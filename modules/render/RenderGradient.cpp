@@ -1,0 +1,81 @@
+#include <panda/PandaDocument.h>
+#include <panda/PandaObject.h>
+#include <panda/ObjectFactory.h>
+#include <panda/Renderer.h>
+#include <panda/Animation.h>
+
+#include <QPointF>
+#include <QPainter>
+
+namespace panda {
+
+class RenderGradient_Horizontal : public Renderer
+{
+public:
+	RenderGradient_Horizontal(PandaDocument *parent)
+		: Renderer(parent)
+		, document(parent)
+		, gradient(initData(&gradient, "gradient", "Gradient to paint on the screen"))
+	{
+		addInput(&gradient);
+	}
+
+	void render(QPainter* painter)
+	{
+		painter->save();
+
+		Gradient grad = gradient.getValue();
+		QSize size = document->getRenderSize();
+		for(int x=0; x<size.width(); ++x)
+		{
+			double p = (double)x / size.width();
+			QColor c = grad.get(p);
+			painter->fillRect(x, 0, 1, size.height(), c);
+		}
+
+		painter->restore();
+	}
+
+protected:
+	PandaDocument* document;
+	Data<Gradient> gradient;
+};
+
+int RenderGradient_HorizontalClass = RegisterObject("Render/Horizontal Gradient").setClass<RenderGradient_Horizontal>().setName("Hor grad").setDescription("Draw a horizontal gradient taking the full screen");
+
+class RenderGradient_Vertical : public Renderer
+{
+public:
+	RenderGradient_Vertical(PandaDocument *parent)
+		: Renderer(parent)
+		, document(parent)
+		, gradient(initData(&gradient, "gradient", "Gradient to paint on the screen"))
+	{
+		addInput(&gradient);
+	}
+
+	void render(QPainter* painter)
+	{
+		painter->save();
+
+		Gradient grad = gradient.getValue();
+		QSize size = document->getRenderSize();
+		for(int y=0; y<size.height(); ++y)
+		{
+			double p = (double)y / size.height();
+			QColor c = grad.get(p);
+			painter->fillRect(0, y, size.width(), 1, c);
+		}
+
+		painter->restore();
+	}
+
+protected:
+	PandaDocument* document;
+	Data<Gradient> gradient;
+};
+
+int RenderGradient_VerticalClass = RegisterObject("Render/Vertical Gradient").setClass<RenderGradient_Vertical>().setName("Ver grad").setDescription("Draw a vertical gradient taking the full screen");
+
+
+} // namespace panda

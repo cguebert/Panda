@@ -1,0 +1,99 @@
+#include <panda/PandaDocument.h>
+#include <panda/PandaObject.h>
+#include <panda/ObjectFactory.h>
+#include <QPointF>
+#include <QList>
+#include <helper/Random.h>
+#include <helper/PointsGrid.h>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+namespace panda {
+
+class GeneratorPoints_Poisson : public PandaObject
+{
+public:
+	GeneratorPoints_Poisson(PandaDocument *doc)
+		: PandaObject(doc)
+		, document(doc)
+		, nbPoints(initData(&nbPoints, 10, "# points", "Number of points generated"))
+		, seed(initData(&seed, 0, "seed", "Seed for the random points generator"))
+		, samples(initData(&samples, 20, "samples", "Number of samples to test (higher means tighter, but longer generation)"))
+		, minimumDistance(initData(&minimumDistance, 50.0, "min distance", "Minimum distance between 2 points"))
+		, points(initData(&points, "points", "The list of points" ))
+	{
+		addInput(&seed);
+		addInput(&minimumDistance);
+		addInput(&samples);
+
+		addOutput(&nbPoints);
+		addOutput(&points);
+
+		seed.setValue(rnd.seedRandom(10000));
+	}
+
+	QPointF randomPointAround(const QPointF& point, double minDist, double maxDist)
+	{
+		double a = rnd.random() * 2 * M_PI;
+		double r = rnd.random(minDist, maxDist);
+		return QPointF(point.x() + r*cos(a), point.y() + r*sin(a));
+	}
+
+	void update()
+	{
+		rnd.seed(seed.getValue());
+		QVector<QPointF>& valPoints = *points.beginEdit();
+		valPoints.clear();
+		QSize size = document->getRenderSize();
+		QRectF area = QRectF(0, 0, size.width()-1, size.height()-1);
+		grid.initGrid(area, minimumDistance.getValue() / sqrt(2.0));
+
+		QList<QPointF> processList;
+
+		QPointF firstPoint(rnd.random(area.left(), area.right())
+						   , rnd.random(area.top(), area.bottom()));
+		processList.append(firstPoint);
+		valPoints.append(firstPoint);
+		grid.addPoint(firstPoint);
+
+		int rejectionLimit = samples.getValue();
+		double minDist = minimumDistance.getValue();
+		double maxDist = minDist * 2.0;
+
+		while(!processList.empty())
+		{
+			int i = floor(rnd.random() * processList.size());
+			QPointF pt = processList.at(i);
+			processList.removeAt(i);
+			for(i=0; i<rejectionLimit; ++i)
+			{
+				QPointF nPt = randomPointAround(pt, minDist, maxDist);
+				if(area.contains(nPt) && !grid.testNeighbor(nPt, minDist))
+				{
+					processList.append(nPt);
+					valPoints.append(nPt);
+					grid.addPoint(nPt);
+				}
+			}
+		}
+
+		nbPoints.setValue(valPoints.size());
+		points.endEdit();
+		grid.clear();
+		this->cleanDirty();
+	}
+
+protected:
+	helper::RandomGenerator rnd;
+	helper::PointsGrid grid;
+
+	PandaDocument *document;
+	Data<int> nbPoints, seed, samples;
+	Data<double> minimumDistance;
+	Data< QVector<QPointF> > points;
+};
+
+int GeneratorPoints_PoissonClass = RegisterObject("Generator/Point/Poisson distribution").setClass<GeneratorPoints_Poisson>().setName("Poisson dist.").setDescription("Generate a list of random points, but with a minimal distance between neighbors");
+
+} // namespace Panda

@@ -1,0 +1,105 @@
+#include <panda/PandaDocument.h>
+#include <panda/PandaObject.h>
+#include <panda/ObjectFactory.h>
+#include <QPointF>
+#include <panda/Renderer.h>
+#include <QPainter>
+
+namespace panda {
+
+class RenderLine : public Renderer
+{
+public:
+	RenderLine(PandaDocument *parent)
+		: Renderer(parent)
+		, inputA(initData(&inputA, "point 1", "Start of the line"))
+		, inputB(initData(&inputB, "point 2", "Start of the line"))
+		, width(initData(&width, 0.0, "width", "Width of the line" ))
+		, color(initData(&color, "color", "Color of the line"))
+	{
+		addInput(&inputA);
+		addInput(&inputB);
+		addInput(&width);
+		addInput(&color);
+	}
+
+	void render(QPainter* painter)
+	{
+		painter->save();
+
+		const QVector<QPointF>& valA = inputA.getValue();
+		const QVector<QPointF>& valB = inputB.getValue();
+		int nb = qMin(valA.size(), valB.size());
+
+		if(nb)
+		{
+			QPen pen;
+			pen.setWidthF(width.getValue());
+			pen.setColor(color.getValue());
+			painter->setBrush(Qt::NoBrush);
+			painter->setPen(pen);
+
+			for(int i=0; i<nb; ++i)
+				painter->drawLine(valA[i], valB[i]);
+		}
+		painter->restore();
+	}
+
+protected:
+	Data< QVector<QPointF> > inputA, inputB;
+	Data<double> width;
+	Data<QColor> color;
+};
+
+int RenderLineClass = RegisterObject("Render/Line").setClass<RenderLine>().setDescription("Draw a line between 2 points");
+
+//*************************************************************************//
+
+class RenderConnectedLines : public Renderer
+{
+public:
+	RenderConnectedLines(PandaDocument *parent)
+		: Renderer(parent)
+		, input(initData(&input, "points", "Vertices of the connected lines"))
+		, width(initData(&width, 0.0, "width", "Width of the line" ))
+		, color(initData(&color, "color", "Color of the line"))
+	{
+		addInput(&input);
+		addInput(&width);
+		addInput(&color);
+	}
+
+	void render(QPainter* painter)
+	{
+		painter->save();
+
+		const QVector<QPointF>& points = input.getValue();
+		int nb = points.size();
+
+		if(nb)
+		{
+			QPen pen;
+			pen.setWidthF(width.getValue());
+			pen.setColor(color.getValue());
+			painter->setBrush(Qt::NoBrush);
+			painter->setPen(pen);
+
+			QPainterPath path;
+			path.moveTo(points[0]);
+			for(int i=1; i<nb; ++i)
+				path.lineTo(points[i]);
+
+			painter->drawPath(path);
+		}
+		painter->restore();
+	}
+
+protected:
+	Data< QVector<QPointF> > input;
+	Data<double> width;
+	Data<QColor> color;
+};
+
+int RenderConnectedLinesClass = RegisterObject("Render/Connected lines").setClass<RenderConnectedLines>().setName("Lines").setDescription("Draw a connected line based on a list of points");
+
+} // namespace panda
