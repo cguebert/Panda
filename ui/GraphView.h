@@ -80,7 +80,7 @@ private:
     qreal zoomFactor;
     QPointF viewDelta;
     QPointF previousMousePos, currentMousePos;
-    enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK };
+	enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK, MOVING_ZOOM };
     MovingAction movingAction;
     panda::BaseData *clickedData, *hoverData;
     QMap<panda::PandaObject*, QSharedPointer<ObjectDrawStruct> > objectDrawStructs;

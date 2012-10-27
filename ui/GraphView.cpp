@@ -256,11 +256,23 @@ void GraphView::mousePressEvent(QMouseEvent *event)
     }
     else if(event->button() == Qt::MidButton)
     {
-        movingAction = MOVING_VIEW;
-        previousMousePos = event->globalPos();
+		if(event->modifiers() == Qt::ControlModifier)
+		{
+			movingAction = MOVING_ZOOM;
+			currentMousePos = event->pos();
+			previousMousePos = event->globalPos();
 
-        QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
-        grabMouse();
+			QApplication::setOverrideCursor(QCursor(Qt::SizeVerCursor));
+			grabMouse();
+		}
+		else
+		{
+			movingAction = MOVING_VIEW;
+			previousMousePos = event->globalPos();
+
+			QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
+			grabMouse();
+		}
     }
 }
 
@@ -320,6 +332,16 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
         previousMousePos = event->globalPos();
         update();
     }
+	else if(movingAction == MOVING_ZOOM)
+	{
+		int y = event->globalY() - previousMousePos.y();
+		QPointF oldPos = currentMousePos / zoomFactor;
+		zoomFactor = qBound(0.1, zoomFactor - y / 500.0, 1.0);
+		zoomLevel = 100.0 * (1.0 - zoomFactor);
+		moveView(currentMousePos / zoomFactor - oldPos);
+		previousMousePos = event->globalPos();
+		update();
+	}
     else if(movingAction == MOVING_SELECTION)
     {
         currentMousePos = event->posF();
@@ -474,7 +496,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
         update();
     }
 
-    QApplication::restoreOverrideCursor();
+	QApplication::restoreOverrideCursor();
     releaseMouse();
     movingAction = MOVING_NONE;
 }
