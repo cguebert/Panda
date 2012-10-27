@@ -198,9 +198,10 @@ public:
 
     void save(QTextStream& out)
     {
-        out << (quint32)nonSortedDatas.size();
+		out << (quint32)nonSortedDatas.size() << " ";
         foreach(BaseData* data, nonSortedDatas)
-            out << (quint32)data->getValueType();
+			out << (quint32)data->getValueType() << " ";
+		out << endl;
 
         PandaObject::save(out);
     }
