@@ -42,6 +42,9 @@ public:
 
 	static const int dataRectSize = 10;
 	static const int dataRectMargin = 5;
+
+	virtual int dataStartY();
+
 protected:
 	GraphView* parentView;
 	panda::PandaObject* object;

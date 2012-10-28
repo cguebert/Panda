@@ -29,7 +29,7 @@ void ObjectDrawStruct::update()
 	for(int i=0; i<nbInputs; ++i)
 	{
 		QRectF dataArea(objectArea.x() + dataRectMargin,
-						objectArea.y() + dataRectMargin + i * (dataRectSize + dataRectMargin),
+						objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
 						dataRectSize, dataRectSize);
 		datas.append(qMakePair(dataArea, inputDatas[i]));
 	}
@@ -37,7 +37,7 @@ void ObjectDrawStruct::update()
 	for(int i=0; i<nbOutputs; ++i)
 	{
 		QRectF dataArea(objectArea.right() - dataRectMargin - dataRectSize,
-						objectArea.y() + dataRectMargin + i * (dataRectSize + dataRectMargin),
+						objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
 						dataRectSize, dataRectSize);
 		datas.append(qMakePair(dataArea, outputDatas[i]));
 	}
@@ -70,7 +70,7 @@ QSize ObjectDrawStruct::getObjectSize()
 	nbInputs = object->getInputDatas().size();
 	nbOutputs = object->getOutputDatas().size();
 	int maxData = qMax(nbInputs, nbOutputs);
-	objectSize.rheight() = qMax(objectSize.rheight(), dataRectMargin + maxData*(dataRectMargin+dataRectSize));
+	objectSize.rheight() = qMax(objectSize.rheight(), 2*dataStartY() + (maxData-1)*dataRectMargin + maxData*dataRectSize);
 
 	return objectSize;
 }
@@ -201,6 +201,11 @@ QPointF ObjectDrawStruct::getPosition() const
 ObjectDrawStruct::RectDataIterator ObjectDrawStruct::getDatasIterator() const
 {
 	return RectDataIterator(datas);
+}
+
+int ObjectDrawStruct::dataStartY()
+{
+	return dataRectMargin;
 }
 
 //******************************************************************************************
