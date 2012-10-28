@@ -16,9 +16,9 @@ HEADERS       = \
 	panda/BaseData.h \
 	panda/Animation.h \
 	ui/DatasEditDialog.h \
-    panda/Group.h \
-    ui/ObjectDrawStruct.h \
-    panda/Dockable.h
+	panda/Group.h \
+	ui/ObjectDrawStruct.h \
+	panda/Dockable.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -62,9 +62,10 @@ SOURCES       = main.cpp \
 	modules/generators/text/DateTime.cpp \
 	modules/modifiers/point/PointsUnion.cpp \
 	ui/DatasEditDialog.cpp \
-    panda/Group.cpp \
-    ui/ObjectDrawStruct.cpp \
-    panda/Dockable.cpp
+	panda/Group.cpp \
+	ui/ObjectDrawStruct.cpp \
+	panda/Dockable.cpp \
+	modules/list/ModifyList.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0

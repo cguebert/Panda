@@ -27,14 +27,34 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
     if(doc->getNbSelected() < 2)
         return false;
 
+	PandaDocument::ObjectsIterator iter = doc->getSelectionIterator();
+
+	// Verify that all selected renderers are in the same layer
+	Layer* layer = NULL;
+	while(iter.hasNext())
+	{
+		PandaObject* object = iter.next();
+		Renderer* renderer = dynamic_cast<Renderer*>(object);
+		if(renderer)
+		{
+			if(!layer)
+				layer = dynamic_cast<Layer*>(renderer->getParentDock());
+			else if(layer != renderer->getParentDock())
+			{
+				QMessageBox::warning(NULL, tr("Panda"),
+					tr("All renderers must be placed in the same layer."));
+				return false;
+			}
+		}
+	}
+
 	Group* group = dynamic_cast<Group*>(doc->createObject(ObjectFactory::getClassName<Group>()));
     if(!group)
         return false;
 
-    PandaDocument::ObjectsIterator iter = doc->getSelectionIterator();
-
     // Find center of the selection
     QRectF totalView;
+	iter.toFront();
     while(iter.hasNext())
     {
         PandaObject* object = iter.next();

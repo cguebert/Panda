@@ -462,8 +462,8 @@ void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
                             --newIndex;
 						prevDock->removeDockable(dockable);
 						prevDock->addDockable(dockable, newIndex);
-						modifiedObject(prevDock);
                     }
+					modifiedObject(prevDock);	// Always update
                 }
             }
         }
