@@ -70,34 +70,42 @@ public:
         return dataList;
     }
 
-    void dataSetParent(BaseData* data, BaseData* parent)
+	void dataSetParent(BaseData* data, BaseData* parent)
     {
-        if(data == &generic)
+		static bool protection = false;
+		if(protection)
+			return;
+
+		if(data == &generic)
         {
-            int type = parent->getValueType();
+			int type = parent->getValueType();
             BaseData *dataList = createDatas(type);
 
             if(dataList)
-                dataList->setParent(parent);
+				dataList->setParent(parent);
 
             emit modified(this);
         }
-        else if(parent || !createdDatas.contains(data))
-            data->setParent(parent);
+		else if(parent || !createdDatas.contains(data))
+		{
+			protection = true;
+			data->setParent(parent);
+			protection = false;
+		}
         else // (NULL), we remove the data
         {
-            int type = data->getValueType();
-            BaseData* dataItem = createdDatas[data];
-            data->setParent(NULL);
+			int type = data->getValueType();
+			BaseData* dataItem = createdDatas[data];
+			data->setParent(NULL);
 
-            createdDatas.remove(data);
+			createdDatas.remove(data);
 
-            removeData(data);
+			removeData(data);
             removeData(dataItem);
 
-            nonSortedDatas.removeAll(data);
+			nonSortedDatas.removeAll(data);
 
-            delete data;
+			delete data;
             delete dataItem;
 
             int id=0;

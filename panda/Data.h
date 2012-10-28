@@ -105,7 +105,7 @@ class GenericData : public Data<QString>
 {
 public:
     explicit GenericData(const BaseData::BaseInitData& init)
-        : Data(init) {}
+		: Data<QString>(init) {}
 
     virtual bool validParent(const BaseData* parent) const;
     virtual QString getFullTypeName() const;

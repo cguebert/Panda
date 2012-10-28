@@ -16,6 +16,7 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget *parent)
     , movingAction(MOVING_NONE)
     , clickedData(NULL)
     , hoverData(NULL)
+	, recomputeTags(false)
 {
     setAutoFillBackground(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -103,6 +104,7 @@ void GraphView::resetView()
     movingAction = MOVING_NONE;
     clickedData = NULL;
     hoverData = NULL;
+	recomputeTags = false;
 }
 
 ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* obj)
@@ -134,6 +136,12 @@ void GraphView::moveView(const QPointF& delta)
 
 void GraphView::paintEvent(QPaintEvent* /* event */)
 {
+	if(recomputeTags)
+	{
+		updateLinkTags();
+		recomputeTags = false;
+	}
+
     QStylePainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setRenderHint(QPainter::TextAntialiasing, true);
@@ -478,16 +486,16 @@ void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
     }
     else if(movingAction == MOVING_LINK)
     {
-        panda::PandaObject* object = getObjectAtPos(currentMousePos);
-        if(object)
+        panda::PandaObject* obj = getObjectAtPos(currentMousePos);
+        if(obj)
         {
-            panda::BaseData* data = objectDrawStructs[object]->getDataAtPos(currentMousePos);
-            if(data && isCompatible(clickedData, data))
+            panda::BaseData* secondData = objectDrawStructs[obj]->getDataAtPos(currentMousePos);
+            if(secondData && isCompatible(clickedData, secondData))
             {
                 if(clickedData->isInput())
-                    object->dataSetParent(clickedData, data);
-                else if(data->isInput())
-                    object->dataSetParent(data, clickedData);
+                    obj->dataSetParent(clickedData, secondData);
+                else if(secondData->isInput())
+                    obj->dataSetParent(secondData, clickedData);
                 emit modified();
                 updateLinkTags();
             }
@@ -658,7 +666,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 {
     objectDrawStructs.remove(object);
     linkTags.clear();
-    updateLinkTags();
+	recomputeTags = true;
     update();
 }
 
@@ -745,10 +753,10 @@ void GraphView::removeLinkTag(panda::BaseData* input, panda::BaseData* output)
 
 void GraphView::updateLinkTags(bool reset)
 {
-    if(reset)
-        linkTags.clear();
+	if(reset)
+		linkTags.clear();
 
-    panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
+	panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
     while(iter.hasNext())
     {
         panda::PandaObject* object = iter.next();

@@ -62,6 +62,10 @@ public:
 
     void dataSetParent(BaseData* data, BaseData* parent)
     {
+		static bool protection = false;
+		if(protection)
+			return;
+
         if(data == &generic)
         {
             int type = parent->getValueType();
@@ -73,7 +77,11 @@ public:
             emit modified(this);
         }
         else if(parent || !createdDatas.contains(data))
-            data->setParent(parent);
+		{
+			protection = true;
+			data->setParent(parent);
+			protection = false;
+		}
         else // (NULL), we remove the data
         {
             int type = data->getValueType();

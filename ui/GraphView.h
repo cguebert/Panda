@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QMap>
 #include <QTextStream>
+#include <ui/ObjectDrawStruct.h>
 
 namespace panda
 {
@@ -14,7 +15,6 @@ class Layer;
 class Renderer;
 }
 
-class ObjectDrawStruct;
 class LinkTag;
 
 class GraphView : public QWidget
@@ -85,6 +85,7 @@ private:
     panda::BaseData *clickedData, *hoverData;
     QMap<panda::PandaObject*, QSharedPointer<ObjectDrawStruct> > objectDrawStructs;
     QMap<panda::BaseData*, QSharedPointer<LinkTag> > linkTags;
+	bool recomputeTags;
 };
 
 class LinkTag

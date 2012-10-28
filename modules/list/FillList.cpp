@@ -66,6 +66,10 @@ public:
 
     void dataSetParent(BaseData* data, BaseData* parent)
     {
+		static bool protection = false;
+		if(protection)
+			return;
+
         if(data == &generic)
         {
             int type = parent->getValueType();
@@ -77,7 +81,11 @@ public:
             emit modified(this);
         }
         else if(parent || !createdDatas.contains(data))
-            data->setParent(parent);
+		{
+			protection = true;
+			data->setParent(parent);
+			protection = false;
+		}
         else // (NULL), we remove the data
         {
             int type = data->getValueType();
@@ -132,10 +140,7 @@ public:
                 if(inputSize)
                 {
                     for(int i=0; i<outputSize; ++i)
-                    {
-                        std::cout << "i :" << i << std::endl;
                         outputData->fromBaseValue(data->getBaseValue(i % inputSize), i);
-                    }
                 }
             }
         }

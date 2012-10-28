@@ -584,11 +584,11 @@ void PandaDocument::selectConnected()
 
 void PandaDocument::doRemoveObject(PandaObject* object, bool del)
 {
+	emit removedObject(object);
     pandaObjectsMap.remove(object->getIndex());
     pandaObjects.removeAll(object);
     selectedObjects.removeAll(object);
     object->disconnect(this);
-    emit removedObject(object);
     if(del)
         delete object;
 }

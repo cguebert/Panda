@@ -108,8 +108,6 @@ RegisterObject::operator int()
     reg->className = entry.className;
     reg->hidden = entry.hidden;
 
-//    std::cout << entry.className.toStdString() << std::endl;
-
     return 1;
 }
 
