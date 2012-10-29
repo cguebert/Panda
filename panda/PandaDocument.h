@@ -45,6 +45,7 @@ public:
     QSize getRenderSize();
 
     double getAnimationTime();
+	double getTimeStep();
 
     quint32 getNextIndex();
     PandaObject* findObject(quint32 objectIndex);

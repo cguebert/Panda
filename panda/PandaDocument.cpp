@@ -464,6 +464,11 @@ double PandaDocument::getAnimationTime()
     return animTime.getValue();
 }
 
+double PandaDocument::getTimeStep()
+{
+	return timestep.getValue();
+}
+
 void PandaDocument::cut()
 {
     copy();
