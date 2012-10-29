@@ -31,6 +31,9 @@ public:
 		valOut.clear();
 		valOut << valInA << valInB;
 
+		inputA.endEdit();
+		inputB.endEdit();
+		result.endEdit();
         this->cleanDirty();
     }
 
@@ -71,6 +74,8 @@ public:
 
 		valOut.swap( valIn.mid(0, val) );
 
+		input.endEdit();
+		result.endEdit();
 		this->cleanDirty();
 	}
 
@@ -115,6 +120,8 @@ public:
 		else
 			valOut.swap( valIn.mid(valIn.size() + val) );
 
+		input.endEdit();
+		result.endEdit();
 		this->cleanDirty();
 	}
 
@@ -171,6 +178,7 @@ public:
 				valOut << valIn[i];
 		}
 
+		result.endEdit();
 		this->cleanDirty();
 	}
 

@@ -166,7 +166,7 @@ public:
                 {
                     const Animation<QPointF>& valAnim = animPoint->getValue();
                     if(valAnim.size())
-                        return animPoint->getValue().getKeys().back();
+						return valAnim.getKeys().back();
                     else
                         return 0.0;
                 }
@@ -190,7 +190,6 @@ public:
                 {
                     const Animation<double>& animDouble = dataAnimDouble->getValue();
                     QVector<double>& valDouble = *dataValDouble->beginEdit();
-//					valDouble.resize(keySize);
                     for(int i=0; i<keySize; ++i)
                         valDouble[i] = animDouble.get(key[i]);
                     dataValDouble->endEdit();
@@ -205,7 +204,6 @@ public:
                 {
                     const Animation<QColor>& animColor = dataAnimColor->getValue();
                     QVector<QColor>& valColor = *dataValColor->beginEdit();
-//					valColor.resize(keySize);
                     for(int i=0; i<keySize; ++i)
                         valColor[i] = animColor.get(key[i]);
                     dataValColor->endEdit();
@@ -220,7 +218,6 @@ public:
                 {
                     const Animation<QPointF>& animPoint = dataAnimPoint->getValue();
                     QVector<QPointF>& valPoint = *dataValPoint->beginEdit();
-//					valPoint.resize(keySize);
                     for(int i=0; i<keySize; ++i)
                         valPoint[i] = animPoint.get(key[i]);
                     dataValPoint->endEdit();
