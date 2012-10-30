@@ -66,8 +66,21 @@ public:
     virtual bool isVector() const = 0;
     virtual bool isAnimation() const = 0;
 
-    virtual int getValueType() const = 0;
+	virtual int getValueType() const = 0;
 	virtual int getFullType() const;
+
+	template <class T> static int getValueTypeOf() { return qMetaTypeId<T>(); }
+	static int getFullTypeOfSingleValue(int valueType);
+	static int getFullTypeOfVector(int valueType);
+	static int getFullTypeOfAnimation(int valueType);
+
+	// To decode the number given by getFullType
+	static int getValueType(int fullType);
+	static bool isSingleValue(int fullType);
+	static bool isVector(int fullType);
+	static bool isAnimation(int fullType);
+	static int replaceValueType(int fullType, int newType);
+
     virtual int getSize() const = 0;
     virtual void clear(int size = 0, bool init = false) = 0;
 

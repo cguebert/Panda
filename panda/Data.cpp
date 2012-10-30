@@ -75,12 +75,13 @@ BaseData* createAnimationDataFromType(int type, const QString& name, const QStri
 
 BaseData* createDataFromFullType(int fullType, const QString& name, const QString& help, PandaObject* owner)
 {
-	if(fullType & (1 << 17))
-		return createVectorDataFromType(fullType & 0x00FF, name, help, owner);
-	if(fullType & (1 << 18))
-		return createAnimationDataFromType(fullType & 0x00FF, name, help, owner);
+	int type = BaseData::getValueType(fullType);
+	if(BaseData::isVector(fullType))
+		return createVectorDataFromType(type, name, help, owner);
+	if(BaseData::isAnimation(fullType))
+		return createAnimationDataFromType(type, name, help, owner);
 
-	return createDataFromType(fullType & 0x00FF, name, help, owner);
+	return createDataFromType(type, name, help, owner);
 }
 
 //***************************************************************//
@@ -316,13 +317,13 @@ template<class T>
 int getDataValueType(const Data<T>*);
 
 template<class T>
-int getDataValueType(const Data< QVector<T> >*) { return qMetaTypeId<T>(); }
+int getDataValueType(const Data< QVector<T> >*) { return BaseData::getValueTypeOf<T>(); }
 
 template<class T>
-int getDataValueType(const Data< Animation<T> >*) { return qMetaTypeId<T>(); }
+int getDataValueType(const Data< Animation<T> >*) { return BaseData::getValueTypeOf<T>(); }
 
 template<class T>
-int getDataValueType(const Data<T>*) { return qMetaTypeId<T>(); }
+int getDataValueType(const Data<T>*) { return BaseData::getValueTypeOf<T>(); }
 
 template<class T>
 int Data<T>::getValueType() const { return getDataValueType(this); }

@@ -164,12 +164,53 @@ QString BaseData::typeToName(int type)
 
 int BaseData::getFullType() const
 {
+	int type = getValueType();
     if(isVector())
-        return getValueType() + (1 << 17);
+		return getFullTypeOfVector(type);
     if(isAnimation())
-        return getValueType() + (1 << 18);
+		return getFullTypeOfAnimation(type);
 
-    return getValueType() + (1 << 16);
+	return getFullTypeOfSingleValue(type);
+}
+
+int BaseData::getFullTypeOfSingleValue(int valueType)
+{
+	return valueType + (1 << 16);
+}
+
+int BaseData::getFullTypeOfVector(int valueType)
+{
+	return valueType + (1 << 17);
+}
+
+int BaseData::getFullTypeOfAnimation(int valueType)
+{
+	return valueType + (1 << 18);
+}
+
+int BaseData::getValueType(int fullType)
+{
+	return fullType & 0xFFFF;
+}
+
+bool BaseData::isSingleValue(int fullType)
+{
+	return fullType & (1 << 16);
+}
+
+bool BaseData::isVector(int fullType)
+{
+	return fullType & (1 << 17);
+}
+
+bool BaseData::isAnimation(int fullType)
+{
+	return fullType & (1 << 18);
+}
+
+int BaseData::replaceValueType(int fullType, int newType)
+{
+	return (fullType & 0xFFFF0000) + newType;
 }
 
 } // namespace panda
