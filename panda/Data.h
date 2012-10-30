@@ -5,7 +5,7 @@
 #include <QVariant>
 
 #include <QTextStream>
-#include <QSet>
+#include <QList>
 
 namespace panda
 {
@@ -110,7 +110,7 @@ public:
     virtual bool validParent(const BaseData* parent) const;
     virtual QString getFullTypeName() const;
 
-    QSet<int> allowedTypes;
+	QList<int> allowedTypes;
 };
 
 class GenericNonVectorData : public GenericData

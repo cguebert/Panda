@@ -677,6 +677,8 @@ void GraphView::modifiedObject(panda::PandaObject* object)
     if(objectDrawStructs.contains(object))	// Can be called before the object is fully created
     {
         objectDrawStructs[object]->update();
+		linkTags.clear();
+		recomputeTags = true;
         update();
     }
 }

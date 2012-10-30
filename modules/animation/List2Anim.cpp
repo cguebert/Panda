@@ -24,9 +24,9 @@ public:
         generic.setDisplayed(false);
         generic.setPersistent(false);
 
-        generic.allowedTypes.insert(QMetaType::Double);
-        generic.allowedTypes.insert(QMetaType::QPointF);
-        generic.allowedTypes.insert(QMetaType::QColor);
+		generic.allowedTypes.append(BaseData::getValueTypeOf<double>());
+		generic.allowedTypes.append(BaseData::getValueTypeOf<QPointF>());
+		generic.allowedTypes.append(BaseData::getValueTypeOf<QColor>());
     }
 
     BaseData* createDatas(int type)

@@ -18,7 +18,8 @@ HEADERS       = \
 	ui/DatasEditDialog.h \
 	panda/Group.h \
 	ui/ObjectDrawStruct.h \
-	panda/Dockable.h
+	panda/Dockable.h \
+	panda/GenericObject.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -66,7 +67,8 @@ SOURCES       = main.cpp \
 	ui/ObjectDrawStruct.cpp \
 	panda/Dockable.cpp \
 	modules/list/ModifyList.cpp \
-    modules/list/ListBuffer.cpp
+	modules/list/ListBuffer.cpp \
+	panda/GenericObject.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0
