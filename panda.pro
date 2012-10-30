@@ -65,7 +65,8 @@ SOURCES       = main.cpp \
 	panda/Group.cpp \
 	ui/ObjectDrawStruct.cpp \
 	panda/Dockable.cpp \
-	modules/list/ModifyList.cpp
+	modules/list/ModifyList.cpp \
+    modules/list/ListBuffer.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0
