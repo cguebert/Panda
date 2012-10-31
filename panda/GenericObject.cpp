@@ -138,8 +138,18 @@ void GenericObject::updateDataNames()
 
 void GenericObject::update()
 {
+	int nbDefs = _dataDefinitions.size();
+
 	foreach(CreatedDatasStructPtr created, _createdDatasStructs)
+	{
+		for(int i=0; i<nbDefs; ++i)
+		{
+			if(_dataDefinitions[i].input)
+					created->datas[i]->updateIfDirty();
+		}
+
 		this->invokeFunction(created->type, created->datas);
+	}
 
 	this->cleanDirty();
 }

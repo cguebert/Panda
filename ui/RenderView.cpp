@@ -9,6 +9,8 @@ RenderView::RenderView(panda::PandaDocument* doc, QWidget *parent)
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+	setMouseTracking(true);
 }
 
 QSize RenderView::minimumSizeHint() const
@@ -33,4 +35,26 @@ void RenderView::paintEvent(QPaintEvent* /*event*/)
 						   viewRect.center().y() - image.height() / 2,
 						   image);
 	}
+}
+
+void RenderView::mousePressEvent(QMouseEvent *event)
+{
+	if(event->button() == Qt::LeftButton)
+		pandaDocument->setMouseClick(1);
+}
+
+void RenderView::mouseMoveEvent(QMouseEvent *event)
+{
+	QRect viewRect = contentsRect();
+	QSize renderSize = pandaDocument->getRenderSize();
+	QPointF delta = QPointF(viewRect.center().x() - renderSize.width() / 2,
+							viewRect.center().y() - renderSize.height() / 2);
+
+	pandaDocument->setMousePosition(event->posF() - delta);
+}
+
+void RenderView:: mouseReleaseEvent(QMouseEvent *event)
+{
+	if(event->button() == Qt::LeftButton)
+		pandaDocument->setMouseClick(0);
 }

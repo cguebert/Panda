@@ -15,6 +15,9 @@ PandaDocument::PandaDocument(QObject *parent)
     , backgroundColor(initData(&backgroundColor, QColor(255,255,255), "background color", "Background color of the image to be rendered"))
     , animTime(initData(&animTime, 0.0, "time", "Time of the animation"))
     , timestep(initData(&timestep, 0.1, "timestep", "Time step of the animation"))
+	, mousePosition(initData(&mousePosition, "mousePosition", "Current position of the mouse in the render view"))
+	, mouseClick(initData(&mouseClick, 0, "mouseClick", "1 if the left mouse button is pressed"))
+	, mouseClickBuffer(0)
     , animPlaying(false)
 {
     addInput(&renderSize);
@@ -22,6 +25,8 @@ PandaDocument::PandaDocument(QObject *parent)
     addInput(&timestep);
 
     animTime.setOutput(true);	// Not connecting to the document, otherwise it would update the layers each time we get the time.
+	mousePosition.setOutput(true);
+	mouseClick.setOutput(true);
 
     connect(this, SIGNAL(modifiedObject(panda::PandaObject*)), this, SIGNAL(modified()));
     connect(this, SIGNAL(addedObject(panda::PandaObject*)), this, SIGNAL(modified()));
@@ -469,6 +474,26 @@ double PandaDocument::getTimeStep()
 	return timestep.getValue();
 }
 
+QPointF PandaDocument::getMousePosition()
+{
+	return mousePosition.getValue();
+}
+
+void PandaDocument::setMousePosition(const QPointF& pos)
+{
+	mousePositionBuffer = pos;
+}
+
+int PandaDocument::getMouseClick()
+{
+	return mouseClick.getValue();
+}
+
+void PandaDocument::setMouseClick(int state)
+{
+	mouseClickBuffer = state;
+}
+
 void PandaDocument::cut()
 {
     copy();
@@ -692,6 +717,8 @@ void PandaDocument::play(bool playing)
 void PandaDocument::step()
 {
     animTime.setValue(animTime.getValue() + timestep.getValue());
+	mousePosition.setValue(mousePositionBuffer);
+	mouseClick.setValue(mouseClickBuffer);
     setDirtyValue();
     emit timeChanged();
 }
@@ -699,6 +726,8 @@ void PandaDocument::step()
 void PandaDocument::rewind()
 {
     animTime.setValue(0.0);
+	mousePosition.setValue(mousePositionBuffer);
+	mouseClick.setValue(mouseClickBuffer);
     foreach(PandaObject* object, pandaObjects)
         object->reset();
     setDirtyValue();

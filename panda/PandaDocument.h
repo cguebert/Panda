@@ -47,6 +47,11 @@ public:
     double getAnimationTime();
 	double getTimeStep();
 
+	QPointF getMousePosition();
+	void setMousePosition(const QPointF& pos);
+	int getMouseClick();
+	void setMouseClick(int state);
+
     quint32 getNextIndex();
     PandaObject* findObject(quint32 objectIndex);
     BaseData* findData(quint32 objectIndex, const QString& dataName);
@@ -68,9 +73,16 @@ protected:
     QImage renderedImage;
     Layer* defaultLayer;
     QList<Layer*> layers;
-    Data<QPointF> renderSize;
+
+	Data<QPointF> renderSize;
     Data<QColor> backgroundColor;
     Data<double> animTime, timestep;
+	Data<QPointF> mousePosition;
+	Data<int> mouseClick;
+
+	QPointF mousePositionBuffer;
+	int mouseClickBuffer;
+
     bool animPlaying;
     QTimer* animTimer;
 

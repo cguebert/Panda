@@ -68,7 +68,8 @@ SOURCES       = main.cpp \
 	panda/Dockable.cpp \
 	modules/list/ModifyList.cpp \
 	modules/list/ListBuffer.cpp \
-	panda/GenericObject.cpp
+	panda/GenericObject.cpp \
+    modules/generators/point/MouseInfo.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0

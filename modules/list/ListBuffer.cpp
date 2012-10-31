@@ -57,7 +57,7 @@ public:
 	void update()
 	{
 		double newControl = control.getValue();
-		if(prevControl != newControl)
+		if(prevControl != newControl || newControl == 0.0)
 		{
 			prevControl = newControl;
 			GenericObject::update();
@@ -67,7 +67,8 @@ public:
 
 	void setDirtyValue()
 	{
-		if(prevControl != control.getValue())
+		double newControl = control.getValue();
+		if(prevControl != newControl || newControl == 0.0)
 			PandaObject::setDirtyValue();
 	}
 
