@@ -25,16 +25,23 @@ public:
 
     void update()
     {
+		QVector<QPointF>& res = *result.beginEdit();
+		res.clear();
+
         const QVector<QPointF>& valA = inputA.getValue();
         const QVector<QPointF>& valB = inputB.getValue();
-        int nb = qMin(valA.size(), valB.size());
+		int nbA = valA.size(), nbB = valB.size();
 
-        QVector<QPointF>& res = *result.beginEdit();
-        res.clear();
-        res.resize(nb);
+		if(nbA && nbB)
+		{
+			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
+			else if(nbB < nbA && nbB > 1)	nbA = nbB;
+			int nb = qMax(nbA, nbB);
+			res.resize(nb);
 
-        for(int i=0; i<nb; ++i)
-            res[i] = valA[i] + valB[i];
+			for(int i=0; i<nb; ++i)
+				res[i] = valA[i%nbA] + valB[i%nbB];
+		}
 
         result.endEdit();
         this->cleanDirty();
@@ -55,26 +62,36 @@ public:
         : PandaObject(doc)
         , input(initData(&input, "point", "Point value to multiply"))
         , result(initData(&result, "result", "Result of the multiplication of the point by the real"))
-        , factor(initData(&factor, 1.0, "factor", "Real by which to multiply the point"))
+		, factor(initData(&factor, "factor", "Real by which to multiply the point"))
     {
         addInput(&input);
         addInput(&factor);
+
+		factor.beginEdit()->append(1.0);
+		factor.endEdit();
 
         addOutput(&result);
     }
 
     void update()
     {
+		QVector<QPointF>& res = *result.beginEdit();
+		res.clear();
+
         const QVector<QPointF>& points = input.getValue();
-        int nb = points.size();
+		const QVector<double>& reals = factor.getValue();
+		int nbP = points.size(), nbR = reals.size();
 
-        QVector<QPointF>& res = *result.beginEdit();
-        res.clear();
-        res.resize(nb);
+		if(nbP && nbR)
+		{
+			if(nbR < nbP && nbR > 1)		nbP = nbR;	// Either 1 real, or equal nb of reals & points
+			else if(nbP < nbR && nbP > 1)	nbR = nbP;
+			int nb = qMax(nbP, nbR);
+			res.resize(nb);
 
-        double f = factor.getValue();
-        for(int i=0; i<nb; ++i)
-            res[i] = points[i] * f;
+			for(int i=0; i<nb; ++i)
+				res[i] = points[i%nbP] * reals[i%nbR];
+		}
 
         result.endEdit();
         this->cleanDirty();
@@ -82,7 +99,7 @@ public:
 
 protected:
     Data< QVector<QPointF> > input, result;
-    Data< double > factor;
+	Data< QVector<double> > factor;
 };
 
 int PointMath_ScaleClass = RegisterObject("Math/Point/Multiply").setClass<PointMath_Scale>().setName("Scale point").setDescription("Multiply a point by a real");
@@ -106,21 +123,27 @@ public:
 
     void update()
     {
+		QVector<double>& res = *result.beginEdit();
+		res.clear();
+
         const QVector<QPointF>& valA = inputA.getValue();
         const QVector<QPointF>& valB = inputB.getValue();
-        int nb = qMin(valA.size(), valB.size());
+		int nbA = valA.size(), nbB = valB.size();
 
-        QVector<double>& res = *result.beginEdit();
-        res.clear();
-        res.resize(nb);
+		if(nbA && nbB)
+		{
+			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
+			else if(nbB < nbA && nbB > 1)	nbA = nbB;
+			int nb = qMax(nbA, nbB);
+			res.resize(nb);
 
-        for(int i=0; i<nb; ++i)
-        {
-            const QPointF& ptA = valA[i], ptB = valB[i];
-            double dx = ptA.x()-ptB.x(), dy = ptA.y()-ptB.y();
-            res[i] = sqrt(dx*dx+dy*dy);
-        }
-
+			for(int i=0; i<nb; ++i)
+			{
+				const QPointF& ptA = valA[i%nbA], ptB = valB[i%nbB];
+				double dx = ptA.x()-ptB.x(), dy = ptA.y()-ptB.y();
+				res[i] = sqrt(dx*dx+dy*dy);
+			}
+		}
         result.endEdit();
         this->cleanDirty();
     }
@@ -153,21 +176,40 @@ public:
 
     void update()
     {
+		QVector<QPointF>& res = *result.beginEdit();
+		res.clear();
+
         const QVector<QPointF>& points = input.getValue();
-        int nb = points.size();
+		const QVector<QPointF>& centers = center.getValue();
+		const QVector<double>& angles = angle.getValue();
+		int nbP = points.size(), nbC = centers.size(), nbA = angles.size();
 
-        QVector<QPointF>& res = *result.beginEdit();
-        res.clear();
-        res.resize(nb);
+		if(nbP && nbC && nbA)
+		{
+			int nb = nbP;
+			if(nbP > 1)
+			{
+				if(nbC != nbP) nbC = 1;
+				if(nbA != nbA) nbA = 1;
+			}
+			else
+			{
+				if(nbC > nbA && nbA > 1)		nbC = nbA;
+				else if(nbA > nbC && nbC > 1)	nbA = nbC;
+				nb = qMax(nbA, nbC);
+			}
 
-        const QPointF& cen = center.getValue();
-        const double& ang = angle.getValue() * M_PI / 180.0;
-        double ca = cos(ang), sa = sin(ang);
-        for(int i=0; i<nb; ++i)
-        {
-            QPointF pt = points[i] - cen;
-            res[i] = QPointF(pt.x()*ca-pt.y()*sa, pt.x()*sa+pt.y()*ca) + cen;
-        }
+			res.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+			{
+				const QPointF& cen = centers[i%nbC];
+				const double& ang = angles[i%nbA] * M_PI / 180.0;
+				double ca = cos(ang), sa = sin(ang);
+				QPointF pt = points[i%nbP] - cen;
+				res[i] = QPointF(pt.x()*ca-pt.y()*sa, pt.x()*sa+pt.y()*ca) + cen;
+			}
+		}
 
         result.endEdit();
         this->cleanDirty();
@@ -175,8 +217,8 @@ public:
 
 protected:
     Data< QVector<QPointF> > input, result;
-    Data< QPointF > center;
-    Data< double > angle;
+	Data< QVector<QPointF> > center;
+	Data< QVector<double> > angle;
 };
 
 int PointMath_RotationClass = RegisterObject("Math/Point/Rotation").setClass<PointMath_Rotation>().setDescription("Rotation of a point around a center");

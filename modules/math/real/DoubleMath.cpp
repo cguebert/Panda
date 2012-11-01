@@ -20,8 +20,8 @@ public:
 
 	void update()
 	{
-		QVector<double> &valIn = *input.beginEdit(),
-						&valOut = *result.beginEdit();
+		const QVector<double> &valIn = input.getValue();
+		QVector<double> &valOut = *result.beginEdit();
 
 		int size = valIn.size();
 		valOut.resize(size);
@@ -29,9 +29,7 @@ public:
 		for(int i=0; i<size; ++i)
 			valOut[i] = compute(valIn[i]);
 
-		input.endEdit();
 		result.endEdit();
-
 		this->cleanDirty();
 	}
 
@@ -60,19 +58,24 @@ public:
 
 	void update()
 	{
-		QVector<double> &valInA = *inputA.beginEdit(),
-						&valInB = *inputB.beginEdit(),
-						&valOut = *result.beginEdit();
+		const QVector<double>	&valInA = inputA.getValue(),
+								&valInB = inputB.getValue();
+		QVector<double> &valOut = *result.beginEdit();
+		valOut.clear();
 
-		int size = qMin(valInA.size(), valInB.size());
-		valOut.resize(size);
+		int nbA = valInA.size(), nbB = valInB.size();
+		if(nbA && nbB)
+		{
+			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
+			else if(nbB < nbA && nbB > 1)	nbA = nbB;
+			int nb = qMax(nbA, nbB);
+			valOut.resize(nb);
 
-		for(int i=0; i<size; ++i)
-			valOut[i] = compute(valInA[i], valInB[i]);
+			for(int i=0; i<nb; ++i)
+				valOut[i] = compute(valInA[i%nbA], valInB[i%nbB]);
 
-		inputA.endEdit();
-		inputB.endEdit();
-		result.endEdit();
+			result.endEdit();
+		}
 
 		this->cleanDirty();
 	}
