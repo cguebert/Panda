@@ -19,7 +19,8 @@ HEADERS       = \
 	panda/Group.h \
 	ui/ObjectDrawStruct.h \
 	panda/Dockable.h \
-	panda/GenericObject.h
+	panda/GenericObject.h \
+    ui/QuickCreateDialog.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -69,7 +70,9 @@ SOURCES       = main.cpp \
 	modules/list/ModifyList.cpp \
 	modules/list/ListBuffer.cpp \
 	panda/GenericObject.cpp \
-    modules/generators/point/MouseInfo.cpp
+    modules/generators/point/MouseInfo.cpp \
+    modules/math/real/DoubleComputation.cpp \
+    ui/QuickCreateDialog.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0

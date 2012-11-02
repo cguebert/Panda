@@ -10,24 +10,24 @@ namespace panda
 
 GenericObject::GenericObject(PandaDocument *parent)
 	: PandaObject(parent)
-	, setParentProtection(false)
+	, setParentProtection_(false)
 {
 
 }
 
 GenericObject::~GenericObject()
 {
-	foreach(CreatedDatasStructPtr createdDatasStruct, _createdDatasStructs)
+	foreach(CreatedDatasStructPtr createdDatasStruct, createdDatasStructs_)
 	{
 		foreach(BaseData* d, createdDatasStruct->datas)
 		{
 			removeData(d);
-			_createdDatasMap.remove(d);
+			createdDatasMap_.remove(d);
 			delete d;
 		}
 
 		createdDatasStruct->datas.clear();
-		_createdDatasStructs.removeAll(createdDatasStruct);
+		createdDatasStructs_.removeAll(createdDatasStruct);
 		delete createdDatasStruct;
 	}
 }
@@ -59,11 +59,11 @@ void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefin
 		QCoreApplication::exit(-3);
 	}
 
-	_genericData = data;
-	_genericData->setDisplayed(false);
-	_genericData->setPersistent(false);
-	_genericData->allowedTypes = getRegisteredTypes();
-	_dataDefinitions = defList;
+	genericData_ = data;
+	genericData_->setDisplayed(false);
+	genericData_->setPersistent(false);
+	genericData_->allowedTypes = getRegisteredTypes();
+	dataDefinitions_ = defList;
 
 	this->registerFunctions();	// Create template functions
 }
@@ -74,43 +74,43 @@ BaseData* GenericObject::createDatas(int type)
 
 	CreatedDatasStruct* createdDatasStruct = new CreatedDatasStruct;
 	createdDatasStruct->type = type;
-	_createdDatasStructs.append(CreatedDatasStructPtr(createdDatasStruct));
-	int index = _createdDatasStructs.size();
+	createdDatasStructs_.append(CreatedDatasStructPtr(createdDatasStruct));
+	int index = createdDatasStructs_.size();
 
 	BaseData* firstInputData = NULL;
 
-	int nbDefs = _dataDefinitions.size();
+	int nbDefs = dataDefinitions_.size();
 	for(int i=0; i<nbDefs; ++i)
 	{
 		QString nameType = BaseData::typeToName(type);
-		QString dataName = _dataDefinitions[i].name;
+		QString dataName = dataDefinitions_[i].name;
 		if(dataName.contains("%1"))
 			dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
 
 		dataName += QString(" #%2").arg(index);	// Add the count
 
-		int dataType = _dataDefinitions[i].type;
+		int dataType = dataDefinitions_[i].type;
 		if(!BaseData::getValueType(dataType))	// Use the type of the connected Data
 			dataType = BaseData::replaceValueType(dataType, valueType);
 
-		BaseData* data = createDataFromFullType(dataType, dataName, _dataDefinitions[i].help, this);
+		BaseData* data = createDataFromFullType(dataType, dataName, dataDefinitions_[i].help, this);
 
-		if(_dataDefinitions[i].input)
+		if(dataDefinitions_[i].input)
 		{
 			addInput(data);
 			if(!firstInputData)
 				firstInputData = data;
 		}
 
-		if(_dataDefinitions[i].output)
+		if(dataDefinitions_[i].output)
 			addOutput(data);
 
 		createdDatasStruct->datas.append(data);
-		_createdDatasMap[data] = createdDatasStruct;
+		createdDatasMap_[data] = createdDatasStruct;
 	}
 
-	removeData(_genericData);	// generic must always be last
-	addData(_genericData);
+	removeData(genericData_);	// generic must always be last
+	addData(genericData_);
 
 	return firstInputData;
 }
@@ -118,13 +118,13 @@ BaseData* GenericObject::createDatas(int type)
 void GenericObject::updateDataNames()
 {
 	int index = 1;
-	int nbDefs = _dataDefinitions.size();
-	foreach(CreatedDatasStructPtr created, _createdDatasStructs)
+	int nbDefs = dataDefinitions_.size();
+	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 	{
 		QString nameType = BaseData::typeToName(created->type);
 		for(int i=0; i<nbDefs; ++i)
 		{
-			QString dataName = _dataDefinitions[i].name;
+			QString dataName = dataDefinitions_[i].name;
 			if(dataName.contains("%1"))
 				dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
 
@@ -138,13 +138,13 @@ void GenericObject::updateDataNames()
 
 void GenericObject::update()
 {
-	int nbDefs = _dataDefinitions.size();
+	int nbDefs = dataDefinitions_.size();
 
-	foreach(CreatedDatasStructPtr created, _createdDatasStructs)
+	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 	{
 		for(int i=0; i<nbDefs; ++i)
 		{
-			if(_dataDefinitions[i].input)
+			if(dataDefinitions_[i].input)
 					created->datas[i]->updateIfDirty();
 		}
 
@@ -156,11 +156,11 @@ void GenericObject::update()
 
 void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 {
-	if(setParentProtection)
+	if(setParentProtection_)
 		return;
-	setParentProtection = true;
+	setParentProtection_ = true;
 
-	if(data == _genericData)
+	if(data == genericData_)
 	{
 		int type = parent->getValueType();
 		BaseData *inputData = createDatas(type);
@@ -170,7 +170,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		emit modified(this);
 	}
-	else if(parent || !_createdDatasMap.contains(data))
+	else if(parent || !createdDatasMap_.contains(data))
 	{
 		data->setParent(parent);
 	}
@@ -178,7 +178,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	{
 		data->setParent(NULL);
 
-		CreatedDatasStruct* createdDatasStruct = _createdDatasMap[data];
+		CreatedDatasStruct* createdDatasStruct = createdDatasMap_[data];
 		int nbConnectedInputs = 0;
 		foreach(BaseData* d, createdDatasStruct->datas)
 		{
@@ -191,12 +191,12 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 			foreach(BaseData* d, createdDatasStruct->datas)
 			{
 				removeData(d);
-				_createdDatasMap.remove(d);
+				createdDatasMap_.remove(d);
 				delete d;
 			}
 
 			createdDatasStruct->datas.clear();
-			_createdDatasStructs.removeAll(createdDatasStruct);
+			createdDatasStructs_.removeAll(createdDatasStruct);
 			delete createdDatasStruct;
 //			_createdDatasStructs.removeAll(CreatedDatasStructPtr(createdDatasStruct));
 			updateDataNames();
@@ -205,13 +205,13 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		emit modified(this);
 	}
 
-	setParentProtection = false;
+	setParentProtection_ = false;
 }
 
 void GenericObject::save(QDataStream& out)
 {
-	out << (quint32)_createdDatasStructs.size();
-	foreach(CreatedDatasStructPtr created, _createdDatasStructs)
+	out << (quint32)createdDatasStructs_.size();
+	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 		out << (quint32)created->type;
 
 	PandaObject::save(out);
@@ -219,8 +219,8 @@ void GenericObject::save(QDataStream& out)
 
 void GenericObject::save(QTextStream& out)
 {
-	out << (quint32)_createdDatasStructs.size() << " ";
-	foreach(CreatedDatasStructPtr created, _createdDatasStructs)
+	out << (quint32)createdDatasStructs_.size() << " ";
+	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 		out << (quint32)created->type << " ";
 
 	PandaObject::save(out);

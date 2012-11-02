@@ -3,6 +3,7 @@
 
 #include <ui/GraphView.h>
 #include <ui/ObjectDrawStruct.h>
+#include <ui/QuickCreateDialog.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
@@ -246,7 +247,6 @@ void GraphView::mousePressEvent(QMouseEvent *event)
                     pandaDocument->setCurrentSelectedObject(object);
                     movingAction = MOVING_START;
                     previousMousePos = zoomedMouse;
-                    grabMouse();
                     return;
                 }
             }
@@ -259,7 +259,6 @@ void GraphView::mousePressEvent(QMouseEvent *event)
             movingAction = MOVING_SELECTION;
             previousMousePos = currentMousePos = event->posF();
             QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
-            grabMouse();
         }
     }
     else if(event->button() == Qt::MidButton)
@@ -271,7 +270,6 @@ void GraphView::mousePressEvent(QMouseEvent *event)
 			previousMousePos = event->globalPos();
 
 			QApplication::setOverrideCursor(QCursor(Qt::SizeVerCursor));
-			grabMouse();
 		}
 		else
 		{
@@ -279,7 +277,6 @@ void GraphView::mousePressEvent(QMouseEvent *event)
 			previousMousePos = event->globalPos();
 
 			QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
-			grabMouse();
 		}
     }
 }
@@ -505,14 +502,16 @@ void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
     }
 
 	QApplication::restoreOverrideCursor();
-    releaseMouse();
     movingAction = MOVING_NONE;
 }
 
 void GraphView::wheelEvent(QWheelEvent * event)
 {
     if(movingAction != MOVING_NONE)
+	{
+		event->ignore();
         return;
+	}
 
     int ticks = event->delta() / 40;
     int newZoom = qBound(0, zoomLevel-ticks, 90);
@@ -525,6 +524,17 @@ void GraphView::wheelEvent(QWheelEvent * event)
         moveView(mousePos / zoomFactor - oldPos);
         update();
     }
+}
+
+void GraphView::keyPressEvent(QKeyEvent * event)
+{
+	if(event->key() == Qt::Key_Space)
+	{
+		QuickCreateDialog dlg(pandaDocument, this);
+		dlg.exec();
+	}
+	else
+		QWidget::keyPressEvent(event);
 }
 
 void GraphView::zoomIn()

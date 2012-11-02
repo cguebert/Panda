@@ -268,6 +268,20 @@ public:
 
 int DoubleMath_MaxClass = RegisterObject("Math/Real/Maximum").setClass<DoubleMath_Max>().setDescription("Returns the highest value of the 2 inputs");
 
+//*************************************************************************//
+
+class DoubleMath_Step : public DoubleMath_2Values
+{
+public:
+	DoubleMath_Step(PandaDocument *doc)
+		: DoubleMath_2Values(doc) { }
+
+	virtual double compute(const double& valA, const double& valB)
+	{ return (valA >= valB); }
+};
+
+int DoubleMath_StepClass = RegisterObject("Math/Real/Step").setClass<DoubleMath_Step>().setDescription("Returns 0 if input1 < input2, 1 otherwise");
+
 
 } // namespace Panda
 

@@ -586,7 +586,7 @@ QString GenericNonVectorData::getFullTypeName() const
 
 bool GenericVectorData::validParent(const BaseData* parent) const
 {
-    return parent->isVector() && GenericData::validParent(parent);
+	return (parent->isVector() || parent->isSingleValue()) && GenericData::validParent(parent);
 }
 
 QString GenericVectorData::getFullTypeName() const

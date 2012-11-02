@@ -45,6 +45,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
+	void keyPressEvent(QKeyEvent *event);
 
     panda::PandaObject* getObjectAtPos(const QPointF& pt);
     void moveView(const QPointF& delta);

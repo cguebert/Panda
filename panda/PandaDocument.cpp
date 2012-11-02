@@ -491,7 +491,10 @@ int PandaDocument::getMouseClick()
 
 void PandaDocument::setMouseClick(int state)
 {
-	mouseClickBuffer = state;
+	if(mouseClickBuffer && !state) // Pressed & released in 1 timestep, we will send 2 events
+		mouseClickBuffer = -1;
+	else
+		mouseClickBuffer = state;
 }
 
 void PandaDocument::cut()
@@ -718,7 +721,13 @@ void PandaDocument::step()
 {
     animTime.setValue(animTime.getValue() + timestep.getValue());
 	mousePosition.setValue(mousePositionBuffer);
-	mouseClick.setValue(mouseClickBuffer);
+	if(mouseClickBuffer < 0)
+	{
+		mouseClick.setValue(1);
+		mouseClickBuffer = 0;
+	}
+	else
+		mouseClick.setValue(mouseClickBuffer);
     setDirtyValue();
     emit timeChanged();
 }
@@ -727,7 +736,7 @@ void PandaDocument::rewind()
 {
     animTime.setValue(0.0);
 	mousePosition.setValue(mousePositionBuffer);
-	mouseClick.setValue(mouseClickBuffer);
+	mouseClick.setValue(0);
     foreach(PandaObject* object, pandaObjects)
         object->reset();
     setDirtyValue();

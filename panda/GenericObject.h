@@ -61,15 +61,14 @@ private:
 		DataList datas;
 	};
 
-	GenericData* _genericData;
-	GenericDataDefinitionList _dataDefinitions;
+	GenericData* genericData_;
+	GenericDataDefinitionList dataDefinitions_;
 
 //	typedef QSharedPointer<CreatedDatasStruct> CreatedDatasStructPtr;
 	typedef CreatedDatasStruct* CreatedDatasStructPtr;
-	QList<CreatedDatasStruct*> _createdDatasStructs;
-//	QList<CreatedDatasStructPtr> _createdDatasStructs;
-	QMap<BaseData*, CreatedDatasStruct*> _createdDatasMap;
-	bool setParentProtection;
+	QList<CreatedDatasStructPtr> createdDatasStructs_;
+	QMap<BaseData*, CreatedDatasStruct*> createdDatasMap_;
+	bool setParentProtection_;
 };
 
 typedef boost::mpl::list<int, double, QColor, QPointF, QRectF, QString, QImage> allDataTypes;
