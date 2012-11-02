@@ -2,6 +2,7 @@
 #define DATASEDITDIALOG_H
 
 #include <QDialog>
+#include <QAbstractListModel>
 
 namespace panda
 {
@@ -9,6 +10,7 @@ namespace panda
 }
 
 class QLineEdit;
+class QListWidget;
 
 class QuickCreateDialog : public QDialog
 {
@@ -19,11 +21,12 @@ public:
 protected:
 	panda::PandaDocument* document;
 	QLineEdit* lineEdit;
-
-signals:
+	QListWidget* listWidget;
+	QStringList menuStringsList;
 
 public slots:
-	void CreateObject();
+	void searchTextChanged();
+	void createObject();
 };
 
 #endif // DATASEDITDIALOG_H
