@@ -72,7 +72,9 @@ SOURCES       = main.cpp \
 	panda/GenericObject.cpp \
     modules/generators/point/MouseInfo.cpp \
     modules/math/real/DoubleComputation.cpp \
-    ui/QuickCreateDialog.cpp
+    ui/QuickCreateDialog.cpp \
+    modules/animation/AnimLength.cpp \
+    modules/list/ListSize.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0
