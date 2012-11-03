@@ -12,7 +12,7 @@ public:
 		, R(initData(&R, "r", "Red component of the color"))
 		, G(initData(&G, "g", "Green component of the color"))
 		, B(initData(&B, "b", "Blue component of the color"))
-		, A(initData(&A, 1.0, "a", "Alpha component of the color"))
+		, A(initData(&A, "a", "Alpha component of the color"))
 		, color(initData(&color, "color", "Color created from the 4 components"))
 	{
 		addInput(&R);
@@ -20,29 +20,42 @@ public:
 		addInput(&B);
 		addInput(&A);
 
+		A.beginEdit()->append(1.0);
+		A.endEdit();
+
 		addOutput(&color);
 	}
 
 	void update()
 	{
-		QColor col;
-		double r, g, b, a;
-		r = qBound(0.0, R.getValue(), 1.0);
-		g = qBound(0.0, G.getValue(), 1.0);
-		b = qBound(0.0, B.getValue(), 1.0);
-		a = qBound(0.0, A.getValue(), 1.0);
-		col.setRgbF(r, g, b, a);
-		color.setValue(col);
+		const QVector<double> &r = R.getValue();
+		const QVector<double> &g = G.getValue();
+		const QVector<double> &b = B.getValue();
+		const QVector<double> &a = A.getValue();
 
+		int nb = qMin(r.size(), qMin(g.size(), qMin(b.size(), a.size())));
+		QVector<QColor>& c = *color.beginEdit();
+		c.resize(nb);
+		for(int i=0; i<nb; ++i)
+		{
+			c[i].setRgbF(qBound(0.0, r[i], 1.0),
+						 qBound(0.0, g[i], 1.0),
+						 qBound(0.0, b[i], 1.0),
+						 qBound(0.0, a[i], 1.0));
+		}
+
+		color.endEdit();
 		this->cleanDirty();
 	}
 
 protected:
-	Data<double> R, G, B, A;
-	Data<QColor> color;
+	Data< QVector<double> > R, G, B, A;
+	Data< QVector<QColor> > color;
 };
 
 int GeneratorColors_ComposeRGBClass = RegisterObject("Generator/Color/From RGB").setClass<GeneratorColors_ComposeRGB>().setDescription("Create a color from red, green and blue components");
+
+//*************************************************************************//
 
 class GeneratorColors_DecomposeRGB : public PandaObject
 {
@@ -52,7 +65,7 @@ public:
 		, R(initData(&R, "r", "Red component of the color"))
 		, G(initData(&G, "g", "Green component of the color"))
 		, B(initData(&B, "b", "Blue component of the color"))
-		, A(initData(&A, 1.0, "a", "Alpha component of the color"))
+		, A(initData(&A, "a", "Alpha component of the color"))
 		, color(initData(&color, "color", "Color created from the 4 components"))
 	{
 		addInput(&color);
@@ -65,18 +78,36 @@ public:
 
 	void update()
 	{
-		QColor col = color.getValue();
-		R.setValue(col.redF());
-		G.setValue(col.greenF());
-		B.setValue(col.blueF());
-		A.setValue(col.alphaF());
+		const QVector<QColor>& c = color.getValue();
+		QVector<double> &r = *R.beginEdit();
+		QVector<double> &g = *G.beginEdit();
+		QVector<double> &b = *B.beginEdit();
+		QVector<double> &a = *A.beginEdit();
 
+		int nb = c.size();
+		r.resize(nb);
+		g.resize(nb);
+		b.resize(nb);
+		a.resize(nb);
+
+		for(int i=0; i<nb; ++i)
+		{
+			r[i] = c[i].redF();
+			g[i] = c[i].greenF();
+			b[i] = c[i].blueF();
+			a[i] = c[i].alphaF();
+		}
+
+		R.endEdit();
+		G.endEdit();
+		B.endEdit();
+		A.endEdit();
 		this->cleanDirty();
 	}
 
 protected:
-	Data<double> R, G, B, A;
-	Data<QColor> color;
+	Data< QVector<double> > R, G, B, A;
+	Data< QVector<QColor> > color;
 };
 
 int GeneratorColors_DecomposeRGBClass = RegisterObject("Generator/Color/To RGB").setClass<GeneratorColors_DecomposeRGB>().setDescription("Extract red, green and blue components from a color");

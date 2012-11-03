@@ -21,17 +21,27 @@ public:
 
 	void update()
 	{
-		point.setValue(QPointF(ptX.getValue(), ptY.getValue()));
+		const QVector<double>	&xVal = ptX.getValue(),
+								&yVal = ptY.getValue();
+		QVector<QPointF>& pts = *point.beginEdit();
 
+		int nb = qMin(xVal.size(), yVal.size());
+		pts.resize(nb);
+		for(int i=0; i<nb; ++i)
+			pts[i] = QPointF(xVal[i], yVal[i]);
+
+		point.endEdit();
 		this->cleanDirty();
 	}
 
 protected:
-	Data<double> ptX, ptY;
-	Data<QPointF> point;
+	Data< QVector<double> > ptX, ptY;
+	Data< QVector<QPointF> > point;
 };
 
 int GeneratorPoints_ComposeClass = RegisterObject("Generator/Point/Create point").setName("Reals to point").setClass<GeneratorPoints_Compose>().setDescription("Create a point from 2 reals");
+
+//*************************************************************************//
 
 class GeneratorPoints_Decompose : public PandaObject
 {
@@ -50,16 +60,28 @@ public:
 
 	void update()
 	{
-		QPointF pt = point.getValue();
-		ptX.setValue(pt.x());
-		ptY.setValue(pt.y());
+		QVector<double>	&xVal = *ptX.beginEdit(),
+						&yVal = *ptY.beginEdit();
+		const QVector<QPointF>& pts = point.getValue();
 
+		int nb = pts.size();
+		xVal.resize(nb);
+		yVal.resize(nb);
+		for(int i=0; i<nb; ++i)
+		{
+			const QPointF pt = pts[i];
+			xVal[i] = pt.x();
+			yVal[i] = pt.y();
+		}
+
+		ptX.endEdit();
+		ptY.endEdit();
 		this->cleanDirty();
 	}
 
 protected:
-	Data<double> ptX, ptY;
-	Data<QPointF> point;
+	Data< QVector<double> > ptX, ptY;
+	Data< QVector<QPointF> > point;
 };
 
 int GeneratorPoints_DecomposeClass = RegisterObject("Generator/Point/Decompose point").setName("Point to reals").setClass<GeneratorPoints_Decompose>().setDescription("Extract the coordinates of a point");
