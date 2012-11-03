@@ -67,14 +67,17 @@ SOURCES       = main.cpp \
 	panda/Group.cpp \
 	ui/ObjectDrawStruct.cpp \
 	panda/Dockable.cpp \
-	modules/list/ModifyList.cpp \
 	modules/list/ListBuffer.cpp \
 	panda/GenericObject.cpp \
     modules/generators/point/MouseInfo.cpp \
     modules/math/real/DoubleComputation.cpp \
     ui/QuickCreateDialog.cpp \
     modules/animation/AnimLength.cpp \
-    modules/list/ListSize.cpp
+    modules/list/ListSize.cpp \
+    modules/list/Concatenation.cpp \
+    modules/list/DeleteItems.cpp \
+    modules/list/ExtractHead.cpp \
+    modules/list/ExtractTail.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0

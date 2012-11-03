@@ -3,13 +3,11 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Animation.h>
 
-#include <QMetaType>
-
 namespace panda {
 
 class ListSize : public GenericObject
 {
-	GENERIC_OBJECT(ListSize, allAnimationTypes)
+	GENERIC_OBJECT(ListSize, allDataTypes)
 public:
 	ListSize(PandaDocument *doc)
 		: GenericObject(doc)
@@ -18,7 +16,7 @@ public:
         addInput(&generic);
 
 		GenericDataDefinitionList defList;
-		// Create an animation of the same type as the data connected
+		// Create a list of the same type as the data connected
 		defList.append(GenericDataDefinition(BaseData::getFullTypeOfVector(0),
 											 true, false,
 											 "input",
@@ -49,6 +47,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int ListSizeClass = RegisterObject("List/List size").setClass<ListSize>().setName("List size").setDescription("Get the size of some lists");
+int ListSizeClass = RegisterObject("List/List size").setClass<ListSize>().setDescription("Get the size of some lists");
 
 } // namespace Panda

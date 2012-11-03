@@ -2,8 +2,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/GenericObject.h>
 
-#include <QMetaType>
-
 namespace panda {
 
 class FillList  : public GenericObject

@@ -3,8 +3,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Animation.h>
 
-#include <QMetaType>
-
 namespace panda {
 
 class AnimValue : public GenericObject
