@@ -20,7 +20,9 @@ HEADERS       = \
 	ui/ObjectDrawStruct.h \
 	panda/Dockable.h \
 	panda/GenericObject.h \
-    ui/QuickCreateDialog.h
+    ui/QuickCreateDialog.h \
+    ui/DockableDrawStruct.h \
+    ui/GenericObjectDrawStruct.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -80,7 +82,9 @@ SOURCES       = main.cpp \
     modules/list/ExtractTail.cpp \
     modules/generators/point/RenderSize.cpp \
     modules/list/Condition.cpp \
-    modules/list/ListReverse.cpp
+    modules/list/ListReverse.cpp \
+    ui/DockableDrawStruct.cpp \
+    ui/GenericObjectDrawStruct.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0

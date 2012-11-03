@@ -145,10 +145,7 @@ void ObjectDrawStruct::drawDatas(QPainter* painter)
 		else
 			painter->setBrush(parentView->palette().button());
 
-		if(dynamic_cast<panda::GenericData*>(dataPair.second))
-			painter->drawRoundedRect(dataPair.first, 2, 2);
-		else
-			painter->drawRect(dataPair.first);
+		painter->drawRect(dataPair.first);
 	}
 }
 

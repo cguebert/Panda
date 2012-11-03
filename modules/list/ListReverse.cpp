@@ -2,10 +2,6 @@
 #include <panda/GenericObject.h>
 #include <panda/ObjectFactory.h>
 
-#include <algorithm>
-#include <vector>
-using namespace std;
-
 namespace panda {
 
 class ListReverse : public GenericObject
@@ -43,8 +39,10 @@ public:
 		const QVector<T> &valIn = dataInput->getValue();
 		QVector<T> &valOut = *dataOutput->beginEdit();
 
-		valOut.resize(valIn.size());
-		std::reverse_copy(valIn.begin(), valIn.end(), valOut.begin());
+		int size = valIn.size();
+		valOut.resize(size);
+		for(int i=0; i<size; ++i)
+			valOut[i] = valIn[size-1-i];
 
 		dataOutput->endEdit();
 	}

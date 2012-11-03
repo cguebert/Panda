@@ -4,10 +4,10 @@
 #include <ui/GraphView.h>
 #include <ui/ObjectDrawStruct.h>
 #include <ui/QuickCreateDialog.h>
+#include <ui/DockableDrawStruct.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
-#include <panda/Dockable.h>
 
 GraphView::GraphView(panda::PandaDocument* doc, QWidget *parent)
     : QWidget(parent)

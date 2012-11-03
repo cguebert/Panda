@@ -10,11 +10,14 @@
 #include <boost/mpl/list.hpp>
 #include <boost/mpl/for_each.hpp>
 
+class GenericObjectDrawStruct;
+
 namespace panda
 {
 
 class GenericObject : public PandaObject
 {
+	friend class GenericObjectDrawStruct;
 public:
 	struct GenericDataDefinition
 	{

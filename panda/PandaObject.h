@@ -68,12 +68,14 @@ public:
     virtual void dataSetParent(BaseData* data, BaseData* parent);
 
     void changeDataName(BaseData* data, const QString& newName);
+	void emitModified();
 
 protected:
     QString name;
     QList<BaseData*> datas;
     QMap<QString, BaseData*> datasMap;
     quint32 index;
+	bool doEmitModified;
 
     void setInternalData(const QString& newName, const quint32 &newIndex);
     friend class ObjectFactory;

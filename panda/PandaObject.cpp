@@ -6,6 +6,7 @@ namespace panda {
 
 PandaObject::PandaObject(QObject *parent)
     : QObject(parent)
+	, doEmitModified(true)
 {
 }
 
@@ -30,7 +31,7 @@ void PandaObject::addData(BaseData* data)
     {
         datas.append(data);
         datasMap[data->getName()] = data;
-        emit modified(this);
+		emitModified();
     }
 }
 
@@ -38,7 +39,7 @@ void PandaObject::removeData(BaseData* data)
 {
     datasMap.remove(data->getName());
     if(datas.removeAll(data))
-        emit modified(this);
+		emitModified();
 }
 
 void PandaObject::addOutput(BaseData* data)
@@ -181,6 +182,12 @@ void PandaObject::changeDataName(BaseData* data, const QString& newName)
 {
     datasMap.remove(data->getName());
     datasMap.insert(newName, data);
+}
+
+void PandaObject::emitModified()
+{
+	if(doEmitModified)
+		emit modified(this);
 }
 
 } // namespace Panda

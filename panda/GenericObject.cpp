@@ -79,6 +79,8 @@ BaseData* GenericObject::createDatas(int type)
 
 	BaseData* firstInputData = NULL;
 
+	this->doEmitModified = false;
+
 	int nbDefs = dataDefinitions_.size();
 	for(int i=0; i<nbDefs; ++i)
 	{
@@ -111,6 +113,9 @@ BaseData* GenericObject::createDatas(int type)
 
 	removeData(genericData_);	// generic must always be last
 	addData(genericData_);
+
+	this->doEmitModified = true;
+	emitModified();
 
 	return firstInputData;
 }
