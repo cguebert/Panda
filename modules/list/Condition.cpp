@@ -1,7 +1,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/GenericObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/Animation.h>
 
 namespace panda {
 

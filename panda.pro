@@ -79,7 +79,8 @@ SOURCES       = main.cpp \
     modules/list/ExtractHead.cpp \
     modules/list/ExtractTail.cpp \
     modules/generators/point/RenderSize.cpp \
-    modules/list/Condition.cpp
+    modules/list/Condition.cpp \
+    modules/list/ListReverse.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0

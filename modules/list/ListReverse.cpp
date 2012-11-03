@@ -2,18 +2,20 @@
 #include <panda/GenericObject.h>
 #include <panda/ObjectFactory.h>
 
+#include <algorithm>
+#include <vector>
+using namespace std;
+
 namespace panda {
 
-class ExtractHead : public GenericObject
+class ListReverse : public GenericObject
 {
-	GENERIC_OBJECT(ExtractHead, allDataTypes)
+	GENERIC_OBJECT(ListReverse, allDataTypes)
 public:
-	ExtractHead(PandaDocument *doc)
+	ListReverse(PandaDocument *doc)
 		: GenericObject(doc)
-		, value(initData(&value, 1, "head", "This number of items will be extracted from the start of the list"))
-		, generic(initData(&generic, "input", "Connect here the first list"))
+		, generic(initData(&generic, "input", "Connect here the list whose items to reverse"))
     {
-		addInput(&value);
         addInput(&generic);
 
 		GenericDataDefinitionList defList;
@@ -21,11 +23,11 @@ public:
 		defList.append(GenericDataDefinition(listType,
 											 true, false,
 											 "input",
-											 "List of items from which to extract the head"));
+											 "List to reverse"));
 		defList.append(GenericDataDefinition(listType,
 											 false, true,
 											 "output",
-											 "Result of the extraction"));
+											 "Reversed list"));
 		setupGenericObject(&generic, defList);
     }
 
@@ -38,20 +40,19 @@ public:
 
 		Q_ASSERT(dataInput && dataOutput);
 
-		int val = value.getValue();
 		const QVector<T> &valIn = dataInput->getValue();
 		QVector<T> &valOut = *dataOutput->beginEdit();
 
-		valOut.swap(valIn.mid(0, val));
+		valOut.resize(valIn.size());
+		std::reverse_copy(valIn.begin(), valIn.end(), valOut.begin());
 
 		dataOutput->endEdit();
 	}
 
 protected:
-	Data< int > value;
 	GenericVectorData generic;
 };
 
-int ExtractHeadClass = RegisterObject("List/Get head").setClass<ExtractHead>().setDescription("Get the first items of a list");
+int ListReverseClass = RegisterObject("List/Reverse").setClass<ListReverse>().setDescription("Reverse the order of items in a list");
 
 } // namespace Panda

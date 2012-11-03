@@ -79,7 +79,6 @@ int DoubleListMath_SumMeanStdDevClass = RegisterObject("Math/List of reals/Sum, 
 
 //*************************************************************************//
 
-
 class DoubleListMath_Median : public PandaObject
 {
 public:
@@ -120,7 +119,46 @@ protected:
 	Data<double> median;
 };
 
-int DoubleListMath_MedianClass = RegisterObject("Math/List of reals/Median").setClass<DoubleListMath_Median>().setName("Median").setDescription("Search the median value of a list of reals");
+int DoubleListMath_MedianClass = RegisterObject("Math/List of reals/Median").setClass<DoubleListMath_Median>().setDescription("Search the median value of a list of reals");
+
+//*************************************************************************//
+
+class DoubleListMath_Sort : public PandaObject
+{
+public:
+	DoubleListMath_Sort(PandaDocument *doc)
+		: PandaObject(doc)
+		, input(initData(&input, "input", "List of reals to sort"))
+		, output(initData(&output, "output", "Sorted list of reals"))
+		, sortedIndices(initData(&sortedIndices, "indices", "Indices corresponding to the sorted list"))
+	{
+		addInput(&input);
+
+		addOutput(&output);
+		addOutput(&sortedIndices);
+	}
+
+	void update()
+	{
+		const QVector<double>& list = input.getValue();
+		QMap<double, int> tmpMap;
+		int nb = list.size();
+
+		for(int i=0; i<nb; ++i)
+			tmpMap.insertMulti(list[i], i);
+
+		output.setValue(tmpMap.keys().toVector());
+		sortedIndices.setValue(tmpMap.values().toVector());
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<double> > input, output;
+	Data< QVector<int> > sortedIndices;
+};
+
+int DoubleListMath_SortClass = RegisterObject("Math/List of reals/Sort").setClass<DoubleListMath_Sort>().setDescription("Sort a list of reals");
 
 
 } // namespace Panda
