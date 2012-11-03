@@ -77,7 +77,8 @@ SOURCES       = main.cpp \
     modules/list/Concatenation.cpp \
     modules/list/DeleteItems.cpp \
     modules/list/ExtractHead.cpp \
-    modules/list/ExtractTail.cpp
+    modules/list/ExtractTail.cpp \
+    modules/generators/point/RenderSize.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0

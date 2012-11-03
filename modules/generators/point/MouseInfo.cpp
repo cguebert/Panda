@@ -45,7 +45,7 @@ protected:
 	Data<int> clickState;
 };
 
-int GeneratorPoint_MouseInfoClass = RegisterObject("Generator/Point/Mouse").setClass<GeneratorPoint_MouseInfo>().setName("Mouse").setDescription("Gives information about the mouse in the render view");
+int GeneratorPoint_MouseInfoClass = RegisterObject("Generator/Point/Mouse").setClass<GeneratorPoint_MouseInfo>().setDescription("Gives information about the mouse in the render view");
 
 } // namespace Panda
 
