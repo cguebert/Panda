@@ -72,6 +72,7 @@ private:
 };
 
 typedef boost::mpl::list<int, double, QColor, QPointF, QRectF, QString, QImage> allDataTypes;
+typedef boost::mpl::list<int, double, QColor, QPointF, QRectF> allNumericalTypes;
 typedef boost::mpl::list<double, QColor, QPointF> allAnimationTypes;
 
 #define GENERIC_OBJECT(T, L)								\

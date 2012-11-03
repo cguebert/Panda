@@ -586,6 +586,7 @@ QString GenericNonVectorData::getFullTypeName() const
 
 bool GenericVectorData::validParent(const BaseData* parent) const
 {
+	// TEST :  now accepting single values also, as the conversion is automatic
 	return (parent->isVector() || parent->isSingleValue()) && GenericData::validParent(parent);
 }
 

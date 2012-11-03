@@ -84,7 +84,7 @@ void QuickCreateDialog::createObject()
 	QString selectedItemText;
 	if(!selectedItems.empty())
 		selectedItemText = selectedItems.front()->text();
-	else if(listWidget->count() == 1)
+	else if(listWidget->count() >= 1)
 		selectedItemText = listWidget->item(0)->text();
 
 	if(selectedItemText.size())

@@ -1,5 +1,4 @@
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/GenericObject.h>
 
@@ -44,9 +43,10 @@ public:
 	void updateT(DataList& list)
 	{
 		typedef Data< QVector<T> > VecData;
-		VecData *dataInput = dynamic_cast<VecData*>(list[0]);
-		VecData *dataInit = dynamic_cast<VecData*>(list[1]);
-		VecData *dataOutput = dynamic_cast<VecData*>(list[2]);
+		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
+		VecData* dataInit = dynamic_cast<VecData*>(list[1]);
+		VecData* dataOutput = dynamic_cast<VecData*>(list[2]);
+		Q_ASSERT(dataInput && dataInit && dataOutput);
 		QVector<T>& outVal = *(dataOutput->beginEdit());
 
 		if(resetValues)
