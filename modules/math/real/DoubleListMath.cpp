@@ -17,6 +17,8 @@ public:
 		, sum(initData(&sum, "sum", "Sum of the list of reals"))
 		, mean(initData(&mean, "mean", "Mean value of the list of reals"))
 		, stdDev(initData(&stdDev, "std dev", "Standard deviation of the list of reals"))
+		, vMin(initData(&vMin, "min", "Minimum value of the list of reals"))
+		, vMax(initData(&vMax, "max", "Maximum value of the list of reals"))
 	{
 		addInput(&input);
 
@@ -24,6 +26,8 @@ public:
 		addOutput(&sum);
 		addOutput(&mean);
 		addOutput(&stdDev);
+		addOutput(&vMin);
+		addOutput(&vMax);
 	}
 
 	void update()
@@ -34,12 +38,15 @@ public:
 
 		if(nb)
 		{
+			double tMin = list[0], tMax = list[0];
 			double E=0, E2=0;
 			for(int i=0; i<nb; ++i)
 			{
 				double v = list[i];
 				E += v;
 				E2 += v*v;
+				tMin = qMin(tMin, v);
+				tMax = qMax(tMax, v);
 			}
 
 			sum.setValue(E);
@@ -47,12 +54,16 @@ public:
 			E2 /= nb;
 			mean.setValue(E);
 			stdDev.setValue(sqrt(E2 - E*E));
+			vMin.setValue(tMin);
+			vMax.setValue(tMax);
 		}
 		else
 		{
-			sum.setValue(0);
-			mean.setValue(0);
-			stdDev.setValue(0);
+			sum.setValue(0.0);
+			mean.setValue(0.0);
+			stdDev.setValue(0.0);
+			vMin.setValue(0.0);
+			vMax.setValue(0.0);
 		}
 
 		this->cleanDirty();
@@ -61,7 +72,7 @@ public:
 protected:
 	Data< QVector<double> > input;
 	Data<int> nbElements;
-	Data<double> sum, mean, stdDev;
+	Data<double> sum, mean, stdDev, vMin, vMax;
 };
 
 int DoubleListMath_SumMeanStdDevClass = RegisterObject("Math/List of reals/Sum, mean and deviation").setClass<DoubleListMath_SumMeanStdDev>().setName("Sum & mean").setDescription("Compute the sum, mean and standard deviation of a list of reals");
