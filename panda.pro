@@ -84,7 +84,8 @@ SOURCES       = main.cpp \
     modules/list/Condition.cpp \
     modules/list/ListReverse.cpp \
     ui/DockableDrawStruct.cpp \
-    ui/GenericObjectDrawStruct.cpp
+    ui/GenericObjectDrawStruct.cpp \
+    modules/math/point/BezierSpline.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0
