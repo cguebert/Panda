@@ -55,6 +55,7 @@ public:
         return init;
     }
 
+	virtual void postCreate(PandaDocument*) { }
     virtual void reset() { }
     virtual void update();
     virtual void setDirtyValue();

@@ -633,15 +633,6 @@ void PandaDocument::doAddObject(PandaObject* object)
     connect(object, SIGNAL(modified(panda::PandaObject*)), this, SIGNAL(modifiedObject(panda::PandaObject*)));
     connect(object, SIGNAL(dirty(panda::PandaObject*)), this, SLOT(onDirtyObject(panda::PandaObject*)));
     emit addedObject(object);
-
-	// Putting dockables in their default dock (especially for Renderers)
-	DockableObject* dockable = dynamic_cast<DockableObject*>(object);
-	if(dockable)
-	{
-		DockObject* dock = dockable->getDefaultDock(this);
-		if(dock)
-			dock->addDockable(dockable);
-	}
 }
 
 quint32 PandaDocument::getNextIndex()

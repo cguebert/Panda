@@ -87,6 +87,13 @@ DockableObject::DockableObject(QObject *parent)
 {
 }
 
+void DockableObject::postCreate(PandaDocument* document)
+{
+	DockObject* dock = getDefaultDock(document);
+	if(dock)
+		dock->addDockable(this);
+}
+
 void DockableObject::setParentDock(DockObject* dock)
 {
 	parentDock = dock;
