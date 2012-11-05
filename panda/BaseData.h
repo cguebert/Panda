@@ -105,6 +105,7 @@ protected:
 
     bool readOnly, displayed, persistent, input, output;
     bool isValueSet;
+	bool setParentProtection;
     QString name, help, group, widget;
     PandaObject* owner;
     BaseData* parentBaseData;

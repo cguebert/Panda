@@ -16,6 +16,7 @@ BaseData::BaseData(const BaseInitData& init)
     , input(false)
     , output(false)
     , isValueSet(false)
+	, setParentProtection(false)
     , name(init.name)
     , help(init.help)
     , owner(init.owner)
@@ -38,6 +39,7 @@ BaseData::BaseData(const QString& name, const QString& help, PandaObject* owner)
     , input(false)
     , output(false)
     , isValueSet(false)
+	, setParentProtection(false)
     , name(name)
     , help(help)
     , owner(owner)
@@ -67,6 +69,9 @@ void BaseData::setParent(BaseData* parent)
 {
     if(parentBaseData == parent)
         return;
+	if(setParentProtection)
+		return;
+	setParentProtection = true;
 
     if(parent)
     {
@@ -96,6 +101,8 @@ void BaseData::setParent(BaseData* parent)
         while(!this->inputs.empty())
             this->removeInput(this->inputs.front());
     }
+
+	setParentProtection = false;
 }
 
 void BaseData::update()
@@ -125,7 +132,7 @@ void BaseData::doRemoveInput(DataNode* node)
     DataNode::doRemoveInput(node);
     if(parentBaseData == node)
     {
-        if(owner)
+		if(owner && !setParentProtection)
             owner->dataSetParent(this, NULL);
     }
     else if(dynamic_cast<PandaObject*>(node))

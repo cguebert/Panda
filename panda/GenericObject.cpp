@@ -10,7 +10,6 @@ namespace panda
 
 GenericObject::GenericObject(PandaDocument *parent)
 	: PandaObject(parent)
-	, setParentProtection_(false)
 {
 
 }
@@ -161,10 +160,6 @@ void GenericObject::update()
 
 void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 {
-	if(setParentProtection_)
-		return;
-	setParentProtection_ = true;
-
 	if(data == genericData_)
 	{
 		int type = parent->getValueType();
@@ -209,8 +204,6 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		emit modified(this);
 	}
-
-	setParentProtection_ = false;
 }
 
 void GenericObject::save(QDataStream& out)

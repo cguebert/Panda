@@ -101,11 +101,11 @@ private:
     Data& operator=(const Data&);
 };
 
-class GenericData : public Data<QString>
+class GenericData : public Data<int>
 {
 public:
     explicit GenericData(const BaseData::BaseInitData& init)
-		: Data<QString>(init) {}
+		: Data<int>(init) {}
 
     virtual bool validParent(const BaseData* parent) const;
     virtual QString getFullTypeName() const;

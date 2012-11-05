@@ -71,7 +71,6 @@ private:
 	typedef CreatedDatasStruct* CreatedDatasStructPtr;
 	QList<CreatedDatasStructPtr> createdDatasStructs_;
 	QMap<BaseData*, CreatedDatasStruct*> createdDatasMap_;
-	bool setParentProtection_;
 };
 
 typedef boost::mpl::list<int, double, QColor, QPointF, QRectF, QString, QImage> allDataTypes;
