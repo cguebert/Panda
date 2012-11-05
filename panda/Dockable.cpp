@@ -85,13 +85,6 @@ void DockObject::doRemoveInput(DataNode* node)
 DockableObject::DockableObject(QObject *parent)
 	: PandaObject(parent)
 {
-	PandaDocument* doc = dynamic_cast<PandaDocument*>(parent);
-	if(doc)
-	{
-		DockObject* dock = getDefaultDock(doc);
-		if(dock)
-			dock->addDockable(this);
-	}
 }
 
 void DockableObject::setParentDock(DockObject* dock)
