@@ -35,8 +35,7 @@ protected:
     QList< QSharedPointer<BaseData> > groupDatas;
 
     BaseData* duplicateData(BaseData* data);
-    void addInputData(BaseData* from, BaseData* to);
-    void addOutputData(BaseData* from, BaseData* to);
+	QString findAvailableDataName(QString baseName, BaseData* data=NULL);
 };
 
 } // namespace panda

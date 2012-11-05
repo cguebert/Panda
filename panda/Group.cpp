@@ -68,6 +68,9 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
     ods->move(totalView.center() - view->getViewDelta() - ods->getPosition() - QPointF(objSize.width(), objSize.height()));
     QPointF groupPos = ods->getPosition();
 
+	// If multiple outside datas are connected to the same data, merge them
+	QMap<BaseData*, BaseData*> connectedInputDatas, connectedOutputDatas;
+
     // Adding the objects
     iter.toFront();
     while(iter.hasNext())
@@ -88,7 +91,27 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
             {
                 PandaObject* connected = otherData->getOwner();
                 if(connected && !doc->isSelected(connected))
-                    group->addInputData(otherData, data);
+				{
+					BaseData* createdData = NULL;
+					if(!connectedInputDatas.contains(otherData))
+					{
+						createdData = group->duplicateData(data);
+						createdData->copyValueFrom(otherData);
+						group->addInput(createdData);
+						group->dataSetParent(createdData, otherData);
+						connectedInputDatas.insert(otherData, createdData);
+					}
+					else
+					{
+						createdData = connectedInputDatas.value(otherData);
+						QString name = group->findAvailableDataName(otherData->getName(), createdData);
+						if(name != createdData->getName())
+							createdData->setName(name);
+					}
+
+					if(createdData)
+						data->getOwner()->dataSetParent(data, createdData);
+				}
             }
         }
 
@@ -102,7 +125,22 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
                 {
                     PandaObject* connected = otherData->getOwner();
                     if(connected && !doc->isSelected(connected))
-                        group->addOutputData(data, otherData);
+					{
+						BaseData* createdData = NULL;
+						if(!connectedOutputDatas.contains(data))
+						{
+							createdData = group->duplicateData(data);
+							createdData->copyValueFrom(data);
+							group->dataSetParent(createdData, data);
+							group->addOutput(createdData);
+							connectedOutputDatas.insert(data, createdData);
+						}
+						else
+							createdData = connectedOutputDatas.value(data);
+
+						if(createdData)
+							otherData->getOwner()->dataSetParent(otherData, createdData);
+					}
                 }
             }
         }
@@ -578,19 +616,30 @@ void Group::load(QTextStream& in)
     emit modified(this);
 }
 
+QString Group::findAvailableDataName(QString baseName, BaseData *data)
+{
+	QString name = baseName;
+	BaseData* testData = getData(name);
+	if(testData && testData != data)
+	{
+		int i=2;
+		testData = getData(name + QString::number(i));
+		while(testData && testData != data)
+		{
+			++i;
+			testData = getData(name + QString::number(i));
+		}
+		name = name + QString::number(i);
+	}
+	return name;
+}
+
 BaseData* Group::duplicateData(BaseData* data)
 {
     if(!data)
         return NULL;
 
-    QString name = data->getName();
-    if(getData(name))
-    {
-        int i=2;
-        while(getData(name + QString::number(i)))
-            ++i;
-        name = name + QString::number(i);
-    }
+	QString name = findAvailableDataName(data->getName());
 
     BaseData* newData = NULL;
     if(data->isSingleValue())
@@ -605,33 +654,6 @@ BaseData* Group::duplicateData(BaseData* data)
     groupDatas.append( QSharedPointer<BaseData>(newData) );
 
     return newData;
-}
-
-void Group::addInputData(BaseData* from, BaseData* to)
-{
-    BaseData* data = duplicateData(to);
-    if(data)
-    {
-        data->copyValueFrom(from);
-        addInput(data);
-
-        dataSetParent(data, from);
-        to->getOwner()->dataSetParent(to, data);
-    }
-}
-
-void Group::addOutputData(BaseData* from, BaseData* to)
-{
-    BaseData* data = duplicateData(from);
-    if(data)
-    {
-        data->copyValueFrom(from);
-
-        dataSetParent(data, from);
-        to->getOwner()->dataSetParent(to, data);
-
-        addOutput(data);
-    }
 }
 
 int GroupClass = RegisterObject("Group").setClass<Group>().setDescription("Groups many object into a single one").setHidden(true);
