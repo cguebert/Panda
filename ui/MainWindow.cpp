@@ -4,6 +4,7 @@
 #include <ui/GraphView.h>
 #include <ui/RenderView.h>
 #include <ui/DatasTable.h>
+#include <ui/EditGroupDialog.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -251,6 +252,12 @@ void MainWindow::createActions()
 
     connect(ungroupAction, SIGNAL(triggered()), this, SLOT(ungroup()));
 
+	editGroupAction = new QAction(tr("&Edit group"), this);
+	editGroupAction->setShortcut(tr("Ctrl+E"));
+	editGroupAction->setStatusTip(tr("Edit the selected group name and parameters"));
+
+	connect(editGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
+
     zoomResetAction = new QAction(tr("Reset &zoom"), this);
     zoomResetAction->setShortcut(tr("Ctrl+0"));
     zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
@@ -354,6 +361,7 @@ void MainWindow::createMenus()
     groupMenu = editMenu->addMenu(tr("&Group"));
     groupMenu->addAction(groupAction);
     groupMenu->addAction(ungroupAction);
+	groupMenu->addAction(editGroupAction);
 
     createRegistryMenu();
 
@@ -624,4 +632,16 @@ void MainWindow::ungroup()
 	bool res = panda::Group::ungroupSelection(pandaDocument, graphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not ungroup the selection"), 2000);
+}
+
+void MainWindow::editGroup()
+{
+	panda::Group* group = dynamic_cast<panda::Group*>(pandaDocument->getCurrentSelectedObject());
+	if(group)
+	{
+		EditGroupDialog dlg(group, this);
+		dlg.exec();
+	}
+	else
+		statusBar()->showMessage(tr("The selected objet is not a group"), 2000);
 }

@@ -42,6 +42,7 @@ private slots:
     void paste();
     void group();
     void ungroup();
+	void editGroup();
 
 private:
     void createActions();
@@ -112,6 +113,7 @@ private:
     QAction* rewindAction;
     QAction* groupAction;
     QAction* ungroupAction;
+	QAction* editGroupAction;
     QLabel* timeLabel;
 };
 

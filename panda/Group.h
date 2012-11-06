@@ -4,6 +4,7 @@
 #include <panda/PandaObject.h>
 
 class GroupObjectDrawStruct;
+class EditGroupDialog;
 class GraphView;
 
 namespace panda
@@ -15,6 +16,7 @@ class Group : public PandaObject
 {
     Q_OBJECT
 	friend class GroupObjectDrawStruct;
+	friend class EditGroupDialog;
 public:
     explicit Group(PandaDocument *parent = 0);
 	virtual ~Group();

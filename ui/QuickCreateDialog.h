@@ -1,8 +1,7 @@
-#ifndef DATASEDITDIALOG_H
-#define DATASEDITDIALOG_H
+#ifndef QUICKCREATEDIALOG_H
+#define QUICKCREATEDIALOG_H
 
 #include <QDialog>
-#include <QAbstractListModel>
 
 namespace panda
 {
@@ -29,4 +28,4 @@ public slots:
 	void createObject();
 };
 
-#endif // DATASEDITDIALOG_H
+#endif // QUICKCREATEDIALOG_H

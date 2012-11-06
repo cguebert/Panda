@@ -58,7 +58,7 @@ void DatasTable::populateTable(panda::PandaObject* object)
 			item1->setFlags(Qt::NoItemFlags);
 		else
 			item1->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
-		item1->setData(Qt::UserRole, qVariantFromValue((void*)data));
+		item1->setData(Qt::UserRole, QVariant::fromValue((void*)data));
 		tableWidget->setItem(rowIndex, 0, item0);
 		tableWidget->setItem(rowIndex, 1, item1);
 		++rowIndex;
