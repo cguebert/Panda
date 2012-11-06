@@ -2,8 +2,8 @@
 #define GROUP_H
 
 #include <panda/PandaObject.h>
-#include <ui/ObjectDrawStruct.h>
 
+class GroupObjectDrawStruct;
 class GraphView;
 
 namespace panda
@@ -14,6 +14,7 @@ class PandaDocument;
 class Group : public PandaObject
 {
     Q_OBJECT
+	friend class GroupObjectDrawStruct;
 public:
     explicit Group(PandaDocument *parent = 0);
 	virtual ~Group();
@@ -39,20 +40,5 @@ protected:
 };
 
 } // namespace panda
-
-class GroupObjectDrawStruct : public ObjectDrawStruct
-{
-public:
-	GroupObjectDrawStruct(GraphView* view, panda::PandaObject* object);
-
-	virtual void drawShape(QPainter* painter);
-	virtual void moveVisual(const QPointF& delta);
-	virtual void update();
-	virtual bool contains(const QPointF& point);
-	virtual int dataStartY();
-
-protected:
-	QPainterPath shapePath;
-};
 
 #endif // GROUP_H

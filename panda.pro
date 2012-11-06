@@ -22,7 +22,8 @@ HEADERS       = \
 	panda/GenericObject.h \
     ui/QuickCreateDialog.h \
     ui/DockableDrawStruct.h \
-    ui/GenericObjectDrawStruct.h
+    ui/GenericObjectDrawStruct.h \
+    ui/GroupObjectDrawStruct.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -85,7 +86,8 @@ SOURCES       = main.cpp \
     modules/list/ListReverse.cpp \
     ui/DockableDrawStruct.cpp \
     ui/GenericObjectDrawStruct.cpp \
-    modules/math/point/BezierSpline.cpp
+    modules/math/point/BezierSpline.cpp \
+    ui/GroupObjectDrawStruct.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0
