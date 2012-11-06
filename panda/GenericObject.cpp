@@ -16,7 +16,7 @@ GenericObject::GenericObject(PandaDocument *parent)
 
 GenericObject::~GenericObject()
 {
-	foreach(CreatedDatasStructPtr createdDatasStruct, createdDatasStructs_)
+/*	foreach(CreatedDatasStructPtr createdDatasStruct, createdDatasStructs_)
 	{
 		foreach(BaseData* d, createdDatasStruct->datas)
 		{
@@ -28,7 +28,7 @@ GenericObject::~GenericObject()
 		createdDatasStruct->datas.clear();
 		createdDatasStructs_.removeAll(createdDatasStruct);
 		delete createdDatasStruct;
-	}
+	}	*/
 }
 
 void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefinitionList &defList)
@@ -71,9 +71,9 @@ BaseData* GenericObject::createDatas(int type)
 {
 	int valueType = BaseData::getValueType(type);
 
-	CreatedDatasStruct* createdDatasStruct = new CreatedDatasStruct;
+	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
 	createdDatasStruct->type = type;
-	createdDatasStructs_.append(CreatedDatasStructPtr(createdDatasStruct));
+	createdDatasStructs_.append(createdDatasStruct);
 	int index = createdDatasStructs_.size();
 
 	BaseData* firstInputData = NULL;
@@ -106,8 +106,8 @@ BaseData* GenericObject::createDatas(int type)
 		if(dataDefinitions_[i].output)
 			addOutput(data);
 
-		createdDatasStruct->datas.append(data);
-		createdDatasMap_[data] = createdDatasStruct;
+		createdDatasStruct->datas.append(BaseDataPtr(data));
+		createdDatasMap_.insert(data, createdDatasStruct);
 	}
 
 	removeData(genericData_);	// generic must always be last
@@ -152,7 +152,10 @@ void GenericObject::update()
 					created->datas[i]->updateIfDirty();
 		}
 
-		this->invokeFunction(created->type, created->datas);
+		DataList list;
+		foreach(BaseDataPtr ptr, created->datas)
+			list.append(ptr.data());
+		this->invokeFunction(created->type, list);
 	}
 
 	this->cleanDirty();
@@ -178,9 +181,9 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	{
 		data->setParent(NULL);
 
-		CreatedDatasStruct* createdDatasStruct = createdDatasMap_[data];
+		CreatedDatasStructPtr createdDatasStruct = createdDatasMap_[data];
 		int nbConnectedInputs = 0;
-		foreach(BaseData* d, createdDatasStruct->datas)
+		foreach(BaseDataPtr d, createdDatasStruct->datas)
 		{
 			if(d->getParent())
 				++nbConnectedInputs;
@@ -188,17 +191,14 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
-			foreach(BaseData* d, createdDatasStruct->datas)
+			foreach(BaseDataPtr d, createdDatasStruct->datas)
 			{
-				removeData(d);
-				createdDatasMap_.remove(d);
-				delete d;
+				removeData(d.data());
+				createdDatasMap_.remove(d.data());
 			}
 
 			createdDatasStruct->datas.clear();
 			createdDatasStructs_.removeAll(createdDatasStruct);
-			delete createdDatasStruct;
-//			_createdDatasStructs.removeAll(CreatedDatasStructPtr(createdDatasStruct));
 			updateDataNames();
 		}
 

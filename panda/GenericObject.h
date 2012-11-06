@@ -58,19 +58,21 @@ protected:
 private:
 	virtual void registerFunctions() {}
 
+	typedef QSharedPointer<BaseData> BaseDataPtr;
+	typedef QList<BaseDataPtr> DataPtrList;
+
 	struct CreatedDatasStruct
 	{
 		int type;
-		DataList datas;
+		DataPtrList datas;
 	};
 
 	GenericData* genericData_;
 	GenericDataDefinitionList dataDefinitions_;
 
-//	typedef QSharedPointer<CreatedDatasStruct> CreatedDatasStructPtr;
-	typedef CreatedDatasStruct* CreatedDatasStructPtr;
+	typedef QSharedPointer<CreatedDatasStruct> CreatedDatasStructPtr;
 	QList<CreatedDatasStructPtr> createdDatasStructs_;
-	QMap<BaseData*, CreatedDatasStruct*> createdDatasMap_;
+	QMap<BaseData*, CreatedDatasStructPtr> createdDatasMap_;
 };
 
 typedef boost::mpl::list<int, double, QColor, QPointF, QRectF, QString, QImage> allDataTypes;

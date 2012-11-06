@@ -75,20 +75,20 @@ void GenericObjectDrawStruct::update()
 	int nbDef = genericObject->dataDefinitions_.size();
 	for(int i=0; i<nbCreated; ++i)
 	{
-		GenericObject::DataList createdDatas = genericObject->createdDatasStructs_[i]->datas;
+		GenericObject::DataPtrList createdDatas = genericObject->createdDatasStructs_[i]->datas;
 		int inputIndex = 0, outputIndex = 0;
 		for(int j=0; j<nbDef; ++j)
 		{
 			if(genericObject->dataDefinitions_[j].input)
 			{
 				QRectF dataArea(xi, y + inputIndex * dh, dataRectSize, dataRectSize);
-				datas.append(qMakePair(dataArea, createdDatas[j]));
+				datas.append(qMakePair(dataArea, createdDatas[j].data()));
 				++inputIndex;
 			}
 			if(genericObject->dataDefinitions_[j].output)
 			{
 				QRectF dataArea(xo, y + outputIndex * dh, dataRectSize, dataRectSize);
-				datas.append(qMakePair(dataArea, createdDatas[j]));
+				datas.append(qMakePair(dataArea, createdDatas[j].data()));
 				++outputIndex;
 			}
 		}
