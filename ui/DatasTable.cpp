@@ -271,8 +271,8 @@ void DataItemWidget::onOpenEditDialog()
 		DatasEditDialog dialog(parentData, this);
 		if(dialog.exec())
 		{
-			dialog.copyToData();
 			dataIsSet = true;
+			dialog.copyToData();
 			lineEdit->setText(parentData->toString());
 			emit editingFinished();
 		}
@@ -289,8 +289,8 @@ void DataItemWidget::onOpenEditDialog()
 					QColor color = QColorDialog::getColor(colorData->getValue(), this, colorData->getName(), QColorDialog::ShowAlphaChannel);
 					if(color.isValid())
 					{
-						colorData->setValue(color);
 						dataIsSet = true;
+						colorData->setValue(color);
 						lineEdit->setText(QString("#%1").arg(color.rgba(), 8, 16, QChar('0')).toUpper());
 						emit editingFinished();
 					}
