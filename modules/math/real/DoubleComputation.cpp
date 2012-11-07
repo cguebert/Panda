@@ -45,8 +45,8 @@ public:
 			int nb = nbV;
 			if(nbV > 1)
 			{
-				if(nbA != nbV) nbA = 1;
-				if(nbB != nbV) nbB = 1;
+				if(nbA != nbV || nbB != nbV)
+					nbA = nbB = 1;
 			}
 			else
 			{
@@ -184,6 +184,140 @@ protected:
 };
 
 int DoubleMath_FallCountClass = RegisterObject("Math/Real/Fall count").setClass<DoubleMath_FallCount>().setDescription("Count the number of fall transitions of a value");
+
+//*************************************************************************//
+
+class DoubleMath_Constrain : public PandaObject
+{
+public:
+	DoubleMath_Constrain(PandaDocument *doc)
+		: PandaObject(doc)
+		, inputA(initData(&inputA, "min", "Minimum value"))
+		, inputB(initData(&inputB, "max", "Maximum value"))
+		, inputV(initData(&inputV, "input", "Value to constrain"))
+		, result(initData(&result, "result", "Result of the operation"))
+	{
+		addInput(&inputA);
+		addInput(&inputB);
+		addInput(&inputV);
+
+		addOutput(&result);
+	}
+
+	double constrain(double a, double b, double x)
+	{
+		if (x < a)	return a;
+		if (x > b)	return b;
+		return x;
+	}
+
+	void update()
+	{
+		const QVector<double>	&valInA = inputA.getValue(),
+								&valInB = inputB.getValue(),
+								&valInV = inputV.getValue();
+		QVector<double> &valOut = *result.beginEdit();
+		valOut.clear();
+
+		int nbA = valInA.size(), nbB = valInB.size(), nbV = valInV.size();
+		if(nbA && nbB && nbV)
+		{
+			int nb = nbV;
+			if(nbV > 1)
+			{
+				if(nbA != nbV || nbB != nbV)
+					nbA = nbB = 1;
+			}
+			else
+			{
+				if(nbB > nbA && nbA > 1)		nbB = nbA;
+				else if(nbA > nbB && nbB > 1)	nbA = nbB;
+				nb = qMax(nbA, nbB);
+			}
+			valOut.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				valOut[i] = constrain(valInA[i%nbA], valInB[i%nbB], valInV[i%nbV]);
+
+			result.endEdit();
+		}
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<double> > inputA, inputB, inputV, result;
+};
+
+int DoubleMath_ConstrainClass = RegisterObject("Math/Real/Constrain").setClass<DoubleMath_Constrain>().setDescription("Constrain a value between a min and a max");
+
+
+//*************************************************************************//
+
+class DoubleMath_Pulse : public PandaObject
+{
+public:
+	DoubleMath_Pulse(PandaDocument *doc)
+		: PandaObject(doc)
+		, inputA(initData(&inputA, "min", "Minimum value"))
+		, inputB(initData(&inputB, "max", "Maximum value"))
+		, inputV(initData(&inputV, "input", "Value to constrain"))
+		, result(initData(&result, "result", "Result of the operation"))
+	{
+		addInput(&inputA);
+		addInput(&inputB);
+		addInput(&inputV);
+
+		addOutput(&result);
+	}
+
+	int pulse(double a, double b, double x)
+	{
+		if (x < a || x > b)	return 0;
+		return 1;
+	}
+
+	void update()
+	{
+		const QVector<double>	&valInA = inputA.getValue(),
+								&valInB = inputB.getValue(),
+								&valInV = inputV.getValue();
+		QVector<int> &valOut = *result.beginEdit();
+		valOut.clear();
+
+		int nbA = valInA.size(), nbB = valInB.size(), nbV = valInV.size();
+		if(nbA && nbB && nbV)
+		{
+			int nb = nbV;
+			if(nbV > 1)
+			{
+				if(nbA != nbV || nbB != nbV)
+					nbA = nbB = 1;
+			}
+			else
+			{
+				if(nbB > nbA && nbA > 1)		nbB = nbA;
+				else if(nbA > nbB && nbB > 1)	nbA = nbB;
+				nb = qMax(nbA, nbB);
+			}
+			valOut.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				valOut[i] = pulse(valInA[i%nbA], valInB[i%nbB], valInV[i%nbV]);
+
+			result.endEdit();
+		}
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<double> > inputA, inputB, inputV;
+	Data< QVector<int> > result;
+};
+
+int DoubleMath_PulseClass = RegisterObject("Math/Real/Pulse").setClass<DoubleMath_Pulse>().setDescription("Set the output to 1 if the value is between min and max, 0 otherwise");
+
 
 } // namespace Panda
 
