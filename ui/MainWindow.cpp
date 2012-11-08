@@ -5,6 +5,7 @@
 #include <ui/RenderView.h>
 #include <ui/DatasTable.h>
 #include <ui/EditGroupDialog.h>
+#include <ui/LayersTab.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -43,6 +44,14 @@ MainWindow::MainWindow()
     datasDock->setWidget(datasTable);
     datasDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, datasDock);
+
+	layersTab = new LayersTab(pandaDocument, this);
+
+	layersDock = new QDockWidget("Layers", this);
+	layersDock->setObjectName("LayersDock");
+	layersDock->setWidget(layersTab);
+	layersDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	addDockWidget(Qt::LeftDockWidgetArea, layersDock);
 
     connect(pandaDocument, SIGNAL(selectedObject(panda::PandaObject*)), datasTable, SLOT(populateTable(panda::PandaObject*)));
     connect(pandaDocument, SIGNAL(selectedObjectIsDirty(panda::PandaObject*)), datasTable, SLOT(populateTable(panda::PandaObject*)));

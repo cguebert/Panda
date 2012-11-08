@@ -9,6 +9,7 @@ class GraphView;
 class RenderView;
 class QDockWidget;
 class DatasTable;
+class LayersTab;
 
 namespace panda
 {
@@ -66,6 +67,8 @@ private:
     panda::PandaDocument* pandaDocument;
     DatasTable* datasTable;
     QDockWidget* datasDock;
+	LayersTab* layersTab;
+	QDockWidget* layersDock;
     QStringList recentFiles;
     QString curFile;
 

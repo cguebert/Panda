@@ -24,7 +24,8 @@ HEADERS       = \
     ui/DockableDrawStruct.h \
     ui/GenericObjectDrawStruct.h \
     ui/GroupObjectDrawStruct.h \
-    ui/EditGroupDialog.h
+    ui/EditGroupDialog.h \
+    ui/LayersTab.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -89,7 +90,8 @@ SOURCES       = main.cpp \
     ui/GenericObjectDrawStruct.cpp \
     modules/math/point/BezierSpline.cpp \
     ui/GroupObjectDrawStruct.cpp \
-    ui/EditGroupDialog.cpp
+    ui/EditGroupDialog.cpp \
+    ui/LayersTab.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0
