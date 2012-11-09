@@ -382,6 +382,7 @@ void PandaDocument::resetDocument()
     selectedObjects.clear();
     foreach(PandaObject* object, pandaObjects)
     {
+		emit removedObject(object);
         object->disconnect(this);
         delete object;
     }
@@ -695,6 +696,45 @@ const QImage& PandaDocument::getRenderedImage()
 Layer* PandaDocument::getDefaultLayer()
 {
     return defaultLayer;
+}
+
+void PandaDocument::moveLayerUp(Layer* layer)
+{
+	int index = pandaObjects.indexOf(layer);
+	if(index == -1)
+		return;
+	int nb = pandaObjects.size();
+	for(++index;index<nb;++index)
+	{
+		Layer* otherLayer = dynamic_cast<Layer*>(pandaObjects.at(index));
+		if(otherLayer)
+		{
+			pandaObjects.removeAll(layer);
+			pandaObjects.insert(index, layer);
+			setDirtyValue();
+			emit modified();
+			return;
+		}
+	}
+}
+
+void PandaDocument::moveLayerDown(Layer* layer)
+{
+	int index = pandaObjects.indexOf(layer);
+	if(index == -1)
+		return;
+	for(--index;index>0;--index)
+	{
+		Layer* otherLayer = dynamic_cast<Layer*>(pandaObjects.at(index));
+		if(otherLayer)
+		{
+			pandaObjects.removeAll(layer);
+			pandaObjects.insert(index, layer);
+			setDirtyValue();
+			emit modified();
+			return;
+		}
+	}
 }
 
 void PandaDocument::setDirtyValue()

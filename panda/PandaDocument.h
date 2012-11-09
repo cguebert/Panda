@@ -62,6 +62,8 @@ public:
     const QImage& getRenderedImage();
 
     Layer* getDefaultLayer();
+	void moveLayerUp(Layer* layer);
+	void moveLayerDown(Layer* layer);
 
     void doAddObject(PandaObject* object);
     void doRemoveObject(PandaObject* object, bool del=true);

@@ -12,6 +12,7 @@ namespace panda
 
 Layer::Layer(PandaDocument *parent)
 	: DockObject((QObject*)parent)
+	, layerName(initData(&layerName, "name", "Name of this layer"))
 	, image(initData(&image, "image", "Image created by the renderers connected to this layer"))
 	, compositionMode(initData(&compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for lsit of modes)"))
 	, opacity(initData(&opacity, 1.0, "opacity", "Set the opacity of the layer"))
@@ -71,6 +72,50 @@ void Layer::mergeLayer(QPainter* docPainter)
 bool Layer::accepts(DockableObject* dockable) const
 {
 	return dynamic_cast<Renderer*>(dockable) != NULL;
+}
+
+QString Layer::getLayerName()
+{
+	return layerName.getValue();
+}
+
+void Layer::setLayerName(QString name)
+{
+	layerName.setValue(name);
+}
+
+int Layer::getCompositionMode()
+{
+	return compositionMode.getValue();
+}
+
+void Layer::setCompositionMode(int mode)
+{
+	compositionMode.setValue(mode);
+}
+
+double Layer::getOpacity()
+{
+	return opacity.getValue();
+}
+
+void Layer::setOpacity(double opa)
+{
+	opacity.setValue(qBound(0.0, opa, 1.0));
+}
+
+void Layer::postCreate(PandaDocument* doc)
+{
+	int i = 1;
+	PandaDocument::ObjectsIterator iter = doc->getObjectsIterator();
+	while(iter.hasNext())
+	{
+		PandaObject* obj = iter.next();
+		if(dynamic_cast<Layer*>(obj) && obj!=this)
+			++i;
+	}
+
+	layerName.setValue(tr("Layer #%1").arg(i));
 }
 
 int LayerClass = RegisterObject("Layer").setClass<Layer>().setDescription("Organize renderers and change opacity and the composition mode");

@@ -21,7 +21,19 @@ public:
     virtual void mergeLayer(QPainter* docPainter);
 	virtual bool accepts(DockableObject* dockable) const;
 
+	virtual QString getLayerName();
+	virtual void setLayerName(QString name);
+
+	virtual int getCompositionMode();
+	virtual void setCompositionMode(int mode);
+
+	virtual double getOpacity();
+	virtual void setOpacity(double opa);
+
+	virtual void postCreate(PandaDocument* doc);
+
 protected:
+	Data<QString> layerName;
     Data<QImage> image;
     Data<int> compositionMode;
     Data<double> opacity;

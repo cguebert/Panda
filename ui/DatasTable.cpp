@@ -31,6 +31,9 @@ DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 	setLayout(mainLayout);
 
 	populateTable((panda::PandaObject*)doc);
+
+	connect(doc, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(populateTable(panda::PandaObject*)));
+	connect(doc, SIGNAL(selectedObjectIsDirty(panda::PandaObject*)), this, SLOT(populateTable(panda::PandaObject*)));
 }
 
 void DatasTable::populateTable(panda::PandaObject* object)

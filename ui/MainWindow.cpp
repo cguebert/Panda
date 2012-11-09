@@ -52,9 +52,6 @@ MainWindow::MainWindow()
 	layersDock->setWidget(layersTab);
 	layersDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	addDockWidget(Qt::LeftDockWidgetArea, layersDock);
-
-    connect(pandaDocument, SIGNAL(selectedObject(panda::PandaObject*)), datasTable, SLOT(populateTable(panda::PandaObject*)));
-    connect(pandaDocument, SIGNAL(selectedObjectIsDirty(panda::PandaObject*)), datasTable, SLOT(populateTable(panda::PandaObject*)));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
