@@ -723,7 +723,7 @@ void PandaDocument::moveLayerDown(Layer* layer)
 	int index = pandaObjects.indexOf(layer);
 	if(index == -1)
 		return;
-	for(--index;index>0;--index)
+	for(--index;index>=0;--index)
 	{
 		Layer* otherLayer = dynamic_cast<Layer*>(pandaObjects.at(index));
 		if(otherLayer)
