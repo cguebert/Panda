@@ -55,7 +55,7 @@ public:
         return init;
     }
 
-	virtual void postCreate(PandaDocument*) { }
+	virtual void postCreate() { }
     virtual void reset() { }
     virtual void update();
     virtual void setDirtyValue();
@@ -77,6 +77,7 @@ protected:
     QMap<QString, BaseData*> datasMap;
     quint32 index;
 	bool doEmitModified;
+	PandaDocument* parentDocument;
 
     void setInternalData(const QString& newName, const quint32 &newIndex);
     friend class ObjectFactory;

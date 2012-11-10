@@ -2,6 +2,7 @@
 #define GROUP_H
 
 #include <panda/PandaObject.h>
+#include <panda/Layer.h>
 
 class GroupObjectDrawStruct;
 class EditGroupDialog;
@@ -39,6 +40,35 @@ protected:
 
     BaseData* duplicateData(BaseData* data);
 	QString findAvailableDataName(QString baseName, BaseData* data=NULL);
+};
+
+class GroupWithLayer : public Group, public BaseLayer
+{
+public:
+	explicit GroupWithLayer(PandaDocument* parent);
+	void setLayer(Layer* layer);
+
+	virtual void update();
+
+	virtual QList<Renderer*> getRenderers();
+
+	virtual QString getLayerName() const;
+	virtual void setLayerName(QString name);
+
+	virtual int getCompositionMode() const;
+	virtual void setCompositionMode(int mode);
+
+	virtual double getOpacity() const;
+	virtual void setOpacity(double opa);
+
+	virtual Data<QImage>* getImage();
+
+protected:
+	Data<QImage> image;
+	Data<int> compositionMode;
+	Data<double> opacity;
+
+	Layer* layer;
 };
 
 } // namespace panda

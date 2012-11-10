@@ -11,6 +11,7 @@
 
 namespace panda {
 
+class BaseLayer;
 class Layer;
 
 class PandaDocument : public PandaObject
@@ -62,8 +63,8 @@ public:
     const QImage& getRenderedImage();
 
     Layer* getDefaultLayer();
-	void moveLayerUp(Layer* layer);
-	void moveLayerDown(Layer* layer);
+	void moveLayerUp(PandaObject *layer);
+	void moveLayerDown(PandaObject* layer);
 
     void doAddObject(PandaObject* object);
     void doRemoveObject(PandaObject* object, bool del=true);
@@ -74,7 +75,6 @@ protected:
     quint32 currentIndex;
     QImage renderedImage;
     Layer* defaultLayer;
-    QList<Layer*> layers;
 
 	Data<QPointF> renderSize;
     Data<QColor> backgroundColor;

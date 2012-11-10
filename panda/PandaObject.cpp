@@ -8,6 +8,7 @@ PandaObject::PandaObject(QObject *parent)
     : QObject(parent)
 	, doEmitModified(true)
 {
+	parentDocument = dynamic_cast<PandaDocument*>(parent);
 }
 
 QString PandaObject::getName() const

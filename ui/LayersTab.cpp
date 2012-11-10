@@ -92,7 +92,7 @@ LayersTab::LayersTab(panda::PandaDocument* doc, QWidget *parent)
 
 	connect(doc, SIGNAL(addedObject(panda::PandaObject*)), this, SLOT(addedObject(panda::PandaObject*)));
 	connect(doc, SIGNAL(removedObject(panda::PandaObject*)), this, SLOT(removedObject(panda::PandaObject*)));
-//	connect(doc, SIGNAL(modified()), this, SLOT(modifiedDocument()));
+	connect(doc, SIGNAL(modified()), this, SLOT(modifiedDocument()));
 
 	connect(nameEdit, SIGNAL(textEdited(QString)), this, SLOT(nameChanged(QString)));
 	connect(tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));
@@ -114,7 +114,7 @@ void LayersTab::updateTable()
 	int nbRows = layers.size();
 	tableWidget->setRowCount(nbRows);
 	int rowIndex = nbRows-1;
-	foreach(panda::Layer* layer, layers)
+	foreach(panda::BaseLayer* layer, layers)
 	{
 		QTableWidgetItem *item = new QTableWidgetItem(layer->getLayerName());
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -128,7 +128,7 @@ void LayersTab::updateTable()
 
 void LayersTab::addedObject(panda::PandaObject* object)
 {
-	panda::Layer* layer = dynamic_cast<panda::Layer*>(object);
+	panda::BaseLayer* layer = dynamic_cast<panda::BaseLayer*>(object);
 	if(layer)
 	{
 		if(layers.empty())
@@ -149,7 +149,7 @@ void LayersTab::addedObject(panda::PandaObject* object)
 
 void LayersTab::removedObject(panda::PandaObject* object)
 {
-	panda::Layer* layer = dynamic_cast<panda::Layer*>(object);
+	panda::BaseLayer* layer = dynamic_cast<panda::BaseLayer*>(object);
 	if(layer)
 	{
 		if(selectedLayer == layer)
@@ -180,7 +180,7 @@ void LayersTab::modifiedDocument()
 
 void LayersTab::itemClicked(QTableWidgetItem* item)
 {
-	selectedLayer = (panda::Layer*)item->data(Qt::UserRole).value<void*>();
+	selectedLayer = (panda::BaseLayer*)item->data(Qt::UserRole).value<void*>();
 	if(selectedLayer)
 	{
 		nameEdit->setEnabled(true);
@@ -227,7 +227,7 @@ void LayersTab::moveLayerUp()
 			moveUpButton->setEnabled(index < layers.size() - 1);
 			moveDownButton->setEnabled(index > 0);
 		}
-		document->moveLayerUp(selectedLayer);
+		document->moveLayerUp(dynamic_cast<panda::PandaObject*>(selectedLayer));
 		updateTable();
 	}
 }
@@ -245,7 +245,7 @@ void LayersTab::moveLayerDown()
 			moveUpButton->setEnabled(index < layers.size() - 1);
 			moveDownButton->setEnabled(index > 0);
 		}
-		document->moveLayerDown(selectedLayer);
+		document->moveLayerDown(dynamic_cast<panda::PandaObject*>(selectedLayer));
 		updateTable();
 	}
 }

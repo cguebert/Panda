@@ -36,10 +36,10 @@ class DockableObject : public PandaObject
 {
 public:
 	DockableObject(QObject *parent);
-	virtual void postCreate(PandaDocument*);
+	virtual void postCreate();
 	virtual void setParentDock(DockObject* dock);
 	virtual DockObject* getParentDock();
-	virtual DockObject* getDefaultDock(PandaDocument* doc);
+	virtual DockObject* getDefaultDock();
 
 protected:
 	QPointer<DockObject> parentDock;

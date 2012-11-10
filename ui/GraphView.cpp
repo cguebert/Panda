@@ -425,7 +425,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
             {
 				QRectF dockableArea = objectDrawStructs[dockable]->getObjectArea();
 				panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
-				panda::DockObject* defaultDock = dockable->getDefaultDock(pandaDocument);
+				panda::DockObject* defaultDock = dockable->getDefaultDock();
 				panda::DockObject* newDock = defaultDock;
                 int newIndex = -1;
                 while(iter.hasNext())

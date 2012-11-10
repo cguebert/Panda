@@ -43,7 +43,7 @@ PandaObject* ObjectFactory::create(QString className, PandaDocument* parent)
             if(object)
 			{
                 object->setInternalData(entry->objectName, parent->getNextIndex());
-				object->postCreate(parent);
+				object->postCreate();
 			}
             return object;
         }

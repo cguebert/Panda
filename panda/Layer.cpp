@@ -10,6 +10,43 @@
 namespace panda
 {
 
+void BaseLayer::updateLayer(PandaDocument* doc)
+{
+	Data<QImage>* dataImage = this->getImage();
+	QImage* editImage = dataImage->beginEdit();
+	*editImage = QImage(doc->getRenderSize(), QImage::Format_ARGB32);
+	editImage->fill(QColor(0,0,0,0));
+	QPainter painter(editImage);
+	painter.setRenderHint(QPainter::Antialiasing, true);
+	painter.setRenderHint(QPainter::TextAntialiasing, true);
+
+	QList<Renderer*> renderers = this->getRenderers();
+	QListIterator<Renderer*> iter = QListIterator<Renderer*>(renderers);
+	iter.toBack();
+	while(iter.hasPrevious())
+	{
+		Renderer* renderer = iter.previous();
+		renderer->render(&painter);
+		renderer->cleanDirty();
+	}
+
+	dataImage->endEdit();
+}
+
+void BaseLayer::mergeLayer(QPainter* docPainter)
+{
+	double valOpacity = qBound(0.0, this->getOpacity(), 1.0);
+	int valCompoMode = qBound(0, this->getCompositionMode(), 32);
+
+	docPainter->save();
+	docPainter->setOpacity(valOpacity);
+	docPainter->setCompositionMode((QPainter::CompositionMode)valCompoMode);
+	docPainter->drawImage(0, 0, this->getImage()->getValue());
+	docPainter->restore();
+}
+
+//*************************************************************************//
+
 Layer::Layer(PandaDocument *parent)
 	: DockObject((QObject*)parent)
 	, layerName(initData(&layerName, "name", "Name of this layer"))
@@ -28,45 +65,8 @@ Layer::Layer(PandaDocument *parent)
 
 void Layer::update()
 {
-	PandaDocument* doc = dynamic_cast<PandaDocument*>(parent());
-    if(doc)
-    {
-        QImage* editImage = image.beginEdit();
-        *editImage = QImage(doc->getRenderSize(), QImage::Format_ARGB32);
-        editImage->fill(QColor(0,0,0,0));
-        QPainter painter(editImage);
-        painter.setRenderHint(QPainter::Antialiasing, true);
-        painter.setRenderHint(QPainter::TextAntialiasing, true);
-
-		DockablesIterator iter = getDockablesIterator();
-		iter.toBack();
-		while(iter.hasPrevious())
-		{
-			Renderer* renderer = dynamic_cast<Renderer*>(iter.previous());
-			if(renderer)
-			{
-				renderer->render(&painter);
-				renderer->cleanDirty();
-			}
-		}
-
-        image.endEdit();
-    }
+	this->updateLayer(parentDocument);
     this->cleanDirty();
-}
-
-void Layer::mergeLayer(QPainter* docPainter)
-{
-    this->updateIfDirty();
-
-    double valOpacity = qBound(0.0, opacity.getValue(), 1.0);
-    int valCompoMode = qBound(0, compositionMode.getValue(), 32);
-
-    docPainter->save();
-    docPainter->setOpacity(valOpacity);
-    docPainter->setCompositionMode((QPainter::CompositionMode)valCompoMode);
-    docPainter->drawImage(0, 0, image.getValue());
-    docPainter->restore();
 }
 
 bool Layer::accepts(DockableObject* dockable) const
@@ -74,7 +74,21 @@ bool Layer::accepts(DockableObject* dockable) const
 	return dynamic_cast<Renderer*>(dockable) != NULL;
 }
 
-QString Layer::getLayerName()
+QList<Renderer*> Layer::getRenderers()
+{
+	QList<Renderer*> renderers;
+	DockablesIterator iter = getDockablesIterator();
+	while(iter.hasNext())
+	{
+		Renderer* renderer = dynamic_cast<Renderer*>(iter.next());
+		if(renderer)
+			renderers.append(renderer);
+	}
+
+	return renderers;
+}
+
+QString Layer::getLayerName() const
 {
 	return layerName.getValue();
 }
@@ -84,7 +98,7 @@ void Layer::setLayerName(QString name)
 	layerName.setValue(name);
 }
 
-int Layer::getCompositionMode()
+int Layer::getCompositionMode() const
 {
 	return compositionMode.getValue();
 }
@@ -94,7 +108,7 @@ void Layer::setCompositionMode(int mode)
 	compositionMode.setValue(mode);
 }
 
-double Layer::getOpacity()
+double Layer::getOpacity() const
 {
 	return opacity.getValue();
 }
@@ -104,10 +118,15 @@ void Layer::setOpacity(double opa)
 	opacity.setValue(qBound(0.0, opa, 1.0));
 }
 
-void Layer::postCreate(PandaDocument* doc)
+Data<QImage>* Layer::getImage()
+{
+	return &image;
+}
+
+void Layer::postCreate()
 {
 	int i = 1;
-	PandaDocument::ObjectsIterator iter = doc->getObjectsIterator();
+	PandaDocument::ObjectsIterator iter = parentDocument->getObjectsIterator();
 	while(iter.hasNext())
 	{
 		PandaObject* obj = iter.next();

@@ -15,7 +15,7 @@ namespace panda
 {
 	class PandaDocument;
 	class PandaObject;
-	class Layer;
+	class BaseLayer;
 }
 
 class LayersTab : public QWidget
@@ -31,8 +31,8 @@ protected:
 	QTableWidget* tableWidget;
 	QPushButton *moveUpButton, *moveDownButton;
 	panda::PandaDocument* document;
-	QList<panda::Layer*> layers;
-	panda::Layer* selectedLayer;
+	QList<panda::BaseLayer*> layers;
+	panda::BaseLayer* selectedLayer;
 	
 signals:
 	

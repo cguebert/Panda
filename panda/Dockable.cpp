@@ -25,7 +25,7 @@ DockObject::~DockObject()
 		removeInput((DataNode*)dockable);
 
 		if(doc)
-			defaultDock = dockable->getDefaultDock(doc);
+			defaultDock = dockable->getDefaultDock();
 
 		if(defaultDock == this)
 			defaultDock = NULL;
@@ -87,9 +87,9 @@ DockableObject::DockableObject(QObject *parent)
 {
 }
 
-void DockableObject::postCreate(PandaDocument* document)
+void DockableObject::postCreate()
 {
-	DockObject* dock = getDefaultDock(document);
+	DockObject* dock = getDefaultDock();
 	if(dock)
 		dock->addDockable(this);
 }
@@ -104,7 +104,7 @@ DockObject* DockableObject::getParentDock()
 	return parentDock.data();
 }
 
-DockObject* DockableObject::getDefaultDock(PandaDocument* /*doc*/)
+DockObject* DockableObject::getDefaultDock()
 {
 	return NULL;
 }

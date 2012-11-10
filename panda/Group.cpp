@@ -29,6 +29,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 
 	PandaDocument::ObjectsIterator iter = doc->getSelectionIterator();
 
+	bool hasRenderer = false;
 	// Verify that all selected renderers are in the same layer
 	Layer* layer = NULL;
 	while(iter.hasNext())
@@ -37,6 +38,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 		Renderer* renderer = dynamic_cast<Renderer*>(object);
 		if(renderer)
 		{
+			hasRenderer = true;
 			if(!layer)
 				layer = dynamic_cast<Layer*>(renderer->getParentDock());
 			else if(layer != renderer->getParentDock())
@@ -45,10 +47,29 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 					tr("All renderers must be placed in the same layer."));
 				return false;
 			}
+
+			if(layer && layer!=doc->getDefaultLayer() && !doc->isSelected(layer))
+			{
+				QMessageBox::warning(NULL, tr("Panda"),
+					tr("Renderers must be grouped with their layers"));
+				return false;
+			}
 		}
 	}
 
-	Group* group = dynamic_cast<Group*>(doc->createObject(ObjectFactory::getClassName<Group>()));
+	if(layer == doc->getDefaultLayer())	// Won't be added in the group!
+		layer = NULL;
+
+	Group* group = NULL;
+	if(hasRenderer)
+	{
+		GroupWithLayer* groupWithLayer = dynamic_cast<GroupWithLayer*>(doc->createObject(ObjectFactory::getClassName<GroupWithLayer>()));
+		if(groupWithLayer)
+			groupWithLayer->setLayer(layer);
+		group = groupWithLayer;
+	}
+	else
+		group = dynamic_cast<Group*>(doc->createObject(ObjectFactory::getClassName<Group>()));
     if(!group)
         return false;
 
@@ -90,7 +111,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
             if(otherData)
             {
                 PandaObject* connected = otherData->getOwner();
-                if(connected && !doc->isSelected(connected))
+				if(connected && !doc->isSelected(connected) && connected!=doc)
 				{
 					BaseData* createdData = NULL;
 					if(!connectedInputDatas.contains(otherData))
@@ -127,7 +148,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
                 if(otherData)
                 {
                     PandaObject* connected = otherData->getOwner();
-                    if(connected && !doc->isSelected(connected))
+					if(connected && !doc->isSelected(connected) && connected!=doc)
 					{
 						BaseData* createdData = NULL;
 						if(!connectedOutputDatas.contains(data))
@@ -191,18 +212,39 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
         QPointF groupPos = view->getObjectDrawStruct(group)->getPosition();
 
         // Putting the objects back into the document
+		QList<DockObject*> docks;
         objIter = group->objects;
         while(objIter.hasNext())
         {
             PandaObject* object = objIter.next();
-            doc->doAddObject(object);
-            doc->selectionAdd(object);
-            object->setParent(doc);
+			DockObject* dock = dynamic_cast<DockObject*>(object);
+			if(dock)
+				docks.append(dock);
+			else
+			{
+				doc->doAddObject(object);
+				doc->selectionAdd(object);
+				object->setParent(doc);
 
-            // Placing the object in the view
-            ObjectDrawStruct* ods = view->getObjectDrawStruct(object);
-            ods->move(groupPos + group->positions[object] - ods->getPosition());
+				// Placing the object in the view
+				ObjectDrawStruct* ods = view->getObjectDrawStruct(object);
+				ods->move(groupPos + group->positions[object] - ods->getPosition());
+			}
         }
+
+		// We extract docks last (their docked objects must be out first)
+		QListIterator<DockObject*> dockIter = QListIterator<DockObject*>(docks);
+		while(dockIter.hasNext())
+		{
+			PandaObject* object = dockIter.next();
+			doc->doAddObject(object);
+			doc->selectionAdd(object);
+			object->setParent(doc);
+
+			// Placing the object in the view
+			ObjectDrawStruct* ods = view->getObjectDrawStruct(object);
+			ods->move(groupPos + group->positions[object] - ods->getPosition());
+		}
 
         // Reconnecting datas
         foreach(QSharedPointer<BaseData> data, group->groupDatas)
@@ -487,7 +529,7 @@ void Group::load(QDataStream& in)
 		DockableObject* dockable = dynamic_cast<DockableObject*>(importObjectsMap[dockableIndex]);
 		if(dock && dockable)
 		{
-			DockObject* defaultDock = dockable->getDefaultDock(doc);
+			DockObject* defaultDock = dockable->getDefaultDock();
 			if(defaultDock)
 				defaultDock->removeDockable(dockable);
 			dock->addDockable(dockable);
@@ -609,7 +651,7 @@ void Group::load(QTextStream& in)
 		DockableObject* dockable = dynamic_cast<DockableObject*>(importObjectsMap[dockableIndex]);
 		if(dock && dockable)
 		{
-			DockObject* defaultDock = dockable->getDefaultDock(doc);
+			DockObject* defaultDock = dockable->getDefaultDock();
 			if(defaultDock)
 				defaultDock->removeDockable(dockable);
 			dock->addDockable(dockable);
@@ -660,5 +702,118 @@ BaseData* Group::duplicateData(BaseData* data)
 }
 
 int GroupClass = RegisterObject("Group").setClass<Group>().setDescription("Groups many object into a single one").setHidden(true);
+
+//*************************************************************************//
+
+GroupWithLayer::GroupWithLayer(PandaDocument* parent)
+	: Group(parent)
+	, layer(NULL)
+	, image(initData(&image, "image", "Image created by the renderers connected to this layer"))
+	, compositionMode(initData(&compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for lsit of modes)"))
+	, opacity(initData(&opacity, 1.0, "opacity", "Set the opacity of the layer"))
+{
+	addOutput((DataNode*)parent);
+}
+
+void GroupWithLayer::setLayer(Layer* newLayer)
+{
+	this->layer = newLayer;
+	if(layer)
+	{
+		removeData(&image);
+		removeData(&compositionMode);
+		removeData(&opacity);
+	}
+	else
+	{
+		addInput(&opacity);
+		addInput(&compositionMode);
+
+		addOutput(&image);
+		image.setDisplayed(false);
+	}
+}
+
+void GroupWithLayer::update()
+{
+	this->updateLayer(parentDocument);
+	this->cleanDirty();
+}
+
+QList<Renderer*> GroupWithLayer::getRenderers()
+{
+	if(layer)
+		return layer->getRenderers();
+	else
+	{
+		QList<Renderer*> renderers;
+		QListIterator<PandaObject*> iter = QListIterator<PandaObject*>(objects);
+		while(iter.hasNext())
+		{
+			Renderer* renderer = dynamic_cast<Renderer*>(iter.next());
+			if(renderer)
+				renderers.append(renderer);
+		}
+		return renderers;
+	}
+}
+
+QString GroupWithLayer::getLayerName() const
+{
+	if(layer)
+		return layer->getLayerName();
+	else
+		return groupName.getValue();
+}
+
+void GroupWithLayer::setLayerName(QString name)
+{
+	if(layer)
+		layer->setLayerName(name);
+	else
+		groupName.setValue(name);
+}
+
+int GroupWithLayer::getCompositionMode() const
+{
+	if(layer)
+		return layer->getCompositionMode();
+	else
+		return compositionMode.getValue();
+}
+
+void GroupWithLayer::setCompositionMode(int mode)
+{
+	if(layer)
+		layer->setCompositionMode(mode);
+	else
+		compositionMode.setValue(mode);
+}
+
+double GroupWithLayer::getOpacity() const
+{
+	if(layer)
+		return layer->getOpacity();
+	else
+		return opacity.getValue();
+}
+
+void GroupWithLayer::setOpacity(double opa)
+{
+	if(layer)
+		layer->setOpacity(opa);
+	else
+		opacity.setValue(opa);
+}
+
+Data<QImage>* GroupWithLayer::getImage()
+{
+	if(layer)
+		return layer->getImage();
+	else
+		return &image;
+}
+
+int GroupWithLayerClass = RegisterObject("GroupWithLayer").setClass<GroupWithLayer>().setDescription("Groups many object into a single one (version with a layer)").setHidden(true);
 
 } // namespace panda

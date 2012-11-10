@@ -211,7 +211,7 @@ bool PandaDocument::readFile(const QString& fileName)
 		DockableObject* dockable = dynamic_cast<DockableObject*>(findObject(dockableIndex));
 		if(dock && dockable)
         {
-			DockObject* defaultDock = dockable->getDefaultDock(this);
+			DockObject* defaultDock = dockable->getDefaultDock();
 			if(defaultDock)
 				defaultDock->removeDockable(dockable);
 			dock->addDockable(dockable);
@@ -361,7 +361,7 @@ bool PandaDocument::readTextDocument(QString& text)
 		DockableObject* dockable = dynamic_cast<DockableObject*>(findObject(dockableIndex));
 		if(dock && dockable)
 		{
-			DockObject* defaultDock = dockable->getDefaultDock(this);
+			DockObject* defaultDock = dockable->getDefaultDock();
 			if(defaultDock)
 				defaultDock->removeDockable(dockable);
 			dock->addDockable(dockable);
@@ -387,7 +387,6 @@ void PandaDocument::resetDocument()
         delete object;
     }
 
-    layers.clear();
     pandaObjectsMap.clear();
     pandaObjects.clear();
     currentIndex = 1;
@@ -673,15 +672,19 @@ void PandaDocument::update()
     renderedImage.fill(backgroundColor.getValue());
 
     QPainter painter(&renderedImage);
+	defaultLayer->updateIfDirty();
     defaultLayer->mergeLayer(&painter);
 
-	// TODO : use a list so we can reorder the layers
 	ObjectsIterator iter = getObjectsIterator();
 	while(iter.hasNext())
 	{
-		Layer* layer = dynamic_cast<Layer*>(iter.next());
+		PandaObject* obj = iter.next();
+		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj);
 		if(layer)
+		{
+			obj->updateIfDirty();
 			layer->mergeLayer(&painter);
+		}
 	}
 
     this->cleanDirty();
@@ -698,15 +701,17 @@ Layer* PandaDocument::getDefaultLayer()
     return defaultLayer;
 }
 
-void PandaDocument::moveLayerUp(Layer* layer)
+void PandaDocument::moveLayerUp(PandaObject* layer)
 {
+	if(!layer)
+		return;
 	int index = pandaObjects.indexOf(layer);
 	if(index == -1)
 		return;
 	int nb = pandaObjects.size();
 	for(++index;index<nb;++index)
 	{
-		Layer* otherLayer = dynamic_cast<Layer*>(pandaObjects.at(index));
+		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects.at(index));
 		if(otherLayer)
 		{
 			pandaObjects.removeAll(layer);
@@ -718,14 +723,16 @@ void PandaDocument::moveLayerUp(Layer* layer)
 	}
 }
 
-void PandaDocument::moveLayerDown(Layer* layer)
+void PandaDocument::moveLayerDown(PandaObject *layer)
 {
+	if(!layer)
+		return;
 	int index = pandaObjects.indexOf(layer);
 	if(index == -1)
 		return;
 	for(--index;index>=0;--index)
 	{
-		Layer* otherLayer = dynamic_cast<Layer*>(pandaObjects.at(index));
+		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects.at(index));
 		if(otherLayer)
 		{
 			pandaObjects.removeAll(layer);

@@ -12,25 +12,48 @@ namespace panda
 
 class Renderer;
 
-class Layer : public DockObject
+class BaseLayer
+{
+public:
+	virtual void updateLayer(PandaDocument* doc);
+	virtual void mergeLayer(QPainter* docPainter);
+
+	virtual QList<Renderer*> getRenderers() = 0;
+
+	virtual QString getLayerName() const = 0;
+	virtual void setLayerName(QString name) = 0;
+
+	virtual int getCompositionMode() const = 0;
+	virtual void setCompositionMode(int mode) = 0;
+
+	virtual double getOpacity() const = 0;
+	virtual void setOpacity(double opa) = 0;
+
+	virtual Data<QImage>* getImage() = 0;
+};
+
+class Layer : public DockObject, public BaseLayer
 {
 public:
     explicit Layer(PandaDocument *parent = 0);
 
     virtual void update();
-    virtual void mergeLayer(QPainter* docPainter);
 	virtual bool accepts(DockableObject* dockable) const;
 
-	virtual QString getLayerName();
+	virtual QList<Renderer*> getRenderers();
+
+	virtual QString getLayerName() const;
 	virtual void setLayerName(QString name);
 
-	virtual int getCompositionMode();
+	virtual int getCompositionMode() const;
 	virtual void setCompositionMode(int mode);
 
-	virtual double getOpacity();
+	virtual double getOpacity() const;
 	virtual void setOpacity(double opa);
 
-	virtual void postCreate(PandaDocument* doc);
+	virtual Data<QImage>* getImage();
+
+	virtual void postCreate();
 
 protected:
 	Data<QString> layerName;
