@@ -21,19 +21,7 @@ public:
 
 		image.setDisplayed(false);
 	}
-/*
-	virtual void dataSetParent(BaseData* data, BaseData* parent)
-	{
-		if(data == &image && parent == NULL)
-		{
-			QImage& img = *image.beginEdit();
-			img = QImage();
-			image.endEdit();
-		}
 
-		data->setParent(parent);
-	}
-*/
 	void update()
 	{
 		const QImage& img = image.getValue();

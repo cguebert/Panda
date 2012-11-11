@@ -91,7 +91,8 @@ SOURCES       = main.cpp \
     modules/math/point/BezierSpline.cpp \
     ui/GroupObjectDrawStruct.cpp \
     ui/EditGroupDialog.cpp \
-    ui/LayersTab.cpp
+    ui/LayersTab.cpp \
+    modules/modifiers/point/RandomDisplacement.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0
