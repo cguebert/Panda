@@ -657,8 +657,9 @@ void GraphView::moveSelectedToCenter()
         while(iter.hasNext())
         {
             panda::PandaObject* object = iter.next();
-			// Do not move dockable objects, their parent dock move them already
-			if(!dynamic_cast<panda::DockableObject*>(object))
+			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
+			// Do not move (docked) dockable objects, their parent dock move them already
+			if(!dockable || dockable->getParentDock() == dockable->getDefaultDock())
 				objectDrawStructs[object]->move(delta);
         }
 

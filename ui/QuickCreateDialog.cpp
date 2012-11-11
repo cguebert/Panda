@@ -44,7 +44,8 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 	while(iter.hasNext())
 	{
 		iter.next();
-		menuStringsList << iter.value()->menuDisplay;
+		if(!iter.value()->hidden)
+			menuStringsList << iter.value()->menuDisplay;
 	}
 	listWidget->addItems(menuStringsList);
 }
