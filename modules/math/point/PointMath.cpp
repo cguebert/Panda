@@ -55,6 +55,53 @@ int PointMath_AdditionClass = RegisterObject("Math/Point/Addition").setClass<Poi
 
 //*************************************************************************//
 
+class PointMath_Substraction : public PandaObject
+{
+public:
+	PointMath_Substraction(PandaDocument *doc)
+		: PandaObject(doc)
+		, inputA(initData(&inputA, "point 1", "First point"))
+		, inputB(initData(&inputB, "point 2", "Second point"))
+		, result(initData(&result, "result", "Result of the substraction"))
+	{
+		addInput(&inputA);
+		addInput(&inputB);
+
+		addOutput(&result);
+	}
+
+	void update()
+	{
+		QVector<QPointF>& res = *result.beginEdit();
+		res.clear();
+
+		const QVector<QPointF>& valA = inputA.getValue();
+		const QVector<QPointF>& valB = inputB.getValue();
+		int nbA = valA.size(), nbB = valB.size();
+
+		if(nbA && nbB)
+		{
+			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
+			else if(nbB < nbA && nbB > 1)	nbA = nbB;
+			int nb = qMax(nbA, nbB);
+			res.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				res[i] = valA[i%nbA] - valB[i%nbB];
+		}
+
+		result.endEdit();
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<QPointF> > inputA, inputB, result;
+};
+
+int PointMath_SubstractionClass = RegisterObject("Math/Point/Substraction").setClass<PointMath_Substraction>().setName("Sub points").setDescription("Compute the substraction of 2 points");
+
+//*************************************************************************//
+
 class PointMath_Scale : public PandaObject
 {
 public:
@@ -103,6 +150,57 @@ protected:
 };
 
 int PointMath_ScaleClass = RegisterObject("Math/Point/Multiply").setClass<PointMath_Scale>().setName("Scale point").setDescription("Multiply a point by a real");
+
+//*************************************************************************//
+
+class PointMath_Division : public PandaObject
+{
+public:
+	PointMath_Division(PandaDocument *doc)
+		: PandaObject(doc)
+		, input(initData(&input, "point", "Point value to multiply"))
+		, result(initData(&result, "result", "Result of the multiplication of the point by the real"))
+		, factor(initData(&factor, "factor", "Real by which to divide the point"))
+	{
+		addInput(&input);
+		addInput(&factor);
+
+		factor.beginEdit()->append(1.0);
+		factor.endEdit();
+
+		addOutput(&result);
+	}
+
+	void update()
+	{
+		QVector<QPointF>& res = *result.beginEdit();
+		res.clear();
+
+		const QVector<QPointF>& points = input.getValue();
+		const QVector<double>& reals = factor.getValue();
+		int nbP = points.size(), nbR = reals.size();
+
+		if(nbP && nbR)
+		{
+			if(nbR < nbP && nbR > 1)		nbP = nbR;	// Either 1 real, or equal nb of reals & points
+			else if(nbP < nbR && nbP > 1)	nbR = nbP;
+			int nb = qMax(nbP, nbR);
+			res.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				res[i] = points[i%nbP] / reals[i%nbR];
+		}
+
+		result.endEdit();
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<QPointF> > input, result;
+	Data< QVector<double> > factor;
+};
+
+int PointMath_DivisionClass = RegisterObject("Math/Point/Division").setClass<PointMath_Division>().setName("Divide point").setDescription("Divide a point by a real");
 
 //*************************************************************************//
 
