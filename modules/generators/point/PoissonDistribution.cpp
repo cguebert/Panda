@@ -16,7 +16,6 @@ class GeneratorPoints_Poisson : public PandaObject
 public:
 	GeneratorPoints_Poisson(PandaDocument *doc)
 		: PandaObject(doc)
-		, document(doc)
 		, nbPoints(initData(&nbPoints, 10, "# points", "Number of points generated"))
 		, seed(initData(&seed, 0, "seed", "Seed for the random points generator"))
 		, samples(initData(&samples, 20, "samples", "Number of samples to test (higher means tighter, but longer generation)"))
@@ -45,7 +44,7 @@ public:
 		rnd.seed(seed.getValue());
 		QVector<QPointF>& valPoints = *points.beginEdit();
 		valPoints.clear();
-		QSize size = document->getRenderSize();
+		QSize size = parentDocument->getRenderSize();
 		QRectF area = QRectF(0, 0, size.width()-1, size.height()-1);
 		grid.initGrid(area, minimumDistance.getValue() / sqrt(2.0));
 
@@ -88,7 +87,6 @@ protected:
 	helper::RandomGenerator rnd;
 	helper::PointsGrid grid;
 
-	PandaDocument *document;
 	Data<int> nbPoints, seed, samples;
 	Data<double> minimumDistance;
 	Data< QVector<QPointF> > points;
