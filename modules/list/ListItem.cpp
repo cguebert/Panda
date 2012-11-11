@@ -55,7 +55,6 @@ public:
 	}
 
 protected:
-	int tempSize;
     Data< QVector<int> > indexData;
     GenericVectorData generic;
 };

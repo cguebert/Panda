@@ -93,7 +93,9 @@ SOURCES       = main.cpp \
     ui/EditGroupDialog.cpp \
     ui/LayersTab.cpp \
     modules/modifiers/point/RandomDisplacement.cpp \
-    modules/math/point/NearestPoint.cpp
+    modules/math/point/NearestPoint.cpp \
+    modules/list/FindItem.cpp \
+    modules/list/ReplaceItem.cpp
 RESOURCES     = panda.qrc
 INCLUDEPATH = . \
 	../boost_1_51_0
