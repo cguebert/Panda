@@ -29,8 +29,6 @@ public:
 
 	void update()
 	{
-		std::cout << parentDocument->getAnimationTime() << std::endl;
-
 		const QVector<QPointF>& inPts = input.getValue();
 		const QVector<QPointF>& searchPts = points.getValue();
 		int nb = inPts.size();

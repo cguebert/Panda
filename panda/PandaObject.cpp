@@ -7,6 +7,7 @@ namespace panda {
 PandaObject::PandaObject(QObject *parent)
     : QObject(parent)
 	, doEmitModified(true)
+	, isUpdating(false)
 {
 	parentDocument = dynamic_cast<PandaDocument*>(parent);
 }
@@ -52,6 +53,20 @@ void PandaObject::addOutput(BaseData* data)
 void PandaObject::update()
 {
     this->cleanDirty();
+}
+
+void PandaObject::updateIfDirty() const
+{
+	if(isDirty())
+	{
+		if(!isUpdating)
+		{
+			isUpdating = true;
+			const_cast<PandaObject*>(this)->update();
+			const_cast<PandaObject*>(this)->cleanDirty();
+			isUpdating = false;
+		}
+	}
 }
 
 void PandaObject::setDirtyValue()

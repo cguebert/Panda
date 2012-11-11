@@ -58,6 +58,7 @@ public:
 	virtual void postCreate() { }
     virtual void reset() { }
     virtual void update();
+	virtual void updateIfDirty() const;
     virtual void setDirtyValue();
 
     virtual void save(QDataStream& out);
@@ -77,6 +78,7 @@ protected:
     QMap<QString, BaseData*> datasMap;
     quint32 index;
 	bool doEmitModified;
+	mutable bool isUpdating;
 	PandaDocument* parentDocument;
 
     void setInternalData(const QString& newName, const quint32 &newIndex);

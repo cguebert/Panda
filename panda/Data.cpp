@@ -558,7 +558,7 @@ void copyValue(Data<T>* data, const BaseData* parent)
 }
 
 template<class T>
-void Data<T>::copyValueFrom(const BaseData* parent) { copyValue(this, parent); }
+void Data<T>::copyValueFrom(const BaseData* parent) { copyValue(this, parent); this->isValueSet = true; }
 
 //***************************************************************//
 
