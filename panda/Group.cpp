@@ -97,7 +97,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
     while(iter.hasNext())
     {
         PandaObject* object = iter.next();
-        group->objects.append(object);
+		group->addObject(object);
         object->setParent(group);
 
         // Storing the position of this object in respect to the group object
@@ -222,6 +222,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 				docks.append(dock);
 			else
 			{
+				group->removeObject(object);
 				doc->doAddObject(object);
 				doc->selectionAdd(object);
 				object->setParent(doc);
@@ -237,6 +238,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		while(dockIter.hasNext())
 		{
 			PandaObject* object = dockIter.next();
+			group->removeObject(object);
 			doc->doAddObject(object);
 			doc->selectionAdd(object);
 			object->setParent(doc);
@@ -661,6 +663,11 @@ void Group::load(QTextStream& in)
     emit modified(this);
 }
 
+void Group::addObject(PandaObject* obj)
+{
+	objects.append(obj);
+}
+
 QString Group::findAvailableDataName(QString baseName, BaseData *data)
 {
 	QString name = baseName;
@@ -709,8 +716,8 @@ GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 	: Group(parent)
 	, layer(NULL)
 	, image(initData(&image, "image", "Image created by the renderers connected to this layer"))
-	, compositionMode(initData(&compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for lsit of modes)"))
-	, opacity(initData(&opacity, 1.0, "opacity", "Set the opacity of the layer"))
+	, compositionMode(0)
+	, opacity(1.0)
 {
 	addOutput((DataNode*)parent);
 }
@@ -718,20 +725,6 @@ GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 void GroupWithLayer::setLayer(Layer* newLayer)
 {
 	this->layer = newLayer;
-	if(layer)
-	{
-		removeData(&image);
-		removeData(&compositionMode);
-		removeData(&opacity);
-	}
-	else
-	{
-		addInput(&opacity);
-		addInput(&compositionMode);
-
-		addOutput(&image);
-		image.setDisplayed(false);
-	}
 }
 
 void GroupWithLayer::update()
@@ -779,7 +772,7 @@ int GroupWithLayer::getCompositionMode() const
 	if(layer)
 		return layer->getCompositionMode();
 	else
-		return compositionMode.getValue();
+		return compositionMode;
 }
 
 void GroupWithLayer::setCompositionMode(int mode)
@@ -787,7 +780,13 @@ void GroupWithLayer::setCompositionMode(int mode)
 	if(layer)
 		layer->setCompositionMode(mode);
 	else
-		compositionMode.setValue(mode);
+	{
+		if(mode != compositionMode)
+		{
+			compositionMode = mode;
+			setDirtyValue();
+		}
+	}
 }
 
 double GroupWithLayer::getOpacity() const
@@ -795,7 +794,7 @@ double GroupWithLayer::getOpacity() const
 	if(layer)
 		return layer->getOpacity();
 	else
-		return opacity.getValue();
+		return opacity;
 }
 
 void GroupWithLayer::setOpacity(double opa)
@@ -803,7 +802,13 @@ void GroupWithLayer::setOpacity(double opa)
 	if(layer)
 		layer->setOpacity(opa);
 	else
-		opacity.setValue(opa);
+	{
+		if(opa != opacity)
+		{
+			opacity = opa;
+			setDirtyValue();
+		}
+	}
 }
 
 Data<QImage>* GroupWithLayer::getImage()
@@ -812,6 +817,30 @@ Data<QImage>* GroupWithLayer::getImage()
 		return layer->getImage();
 	else
 		return &image;
+}
+
+void GroupWithLayer::addObject(PandaObject* obj)
+{
+	Group::addObject(obj);
+
+	Layer* defaultLayer = parentDocument->getDefaultLayer();
+	Renderer* renderer = dynamic_cast<Renderer*>(obj);
+	if(renderer)
+	{
+		if(renderer->getParentDock() == defaultLayer)
+			defaultLayer->removeDockable(renderer);
+		renderer->setParentDock(NULL);
+		addInput((DataNode*)renderer);
+	}
+}
+
+void GroupWithLayer::removeObject(PandaObject* obj)
+{
+	Group::removeObject(obj);
+
+	Renderer* renderer = dynamic_cast<Renderer*>(obj);
+	if(renderer && !renderer->getParentDock())
+		parentDocument->getDefaultLayer()->addDockable(renderer);
 }
 
 int GroupWithLayerClass = RegisterObject("GroupWithLayer").setClass<GroupWithLayer>().setDescription("Groups many object into a single one (version with a layer)").setHidden(true);

@@ -16,9 +16,9 @@ void Renderer::setDirtyValue()
 	emit dirty(this);
 }
 
-DockObject* Renderer::getDefaultDock(PandaDocument* doc)
+DockObject* Renderer::getDefaultDock()
 {
-	return doc->getDefaultLayer();
+	return parentDocument->getDefaultLayer();
 }
 
 } // namespace panda

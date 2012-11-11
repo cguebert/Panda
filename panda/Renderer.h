@@ -16,7 +16,7 @@ class Renderer : public DockableObject
 {
 public:
 	explicit Renderer(PandaDocument* doc);
-	virtual DockObject* getDefaultDock(PandaDocument* doc);
+	virtual DockObject* getDefaultDock();
 	virtual void setDirtyValue();
 
 	virtual void render(QPainter* /*painter*/) = 0;

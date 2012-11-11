@@ -38,6 +38,9 @@ protected:
     QMap<PandaObject*, QPointF> positions;
     QList< QSharedPointer<BaseData> > groupDatas;
 
+	virtual void addObject(PandaObject* obj);
+	virtual void removeObject(PandaObject*) {}
+
     BaseData* duplicateData(BaseData* data);
 	QString findAvailableDataName(QString baseName, BaseData* data=NULL);
 };
@@ -64,9 +67,12 @@ public:
 	virtual Data<QImage>* getImage();
 
 protected:
+	virtual void addObject(PandaObject* obj);
+	virtual void removeObject(PandaObject* obj);
+
 	Data<QImage> image;
-	Data<int> compositionMode;
-	Data<double> opacity;
+	int compositionMode;
+	double opacity;
 
 	Layer* layer;
 };
