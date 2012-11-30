@@ -97,5 +97,6 @@ SOURCES       = main.cpp \
     modules/list/FindItem.cpp \
     modules/list/ReplaceItem.cpp
 RESOURCES     = panda.qrc
+win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
 	../boost_1_51_0
