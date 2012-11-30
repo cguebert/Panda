@@ -7,6 +7,8 @@ namespace panda {
 class GeneratorPoint_MouseInfo : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorPoint_MouseInfo, PandaObject)
+
 	GeneratorPoint_MouseInfo(PandaDocument *doc)
 		: PandaObject(doc)
 		, document(doc)

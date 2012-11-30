@@ -8,6 +8,8 @@ namespace panda {
 class ModifierPoints_Union : public PandaObject
 {
 public:
+	PANDA_CLASS(ModifierPoints_Union, PandaObject)
+
 	ModifierPoints_Union(PandaDocument *doc)
 		: PandaObject(doc)
 		, image(initData(&image, "image", "Image used to select valid points"))

@@ -15,6 +15,8 @@ class Layer;
 class Renderer : public DockableObject
 {
 public:
+	PANDA_CLASS(Renderer, DockableObject)
+
 	explicit Renderer(PandaDocument* doc);
 	virtual DockObject* getDefaultDock();
 	virtual void setDirtyValue();

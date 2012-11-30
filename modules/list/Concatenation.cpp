@@ -8,6 +8,8 @@ class ListConcatenation : public GenericObject
 {
 	GENERIC_OBJECT(ListConcatenation, allDataTypes)
 public:
+	PANDA_CLASS(ListConcatenation, GenericObject)
+
 	ListConcatenation(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the first list"))

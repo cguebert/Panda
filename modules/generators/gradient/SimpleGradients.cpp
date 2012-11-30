@@ -8,6 +8,8 @@ namespace panda {
 class GradientsSimple_2Colors : public PandaObject
 {
 public:
+	PANDA_CLASS(GradientsSimple_2Colors, PandaObject)
+
 	GradientsSimple_2Colors(PandaDocument *doc)
 		: PandaObject(doc)
 		, colorA(initData(&colorA, QColor(0,0,0), "color 1", "Start color of the gradient"))

@@ -8,6 +8,8 @@ namespace panda {
 class Curve_BezierSpline : public PandaObject
 {
 public:
+	PANDA_CLASS(Curve_BezierSpline, PandaObject)
+
 	Curve_BezierSpline(PandaDocument *doc)
 		: PandaObject(doc)
 		, steps(initData(&steps, 4, "steps", "Number of points on each segment"))

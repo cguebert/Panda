@@ -8,6 +8,8 @@ class FindItem : public GenericObject
 {
 	GENERIC_OBJECT(FindItem, allDataTypes)
 public:
+	PANDA_CLASS(FindItem, GenericObject)
+
 	FindItem(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the lists in which to look for the values"))

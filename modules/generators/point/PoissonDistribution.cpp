@@ -14,6 +14,8 @@ namespace panda {
 class GeneratorPoints_Poisson : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorPoints_Poisson, PandaObject)
+
 	GeneratorPoints_Poisson(PandaDocument *doc)
 		: PandaObject(doc)
 		, nbPoints(initData(&nbPoints, 10, "# points", "Number of points generated"))

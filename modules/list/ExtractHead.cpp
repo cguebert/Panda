@@ -8,6 +8,8 @@ class ExtractHead : public GenericObject
 {
 	GENERIC_OBJECT(ExtractHead, allDataTypes)
 public:
+	PANDA_CLASS(ExtractHead, GenericObject)
+
 	ExtractHead(PandaDocument *doc)
 		: GenericObject(doc)
 		, value(initData(&value, 1, "head", "This number of items will be extracted from the start of the list"))

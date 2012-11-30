@@ -9,6 +9,8 @@ class List2Anim : public GenericObject
 {
 	GENERIC_OBJECT(List2Anim, allAnimationTypes)
 public:
+	PANDA_CLASS(List2Anim, GenericObject)
+
     List2Anim(PandaDocument *doc)
 		: GenericObject(doc)
 		, interval(initData(&interval, 1.0, "interval", "Interval between 2 animation keys"))

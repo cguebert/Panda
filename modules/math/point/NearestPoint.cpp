@@ -9,6 +9,8 @@ namespace panda {
 class PointListMath_Nearest : public PandaObject
 {
 public:
+	PANDA_CLASS(PointListMath_Nearest, PandaObject)
+
 	PointListMath_Nearest(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "input", "List of points to analyse"))

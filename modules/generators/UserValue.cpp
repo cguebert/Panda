@@ -15,6 +15,8 @@ template <class T>
 class GeneratorUser : public PandaObject
 {
 public:
+	PANDA_CLASS(PANDA_TEMPLATE(GeneratorUser, T), PandaObject)
+
     GeneratorUser(PandaDocument *doc)
         : PandaObject(doc)
         , userValue(initData(&userValue, T(), "value", "The value you want to store"))

@@ -8,6 +8,8 @@ class FillList  : public GenericObject
 {
 	GENERIC_OBJECT(FillList, allDataTypes)
 public:
+	PANDA_CLASS(FillList, GenericObject)
+
     FillList(PandaDocument *doc)
 		: GenericObject(doc)
         , size(initData(&size, 10, "size", "Size of the list to be created"))

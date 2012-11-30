@@ -10,6 +10,8 @@ namespace panda {
 class DoubleListMath_SumMeanStdDev : public PandaObject
 {
 public:
+	PANDA_CLASS(DoubleListMath_SumMeanStdDev, PandaObject)
+
 	DoubleListMath_SumMeanStdDev(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "input", "List of reals to analyse"))
@@ -82,6 +84,8 @@ int DoubleListMath_SumMeanStdDevClass = RegisterObject("Math/List of reals/Sum, 
 class DoubleListMath_Median : public PandaObject
 {
 public:
+	PANDA_CLASS(DoubleListMath_Median, PandaObject)
+
 	DoubleListMath_Median(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "input", "List of reals to analyse"))
@@ -126,6 +130,8 @@ int DoubleListMath_MedianClass = RegisterObject("Math/List of reals/Median").set
 class DoubleListMath_Sort : public PandaObject
 {
 public:
+	PANDA_CLASS(DoubleListMath_Sort, PandaObject)
+
 	DoubleListMath_Sort(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "input", "List of reals to sort"))

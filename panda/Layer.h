@@ -35,6 +35,8 @@ public:
 class Layer : public DockObject, public BaseLayer
 {
 public:
+	PANDA_CLASS(Layer, DockObject)
+
     explicit Layer(PandaDocument *parent = 0);
 
     virtual void update();

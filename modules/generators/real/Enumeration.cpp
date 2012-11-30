@@ -6,6 +6,8 @@ namespace panda {
 class GeneratorReals_Enumeration : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorReals_Enumeration, PandaObject)
+
 	GeneratorReals_Enumeration(PandaDocument *doc)
 		: PandaObject(doc)
 		, nbNumbers(initData(&nbNumbers, 10, "# numbers", "How many numbers to generate"))

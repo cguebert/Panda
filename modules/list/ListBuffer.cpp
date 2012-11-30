@@ -9,6 +9,8 @@ class ListBuffer : public GenericObject
 	GENERIC_OBJECT(ListBuffer, allDataTypes)
 
 public:
+	PANDA_CLASS(ListBuffer, GenericObject)
+
 	ListBuffer(PandaDocument *doc)
 		: GenericObject(doc)
 		, resetValues(false)

@@ -8,6 +8,8 @@ class ReplaceItem : public GenericObject
 {
 	GENERIC_OBJECT(ReplaceItem, allDataTypes)
 public:
+	PANDA_CLASS(ReplaceItem, GenericObject)
+
 	ReplaceItem(PandaDocument *doc)
 		: GenericObject(doc)
         , generic(initData(&generic, "input", "Connect here the lists to get the items from"))

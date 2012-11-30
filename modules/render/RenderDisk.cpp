@@ -11,6 +11,8 @@ namespace panda {
 class RenderDisk : public Renderer
 {
 public:
+	PANDA_CLASS(RenderDisk, Renderer)
+
 	RenderDisk(PandaDocument *parent)
 		: Renderer(parent)
 		, center(initData(&center, "center", "Center position of the disk"))

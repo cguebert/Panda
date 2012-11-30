@@ -14,6 +14,8 @@ class DockableObject;
 class DockObject : public PandaObject
 {
 public:
+	PANDA_CLASS(DockObject, PandaObject)
+
 	DockObject(QObject *parent);
 	virtual ~DockObject();
 
@@ -35,6 +37,8 @@ protected:
 class DockableObject : public PandaObject
 {
 public:
+	PANDA_CLASS(DockableObject, PandaObject)
+
 	DockableObject(QObject *parent);
 	virtual void postCreate();
 	virtual void setParentDock(DockObject* dock);

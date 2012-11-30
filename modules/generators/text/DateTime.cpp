@@ -8,6 +8,8 @@ namespace panda {
 class GeneratorText_DateTime : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorText_DateTime, PandaObject)
+
 	GeneratorText_DateTime(PandaDocument *doc)
 		: PandaObject(doc)
 		, format(initData(&format, QString("hh:mm:ss"), "format", "Format used to create the text"))

@@ -19,6 +19,8 @@ class Group : public PandaObject
 	friend class GroupObjectDrawStruct;
 	friend class EditGroupDialog;
 public:
+	PANDA_CLASS(Group, PandaObject)
+
     explicit Group(PandaDocument *parent = 0);
 	virtual ~Group();
 

@@ -10,6 +10,8 @@ namespace panda {
 class RenderLine : public Renderer
 {
 public:
+	PANDA_CLASS(RenderLine, Renderer)
+
 	RenderLine(PandaDocument *parent)
 		: Renderer(parent)
 		, inputA(initData(&inputA, "point 1", "Start of the line"))
@@ -58,6 +60,8 @@ int RenderLineClass = RegisterObject("Render/Line").setClass<RenderLine>().setDe
 class RenderConnectedLines : public Renderer
 {
 public:
+	PANDA_CLASS(RenderConnectedLines, Renderer)
+
 	RenderConnectedLines(PandaDocument *parent)
 		: Renderer(parent)
 		, input(initData(&input, "points", "Vertices of the connected lines"))

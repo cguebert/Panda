@@ -18,6 +18,8 @@ class PandaDocument : public PandaObject
 {
     Q_OBJECT
 public:
+	PANDA_CLASS(PandaDocument, PandaObject)
+
     typedef QListIterator<PandaObject*> ObjectsIterator;
     typedef QListIterator<Layer*> LayersIterator;
 

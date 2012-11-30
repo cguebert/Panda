@@ -9,6 +9,8 @@ namespace panda {
 class GeneratorPoints_Random : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorPoints_Random, PandaObject)
+
 	GeneratorPoints_Random(PandaDocument *doc)
 		: PandaObject(doc)
 		, document(doc)

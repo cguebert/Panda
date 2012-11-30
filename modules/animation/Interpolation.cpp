@@ -12,6 +12,8 @@ template<class T>
 class AnimationInterpolation : public PandaObject
 {
 public:
+	PANDA_CLASS(AnimationInterpolation, PandaObject)
+
     AnimationInterpolation(PandaDocument *doc)
         : PandaObject(doc)
         , inputA(initData(&inputA, "from", "Start value of the interpolation"))

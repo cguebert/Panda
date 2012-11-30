@@ -7,6 +7,8 @@ namespace panda {
 class GeneratorPoints_Compose : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorPoints_Compose, PandaObject)
+
 	GeneratorPoints_Compose(PandaDocument *doc)
 		: PandaObject(doc)
 		, ptX(initData(&ptX, "x", "Horizontal position of the point"))
@@ -46,6 +48,8 @@ int GeneratorPoints_ComposeClass = RegisterObject("Generator/Point/Create point"
 class GeneratorPoints_Decompose : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorPoints_Decompose, PandaObject)
+
 	GeneratorPoints_Decompose(PandaDocument *doc)
 		: PandaObject(doc)
 		, ptX(initData(&ptX, "x", "Horizontal position of the point"))

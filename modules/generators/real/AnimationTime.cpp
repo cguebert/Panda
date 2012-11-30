@@ -7,6 +7,8 @@ namespace panda {
 class GeneratorNumber_AnimationTime : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorNumber_AnimationTime, PandaObject)
+
 	GeneratorNumber_AnimationTime(PandaDocument *doc)
 		: PandaObject(doc)
 		, document(doc)

@@ -9,6 +9,8 @@ namespace panda {
 class PointListMath_Center : public PandaObject
 {
 public:
+	PANDA_CLASS(PointListMath_Center, PandaObject)
+
 	PointListMath_Center(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "points", "List of points to analyse"))
@@ -85,6 +87,8 @@ int PointListMath_CenterClass = RegisterObject("Math/List of points/Mean positio
 class PointListMath_Length : public PandaObject
 {
 public:
+	PANDA_CLASS(PointListMath_Length, PandaObject)
+
 	PointListMath_Length(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "points", "List of points to analyse"))

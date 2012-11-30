@@ -7,6 +7,8 @@ namespace panda {
 class GeneratorRectangles_Compose : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorRectangles_Compose, PandaObject)
+
 	GeneratorRectangles_Compose(PandaDocument *doc)
 		: PandaObject(doc)
 		, left(initData(&left, "left", "Left boundary of the rectangle"))
@@ -57,6 +59,8 @@ int GeneratorRectangles_ComposeClass = RegisterObject("Generator/Rectangle/Recta
 class GeneratorRectangles_ComposeCenter : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorRectangles_ComposeCenter, PandaObject)
+
 	GeneratorRectangles_ComposeCenter(PandaDocument *doc)
 		: PandaObject(doc)
 		, center(initData(&center, "center", "Center of the rectangle"))
@@ -97,6 +101,8 @@ int GeneratorRectangles_ComposeCenterClass = RegisterObject("Generator/Rectangle
 class GeneratorRectangles_Decompose : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorRectangles_Decompose, PandaObject)
+
 	GeneratorRectangles_Decompose(PandaDocument *doc)
 		: PandaObject(doc)
 		, left(initData(&left, "left", "Left boundary of the rectangle"))
@@ -156,6 +162,8 @@ int GeneratorRectangles_DecomposeClass = RegisterObject("Generator/Rectangle/Rec
 class GeneratorRectangles_DecomposeCenter : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorRectangles_DecomposeCenter, PandaObject)
+
 	GeneratorRectangles_DecomposeCenter(PandaDocument *doc)
 		: PandaObject(doc)
 		, center(initData(&center, "center", "Center of the rectangle"))

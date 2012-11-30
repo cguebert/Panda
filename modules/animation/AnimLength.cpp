@@ -9,6 +9,8 @@ class AnimLength : public GenericObject
 {
 	GENERIC_OBJECT(AnimLength, allAnimationTypes)
 public:
+	PANDA_CLASS(AnimLength, GenericObject)
+
 	AnimLength(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the animations to analyse"))

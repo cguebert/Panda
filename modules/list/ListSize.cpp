@@ -8,6 +8,8 @@ class ListSize : public GenericObject
 {
 	GENERIC_OBJECT(ListSize, allDataTypes)
 public:
+	PANDA_CLASS(ListSize, GenericObject)
+
 	ListSize(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the lists to analyse"))

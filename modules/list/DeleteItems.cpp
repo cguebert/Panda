@@ -9,6 +9,8 @@ class DeleteItems : public GenericObject
 {
 	GENERIC_OBJECT(DeleteItems, allDataTypes)
 public:
+	PANDA_CLASS(DeleteItems, GenericObject)
+
 	DeleteItems(PandaDocument *doc)
 		: GenericObject(doc)
 		, indices(initData(&indices, "indices", "Indices of items to be removed from the list"))

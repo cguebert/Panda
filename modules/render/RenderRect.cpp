@@ -10,6 +10,8 @@ namespace panda {
 class RenderRect : public Renderer
 {
 public:
+	PANDA_CLASS(RenderRect, Renderer)
+
 	RenderRect(PandaDocument *parent)
 		: Renderer(parent)
 		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))

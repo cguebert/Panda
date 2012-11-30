@@ -11,6 +11,8 @@ namespace panda {
 class ModifierPoints_RandomDisplacement : public PandaObject
 {
 public:
+	PANDA_CLASS(ModifierPoints_RandomDisplacement, PandaObject)
+
 	ModifierPoints_RandomDisplacement(PandaDocument *doc)
 		: PandaObject(doc)
 		, inputPoints(initData(&inputPoints, "input", "List of points to move"))

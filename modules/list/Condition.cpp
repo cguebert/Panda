@@ -8,6 +8,8 @@ class ListCondition : public GenericObject
 {
 	GENERIC_OBJECT(ListCondition, allDataTypes)
 public:
+	PANDA_CLASS(ListCondition, GenericObject)
+
 	ListCondition(PandaDocument *doc)
 		: GenericObject(doc)
 		, control(initData(&control, 1, "control", "If this value is non zero copy the first list, otherwise copy the second"))

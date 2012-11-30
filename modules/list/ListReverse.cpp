@@ -8,6 +8,8 @@ class ListReverse : public GenericObject
 {
 	GENERIC_OBJECT(ListReverse, allDataTypes)
 public:
+	PANDA_CLASS(ListReverse, GenericObject)
+
 	ListReverse(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the list whose items to reverse"))

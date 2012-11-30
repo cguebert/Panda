@@ -8,6 +8,8 @@ namespace panda {
 class GeneratorReals_Random : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorReals_Random, PandaObject)
+
     GeneratorReals_Random(PandaDocument *doc)
         : PandaObject(doc)
         , nbNumbers(initData(&nbNumbers, 10, "# numbers", "How many numbers to generate"))

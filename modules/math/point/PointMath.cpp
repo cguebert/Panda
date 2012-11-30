@@ -11,6 +11,8 @@ namespace panda {
 class PointMath_Addition : public PandaObject
 {
 public:
+	PANDA_CLASS(PointMath_Addition, PandaObject)
+
     PointMath_Addition(PandaDocument *doc)
         : PandaObject(doc)
         , inputA(initData(&inputA, "point 1", "First point"))
@@ -58,6 +60,8 @@ int PointMath_AdditionClass = RegisterObject("Math/Point/Addition").setClass<Poi
 class PointMath_Substraction : public PandaObject
 {
 public:
+	PANDA_CLASS(PointMath_Substraction, PandaObject)
+
 	PointMath_Substraction(PandaDocument *doc)
 		: PandaObject(doc)
 		, inputA(initData(&inputA, "point 1", "First point"))
@@ -105,6 +109,8 @@ int PointMath_SubstractionClass = RegisterObject("Math/Point/Substraction").setC
 class PointMath_Scale : public PandaObject
 {
 public:
+	PANDA_CLASS(PointMath_Scale, PandaObject)
+
     PointMath_Scale(PandaDocument *doc)
         : PandaObject(doc)
         , input(initData(&input, "point", "Point value to multiply"))
@@ -156,6 +162,8 @@ int PointMath_ScaleClass = RegisterObject("Math/Point/Multiply").setClass<PointM
 class PointMath_Division : public PandaObject
 {
 public:
+	PANDA_CLASS(PointMath_Division, PandaObject)
+
 	PointMath_Division(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "point", "Point value to multiply"))
@@ -207,6 +215,8 @@ int PointMath_DivisionClass = RegisterObject("Math/Point/Division").setClass<Poi
 class PointMath_Distance : public PandaObject
 {
 public:
+	PANDA_CLASS(PointMath_Distance, PandaObject)
+
     PointMath_Distance(PandaDocument *doc)
         : PandaObject(doc)
         , inputA(initData(&inputA, "point 1", "First point"))
@@ -258,6 +268,8 @@ int PointMath_DistanceClass = RegisterObject("Math/Point/Distance").setClass<Poi
 class PointMath_Rotation : public PandaObject
 {
 public:
+	PANDA_CLASS(PointMath_Rotation, PandaObject)
+
     PointMath_Rotation(PandaDocument *doc)
         : PandaObject(doc)
         , input(initData(&input, "point", "Point to rotate"))

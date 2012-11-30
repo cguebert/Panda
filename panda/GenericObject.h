@@ -19,6 +19,8 @@ class GenericObject : public PandaObject
 {
 	friend class GenericObjectDrawStruct;
 public:
+	PANDA_CLASS(GenericObject, PandaObject)
+
 	struct GenericDataDefinition
 	{
 		GenericDataDefinition()

@@ -12,6 +12,8 @@ namespace panda {
 class RenderGradient_Horizontal : public Renderer
 {
 public:
+	PANDA_CLASS(RenderGradient_Horizontal, Renderer)
+
 	RenderGradient_Horizontal(PandaDocument *parent)
 		: Renderer(parent)
 		, document(parent)
@@ -46,6 +48,8 @@ int RenderGradient_HorizontalClass = RegisterObject("Render/Horizontal Gradient"
 class RenderGradient_Vertical : public Renderer
 {
 public:
+	PANDA_CLASS(RenderGradient_Vertical, Renderer)
+
 	RenderGradient_Vertical(PandaDocument *parent)
 		: Renderer(parent)
 		, document(parent)

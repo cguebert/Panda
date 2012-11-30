@@ -9,6 +9,8 @@ namespace panda {
 class DoubleMath_1Value : public PandaObject
 {
 public:
+	PANDA_ABSTRACT_CLASS(DoubleMath_1Value, PandaObject)
+
 	DoubleMath_1Value(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "input", "Operand of the operation"))
@@ -44,6 +46,8 @@ protected:
 class DoubleMath_2Values : public PandaObject
 {
 public:
+	PANDA_ABSTRACT_CLASS(DoubleMath_1Value, PandaObject)
+
 	DoubleMath_2Values(PandaDocument *doc)
 		: PandaObject(doc)
 		, inputA(initData(&inputA, "input 1", "First operand of the operation"))
@@ -91,6 +95,8 @@ protected:
 class DoubleMath_Add : public DoubleMath_2Values
 {
 public:
+	PANDA_CLASS(DoubleMath_Add, DoubleMath_2Values)
+
 	DoubleMath_Add(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
@@ -105,6 +111,8 @@ int DoubleMath_AddClass = RegisterObject("Math/Real/Addition").setClass<DoubleMa
 class DoubleMath_Sub : public DoubleMath_2Values
 {
 public:
+	PANDA_CLASS(DoubleMath_Sub, DoubleMath_2Values)
+
 	DoubleMath_Sub(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
@@ -119,6 +127,8 @@ int DoubleMath_SubClass = RegisterObject("Math/Real/Substraction").setClass<Doub
 class DoubleMath_Mult : public DoubleMath_2Values
 {
 public:
+	PANDA_CLASS(DoubleMath_Mult, DoubleMath_2Values)
+
 	DoubleMath_Mult(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
@@ -133,6 +143,8 @@ int DoubleMath_MultClass = RegisterObject("Math/Real/Multiplication").setClass<D
 class DoubleMath_Div : public DoubleMath_2Values
 {
 public:
+	PANDA_CLASS(DoubleMath_Div, DoubleMath_2Values)
+
 	DoubleMath_Div(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
@@ -147,6 +159,8 @@ int DoubleMath_DivClass = RegisterObject("Math/Real/Division").setClass<DoubleMa
 class DoubleMath_Mod : public DoubleMath_2Values
 {
 public:
+	PANDA_CLASS(DoubleMath_Mod, DoubleMath_2Values)
+
 	DoubleMath_Mod(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
@@ -161,6 +175,8 @@ int DoubleMath_ModClass = RegisterObject("Math/Real/Modulo").setClass<DoubleMath
 class DoubleMath_Abs : public DoubleMath_1Value
 {
 public:
+	PANDA_CLASS(DoubleMath_Abs, DoubleMath_1Value)
+
 	DoubleMath_Abs(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
@@ -175,6 +191,8 @@ int DoubleMath_AbsClass = RegisterObject("Math/Real/Absolute").setClass<DoubleMa
 class DoubleMath_Floor : public DoubleMath_1Value
 {
 public:
+	PANDA_CLASS(DoubleMath_Floor, DoubleMath_1Value)
+
 	DoubleMath_Floor(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
@@ -189,6 +207,8 @@ int DoubleMath_FloorClass = RegisterObject("Math/Real/Floor").setClass<DoubleMat
 class DoubleMath_Ceil : public DoubleMath_1Value
 {
 public:
+	PANDA_CLASS(DoubleMath_Ceil, DoubleMath_1Value)
+
 	DoubleMath_Ceil(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
@@ -203,6 +223,8 @@ int DoubleMath_CeilClass = RegisterObject("Math/Real/Ceiling").setClass<DoubleMa
 class DoubleMath_Round : public DoubleMath_1Value
 {
 public:
+	PANDA_CLASS(DoubleMath_Round, DoubleMath_1Value)
+
 	DoubleMath_Round(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
@@ -217,6 +239,8 @@ int DoubleMath_RoundClass = RegisterObject("Math/Real/Rounding").setClass<Double
 class DoubleMath_Power : public DoubleMath_2Values
 {
 public:
+	PANDA_CLASS(DoubleMath_Power, DoubleMath_2Values)
+
 	DoubleMath_Power(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
@@ -231,6 +255,8 @@ int DoubleMath_PowerClass = RegisterObject("Math/Real/Power").setClass<DoubleMat
 class DoubleMath_Sqrt : public DoubleMath_1Value
 {
 public:
+	PANDA_CLASS(DoubleMath_Sqrt, DoubleMath_1Value)
+
 	DoubleMath_Sqrt(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
@@ -245,6 +271,8 @@ int DoubleMath_SqrtClass = RegisterObject("Math/Real/Square root").setClass<Doub
 class DoubleMath_Min : public DoubleMath_2Values
 {
 public:
+	PANDA_CLASS(DoubleMath_Min, DoubleMath_2Values)
+
 	DoubleMath_Min(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
@@ -259,6 +287,8 @@ int DoubleMath_MinClass = RegisterObject("Math/Real/Minimum").setClass<DoubleMat
 class DoubleMath_Max : public DoubleMath_2Values
 {
 public:
+	PANDA_CLASS(DoubleMath_Max, DoubleMath_2Values)
+
 	DoubleMath_Max(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
@@ -273,6 +303,8 @@ int DoubleMath_MaxClass = RegisterObject("Math/Real/Maximum").setClass<DoubleMat
 class DoubleMath_Step : public DoubleMath_2Values
 {
 public:
+	PANDA_CLASS(DoubleMath_Step, DoubleMath_2Values)
+
 	DoubleMath_Step(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 

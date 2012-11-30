@@ -7,6 +7,8 @@ namespace panda {
 class GeneratorColors_ComposeRGB : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorColors_ComposeRGB, PandaObject)
+
 	GeneratorColors_ComposeRGB(PandaDocument *doc)
 		: PandaObject(doc)
 		, R(initData(&R, "r", "Red component of the color"))
@@ -60,6 +62,8 @@ int GeneratorColors_ComposeRGBClass = RegisterObject("Generator/Color/From RGB")
 class GeneratorColors_DecomposeRGB : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorColors_DecomposeRGB, PandaObject)
+
 	GeneratorColors_DecomposeRGB(PandaDocument *doc)
 		: PandaObject(doc)
 		, R(initData(&R, "r", "Red component of the color"))

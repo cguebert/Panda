@@ -9,6 +9,8 @@ class AnimValue : public GenericObject
 {
 	GENERIC_OBJECT(AnimValue, allAnimationTypes)
 public:
+	PANDA_CLASS(AnimValue, GenericObject)
+
     AnimValue(PandaDocument *doc)
 		: GenericObject(doc)
         , progress(initData(&progress, "progress", "Position inside the animation"))

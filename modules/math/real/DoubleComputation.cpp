@@ -9,6 +9,8 @@ namespace panda {
 class DoubleMath_SmoothStep : public PandaObject
 {
 public:
+	PANDA_CLASS(DoubleMath_SmoothStep, PandaObject)
+
 	DoubleMath_SmoothStep(PandaDocument *doc)
 		: PandaObject(doc)
 		, inputA(initData(&inputA, "min", "Start of the smooth step"))
@@ -76,6 +78,8 @@ int DoubleMath_SmoothStepClass = RegisterObject("Math/Real/Smooth Step").setClas
 class DoubleMath_RiseCount : public PandaObject
 {
 public:
+	PANDA_CLASS(DoubleMath_RiseCount, PandaObject)
+
 	DoubleMath_RiseCount(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "input", "Value to observe"))
@@ -133,6 +137,8 @@ int DoubleMath_RiseCountClass = RegisterObject("Math/Real/Rise count").setClass<
 class DoubleMath_FallCount : public PandaObject
 {
 public:
+	PANDA_CLASS(DoubleMath_FallCount, PandaObject)
+
 	DoubleMath_FallCount(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "input", "Value to observe"))
@@ -190,6 +196,8 @@ int DoubleMath_FallCountClass = RegisterObject("Math/Real/Fall count").setClass<
 class DoubleMath_Constrain : public PandaObject
 {
 public:
+	PANDA_CLASS(DoubleMath_Constrain, PandaObject)
+
 	DoubleMath_Constrain(PandaDocument *doc)
 		: PandaObject(doc)
 		, inputA(initData(&inputA, "min", "Minimum value"))
@@ -257,6 +265,8 @@ int DoubleMath_ConstrainClass = RegisterObject("Math/Real/Constrain").setClass<D
 class DoubleMath_Pulse : public PandaObject
 {
 public:
+	PANDA_CLASS(DoubleMath_Pulse, PandaObject)
+
 	DoubleMath_Pulse(PandaDocument *doc)
 		: PandaObject(doc)
 		, inputA(initData(&inputA, "min", "Minimum value"))

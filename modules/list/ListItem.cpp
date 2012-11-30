@@ -8,6 +8,8 @@ class ListItem : public GenericObject
 {
 	GENERIC_OBJECT(ListItem, allDataTypes)
 public:
+	PANDA_CLASS(ListItem, GenericObject)
+
     ListItem(PandaDocument *doc)
 		: GenericObject(doc)
         , indexData(initData(&indexData, "index", "0-based index of the items to extract from the lists"))

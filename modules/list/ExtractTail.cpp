@@ -8,6 +8,8 @@ class ExtractTail : public GenericObject
 {
 	GENERIC_OBJECT(ExtractTail, allDataTypes)
 public:
+	PANDA_CLASS(ExtractTail, GenericObject)
+
 	ExtractTail(PandaDocument *doc)
 		: GenericObject(doc)
 		, value(initData(&value, 1, "tail", "All items starting at this index will be extracted. If negative, extract this number of items instead."))

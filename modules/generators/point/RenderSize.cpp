@@ -7,6 +7,8 @@ namespace panda {
 class GeneratorPoint_RenderSize : public PandaObject
 {
 public:
+	PANDA_CLASS(GeneratorPoint_RenderSize, PandaObject)
+
 	GeneratorPoint_RenderSize(PandaDocument *doc)
 		: PandaObject(doc)
 		, document(doc)
