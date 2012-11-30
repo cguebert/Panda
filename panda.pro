@@ -25,7 +25,8 @@ HEADERS       = \
     ui/GenericObjectDrawStruct.h \
     ui/GroupObjectDrawStruct.h \
     ui/EditGroupDialog.h \
-    ui/LayersTab.h
+    ui/LayersTab.h \
+    panda/BaseClass.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -95,7 +96,8 @@ SOURCES       = main.cpp \
     modules/modifiers/point/RandomDisplacement.cpp \
     modules/math/point/NearestPoint.cpp \
     modules/list/FindItem.cpp \
-    modules/list/ReplaceItem.cpp
+    modules/list/ReplaceItem.cpp \
+    panda/BaseClass.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

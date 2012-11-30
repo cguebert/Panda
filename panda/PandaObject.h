@@ -2,6 +2,8 @@
 #define PANDAOBJECT_H
 
 #include <panda/Data.h>
+#include <panda/BaseClass.h>
+
 #include <QObject>
 #include <QSharedPointer>
 #include <QPointF>
@@ -17,6 +19,10 @@ class PandaObject : public QObject, public DataNode
 
 public:
     explicit PandaObject(QObject *parent = 0);
+
+	typedef TClass< PandaObject, void > MyClass;
+	static const MyClass* getClass() { return MyClass::getInstance(); }
+	virtual const BaseClass* getBaseClass() const { return getClass(); }
 
     QString getName() const;
     quint32 getIndex() const;
