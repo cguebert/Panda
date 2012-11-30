@@ -16,19 +16,6 @@ GenericObject::GenericObject(PandaDocument *parent)
 
 GenericObject::~GenericObject()
 {
-/*	foreach(CreatedDatasStructPtr createdDatasStruct, createdDatasStructs_)
-	{
-		foreach(BaseData* d, createdDatasStruct->datas)
-		{
-			removeData(d);
-			createdDatasMap_.remove(d);
-			delete d;
-		}
-
-		createdDatasStruct->datas.clear();
-		createdDatasStructs_.removeAll(createdDatasStruct);
-		delete createdDatasStruct;
-	}	*/
 }
 
 void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefinitionList &defList)

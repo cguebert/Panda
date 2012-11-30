@@ -7,7 +7,7 @@
 #include <QMap>
 #include <QSharedPointer>
 
-#include <boost/mpl/list.hpp>
+#include <boost/mpl/vector.hpp>
 #include <boost/mpl/for_each.hpp>
 
 class GenericObjectDrawStruct;
@@ -75,9 +75,9 @@ private:
 	QMap<BaseData*, CreatedDatasStructPtr> createdDatasMap_;
 };
 
-typedef boost::mpl::list<int, double, QColor, QPointF, QRectF, QString, QImage> allDataTypes;
-typedef boost::mpl::list<int, double, QColor, QPointF, QRectF> allNumericalTypes;
-typedef boost::mpl::list<double, QColor, QPointF> allAnimationTypes;
+typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString, QImage> allDataTypes;
+typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF> allNumericalTypes;
+typedef boost::mpl::vector<double, QColor, QPointF> allAnimationTypes;
 
 #define GENERIC_OBJECT(T, L)								\
 	protected:												\
