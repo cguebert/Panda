@@ -4,6 +4,19 @@
 #include <QVector>
 #include <math.h>
 
+/* Rules when there are many input parameters :
+  (1 list of input values + X lists of parameters)
+  - nb val == nb params
+	nb out = nb val
+	operation on each value with each param
+  - nb params < nb val
+	nb out = nb val
+	operation on each value using the first param
+  - nb val == 1 && nb params > 1
+	nb out = min(nb params)
+	operation on the value with each param
+*/
+
 namespace panda {
 
 class DoubleMath_SmoothStep : public PandaObject
@@ -45,21 +58,18 @@ public:
 		if(nbA && nbB && nbV)
 		{
 			int nb = nbV;
+			int nbP = qMin(nbA, nbB);
 			if(nbV > 1)
 			{
-				if(nbA != nbV || nbB != nbV)
-					nbA = nbB = 1;
+				if(nbP != nbV)
+					nbP = 1;
 			}
 			else
-			{
-				if(nbB > nbA && nbA > 1)		nbB = nbA;
-				else if(nbA > nbB && nbB > 1)	nbA = nbB;
-				nb = qMax(nbA, nbB);
-			}
+				nb = nbP;
 			valOut.resize(nb);
 
 			for(int i=0; i<nb; ++i)
-				valOut[i] = smoothStep(valInA[i%nbA], valInB[i%nbB], valInV[i%nbV]);
+				valOut[i] = smoothStep(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
 
 			result.endEdit();
 		}
@@ -231,21 +241,18 @@ public:
 		if(nbA && nbB && nbV)
 		{
 			int nb = nbV;
+			int nbP = qMin(nbA, nbB);
 			if(nbV > 1)
 			{
-				if(nbA != nbV || nbB != nbV)
-					nbA = nbB = 1;
+				if(nbP != nbV)
+					nbP = 1;
 			}
 			else
-			{
-				if(nbB > nbA && nbA > 1)		nbB = nbA;
-				else if(nbA > nbB && nbB > 1)	nbA = nbB;
-				nb = qMax(nbA, nbB);
-			}
+				nb = nbP;
 			valOut.resize(nb);
 
 			for(int i=0; i<nb; ++i)
-				valOut[i] = constrain(valInA[i%nbA], valInB[i%nbB], valInV[i%nbV]);
+				valOut[i] = constrain(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
 
 			result.endEdit();
 		}
@@ -258,7 +265,6 @@ protected:
 };
 
 int DoubleMath_ConstrainClass = RegisterObject("Math/Real/Constrain").setClass<DoubleMath_Constrain>().setDescription("Constrain a value between a min and a max");
-
 
 //*************************************************************************//
 
@@ -299,21 +305,18 @@ public:
 		if(nbA && nbB && nbV)
 		{
 			int nb = nbV;
+			int nbP = qMin(nbA, nbB);
 			if(nbV > 1)
 			{
-				if(nbA != nbV || nbB != nbV)
-					nbA = nbB = 1;
+				if(nbP != nbV)
+					nbP = 1;
 			}
 			else
-			{
-				if(nbB > nbA && nbA > 1)		nbB = nbA;
-				else if(nbA > nbB && nbB > 1)	nbA = nbB;
-				nb = qMax(nbA, nbB);
-			}
+				nb = nbP;
 			valOut.resize(nb);
 
 			for(int i=0; i<nb; ++i)
-				valOut[i] = pulse(valInA[i%nbA], valInB[i%nbB], valInV[i%nbV]);
+				valOut[i] = pulse(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
 
 			result.endEdit();
 		}
@@ -327,6 +330,80 @@ protected:
 };
 
 int DoubleMath_PulseClass = RegisterObject("Math/Real/Pulse").setClass<DoubleMath_Pulse>().setDescription("Set the output to 1 if the value is between min and max, 0 otherwise");
+
+//*************************************************************************//
+
+class DoubleMath_Remap : public PandaObject
+{
+public:
+	PANDA_CLASS(DoubleMath_Remap, PandaObject)
+
+	DoubleMath_Remap(PandaDocument *doc)
+		: PandaObject(doc)
+		, inputV(initData(&inputV, "input", "Values to re-map"))
+		, inputMin(initData(&inputMin, "iMin", "Lower bound of the value's current range"))
+		, inputMax(initData(&inputMax, "iMax", "Upper bound of the value's current range"))
+		, outputMin(initData(&outputMin, "oMin", "Lower bound of the value's target  range"))
+		, outputMax(initData(&outputMax, "oMax", "Upper bound of the value's target  range"))
+		, result(initData(&result, "result", "Result of the remap"))
+	{
+		addInput(&inputV);
+		addInput(&inputMin);
+		addInput(&inputMax);
+		addInput(&outputMin);
+		addInput(&outputMax);
+
+		addOutput(&result);
+	}
+
+	double remap(double v, double iMin, double iMax, double oMin, double oMax)
+	{
+		double p = (v - iMin) / (iMax - iMin);
+		return oMin + p * (oMax - oMin);
+	}
+
+	void update()
+	{
+		const QVector<double>	&valInV = inputV.getValue(),
+								&valInMin = inputMin.getValue(),
+								&valInMax = inputMax.getValue(),
+								&valOutMin = outputMin.getValue(),
+								&valOutMax = outputMax.getValue();
+		QVector<double> &valOut = *result.beginEdit();
+		valOut.clear();
+
+		int nbV = valInV.size(),
+				nbInMin = valInMin.size(), nbInMax = valInMax.size(),
+				nbOutMin = valOutMin.size(), nbOutMax = valOutMax.size();
+		if(nbV && nbInMin && nbInMax && nbOutMin && nbOutMax)
+		{
+			int nb = nbV;
+			int nbP = qMin(qMin(nbInMin, nbInMax), qMin(nbOutMin, nbOutMax));
+			if(nbV > 1)
+			{
+				if(nbP != nbV)
+					nbP = 1;
+			}
+			else
+				nb = nbP;
+			valOut.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				valOut[i] = remap(valInV[i%nbV],
+								  valInMin[i%nbP], valInMax[i%nbP],
+								  valOutMin[i%nbP], valOutMax[i%nbP]);
+
+			result.endEdit();
+		}
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<double> > inputV, inputMin, inputMax, outputMin, outputMax, result;
+};
+
+int DoubleMath_RemapClass = RegisterObject("Math/Real/Remap").setClass<DoubleMath_Remap>().setDescription("Re-maps a value from one range to another");
 
 
 } // namespace Panda
