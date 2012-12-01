@@ -20,6 +20,9 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 	listWidget->setMinimumSize(350, 200);
 	vLayout->addWidget(listWidget);
 
+	descLabel = new QLabel;
+	vLayout->addWidget(descLabel);
+
 	QPushButton* okButton = new QPushButton(tr("Ok"), this);
 	okButton->setDefault(true);
 	connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -35,6 +38,8 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 
 	connect(this, SIGNAL(accepted()), this, SLOT(createObject()));
 	connect(lineEdit, SIGNAL(textEdited(QString)), this, SLOT(searchTextChanged()));
+	connect(listWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
+			this, SLOT(updateDescLabel()));
 	connect(listWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
 
 	lineEdit->setFocus(Qt::PopupFocusReason);
@@ -48,6 +53,41 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 			menuStringsList << iter.value()->menuDisplay;
 	}
 	listWidget->addItems(menuStringsList);
+
+	updateDescLabel();
+}
+
+const ObjectFactory::ClassEntry* getFactoryEntry(QString menu)
+{
+	ObjectFactory* factory = ObjectFactory::getInstance();
+	ObjectFactory::RegistryMapIterator iter = factory->getRegistryIterator();
+	while(iter.hasNext())
+	{
+		iter.next();
+		if(menu == iter.value()->menuDisplay)
+			return iter.value().data();
+	}
+
+	return NULL;
+}
+
+void QuickCreateDialog::updateDescLabel()
+{
+	QListWidgetItem* current = listWidget->currentItem();
+	if(!current)
+		current = listWidget->item(0);
+
+	if(current)
+	{
+		QString selectedItemText = current->text();
+		const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
+		if(entry)
+			descLabel->setText(entry->description);
+		else
+			descLabel->setText("");
+	}
+	else
+		descLabel->setText("");
 }
 
 void QuickCreateDialog::searchTextChanged()
@@ -77,6 +117,8 @@ void QuickCreateDialog::searchTextChanged()
 		if(!selectedItems.empty())
 			listWidget->setCurrentItem(selectedItems.front());
 	}
+
+	updateDescLabel();
 }
 
 void QuickCreateDialog::createObject()
@@ -90,17 +132,9 @@ void QuickCreateDialog::createObject()
 
 	if(selectedItemText.size())
 	{
-		ObjectFactory* factory = ObjectFactory::getInstance();
-		ObjectFactory::RegistryMapIterator iter = factory->getRegistryIterator();
-		while(iter.hasNext())
-		{
-			iter.next();
-			if(selectedItemText == iter.value()->menuDisplay)
-			{
-				document->createObject(iter.value()->className);
-				return;
-			}
-		}
+		const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
+		if(entry)
+			document->createObject(entry->className);
 	}
 
 }

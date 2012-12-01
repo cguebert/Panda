@@ -10,6 +10,7 @@ namespace panda
 
 class QLineEdit;
 class QListWidget;
+class QLabel;
 
 class QuickCreateDialog : public QDialog
 {
@@ -20,10 +21,12 @@ public:
 protected:
 	panda::PandaDocument* document;
 	QLineEdit* lineEdit;
+	QLabel* descLabel;
 	QListWidget* listWidget;
 	QStringList menuStringsList;
 
 public slots:
+	void updateDescLabel();
 	void searchTextChanged();
 	void createObject();
 };
