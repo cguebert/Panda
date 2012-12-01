@@ -12,7 +12,7 @@ template<class T>
 class AnimationInterpolation : public PandaObject
 {
 public:
-	PANDA_CLASS(AnimationInterpolation, PandaObject)
+	PANDA_CLASS(PANDA_TEMPLATE(AnimationInterpolation, T), PandaObject)
 
     AnimationInterpolation(PandaDocument *doc)
         : PandaObject(doc)
@@ -28,9 +28,6 @@ public:
         addInput(&mode);
 
         addOutput(&result);
-
-        progress.beginEdit()->append(0.0);
-        progress.endEdit();
     }
 
     void update()
@@ -39,22 +36,33 @@ public:
 
         const QVector<T>& listFrom = inputA.getValue();
         const QVector<T>& listTo = inputB.getValue();
-        int inputSize = qMin(listFrom.size(), listTo.size());
-
         const QVector<double>& listProg = progress.getValue();
-        int progSize = listProg.size();
+		QVector<T>& listResult = *result.beginEdit();
+		listResult.clear();
 
-        QVector<T>& listResult = *result.beginEdit();
-        listResult.resize(inputSize * progSize);
+		int nbV = listProg.size();
+		int nbP = qMin(listFrom.size(), listTo.size());
 
-        for(int i=0; i<progSize; ++i)
-        {
-            double prog = qBound(0.0, listProg[i], 1.0);
-            double amt = curve.valueForProgress(prog);
+		if(nbV && nbP)
+		{
+			int nb = nbV;
+			if(nbV > 1)
+			{
+				if(nbP != nbV)
+					nbP = 1;
+			}
+			else
+				nb = nbP;
+			listResult.resize(nb);
 
-            for(int j=0; j<inputSize; ++j)
-                listResult[i*inputSize+j] = lerp(listFrom[j], listTo[j], amt);
-        }
+			for(int i=0; i<nb; ++i)
+			{
+				double prog = qBound(0.0, listProg[i%nbV], 1.0);
+				double amt = curve.valueForProgress(prog);
+
+				listResult[i] = lerp(listFrom[i%nbP], listTo[i%nbP], amt);
+			}
+		}
 
         result.endEdit();
         this->cleanDirty();
