@@ -15,6 +15,11 @@ BaseClass::~BaseClass()
 {
 }
 
+QString BaseClass::getTypeName() const
+{
+	return typeName;
+}
+
 QString BaseClass::getNamespaceName() const
 {
 	return namespaceName;

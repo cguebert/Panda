@@ -63,13 +63,13 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	Group* group = NULL;
 	if(hasRenderer)
 	{
-		GroupWithLayer* groupWithLayer = dynamic_cast<GroupWithLayer*>(doc->createObject(ObjectFactory::getClassName<GroupWithLayer>()));
+		GroupWithLayer* groupWithLayer = dynamic_cast<GroupWithLayer*>(doc->createObject(ObjectFactory::getRegistryName<GroupWithLayer>()));
 		if(groupWithLayer)
 			groupWithLayer->setLayer(layer);
 		group = groupWithLayer;
 	}
 	else
-		group = dynamic_cast<Group*>(doc->createObject(ObjectFactory::getClassName<Group>()));
+		group = dynamic_cast<Group*>(doc->createObject(ObjectFactory::getRegistryName<Group>()));
     if(!group)
         return false;
 
@@ -287,12 +287,11 @@ void Group::save(QDataStream& out)
 	QList<IntPair> dockedObjects;
 
     // Saving objects in this group
-    ObjectFactory* factory = ObjectFactory::getInstance();
     out << (quint32)objects.size();
     QList<PandaObject*>::iterator iter;
     foreach(PandaObject* object, objects)
     {
-        out << factory->getRegistryName(object);
+		out << ObjectFactory::getRegistryName(object);
         out << object->getIndex();
 
         object->save(out);
@@ -367,12 +366,11 @@ void Group::save(QTextStream& out)
 	QList<IntPair> dockedObjects;
 
     // Saving objects in this group
-    ObjectFactory* factory = ObjectFactory::getInstance();
     out << (quint32)objects.size() << endl;
     QList<PandaObject*>::iterator iter;
     foreach(PandaObject* object, objects)
     {
-        out << factory->getRegistryName(object) << endl;
+		out << ObjectFactory::getRegistryName(object) << endl;
         out << object->getIndex() << endl;
 
         object->save(out);

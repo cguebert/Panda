@@ -1,6 +1,8 @@
 #ifndef OBJECTFACTORY_H
 #define OBJECTFACTORY_H
 
+#include <panda/BaseClass.h>
+
 #include <QSharedPointer>
 #include <QMap>
 #include <iostream>
@@ -33,18 +35,23 @@ public:
         QString menuDisplay;
         QString objectName;
         QString description;
-        QString className;
+		QString className;
+		const BaseClass* theClass;
         QSharedPointer<BaseObjectCreator> creator;
         bool hidden;
     };
 
     static ObjectFactory* getInstance();
-	static QString decodeTypeName(const std::type_info& type);
-	template <class T> static QString getClassName() { return decodeTypeName(typeid(T)); }
     ClassEntry* getEntry(QString className);
-    QString getRegistryName(PandaObject* object);
 
-    PandaObject* create(QString display, PandaDocument* parent);
+	template <class T>
+	static QString getRegistryName()
+	{
+		return T::getClass()->getTypeName();
+	}
+	static QString getRegistryName(PandaObject* object);
+
+	PandaObject* create(QString className, PandaDocument* parent);
 
     typedef QMapIterator< QString, QSharedPointer<ClassEntry> > RegistryMapIterator;
     RegistryMapIterator getRegistryIterator() { return RegistryMapIterator(registry); }
@@ -75,7 +82,7 @@ public:
     template <class T> RegisterObject& setClass()
     {
         entry.creator = QSharedPointer<BaseObjectCreator>(new ObjectCreator<T>);
-		entry.className = ObjectFactory::getClassName<T>();
+		entry.theClass = T::getClass();
         return *this;
     }
 

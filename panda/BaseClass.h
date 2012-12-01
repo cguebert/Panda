@@ -17,6 +17,7 @@ protected:
 	virtual ~BaseClass();
 
 public:
+	QString getTypeName() const;
 	QString getNamespaceName() const;
 	QString getClassName() const;
 	QString getTemplateName() const;
@@ -35,7 +36,7 @@ public:
 
 protected:
 	QList<const BaseClass*> parents;
-	QString namespaceName, className, templateName;
+	QString typeName, namespaceName, className, templateName;
 };
 
 #define PANDA_TEMPLATE(Class,P1) Class<P1>
@@ -145,6 +146,7 @@ class TClass : public BaseClass
 protected:
 	TClass()
 	{
+		typeName = decodeTypeName(typeid(T));
 		namespaceName = decodeNamespaceName(typeid(T));
 		className = decodeClassName(typeid(T));
 		templateName = decodeTemplateName(typeid(T));

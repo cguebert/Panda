@@ -15,23 +15,6 @@ ObjectFactory* ObjectFactory::getInstance()
     return &instance;
 }
 
-QString ObjectFactory::decodeTypeName(const std::type_info& type)
-{
-    QString name;
-#ifdef __GNUC__
-    int status;
-    char* allocname = abi::__cxa_demangle(type.name(), 0, 0, &status);
-    if(allocname)
-        name = allocname;
-    else
-        std::cerr << "Unable to demangle symbol: " << type.name() << std::endl;
-#else
-    name = type.name();
-	name.replace("class ", "");
-#endif
-    return name;
-}
-
 PandaObject* ObjectFactory::create(QString className, PandaDocument* parent)
 {
     if(registry.contains(className))
@@ -67,7 +50,7 @@ ObjectFactory::ClassEntry* ObjectFactory::getEntry(QString className)
 
 QString ObjectFactory::getRegistryName(PandaObject* object)
 {
-    return decodeTypeName(typeid(*object));
+	return object->getBaseClass()->getTypeName();
 }
 
 RegisterObject::RegisterObject(QString menuDisplay)
@@ -103,12 +86,14 @@ RegisterObject::operator int()
         return 0;
     }
 
-    ObjectFactory::ClassEntry* reg = ObjectFactory::getInstance()->getEntry(entry.className);
+	QString typeName = entry.theClass->getTypeName();
+	ObjectFactory::ClassEntry* reg = ObjectFactory::getInstance()->getEntry(typeName);
     reg->creator = entry.creator;
     reg->description = entry.description;
     reg->objectName = entry.objectName;
     reg->menuDisplay = entry.menuDisplay;
-    reg->className = entry.className;
+	reg->theClass = entry.theClass;
+	reg->className = typeName;
     reg->hidden = entry.hidden;
 
     return 1;

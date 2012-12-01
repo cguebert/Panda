@@ -12,6 +12,26 @@ PandaObject::PandaObject(QObject *parent)
 	parentDocument = dynamic_cast<PandaDocument*>(parent);
 }
 
+QString PandaObject::getTypeName()
+{
+	return getClass()->getTypeName();
+}
+
+QString PandaObject::getClassName()
+{
+	return getClass()->getClassName();
+}
+
+QString PandaObject::getNamespaceName()
+{
+	return getClass()->getNamespaceName();
+}
+
+QString PandaObject::getTemplateName()
+{
+	return getClass()->getTemplateName();
+}
+
 QString PandaObject::getName() const
 {
     return name;

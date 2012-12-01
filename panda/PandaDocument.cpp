@@ -68,13 +68,12 @@ bool PandaDocument::writeFile(const QString& fileName)
 	QList<IntPair> dockedObjects;
 
     // Saving objects
-    ObjectFactory* factory = ObjectFactory::getInstance();
     out << (quint32)pandaObjects.size();
     QList<PandaObject*>::iterator iter;
     for(iter = pandaObjects.begin(); iter != pandaObjects.end(); ++iter)
     {
         PandaObject* object = *iter;
-        out << factory->getRegistryName(object);
+		out << ObjectFactory::getRegistryName(object);
         out << object->getIndex();
 
         object->save(out);
@@ -239,13 +238,12 @@ QString PandaDocument::writeTextDocument()
 	QList<IntPair> dockedObjects;
 
     // Saving objects
-    ObjectFactory* factory = ObjectFactory::getInstance();
     out << (quint32)selectedObjects.size() << endl;
     QList<PandaObject*>::iterator iter;
     for(iter = selectedObjects.begin(); iter != selectedObjects.end(); ++iter)
     {
         PandaObject* object = *iter;
-        out << factory->getRegistryName(object) << endl;
+		out << ObjectFactory::getRegistryName(object) << endl;
         out << object->getIndex() << endl;
 
         object->save(out);

@@ -25,6 +25,11 @@ public:
 //	virtual const BaseClass* getBaseClass() const { return getClass(); }
 	virtual const BaseClass* getBaseClass() const = 0;
 
+	static QString getTypeName();
+	static QString getClassName();
+	static QString getNamespaceName();
+	static QString getTemplateName();
+
     QString getName() const;
     quint32 getIndex() const;
 
