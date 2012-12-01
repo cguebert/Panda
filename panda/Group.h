@@ -50,6 +50,8 @@ protected:
 class GroupWithLayer : public Group, public BaseLayer
 {
 public:
+	PANDA_CLASS(GroupWithLayer, Group)
+
 	explicit GroupWithLayer(PandaDocument* parent);
 	void setLayer(Layer* layer);
 

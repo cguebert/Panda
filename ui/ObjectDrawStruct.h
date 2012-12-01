@@ -9,6 +9,7 @@ namespace panda
 {
 	class PandaObject;
 	class BaseData;
+	class BaseClass;
 }
 
 class ObjectDrawStruct
@@ -57,7 +58,7 @@ class BaseObjectDrawCreator
 {
 public:
 	virtual ~BaseObjectDrawCreator() {}
-	virtual bool match(panda::PandaObject*) const = 0;
+	virtual const panda::BaseClass* getClass() const = 0;
 	virtual ObjectDrawStruct* create(GraphView* view, panda::PandaObject* obj) const = 0;
 };
 
@@ -65,21 +66,29 @@ template<class O, class D>
 class ObjectDrawCreator : public BaseObjectDrawCreator
 {
 public:
-	virtual bool match(panda::PandaObject* obj) const
+	ObjectDrawCreator()
+		: theClass(O::getClass())
+	{ }
+
+	virtual const panda::BaseClass* getClass() const
 	{
-		return dynamic_cast<O*>(obj) != NULL;
+		return theClass;
 	}
 
 	virtual ObjectDrawStruct* create(GraphView* view, panda::PandaObject* obj) const
 	{
 		return new D(view, dynamic_cast<O*>(obj));
 	}
+
+protected:
+	const panda::BaseClass* theClass;
 };
 
 class ObjectDrawStructFactory
 {
 public:
 	static ObjectDrawStructFactory* getInstance();
+	void debug();
 	ObjectDrawStruct* createDrawStruct(GraphView *view, panda::PandaObject *obj);
 
 protected:

@@ -220,7 +220,7 @@ ObjectDrawStruct* ObjectDrawStructFactory::createDrawStruct(GraphView* view, pan
 {
 	foreach(QSharedPointer<BaseObjectDrawCreator> creator, creators)
 	{
-		if(creator->match(obj))
+		if(creator->getClass()->isInstance(obj))
 			return creator->create(view, obj);
 	}
 
@@ -229,6 +229,19 @@ ObjectDrawStruct* ObjectDrawStructFactory::createDrawStruct(GraphView* view, pan
 
 void ObjectDrawStructFactory::addCreator(BaseObjectDrawCreator* creator)
 {
-	creators.prepend(QSharedPointer<BaseObjectDrawCreator>(creator));
-}
+	const panda::BaseClass* newClass = creator->getClass();
+	QSharedPointer<BaseObjectDrawCreator> ptr(creator);
 
+	unsigned int nb = creators.size();
+	for(unsigned int i=0; i<nb; ++i)
+	{
+		const panda::BaseClass* prevClass = creators[i]->getClass();
+		if(newClass->hasParent(prevClass))
+		{
+			creators.insert(i, ptr);
+			return;
+		}
+	}
+
+	creators.append(ptr);
+}
