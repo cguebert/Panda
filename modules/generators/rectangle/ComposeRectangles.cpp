@@ -77,13 +77,16 @@ public:
 	{
 		const QVector<QPointF> &c = center.getValue();
 		const QVector<QPointF> &s = size.getValue();
-		int nb = qMin(c.size(), s.size());
+		int nb = c.size();
+		int nbS = s.size();
+		if(nbS < nb) nbS = 1;
 
 		QVector<QRectF>& rect = *rectangle.beginEdit();
+		rect.clear();
 		rect.resize(nb);
 
 		for(int i=0; i<nb; ++i)
-			rect[i] = QRectF(c[i].x()-s[i].x()/2.0, c[i].y()-s[i].y()/2.0, s[i].x(), s[i].y());
+			rect[i] = QRectF(c[i].x()-s[i%nbS].x()/2.0, c[i].y()-s[i%nbS].y()/2.0, s[i%nbS].x(), s[i%nbS].y());
 
 		rectangle.endEdit();
 		this->cleanDirty();

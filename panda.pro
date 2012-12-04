@@ -99,7 +99,8 @@ SOURCES       = main.cpp \
     modules/list/ReplaceItem.cpp \
     panda/BaseClass.cpp \
     modules/generators/image/LoadImage.cpp \
-    modules/render/RenderImage.cpp
+    modules/render/RenderImage.cpp \
+    modules/math/image/ImageSize.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

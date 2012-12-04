@@ -12,6 +12,8 @@ namespace panda {
 class Replicator : public Layer
 {
 public:
+	PANDA_CLASS(Replicator, Layer)
+
     Replicator(PandaDocument *doc)
         : Layer(doc)
         , iterating(false)
