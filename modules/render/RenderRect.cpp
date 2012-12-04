@@ -39,9 +39,11 @@ public:
 
 		if(nbRect && nbColor)
 		{
+			if(nbColor < nbRect) nbColor = 1;
+
 			for(int i=0; i<nbRect; ++i)
 			{
-				painter->setBrush(QBrush(listColor[qMin(i, nbColor-1)]));
+				painter->setBrush(QBrush(listColor[i % nbColor]));
 				painter->setPen(Qt::NoPen);
 				painter->drawRect(listRect[i]);
 			}

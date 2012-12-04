@@ -49,10 +49,13 @@ public:
 
 		if(nbCenter && nbRadius && nbColor)
 		{
+			if(nbRadius < nbCenter) nbRadius = 1;
+			if(nbColor < nbCenter) nbColor = 1;
+
 			for(int i=0; i<nbCenter; ++i)
 			{
-				painter->setBrush(QBrush(listColor[qMin(i, nbColor-1)]));
-				double valRadius = listRadius[qMin(i, nbRadius-1)];
+				painter->setBrush(QBrush(listColor[i % nbColor]));
+				double valRadius = listRadius[i % nbRadius];
 				painter->drawEllipse(listCenter[i], valRadius, valRadius);
 			}
 		}
