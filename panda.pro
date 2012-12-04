@@ -97,7 +97,9 @@ SOURCES       = main.cpp \
     modules/math/point/NearestPoint.cpp \
     modules/list/FindItem.cpp \
     modules/list/ReplaceItem.cpp \
-    panda/BaseClass.cpp
+    panda/BaseClass.cpp \
+    modules/generators/image/LoadImage.cpp \
+    modules/render/RenderImage.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
