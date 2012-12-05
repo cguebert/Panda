@@ -2,7 +2,10 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <QVector>
+
+#define _USE_MATH_DEFINES
 #include <math.h>
+#include <algorithm>
 
 namespace panda {
 
@@ -134,6 +137,97 @@ protected:
 };
 
 int PointListMath_LengthClass = RegisterObject("Math/List of points/Curve length").setClass<PointListMath_Length>().setDescription("Compute the length of a series of segments");
+
+//*************************************************************************//
+
+class PointListMath_GetPoint : public PandaObject
+{
+public:
+	PANDA_CLASS(PointListMath_GetPoint, PandaObject)
+
+	PointListMath_GetPoint(PandaDocument *doc)
+		: PandaObject(doc)
+		, input(initData(&input, "points", "List of points forming the curve"))
+		, position(initData(&position, "position", "Position of the point on the curve"))
+		, abscissa(initData(&abscissa, "abscissa", "Abscissa of the point to find"))
+		, rotation(initData(&rotation, "rotation", "Rotation of the point on the curve"))
+	{
+		addInput(&input);
+		addInput(&abscissa);
+
+		addOutput(&position);
+		addOutput(&rotation);
+	}
+
+	void update()
+	{
+		const QVector<QPointF>& curve = input.getValue();
+		const QVector<double>& listAbscissa = abscissa.getValue();
+		unsigned int nbPts = curve.size();
+		unsigned int nbAbscissa = listAbscissa.size();
+
+		QVector<QPointF>& listPos = *position.beginEdit();
+		QVector<double>& listRot = *rotation.beginEdit();
+
+		if(nbPts > 1 && nbAbscissa)
+		{
+			listPos.resize(nbAbscissa);
+			listRot.resize(nbAbscissa);
+
+			// Some precomputation
+			double totalLength = 0.0;
+			QVector<double> lengths, starts, ends;
+			lengths.resize(nbPts - 1);
+			starts.resize(nbPts - 1);
+			ends.resize(nbPts - 1);
+			QPointF pt1 = curve[0];
+			for(unsigned int i=0; i<nbPts-1; ++i)
+			{
+				starts[i] = totalLength;
+				const QPointF& pt2 = curve[i+1];
+				double dx = pt2.x()-pt1.x(), dy = pt2.y()-pt1.y();
+				double d2 = dx*dx+dy*dy;
+				double l = sqrt(d2);
+				lengths[i] = l;
+				pt1 = pt2;
+				totalLength += l;
+				ends[i] = totalLength;
+			}
+
+			for(unsigned int i=0; i<nbAbscissa; ++i)
+			{
+				double a = qBound(0.0, listAbscissa[i], totalLength);
+				QVector<double>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
+
+				unsigned int index = iter - ends.begin();
+				double p = 0.0;
+				if(lengths[index] > 0.1)
+					p = (a - starts[index]) / lengths[index];
+				const QPointF& pt1 = curve[index];
+				const QPointF& pt2 = curve[index+1];
+				listPos[i] = pt1 * (1.0 - p) + pt2 * p;
+				listRot[i] = atan2(pt2.y()-pt1.y(), pt2.x()-pt1.x()) * 180.0 / M_PI;
+			}
+		}
+		else
+		{
+			listPos.clear();
+			listRot.clear();
+		}
+
+		position.endEdit();
+		rotation.endEdit();
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<QPointF> > input, position;
+	Data< QVector<double> > abscissa, rotation;
+};
+
+int PointListMath_GetPointClass = RegisterObject("Math/List of points/Point on curve").setClass<PointListMath_GetPoint>().setDescription("Get the position and the rotation of a point on a curve based on his abscissa");
+
 
 } // namespace Panda
 
