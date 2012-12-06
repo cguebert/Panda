@@ -51,6 +51,11 @@ void PointsGrid::removePoint(const QPointF& point)
 	cells[index(point)].removeAll(point);
 }
 
+bool PointsGrid::hasPoint(const QPointF& point)
+{
+	return cells[index(point)].contains(point);
+}
+
 double distance2(const QPointF& ptA, const QPointF& ptB)
 {
 	double dx = ptA.x()-ptB.x();

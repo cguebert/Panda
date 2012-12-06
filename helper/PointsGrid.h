@@ -21,6 +21,7 @@ public:
 	void addPoint(const QPointF& point);
 	void addPoints(const QVector<QPointF>& points);
 	void removePoint(const QPointF& point);
+	bool hasPoint(const QPointF& point);
 
 	// Return true if there is another point inside the disk a radius "distance" around "point"
 	bool testNeighbor(const QPointF& point, double distance);
