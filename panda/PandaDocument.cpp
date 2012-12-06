@@ -390,6 +390,8 @@ void PandaDocument::resetDocument()
     currentIndex = 1;
     animTime.setValue(0.0);
     timestep.setValue(0.1);
+	renderSize.setValue(QPointF(800,600));
+	backgroundColor.setValue(QColor(255,255,255));
 
     emit modified();
     emit selectionChanged();
