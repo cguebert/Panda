@@ -35,10 +35,6 @@ public:
 
 	void render(QPainter* painter)
 	{
-		painter->save();
-
-		painter->setPen(Qt::NoPen);
-
 		const QVector<QPointF>& listCenter = center.getValue();
 		const QVector<double>& listRadius = radius.getValue();
 		const QVector<QColor>& listColor = color.getValue();
@@ -49,6 +45,9 @@ public:
 
 		if(nbCenter && nbRadius && nbColor)
 		{
+			painter->save();
+			painter->setPen(Qt::NoPen);
+
 			if(nbRadius < nbCenter) nbRadius = 1;
 			if(nbColor < nbCenter) nbColor = 1;
 
@@ -58,9 +57,9 @@ public:
 				double valRadius = listRadius[i % nbRadius];
 				painter->drawEllipse(listCenter[i], valRadius, valRadius);
 			}
-		}
 
-		painter->restore();
+			painter->restore();
+		}
 	}
 
 protected:

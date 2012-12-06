@@ -15,16 +15,23 @@ public:
 	RenderRect(PandaDocument *parent)
 		: Renderer(parent)
 		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
-		, color(initData(&color, "color", "Color of the plain rectangle"))
+		, lineWidth(initData(&lineWidth, "lineWidth", "Width of the outline of the rectangle"))
+		, lineColor(initData(&lineColor, "lineColor", "Color of the outline of the rectangle"))
+		, color(initData(&color, "color", "Color inside the rectangle"))
 	{
 		addInput(&rect);
+		addInput(&lineWidth);
+		addInput(&lineColor);
 		addInput(&color);
 
 		rect.beginEdit()->append(QRectF(100, 100, 50, 50));
 		rect.endEdit();
 
-		color.beginEdit()->append(QColor(0,0,0));
-		color.endEdit();
+		lineColor.beginEdit()->append(QColor(0,0,0));
+		lineColor.endEdit();
+
+		lineWidth.beginEdit()->append(0.0);
+		lineWidth.endEdit();
 	}
 
 	void render(QPainter* painter)
@@ -32,19 +39,39 @@ public:
 		painter->save();
 
 		const QVector<QRectF>& listRect = rect.getValue();
+		const QVector<QColor>& listLineColor = lineColor.getValue();
 		const QVector<QColor>& listColor = color.getValue();
+		const QVector<double>& listLineWidth = lineWidth.getValue();
 
 		int nbRect = listRect.size();
+		int nbLineColor = listLineColor.size();
 		int nbColor = listColor.size();
+		int nbLineWidth = listLineWidth.size();
 
-		if(nbRect && nbColor)
+		bool drawOutline = (nbLineWidth && nbLineColor);
+		bool drawInside = (nbColor > 0);
+
+		if(nbRect && (drawOutline || drawInside) )
 		{
+			painter->setBrush(Qt::NoBrush);
+			painter->setPen(Qt::NoPen);
+
+			if(nbLineColor < nbRect) nbLineColor = 1;
+			if(nbLineWidth < nbRect) nbLineWidth = 1;
 			if(nbColor < nbRect) nbColor = 1;
 
 			for(int i=0; i<nbRect; ++i)
 			{
-				painter->setBrush(QBrush(listColor[i % nbColor]));
-				painter->setPen(Qt::NoPen);
+				if(drawOutline)
+				{
+					QPen pen(listLineColor[i % nbLineColor]);
+					pen.setWidthF(listLineWidth[i % nbLineWidth]);
+					painter->setPen(pen);
+				}
+
+				if(drawInside)
+					painter->setBrush(QBrush(listColor[i % nbColor]));
+
 				painter->drawRect(listRect[i]);
 			}
 		}
@@ -54,7 +81,8 @@ public:
 
 protected:
 	Data< QVector<QRectF> > rect;
-	Data< QVector<QColor> > color;
+	Data< QVector<double> > lineWidth;
+	Data< QVector<QColor> > lineColor, color;
 };
 
 int RenderRectClass = RegisterObject("Render/Rectangle").setClass<RenderRect>().setDescription("Draw a plain rectangle");
