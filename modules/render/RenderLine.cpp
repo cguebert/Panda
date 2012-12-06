@@ -16,41 +16,58 @@ public:
 		: Renderer(parent)
 		, inputA(initData(&inputA, "point 1", "Start of the line"))
 		, inputB(initData(&inputB, "point 2", "Start of the line"))
-		, width(initData(&width, 0.0, "width", "Width of the line" ))
+		, width(initData(&width, "width", "Width of the line" ))
 		, color(initData(&color, "color", "Color of the line"))
 	{
 		addInput(&inputA);
 		addInput(&inputB);
 		addInput(&width);
 		addInput(&color);
+
+		width.beginEdit()->append(0.0);
+		width.endEdit();
+
+		color.beginEdit()->append(QColor());
+		color.endEdit();
 	}
 
 	void render(QPainter* painter)
 	{
-		painter->save();
-
 		const QVector<QPointF>& valA = inputA.getValue();
 		const QVector<QPointF>& valB = inputB.getValue();
-		int nb = qMin(valA.size(), valB.size());
+		const QVector<double>& listWidth = width.getValue();
+		const QVector<QColor>& listColor = color.getValue();
 
-		if(nb)
+		int nbPts = qMin(valA.size(), valB.size());
+		int nbWidth = listWidth.size();
+		int nbColor = listColor.size();
+
+		if(nbPts && nbWidth && nbColor)
 		{
-			QPen pen;
-			pen.setWidthF(width.getValue());
-			pen.setColor(color.getValue());
-			painter->setBrush(Qt::NoBrush);
-			painter->setPen(pen);
+			if(nbWidth < nbPts) nbWidth = 1;
+			if(nbColor < nbPts) nbColor = 1;
 
-			for(int i=0; i<nb; ++i)
+			painter->save();
+			painter->setBrush(Qt::NoBrush);
+
+			for(int i=0; i<nbPts; ++i)
+			{
+				QPen pen(listColor[i % nbColor]);
+				pen.setWidthF(listWidth[i % nbWidth]);
+				pen.setCapStyle(Qt::RoundCap);
+				painter->setPen(pen);
+
 				painter->drawLine(valA[i], valB[i]);
+			}
+
+			painter->restore();
 		}
-		painter->restore();
 	}
 
 protected:
 	Data< QVector<QPointF> > inputA, inputB;
-	Data<double> width;
-	Data<QColor> color;
+	Data< QVector<double> > width;
+	Data< QVector<QColor> > color;
 };
 
 int RenderLineClass = RegisterObject("Render/Line").setClass<RenderLine>().setDescription("Draw a line between 2 points");
@@ -85,6 +102,7 @@ public:
 			QPen pen;
 			pen.setWidthF(width.getValue());
 			pen.setColor(color.getValue());
+			pen.setCapStyle(Qt::RoundCap);
 			painter->setBrush(Qt::NoBrush);
 			painter->setPen(pen);
 
