@@ -55,13 +55,9 @@ public:
 			bool filterSelf = notSelf.getValue();
 			for(int i=0; i<nb; ++i)
 			{
-				bool removedSelf = false;
-				if(filterSelf)
-				{
-					removedSelf = grid.hasPoint(inPts[i]);
-					if(removedSelf)
-						grid.removePoint(inPts[i]);
-				}
+				int removedSelfNb = 0;
+				if(filterSelf && grid.hasPoint(inPts[i]))
+					removedSelfNb = grid.removePoint(inPts[i]);
 
 				outPts[i] = inPts[i];
 				outFound[i] = grid.getNearest(inPts[i], maxD, outPts[i]);
@@ -71,7 +67,7 @@ public:
 					grid.removePoint(pt);
 				}
 
-				if(removedSelf)
+				for(int j=0; j<removedSelfNb; ++j)
 					grid.addPoint(inPts[i]);
 			}
 

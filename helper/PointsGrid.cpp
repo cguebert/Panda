@@ -46,9 +46,9 @@ void PointsGrid::addPoints(const QVector<QPointF>& points)
 		addPoint(points[i]);
 }
 
-void PointsGrid::removePoint(const QPointF& point)
+int PointsGrid::removePoint(const QPointF& point)
 {
-	cells[index(point)].removeAll(point);
+	return cells[index(point)].removeAll(point);
 }
 
 bool PointsGrid::hasPoint(const QPointF& point)

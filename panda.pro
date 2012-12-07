@@ -101,7 +101,8 @@ SOURCES       = main.cpp \
     modules/generators/image/LoadImage.cpp \
     modules/render/RenderImage.cpp \
     modules/math/image/ImageSize.cpp \
-    modules/render/RenderCircle.cpp
+    modules/render/RenderCircle.cpp \
+    modules/modifiers/point/PointsInShapes.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
