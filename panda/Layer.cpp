@@ -19,6 +19,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	QPainter painter(editImage);
 	painter.setRenderHint(QPainter::Antialiasing, true);
 	painter.setRenderHint(QPainter::TextAntialiasing, true);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
 	QList<Renderer*> renderers = this->getRenderers();
 	QListIterator<Renderer*> iter = QListIterator<Renderer*>(renderers);
