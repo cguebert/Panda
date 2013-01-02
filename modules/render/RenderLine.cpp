@@ -15,7 +15,7 @@ public:
 	RenderLine(PandaDocument *parent)
 		: Renderer(parent)
 		, inputA(initData(&inputA, "point 1", "Start of the line"))
-		, inputB(initData(&inputB, "point 2", "Start of the line"))
+		, inputB(initData(&inputB, "point 2", "End of the line"))
 		, width(initData(&width, "width", "Width of the line" ))
 		, color(initData(&color, "color", "Color of the line"))
 	{
@@ -38,26 +38,37 @@ public:
 		const QVector<double>& listWidth = width.getValue();
 		const QVector<QColor>& listColor = color.getValue();
 
-		int nbPts = qMin(valA.size(), valB.size());
+		int nbA = valA.size(), nbB = valB.size();
+		int nbLines = qMin(valA.size(), valB.size());
+		bool useTwoLists = true;
+		if(nbA && !nbB)
+		{
+			useTwoLists = false;
+			nbLines = nbA / 2;
+		}
+
 		int nbWidth = listWidth.size();
 		int nbColor = listColor.size();
 
-		if(nbPts && nbWidth && nbColor)
+		if(nbLines && nbWidth && nbColor)
 		{
-			if(nbWidth < nbPts) nbWidth = 1;
-			if(nbColor < nbPts) nbColor = 1;
+			if(nbWidth < nbLines) nbWidth = 1;
+			if(nbColor < nbLines) nbColor = 1;
 
 			painter->save();
 			painter->setBrush(Qt::NoBrush);
 
-			for(int i=0; i<nbPts; ++i)
+			for(int i=0; i<nbLines; ++i)
 			{
 				QPen pen(listColor[i % nbColor]);
 				pen.setWidthF(listWidth[i % nbWidth]);
 				pen.setCapStyle(Qt::RoundCap);
 				painter->setPen(pen);
 
-				painter->drawLine(valA[i], valB[i]);
+				if(useTwoLists)
+					painter->drawLine(valA[i], valB[i]);
+				else
+					painter->drawLine(valA[i*2], valA[i*2+1]);
 			}
 
 			painter->restore();
