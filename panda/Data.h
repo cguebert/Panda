@@ -37,16 +37,21 @@ public:
         : BaseData(init)
         , value(T())
     {
+		setCustomFlags();
     }
 
     explicit Data(const InitData& init)
         : BaseData(init)
     {
         value = init.value;
+		setCustomFlags();
     }
 
     Data(const QString& name, const QString& help, PandaObject* owner)
-        : BaseData(name, help, owner) { }
+		: BaseData(name, help, owner)
+	{
+		setCustomFlags();
+	}
 
     virtual ~Data() {}
 
@@ -94,6 +99,8 @@ public:
 
 protected:
     virtual QString doToString() const;
+
+	void setCustomFlags();
 
 private:
     T value;

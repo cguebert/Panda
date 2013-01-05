@@ -618,7 +618,39 @@ QTextStream& operator<<(QTextStream& stream, const Topology& topo)
 
 QTextStream& operator>>(QTextStream& stream, Topology& topo)
 {
+	topo.clear();
+
 	int nbPts, nbEdges, nbPolys;
+	stream >> nbPts;
+	topo.m_points.resize(nbPts);
+	for(int i=0; i<nbPts; ++i)
+	{
+		QPointF pt;
+		stream >> pt.rx() >> pt.ry();
+		topo.m_points[i] = pt;
+	}
+
+	stream >> nbEdges;
+	topo.m_edges.resize(nbEdges);
+	for(int i=0; i<nbEdges; ++i)
+	{
+		Topology::Edge e;
+		stream >> e.first >> e.second;
+		topo.m_edges[i] = e;
+	}
+
+	stream >> nbPolys;
+	topo.m_polygons.resize(nbPolys);
+	for(int i=0; i<nbPolys; ++i)
+	{
+		Topology::Polygon p;
+		int nbP;
+		stream >> nbP;
+		p.resize(nbP);
+		for(int j=0; j<nbP; ++j)
+			stream >> p[j];
+		topo.m_polygons[i] = p;
+	}
 
 	return stream;
 }

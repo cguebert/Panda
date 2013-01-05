@@ -252,7 +252,7 @@ QString PandaDocument::writeTextDocument()
         foreach(BaseData* data, object->getInputDatas())
         {
             BaseData* parent = data->getParent();
-            if(parent)
+			if(parent && selectedObjects.contains(parent->getOwner()))
                 links.append(qMakePair(data, parent));
         }
 

@@ -272,8 +272,8 @@ void Data<T>::fromString(const QString& text)
     QString copy;
     if(getValueType() != QMetaType::QString)
         copy = text.simplified();
-    else
-        copy = text.trimmed();
+	else
+		copy = text;
     QTextStream stream(&copy, QIODevice::ReadOnly);
     beginEdit();
     readValue(stream, value);
@@ -640,6 +640,20 @@ QString Data<T>::getFullTypeName() const
         return QString("Animation of %1s").arg(typeName);
 
     return QString();
+}
+
+//***************************************************************//
+
+template<class T>
+void Data<T>::setCustomFlags()
+{
+	if(getValueType() == QMetaType::QImage)
+	{
+		setPersistent(false);
+		setDisplayed(false);
+	}
+//	else if(getValueType() == qMetaTypeId<Topology>())
+//		setDisplayed(false);
 }
 
 //***************************************************************//

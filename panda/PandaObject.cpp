@@ -4,6 +4,9 @@
 
 namespace panda {
 
+const QString dataMarkerStart("~~{");
+const QString dataMarkerEnd("}~~");
+
 PandaObject::PandaObject(QObject *parent)
     : QObject(parent)
 	, doEmitModified(true)
@@ -138,16 +141,6 @@ void PandaObject::setInternalData(const QString& newName, const quint32& newInde
 {
     name = newName;
     index = newIndex;
-
-	foreach(BaseData* data, datas)
-	{
-		// If data is an image, set it to non persistent and non editable in the UI
-		if(data->getValueType() == QMetaType::QImage)
-		{
-			data->setPersistent(false);
-			data->setDisplayed(false);
-		}
-	}
 }
 
 void PandaObject::save(QDataStream& out)
@@ -181,7 +174,11 @@ void PandaObject::save(QTextStream& out)
         if(data->isSet() && data->isPersistent() && !data->isReadOnly() && !data->getParent())
         {
             out << data->getName() << endl;
-            out << data->toString() << endl;
+			QString value = data->toString();
+			if(value.contains('\n'))	// TODO : more robust system for multiline values
+				out << dataMarkerStart << endl << value << dataMarkerEnd << endl;
+			else
+				out << value << endl;
         }
     }
 }
@@ -211,8 +208,18 @@ void PandaObject::load(QTextStream& in)
         QString name, value;
         in.skipWhiteSpace();
         name = in.readLine();
-        in.skipWhiteSpace();
         value = in.readLine();
+		if(value == dataMarkerStart)
+		{
+			value = "";
+			QString tmp = in.readLine();
+			do
+			{
+				value += tmp + '\n';
+				tmp = in.readLine();
+			}
+			while(tmp != dataMarkerEnd);
+		}
         BaseData* data = getData(name);
         if(data)
             data->fromString(value);
