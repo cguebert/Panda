@@ -26,7 +26,8 @@ HEADERS       = \
     ui/GroupObjectDrawStruct.h \
     ui/EditGroupDialog.h \
     ui/LayersTab.h \
-    panda/BaseClass.h
+    panda/BaseClass.h \
+    panda/Topology.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -102,7 +103,10 @@ SOURCES       = main.cpp \
     modules/render/RenderImage.cpp \
     modules/math/image/ImageSize.cpp \
     modules/render/RenderCircle.cpp \
-    modules/modifiers/point/PointsInShapes.cpp
+    modules/modifiers/point/PointsInShapes.cpp \
+    panda/Topology.cpp \
+    modules/generators/topology/ComposeTopology.cpp \
+    modules/render/RenderPolygon.cpp \
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

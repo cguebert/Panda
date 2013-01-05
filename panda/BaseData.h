@@ -90,7 +90,6 @@ public:
     QString toString() const;
     virtual void fromString(const QString& text) = 0;
 
-    static QString typeToName(int type);
     virtual QString getFullTypeName() const = 0;
 
     virtual void copyValueFrom(const BaseData* parent) = 0;

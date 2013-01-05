@@ -7,10 +7,30 @@
 #include <QVector>
 #include <QImage>
 
+#include <panda/Topology.h>
+
 #include <panda/PandaObject.h>
 
 namespace panda
 {
+
+QString dataTypeToName(int type)
+{
+	switch(type)
+	{
+	case QMetaType::Int: 		return "integer";
+	case QMetaType::Double:		return "real";
+	case QMetaType::QColor:		return "color";
+	case QMetaType::QPointF:	return "point";
+	case QMetaType::QRectF:		return "rectangle";
+	case QMetaType::QString:	return "text";
+	case QMetaType::QImage:		return "image";
+	default:
+		if(type == qMetaTypeId<Topology>())
+			return "topology";
+		return "unknown";
+	}
+}
 
 BaseData* createDataFromType(int type, const QString& name, const QString& help, PandaObject* owner)
 {
@@ -31,6 +51,8 @@ BaseData* createDataFromType(int type, const QString& name, const QString& help,
     case QMetaType::QImage:
         return new Data<QImage>(name, help, owner);
     default:
+		if(type == qMetaTypeId<Topology>())
+			return new Data<Topology>(name, help, owner);
         return NULL;
     }
 }
@@ -109,7 +131,6 @@ QTextStream& writeValue(QTextStream& stream, const QVector<QString>& v)
         {
             stream << "\n";
             writeValue(stream, v[i]);
-
         }
     }
     return stream;
@@ -126,7 +147,6 @@ QTextStream& writeValue(QTextStream& stream, const QVector<T>& v)
         {
             stream << " ";
             writeValue(stream, v[i]);
-
         }
     }
     return stream;
@@ -610,7 +630,7 @@ QString GenericAnimationData::getFullTypeName() const
 template<class T>
 QString Data<T>::getFullTypeName() const
 {
-    QString typeName = typeToName(getValueType());
+	QString typeName = dataTypeToName(getValueType());
 
     if(isSingleValue())
         return QString("Single %1 value").arg(typeName);
@@ -631,6 +651,7 @@ template class Data<QPointF>;
 template class Data<QRectF>;
 template class Data<QString>;
 template class Data<QImage>;
+template class Data<Topology>;
 
 template class Data< QVector<int> >;
 template class Data< QVector<double> >;
@@ -639,6 +660,7 @@ template class Data< QVector<QPointF> >;
 template class Data< QVector<QRectF> >;
 template class Data< QVector<QString> >;
 template class Data< QVector<QImage> >;
+template class Data< QVector<Topology> >;
 
 template class Data< Animation<double> >;
 template class Data< Animation<QColor> >;

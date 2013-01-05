@@ -70,7 +70,7 @@ BaseData* GenericObject::createDatas(int type)
 	int nbDefs = dataDefinitions_.size();
 	for(int i=0; i<nbDefs; ++i)
 	{
-		QString nameType = BaseData::typeToName(type);
+		QString nameType = dataTypeToName(type);
 		QString dataName = dataDefinitions_[i].name;
 		if(dataName.contains("%1"))
 			dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
@@ -112,7 +112,7 @@ void GenericObject::updateDataNames()
 	int nbDefs = dataDefinitions_.size();
 	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 	{
-		QString nameType = BaseData::typeToName(created->type);
+		QString nameType = dataTypeToName(created->type);
 		for(int i=0; i<nbDefs; ++i)
 		{
 			QString dataName = dataDefinitions_[i].name;

@@ -153,22 +153,6 @@ void BaseData::doRemoveOutput(DataNode* node)
         input = false;
 }
 
-QString BaseData::typeToName(int type)
-{
-    switch(type)
-    {
-    case QMetaType::Int: 		return "integer";
-    case QMetaType::Double:		return "real";
-    case QMetaType::QColor:		return "color";
-    case QMetaType::QPointF:	return "point";
-    case QMetaType::QRectF:		return "rectangle";
-    case QMetaType::QString:	return "text";
-    case QMetaType::QImage:		return "image";
-    default:					return "unknown";
-    }
-}
-
-
 int BaseData::getFullType() const
 {
 	int type = getValueType();
