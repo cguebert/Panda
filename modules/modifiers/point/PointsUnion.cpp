@@ -22,8 +22,6 @@ public:
 
 		addOutput(&outputPoints);
 		addOutput(&outputIndices);
-
-		image.setDisplayed(false);
 	}
 
 	void update()

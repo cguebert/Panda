@@ -83,7 +83,7 @@ void PandaObject::updateIfDirty() const
 		{
 			isUpdating = true;
 			const_cast<PandaObject*>(this)->update();
-			const_cast<PandaObject*>(this)->cleanDirty();
+			const_cast<PandaObject*>(this)->cleanDirty();	// Verify if we can remove this call
 			isUpdating = false;
 		}
 	}
@@ -138,6 +138,16 @@ void PandaObject::setInternalData(const QString& newName, const quint32& newInde
 {
     name = newName;
     index = newIndex;
+
+	foreach(BaseData* data, datas)
+	{
+		// If data is an image, set it to non persistent and non editable in the UI
+		if(data->getValueType() == QMetaType::QImage)
+		{
+			data->setPersistent(false);
+			data->setDisplayed(false);
+		}
+	}
 }
 
 void PandaObject::save(QDataStream& out)

@@ -17,7 +17,6 @@ public:
 		addInput(&fileName);
 
 		addOutput(&image);
-		image.setDisplayed(false);
     }
 
     void update()

@@ -60,8 +60,6 @@ Layer::Layer(PandaDocument *parent)
 
     addOutput((DataNode*)parent);
     addOutput(&image);
-
-    image.setDisplayed(false);
 }
 
 void Layer::update()

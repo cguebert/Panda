@@ -15,7 +15,6 @@ public:
 		, size(initData(&size, "size", "size of the image"))
 	{
 		addInput(&image);
-		image.setDisplayed(false);
 
 		addOutput(&size);
 	}

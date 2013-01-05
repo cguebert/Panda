@@ -24,8 +24,6 @@ public:
 		addInput(&rotation);
 		addInput(&drawCentered);
 
-		image.setDisplayed(false);
-
 		center.beginEdit()->append(QPointF(100, 100));
 		center.endEdit();
 	}
