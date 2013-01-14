@@ -322,19 +322,20 @@ void MainWindow::createActions()
 
     playAction = new QAction(tr("Play"), this);
     playAction->setIcon(QIcon(":/images/play.png"));
-    playAction->setShortcut(tr("Alt+A"));
+	playAction->setShortcut(tr("F5"));
     playAction->setStatusTip(tr("Start the animation"));
     playAction->setCheckable(true);
     connect(playAction, SIGNAL(triggered(bool)), pandaDocument, SLOT(play(bool)));
 
-    stepAction = new QAction(tr("Play"), this);
+	stepAction = new QAction(tr("Step"), this);
     stepAction->setIcon(QIcon(":/images/step.png"));
+	stepAction->setShortcut(tr("F6"));
     stepAction->setStatusTip(tr("Do one step of the animation"));
     connect(stepAction, SIGNAL(triggered()), pandaDocument, SLOT(step()));
 
     rewindAction = new QAction(tr("Rewind"), this);
     rewindAction->setIcon(QIcon(":/images/stop.png"));
-    rewindAction->setShortcut(tr("Ctrl+R"));
+	rewindAction->setShortcut(tr("F7"));
     rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
     connect(rewindAction, SIGNAL(triggered()), pandaDocument, SLOT(rewind()));
 }
