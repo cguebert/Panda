@@ -44,7 +44,10 @@ public:
 		const QVector<T> &valIn = dataInput->getValue();
 		QVector<T> &valOut = *dataOutput->beginEdit();
 
-		valOut.swap(valIn.mid(0, val));
+		if(val >= valIn.size())
+			valOut = valIn;
+		else
+			valOut.swap(valIn.mid(0, val));
 
 		dataOutput->endEdit();
 	}

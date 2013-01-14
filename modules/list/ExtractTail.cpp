@@ -43,11 +43,14 @@ public:
 		int val = value.getValue();
 		const QVector<T> &valIn = dataInput->getValue();
 		QVector<T> &valOut = *dataOutput->beginEdit();
+		int nb = valIn.size();
 
-		if(val > 0)
+		if(val >= nb)
+			valOut.clear();
+		else if(val > 0)
 			valOut.swap( valIn.mid(val) );
 		else
-			valOut.swap( valIn.mid(valIn.size() + val) );
+			valOut.swap( valIn.mid( qMax(0, valIn.size() + val) ) );
 
 		dataOutput->endEdit();
 	}
