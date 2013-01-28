@@ -125,4 +125,54 @@ int GeneratorTopology_VerticesClass = RegisterObject("Generator/Topology/Vertice
 
 //*************************************************************************//
 
+
+class GeneratorTopology_ExtractPolygons : public PandaObject
+{
+public:
+	PANDA_CLASS(GeneratorTopology_ExtractPolygons, PandaObject)
+
+	GeneratorTopology_ExtractPolygons(PandaDocument *doc)
+		: PandaObject(doc)
+		, input(initData(&input, "input", "Input topology"))
+		, output(initData(&output, "output", "Output topology"))
+		, polygons(initData(&polygons, "polygons", "Indices of the polygons to extract"))
+	{
+		addInput(&input);
+		addInput(&polygons);
+
+		addOutput(&output);
+	}
+
+	void update()
+	{
+		const Topology& inTopo = input.getValue();
+		const QVector<int>& polyId = polygons.getValue();
+
+		Topology& outTopo = *output.beginEdit();
+
+		outTopo.clear();
+		outTopo.addPoints(inTopo.getPoints());
+
+		foreach(int i, polyId)
+			outTopo.addPolygon(inTopo.getPolygon(i));
+
+//		outTopo.createPolygonsAroundPointList();
+//		const QVector<Topology::IndicesList>& papl = outTopo.getPolygonsAroundPointList();
+
+		output.endEdit();
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data<Topology> input, output;
+	Data< QVector<int> > polygons;
+};
+
+int GeneratorTopology_ExtractPolygonsClass = RegisterObject("Generator/Topology/Extract polygons")
+		.setName("Extract poly").setClass<GeneratorTopology_ExtractPolygons>()
+		.setDescription("Extract some polygons from a topology");
+
+//*************************************************************************//
+
 } // namespace Panda

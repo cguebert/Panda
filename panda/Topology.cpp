@@ -1,6 +1,7 @@
 #include <panda/Topology.h>
 
 #include <QMap>
+#include <QStack>
 #include <set>
 
 namespace panda
@@ -14,9 +15,10 @@ Topology::~Topology()
 {
 }
 
-void Topology::addPoint(const QPointF& point)
+int Topology::addPoint(const QPointF& point)
 {
-	m_points.append(point);
+	m_points.push_back(point);
+	return m_points.size() - 1;
 }
 
 void Topology::addPoints(const QVector<QPointF>& pts)
@@ -24,10 +26,18 @@ void Topology::addPoints(const QVector<QPointF>& pts)
 	m_points += pts;
 }
 
-void Topology::addEdge(int a, int b)
+int Topology::addEdge(int a, int b)
 {
     Q_ASSERT(a != b);
-	m_edges.append(std::make_pair(a, b));
+	m_edges.push_back(std::make_pair(a, b));
+	return m_edges.size() - 1;
+}
+
+int Topology::addEdge(Edge e)
+{
+	Q_ASSERT(e.first != e.second);
+	m_edges.push_back(e);
+	return m_edges.size() - 1;
 }
 
 void Topology::addEdges(const QVector<Edge>& e)
@@ -35,9 +45,10 @@ void Topology::addEdges(const QVector<Edge>& e)
 	m_edges += e;
 }
 
-void Topology::addPolygon(const Polygon& p)
+int Topology::addPolygon(const Polygon& p)
 {
-	m_polygons.append(p);
+	m_polygons.push_back(p);
+	return m_polygons.size() - 1;
 }
 
 void Topology::addPolygons(const QVector<Polygon>& p)
@@ -55,6 +66,11 @@ int Topology::getNumberOfEdges()
 	if(!hasEdges() && getNumberOfPolygons() > 0)
 		createEdgeList();
 
+	return m_edges.size();
+}
+
+int Topology::getNumberOfEdges() const
+{
 	return m_edges.size();
 }
 
@@ -96,6 +112,11 @@ Topology::Edge Topology::getEdge(int index)
 	if(!hasEdges())
 		createEdgeList();
 
+	return m_edges[index];
+}
+
+Topology::Edge Topology::getEdge(int index) const
+{
 	return m_edges[index];
 }
 
@@ -300,6 +321,72 @@ Topology::IndicesList Topology::getPolygonsConnectedToPolygon(int index)
 	}
 
 	return polyAll;
+}
+
+int Topology::getOtherPointInEdge(int edge, int point)
+{
+	Edge e = getEdge(edge);
+	if(e.first == point)
+		return e.second;
+	else if(e.second == point)
+		return e.first;
+	else
+		return -1;
+}
+
+double Topology::areaOfPolygon(int polyId)
+{
+	const Polygon& p = getPolygon(polyId);
+
+	int nbPts = p.size();
+	double area = 0;
+	for(int i=0; i<nbPts; ++i)
+	{
+		QPointF p1 = getPoint(p[i]), p2 = getPoint(p[(i+1)%nbPts]);
+		area += p1.x()*p2.y() - p2.x()*p1.y();
+	}
+
+	return area / 2;
+}
+
+void Topology::reorientPolygon(int polyId)
+{
+	Polygon& p = getPolygon(polyId);
+	Polygon copy = p;
+	p.clear();
+	p.reserve(copy.size());
+
+	foreach(int pt, copy)
+		p.push_front(pt);
+}
+
+bool Topology::comparePolygon(Polygon p1, Polygon p2)
+{
+	if(p1.size() != p2.size())
+		return false;
+
+	while(!p1.empty())
+	{
+		int pt1 = p1.back();
+		p1.pop_back();
+
+		bool found = false;
+
+		for(int i=0; i<p2.size(); ++i)
+		{
+			if(p2[i] == pt1)
+			{
+				p2.remove(i);
+				found = true;
+				break;
+			}
+		}
+
+		if(!found)
+			return false;
+	}
+
+	return true;
 }
 
 bool Topology::hasPoints() const
@@ -526,6 +613,74 @@ void Topology::createElementsOnBorder()
 			const int plId = m_polygonsAroundEdge[i][0];
 			if(m_polygonsOnBorder.contains(plId))
 				m_polygonsOnBorder.push_back(plId);
+		}
+	}
+}
+
+void Topology::createTriangles()
+{
+	if(!hasEdges())
+		return;
+
+	if(!hasEdgesAroundPoint())
+		createEdgesAroundPointList();
+
+	if(hasPolygons())
+		clearPolygons();
+
+	const int nbEdges = getNumberOfEdges();
+	QList<int> tmpEdgesId;
+	for(int i=0; i<nbEdges; ++i)
+		tmpEdgesId.push_back(i);
+
+	clearPolygonsAroundEdge();
+	m_polygonsAroundEdge.resize(nbEdges);
+
+	while(!tmpEdgesId.empty())
+	{
+		int eid = tmpEdgesId.front();
+		Edge e = getEdge(eid);
+		tmpEdgesId.pop_front();
+
+		const IndicesList& neighbors = getEdgesAroundPoint(e.first);
+		int nbNgh = neighbors.size();
+		for(int i=0; i<nbNgh; ++i)
+		{
+			int e2id = neighbors[i];
+			int p2id = getOtherPointInEdge(e2id, e.first);
+			int e3id = getEdgeIndex(p2id, e.second);
+
+			if(e3id != -1)
+			{
+				Polygon poly;
+				poly.push_back(e.first);
+				poly.push_back(p2id);
+				poly.push_back(e.second);
+
+				if(!m_polygonsAroundEdge[eid].empty())
+				{
+					int poly2 = m_polygonsAroundEdge[eid][0];
+					if(comparePolygon(poly, getPolygon(poly2)))
+						continue;
+				}
+
+				int polyid = addPolygon(poly);
+
+				if(areaOfPolygon(polyid) < 0)
+					reorientPolygon(polyid);
+
+				m_polygonsAroundEdge[eid].push_back(polyid);
+				if(m_polygonsAroundEdge[eid].size() == 2)
+					tmpEdgesId.removeOne(eid);
+
+				m_polygonsAroundEdge[e2id].push_back(polyid);
+				if(m_polygonsAroundEdge[e2id].size() == 2)
+					tmpEdgesId.removeOne(e2id);
+
+				m_polygonsAroundEdge[e3id].push_back(polyid);
+				if(m_polygonsAroundEdge[e3id].size() == 2)
+					tmpEdgesId.removeOne(e3id);
+			}
 		}
 	}
 }

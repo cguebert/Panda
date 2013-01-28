@@ -107,7 +107,9 @@ SOURCES       = main.cpp \
     panda/Topology.cpp \
     modules/generators/topology/ComposeTopology.cpp \
     modules/render/RenderPolygon.cpp \
-    modules/generators/topology/Voronoi.cpp
+    modules/generators/topology/Delaunay.cpp \
+    modules/generators/topology/Voronoi.cpp \
+    modules/math/topology/TopologyInfo.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

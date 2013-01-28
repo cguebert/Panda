@@ -68,18 +68,6 @@ public:
 
 			topo.addEdge(it->vertex0() - firstVertex, it->vertex1() - firstVertex);
 		}
-/*
-		int result = 0;
-		for(Diagram::const_cell_iterator it = vd.cells().begin(); it != vd.cells().end(); ++it)
-		{
-			const Diagram::cell_type &cell = *it;
-			const Diagram::edge_type *edge = cell.incident_edge();
-			do {
-				if(edge->is_linear())
-					++result;
-				edge = edge->next();
-			} while (edge != cell.incident_edge());
-		 }*/
 
 		topology.endEdit();
 		this->cleanDirty();
@@ -90,7 +78,9 @@ protected:
 	Data<Topology> topology;
 };
 
-int GeneratorTopology_VoronoiClass = RegisterObject("Generator/Topology/Voronoi").setClass<GeneratorTopology_Voronoi>().setDescription("Create a topology from a Voronoi tessellation");
+int GeneratorTopology_VoronoiClass = RegisterObject("Generator/Topology/Voronoi")
+		.setClass<GeneratorTopology_Voronoi>()
+		.setDescription("Create a topology from a Voronoi tessellation");
 
 //*************************************************************************//
 

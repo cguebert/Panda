@@ -21,17 +21,19 @@ public:
     Topology();
     virtual ~Topology();
 
-    void addPoint(const QPointF& point);
+	int addPoint(const QPointF& point);
     void addPoints(const QVector<QPointF>& pts);
 
-    void addEdge(int a, int b);
+	int addEdge(int a, int b);
+	int addEdge(Edge e);
     void addEdges(const QVector<Edge>& e);
 
-    void addPolygon(const Polygon& p);
+	int addPolygon(const Polygon& p);
     void addPolygons(const QVector<Polygon>& p);
 
     int getNumberOfPoints() const;
 	int getNumberOfEdges();
+	int getNumberOfEdges() const;
     int getNumberOfPolygons() const;
 
 	const QVector<QPointF>& getPoints() const;
@@ -41,6 +43,7 @@ public:
     QPointF& getPoint(int index);
 	QPointF getPoint(int index) const;
 	Edge getEdge(int index);
+	Edge getEdge(int index) const;
 	Polygon getPolygon(int index) const;
 
 	int getPointIndex(QPointF pt);
@@ -68,6 +71,11 @@ public:
 	IndicesList getPolygonsAroundPolygons(const IndicesList& listID);
 	IndicesList getPolygonsConnectedToPolygon(int index);
 
+	int getOtherPointInEdge(int edge, int point);
+	double areaOfPolygon(int polyId);
+	void reorientPolygon(int polyId);
+	bool comparePolygon(Polygon p1, Polygon p2);
+
 	bool hasPoints() const;
 	bool hasEdges() const;
 	bool hasPolygons() const;
@@ -83,6 +91,7 @@ public:
 	void createPolygonsAroundPointList();
 	void createPolygonsAroundEdgeList();
 	void createElementsOnBorder();
+	void createTriangles();
 
 	void clearPoints();
 	void clearEdges();
@@ -110,7 +119,6 @@ protected:
     IndicesList m_pointsOnBorder,
         m_edgesOnBorder,
         m_polygonsOnBorder;
-
 };
 
 Q_DECLARE_METATYPE(Topology)
