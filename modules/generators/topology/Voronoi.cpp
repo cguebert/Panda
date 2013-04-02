@@ -7,11 +7,9 @@
 #include <vector>
 using std::vector;
 
+#include <boost/polygon/polygon.hpp>
 #include <boost/polygon/voronoi.hpp>
-using boost::polygon::voronoi_builder;
-using boost::polygon::voronoi_diagram;
-using boost::polygon::point_data;
-using boost::polygon::segment_data;
+using namespace boost::polygon;
 
 namespace panda {
 
