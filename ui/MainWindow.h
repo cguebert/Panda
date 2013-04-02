@@ -44,11 +44,14 @@ private slots:
     void group();
     void ungroup();
 	void editGroup();
+	void saveGroup();
+    void createGroupObject();
 
 private:
     void createActions();
     void createMenus();
     void createRegistryMenu();
+    void createGroupRegistryMenu();
     void createContextMenu();
     void createToolBars();
     void createStatusBar();
@@ -85,6 +88,7 @@ private:
     QMenu* toolsMenu;
     QMenu* optionsMenu;
     QMenu* helpMenu;
+    QMenu* groupsRegistryMenu;
     QToolBar* fileToolBar;
     QToolBar* editToolBar;
     QToolBar* animToolBar;
@@ -117,6 +121,7 @@ private:
     QAction* groupAction;
     QAction* ungroupAction;
 	QAction* editGroupAction;
+	QAction* saveGroupAction;
     QLabel* timeLabel;
 };
 

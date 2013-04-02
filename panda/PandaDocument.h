@@ -13,6 +13,7 @@ namespace panda {
 
 class BaseLayer;
 class Layer;
+class Group;
 
 class PandaDocument : public PandaObject
 {
@@ -22,6 +23,7 @@ public:
 
     typedef QListIterator<PandaObject*> ObjectsIterator;
     typedef QListIterator<Layer*> LayersIterator;
+    typedef QMapIterator<QString, QString> GroupsIterator;
 
     explicit PandaDocument(QObject *parent = 0);
 
@@ -71,6 +73,12 @@ public:
     void doAddObject(PandaObject* object);
     void doRemoveObject(PandaObject* object, bool del=true);
 
+    void createGroupsList();
+    GroupsIterator getGroupsIterator();
+    QString getGroupDescription(const QString& groupName);
+    bool saveGroup(Group* group);
+    PandaObject* createGroupObject(QString groupPath);
+
 protected:
     QList<PandaObject*> pandaObjects, selectedObjects;
     QMap<quint32, PandaObject*> pandaObjectsMap;
@@ -90,9 +98,17 @@ protected:
     bool animPlaying;
     QTimer* animTimer;
 
+    QMap<QString, QString> groupsMap;
+
+    bool getGroupDescription(const QString &fileName, QString& description);
+
 private:
     static const quint32 pandaMagicNumber = 0x574f306b;
     static const quint32 pandaVersion = 40;
+
+    QString groupsDirPath;
+    static const quint32 groupsMagicNumber = 0x47723070;
+    static const quint32 groupsVersion = 40;
 
 signals:
     void modified();

@@ -706,6 +706,17 @@ BaseData* Group::duplicateData(BaseData* data)
     return newData;
 }
 
+void Group::reset()
+{
+    foreach(PandaObject* obj, objects)
+        obj->reset();
+}
+
+QString Group::getGroupName()
+{
+    return groupName.getValue();
+}
+
 int GroupClass = RegisterObject("Group").setClass<Group>().setDescription("Groups many object into a single one").setHidden(true);
 
 //*************************************************************************//

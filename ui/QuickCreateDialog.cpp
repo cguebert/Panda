@@ -52,6 +52,16 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 		if(!iter.value()->hidden)
 			menuStringsList << iter.value()->menuDisplay;
 	}
+
+    // Adding groups
+    panda::PandaDocument::GroupsIterator iter2 = doc->getGroupsIterator();
+    while(iter2.hasNext())
+    {
+        iter2.next();
+        menuStringsList << "Groups/" + iter2.key();
+    }
+
+    menuStringsList.sort();
 	listWidget->addItems(menuStringsList);
 
 	updateDescLabel();
@@ -80,11 +90,20 @@ void QuickCreateDialog::updateDescLabel()
 	if(current)
 	{
 		QString selectedItemText = current->text();
-		const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
-		if(entry)
-			descLabel->setText(entry->description);
-		else
-			descLabel->setText("");
+        if(selectedItemText.startsWith("Groups/"))
+        {
+            QString groupName = selectedItemText.mid(7);
+            QString description = document->getGroupDescription(groupName);
+            descLabel->setText(description);
+        }
+        else
+        {
+            const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
+            if(entry)
+                descLabel->setText(entry->description);
+            else
+                descLabel->setText("");
+        }
 	}
 	else
 		descLabel->setText("");
@@ -130,11 +149,19 @@ void QuickCreateDialog::createObject()
 	else if(listWidget->count() >= 1)
 		selectedItemText = listWidget->item(0)->text();
 
-	if(selectedItemText.size())
+    if(!selectedItemText.isEmpty())
 	{
-		const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
-		if(entry)
-			document->createObject(entry->className);
+        if(selectedItemText.startsWith("Groups/"))
+        {
+            QString groupName = selectedItemText.mid(7);
+            document->createGroupObject(groupName);
+        }
+        else
+        {
+            const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
+            if(entry)
+                document->createObject(entry->className);
+        }
 	}
 
 }

@@ -22,7 +22,6 @@ public:
 
 	typedef TClass< PandaObject, void > MyClass;
 	static const MyClass* getClass() { return MyClass::getInstance(); }
-//	virtual const BaseClass* getBaseClass() const { return getClass(); }
 	virtual const BaseClass* getBaseClass() const = 0;
 
 	static QString getTypeName();

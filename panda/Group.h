@@ -33,6 +33,10 @@ public:
     virtual void load(QDataStream& in);
     virtual void load(QTextStream& in);
 
+    virtual void reset();
+
+    QString getGroupName();
+
 protected:
     Data<QString> groupName;
 

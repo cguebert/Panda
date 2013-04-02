@@ -12,6 +12,7 @@
 #include <panda/Group.h>
 
 MainWindow::MainWindow()
+    : groupsRegistryMenu(NULL)
 {
     pandaDocument = new panda::PandaDocument(this);
 
@@ -33,6 +34,8 @@ MainWindow::MainWindow()
     connect(graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 
     readSettings();
+
+    createGroupRegistryMenu();
 
     setWindowIcon(QIcon(":/images/icon.png"));
     setCurrentFile("");
@@ -126,7 +129,7 @@ void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Panda"),
             tr("<h2>Panda 0.1</h2>"
-               "<p>Copyright &copy; 2012 Christophe Guébert"
+               "<p>Copyright &copy; 2012 Christophe GuÃ©bert"
                "<p>Panda is a framework for parametric drawing and animation."));
 }
 
@@ -264,6 +267,12 @@ void MainWindow::createActions()
 
 	connect(editGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
 
+	saveGroupAction = new QAction(tr("&Save group"), this);
+	saveGroupAction->setShortcut(tr("Ctrl+Shift+E"));
+	saveGroupAction->setStatusTip(tr("Save the selected group for later use"));
+
+    connect(saveGroupAction, SIGNAL(triggered()), this, SLOT(saveGroup()));
+
     zoomResetAction = new QAction(tr("Reset &zoom"), this);
     zoomResetAction->setShortcut(tr("Ctrl+0"));
     zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
@@ -369,6 +378,7 @@ void MainWindow::createMenus()
     groupMenu->addAction(groupAction);
     groupMenu->addAction(ungroupAction);
 	groupMenu->addAction(editGroupAction);
+	groupMenu->addAction(saveGroupAction);
 
     createRegistryMenu();
 
@@ -441,6 +451,43 @@ void MainWindow::createRegistryMenu()
         }
 
         menuTree.registerActions(registryMenu);
+    }
+}
+
+void MainWindow::createGroupRegistryMenu()
+{
+    if(groupsRegistryMenu)
+        groupsRegistryMenu->clear();
+    pandaDocument->createGroupsList();
+
+    panda::PandaDocument::GroupsIterator iter = pandaDocument->getGroupsIterator();
+    if(iter.hasNext())
+    {
+        if(!groupsRegistryMenu)
+        {
+            registryMenu->addSeparator();
+            groupsRegistryMenu = registryMenu->addMenu(tr("&Groups"));
+        }
+
+        menuItemInfo menuTree;
+        while(iter.hasNext())
+        {
+            iter.next();
+            QString display = iter.key();
+            QStringList hierarchy = display.split("/");
+            menuItemInfo* currentMenu = &menuTree;
+            for(int i=0; i<hierarchy.count()-1; ++i)
+                currentMenu = &currentMenu->childs[hierarchy[i]];
+
+            QAction* tempAction = new QAction(hierarchy.last(), this);
+            tempAction->setStatusTip(iter.value());
+            tempAction->setData(iter.key());
+            currentMenu->actions[hierarchy.last()] = tempAction;
+
+            connect(tempAction, SIGNAL(triggered()), this, SLOT(createGroupObject()));
+        }
+
+        menuTree.registerActions(groupsRegistryMenu);
     }
 }
 
@@ -651,4 +698,31 @@ void MainWindow::editGroup()
 	}
 	else
 		statusBar()->showMessage(tr("The selected objet is not a group"), 2000);
+}
+
+void MainWindow::saveGroup()
+{
+    panda::PandaObject* object = pandaDocument->getCurrentSelectedObject();
+    panda::Group* group = dynamic_cast<panda::Group*>(object);
+	if(group)
+	{        
+        if(pandaDocument->saveGroup(group))
+        {
+            statusBar()->showMessage(tr("Group saved"), 2000);
+            createGroupRegistryMenu();
+        }
+	}
+	else
+		statusBar()->showMessage(tr("The selected objet is not a group"), 2000);
+}
+
+
+void MainWindow::createGroupObject()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if(action)
+    {
+        QString path = action->data().toString();
+        pandaDocument->createGroupObject(path);
+    }
 }
