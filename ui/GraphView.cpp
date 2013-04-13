@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 #include <cmath>
 
 #include <ui/GraphView.h>
@@ -198,7 +198,7 @@ void GraphView::resizeEvent(QResizeEvent * /* event */)
 
 void GraphView::mousePressEvent(QMouseEvent *event)
 {
-    QPointF zoomedMouse = event->posF() / zoomFactor;
+	QPointF zoomedMouse = event->localPos() / zoomFactor;
     if(event->button() == Qt::LeftButton)
     {
         panda::PandaObject* object = getObjectAtPos(zoomedMouse);
@@ -257,7 +257,7 @@ void GraphView::mousePressEvent(QMouseEvent *event)
             // Starting a rubber band to select in a zone
             pandaDocument->selectNone();
             movingAction = MOVING_SELECTION;
-            previousMousePos = currentMousePos = event->posF();
+			previousMousePos = currentMousePos = event->localPos();
             QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
         }
     }
@@ -285,7 +285,7 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
 {
     if(movingAction == MOVING_START)
     {
-        QPointF mousePos = event->posF() / zoomFactor;
+		QPointF mousePos = event->localPos() / zoomFactor;
         QPointF delta = mousePos - previousMousePos;
         if(QVector2D(delta *  zoomFactor).length() > 5)
         {
@@ -311,7 +311,7 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
     }
     else if(movingAction == MOVING_OBJECT)
     {
-        QPointF mousePos = event->posF() / zoomFactor;
+		QPointF mousePos = event->localPos() / zoomFactor;
         QPointF delta = mousePos - previousMousePos;
         if(!delta.isNull())
         {
@@ -349,18 +349,18 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
 	}
     else if(movingAction == MOVING_SELECTION)
     {
-        currentMousePos = event->posF();
+		currentMousePos = event->localPos();
         update();
     }
     else if(movingAction == MOVING_LINK)
     {
-        currentMousePos = event->posF() / zoomFactor;
+		currentMousePos = event->localPos() / zoomFactor;
         update();
     }
 
     if(movingAction == MOVING_NONE || movingAction == MOVING_LINK)
     {
-        QPointF zoomedMouse = event->posF() / zoomFactor;
+		QPointF zoomedMouse = event->localPos() / zoomFactor;
         panda::PandaObject* object = getObjectAtPos(zoomedMouse);
         if(object)
         {

@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>

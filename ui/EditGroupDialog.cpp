@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include <ui/EditGroupDialog.h>
 
@@ -37,7 +37,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 	tableWidget->horizontalHeader()->resizeSection(1, 50);
 	tableWidget->horizontalHeader()->resizeSection(2, 50);
 	tableWidget->horizontalHeader()->setStretchLastSection(true);
-	tableWidget->horizontalHeader()->setClickable(false);
+	tableWidget->horizontalHeader()->setSectionsClickable(false);
 
 	connect(tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));
 

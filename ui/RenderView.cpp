@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include <ui/RenderView.h>
 #include <panda/PandaDocument.h>
@@ -50,7 +50,7 @@ void RenderView::mouseMoveEvent(QMouseEvent *event)
 	QPointF delta = QPointF(viewRect.center().x() - renderSize.width() / 2,
 							viewRect.center().y() - renderSize.height() / 2);
 
-	pandaDocument->setMousePosition(event->posF() - delta);
+	pandaDocument->setMousePosition(event->localPos() - delta);
 }
 
 void RenderView:: mouseReleaseEvent(QMouseEvent *event)

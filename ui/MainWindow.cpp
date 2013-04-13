@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include <ui/MainWindow.h>
 #include <ui/GraphView.h>

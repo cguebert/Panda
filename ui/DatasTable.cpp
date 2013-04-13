@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include <ui/DatasTable.h>
 #include <ui/DatasEditDialog.h>
