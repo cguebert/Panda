@@ -9,7 +9,7 @@ using panda::ObjectFactory;
 EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 	: QDialog(parent)
 	, group(group)
-	, selectedData(NULL)
+	, selectedData(nullptr)
 	, selectedRow(-1)
 {
     QVBoxLayout* vLayout = new QVBoxLayout;

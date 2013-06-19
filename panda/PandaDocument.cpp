@@ -25,9 +25,15 @@ PandaDocument::PandaDocument(QObject *parent)
     addInput(&backgroundColor);
     addInput(&timestep);
 
-    animTime.setOutput(true);	// Not connecting to the document, otherwise it would update the layers each time we get the time.
+    // Not connecting to the document, otherwise it would update the layers each time we get the time.
+    animTime.setOutput(true);
+    animTime.setReadOnly(true);
+
 	mousePosition.setOutput(true);
+    mousePosition.setReadOnly(true);
+
 	mouseClick.setOutput(true);
+    mouseClick.setReadOnly(true);
 
     connect(this, SIGNAL(modifiedObject(panda::PandaObject*)), this, SIGNAL(modified()));
     connect(this, SIGNAL(addedObject(panda::PandaObject*)), this, SIGNAL(modified()));
@@ -49,7 +55,7 @@ bool PandaDocument::writeFile(const QString& fileName)
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
     {
-        QMessageBox::warning(NULL, tr("Panda"),
+        QMessageBox::warning(nullptr, tr("Panda"),
                              tr("Cannot write file %1:\n%2.")
                              .arg(file.fileName())
                              .arg(file.errorString()));
@@ -124,7 +130,7 @@ bool PandaDocument::readFile(const QString& fileName)
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))
     {
-        QMessageBox::warning(NULL, tr("Panda"),
+        QMessageBox::warning(nullptr, tr("Panda"),
                              tr("Cannot read file %1:\n%2.")
                              .arg(file.fileName())
                              .arg(file.errorString()));
@@ -139,13 +145,13 @@ bool PandaDocument::readFile(const QString& fileName)
     in >> version;
     if(magicNumber != pandaMagicNumber)
     {
-        QMessageBox::warning(NULL, tr("Panda"), tr("The file is not a Panda file."));
+        QMessageBox::warning(nullptr, tr("Panda"), tr("The file is not a Panda file."));
         return false;
     }
 
     if(version < pandaVersion)
     {
-        QMessageBox::warning(NULL, tr("Panda"), tr("This version is not supported any more."));
+        QMessageBox::warning(nullptr, tr("Panda"), tr("This version is not supported any more."));
         return false;
     }
 
@@ -174,7 +180,7 @@ bool PandaDocument::readFile(const QString& fileName)
         }
         else
         {
-            QMessageBox::warning(NULL, tr("Panda"),
+            QMessageBox::warning(nullptr, tr("Panda"),
                 tr("Could not create the object %1.\nA plugin must be missing.")
                 .arg(registryName));
             return false;
@@ -318,7 +324,7 @@ bool PandaDocument::readTextDocument(QString& text)
         }
         else
         {
-            QMessageBox::warning(NULL, tr("Panda"),
+            QMessageBox::warning(nullptr, tr("Panda"),
                 tr("Could not create the object %1.\nA plugin must be missing.")
                 .arg(registryName));
             return false;
@@ -398,7 +404,7 @@ void PandaDocument::resetDocument()
 
     emit modified();
     emit selectionChanged();
-    emit selectedObject(NULL);
+    emit selectedObject(nullptr);
 }
 
 PandaObject* PandaDocument::createObject(QString registryName)
@@ -423,7 +429,7 @@ PandaDocument::ObjectsIterator PandaDocument::getObjectsIterator() const
 PandaObject* PandaDocument::getCurrentSelectedObject()
 {
     if(selectedObjects.empty())
-        return NULL;
+        return nullptr;
     else
         return selectedObjects.back();
 }
@@ -531,7 +537,7 @@ void PandaDocument::del()
             doRemoveObject(object);
 
         selectedObjects.clear();
-        emit selectedObject(NULL);
+        emit selectedObject(nullptr);
         emit selectionChanged();
         emit modified();
     }
@@ -569,7 +575,7 @@ void PandaDocument::selectNone()
     if(!selectedObjects.empty())
     {
         selectedObjects.clear();
-        emit selectedObject(NULL);
+        emit selectedObject(nullptr);
         emit selectionChanged();
     }
 }
@@ -708,7 +714,7 @@ QString PandaDocument::getGroupDescription(const QString& groupName)
 bool PandaDocument::saveGroup(Group *group)
 {
     bool ok;
-    QString text = QInputDialog::getText(NULL, tr("Save group"),
+    QString text = QInputDialog::getText(nullptr, tr("Save group"),
                                          tr("Group name:"), QLineEdit::Normal,
                                          group->getGroupName(), &ok);
     if (ok && !text.isEmpty())
@@ -722,7 +728,7 @@ bool PandaDocument::saveGroup(Group *group)
         // If already exists
         if(file.exists())
         {
-            if(QMessageBox::question(NULL, tr("Panda"),
+            if(QMessageBox::question(nullptr, tr("Panda"),
                                   tr("This group already exists, overwrite?"),
                                   QMessageBox::Yes|QMessageBox::No,
                                   QMessageBox::Yes)
@@ -732,7 +738,7 @@ bool PandaDocument::saveGroup(Group *group)
 
         if (!file.open(QIODevice::WriteOnly))
         {
-            QMessageBox::warning(NULL, tr("Panda"),
+            QMessageBox::warning(nullptr, tr("Panda"),
                                  tr("Cannot write file %1:\n%2.")
                                  .arg(file.fileName())
                                  .arg(file.errorString()));
@@ -745,7 +751,7 @@ bool PandaDocument::saveGroup(Group *group)
         out << groupsMagicNumber;
         out << groupsVersion;
 
-        QString text = QInputDialog::getText(NULL, tr("Save group"),
+        QString text = QInputDialog::getText(nullptr, tr("Save group"),
                                              tr("Group description:"), QLineEdit::Normal,
                                              "", &ok);
         out << text;
@@ -763,8 +769,8 @@ PandaObject* PandaDocument::createGroupObject(QString groupPath)
     QFile file(groupsDirPath + "/" + groupPath + ".grp");
     if(!file.open(QIODevice::ReadOnly))
     {
-        QMessageBox::warning(NULL, tr("Panda"), tr("Could not open the file."));
-        return NULL;
+        QMessageBox::warning(nullptr, tr("Panda"), tr("Could not open the file."));
+        return nullptr;
     }
 
     QDataStream in(&file);
@@ -775,14 +781,14 @@ PandaObject* PandaDocument::createGroupObject(QString groupPath)
     in >> version;
     if(magicNumber != groupsMagicNumber)
     {
-        QMessageBox::warning(NULL, tr("Panda"), tr("The file is not a Panda file."));
-        return NULL;
+        QMessageBox::warning(nullptr, tr("Panda"), tr("The file is not a Panda file."));
+        return nullptr;
     }
 
     if(version < groupsVersion)
     {
-        QMessageBox::warning(NULL, tr("Panda"), tr("This version is not supported any more."));
-        return NULL;
+        QMessageBox::warning(nullptr, tr("Panda"), tr("This version is not supported any more."));
+        return nullptr;
     }
 
     QString description;
@@ -798,10 +804,10 @@ PandaObject* PandaDocument::createGroupObject(QString groupPath)
     }
     else
     {
-        QMessageBox::warning(NULL, tr("Panda"),
+        QMessageBox::warning(nullptr, tr("Panda"),
             tr("Could not create the object %1.\nA plugin must be missing.")
             .arg(registryName));
-        return NULL;
+        return nullptr;
     }
 
     return object;
@@ -817,7 +823,7 @@ PandaObject* PandaDocument::findObject(quint32 objectIndex)
     if(pandaObjectsMap.contains(objectIndex))
         return pandaObjectsMap[objectIndex];
 
-    return NULL;
+    return nullptr;
 }
 
 BaseData* PandaDocument::findData(quint32 objectIndex, const QString& dataName)
@@ -826,7 +832,7 @@ BaseData* PandaDocument::findData(quint32 objectIndex, const QString& dataName)
     if(object)
         return object->getData(dataName);
 
-    return NULL;
+    return nullptr;
 }
 
 void PandaDocument::onDirtyObject(panda::PandaObject* object)
@@ -922,7 +928,7 @@ void PandaDocument::setDirtyValue()
     {
         DataNode::setDirtyValue();
         if(!getCurrentSelectedObject())
-            emit selectedObjectIsDirty(NULL);
+            emit selectedObjectIsDirty(nullptr);
         emit modified();
     }
 }

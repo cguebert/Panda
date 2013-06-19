@@ -48,7 +48,7 @@ protected:
 	virtual void removeObject(PandaObject*) {}
 
     BaseData* duplicateData(BaseData* data);
-	QString findAvailableDataName(QString baseName, BaseData* data=NULL);
+	QString findAvailableDataName(QString baseName, BaseData* data=nullptr);
 };
 
 class GroupWithLayer : public Group, public BaseLayer

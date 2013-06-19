@@ -78,7 +78,7 @@ const ObjectFactory::ClassEntry* getFactoryEntry(QString menu)
 			return iter.value().data();
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void QuickCreateDialog::updateDescLabel()

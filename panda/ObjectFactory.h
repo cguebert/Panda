@@ -51,7 +51,7 @@ public:
 	}
 	static QString getRegistryName(PandaObject* object);
 
-	PandaObject* create(QString className, PandaDocument* parent);
+    PandaObject* create(QString className, PandaDocument* parent);
 
     typedef QMapIterator< QString, QSharedPointer<ClassEntry> > RegistryMapIterator;
     RegistryMapIterator getRegistryIterator() { return RegistryMapIterator(registry); }

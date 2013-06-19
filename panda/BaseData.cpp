@@ -10,26 +10,13 @@ namespace panda
 {
 
 BaseData::BaseData(const BaseInitData& init)
-    : readOnly(false)
-    , displayed(true)
-    , persistent(true)
-    , input(false)
-    , output(false)
-    , isValueSet(false)
-	, setParentProtection(false)
-    , name(init.name)
-    , help(init.help)
-    , owner(init.owner)
-    , parentBaseData(NULL)
+    : BaseData(init.name, init.help, init.owner)
 {
     if(init.data != this)
     {
         std::cerr << "Fatal error : wrong pointer in initData" << std::endl;
         QCoreApplication::exit(-1);
     }
-
-    if(owner)
-        owner->addData(this);
 }
 
 BaseData::BaseData(const QString& name, const QString& help, PandaObject* owner)
@@ -40,10 +27,12 @@ BaseData::BaseData(const QString& name, const QString& help, PandaObject* owner)
     , output(false)
     , isValueSet(false)
 	, setParentProtection(false)
+    , counter(0)
     , name(name)
     , help(help)
+    , widget("default")
     , owner(owner)
-    , parentBaseData(NULL)
+    , parentBaseData(nullptr)
 {
     if(owner)
         owner->addData(this);
@@ -92,12 +81,13 @@ void BaseData::setParent(BaseData* parent)
         addInput(parent);
         BaseData::setDirtyValue();
         update();
+        ++counter;
         isValueSet = true;
         setDirtyValue();
     }
     else
     {
-        parentBaseData = NULL;
+        parentBaseData = nullptr;
         while(!this->inputs.empty())
             this->removeInput(this->inputs.front());
     }
@@ -133,7 +123,7 @@ void BaseData::doRemoveInput(DataNode* node)
     if(parentBaseData == node)
     {
 		if(owner && !setParentProtection)
-            owner->dataSetParent(this, NULL);
+            owner->dataSetParent(this, nullptr);
     }
     else if(dynamic_cast<PandaObject*>(node))
         output = false;

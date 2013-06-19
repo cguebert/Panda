@@ -70,7 +70,7 @@ void Layer::update()
 
 bool Layer::accepts(DockableObject* dockable) const
 {
-	return dynamic_cast<Renderer*>(dockable) != NULL;
+	return dynamic_cast<Renderer*>(dockable) != nullptr;
 }
 
 QList<Renderer*> Layer::getRenderers()

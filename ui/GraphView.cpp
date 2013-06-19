@@ -15,8 +15,8 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget *parent)
     , zoomLevel(0)
     , zoomFactor(1.0)
     , movingAction(MOVING_NONE)
-    , clickedData(NULL)
-    , hoverData(NULL)
+    , clickedData(nullptr)
+    , hoverData(nullptr)
 	, recomputeTags(false)
 {
     setAutoFillBackground(true);
@@ -71,7 +71,7 @@ panda::PandaObject* GraphView::getObjectAtPos(const QPointF& pt)
         if(objectDrawStructs[object]->contains(pt))
             return object;
     }
-    return NULL;
+    return nullptr;
 }
 
 bool GraphView::isCompatible(const panda::BaseData* data1, const panda::BaseData* data2)
@@ -103,8 +103,8 @@ void GraphView::resetView()
     objectDrawStructs.clear();
     linkTags.clear();
     movingAction = MOVING_NONE;
-    clickedData = NULL;
-    hoverData = NULL;
+    clickedData = nullptr;
+    hoverData = nullptr;
 	recomputeTags = false;
 }
 
@@ -213,7 +213,7 @@ void GraphView::mousePressEvent(QMouseEvent *event)
                 if(data->getParent() && event->modifiers() == Qt::ControlModifier)
                 {
                     removeLinkTag(data->getParent(), data);
-                    object->dataSetParent(data, NULL);
+                    object->dataSetParent(data, nullptr);
                     emit modified();
                     update();
                     return;
@@ -381,7 +381,7 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
         }
         else
         {
-            hoverData = NULL;
+            hoverData = nullptr;
 
             if(movingAction == MOVING_NONE)
             {
@@ -497,7 +497,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
                 updateLinkTags();
             }
         }
-        clickedData = NULL;
+        clickedData = nullptr;
         update();
     }
 

@@ -27,7 +27,10 @@ HEADERS       = \
     ui/EditGroupDialog.h \
     ui/LayersTab.h \
     panda/BaseClass.h \
-    panda/Topology.h
+    panda/Topology.h \
+    helper/Factory.h \
+    ui/DataWidget.h \
+    ui/SimpleDataWidget.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -109,7 +112,9 @@ SOURCES       = main.cpp \
     modules/render/RenderPolygon.cpp \
     modules/generators/topology/Delaunay.cpp \
     modules/generators/topology/Voronoi.cpp \
-    modules/math/topology/TopologyInfo.cpp
+    modules/math/topology/TopologyInfo.cpp \
+    helper/Factory.cpp \
+    ui/SimpleDataWidget.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

@@ -5,10 +5,17 @@
 
 #include <panda/PandaObject.h>
 
+#include <helper/Factory.h>
+
+#include <QDebug>
+
 DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 	: QWidget(parent)
 	, document(doc)
 {
+	qDebug() << panda::helper::getFactoryLog();
+
+
 	tableWidget = new QTableWidget(this);
 	tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 	tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
@@ -22,6 +29,8 @@ DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 	tableWidget->setItemDelegate(new DataDelegate(1, this));
 
 	tableWidget->horizontalHeader()->setStretchLastSection(true);
+
+    tableWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
 
 	nameLabel = new QLabel("Document");
 
@@ -40,6 +49,8 @@ void DatasTable::populateTable(panda::PandaObject* object)
 {
 	tableWidget->clearContents();
 	tableWidget->setRowCount(0);
+
+    dataWidgets.clear();
 
 	if(!object)
 		object = document;
@@ -61,7 +72,14 @@ void DatasTable::populateTable(panda::PandaObject* object)
 			item1->setFlags(Qt::NoItemFlags);
 		else
 			item1->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
-		item1->setData(Qt::UserRole, QVariant::fromValue((void*)data));
+
+        BaseDataWidget::CreatorArgument arg = { data, this };
+        DataWidgetPtr dataWidget = DataWidgetPtr(BaseDataWidget::CreateDataWidget(arg));
+        dataWidgets.append(dataWidget);
+
+		qDebug() << dataWidget.data();
+
+        item1->setData(Qt::UserRole, QVariant::fromValue((void*)dataWidget.data()));
 		tableWidget->setItem(rowIndex, 0, item0);
 		tableWidget->setItem(rowIndex, 1, item1);
 		++rowIndex;
@@ -94,7 +112,7 @@ DataDelegate::DataDelegate(int dataColumn, QObject *parent)
 
 void DataDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	panda::BaseData* data = (panda::BaseData*)index.data(Qt::UserRole).value<void*>();
+    panda::BaseData* data = getData(index);
 	if(data)
 	{
 		if(data->isSingleValue())
@@ -126,7 +144,7 @@ void DataDelegate::commitAndCloseEditor()
 
 QWidget* DataDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	panda::BaseData* data = (panda::BaseData*)index.data(Qt::UserRole).value<void*>();
+    panda::BaseData* data = getData(index);
 	if(data)
 	{
 		DataItemWidget* editor = new DataItemWidget(data, parent);
@@ -139,7 +157,7 @@ QWidget* DataDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem 
 
 void DataDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-	panda::BaseData* data = (panda::BaseData*)index.data(Qt::UserRole).value<void*>();
+    panda::BaseData* data = getData(index);
 	if(data)
 	{
 		DataItemWidget* itemEditor = qobject_cast<DataItemWidget *>(editor);
@@ -152,7 +170,7 @@ void DataDelegate::setEditorData(QWidget *editor, const QModelIndex &index) cons
 
 void DataDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-	panda::BaseData* data = (panda::BaseData*)index.data(Qt::UserRole).value<void*>();
+    panda::BaseData* data = getData(index);
 	if(data)
 	{
 		DataItemWidget* itemEditor = qobject_cast<DataItemWidget *>(editor);
@@ -164,6 +182,19 @@ void DataDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
 	}
 	else
 		QStyledItemDelegate::setModelData(editor, model, index);
+}
+
+panda::BaseData* DataDelegate::getData(const QModelIndex &index) const
+{
+    BaseDataWidget* dataWidget = getDataWidget(index);
+    if(!dataWidget)
+        return nullptr;
+    return dataWidget->getBaseData();
+}
+
+BaseDataWidget* DataDelegate::getDataWidget(const QModelIndex &index) const
+{
+    return static_cast<BaseDataWidget*>(index.data(Qt::UserRole).value<void*>());
 }
 
 //***************************************************************//

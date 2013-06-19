@@ -8,7 +8,7 @@
 LayersTab::LayersTab(panda::PandaDocument* doc, QWidget *parent)
 	: QWidget(parent)
 	, document(doc)
-	, selectedLayer(NULL)
+	, selectedLayer(nullptr)
 {
 	QLabel* nameLabel = new QLabel(tr("Name:"), this);
 	nameEdit = new QLineEdit(this);
@@ -154,7 +154,7 @@ void LayersTab::removedObject(panda::PandaObject* object)
 	{
 		if(selectedLayer == layer)
 		{
-			selectedLayer = NULL;
+			selectedLayer = nullptr;
 			nameEdit->setEnabled(false);
 			compositionBox->setEnabled(false);
 			opacitySlider->setEnabled(false);

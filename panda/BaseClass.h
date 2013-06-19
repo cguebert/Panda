@@ -116,7 +116,7 @@ public:
 	static const BaseClass* getClass(int i)
 	{
 		if (i==0)	return Parents::getClass();
-		else		return NULL;
+		else		return nullptr;
 	}
 };
 
@@ -125,7 +125,7 @@ class TClassParents<void>
 {
 public:
 	static unsigned int nb() { return 0; }
-	static const BaseClass* getClass(int) { return NULL; }
+	static const BaseClass* getClass(int) { return nullptr; }
 };
 
 template<class P1, class P2>
@@ -166,7 +166,7 @@ protected:
 
 	virtual bool isInstance(PandaObject* obj) const
 	{
-		return dynamicCast(obj) != NULL;
+		return dynamicCast(obj) != nullptr;
 	}
 
 public:

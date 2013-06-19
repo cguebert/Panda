@@ -732,7 +732,7 @@ void DatasEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                 if(editorText.startsWith('#'))
                     editorText = editorText.mid(1);
                 QColor col;
-                col.setRgba(editorText.toUInt(NULL, 16));
+                col.setRgba(editorText.toUInt(nullptr, 16));
                 model->setData(index, qVariantFromValue(col), Qt::UserRole);
             }
             break;

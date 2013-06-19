@@ -63,7 +63,7 @@ BaseData* GenericObject::createDatas(int type)
 	createdDatasStructs_.append(createdDatasStruct);
 	int index = createdDatasStructs_.size();
 
-	BaseData* firstInputData = NULL;
+	BaseData* firstInputData = nullptr;
 
 	this->doEmitModified = false;
 
@@ -164,9 +164,9 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	{
 		data->setParent(parent);
 	}
-	else // (NULL), we remove the data
+	else // (nullptr), we remove the data
 	{
-		data->setParent(NULL);
+		data->setParent(nullptr);
 
 		CreatedDatasStructPtr createdDatasStruct = createdDatasMap_[data];
 		int nbConnectedInputs = 0;

@@ -74,6 +74,7 @@ public:
     inline T* beginEdit()
     {
         this->updateIfDirty();
+        ++counter;
         return &value;
     }
 

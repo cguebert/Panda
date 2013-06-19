@@ -14,7 +14,7 @@ void RandomGenerator::seed(unsigned int seed)
 
 unsigned int RandomGenerator::seedRandom(unsigned int limit)
 {
-	gen.seed( (unsigned int)time(NULL) + (unsigned int)this );
+	gen.seed( (unsigned int)time(nullptr) + (unsigned int)this );
 	return (unsigned int)(random() * limit);
 }
 

@@ -105,7 +105,7 @@ BaseData* PandaObject::getData(const QString& name) const
 {
     if(datasMap.contains(name))
         return datasMap[name];
-    else return NULL;
+    else return nullptr;
 }
 
 QList<BaseData*> PandaObject::getDatas() const

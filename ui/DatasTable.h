@@ -3,6 +3,10 @@
 
 #include <QWidget>
 #include <QStyledItemDelegate>
+#include <QList>
+#include <QSharedPointer>
+
+#include <ui/DataWidget.h>
 
 class QTableWidget;
 class QLabel;
@@ -21,10 +25,14 @@ class DatasTable : public QWidget
 public:
 	explicit DatasTable(panda::PandaObject* document, QWidget *parent = 0);
 
+    typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
+
 protected:
 	QTableWidget* tableWidget;
 	QLabel* nameLabel;
 	panda::PandaObject* document;
+
+    QList<DataWidgetPtr> dataWidgets;
 	
 signals:
 	
@@ -41,6 +49,10 @@ public:
 	virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
 	virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+
+protected:
+    panda::BaseData* getData(const QModelIndex &index) const;
+    BaseDataWidget* getDataWidget(const QModelIndex &index) const;
 
 private slots:
 	void commitAndCloseEditor();

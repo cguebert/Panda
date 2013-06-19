@@ -28,7 +28,7 @@ public:
 	virtual bool contains(const QPointF& point);	// Is this point inside of the shape of this object ? (which can be complex)
 
 	virtual QSize getObjectSize();
-	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = NULL);
+	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr);
 	bool getDataRect(panda::BaseData* data, QRectF& rect);
 
 	QRectF getObjectArea() const;

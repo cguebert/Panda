@@ -28,12 +28,12 @@ PandaObject* ObjectFactory::create(QString className, PandaDocument* parent)
                 object->setInternalData(entry->objectName, parent->getNextIndex());
 				object->postCreate();
 			}
-            return object;
+			return object;
         }
     }
 
     std::cerr << "Factory has no entry for " << className.toStdString() << std::endl;
-    return NULL;
+    return nullptr;
 }
 
 ObjectFactory::ClassEntry* ObjectFactory::getEntry(QString className)

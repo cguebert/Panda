@@ -17,8 +17,8 @@ public:
     {
     public:
         BaseInitData()
-            : data(NULL)
-            , owner(NULL)
+            : data(nullptr)
+            , owner(nullptr)
         {}
         BaseData* data;
         PandaObject* owner;
@@ -41,6 +41,8 @@ public:
     bool isSet() const { return isValueSet; }
     void unset() { isValueSet = false; }
     void forceSet() { isValueSet = true; }
+
+    int getCounter() { return counter; }
 
     bool isReadOnly() const { return readOnly; }
     void setReadOnly(bool b) { readOnly = b; }
@@ -105,6 +107,7 @@ protected:
     bool readOnly, displayed, persistent, input, output;
     bool isValueSet;
 	bool setParentProtection;
+    int counter;
     QString name, help, group, widget;
     PandaObject* owner;
     BaseData* parentBaseData;

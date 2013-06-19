@@ -15,7 +15,7 @@ DockObject::DockObject(QObject *parent)
 
 DockObject::~DockObject()
 {
-	DockObject* defaultDock = NULL;
+	DockObject* defaultDock = nullptr;
 	PandaDocument* doc = dynamic_cast<PandaDocument*>(parent());
 
 	DockablesIterator iter(dockedObjects);
@@ -28,7 +28,7 @@ DockObject::~DockObject()
 			defaultDock = dockable->getDefaultDock();
 
 		if(defaultDock == this)
-			defaultDock = NULL;
+			defaultDock = nullptr;
 
 		dockable->setParentDock(defaultDock);
 
@@ -106,7 +106,7 @@ DockObject* DockableObject::getParentDock()
 
 DockObject* DockableObject::getDefaultDock()
 {
-	return NULL;
+	return nullptr;
 }
 
 } // namespace panda

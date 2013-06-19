@@ -87,7 +87,7 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* cent
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool ObjectDrawStruct::getDataRect(panda::BaseData* data, QRectF& rect)

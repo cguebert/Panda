@@ -31,7 +31,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 
 	bool hasRenderer = false;
 	// Verify that all selected renderers are in the same layer
-	Layer* layer = NULL;
+	Layer* layer = nullptr;
 	while(iter.hasNext())
 	{
 		PandaObject* object = iter.next();
@@ -43,14 +43,14 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 				layer = dynamic_cast<Layer*>(renderer->getParentDock());
 			else if(layer != renderer->getParentDock())
 			{
-				QMessageBox::warning(NULL, tr("Panda"),
+				QMessageBox::warning(nullptr, tr("Panda"),
 					tr("All renderers must be placed in the same layer."));
 				return false;
 			}
 
 			if(layer && layer!=doc->getDefaultLayer() && !doc->isSelected(layer))
 			{
-				QMessageBox::warning(NULL, tr("Panda"),
+				QMessageBox::warning(nullptr, tr("Panda"),
 					tr("Renderers must be grouped with their layers"));
 				return false;
 			}
@@ -58,9 +58,9 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	}
 
 	if(layer == doc->getDefaultLayer())	// Won't be added in the group!
-		layer = NULL;
+		layer = nullptr;
 
-	Group* group = NULL;
+	Group* group = nullptr;
 	if(hasRenderer)
 	{
 		GroupWithLayer* groupWithLayer = dynamic_cast<GroupWithLayer*>(doc->createObject(ObjectFactory::getRegistryName<GroupWithLayer>()));
@@ -113,7 +113,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
                 PandaObject* connected = otherData->getOwner();
 				if(connected && !doc->isSelected(connected) && connected!=doc)
 				{
-					BaseData* createdData = NULL;
+					BaseData* createdData = nullptr;
 					if(!connectedInputDatas.contains(otherData))
 					{
 						createdData = group->duplicateData(data);
@@ -150,7 +150,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
                     PandaObject* connected = otherData->getOwner();
 					if(connected && !doc->isSelected(connected) && connected!=doc)
 					{
-						BaseData* createdData = NULL;
+						BaseData* createdData = nullptr;
 						if(!connectedOutputDatas.contains(data))
 						{
 							createdData = group->duplicateData(data);
@@ -476,7 +476,7 @@ void Group::load(QDataStream& in)
         }
         else
         {
-            QMessageBox::warning(NULL, tr("Panda"),
+            QMessageBox::warning(nullptr, tr("Panda"),
                 tr("Could not create the object %1.\nA plugin must be missing.")
                 .arg(registryName));
             return;
@@ -494,7 +494,7 @@ void Group::load(QDataStream& in)
 
         PandaObject *object1, *object2;
 
-        BaseData *data1=NULL, *data2=NULL;
+        BaseData *data1=nullptr, *data2=nullptr;
         if(index1)
         {
             object1 = importObjectsMap[index1];
@@ -593,7 +593,7 @@ void Group::load(QTextStream& in)
         }
         else
         {
-            QMessageBox::warning(NULL, tr("Panda"),
+            QMessageBox::warning(nullptr, tr("Panda"),
                 tr("Could not create the object %1.\nA plugin must be missing.")
                 .arg(registryName));
             return;
@@ -616,7 +616,7 @@ void Group::load(QTextStream& in)
 
         PandaObject *object1, *object2;
 
-        BaseData *data1=NULL, *data2=NULL;
+        BaseData *data1=nullptr, *data2=nullptr;
         if(index1)
         {
             object1 = importObjectsMap[index1];
@@ -687,11 +687,11 @@ QString Group::findAvailableDataName(QString baseName, BaseData *data)
 BaseData* Group::duplicateData(BaseData* data)
 {
     if(!data)
-        return NULL;
+        return nullptr;
 
 	QString name = findAvailableDataName(data->getName());
 
-    BaseData* newData = NULL;
+    BaseData* newData = nullptr;
     if(data->isSingleValue())
         newData = createDataFromType(data->getValueType(), name, data->getHelp(), this);
     else if(data->isVector())
@@ -723,7 +723,7 @@ int GroupClass = RegisterObject("Group").setClass<Group>().setDescription("Group
 
 GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 	: Group(parent)
-	, layer(NULL)
+	, layer(nullptr)
 	, image(initData(&image, "image", "Image created by the renderers connected to this layer"))
 	, compositionMode(0)
 	, opacity(1.0)
@@ -838,7 +838,7 @@ void GroupWithLayer::addObject(PandaObject* obj)
 	{
 		if(renderer->getParentDock() == defaultLayer)
 			defaultLayer->removeDockable(renderer);
-		renderer->setParentDock(NULL);
+		renderer->setParentDock(nullptr);
 		addInput((DataNode*)renderer);
 	}
 }

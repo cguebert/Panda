@@ -53,7 +53,7 @@ BaseData* createDataFromType(int type, const QString& name, const QString& help,
     default:
 		if(type == qMetaTypeId<Topology>())
 			return new Data<Topology>(name, help, owner);
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -76,7 +76,7 @@ BaseData* createVectorDataFromType(int type, const QString& name, const QString&
     case QMetaType::QImage:
         return new Data< QVector<QImage> >(name, help, owner);
     default:
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -91,7 +91,7 @@ BaseData* createAnimationDataFromType(int type, const QString& name, const QStri
     case QMetaType::QPointF:
         return new Data< Animation<QPointF> >(name, help, owner);
     default:
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -196,7 +196,7 @@ QTextStream& readValue<QColor>(QTextStream& stream, QColor& v)
     stream >> temp;
     if(temp.startsWith('#'))
         temp = temp.mid(1);
-    v.setRgba(temp.toUInt(NULL, 16));
+    v.setRgba(temp.toUInt(nullptr, 16));
     return stream;
 }
 

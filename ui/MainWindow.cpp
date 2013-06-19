@@ -12,7 +12,7 @@
 #include <panda/Group.h>
 
 MainWindow::MainWindow()
-    : groupsRegistryMenu(NULL)
+    : groupsRegistryMenu(nullptr)
 {
     pandaDocument = new panda::PandaDocument(this);
 
