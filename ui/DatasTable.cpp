@@ -13,8 +13,7 @@ DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 	: QWidget(parent)
 	, document(doc)
 {
-	qDebug() << panda::helper::getFactoryLog();
-
+//	qDebug() << panda::helper::getFactoryLog();
 
 	tableWidget = new QTableWidget(this);
 	tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -77,8 +76,6 @@ void DatasTable::populateTable(panda::PandaObject* object)
         DataWidgetPtr dataWidget = DataWidgetPtr(BaseDataWidget::CreateDataWidget(arg));
         dataWidgets.append(dataWidget);
 
-		qDebug() << dataWidget.data();
-
         item1->setData(Qt::UserRole, QVariant::fromValue((void*)dataWidget.data()));
 		tableWidget->setItem(rowIndex, 0, item0);
 		tableWidget->setItem(rowIndex, 1, item1);
@@ -137,6 +134,7 @@ void DataDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 
 void DataDelegate::commitAndCloseEditor()
 {
+	qDebug() << "commitAndCloseEditor";
 	QWidget *editor = qobject_cast<QWidget *>(sender());
 	emit commitData(editor);
 	emit closeEditor(editor);
@@ -144,44 +142,71 @@ void DataDelegate::commitAndCloseEditor()
 
 QWidget* DataDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    panda::BaseData* data = getData(index);
-	if(data)
+	BaseDataWidget* dataWidget = getDataWidget(index);
+	if(dataWidget)
 	{
-		DataItemWidget* editor = new DataItemWidget(data, parent);
-		connect(editor, SIGNAL(editingFinished()), this, SLOT(commitAndCloseEditor()));
-		return editor;
+		qDebug() << "createEditor";
+		return dataWidget->createWidgets();
 	}
 	else
-		return QStyledItemDelegate::createEditor(parent, option, index);
+	{
+		panda::BaseData* data = getData(index);
+		if(data)
+		{
+			DataItemWidget* editor = new DataItemWidget(data, parent);
+			connect(editor, SIGNAL(editingFinished()), this, SLOT(commitAndCloseEditor()));
+			return editor;
+		}
+		else
+			return QStyledItemDelegate::createEditor(parent, option, index);
+	}
 }
 
 void DataDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    panda::BaseData* data = getData(index);
-	if(data)
+	BaseDataWidget* dataWidget = getDataWidget(index);
+	if(dataWidget)
 	{
-		DataItemWidget* itemEditor = qobject_cast<DataItemWidget *>(editor);
-		if(itemEditor)
-			itemEditor->setEditorData();
+		dataWidget->updateWidgetValue();
+		qDebug() << "setEditorData";
 	}
 	else
-		QStyledItemDelegate::setEditorData(editor, index);
+	{
+		panda::BaseData* data = getData(index);
+		if(data)
+		{
+			DataItemWidget* itemEditor = qobject_cast<DataItemWidget *>(editor);
+			if(itemEditor)
+				itemEditor->setEditorData();
+		}
+		else
+			QStyledItemDelegate::setEditorData(editor, index);
+	}
 }
 
 void DataDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    panda::BaseData* data = getData(index);
-	if(data)
+	BaseDataWidget* dataWidget = getDataWidget(index);
+	if(dataWidget)
 	{
-		DataItemWidget* itemEditor = qobject_cast<DataItemWidget *>(editor);
-		if(itemEditor)
-		{
-			QString text = itemEditor->setModelData();
-			model->setData(index, qVariantFromValue(text));
-		}
+		dataWidget->updateDataValue();
+		qDebug() << "setModelData";
 	}
 	else
-		QStyledItemDelegate::setModelData(editor, model, index);
+	{
+		panda::BaseData* data = getData(index);
+		if(data)
+		{
+			DataItemWidget* itemEditor = qobject_cast<DataItemWidget *>(editor);
+			if(itemEditor)
+			{
+				QString text = itemEditor->setModelData();
+				model->setData(index, qVariantFromValue(text));
+			}
+		}
+		else
+			QStyledItemDelegate::setModelData(editor, model, index);
+	}
 }
 
 panda::BaseData* DataDelegate::getData(const QModelIndex &index) const

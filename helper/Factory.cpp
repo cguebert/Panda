@@ -1,4 +1,4 @@
-#include <helper/Factory.inl>
+#include <helper/Factory.h>
 
 namespace panda
 {

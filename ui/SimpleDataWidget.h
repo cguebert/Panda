@@ -12,105 +12,46 @@
 /// This class is used to specify how to graphically represent a data type,
 /// by default using a simple QLineEdit
 template<class T>
-class data_widget_trait
-{
-public:
-    typedef T data_type;
-    typedef QLineEdit Widget;
-    static Widget* create(QWidget* parent, const data_type& /*d*/)
-    {
-        Widget* w = new Widget(parent);
-        return w;
-    }
-    static void readFromData(Widget* w, const data_type& d)
-    {
-        QTextStream o;
-        o << d;
-        if (o.string() != w->text())
-            w->setText(o.string());
-    }
-    static void writeToData(Widget* w, data_type& d)
-    {
-        QString s = w->text();
-        QTextStream i(&s);
-        i >> d;
-    }
-    static void connectChanged(Widget* w, BaseDataWidget* datawidget)
-    {
-        connect(w, SIGNAL(textChanged(const QString&)), datawidget, SLOT(setWidgetDirty()));
-    }
-};
-
-
-/// This class is used to create and manage the GUI of a data type,
-/// using data_widget_trait to know which widgets to use
-template<class T>
 class data_widget_container
 {
 public:
-    typedef T data_type;
-    typedef data_widget_trait<data_type> helper;
-    typedef typename helper::Widget Widget;
-    typedef QHBoxLayout Layout;
-    Widget* w;
-    Layout* container_layout;
-    data_widget_container() : w(nullptr),container_layout(nullptr) {  }
+	typedef T value_type;
+	typedef panda::Data<T> data_type;
+	QLineEdit* lineEdit;
 
-    bool createLayout(BaseDataWidget* parent)
-    {
-        if(parent->layout() != nullptr) return false;
-        container_layout = new QHBoxLayout(parent);
-        return true;
-    }
+	data_widget_container() : lineEdit(nullptr) {}
 
-    bool createLayout(QLayout* layout)
+	QWidget* createWidgets(QWidget* parent, const data_type* /*d*/)
     {
-        if(container_layout) return false;
-        container_layout = new QHBoxLayout(layout);
-        return true;
+		lineEdit = new QLineEdit(parent);
+		lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+		QObject::connect(lineEdit, SIGNAL(textChanged(const QString&)), parent, SLOT(setWidgetDirty()));
+		return lineEdit;
     }
 
-    bool createWidgets(BaseDataWidget* parent, const data_type& d, bool readOnly)
+	void readFromData(const data_type* d)
     {
-        w = helper::create(parent,d);
-        if (w == nullptr)
-            return false;
-
-        helper::readFromData(w, d);
-        if (readOnly)
-            w->setEnabled(false);
-        else
-            helper::connectChanged(w, parent);
-        return true;
-    }
-    void setReadOnly(bool readOnly)
-    {
-        w->setEnabled(!readOnly);
-    }
-    void readFromData(const data_type& d)
-    {
-        helper::readFromData(w, d);
-    }
-    void writeToData(data_type& d)
-    {
-        helper::writeToData(w, d);
+		QString s = d->toString();
+		if(s != lineEdit->text())
+			lineEdit->setText(s);
     }
 
-    void insertWidgets()
+	void writeToData(data_type* d)
     {
-        Q_ASSERT(w);
-        container_layout->addWidget(w);
+		QString s = lineEdit->text();
+		d->fromString(s);
     }
 };
+
+//***************************************************************//
 
 /// This class manages the GUI of a BaseData, using the corresponding instance of data_widget_container
 template<class T, class Container = data_widget_container<T> >
 class SimpleDataWidget : public DataWidget<T>
 {
 protected:
-    typedef T data_type;
-    Container container;
-    typedef data_widget_trait<data_type> helper;
+	typedef T value_type;
+	Container container;
 
 public:
     typedef panda::Data<T> MyTData;
@@ -118,139 +59,149 @@ public:
         DataWidget<T>(parent, d)
     {}
 
-    virtual bool createWidgets()
+	virtual QWidget* createWidgets()
     {
-        const data_type& d = this->getData()->getValue();
-        if (!container.createWidgets(this, d, getData()->isReadOnly()) )
-            return false;
+		QWidget* w = container.createWidgets(this, this->getData());
+		if(!w)
+			return nullptr;
 
-        container.createLayout(this);
-        container.insertWidgets();
-        return true;
+		container.readFromData(this->getData());
+		return w;
     }
+
     virtual void readFromData()
     {
-        container.readFromData(this->getData()->getValue());
-    }
-
-    virtual void setReadOnly(bool readOnly)
-    {
-        container.setReadOnly(readOnly);
+		container.readFromData(this->getData());
     }
 
     virtual void writeToData()
     {
-        data_type& d = *this->getData()->beginEdit();
-        container.writeToData(d);
-        this->getData()->endEdit();
+		container.writeToData(this->getData());
     }
 };
+
+//***************************************************************//
 
 template<>
-class data_widget_trait< int >
+class data_widget_container< int >
 {
 public:
-    typedef int data_type;
-    typedef QSpinBox Widget;
-    static Widget* create(QWidget* parent, const data_type&)
+	typedef int value_type;
+	typedef panda::Data<value_type> data_type;
+	QSpinBox* spinBox;
+
+	data_widget_container() : spinBox(nullptr) {}
+
+	QWidget* createWidgets(QWidget* parent, const data_type*)
     {
-        Widget* w = new Widget(parent);
-        w->setMinimum(INT_MIN);
-        w->setMaximum(INT_MAX);
-        w->setSingleStep(1);
-        return w;
+		spinBox = new QSpinBox(parent);
+		spinBox->setMinimum(INT_MIN);
+		spinBox->setMaximum(INT_MAX);
+		spinBox->setSingleStep(1);
+
+		QObject::connect(spinBox, SIGNAL(valueChanged(int)), parent, SLOT(setWidgetDirty()));
+
+		return spinBox;
     }
-    static void readFromData(Widget* w, const data_type& d)
+	void readFromData(const data_type* d)
     {
-        if (d != w->value())
-            w->setValue(d);
+		int i = d->getValue();
+		if(i != spinBox->value())
+			spinBox->setValue(i);
     }
-    static void writeToData(Widget* w, data_type& d)
+	void writeToData(data_type* d)
     {
-        d = w->value();
-    }
-    static void connectChanged(Widget* w, BaseDataWidget* datawidget)
-    {
-        QObject::connect(w, SIGNAL(valueChanged(int)), datawidget, SLOT(setWidgetDirty()));
+		d->setValue(spinBox->value());
     }
 };
 
-class checkbox_data_widget_trait : public data_widget_trait< int >
+//***************************************************************//
+
+class checkbox_data_widget_trait : public data_widget_container< int >
 {
 public:
-    typedef int data_type;
-    typedef QCheckBox Widget;
-    static Widget* create(QWidget* parent, const data_type&)
+	typedef int value_type;
+	typedef panda::Data<value_type> data_type;
+	QCheckBox* checkBox;
+
+	checkbox_data_widget_trait() : checkBox(nullptr) {}
+
+	QWidget* createWidgets(QWidget* parent, const data_type*)
     {
-        Widget* w = new Widget(parent);
-        return w;
+		checkBox = new QCheckBox(parent);
+		QObject::connect(checkBox, SIGNAL(toggled(bool)), parent, SLOT(setWidgetDirty()));
+		return checkBox;
     }
-    static void readFromData(Widget* w, const data_type& d)
+	void readFromData(const data_type* d)
     {
-        bool b = (d!=0);
-        if (w->isChecked() != b)
-            w->setChecked(b);
+		bool b = (d->getValue()!=0);
+		if (checkBox->isChecked() != b)
+			checkBox->setChecked(b);
     }
-    static void writeToData(Widget* w, data_type& d)
+	void writeToData(data_type* d)
     {
-        d = w->isChecked() ? 1 : 0;
-    }
-    static void connectChanged(Widget* w, BaseDataWidget* datawidget)
-    {
-        QObject::connect(w, SIGNAL(toggled(bool)), datawidget, SLOT(setWidgetDirty()));
+		d->setValue(checkBox->isChecked() ? 1 : 0);
     }
 };
+
+//***************************************************************//
 
 template <>
-class data_widget_trait< double >
+class data_widget_container< double >
 {
 public:
-    typedef double data_type;
-    typedef QLineEdit Widget;
-    static Widget* create(QWidget* parent, const data_type& /*d*/)
+	typedef double value_type;
+	typedef panda::Data<value_type> data_type;
+	QLineEdit* lineEdit;
+
+	data_widget_container() : lineEdit(nullptr) {}
+
+	QWidget* createWidgets(QWidget* parent, const data_type* /*d*/)
     {
-        Widget* w = new Widget(parent);
-        w->setValidator(new QDoubleValidator(w));
-        return w;
+		lineEdit = new QLineEdit(parent);
+		lineEdit->setValidator(new QDoubleValidator(lineEdit));
+		QObject::connect(lineEdit, SIGNAL(textChanged(const QString&)), parent, SLOT(setWidgetDirty()));
+		return lineEdit;
     }
-    static void readFromData(Widget* w, const data_type& d)
+	void readFromData(const data_type* d)
     {
-        if (d != w->text().toDouble())
-            w->setText(QString::number(d));
+		value_type v = d->getValue();
+		if (v != lineEdit->text().toDouble())
+			lineEdit->setText(QString::number(v));
     }
-    static void writeToData(Widget* w, data_type& d)
+	void writeToData(data_type* d)
     {
-        d = w->text().toDouble();
-    }
-    static void connectChanged(Widget* w, BaseDataWidget* datawidget)
-    {
-        QObject::connect(w, SIGNAL(textChanged(const QString&)), datawidget, SLOT(setWidgetDirty()));
+		d->setValue(lineEdit->text().toDouble());
     }
 };
 
+//***************************************************************//
+
 template<>
-class data_widget_trait < QString >
+class data_widget_container< QString >
 {
 public:
-    typedef QString data_type;
-    typedef QLineEdit Widget;
-    static Widget* create(QWidget* parent, const data_type&)
+	typedef QString value_type;
+	typedef panda::Data<value_type> data_type;
+	QLineEdit* lineEdit;
+
+	data_widget_container() : lineEdit(nullptr) {}
+
+	QWidget* createWidgets(QWidget* parent, const data_type*)
     {
-        Widget* w = new Widget(parent);
-        return w;
+		lineEdit = new QLineEdit(parent);
+		QObject::connect(lineEdit, SIGNAL(textChanged(const QString&)), parent, SLOT(setWidgetDirty()) );
+		return lineEdit;
     }
-    static void readFromData(Widget* w, const data_type& d)
+	void readFromData(const data_type* d)
     {
-        if (w->text() != d)
-            w->setText(d);
+		value_type v = d->getValue();
+		if (lineEdit->text() != v)
+			lineEdit->setText(v);
     }
-    static void writeToData(Widget* w, data_type& d)
+	void writeToData(data_type* d)
     {
-        d = w->text();
-    }
-    static void connectChanged(Widget* w, BaseDataWidget* datawidget)
-    {
-        QObject::connect(w, SIGNAL(textChanged(const QString&)), datawidget, SLOT(setWidgetDirty()) );
+		d->setValue(lineEdit->text());
     }
 };
 

@@ -46,14 +46,13 @@ public:
 
 public slots:
     /// Checks that widget has been edited
-    /// emit DataOwnerDirty in case the name field has been modified
     void updateDataValue()
     {
         if(dirty)
             writeToData();
 
         dirty = false;
-        counter = baseData->getCounter();
+		counter = baseData->getCounter();
     }
 
     /// First checks that the widget is not currently being edited
@@ -124,7 +123,7 @@ public:
 
     /// The implementation of this method holds the widget creation and the signal / slot
     /// connections.
-    virtual bool createWidgets() = 0;
+	virtual QWidget* createWidgets() = 0;
 
 protected:
     /// The implementation of this method tells how the widget reads the value of the data.
