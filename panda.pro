@@ -118,5 +118,5 @@ SOURCES       = main.cpp \
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
-    ../boost_1_53_0
+    ../boost_1_54_0
 QT += widgets

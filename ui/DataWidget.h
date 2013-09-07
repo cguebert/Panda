@@ -24,7 +24,7 @@ public:
     typedef panda::helper::Factory<BaseDataWidget, BaseDataWidget::CreatorArgument> DataWidgetFactory;
 
     template<class T>
-    static T* create(T*, const CreatorArgument& arg)
+    static T* create(T*, const BaseDataWidget::CreatorArgument& arg)
     {
         typename T::MyData* data = dynamic_cast<typename T::MyData*>(arg.data);
         if(!data)
@@ -75,6 +75,7 @@ public slots:
     void setWidgetDirty(bool b = true)
     {
         dirty = b;
+        updateDataValue();
         emit WidgetDirty(b);
     }
 

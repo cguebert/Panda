@@ -10,13 +10,28 @@ namespace panda
 {
 
 BaseData::BaseData(const BaseInitData& init)
-    : BaseData(init.name, init.help, init.owner)
+	: readOnly(false)
+	, displayed(true)
+	, persistent(true)
+	, input(false)
+	, output(false)
+	, isValueSet(false)
+	, setParentProtection(false)
+	, counter(0)
+	, name(init.name)
+	, help(init.help)
+	, widget("default")
+	, owner(init.owner)
+	, parentBaseData(nullptr)
 {
     if(init.data != this)
     {
         std::cerr << "Fatal error : wrong pointer in initData" << std::endl;
         QCoreApplication::exit(-1);
     }
+
+	if(owner)
+		owner->addData(this);
 }
 
 BaseData::BaseData(const QString& name, const QString& help, PandaObject* owner)

@@ -2,16 +2,13 @@
 #define DATASTABLE_H
 
 #include <QWidget>
-#include <QStyledItemDelegate>
 #include <QList>
 #include <QSharedPointer>
 
 #include <ui/DataWidget.h>
 
-class QTableWidget;
+class QStackedLayout;
 class QLabel;
-class QLineEdit;
-class QPushButton;
 
 namespace panda
 {
@@ -28,9 +25,9 @@ public:
     typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
 
 protected:
-	QTableWidget* tableWidget;
+	QStackedLayout* stackedLayout;
 	QLabel* nameLabel;
-	panda::PandaObject* document;
+	panda::PandaObject *document, *currentObject;
 
     QList<DataWidgetPtr> dataWidgets;
 	
@@ -38,50 +35,6 @@ signals:
 	
 public slots:
 	void populateTable(panda::PandaObject*);
-};
-
-class DataDelegate : public QStyledItemDelegate
-{
-	Q_OBJECT
-public:
-	DataDelegate(int dataColumn, QObject *parent = 0);
-	virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-	virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-	virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
-	virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
-
-protected:
-    panda::BaseData* getData(const QModelIndex &index) const;
-    BaseDataWidget* getDataWidget(const QModelIndex &index) const;
-
-private slots:
-	void commitAndCloseEditor();
-
-private:
-	int dataColumn;
-};
-
-class DataItemWidget : public QWidget
-{
-	Q_OBJECT
-public:
-	DataItemWidget(panda::BaseData* data, QWidget *parent = 0);
-
-	void setEditorData();
-	QString setModelData();
-
-signals:
-	void editingFinished();
-
-private slots:
-	void onOpenEditDialog();
-
-protected:
-	panda::BaseData *parentData;
-	bool dataIsSet;
-
-	QLineEdit *lineEdit;
-	QPushButton *pushButton;
 };
 
 #endif // DATASTABLE_H
