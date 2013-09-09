@@ -30,7 +30,8 @@ HEADERS       = \
     panda/Topology.h \
     helper/Factory.h \
     ui/DataWidget.h \
-    ui/SimpleDataWidget.h
+    ui/SimpleDataWidget.h \
+    ui/StructDataWidget.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -114,7 +115,8 @@ SOURCES       = main.cpp \
     modules/generators/topology/Voronoi.cpp \
     modules/math/topology/TopologyInfo.cpp \
     helper/Factory.cpp \
-    ui/SimpleDataWidget.cpp
+    ui/SimpleDataWidget.cpp \
+    ui/StructDataWidget.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

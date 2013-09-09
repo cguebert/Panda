@@ -86,13 +86,17 @@ public:
 	}
 	void readFromData(const data_type* d)
 	{
+		value_type n = lineEdit->text().toDouble();
 		value_type v = d->getValue();
-		if (v != lineEdit->text().toDouble())
+		if (v != n)
 			lineEdit->setText(QString::number(v));
 	}
 	void writeToData(data_type* d)
 	{
-		d->setValue(lineEdit->text().toDouble());
+		bool ok;
+		value_type n = lineEdit->text().toDouble(&ok);
+		if(ok)
+			d->setValue(n);
 	}
 };
 
@@ -185,5 +189,3 @@ Creator<DataWidgetFactory, SimpleDataWidget<double> > DWClass_double("default",t
 Creator<DataWidgetFactory, SimpleDataWidget<QString> > DWClass_string("default",true);
 
 Creator<DataWidgetFactory, SimpleDataWidget<QColor> > DWClass_color("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QPointF> > DWClass_point("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QRectF> > DWClass_rect("default",true);
