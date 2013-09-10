@@ -34,18 +34,22 @@ public:
 	{
 		d.setValue(spinBox->value());
 	}
+	void setWidgetEnabled(QWidget* widget, bool enable)
+	{
+		widget->setEnabled(enable);
+	}
 };
 
 //***************************************************************//
 
-class checkbox_data_widget_trait : public data_widget_container< int >
+class checkbox_data_widget : public data_widget_container< int >
 {
 public:
 	typedef int value_type;
 	typedef panda::Data<value_type> data_type;
 	QCheckBox* checkBox;
 
-	checkbox_data_widget_trait() : checkBox(nullptr) {}
+	checkbox_data_widget() : checkBox(nullptr) {}
 
 	QWidget* createWidgets(BaseDataWidget* parent, const data_type&)
 	{
@@ -62,6 +66,10 @@ public:
 	void writeToData(data_type& d)
 	{
 		d.setValue(checkBox->isChecked() ? 1 : 0);
+	}
+	void setWidgetEnabled(QWidget* widget, bool enable)
+	{
+		widget->setEnabled(enable);
 	}
 };
 
@@ -98,6 +106,10 @@ public:
 		if(ok)
 			d.setValue(n);
 	}
+	void setWidgetEnabled(QWidget* widget, bool enable)
+	{
+		widget->setEnabled(enable);
+	}
 };
 
 //***************************************************************//
@@ -127,6 +139,10 @@ public:
 	void writeToData(data_type& d)
 	{
 		d.setValue(lineEdit->text());
+	}
+	void setWidgetEnabled(QWidget* widget, bool enable)
+	{
+		widget->setEnabled(enable);
 	}
 };
 
@@ -179,12 +195,15 @@ public:
 	{
 		d.setValue(chooser->getColor());
 	}
+	void setWidgetEnabled(QWidget* /*widget*/, bool /*enable*/)
+	{
+	}
 };
 
 //***************************************************************//
 
 Creator<DataWidgetFactory, SimpleDataWidget<int> > DWClass_int("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<int, checkbox_data_widget_trait> > DWClass_checkbox("checkbox",true);
+Creator<DataWidgetFactory, SimpleDataWidget<int, checkbox_data_widget> > DWClass_checkbox("checkbox",true);
 Creator<DataWidgetFactory, SimpleDataWidget<double> > DWClass_double("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString> > DWClass_string("default",true);
 

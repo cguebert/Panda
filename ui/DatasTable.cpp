@@ -66,7 +66,8 @@ void DatasTable::populateTable(panda::PandaObject* object)
 			dataWidgets.append(dataWidget);
 
 			QWidget* widget = dataWidget->createWidgets();
-		//	widget->setEnabled(data->getParent() == nullptr);
+			if(data->getParent())
+				dataWidget->setWidgetEnabled(widget, false);
 			formLayout->addRow(data->getName(), widget);
 		}
 		else

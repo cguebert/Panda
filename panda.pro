@@ -31,7 +31,8 @@ HEADERS       = \
     helper/Factory.h \
     ui/DataWidget.h \
     ui/SimpleDataWidget.h \
-    ui/StructDataWidget.h
+    ui/StructDataWidget.h \
+    panda/DataTraits.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \

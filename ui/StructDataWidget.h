@@ -1,152 +1,11 @@
 #ifndef STRUCTDATAWIDGET_H
 #define STRUCTDATAWIDGET_H
 
+#include <panda/DataTraits.h>
 #include <ui/DataWidget.h>
 
 #include <QtWidgets>
 
-template<class T>
-class flat_data_trait
-{
-public:
-	typedef T value_type;
-	typedef T item_type;
-
-	static size_t size() { return 1; }
-	static QStringList header() { return QStringList(); }
-	static const item_type get(const value_type& d, size_t /*i*/= 0) { return &d; }
-	static void set(value_type& d, const item_type& v, size_t /*i*/= 0) { d = v; }
-};
-
-//***************************************************************//
-
-template<>
-class flat_data_trait<QPointF>
-{
-public:
-	typedef QPointF value_type;
-	typedef qreal item_type;
-
-	static size_t size() { return 2; }
-	static QStringList header()
-	{
-		QStringList header;
-		header << "X" << "Y";
-		return header;
-	}
-	static const item_type get(const value_type& d, size_t i = 0)
-	{
-		switch(i)
-		{
-		case 0: return d.x();
-		case 1: return d.y();
-		}
-
-		return 0.;
-	}
-	static void set(value_type& d, const item_type& v, size_t i = 0)
-	{
-		switch(i)
-		{
-		case 0: return d.setX(v);
-		case 1: return d.setY(v);
-		}
-	}
-};
-
-//***************************************************************//
-
-template<>
-class flat_data_trait<QRectF>
-{
-public:
-	typedef QRectF value_type;
-	typedef qreal item_type;
-
-	static size_t size() { return 4; }
-	static QStringList header()
-	{
-		QStringList header;
-		header << "Left" << "Top" << "Right" << "Bottom";
-		return header;
-	}
-	static const item_type get(const value_type& d, size_t i = 0)
-	{
-		switch(i)
-		{
-		case 0: return d.left();
-		case 1: return d.top();
-		case 2: return d.right();
-		case 3: return d.bottom();
-		}
-
-		return 0.;
-	}
-	static void set(value_type& d, const item_type& v, size_t i = 0)
-	{
-		switch(i)
-		{
-		case 0: return d.setLeft(v);
-		case 1: return d.setTop(v);
-		case 2: return d.setRight(v);
-		case 3: return d.setBottom(v);
-		}
-	}
-};
-
-//***************************************************************//
-
-template<class T>
-class vector_data_trait
-{
-public:
-	typedef T vector_type;
-	typedef T row_type;
-
-	enum { is_vector = 0 };
-	enum { is_single = 1 };
-	static size_t size(const vector_type&) { return 1; }
-	static const row_type* get(const vector_type& v, size_t i=0)
-	{
-		return !i ? &v : nullptr;
-	}
-	static void set(vector_type& v, const row_type& r, size_t i=0)
-	{
-		if(!i)
-			v = r;
-	}
-	static void resize(vector_type& /*v*/, size_t /*s*/) {}
-};
-
-//***************************************************************//
-
-template<class T>
-class vector_data_trait< QVector<T> >
-{
-public:
-	typedef QVector<T> vector_type;
-	typedef T row_type;
-
-	enum { is_vector = 1 };
-	enum { is_single = 0 };
-	static size_t size(const vector_type& v) { return v.size(); }
-	static QStringList header(const vector_type&) { return QStringList{}; }
-	static const row_type* get(const vector_type& v, size_t i=0)
-	{
-		return (i<size(v)) ? &(v[i]) : nullptr;
-	}
-	static void set(vector_type& v, const row_type& r, size_t i=0)
-	{
-		if(i < size(v))
-			v[i] = r;
-	}
-	static void resize(vector_type& v, size_t s)
-	{
-		v.resize(s);
-	}
-};
-
-//***************************************************************//
 
 class BaseTableDataDialog : public QDialog
 {
@@ -168,9 +27,9 @@ class TableDataDialog : public BaseTableDataDialog
 public:
 	typedef T value_type;
 	typedef panda::Data<value_type> data_type;
-	typedef vector_data_trait<value_type> rowTrait;
+	typedef panda::vector_data_trait<value_type> rowTrait;
 	typedef typename rowTrait::row_type row_type;
-	typedef flat_data_trait<row_type> itemTrait;
+	typedef panda::flat_data_trait<row_type> itemTrait;
 	typedef typename itemTrait::item_type item_type;
 
 	bool readOnly;
@@ -232,9 +91,12 @@ public:
 		size_t nbRows = rowTrait::size(v);
 		size_t nbCols = itemTrait::size();
 
-		QStringList headerLabels = itemTrait::header();
-		tableWidget->setColumnCount(itemTrait::size());
-		tableWidget->setHorizontalHeaderLabels(headerLabels);
+
+		tableWidget->setColumnCount(nbCols);
+		if(nbCols > 1)
+			tableWidget->setHorizontalHeaderLabels(itemTrait::header());
+		else
+			tableWidget->horizontalHeader()->hide();
 
 		tableWidget->setRowCount(nbRows);
 
@@ -366,7 +228,7 @@ public:
 	QWidget* createWidgets(BaseDataWidget* parent, const data_type& d)
 	{
 		data = &d;
-		QWidget* container = new QWidget(parent);
+		container = new QWidget(parent);
 		QPushButton* pushButton = new QPushButton("...");
 
 		QHBoxLayout* layout = new QHBoxLayout(container);
@@ -390,6 +252,11 @@ public:
 	{
 		if(dialog)
 			dialog->writeToData(d);
+	}
+
+	void setWidgetEnabled(QWidget* /*widget*/, bool /*enable*/)
+	{
+		// TODO: when we have a preview of the data, grey the preview but keep the button
 	}
 
 	void onShowDialog()

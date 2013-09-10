@@ -38,6 +38,11 @@ public:
 		QString s = lineEdit->text();
 		d.fromString(s);
     }
+
+	void setWidgetEnabled(QWidget* widget, bool enable)
+	{
+		widget->setEnabled(enable);
+	}
 };
 
 //***************************************************************//
@@ -75,6 +80,11 @@ public:
     {
 		container.writeToData(*this->getData());
     }
+
+	virtual void setWidgetEnabled(QWidget* widget, bool enable = true)
+	{
+		container.setWidgetEnabled(widget, enable);
+	}
 };
 
 //***************************************************************//
