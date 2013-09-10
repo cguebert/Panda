@@ -13,7 +13,7 @@ public:
 
 	data_widget_container() : spinBox(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type*)
+	QWidget* createWidgets(BaseDataWidget* parent, const data_type&)
 	{
 		spinBox = new QSpinBox(parent);
 		spinBox->setMinimum(INT_MIN);
@@ -24,15 +24,15 @@ public:
 
 		return spinBox;
 	}
-	void readFromData(const data_type* d)
+	void readFromData(const data_type& d)
 	{
-		int i = d->getValue();
+		int i = d.getValue();
 		if(i != spinBox->value())
 			spinBox->setValue(i);
 	}
-	void writeToData(data_type* d)
+	void writeToData(data_type& d)
 	{
-		d->setValue(spinBox->value());
+		d.setValue(spinBox->value());
 	}
 };
 
@@ -47,21 +47,21 @@ public:
 
 	checkbox_data_widget_trait() : checkBox(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type*)
+	QWidget* createWidgets(BaseDataWidget* parent, const data_type&)
 	{
 		checkBox = new QCheckBox(parent);
 		QObject::connect(checkBox, SIGNAL(stateChanged(int)), parent, SLOT(setWidgetDirty()));
 		return checkBox;
 	}
-	void readFromData(const data_type* d)
+	void readFromData(const data_type& d)
 	{
-		bool b = (d->getValue()!=0);
+		bool b = (d.getValue()!=0);
 		if (checkBox->isChecked() != b)
 			checkBox->setChecked(b);
 	}
-	void writeToData(data_type* d)
+	void writeToData(data_type& d)
 	{
-		d->setValue(checkBox->isChecked() ? 1 : 0);
+		d.setValue(checkBox->isChecked() ? 1 : 0);
 	}
 };
 
@@ -77,26 +77,26 @@ public:
 
 	data_widget_container() : lineEdit(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type* /*d*/)
+	QWidget* createWidgets(BaseDataWidget* parent, const data_type& /*d*/)
 	{
 		lineEdit = new QLineEdit(parent);
 //		lineEdit->setValidator(new QDoubleValidator(lineEdit));
 		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
 		return lineEdit;
 	}
-	void readFromData(const data_type* d)
+	void readFromData(const data_type& d)
 	{
 		value_type n = lineEdit->text().toDouble();
-		value_type v = d->getValue();
+		value_type v = d.getValue();
 		if (v != n)
 			lineEdit->setText(QString::number(v));
 	}
-	void writeToData(data_type* d)
+	void writeToData(data_type& d)
 	{
 		bool ok;
 		value_type n = lineEdit->text().toDouble(&ok);
 		if(ok)
-			d->setValue(n);
+			d.setValue(n);
 	}
 };
 
@@ -112,21 +112,21 @@ public:
 
 	data_widget_container() : lineEdit(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type*)
+	QWidget* createWidgets(BaseDataWidget* parent, const data_type&)
 	{
 		lineEdit = new QLineEdit(parent);
 		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()) );
 		return lineEdit;
 	}
-	void readFromData(const data_type* d)
+	void readFromData(const data_type& d)
 	{
-		value_type v = d->getValue();
+		value_type v = d.getValue();
 		if (lineEdit->text() != v)
 			lineEdit->setText(v);
 	}
-	void writeToData(data_type* d)
+	void writeToData(data_type& d)
 	{
-		d->setValue(lineEdit->text());
+		d.setValue(lineEdit->text());
 	}
 };
 
@@ -165,19 +165,19 @@ public:
 
 	data_widget_container() : chooser(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type* d)
+	QWidget* createWidgets(BaseDataWidget* parent, const data_type& d)
 	{
-		chooser = new DataWidgetColorChooser(d->getValue());
+		chooser = new DataWidgetColorChooser(d.getValue());
 		QObject::connect(chooser, SIGNAL(colorEdited()), parent, SLOT(setWidgetDirty()) );
 		return chooser;
 	}
-	void readFromData(const data_type* d)
+	void readFromData(const data_type& d)
 	{
-		chooser->setColor(d->getValue());
+		chooser->setColor(d.getValue());
 	}
-	void writeToData(data_type* d)
+	void writeToData(data_type& d)
 	{
-		d->setValue(chooser->getColor());
+		d.setValue(chooser->getColor());
 	}
 };
 

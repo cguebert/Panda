@@ -94,13 +94,6 @@ QColor lerp(const QColor& v1, const QColor& v2, const double& amt)
     return temp;
 }
 
-/*
-template<class T>
-T lerp(const T& v1, const T& v2, const double& amt)
-{
-    return v1 * (1.0-amt) + v2 * amt;
-}
-*/
 template class Animation<double>;
 template class Animation<QPointF>;
 template class Animation<QColor>;

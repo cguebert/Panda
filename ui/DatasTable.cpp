@@ -66,14 +66,13 @@ void DatasTable::populateTable(panda::PandaObject* object)
 			dataWidgets.append(dataWidget);
 
 			QWidget* widget = dataWidget->createWidgets();
-			widget->setEnabled(data->getParent() == nullptr);
+		//	widget->setEnabled(data->getParent() == nullptr);
 			formLayout->addRow(data->getName(), widget);
 		}
 		else
 		{
 			QString text = data->toString();
 			text.truncate(150);
-		//	QLineEdit* lineEdit = new QLineEdit(text, layoutWidget);
 			QLineEdit* lineEdit = new QLineEdit();
 			lineEdit->setText(text);
 			lineEdit->setEnabled(data->getParent() == nullptr);

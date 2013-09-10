@@ -18,7 +18,7 @@ public:
 
     data_widget_container() : lineEdit(nullptr) {}
 
-    QWidget* createWidgets(BaseDataWidget* parent, const data_type* /*d*/)
+	QWidget* createWidgets(BaseDataWidget* parent, const data_type&)
     {
 		lineEdit = new QLineEdit(parent);
 		lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -26,17 +26,17 @@ public:
 		return lineEdit;
     }
 
-	void readFromData(const data_type* d)
+	void readFromData(const data_type& d)
     {
-		QString s = d->toString();
+		QString s = d.toString();
 		if(s != lineEdit->text())
 			lineEdit->setText(s);
     }
 
-	void writeToData(data_type* d)
+	void writeToData(data_type& d)
     {
 		QString s = lineEdit->text();
-		d->fromString(s);
+		d.fromString(s);
     }
 };
 
@@ -58,22 +58,22 @@ public:
 
 	virtual QWidget* createWidgets()
     {
-		QWidget* w = container.createWidgets(this, this->getData());
+		QWidget* w = container.createWidgets(this, *this->getData());
 		if(!w)
 			return nullptr;
 
-		container.readFromData(this->getData());
+		container.readFromData(*this->getData());
 		return w;
     }
 
     virtual void readFromData()
     {
-		container.readFromData(this->getData());
+		container.readFromData(*this->getData());
     }
 
     virtual void writeToData()
     {
-		container.writeToData(this->getData());
+		container.writeToData(*this->getData());
     }
 };
 
