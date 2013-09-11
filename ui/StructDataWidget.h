@@ -118,6 +118,41 @@ public:
 		}
 	}
 
+	value_type readFromTable()
+	{
+		value_type v;
+
+		size_t nbRows = tableWidget->rowCount();
+		size_t nbCols = itemTrait::size();
+
+		rowTrait::resize(v, nbRows);
+
+		for(size_t i = 0; i<nbRows; ++i)
+		{
+			const row_type* row = rowTrait::get(v, i);
+			if(row)
+			{
+				row_type rowVal = *row;
+				for(size_t j=0; j<nbCols; ++j)
+				{
+					QTableWidgetItem *item = tableWidget->item(i, j);
+					if(item)
+					{
+						item_type val;
+						QString text = item->text();
+						QTextStream stream(&text, QIODevice::ReadOnly);
+						stream >> val;
+						itemTrait::set(rowVal, val, j);
+					}
+				}
+
+				rowTrait::set(v, rowVal, i);
+			}
+		}
+
+		return v;
+	}
+
 	virtual void readFromData(const data_type& d)
 	{
 		if(!d.isReadOnly() && !d.getParent())
@@ -157,41 +192,14 @@ public:
 	virtual void writeToData(data_type& d)
 	{
 		value_type& v = *d.beginEdit();
-
-		size_t nbRows = tableWidget->rowCount();
-		size_t nbCols = itemTrait::size();
-
-		rowTrait::resize(v, nbRows);
-
-		for(size_t i = 0; i<nbRows; ++i)
-		{
-			const row_type* row = rowTrait::get(v, i);
-			if(row)
-			{
-				row_type rowVal = *row;
-				for(size_t j=0; j<nbCols; ++j)
-				{
-					QTableWidgetItem *item = tableWidget->item(i, j);
-					if(item)
-					{
-						item_type val;
-						QString text = item->text();
-						QTextStream stream(&text, QIODevice::ReadOnly);
-						stream >> val;
-						itemTrait::set(rowVal, val, j);
-					}
-				}
-
-				rowTrait::set(v, rowVal, i);
-			}
-		}
-
+		v = readFromTable();
 		d.endEdit();
 	}
 
 	virtual void resizeValue()
 	{
 		int size = resizeSpinBox->value();
+		valueCopy = readFromTable();
 		rowTrait::resize(valueCopy, size);
 		updateTable(valueCopy);
 	}
