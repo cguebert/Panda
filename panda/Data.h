@@ -53,19 +53,19 @@ public:
 		setCustomFlags();
 	}
 
-    virtual ~Data() {}
+	virtual ~Data() {}
 
-    virtual bool isSingleValue() const;
-    virtual bool isVector() const;
-    virtual bool isAnimation() const;
+	virtual bool isSingleValue() const;
+	virtual bool isVector() const;
+	virtual bool isAnimation() const;
 
-    virtual int getValueType() const;
+	virtual int getValueType() const;
 
-    virtual int getSize() const;
-    virtual void clear(int size = 0, bool init = false);
+	virtual int getSize() const;
+	virtual void clear(int size = 0, bool init = false);
 
-    virtual QVariant getBaseValue(int index) const;
-    virtual void fromBaseValue(QVariant val, int index);
+	virtual QVariant getBaseValue(int index) const;
+	virtual void fromBaseValue(QVariant val, int index);
 
     virtual void fromString(const QString& text);
 
