@@ -1,6 +1,9 @@
 #ifndef DATATRAITS_H
 #define DATATRAITS_H
 
+#include <panda/BaseData.h>
+#include <panda/Animation.h>
+
 #include <QRectF>
 #include <QPointF>
 #include <QVector>
@@ -8,6 +11,49 @@
 
 namespace panda
 {
+
+//***************************************************************//
+
+template<class T>
+class data_trait
+{
+public:
+	typedef T value_type;
+
+	enum { is_single = 1 };
+	enum { is_vector = 0 };
+	enum { is_animation = 0 };
+
+	static int getValueType() { return BaseData::getValueTypeOf<value_type>(); }
+};
+
+template<class T>
+class data_trait< QVector<T> >
+{
+public:
+	typedef T value_type;
+
+	enum { is_single = 0 };
+	enum { is_vector = 1 };
+	enum { is_animation = 0 };
+
+	static int getValueType() { return BaseData::getValueTypeOf<value_type>(); }
+};
+
+template<class T>
+class data_trait< Animation<T> >
+{
+public:
+	typedef T value_type;
+
+	enum { is_single = 0 };
+	enum { is_vector = 0 };
+	enum { is_animation = 1 };
+
+	static int getValueType() { return BaseData::getValueTypeOf<value_type>(); }
+};
+
+//***************************************************************//
 
 template<class T>
 class flat_data_trait

@@ -10,6 +10,7 @@
 #include <panda/Topology.h>
 
 #include <panda/PandaObject.h>
+#include <panda/DataTraits.h>
 
 namespace panda
 {
@@ -283,70 +284,30 @@ void Data<T>::fromString(const QString& text)
 //***************************************************************//
 
 template<class T>
-bool dataIsSingleValue(const Data<T>*);
+bool Data<T>::isSingleValue() const
+{
+	return panda::data_trait<T>::is_single == 1;
+}
 
 template<class T>
-bool dataIsSingleValue(const Data< QVector<T> >*) { return false; }
+bool Data<T>::isVector() const
+{
+	return panda::data_trait<T>::is_vector == 1;
+}
 
 template<class T>
-bool dataIsSingleValue(const Data< Animation<T> >*) { return false; }
-
-template<class T>
-bool dataIsSingleValue(const Data<T>*) { return true; }
-
-template<class T>
-bool Data<T>::isSingleValue() const { return dataIsSingleValue(this); }
+bool Data<T>::isAnimation() const
+{
+	return panda::data_trait<T>::is_animation == 1;
+}
 
 //***************************************************************//
 
 template<class T>
-bool dataIsVectorType(const Data<T>*);
-
-template<class T>
-bool dataIsVectorType(const Data< QVector<T> >*) { return true; }
-
-template<class T>
-bool dataIsVectorType(const Data< Animation<T> >*) { return false; }
-
-template<class T>
-bool dataIsVectorType(const Data<T>*) { return false; }
-
-template<class T>
-bool Data<T>::isVector() const { return dataIsVectorType(this); }
-
-//***************************************************************//
-
-template<class T>
-bool dataIsAnimation(const Data<T>*);
-
-template<class T>
-bool dataIsAnimation(const Data< QVector<T> >*) { return false; }
-
-template<class T>
-bool dataIsAnimation(const Data< Animation<T> >*) { return true; }
-
-template<class T>
-bool dataIsAnimation(const Data<T>*) { return false; }
-
-template<class T>
-bool Data<T>::isAnimation() const { return dataIsAnimation(this); }
-
-//***************************************************************//
-
-template<class T>
-int getDataValueType(const Data<T>*);
-
-template<class T>
-int getDataValueType(const Data< QVector<T> >*) { return BaseData::getValueTypeOf<T>(); }
-
-template<class T>
-int getDataValueType(const Data< Animation<T> >*) { return BaseData::getValueTypeOf<T>(); }
-
-template<class T>
-int getDataValueType(const Data<T>*) { return BaseData::getValueTypeOf<T>(); }
-
-template<class T>
-int Data<T>::getValueType() const { return getDataValueType(this); }
+int Data<T>::getValueType() const
+{
+	return panda::data_trait<T>::getValueType();
+}
 
 //***************************************************************//
 
