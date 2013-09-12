@@ -38,8 +38,6 @@ public:
 	QWidget* resizeWidget;
 	QSpinBox* resizeSpinBox;
 
-	value_type valueCopy;
-
 	TableDataDialog(QWidget* parent)
 		: BaseTableDataDialog(parent)
 		, readOnly(true)
@@ -163,8 +161,6 @@ public:
 		setWindowTitle(d.getName() + (readOnly ? tr(" (read-only)") : ""));
 
 		const value_type& v = d.getValue();
-		valueCopy = v;
-
 		updateTable(v);
 
 		if(rowTrait::is_single)
@@ -198,10 +194,33 @@ public:
 
 	virtual void resizeValue()
 	{
+		int oldSize = tableWidget->rowCount();
 		int size = resizeSpinBox->value();
-		valueCopy = readFromTable();
-		rowTrait::resize(valueCopy, size);
-		updateTable(valueCopy);
+		int nbCols = tableWidget->columnCount();
+
+		tableWidget->setRowCount(size);
+
+		if(oldSize < size)
+		{
+			itemTrait::item_type val = itemTrait::item_type();
+			QString text;
+			QTextStream stream(&text, QIODevice::WriteOnly);
+			stream << val;
+
+			Qt::ItemFlags itemFlags = Qt::ItemIsEnabled;
+			if(!readOnly)
+				itemFlags |= Qt::ItemIsEditable;
+
+			for(int i=oldSize; i<size; ++i)
+			{
+				for(int j=0; j<nbCols; ++j)
+				{
+					QTableWidgetItem *item = new QTableWidgetItem(text);
+					item->setFlags(itemFlags);
+					tableWidget->setItem(i, j, item);
+				}
+			}
+		}
 	}
 };
 
