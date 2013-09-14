@@ -13,7 +13,7 @@ public:
 
 	data_widget_container() : container(nullptr), preview(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
+	QWidget* createWidgets(QWidget* parent, bool readOnly)
 	{
 		container = new QWidget(parent);
 		preview = new QLabel();
@@ -29,8 +29,14 @@ public:
 		container->setLayout(layout);
 
 		QObject::connect(pushButton, SIGNAL(clicked()), this, SLOT(onShowDialog()) );
-		QObject::connect(this, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()) );
 		return container;
+	}
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
+	{
+		QWidget* parentWidget = dynamic_cast<QWidget*>(parent);
+		QWidget* widget = createWidgets(parentWidget, readOnly);
+		QObject::connect(this, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()) );
+		return widget;
 	}
 	void readFromData(const value_type& v)
 	{
@@ -59,7 +65,7 @@ public:
 	}
 	void updatePreview()
 	{
-		QPixmap pixmap(50, 50);
+		QPixmap pixmap(50, 25);
 		pixmap.fill(theColor);
 		preview->setPixmap(pixmap);
 	}
@@ -73,6 +79,7 @@ Creator<DataWidgetFactory, OpenDialogDataWidget<QRectF> > DWClass_rect("default"
 
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<int> > > DWClass_ints_list("default",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<double> > > DWClass_doubles_list("default",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QColor>, ListDataDialog<QVector<QColor>> > > DWClass_colors_list("default",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QPointF> > > DWClass_points_list("default",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QRectF> > > DWClass_rects_list("default",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString> > > DWClass_strings_list("default",true);

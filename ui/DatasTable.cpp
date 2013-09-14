@@ -41,16 +41,23 @@ void DatasTable::populateTable(panda::PandaObject* object)
 
 	currentObject = object;
 
-	QWidget *layoutWidget = new QWidget(this);
+	QScrollArea* scrollArea = new QScrollArea(this);
+	scrollArea->setFrameShape(QFrame::NoFrame);
+	scrollArea->setWidgetResizable(true);
+	QWidget *layoutWidget = new QWidget(scrollArea);
     QFormLayout *formLayout = new QFormLayout(layoutWidget);
+	formLayout->setMargin(0);
+	formLayout->setSizeConstraint(QLayout::SetMinimumSize);
+
+	scrollArea->setWidget(layoutWidget);
 
 	if (stackedLayout->currentWidget())
 		delete stackedLayout->currentWidget();
 	dataWidgets.clear();
 
 	nameLabel->setText(object->getName());
-	stackedLayout->addWidget(layoutWidget);
-	stackedLayout->setCurrentWidget(layoutWidget);
+	stackedLayout->addWidget(scrollArea);
+	stackedLayout->setCurrentWidget(scrollArea);
 
 	// inputs (or editable)
 	foreach (panda::BaseData* data, object->getDatas())
