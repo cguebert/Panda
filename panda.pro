@@ -15,7 +15,6 @@ HEADERS       = \
 	panda/Data.h \
 	panda/BaseData.h \
 	panda/Animation.h \
-	ui/DatasEditDialog.h \
 	panda/Group.h \
 	ui/ObjectDrawStruct.h \
 	panda/Dockable.h \
@@ -75,7 +74,6 @@ SOURCES       = main.cpp \
 	modules/list/FillList.cpp \
 	modules/generators/text/DateTime.cpp \
 	modules/modifiers/point/PointsUnion.cpp \
-	ui/DatasEditDialog.cpp \
 	panda/Group.cpp \
 	ui/ObjectDrawStruct.cpp \
 	panda/Dockable.cpp \
