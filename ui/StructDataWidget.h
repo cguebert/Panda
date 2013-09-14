@@ -47,7 +47,7 @@ public:
 	{
 		QVBoxLayout* mainLayout = new QVBoxLayout(this);
 
-		if(!readOnly)
+		if(!readOnly && rowTrait::is_vector)
 		{
 			resizeWidget = new QWidget(this);
 			QLabel* resizeLabel = new QLabel(tr("Size"));

@@ -1,7 +1,6 @@
 #include <QtWidgets>
 
 #include <ui/DatasTable.h>
-#include <ui/DatasEditDialog.h>
 
 #include <panda/PandaObject.h>
 
