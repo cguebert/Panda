@@ -11,38 +11,35 @@ class QPushButton;
 template<class T>
 class data_widget_container
 {
-public:
+protected:
 	typedef T value_type;
 	typedef panda::Data<T> data_type;
 	QLineEdit* lineEdit;
 
+public:
     data_widget_container() : lineEdit(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type&)
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
     {
 		lineEdit = new QLineEdit(parent);
 		lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-		QObject::connect(lineEdit, SIGNAL(textChanged(const QString&)), parent, SLOT(setWidgetDirty()));
+		lineEdit->setEnabled(readOnly);
+		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
 		return lineEdit;
     }
 
-	void readFromData(const data_type& d)
+	void readFromData(const value_type& d)
     {
 		QString s = d.toString();
 		if(s != lineEdit->text())
 			lineEdit->setText(s);
     }
 
-	void writeToData(data_type& d)
+	void writeToData(value_type& d)
     {
 		QString s = lineEdit->text();
-		d.fromString(s);
+		d = valueFromString<value_type>(s);
     }
-
-	void setWidgetEnabled(QWidget* widget, bool enable)
-	{
-		widget->setEnabled(enable);
-	}
 };
 
 //***************************************************************//
@@ -61,52 +58,28 @@ public:
         DataWidget<T>(parent, d)
     {}
 
-	virtual QWidget* createWidgets()
+	virtual QWidget* createWidgets(bool readOnly)
     {
-		QWidget* w = container.createWidgets(this, *this->getData());
+		QWidget* w = container.createWidgets(this, readOnly);
 		if(!w)
 			return nullptr;
 
-		container.readFromData(*this->getData());
+		container.readFromData(getData()->getValue());
 		return w;
     }
 
     virtual void readFromData()
     {
-		container.readFromData(*this->getData());
+		container.readFromData(getData()->getValue());
     }
 
     virtual void writeToData()
     {
-		container.writeToData(*this->getData());
+		MyTData* data = getData();
+		value_type& v = *data->beginEdit();
+		container.writeToData(v);
+		data->endEdit();
     }
-
-	virtual void setWidgetEnabled(QWidget* widget, bool enable = true)
-	{
-		container.setWidgetEnabled(widget, enable);
-	}
-};
-
-//***************************************************************//
-
-class DataWidgetColorChooser : public QWidget
-{
-    Q_OBJECT
-protected:
-    QPushButton* pushButton;
-    QColor theColor;
-
-public:
-    DataWidgetColorChooser(QColor color);
-
-    void setColor(QColor color) { theColor = color; }
-    QColor getColor() { return theColor; }
-
-signals:
-    void colorEdited();
-
-public slots:
-    void onChooseColor();
 };
 
 #endif

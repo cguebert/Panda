@@ -160,20 +160,19 @@ void Data<T>::fromBaseValue(QVariant val, int index)
 template<class T>
 QString Data<T>::doToString() const
 {
-	QString tempString;
-	QTextStream stream(&tempString, QIODevice::WriteOnly);
-	data_trait<T>::writeValue(stream, value);
-	return tempString;
+	return valueToString(value);
 }
 
 template<class T>
 void Data<T>::fromString(const QString& text)
 {
-	QString copy;
+/*	QString copy;
 	if(getValueType() != QMetaType::QString)
 		copy = text.simplified();
 	else
 		copy = text;
+	QTextStream stream(&copy, QIODevice::ReadOnly);	*/
+	QString copy(text);
 	QTextStream stream(&copy, QIODevice::ReadOnly);
 	beginEdit();
 	data_trait<T>::readValue(stream, value);

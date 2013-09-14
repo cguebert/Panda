@@ -6,37 +6,33 @@
 template<>
 class data_widget_container< int >
 {
-public:
+protected:
 	typedef int value_type;
-	typedef panda::Data<value_type> data_type;
 	QSpinBox* spinBox;
 
+public:
 	data_widget_container() : spinBox(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type&)
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
 		spinBox = new QSpinBox(parent);
 		spinBox->setMinimum(INT_MIN);
 		spinBox->setMaximum(INT_MAX);
 		spinBox->setSingleStep(1);
+		spinBox->setEnabled(!readOnly);
 
 		QObject::connect(spinBox, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
 
 		return spinBox;
 	}
-	void readFromData(const data_type& d)
+	void readFromData(const value_type& v)
 	{
-		int i = d.getValue();
-		if(i != spinBox->value())
-			spinBox->setValue(i);
+		if(v != spinBox->value())
+			spinBox->setValue(v);
 	}
-	void writeToData(data_type& d)
+	void writeToData(value_type& v)
 	{
-		d.setValue(spinBox->value());
-	}
-	void setWidgetEnabled(QWidget* widget, bool enable)
-	{
-		widget->setEnabled(enable);
+		v = spinBox->value();
 	}
 };
 
@@ -44,32 +40,29 @@ public:
 
 class checkbox_data_widget : public data_widget_container< int >
 {
-public:
+protected:
 	typedef int value_type;
-	typedef panda::Data<value_type> data_type;
 	QCheckBox* checkBox;
 
+public:
 	checkbox_data_widget() : checkBox(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type&)
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
 		checkBox = new QCheckBox(parent);
+		checkBox->setEnabled(!readOnly);
 		QObject::connect(checkBox, SIGNAL(stateChanged(int)), parent, SLOT(setWidgetDirty()));
 		return checkBox;
 	}
-	void readFromData(const data_type& d)
+	void readFromData(const value_type& v)
 	{
-		bool b = (d.getValue()!=0);
+		bool b = (v!=0);
 		if (checkBox->isChecked() != b)
 			checkBox->setChecked(b);
 	}
-	void writeToData(data_type& d)
+	void writeToData(value_type& v)
 	{
-		d.setValue(checkBox->isChecked() ? 1 : 0);
-	}
-	void setWidgetEnabled(QWidget* widget, bool enable)
-	{
-		widget->setEnabled(enable);
+		v = (checkBox->isChecked() ? 1 : 0);
 	}
 };
 
@@ -78,37 +71,33 @@ public:
 template <>
 class data_widget_container< double >
 {
-public:
+protected:
 	typedef double value_type;
-	typedef panda::Data<value_type> data_type;
 	QLineEdit* lineEdit;
 
+public:
 	data_widget_container() : lineEdit(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type& /*d*/)
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
 		lineEdit = new QLineEdit(parent);
 //		lineEdit->setValidator(new QDoubleValidator(lineEdit));
+		lineEdit->setEnabled(!readOnly);
 		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
 		return lineEdit;
 	}
-	void readFromData(const data_type& d)
+	void readFromData(const value_type& v)
 	{
 		value_type n = lineEdit->text().toDouble();
-		value_type v = d.getValue();
 		if (v != n)
 			lineEdit->setText(QString::number(v));
 	}
-	void writeToData(data_type& d)
+	void writeToData(value_type& v)
 	{
 		bool ok;
 		value_type n = lineEdit->text().toDouble(&ok);
 		if(ok)
-			d.setValue(n);
-	}
-	void setWidgetEnabled(QWidget* widget, bool enable)
-	{
-		widget->setEnabled(enable);
+			v = n;
 	}
 };
 
@@ -117,86 +106,28 @@ public:
 template<>
 class data_widget_container< QString >
 {
-public:
+protected:
 	typedef QString value_type;
-	typedef panda::Data<value_type> data_type;
 	QLineEdit* lineEdit;
 
+public:
 	data_widget_container() : lineEdit(nullptr) {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type&)
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
 		lineEdit = new QLineEdit(parent);
+		lineEdit->setEnabled(!readOnly);
 		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()) );
 		return lineEdit;
 	}
-	void readFromData(const data_type& d)
+	void readFromData(const value_type& v)
 	{
-		value_type v = d.getValue();
 		if (lineEdit->text() != v)
 			lineEdit->setText(v);
 	}
-	void writeToData(data_type& d)
+	void writeToData(value_type& v)
 	{
-		d.setValue(lineEdit->text());
-	}
-	void setWidgetEnabled(QWidget* widget, bool enable)
-	{
-		widget->setEnabled(enable);
-	}
-};
-
-//***************************************************************//
-
-DataWidgetColorChooser::DataWidgetColorChooser(QColor color)
-	: theColor(color)
-{
-	pushButton = new QPushButton("...", this);
-	QObject::connect(pushButton, SIGNAL(clicked()), this, SLOT(onChooseColor()) );
-
-	QHBoxLayout* layout = new QHBoxLayout();
-	layout->setMargin(0);
-	layout->addWidget(pushButton);
-
-	setLayout(layout);
-}
-
-void DataWidgetColorChooser::onChooseColor()
-{
-	QColor tmp = QColorDialog::getColor(theColor, this);
-	if(tmp.isValid())
-	{
-		theColor = tmp;
-		emit colorEdited();
-	}
-}
-
-template<>
-class data_widget_container< QColor >
-{
-public:
-	typedef QColor value_type;
-	typedef panda::Data<value_type> data_type;
-	DataWidgetColorChooser* chooser;
-
-	data_widget_container() : chooser(nullptr) {}
-
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type& d)
-	{
-		chooser = new DataWidgetColorChooser(d.getValue());
-		QObject::connect(chooser, SIGNAL(colorEdited()), parent, SLOT(setWidgetDirty()) );
-		return chooser;
-	}
-	void readFromData(const data_type& d)
-	{
-		chooser->setColor(d.getValue());
-	}
-	void writeToData(data_type& d)
-	{
-		d.setValue(chooser->getColor());
-	}
-	void setWidgetEnabled(QWidget* /*widget*/, bool /*enable*/)
-	{
+		v = lineEdit->text();
 	}
 };
 
@@ -206,5 +137,3 @@ Creator<DataWidgetFactory, SimpleDataWidget<int> > DWClass_int("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<int, checkbox_data_widget> > DWClass_checkbox("checkbox",true);
 Creator<DataWidgetFactory, SimpleDataWidget<double> > DWClass_double("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString> > DWClass_string("default",true);
-
-Creator<DataWidgetFactory, SimpleDataWidget<QColor> > DWClass_color("default",true);

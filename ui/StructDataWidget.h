@@ -24,23 +24,23 @@ public slots:
 template<class T>
 class TableDataDialog : public BaseTableDataDialog
 {
-public:
+protected:
 	typedef T value_type;
-	typedef panda::Data<value_type> data_type;
+	typedef panda::Data<T> data_type;
 	typedef panda::vector_data_trait<value_type> rowTrait;
 	typedef typename rowTrait::row_type row_type;
 	typedef panda::flat_data_trait<row_type> itemTrait;
 	typedef typename itemTrait::item_type item_type;
 
 	bool readOnly;
-
 	QTableWidget* tableWidget;
 	QWidget* resizeWidget;
 	QSpinBox* resizeSpinBox;
 
-	TableDataDialog(QWidget* parent)
+public:
+	TableDataDialog(QWidget* parent, const data_type& d, bool readOnly)
 		: BaseTableDataDialog(parent)
-		, readOnly(true)
+		, readOnly(readOnly)
 		, tableWidget(nullptr)
 		, resizeWidget(nullptr)
 		, resizeSpinBox(nullptr)
@@ -78,6 +78,8 @@ public:
 		mainLayout->addLayout(buttonsLayout);
 
 		setLayout(mainLayout);
+
+		setWindowTitle(d.getName() + (readOnly ? tr(" (read-only)") : ""));
 	}
 
 	void updateTable(const value_type& v)
@@ -118,11 +120,10 @@ public:
 
 	value_type readFromTable()
 	{
-		value_type v;
-
 		size_t nbRows = tableWidget->rowCount();
 		size_t nbCols = itemTrait::size();
 
+		value_type v;
 		rowTrait::resize(v, nbRows);
 
 		for(size_t i = 0; i<nbRows; ++i)
@@ -151,18 +152,11 @@ public:
 		return v;
 	}
 
-	virtual void readFromData(const data_type& d)
+	virtual void readFromData(const value_type& v)
 	{
-		if(!d.isReadOnly() && !d.getParent())
-			readOnly = false;
-		else
-			readOnly = true;
-
-		setWindowTitle(d.getName() + (readOnly ? tr(" (read-only)") : ""));
-
-		const value_type& v = d.getValue();
 		updateTable(v);
 
+		// Resize the view in single value mode
 		if(rowTrait::is_single)
 		{
 			tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
@@ -185,11 +179,9 @@ public:
 			resizeSpinBox->setValue(tableWidget->rowCount());
 	}
 
-	virtual void writeToData(data_type& d)
+	virtual void writeToData(value_type& v)
 	{
-		value_type& v = *d.beginEdit();
 		v = readFromTable();
-		d.endEdit();
 	}
 
 	virtual void resizeValue()
@@ -226,7 +218,7 @@ public:
 
 //***************************************************************//
 
-class BaseOpenDialogDataWidgetContainer : public QObject
+class BaseOpenDialogObject : public QObject
 {
 	Q_OBJECT
 signals:
@@ -237,63 +229,93 @@ public slots:
 };
 
 template<class T, class Dialog = TableDataDialog<T> >
-class open_dialog_data_widget_container : public BaseOpenDialogDataWidgetContainer
+class OpenDialogDataWidget : public DataWidget<T>, public BaseOpenDialogObject
 {
-public:
+protected:
 	typedef T value_type;
-	typedef panda::Data<value_type> data_type;
-	QWidget* container;
-	Dialog* dialog;
-	const data_type* data;
+	typedef panda::Data<T> data_type;
 
-	open_dialog_data_widget_container()
-		: dialog(nullptr)
+	QWidget* container;
+	QLabel* label;
+	Dialog* dialog;
+	bool isReadOnly;
+
+public:
+	OpenDialogDataWidget(QWidget* parent, MyTData* d)
+		: DataWidget<T>(parent, d)
+		, dialog(nullptr)
 		, container(nullptr)
-		, data(nullptr)
+		, label(nullptr)
+		, isReadOnly(false)
 	{}
 
-	QWidget* createWidgets(BaseDataWidget* parent, const data_type& d)
+	virtual QWidget* createWidgets(bool readOnly)
 	{
-		data = &d;
-		container = new QWidget(parent);
+		isReadOnly = readOnly;
+		container = new QWidget(this);
+
+		label = new QLabel("toto");
+
 		QPushButton* pushButton = new QPushButton("...");
+		pushButton->setMaximumWidth(40);
 
 		QHBoxLayout* layout = new QHBoxLayout(container);
 		layout->setMargin(0);
+		layout->addWidget(label, 1);
 		layout->addWidget(pushButton);
 		container->setLayout(layout);
 
-		QObject::connect(pushButton, SIGNAL(clicked()), this, SLOT(onShowDialog()) );
-		QObject::connect(this, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()) );
+		BaseOpenDialogObject* boddw = dynamic_cast<BaseOpenDialogObject*>(this);
+		BaseDataWidget* bdw = dynamic_cast<BaseDataWidget*>(this);
+		QObject::connect(pushButton, SIGNAL(clicked()), boddw, SLOT(onShowDialog()) );
+		QObject::connect(boddw, SIGNAL(editingFinished()), bdw, SLOT(setWidgetDirty()) );
+
+		readFromData();
 
 		return container;
 	}
 
-	void readFromData(const data_type& d)
+	virtual void readFromData()
+	{
+		updatePreview();
+		if(dialog)
+			dialog->readFromData(getData()->getValue());
+	}
+
+	virtual void writeToData()
 	{
 		if(dialog)
-			dialog->readFromData(d);
+		{
+			MyTData* data = getData();
+			value_type& v = *data->beginEdit();
+			dialog->writeToData(v);
+			data->endEdit();
+
+			updatePreview();
+		}
 	}
 
-	void writeToData(data_type& d)
-	{
-		if(dialog)
-			dialog->writeToData(d);
-	}
-
-	void setWidgetEnabled(QWidget* /*widget*/, bool /*enable*/)
-	{
-		// TODO: when we have a preview of the data, grey the preview but keep the button
-	}
-
-	void onShowDialog()
+	virtual void onShowDialog()
 	{
 		if(!dialog)
-			dialog = new Dialog(container);
+			dialog = new Dialog(container, *getData(), isReadOnly);
 
-		dialog->readFromData(*data);
-		if(dialog->exec() == QDialog::Accepted)
+		dialog->readFromData(getData()->getValue());
+		if(dialog->exec() == QDialog::Accepted && !isReadOnly)
 			emit editingFinished();
+	}
+
+	void updatePreview()
+	{
+		const value_type& v = getData()->getValue();
+		typedef panda::vector_data_trait<value_type> vector_trait;
+		if(vector_trait::is_vector)
+		{
+			QString text = QString("<i>%1 elements</i>").arg(vector_trait::size(v));	// tr()
+			label->setText(text);
+		}
+		else
+			label->setText(panda::valueToString(v));
 	}
 };
 

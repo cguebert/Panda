@@ -60,14 +60,12 @@ void DatasTable::populateTable(panda::PandaObject* object)
 
         BaseDataWidget::CreatorArgument arg = { data, this };
         DataWidgetPtr dataWidget = DataWidgetPtr(BaseDataWidget::CreateDataWidget(arg));
+		bool readOnly = (data->getParent() != nullptr);
 
 		if (dataWidget)
 		{
 			dataWidgets.append(dataWidget);
-
-			QWidget* widget = dataWidget->createWidgets();
-			if(data->getParent())
-				dataWidget->setWidgetEnabled(widget, false);
+			QWidget* widget = dataWidget->createWidgets(readOnly);
 			formLayout->addRow(data->getName(), widget);
 		}
 		else
@@ -76,7 +74,7 @@ void DatasTable::populateTable(panda::PandaObject* object)
 			text.truncate(150);
 			QLineEdit* lineEdit = new QLineEdit();
 			lineEdit->setText(text);
-			lineEdit->setEnabled(data->getParent() == nullptr);
+			lineEdit->setEnabled(!readOnly);
 			formLayout->addRow(data->getName(), lineEdit);
 		}
 	}
@@ -87,9 +85,25 @@ void DatasTable::populateTable(panda::PandaObject* object)
 		if (!data->isDisplayed() || !data->isReadOnly())
 			continue;
 
-		QLineEdit* lineEdit = new QLineEdit(data->toString(), layoutWidget);
-		lineEdit->setEnabled(false);
-		formLayout->addRow(data->getName(), lineEdit);
+		BaseDataWidget::CreatorArgument arg = { data, this };
+		DataWidgetPtr dataWidget = DataWidgetPtr(BaseDataWidget::CreateDataWidget(arg));
+
+		if (dataWidget)
+		{
+			dataWidgets.append(dataWidget);
+
+			QWidget* widget = dataWidget->createWidgets(true);
+			formLayout->addRow(data->getName(), widget);
+		}
+		else
+		{
+			QString text = data->toString();
+			text.truncate(150);
+			QLineEdit* lineEdit = new QLineEdit();
+			lineEdit->setText(text);
+			lineEdit->setEnabled(true);
+			formLayout->addRow(data->getName(), lineEdit);
+		}
 	}
 }
 

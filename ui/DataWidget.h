@@ -128,7 +128,7 @@ public:
 
     /// The implementation of this method holds the widget creation and the signal / slot
     /// connections.
-	virtual QWidget* createWidgets() = 0;
+	virtual QWidget* createWidgets(bool readOnly = true) = 0;
 
 protected:
     /// The implementation of this method tells how the widget reads the value of the data.

@@ -493,6 +493,26 @@ public:
 	}
 };
 
+//***************************************************************//
+
+template<class T>
+T valueFromString(const QString& text)
+{
+	T val();
+	QTextStream stream(&text, QIODevice::ReadOnly);
+	data_trait<T>::readValue(stream, val);
+	return val;
+}
+
+template<class T>
+QString valueToString(const T& val)
+{
+	QString tempString;
+	QTextStream stream(&tempString, QIODevice::WriteOnly);
+	data_trait<T>::writeValue(stream, val);
+	return tempString;
+}
+
 } // namespace panda
 
 #endif // DATATRAITS_H
