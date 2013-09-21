@@ -34,6 +34,7 @@ PandaDocument::PandaDocument(QObject *parent)
 
 	mouseClick.setOutput(true);
     mouseClick.setReadOnly(true);
+	mouseClick.setWidget("checkbox");
 
     connect(this, SIGNAL(modifiedObject(panda::PandaObject*)), this, SIGNAL(modified()));
     connect(this, SIGNAL(addedObject(panda::PandaObject*)), this, SIGNAL(modified()));

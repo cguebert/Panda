@@ -15,6 +15,7 @@ public:
 		, image(initData(&image, "image", "The image loaded from disk"))
     {
 		addInput(&fileName);
+		fileName.setWidget("open file");
 
 		addOutput(&image);
     }

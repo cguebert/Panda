@@ -49,7 +49,7 @@ void BaseLayer::mergeLayer(QPainter* docPainter)
 //*************************************************************************//
 
 Layer::Layer(PandaDocument *parent)
-	: DockObject((QObject*)parent)
+	: DockObject(parent)
 	, layerName(initData(&layerName, "name", "Name of this layer"))
 	, image(initData(&image, "image", "Image created by the renderers connected to this layer"))
 	, compositionMode(initData(&compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for lsit of modes)"))
