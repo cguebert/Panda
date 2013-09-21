@@ -176,7 +176,7 @@ void PandaObject::save(QTextStream& out)
             out << data->getName() << endl;
 			QString value = data->toString();
 			if(value.contains('\n'))	// TODO : more robust system for multiline values
-				out << dataMarkerStart << endl << value << dataMarkerEnd << endl;
+				out << dataMarkerStart << endl << value << endl << dataMarkerEnd << endl;
 			else
 				out << value << endl;
         }

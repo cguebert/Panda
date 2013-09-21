@@ -299,6 +299,17 @@ QTextStream& data_trait<QRectF>::writeValue(QTextStream& stream, const QRectF& v
 { return stream << v.left() << " " << v.top() << " " << v.right() << " " << v.bottom(); }
 
 template<>
+QTextStream& data_trait< QVector<QString> >::writeValue(QTextStream& stream, const QVector<QString>& v)
+{
+	if(v.empty())
+		return stream;
+	for(int i=0, nb=v.size()-1; i<nb; ++i)
+		stream << v[i] << endl;
+	stream << v.last();
+	return stream;
+}
+
+template<>
 QTextStream& data_trait<QImage>::writeValue(QTextStream& stream, const QImage&)
 { return stream; } // Use a SaveImage object instead
 
@@ -336,8 +347,7 @@ QTextStream& data_trait< QVector<QString> >::readValue(QTextStream& stream, QVec
 	while(!stream.atEnd())
 	{
 		QString t = stream.readLine();
-		if(!t.isEmpty())
-			v.append(t);
+		v.append(t);
 	}
 	return stream;
 }
