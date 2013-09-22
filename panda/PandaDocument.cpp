@@ -238,33 +238,35 @@ bool PandaDocument::readFile(const QString& fileName)
 
 QString PandaDocument::writeTextDocument()
 {
-    QString text;
-    QTextStream out(&text, QIODevice::WriteOnly);
+	QDomDocument doc;
+	QDomElement root = doc.createElement("Panda");
+	doc.appendChild(root);
 
-    typedef QPair<BaseData*, BaseData*> DataPair;
-    QList<DataPair> links;
+	typedef QPair<BaseData*, BaseData*> DataPair;
+	QList<DataPair> links;
 
-    typedef QPair<quint32, quint32> IntPair;
+	typedef QPair<quint32, quint32> IntPair;
 	QList<IntPair> dockedObjects;
 
-    // Saving objects
-    out << (quint32)selectedObjects.size() << endl;
-    QList<PandaObject*>::iterator iter;
-    for(iter = selectedObjects.begin(); iter != selectedObjects.end(); ++iter)
-    {
-        PandaObject* object = *iter;
-		out << ObjectFactory::getRegistryName(object) << endl;
-        out << object->getIndex() << endl;
+	// Saving objects
+	QList<PandaObject*>::iterator iter;
+	for(iter = selectedObjects.begin(); iter != selectedObjects.end(); ++iter)
+	{
+		PandaObject* object = *iter;
+		QDomElement elem = doc.createElement("Object");
+		elem.setAttribute("type", ObjectFactory::getRegistryName(object));
+		elem.setAttribute("index", object->getIndex());
+		root.appendChild(elem);
 
-        object->save(out);
+		object->save(doc, elem);
 
-        // Preparing links
-        foreach(BaseData* data, object->getInputDatas())
-        {
-            BaseData* parent = data->getParent();
+		// Preparing links
+		foreach(BaseData* data, object->getInputDatas())
+		{
+			BaseData* parent = data->getParent();
 			if(parent && selectedObjects.contains(parent->getOwner()))
-                links.append(qMakePair(data, parent));
-        }
+				links.append(qMakePair(data, parent));
+		}
 
 		// Preparing dockables list for docks
 		DockObject* dock = dynamic_cast<DockObject*>(object);
@@ -275,93 +277,102 @@ QString PandaDocument::writeTextDocument()
 				dockedObjects.append(qMakePair(dock->getIndex(), dockableIter.next()->getIndex()));
 		}
 
-        emit savingObject(out, object);
-    }
+		emit savingObject(doc, elem, object);
+	}
 
-    // Saving links
-    out << (quint32)links.size() << endl;
-    foreach(DataPair link, links)
-    {
-        out << link.first->getOwner()->getIndex() << " ";
-        out << link.first->getName() << endl;
-        out << link.second->getOwner()->getIndex() << " ";
-        out << link.second->getName() << endl;
-    }
+	// Saving links
+	foreach(DataPair link, links)
+	{
+		QDomElement elem = doc.createElement("Link");
+		elem.setAttribute("object1", link.first->getOwner()->getIndex());
+		elem.setAttribute("data1", link.first->getName());
+		elem.setAttribute("object2", link.second->getOwner()->getIndex());
+		elem.setAttribute("data2", link.second->getName());
+		root.appendChild(elem);
+	}
 
 	// Saving docked objects list
-	out << (quint32)dockedObjects.size() << endl;
 	foreach(IntPair dockable, dockedObjects)
-		out << dockable.first << " " << dockable.second << endl;
+	{
+		QDomElement elem = doc.createElement("Dock");
+		elem.setAttribute("dock", dockable.first);
+		elem.setAttribute("docked", dockable.second);
+		root.appendChild(elem);
+	}
 
-    return text;
+	return doc.toString(4);
 }
 
 bool PandaDocument::readTextDocument(QString& text)
 {
-    QTextStream in(&text, QIODevice::ReadOnly);
+	QDomDocument doc("Panda");
+	if(!doc.setContent(text))
+		return false;
 
-    QMap<quint32, quint32> importIndicesMap;
-    selectedObjects.clear();
+	QMap<quint32, quint32> importIndicesMap;
+	selectedObjects.clear();
 
-    quint32 nbObjects;
-    in >> nbObjects;
-    for(quint32 i=0; i<nbObjects; ++i)
-    {
-        QString registryName;
-        quint32 index;
-        in.skipWhiteSpace();
-        registryName = in.readLine();
-        in >> index;
+	QDomElement root = doc.documentElement();
 
-        PandaObject* object = createObject(registryName);
-        if(object)
-        {
-            importIndicesMap[index] = object->getIndex();
-            selectedObjects.append(object);
+	// Loading objects
+	QDomElement elem = root.firstChildElement("Object");
+	while(!elem.isNull())
+	{
+		QString registryName = elem.attribute("type");
+		if(registryName.isEmpty())
+			return false;
+		quint32 index = elem.attribute("index").toUInt();
+		PandaObject* object = createObject(registryName);
+		if(object)
+		{
+			importIndicesMap[index] = object->getIndex();
+			selectedObjects.append(object);
 
-            object->load(in);
+			object->load(elem);
 
-            emit loadingObject(in, object);
-        }
-        else
-        {
-            QMessageBox::warning(nullptr, tr("Panda"),
-                tr("Could not create the object %1.\nA plugin must be missing.")
-                .arg(registryName));
-            return false;
-        }
-    }
+			emit loadingObject(elem, object);
+		}
+		else
+		{
+			QMessageBox::warning(nullptr, tr("Panda"),
+				tr("Could not create the object %1.\nA plugin must be missing.")
+				.arg(registryName));
+			return false;
+		}
 
-    // Create links
-    quint32 nbLinks;
-    in >> nbLinks;
-    for(quint32 i=0; i<nbLinks; ++i)
-    {
-        quint32 index1, index2;
-        QString name1, name2;
-        in >> index1;
-        in.skipWhiteSpace();
-        name1 = in.readLine();
-        in >> index2;
-        in.skipWhiteSpace();
-        name2 = in.readLine();
-        index1 = importIndicesMap[index1];
-        index2 = importIndicesMap[index2];
+		elem = elem.nextSiblingElement("Object");
+	}
 
-        BaseData *data1, *data2;
-        data1 = findData(index1, name1);
-        data2 = findData(index2, name2);
-        if(data1 && data2)
-            data1->setParent(data2);
-    }
+	// Create links
+	elem = root.firstChildElement("Link");
+	while(!elem.isNull())
+	{
+		quint32 index1, index2;
+		QString name1, name2;
+		index1 = elem.attribute("object1").toUInt();
+		index2 = elem.attribute("object2").toUInt();
+		index1 = importIndicesMap[index1];
+		index2 = importIndicesMap[index2];
+
+		name1 = elem.attribute("data1");
+		name2 = elem.attribute("data2");
+
+		BaseData *data1, *data2;
+		data1 = findData(index1, name1);
+		data2 = findData(index2, name2);
+		if(data1 && data2)
+			data1->setParent(data2);
+
+		elem = elem.nextSiblingElement("Link");
+	}
 
 	// Put dockables in their docks
-	quint32 nbDockedObjects;
-	in >> nbDockedObjects;
-	for(quint32 i=0; i<nbDockedObjects; ++i)
+	elem = root.firstChildElement("Dock");
+	while(!elem.isNull())
 	{
 		quint32 dockIndex, dockableIndex;
-		in >> dockIndex >> dockableIndex;
+		dockIndex = elem.attribute("dock").toUInt();
+		dockableIndex = elem.attribute("docked").toUInt();
 		dockIndex = importIndicesMap[dockIndex];
 		dockableIndex = importIndicesMap[dockableIndex];
 
@@ -374,6 +385,8 @@ bool PandaDocument::readTextDocument(QString& text)
 				defaultDock->removeDockable(dockable);
 			dock->addDockable(dockable);
 		}
+
+		elem = elem.nextSiblingElement("Dock");
 	}
 
     if(!selectedObjects.empty())
@@ -382,7 +395,7 @@ bool PandaDocument::readTextDocument(QString& text)
         emit selectedObject(getCurrentSelectedObject());
     }
 
-    return true;
+	return true;
 }
 
 void PandaDocument::resetDocument()

@@ -10,6 +10,7 @@
 #include <QVector>
 #include <QStringList>
 #include <QTextStream>
+#include <QDomDocument>
 
 namespace panda
 {
@@ -51,6 +52,16 @@ public:
 	static QTextStream& readValue(QTextStream& stream, value_type& v)
 	{
 		return stream >> v;
+	}
+	static void writeValue(QDomDocument& doc, QDomElement& elem, const value_type& v)
+	{
+		QString text = valueToString(v);
+		QDomText node = doc.createTextNode(text);
+		elem.appendChild(node);
+	}
+	static void readValue(QDomElement& elem, value_type& v)
+	{
+		v = valueFromString<value_type>(elem.text());
 	}
 	static void copyValue(data_type* data, const BaseData* parent)
 	{
@@ -143,9 +154,30 @@ public:
 		while(!stream.atEnd())
 		{
 			base_traits::readValue(stream, t);
-			vec.append(t);
+			vec.push_back(t);
 		}
 		return stream;
+	}
+	static void writeValue(QDomDocument& doc, QDomElement& elem, const vector_type& vec)
+	{
+		for(auto& v : vec)
+		{
+			QDomElement node = doc.createElement("Value");
+			base_traits::writeValue(doc, node, v);
+			elem.appendChild(node);
+		}
+	}
+	static void readValue(QDomElement& elem, vector_type& vec)
+	{
+		vec.clear();
+		T t = T();
+		QDomElement e = elem.firstChildElement("Value");
+		while(!e.isNull())
+		{
+			base_traits::readValue(e, t);
+			vec.push_back(t);
+			e = e.nextSiblingElement("Value");
+		}
 	}
 	static void copyValue(data_type* data, const BaseData* parent)
 	{
@@ -255,6 +287,32 @@ public:
 		}
 		return stream;
 	}
+	static void writeValue(QDomDocument& doc, QDomElement& elem, const animation_type& anim)
+	{
+		typename animation_type::Iterator iter = anim.getIterator();
+		while(iter.hasNext())
+		{
+			iter.next();
+			QDomElement node = doc.createElement("Value");
+			node.setAttribute("key", iter.key());
+			base_traits::writeValue(doc, node, iter.value());
+			elem.appendChild(node);
+		}
+	}
+	static void readValue(QDomElement& elem, animation_type& anim)
+	{
+		anim.clear();
+		T val = T();
+		double key;
+		QDomElement e = elem.firstChildElement("Value");
+		while(!e.isNull())
+		{
+			key = e.attribute("key").toDouble();
+			base_traits::readValue(e, val);
+			anim.add(key, val);
+			e = e.nextSiblingElement("Value");
+		}
+	}
 	static void copyValue(data_type* data, const BaseData* parent)
 	{
 		// Without conversion
@@ -338,7 +396,7 @@ QTextStream& data_trait< QVector<QString> >::readValue(QTextStream& stream, QVec
 	while(!stream.atEnd())
 	{
 		QString t = stream.readLine();
-		v.append(t);
+		v.push_back(t);
 	}
 	return stream;
 }

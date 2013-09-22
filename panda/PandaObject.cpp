@@ -183,6 +183,20 @@ void PandaObject::save(QTextStream& out)
     }
 }
 
+void PandaObject::save(QDomDocument& doc, QDomElement& elem)
+{
+	foreach(BaseData* data, datas)
+	{	// We now also save datas that have parents, because we don't know if the parent will be saved
+		if(data->isSet() && data->isPersistent() && !data->isReadOnly())
+		{
+			QDomElement xmlData = doc.createElement("Data");
+			xmlData.setAttribute("name", data->getName());
+			data->save(doc, xmlData);
+			elem.appendChild(xmlData);
+		}
+	}
+}
+
 void PandaObject::load(QDataStream& in)
 {
     int nb;
@@ -224,6 +238,18 @@ void PandaObject::load(QTextStream& in)
         if(data)
             data->fromString(value);
     }
+}
+
+void PandaObject::load(QDomElement& elem)
+{
+	QDomElement e = elem.firstChildElement("Data");
+	while(!e.isNull())
+	{
+		BaseData* data = getData(e.attribute("name"));
+		if(data)
+			data->load(e);
+		e = e.nextSiblingElement("Data");
+	}
 }
 
 void PandaObject::dataSetParent(BaseData* data, BaseData* parent)

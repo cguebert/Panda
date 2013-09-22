@@ -92,7 +92,11 @@ public:
         return value;
     }
 
-    void copyValueFrom(const BaseData* parent);
+	virtual void copyValueFrom(const BaseData* parent);
+
+	virtual void save(QDomDocument& doc, QDomElement& elem);
+
+	virtual void load(QDomElement& elem);
 
 protected:
     virtual QString doToString() const;

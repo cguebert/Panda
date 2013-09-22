@@ -211,6 +211,18 @@ void GenericObject::save(QTextStream& out)
 	PandaObject::save(out);
 }
 
+void GenericObject::save(QDomDocument& doc, QDomElement& elem)
+{
+	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
+	{
+		QDomElement e = doc.createElement("CreatedData");
+		e.setAttribute("type", created->type);
+		elem.appendChild(e);
+	}
+
+	PandaObject::save(doc, elem);
+}
+
 void GenericObject::load(QDataStream& in)
 {
 	quint32 nb;
@@ -240,6 +252,18 @@ void GenericObject::load(QTextStream& in)
 
 	in.skipWhiteSpace();
 	PandaObject::load(in);
+}
+
+void GenericObject::load(QDomElement& elem)
+{
+	QDomElement e = elem.firstChildElement("CreatedData");
+	while(!e.isNull())
+	{
+		createDatas(e.attribute("type").toUInt());
+		e = e.nextSiblingElement("CreatedData");
+	}
+
+	PandaObject::load(elem);
 }
 
 } // namespace panda

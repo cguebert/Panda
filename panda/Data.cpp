@@ -166,12 +166,6 @@ QString Data<T>::doToString() const
 template<class T>
 void Data<T>::fromString(const QString& text)
 {
-/*	QString copy;
-	if(getValueType() != QMetaType::QString)
-		copy = text.simplified();
-	else
-		copy = text;
-	QTextStream stream(&copy, QIODevice::ReadOnly);	*/
 	QString copy(text);
 	QTextStream stream(&copy, QIODevice::ReadOnly);
 	beginEdit();
@@ -184,6 +178,18 @@ void Data<T>::copyValueFrom(const BaseData* parent)
 {
 	data_trait<T>::copyValue(this, parent);
 	this->isValueSet = true;
+}
+
+template<class T>
+void Data<T>::save(QDomDocument& doc, QDomElement& elem)
+{
+	data_trait<T>::writeValue(doc, elem, value);
+}
+
+template<class T>
+void Data<T>::load(QDomElement& elem)
+{
+	data_trait<T>::readValue(elem, value);
 }
 
 template<class T>

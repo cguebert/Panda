@@ -8,6 +8,7 @@
 #include <QSize>
 #include <QMap>
 #include <QImage>
+#include <QDomDocument>
 
 namespace panda {
 
@@ -118,8 +119,10 @@ signals:
     void removedObject(panda::PandaObject*);
     void savingObject(QDataStream&, panda::PandaObject*);
     void savingObject(QTextStream&, panda::PandaObject*);
+	void savingObject(QDomDocument&, QDomElement&, panda::PandaObject*);
     void loadingObject(QDataStream&, panda::PandaObject*);
     void loadingObject(QTextStream&, panda::PandaObject*);
+	void loadingObject(QDomElement&, panda::PandaObject*);
     void selectedObject(panda::PandaObject*);
     void selectedObjectIsDirty(panda::PandaObject*);
     void selectionChanged();

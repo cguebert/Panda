@@ -4,6 +4,7 @@
 #include <panda/DataNode.h>
 #include <QString>
 #include <QVariant>
+#include <QDomDocument>
 
 namespace panda
 {
@@ -95,6 +96,9 @@ public:
     virtual QString getFullTypeName() const = 0;
 
     virtual void copyValueFrom(const BaseData* parent) = 0;
+
+	virtual void save(QDomDocument& doc, QDomElement& elem) = 0;
+	virtual void load(QDomElement& elem) = 0;
 
 protected:
     virtual void doAddInput(DataNode* node);
