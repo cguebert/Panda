@@ -24,11 +24,8 @@ public:
 		addInput(&width);
 		addInput(&color);
 
-		width.beginEdit()->append(0.0);
-		width.endEdit();
-
-		color.beginEdit()->append(QColor());
-		color.endEdit();
+		width.getAccessor().push_back(0.0);
+		color.getAccessor().push_back(QColor());
 	}
 
 	void render(QPainter* painter)

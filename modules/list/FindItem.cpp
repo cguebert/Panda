@@ -46,7 +46,7 @@ public:
 
 		const QVector<T>& inList = dataInput->getValue();
 		const QVector<T>& inVal = dataValues->getValue();
-		QVector<int>& id = *dataOutput->beginEdit();
+		auto id = dataOutput->getAccessor();
 
 		int size = inList.size();
 		if(size)
@@ -58,8 +58,6 @@ public:
 		}
 		else
 			id.clear();
-
-		dataOutput->endEdit();
 	}
 
 protected:

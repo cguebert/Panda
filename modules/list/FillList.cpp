@@ -42,7 +42,7 @@ public:
 		Q_ASSERT(dataInput && dataOutput);
 
 		const QVector<T>& inVal = dataInput->getValue();
-		QVector<T>& outVal = *(dataOutput->beginEdit());
+		auto outVal = dataOutput->getAccessor();
 		int inputSize = inVal.size();
 
 		if(outputSize && inputSize)
@@ -54,8 +54,6 @@ public:
 		}
 		else
 			outVal.clear();
-
-		dataOutput->endEdit();
     }
 
 

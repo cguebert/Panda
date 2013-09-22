@@ -8,12 +8,12 @@
 namespace panda
 {
 
-template<class T> T lerp(const T& v1, const T& v2, const double& amt);
+template<class T> T lerp(const T& v1, const T& v2, double amt);
 
 template<>
-QColor lerp(const QColor& v1, const QColor& v2, const double& amt);
+QColor lerp(const QColor& v1, const QColor& v2, double amt);
 
-template<class T> T lerp(const T& v1, const T& v2, const double& amt)
+template<class T> T lerp(const T& v1, const T& v2, double amt)
 {
     return v1 * (1.0-amt) + v2 * amt;
 }
@@ -22,24 +22,30 @@ template <class T>
 class Animation
 {
 public:
+	typedef T value_type;
+	typedef value_type& reference;
+	typedef const value_type& const_reference;
+	typedef QMapIterator<double, T> Iterator;
+	typedef QList<double> keysList;
+	typedef QList<value_type> valuesList;
+
     Animation() {}
     virtual ~Animation() {}
 
-    T get(const double& at) const;
-    T& getValue(const double& key) { return map[key]; }
-    T& getValueAtIndex(int index);
-    T getValueAtIndexConst(int index) const;
+	value_type get(double at) const;
+	reference getValue(double key) { return map[key]; }
+	reference getValueAtIndex(int index);
+	value_type getValueAtIndexConst(int index) const;
 
     int size() const { return map.size(); }
     void clear() { map.clear(); }
-    void add(const double& key, const T& value) { map.insert(key, value); }
-    void move(const double& keyFrom, const double& keyTo);
-    void remove(const double& key) { map.remove(key); }
+	void add(double key, const_reference value) { map.insert(key, value); }
+	void move(double keyFrom, double keyTo);
+	void remove(double key) { map.remove(key); }
 
-    virtual QList<double> getKeys() const { return map.uniqueKeys(); }
-    QList<T> getValues() const { return map.values(); }
+	virtual keysList getKeys() const { return map.uniqueKeys(); }
+	valuesList getValues() const { return map.values(); }
 
-    typedef QMapIterator<double, T> Iterator;
     Iterator getIterator() const { return Iterator(map); }
 
     QEasingCurve interpolation;

@@ -29,8 +29,8 @@ public:
 		const QRectF& rect = rectangle.getValue();
 
 		const QVector<QPointF>& inPts = inputPoints.getValue();
-		QVector<QPointF>& outPts = *outputPoints.beginEdit();
-		QVector<int>& outId = *outputIndices.beginEdit();
+		auto outPts = outputPoints.getAccessor();
+		auto outId = outputIndices.getAccessor();
 		int nb = inPts.size();
 		outPts.clear();
 		outId.clear();
@@ -40,13 +40,11 @@ public:
 			QPointF pt = inPts[i];
 			if(rect.contains(pt))
 			{
-				outPts.append(pt);
-				outId.append(i);
+				outPts.push_back(pt);
+				outId.push_back(i);
 			}
 		}
 
-		outputPoints.endEdit();
-		outputIndices.endEdit();
 		this->cleanDirty();
 	}
 
@@ -88,8 +86,8 @@ public:
 		double r2 = r*r;
 
 		const QVector<QPointF>& inPts = inputPoints.getValue();
-		QVector<QPointF>& outPts = *outputPoints.beginEdit();
-		QVector<int>& outId = *outputIndices.beginEdit();
+		auto outPts = outputPoints.getAccessor();
+		auto outId = outputIndices.getAccessor();
 		int nb = inPts.size();
 		outPts.clear();
 		outId.clear();
@@ -101,13 +99,11 @@ public:
 			double d2 = dx*dx+dy*dy;
 			if(d2 < r2)
 			{
-				outPts.append(pt);
-				outId.append(i);
+				outPts.push_back(pt);
+				outId.push_back(i);
 			}
 		}
 
-		outputPoints.endEdit();
-		outputIndices.endEdit();
 		this->cleanDirty();
 	}
 

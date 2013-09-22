@@ -45,12 +45,11 @@ public:
 
 		Q_ASSERT(dataInTrue && dataInFalse && dataOutput);
 
-		QVector<T>& outVal = *dataOutput->beginEdit();
+		auto outVal = dataOutput->getAccessor();
 		if(control.getValue())
 			outVal = dataInTrue->getValue();
 		else
 			outVal = dataInFalse->getValue();
-		dataOutput->endEdit();
 	}
 
 protected:

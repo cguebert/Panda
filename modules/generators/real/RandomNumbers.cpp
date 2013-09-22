@@ -31,7 +31,7 @@ public:
     void update()
     {
         rnd.seed(seed.getValue());
-        QVector<double>& valNumbers = *numbers.beginEdit();
+		auto valNumbers = numbers.getAccessor();
         int valNbNumbers = nbNumbers.getValue();
         valNumbers.resize(valNbNumbers);
 
@@ -39,7 +39,6 @@ public:
         for(int i=0; i<valNbNumbers; ++i)
             valNumbers[i] = rnd.random(min, max);
 
-        numbers.endEdit();
         this->cleanDirty();
     }
 

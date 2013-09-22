@@ -52,7 +52,7 @@ public:
 		const QVector<T>& inList = dataInput->getValue();
 		const QVector<int>& id = dataIndices->getValue();
 		const QVector<T>& inVal = dataValues->getValue();
-		QVector<T>& outVal = *(dataOutput->beginEdit());
+		auto outVal = dataOutput->getAccessor();
 
 		int listSize = inList.size();
 		int idSize = id.size();
@@ -67,8 +67,6 @@ public:
 					outVal[id[i]] = inVal[i];
 			}
 		}
-
-		dataOutput->endEdit();
 	}
 
 protected:

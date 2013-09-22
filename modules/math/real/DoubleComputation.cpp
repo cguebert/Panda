@@ -51,7 +51,7 @@ public:
 		const QVector<double>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
-		QVector<double> &valOut = *result.beginEdit();
+		auto valOut = result.getAccessor();
 		valOut.clear();
 
 		int nbA = valInA.size(), nbB = valInB.size(), nbV = valInV.size();
@@ -70,8 +70,6 @@ public:
 
 			for(int i=0; i<nb; ++i)
 				valOut[i] = smoothStep(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
-
-			result.endEdit();
 		}
 
 		this->cleanDirty();
@@ -102,7 +100,7 @@ public:
 	void update()
 	{
 		const QVector<double> &valIn = input.getValue();
-		QVector<int> &valOut = *count.beginEdit();
+		auto valOut = count.getAccessor();
 
 		int size = valIn.size();
 		valOut.resize(size);
@@ -115,7 +113,6 @@ public:
 			prevValues[i] = valIn[i];
 		}
 
-		count.endEdit();
 		this->cleanDirty();
 	}
 
@@ -124,7 +121,7 @@ public:
 		PandaObject::reset();
 
 		const QVector<double> &valIn = input.getValue();
-		QVector<int> &valOut = *count.beginEdit();
+		auto valOut = count.getAccessor();
 		int size = valIn.size();
 		prevValues.resize(size);
 		for(int i=0; i<size; ++i)
@@ -161,7 +158,7 @@ public:
 	void update()
 	{
 		const QVector<double> &valIn = input.getValue();
-		QVector<int> &valOut = *count.beginEdit();
+		auto valOut = count.getAccessor();
 
 		int size = valIn.size();
 		valOut.resize(size);
@@ -174,7 +171,6 @@ public:
 			prevValues[i] = valIn[i];
 		}
 
-		count.endEdit();
 		this->cleanDirty();
 	}
 
@@ -183,7 +179,7 @@ public:
 		PandaObject::reset();
 
 		const QVector<double> &valIn = input.getValue();
-		QVector<int> &valOut = *count.beginEdit();
+		auto valOut = count.getAccessor();
 		int size = valIn.size();
 		prevValues.resize(size);
 		for(int i=0; i<size; ++i)
@@ -234,7 +230,7 @@ public:
 		const QVector<double>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
-		QVector<double> &valOut = *result.beginEdit();
+		auto valOut = result.getAccessor();
 		valOut.clear();
 
 		int nbA = valInA.size(), nbB = valInB.size(), nbV = valInV.size();
@@ -253,8 +249,6 @@ public:
 
 			for(int i=0; i<nb; ++i)
 				valOut[i] = constrain(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
-
-			result.endEdit();
 		}
 
 		this->cleanDirty();
@@ -298,7 +292,7 @@ public:
 		const QVector<double>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
-		QVector<int> &valOut = *result.beginEdit();
+		auto valOut = result.getAccessor();
 		valOut.clear();
 
 		int nbA = valInA.size(), nbB = valInB.size(), nbV = valInV.size();
@@ -317,8 +311,6 @@ public:
 
 			for(int i=0; i<nb; ++i)
 				valOut[i] = pulse(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
-
-			result.endEdit();
 		}
 
 		this->cleanDirty();
@@ -369,7 +361,7 @@ public:
 								&valInMax = inputMax.getValue(),
 								&valOutMin = outputMin.getValue(),
 								&valOutMax = outputMax.getValue();
-		QVector<double> &valOut = *result.beginEdit();
+		auto valOut = result.getAccessor();
 		valOut.clear();
 
 		int nbV = valInV.size(),
@@ -392,8 +384,6 @@ public:
 				valOut[i] = remap(valInV[i%nbV],
 								  valInMin[i%nbP], valInMax[i%nbP],
 								  valOutMin[i%nbP], valOutMax[i%nbP]);
-
-			result.endEdit();
 		}
 
 		this->cleanDirty();

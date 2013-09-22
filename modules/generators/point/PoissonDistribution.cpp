@@ -44,7 +44,7 @@ public:
 	void update()
 	{
 		rnd.seed(seed.getValue());
-		QVector<QPointF>& valPoints = *points.beginEdit();
+		auto valPoints = points.getAccessor();
 		valPoints.clear();
 		QSize size = parentDocument->getRenderSize();
 		QRectF area = QRectF(0, 0, size.width()-1, size.height()-1);
@@ -54,8 +54,8 @@ public:
 
 		QPointF firstPoint(rnd.random(area.left(), area.right())
 						   , rnd.random(area.top(), area.bottom()));
-		processList.append(firstPoint);
-		valPoints.append(firstPoint);
+		processList.push_back(firstPoint);
+		valPoints.push_back(firstPoint);
 		grid.addPoint(firstPoint);
 
 		int rejectionLimit = samples.getValue();
@@ -72,15 +72,14 @@ public:
 				QPointF nPt = randomPointAround(pt, minDist, maxDist);
 				if(area.contains(nPt) && !grid.testNeighbor(nPt, minDist))
 				{
-					processList.append(nPt);
-					valPoints.append(nPt);
+					processList.push_back(nPt);
+					valPoints.push_back(nPt);
 					grid.addPoint(nPt);
 				}
 			}
 		}
 
 		nbPoints.setValue(valPoints.size());
-		points.endEdit();
 		grid.clear();
 		this->cleanDirty();
 	}

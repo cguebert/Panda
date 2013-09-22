@@ -42,14 +42,12 @@ public:
 
 		int val = value.getValue();
 		const QVector<T> &valIn = dataInput->getValue();
-		QVector<T> &valOut = *dataOutput->beginEdit();
+		auto valOut = dataOutput->getAccessor();
 
 		if(val >= valIn.size())
 			valOut = valIn;
 		else
-			valOut.swap(valIn.mid(0, val));
-
-		dataOutput->endEdit();
+			valOut = valIn.mid(0, val);
 	}
 
 protected:

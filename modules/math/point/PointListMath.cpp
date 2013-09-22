@@ -166,8 +166,8 @@ public:
 		unsigned int nbPts = curve.size();
 		unsigned int nbAbscissa = listAbscissa.size();
 
-		QVector<QPointF>& listPos = *position.beginEdit();
-		QVector<double>& listRot = *rotation.beginEdit();
+		auto listPos = position.getAccessor();
+		auto listRot = rotation.getAccessor();
 
 		if(nbPts > 1 && nbAbscissa)
 		{
@@ -214,9 +214,6 @@ public:
 			listPos.clear();
 			listRot.clear();
 		}
-
-		position.endEdit();
-		rotation.endEdit();
 
 		this->cleanDirty();
 	}

@@ -18,8 +18,7 @@ public:
         addInput(&indexData);
         addInput(&generic);
 
-        indexData.beginEdit()->append(0);
-        indexData.endEdit();
+		indexData.getAccessor().push_back(0);
 
 		int typeOfList = BaseData::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
@@ -45,15 +44,13 @@ public:
 
 		const QVector<int>& id = indexData.getValue();
 		const QVector<T>& inVal = dataInput->getValue();
-		QVector<T>& outVal = *(dataOutput->beginEdit());
+		auto outVal = dataOutput->getAccessor();
 
 		int size = inVal.size();
 		int nb = id.size();
 		outVal.resize(nb);
 		for(int i=0; i<nb; ++i)
 			outVal[i] = inVal[qBound(0, id[i], size-1)];
-
-		dataOutput->endEdit();
 	}
 
 protected:

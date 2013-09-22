@@ -7,7 +7,7 @@ namespace panda
 {
 
 template <class T>
-T Animation<T>::get(const double& at) const
+typename Animation<T>::value_type Animation<T>::get(double at) const
 {
     T defaultValue = T();
     if(map.isEmpty())
@@ -47,14 +47,14 @@ T Animation<T>::get(const double& at) const
 }
 
 template <class T>
-void Animation<T>::move(const double& keyFrom, const double& keyTo)
+void Animation<T>::move(double keyFrom, double keyTo)
 {
     T value = map.take(keyFrom);
     map.insert(keyTo, value);
 }
 
 template <class T>
-T& Animation<T>::getValueAtIndex(int index)
+typename Animation<T>::reference Animation<T>::getValueAtIndex(int index)
 {
     typename QMap<double, T>::iterator iter;
     int i=0;
@@ -67,7 +67,7 @@ T& Animation<T>::getValueAtIndex(int index)
 }
 
 template <class T>
-T Animation<T>::getValueAtIndexConst(int index) const
+typename Animation<T>::value_type Animation<T>::getValueAtIndexConst(int index) const
 {
     typename QMap<double, T>::const_iterator iter;
     int i=0;
@@ -79,7 +79,7 @@ T Animation<T>::getValueAtIndexConst(int index) const
 }
 
 template<>
-QColor lerp(const QColor& v1, const QColor& v2, const double& amt)
+QColor lerp(const QColor& v1, const QColor& v2, double amt)
 {
     qreal r1, r2, g1, g2, b1, b2, a1, a2;
     v1.getRgbF(&r1, &g1, &b1, &a1);

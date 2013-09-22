@@ -24,8 +24,7 @@ public:
 		addInput(&rotation);
 		addInput(&drawCentered);
 
-		center.beginEdit()->append(QPointF(100, 100));
-		center.endEdit();
+		center.getAccessor().push_back(QPointF(100, 100));
 	}
 
 	void render(QPainter* painter)

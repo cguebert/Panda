@@ -472,10 +472,8 @@ public:
 	{
 		if(dialog)
 		{
-			MyTData* data = getData();
-			value_type& v = *data->beginEdit();
-			dialog->writeToData(v);
-			data->endEdit();
+			auto v = getData()->getAccessor();
+			dialog->writeToData(v.wref());
 
 			updatePreview();
 		}

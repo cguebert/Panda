@@ -43,10 +43,9 @@ public:
 
 		Q_ASSERT(dataHead && dataTail && dataOutput);
 
-		QVector<T>& outVal = *dataOutput->beginEdit();
+		auto outVal = dataOutput->getAccessor();
 		outVal.clear();
 		outVal << dataHead->getValue() << dataTail->getValue();
-		dataOutput->endEdit();
 	}
 
 protected:

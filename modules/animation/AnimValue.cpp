@@ -19,8 +19,7 @@ public:
         addInput(&progress);
         addInput(&generic);
 
-        progress.beginEdit()->append(0.0);
-        progress.endEdit();
+		progress.getAccessor().push_back(0.0);
 
 		GenericDataDefinitionList defList;
 		// Create an animation of the same type as the data connected
@@ -49,14 +48,12 @@ public:
 
 		const QVector<double>& key = progress.getValue();
 		const Animation<T>& inVal = dataInput->getValue();
-		QVector<T>& outVal = *(dataOutput->beginEdit());
+		auto outVal = dataOutput->getAccessor();
 
 		int size = key.size();
 		outVal.resize(size);
 		for(int i=0; i<size; ++i)
 			outVal[i] = inVal.get(key[i]);
-
-		dataOutput->endEdit();
 	}
 
 protected:

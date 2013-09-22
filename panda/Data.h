@@ -2,6 +2,8 @@
 #define DATA_H
 
 #include <panda/BaseData.h>
+#include <helper/DataAccessor.h>
+
 #include <QVariant>
 
 #include <QTextStream>
@@ -20,22 +22,27 @@ BaseData* createDataFromFullType(int fullType, const QString& name, const QStrin
 template<class T> QTextStream& readValue(QTextStream& stream, T& v);
 template<class T> QTextStream& writeValue(QTextStream& stream, const T& v);
 
+template<class T> class DataAccessor;
+
 template <class T = void*>
 class Data : public BaseData
 {
 public:
-    typedef T value_type;
+	typedef T value_type;
+	typedef T& reference;
+	typedef const T& const_reference;
+	typedef T* pointer;
 
     class InitData : public BaseData::BaseInitData
     {
     public:
-        InitData() : value(T()) {}
-        T value;
+		InitData() : value(value_type()) {}
+		value_type value;
     };
 
     explicit Data(const BaseData::BaseInitData& init)
         : BaseData(init)
-        , value(T())
+		, value(value_type())
     {
 		setCustomFlags();
     }
@@ -71,26 +78,15 @@ public:
 
     virtual QString getFullTypeName() const;
 
-    inline T* beginEdit()
-    {
-        this->updateIfDirty();
-        ++counter;
-        return &value;
-    }
+	helper::DataAccessor< Data<value_type> > getAccessor();
 
-    inline void endEdit()
-    {
-        this->isValueSet = true;
-        BaseData::setDirtyOutputs();
-    }
-
-    inline void setValue(const T& v)
+	inline void setValue(const_reference v)
     {
         *beginEdit() = v;
         endEdit();
     }
 
-    inline const T& getValue() const
+	inline const_reference getValue() const
     {
         this->updateIfDirty();
         return value;
@@ -103,6 +99,21 @@ protected:
 
 	void setCustomFlags();
 
+	friend class helper::DataAccessor< Data<T> >;
+
+	inline pointer beginEdit()
+	{
+		this->updateIfDirty();
+		++counter;
+		return &value;
+	}
+
+	inline void endEdit()
+	{
+		this->isValueSet = true;
+		BaseData::setDirtyOutputs();
+	}
+
 private:
     T value;
 
@@ -110,6 +121,8 @@ private:
     Data(const Data&);
     Data& operator=(const Data&);
 };
+
+//***************************************************************//
 
 class GenericData : public Data<int>
 {
@@ -152,6 +165,31 @@ public:
     virtual bool validParent(const BaseData* parent) const;
     virtual QString getFullTypeName() const;
 };
+
+//***************************************************************//
+
+namespace helper
+{
+
+template<class T>
+class DataAccessor<Data<T>> : public DataAccessor<T>
+{
+public:
+	typedef DataAccessor<T> Inherit;
+	typedef panda::Data<T> data_type;
+	typedef T container_type;
+
+protected:
+	data_type& data;
+
+public:
+	DataAccessor(data_type& d) : Inherit(*d.beginEdit()) , data(d) {}
+	~DataAccessor() { data.endEdit(); }
+
+	template<class U> void operator=(const U& v) { Inherit::operator=(v); }
+};
+
+} // namespace helper
 
 } // namespace panda
 

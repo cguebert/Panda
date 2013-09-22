@@ -39,14 +39,12 @@ public:
 		Q_ASSERT(dataInput && dataOutput);
 
 		const QVector<T> &valIn = dataInput->getValue();
-		QVector<T> &valOut = *dataOutput->beginEdit();
+		auto valOut = dataOutput->getAccessor();
 
 		int size = valIn.size();
 		valOut.resize(size);
 		for(int i=0; i<size; ++i)
 			valOut[i] = valIn[size-1-i];
-
-		dataOutput->endEdit();
 	}
 
 protected:

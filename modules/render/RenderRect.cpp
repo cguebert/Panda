@@ -24,14 +24,9 @@ public:
 		addInput(&lineColor);
 		addInput(&color);
 
-		rect.beginEdit()->append(QRectF(100, 100, 50, 50));
-		rect.endEdit();
-
-		lineColor.beginEdit()->append(QColor(0,0,0));
-		lineColor.endEdit();
-
-		lineWidth.beginEdit()->append(0.0);
-		lineWidth.endEdit();
+		rect.getAccessor().push_back(QRectF(100, 100, 50, 50));
+		lineColor.getAccessor().push_back(QColor(0,0,0));
+		lineWidth.getAccessor().push_back(0.0);
 	}
 
 	void render(QPainter* painter)

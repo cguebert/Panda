@@ -118,9 +118,9 @@ public:
 		}
 
 		// copy particles values to the output Datas
-		QVector<QPointF> &pos = *positions.beginEdit();
-		QVector<QPointF> &vel = *velocities.beginEdit();
-		QVector<QPointF> &acc = *accelerations.beginEdit();
+		auto pos = positions.getAccessor();
+		auto vel = velocities.getAccessor();
+		auto acc = accelerations.getAccessor();
 
 		int nb = particles.size();
 		pos.resize(nb);
@@ -134,10 +134,6 @@ public:
 			vel[i] = p.velocity;
 			acc[i] = p.acceleration;
 		}
-
-		positions.endEdit();
-		velocities.endEdit();
-		accelerations.endEdit();
 
 		this->cleanDirty();
 	}

@@ -23,14 +23,9 @@ public:
 		addInput(&radius);
 		addInput(&color);
 
-		center.beginEdit()->append(QPointF(100, 100));
-		center.endEdit();
-
-		radius.beginEdit()->append(5.0);
-		radius.endEdit();
-
-		color.beginEdit()->append(QColor(0,0,0));
-		color.endEdit();
+		center.getAccessor().push_back(QPointF(100, 100));
+		radius.getAccessor().push_back(5.0);
+		color.getAccessor().push_back(QColor(0,0,0));
 	}
 
 	void render(QPainter* painter)

@@ -25,14 +25,13 @@ public:
 	{
 		const QVector<double>	&xVal = ptX.getValue(),
 								&yVal = ptY.getValue();
-		QVector<QPointF>& pts = *point.beginEdit();
+		auto pts = point.getAccessor();
 
 		int nb = qMin(xVal.size(), yVal.size());
 		pts.resize(nb);
 		for(int i=0; i<nb; ++i)
 			pts[i] = QPointF(xVal[i], yVal[i]);
 
-		point.endEdit();
 		this->cleanDirty();
 	}
 
@@ -64,8 +63,8 @@ public:
 
 	void update()
 	{
-		QVector<double>	&xVal = *ptX.beginEdit(),
-						&yVal = *ptY.beginEdit();
+		auto xVal = ptX.getAccessor();
+		auto yVal = ptY.getAccessor();
 		const QVector<QPointF>& pts = point.getValue();
 
 		int nb = pts.size();
@@ -78,8 +77,6 @@ public:
 			yVal[i] = pt.y();
 		}
 
-		ptX.endEdit();
-		ptY.endEdit();
 		this->cleanDirty();
 	}
 

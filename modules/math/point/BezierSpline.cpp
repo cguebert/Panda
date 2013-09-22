@@ -25,7 +25,7 @@ public:
 	void update()
 	{
 		const QVector<QPointF>& ctrlPts = input.getValue();
-		QVector<QPointF>& outPts = *output.beginEdit();
+		auto outPts = output.getAccessor();
 		int nbCtrlPts = ctrlPts.size();
 		if(nbCtrlPts > 2)
 		{
@@ -45,7 +45,6 @@ public:
 		else
 			outPts.clear();
 
-		output.endEdit();
 		this->cleanDirty();
 	}
 

@@ -33,7 +33,8 @@ HEADERS       = \
     ui/StructDataWidget.h \
     panda/DataTraits.h \
     modules/particles/ParticleEffector.h \
-    modules/particles/Particle.h
+    modules/particles/Particle.h \
+    helper/DataAccessor.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \

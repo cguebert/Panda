@@ -44,15 +44,13 @@ public:
 		Q_ASSERT(dataInput && dataOutput);
 
 		const QVector<T>& inVal = dataInput->getValue();
-		Animation<T>& outVal = *(dataOutput->beginEdit());
+		auto outVal = dataOutput->getAccessor();
 
 		double inter = interval.getValue();
 		int size = inVal.size();
 		outVal.clear();
 		for(int i=0; i<size; ++i)
 			outVal.add(i*inter, inVal[i]);
-
-		dataOutput->endEdit();
 	}
 
 protected:

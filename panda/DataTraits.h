@@ -101,11 +101,10 @@ public:
 	static size_t size(const data_type& d) { return d.getValue().size(); }
 	static void clear(data_type& d, size_t size, bool init)
 	{
-		vector_type& v = *d.beginEdit();
+		auto v = d.getAccessor();
 		if(init)
 			v.clear();
 		v.resize(size);
-		d.endEdit();
 	}
 	static QVariant getBaseValue(const data_type& d, size_t index)
 	{
@@ -118,11 +117,10 @@ public:
 	}
 	static void fromBaseValue(data_type& d, QVariant val, size_t index)
 	{
-		vector_type& vec = *d.beginEdit();
+		auto vec = d.getAccessor();
 		if(vec.size() <= static_cast<int>(index))
 			vec.resize(index+1);
 		vec[index] = val.value<T>();
-		d.endEdit();
 	}
 	static QTextStream& writeValue(QTextStream& stream, const vector_type& vec)
 	{
@@ -168,9 +166,8 @@ public:
 			const Data< Animation<T> >* castedAnimationParent = dynamic_cast<const Data< Animation<T> >*>(parent);
 			if(castedAnimationParent)
 			{
-				QVector<T>& vec = *data->beginEdit();
+				auto vec = data->getAccessor();
 				vec = castedAnimationParent->getValue().getValues().toVector();
-				data->endEdit();
 				return;
 			}
 		}
@@ -180,21 +177,19 @@ public:
 			const Data<T>* castedSingleValueParent = dynamic_cast<const Data<T>*>(parent);
 			if(castedSingleValueParent)
 			{
-				QVector<T>& vec = *data->beginEdit();
+				auto vec = data->getAccessor();
 				vec.clear();
-				vec.append(castedSingleValueParent->getValue());
-				data->endEdit();
+				vec.push_back(castedSingleValueParent->getValue());
 				return;
 			}
 		}
 
 		// Else we use QVariant for a conversion
-		QVector<T>& value = *data->beginEdit();
+		auto value = data->getAccessor();
 		value.clear();
 		int size = parent->getSize();
 		for(int i=0; i<size; ++i)
-			value.append(parent->getBaseValue(i).value<T>());
-		data->endEdit();
+			value.push_back(parent->getBaseValue(i).value<T>());
 	}
 };
 
@@ -215,8 +210,7 @@ public:
 	static size_t size(const data_type& d) { return d.getValue().size(); }
 	static void clear(data_type& d, size_t /*size*/, bool /*init*/)
 	{
-		d.beginEdit()->clear();
-		d.endEdit();
+		d.getAccessor().clear();
 	}
 	static QVariant getBaseValue(const data_type& d, size_t index)
 	{
@@ -229,9 +223,8 @@ public:
 	}
 	static void fromBaseValue(data_type& d, QVariant val, size_t index)
 	{
-		animation_type& anim = *d.beginEdit();
+		auto anim = d.getAccessor();
 		anim.getValueAtIndex(index) = val.value<T>();
-		d.endEdit();
 	}
 	static QTextStream& writeValue(QTextStream& stream, const animation_type& anim)
 	{
@@ -277,9 +270,7 @@ public:
 		}
 
 		// Not accepting conversions from non-animation datas
-		Animation<T>& value = *data->beginEdit();
-		value.clear();
-		data->endEdit();
+		data->getAccessor().clear();
 	}
 };
 

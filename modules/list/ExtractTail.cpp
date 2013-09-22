@@ -42,17 +42,15 @@ public:
 
 		int val = value.getValue();
 		const QVector<T> &valIn = dataInput->getValue();
-		QVector<T> &valOut = *dataOutput->beginEdit();
+		auto valOut = dataOutput->getAccessor();
 		int nb = valIn.size();
 
 		if(val >= nb)
 			valOut.clear();
 		else if(val > 0)
-			valOut.swap( valIn.mid(val) );
+			valOut = valIn.mid(val);
 		else
-			valOut.swap( valIn.mid( qMax(0, valIn.size() + val) ) );
-
-		dataOutput->endEdit();
+			valOut = valIn.mid( qMax(0, valIn.size() + val) );
 	}
 
 protected:

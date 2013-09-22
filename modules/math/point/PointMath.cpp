@@ -27,7 +27,7 @@ public:
 
     void update()
     {
-		QVector<QPointF>& res = *result.beginEdit();
+		auto res = result.getAccessor();
 		res.clear();
 
         const QVector<QPointF>& valA = inputA.getValue();
@@ -45,7 +45,6 @@ public:
 				res[i] = valA[i%nbA] + valB[i%nbB];
 		}
 
-        result.endEdit();
         this->cleanDirty();
     }
 
@@ -76,7 +75,7 @@ public:
 
 	void update()
 	{
-		QVector<QPointF>& res = *result.beginEdit();
+		auto res = result.getAccessor();
 		res.clear();
 
 		const QVector<QPointF>& valA = inputA.getValue();
@@ -94,7 +93,6 @@ public:
 				res[i] = valA[i%nbA] - valB[i%nbB];
 		}
 
-		result.endEdit();
 		this->cleanDirty();
 	}
 
@@ -120,15 +118,14 @@ public:
         addInput(&input);
         addInput(&factor);
 
-		factor.beginEdit()->append(1.0);
-		factor.endEdit();
+		factor.getAccessor().push_back(1.0);
 
         addOutput(&result);
     }
 
     void update()
     {
-		QVector<QPointF>& res = *result.beginEdit();
+		auto res = result.getAccessor();
 		res.clear();
 
         const QVector<QPointF>& points = input.getValue();
@@ -146,7 +143,6 @@ public:
 				res[i] = points[i%nbP] * reals[i%nbR];
 		}
 
-        result.endEdit();
         this->cleanDirty();
     }
 
@@ -173,15 +169,14 @@ public:
 		addInput(&input);
 		addInput(&factor);
 
-		factor.beginEdit()->append(1.0);
-		factor.endEdit();
+		factor.getAccessor().push_back(1.0);
 
 		addOutput(&result);
 	}
 
 	void update()
 	{
-		QVector<QPointF>& res = *result.beginEdit();
+		auto res = result.getAccessor();
 		res.clear();
 
 		const QVector<QPointF>& points = input.getValue();
@@ -199,7 +194,6 @@ public:
 				res[i] = points[i%nbP] / reals[i%nbR];
 		}
 
-		result.endEdit();
 		this->cleanDirty();
 	}
 
@@ -231,7 +225,7 @@ public:
 
     void update()
     {
-		QVector<double>& res = *result.beginEdit();
+		auto res = result.getAccessor();
 		res.clear();
 
         const QVector<QPointF>& valA = inputA.getValue();
@@ -252,7 +246,7 @@ public:
 				res[i] = sqrt(dx*dx+dy*dy);
 			}
 		}
-        result.endEdit();
+
         this->cleanDirty();
     }
 
@@ -286,7 +280,7 @@ public:
 
     void update()
     {
-		QVector<QPointF>& res = *result.beginEdit();
+		auto res = result.getAccessor();
 		res.clear();
 
         const QVector<QPointF>& points = input.getValue();
@@ -321,7 +315,6 @@ public:
 			}
 		}
 
-        result.endEdit();
         this->cleanDirty();
     }
 

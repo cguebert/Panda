@@ -22,7 +22,7 @@ public:
 	void update()
 	{
 		const QVector<QImage>& listImage = image.getValue();
-		QVector<QPointF>& listSize = *size.beginEdit();
+		auto listSize = size.getAccessor();
 
 		unsigned int nb = listImage.size();
 		listSize.clear();
@@ -37,7 +37,6 @@ public:
 			}
 		}
 
-		size.endEdit();
 		this->cleanDirty();
 	}
 

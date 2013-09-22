@@ -29,8 +29,8 @@ public:
 		const QImage& img = image.getValue();
 
 		const QVector<QPointF>& inPts = inputPoints.getValue();
-		QVector<QPointF>& outPts = *outputPoints.beginEdit();
-		QVector<int>& outId = *outputIndices.beginEdit();
+		auto outPts = outputPoints.getAccessor();
+		auto outId = outputIndices.getAccessor();
 		int nb = inPts.size();
 		outPts.clear();
 		outId.clear();
@@ -44,14 +44,12 @@ public:
 				QRgb color = img.pixel(iPt);
 				if(qGray(color) > 128)
 				{
-					outPts.append(pt);
-					outId.append(i);
+					outPts.push_back(pt);
+					outId.push_back(i);
 				}
 			}
 		}
 
-		outputPoints.endEdit();
-		outputIndices.endEdit();
 		this->cleanDirty();
 	}
 

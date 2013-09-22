@@ -37,7 +37,7 @@ public:
         const QVector<T>& listFrom = inputA.getValue();
         const QVector<T>& listTo = inputB.getValue();
         const QVector<double>& listProg = progress.getValue();
-		QVector<T>& listResult = *result.beginEdit();
+		auto listResult = result.getAccessor();
 		listResult.clear();
 
 		int nbV = listProg.size();
@@ -64,7 +64,6 @@ public:
 			}
 		}
 
-        result.endEdit();
         this->cleanDirty();
     }
 

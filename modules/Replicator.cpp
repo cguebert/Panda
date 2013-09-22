@@ -31,10 +31,10 @@ public:
 		PandaDocument* doc = dynamic_cast<PandaDocument*>(parent());
         if(doc)
         {
-            QImage* editImage = image.beginEdit();
-            *editImage = QImage(doc->getRenderSize(), QImage::Format_ARGB32);
+			auto editImage = image.getAccessor();
+			editImage = QImage(doc->getRenderSize(), QImage::Format_ARGB32);
             editImage->fill(QColor(0,0,0,0));
-            QPainter painter(editImage);
+			QPainter painter(&*editImage);
             painter.setRenderHint(QPainter::Antialiasing, true);
             painter.setRenderHint(QPainter::TextAntialiasing, true);
 
@@ -55,8 +55,6 @@ public:
 					}
                 }
             }
-
-            image.endEdit();
         }
         this->cleanDirty();
     }

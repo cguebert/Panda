@@ -22,8 +22,7 @@ public:
 		addInput(&B);
 		addInput(&A);
 
-		A.beginEdit()->append(1.0);
-		A.endEdit();
+		A.getAccessor().push_back(0.0);
 
 		addOutput(&color);
 	}
@@ -36,7 +35,7 @@ public:
 		const QVector<double> &a = A.getValue();
 
 		int nb = qMin(r.size(), qMin(g.size(), qMin(b.size(), a.size())));
-		QVector<QColor>& c = *color.beginEdit();
+		auto c = color.getAccessor();
 		c.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
@@ -46,7 +45,6 @@ public:
 						 qBound(0.0, a[i], 1.0));
 		}
 
-		color.endEdit();
 		this->cleanDirty();
 	}
 
@@ -83,10 +81,10 @@ public:
 	void update()
 	{
 		const QVector<QColor>& c = color.getValue();
-		QVector<double> &r = *R.beginEdit();
-		QVector<double> &g = *G.beginEdit();
-		QVector<double> &b = *B.beginEdit();
-		QVector<double> &a = *A.beginEdit();
+		auto r = R.getAccessor();
+		auto g = G.getAccessor();
+		auto b = B.getAccessor();
+		auto a = A.getAccessor();
 
 		int nb = c.size();
 		r.resize(nb);
@@ -102,10 +100,6 @@ public:
 			a[i] = c[i].alphaF();
 		}
 
-		R.endEdit();
-		G.endEdit();
-		B.endEdit();
-		A.endEdit();
 		this->cleanDirty();
 	}
 

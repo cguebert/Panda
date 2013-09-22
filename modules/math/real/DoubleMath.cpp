@@ -23,7 +23,7 @@ public:
 	void update()
 	{
 		const QVector<double> &valIn = input.getValue();
-		QVector<double> &valOut = *result.beginEdit();
+		auto valOut = result.getAccessor();
 
 		int size = valIn.size();
 		valOut.resize(size);
@@ -31,7 +31,6 @@ public:
 		for(int i=0; i<size; ++i)
 			valOut[i] = compute(valIn[i]);
 
-		result.endEdit();
 		this->cleanDirty();
 	}
 
@@ -64,7 +63,7 @@ public:
 	{
 		const QVector<double>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue();
-		QVector<double> &valOut = *result.beginEdit();
+		auto valOut = result.getAccessor();
 		valOut.clear();
 
 		int nbA = valInA.size(), nbB = valInB.size();
@@ -77,8 +76,6 @@ public:
 
 			for(int i=0; i<nb; ++i)
 				valOut[i] = compute(valInA[i%nbA], valInB[i%nbB]);
-
-			result.endEdit();
 		}
 
 		this->cleanDirty();

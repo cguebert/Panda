@@ -34,7 +34,7 @@ public:
 
 		int nb = qMin(l.size(), qMin(t.size(), qMin(r.size(), b.size())));
 
-		QVector<QRectF>& rect = *rectangle.beginEdit();
+		auto rect = rectangle.getAccessor();
 		rect.resize(nb);
 
 		for(int i=0; i<nb; ++i)
@@ -43,7 +43,6 @@ public:
 			rect[i] = QRectF(tl, tt, r[i] - tl, b[i] - tt);
 		}
 
-		rectangle.endEdit();
 		this->cleanDirty();
 	}
 
@@ -81,14 +80,13 @@ public:
 		int nbS = s.size();
 		if(nbS < nb) nbS = 1;
 
-		QVector<QRectF>& rect = *rectangle.beginEdit();
+		auto rect = rectangle.getAccessor();
 		rect.clear();
 		rect.resize(nb);
 
 		for(int i=0; i<nb; ++i)
 			rect[i] = QRectF(c[i].x()-s[i%nbS].x()/2.0, c[i].y()-s[i%nbS].y()/2.0, s[i%nbS].x(), s[i%nbS].y());
 
-		rectangle.endEdit();
 		this->cleanDirty();
 	}
 
@@ -127,10 +125,10 @@ public:
 		const QVector<QRectF> &rect = rectangle.getValue();
 		int nb = rect.size();
 
-		QVector<double> &l = *left.beginEdit();
-		QVector<double> &t = *top.beginEdit();
-		QVector<double> &r = *right.beginEdit();
-		QVector<double> &b = *bottom.beginEdit();
+		auto l = left.getAccessor();
+		auto t = top.getAccessor();
+		auto r = right.getAccessor();
+		auto b = bottom.getAccessor();
 
 		l.resize(nb);
 		t.resize(nb);
@@ -146,10 +144,6 @@ public:
 			b[i] = tr.bottom();
 		}
 
-		left.endEdit();
-		top.endEdit();
-		right.endEdit();
-		bottom.endEdit();
 		this->cleanDirty();
 	}
 
@@ -184,8 +178,8 @@ public:
 		const QVector<QRectF> &rect = rectangle.getValue();
 		int nb = rect.size();
 
-		QVector<QPointF> &c = *center.beginEdit();
-		QVector<QPointF> &s = *size.beginEdit();
+		auto c = center.getAccessor();
+		auto s = size.getAccessor();
 
 		c.resize(nb);
 		s.resize(nb);
@@ -197,8 +191,6 @@ public:
 			s[i] = QPointF(tr.width(), tr.height());
 		}
 
-		center.endEdit();
-		size.endEdit();
 		this->cleanDirty();
 	}
 

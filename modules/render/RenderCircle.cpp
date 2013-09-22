@@ -27,17 +27,10 @@ public:
 		addInput(&lineColor);
 		addInput(&color);
 
-		center.beginEdit()->append(QPointF(100, 100));
-		center.endEdit();
-
-		radius.beginEdit()->append(5.0);
-		radius.endEdit();
-
-		lineWidth.beginEdit()->append(0.0);
-		lineWidth.endEdit();
-
-		lineColor.beginEdit()->append(QColor(0,0,0));
-		lineColor.endEdit();
+		center.getAccessor().push_back(QPointF(100, 100));
+		radius.getAccessor().push_back(5.0);
+		lineWidth.getAccessor().push_back(0.0);
+		lineColor.getAccessor().push_back(QColor(0,0,0));
 	}
 
 	void render(QPainter* painter)

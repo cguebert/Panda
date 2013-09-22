@@ -49,14 +49,12 @@ public:
 		VecData* dataInit = dynamic_cast<VecData*>(list[1]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[2]);
 		Q_ASSERT(dataInput && dataInit && dataOutput);
-		QVector<T>& outVal = *(dataOutput->beginEdit());
+		auto outVal = dataOutput->getAccessor();
 
 		if(resetValues)
 			outVal = dataInit->getValue();
 		else
 			outVal = dataInput->getValue();
-
-		dataOutput->endEdit();
 	}
 
 	void update()

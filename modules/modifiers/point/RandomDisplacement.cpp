@@ -38,7 +38,7 @@ public:
 	void update()
 	{
 		const QVector<QPointF>& inPts = inputPoints.getValue();
-		QVector<QPointF>& outPts = *outputPoints.beginEdit();
+		auto outPts = outputPoints.getAccessor();
 		int nb = inPts.size();
 		outPts.resize(nb);
 
@@ -54,8 +54,6 @@ public:
 			outPts[i] = inPts[i] + disp;
 		}
 
-
-		outputPoints.endEdit();
 		this->cleanDirty();
 	}
 

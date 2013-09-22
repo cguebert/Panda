@@ -12,11 +12,10 @@ namespace panda
 
 void BaseLayer::updateLayer(PandaDocument* doc)
 {
-	Data<QImage>* dataImage = this->getImage();
-	QImage* editImage = dataImage->beginEdit();
-	*editImage = QImage(doc->getRenderSize(), QImage::Format_ARGB32);
+	auto editImage = this->getImage()->getAccessor();
+	editImage = QImage(doc->getRenderSize(), QImage::Format_ARGB32);
 	editImage->fill(QColor(0,0,0,0));
-	QPainter painter(editImage);
+	QPainter painter(&*editImage);
 	painter.setRenderHint(QPainter::Antialiasing, true);
 	painter.setRenderHint(QPainter::TextAntialiasing, true);
 	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
@@ -30,8 +29,6 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 		renderer->render(&painter);
 		renderer->cleanDirty();
 	}
-
-	dataImage->endEdit();
 }
 
 void BaseLayer::mergeLayer(QPainter* docPainter)

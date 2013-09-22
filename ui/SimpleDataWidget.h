@@ -77,10 +77,8 @@ public:
 
     virtual void writeToData()
     {
-		MyTData* data = getData();
-		value_type& v = *data->beginEdit();
-		container.writeToData(v);
-		data->endEdit();
+		auto v = getData()->getAccessor();
+		container.writeToData(v.wref());
     }
 };
 

@@ -20,8 +20,7 @@ public:
 		addInput(&topology);
 		addInput(&color);
 
-		color.beginEdit()->append(QColor());
-		color.endEdit();
+		color.getAccessor().push_back(QColor());
 	}
 
 	void render(QPainter* painter)

@@ -22,11 +22,8 @@ public:
 
     void update()
     {
-		QImage& img = *image.beginEdit();
-
-		img.load(fileName.getValue());
-
-		image.endEdit();
+		auto img = image.getAccessor();
+		img->load(fileName.getValue());
         this->cleanDirty();
     }
 

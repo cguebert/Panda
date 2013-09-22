@@ -42,7 +42,7 @@ public:
 		Q_ASSERT(dataInput && dataOutput);
 
 		const QVector<T> &valIn = dataInput->getValue();
-		QVector<T> &valOut = *dataOutput->beginEdit();
+		auto valOut = dataOutput->getAccessor();
 		const QVector<int> &valId = indices.getValue();
 
 		QVector<bool> mask;
@@ -62,7 +62,6 @@ public:
 				valOut << valIn[i];
 		}
 
-		dataOutput->endEdit();
 	}
 
 protected:

@@ -186,6 +186,12 @@ void Data<T>::copyValueFrom(const BaseData* parent)
 	this->isValueSet = true;
 }
 
+template<class T>
+helper::DataAccessor< Data<T> > Data<T>::getAccessor()
+{
+	return helper::DataAccessor< Data<T> >(*this);
+}
+
 //***************************************************************//
 
 bool GenericData::validParent(const BaseData* parent) const

@@ -24,11 +24,10 @@ public:
 
 	void update()
 	{
-		Gradient& grad = *gradient.beginEdit();
+		auto grad = gradient.getAccessor();
 		grad.clear();
 		grad.add(0.0, colorA.getValue());
 		grad.add(1.0, colorB.getValue());
-		gradient.endEdit();
 		this->cleanDirty();
 	}
 

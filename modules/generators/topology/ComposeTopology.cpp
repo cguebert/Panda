@@ -24,17 +24,16 @@ public:
 	void update()
 	{
 		const QVector<QPointF>& pts = points.getValue();
-		Topology& topo = *topology.beginEdit();
+		auto topo = topology.getAccessor();
 
-		topo.clear();
-		topo.addPoints(pts);
+		topo->clear();
+		topo->addPoints(pts);
 
 		Topology::Polygon poly;
 		for(int i=0; i<pts.size(); ++i)
 			poly.push_back(i);
-		topo.addPolygon(poly);
+		topo->addPolygon(poly);
 
-		topology.endEdit();
 		this->cleanDirty();
 	}
 
@@ -66,7 +65,7 @@ public:
 	{
 		Topology topo = topology.getValue();
 		const QVector<QPointF>& topoPts = topo.getPoints();
-		QVector<QPointF>& pts = *points.beginEdit();
+		auto pts = points.getAccessor();
 
 		pts.clear();
 
@@ -74,10 +73,10 @@ public:
 		for(int i=0; i<nbEdges; ++i)
 		{
 			const Topology::Edge& e = topo.getEdge(i);
-			pts << topoPts[e.first] << topoPts[e.second];
+			pts.push_back(topoPts[e.first]);
+			pts.push_back(topoPts[e.second]);
 		}
 
-		points.endEdit();
 		this->cleanDirty();
 	}
 
@@ -109,9 +108,8 @@ public:
 	{
 		const Topology& topo = topology.getValue();
 
-		QVector<QPointF>& pts = *points.beginEdit();
+		auto pts = points.getAccessor();
 		pts = topo.getPoints();
-		points.endEdit();
 
 		this->cleanDirty();
 	}
@@ -148,18 +146,16 @@ public:
 		const Topology& inTopo = input.getValue();
 		const QVector<int>& polyId = polygons.getValue();
 
-		Topology& outTopo = *output.beginEdit();
+		auto outTopo = output.getAccessor();
 
-		outTopo.clear();
-		outTopo.addPoints(inTopo.getPoints());
+		outTopo->clear();
+		outTopo->addPoints(inTopo.getPoints());
 
 		foreach(int i, polyId)
-			outTopo.addPolygon(inTopo.getPolygon(i));
+			outTopo->addPolygon(inTopo.getPolygon(i));
 
-//		outTopo.createPolygonsAroundPointList();
-//		const QVector<Topology::IndicesList>& papl = outTopo.getPolygonsAroundPointList();
-
-		output.endEdit();
+//		outTopo->createPolygonsAroundPointList();
+//		const QVector<Topology::IndicesList>& papl = outTopo->getPolygonsAroundPointList();
 
 		this->cleanDirty();
 	}

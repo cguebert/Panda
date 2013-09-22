@@ -1,6 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+
 namespace panda {
 
 class GeneratorReals_Enumeration : public PandaObject
@@ -24,7 +25,7 @@ public:
 
 	void update()
 	{
-		QVector<double>& valNumbers = *numbers.beginEdit();
+		auto valNumbers = numbers.getAccessor();
 		int valNbNumbers = nbNumbers.getValue();
 		valNumbers.resize(valNbNumbers);
 
@@ -32,7 +33,6 @@ public:
 		for(int i=0; i<valNbNumbers; ++i)
 			valNumbers[i] = valStart + valStep * i;
 
-		numbers.endEdit();
 		this->cleanDirty();
 	}
 

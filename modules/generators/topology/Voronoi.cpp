@@ -42,9 +42,9 @@ public:
 	void update()
 	{
 		const QVector<QPointF>& pts = sites.getValue();
-		Topology& topo = *topology.beginEdit();
+		auto topo = topology.getAccessor();
 
-		topo.clear();
+		topo->clear();
 
 		vector<Point> points;
 		foreach(QPointF p, pts)
@@ -56,7 +56,7 @@ public:
 		construct_voronoi(points.begin(), points.end(), segments.begin(), segments.end(), &vd);
 
 		for(VertexIterator it = vd.vertices().begin(); it != vd.vertices().end(); ++it)
-			topo.addPoint(QPointF(it->x(), it->y()));
+			topo->addPoint(QPointF(it->x(), it->y()));
 
 		const Vertex* firstVertex = &vd.vertices().front();
 		for(EdgeIterator it = vd.edges().begin(); it != vd.edges().end(); ++it)
@@ -64,10 +64,9 @@ public:
 			if(!it->is_primary() || !it->is_linear() || !it->is_finite())
 				continue;
 
-			topo.addEdge(it->vertex0() - firstVertex, it->vertex1() - firstVertex);
+			topo->addEdge(it->vertex0() - firstVertex, it->vertex1() - firstVertex);
 		}
 
-		topology.endEdit();
 		this->cleanDirty();
 	}
 

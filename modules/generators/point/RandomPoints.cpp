@@ -29,15 +29,14 @@ public:
 	void update()
 	{
 		rnd.seed(seed.getValue());
-		QVector<QPointF>& valPoints = *points.beginEdit();
+		auto valPoints = points.getAccessor();
 		int valNbPoints = nbPoints.getValue();
 		valPoints.clear();
 		QSize size = document->getRenderSize();
 
 		for(int i=0; i<valNbPoints; ++i)
-			valPoints.append(QPointF(rnd.random()*size.width(), rnd.random()*size.height()));
+			valPoints.push_back(QPointF(rnd.random()*size.width(), rnd.random()*size.height()));
 
-		points.endEdit();
 		this->cleanDirty();
 	}
 

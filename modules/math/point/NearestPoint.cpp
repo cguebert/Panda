@@ -45,8 +45,8 @@ public:
 			grid.initGrid(area, qMax(maxD, 10.0));
 			grid.addPoints(searchPts);
 
-			QVector<QPointF>& outPts = *output.beginEdit();
-			QVector<int>& outFound = *found.beginEdit();
+			auto outPts = output.getAccessor();
+			auto outFound = found.getAccessor();
 
 			outPts.resize(nb);
 			outFound.resize(nb);
@@ -70,9 +70,6 @@ public:
 				for(int j=0; j<removedSelfNb; ++j)
 					grid.addPoint(inPts[i]);
 			}
-
-			output.endEdit();
-			found.endEdit();
 		}
 
 		this->cleanDirty();
