@@ -508,8 +508,9 @@ public:
 template<class T>
 T valueFromString(const QString& text)
 {
-	T val();
-	QTextStream stream(&text, QIODevice::ReadOnly);
+	T val = T();
+	QString copy = text;
+	QTextStream stream(&copy, QIODevice::ReadOnly);
 	data_trait<T>::readValue(stream, val);
 	return val;
 }

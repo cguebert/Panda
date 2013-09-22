@@ -2,6 +2,7 @@
 #define SIMPLEDATAWIDGET_H
 
 #include <ui/DataWidget.h>
+#include <panda/DataTraits.h>
 
 class QLineEdit;
 class QPushButton;
@@ -14,6 +15,7 @@ class data_widget_container
 protected:
 	typedef T value_type;
 	typedef panda::Data<T> data_type;
+	typedef panda::data_trait<T> trait;
 	QLineEdit* lineEdit;
 
 public:
@@ -23,14 +25,14 @@ public:
     {
 		lineEdit = new QLineEdit(parent);
 		lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-		lineEdit->setEnabled(readOnly);
+		lineEdit->setEnabled(!readOnly);
 		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
 		return lineEdit;
     }
 
 	void readFromData(const value_type& d)
     {
-		QString s = d.toString();
+		QString s = panda::valueToString(d);
 		if(s != lineEdit->text())
 			lineEdit->setText(s);
     }
@@ -38,7 +40,7 @@ public:
 	void writeToData(value_type& d)
     {
 		QString s = lineEdit->text();
-		d = valueFromString<value_type>(s);
+		d = panda::valueFromString<value_type>(s);
     }
 };
 

@@ -250,6 +250,7 @@ QString Data<T>::getFullTypeName() const
 
 //***************************************************************//
 
+// TODO: we should not need this function after all...
 template<class T>
 void Data<T>::setCustomFlags()
 {

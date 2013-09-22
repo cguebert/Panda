@@ -74,15 +74,6 @@ void DatasTable::populateTable(panda::PandaObject* object)
 			QWidget* widget = dataWidget->createWidgets(readOnly);
 			formLayout->addRow(data->getName(), widget);
 		}
-		else
-		{
-			QString text = data->toString();
-			text.truncate(150);
-			QLineEdit* lineEdit = new QLineEdit();
-			lineEdit->setText(text);
-			lineEdit->setEnabled(!readOnly);
-			formLayout->addRow(data->getName(), lineEdit);
-		}
 	}
 
 	// outputs (or read only)
@@ -100,15 +91,6 @@ void DatasTable::populateTable(panda::PandaObject* object)
 
 			QWidget* widget = dataWidget->createWidgets(true);
 			formLayout->addRow(data->getName(), widget);
-		}
-		else
-		{
-			QString text = data->toString();
-			text.truncate(150);
-			QLineEdit* lineEdit = new QLineEdit();
-			lineEdit->setText(text);
-			lineEdit->setEnabled(true);
-			formLayout->addRow(data->getName(), lineEdit);
 		}
 	}
 }
