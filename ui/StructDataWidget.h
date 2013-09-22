@@ -441,6 +441,7 @@ public:
 		container = new QWidget(this);
 
 		label = new QLabel("toto");
+		label->setEnabled(!readOnly);
 
 		QPushButton* pushButton = new QPushButton("...");
 		pushButton->setMaximumWidth(40);
@@ -495,7 +496,7 @@ public:
 		typedef panda::vector_data_trait<value_type> vector_trait;
 		if(vector_trait::is_vector)
 		{
-			QString text = QString("<i>%1 elements</i>").arg(vector_trait::size(v));	// tr()
+			QString text = QString(container->tr("<i>%1 elements</i>")).arg(vector_trait::size(v));
 			label->setText(text);
 		}
 		else
