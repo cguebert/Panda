@@ -89,8 +89,9 @@ public:
 	}
 	void readFromData(const value_type& v)
 	{
-		value_type n = lineEdit->text().toDouble();
-		if (v != n)
+		QString t = lineEdit->text();
+		value_type n = t.toDouble();
+		if (v != n || t.isEmpty())
 			lineEdit->setText(QString::number(v));
 	}
 	void writeToData(value_type& v)
