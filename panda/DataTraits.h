@@ -55,13 +55,13 @@ public:
 	}
 	static void writeValue(QDomDocument& doc, QDomElement& elem, const value_type& v)
 	{
-		QString text = valueToString(v);
+	/*	QString text = valueToString(v);
 		QDomText node = doc.createTextNode(text);
-		elem.appendChild(node);
+		elem.appendChild(node);*/
 	}
 	static void readValue(QDomElement& elem, value_type& v)
 	{
-		v = valueFromString<value_type>(elem.text());
+	//	v = valueFromString<value_type>(elem.text());
 	}
 	static void copyValue(data_type* data, const BaseData* parent)
 	{
@@ -408,6 +408,79 @@ QTextStream& data_trait<QImage>::readValue(QTextStream& stream, QImage&)
 template<>
 QTextStream& data_trait<QString>::readValue(QTextStream& stream, QString& v)
 { v = stream.readLine(); return stream; }
+
+//***************************************************************//
+// Overrides for writeValue xml
+
+template<>
+void data_trait<int>::writeValue(QDomDocument&, QDomElement& elem, const int& v)
+{ elem.setAttribute("int", v); }
+
+template<>
+void data_trait<double>::writeValue(QDomDocument&, QDomElement& elem, const double& v)
+{ elem.setAttribute("double", v); }
+
+template<>
+void data_trait<QColor>::writeValue(QDomDocument&, QDomElement& elem, const QColor& v)
+{	elem.setAttribute("r", v.red());
+	elem.setAttribute("g", v.green());
+	elem.setAttribute("b", v.blue());
+	elem.setAttribute("a", v.alpha()); }
+
+template<>
+void data_trait<QPointF>::writeValue(QDomDocument&, QDomElement& elem, const QPointF& v)
+{ elem.setAttribute("x", v.x()); elem.setAttribute("y", v.y()); }
+
+template<>
+void data_trait<QRectF>::writeValue(QDomDocument&, QDomElement& elem, const QRectF& v)
+{	elem.setAttribute("l", v.left());
+	elem.setAttribute("t", v.top());
+	elem.setAttribute("r", v.right());
+	elem.setAttribute("b", v.bottom()); }
+
+template<>
+void data_trait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const QString& v)
+{
+	QDomText node = doc.createTextNode(v);
+	elem.appendChild(node);
+}
+
+//***************************************************************//
+// Overrides for readValue xml
+
+template<>
+void data_trait<int>::readValue(QDomElement& elem, int& v)
+{ v = elem.attribute("int").toInt(); }
+
+template<>
+void data_trait<double>::readValue(QDomElement& elem, double& v)
+{ v = elem.attribute("double").toDouble(); }
+
+template<>
+void data_trait<QColor>::readValue(QDomElement& elem, QColor& v)
+{	v.setRed(  elem.attribute("r").toInt());
+	v.setGreen(elem.attribute("g").toInt());
+	v.setBlue( elem.attribute("b").toInt());
+	v.setAlpha(elem.attribute("a").toInt()); }
+
+template<>
+void data_trait<QPointF>::readValue(QDomElement& elem, QPointF& v)
+{	v.setX(elem.attribute("x").toDouble());
+	v.setY(elem.attribute("y").toDouble()); }
+
+template<>
+void data_trait<QRectF>::readValue(QDomElement& elem, QRectF& v)
+{	v.setLeft(  elem.attribute("l").toDouble());
+	v.setRight( elem.attribute("t").toDouble());
+	v.setTop(   elem.attribute("r").toDouble());
+	v.setBottom(elem.attribute("b").toDouble());
+}
+
+template<>
+void data_trait<QString>::readValue(QDomElement& elem, QString& v)
+{
+	v = elem.text();
+}
 
 //***************************************************************//
 

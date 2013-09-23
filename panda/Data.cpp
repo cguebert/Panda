@@ -166,10 +166,8 @@ QString Data<T>::doToString() const
 template<class T>
 void Data<T>::fromString(const QString& text)
 {
-	QString copy(text);
-	QTextStream stream(&copy, QIODevice::ReadOnly);
 	beginEdit();
-	data_trait<T>::readValue(stream, value);
+	value = valueFromString<T>(text);
 	endEdit();
 }
 
