@@ -29,9 +29,11 @@ public:
 
     virtual void save(QDataStream& out);
     virtual void save(QTextStream& out);
+	virtual void save(QDomDocument& doc, QDomElement& elem);
 
-    virtual void load(QDataStream& in);
-    virtual void load(QTextStream& in);
+	virtual void load(QDataStream& in);
+	virtual void load(QTextStream& in);
+	virtual void load(QDomElement& elem);
 
     virtual void reset();
 

@@ -249,10 +249,8 @@ QString PandaDocument::writeTextDocument()
 	QList<IntPair> dockedObjects;
 
 	// Saving objects
-	QList<PandaObject*>::iterator iter;
-	for(iter = selectedObjects.begin(); iter != selectedObjects.end(); ++iter)
+	for(PandaObject* object : selectedObjects)
 	{
-		PandaObject* object = *iter;
 		QDomElement elem = doc.createElement("Object");
 		elem.setAttribute("type", ObjectFactory::getRegistryName(object));
 		elem.setAttribute("index", object->getIndex());
@@ -281,7 +279,7 @@ QString PandaDocument::writeTextDocument()
 	}
 
 	// Saving links
-	foreach(DataPair link, links)
+	for(DataPair link : links)
 	{
 		QDomElement elem = doc.createElement("Link");
 		elem.setAttribute("object1", link.first->getOwner()->getIndex());
@@ -292,7 +290,7 @@ QString PandaDocument::writeTextDocument()
 	}
 
 	// Saving docked objects list
-	foreach(IntPair dockable, dockedObjects)
+	for(IntPair dockable : dockedObjects)
 	{
 		QDomElement elem = doc.createElement("Dock");
 		elem.setAttribute("dock", dockable.first);

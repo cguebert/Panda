@@ -427,6 +427,98 @@ void Group::save(QTextStream& out)
 		out << dockable.first << " " << dockable.second << endl;
 }
 
+void Group::save(QDomDocument& doc, QDomElement& elem)
+{
+	// Saving group datas
+	foreach(QSharedPointer<BaseData> data, groupDatas)
+	{
+		QDomElement node = doc.createElement("GroupData");
+		elem.appendChild(node);
+		// TODO : use the full type name
+		node.setAttribute("type", data->getFullType());
+		node.setAttribute("input", data->isInput());
+		node.setAttribute("output", data->isOutput());
+		node.setAttribute("name", data->getName());
+		node.setAttribute("help", data->getHelp());
+	}
+
+	// Saving data values
+	PandaObject::save(doc, elem);
+
+	typedef QPair<BaseData*, BaseData*> DataPair;
+	QList<DataPair> links;
+
+	typedef QPair<quint32, quint32> IntPair;
+	QList<IntPair> dockedObjects;
+
+	// Saving objects in this group
+	for(PandaObject* object : objects)
+	{
+		QDomElement node = doc.createElement("Object");
+		node.setAttribute("type", ObjectFactory::getRegistryName(object));
+		node.setAttribute("index", object->getIndex());
+		elem.appendChild(node);
+
+		object->save(doc, node);
+
+		QPointF pos = positions[object];
+		node.setAttribute("x", pos.x());
+		node.setAttribute("y", pos.y());
+
+		// Preparing links
+		foreach(BaseData* data, object->getInputDatas())
+		{
+			BaseData* parent = data->getParent();
+			if(parent)
+				links.append(qMakePair(data, parent));
+		}
+
+		// Preparing dockables list for docks
+		DockObject* dock = dynamic_cast<DockObject*>(object);
+		if(dock)
+		{
+			DockObject::DockablesIterator dockableIter = dock->getDockablesIterator();
+			while(dockableIter.hasNext())
+				dockedObjects.append(qMakePair(dock->getIndex(), dockableIter.next()->getIndex()));
+		}
+	}
+
+	// Links from objects to the output of the group
+	foreach(BaseData* data, getOutputDatas())
+	{
+		BaseData* parent = data->getParent();
+		if(parent)
+			links.append(qMakePair(data, parent));
+	}
+
+	// Saving links
+	for(DataPair link : links)
+	{
+		QDomElement node = doc.createElement("Link");
+		if(link.first->getOwner() == this)
+			node.setAttribute("object1", 0);
+		else
+			node.setAttribute("object1", link.first->getOwner()->getIndex());
+		node.setAttribute("data1", link.first->getName());
+
+		if(link.second->getOwner() == this)
+			node.setAttribute("object2", 0);
+		else
+			node.setAttribute("object2", link.second->getOwner()->getIndex());
+		node.setAttribute("data2", link.second->getName());
+		elem.appendChild(node);
+	}
+
+	// Saving docked objects list
+	for(IntPair dockable : dockedObjects)
+	{
+		QDomElement node = doc.createElement("Dock");
+		node.setAttribute("dock", dockable.first);
+		node.setAttribute("docked", dockable.second);
+		elem.appendChild(node);
+	}
+}
+
 void Group::load(QDataStream& in)
 {
     quint32 nbDatas;
@@ -659,6 +751,128 @@ void Group::load(QTextStream& in)
 	}
 
     emit modified(this);
+}
+
+void Group::load(QDomElement& elem)
+{
+	QDomElement groupDataNode = elem.firstChildElement("GroupData");
+	while(!groupDataNode.isNull())
+	{
+		quint32 type, input, output;
+		QString name, help;
+		type = groupDataNode.attribute("type").toUInt();
+		input = groupDataNode.attribute("input").toUInt();
+		output = groupDataNode.attribute("output").toUInt();
+		name = groupDataNode.attribute("name");
+		help = groupDataNode.attribute("help");
+
+		BaseData* data = createDataFromFullType(type, name, help, this);
+		groupDatas.append( QSharedPointer<BaseData>(data) );
+		if(input)
+			addInput(data);
+		if(output)
+			addOutput(data);
+
+		groupDataNode = groupDataNode.nextSiblingElement("GroupData");
+	}
+
+	// Loading data values
+	PandaObject::load(elem);
+
+	QMap<quint32, PandaObject*> importObjectsMap;
+	ObjectFactory* factory = ObjectFactory::getInstance();
+	PandaDocument* doc = dynamic_cast<PandaDocument*>(parent());
+
+	QDomElement objectNode = elem.firstChildElement("Object");
+	while(!objectNode.isNull())
+	{
+		QString registryName = objectNode.attribute("type");
+		quint32 index = objectNode.attribute("index").toUInt();
+		PandaObject* object = factory->create(registryName, doc);
+		if(object)
+		{
+			importObjectsMap[index] = object;
+			objects.append(object);
+			object->setParent(this);
+
+			object->load(objectNode);
+
+			QPointF pos;
+			pos.setX(objectNode.attribute("x").toDouble());
+			pos.setY(objectNode.attribute("y").toDouble());
+			positions[object] = pos;
+		}
+		else
+		{
+			QMessageBox::warning(nullptr, tr("Panda"),
+				tr("Could not create the object %1.\nA plugin must be missing.")
+				.arg(registryName));
+			return;
+		}
+
+		objectNode = objectNode.nextSiblingElement("Object");
+	}
+
+	// Create links
+	QDomElement linkNode = elem.firstChildElement("Link");
+	while(!linkNode.isNull())
+	{
+		quint32 index1, index2;
+		QString name1, name2;
+		index1 = linkNode.attribute("object1").toUInt();
+		index2 = linkNode.attribute("object2").toUInt();
+		name1 = linkNode.attribute("data1");
+		name2 = linkNode.attribute("data2");
+
+		PandaObject *object1, *object2;
+		BaseData *data1=nullptr, *data2=nullptr;
+
+		if(index1)
+		{
+			object1 = importObjectsMap[index1];
+			if(object1)
+				data1 = object1->getData(name1);
+		}
+		else
+			data1 = getData(name1);
+
+		if(index2)
+		{
+			object2 = importObjectsMap[index2];
+			if(object2)
+				data2 = object2->getData(name2);
+		}
+		else
+			data2 = getData(name2);
+
+		if(data1 && data2)
+			data1->setParent(data2);
+
+		linkNode = linkNode.nextSiblingElement("Link");
+	}
+
+	// Put dockables in their docks
+	QDomElement dockNode = elem.firstChildElement("Dock");
+	while(!dockNode.isNull())
+	{
+		quint32 dockIndex, dockableIndex;
+		dockIndex = dockNode.attribute("dock").toUInt();
+		dockableIndex = dockNode.attribute("docked").toUInt();
+
+		DockObject* dock = dynamic_cast<DockObject*>(importObjectsMap[dockIndex]);
+		DockableObject* dockable = dynamic_cast<DockableObject*>(importObjectsMap[dockableIndex]);
+		if(dock && dockable)
+		{
+			DockObject* defaultDock = dockable->getDefaultDock();
+			if(defaultDock)
+				defaultDock->removeDockable(dockable);
+			dock->addDockable(dockable);
+		}
+
+		dockNode = dockNode.nextSiblingElement("Dock");
+	}
+
+	emit modified(this);
 }
 
 void Group::addObject(PandaObject* obj)
