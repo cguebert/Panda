@@ -61,16 +61,11 @@ int Topology::getNumberOfPoints() const
 	return m_points.size();
 }
 
-int Topology::getNumberOfEdges()
-{
-	if(!hasEdges() && getNumberOfPolygons() > 0)
-		createEdgeList();
-
-	return m_edges.size();
-}
-
 int Topology::getNumberOfEdges() const
 {
+	if(!hasEdges() && getNumberOfPolygons() > 0)
+		const_cast<Topology*>(this)->createEdgeList();
+
 	return m_edges.size();
 }
 
@@ -84,10 +79,10 @@ const QVector<QPointF>& Topology::getPoints() const
 	return m_points;
 }
 
-const QVector<typename Topology::Edge>& Topology::getEdges()
+const QVector<typename Topology::Edge>& Topology::getEdges() const
 {
 	if(!hasEdges())
-		createEdgeList();
+		const_cast<Topology*>(this)->createEdgeList();
 
 	return m_edges;
 }
@@ -107,16 +102,11 @@ QPointF Topology::getPoint(int index) const
 	return m_points[index];
 }
 
-Topology::Edge Topology::getEdge(int index)
-{
-	if(!hasEdges())
-		createEdgeList();
-
-	return m_edges[index];
-}
-
 Topology::Edge Topology::getEdge(int index) const
 {
+	if(!hasEdges())
+		const_cast<Topology*>(this)->createEdgeList();
+
 	return m_edges[index];
 }
 
@@ -125,12 +115,12 @@ Topology::Polygon Topology::getPolygon(int index) const
 	return m_polygons[index];
 }
 
-int Topology::getPointIndex(QPointF pt)
+int Topology::getPointIndex(QPointF pt) const
 {
 	return m_points.indexOf(pt);
 }
 
-int Topology::getEdgeIndex(int a, int b)
+int Topology::getEdgeIndex(int a, int b) const
 {
 	Edge e1 = Edge(a, b), e2 = Edge(b, a);
 	int id = m_edges.indexOf(e1);
@@ -139,7 +129,7 @@ int Topology::getEdgeIndex(int a, int b)
 	return id;
 }
 
-int Topology::getEdgeIndex(const Edge& e)
+int Topology::getEdgeIndex(const Edge& e) const
 {
 	Edge e2 = Edge(e.second, e.first);
 	int id = m_edges.indexOf(e);
@@ -148,7 +138,7 @@ int Topology::getEdgeIndex(const Edge& e)
 	return id;
 }
 
-int Topology::getPolygonIndex(const Polygon& p)
+int Topology::getPolygonIndex(const Polygon& p) const
 {
 	return m_polygons.indexOf(p);
 }
@@ -323,7 +313,7 @@ Topology::IndicesList Topology::getPolygonsConnectedToPolygon(int index)
 	return polyAll;
 }
 
-int Topology::getOtherPointInEdge(int edge, int point)
+int Topology::getOtherPointInEdge(int edge, int point) const
 {
 	Edge e = getEdge(edge);
 	if(e.first == point)
@@ -334,7 +324,7 @@ int Topology::getOtherPointInEdge(int edge, int point)
 		return -1;
 }
 
-double Topology::areaOfPolygon(int polyId)
+double Topology::areaOfPolygon(int polyId) const
 {
 	const Polygon& p = getPolygon(polyId);
 

@@ -71,8 +71,7 @@ public:
 			int nb = list.size();
 			if(nb)
 			{
-				newParticles.resize(nbNew + nb);
-				qCopy(list.begin(), list.end(), newParticles.begin()+nbNew);
+				newParticles += list;
 				nbNew += nb;
 			}
 		}
@@ -80,9 +79,7 @@ public:
 		for(auto effector : effectors)
 			effector->onInitParticles(newParticles);
 
-		int prevNb = particles.size();
-		particles.resize(prevNb + nbNew);
-		qCopy(newParticles.begin(), newParticles.end(), particles.begin()+prevNb);
+		particles += newParticles;
 
 		// update the particles' indices
 		int i=0;

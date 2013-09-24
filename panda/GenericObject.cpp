@@ -216,7 +216,7 @@ void GenericObject::save(QDomDocument& doc, QDomElement& elem)
 	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 	{
 		QDomElement e = doc.createElement("CreatedData");
-		e.setAttribute("type", created->type);
+		e.setAttribute("type", dataTypeToName(created->type));
 		elem.appendChild(e);
 	}
 
@@ -259,7 +259,7 @@ void GenericObject::load(QDomElement& elem)
 	QDomElement e = elem.firstChildElement("CreatedData");
 	while(!e.isNull())
 	{
-		createDatas(e.attribute("type").toUInt());
+		createDatas(dataNameToType(e.attribute("type")));
 		e = e.nextSiblingElement("CreatedData");
 	}
 

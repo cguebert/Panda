@@ -13,6 +13,7 @@ namespace panda
 {
 
 QString dataTypeToName(int type);
+int dataNameToType(QString name);
 
 BaseData* createDataFromType(int type, const QString& name, const QString& help, PandaObject* owner);
 BaseData* createVectorDataFromType(int type, const QString& name, const QString& help, PandaObject* owner);

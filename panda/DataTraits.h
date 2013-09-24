@@ -53,15 +53,11 @@ public:
 	{
 		return stream >> v;
 	}
-	static void writeValue(QDomDocument& doc, QDomElement& elem, const value_type& v)
+	static void writeValue(QDomDocument&, QDomElement&, const value_type&)
 	{
-	/*	QString text = valueToString(v);
-		QDomText node = doc.createTextNode(text);
-		elem.appendChild(node);*/
 	}
-	static void readValue(QDomElement& elem, value_type& v)
+	static void readValue(QDomElement&, value_type&)
 	{
-	//	v = valueFromString<value_type>(elem.text());
 	}
 	static void copyValue(data_type* data, const BaseData* parent)
 	{

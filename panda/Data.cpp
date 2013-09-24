@@ -33,6 +33,27 @@ QString dataTypeToName(int type)
 	}
 }
 
+int dataNameToType(QString name)
+{
+	if(name == "integer")
+		return QMetaType::Int;
+	else if(name == "real")
+		return QMetaType::Double;
+	else if(name == "color")
+		return QMetaType::QColor;
+	else if(name == "point")
+		return QMetaType::QPointF;
+	else if(name == "rectangle")
+		return QMetaType::QRectF;
+	else if(name == "text")
+		return QMetaType::QString;
+	else if(name == "image")
+		return QMetaType::QImage;
+	else if(name == "topology")
+		return qMetaTypeId<Topology>();
+	return -1;
+}
+
 BaseData* createDataFromType(int type, const QString& name, const QString& help, PandaObject* owner)
 {
     switch(type)
