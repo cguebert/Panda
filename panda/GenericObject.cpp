@@ -212,7 +212,7 @@ void GenericObject::save(QTextStream& out)
 	PandaObject::save(out);
 }
 
-void GenericObject::save(QDomDocument& doc, QDomElement& elem)
+void GenericObject::save(QDomDocument& doc, QDomElement& elem, QList<PandaObject*>* selected)
 {
 	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 	{
@@ -221,7 +221,7 @@ void GenericObject::save(QDomDocument& doc, QDomElement& elem)
 		elem.appendChild(e);
 	}
 
-	PandaObject::save(doc, elem);
+	PandaObject::save(doc, elem, selected);
 }
 
 void GenericObject::load(QDataStream& in)

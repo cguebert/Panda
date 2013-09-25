@@ -428,7 +428,7 @@ void Group::save(QTextStream& out)
 		out << dockable.first << " " << dockable.second << endl;
 }
 
-void Group::save(QDomDocument& doc, QDomElement& elem)
+void Group::save(QDomDocument& doc, QDomElement& elem, QList<PandaObject*>* selected)
 {
 	// Saving group datas
 	foreach(QSharedPointer<BaseData> data, groupDatas)
@@ -444,7 +444,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem)
 	}
 
 	// Saving data values
-	PandaObject::save(doc, elem);
+	PandaObject::save(doc, elem, selected);
 
 	typedef QPair<BaseData*, BaseData*> DataPair;
 	QList<DataPair> links;
@@ -460,7 +460,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem)
 		node.setAttribute("index", object->getIndex());
 		elem.appendChild(node);
 
-		object->save(doc, node);
+		object->save(doc, node, &objects);
 
 		QPointF pos = positions[object];
 		node.setAttribute("x", pos.x());

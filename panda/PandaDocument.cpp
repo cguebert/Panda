@@ -256,7 +256,7 @@ QString PandaDocument::writeTextDocument()
 		elem.setAttribute("index", object->getIndex());
 		root.appendChild(elem);
 
-		object->save(doc, elem);
+		object->save(doc, elem, &selectedObjects);
 
 		// Preparing links
 		foreach(BaseData* data, object->getInputDatas())

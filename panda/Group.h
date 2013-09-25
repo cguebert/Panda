@@ -29,7 +29,7 @@ public:
 
     virtual void save(QDataStream& out);
     virtual void save(QTextStream& out);
-	virtual void save(QDomDocument& doc, QDomElement& elem);
+	virtual void save(QDomDocument& doc, QDomElement& elem, QList<PandaObject*>* selected = nullptr);
 
 	virtual void load(QDataStream& in);
 	virtual void load(QTextStream& in);

@@ -183,11 +183,12 @@ void PandaObject::save(QTextStream& out)
     }
 }
 
-void PandaObject::save(QDomDocument& doc, QDomElement& elem)
+void PandaObject::save(QDomDocument& doc, QDomElement& elem, QList<PandaObject*>* selected)
 {
 	foreach(BaseData* data, datas)
-	{	// We now also save datas that have parents, because we don't know if the parent will be saved
-		if(data->isSet() && data->isPersistent() && !data->isReadOnly())
+	{
+		if(data->isSet() && data->isPersistent() && !data->isReadOnly()
+				&& !(selected && data->getParent() && selected->contains(data->getParent()->getOwner())))
 		{
 			QDomElement xmlData = doc.createElement("Data");
 			xmlData.setAttribute("name", data->getName());
