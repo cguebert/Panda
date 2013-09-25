@@ -15,6 +15,8 @@
 namespace panda
 {
 
+template<class T> class Data;
+
 //***************************************************************//
 
 template<class T>
@@ -28,7 +30,12 @@ public:
 	enum { is_vector = 0 };
 	enum { is_animation = 0 };
 
+	static QString valueTypeName() { return ""; } // Override for each type
+	static QString description() { return valueTypeName(); }
 	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
+	static int fullType() { return valueType(); }
+	static bool isDisplayed() { return true; }
+	static bool isPersistent() { return true; }
 	static size_t size(const data_type& /*d*/) { return 1; }
 	static void clear(data_type& d, size_t /*size*/, bool init)
 	{
@@ -53,12 +60,8 @@ public:
 	{
 		return stream >> v;
 	}
-	static void writeValue(QDomDocument&, QDomElement&, const value_type&)
-	{
-	}
-	static void readValue(QDomElement&, value_type&)
-	{
-	}
+	static void writeValue(QDomDocument&, QDomElement&, const value_type&) {}
+	static void readValue(QDomElement&, value_type&) {}
 	static void copyValue(data_type* data, const BaseData* parent)
 	{
 		// First we try without conversion
@@ -104,7 +107,12 @@ public:
 	enum { is_vector = 1 };
 	enum { is_animation = 0 };
 
+	static QString valueTypeName() { return base_traits::valueTypeName(); }
+	static QString description() { return valueTypeName() + "_vector"; }
 	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
+	static int fullType() { return BaseData::getFullTypeOfVector(valueType()); }
+	static bool isDisplayed() { return base_traits::isDisplayed(); }
+	static bool isPersistent() { return base_traits::isPersistent(); }
 	static size_t size(const data_type& d) { return d.getValue().size(); }
 	static void clear(data_type& d, size_t size, bool init)
 	{
@@ -234,7 +242,12 @@ public:
 	enum { is_vector = 0 };
 	enum { is_animation = 1 };
 
+	static QString valueTypeName() { return base_traits::valueTypeName(); }
+	static QString description() { return valueTypeName() + "_animation"; }
 	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
+	static int fullType() { return BaseData::getFullTypeOfAnimation(valueType()); }
+	static bool isDisplayed() { return base_traits::isDisplayed(); }
+	static bool isPersistent() { return base_traits::isPersistent(); }
 	static size_t size(const data_type& d) { return d.getValue().size(); }
 	static void clear(data_type& d, size_t /*size*/, bool /*init*/)
 	{
@@ -327,6 +340,19 @@ public:
 		data->getAccessor().clear();
 	}
 };
+
+//***************************************************************//
+
+template<> QString data_trait<int>::valueTypeName() { return "integer"; }
+template<> QString data_trait<double>::valueTypeName() { return "real"; }
+template<> QString data_trait<QColor>::valueTypeName() { return "color"; }
+template<> QString data_trait<QPointF>::valueTypeName() { return "point"; }
+template<> QString data_trait<QRectF>::valueTypeName() { return "rectangle"; }
+template<> QString data_trait<QString>::valueTypeName() { return "text"; }
+template<> QString data_trait<QImage>::valueTypeName() { return "image"; }
+
+template<> bool data_trait<QImage>::isDisplayed() { return false; }
+template<> bool data_trait<QImage>::isPersistent() { return false; }
 
 //***************************************************************//
 // Overrides for writeValue

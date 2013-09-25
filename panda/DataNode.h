@@ -2,15 +2,15 @@
 #define DATANODE_H
 
 #include <QList>
+#include <panda/BaseClass.h>
 
 namespace panda
 {
 
-class BaseData;
-
 class DataNode
 {
 public:
+	PANDA_ABSTRACT_CLASS(DataNode, void)
     typedef QList<DataNode*> NodesList;
 
     DataNode();

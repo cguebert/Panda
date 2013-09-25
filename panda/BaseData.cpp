@@ -125,6 +125,20 @@ QString BaseData::toString() const
     return doToString();
 }
 
+QString BaseData::getDescription() const
+{
+	QString typeName = getValueTypeName();
+
+	if(isSingleValue())
+		return QString("Single %1 value").arg(typeName);
+	if(isVector())
+		return QString("List of %1s").arg(typeName);
+	if(isAnimation())
+		return QString("Animation of %1s").arg(typeName);
+
+	return QString();
+}
+
 void BaseData::doAddInput(DataNode* node)
 {
     if(dynamic_cast<PandaObject*>(node))

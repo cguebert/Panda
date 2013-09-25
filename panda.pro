@@ -34,7 +34,8 @@ HEADERS       = \
     panda/DataTraits.h \
     modules/particles/ParticleEffector.h \
     modules/particles/Particle.h \
-    helper/DataAccessor.h
+    helper/DataAccessor.h \
+    panda/DataFactory.h
 SOURCES       = main.cpp \
 	helper/PointsGrid.cpp \
 	helper/Random.cpp \
@@ -119,7 +120,8 @@ SOURCES       = main.cpp \
     helper/Factory.cpp \
     ui/SimpleDataWidget.cpp \
     ui/StructDataWidget.cpp \
-    modules/particles/ParticleEngine.cpp
+    modules/particles/ParticleEngine.cpp \
+    panda/DataFactory.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

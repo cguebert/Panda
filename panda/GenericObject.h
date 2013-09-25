@@ -15,6 +15,50 @@ class GenericObjectDrawStruct;
 namespace panda
 {
 
+class GenericData : public Data<int>
+{
+public:
+	explicit GenericData(const BaseData::BaseInitData& init)
+		: Data<int>(init) {}
+
+	virtual bool validParent(const BaseData* parent) const;
+	virtual QString getDescription() const;
+
+	QList<int> allowedTypes;
+};
+
+class GenericNonVectorData : public GenericData
+{
+public:
+	explicit GenericNonVectorData(const BaseData::BaseInitData& init)
+		: GenericData(init) {}
+
+	virtual bool validParent(const BaseData* parent) const;
+	virtual QString getDescription() const;
+};
+
+class GenericVectorData : public GenericData
+{
+public:
+	explicit GenericVectorData(const BaseData::BaseInitData& init)
+		: GenericData(init) {}
+
+	virtual bool validParent(const BaseData* parent) const;
+	virtual QString getDescription() const;
+};
+
+class GenericAnimationData : public GenericData
+{
+public:
+	explicit GenericAnimationData(const BaseData::BaseInitData& init)
+		: GenericData(init) {}
+
+	virtual bool validParent(const BaseData* parent) const;
+	virtual QString getDescription() const;
+};
+
+//***************************************************************//
+
 class GenericObject : public PandaObject
 {
 	friend class GenericObjectDrawStruct;
@@ -78,6 +122,8 @@ private:
 	QList<CreatedDatasStructPtr> createdDatasStructs_;
 	QMap<BaseData*, CreatedDatasStructPtr> createdDatasMap_;
 };
+
+//***************************************************************//
 
 typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString, QImage> allDataTypes;
 typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF> allNumericalTypes;

@@ -19,11 +19,8 @@ class PandaObject : public QObject, public DataNode
     Q_OBJECT
 
 public:
+	PANDA_CLASS(PandaObject, DataNode)
     explicit PandaObject(QObject *parent = 0);
-
-	typedef TClass< PandaObject, void > MyClass;
-	static const MyClass* getClass() { return MyClass::getInstance(); }
-	virtual const BaseClass* getBaseClass() const = 0;
 
 	static QString getTypeName();
 	static QString getClassName();

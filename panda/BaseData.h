@@ -14,6 +14,7 @@ class PandaObject;
 class BaseData : public DataNode
 {
 public:
+	PANDA_CLASS(BaseData, DataNode)
     class BaseInitData
     {
     public:
@@ -93,7 +94,8 @@ public:
     QString toString() const;
     virtual void fromString(const QString& text) = 0;
 
-    virtual QString getFullTypeName() const = 0;
+	virtual QString getValueTypeName() const = 0;
+	virtual QString getDescription() const;
 
     virtual void copyValueFrom(const BaseData* parent) = 0;
 

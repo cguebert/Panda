@@ -1,5 +1,6 @@
 #include <panda/GenericObject.h>
 #include <panda/PandaDocument.h>
+#include <panda/DataFactory.h>
 
 #include <QApplication>
 
@@ -70,7 +71,7 @@ BaseData* GenericObject::createDatas(int type)
 	int nbDefs = dataDefinitions_.size();
 	for(int i=0; i<nbDefs; ++i)
 	{
-		QString nameType = dataTypeToName(type);
+		QString nameType = DataFactory::typeToDescription(type);
 		QString dataName = dataDefinitions_[i].name;
 		if(dataName.contains("%1"))
 			dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
@@ -81,7 +82,7 @@ BaseData* GenericObject::createDatas(int type)
 		if(!BaseData::getValueType(dataType))	// Use the type of the connected Data
 			dataType = BaseData::replaceValueType(dataType, valueType);
 
-		BaseData* data = createDataFromFullType(dataType, dataName, dataDefinitions_[i].help, this);
+		BaseData* data = DataFactory::getInstance()->create(dataType, dataName, dataDefinitions_[i].help, this);
 
 		if(dataDefinitions_[i].input)
 		{
@@ -112,7 +113,7 @@ void GenericObject::updateDataNames()
 	int nbDefs = dataDefinitions_.size();
 	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 	{
-		QString nameType = dataTypeToName(created->type);
+		QString nameType = DataFactory::typeToDescription(created->type);
 		for(int i=0; i<nbDefs; ++i)
 		{
 			QString dataName = dataDefinitions_[i].name;
@@ -216,7 +217,7 @@ void GenericObject::save(QDomDocument& doc, QDomElement& elem)
 	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 	{
 		QDomElement e = doc.createElement("CreatedData");
-		e.setAttribute("type", dataTypeToName(created->type));
+		e.setAttribute("type", DataFactory::typeToDescription(created->type));
 		elem.appendChild(e);
 	}
 
@@ -259,11 +260,56 @@ void GenericObject::load(QDomElement& elem)
 	QDomElement e = elem.firstChildElement("CreatedData");
 	while(!e.isNull())
 	{
-		createDatas(dataNameToType(e.attribute("type")));
+		createDatas(DataFactory::descriptionToType(e.attribute("type")));
 		e = e.nextSiblingElement("CreatedData");
 	}
 
 	PandaObject::load(elem);
+}
+
+//***************************************************************//
+
+bool GenericData::validParent(const BaseData* parent) const
+{
+	if(allowedTypes.size() && !allowedTypes.contains(parent->getValueType()))
+		return false;
+	return true;
+}
+
+QString GenericData::getDescription() const
+{
+	return QString("Accepting all types");
+}
+
+bool GenericNonVectorData::validParent(const BaseData* parent) const
+{
+	return parent->isSingleValue() && GenericData::validParent(parent);
+}
+
+QString GenericNonVectorData::getDescription() const
+{
+	return QString("Accepting single values");
+}
+
+bool GenericVectorData::validParent(const BaseData* parent) const
+{
+	// TEST :  now accepting single values also, as the conversion is automatic
+	return (parent->isVector() || parent->isSingleValue()) && GenericData::validParent(parent);
+}
+
+QString GenericVectorData::getDescription() const
+{
+	return QString("Accepting lists");
+}
+
+bool GenericAnimationData::validParent(const BaseData* parent) const
+{
+	return parent->isAnimation() && GenericData::validParent(parent);
+}
+
+QString GenericAnimationData::getDescription() const
+{
+	return QString("Accepting animations");
 }
 
 } // namespace panda

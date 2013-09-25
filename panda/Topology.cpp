@@ -1,4 +1,5 @@
 #include <panda/Topology.h>
+#include <panda/DataFactory.h>
 
 #include <QMap>
 #include <QStack>
@@ -799,5 +800,13 @@ QTextStream& operator>>(QTextStream& stream, Topology& topo)
 
 	return stream;
 }
+
+//***************************************************************//
+
+template class Data<Topology>;
+template class Data< QVector<Topology> >;
+
+int topologyDataClass = RegisterData< Data<Topology> >();
+int topologyVectorDataClass = RegisterData< Data< QVector<Topology> > >();
 
 } // namespace panda

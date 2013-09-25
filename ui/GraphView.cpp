@@ -374,7 +374,7 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
                 {
                     QString display = QString("%1\n%2")
                             .arg(hoverData->getName())
-                            .arg(hoverData->getFullTypeName());
+                            .arg(hoverData->getDescription());
                     QToolTip::showText(event->globalPos(), display, this, dataRect.toRect());
                     if(!hoverData->getHelp().isEmpty())
                         emit showStatusBarMessage(hoverData->getHelp());
@@ -767,8 +767,8 @@ void GraphView::addLinkTag(panda::BaseData* input, panda::BaseData* output)
         linkTags[input]->addOutput(output);
     else
     {
-        QSharedPointer<LinkTag> tag(new LinkTag(this, input, output));
-        tag->index = getAvailableLinkTagIndex();
+		QSharedPointer<LinkTag> tag(new LinkTag(this, input, output));
+		tag->index = getAvailableLinkTagIndex();
         linkTags[input] = tag;
     }
 }

@@ -5,6 +5,7 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Layer.h>
 #include <panda/Renderer.h>
+#include <panda/DataFactory.h>
 
 #include <QMessageBox>
 #include <QPainter>
@@ -530,7 +531,7 @@ void Group::load(QDataStream& in)
         QString name, help;
         in >> type >> input >> output
               >> name >> help;
-        BaseData* data = createDataFromFullType(type, name, help, this);
+		BaseData* data = DataFactory::getInstance()->create(type, name, help, this);
         groupDatas.append( QSharedPointer<BaseData>(data) );
         if(input)
             addInput(data);
@@ -645,7 +646,7 @@ void Group::load(QTextStream& in)
         in.skipWhiteSpace();
         help = in.readLine();
 
-        BaseData* data = createDataFromFullType(type, name, help, this);
+		BaseData* data = DataFactory::getInstance()->create(type, name, help, this);
         groupDatas.append( QSharedPointer<BaseData>(data) );
         if(input)
             addInput(data);
@@ -766,7 +767,7 @@ void Group::load(QDomElement& elem)
 		name = groupDataNode.attribute("name");
 		help = groupDataNode.attribute("help");
 
-		BaseData* data = createDataFromFullType(type, name, help, this);
+		BaseData* data = DataFactory::getInstance()->create(type, name, help, this);
 		groupDatas.append( QSharedPointer<BaseData>(data) );
 		if(input)
 			addInput(data);
@@ -905,19 +906,13 @@ BaseData* Group::duplicateData(BaseData* data)
 
 	QString name = findAvailableDataName(data->getName());
 
-    BaseData* newData = nullptr;
-    if(data->isSingleValue())
-        newData = createDataFromType(data->getValueType(), name, data->getHelp(), this);
-    else if(data->isVector())
-        newData = createVectorDataFromType(data->getValueType(), name, data->getHelp(), this);
-    else if(data->isAnimation())
-        newData = createAnimationDataFromType(data->getValueType(), name, data->getHelp(), this);
-
+	QSharedPointer<BaseData> newData = QSharedPointer<BaseData>(
+				DataFactory::getInstance()->create(data->getFullType(), name, data->getHelp(), this) );
     newData->setDisplayed(data->isDisplayed());
     newData->setPersistent(data->isPersistent());
-    groupDatas.append( QSharedPointer<BaseData>(newData) );
+	groupDatas.append(newData);
 
-    return newData;
+	return newData.data();
 }
 
 void Group::reset()

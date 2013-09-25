@@ -122,8 +122,13 @@ protected:
         m_polygonsOnBorder;
 };
 
+//***************************************************************//
+
 Q_DECLARE_METATYPE(Topology)
 const int topologyMetaTypeId = qMetaTypeId<Topology>();
+
+template<> QString data_trait<Topology>::valueTypeName() { return "topology"; }
+template<> bool data_trait<Topology>::isDisplayed() { return false; }
 
 template<>
 void data_trait<Topology>::writeValue(QDomDocument& doc, QDomElement& elem, const Topology& v)

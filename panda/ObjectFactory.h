@@ -53,10 +53,11 @@ public:
 
     PandaObject* create(QString className, PandaDocument* parent);
 
-    typedef QMapIterator< QString, QSharedPointer<ClassEntry> > RegistryMapIterator;
+	typedef QSharedPointer<ClassEntry> ClassEntryPtr;
+	typedef QMapIterator< QString, ClassEntryPtr > RegistryMapIterator;
     RegistryMapIterator getRegistryIterator() { return RegistryMapIterator(registry); }
 protected:
-    typedef QMap< QString, QSharedPointer<ClassEntry> > RegistryMap;
+	typedef QMap< QString, ClassEntryPtr > RegistryMap;
     RegistryMap registry;
 };
 
@@ -81,7 +82,7 @@ public:
 
     template <class T> RegisterObject& setClass()
     {
-        entry.creator = QSharedPointer<BaseObjectCreator>(new ObjectCreator<T>);
+		entry.creator = QSharedPointer<ObjectCreator<T>>::create();
 		entry.theClass = T::getClass();
         return *this;
     }

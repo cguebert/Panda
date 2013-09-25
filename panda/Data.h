@@ -2,23 +2,14 @@
 #define DATA_H
 
 #include <panda/BaseData.h>
+#include <panda/DataTraits.h>
 #include <helper/DataAccessor.h>
 
 #include <QVariant>
-
 #include <QTextStream>
-#include <QList>
 
 namespace panda
 {
-
-QString dataTypeToName(int type);
-int dataNameToType(QString name);
-
-BaseData* createDataFromType(int type, const QString& name, const QString& help, PandaObject* owner);
-BaseData* createVectorDataFromType(int type, const QString& name, const QString& help, PandaObject* owner);
-BaseData* createAnimationDataFromType(int type, const QString& name, const QString& help, PandaObject* owner);
-BaseData* createDataFromFullType(int fullType, const QString& name, const QString& help, PandaObject* owner);
 
 template<class T> QTextStream& readValue(QTextStream& stream, T& v);
 template<class T> QTextStream& writeValue(QTextStream& stream, const T& v);
@@ -29,6 +20,7 @@ template <class T = void*>
 class Data : public BaseData
 {
 public:
+	PANDA_CLASS(PANDA_TEMPLATE(Data, T), BaseData)
 	typedef T value_type;
 	typedef T& reference;
 	typedef const T& const_reference;
@@ -45,41 +37,63 @@ public:
         : BaseData(init)
 		, value(value_type())
     {
-		setCustomFlags();
+		displayed = data_trait<T>::isDisplayed();
+		persistent = data_trait<T>::isPersistent();
     }
 
     explicit Data(const InitData& init)
         : BaseData(init)
     {
         value = init.value;
-		setCustomFlags();
+		displayed = data_trait<T>::isDisplayed();
+		persistent = data_trait<T>::isPersistent();
     }
 
     Data(const QString& name, const QString& help, PandaObject* owner)
 		: BaseData(name, help, owner)
 	{
-		setCustomFlags();
+		displayed = data_trait<T>::isDisplayed();
+		persistent = data_trait<T>::isPersistent();
 	}
 
 	virtual ~Data() {}
 
-	virtual bool isSingleValue() const;
-	virtual bool isVector() const;
-	virtual bool isAnimation() const;
+	virtual bool isSingleValue() const
+	{ return data_trait<T>::is_single; }
 
-	virtual int getValueType() const;
+	virtual bool isVector() const
+	{ return data_trait<T>::is_vector; }
 
-	virtual int getSize() const;
-	virtual void clear(int size = 0, bool init = false);
+	virtual bool isAnimation() const
+	{ return data_trait<T>::is_animation; }
 
-	virtual QVariant getBaseValue(int index) const;
-	virtual void fromBaseValue(QVariant val, int index);
+	virtual int getValueType() const
+	{ return data_trait<T>::valueType(); }
 
-    virtual void fromString(const QString& text);
+	virtual QString getValueTypeName() const
+	{ return data_trait<T>::valueTypeName(); }
 
-    virtual QString getFullTypeName() const;
+	virtual int getSize() const
+	{ return data_trait<T>::size(*this); }
 
-	helper::DataAccessor< Data<value_type> > getAccessor();
+	virtual void clear(int size = 0, bool init = false)
+	{ data_trait<T>::clear(*this, size, init); }
+
+	virtual QVariant getBaseValue(int index) const
+	{ return data_trait<T>::getBaseValue(*this, index); }
+
+	virtual void fromBaseValue(QVariant val, int index)
+	{ data_trait<T>::fromBaseValue(*this, val, index); }
+
+	virtual void fromString(const QString& text)
+	{
+		beginEdit();
+		value = valueFromString<T>(text);
+		endEdit();
+	}
+
+	helper::DataAccessor< Data<value_type> > getAccessor()
+	{ return helper::DataAccessor< Data<T> >(*this); }
 
 	inline void setValue(const_reference v)
     {
@@ -93,16 +107,21 @@ public:
         return value;
     }
 
-	virtual void copyValueFrom(const BaseData* parent);
+	virtual void copyValueFrom(const BaseData* parent)
+	{
+		data_trait<T>::copyValue(this, parent);
+		this->isValueSet = true;
+	}
 
-	virtual void save(QDomDocument& doc, QDomElement& elem);
+	virtual void save(QDomDocument& doc, QDomElement& elem)
+	{ data_trait<T>::writeValue(doc, elem, value); }
 
-	virtual void load(QDomElement& elem);
+	virtual void load(QDomElement& elem)
+	{ data_trait<T>::readValue(elem, value); }
 
 protected:
-    virtual QString doToString() const;
-
-	void setCustomFlags();
+	virtual QString doToString() const
+	{ return valueToString(value); }
 
 	friend class helper::DataAccessor< Data<T> >;
 
@@ -125,50 +144,6 @@ private:
     Data();
     Data(const Data&);
     Data& operator=(const Data&);
-};
-
-//***************************************************************//
-
-class GenericData : public Data<int>
-{
-public:
-    explicit GenericData(const BaseData::BaseInitData& init)
-		: Data<int>(init) {}
-
-    virtual bool validParent(const BaseData* parent) const;
-    virtual QString getFullTypeName() const;
-
-	QList<int> allowedTypes;
-};
-
-class GenericNonVectorData : public GenericData
-{
-public:
-    explicit GenericNonVectorData(const BaseData::BaseInitData& init)
-        : GenericData(init) {}
-
-    virtual bool validParent(const BaseData* parent) const;
-    virtual QString getFullTypeName() const;
-};
-
-class GenericVectorData : public GenericData
-{
-public:
-    explicit GenericVectorData(const BaseData::BaseInitData& init)
-        : GenericData(init) {}
-
-    virtual bool validParent(const BaseData* parent) const;
-    virtual QString getFullTypeName() const;
-};
-
-class GenericAnimationData : public GenericData
-{
-public:
-    explicit GenericAnimationData(const BaseData::BaseInitData& init)
-        : GenericData(init) {}
-
-    virtual bool validParent(const BaseData* parent) const;
-    virtual QString getFullTypeName() const;
 };
 
 //***************************************************************//

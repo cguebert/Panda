@@ -8,7 +8,7 @@
 namespace panda
 {
 
-class PandaObject;
+class DataNode;
 
 class BaseClass
 {
@@ -26,8 +26,8 @@ public:
 	bool operator==(const BaseClass& c) const;
 	bool operator!=(const BaseClass& c) const;
 
-	virtual void* dynamicCast(PandaObject* obj) const = 0;
-	virtual bool isInstance(PandaObject* obj) const = 0;
+	virtual void* dynamicCast(DataNode* obj) const = 0;
+	virtual bool isInstance(DataNode* obj) const = 0;
 
 	static QString decodeTypeName(const std::type_info& type);
 	static QString decodeClassName(const std::type_info& type);
@@ -159,12 +159,12 @@ protected:
 
 	virtual ~TClass() {}
 
-	virtual void* dynamicCast(PandaObject* obj) const
+	virtual void* dynamicCast(DataNode* obj) const
 	{
 		return dynamic_cast<T*>(obj);
 	}
 
-	virtual bool isInstance(PandaObject* obj) const
+	virtual bool isInstance(DataNode* obj) const
 	{
 		return dynamicCast(obj) != nullptr;
 	}

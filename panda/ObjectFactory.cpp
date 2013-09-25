@@ -40,7 +40,7 @@ ObjectFactory::ClassEntry* ObjectFactory::getEntry(QString className)
 {
     if(!registry.contains(className))
     {
-        QSharedPointer<ObjectFactory::ClassEntry> entry(new ObjectFactory::ClassEntry);
+		ClassEntryPtr entry = ClassEntryPtr::create();
         registry.insert(className, entry);
         return entry.data();
     }
