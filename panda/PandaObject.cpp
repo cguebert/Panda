@@ -143,47 +143,7 @@ void PandaObject::setInternalData(const QString& newName, const quint32& newInde
     index = newIndex;
 }
 
-void PandaObject::save(QDataStream& out)
-{
-    int nb = 0;
-    foreach(BaseData* data, datas)
-        if(data->isSet() && data->isPersistent() && !data->isReadOnly() && !data->getParent())
-            ++nb;
-
-    out << nb;
-    foreach(BaseData* data, datas)
-    {
-        if(data->isSet() && data->isPersistent() && !data->isReadOnly() && !data->getParent())
-        {
-            out << data->getName();
-            out << data->toString();
-        }
-    }
-}
-
-void PandaObject::save(QTextStream& out)
-{
-    int nb = 0;
-    foreach(BaseData* data, datas)
-        if(data->isSet() && data->isPersistent() && !data->isReadOnly() && !data->getParent())
-            ++nb;
-
-    out << nb << endl;
-    foreach(BaseData* data, datas)
-    {
-        if(data->isSet() && data->isPersistent() && !data->isReadOnly() && !data->getParent())
-        {
-            out << data->getName() << endl;
-			QString value = data->toString();
-			if(value.contains('\n'))	// TODO : more robust system for multiline values
-				out << dataMarkerStart << endl << value << endl << dataMarkerEnd << endl;
-			else
-				out << value << endl;
-        }
-    }
-}
-
-void PandaObject::save(QDomDocument& doc, QDomElement& elem, QList<PandaObject*>* selected)
+void PandaObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
 {
 	foreach(BaseData* data, datas)
 	{
@@ -196,49 +156,6 @@ void PandaObject::save(QDomDocument& doc, QDomElement& elem, QList<PandaObject*>
 			elem.appendChild(xmlData);
 		}
 	}
-}
-
-void PandaObject::load(QDataStream& in)
-{
-    int nb;
-    in >> nb;
-
-    for(int i=0; i<nb; ++i)
-    {
-        QString name, value;
-        in >> name >> value;
-        BaseData* data = getData(name);
-        if(data)
-            data->fromString(value);
-    }
-}
-
-void PandaObject::load(QTextStream& in)
-{
-    int nb;
-    in >> nb;
-
-    for(int i=0; i<nb; ++i)
-    {
-        QString name, value;
-        in.skipWhiteSpace();
-        name = in.readLine();
-        value = in.readLine();
-		if(value == dataMarkerStart)
-		{
-			value = "";
-			QString tmp = in.readLine();
-			do
-			{
-				value += tmp + '\n';
-				tmp = in.readLine();
-			}
-			while(tmp != dataMarkerEnd);
-		}
-        BaseData* data = getData(name);
-        if(data)
-            data->fromString(value);
-    }
 }
 
 void PandaObject::load(QDomElement& elem)

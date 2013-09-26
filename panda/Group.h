@@ -27,12 +27,7 @@ public:
     static bool createGroup(PandaDocument* doc, GraphView* view);
 	static bool ungroupSelection(PandaDocument* doc, GraphView* view);
 
-    virtual void save(QDataStream& out);
-    virtual void save(QTextStream& out);
-	virtual void save(QDomDocument& doc, QDomElement& elem, QList<PandaObject*>* selected = nullptr);
-
-	virtual void load(QDataStream& in);
-	virtual void load(QTextStream& in);
+	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected = nullptr);
 	virtual void load(QDomElement& elem);
 
     virtual void reset();

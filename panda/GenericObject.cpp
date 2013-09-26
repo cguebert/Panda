@@ -71,7 +71,7 @@ BaseData* GenericObject::createDatas(int type)
 	int nbDefs = dataDefinitions_.size();
 	for(int i=0; i<nbDefs; ++i)
 	{
-		QString nameType = DataFactory::typeToDescription(type);
+		QString nameType = DataFactory::typeToName(type);
 		QString dataName = dataDefinitions_[i].name;
 		if(dataName.contains("%1"))
 			dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
@@ -113,7 +113,7 @@ void GenericObject::updateDataNames()
 	int nbDefs = dataDefinitions_.size();
 	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 	{
-		QString nameType = DataFactory::typeToDescription(created->type);
+		QString nameType = DataFactory::typeToName(created->type);
 		for(int i=0; i<nbDefs; ++i)
 		{
 			QString dataName = dataDefinitions_[i].name;
@@ -194,65 +194,16 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	}
 }
 
-void GenericObject::save(QDataStream& out)
-{
-	out << (quint32)createdDatasStructs_.size();
-	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
-		out << (quint32)created->type;
-
-	PandaObject::save(out);
-}
-
-void GenericObject::save(QTextStream& out)
-{
-	out << (quint32)createdDatasStructs_.size() << " ";
-	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
-		out << (quint32)created->type << " ";
-
-	PandaObject::save(out);
-}
-
-void GenericObject::save(QDomDocument& doc, QDomElement& elem, QList<PandaObject*>* selected)
+void GenericObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
 {
 	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
 	{
 		QDomElement e = doc.createElement("CreatedData");
-		e.setAttribute("type", DataFactory::typeToDescription(created->type));
+		e.setAttribute("type", DataFactory::typeToName(created->type));
 		elem.appendChild(e);
 	}
 
 	PandaObject::save(doc, elem, selected);
-}
-
-void GenericObject::load(QDataStream& in)
-{
-	quint32 nb;
-	in >> nb;
-
-	for(quint32 i=0; i<nb; ++i)
-	{
-		quint32 type;
-		in >> type;
-		createDatas(type);
-	}
-
-	PandaObject::load(in);
-}
-
-void GenericObject::load(QTextStream& in)
-{
-	quint32 nb;
-	in >> nb;
-
-	for(quint32 i=0; i<nb; ++i)
-	{
-		quint32 type;
-		in >> type;
-		createDatas(type);
-	}
-
-	in.skipWhiteSpace();
-	PandaObject::load(in);
 }
 
 void GenericObject::load(QDomElement& elem)
@@ -260,7 +211,7 @@ void GenericObject::load(QDomElement& elem)
 	QDomElement e = elem.firstChildElement("CreatedData");
 	while(!e.isNull())
 	{
-		createDatas(DataFactory::descriptionToType(e.attribute("type")));
+		createDatas(DataFactory::nameToType(e.attribute("type")));
 		e = e.nextSiblingElement("CreatedData");
 	}
 

@@ -63,65 +63,13 @@ bool PandaDocument::writeFile(const QString& fileName)
         return false;
     }
 
-    QDataStream out(&file);
-    out.setVersion(QDataStream::Qt_4_6);
+	QDomDocument doc;
+	QDomElement root = doc.createElement("Panda");
+	doc.appendChild(root);
+	save(doc, root);	// The document's Datas
+	saveDoc(doc, root, pandaObjects);	// The document and all of its objects
 
-    out << pandaMagicNumber;
-    out << pandaVersion;
-
-    this->save(out);
-
-    typedef QPair<BaseData*, BaseData*> DataPair;
-    QList<DataPair> links;
-
-    typedef QPair<quint32, quint32> IntPair;
-	QList<IntPair> dockedObjects;
-
-    // Saving objects
-    out << (quint32)pandaObjects.size();
-    QList<PandaObject*>::iterator iter;
-    for(iter = pandaObjects.begin(); iter != pandaObjects.end(); ++iter)
-    {
-        PandaObject* object = *iter;
-		out << ObjectFactory::getRegistryName(object);
-        out << object->getIndex();
-
-        object->save(out);
-
-        // Preparing links
-        foreach(BaseData* data, object->getInputDatas())
-        {
-            BaseData* parent = data->getParent();
-            if(parent)
-                links.append(qMakePair(data, parent));
-        }
-
-		// Preparing dockables list for docks
-		DockObject* dock = dynamic_cast<DockObject*>(object);
-		if(dock)
-        {
-			DockObject::DockablesIterator dockableIter = dock->getDockablesIterator();
-			while(dockableIter.hasNext())
-				dockedObjects.append(qMakePair(dock->getIndex(), dockableIter.next()->getIndex()));
-        }
-
-        emit savingObject(out, object);
-    }
-
-    // Saving links
-    out << (quint32)links.size();
-    foreach(DataPair link, links)
-    {
-        out << link.first->getOwner()->getIndex();
-        out << link.first->getName();
-        out << link.second->getOwner()->getIndex();
-        out << link.second->getName();
-    }
-
-	// Saving docked objects list
-	out << (quint32)dockedObjects.size();
-	foreach(IntPair dockable, dockedObjects)
-		out << dockable.first << dockable.second;
+	file.write(doc.toByteArray(4));
 
     return true;
 }
@@ -138,100 +86,24 @@ bool PandaDocument::readFile(const QString& fileName)
         return false;
     }
 
-    QDataStream in(&file);
-    in.setVersion(QDataStream::Qt_4_6);
+	QDomDocument doc;
+	int errLine, errCol;
+	if (!doc.setContent(&file, nullptr, &errLine, &errCol))
+	{
+		QMessageBox::warning(nullptr, tr("Panda"),
+							 tr("Cannot parse xml file %1. Error in ligne %2, column %3")
+							 .arg(file.fileName())
+							 .arg(errLine)
+							 .arg(errCol));
+		return false;
+	}
 
-    quint32 magicNumber, version;
-    in >> magicNumber;
-    in >> version;
-    if(magicNumber != pandaMagicNumber)
-    {
-        QMessageBox::warning(nullptr, tr("Panda"), tr("The file is not a Panda file."));
-        return false;
-    }
+	QDomElement root = doc.documentElement();
+	load(root);		// Only the document's Datas
+	loadDoc(root);	// All the document's objects
 
-    if(version < pandaVersion)
-    {
-        QMessageBox::warning(nullptr, tr("Panda"), tr("This version is not supported any more."));
-        return false;
-    }
-
-    this->load(in);
-
-    QMap<quint32, quint32> importIndicesMap;
-    selectedObjects.clear();
-
-    quint32 nbObjects;
-    in >> nbObjects;
-    for(quint32 i=0; i<nbObjects; ++i)
-    {
-        QString registryName;
-        quint32 index;
-        in >> registryName >> index;
-
-        PandaObject* object = createObject(registryName);
-        if(object)
-        {
-            importIndicesMap[index] = object->getIndex();
-            selectedObjects.append(object);
-
-            object->load(in);
-
-            emit loadingObject(in, object);
-        }
-        else
-        {
-            QMessageBox::warning(nullptr, tr("Panda"),
-                tr("Could not create the object %1.\nA plugin must be missing.")
-                .arg(registryName));
-            return false;
-        }
-    }
-
-    // Create links
-    quint32 nbLinks;
-    in >> nbLinks;
-    for(quint32 i=0; i<nbLinks; ++i)
-    {
-        quint32 index1, index2;
-        QString name1, name2;
-        in >> index1 >> name1 >> index2 >> name2;
-        index1 = importIndicesMap[index1];
-        index2 = importIndicesMap[index2];
-
-        BaseData *data1, *data2;
-        data1 = findData(index1, name1);
-        data2 = findData(index2, name2);
-        if(data1 && data2)
-            data1->setParent(data2);
-    }
-
-	// Put dockables in their docks
-	quint32 nbDockedObjects;
-	in >> nbDockedObjects;
-	for(quint32 i=0; i<nbDockedObjects; ++i)
-    {
-		quint32 dockIndex, dockableIndex;
-		in >> dockIndex >> dockableIndex;
-		dockIndex = importIndicesMap[dockIndex];
-		dockableIndex = importIndicesMap[dockableIndex];
-
-		DockObject* dock = dynamic_cast<DockObject*>(findObject(dockIndex));
-		DockableObject* dockable = dynamic_cast<DockableObject*>(findObject(dockableIndex));
-		if(dock && dockable)
-        {
-			DockObject* defaultDock = dockable->getDefaultDock();
-			if(defaultDock)
-				defaultDock->removeDockable(dockable);
-			dock->addDockable(dockable);
-        }
-    }
-
-    if(!selectedObjects.empty())
-    {
-        emit selectionChanged();
-        emit selectedObject(getCurrentSelectedObject());
-    }
+	emit selectionChanged();
+	emit selectedObject(getCurrentSelectedObject());
 
     return true;
 }
@@ -242,6 +114,34 @@ QString PandaDocument::writeTextDocument()
 	QDomElement root = doc.createElement("Panda");
 	doc.appendChild(root);
 
+	saveDoc(doc, root, selectedObjects);
+
+	return doc.toString(4);
+}
+
+bool PandaDocument::readTextDocument(QString& text)
+{
+	QDomDocument doc("Panda");
+	if(!doc.setContent(text))
+		return false;
+
+	bool bSelected = !selectedObjects.isEmpty();
+	selectedObjects.clear();
+
+	QDomElement root = doc.documentElement();
+	bool bVal = loadDoc(root);
+
+	if(bSelected || !selectedObjects.empty())
+    {
+        emit selectionChanged();
+        emit selectedObject(getCurrentSelectedObject());
+    }
+
+	return bVal;
+}
+
+bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const QList<PandaObject*>& selected)
+{
 	typedef QPair<BaseData*, BaseData*> DataPair;
 	QList<DataPair> links;
 
@@ -249,20 +149,20 @@ QString PandaDocument::writeTextDocument()
 	QList<IntPair> dockedObjects;
 
 	// Saving objects
-	for(PandaObject* object : selectedObjects)
+	for(PandaObject* object : selected)
 	{
 		QDomElement elem = doc.createElement("Object");
 		elem.setAttribute("type", ObjectFactory::getRegistryName(object));
 		elem.setAttribute("index", object->getIndex());
 		root.appendChild(elem);
 
-		object->save(doc, elem, &selectedObjects);
+		object->save(doc, elem, &selected);
 
 		// Preparing links
 		foreach(BaseData* data, object->getInputDatas())
 		{
 			BaseData* parent = data->getParent();
-			if(parent && selectedObjects.contains(parent->getOwner()))
+			if(parent && selected.contains(parent->getOwner()))
 				links.append(qMakePair(data, parent));
 		}
 
@@ -298,19 +198,12 @@ QString PandaDocument::writeTextDocument()
 		root.appendChild(elem);
 	}
 
-	return doc.toString(4);
+	return true;
 }
 
-bool PandaDocument::readTextDocument(QString& text)
+bool PandaDocument::loadDoc(QDomElement& root)
 {
-	QDomDocument doc("Panda");
-	if(!doc.setContent(text))
-		return false;
-
 	QMap<quint32, quint32> importIndicesMap;
-	selectedObjects.clear();
-
-	QDomElement root = doc.documentElement();
 
 	// Loading objects
 	QDomElement elem = root.firstChildElement("Object");
@@ -387,12 +280,6 @@ bool PandaDocument::readTextDocument(QString& text)
 		elem = elem.nextSiblingElement("Dock");
 	}
 
-    if(!selectedObjects.empty())
-    {
-        emit selectionChanged();
-        emit selectedObject(getCurrentSelectedObject());
-    }
-
 	return true;
 }
 
@@ -413,6 +300,9 @@ void PandaDocument::resetDocument()
     timestep.setValue(0.1);
 	renderSize.setValue(QPointF(800,600));
 	backgroundColor.setValue(QColor(255,255,255));
+
+	animPlaying = false;
+	animTimer->stop();
 
     emit modified();
     emit selectionChanged();
@@ -526,6 +416,8 @@ void PandaDocument::cut()
 
 void PandaDocument::copy()
 {
+	if(selectedObjects.isEmpty())
+		return;
     QClipboard* clipboard = QApplication::clipboard();
     clipboard->setText(writeTextDocument());
 }
@@ -701,19 +593,14 @@ bool PandaDocument::getGroupDescription(const QString &fileName, QString& descri
     if(!file.open(QIODevice::ReadOnly))
         return false;
 
-    QDataStream in(&file);
-    in.setVersion(QDataStream::Qt_4_6);
+	QDomDocument doc;
+	if(!doc.setContent(&file))
+		return false;
 
-    quint32 magicNumber, version;
-    in >> magicNumber;
-    in >> version;
-    if(magicNumber != groupsMagicNumber)
-        return false;
-
-    if(version < groupsVersion)
-        return false;
-
-    in >> description;
+	QDomElement root = doc.documentElement();
+	if(!root.hasAttribute("description"))
+		return false;
+	description = root.attribute("description");
 
     return true;
 }
@@ -729,51 +616,50 @@ bool PandaDocument::saveGroup(Group *group)
     QString text = QInputDialog::getText(nullptr, tr("Save group"),
                                          tr("Group name:"), QLineEdit::Normal,
                                          group->getGroupName(), &ok);
-    if (ok && !text.isEmpty())
-    {
-        QString fileName = groupsDirPath + text + ".grp";
-        QFileInfo fileInfo(fileName);
-        QDir dir;
-        dir.mkpath(fileInfo.dir().path());
-        QFile file(fileName);
+	if (!ok || text.isEmpty())
+		return false;
 
-        // If already exists
-        if(file.exists())
-        {
-            if(QMessageBox::question(nullptr, tr("Panda"),
-                                  tr("This group already exists, overwrite?"),
-                                  QMessageBox::Yes|QMessageBox::No,
-                                  QMessageBox::Yes)
-                    != QMessageBox::Yes)
-                return false;
-        }
+	QString fileName = groupsDirPath + text + ".grp";
+	QFileInfo fileInfo(fileName);
+	QDir dir;
+	dir.mkpath(fileInfo.dir().path());
+	QFile file(fileName);
 
-        if (!file.open(QIODevice::WriteOnly))
-        {
-            QMessageBox::warning(nullptr, tr("Panda"),
-                                 tr("Cannot write file %1:\n%2.")
-                                 .arg(file.fileName())
-                                 .arg(file.errorString()));
-            return false;
-        }
+	// If already exists
+	if(file.exists())
+	{
+		if(QMessageBox::question(nullptr, tr("Panda"),
+							  tr("This group already exists, overwrite?"),
+							  QMessageBox::Yes|QMessageBox::No,
+							  QMessageBox::Yes)
+				!= QMessageBox::Yes)
+			return false;
+	}
 
-        QDataStream out(&file);
-        out.setVersion(QDataStream::Qt_4_6);
+	if (!file.open(QIODevice::WriteOnly))
+	{
+		QMessageBox::warning(nullptr, tr("Panda"),
+							 tr("Cannot write file %1:\n%2.")
+							 .arg(file.fileName())
+							 .arg(file.errorString()));
+		return false;
+	}
 
-        out << groupsMagicNumber;
-        out << groupsVersion;
+	QDomDocument doc;
+	QDomElement root = doc.createElement("Group");
+	doc.appendChild(root);
 
-        QString text = QInputDialog::getText(nullptr, tr("Save group"),
-                                             tr("Group description:"), QLineEdit::Normal,
-                                             "", &ok);
-        out << text;
+	QString desc = QInputDialog::getText(nullptr, tr("Save group"),
+										 tr("Group description:"), QLineEdit::Normal,
+										 "", &ok);
 
-        out << panda::ObjectFactory::getRegistryName(group);
-        group->save(out);
-        return true;
-    }
+	root.setAttribute("description", desc);
+	root.setAttribute("type", panda::ObjectFactory::getRegistryName(group));
 
-    return false;
+	group->save(doc, root);
+
+	file.write(doc.toByteArray(4));
+	return true;
 }
 
 PandaObject* PandaDocument::createGroupObject(QString groupPath)
@@ -785,35 +671,24 @@ PandaObject* PandaDocument::createGroupObject(QString groupPath)
         return nullptr;
     }
 
-    QDataStream in(&file);
-    in.setVersion(QDataStream::Qt_4_6);
+	QDomDocument doc;
+	int errLine, errCol;
+	if (!doc.setContent(&file, nullptr, &errLine, &errCol))
+	{
+		QMessageBox::warning(nullptr, tr("Panda"),
+							 tr("Cannot parse xml: error in ligne %2, column %3")
+							 .arg(errLine)
+							 .arg(errCol));
+		return false;
+	}
 
-    quint32 magicNumber, version;
-    in >> magicNumber;
-    in >> version;
-    if(magicNumber != groupsMagicNumber)
-    {
-        QMessageBox::warning(nullptr, tr("Panda"), tr("The file is not a Panda file."));
-        return nullptr;
-    }
-
-    if(version < groupsVersion)
-    {
-        QMessageBox::warning(nullptr, tr("Panda"), tr("This version is not supported any more."));
-        return nullptr;
-    }
-
-    QString description;
-    in >> description;
-
-    QString registryName;
-    in >> registryName;
+	QDomElement root = doc.documentElement();
+	QString description = root.attribute("description");
+	QString registryName = root.attribute("type");
 
     panda::PandaObject* object = createObject(registryName);
     if(object)
-    {
-        object->load(in);
-    }
+		object->load(root);
     else
     {
         QMessageBox::warning(nullptr, tr("Panda"),

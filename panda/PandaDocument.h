@@ -34,6 +34,9 @@ public:
     QString writeTextDocument();
     bool readTextDocument(QString &text);
 
+	bool saveDoc(QDomDocument& doc, QDomElement& root, const QList<PandaObject*>& selected);
+	bool loadDoc(QDomElement& root);
+
     void resetDocument();
 
     PandaObject* createObject(QString registryName);
@@ -104,12 +107,7 @@ protected:
     bool getGroupDescription(const QString &fileName, QString& description);
 
 private:
-    static const quint32 pandaMagicNumber = 0x574f306b;
-    static const quint32 pandaVersion = 40;
-
     QString groupsDirPath;
-    static const quint32 groupsMagicNumber = 0x47723070;
-    static const quint32 groupsVersion = 40;
 
 signals:
     void modified();
@@ -117,11 +115,7 @@ signals:
     void dirtyObject(panda::PandaObject*);
     void addedObject(panda::PandaObject*);
     void removedObject(panda::PandaObject*);
-    void savingObject(QDataStream&, panda::PandaObject*);
-    void savingObject(QTextStream&, panda::PandaObject*);
 	void savingObject(QDomDocument&, QDomElement&, panda::PandaObject*);
-    void loadingObject(QDataStream&, panda::PandaObject*);
-    void loadingObject(QTextStream&, panda::PandaObject*);
 	void loadingObject(QDomElement&, panda::PandaObject*);
     void selectedObject(panda::PandaObject*);
     void selectedObjectIsDirty(panda::PandaObject*);

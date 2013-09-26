@@ -28,7 +28,7 @@ public:
 	public:
 		DataEntry() {}
 
-		QString description;
+		QString typeName;
 		QString className;
 		int fullType;
 		const BaseClass* theClass;
@@ -42,8 +42,8 @@ public:
 	BaseData* create(QString className, const QString& name, const QString& help, PandaObject* owner);
 	BaseData* create(int type, const QString& name, const QString& help, PandaObject* owner);
 
-	static QString typeToDescription(int type);
-	static int descriptionToType(QString description);
+	static QString typeToName(int type);
+	static int nameToType(QString name);
 
 	typedef QList< QSharedPointer<DataEntry> > EntriesList;
 	const EntriesList getEntries() { return entries; }
@@ -51,11 +51,11 @@ public:
 protected:
 	EntriesList entries;
 	QMap< QString, DataEntry* > registry;
-	QMap< QString, DataEntry* > descriptionRegistry;
+	QMap< QString, DataEntry* > nameRegistry;
 	QMap< int, DataEntry* > typeRegistry;
 
 	template<class T> friend class RegisterData;
-	void registerData(QString description, int fullType, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator);
+	void registerData(QString typeName, int fullType, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator);
 
 private:
 	DataFactory() {}

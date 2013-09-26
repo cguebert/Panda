@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QMap>
-#include <QTextStream>
 #include <ui/ObjectDrawStruct.h>
 #include <QDomDocument>
 
@@ -69,11 +68,7 @@ public slots:
     void addedObject(panda::PandaObject* object);
     void removeObject(panda::PandaObject* object);
     void modifiedObject(panda::PandaObject* object);
-	void savingObject(QDataStream&, panda::PandaObject*);
-    void savingObject(QTextStream&, panda::PandaObject*);
 	void savingObject(QDomDocument&, QDomElement&, panda::PandaObject*);
-    void loadingObject(QDataStream&, panda::PandaObject*);
-    void loadingObject(QTextStream&, panda::PandaObject*);
 	void loadingObject(QDomElement&, panda::PandaObject*);
     int getAvailableLinkTagIndex();
     void updateLinkTags(bool reset=false);

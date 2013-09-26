@@ -117,7 +117,11 @@ public:
 	{ data_trait<T>::writeValue(doc, elem, value); }
 
 	virtual void load(QDomElement& elem)
-	{ data_trait<T>::readValue(elem, value); }
+	{
+		beginEdit();
+		data_trait<T>::readValue(elem, value);
+		endEdit();
+	}
 
 protected:
 	virtual QString doToString() const

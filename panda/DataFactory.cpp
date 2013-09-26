@@ -39,10 +39,10 @@ BaseData* DataFactory::create(int type, const QString& name, const QString& help
 	return nullptr;
 }
 
-void DataFactory::registerData(QString description, int fullType, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator)
+void DataFactory::registerData(QString typeName, int fullType, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator)
 {
-	QString typeName = theClass->getTypeName();
-	DataEntry* entry = registry.value(typeName);
+	QString className = theClass->getTypeName();
+	DataEntry* entry = registry.value(className);
 	if(!entry)
 	{
 		QSharedPointer<DataEntry> newEntry = QSharedPointer<DataEntry>::create();
@@ -50,28 +50,28 @@ void DataFactory::registerData(QString description, int fullType, const BaseClas
 		entry = newEntry.data();
 	}
 
-	entry->description = description;
-	entry->className = typeName;
+	entry->typeName = typeName;
+	entry->className = className;
 	entry->creator = creator;
 	entry->fullType = fullType;
 	entry->theClass = theClass;
 
-	registry[typeName] = entry;
+	registry[className] = entry;
 	typeRegistry[fullType] = entry;
-	descriptionRegistry[description] = entry;
+	nameRegistry[typeName] = entry;
 }
 
-QString DataFactory::typeToDescription(int type)
+QString DataFactory::typeToName(int type)
 {
 	const DataFactory::DataEntry* entry = DataFactory::getInstance()->getEntry(type);
 	if(entry)
-		return entry->description;
+		return entry->typeName;
 	return "unknown";
 }
 
-int DataFactory::descriptionToType(QString description)
+int DataFactory::nameToType(QString name)
 {
-	const DataFactory::DataEntry* entry = DataFactory::getInstance()->descriptionRegistry[description];
+	const DataFactory::DataEntry* entry = DataFactory::getInstance()->nameRegistry[name];
 	if(entry)
 		return entry->fullType;
 	return -1;

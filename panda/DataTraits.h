@@ -493,8 +493,8 @@ void data_trait<QPointF>::readValue(QDomElement& elem, QPointF& v)
 template<>
 void data_trait<QRectF>::readValue(QDomElement& elem, QRectF& v)
 {	v.setLeft(  elem.attribute("l").toDouble());
-	v.setRight( elem.attribute("t").toDouble());
-	v.setTop(   elem.attribute("r").toDouble());
+	v.setTop(   elem.attribute("t").toDouble());
+	v.setRight( elem.attribute("r").toDouble());
 	v.setBottom(elem.attribute("b").toDouble());
 }
 

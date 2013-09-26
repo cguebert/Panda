@@ -28,11 +28,7 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget *parent)
     connect(pandaDocument, SIGNAL(addedObject(panda::PandaObject*)), this, SLOT(addedObject(panda::PandaObject*)));
     connect(pandaDocument, SIGNAL(removedObject(panda::PandaObject*)), this, SLOT(removeObject(panda::PandaObject*)));
     connect(pandaDocument, SIGNAL(modifiedObject(panda::PandaObject*)), this, SLOT(modifiedObject(panda::PandaObject*)));
-    connect(pandaDocument, SIGNAL(savingObject(QDataStream&, panda::PandaObject*)), this, SLOT(savingObject(QDataStream&, panda::PandaObject*)));
-    connect(pandaDocument, SIGNAL(savingObject(QTextStream&, panda::PandaObject*)), this, SLOT(savingObject(QTextStream&, panda::PandaObject*)));
 	connect(pandaDocument, SIGNAL(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)), this, SLOT(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)));
-    connect(pandaDocument, SIGNAL(loadingObject(QDataStream&, panda::PandaObject*)), this, SLOT(loadingObject(QDataStream&, panda::PandaObject*)));
-    connect(pandaDocument, SIGNAL(loadingObject(QTextStream&, panda::PandaObject*)), this, SLOT(loadingObject(QTextStream&, panda::PandaObject*)));
 	connect(pandaDocument, SIGNAL(loadingObject(QDomElement&,panda::PandaObject*)), this, SLOT(loadingObject(QDomElement&,panda::PandaObject*)));
 
     setMouseTracking(true);
@@ -696,38 +692,11 @@ void GraphView::modifiedObject(panda::PandaObject* object)
     }
 }
 
-void GraphView::savingObject(QDataStream& out, panda::PandaObject* object)
-{
-    out << objectDrawStructs[object]->getPosition();
-}
-
-void GraphView::savingObject(QTextStream& out, panda::PandaObject* object)
-{
-    QPointF pos = objectDrawStructs[object]->getPosition();
-    out << pos.x() << " " << pos.y() << endl;
-}
-
 void GraphView::savingObject(QDomDocument&, QDomElement& elem, panda::PandaObject* object)
 {
 	QPointF pos = objectDrawStructs[object]->getPosition();
 	elem.setAttribute("x", pos.x());
 	elem.setAttribute("y", pos.y());
-}
-
-void GraphView::loadingObject(QDataStream& in, panda::PandaObject* object)
-{
-    QPointF newPos, prevPos;
-    prevPos = objectDrawStructs[object]->getPosition();
-    in >> newPos;
-    objectDrawStructs[object]->move(newPos - prevPos);
-}
-
-void GraphView::loadingObject(QTextStream& in, panda::PandaObject* object)
-{
-    QPointF newPos, prevPos;
-    prevPos = objectDrawStructs[object]->getPosition();
-    in >> newPos.rx() >> newPos.ry();
-    objectDrawStructs[object]->move(newPos - prevPos);
 }
 
 void GraphView::loadingObject(QDomElement& elem, panda::PandaObject* object)
