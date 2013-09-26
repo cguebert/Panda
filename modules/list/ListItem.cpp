@@ -49,8 +49,11 @@ public:
 		int size = inVal.size();
 		int nb = id.size();
 		outVal.resize(nb);
-		for(int i=0; i<nb; ++i)
-			outVal[i] = inVal[qBound(0, id[i], size-1)];
+		if(size)
+		{
+			for(int i=0; i<nb; ++i)
+				outVal[i] = inVal[qBound(0, id[i], size-1)];
+		}
 	}
 
 protected:
