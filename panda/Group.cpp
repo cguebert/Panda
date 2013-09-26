@@ -293,6 +293,9 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 	typedef QPair<quint32, quint32> IntPair;
 	QList<IntPair> dockedObjects;
 
+	QList<PandaObject*> allObjects(objects);
+	allObjects.push_back(this);
+
 	// Saving objects in this group
 	for(PandaObject* object : objects)
 	{
@@ -301,7 +304,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 		node.setAttribute("index", object->getIndex());
 		elem.appendChild(node);
 
-		object->save(doc, node, &objects);
+		object->save(doc, node, &allObjects);
 
 		QPointF pos = positions[object];
 		node.setAttribute("x", pos.x());
