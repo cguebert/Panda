@@ -1,6 +1,5 @@
-#include <ui/StructDataWidget.h>
+#include <ui/ListDataWidgetDialog.h>
 #include <ui/SimpleDataWidget.h>
-#include <helper/Factory.h>
 
 template<>
 class data_widget_container< QColor > : public BaseOpenDialogObject
@@ -140,16 +139,9 @@ public:
 //***************************************************************//
 
 Creator<DataWidgetFactory, SimpleDataWidget<QColor> > DWClass_color("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QPointF> > DWClass_point("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QRectF> > DWClass_rect("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString, file_data_widget_container<true> > > DWClass_file_open("open file",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString, file_data_widget_container<false> > > DWClass_file_save("save file",true);
 
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<int> > > DWClass_ints_list("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<double> > > DWClass_doubles_list("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QColor>, ListDataDialog<QVector<QColor>> > > DWClass_colors_list("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QPointF> > > DWClass_points_list("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QRectF> > > DWClass_rects_list("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString> > > DWClass_strings_list("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataDialog<QVector<QString>, file_data_widget_container<true> > > > DWClass_files_list_open("open file",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataDialog<QVector<QString>, file_data_widget_container<false> > > > DWClass_files_list_save("save file",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QColor>, ListDataWidgetDialog<QVector<QColor>> > > DWClass_colors_list("default",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, file_data_widget_container<true> > > > DWClass_files_list_open("open file",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, file_data_widget_container<false> > > > DWClass_files_list_save("save file",true);

@@ -1,5 +1,4 @@
 #include <ui/SimpleDataWidget.h>
-#include <helper/Factory.h>
 #include <panda/Animation.h>
 
 #include <QtWidgets>
