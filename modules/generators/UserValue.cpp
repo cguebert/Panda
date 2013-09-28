@@ -17,16 +17,16 @@ class GeneratorUser : public PandaObject
 public:
 	PANDA_CLASS(PANDA_TEMPLATE(GeneratorUser, T), PandaObject)
 
-    GeneratorUser(PandaDocument *doc)
-        : PandaObject(doc)
-        , userValue(initData(&userValue, T(), "value", "The value you want to store"))
-    {
-        addOutput(&userValue);
-        userValue.setReadOnly(false);
-    }
+	GeneratorUser(PandaDocument *doc)
+		: PandaObject(doc)
+		, userValue(initData(&userValue, T(), "value", "The value you want to store"))
+	{
+		addOutput(&userValue);
+		userValue.setReadOnly(false);
+	}
 
 protected:
-    Data<T> userValue;
+	Data<T> userValue;
 };
 
 int GeneratorUser_IntegerClass = RegisterObject("Generator/Integer/Integer user value").setClass< GeneratorUser<int> >().setName("Integer value").setDescription("Lets you store a value for use in other objects");

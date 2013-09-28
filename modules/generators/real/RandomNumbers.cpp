@@ -10,43 +10,43 @@ class GeneratorReals_Random : public PandaObject
 public:
 	PANDA_CLASS(GeneratorReals_Random, PandaObject)
 
-    GeneratorReals_Random(PandaDocument *doc)
-        : PandaObject(doc)
-        , nbNumbers(initData(&nbNumbers, 10, "# numbers", "How many numbers to generate"))
-        , seed(initData(&seed, 0, "seed", "Seed for the random points generator"))
-        , numMin(initData(&numMin, 0.0, "minimum", "Minimum limit of the numbers"))
-        , numMax(initData(&numMax, 1.0, "maximum", "Maximum limit of the numbers"))
-        , numbers(initData(&numbers, "numbers", "The list of numbers" ))
-    {
-        addInput(&nbNumbers);
-        addInput(&seed);
-        addInput(&numMin);
-        addInput(&numMax);
+	GeneratorReals_Random(PandaDocument *doc)
+		: PandaObject(doc)
+		, nbNumbers(initData(&nbNumbers, 10, "# numbers", "How many numbers to generate"))
+		, seed(initData(&seed, 0, "seed", "Seed for the random points generator"))
+		, numMin(initData(&numMin, 0.0, "minimum", "Minimum limit of the numbers"))
+		, numMax(initData(&numMax, 1.0, "maximum", "Maximum limit of the numbers"))
+		, numbers(initData(&numbers, "numbers", "The list of numbers" ))
+	{
+		addInput(&nbNumbers);
+		addInput(&seed);
+		addInput(&numMin);
+		addInput(&numMax);
 
-        addOutput(&numbers);
+		addOutput(&numbers);
 
-        seed.setValue(rnd.seedRandom(10000));
-    }
+		seed.setValue(rnd.seedRandom(10000));
+	}
 
-    void update()
-    {
-        rnd.seed(seed.getValue());
+	void update()
+	{
+		rnd.seed(seed.getValue());
 		auto valNumbers = numbers.getAccessor();
-        int valNbNumbers = nbNumbers.getValue();
-        valNumbers.resize(valNbNumbers);
+		int valNbNumbers = nbNumbers.getValue();
+		valNumbers.resize(valNbNumbers);
 
-        double min = numMin.getValue(), max = numMax.getValue();
-        for(int i=0; i<valNbNumbers; ++i)
-            valNumbers[i] = rnd.random(min, max);
+		double min = numMin.getValue(), max = numMax.getValue();
+		for(int i=0; i<valNbNumbers; ++i)
+			valNumbers[i] = rnd.random(min, max);
 
-        this->cleanDirty();
-    }
+		this->cleanDirty();
+	}
 
 protected:
-    helper::RandomGenerator rnd;
-    Data<int> nbNumbers, seed;
-    Data<double> numMin, numMax;
-    Data< QVector<double> > numbers;
+	helper::RandomGenerator rnd;
+	Data<int> nbNumbers, seed;
+	Data<double> numMin, numMax;
+	Data< QVector<double> > numbers;
 };
 
 int GeneratorReals_RandomClass = RegisterObject("Generator/Real/Random").setClass<GeneratorReals_Random>().setName("Rnd numbers").setDescription("Generate a list of random numbers");

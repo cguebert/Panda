@@ -14,8 +14,8 @@ namespace panda
 {
 
 Group::Group(PandaDocument *parent)
-    : PandaObject(parent)
-    , groupName(initData(&groupName, QString("Group"), "name", "Name to be displayed for this group"))
+	: PandaObject(parent)
+	, groupName(initData(&groupName, QString("Group"), "name", "Name to be displayed for this group"))
 {
 }
 
@@ -25,8 +25,8 @@ Group::~Group()
 
 bool Group::createGroup(PandaDocument* doc, GraphView* view)
 {
-    if(doc->getNbSelected() < 2)
-        return false;
+	if(doc->getNbSelected() < 2)
+		return false;
 
 	PandaDocument::ObjectsIterator iter = doc->getSelectionIterator();
 
@@ -71,47 +71,47 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	}
 	else
 		group = dynamic_cast<Group*>(doc->createObject(ObjectFactory::getRegistryName<Group>()));
-    if(!group)
-        return false;
+	if(!group)
+		return false;
 
-    // Find center of the selection
-    QRectF totalView;
+	// Find center of the selection
+	QRectF totalView;
 	iter.toFront();
-    while(iter.hasNext())
-    {
-        PandaObject* object = iter.next();
-        QRectF objectArea = view->getObjectDrawStruct(object)->getObjectArea();
-        totalView = totalView.united(objectArea);
-    }
+	while(iter.hasNext())
+	{
+		PandaObject* object = iter.next();
+		QRectF objectArea = view->getObjectDrawStruct(object)->getObjectArea();
+		totalView = totalView.united(objectArea);
+	}
 
-    // Put the new object there
-    ObjectDrawStruct* ods = view->getObjectDrawStruct(group);
-    QSize objSize = ods->getObjectSize() / 2;
-    ods->move(totalView.center() - view->getViewDelta() - ods->getPosition() - QPointF(objSize.width(), objSize.height()));
-    QPointF groupPos = ods->getPosition();
+	// Put the new object there
+	ObjectDrawStruct* ods = view->getObjectDrawStruct(group);
+	QSize objSize = ods->getObjectSize() / 2;
+	ods->move(totalView.center() - view->getViewDelta() - ods->getPosition() - QPointF(objSize.width(), objSize.height()));
+	QPointF groupPos = ods->getPosition();
 
 	// If multiple outside datas are connected to the same data, merge them
 	QMap<BaseData*, BaseData*> connectedInputDatas, connectedOutputDatas;
 
-    // Adding the objects
-    iter.toFront();
-    while(iter.hasNext())
-    {
-        PandaObject* object = iter.next();
+	// Adding the objects
+	iter.toFront();
+	while(iter.hasNext())
+	{
+		PandaObject* object = iter.next();
 		group->addObject(object);
-        object->setParent(group);
+		object->setParent(group);
 
-        // Storing the position of this object in respect to the group object
-        QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
-        group->positions[object] = delta;
+		// Storing the position of this object in respect to the group object
+		QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
+		group->positions[object] = delta;
 
-        // Adding input datas
-        foreach(BaseData* data, object->getInputDatas())
-        {
-            BaseData* otherData = data->getParent();
-            if(otherData)
-            {
-                PandaObject* connected = otherData->getOwner();
+		// Adding input datas
+		foreach(BaseData* data, object->getInputDatas())
+		{
+			BaseData* otherData = data->getParent();
+			if(otherData)
+			{
+				PandaObject* connected = otherData->getOwner();
 				if(connected && !doc->isSelected(connected) && connected!=doc)
 				{
 					BaseData* createdData = nullptr;
@@ -137,18 +137,18 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 					if(createdData)
 						data->getOwner()->dataSetParent(data, createdData);
 				}
-            }
-        }
+			}
+		}
 
-        // Adding ouput datas
-        foreach(BaseData* data, object->getOutputDatas())
-        {
-            foreach(DataNode* otherNode, data->getOutputs())
-            {
-                BaseData* otherData = dynamic_cast<BaseData*>(otherNode);
-                if(otherData)
-                {
-                    PandaObject* connected = otherData->getOwner();
+		// Adding ouput datas
+		foreach(BaseData* data, object->getOutputDatas())
+		{
+			foreach(DataNode* otherNode, data->getOutputs())
+			{
+				BaseData* otherData = dynamic_cast<BaseData*>(otherNode);
+				if(otherData)
+				{
+					PandaObject* connected = otherData->getOwner();
 					if(connected && !doc->isSelected(connected) && connected!=doc)
 					{
 						BaseData* createdData = nullptr;
@@ -166,58 +166,58 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 						if(createdData)
 							otherData->getOwner()->dataSetParent(otherData, createdData);
 					}
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 
-    // Select the group
-    doc->selectNone();
-    doc->setCurrentSelectedObject(group);
+	// Select the group
+	doc->selectNone();
+	doc->setCurrentSelectedObject(group);
 
-    // Removing the objects from the document
-    iter.toFront();
-    while(iter.hasNext())
-        doc->doRemoveObject(iter.next(), false); // Do not delete it
+	// Removing the objects from the document
+	iter.toFront();
+	while(iter.hasNext())
+		doc->doRemoveObject(iter.next(), false); // Do not delete it
 
-    view->modifiedObject(group);
-    view->updateLinkTags();
+	view->modifiedObject(group);
+	view->updateLinkTags();
 
-    return true;
+	return true;
 }
 
 bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 {
-    if(doc->getNbSelected() < 1)
-        return false;
+	if(doc->getNbSelected() < 1)
+		return false;
 
-    QList<Group*> groups;
-    PandaDocument::ObjectsIterator objIter = doc->getSelectionIterator();
-    while(objIter.hasNext())
-    {
+	QList<Group*> groups;
+	PandaDocument::ObjectsIterator objIter = doc->getSelectionIterator();
+	while(objIter.hasNext())
+	{
 		Group* group = dynamic_cast<Group*>(objIter.next());
-        if(group)
-            groups.append(group);
-    }
+		if(group)
+			groups.append(group);
+	}
 
-    if(groups.isEmpty())
-        return false;
+	if(groups.isEmpty())
+		return false;
 
-    doc->selectNone();
+	doc->selectNone();
 
-    // For each group in the selection
-    QListIterator<Group*> iter(groups);
-    while(iter.hasNext())
-    {
-        Group* group = iter.next();
-        QPointF groupPos = view->getObjectDrawStruct(group)->getPosition();
+	// For each group in the selection
+	QListIterator<Group*> iter(groups);
+	while(iter.hasNext())
+	{
+		Group* group = iter.next();
+		QPointF groupPos = view->getObjectDrawStruct(group)->getPosition();
 
-        // Putting the objects back into the document
+		// Putting the objects back into the document
 		QList<DockObject*> docks;
-        objIter = group->objects;
-        while(objIter.hasNext())
-        {
-            PandaObject* object = objIter.next();
+		objIter = group->objects;
+		while(objIter.hasNext())
+		{
+			PandaObject* object = objIter.next();
 			DockObject* dock = dynamic_cast<DockObject*>(object);
 			if(dock)
 				docks.append(dock);
@@ -232,7 +232,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 				ObjectDrawStruct* ods = view->getObjectDrawStruct(object);
 				ods->move(groupPos + group->positions[object] - ods->getPosition());
 			}
-        }
+		}
 
 		// We extract docks last (their docked objects must be out first)
 		QListIterator<DockObject*> dockIter = QListIterator<DockObject*>(docks);
@@ -249,24 +249,24 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 			ods->move(groupPos + group->positions[object] - ods->getPosition());
 		}
 
-        // Reconnecting datas
-        foreach(QSharedPointer<BaseData> data, group->groupDatas)
-        {
-            BaseData* parent = data->getParent();
-            foreach(DataNode* node, data->getOutputs())
-            {
-                BaseData* outData = dynamic_cast<BaseData*>(node);
-                if(outData)
-                    outData->getOwner()->dataSetParent(outData, parent);
-            }
-        }
+		// Reconnecting datas
+		foreach(QSharedPointer<BaseData> data, group->groupDatas)
+		{
+			BaseData* parent = data->getParent();
+			foreach(DataNode* node, data->getOutputs())
+			{
+				BaseData* outData = dynamic_cast<BaseData*>(node);
+				if(outData)
+					outData->getOwner()->dataSetParent(outData, parent);
+			}
+		}
 
-        doc->doRemoveObject(group);
-    }
+		doc->doRemoveObject(group);
+	}
 
-    view->updateLinkTags();
+	view->updateLinkTags();
 
-    return true;
+	return true;
 }
 
 void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
@@ -511,15 +511,15 @@ QString Group::findAvailableDataName(QString baseName, BaseData *data)
 
 BaseData* Group::duplicateData(BaseData* data)
 {
-    if(!data)
-        return nullptr;
+	if(!data)
+		return nullptr;
 
 	QString name = findAvailableDataName(data->getName());
 
 	QSharedPointer<BaseData> newData = QSharedPointer<BaseData>(
 				DataFactory::getInstance()->create(data->getFullType(), name, data->getHelp(), this) );
-    newData->setDisplayed(data->isDisplayed());
-    newData->setPersistent(data->isPersistent());
+	newData->setDisplayed(data->isDisplayed());
+	newData->setPersistent(data->isPersistent());
 	groupDatas.append(newData);
 
 	return newData.data();
@@ -527,13 +527,13 @@ BaseData* Group::duplicateData(BaseData* data)
 
 void Group::reset()
 {
-    foreach(PandaObject* obj, objects)
-        obj->reset();
+	foreach(PandaObject* obj, objects)
+		obj->reset();
 }
 
 QString Group::getGroupName()
 {
-    return groupName.getValue();
+	return groupName.getValue();
 }
 
 int GroupClass = RegisterObject("Group").setClass<Group>().setDescription("Groups many object into a single one").setHidden(true);

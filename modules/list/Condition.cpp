@@ -14,9 +14,9 @@ public:
 		: GenericObject(doc)
 		, control(initData(&control, 1, "control", "If this value is non zero copy the first list, otherwise copy the second"))
 		, generic(initData(&generic, "input", "Connect here the first list"))
-    {
+	{
 		addInput(&control);
-        addInput(&generic);
+		addInput(&generic);
 
 		GenericDataDefinitionList defList;
 		int listType = BaseData::getFullTypeOfVector(0);
@@ -33,7 +33,7 @@ public:
 											 "result",
 											 "Result of the condition"));
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)

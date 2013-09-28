@@ -11,35 +11,35 @@ class DataNode
 {
 public:
 	PANDA_ABSTRACT_CLASS(DataNode, void)
-    typedef QList<DataNode*> NodesList;
+	typedef QList<DataNode*> NodesList;
 
-    DataNode();
-    virtual ~DataNode();
+	DataNode();
+	virtual ~DataNode();
 
 	virtual void addInput(DataNode* node);
 	virtual void removeInput(DataNode* node);
 	virtual void addOutput(DataNode* node);
 	virtual void removeOutput(DataNode* node);
 
-    const NodesList& getInputs();
-    const NodesList& getOutputs();
+	const NodesList& getInputs();
+	const NodesList& getOutputs();
 
-    virtual void update() = 0;
+	virtual void update() = 0;
 
 	virtual bool isDirty() const;
-    virtual void setDirtyValue();
-    virtual void setDirtyOutputs();
+	virtual void setDirtyValue();
+	virtual void setDirtyOutputs();
 	virtual void cleanDirty();
 	virtual void updateIfDirty() const;
 
 protected:
-    virtual void doAddInput(DataNode* node);
-    virtual void doRemoveInput(DataNode* node);
-    virtual void doAddOutput(DataNode* node);
-    virtual void doRemoveOutput(DataNode* node);
+	virtual void doAddInput(DataNode* node);
+	virtual void doRemoveInput(DataNode* node);
+	virtual void doAddOutput(DataNode* node);
+	virtual void doRemoveOutput(DataNode* node);
 
 	bool dirtyValue;
-    NodesList inputs, outputs;
+	NodesList inputs, outputs;
 };
 
 } // namespace panda

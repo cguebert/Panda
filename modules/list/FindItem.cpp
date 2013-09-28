@@ -13,8 +13,8 @@ public:
 	FindItem(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the lists in which to look for the values"))
-    {
-        addInput(&generic);
+	{
+		addInput(&generic);
 
 		int typeOfList = BaseData::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
@@ -32,7 +32,7 @@ public:
 											 "Indices of the values in the input list"));
 
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)
@@ -61,7 +61,7 @@ public:
 	}
 
 protected:
-    GenericVectorData generic;
+	GenericVectorData generic;
 };
 
 int FindItemClass = RegisterObject("List/Find item").setClass<FindItem>().setDescription("Find some values in a list");

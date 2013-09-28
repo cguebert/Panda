@@ -12,9 +12,9 @@ public:
 
 	ReplaceItem(PandaDocument *doc)
 		: GenericObject(doc)
-        , generic(initData(&generic, "input", "Connect here the lists to get the items from"))
-    {
-        addInput(&generic);
+		, generic(initData(&generic, "input", "Connect here the lists to get the items from"))
+	{
+		addInput(&generic);
 
 		int typeOfList = BaseData::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
@@ -36,7 +36,7 @@ public:
 											 "Modified list"));
 
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)
@@ -70,7 +70,7 @@ public:
 	}
 
 protected:
-    GenericVectorData generic;
+	GenericVectorData generic;
 };
 
 int ReplaceItemClass = RegisterObject("List/Replace item").setClass<ReplaceItem>().setDescription("Replace some items in a list by new values");

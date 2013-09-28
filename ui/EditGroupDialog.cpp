@@ -12,7 +12,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 	, selectedData(nullptr)
 	, selectedRow(-1)
 {
-    QVBoxLayout* vLayout = new QVBoxLayout;
+	QVBoxLayout* vLayout = new QVBoxLayout;
 
 	QLabel* groupNameLabel = new QLabel(tr("group name:"), this);
 	editGroupName = new QLineEdit(group->groupName.getValue(), this);

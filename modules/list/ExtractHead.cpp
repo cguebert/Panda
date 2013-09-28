@@ -14,9 +14,9 @@ public:
 		: GenericObject(doc)
 		, value(initData(&value, 1, "head", "This number of items will be extracted from the start of the list"))
 		, generic(initData(&generic, "input", "Connect here the first list"))
-    {
+	{
 		addInput(&value);
-        addInput(&generic);
+		addInput(&generic);
 
 		GenericDataDefinitionList defList;
 		int listType = BaseData::getFullTypeOfVector(0);
@@ -29,7 +29,7 @@ public:
 											 "output",
 											 "Result of the extraction"));
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)

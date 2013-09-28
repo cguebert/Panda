@@ -17,32 +17,32 @@ namespace panda
 class Topology
 {
 public:
-    typedef std::pair<int, int> Edge;
-    typedef QVector<int> IndicesList;
+	typedef std::pair<int, int> Edge;
+	typedef QVector<int> IndicesList;
 	typedef IndicesList Polygon;
 
-    Topology();
-    virtual ~Topology();
+	Topology();
+	virtual ~Topology();
 
 	int addPoint(const QPointF& point);
-    void addPoints(const QVector<QPointF>& pts);
+	void addPoints(const QVector<QPointF>& pts);
 
 	int addEdge(int a, int b);
 	int addEdge(Edge e);
-    void addEdges(const QVector<Edge>& e);
+	void addEdges(const QVector<Edge>& e);
 
 	int addPolygon(const Polygon& p);
-    void addPolygons(const QVector<Polygon>& p);
+	void addPolygons(const QVector<Polygon>& p);
 
-    int getNumberOfPoints() const;
+	int getNumberOfPoints() const;
 	int getNumberOfEdges() const;
-    int getNumberOfPolygons() const;
+	int getNumberOfPolygons() const;
 
 	const QVector<QPointF>& getPoints() const;
 	const QVector<Edge>& getEdges() const;
 	const QVector<Polygon>& getPolygons() const;
 
-    QPointF& getPoint(int index);
+	QPointF& getPoint(int index);
 	QPointF getPoint(int index) const;
 	Edge getEdge(int index) const;
 	Polygon getPolygon(int index) const;
@@ -108,18 +108,18 @@ public:
 	friend QTextStream& operator>>(QTextStream& stream, Topology& topo);
 
 protected:
-    QVector<QPointF> m_points;
+	QVector<QPointF> m_points;
 	QVector<Edge> m_edges;
-    QVector<Polygon> m_polygons;
+	QVector<Polygon> m_polygons;
 
-    QVector<IndicesList> m_edgesInPolygon,
-        m_edgesAroundPoint,
-        m_polygonsAroundPoint,
-        m_polygonsAroundEdge;
+	QVector<IndicesList> m_edgesInPolygon,
+		m_edgesAroundPoint,
+		m_polygonsAroundPoint,
+		m_polygonsAroundEdge;
 
-    IndicesList m_pointsOnBorder,
-        m_edgesOnBorder,
-        m_polygonsOnBorder;
+	IndicesList m_pointsOnBorder,
+		m_edgesOnBorder,
+		m_polygonsOnBorder;
 };
 
 //***************************************************************//

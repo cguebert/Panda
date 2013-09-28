@@ -11,7 +11,7 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 	: QDialog(parent, Qt::Popup)
 	, document(doc)
 {
-    QVBoxLayout* vLayout = new QVBoxLayout;
+	QVBoxLayout* vLayout = new QVBoxLayout;
 
 	lineEdit = new QLineEdit;
 	vLayout->addWidget(lineEdit);
@@ -53,15 +53,15 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 			menuStringsList << iter.value()->menuDisplay;
 	}
 
-    // Adding groups
-    panda::PandaDocument::GroupsIterator iter2 = doc->getGroupsIterator();
-    while(iter2.hasNext())
-    {
-        iter2.next();
-        menuStringsList << "Groups/" + iter2.key();
-    }
+	// Adding groups
+	panda::PandaDocument::GroupsIterator iter2 = doc->getGroupsIterator();
+	while(iter2.hasNext())
+	{
+		iter2.next();
+		menuStringsList << "Groups/" + iter2.key();
+	}
 
-    menuStringsList.sort();
+	menuStringsList.sort();
 	listWidget->addItems(menuStringsList);
 
 	updateDescLabel();
@@ -90,20 +90,20 @@ void QuickCreateDialog::updateDescLabel()
 	if(current)
 	{
 		QString selectedItemText = current->text();
-        if(selectedItemText.startsWith("Groups/"))
-        {
-            QString groupName = selectedItemText.mid(7);
-            QString description = document->getGroupDescription(groupName);
-            descLabel->setText(description);
-        }
-        else
-        {
-            const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
-            if(entry)
-                descLabel->setText(entry->description);
-            else
-                descLabel->setText("");
-        }
+		if(selectedItemText.startsWith("Groups/"))
+		{
+			QString groupName = selectedItemText.mid(7);
+			QString description = document->getGroupDescription(groupName);
+			descLabel->setText(description);
+		}
+		else
+		{
+			const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
+			if(entry)
+				descLabel->setText(entry->description);
+			else
+				descLabel->setText("");
+		}
 	}
 	else
 		descLabel->setText("");
@@ -149,19 +149,19 @@ void QuickCreateDialog::createObject()
 	else if(listWidget->count() >= 1)
 		selectedItemText = listWidget->item(0)->text();
 
-    if(!selectedItemText.isEmpty())
+	if(!selectedItemText.isEmpty())
 	{
-        if(selectedItemText.startsWith("Groups/"))
-        {
-            QString groupName = selectedItemText.mid(7);
-            document->createGroupObject(groupName);
-        }
-        else
-        {
-            const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
-            if(entry)
-                document->createObject(entry->className);
-        }
+		if(selectedItemText.startsWith("Groups/"))
+		{
+			QString groupName = selectedItemText.mid(7);
+			document->createGroupObject(groupName);
+		}
+		else
+		{
+			const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
+			if(entry)
+				document->createObject(entry->className);
+		}
 	}
 
 }

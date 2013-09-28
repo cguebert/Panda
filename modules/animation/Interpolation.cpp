@@ -14,29 +14,29 @@ class AnimationInterpolation : public PandaObject
 public:
 	PANDA_CLASS(PANDA_TEMPLATE(AnimationInterpolation, T), PandaObject)
 
-    AnimationInterpolation(PandaDocument *doc)
-        : PandaObject(doc)
-        , inputA(initData(&inputA, "from", "Start value of the interpolation"))
-        , inputB(initData(&inputB, "to", "End value of the interpolation"))
-        , progress(initData(&progress, "progress", "Position inside the interpolation"))
-        , result(initData(&result, "result", "Result of the interpolation"))
-        , mode(initData(&mode, 0, "mode", "Interpolation mode"))
-    {
-        addInput(&inputA);
-        addInput(&inputB);
-        addInput(&progress);
-        addInput(&mode);
+	AnimationInterpolation(PandaDocument *doc)
+		: PandaObject(doc)
+		, inputA(initData(&inputA, "from", "Start value of the interpolation"))
+		, inputB(initData(&inputB, "to", "End value of the interpolation"))
+		, progress(initData(&progress, "progress", "Position inside the interpolation"))
+		, result(initData(&result, "result", "Result of the interpolation"))
+		, mode(initData(&mode, 0, "mode", "Interpolation mode"))
+	{
+		addInput(&inputA);
+		addInput(&inputB);
+		addInput(&progress);
+		addInput(&mode);
 
-        addOutput(&result);
-    }
+		addOutput(&result);
+	}
 
-    void update()
-    {
-        QEasingCurve curve((QEasingCurve::Type)mode.getValue());
+	void update()
+	{
+		QEasingCurve curve((QEasingCurve::Type)mode.getValue());
 
-        const QVector<T>& listFrom = inputA.getValue();
-        const QVector<T>& listTo = inputB.getValue();
-        const QVector<double>& listProg = progress.getValue();
+		const QVector<T>& listFrom = inputA.getValue();
+		const QVector<T>& listTo = inputB.getValue();
+		const QVector<double>& listProg = progress.getValue();
 		auto listResult = result.getAccessor();
 		listResult.clear();
 
@@ -64,14 +64,14 @@ public:
 			}
 		}
 
-        this->cleanDirty();
-    }
+		this->cleanDirty();
+	}
 
 protected:
-    Data< QVector<T> > inputA, inputB;
-    Data< QVector<double> > progress;
-    Data< QVector<T> > result;
-    Data<int> mode;
+	Data< QVector<T> > inputA, inputB;
+	Data< QVector<double> > progress;
+	Data< QVector<T> > result;
+	Data<int> mode;
 };
 
 int AnimationInterpolation_DoubleClass = RegisterObject("Animation/Interpolation/Reals").setClass< AnimationInterpolation<double> >().setName("Inter reals").setDescription("Interpolate between 2 reals");

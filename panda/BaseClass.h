@@ -105,7 +105,7 @@ protected:
 	static const char* HeaderFileLocation() { return __FILE__; }
 
 // Do not use this macro directly, use PANDA_CLASS instead
-#define PANDA_CLASS_DECL                                        \
+#define PANDA_CLASS_DECL													\
 	PANDA_ABSTRACT_CLASS_DECL;
 
 template <class Parents>

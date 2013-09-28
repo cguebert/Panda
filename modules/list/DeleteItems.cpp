@@ -15,9 +15,9 @@ public:
 		: GenericObject(doc)
 		, indices(initData(&indices, "indices", "Indices of items to be removed from the list"))
 		, generic(initData(&generic, "input", "Connect here the list"))
-    {
+	{
 		addInput(&indices);
-        addInput(&generic);
+		addInput(&generic);
 
 		GenericDataDefinitionList defList;
 		int listType = BaseData::getFullTypeOfVector(0);
@@ -30,7 +30,7 @@ public:
 											 "output",
 											 "Result of the deletion"));
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)

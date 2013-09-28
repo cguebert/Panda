@@ -8,7 +8,7 @@ const QString dataMarkerStart("~~{");
 const QString dataMarkerEnd("}~~");
 
 PandaObject::PandaObject(QObject *parent)
-    : QObject(parent)
+	: QObject(parent)
 	, doEmitModified(true)
 	, isUpdating(false)
 {
@@ -37,45 +37,45 @@ QString PandaObject::getTemplateName()
 
 QString PandaObject::getName() const
 {
-    return name;
+	return name;
 }
 
 quint32 PandaObject::getIndex() const
 {
-    return index;
+	return index;
 }
 
 void PandaObject::addData(BaseData* data)
 {
-    if(datasMap.contains(data->getName()))
-    {
-        std::cerr << "Fatal error : another data already have the name " << data->getName().toStdString() << std::endl;
-        return;
-    }
-    if(!datas.contains(data))
-    {
-        datas.append(data);
-        datasMap[data->getName()] = data;
+	if(datasMap.contains(data->getName()))
+	{
+		std::cerr << "Fatal error : another data already have the name " << data->getName().toStdString() << std::endl;
+		return;
+	}
+	if(!datas.contains(data))
+	{
+		datas.append(data);
+		datasMap[data->getName()] = data;
 		emitModified();
-    }
+	}
 }
 
 void PandaObject::removeData(BaseData* data)
 {
-    datasMap.remove(data->getName());
-    if(datas.removeAll(data))
+	datasMap.remove(data->getName());
+	if(datas.removeAll(data))
 		emitModified();
 }
 
 void PandaObject::addOutput(BaseData* data)
 {
-    data->setReadOnly(true);
-    DataNode::addOutput(data);
+	data->setReadOnly(true);
+	DataNode::addOutput(data);
 }
 
 void PandaObject::update()
 {
-    this->cleanDirty();
+	this->cleanDirty();
 }
 
 void PandaObject::updateIfDirty() const
@@ -94,53 +94,53 @@ void PandaObject::updateIfDirty() const
 
 void PandaObject::setDirtyValue()
 {
-    if(!dirtyValue)
-    {
-        DataNode::setDirtyValue();
-        emit dirty(this);
-    }
+	if(!dirtyValue)
+	{
+		DataNode::setDirtyValue();
+		emit dirty(this);
+	}
 }
 
 BaseData* PandaObject::getData(const QString& name) const
 {
-    if(datasMap.contains(name))
-        return datasMap[name];
-    else return nullptr;
+	if(datasMap.contains(name))
+		return datasMap[name];
+	else return nullptr;
 }
 
 QList<BaseData*> PandaObject::getDatas() const
 {
-    return datas;
+	return datas;
 }
 
 QList<BaseData*> PandaObject::getInputDatas() const
 {
-    QList<BaseData*> temp;
-    foreach(BaseData* data, datas)
-    {
-        if(data->isInput())
-            temp.append(data);
-    }
+	QList<BaseData*> temp;
+	foreach(BaseData* data, datas)
+	{
+		if(data->isInput())
+			temp.append(data);
+	}
 
-    return temp;
+	return temp;
 }
 
 QList<BaseData*> PandaObject::getOutputDatas() const
 {
-    QList<BaseData*> temp;
-    foreach(BaseData* data, datas)
-    {
-        if(data->isOutput())
-            temp.append(data);
-    }
+	QList<BaseData*> temp;
+	foreach(BaseData* data, datas)
+	{
+		if(data->isOutput())
+			temp.append(data);
+	}
 
-    return temp;
+	return temp;
 }
 
 void PandaObject::setInternalData(const QString& newName, const quint32& newIndex)
 {
-    name = newName;
-    index = newIndex;
+	name = newName;
+	index = newIndex;
 }
 
 void PandaObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
@@ -172,13 +172,13 @@ void PandaObject::load(QDomElement& elem)
 
 void PandaObject::dataSetParent(BaseData* data, BaseData* parent)
 {
-    data->setParent(parent);
+	data->setParent(parent);
 }
 
 void PandaObject::changeDataName(BaseData* data, const QString& newName)
 {
-    datasMap.remove(data->getName());
-    datasMap.insert(newName, data);
+	datasMap.remove(data->getName());
+	datasMap.insert(newName, data);
 }
 
 void PandaObject::emitModified()

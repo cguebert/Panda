@@ -14,7 +14,7 @@ class QLabel;
 
 class QuickCreateDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
 	explicit QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent = 0);
 

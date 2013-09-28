@@ -13,8 +13,8 @@ public:
 	ListReverse(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the list whose items to reverse"))
-    {
-        addInput(&generic);
+	{
+		addInput(&generic);
 
 		GenericDataDefinitionList defList;
 		int listType = BaseData::getFullTypeOfVector(0);
@@ -27,7 +27,7 @@ public:
 											 "output",
 											 "Reversed list"));
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)

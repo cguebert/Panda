@@ -13,8 +13,8 @@ public:
 	ListConcatenation(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the first list"))
-    {
-        addInput(&generic);
+	{
+		addInput(&generic);
 
 		GenericDataDefinitionList defList;
 		int listType = BaseData::getFullTypeOfVector(0);
@@ -31,7 +31,7 @@ public:
 											 "result",
 											 "Result of the concatenation"));
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)

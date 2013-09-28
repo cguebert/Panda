@@ -18,42 +18,42 @@ class Group;
 
 class PandaDocument : public PandaObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
 	PANDA_CLASS(PandaDocument, PandaObject)
 
-    typedef QListIterator<PandaObject*> ObjectsIterator;
-    typedef QListIterator<Layer*> LayersIterator;
-    typedef QMapIterator<QString, QString> GroupsIterator;
+	typedef QListIterator<PandaObject*> ObjectsIterator;
+	typedef QListIterator<Layer*> LayersIterator;
+	typedef QMapIterator<QString, QString> GroupsIterator;
 
-    explicit PandaDocument(QObject *parent = 0);
+	explicit PandaDocument(QObject *parent = 0);
 
-    bool writeFile(const QString& fileName);
-    bool readFile(const QString& fileName);
+	bool writeFile(const QString& fileName);
+	bool readFile(const QString& fileName);
 
-    QString writeTextDocument();
-    bool readTextDocument(QString &text);
+	QString writeTextDocument();
+	bool readTextDocument(QString &text);
 
 	bool saveDoc(QDomDocument& doc, QDomElement& root, const QList<PandaObject*>& selected);
 	bool loadDoc(QDomElement& root);
 
-    void resetDocument();
+	void resetDocument();
 
-    PandaObject* createObject(QString registryName);
-    int getNbObjects() const;
-    ObjectsIterator getObjectsIterator() const;
+	PandaObject* createObject(QString registryName);
+	int getNbObjects() const;
+	ObjectsIterator getObjectsIterator() const;
 
-    PandaObject* getCurrentSelectedObject();
-    void setCurrentSelectedObject(PandaObject* object);
-    bool isSelected(PandaObject* object) const;
-    int getNbSelected() const;
-    ObjectsIterator getSelectionIterator() const;
+	PandaObject* getCurrentSelectedObject();
+	void setCurrentSelectedObject(PandaObject* object);
+	bool isSelected(PandaObject* object) const;
+	int getNbSelected() const;
+	ObjectsIterator getSelectionIterator() const;
 
-    QColor getBackgroundColor();
-    void setBackgroundColor(QColor color);
-    QSize getRenderSize();
+	QColor getBackgroundColor();
+	void setBackgroundColor(QColor color);
+	QSize getRenderSize();
 
-    double getAnimationTime();
+	double getAnimationTime();
 	double getTimeStep();
 
 	QPointF getMousePosition();
@@ -61,81 +61,81 @@ public:
 	int getMouseClick();
 	void setMouseClick(int state);
 
-    quint32 getNextIndex();
-    PandaObject* findObject(quint32 objectIndex);
-    BaseData* findData(quint32 objectIndex, const QString& dataName);
+	quint32 getNextIndex();
+	PandaObject* findObject(quint32 objectIndex);
+	BaseData* findData(quint32 objectIndex, const QString& dataName);
 
-    virtual void update();
-    virtual void setDirtyValue();
+	virtual void update();
+	virtual void setDirtyValue();
 
-    const QImage& getRenderedImage();
+	const QImage& getRenderedImage();
 
-    Layer* getDefaultLayer();
+	Layer* getDefaultLayer();
 	void moveLayerUp(PandaObject *layer);
 	void moveLayerDown(PandaObject* layer);
 
-    void doAddObject(PandaObject* object);
-    void doRemoveObject(PandaObject* object, bool del=true);
+	void doAddObject(PandaObject* object);
+	void doRemoveObject(PandaObject* object, bool del=true);
 
-    void createGroupsList();
-    GroupsIterator getGroupsIterator();
-    QString getGroupDescription(const QString& groupName);
-    bool saveGroup(Group* group);
-    PandaObject* createGroupObject(QString groupPath);
+	void createGroupsList();
+	GroupsIterator getGroupsIterator();
+	QString getGroupDescription(const QString& groupName);
+	bool saveGroup(Group* group);
+	PandaObject* createGroupObject(QString groupPath);
 
 protected:
-    QList<PandaObject*> pandaObjects, selectedObjects;
-    QMap<quint32, PandaObject*> pandaObjectsMap;
-    quint32 currentIndex;
-    QImage renderedImage;
-    Layer* defaultLayer;
+	QList<PandaObject*> pandaObjects, selectedObjects;
+	QMap<quint32, PandaObject*> pandaObjectsMap;
+	quint32 currentIndex;
+	QImage renderedImage;
+	Layer* defaultLayer;
 
 	Data<QPointF> renderSize;
-    Data<QColor> backgroundColor;
-    Data<double> animTime, timestep;
+	Data<QColor> backgroundColor;
+	Data<double> animTime, timestep;
 	Data<QPointF> mousePosition;
 	Data<int> mouseClick;
 
 	QPointF mousePositionBuffer;
 	int mouseClickBuffer;
 
-    bool animPlaying;
-    QTimer* animTimer;
+	bool animPlaying;
+	QTimer* animTimer;
 
-    QMap<QString, QString> groupsMap;
+	QMap<QString, QString> groupsMap;
 
-    bool getGroupDescription(const QString &fileName, QString& description);
+	bool getGroupDescription(const QString &fileName, QString& description);
 
 private:
-    QString groupsDirPath;
+	QString groupsDirPath;
 
 signals:
-    void modified();
-    void modifiedObject(panda::PandaObject*);
-    void dirtyObject(panda::PandaObject*);
-    void addedObject(panda::PandaObject*);
-    void removedObject(panda::PandaObject*);
+	void modified();
+	void modifiedObject(panda::PandaObject*);
+	void dirtyObject(panda::PandaObject*);
+	void addedObject(panda::PandaObject*);
+	void removedObject(panda::PandaObject*);
 	void savingObject(QDomDocument&, QDomElement&, panda::PandaObject*);
 	void loadingObject(QDomElement&, panda::PandaObject*);
-    void selectedObject(panda::PandaObject*);
-    void selectedObjectIsDirty(panda::PandaObject*);
-    void selectionChanged();
-    void timeChanged();
+	void selectedObject(panda::PandaObject*);
+	void selectedObjectIsDirty(panda::PandaObject*);
+	void selectionChanged();
+	void timeChanged();
 
 public slots:
-    void cut();
-    void copy();
-    void paste();
-    void del();
-    void selectionAdd(panda::PandaObject* object);
-    void selectionRemove(panda::PandaObject* object);
-    void selectAll();
-    void selectNone();
-    void selectConnected();
-    void onDirtyObject(panda::PandaObject* object);
-    void play(bool playing);
-    void step();
-    void rewind();
+	void cut();
+	void copy();
+	void paste();
+	void del();
+	void selectionAdd(panda::PandaObject* object);
+	void selectionRemove(panda::PandaObject* object);
+	void selectAll();
+	void selectNone();
+	void selectConnected();
+	void onDirtyObject(panda::PandaObject* object);
+	void play(bool playing);
+	void step();
+	void rewind();
 };
 
 } // namespace panda

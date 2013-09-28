@@ -11,13 +11,13 @@ class List2Anim : public GenericObject
 public:
 	PANDA_CLASS(List2Anim, GenericObject)
 
-    List2Anim(PandaDocument *doc)
+	List2Anim(PandaDocument *doc)
 		: GenericObject(doc)
 		, interval(initData(&interval, 1.0, "interval", "Interval between 2 animation keys"))
-        , generic(initData(&generic, "input", "Connect here the lists to get the values from"))
-    {
-        addInput(&interval);
-        addInput(&generic);
+		, generic(initData(&generic, "input", "Connect here the lists to get the values from"))
+	{
+		addInput(&interval);
+		addInput(&generic);
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
@@ -55,7 +55,7 @@ public:
 
 protected:
 	Data<double> interval;
-    GenericVectorData generic;
+	GenericVectorData generic;
 };
 
 int List2AnimClass = RegisterObject("Animation/List to Animation").setClass<List2Anim>().setName("List 2 Anim").setDescription("Create animations from lists");

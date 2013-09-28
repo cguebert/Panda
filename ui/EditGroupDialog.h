@@ -16,7 +16,7 @@ class QTableWidgetItem;
 
 class EditGroupDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
 	explicit EditGroupDialog(panda::Group* group, QWidget *parent = 0);
 

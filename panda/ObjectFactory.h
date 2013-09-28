@@ -17,32 +17,32 @@ class PandaDocument;
 class BaseObjectCreator
 {
 public:
-    virtual ~BaseObjectCreator() {}
-    virtual PandaObject* create(PandaDocument* parent) = 0;
+	virtual ~BaseObjectCreator() {}
+	virtual PandaObject* create(PandaDocument* parent) = 0;
 };
 
 class ObjectFactory
 {
 private:
-    ObjectFactory() {}
+	ObjectFactory() {}
 
 public:
-    class ClassEntry
-    {
-    public:
-        ClassEntry() : hidden(false) {}
+	class ClassEntry
+	{
+	public:
+		ClassEntry() : hidden(false) {}
 
-        QString menuDisplay;
-        QString objectName;
-        QString description;
+		QString menuDisplay;
+		QString objectName;
+		QString description;
 		QString className;
 		const BaseClass* theClass;
-        QSharedPointer<BaseObjectCreator> creator;
-        bool hidden;
-    };
+		QSharedPointer<BaseObjectCreator> creator;
+		bool hidden;
+	};
 
-    static ObjectFactory* getInstance();
-    ClassEntry* getEntry(QString className);
+	static ObjectFactory* getInstance();
+	ClassEntry* getEntry(QString className);
 
 	template <class T>
 	static QString getRegistryName()
@@ -51,49 +51,49 @@ public:
 	}
 	static QString getRegistryName(PandaObject* object);
 
-    PandaObject* create(QString className, PandaDocument* parent);
+	PandaObject* create(QString className, PandaDocument* parent);
 
 	typedef QSharedPointer<ClassEntry> ClassEntryPtr;
 	typedef QMapIterator< QString, ClassEntryPtr > RegistryMapIterator;
-    RegistryMapIterator getRegistryIterator() { return RegistryMapIterator(registry); }
+	RegistryMapIterator getRegistryIterator() { return RegistryMapIterator(registry); }
 protected:
 	typedef QMap< QString, ClassEntryPtr > RegistryMap;
-    RegistryMap registry;
+	RegistryMap registry;
 };
 
 template<class T>
 class ObjectCreator : public BaseObjectCreator
 {
 public:
-    virtual PandaObject* create(PandaDocument* parent)
-    {
-        return new T(parent);
-    }
+	virtual PandaObject* create(PandaDocument* parent)
+	{
+		return new T(parent);
+	}
 };
 
 class RegisterObject
 {
 public:
-    explicit RegisterObject(QString menuDisplay);
+	explicit RegisterObject(QString menuDisplay);
 
-    RegisterObject& setDescription(QString description);
-    RegisterObject& setName(QString name);
-    RegisterObject& setHidden(bool hid);
+	RegisterObject& setDescription(QString description);
+	RegisterObject& setName(QString name);
+	RegisterObject& setHidden(bool hid);
 
-    template <class T> RegisterObject& setClass()
-    {
+	template <class T> RegisterObject& setClass()
+	{
 		entry.creator = QSharedPointer<ObjectCreator<T>>::create();
 		entry.theClass = T::getClass();
-        return *this;
-    }
+		return *this;
+	}
 
-    operator int();
+	operator int();
 
 protected:
-    ObjectFactory::ClassEntry entry;
+	ObjectFactory::ClassEntry entry;
 
 private:
-    RegisterObject();
+	RegisterObject();
 };
 
 } // namespace panda

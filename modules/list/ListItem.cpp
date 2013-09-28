@@ -10,13 +10,13 @@ class ListItem : public GenericObject
 public:
 	PANDA_CLASS(ListItem, GenericObject)
 
-    ListItem(PandaDocument *doc)
+	ListItem(PandaDocument *doc)
 		: GenericObject(doc)
-        , indexData(initData(&indexData, "index", "0-based index of the items to extract from the lists"))
-        , generic(initData(&generic, "input", "Connect here the lists to get the items from"))
-    {
-        addInput(&indexData);
-        addInput(&generic);
+		, indexData(initData(&indexData, "index", "0-based index of the items to extract from the lists"))
+		, generic(initData(&generic, "input", "Connect here the lists to get the items from"))
+	{
+		addInput(&indexData);
+		addInput(&generic);
 
 		indexData.getAccessor().push_back(0);
 
@@ -32,7 +32,7 @@ public:
 											 "Value extracted from the list"));
 
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)
@@ -57,8 +57,8 @@ public:
 	}
 
 protected:
-    Data< QVector<int> > indexData;
-    GenericVectorData generic;
+	Data< QVector<int> > indexData;
+	GenericVectorData generic;
 };
 
 int ListItemClass = RegisterObject("List/List item").setClass<ListItem>().setDescription("Extract an item from a list");

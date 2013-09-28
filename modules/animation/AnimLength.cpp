@@ -14,8 +14,8 @@ public:
 	AnimLength(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the animations to analyse"))
-    {
-        addInput(&generic);
+	{
+		addInput(&generic);
 
 		GenericDataDefinitionList defList;
 		// Create an animation of the same type as the data connected
@@ -34,7 +34,7 @@ public:
 											 "size",
 											 "Number of keys in this animation"));
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)
@@ -56,7 +56,7 @@ public:
 	}
 
 protected:
-    GenericAnimationData generic;
+	GenericAnimationData generic;
 };
 
 int AnimLengthClass = RegisterObject("Animation/Animation length").setClass<AnimLength>().setName("Anim length").setDescription("Get the length and size of a list of animations");

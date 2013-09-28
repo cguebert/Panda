@@ -22,17 +22,17 @@ class DatasTable : public QWidget
 public:
 	explicit DatasTable(panda::PandaObject* document, QWidget *parent = 0);
 
-    typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
+	typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
 
 protected:
 	QStackedLayout* stackedLayout;
 	QLabel* nameLabel;
 	panda::PandaObject *document, *currentObject;
 
-    QList<DataWidgetPtr> dataWidgets;
-	
+	QList<DataWidgetPtr> dataWidgets;
+
 signals:
-	
+
 public slots:
 	void populateTable(panda::PandaObject*);
 };

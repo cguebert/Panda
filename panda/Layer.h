@@ -37,9 +37,9 @@ class Layer : public DockObject, public BaseLayer
 public:
 	PANDA_CLASS(Layer, DockObject)
 
-    explicit Layer(PandaDocument *parent = 0);
+	explicit Layer(PandaDocument *parent = 0);
 
-    virtual void update();
+	virtual void update();
 	virtual bool accepts(DockableObject* dockable) const;
 
 	virtual QList<Renderer*> getRenderers();
@@ -59,9 +59,9 @@ public:
 
 protected:
 	Data<QString> layerName;
-    Data<QImage> image;
-    Data<int> compositionMode;
-    Data<double> opacity;
+	Data<QImage> image;
+	Data<int> compositionMode;
+	Data<double> opacity;
 };
 
 } // namespace panda

@@ -26,30 +26,30 @@ public:
 	typedef const T& const_reference;
 	typedef T* pointer;
 
-    class InitData : public BaseData::BaseInitData
-    {
-    public:
+	class InitData : public BaseData::BaseInitData
+	{
+	public:
 		InitData() : value(value_type()) {}
 		value_type value;
-    };
+	};
 
-    explicit Data(const BaseData::BaseInitData& init)
-        : BaseData(init)
+	explicit Data(const BaseData::BaseInitData& init)
+		: BaseData(init)
 		, value(value_type())
-    {
+	{
 		displayed = data_trait<T>::isDisplayed();
 		persistent = data_trait<T>::isPersistent();
-    }
+	}
 
-    explicit Data(const InitData& init)
-        : BaseData(init)
-    {
-        value = init.value;
+	explicit Data(const InitData& init)
+		: BaseData(init)
+	{
+		value = init.value;
 		displayed = data_trait<T>::isDisplayed();
 		persistent = data_trait<T>::isPersistent();
-    }
+	}
 
-    Data(const QString& name, const QString& help, PandaObject* owner)
+	Data(const QString& name, const QString& help, PandaObject* owner)
 		: BaseData(name, help, owner)
 	{
 		displayed = data_trait<T>::isDisplayed();
@@ -96,16 +96,16 @@ public:
 	{ return helper::DataAccessor< Data<T> >(*this); }
 
 	inline void setValue(const_reference v)
-    {
-        *beginEdit() = v;
-        endEdit();
-    }
+	{
+		*beginEdit() = v;
+		endEdit();
+	}
 
 	inline const_reference getValue() const
-    {
-        this->updateIfDirty();
-        return value;
-    }
+	{
+		this->updateIfDirty();
+		return value;
+	}
 
 	virtual void copyValueFrom(const BaseData* parent)
 	{
@@ -143,11 +143,11 @@ protected:
 	}
 
 private:
-    T value;
+	T value;
 
-    Data();
-    Data(const Data&);
-    Data& operator=(const Data&);
+	Data();
+	Data(const Data&);
+	Data& operator=(const Data&);
 };
 
 //***************************************************************//

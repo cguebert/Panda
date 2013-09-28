@@ -10,22 +10,22 @@ public:
 	PANDA_CLASS(GeneratorImage_Load, PandaObject)
 
 	GeneratorImage_Load(PandaDocument *doc)
-        : PandaObject(doc)
+		: PandaObject(doc)
 		, fileName(initData(&fileName, "fileName", "Path of the image to load"))
 		, image(initData(&image, "image", "The image loaded from disk"))
-    {
+	{
 		addInput(&fileName);
 		fileName.setWidget("open file");
 
 		addOutput(&image);
-    }
+	}
 
-    void update()
-    {
+	void update()
+	{
 		auto img = image.getAccessor();
 		img->load(fileName.getValue());
-        this->cleanDirty();
-    }
+		this->cleanDirty();
+	}
 
 protected:
 	Data<QString> fileName;

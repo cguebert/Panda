@@ -20,29 +20,29 @@ protected:
 	QLineEdit* lineEdit;
 
 public:
-    data_widget_container() : lineEdit(nullptr) {}
+	data_widget_container() : lineEdit(nullptr) {}
 
 	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
-    {
+	{
 		lineEdit = new QLineEdit(parent);
 		lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		lineEdit->setEnabled(!readOnly);
 		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
 		return lineEdit;
-    }
+	}
 
 	void readFromData(const value_type& d)
-    {
+	{
 		QString s = panda::valueToString(d);
 		if(s != lineEdit->text())
 			lineEdit->setText(s);
-    }
+	}
 
 	void writeToData(value_type& d)
-    {
+	{
 		QString s = lineEdit->text();
 		d = panda::valueFromString<value_type>(s);
-    }
+	}
 };
 
 //***************************************************************//
@@ -56,31 +56,31 @@ protected:
 	Container container;
 
 public:
-    typedef panda::Data<T> MyTData;
-    SimpleDataWidget(QWidget* parent, MyTData* d) :
-        DataWidget<T>(parent, d)
-    {}
+	typedef panda::Data<T> MyTData;
+	SimpleDataWidget(QWidget* parent, MyTData* d) :
+		DataWidget<T>(parent, d)
+	{}
 
 	virtual QWidget* createWidgets(bool readOnly)
-    {
+	{
 		QWidget* w = container.createWidgets(this, readOnly);
 		if(!w)
 			return nullptr;
 
 		container.readFromData(getData()->getValue());
 		return w;
-    }
+	}
 
-    virtual void readFromData()
-    {
+	virtual void readFromData()
+	{
 		container.readFromData(getData()->getValue());
-    }
+	}
 
-    virtual void writeToData()
-    {
+	virtual void writeToData()
+	{
 		auto v = getData()->getAccessor();
 		container.writeToData(v.wref());
-    }
+	}
 };
 
 //***************************************************************//

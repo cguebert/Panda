@@ -29,7 +29,7 @@ void Topology::addPoints(const QVector<QPointF>& pts)
 
 int Topology::addEdge(int a, int b)
 {
-    Q_ASSERT(a != b);
+	Q_ASSERT(a != b);
 	m_edges.push_back(std::make_pair(a, b));
 	return m_edges.size() - 1;
 }

@@ -11,13 +11,13 @@ class AnimValue : public GenericObject
 public:
 	PANDA_CLASS(AnimValue, GenericObject)
 
-    AnimValue(PandaDocument *doc)
+	AnimValue(PandaDocument *doc)
 		: GenericObject(doc)
-        , progress(initData(&progress, "progress", "Position inside the animation"))
-        , generic(initData(&generic, "input", "Connect here the animations to get the values from"))
-    {
-        addInput(&progress);
-        addInput(&generic);
+		, progress(initData(&progress, "progress", "Position inside the animation"))
+		, generic(initData(&generic, "input", "Connect here the animations to get the values from"))
+	{
+		addInput(&progress);
+		addInput(&generic);
 
 		progress.getAccessor().push_back(0.0);
 
@@ -34,7 +34,7 @@ public:
 											 "Values extracted from the animation"));
 
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)
@@ -57,8 +57,8 @@ public:
 	}
 
 protected:
-    Data< QVector<double> > progress;
-    GenericAnimationData generic;
+	Data< QVector<double> > progress;
+	GenericAnimationData generic;
 };
 
 int AnimValueClass = RegisterObject("Animation/Animation value").setClass<AnimValue>().setName("Anim value").setDescription("Extract a value from an animation");

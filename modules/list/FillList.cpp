@@ -10,13 +10,13 @@ class FillList  : public GenericObject
 public:
 	PANDA_CLASS(FillList, GenericObject)
 
-    FillList(PandaDocument *doc)
+	FillList(PandaDocument *doc)
 		: GenericObject(doc)
-        , size(initData(&size, 10, "size", "Size of the list to be created"))
-        , generic(initData(&generic, "input", "Connect here the lists to get the items from"))
-    {
-        addInput(&size);
-        addInput(&generic);
+		, size(initData(&size, 10, "size", "Size of the list to be created"))
+		, generic(initData(&generic, "input", "Connect here the lists to get the items from"))
+	{
+		addInput(&size);
+		addInput(&generic);
 
 		int typeOfList = BaseData::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
@@ -30,7 +30,7 @@ public:
 											 "List created from the given value"));
 
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)
@@ -54,11 +54,11 @@ public:
 		}
 		else
 			outVal.clear();
-    }
+	}
 
 
 protected:
-    Data<int> size;
+	Data<int> size;
 	GenericVectorData generic;
 };
 

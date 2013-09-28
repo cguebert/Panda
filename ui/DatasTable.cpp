@@ -44,7 +44,7 @@ void DatasTable::populateTable(panda::PandaObject* object)
 	scrollArea->setFrameShape(QFrame::NoFrame);
 	scrollArea->setWidgetResizable(true);
 	QWidget *layoutWidget = new QWidget(scrollArea);
-    QFormLayout *formLayout = new QFormLayout(layoutWidget);
+	QFormLayout *formLayout = new QFormLayout(layoutWidget);
 	formLayout->setMargin(0);
 	formLayout->setSizeConstraint(QLayout::SetMinimumSize);
 
@@ -64,8 +64,8 @@ void DatasTable::populateTable(panda::PandaObject* object)
 		if (!data->isDisplayed() || data->isReadOnly())
 			continue;
 
-        BaseDataWidget::CreatorArgument arg = { data, this };
-        DataWidgetPtr dataWidget = DataWidgetPtr(BaseDataWidget::CreateDataWidget(arg));
+		BaseDataWidget::CreatorArgument arg = { data, this };
+		DataWidgetPtr dataWidget = DataWidgetPtr(BaseDataWidget::CreateDataWidget(arg));
 		bool readOnly = (data->getParent() != nullptr);
 
 		if (dataWidget)

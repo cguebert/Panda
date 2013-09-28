@@ -13,8 +13,8 @@ public:
 	ListSize(PandaDocument *doc)
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the lists to analyse"))
-    {
-        addInput(&generic);
+	{
+		addInput(&generic);
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
@@ -28,7 +28,7 @@ public:
 											 "size",
 											 "Number of values in this list"));
 		setupGenericObject(&generic, defList);
-    }
+	}
 
 	template <class T>
 	void updateT(DataList& list)
