@@ -90,8 +90,8 @@ public:
 		if(!readOnly)
 			itemFlags |= Qt::ItemIsEditable;
 
-		size_t nbRows = rowTrait::size(v);
-		size_t nbCols = itemTrait::size();
+		int nbRows = rowTrait::size(v);
+		int nbCols = itemTrait::size();
 
 
 		tableWidget->setColumnCount(nbCols);
@@ -102,12 +102,12 @@ public:
 
 		tableWidget->setRowCount(nbRows);
 
-		for(size_t i = 0; i<nbRows; ++i)
+		for(int i = 0; i<nbRows; ++i)
 		{
 			const row_type* row = rowTrait::get(v, i);
 			if(row)
 			{
-				for(size_t j=0; j<nbCols; ++j)
+				for(int j=0; j<nbCols; ++j)
 				{
 					QString text;
 					QTextStream stream(&text, QIODevice::WriteOnly);
@@ -122,19 +122,19 @@ public:
 
 	value_type readFromTable()
 	{
-		size_t nbRows = tableWidget->rowCount();
-		size_t nbCols = itemTrait::size();
+		int nbRows = tableWidget->rowCount();
+		int nbCols = itemTrait::size();
 
 		value_type v;
 		rowTrait::resize(v, nbRows);
 
-		for(size_t i = 0; i<nbRows; ++i)
+		for(int i = 0; i<nbRows; ++i)
 		{
 			const row_type* row = rowTrait::get(v, i);
 			if(row)
 			{
 				row_type rowVal = *row;
-				for(size_t j=0; j<nbCols; ++j)
+				for(int j=0; j<nbCols; ++j)
 				{
 					QTableWidgetItem *item = tableWidget->item(i, j);
 					if(item)
@@ -165,7 +165,7 @@ public:
 			tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
 			int w = tableWidget->verticalHeader()->width() + 20;
-			for(size_t i=0, nb=tableWidget->columnCount(); i<nb; ++i)
+			for(int i=0, nb=tableWidget->columnCount(); i<nb; ++i)
 				w += tableWidget->columnWidth(i);
 			int h = tableWidget->horizontalHeader()->height() + 4 + tableWidget->rowHeight(0);
 

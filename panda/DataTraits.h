@@ -36,19 +36,19 @@ public:
 	static int fullType() { return valueType(); }
 	static bool isDisplayed() { return true; }
 	static bool isPersistent() { return true; }
-    static int size(const data_type& /*d*/) { return 1; }
-    static void clear(data_type& d, int /*size*/, bool init)
+	static int size(const data_type& /*d*/) { return 1; }
+	static void clear(data_type& d, int /*size*/, bool init)
 	{
 		if(init)
 			d.setValue(T());
 	}
-    static QVariant getBaseValue(const data_type& d, int /*index*/)
+	static QVariant getBaseValue(const data_type& d, int /*index*/)
 	{
 		QVariant temp;
 		temp.setValue(d.getValue());
 		return temp;
 	}
-    static void fromBaseValue(data_type& d, QVariant val, int /*index*/)
+	static void fromBaseValue(data_type& d, QVariant val, int /*index*/)
 	{
 		d.setValue(val.value<T>());
 	}
@@ -113,15 +113,15 @@ public:
 	static int fullType() { return BaseData::getFullTypeOfVector(valueType()); }
 	static bool isDisplayed() { return base_traits::isDisplayed(); }
 	static bool isPersistent() { return base_traits::isPersistent(); }
-    static int size(const data_type& d) { return d.getValue().size(); }
-    static void clear(data_type& d, int size, bool init)
+	static int size(const data_type& d) { return d.getValue().size(); }
+	static void clear(data_type& d, int size, bool init)
 	{
 		auto v = d.getAccessor();
 		if(init)
 			v.clear();
 		v.resize(size);
 	}
-    static QVariant getBaseValue(const data_type& d, int index)
+	static QVariant getBaseValue(const data_type& d, int index)
 	{
 		QVariant temp;
 		if(index < 0 || index >= size(d))
@@ -130,7 +130,7 @@ public:
 			temp.setValue(d.getValue()[index]);
 		return temp;
 	}
-    static void fromBaseValue(data_type& d, QVariant val, int index)
+	static void fromBaseValue(data_type& d, QVariant val, int index)
 	{
 		auto vec = d.getAccessor();
 		if(vec.size() <= static_cast<int>(index))
@@ -248,12 +248,12 @@ public:
 	static int fullType() { return BaseData::getFullTypeOfAnimation(valueType()); }
 	static bool isDisplayed() { return base_traits::isDisplayed(); }
 	static bool isPersistent() { return base_traits::isPersistent(); }
-    static int size(const data_type& d) { return d.getValue().size(); }
-    static void clear(data_type& d, int /*size*/, bool /*init*/)
+	static int size(const data_type& d) { return d.getValue().size(); }
+	static void clear(data_type& d, int /*size*/, bool /*init*/)
 	{
 		d.getAccessor().clear();
 	}
-    static QVariant getBaseValue(const data_type& d, int index)
+	static QVariant getBaseValue(const data_type& d, int index)
 	{
 		QVariant temp;
 		if(index < 0 || index >= size(d))
@@ -262,7 +262,7 @@ public:
 			temp.setValue(d.getValue().getValueAtIndexConst(index));
 		return temp;
 	}
-    static void fromBaseValue(data_type& d, QVariant val, int index)
+	static void fromBaseValue(data_type& d, QVariant val, int index)
 	{
 		auto anim = d.getAccessor();
 		anim.getValueAtIndex(index) = val.value<T>();

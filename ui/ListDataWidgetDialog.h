@@ -97,9 +97,9 @@ public:
 
 	void updateTable(const value_type& v)
 	{
-        int nb = rowTrait::size(v);
+		int nb = rowTrait::size(v);
 
-        for(int i = 0; i < nb; ++i)
+		for(int i = 0; i < nb; ++i)
 		{
 			const row_type* row = rowTrait::get(v, i);
 			if(row)
