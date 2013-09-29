@@ -127,10 +127,8 @@ Data<QImage>* Layer::getImage()
 void Layer::postCreate()
 {
 	int i = 1;
-	PandaDocument::ObjectsIterator iter = parentDocument->getObjectsIterator();
-	while(iter.hasNext())
+	for(auto obj : parentDocument->getObjects())
 	{
-		PandaObject* obj = iter.next();
 		if(dynamic_cast<Layer*>(obj) && obj!=this)
 			++i;
 	}

@@ -28,14 +28,12 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	if(doc->getNbSelected() < 2)
 		return false;
 
-	PandaDocument::ObjectsIterator iter = doc->getSelectionIterator();
-
+	PandaDocument::ObjectsList selection = doc->getSelection();
 	bool hasRenderer = false;
 	// Verify that all selected renderers are in the same layer
 	Layer* layer = nullptr;
-	while(iter.hasNext())
+	for(auto object : selection)
 	{
-		PandaObject* object = iter.next();
 		Renderer* renderer = dynamic_cast<Renderer*>(object);
 		if(renderer)
 		{
@@ -76,10 +74,8 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 
 	// Find center of the selection
 	QRectF totalView;
-	iter.toFront();
-	while(iter.hasNext())
+	for(auto object : selection)
 	{
-		PandaObject* object = iter.next();
 		QRectF objectArea = view->getObjectDrawStruct(object)->getObjectArea();
 		totalView = totalView.united(objectArea);
 	}
@@ -94,10 +90,8 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	QMap<BaseData*, BaseData*> connectedInputDatas, connectedOutputDatas;
 
 	// Adding the objects
-	iter.toFront();
-	while(iter.hasNext())
+	for(auto object : selection)
 	{
-		PandaObject* object = iter.next();
 		group->addObject(object);
 		object->setParent(group);
 
@@ -176,9 +170,8 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	doc->setCurrentSelectedObject(group);
 
 	// Removing the objects from the document
-	iter.toFront();
-	while(iter.hasNext())
-		doc->doRemoveObject(iter.next(), false); // Do not delete it
+	for(auto object : selection)
+		doc->doRemoveObject(object, false); // Do not delete it
 
 	view->modifiedObject(group);
 	view->updateLinkTags();
@@ -192,10 +185,9 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		return false;
 
 	QList<Group*> groups;
-	PandaDocument::ObjectsIterator objIter = doc->getSelectionIterator();
-	while(objIter.hasNext())
+	for(auto object : doc->getSelection())
 	{
-		Group* group = dynamic_cast<Group*>(objIter.next());
+		Group* group = dynamic_cast<Group*>(object);
 		if(group)
 			groups.append(group);
 	}
@@ -214,10 +206,8 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 
 		// Putting the objects back into the document
 		QList<DockObject*> docks;
-		objIter = group->objects;
-		while(objIter.hasNext())
+		for(auto object : group->objects)
 		{
-			PandaObject* object = objIter.next();
 			DockObject* dock = dynamic_cast<DockObject*>(object);
 			if(dock)
 				docks.append(dock);

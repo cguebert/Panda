@@ -61,11 +61,10 @@ const panda::BaseData* GraphView::getClickedData() const
 
 panda::PandaObject* GraphView::getObjectAtPos(const QPointF& pt)
 {
-	panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
-	iter.toBack();
-	while(iter.hasPrevious())
+	auto objects = pandaDocument->getObjects();
+	for(int i=objects.size()-1; i>=0; --i)
 	{
-		panda::PandaObject* object = iter.previous();
+		auto object = objects[i];
 		if(objectDrawStructs[object]->contains(pt))
 			return object;
 	}
@@ -125,10 +124,10 @@ void GraphView::moveView(const QPointF& delta)
 	if(!delta.isNull())
 	{
 		viewDelta += delta;
-		foreach(QSharedPointer<ObjectDrawStruct> drawStruct, objectDrawStructs)
+		for(auto& drawStruct : objectDrawStructs)
 			drawStruct->moveVisual(delta);
 
-		foreach(QSharedPointer<LinkTag> tag, linkTags.values())
+		for(auto tag : linkTags.values())
 			tag->moveView(delta);
 	}
 }
@@ -149,24 +148,20 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	painter.scale(zoomFactor, zoomFactor);
 
 	// Draw the objects
-	panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
-	while(iter.hasNext())
-		objectDrawStructs[iter.next()]->draw(&painter);
+	for(auto object : pandaDocument->getObjects())
+		objectDrawStructs[object]->draw(&painter);
 
-	// TEST : redraw selected objets in case they are moved over others (so that they don't appear under them)
-	iter = pandaDocument->getSelectionIterator();
-	while(iter.hasNext())
-		objectDrawStructs[iter.next()]->draw(&painter);
-	iter = pandaDocument->getObjectsIterator();
+	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
+	for(auto object : pandaDocument->getSelection())
+		objectDrawStructs[object]->draw(&painter);
 
 	// Draw links
 	painter.setBrush(Qt::NoBrush);
-	iter.toFront();
-	while(iter.hasNext())
-		objectDrawStructs[iter.next()]->drawLinks(&painter);
+	for(auto object : pandaDocument->getObjects())
+		objectDrawStructs[object]->drawLinks(&painter);
 
 	// Draw links tags
-	foreach(QSharedPointer<LinkTag> tag, linkTags.values())
+	for(auto& tag : linkTags.values())
 		tag->draw(&painter);
 
 	// Selection rubber band
@@ -291,10 +286,8 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
 			QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
 			if(!delta.isNull())
 			{
-				panda::PandaDocument::ObjectsIterator iter = pandaDocument->getSelectionIterator();
-				while(iter.hasNext())
+				for(auto object : pandaDocument->getSelection())
 				{
-					panda::PandaObject* object = iter.next();
 					panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 					if(dockable && pandaDocument->isSelected(dockable->getParentDock()))
 						continue; // don't move a dockable object if their parent dock is selected, it will move them
@@ -313,10 +306,8 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
 		QPointF delta = mousePos - previousMousePos;
 		if(!delta.isNull())
 		{
-			panda::PandaDocument::ObjectsIterator iter = pandaDocument->getSelectionIterator();
-			while(iter.hasNext())
+			for(auto object : pandaDocument->getSelection())
 			{
-				panda::PandaObject* object = iter.next();
 				panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 				if(dockable && pandaDocument->isSelected(dockable->getParentDock()))
 					continue; // don't move a dockable object if their parent dock is selected, it will move them
@@ -384,13 +375,9 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
 			if(movingAction == MOVING_NONE)
 			{
 				// Look for link tags
-				QMapIterator<panda::BaseData*, QSharedPointer<LinkTag> > iter(linkTags);
-				while(iter.hasNext())
+				for(auto& tag : linkTags)
 				{
-					iter.next();
-					LinkTag* tag = iter.value().data();
 					bool hover = tag->isHovering(zoomedMouse);
-
 					if(hover != tag->hovering)
 					{
 						tag->hovering = hover;
@@ -415,20 +402,23 @@ void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
 	}
 	else if(movingAction == MOVING_OBJECT)
 	{
-		panda::PandaObject* object = pandaDocument->getCurrentSelectedObject();
-		if(object)
+		QMap<panda::PandaObject*, QPointF> positions;
+		for(auto object : pandaDocument->getSelection())
+			positions[object] = objectDrawStructs[object]->getPosition();
+
+		for(auto object : pandaDocument->getSelection())
 		{
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 			if(dockable)
 			{
+				objectDrawStructs[dockable]->move(positions[object] - objectDrawStructs[dockable]->getPosition());
 				QRectF dockableArea = objectDrawStructs[dockable]->getObjectArea();
-				panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
 				panda::DockObject* defaultDock = dockable->getDefaultDock();
 				panda::DockObject* newDock = defaultDock;
 				int newIndex = -1;
-				while(iter.hasNext())
+				for(auto object : pandaDocument->getObjects())
 				{
-					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(iter.next());
+					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object);
 					if(dock)
 					{
 						if(dockableArea.intersects(objectDrawStructs[dock]->getObjectArea()) && dock->accepts(dockable))
@@ -468,10 +458,8 @@ void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
 		pandaDocument->selectNone();
 
 		QRectF selectionRect = QRectF(previousMousePos/zoomFactor, currentMousePos/zoomFactor).normalized();
-		panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
-		while(iter.hasNext())
+		for(auto object : pandaDocument->getObjects())
 		{
-			panda::PandaObject* object = iter.next();
 			QRectF objectArea = objectDrawStructs[object]->getObjectArea();
 			if(selectionRect.contains(objectArea) || selectionRect.intersects(objectArea))
 				pandaDocument->selectionAdd(object);
@@ -579,10 +567,8 @@ void GraphView::centerView()
 	if(pandaDocument->getNbObjects())
 	{
 		QRectF totalView;
-		panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
-		while(iter.hasNext())
+		for(auto object : pandaDocument->getObjects())
 		{
-			panda::PandaObject* object = iter.next();
 			QRectF objectArea = objectDrawStructs[object]->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
@@ -597,10 +583,8 @@ void GraphView::showAll()
 	if(pandaDocument->getNbObjects())
 	{
 		QRectF totalView;
-		panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
-		while(iter.hasNext())
+		for(auto object : pandaDocument->getObjects())
 		{
-			panda::PandaObject* object = iter.next();
 			QRectF objectArea = objectDrawStructs[object]->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
@@ -616,13 +600,11 @@ void GraphView::showAll()
 
 void GraphView::showAllSelected()
 {
-	panda::PandaDocument::ObjectsIterator iter = pandaDocument->getSelectionIterator();
-	if(iter.hasNext())
+	if(pandaDocument->getNbSelected())
 	{
 		QRectF totalView;
-		while(iter.hasNext())
+		for(auto object : pandaDocument->getSelection())
 		{
-			panda::PandaObject* object = iter.next();
 			QRectF objectArea = objectDrawStructs[object]->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
@@ -638,23 +620,19 @@ void GraphView::showAllSelected()
 
 void GraphView::moveSelectedToCenter()
 {
-	panda::PandaDocument::ObjectsIterator iter = pandaDocument->getSelectionIterator();
-	if(iter.hasNext())
+	if(pandaDocument->getNbSelected())
 	{
 		QRectF totalView;
-		while(iter.hasNext())
+		for(auto object : pandaDocument->getSelection())
 		{
-			panda::PandaObject* object = iter.next();
 			QRectF objectArea = objectDrawStructs[object]->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
 
 		QPointF delta = contentsRect().center() / zoomFactor - totalView.center();
 
-		iter.toFront();
-		while(iter.hasNext())
+		for(auto object : pandaDocument->getSelection())
 		{
-			panda::PandaObject* object = iter.next();
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 			// Do not move (docked) dockable objects, their parent dock move them already
 			if(!dockable || !pandaDocument->isSelected(dockable->getParentDock()))
@@ -713,12 +691,10 @@ int GraphView::getAvailableLinkTagIndex()
 	int nb = linkTags.size();
 	QVector<bool> indices(nb, true);
 
-	QMapIterator<panda::BaseData*, QSharedPointer<LinkTag> > iterTag(linkTags);
-	while(iterTag.hasNext())
+	for(auto& tag : linkTags)
 	{
-		iterTag.next();
-		if(iterTag.value()->index < nb)
-			indices[iterTag.value()->index] = false;
+		if(tag->index < nb)
+			indices[tag->index] = false;
 	}
 
 	for(int i=0; i<nb; ++i)
@@ -758,11 +734,9 @@ void GraphView::updateLinkTags(bool reset)
 	if(reset)
 		linkTags.clear();
 
-	panda::PandaDocument::ObjectsIterator iter = pandaDocument->getObjectsIterator();
-	while(iter.hasNext())
+	for(auto object : pandaDocument->getObjects())
 	{
-		panda::PandaObject* object = iter.next();
-		foreach(panda::BaseData* data, object->getInputDatas())
+		for(auto data : object->getInputDatas())
 		{
 			panda::BaseData* parentData = data->getParent();
 			if(parentData)
@@ -844,7 +818,7 @@ bool LinkTag::isHovering(const QPointF& point)
 	if(inputDataRect.contains(point))
 		return true;
 
-	foreach(QRectF rect, outputDatas.values())
+	for(auto rect : outputDatas.values())
 		if(rect.contains(point))
 			return true;
 
@@ -854,8 +828,8 @@ bool LinkTag::isHovering(const QPointF& point)
 void LinkTag::moveView(const QPointF& delta)
 {
 	inputDataRect.translate(delta);
-	for(QMap<panda::BaseData*, QRectF>::iterator iter=outputDatas.begin(); iter!=outputDatas.end(); ++iter)
-		iter.value().translate(delta);
+	for(auto& rect : outputDatas)
+		rect.translate(delta);
 }
 
 void LinkTag::draw(QPainter* painter)
@@ -868,7 +842,7 @@ void LinkTag::draw(QPainter* painter)
 		pen.setStyle(Qt::DotLine);
 		painter->setPen(pen);
 
-		foreach(QRectF tagRect, outputDatas.values())
+		for(auto tagRect : outputDatas.values())
 			painter->drawLine(inputDataRect.center(), tagRect.center());
 	}
 	else
@@ -887,7 +861,7 @@ void LinkTag::draw(QPainter* painter)
 	painter->drawText(inputDataRect, Qt::AlignCenter, QString::number(index+1));
 
 	// outputs
-	foreach(QRectF tagRect, outputDatas.values())
+	for(auto tagRect : outputDatas.values())
 	{
 		x = tagRect.right();
 		cy = tagRect.center().y();

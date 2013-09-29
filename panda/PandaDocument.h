@@ -22,8 +22,7 @@ class PandaDocument : public PandaObject
 public:
 	PANDA_CLASS(PandaDocument, PandaObject)
 
-	typedef QListIterator<PandaObject*> ObjectsIterator;
-	typedef QListIterator<Layer*> LayersIterator;
+	typedef QList<PandaObject*> ObjectsList;
 	typedef QMapIterator<QString, QString> GroupsIterator;
 
 	explicit PandaDocument(QObject *parent = 0);
@@ -41,13 +40,13 @@ public:
 
 	PandaObject* createObject(QString registryName);
 	int getNbObjects() const;
-	ObjectsIterator getObjectsIterator() const;
+	const ObjectsList getObjects() const;
 
 	PandaObject* getCurrentSelectedObject();
 	void setCurrentSelectedObject(PandaObject* object);
 	bool isSelected(PandaObject* object) const;
 	int getNbSelected() const;
-	ObjectsIterator getSelectionIterator() const;
+	const ObjectsList getSelection() const;
 
 	QColor getBackgroundColor();
 	void setBackgroundColor(QColor color);
@@ -84,7 +83,7 @@ public:
 	PandaObject* createGroupObject(QString groupPath);
 
 protected:
-	QList<PandaObject*> pandaObjects, selectedObjects;
+	ObjectsList pandaObjects, selectedObjects;
 	QMap<quint32, PandaObject*> pandaObjectsMap;
 	quint32 currentIndex;
 	QImage renderedImage;

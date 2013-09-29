@@ -323,9 +323,9 @@ int PandaDocument::getNbObjects() const
 	return pandaObjects.size();
 }
 
-PandaDocument::ObjectsIterator PandaDocument::getObjectsIterator() const
+const PandaDocument::ObjectsList PandaDocument::getObjects() const
 {
-	return ObjectsIterator(pandaObjects);
+	return pandaObjects;
 }
 
 PandaObject* PandaDocument::getCurrentSelectedObject()
@@ -354,9 +354,9 @@ int PandaDocument::getNbSelected() const
 	return selectedObjects.size();
 }
 
-PandaDocument::ObjectsIterator PandaDocument::getSelectionIterator() const
+const PandaDocument::ObjectsList PandaDocument::getSelection() const
 {
-	return ObjectsIterator(selectedObjects);
+	return selectedObjects;
 }
 
 QColor PandaDocument::getBackgroundColor()
@@ -760,10 +760,8 @@ void PandaDocument::update()
 	defaultLayer->updateIfDirty();
 	defaultLayer->mergeLayer(&painter);
 
-	ObjectsIterator iter = getObjectsIterator();
-	while(iter.hasNext())
+	for(auto obj : pandaObjects)
 	{
-		PandaObject* obj = iter.next();
 		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj);
 		if(layer)
 		{
