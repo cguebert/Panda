@@ -519,6 +519,26 @@ void PandaDocument::selectConnected()
 					}
 				}
 			}
+
+			DockableObject* dockable = dynamic_cast<DockableObject*>(object);
+			if(dockable)
+			{
+				PandaObject* dock = dockable->getParentDock();
+				if(!closedList.contains(dock))
+					openList.insert(dock);
+			}
+
+			DockObject* dock = dynamic_cast<DockObject*>(object);
+			if(dock)
+			{
+				auto iter = dock->getDockablesIterator();
+				while(iter.hasNext())
+				{
+					PandaObject* docked = iter.next();
+					if(!closedList.contains(docked))
+						openList.insert(docked);
+				}
+			}
 		}
 
 		PandaObject* currentSelected = selectedObjects.back();
