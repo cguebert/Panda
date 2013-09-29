@@ -95,10 +95,9 @@ void PandaObject::updateIfDirty() const
 void PandaObject::setDirtyValue()
 {
 	if(!dirtyValue)
-	{
 		DataNode::setDirtyValue();
-		emit dirty(this);
-	}
+
+	emit dirty(this);
 }
 
 BaseData* PandaObject::getData(const QString& name) const

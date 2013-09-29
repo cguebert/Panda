@@ -52,6 +52,7 @@ Layer::Layer(PandaDocument *parent)
 	, compositionMode(initData(&compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
 	, opacity(initData(&opacity, 1.0, "opacity", "Set the opacity of the layer"))
 {
+	addInput(&layerName);
 	addInput(&opacity);
 	addInput(&compositionMode);
 
@@ -91,7 +92,8 @@ QString Layer::getLayerName() const
 
 void Layer::setLayerName(QString name)
 {
-	layerName.setValue(name);
+	if(layerName.getValue() != name)
+		layerName.setValue(name);
 }
 
 int Layer::getCompositionMode() const
@@ -101,7 +103,8 @@ int Layer::getCompositionMode() const
 
 void Layer::setCompositionMode(int mode)
 {
-	compositionMode.setValue(mode);
+	if(compositionMode.getValue() != mode)
+		compositionMode.setValue(mode);
 }
 
 double Layer::getOpacity() const
@@ -111,7 +114,9 @@ double Layer::getOpacity() const
 
 void Layer::setOpacity(double opa)
 {
-	opacity.setValue(qBound(0.0, opa, 1.0));
+	double tmp = qBound(0.0, opa, 1.0);
+	if(opacity.getValue() != opa)
+		opacity.setValue(tmp);
 }
 
 Data<QImage>* Layer::getImage()

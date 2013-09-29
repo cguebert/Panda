@@ -276,7 +276,6 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 	{
 		QDomElement node = doc.createElement("GroupData");
 		elem.appendChild(node);
-		// TODO : use the full type name
 		node.setAttribute("type", DataFactory::typeToName(data->getFullType()));
 		node.setAttribute("input", data->isInput());
 		node.setAttribute("output", data->isOutput());

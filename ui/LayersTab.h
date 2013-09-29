@@ -33,16 +33,16 @@ protected:
 	panda::PandaDocument* document;
 	QList<panda::BaseLayer*> layers;
 	panda::BaseLayer* selectedLayer;
-	
+
 signals:
-	
+
 public slots:
 	void updateTable();
-	void modifiedDocument();
 	void addedObject(panda::PandaObject*);
 	void removedObject(panda::PandaObject*);
+	void dirtyObject(panda::PandaObject*);
 	void itemClicked(QTableWidgetItem*);
-	void nameChanged(QString);
+	void nameChanged();
 	void compositionModeChanged(int);
 	void opacityChanged(int);
 	void moveLayerUp();

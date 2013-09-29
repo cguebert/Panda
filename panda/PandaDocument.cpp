@@ -811,11 +811,12 @@ void PandaDocument::moveLayerDown(PandaObject *layer)
 
 void PandaDocument::setDirtyValue()
 {
+	if(!getCurrentSelectedObject())
+		emit selectedObjectIsDirty(nullptr);
+
 	if(!this->dirtyValue)
 	{
 		DataNode::setDirtyValue();
-		if(!getCurrentSelectedObject())
-			emit selectedObjectIsDirty(nullptr);
 		emit modified();
 	}
 }

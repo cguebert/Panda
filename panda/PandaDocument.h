@@ -112,7 +112,6 @@ private:
 signals:
 	void modified();
 	void modifiedObject(panda::PandaObject*);
-	void dirtyObject(panda::PandaObject*);
 	void addedObject(panda::PandaObject*);
 	void removedObject(panda::PandaObject*);
 	void savingObject(QDomDocument&, QDomElement&, panda::PandaObject*);

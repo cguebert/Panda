@@ -92,9 +92,8 @@ LayersTab::LayersTab(panda::PandaDocument* doc, QWidget *parent)
 
 	connect(doc, SIGNAL(addedObject(panda::PandaObject*)), this, SLOT(addedObject(panda::PandaObject*)));
 	connect(doc, SIGNAL(removedObject(panda::PandaObject*)), this, SLOT(removedObject(panda::PandaObject*)));
-	connect(doc, SIGNAL(modified()), this, SLOT(modifiedDocument()));
 
-	connect(nameEdit, SIGNAL(textEdited(QString)), this, SLOT(nameChanged(QString)));
+	connect(nameEdit, SIGNAL(editingFinished()), this, SLOT(nameChanged()));
 	connect(tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));
 	connect(compositionBox, SIGNAL(currentIndexChanged(int)), this, SLOT(compositionModeChanged(int)));
 	connect(opacitySlider, SIGNAL(valueChanged(int)), this, SLOT(opacityChanged(int)));
@@ -131,6 +130,7 @@ void LayersTab::addedObject(panda::PandaObject* object)
 	panda::BaseLayer* layer = dynamic_cast<panda::BaseLayer*>(object);
 	if(layer)
 	{
+		connect(object, SIGNAL(dirty(panda::PandaObject*)), this, SLOT(dirtyObject(panda::PandaObject*)));
 		if(layers.empty())
 		{
 			selectedLayer = layer;
@@ -167,7 +167,7 @@ void LayersTab::removedObject(panda::PandaObject* object)
 	}
 }
 
-void LayersTab::modifiedDocument()
+void LayersTab::dirtyObject(panda::PandaObject*)
 {
 	if(selectedLayer)
 	{
@@ -250,9 +250,10 @@ void LayersTab::moveLayerDown()
 	}
 }
 
-void LayersTab::nameChanged(QString name)
+void LayersTab::nameChanged()
 {
-	if(selectedLayer)
+	QString name = nameEdit->text();
+	if(selectedLayer && !name.isEmpty())
 	{
 		selectedLayer->setLayerName(name);
 		updateTable();
