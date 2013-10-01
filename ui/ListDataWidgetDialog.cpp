@@ -138,10 +138,78 @@ public:
 
 //***************************************************************//
 
+class font_data_widget_container : public BaseOpenDialogObject
+{
+public:
+	typedef QString value_type;
+	QWidget* container;
+	QLabel* preview;
+	QFont theFont;
+
+	font_data_widget_container() : container(nullptr), preview(nullptr) {}
+
+	QWidget* createWidgets(QWidget* parent, bool readOnly)
+	{
+		container = new QWidget(parent);
+		preview = new QLabel("Test");
+
+		QPushButton* pushButton = new QPushButton("...");
+		pushButton->setEnabled(!readOnly);
+		pushButton->setMaximumWidth(40);
+
+		QHBoxLayout* layout = new QHBoxLayout(container);
+		layout->setMargin(0);
+		layout->addWidget(preview, 1);
+		layout->addWidget(pushButton);
+		container->setLayout(layout);
+
+		QObject::connect(pushButton, SIGNAL(clicked()), this, SLOT(onShowDialog()) );
+		return container;
+	}
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
+	{
+		QWidget* parentWidget = dynamic_cast<QWidget*>(parent);
+		QWidget* widget = createWidgets(parentWidget, readOnly);
+		QObject::connect(this, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()) );
+		return widget;
+	}
+	void readFromData(const value_type& v)
+	{
+		theFont.fromString(v);
+		updatePreview();
+	}
+	void writeToData(value_type& v)
+	{
+		v = theFont.toString();
+		updatePreview();
+	}
+	virtual void onShowDialog()
+	{
+		bool ok;
+		QFont tmpFont = QFontDialog::getFont(&ok, theFont, container);
+		if(ok)
+		{
+			theFont = tmpFont;
+			emit editingFinished();
+		}
+	}
+	void updatePreview()
+	{
+		QFont tmpFont = theFont;
+		tmpFont.setPointSize(12);
+		preview->setFont(tmpFont);
+		preview->setText(theFont.family());
+	}
+};
+
+//***************************************************************//
+
 Creator<DataWidgetFactory, SimpleDataWidget<QColor> > DWClass_color("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString, file_data_widget_container<true> > > DWClass_file_open("open file",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString, file_data_widget_container<false> > > DWClass_file_save("save file",true);
+Creator<DataWidgetFactory, SimpleDataWidget<QString, font_data_widget_container> > DWClass_font("font",true);
 
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QColor>, ListDataWidgetDialog<QVector<QColor>> > > DWClass_colors_list("default",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, file_data_widget_container<true> > > > DWClass_files_list_open("open file",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, file_data_widget_container<false> > > > DWClass_files_list_save("save file",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, font_data_widget_container> > > DWClass_fonts_list("font",true);

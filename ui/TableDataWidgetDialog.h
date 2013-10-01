@@ -3,6 +3,7 @@
 
 #include <ui/DataWidget.h>
 #include <ui/StructTraits.h>
+#include <panda/DataTraits.h>
 
 #include <QtWidgets>
 
@@ -109,10 +110,7 @@ public:
 			{
 				for(int j=0; j<nbCols; ++j)
 				{
-					QString text;
-					QTextStream stream(&text, QIODevice::WriteOnly);
-					stream << itemTrait::get(*row, j);
-					QTableWidgetItem *item = new QTableWidgetItem(text);
+					QTableWidgetItem *item = new QTableWidgetItem(panda::valueToString(itemTrait::get(*row, j)));
 					item->setFlags(itemFlags);
 					tableWidget->setItem(i, j, item);
 				}
@@ -139,10 +137,7 @@ public:
 					QTableWidgetItem *item = tableWidget->item(i, j);
 					if(item)
 					{
-						item_type val;
-						QString text = item->text();
-						QTextStream stream(&text, QIODevice::ReadOnly);
-						stream >> val;
+						item_type val = panda::valueFromString<item_type>(item->text());
 						itemTrait::set(rowVal, val, j);
 					}
 				}

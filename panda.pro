@@ -96,6 +96,7 @@ SOURCES       = main.cpp \
     modules/render/RenderLine.cpp \
     modules/render/RenderPolygon.cpp \
     modules/render/RenderRect.cpp \
+    modules/render/RenderText.cpp \
     panda/Animation.cpp \
     panda/BaseClass.cpp \
     panda/BaseData.cpp \
