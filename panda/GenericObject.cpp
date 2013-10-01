@@ -46,13 +46,13 @@ void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefin
 		QCoreApplication::exit(-3);
 	}
 
+	this->registerFunctions();	// Create template functions
+
 	genericData_ = data;
 	genericData_->setDisplayed(false);
 	genericData_->setPersistent(false);
 	genericData_->allowedTypes = getRegisteredTypes();
 	dataDefinitions_ = defList;
-
-	this->registerFunctions();	// Create template functions
 }
 
 BaseData* GenericObject::createDatas(int type)
@@ -66,7 +66,8 @@ BaseData* GenericObject::createDatas(int type)
 
 	BaseData* firstInputData = nullptr;
 
-	this->doEmitModified = false;
+	doEmitModified = false;
+	doEmitDirty = false;
 
 	int nbDefs = dataDefinitions_.size();
 	for(int i=0; i<nbDefs; ++i)
@@ -101,7 +102,8 @@ BaseData* GenericObject::createDatas(int type)
 	removeData(genericData_);	// generic must always be last
 	addData(genericData_);
 
-	this->doEmitModified = true;
+	doEmitModified = true;
+	doEmitDirty = true;
 	emitModified();
 
 	return firstInputData;
@@ -137,7 +139,7 @@ void GenericObject::update()
 		for(int i=0; i<nbDefs; ++i)
 		{
 			if(dataDefinitions_[i].input)
-					created->datas[i]->updateIfDirty();
+				created->datas[i]->updateIfDirty();
 		}
 
 		DataList list;
@@ -232,12 +234,12 @@ QString GenericData::getDescription() const
 	return QString("Accepting all types");
 }
 
-bool GenericNonVectorData::validParent(const BaseData* parent) const
+bool GenericSingleValueData::validParent(const BaseData* parent) const
 {
 	return parent->isSingleValue() && GenericData::validParent(parent);
 }
 
-QString GenericNonVectorData::getDescription() const
+QString GenericSingleValueData::getDescription() const
 {
 	return QString("Accepting single values");
 }

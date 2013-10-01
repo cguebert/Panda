@@ -83,7 +83,7 @@ protected:
 	QList<BaseData*> datas;
 	QMap<QString, BaseData*> datasMap;
 	quint32 index;
-	bool doEmitModified;
+	bool doEmitModified, doEmitDirty;
 	mutable bool isUpdating;
 	PandaDocument* parentDocument;
 

@@ -27,10 +27,10 @@ public:
 	QList<int> allowedTypes;
 };
 
-class GenericNonVectorData : public GenericData
+class GenericSingleValueData : public GenericData
 {
 public:
-	explicit GenericNonVectorData(const BaseData::BaseInitData& init)
+	explicit GenericSingleValueData(const BaseData::BaseInitData& init)
 		: GenericData(init) {}
 
 	virtual bool validParent(const BaseData* parent) const;

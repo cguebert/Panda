@@ -61,6 +61,7 @@ SOURCES       = main.cpp \
     modules/generators/real/RandomNumbers.cpp \
     modules/generators/rectangle/ComposeRectangles.cpp \
     modules/generators/text/DateTime.cpp \
+    modules/generators/text/Format.cpp \
     modules/generators/topology/ComposeTopology.cpp \
     modules/generators/topology/Delaunay.cpp \
     modules/generators/topology/Voronoi.cpp \

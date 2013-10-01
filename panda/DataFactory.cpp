@@ -41,7 +41,7 @@ BaseData* DataFactory::create(int type, const QString& name, const QString& help
 
 void DataFactory::registerData(QString typeName, int fullType, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator)
 {
-	QString className = theClass->getTypeName();
+	QString className = theClass->getTemplateName();
 	DataEntry* entry = registry.value(className);
 	if(!entry)
 	{
@@ -55,6 +55,8 @@ void DataFactory::registerData(QString typeName, int fullType, const BaseClass* 
 	entry->creator = creator;
 	entry->fullType = fullType;
 	entry->theClass = theClass;
+
+//	std::cout << typeName.toStdString() << "\t" << className.toStdString() << "\t" << fullType << std::endl;
 
 	registry[className] = entry;
 	typeRegistry[fullType] = entry;

@@ -185,17 +185,17 @@ int BaseData::getFullType() const
 
 int BaseData::getFullTypeOfSingleValue(int valueType)
 {
-	return valueType + (1 << 16);
+	return valueType;
 }
 
 int BaseData::getFullTypeOfVector(int valueType)
 {
-	return valueType + (1 << 17);
+	return valueType + (1 << 16);
 }
 
 int BaseData::getFullTypeOfAnimation(int valueType)
 {
-	return valueType + (1 << 18);
+	return valueType + (1 << 17);
 }
 
 int BaseData::getValueType(int fullType)
@@ -205,17 +205,17 @@ int BaseData::getValueType(int fullType)
 
 bool BaseData::isSingleValue(int fullType)
 {
-	return fullType & (1 << 16);
+	return !(fullType & 0xFFFF0000);
 }
 
 bool BaseData::isVector(int fullType)
 {
-	return fullType & (1 << 17);
+	return fullType & (1 << 16);
 }
 
 bool BaseData::isAnimation(int fullType)
 {
-	return fullType & (1 << 18);
+	return fullType & (1 << 17);
 }
 
 int BaseData::replaceValueType(int fullType, int newType)

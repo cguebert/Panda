@@ -10,6 +10,7 @@ const QString dataMarkerEnd("}~~");
 PandaObject::PandaObject(QObject *parent)
 	: QObject(parent)
 	, doEmitModified(true)
+	, doEmitDirty(true)
 	, isUpdating(false)
 {
 	parentDocument = dynamic_cast<PandaDocument*>(parent);
@@ -97,7 +98,8 @@ void PandaObject::setDirtyValue()
 	if(!dirtyValue)
 		DataNode::setDirtyValue();
 
-	emit dirty(this);
+	if(doEmitDirty)
+		emit dirty(this);
 }
 
 BaseData* PandaObject::getData(const QString& name) const

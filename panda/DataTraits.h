@@ -33,7 +33,7 @@ public:
 	static QString valueTypeName() { return ""; } // Override for each type
 	static QString description() { return valueTypeName(); }
 	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
-	static int fullType() { return valueType(); }
+	static int fullType() { return BaseData::getFullTypeOfSingleValue(valueType()); }
 	static bool isDisplayed() { return true; }
 	static bool isPersistent() { return true; }
 	static int size(const data_type& /*d*/) { return 1; }
