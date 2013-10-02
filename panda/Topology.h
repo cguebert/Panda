@@ -124,9 +124,6 @@ protected:
 
 //***************************************************************//
 
-Q_DECLARE_METATYPE(Topology)
-const int topologyMetaTypeId = qMetaTypeId<Topology>();
-
 template<> QString data_trait<Topology>::valueTypeName() { return "topology"; }
 template<> bool data_trait<Topology>::isDisplayed() { return false; }
 

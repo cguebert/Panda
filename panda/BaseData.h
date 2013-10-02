@@ -5,10 +5,13 @@
 #include <QString>
 #include <QDomDocument>
 
+#include <typeinfo>
+
 namespace panda
 {
 
 class PandaObject;
+class DataTypeId;
 
 class BaseData : public DataNode
 {
@@ -72,7 +75,7 @@ public:
 	virtual int getValueType() const = 0;
 	virtual int getFullType() const;
 
-	template <class T> static int getValueTypeOf() { return qMetaTypeId<T>(); }
+	template <class T> static int getValueTypeOf() { return DataTypeId::getIdOf<T>(); }
 	static int getFullTypeOfSingleValue(int valueType);
 	static int getFullTypeOfVector(int valueType);
 	static int getFullTypeOfAnimation(int valueType);
@@ -121,6 +124,19 @@ protected:
 
 private:
 	BaseData() {}
+};
+
+//***************************************************************//
+
+class DataTypeId
+{
+public:
+	static int getId(const std::type_info& type);
+	template <class T>
+	static int getIdOf() { return getId(typeid(T)); }
+
+private:
+	DataTypeId();
 };
 
 } // namespace panda

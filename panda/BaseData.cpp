@@ -1,8 +1,10 @@
 #include <panda/BaseData.h>
 #include <panda/PandaObject.h>
-#include <iostream>
 
 #include <QApplication>
+#include <iostream>
+
+#include <typeindex>
 
 namespace panda
 {
@@ -219,6 +221,22 @@ bool BaseData::isAnimation(int fullType)
 int BaseData::replaceValueType(int fullType, int newType)
 {
 	return (fullType & 0xFFFF0000) + newType;
+}
+
+//***************************************************************//
+
+int DataTypeId::getId(const std::type_info &type)
+{
+	static QMap<std::type_index, int> typesId;
+	std::type_index index(type);
+	if(typesId.contains(index))
+		return typesId.value(index);
+	else
+	{
+		int i = typesId.size() + 1; // start at 1
+		typesId[index] = i;
+		return i;
+	}
 }
 
 } // namespace panda
