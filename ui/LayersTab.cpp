@@ -117,7 +117,7 @@ void LayersTab::updateTable()
 	{
 		QTableWidgetItem *item = new QTableWidgetItem(layer->getLayerName());
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		item->setData(Qt::UserRole, QVariant::fromValue((void*)layer));
+		item->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(layer)));
 		tableWidget->setItem(rowIndex, 0, item);
 		if(selectedLayer == layer)
 			tableWidget->selectRow(rowIndex);

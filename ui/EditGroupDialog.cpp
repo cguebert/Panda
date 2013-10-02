@@ -106,16 +106,16 @@ void EditGroupDialog::populateRow(int rowIndex, panda::BaseData* data)
 {
 	QTableWidgetItem *item0 = new QTableWidgetItem(data->getName());
 	item0->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	item0->setData(Qt::UserRole, QVariant::fromValue((void*)data));
+	item0->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
 	QTableWidgetItem *item1 = new QTableWidgetItem(data->isInput()?"true":"false");
 	item1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	item1->setData(Qt::UserRole, QVariant::fromValue((void*)data));
+	item1->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
 	QTableWidgetItem *item2 = new QTableWidgetItem(data->isOutput()?"true":"false");
 	item2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	item2->setData(Qt::UserRole, QVariant::fromValue((void*)data));
+	item2->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
 	QTableWidgetItem *item3 = new QTableWidgetItem(data->getHelp());
 	item3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	item3->setData(Qt::UserRole, QVariant::fromValue((void*)data));
+	item3->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
 	tableWidget->setItem(rowIndex, 0, item0);
 	tableWidget->setItem(rowIndex, 1, item1);
 	tableWidget->setItem(rowIndex, 2, item2);

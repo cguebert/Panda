@@ -14,8 +14,8 @@ void RandomGenerator::seed(unsigned int seed)
 
 unsigned int RandomGenerator::seedRandom(unsigned int limit)
 {
-	gen.seed( (unsigned int)time(nullptr) + (unsigned int)this );
-	return (unsigned int)(random() * limit);
+	gen.seed( static_cast<unsigned int>(time(nullptr)) + reinterpret_cast<uintptr_t>(this) );
+	return static_cast<unsigned int>(random() * limit);
 }
 
 double RandomGenerator::random()
