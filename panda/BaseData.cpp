@@ -3,8 +3,6 @@
 #include <iostream>
 
 #include <QApplication>
-#include <QVariant>
-#include <QMetaType>
 
 namespace panda
 {
@@ -65,8 +63,8 @@ bool BaseData::validParent(const BaseData* parent) const
 	if(isAnimation() && !parent->isAnimation())
 		return false; // Can not convert to animation, need more parameters
 
-	return QVariant( (QVariant::Type)parent->getValueType( ))
-			.canConvert( (QVariant::Type)this->getValueType() );
+	return (getValueType() == parent->getValueType())		// Either the 2 Datas have the same base type (int & vector of ints for example)
+			|| (isNumerical() && parent->isNumerical());	// Or we can convert from one to the other (double & vector of ints)
 }
 
 void BaseData::setParent(BaseData* parent)

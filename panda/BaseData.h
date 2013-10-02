@@ -3,7 +3,6 @@
 
 #include <panda/DataNode.h>
 #include <QString>
-#include <QVariant>
 #include <QDomDocument>
 
 namespace panda
@@ -88,8 +87,10 @@ public:
 	virtual int getSize() const = 0;
 	virtual void clear(int size = 0, bool init = false) = 0;
 
-	virtual QVariant getBaseValue(int index) const = 0;
-	virtual void fromBaseValue(QVariant val, int index) = 0;
+	virtual bool isNumerical() const = 0;	// Is the data a simple numerical value, that we can convert to other number types?
+	virtual double getNumerical(int index) const = 0;
+	virtual void setNumerical(double val, int index) = 0;
+	virtual void* getValueVoidPtr() = 0;
 
 	QString toString() const;
 	virtual void fromString(const QString& text) = 0;

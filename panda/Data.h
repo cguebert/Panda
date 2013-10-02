@@ -5,14 +5,8 @@
 #include <panda/DataTraits.h>
 #include <helper/DataAccessor.h>
 
-#include <QVariant>
-#include <QTextStream>
-
 namespace panda
 {
-
-template<class T> QTextStream& readValue(QTextStream& stream, T& v);
-template<class T> QTextStream& writeValue(QTextStream& stream, const T& v);
 
 template<class T> class DataAccessor;
 
@@ -79,11 +73,23 @@ public:
 	virtual void clear(int size = 0, bool init = false)
 	{ data_trait<T>::clear(*this, size, init); }
 
-	virtual QVariant getBaseValue(int index) const
-	{ return data_trait<T>::getBaseValue(*this, index); }
+	virtual bool isNumerical() const
+	{ return data_trait<T>::isNumerical(); }
 
-	virtual void fromBaseValue(QVariant val, int index)
-	{ data_trait<T>::fromBaseValue(*this, val, index); }
+	virtual double getNumerical(int index) const	// TODO: REDO
+	{
+		updateIfDirty();
+		return data_trait<T>::getNumerical(value, index);
+	}
+
+	virtual void setNumerical(double val, int index) // TODO: REDO
+	{ data_trait<T>::setNumerical(value, val, index); }
+
+	virtual void* getValueVoidPtr()
+	{
+		updateIfDirty();
+		return &value;
+	}
 
 	virtual void fromString(const QString& text)
 	{
@@ -103,14 +109,14 @@ public:
 
 	inline const_reference getValue() const
 	{
-		this->updateIfDirty();
+		updateIfDirty();
 		return value;
 	}
 
 	virtual void copyValueFrom(const BaseData* parent)
 	{
 		data_trait<T>::copyValue(this, parent);
-		this->isValueSet = true;
+		isValueSet = true;
 	}
 
 	virtual void save(QDomDocument& doc, QDomElement& elem)
@@ -131,14 +137,14 @@ protected:
 
 	inline pointer beginEdit()
 	{
-		this->updateIfDirty();
+		updateIfDirty();
 		++counter;
 		return &value;
 	}
 
 	inline void endEdit()
 	{
-		this->isValueSet = true;
+		isValueSet = true;
 		BaseData::setDirtyOutputs();
 	}
 

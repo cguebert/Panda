@@ -4,7 +4,6 @@
 #include <panda/Data.h>
 #include <panda/Animation.h>
 
-#include <QVariant>
 #include <QRectF>
 #include <QPointF>
 #include <QVector>
@@ -36,30 +35,13 @@ public:
 	static int fullType() { return BaseData::getFullTypeOfSingleValue(valueType()); }
 	static bool isDisplayed() { return true; }
 	static bool isPersistent() { return true; }
+	static bool isNumerical() { return false; }
 	static int size(const data_type& /*d*/) { return 1; }
-	static void clear(data_type& d, int /*size*/, bool init)
-	{
-		if(init)
-			d.setValue(T());
-	}
-	static QVariant getBaseValue(const data_type& d, int /*index*/)
-	{
-		QVariant temp;
-		temp.setValue(d.getValue());
-		return temp;
-	}
-	static void fromBaseValue(data_type& d, QVariant val, int /*index*/)
-	{
-		d.setValue(val.value<T>());
-	}
-	static QTextStream& writeValue(QTextStream& stream, const value_type& v)
-	{
-		return stream << v;
-	}
-	static QTextStream& readValue(QTextStream& stream, value_type& v)
-	{
-		return stream >> v;
-	}
+	static void clear(data_type& d, int /*size*/, bool init) { if(init) d.setValue(T()); }
+	static double getNumerical(const value_type& /*v*/, int /*index*/) { return 0; }
+	static void setNumerical(value_type& /*v*/, double /*val*/, int /*index*/) { }
+	static QTextStream& writeValue(QTextStream& stream, const value_type& v) { return stream << v; }
+	static QTextStream& readValue(QTextStream& stream, value_type& v) { return stream >> v; }
 	static void writeValue(QDomDocument&, QDomElement&, const value_type&) {}
 	static void readValue(QDomElement&, value_type&) {}
 	static void copyValue(data_type* data, const BaseData* parent)
@@ -89,8 +71,12 @@ public:
 			}
 		}
 
-		// Else we use QVariant for a conversion
-		data->setValue(parent->getBaseValue(0).value<T>());
+		// Else we try a conversion
+		if(data->isNumerical() && parent->isNumerical())
+		{
+			auto value = data->getAccessor();
+			setNumerical(value.wref(), parent->getNumerical(0), 0);
+		}
 	}
 };
 
@@ -113,6 +99,7 @@ public:
 	static int fullType() { return BaseData::getFullTypeOfVector(valueType()); }
 	static bool isDisplayed() { return base_traits::isDisplayed(); }
 	static bool isPersistent() { return base_traits::isPersistent(); }
+	static bool isNumerical() { return base_traits::isNumerical(); }
 	static int size(const data_type& d) { return d.getValue().size(); }
 	static void clear(data_type& d, int size, bool init)
 	{
@@ -121,21 +108,16 @@ public:
 			v.clear();
 		v.resize(size);
 	}
-	static QVariant getBaseValue(const data_type& d, int index)
+	static double getNumerical(const vector_type& vec, int index)
 	{
-		QVariant temp;
-		if(index < 0 || index >= size(d))
-			temp.setValue(T());
-		else
-			temp.setValue(d.getValue()[index]);
-		return temp;
+		if(index < 0 || index >= vec.size())
+			return 0.0;
+		return base_traits::getNumerical(vec[index], 0);
 	}
-	static void fromBaseValue(data_type& d, QVariant val, int index)
+	static void setNumerical(vector_type& vec, double val, int index)
 	{
-		auto vec = d.getAccessor();
-		if(vec.size() <= static_cast<int>(index))
-			vec.resize(index+1);
-		vec[index] = val.value<T>();
+		if(index >= 0 && index < vec.size())
+			base_traits::setNumerical(vec[index], val, 0);
 	}
 	static QTextStream& writeValue(QTextStream& stream, const vector_type& vec)
 	{
@@ -220,12 +202,15 @@ public:
 			}
 		}
 
-		// Else we use QVariant for a conversion
-		auto value = data->getAccessor();
-		value.clear();
-		int size = parent->getSize();
-		for(int i=0; i<size; ++i)
-			value.push_back(parent->getBaseValue(i).value<T>());
+		// Else we try a conversion
+		if(data->isNumerical() && parent->isNumerical())
+		{
+			int size = parent->getSize();
+			auto value = data->getAccessor();
+			value.resize(size);
+			for(int i=0; i<size; ++i)
+				setNumerical(value.wref(), parent->getNumerical(i), i);
+		}
 	}
 };
 
@@ -248,25 +233,14 @@ public:
 	static int fullType() { return BaseData::getFullTypeOfAnimation(valueType()); }
 	static bool isDisplayed() { return base_traits::isDisplayed(); }
 	static bool isPersistent() { return base_traits::isPersistent(); }
+	static bool isNumerical() { return base_traits::isNumerical(); }
 	static int size(const data_type& d) { return d.getValue().size(); }
 	static void clear(data_type& d, int /*size*/, bool /*init*/)
 	{
 		d.getAccessor().clear();
 	}
-	static QVariant getBaseValue(const data_type& d, int index)
-	{
-		QVariant temp;
-		if(index < 0 || index >= size(d))
-			temp.setValue(T());
-		else
-			temp.setValue(d.getValue().getValueAtIndexConst(index));
-		return temp;
-	}
-	static void fromBaseValue(data_type& d, QVariant val, int index)
-	{
-		auto anim = d.getAccessor();
-		anim.getValueAtIndex(index) = val.value<T>();
-	}
+	static double getNumerical(const animation_type& /*anim*/, int /*index*/) { return 0.0; }
+	static void setNumerical(animation_type& /*anim*/, double /*val*/, int /*index*/) { }
 	static QTextStream& writeValue(QTextStream& stream, const animation_type& anim)
 	{
 		int size = anim.size();
@@ -353,6 +327,57 @@ template<> QString data_trait<QImage>::valueTypeName() { return "image"; }
 
 template<> bool data_trait<QImage>::isDisplayed() { return false; }
 template<> bool data_trait<QImage>::isPersistent() { return false; }
+
+template<> bool data_trait<int>::isNumerical() { return true; }
+template<> bool data_trait<double>::isNumerical() { return true; }
+
+//***************************************************************//
+// Overrides for get/setNumerical
+
+template<>
+double data_trait<int>::getNumerical(const value_type& v, int index)
+{
+	if(index == 0)
+		return v;
+	return 0;
+}
+
+template<>
+void data_trait<int>::setNumerical(value_type& v, double val, int index)
+{
+	if(index == 0)
+		v = static_cast<int>(val);
+}
+
+template<>
+double data_trait<double>::getNumerical(const value_type& v, int index)
+{
+	if(index == 0)
+		return v;
+	return 0;
+}
+
+template<>
+void data_trait<double>::setNumerical(value_type& v, double val, int index)
+{
+	if(index == 0)
+		v = val;
+}
+
+template<>
+double data_trait< Animation<double> >::getNumerical(const animation_type& anim, int index)
+{
+	if(index < 0 || index >= anim.size())
+		return 0.0;
+	return anim.getValueAtIndexConst(index);
+}
+
+template<>
+void data_trait< Animation<double> >::setNumerical(animation_type& anim, double val, int index)
+{
+	if(index >= 0 && index < anim.size())
+		anim.getValueAtIndex(index) = val;
+}
 
 //***************************************************************//
 // Overrides for writeValue
