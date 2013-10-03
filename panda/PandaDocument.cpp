@@ -524,7 +524,7 @@ void PandaDocument::selectConnected()
 			if(dockable)
 			{
 				PandaObject* dock = dockable->getParentDock();
-				if(!closedList.contains(dock))
+				if(dock != defaultLayer && !closedList.contains(dock))
 					openList.insert(dock);
 			}
 
