@@ -58,21 +58,19 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 	tableLayout->addLayout(moveButtonsLayout);
 	vLayout->addLayout(tableLayout);
 
+	QGridLayout* gridLayout = new QGridLayout;
 	QLabel* dataNameLabel = new QLabel(tr("data name:"), this);
 	editDataName = new QLineEdit(this);
 	connect(editDataName, SIGNAL(textEdited(QString)), this, SLOT(dataNameEdited(QString)));
-	QHBoxLayout* dataNameLayout = new QHBoxLayout;
-	dataNameLayout->addWidget(dataNameLabel);
-	dataNameLayout->addWidget(editDataName);
-	vLayout->addLayout(dataNameLayout);
+	gridLayout->addWidget(dataNameLabel, 0, 0);
+	gridLayout->addWidget(editDataName, 0, 1);
 
 	QLabel* dataHelpLabel = new QLabel(tr("data description:"), this);
 	editDataHelp = new QLineEdit(this);
 	connect(editDataHelp, SIGNAL(textEdited(QString)), this, SLOT(dataHelpEdited(QString)));
-	QHBoxLayout* dataHelpLayout = new QHBoxLayout;
-	dataHelpLayout->addWidget(dataHelpLabel);
-	dataHelpLayout->addWidget(editDataHelp);
-	vLayout->addLayout(dataHelpLayout);
+	gridLayout->addWidget(dataHelpLabel, 1, 0);
+	gridLayout->addWidget(editDataHelp, 1, 1);
+	vLayout->addLayout(gridLayout);
 
 	QPushButton* okButton = new QPushButton(tr("Ok"), this);
 	okButton->setDefault(true);

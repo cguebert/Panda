@@ -38,6 +38,14 @@ public:
 	ObjectDrawStruct* getObjectDrawStruct(panda::PandaObject* obj);
 	QRectF getDataRect(panda::BaseData* data);
 
+	int getAvailableLinkTagIndex();
+
+	enum ContextMenuReason {
+		MENU_OBJECT = 0x1,
+		MENU_DATA = 0x2,
+		MENU_LINK = 0x4
+	};
+
 protected:
 	void paintEvent(QPaintEvent *event);
 	void resizeEvent(QResizeEvent *event);
@@ -46,6 +54,7 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event);
 	void wheelEvent(QWheelEvent *event);
 	void keyPressEvent(QKeyEvent *event);
+	void contextMenuEvent(QContextMenuEvent *event);
 
 	panda::PandaObject* getObjectAtPos(const QPointF& pt);
 	void moveView(const QPointF& delta);
@@ -56,6 +65,7 @@ protected:
 signals:
 	void modified();
 	void showStatusBarMessage(QString);
+	void showContextMenu(QPoint pos, int reason);
 
 public slots:
 	void zoomIn();
@@ -70,8 +80,8 @@ public slots:
 	void modifiedObject(panda::PandaObject* object);
 	void savingObject(QDomDocument&, QDomElement&, panda::PandaObject*);
 	void loadingObject(QDomElement&, panda::PandaObject*);
-	int getAvailableLinkTagIndex();
 	void updateLinkTags(bool reset=false);
+	void removeLink();
 
 private:
 	panda::PandaDocument* pandaDocument;
@@ -81,7 +91,7 @@ private:
 	QPointF previousMousePos, currentMousePos;
 	enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK, MOVING_ZOOM };
 	MovingAction movingAction;
-	panda::BaseData *clickedData, *hoverData;
+	panda::BaseData *clickedData, *hoverData, *contextMenuData;
 	QMap<panda::PandaObject*, QSharedPointer<ObjectDrawStruct> > objectDrawStructs;
 	QMap<panda::BaseData*, QSharedPointer<LinkTag> > linkTags;
 	bool recomputeTags;

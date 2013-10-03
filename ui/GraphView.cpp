@@ -102,6 +102,7 @@ void GraphView::resetView()
 	movingAction = MOVING_NONE;
 	clickedData = nullptr;
 	hoverData = nullptr;
+	contextMenuData = nullptr;
 	recomputeTags = false;
 }
 
@@ -523,6 +524,28 @@ void GraphView::keyPressEvent(QKeyEvent * event)
 		QWidget::keyPressEvent(event);
 }
 
+void GraphView::contextMenuEvent(QContextMenuEvent *event)
+{
+	contextMenuData = nullptr;
+	int flags = 0;
+	QPointF zoomedMouse = event->pos() / zoomFactor;
+	panda::PandaObject* object = getObjectAtPos(zoomedMouse);
+	if(object)
+	{
+		flags |= MENU_OBJECT;
+		panda::BaseData* data = objectDrawStructs[object]->getDataAtPos(zoomedMouse);
+		if(data)
+		{
+			flags |= MENU_DATA;
+			contextMenuData = data;
+			if(contextMenuData->getParent())
+				flags |= MENU_LINK;
+		}
+	}
+
+	emit showContextMenu(event->globalPos(), flags);
+}
+
 void GraphView::zoomIn()
 {
 	if(zoomLevel > 0)
@@ -756,6 +779,18 @@ void GraphView::updateLinkTags(bool reset)
 		iterTag.value()->update();
 		if(iterTag.value()->isEmpty())
 			iterTag.remove();
+	}
+}
+
+void GraphView::removeLink()
+{
+	if(contextMenuData && contextMenuData->isInput() && contextMenuData->getParent())
+	{
+		removeLinkTag(contextMenuData->getParent(), contextMenuData);
+		contextMenuData->getOwner()->dataSetParent(contextMenuData, nullptr);
+		contextMenuData = nullptr;
+		emit modified();
+		update();
 	}
 }
 

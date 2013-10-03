@@ -25,13 +25,13 @@ MainWindow::MainWindow()
 
 	createActions();
 	createMenus();
-	createContextMenu();
 	createToolBars();
 	createStatusBar();
 
 	connect(pandaDocument, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(graphView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
+	connect(graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
 
 	readSettings();
 
@@ -87,6 +87,7 @@ void MainWindow::open()
 		{
 			playAction->setChecked(false);
 			pandaDocument->resetDocument();
+			graphView->resetView();
 			loadFile(fileName);
 			graphView->updateLinkTags(true);
 		}
@@ -347,6 +348,10 @@ void MainWindow::createActions()
 	rewindAction->setShortcut(tr("F7"));
 	rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
 	connect(rewindAction, SIGNAL(triggered()), pandaDocument, SLOT(rewind()));
+
+	removeLinkAction = new QAction(tr("Remove link"), this);
+	removeLinkAction->setStatusTip(tr("Remove the link to this data"));
+	connect(removeLinkAction, SIGNAL(triggered()), graphView, SLOT(removeLink()));
 }
 
 void MainWindow::createMenus()
@@ -489,14 +494,6 @@ void MainWindow::createGroupRegistryMenu()
 
 		menuTree.registerActions(groupsRegistryMenu);
 	}
-}
-
-void MainWindow::createContextMenu()
-{
-	graphView->addAction(cutAction);
-	graphView->addAction(copyAction);
-	graphView->addAction(pasteAction);
-	graphView->setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
 void MainWindow::createToolBars()
@@ -725,4 +722,38 @@ void MainWindow::createGroupObject()
 		QString path = action->data().toString();
 		pandaDocument->createGroupObject(path);
 	}
+}
+
+void MainWindow::showContextMenu(QPoint pos, int flags)
+{
+	QMenu menu(this);
+
+	panda::PandaObject* obj = pandaDocument->getCurrentSelectedObject();
+	if(obj)
+	{
+		menu.addAction(cutAction);
+		menu.addAction(copyAction);
+	}
+	menu.addAction(pasteAction);
+
+	if(flags & GraphView::MENU_LINK)
+	{
+		menu.addAction(removeLinkAction);
+	}
+
+	int nbSelected = pandaDocument->getSelection().size();
+	if(dynamic_cast<panda::Group*>(obj) && nbSelected == 1)
+	{
+		menu.addAction(ungroupAction);
+		menu.addAction(editGroupAction);
+		menu.addAction(saveGroupAction);
+	}
+
+	if(nbSelected > 1)
+	{
+		menu.addAction(groupAction);
+	}
+
+	if(!menu.actions().isEmpty())
+		menu.exec(pos);
 }

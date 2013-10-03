@@ -46,13 +46,13 @@ private slots:
 	void editGroup();
 	void saveGroup();
 	void createGroupObject();
+	void showContextMenu(QPoint, int);
 
 private:
 	void createActions();
 	void createMenus();
 	void createRegistryMenu();
 	void createGroupRegistryMenu();
-	void createContextMenu();
 	void createToolBars();
 	void createStatusBar();
 	void readSettings();
@@ -122,6 +122,7 @@ private:
 	QAction* ungroupAction;
 	QAction* editGroupAction;
 	QAction* saveGroupAction;
+	QAction* removeLinkAction;
 	QLabel* timeLabel;
 };
 
