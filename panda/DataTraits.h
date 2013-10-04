@@ -30,6 +30,7 @@ public:
 	enum { is_animation = 0 };
 
 	static QString valueTypeName() { return ""; } // Override for each type
+	static QString valueTypeNamePlural() { return valueTypeName() + "s"; }
 	static QString description() { return valueTypeName(); }
 	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
 	static int fullType() { return BaseData::getFullTypeOfSingleValue(valueType()); }
@@ -94,6 +95,7 @@ public:
 	enum { is_animation = 0 };
 
 	static QString valueTypeName() { return base_traits::valueTypeName(); }
+	static QString valueTypeNamePlural() { return base_traits::valueTypeNamePlural(); }
 	static QString description() { return valueTypeName() + "_vector"; }
 	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
 	static int fullType() { return BaseData::getFullTypeOfVector(valueType()); }
@@ -228,6 +230,7 @@ public:
 	enum { is_animation = 1 };
 
 	static QString valueTypeName() { return base_traits::valueTypeName(); }
+	static QString valueTypeNamePlural() { return base_traits::valueTypeNamePlural(); }
 	static QString description() { return valueTypeName() + "_animation"; }
 	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
 	static int fullType() { return BaseData::getFullTypeOfAnimation(valueType()); }

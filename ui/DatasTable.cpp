@@ -23,6 +23,7 @@ DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 
 	connect(doc, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(populateTable(panda::PandaObject*)));
 	connect(doc, SIGNAL(selectedObjectIsDirty(panda::PandaObject*)), this, SLOT(populateTable(panda::PandaObject*)));
+	connect(doc, SIGNAL(modifiedObject(panda::PandaObject*)), this, SLOT(onModifiedObject(panda::PandaObject*)));
 }
 
 void DatasTable::populateTable(panda::PandaObject* object)
@@ -92,6 +93,16 @@ void DatasTable::populateTable(panda::PandaObject* object)
 			QWidget* widget = dataWidget->createWidgets(true);
 			formLayout->addRow(data->getName(), widget);
 		}
+	}
+}
+
+void DatasTable::onModifiedObject(panda::PandaObject* object)
+{
+	if(currentObject == object)
+	{
+		// Force the reconstruction of the table
+		currentObject = nullptr;
+		populateTable(object);
 	}
 }
 

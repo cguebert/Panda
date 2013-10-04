@@ -35,6 +35,7 @@ signals:
 
 public slots:
 	void populateTable(panda::PandaObject*);
+	void onModifiedObject(panda::PandaObject*);
 };
 
 #endif // DATASTABLE_H

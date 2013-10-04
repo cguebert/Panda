@@ -99,6 +99,7 @@ public:
 	virtual void fromString(const QString& text) = 0;
 
 	virtual QString getValueTypeName() const = 0;
+	virtual QString getValueTypeNamePlural() const = 0;
 	virtual QString getDescription() const;
 
 	virtual void copyValueFrom(const BaseData* parent) = 0;

@@ -67,6 +67,9 @@ public:
 	virtual QString getValueTypeName() const
 	{ return data_trait<T>::valueTypeName(); }
 
+	virtual QString getValueTypeNamePlural() const
+	{ return data_trait<T>::valueTypeNamePlural(); }
+
 	virtual int getSize() const
 	{ return data_trait<T>::size(*this); }
 

@@ -744,8 +744,7 @@ BaseData* PandaDocument::findData(quint32 objectIndex, const QString& dataName)
 
 void PandaDocument::onDirtyObject(panda::PandaObject* object)
 {
-	PandaObject* selected = getCurrentSelectedObject();
-	if(object == selected)
+	if(object == getCurrentSelectedObject())
 		emit selectedObjectIsDirty(object);
 	emit modified();
 }

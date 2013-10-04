@@ -231,7 +231,25 @@ bool GenericData::validParent(const BaseData* parent) const
 
 QString GenericData::getDescription() const
 {
-	return QString("Accepting all types");
+	return QString("Accepting single values, lists & animations" + getTypesName());
+}
+
+QString GenericData::getTypesName() const
+{
+	if(allowedTypes.isEmpty())
+		return "";
+	QString temp("\n (");
+	for(int i=0, nb=allowedTypes.size(); i<nb; ++i)
+	{
+		if(i)
+			temp += ", ";
+		if(i && !(i%3))
+			temp += "\n  ";
+		temp += DataFactory::typeToName(allowedTypes[i]);
+	}
+
+	temp += ")";
+	return temp;
 }
 
 bool GenericSingleValueData::validParent(const BaseData* parent) const
@@ -241,7 +259,7 @@ bool GenericSingleValueData::validParent(const BaseData* parent) const
 
 QString GenericSingleValueData::getDescription() const
 {
-	return QString("Accepting single values");
+	return QString("Accepting single values" + getTypesName());
 }
 
 bool GenericVectorData::validParent(const BaseData* parent) const
@@ -252,7 +270,7 @@ bool GenericVectorData::validParent(const BaseData* parent) const
 
 QString GenericVectorData::getDescription() const
 {
-	return QString("Accepting lists");
+	return QString("Accepting lists" + getTypesName());
 }
 
 bool GenericAnimationData::validParent(const BaseData* parent) const
@@ -262,7 +280,7 @@ bool GenericAnimationData::validParent(const BaseData* parent) const
 
 QString GenericAnimationData::getDescription() const
 {
-	return QString("Accepting animations");
+	return QString("Accepting animations" + getTypesName());
 }
 
 } // namespace panda

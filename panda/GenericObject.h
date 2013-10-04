@@ -2,6 +2,7 @@
 #define GENERICOBJECT_H
 
 #include <panda/PandaObject.h>
+#include <panda/Topology.h>
 
 #include <QList>
 #include <QMap>
@@ -23,6 +24,7 @@ public:
 
 	virtual bool validParent(const BaseData* parent) const;
 	virtual QString getDescription() const;
+	virtual QString getTypesName() const;
 
 	QList<int> allowedTypes;
 };
@@ -120,7 +122,8 @@ private:
 
 //***************************************************************//
 
-typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString, QImage> allDataTypes;
+typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString, QImage, Topology> allDataTypes;
+typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString> allSearchableTypes;
 typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF> allNumericalTypes;
 typedef boost::mpl::vector<double, QColor, QPointF> allAnimationTypes;
 

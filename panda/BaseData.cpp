@@ -127,14 +127,12 @@ QString BaseData::toString() const
 
 QString BaseData::getDescription() const
 {
-	QString typeName = getValueTypeName();
-
 	if(isSingleValue())
-		return QString("Single %1 value").arg(typeName);
+		return QString("Single %1 value").arg(getValueTypeName());
 	if(isVector())
-		return QString("List of %1s").arg(typeName);
+		return QString("List of %1").arg(getValueTypeNamePlural());
 	if(isAnimation())
-		return QString("Animation of %1s").arg(typeName);
+		return QString("Animation of %1").arg(getValueTypeNamePlural());
 
 	return QString();
 }

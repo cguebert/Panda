@@ -125,6 +125,7 @@ protected:
 //***************************************************************//
 
 template<> QString data_trait<Topology>::valueTypeName() { return "topology"; }
+template<> QString data_trait<Topology>::valueTypeNamePlural() { return "topologies"; }
 template<> bool data_trait<Topology>::isDisplayed() { return false; }
 
 template<>

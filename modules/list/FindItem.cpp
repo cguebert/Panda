@@ -6,7 +6,7 @@ namespace panda {
 
 class FindItem : public GenericObject
 {
-	GENERIC_OBJECT(FindItem, allDataTypes)
+	GENERIC_OBJECT(FindItem, allSearchableTypes)
 public:
 	PANDA_CLASS(FindItem, GenericObject)
 
