@@ -13,6 +13,7 @@ HEADERS       = \
     panda/DataFactory.h \
     panda/DataNode.h \
     panda/DataTraits.h \
+    panda/DataTypeId.h \
     panda/Dockable.h \
     panda/GenericObject.h \
     panda/Group.h \
@@ -104,6 +105,7 @@ SOURCES       = main.cpp \
     panda/Data.cpp \
     panda/DataFactory.cpp \
     panda/DataNode.cpp \
+    panda/DataTypeId.cpp \
     panda/Dockable.cpp \
     panda/GenericObject.cpp \
     panda/Group.cpp \

@@ -78,10 +78,10 @@ public:
 	RegisterData() {}
 	operator int()
 	{
-		DataFactory::getInstance()->registerData(data_trait<T::value_type>::description(),
-												 data_trait<T::value_type>::fullType(),
+		DataFactory::getInstance()->registerData(DataTrait<T::value_type>::description(),
+												 DataTrait<T::value_type>::fullTypeId(),
 												 T::getClass(),
-												 QSharedPointer<DataCreator<T>>::create());
+												 QSharedPointer< DataCreator<T> >::create());
 		return 1;
 	}
 };

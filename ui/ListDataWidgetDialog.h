@@ -21,14 +21,14 @@ public slots:
 	virtual void resizeValue() {}
 };
 
-template<class T, class Container = data_widget_container< vector_data_trait<T>::row_type > >
+template<class T, class Container = data_widget_container< VectorDataTrait<T>::row_type > >
 class ListDataWidgetDialog : public BaseListDataWidgetDialog
 {
 protected:
 	typedef T value_type;
 	typedef panda::Data<T> data_type;
-	typedef vector_data_trait<value_type> rowTrait;
-	typedef typename rowTrait::row_type row_type;
+	typedef VectorDataTrait<value_type> row_trait;
+	typedef typename row_trait::row_type row_type;
 
 	typedef QSharedPointer<Container> ContainerPtr;
 
@@ -97,11 +97,11 @@ public:
 
 	void updateTable(const value_type& v)
 	{
-		int nb = rowTrait::size(v);
+		int nb = row_trait::size(v);
 
 		for(int i = 0; i < nb; ++i)
 		{
-			const row_type* row = rowTrait::get(v, i);
+			const row_type* row = row_trait::get(v, i);
 			if(row)
 				containers[i]->readFromData(*row);
 		}
@@ -109,7 +109,7 @@ public:
 
 	virtual void readFromData(const value_type& v)
 	{
-		resizeContainers(rowTrait::size(v));
+		resizeContainers(row_trait::size(v));
 		updateTable(v);
 
 		if(resizeSpinBox)
@@ -120,16 +120,16 @@ public:
 	{
 		value_type v;
 		int nbRows = containers.size();
-		rowTrait::resize(v, nbRows);
+		row_trait::resize(v, nbRows);
 
 		for(int i = 0; i < nbRows; ++i)
 		{
-			const row_type* row = rowTrait::get(v, i);
+			const row_type* row = row_trait::get(v, i);
 			if(row)
 			{
 				row_type val;
 				containers[i]->writeToData(val);
-				rowTrait::set(v, val, i);
+				row_trait::set(v, val, i);
 			}
 		}
 

@@ -1,5 +1,6 @@
 #include <panda/BaseData.h>
 #include <panda/PandaObject.h>
+#include <panda/DataTraits.h>
 
 #include <QApplication>
 #include <iostream>
@@ -62,11 +63,13 @@ void BaseData::setName(const QString& newName)
 
 bool BaseData::validParent(const BaseData* parent) const
 {
-	if(isAnimation() && !parent->isAnimation())
+	auto trait = getDataTrait();
+	auto parentTrait = parent->getDataTrait();
+	if(trait->isAnimation() && !parentTrait->isAnimation())
 		return false; // Can not convert to animation, need more parameters
 
-	return (getValueType() == parent->getValueType())		// Either the 2 Datas have the same base type (int & vector of ints for example)
-			|| (isNumerical() && parent->isNumerical());	// Or we can convert from one to the other (double & vector of ints)
+	return (trait->valueTypeId() == parentTrait->valueTypeId())		// Either the 2 Datas have the same base type (int & vector of ints for example)
+			|| (trait->isNumerical() && parentTrait->isNumerical());	// Or we can convert from one to the other (double & vector of ints)
 }
 
 void BaseData::setParent(BaseData* parent)
@@ -119,20 +122,15 @@ void BaseData::update()
 		copyValueFrom(parentBaseData);
 }
 
-QString BaseData::toString() const
-{
-	this->updateIfDirty();
-	return doToString();
-}
-
 QString BaseData::getDescription() const
 {
-	if(isSingleValue())
-		return QString("Single %1 value").arg(getValueTypeName());
-	if(isVector())
-		return QString("List of %1").arg(getValueTypeNamePlural());
-	if(isAnimation())
-		return QString("Animation of %1").arg(getValueTypeNamePlural());
+	auto trait = getDataTrait();
+	if(trait->isSingleValue())
+		return QString("Single %1 value").arg(trait->valueTypeName());
+	if(trait->isVector())
+		return QString("List of %1").arg(trait->valueTypeNamePlural());
+	if(trait->isAnimation())
+		return QString("Animation of %1").arg(trait->valueTypeNamePlural());
 
 	return QString();
 }
@@ -170,71 +168,20 @@ void BaseData::doRemoveOutput(DataNode* node)
 		input = false;
 }
 
-int BaseData::getFullType() const
-{
-	int type = getValueType();
-	if(isVector())
-		return getFullTypeOfVector(type);
-	if(isAnimation())
-		return getFullTypeOfAnimation(type);
-
-	return getFullTypeOfSingleValue(type);
-}
-
-int BaseData::getFullTypeOfSingleValue(int valueType)
-{
-	return valueType;
-}
-
-int BaseData::getFullTypeOfVector(int valueType)
-{
-	return valueType + (1 << 16);
-}
-
-int BaseData::getFullTypeOfAnimation(int valueType)
-{
-	return valueType + (1 << 17);
-}
-
-int BaseData::getValueType(int fullType)
-{
-	return fullType & 0xFFFF;
-}
-
-bool BaseData::isSingleValue(int fullType)
-{
-	return !(fullType & 0xFFFF0000);
-}
-
-bool BaseData::isVector(int fullType)
-{
-	return fullType & (1 << 16);
-}
-
-bool BaseData::isAnimation(int fullType)
-{
-	return fullType & (1 << 17);
-}
-
-int BaseData::replaceValueType(int fullType, int newType)
-{
-	return (fullType & 0xFFFF0000) + newType;
-}
-
 //***************************************************************//
 
-int DataTypeId::getId(const std::type_info &type)
-{
-	static QMap<std::type_index, int> typesId;
-	std::type_index index(type);
-	if(typesId.contains(index))
-		return typesId.value(index);
-	else
-	{
-		int i = typesId.size() + 1; // start at 1
-		typesId[index] = i;
-		return i;
-	}
-}
+VoidDataAccessor::VoidDataAccessor(BaseData* d)
+	: data(d)
+	, value(d->beginVoidEdit())
+{}
+
+VoidDataAccessor::~VoidDataAccessor()
+{ data->endVoidEdit(); }
+
+void* VoidDataAccessor::get()
+{ return value; }
+
+VoidDataAccessor::operator void *()
+{ return value; }
 
 } // namespace panda

@@ -21,12 +21,12 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.append(GenericDataDefinition(BaseData::getFullTypeOfVector(0),
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
 											 true, false,
 											 "input",
 											 "List used to create the animation"));
 		// Create an animation of the same type as the data connected
-		defList.append(GenericDataDefinition(BaseData::getFullTypeOfAnimation(0),
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
 											 false, true,
 											 "output",
 											 "Animation created from the given list"));

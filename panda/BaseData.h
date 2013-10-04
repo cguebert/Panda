@@ -5,13 +5,27 @@
 #include <QString>
 #include <QDomDocument>
 
-#include <typeinfo>
-
 namespace panda
 {
 
 class PandaObject;
-class DataTypeId;
+class BaseData;
+class AbstractDataTrait;
+
+class VoidDataAccessor
+{
+public:
+	VoidDataAccessor(BaseData* d);
+	~VoidDataAccessor();
+	void* get();
+	operator void*();
+
+protected:
+	BaseData* data;
+	void* value;
+};
+
+//***************************************************************//
 
 class BaseData : public DataNode
 {
@@ -68,38 +82,10 @@ public:
 
 	void update();
 
-	virtual bool isSingleValue() const = 0;
-	virtual bool isVector() const = 0;
-	virtual bool isAnimation() const = 0;
+	virtual const AbstractDataTrait* getDataTrait() const = 0;
+	virtual const void* getVoidValue() const = 0;
+	VoidDataAccessor getVoidAccessor() { return VoidDataAccessor(this); }
 
-	virtual int getValueType() const = 0;
-	virtual int getFullType() const;
-
-	template <class T> static int getValueTypeOf() { return DataTypeId::getIdOf<T>(); }
-	static int getFullTypeOfSingleValue(int valueType);
-	static int getFullTypeOfVector(int valueType);
-	static int getFullTypeOfAnimation(int valueType);
-
-	// To decode the number given by getFullType
-	static int getValueType(int fullType);
-	static bool isSingleValue(int fullType);
-	static bool isVector(int fullType);
-	static bool isAnimation(int fullType);
-	static int replaceValueType(int fullType, int newType);
-
-	virtual int getSize() const = 0;
-	virtual void clear(int size = 0, bool init = false) = 0;
-
-	virtual bool isNumerical() const = 0;	// Is the data a simple numerical value, that we can convert to other number types?
-	virtual double getNumerical(int index) const = 0;
-	virtual void setNumerical(double val, int index) = 0;
-	virtual void* getValueVoidPtr() = 0;
-
-	QString toString() const;
-	virtual void fromString(const QString& text) = 0;
-
-	virtual QString getValueTypeName() const = 0;
-	virtual QString getValueTypeNamePlural() const = 0;
 	virtual QString getDescription() const;
 
 	virtual void copyValueFrom(const BaseData* parent) = 0;
@@ -113,7 +99,9 @@ protected:
 	virtual void doAddOutput(DataNode* node);
 	virtual void doRemoveOutput(DataNode* node);
 
-	virtual QString doToString() const = 0;
+	friend class VoidDataAccessor;
+	virtual void* beginVoidEdit() = 0;
+	virtual void endVoidEdit() = 0;
 
 	bool readOnly, displayed, persistent, input, output;
 	bool isValueSet;
@@ -125,19 +113,6 @@ protected:
 
 private:
 	BaseData() {}
-};
-
-//***************************************************************//
-
-class DataTypeId
-{
-public:
-	static int getId(const std::type_info& type);
-	template <class T>
-	static int getIdOf() { return getId(typeid(T)); }
-
-private:
-	DataTypeId();
 };
 
 } // namespace panda

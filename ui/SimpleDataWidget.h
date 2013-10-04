@@ -16,7 +16,7 @@ class data_widget_container
 protected:
 	typedef T value_type;
 	typedef panda::Data<T> data_type;
-	typedef panda::data_trait<T> trait;
+	typedef panda::DataTrait<value_type> trait;
 	QLineEdit* lineEdit;
 
 public:
@@ -174,7 +174,7 @@ public:
 	void updatePreview()
 	{
 		const value_type& v = getData()->getValue();
-		typedef vector_data_trait<value_type> vector_trait;
+		typedef VectorDataTrait<value_type> vector_trait;
 		if(vector_trait::is_vector)
 		{
 			QString text = QString(container->tr("<i>%1 elements</i>")).arg(vector_trait::size(v));

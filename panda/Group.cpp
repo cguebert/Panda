@@ -266,7 +266,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 	{
 		QDomElement node = doc.createElement("GroupData");
 		elem.appendChild(node);
-		node.setAttribute("type", DataFactory::typeToName(data->getFullType()));
+		node.setAttribute("type", DataFactory::typeToName(data->getDataTrait()->fullTypeId()));
 		node.setAttribute("input", data->isInput());
 		node.setAttribute("output", data->isOutput());
 		node.setAttribute("name", data->getName());
@@ -506,7 +506,7 @@ BaseData* Group::duplicateData(BaseData* data)
 	QString name = findAvailableDataName(data->getName());
 
 	QSharedPointer<BaseData> newData = QSharedPointer<BaseData>(
-				DataFactory::getInstance()->create(data->getFullType(), name, data->getHelp(), this) );
+				DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(), name, data->getHelp(), this) );
 	newData->setDisplayed(data->isDisplayed());
 	newData->setPersistent(data->isPersistent());
 	groupDatas.append(newData);

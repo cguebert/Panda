@@ -2,6 +2,7 @@
 #define DATATRAITS_H
 
 #include <panda/Data.h>
+#include <panda/DataTypeId.h>
 #include <panda/Animation.h>
 
 #include <QRectF>
@@ -18,27 +19,60 @@ template<class T> class Data;
 
 //***************************************************************//
 
+class AbstractDataTrait
+{
+public:
+	virtual const AbstractDataTrait* baseTypeTrait() const = 0;
+	virtual const AbstractDataTrait* valueTypeTrait() const = 0;
+
+	virtual bool isSingleValue() const = 0;
+	virtual bool isVector() const = 0;
+	virtual bool isAnimation() const = 0;
+	virtual bool isDisplayed() const = 0;
+	virtual bool isPersistent() const = 0;
+	virtual bool isNumerical() const = 0;
+
+	virtual QString valueTypeName() const = 0;
+	virtual QString valueTypeNamePlural() const = 0;
+	virtual QString description() const = 0;
+	virtual int valueTypeId() const = 0;
+	virtual int fullTypeId() const = 0;
+
+	virtual int size(const void* value) const = 0;
+	virtual void clear(void* value, int size, bool init) const = 0;
+	virtual double getNumerical(const void* value, int index) const = 0;
+	virtual void setNumerical(void* value, double num, int index) const = 0;
+
+	virtual QTextStream& writeValue(QTextStream& stream, const void* value) const = 0;
+	virtual QTextStream& readValue(QTextStream& stream, void* value) const = 0;
+	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const = 0;
+	virtual void readValue(QDomElement& doc, void* value) const = 0;
+};
+
+//***************************************************************//
+
 template<class T>
-class data_trait
+class DataTrait
 {
 public:
 	typedef Data<T> data_type;
+	typedef T base_type;
 	typedef T value_type;
 
 	enum { is_single = 1 };
 	enum { is_vector = 0 };
 	enum { is_animation = 0 };
+	static bool isDisplayed() { return true; }
+	static bool isPersistent() { return true; }
+	static bool isNumerical() { return false; }
 
 	static QString valueTypeName() { return ""; } // Override for each type
 	static QString valueTypeNamePlural() { return valueTypeName() + "s"; }
 	static QString description() { return valueTypeName(); }
-	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
-	static int fullType() { return BaseData::getFullTypeOfSingleValue(valueType()); }
-	static bool isDisplayed() { return true; }
-	static bool isPersistent() { return true; }
-	static bool isNumerical() { return false; }
-	static int size(const data_type& /*d*/) { return 1; }
-	static void clear(data_type& d, int /*size*/, bool init) { if(init) d.setValue(T()); }
+	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
+	static int fullTypeId() { return DataTypeId::getFullTypeOfSingleValue(valueTypeId()); }
+	static int size(const value_type& /*v*/) { return 1; }
+	static void clear(value_type& v, int /*size*/, bool init) { if(init) v = T(); }
 	static double getNumerical(const value_type& /*v*/, int /*index*/) { return 0; }
 	static void setNumerical(value_type& /*v*/, double /*val*/, int /*index*/) { }
 	static QTextStream& writeValue(QTextStream& stream, const value_type& v) { return stream << v; }
@@ -47,8 +81,10 @@ public:
 	static void readValue(QDomElement&, value_type&) {}
 	static void copyValue(data_type* data, const BaseData* parent)
 	{
+		auto trait = data->getDataTrait();
+		auto parentTrait = parent->getDataTrait();
 		// First we try without conversion
-		if(parent->isVector())
+		if(parentTrait->isVector())
 		{
 			// The parent is a vector of T
 			const Data< QVector<T> >* castedVectorParent = dynamic_cast<const Data< QVector<T> >*>(parent);
@@ -61,7 +97,7 @@ public:
 				return;
 			}
 		}
-		else if(parent->isSingleValue())
+		else if(parentTrait->isSingleValue())
 		{
 			// Same type
 			const Data<T>* castedParent = dynamic_cast<const Data<T>*>(parent);
@@ -73,39 +109,90 @@ public:
 		}
 
 		// Else we try a conversion
-		if(data->isNumerical() && parent->isNumerical())
+		if(trait->isNumerical() && parentTrait->isNumerical())
 		{
 			auto value = data->getAccessor();
-			setNumerical(value.wref(), parent->getNumerical(0), 0);
+			setNumerical(value.wref(), parentTrait->getNumerical(parent->getVoidValue(), 0), 0);
 		}
 	}
 };
 
+//***************************************************************//
+
 template<class T>
-class data_trait< QVector<T> >
+class VirtualDataTrait : public AbstractDataTrait
+{
+public:
+	typedef T value_type;
+	typedef DataTrait<value_type> value_trait;
+
+	static VirtualDataTrait* get() { static VirtualDataTrait<value_type> trait; return &trait; }
+
+	virtual const AbstractDataTrait* baseTypeTrait() const
+	{ return VirtualDataTrait<value_trait::base_type>::get(); }
+	virtual const AbstractDataTrait* valueTypeTrait() const
+	{ return VirtualDataTrait<value_trait::value_type>::get(); }
+
+	virtual bool isSingleValue() const	{ return value_trait::is_single; }
+	virtual bool isVector() const		{ return value_trait::is_vector; }
+	virtual bool isAnimation() const	{ return value_trait::is_animation; }
+	virtual bool isDisplayed() const	{ return value_trait::isDisplayed(); }
+	virtual bool isPersistent() const	{ return value_trait::isPersistent(); }
+	virtual bool isNumerical() const	{ return value_trait::isNumerical(); }
+
+	virtual QString valueTypeName() const { return value_trait::valueTypeName(); }
+	virtual QString valueTypeNamePlural() const { return value_trait::valueTypeNamePlural(); }
+	virtual QString description() const { return value_trait::description(); }
+	virtual int valueTypeId() const { return value_trait::valueTypeId(); }
+	virtual int fullTypeId() const { return value_trait::fullTypeId(); }
+
+	virtual int size(const void* value) const
+	{ return value_trait::size(*static_cast<const value_type*>(value)); }
+	virtual void clear(void* value, int size, bool init) const
+	{ return value_trait::clear(*static_cast<value_type*>(value), size, init); }
+	virtual double getNumerical(const void* value, int index) const
+	{ return value_trait::getNumerical(*static_cast<const value_type*>(value), index); }
+	virtual void setNumerical(void* value, double num, int index) const
+	{ return value_trait::setNumerical(*static_cast<value_type*>(value), num, index); }
+
+	virtual QTextStream& writeValue(QTextStream& stream, const void* value) const
+	{ return value_trait::writeValue(stream, *static_cast<const value_type*>(value)); }
+	virtual QTextStream& readValue(QTextStream& stream, void* value) const
+	{ return value_trait::readValue(stream, *static_cast<value_type*>(value)); }
+	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const
+	{ return value_trait::writeValue(doc, elem, *static_cast<const value_type*>(value)); }
+	virtual void readValue(QDomElement& doc, void* value) const
+	{ return value_trait::readValue(doc, *static_cast<value_type*>(value)); }
+};
+
+//***************************************************************//
+
+
+template<class T>
+class DataTrait< QVector<T> >
 {
 public:
 	typedef QVector<T> vector_type;
 	typedef Data<vector_type> data_type;
+	typedef T base_type;
 	typedef T value_type;
-	typedef data_trait<T> base_traits;
+	typedef DataTrait<base_type> base_trait;
 
 	enum { is_single = 0 };
 	enum { is_vector = 1 };
 	enum { is_animation = 0 };
+	static bool isDisplayed() { return base_trait::isDisplayed(); }
+	static bool isPersistent() { return base_trait::isPersistent(); }
+	static bool isNumerical() { return base_trait::isNumerical(); }
 
-	static QString valueTypeName() { return base_traits::valueTypeName(); }
-	static QString valueTypeNamePlural() { return base_traits::valueTypeNamePlural(); }
+	static QString valueTypeName() { return base_trait::valueTypeName(); }
+	static QString valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
 	static QString description() { return valueTypeName() + "_vector"; }
-	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
-	static int fullType() { return BaseData::getFullTypeOfVector(valueType()); }
-	static bool isDisplayed() { return base_traits::isDisplayed(); }
-	static bool isPersistent() { return base_traits::isPersistent(); }
-	static bool isNumerical() { return base_traits::isNumerical(); }
-	static int size(const data_type& d) { return d.getValue().size(); }
-	static void clear(data_type& d, int size, bool init)
+	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
+	static int fullTypeId() { return DataTypeId::getFullTypeOfVector(valueTypeId()); }
+	static int size(const vector_type& v) { return v.size(); }
+	static void clear(vector_type& v, int size, bool init)
 	{
-		auto v = d.getAccessor();
 		if(init)
 			v.clear();
 		v.resize(size);
@@ -114,23 +201,23 @@ public:
 	{
 		if(index < 0 || index >= vec.size())
 			return 0.0;
-		return base_traits::getNumerical(vec[index], 0);
+		return base_trait::getNumerical(vec[index], 0);
 	}
 	static void setNumerical(vector_type& vec, double val, int index)
 	{
 		if(index >= 0 && index < vec.size())
-			base_traits::setNumerical(vec[index], val, 0);
+			base_trait::setNumerical(vec[index], val, 0);
 	}
 	static QTextStream& writeValue(QTextStream& stream, const vector_type& vec)
 	{
 		int size = vec.size();
 		if(size)
 		{
-			base_traits::writeValue(stream, vec[0]);
+			base_trait::writeValue(stream, vec[0]);
 			for(int i=1; i<size; ++i)
 			{
 				stream << " ";
-				base_traits::writeValue(stream, vec[i]);
+				base_trait::writeValue(stream, vec[i]);
 			}
 		}
 		return stream;
@@ -141,7 +228,7 @@ public:
 		T t = T();
 		while(!stream.atEnd())
 		{
-			base_traits::readValue(stream, t);
+			base_trait::readValue(stream, t);
 			vec.push_back(t);
 		}
 		return stream;
@@ -151,7 +238,7 @@ public:
 		for(auto& v : vec)
 		{
 			QDomElement node = doc.createElement("Value");
-			base_traits::writeValue(doc, node, v);
+			base_trait::writeValue(doc, node, v);
 			elem.appendChild(node);
 		}
 	}
@@ -162,15 +249,17 @@ public:
 		QDomElement e = elem.firstChildElement("Value");
 		while(!e.isNull())
 		{
-			base_traits::readValue(e, t);
+			base_trait::readValue(e, t);
 			vec.push_back(t);
 			e = e.nextSiblingElement("Value");
 		}
 	}
 	static void copyValue(data_type* data, const BaseData* parent)
 	{
+		auto trait = data->getDataTrait();
+		auto parentTrait = parent->getDataTrait();
 		// First we try without conversion
-		if(parent->isVector())
+		if(parentTrait->isVector())
 		{
 			// Same type (both vectors)
 			const Data< QVector<T> >* castedParent = dynamic_cast<const Data< QVector<T> >*>(parent);
@@ -180,7 +269,7 @@ public:
 				return;
 			}
 		}
-		else if(parent->isAnimation())
+		else if(parentTrait->isAnimation())
 		{
 			// The parent is not a vector of T, but an animation of type T
 			const Data< Animation<T> >* castedAnimationParent = dynamic_cast<const Data< Animation<T> >*>(parent);
@@ -191,7 +280,7 @@ public:
 				return;
 			}
 		}
-		else if(parent->isSingleValue())
+		else if(parentTrait->isSingleValue())
 		{
 			// The parent is not a vector of T, but a single value of type T
 			const Data<T>* castedSingleValueParent = dynamic_cast<const Data<T>*>(parent);
@@ -205,42 +294,46 @@ public:
 		}
 
 		// Else we try a conversion
-		if(data->isNumerical() && parent->isNumerical())
+		if(trait->isNumerical() && parentTrait->isNumerical())
 		{
-			int size = parent->getSize();
+			auto parentValue = parent->getVoidValue();
+			int size = parentTrait->size(parentValue);
 			auto value = data->getAccessor();
 			value.resize(size);
 			for(int i=0; i<size; ++i)
-				setNumerical(value.wref(), parent->getNumerical(i), i);
+				setNumerical(value.wref(), parentTrait->getNumerical(parentValue, i), i);
 		}
 	}
 };
 
+//***************************************************************//
+
 template<class T>
-class data_trait< Animation<T> >
+class DataTrait< Animation<T> >
 {
 public:
 	typedef Animation<T> animation_type;
 	typedef Data<animation_type> data_type;
+	typedef T base_type;
 	typedef T value_type;
-	typedef data_trait<T> base_traits;
+	typedef DataTrait<base_type> base_trait;
 
 	enum { is_single = 0 };
 	enum { is_vector = 0 };
 	enum { is_animation = 1 };
+	static bool isDisplayed() { return base_trait::isDisplayed(); }
+	static bool isPersistent() { return base_trait::isPersistent(); }
+	static bool isNumerical() { return base_trait::isNumerical(); }
 
-	static QString valueTypeName() { return base_traits::valueTypeName(); }
-	static QString valueTypeNamePlural() { return base_traits::valueTypeNamePlural(); }
+	static QString valueTypeName() { return base_trait::valueTypeName(); }
+	static QString valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
 	static QString description() { return valueTypeName() + "_animation"; }
-	static int valueType() { return BaseData::getValueTypeOf<value_type>(); }
-	static int fullType() { return BaseData::getFullTypeOfAnimation(valueType()); }
-	static bool isDisplayed() { return base_traits::isDisplayed(); }
-	static bool isPersistent() { return base_traits::isPersistent(); }
-	static bool isNumerical() { return base_traits::isNumerical(); }
-	static int size(const data_type& d) { return d.getValue().size(); }
-	static void clear(data_type& d, int /*size*/, bool /*init*/)
+	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
+	static int fullTypeId() { return DataTypeId::getFullTypeOfAnimation(valueTypeId()); }
+	static int size(const animation_type& a) { return a.size(); }
+	static void clear(animation_type& a, int /*size*/, bool /*init*/)
 	{
-		d.getAccessor().clear();
+		a.clear();
 	}
 	static double getNumerical(const animation_type& /*anim*/, int /*index*/) { return 0.0; }
 	static void setNumerical(animation_type& /*anim*/, double /*val*/, int /*index*/) { }
@@ -254,7 +347,7 @@ public:
 			{
 				iter.next();
 				stream << iter.key() << " ";
-				base_traits::writeValue(stream, iter.value());
+				base_trait::writeValue(stream, iter.value());
 				stream << " ";
 			}
 		}
@@ -268,7 +361,7 @@ public:
 		while(!stream.atEnd())
 		{
 			stream >> key;
-			base_traits::readValue(stream, val);
+			base_trait::readValue(stream, val);
 			anim.add(key, val);
 		}
 		return stream;
@@ -281,7 +374,7 @@ public:
 			iter.next();
 			QDomElement node = doc.createElement("Value");
 			node.setAttribute("key", iter.key());
-			base_traits::writeValue(doc, node, iter.value());
+			base_trait::writeValue(doc, node, iter.value());
 			elem.appendChild(node);
 		}
 	}
@@ -294,15 +387,16 @@ public:
 		while(!e.isNull())
 		{
 			key = e.attribute("key").toDouble();
-			base_traits::readValue(e, val);
+			base_trait::readValue(e, val);
 			anim.add(key, val);
 			e = e.nextSiblingElement("Value");
 		}
 	}
 	static void copyValue(data_type* data, const BaseData* parent)
 	{
+		auto parentTrait = parent->getDataTrait();
 		// Without conversion
-		if(parent->isAnimation())
+		if(parentTrait->isAnimation())
 		{
 			// Same type (both animations)
 			const Data< Animation<T> >* castedAnimationParent = dynamic_cast<const Data< Animation<T> >*>(parent);
@@ -320,25 +414,25 @@ public:
 
 //***************************************************************//
 
-template<> QString data_trait<int>::valueTypeName() { return "integer"; }
-template<> QString data_trait<double>::valueTypeName() { return "real"; }
-template<> QString data_trait<QColor>::valueTypeName() { return "color"; }
-template<> QString data_trait<QPointF>::valueTypeName() { return "point"; }
-template<> QString data_trait<QRectF>::valueTypeName() { return "rectangle"; }
-template<> QString data_trait<QString>::valueTypeName() { return "text"; }
-template<> QString data_trait<QImage>::valueTypeName() { return "image"; }
+template<> QString DataTrait<int>::valueTypeName() { return "integer"; }
+template<> QString DataTrait<double>::valueTypeName() { return "real"; }
+template<> QString DataTrait<QColor>::valueTypeName() { return "color"; }
+template<> QString DataTrait<QPointF>::valueTypeName() { return "point"; }
+template<> QString DataTrait<QRectF>::valueTypeName() { return "rectangle"; }
+template<> QString DataTrait<QString>::valueTypeName() { return "text"; }
+template<> QString DataTrait<QImage>::valueTypeName() { return "image"; }
 
-template<> bool data_trait<QImage>::isDisplayed() { return false; }
-template<> bool data_trait<QImage>::isPersistent() { return false; }
+template<> bool DataTrait<QImage>::isDisplayed() { return false; }
+template<> bool DataTrait<QImage>::isPersistent() { return false; }
 
-template<> bool data_trait<int>::isNumerical() { return true; }
-template<> bool data_trait<double>::isNumerical() { return true; }
+template<> bool DataTrait<int>::isNumerical() { return true; }
+template<> bool DataTrait<double>::isNumerical() { return true; }
 
 //***************************************************************//
 // Overrides for get/setNumerical
 
 template<>
-double data_trait<int>::getNumerical(const value_type& v, int index)
+double DataTrait<int>::getNumerical(const value_type& v, int index)
 {
 	if(index == 0)
 		return v;
@@ -346,14 +440,14 @@ double data_trait<int>::getNumerical(const value_type& v, int index)
 }
 
 template<>
-void data_trait<int>::setNumerical(value_type& v, double val, int index)
+void DataTrait<int>::setNumerical(value_type& v, double val, int index)
 {
 	if(index == 0)
 		v = static_cast<int>(val);
 }
 
 template<>
-double data_trait<double>::getNumerical(const value_type& v, int index)
+double DataTrait<double>::getNumerical(const value_type& v, int index)
 {
 	if(index == 0)
 		return v;
@@ -361,14 +455,14 @@ double data_trait<double>::getNumerical(const value_type& v, int index)
 }
 
 template<>
-void data_trait<double>::setNumerical(value_type& v, double val, int index)
+void DataTrait<double>::setNumerical(value_type& v, double val, int index)
 {
 	if(index == 0)
 		v = val;
 }
 
 template<>
-double data_trait< Animation<double> >::getNumerical(const animation_type& anim, int index)
+double DataTrait< Animation<double> >::getNumerical(const animation_type& anim, int index)
 {
 	if(index < 0 || index >= anim.size())
 		return 0.0;
@@ -376,7 +470,7 @@ double data_trait< Animation<double> >::getNumerical(const animation_type& anim,
 }
 
 template<>
-void data_trait< Animation<double> >::setNumerical(animation_type& anim, double val, int index)
+void DataTrait< Animation<double> >::setNumerical(animation_type& anim, double val, int index)
 {
 	if(index >= 0 && index < anim.size())
 		anim.getValueAtIndex(index) = val;
@@ -386,19 +480,19 @@ void data_trait< Animation<double> >::setNumerical(animation_type& anim, double 
 // Overrides for writeValue
 
 template<>
-QTextStream& data_trait<QColor>::writeValue(QTextStream& stream, const QColor& v)
+QTextStream& DataTrait<QColor>::writeValue(QTextStream& stream, const QColor& v)
 { return stream << QString("#%1").arg(v.rgba(), 8, 16, QChar('0')).toUpper(); }
 
 template<>
-QTextStream& data_trait<QPointF>::writeValue(QTextStream& stream, const QPointF& v)
+QTextStream& DataTrait<QPointF>::writeValue(QTextStream& stream, const QPointF& v)
 { return stream << v.x() << " " << v.y(); }
 
 template<>
-QTextStream& data_trait<QRectF>::writeValue(QTextStream& stream, const QRectF& v)
+QTextStream& DataTrait<QRectF>::writeValue(QTextStream& stream, const QRectF& v)
 { return stream << v.left() << " " << v.top() << " " << v.right() << " " << v.bottom(); }
 
 template<>
-QTextStream& data_trait< QVector<QString> >::writeValue(QTextStream& stream, const QVector<QString>& v)
+QTextStream& DataTrait< QVector<QString> >::writeValue(QTextStream& stream, const QVector<QString>& v)
 {
 	if(v.empty())
 		return stream;
@@ -409,14 +503,14 @@ QTextStream& data_trait< QVector<QString> >::writeValue(QTextStream& stream, con
 }
 
 template<>
-QTextStream& data_trait<QImage>::writeValue(QTextStream& stream, const QImage&)
+QTextStream& DataTrait<QImage>::writeValue(QTextStream& stream, const QImage&)
 { return stream; } // Use a SaveImage object instead
 
 //***************************************************************//
 // Overrides for readValue
 
 template<>
-QTextStream& data_trait<QColor>::readValue(QTextStream& stream, QColor& v)
+QTextStream& DataTrait<QColor>::readValue(QTextStream& stream, QColor& v)
 {
 	QString temp;
 	stream >> temp;
@@ -427,7 +521,7 @@ QTextStream& data_trait<QColor>::readValue(QTextStream& stream, QColor& v)
 }
 
 template<>
-QTextStream& data_trait<QRectF>::readValue(QTextStream& stream, QRectF& v)
+QTextStream& DataTrait<QRectF>::readValue(QTextStream& stream, QRectF& v)
 {
 	double l, t, r, b;
 	stream >> l >> t >> r >> b;
@@ -436,11 +530,11 @@ QTextStream& data_trait<QRectF>::readValue(QTextStream& stream, QRectF& v)
 }
 
 template<>
-QTextStream& data_trait<QPointF>::readValue(QTextStream& stream, QPointF& v)
+QTextStream& DataTrait<QPointF>::readValue(QTextStream& stream, QPointF& v)
 { return stream >> v.rx() >> v.ry(); }
 
 template<>
-QTextStream& data_trait< QVector<QString> >::readValue(QTextStream& stream, QVector<QString>& v)
+QTextStream& DataTrait< QVector<QString> >::readValue(QTextStream& stream, QVector<QString>& v)
 {
 	v.clear();
 	while(!stream.atEnd())
@@ -452,44 +546,44 @@ QTextStream& data_trait< QVector<QString> >::readValue(QTextStream& stream, QVec
 }
 
 template<>
-QTextStream& data_trait<QImage>::readValue(QTextStream& stream, QImage&)
+QTextStream& DataTrait<QImage>::readValue(QTextStream& stream, QImage&)
 { return stream; } // Not saving images (save it as a separate file and use a LoadImage object)
 
 template<>
-QTextStream& data_trait<QString>::readValue(QTextStream& stream, QString& v)
+QTextStream& DataTrait<QString>::readValue(QTextStream& stream, QString& v)
 { v = stream.readLine(); return stream; }
 
 //***************************************************************//
 // Overrides for writeValue xml
 
 template<>
-void data_trait<int>::writeValue(QDomDocument&, QDomElement& elem, const int& v)
+void DataTrait<int>::writeValue(QDomDocument&, QDomElement& elem, const int& v)
 { elem.setAttribute("int", v); }
 
 template<>
-void data_trait<double>::writeValue(QDomDocument&, QDomElement& elem, const double& v)
+void DataTrait<double>::writeValue(QDomDocument&, QDomElement& elem, const double& v)
 { elem.setAttribute("double", v); }
 
 template<>
-void data_trait<QColor>::writeValue(QDomDocument&, QDomElement& elem, const QColor& v)
+void DataTrait<QColor>::writeValue(QDomDocument&, QDomElement& elem, const QColor& v)
 {	elem.setAttribute("r", v.red());
 	elem.setAttribute("g", v.green());
 	elem.setAttribute("b", v.blue());
 	elem.setAttribute("a", v.alpha()); }
 
 template<>
-void data_trait<QPointF>::writeValue(QDomDocument&, QDomElement& elem, const QPointF& v)
+void DataTrait<QPointF>::writeValue(QDomDocument&, QDomElement& elem, const QPointF& v)
 { elem.setAttribute("x", v.x()); elem.setAttribute("y", v.y()); }
 
 template<>
-void data_trait<QRectF>::writeValue(QDomDocument&, QDomElement& elem, const QRectF& v)
+void DataTrait<QRectF>::writeValue(QDomDocument&, QDomElement& elem, const QRectF& v)
 {	elem.setAttribute("l", v.left());
 	elem.setAttribute("t", v.top());
 	elem.setAttribute("r", v.right());
 	elem.setAttribute("b", v.bottom()); }
 
 template<>
-void data_trait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const QString& v)
+void DataTrait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const QString& v)
 {
 	QDomText node = doc.createTextNode(v);
 	elem.appendChild(node);
@@ -499,27 +593,27 @@ void data_trait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const
 // Overrides for readValue xml
 
 template<>
-void data_trait<int>::readValue(QDomElement& elem, int& v)
+void DataTrait<int>::readValue(QDomElement& elem, int& v)
 { v = elem.attribute("int").toInt(); }
 
 template<>
-void data_trait<double>::readValue(QDomElement& elem, double& v)
+void DataTrait<double>::readValue(QDomElement& elem, double& v)
 { v = elem.attribute("double").toDouble(); }
 
 template<>
-void data_trait<QColor>::readValue(QDomElement& elem, QColor& v)
+void DataTrait<QColor>::readValue(QDomElement& elem, QColor& v)
 {	v.setRed(  elem.attribute("r").toInt());
 	v.setGreen(elem.attribute("g").toInt());
 	v.setBlue( elem.attribute("b").toInt());
 	v.setAlpha(elem.attribute("a").toInt()); }
 
 template<>
-void data_trait<QPointF>::readValue(QDomElement& elem, QPointF& v)
+void DataTrait<QPointF>::readValue(QDomElement& elem, QPointF& v)
 {	v.setX(elem.attribute("x").toDouble());
 	v.setY(elem.attribute("y").toDouble()); }
 
 template<>
-void data_trait<QRectF>::readValue(QDomElement& elem, QRectF& v)
+void DataTrait<QRectF>::readValue(QDomElement& elem, QRectF& v)
 {	v.setLeft(  elem.attribute("l").toDouble());
 	v.setTop(   elem.attribute("t").toDouble());
 	v.setRight( elem.attribute("r").toDouble());
@@ -527,7 +621,7 @@ void data_trait<QRectF>::readValue(QDomElement& elem, QRectF& v)
 }
 
 template<>
-void data_trait<QString>::readValue(QDomElement& elem, QString& v)
+void DataTrait<QString>::readValue(QDomElement& elem, QString& v)
 {
 	v = elem.text();
 }
@@ -540,7 +634,7 @@ T valueFromString(const QString& text)
 	T val = T();
 	QString copy = text;
 	QTextStream stream(&copy, QIODevice::ReadOnly);
-	data_trait<T>::readValue(stream, val);
+	DataTrait<T>::readValue(stream, val);
 	return val;
 }
 
@@ -549,7 +643,7 @@ QString valueToString(const T& val)
 {
 	QString tempString;
 	QTextStream stream(&tempString, QIODevice::WriteOnly);
-	data_trait<T>::writeValue(stream, val);
+	DataTrait<T>::writeValue(stream, val);
 	return tempString;
 }
 

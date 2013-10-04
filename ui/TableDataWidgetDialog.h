@@ -26,11 +26,11 @@ class TableDataWidgetDialog : public BaseTableDataWidgetDialog
 {
 protected:
 	typedef T value_type;
-	typedef panda::Data<T> data_type;
-	typedef vector_data_trait<value_type> rowTrait;
-	typedef typename rowTrait::row_type row_type;
-	typedef flat_data_trait<row_type> itemTrait;
-	typedef typename itemTrait::item_type item_type;
+	typedef panda::Data<value_type> data_type;
+	typedef VectorDataTrait<value_type> row_trait;
+	typedef typename row_trait::row_type row_type;
+	typedef FlatDataTrait<row_type> item_trait;
+	typedef typename item_trait::item_type item_type;
 
 	bool readOnly;
 	QTableWidget* tableWidget;
@@ -47,7 +47,7 @@ public:
 	{
 		QVBoxLayout* mainLayout = new QVBoxLayout(this);
 
-		if(!readOnly && rowTrait::is_vector)
+		if(!readOnly && row_trait::is_vector)
 		{
 			resizeWidget = new QWidget(this);
 			QLabel* resizeLabel = new QLabel(tr("Size"));
@@ -91,13 +91,12 @@ public:
 		if(!readOnly)
 			itemFlags |= Qt::ItemIsEditable;
 
-		int nbRows = rowTrait::size(v);
-		int nbCols = itemTrait::size();
-
+		int nbRows = row_trait::size(v);
+		int nbCols = item_trait::size();
 
 		tableWidget->setColumnCount(nbCols);
 		if(nbCols > 1)
-			tableWidget->setHorizontalHeaderLabels(itemTrait::header());
+			tableWidget->setHorizontalHeaderLabels(item_trait::header());
 		else
 			tableWidget->horizontalHeader()->hide();
 
@@ -105,12 +104,12 @@ public:
 
 		for(int i = 0; i<nbRows; ++i)
 		{
-			const row_type* row = rowTrait::get(v, i);
+			const row_type* row = row_trait::get(v, i);
 			if(row)
 			{
 				for(int j=0; j<nbCols; ++j)
 				{
-					QTableWidgetItem *item = new QTableWidgetItem(panda::valueToString(itemTrait::get(*row, j)));
+					QTableWidgetItem *item = new QTableWidgetItem(panda::valueToString(item_trait::get(*row, j)));
 					item->setFlags(itemFlags);
 					tableWidget->setItem(i, j, item);
 				}
@@ -121,14 +120,14 @@ public:
 	value_type readFromTable()
 	{
 		int nbRows = tableWidget->rowCount();
-		int nbCols = itemTrait::size();
+		int nbCols = item_trait::size();
 
 		value_type v;
-		rowTrait::resize(v, nbRows);
+		row_trait::resize(v, nbRows);
 
 		for(int i = 0; i<nbRows; ++i)
 		{
-			const row_type* row = rowTrait::get(v, i);
+			const row_type* row = row_trait::get(v, i);
 			if(row)
 			{
 				row_type rowVal = *row;
@@ -138,11 +137,11 @@ public:
 					if(item)
 					{
 						item_type val = panda::valueFromString<item_type>(item->text());
-						itemTrait::set(rowVal, val, j);
+						item_trait::set(rowVal, val, j);
 					}
 				}
 
-				rowTrait::set(v, rowVal, i);
+				row_trait::set(v, rowVal, i);
 			}
 		}
 
@@ -154,7 +153,7 @@ public:
 		updateTable(v);
 
 		// Resize the view in single value mode
-		if(rowTrait::is_single)
+		if(row_trait::is_single)
 		{
 			tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 			tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
@@ -189,7 +188,7 @@ public:
 
 		if(oldSize < size)
 		{
-			itemTrait::item_type val = itemTrait::item_type();
+			item_trait::item_type val = item_trait::item_type();
 			QString text;
 			QTextStream stream(&text, QIODevice::WriteOnly);
 			stream << val;

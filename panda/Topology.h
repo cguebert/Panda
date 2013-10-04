@@ -124,12 +124,12 @@ protected:
 
 //***************************************************************//
 
-template<> QString data_trait<Topology>::valueTypeName() { return "topology"; }
-template<> QString data_trait<Topology>::valueTypeNamePlural() { return "topologies"; }
-template<> bool data_trait<Topology>::isDisplayed() { return false; }
+template<> QString DataTrait<Topology>::valueTypeName() { return "topology"; }
+template<> QString DataTrait<Topology>::valueTypeNamePlural() { return "topologies"; }
+template<> bool DataTrait<Topology>::isDisplayed() { return false; }
 
 template<>
-void data_trait<Topology>::writeValue(QDomDocument& doc, QDomElement& elem, const Topology& v)
+void DataTrait<Topology>::writeValue(QDomDocument& doc, QDomElement& elem, const Topology& v)
 {
 	for(const auto& p : v.getPoints())
 	{
@@ -161,7 +161,7 @@ void data_trait<Topology>::writeValue(QDomDocument& doc, QDomElement& elem, cons
 }
 
 template<>
-void data_trait<Topology>::readValue(QDomElement& elem, Topology& v)
+void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
 {
 	Topology tmp;
 

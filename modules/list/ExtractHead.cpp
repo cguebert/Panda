@@ -19,7 +19,7 @@ public:
 		addInput(&generic);
 
 		GenericDataDefinitionList defList;
-		int listType = BaseData::getFullTypeOfVector(0);
+		int listType = DataTypeId::getFullTypeOfVector(0);
 		defList.append(GenericDataDefinition(listType,
 											 true, false,
 											 "input",

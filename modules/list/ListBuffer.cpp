@@ -23,7 +23,7 @@ public:
 		addInput(&resetData);
 		addInput(&generic);
 
-		int typeOfList = BaseData::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
+		int typeOfList = DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
 		defList.append(GenericDataDefinition(typeOfList,
 											 true, false,

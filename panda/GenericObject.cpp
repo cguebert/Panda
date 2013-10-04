@@ -57,7 +57,7 @@ void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefin
 
 BaseData* GenericObject::createDatas(int type)
 {
-	int valueType = BaseData::getValueType(type);
+	int valueType = DataTypeId::getValueType(type);
 
 	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
 	createdDatasStruct->type = type;
@@ -80,8 +80,8 @@ BaseData* GenericObject::createDatas(int type)
 		dataName += QString(" #%2").arg(index);	// Add the count
 
 		int dataType = dataDefinitions_[i].type;
-		if(!BaseData::getValueType(dataType))	// Use the type of the connected Data
-			dataType = BaseData::replaceValueType(dataType, valueType);
+		if(!DataTypeId::getValueType(dataType))	// Use the type of the connected Data
+			dataType = DataTypeId::replaceValueType(dataType, valueType);
 
 		BaseData* data = DataFactory::getInstance()->create(dataType, dataName, dataDefinitions_[i].help, this);
 
@@ -155,7 +155,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 {
 	if(data == genericData_)
 	{
-		int type = parent->getValueType();
+		int type = parent->getDataTrait()->valueTypeId();
 		BaseData *inputData = createDatas(type);
 
 		if(inputData)
@@ -224,7 +224,7 @@ void GenericObject::load(QDomElement& elem)
 
 bool GenericData::validParent(const BaseData* parent) const
 {
-	if(allowedTypes.size() && !allowedTypes.contains(parent->getValueType()))
+	if(allowedTypes.size() && !allowedTypes.contains(parent->getDataTrait()->valueTypeId()))
 		return false;
 	return true;
 }
@@ -254,7 +254,7 @@ QString GenericData::getTypesName() const
 
 bool GenericSingleValueData::validParent(const BaseData* parent) const
 {
-	return parent->isSingleValue() && GenericData::validParent(parent);
+	return parent->getDataTrait()->isSingleValue() && GenericData::validParent(parent);
 }
 
 QString GenericSingleValueData::getDescription() const
@@ -265,7 +265,9 @@ QString GenericSingleValueData::getDescription() const
 bool GenericVectorData::validParent(const BaseData* parent) const
 {
 	// TEST :  now accepting single values also, as the conversion is automatic
-	return (parent->isVector() || parent->isSingleValue()) && GenericData::validParent(parent);
+	return (parent->getDataTrait()->isVector()
+			|| parent->getDataTrait()->isSingleValue())
+			&& GenericData::validParent(parent);
 }
 
 QString GenericVectorData::getDescription() const
@@ -275,7 +277,7 @@ QString GenericVectorData::getDescription() const
 
 bool GenericAnimationData::validParent(const BaseData* parent) const
 {
-	return parent->isAnimation() && GenericData::validParent(parent);
+	return parent->getDataTrait()->isAnimation() && GenericData::validParent(parent);
 }
 
 QString GenericAnimationData::getDescription() const

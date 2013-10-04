@@ -16,9 +16,10 @@ class Data : public BaseData
 public:
 	PANDA_CLASS(PANDA_TEMPLATE(Data, T), BaseData)
 	typedef T value_type;
-	typedef T& reference;
-	typedef const T& const_reference;
-	typedef T* pointer;
+	typedef value_type& reference;
+	typedef const value_type& const_reference;
+	typedef value_type* pointer;
+	typedef Data<value_type> data_type;
 
 	class InitData : public BaseData::BaseInitData
 	{
@@ -31,78 +32,35 @@ public:
 		: BaseData(init)
 		, value(value_type())
 	{
-		displayed = data_trait<T>::isDisplayed();
-		persistent = data_trait<T>::isPersistent();
+		displayed = DataTrait<value_type>::isDisplayed();
+		persistent = DataTrait<value_type>::isPersistent();
 	}
 
 	explicit Data(const InitData& init)
 		: BaseData(init)
 	{
 		value = init.value;
-		displayed = data_trait<T>::isDisplayed();
-		persistent = data_trait<T>::isPersistent();
+		displayed = DataTrait<value_type>::isDisplayed();
+		persistent = DataTrait<value_type>::isPersistent();
 	}
 
 	Data(const QString& name, const QString& help, PandaObject* owner)
 		: BaseData(name, help, owner)
 	{
-		displayed = data_trait<T>::isDisplayed();
-		persistent = data_trait<T>::isPersistent();
+		displayed = DataTrait<value_type>::isDisplayed();
+		persistent = DataTrait<value_type>::isPersistent();
 	}
 
 	virtual ~Data() {}
 
-	virtual bool isSingleValue() const
-	{ return data_trait<T>::is_single; }
+	virtual const AbstractDataTrait* getDataTrait() const
+	{ return VirtualDataTrait<value_type>::get(); }
 
-	virtual bool isVector() const
-	{ return data_trait<T>::is_vector; }
+	virtual const void* getVoidValue() const
+	{ return &getValue(); }
 
-	virtual bool isAnimation() const
-	{ return data_trait<T>::is_animation; }
-
-	virtual int getValueType() const
-	{ return data_trait<T>::valueType(); }
-
-	virtual QString getValueTypeName() const
-	{ return data_trait<T>::valueTypeName(); }
-
-	virtual QString getValueTypeNamePlural() const
-	{ return data_trait<T>::valueTypeNamePlural(); }
-
-	virtual int getSize() const
-	{ return data_trait<T>::size(*this); }
-
-	virtual void clear(int size = 0, bool init = false)
-	{ data_trait<T>::clear(*this, size, init); }
-
-	virtual bool isNumerical() const
-	{ return data_trait<T>::isNumerical(); }
-
-	virtual double getNumerical(int index) const	// TODO: REDO
-	{
-		updateIfDirty();
-		return data_trait<T>::getNumerical(value, index);
-	}
-
-	virtual void setNumerical(double val, int index) // TODO: REDO
-	{ data_trait<T>::setNumerical(value, val, index); }
-
-	virtual void* getValueVoidPtr()
-	{
-		updateIfDirty();
-		return &value;
-	}
-
-	virtual void fromString(const QString& text)
-	{
-		beginEdit();
-		value = valueFromString<T>(text);
-		endEdit();
-	}
-
-	helper::DataAccessor< Data<value_type> > getAccessor()
-	{ return helper::DataAccessor< Data<T> >(*this); }
+	helper::DataAccessor<data_type> getAccessor()
+	{ return helper::DataAccessor<data_type>(*this); }
 
 	inline void setValue(const_reference v)
 	{
@@ -118,25 +76,22 @@ public:
 
 	virtual void copyValueFrom(const BaseData* parent)
 	{
-		data_trait<T>::copyValue(this, parent);
+		DataTrait<value_type>::copyValue(this, parent);
 		isValueSet = true;
 	}
 
 	virtual void save(QDomDocument& doc, QDomElement& elem)
-	{ data_trait<T>::writeValue(doc, elem, value); }
+	{ DataTrait<value_type>::writeValue(doc, elem, value); }
 
 	virtual void load(QDomElement& elem)
 	{
 		beginEdit();
-		data_trait<T>::readValue(elem, value);
+		DataTrait<value_type>::readValue(elem, value);
 		endEdit();
 	}
 
 protected:
-	virtual QString doToString() const
-	{ return valueToString(value); }
-
-	friend class helper::DataAccessor< Data<T> >;
+	friend class helper::DataAccessor<data_type>;
 
 	inline pointer beginEdit()
 	{
@@ -150,6 +105,12 @@ protected:
 		isValueSet = true;
 		BaseData::setDirtyOutputs();
 	}
+
+	virtual void* beginVoidEdit()
+	{ return beginEdit(); }
+
+	virtual void endVoidEdit()
+	{ endEdit(); }
 
 private:
 	T value;

@@ -7,7 +7,7 @@
 #include <QStringList>
 
 template<class T>
-class flat_data_trait
+class FlatDataTrait
 {
 public:
 	typedef T value_type;
@@ -22,7 +22,7 @@ public:
 //***************************************************************//
 
 template<>
-class flat_data_trait<QPointF>
+class FlatDataTrait<QPointF>
 {
 public:
 	typedef QPointF value_type;
@@ -58,7 +58,7 @@ public:
 //***************************************************************//
 
 template<>
-class flat_data_trait<QRectF>
+class FlatDataTrait<QRectF>
 {
 public:
 	typedef QRectF value_type;
@@ -98,7 +98,7 @@ public:
 //***************************************************************//
 
 template<class T>
-class vector_data_trait
+class VectorDataTrait
 {
 public:
 	typedef T vector_type;
@@ -122,7 +122,7 @@ public:
 //***************************************************************//
 
 template<class T>
-class vector_data_trait< QVector<T> >
+class VectorDataTrait< QVector<T> >
 {
 public:
 	typedef QVector<T> vector_type;

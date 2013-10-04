@@ -19,17 +19,17 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create an animation of the same type as the data connected
-		defList.append(GenericDataDefinition(BaseData::getFullTypeOfAnimation(0),
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
 											 true, false,
 											 "input",
 											 "Animation to analyse"));
 		// Create a single double value
-		defList.append(GenericDataDefinition(BaseData::getFullTypeOfSingleValue(BaseData::getValueTypeOf<double>()),
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<double>()),
 											 false, true,
 											 "length",
 											 "Length of this animation"));
 		// Create a single int value
-		defList.append(GenericDataDefinition(BaseData::getFullTypeOfSingleValue(BaseData::getValueTypeOf<int>()),
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
 											 false, true,
 											 "size",
 											 "Number of keys in this animation"));

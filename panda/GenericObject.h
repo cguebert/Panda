@@ -3,6 +3,7 @@
 
 #include <panda/PandaObject.h>
 #include <panda/Topology.h>
+#include <panda/DataTypeId.h>
 
 #include <QList>
 #include <QMap>
@@ -137,7 +138,7 @@ typedef boost::mpl::vector<double, QColor, QPointF> allAnimationTypes;
 		functionCreatorWrapper(T* obj) : object(obj) {}		\
 		template<typename U> void operator()(U)				\
 		{													\
-			int type = BaseData::getValueTypeOf<U>();		\
+			int type = DataTypeId::getIdOf<U>();		\
 			object->registerFunction(type, &T::updateT<U>);	\
 		}													\
 	};														\
