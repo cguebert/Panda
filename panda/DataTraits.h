@@ -1,7 +1,6 @@
 #ifndef DATATRAITS_H
 #define DATATRAITS_H
 
-#include <panda/Data.h>
 #include <panda/DataTypeId.h>
 #include <panda/Animation.h>
 
@@ -14,10 +13,6 @@
 
 namespace panda
 {
-
-template<class T> class Data;
-
-//***************************************************************//
 
 class AbstractDataTrait
 {
@@ -55,7 +50,6 @@ template<class T>
 class DataTrait
 {
 public:
-	typedef Data<T> data_type;
 	typedef T base_type;
 	typedef T value_type;
 
@@ -79,42 +73,6 @@ public:
 	static QTextStream& readValue(QTextStream& stream, value_type& v) { return stream >> v; }
 	static void writeValue(QDomDocument&, QDomElement&, const value_type&) {}
 	static void readValue(QDomElement&, value_type&) {}
-	static void copyValue(data_type* data, const BaseData* parent)
-	{
-		auto trait = data->getDataTrait();
-		auto parentTrait = parent->getDataTrait();
-		// First we try without conversion
-		if(parentTrait->isVector())
-		{
-			// The parent is a vector of T
-			const Data< QVector<T> >* castedVectorParent = dynamic_cast<const Data< QVector<T> >*>(parent);
-			if(castedVectorParent)
-			{
-				if(castedVectorParent->getValue().size())
-					data->setValue(castedVectorParent->getValue()[0]);
-				else
-					data->setValue(T());
-				return;
-			}
-		}
-		else if(parentTrait->isSingleValue())
-		{
-			// Same type
-			const Data<T>* castedParent = dynamic_cast<const Data<T>*>(parent);
-			if(castedParent)
-			{
-				data->setValue(castedParent->getValue());
-				return;
-			}
-		}
-
-		// Else we try a conversion
-		if(trait->isNumerical() && parentTrait->isNumerical())
-		{
-			auto value = data->getAccessor();
-			setNumerical(value.wref(), parentTrait->getNumerical(parent->getVoidValue(), 0), 0);
-		}
-	}
 };
 
 //***************************************************************//
@@ -173,7 +131,6 @@ class DataTrait< QVector<T> >
 {
 public:
 	typedef QVector<T> vector_type;
-	typedef Data<vector_type> data_type;
 	typedef T base_type;
 	typedef T value_type;
 	typedef DataTrait<base_type> base_trait;
@@ -254,56 +211,6 @@ public:
 			e = e.nextSiblingElement("Value");
 		}
 	}
-	static void copyValue(data_type* data, const BaseData* parent)
-	{
-		auto trait = data->getDataTrait();
-		auto parentTrait = parent->getDataTrait();
-		// First we try without conversion
-		if(parentTrait->isVector())
-		{
-			// Same type (both vectors)
-			const Data< QVector<T> >* castedParent = dynamic_cast<const Data< QVector<T> >*>(parent);
-			if(castedParent)
-			{
-				data->setValue(castedParent->getValue());
-				return;
-			}
-		}
-		else if(parentTrait->isAnimation())
-		{
-			// The parent is not a vector of T, but an animation of type T
-			const Data< Animation<T> >* castedAnimationParent = dynamic_cast<const Data< Animation<T> >*>(parent);
-			if(castedAnimationParent)
-			{
-				auto vec = data->getAccessor();
-				vec = castedAnimationParent->getValue().getValues().toVector();
-				return;
-			}
-		}
-		else if(parentTrait->isSingleValue())
-		{
-			// The parent is not a vector of T, but a single value of type T
-			const Data<T>* castedSingleValueParent = dynamic_cast<const Data<T>*>(parent);
-			if(castedSingleValueParent)
-			{
-				auto vec = data->getAccessor();
-				vec.clear();
-				vec.push_back(castedSingleValueParent->getValue());
-				return;
-			}
-		}
-
-		// Else we try a conversion
-		if(trait->isNumerical() && parentTrait->isNumerical())
-		{
-			auto parentValue = parent->getVoidValue();
-			int size = parentTrait->size(parentValue);
-			auto value = data->getAccessor();
-			value.resize(size);
-			for(int i=0; i<size; ++i)
-				setNumerical(value.wref(), parentTrait->getNumerical(parentValue, i), i);
-		}
-	}
 };
 
 //***************************************************************//
@@ -313,7 +220,6 @@ class DataTrait< Animation<T> >
 {
 public:
 	typedef Animation<T> animation_type;
-	typedef Data<animation_type> data_type;
 	typedef T base_type;
 	typedef T value_type;
 	typedef DataTrait<base_type> base_trait;
@@ -391,24 +297,6 @@ public:
 			anim.add(key, val);
 			e = e.nextSiblingElement("Value");
 		}
-	}
-	static void copyValue(data_type* data, const BaseData* parent)
-	{
-		auto parentTrait = parent->getDataTrait();
-		// Without conversion
-		if(parentTrait->isAnimation())
-		{
-			// Same type (both animations)
-			const Data< Animation<T> >* castedAnimationParent = dynamic_cast<const Data< Animation<T> >*>(parent);
-			if(castedAnimationParent)
-			{
-				data->setValue(castedAnimationParent->getValue());
-				return;
-			}
-		}
-
-		// Not accepting conversions from non-animation datas
-		data->getAccessor().clear();
 	}
 };
 

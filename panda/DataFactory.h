@@ -12,6 +12,7 @@ namespace panda
 {
 
 class BaseData;
+class PandaObject;
 
 class BaseDataCreator
 {
