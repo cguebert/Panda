@@ -2,7 +2,7 @@
 #include <ui/SimpleDataWidget.h>
 
 template<>
-class data_widget_container< QColor > : public BaseOpenDialogObject
+class DataWidgetContainer< QColor > : public BaseOpenDialogObject
 {
 public:
 	typedef QColor value_type;
@@ -10,7 +10,7 @@ public:
 	QLabel* preview;
 	QColor theColor;
 
-	data_widget_container() : container(nullptr), preview(nullptr) {}
+	DataWidgetContainer() : container(nullptr), preview(nullptr) {}
 
 	QWidget* createWidgets(QWidget* parent, bool readOnly)
 	{

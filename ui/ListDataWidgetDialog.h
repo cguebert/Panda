@@ -21,7 +21,7 @@ public slots:
 	virtual void resizeValue() {}
 };
 
-template<class T, class Container = data_widget_container< VectorDataTrait<T>::row_type > >
+template<class T, class Container = DataWidgetContainer< VectorDataTrait<T>::row_type > >
 class ListDataWidgetDialog : public BaseListDataWidgetDialog
 {
 protected:

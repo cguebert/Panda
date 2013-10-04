@@ -11,7 +11,7 @@ class QLabel;
 /// This class is used to specify how to graphically represent a data type,
 /// by default using a simple QLineEdit
 template<class T>
-class data_widget_container
+class DataWidgetContainer
 {
 protected:
 	typedef T value_type;
@@ -20,7 +20,7 @@ protected:
 	QLineEdit* lineEdit;
 
 public:
-	data_widget_container() : lineEdit(nullptr) {}
+	DataWidgetContainer() : lineEdit(nullptr) {}
 
 	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
@@ -47,8 +47,8 @@ public:
 
 //***************************************************************//
 
-/// This class manages the GUI of a BaseData, using the corresponding instance of data_widget_container
-template<class T, class Container = data_widget_container<T> >
+/// This class manages the GUI of a BaseData, using the corresponding instance of DataWidgetContainer
+template<class T, class Container = DataWidgetContainer<T> >
 class SimpleDataWidget : public DataWidget<T>
 {
 protected:

@@ -4,14 +4,14 @@
 #include <QtWidgets>
 
 template<>
-class data_widget_container< int >
+class DataWidgetContainer< int >
 {
 protected:
 	typedef int value_type;
 	QSpinBox* spinBox;
 
 public:
-	data_widget_container() : spinBox(nullptr) {}
+	DataWidgetContainer() : spinBox(nullptr) {}
 
 	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
@@ -38,7 +38,7 @@ public:
 
 //***************************************************************//
 
-class checkbox_data_widget : public data_widget_container< int >
+class checkbox_data_widget : public DataWidgetContainer< int >
 {
 protected:
 	typedef int value_type;
@@ -69,14 +69,14 @@ public:
 //***************************************************************//
 
 template <>
-class data_widget_container< double >
+class DataWidgetContainer< double >
 {
 protected:
 	typedef double value_type;
 	QLineEdit* lineEdit;
 
 public:
-	data_widget_container() : lineEdit(nullptr) {}
+	DataWidgetContainer() : lineEdit(nullptr) {}
 
 	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
@@ -105,14 +105,14 @@ public:
 //***************************************************************//
 
 template<>
-class data_widget_container< QString >
+class DataWidgetContainer< QString >
 {
 protected:
 	typedef QString value_type;
 	QLineEdit* lineEdit;
 
 public:
-	data_widget_container() : lineEdit(nullptr) {}
+	DataWidgetContainer() : lineEdit(nullptr) {}
 
 	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
