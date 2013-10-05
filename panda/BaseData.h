@@ -90,8 +90,8 @@ public:
 
 	virtual void copyValueFrom(const BaseData* parent) = 0;
 
-	virtual void save(QDomDocument& doc, QDomElement& elem) = 0;
-	virtual void load(QDomElement& elem) = 0;
+	virtual void save(QDomDocument& doc, QDomElement& elem);
+	virtual void load(QDomElement& elem);
 
 protected:
 	virtual void doAddInput(DataNode* node);
@@ -102,6 +102,8 @@ protected:
 	friend class VoidDataAccessor;
 	virtual void* beginVoidEdit() = 0;
 	virtual void endVoidEdit() = 0;
+
+	void initFlags();
 
 	bool readOnly, displayed, persistent, input, output;
 	bool isValueSet;

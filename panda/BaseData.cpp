@@ -135,6 +135,17 @@ QString BaseData::getDescription() const
 	return QString();
 }
 
+void BaseData::save(QDomDocument& doc, QDomElement& elem)
+{
+	getDataTrait()->writeValue(doc, elem, getVoidValue());
+}
+
+void BaseData::load(QDomElement& elem)
+{
+	auto acc = getVoidAccessor();
+	getDataTrait()->readValue(elem, acc);
+}
+
 void BaseData::doAddInput(DataNode* node)
 {
 	if(dynamic_cast<PandaObject*>(node))
@@ -166,6 +177,12 @@ void BaseData::doRemoveOutput(DataNode* node)
 	DataNode::doRemoveOutput(node);
 	if(dynamic_cast<PandaObject*>(node))
 		input = false;
+}
+
+void BaseData::initFlags()
+{
+	displayed = getDataTrait()->isDisplayed();
+	persistent = getDataTrait()->isPersistent();
 }
 
 //***************************************************************//

@@ -3,6 +3,8 @@
 
 #include <panda/BaseClass.h>
 #include <panda/DataTraits.h>
+#include <panda/Data.h>
+#include <panda/DataCopier.h>
 
 #include <QList>
 #include <QSharedPointer>
@@ -79,10 +81,16 @@ public:
 	RegisterData() {}
 	operator int()
 	{
-		DataFactory::getInstance()->registerData(DataTrait<T::value_type>::description(),
-												 DataTrait<T::value_type>::fullTypeId(),
-												 T::getClass(),
-												 QSharedPointer< DataCreator<T> >::create());
+		typedef T value_type;
+		typedef Data<value_type> data_type;
+
+		data_type::setDataTrait(VirtualDataTrait<value_type>::get());
+		data_type::setDataCopier(VirtualDataCopier<value_type>::get());
+
+		DataFactory::getInstance()->registerData(DataTrait<value_type>::description(),
+												 DataTrait<value_type>::fullTypeId(),
+												 data_type::getClass(),
+												 QSharedPointer< DataCreator<data_type> >::create());
 		return 1;
 	}
 };

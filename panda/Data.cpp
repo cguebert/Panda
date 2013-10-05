@@ -33,24 +33,24 @@ template class Data< Animation<double> >;
 template class Data< Animation<QColor> >;
 template class Data< Animation<QPointF> >;
 
-int intDataClass = RegisterData< Data<int> >();
-int doubleDataClass = RegisterData< Data<double> >();
-int colorDataClass = RegisterData< Data<QColor> >();
-int pointDataClass = RegisterData< Data<QPointF> >();
-int rectDataClass = RegisterData< Data<QRectF> >();
-int stringDataClass = RegisterData< Data<QString> >();
-int imageDataClass = RegisterData< Data<QImage> >();
+int intDataClass = RegisterData< int >();
+int doubleDataClass = RegisterData< double >();
+int colorDataClass = RegisterData< QColor >();
+int pointDataClass = RegisterData< QPointF >();
+int rectDataClass = RegisterData< QRectF >();
+int stringDataClass = RegisterData< QString >();
+int imageDataClass = RegisterData< QImage >();
 
-int intVectorDataClass = RegisterData< Data< QVector<int> > >();
-int doubleVectorDataClass = RegisterData< Data< QVector<double> > >();
-int colorVectorDataClass = RegisterData< Data< QVector<QColor> > >();
-int pointVectorDataClass = RegisterData< Data< QVector<QPointF> > >();
-int rectVectorDataClass = RegisterData< Data< QVector<QRectF> > >();
-int stringVectorDataClass = RegisterData< Data< QVector<QString> > >();
-int imageVectorDataClass = RegisterData< Data< QVector<QImage> > >();
+int intVectorDataClass = RegisterData< QVector<int> >();
+int doubleVectorDataClass = RegisterData< QVector<double> >();
+int colorVectorDataClass = RegisterData< QVector<QColor> >();
+int pointVectorDataClass = RegisterData< QVector<QPointF> >();
+int rectVectorDataClass = RegisterData< QVector<QRectF> >();
+int stringVectorDataClass = RegisterData< QVector<QString> >();
+int imageVectorDataClass = RegisterData< QVector<QImage> >();
 
-int doubleAnimationDataClass = RegisterData< Data< Animation<double> > >();
-int colorAnimationDataClass = RegisterData< Data< Animation<QColor> > >();
-int pointAnimationDataClass = RegisterData< Data< Animation<QPointF> > >();
+int doubleAnimationDataClass = RegisterData< Animation<double> >();
+int colorAnimationDataClass = RegisterData< Animation<QColor> >();
+int pointAnimationDataClass = RegisterData< Animation<QPointF> >();
 
 } // namespace panda

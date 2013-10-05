@@ -2,6 +2,7 @@
 #define SIMPLEDATAWIDGET_H
 
 #include <ui/DataWidget.h>
+#include <panda/DataTraits.h>
 #include <ui/StructTraits.h>
 
 class QLineEdit;

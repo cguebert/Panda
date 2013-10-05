@@ -804,10 +804,10 @@ QTextStream& operator>>(QTextStream& stream, Topology& topo)
 
 //***************************************************************//
 
-template class Data<Topology>;
+template class Data< Topology >;
 template class Data< QVector<Topology> >;
 
-int topologyDataClass = RegisterData< Data<Topology> >();
-int topologyVectorDataClass = RegisterData< Data< QVector<Topology> > >();
+int topologyDataClass = RegisterData< Topology >();
+int topologyVectorDataClass = RegisterData< QVector<Topology> >();
 
 } // namespace panda

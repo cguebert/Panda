@@ -10,6 +10,7 @@ HEADERS       = \
     panda/BaseClass.h \
     panda/BaseData.h \
     panda/Data.h \
+	panda/DataCopier.h \
     panda/DataFactory.h \
     panda/DataNode.h \
     panda/DataTraits.h \
@@ -38,7 +39,7 @@ HEADERS       = \
     ui/RenderView.h \
     ui/SimpleDataWidget.h \
     ui/StructTraits.h \
-    ui/TableDataWidgetDialog.h
+	ui/TableDataWidgetDialog.h
 SOURCES       = main.cpp \
     helper/Factory.cpp \
     helper/PointsGrid.cpp \

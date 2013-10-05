@@ -41,7 +41,7 @@ public:
 	virtual QTextStream& writeValue(QTextStream& stream, const void* value) const = 0;
 	virtual QTextStream& readValue(QTextStream& stream, void* value) const = 0;
 	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const = 0;
-	virtual void readValue(QDomElement& doc, void* value) const = 0;
+	virtual void readValue(QDomElement& elem, void* value) const = 0;
 };
 
 //***************************************************************//
@@ -119,8 +119,8 @@ public:
 	{ return value_trait::readValue(stream, *static_cast<value_type*>(value)); }
 	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const
 	{ return value_trait::writeValue(doc, elem, *static_cast<const value_type*>(value)); }
-	virtual void readValue(QDomElement& doc, void* value) const
-	{ return value_trait::readValue(doc, *static_cast<value_type*>(value)); }
+	virtual void readValue(QDomElement& elem, void* value) const
+	{ return value_trait::readValue(elem, *static_cast<value_type*>(value)); }
 };
 
 //***************************************************************//

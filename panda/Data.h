@@ -2,7 +2,6 @@
 #define DATA_H
 
 #include <panda/BaseData.h>
-#include <panda/DataTraits.h>
 #include <helper/DataAccessor.h>
 
 namespace panda
@@ -10,12 +9,13 @@ namespace panda
 
 template<class T> class DataAccessor;
 template<class T> class Data;
+template<class T> class RegisterData;
+class AbstractDataTrait;
 
-template<class T>
-class DataCopier
+class AbstractDataCopier
 {
 public:
-	static bool copyData(Data<T>* dest, const BaseData* from);
+	virtual bool copyData(BaseData* dest, const BaseData* from) const = 0;
 };
 
 template <class T = void*>
@@ -40,29 +40,26 @@ public:
 		: BaseData(init)
 		, value(value_type())
 	{
-		displayed = DataTrait<value_type>::isDisplayed();
-		persistent = DataTrait<value_type>::isPersistent();
+		initFlags();
 	}
 
 	explicit Data(const InitData& init)
 		: BaseData(init)
 	{
 		value = init.value;
-		displayed = DataTrait<value_type>::isDisplayed();
-		persistent = DataTrait<value_type>::isPersistent();
+		initFlags();
 	}
 
 	Data(const QString& name, const QString& help, PandaObject* owner)
 		: BaseData(name, help, owner)
 	{
-		displayed = DataTrait<value_type>::isDisplayed();
-		persistent = DataTrait<value_type>::isPersistent();
+		initFlags();
 	}
 
 	virtual ~Data() {}
 
 	virtual const AbstractDataTrait* getDataTrait() const
-	{ return VirtualDataTrait<value_type>::get(); }
+	{ return dataTrait; }
 
 	virtual const void* getVoidValue() const
 	{ return &getValue(); }
@@ -84,24 +81,13 @@ public:
 
 	virtual void copyValueFrom(const BaseData* from)
 	{
-//		DataTrait<value_type>::copyValue(this, from);
-
-		DataCopier<value_type>::copyData(this, from);
-		isValueSet = true;
-	}
-
-	virtual void save(QDomDocument& doc, QDomElement& elem)
-	{ DataTrait<value_type>::writeValue(doc, elem, value); }
-
-	virtual void load(QDomElement& elem)
-	{
-		beginEdit();
-		DataTrait<value_type>::readValue(elem, value);
-		endEdit();
+		if(dataCopier->copyData(this, from))
+			isValueSet = true;
 	}
 
 protected:
 	friend class helper::DataAccessor<data_type>;
+	friend class RegisterData<value_type>;
 
 	inline pointer beginEdit()
 	{
@@ -122,13 +108,25 @@ protected:
 	virtual void endVoidEdit()
 	{ endEdit(); }
 
+	static void setDataTrait(AbstractDataTrait* trait)
+	{ dataTrait = trait; }
+
+	static void setDataCopier(AbstractDataCopier* copier)
+	{ dataCopier = copier; }
+
 private:
 	T value;
+	static AbstractDataTrait* dataTrait;
+	static AbstractDataCopier* dataCopier;
 
 	Data();
 	Data(const Data&);
 	Data& operator=(const Data&);
 };
+
+// Definition of the static members
+template<class T> AbstractDataTrait* Data<T>::dataTrait;
+template<class T> AbstractDataCopier* Data<T>::dataCopier;
 
 //***************************************************************//
 
@@ -154,134 +152,6 @@ public:
 };
 
 } // namespace helper
-
-//***************************************************************//
-
-template<class T>
-bool DataCopier<T>::copyData(Data<T> *dest, const BaseData* from)
-{
-	typedef DataTrait<T> DestTrait;
-	auto fromTrait = from->getDataTrait();
-	// First we try without conversion
-	if(fromTrait->isVector())
-	{
-		// The from is a vector of T
-		const Data< QVector<T> >* castedVectorFrom = dynamic_cast<const Data< QVector<T> >*>(from);
-		if(castedVectorFrom)
-		{
-			if(castedVectorFrom->getValue().size())
-				dest->setValue(castedVectorFrom->getValue()[0]);
-			else
-				dest->setValue(T());
-			return true;
-		}
-	}
-	else if(fromTrait->isSingleValue())
-	{
-		// Same type
-		const Data<T>* castedFrom = dynamic_cast<const Data<T>*>(from);
-		if(castedFrom)
-		{
-			dest->setValue(castedFrom->getValue());
-			return true;
-		}
-	}
-
-	// Else we try a conversion
-	if(DestTrait::isNumerical() && fromTrait->isNumerical())
-	{
-		auto value = dest->getAccessor();
-		DestTrait::setNumerical(value.wref(), fromTrait->getNumerical(from->getVoidValue(), 0), 0);
-		return true;
-	}
-
-	return false;
-}
-
-template<class T>
-class DataCopier< QVector<T> >
-{
-public:
-	static bool copyData(Data< QVector<T> >* dest, const BaseData* from)
-	{
-		typedef DataTrait< QVector<T> > DestTrait;
-		auto fromTrait = from->getDataTrait();
-		// First we try without conversion
-		if(fromTrait->isVector())
-		{
-			// Same type (both vectors)
-			const Data< QVector<T> >* castedFrom = dynamic_cast<const Data< QVector<T> >*>(from);
-			if(castedFrom)
-			{
-				dest->setValue(castedFrom->getValue());
-				return true;
-			}
-		}
-		else if(fromTrait->isAnimation())
-		{
-			// The from is not a vector of T, but an animation of type T
-			const Data< Animation<T> >* castedAnimationFrom = dynamic_cast<const Data< Animation<T> >*>(from);
-			if(castedAnimationFrom)
-			{
-				auto vec = dest->getAccessor();
-				vec = castedAnimationFrom->getValue().getValues().toVector();
-				return true;
-			}
-		}
-		else if(fromTrait->isSingleValue())
-		{
-			// The from is not a vector of T, but a single value of type T
-			const Data<T>* castedSingleValueFrom = dynamic_cast<const Data<T>*>(from);
-			if(castedSingleValueFrom)
-			{
-				auto vec = dest->getAccessor();
-				vec.clear();
-				vec.push_back(castedSingleValueFrom->getValue());
-				return true;
-			}
-		}
-
-		// Else we try a conversion
-		if(DestTrait::isNumerical() && fromTrait->isNumerical())
-		{
-			auto fromValue = from->getVoidValue();
-			auto value = dest->getAccessor();
-			int size = fromTrait->size(fromValue);
-			value.resize(size);
-			for(int i=0; i<size; ++i)
-				DestTrait::setNumerical(value.wref(), fromTrait->getNumerical(fromValue, i), i);
-			return true;
-		}
-
-		return false;
-	}
-};
-
-template<class T>
-class DataCopier< Animation<T> >
-{
-public:
-	static bool copyData(Data< Animation<T> >* dest, const BaseData* from)
-	{
-		auto fromTrait = from->getDataTrait();
-		// Without conversion
-		if(fromTrait->isAnimation())
-		{
-			// Same type (both animations)
-			const Data< Animation<T> >* castedAnimationFrom = dynamic_cast<const Data< Animation<T> >*>(from);
-			if(castedAnimationFrom)
-			{
-				dest->setValue(castedAnimationFrom->getValue());
-				return true;
-			}
-		}
-
-		// Not accepting conversions from non-animation datas
-		dest->getAccessor().clear();
-
-		return false;
-	}
-};
 
 } // namespace panda
 
