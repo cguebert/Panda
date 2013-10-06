@@ -4,8 +4,6 @@
 #include <QVector>
 #include <QPointF>
 
-#include <QTextStream>
-
 namespace panda
 {
 
@@ -101,9 +99,6 @@ public:
 	void clearPolygonsAroundEdge();
 	void clearBorderElementLists();
 	void clear();
-
-	friend QTextStream& operator<<(QTextStream& stream, const Topology& topo);
-	friend QTextStream& operator>>(QTextStream& stream, Topology& topo);
 
 protected:
 	QVector<QPointF> m_points;

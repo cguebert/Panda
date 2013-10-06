@@ -8,7 +8,6 @@
 #include <QPointF>
 #include <QVector>
 #include <QStringList>
-#include <QTextStream>
 #include <QDomDocument>
 
 namespace panda
@@ -41,8 +40,6 @@ public:
 	virtual double getNumerical(const void* value, int index) const = 0;
 	virtual void setNumerical(void* value, double num, int index) const = 0;
 
-	virtual QTextStream& writeValue(QTextStream& stream, const void* value) const = 0;
-	virtual QTextStream& readValue(QTextStream& stream, void* value) const = 0;
 	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const = 0;
 	virtual void readValue(QDomElement& elem, void* value) const = 0;
 };
@@ -72,8 +69,6 @@ public:
 	static void clear(value_type& v, int /*size*/, bool init) { if(init) v = T(); }
 	static double getNumerical(const value_type& /*v*/, int /*index*/) { return 0; }
 	static void setNumerical(value_type& /*v*/, double /*val*/, int /*index*/) { }
-	static QTextStream& writeValue(QTextStream& stream, const value_type& v) { return stream << v; }
-	static QTextStream& readValue(QTextStream& stream, value_type& v) { return stream >> v; }
 	static void writeValue(QDomDocument&, QDomElement&, const value_type&) {}
 	static void readValue(QDomElement&, value_type&) {}
 };
@@ -116,10 +111,6 @@ public:
 	virtual void setNumerical(void* value, double num, int index) const
 	{ return value_trait::setNumerical(*static_cast<value_type*>(value), num, index); }
 
-	virtual QTextStream& writeValue(QTextStream& stream, const void* value) const
-	{ return value_trait::writeValue(stream, *static_cast<const value_type*>(value)); }
-	virtual QTextStream& readValue(QTextStream& stream, void* value) const
-	{ return value_trait::readValue(stream, *static_cast<value_type*>(value)); }
 	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const
 	{ return value_trait::writeValue(doc, elem, *static_cast<const value_type*>(value)); }
 	virtual void readValue(QDomElement& elem, void* value) const
@@ -167,31 +158,6 @@ public:
 	{
 		if(index >= 0 && index < vec.size())
 			base_trait::setNumerical(vec[index], val, 0);
-	}
-	static QTextStream& writeValue(QTextStream& stream, const vector_type& vec)
-	{
-		int size = vec.size();
-		if(size)
-		{
-			base_trait::writeValue(stream, vec[0]);
-			for(int i=1; i<size; ++i)
-			{
-				stream << " ";
-				base_trait::writeValue(stream, vec[i]);
-			}
-		}
-		return stream;
-	}
-	static QTextStream& readValue(QTextStream& stream, vector_type& vec)
-	{
-		vec.clear();
-		T t = T();
-		while(!stream.atEnd())
-		{
-			base_trait::readValue(stream, t);
-			vec.push_back(t);
-		}
-		return stream;
 	}
 	static void writeValue(QDomDocument& doc, QDomElement& elem, const vector_type& vec)
 	{
@@ -246,35 +212,6 @@ public:
 	}
 	static double getNumerical(const animation_type& /*anim*/, int /*index*/) { return 0.0; }
 	static void setNumerical(animation_type& /*anim*/, double /*val*/, int /*index*/) { }
-	static QTextStream& writeValue(QTextStream& stream, const animation_type& anim)
-	{
-		int size = anim.size();
-		if(size)
-		{
-			typename animation_type::Iterator iter = anim.getIterator();
-			while(iter.hasNext())
-			{
-				iter.next();
-				stream << iter.key() << " ";
-				base_trait::writeValue(stream, iter.value());
-				stream << " ";
-			}
-		}
-		return stream;
-	}
-	static QTextStream& readValue(QTextStream& stream, animation_type& anim)
-	{
-		anim.clear();
-		T val = T();
-		double key;
-		while(!stream.atEnd())
-		{
-			stream >> key;
-			base_trait::readValue(stream, val);
-			anim.add(key, val);
-		}
-		return stream;
-	}
 	static void writeValue(QDomDocument& doc, QDomElement& elem, const animation_type& anim)
 	{
 		typename animation_type::Iterator iter = anim.getIterator();
@@ -368,83 +305,6 @@ void DataTrait< Animation<double> >::setNumerical(animation_type& anim, double v
 }
 
 //***************************************************************//
-// Overrides for writeValue
-
-template<>
-QTextStream& DataTrait<QColor>::writeValue(QTextStream& stream, const QColor& v)
-{ return stream << QString("#%1").arg(v.rgba(), 8, 16, QChar('0')).toUpper(); }
-
-template<>
-QTextStream& DataTrait<QPointF>::writeValue(QTextStream& stream, const QPointF& v)
-{ return stream << v.x() << " " << v.y(); }
-
-template<>
-QTextStream& DataTrait<QRectF>::writeValue(QTextStream& stream, const QRectF& v)
-{ return stream << v.left() << " " << v.top() << " " << v.right() << " " << v.bottom(); }
-
-template<>
-QTextStream& DataTrait< QVector<QString> >::writeValue(QTextStream& stream, const QVector<QString>& v)
-{
-	if(v.empty())
-		return stream;
-	for(int i=0, nb=v.size()-1; i<nb; ++i)
-		stream << v[i] << endl;
-	stream << v.last();
-	return stream;
-}
-
-template<>
-QTextStream& DataTrait<QImage>::writeValue(QTextStream& stream, const QImage&)
-{ return stream; } // Use a SaveImage object instead
-
-//***************************************************************//
-// Overrides for readValue
-
-template<>
-QTextStream& DataTrait<QColor>::readValue(QTextStream& stream, QColor& v)
-{
-	QString temp;
-	stream >> temp;
-	if(temp.startsWith('#'))
-		temp = temp.mid(1);
-	v.setRgba(temp.toUInt(nullptr, 16));
-	return stream;
-}
-
-template<>
-QTextStream& DataTrait<QRectF>::readValue(QTextStream& stream, QRectF& v)
-{
-	double l, t, r, b;
-	stream >> l >> t >> r >> b;
-	v = QRectF(l, t, r-l, b-t).normalized();
-	return stream;
-}
-
-template<>
-QTextStream& DataTrait<QPointF>::readValue(QTextStream& stream, QPointF& v)
-{ return stream >> v.rx() >> v.ry(); }
-
-template<>
-QTextStream& DataTrait< QVector<QString> >::readValue(QTextStream& stream, QVector<QString>& v)
-{
-	v.clear();
-	while(!stream.atEnd())
-	{
-		QString t = stream.readLine();
-		v.push_back(t);
-	}
-	return stream;
-}
-
-template<>
-QTextStream& DataTrait<QImage>::readValue(QTextStream& stream, QImage&)
-{ return stream; } // Not saving images (save it as a separate file and use a LoadImage object)
-
-template<>
-QTextStream& DataTrait<QString>::readValue(QTextStream& stream, QString& v)
-{ v = stream.readLine(); return stream; }
-
-//***************************************************************//
 // Overrides for writeValue xml
 
 template<>
@@ -515,27 +375,6 @@ template<>
 void DataTrait<QString>::readValue(QDomElement& elem, QString& v)
 {
 	v = elem.text();
-}
-
-//***************************************************************//
-
-template<class T>
-T valueFromString(const QString& text)
-{
-	T val = T();
-	QString copy = text;
-	QTextStream stream(&copy, QIODevice::ReadOnly);
-	DataTrait<T>::readValue(stream, val);
-	return val;
-}
-
-template<class T>
-QString valueToString(const T& val)
-{
-	QString tempString;
-	QTextStream stream(&tempString, QIODevice::WriteOnly);
-	DataTrait<T>::writeValue(stream, val);
-	return tempString;
 }
 
 } // namespace types

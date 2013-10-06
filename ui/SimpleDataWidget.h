@@ -10,7 +10,6 @@ class QPushButton;
 class QLabel;
 
 /// This class is used to specify how to graphically represent a data type,
-/// by default using a simple QLineEdit
 template<class T>
 class DataWidgetContainer
 {
@@ -18,32 +17,13 @@ protected:
 	typedef T value_type;
 	typedef panda::Data<T> data_type;
 	typedef panda::types::DataTrait<value_type> trait;
-	QLineEdit* lineEdit;
 
 public:
-	DataWidgetContainer() : lineEdit(nullptr) {}
+	DataWidgetContainer() {}
 
-	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
-	{
-		lineEdit = new QLineEdit(parent);
-		lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-		lineEdit->setEnabled(!readOnly);
-		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
-		return lineEdit;
-	}
-
-	void readFromData(const value_type& d)
-	{
-		QString s = panda::types::valueToString(d);
-		if(s != lineEdit->text())
-			lineEdit->setText(s);
-	}
-
-	void writeToData(value_type& d)
-	{
-		QString s = lineEdit->text();
-		d = panda::types::valueFromString<value_type>(s);
-	}
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly);
+	void readFromData(const value_type& d);
+	void writeToData(value_type& d);
 };
 
 //***************************************************************//
@@ -182,7 +162,14 @@ public:
 			label->setText(text);
 		}
 		else
-			label->setText(panda::types::valueToString(v));
+		{
+			const vector_trait::row_type* row = vector_trait::get(v, 0);
+			if(row)
+			{
+				typedef FlatDataTrait<vector_trait::row_type> item_trait;
+				label->setText(item_trait::toString(*row));
+			}
+		}
 	}
 };
 

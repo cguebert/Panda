@@ -17,7 +17,12 @@ public:
 	static QStringList header() { return QStringList(); }
 	static const item_type get(const value_type& d, int /*i*/= 0) { return d; }
 	static void set(value_type& d, const item_type& v, int /*i*/= 0) { d = v; }
+	static QString toString(const value_type& /*d*/) { return QString(); }
 };
+
+template<>
+static QString FlatDataTrait<QString>::toString(const value_type& d)
+{ return d; }
 
 //***************************************************************//
 
@@ -52,6 +57,10 @@ public:
 		case 0: return d.setX(v);
 		case 1: return d.setY(v);
 		}
+	}
+	static QString toString(const value_type& d)
+	{
+		return QString("%1 %2").arg(d.x()).arg(d.y());
 	}
 };
 
@@ -92,6 +101,12 @@ public:
 		case 2: return d.setRight(v);
 		case 3: return d.setBottom(v);
 		}
+	}
+	static QString toString(const value_type& d)
+	{
+		return QString("%1 %2 %3 %4")
+				.arg(d.left()).arg(d.top())
+				.arg(d.right()).arg(d.bottom());
 	}
 };
 

@@ -1,5 +1,4 @@
 #include <ui/SimpleDataWidget.h>
-#include <panda/types/Animation.h>
 
 #include <QtWidgets>
 
@@ -81,7 +80,6 @@ public:
 	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
 		lineEdit = new QLineEdit(parent);
-//		lineEdit->setValidator(new QDoubleValidator(lineEdit));
 		lineEdit->setEnabled(!readOnly);
 		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
 		return lineEdit;
@@ -138,9 +136,3 @@ Creator<DataWidgetFactory, SimpleDataWidget<int> > DWClass_int("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<int, checkbox_data_widget> > DWClass_checkbox("checkbox",true);
 Creator<DataWidgetFactory, SimpleDataWidget<double> > DWClass_double("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString> > DWClass_string("default",true);
-
-// Temporary data widgets:
-using panda::types::Animation;
-Creator<DataWidgetFactory, SimpleDataWidget<Animation<double> > > DWClass_doubles_animation("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<Animation<QColor> > > DWClass_colors_animation("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<Animation<QPointF> > > DWClass_points_animation("default",true);

@@ -132,44 +132,6 @@ QColor Gradient::interpolate(const QColor& v1, const QColor& v2, qreal amt)
 	return temp;
 }
 
-QTextStream& operator<<(QTextStream& stream, const Gradient& grad)
-{
-	stream << grad.getExtend();
-
-	auto stops = grad.getStops();
-	const int nbStops = stops.size();
-	stream << nbStops << " ";
-	for(auto& stop : stops)
-	{
-		stream << stop.first << " ";
-		DataTrait<QColor>::writeValue(stream, stop.second);
-		stream << " ";
-	}
-
-	return stream;
-}
-
-QTextStream& operator>>(QTextStream& stream, Gradient& grad)
-{
-	grad.clear();
-	int extend;
-	stream >> extend;
-	grad.setExtend(extend);
-
-	int nbStops;
-	stream >> nbStops;
-	for(int i=0; i<nbStops; ++i)
-	{
-		qreal pos;
-		QColor color;
-		stream >> pos;
-		DataTrait<QColor>::readValue(stream, color);
-		grad.add(pos, color);
-	}
-
-	return stream;
-}
-
 //***************************************************************//
 
 template<> QString DataTrait<Gradient>::valueTypeName() { return "gradient"; }

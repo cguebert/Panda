@@ -109,7 +109,8 @@ public:
 			{
 				for(int j=0; j<nbCols; ++j)
 				{
-					QTableWidgetItem *item = new QTableWidgetItem(panda::types::valueToString(item_trait::get(*row, j)));
+					QString text = QString("%1").arg(item_trait::get(*row, j));
+					QTableWidgetItem *item = new QTableWidgetItem(text);
 					item->setFlags(itemFlags);
 					tableWidget->setItem(i, j, item);
 				}
@@ -136,7 +137,10 @@ public:
 					QTableWidgetItem *item = tableWidget->item(i, j);
 					if(item)
 					{
-						item_type val = panda::types::valueFromString<item_type>(item->text());
+						QString text = item->text();
+						QTextStream stream(&text);
+						item_type val;
+						stream >> val;
 						item_trait::set(rowVal, val, j);
 					}
 				}

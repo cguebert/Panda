@@ -4,8 +4,6 @@
 #include <QVector>
 #include <QColor>
 
-#include <QTextStream>
-
 namespace panda
 {
 
@@ -32,9 +30,6 @@ public:
 
 	void setStops(GradientStops stopsPoints);
 	GradientStops getStops() const;
-
-	friend QTextStream& operator<<(QTextStream& stream, const Gradient& grad);
-	friend QTextStream& operator>>(QTextStream& stream, Gradient& grad);
 
 protected:
 	qreal extendPos(qreal position) const;
