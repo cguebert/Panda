@@ -45,13 +45,11 @@ public:
 	static void setNumerical(animation_type& /*anim*/, double /*val*/, int /*index*/) { }
 	static void writeValue(QDomDocument& doc, QDomElement& elem, const animation_type& anim)
 	{
-		typename animation_type::Iterator iter = anim.getIterator();
-		while(iter.hasNext())
+		for(auto stop : anim.getStops())
 		{
-			iter.next();
 			QDomElement node = doc.createElement("Value");
-			node.setAttribute("key", iter.key());
-			base_trait::writeValue(doc, node, iter.value());
+			node.setAttribute("key", stop.first);
+			base_trait::writeValue(doc, node, stop.second);
 			elem.appendChild(node);
 		}
 	}
@@ -78,14 +76,14 @@ double DataTrait< Animation<double> >::getNumerical(const animation_type& anim, 
 {
 	if(index < 0 || index >= anim.size())
 		return 0.0;
-	return anim.getValueAtIndexConst(index);
+	return anim.getAtIndex(index);
 }
 
 template<>
 void DataTrait< Animation<double> >::setNumerical(animation_type& anim, double val, int index)
 {
 	if(index >= 0 && index < anim.size())
-		anim.getValueAtIndex(index) = val;
+		anim.getAtIndex(index) = val;
 }
 
 } // namespace types

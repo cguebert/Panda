@@ -65,8 +65,9 @@ bool BaseData::validParent(const BaseData* parent) const
 {
 	auto trait = getDataTrait();
 	auto parentTrait = parent->getDataTrait();
-	if(trait->isAnimation() && !parentTrait->isAnimation())
-		return false; // Can not convert to animation, need more parameters
+	if( (trait->isAnimation() && !parentTrait->isAnimation())
+			|| (!trait->isAnimation() && parentTrait->isAnimation()) )
+		return false; // Can not convert to or from animation
 
 	return (trait->valueTypeId() == parentTrait->valueTypeId())		// Either the 2 Datas have the same base type (int & vector of ints for example)
 			|| (trait->isNumerical() && parentTrait->isNumerical());	// Or we can convert from one to the other (double & vector of ints)

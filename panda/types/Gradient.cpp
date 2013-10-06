@@ -21,6 +21,9 @@ void Gradient::clear()
 
 void Gradient::add(qreal position, QColor color)
 {
+	if(position < 0 || position > 1)
+		return; // Ignore invalid insertions
+
 	// Insert already at the right place
 	for(int i=0, nb=stops.size(); i<nb; ++i)
 	{
@@ -31,7 +34,7 @@ void Gradient::add(qreal position, QColor color)
 		}
 	}
 
-	// If the list is currently empty
+	// Or if the list is currently empty...
 	stops.push_back(qMakePair(position, color));
 }
 

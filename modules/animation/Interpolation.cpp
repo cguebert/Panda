@@ -60,7 +60,7 @@ public:
 				double prog = qBound(0.0, listProg[i%nbV], 1.0);
 				double amt = curve.valueForProgress(prog);
 
-				listResult[i] = types::lerp(listFrom[i%nbP], listTo[i%nbP], amt);
+				listResult[i] = types::interpolate(listFrom[i%nbP], listTo[i%nbP], amt);
 			}
 		}
 

@@ -52,7 +52,7 @@ public:
 		Q_ASSERT(dataInput && dataLength && dataSize);
 
 		const Animation<T>& inVal = dataInput->getValue();
-		QList<double> keys = inVal.getKeys();
+		auto keys = inVal.getKeys();
 		dataSize->setValue(keys.size());
 		if(!keys.empty())
 			dataLength->setValue(keys.back());

@@ -51,9 +51,9 @@ public:
 
 		double inter = interval.getValue();
 		int size = inVal.size();
-		outVal.clear();
+		outVal->clear();
 		for(int i=0; i<size; ++i)
-			outVal.add(i*inter, inVal[i]);
+			outVal->add(i*inter, inVal[i]);
 	}
 
 protected:
@@ -62,5 +62,52 @@ protected:
 };
 
 int List2AnimClass = RegisterObject("Animation/List to Animation").setClass<List2Anim>().setName("List 2 Anim").setDescription("Create animations from lists");
+
+//***************************************************************//
+
+class Anim2List : public GenericObject
+{
+	GENERIC_OBJECT(Anim2List, allAnimationTypes)
+public:
+	PANDA_CLASS(Anim2List, GenericObject)
+
+	Anim2List(PandaDocument *doc)
+		: GenericObject(doc)
+		, generic(initData(&generic, "input", "Connect here the animations to get the values from"))
+	{
+		addInput(&generic);
+
+		GenericDataDefinitionList defList;
+		// Create a list of the same type as the data connected
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
+											 true, false,
+											 "input",
+											 "Animation from which to get the values"));
+		// Create an animation of the same type as the data connected
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
+											 false, true,
+											 "output",
+											 "List created from the given animation"));
+
+		setupGenericObject(&generic, defList);
+	}
+
+	template <class T>
+	void updateT(DataList& list)
+	{
+		typedef Data< Animation<T> > AnimData;
+		typedef Data< QVector<T> > VecData;
+		AnimData* dataInput = dynamic_cast<AnimData*>(list[0]);
+		VecData* dataOutput = dynamic_cast<VecData*>(list[1]);
+		Q_ASSERT(dataInput && dataOutput);
+
+		dataOutput->getAccessor() = dataInput->getValue().getValues();
+	}
+
+protected:
+	GenericAnimationData generic;
+};
+
+int Anim2ListClass = RegisterObject("Animation/Animation to List").setClass<Anim2List>().setName("Anim 2 List").setDescription("Extract the values from an animation");
 
 } // namespace Panda

@@ -29,6 +29,8 @@ public:
 	}
 };
 
+//***************************************************************//
+
 template<class T>
 bool DataCopier<T>::copyData(Data<T> *dest, const BaseData* from)
 {
@@ -70,6 +72,8 @@ bool DataCopier<T>::copyData(Data<T> *dest, const BaseData* from)
 	return false;
 }
 
+//***************************************************************//
+
 template<class T>
 class DataCopier< QVector<T> >
 {
@@ -91,17 +95,6 @@ public:
 			if(castedFrom)
 			{
 				dest->setValue(castedFrom->getValue());
-				return true;
-			}
-		}
-		else if(fromTrait->isAnimation())
-		{
-			// The from is not a vector of T, but an animation of type T
-			const Data<animation_type>* castedAnimationFrom = dynamic_cast<const Data<animation_type>*>(from);
-			if(castedAnimationFrom)
-			{
-				auto vec = dest->getAccessor();
-				vec = castedAnimationFrom->getValue().getValues().toVector();
 				return true;
 			}
 		}
@@ -134,6 +127,8 @@ public:
 	}
 };
 
+//***************************************************************//
+
 template<class T>
 class DataCopier< types::Animation<T> >
 {
@@ -158,7 +153,7 @@ public:
 		}
 
 		// Not accepting conversions from non-animation datas
-		dest->getAccessor().clear();
+		dest->getAccessor()->clear();
 
 		return false;
 	}
