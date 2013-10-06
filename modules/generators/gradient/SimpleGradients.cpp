@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/Animation.h>
+#include <panda/types/Animation.h>
 
 namespace panda {
 
@@ -33,7 +33,7 @@ public:
 
 protected:
 	Data<QColor> colorA, colorB;
-	Data<Gradient> gradient;
+	Data<types::Gradient> gradient;
 };
 
 int GradientsSimple_2ColorsClass = RegisterObject("Generator/Gradient/2 colors").setClass<GradientsSimple_2Colors>().setName("2 colors grad").setDescription("Create a gradient between 2 colors");

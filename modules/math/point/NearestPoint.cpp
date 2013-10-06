@@ -2,7 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
-#include <helper/PointsGrid.h>
+#include <panda/helper/PointsGrid.h>
 
 namespace panda {
 

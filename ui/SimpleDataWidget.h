@@ -2,7 +2,7 @@
 #define SIMPLEDATAWIDGET_H
 
 #include <ui/DataWidget.h>
-#include <panda/DataTraits.h>
+#include <panda/types/DataTraits.h>
 #include <ui/StructTraits.h>
 
 class QLineEdit;
@@ -17,7 +17,7 @@ class DataWidgetContainer
 protected:
 	typedef T value_type;
 	typedef panda::Data<T> data_type;
-	typedef panda::DataTrait<value_type> trait;
+	typedef panda::types::DataTrait<value_type> trait;
 	QLineEdit* lineEdit;
 
 public:
@@ -34,7 +34,7 @@ public:
 
 	void readFromData(const value_type& d)
 	{
-		QString s = panda::valueToString(d);
+		QString s = panda::types::valueToString(d);
 		if(s != lineEdit->text())
 			lineEdit->setText(s);
 	}
@@ -42,7 +42,7 @@ public:
 	void writeToData(value_type& d)
 	{
 		QString s = lineEdit->text();
-		d = panda::valueFromString<value_type>(s);
+		d = panda::types::valueFromString<value_type>(s);
 	}
 };
 
@@ -182,7 +182,7 @@ public:
 			label->setText(text);
 		}
 		else
-			label->setText(panda::valueToString(v));
+			label->setText(panda::types::valueToString(v));
 	}
 };
 

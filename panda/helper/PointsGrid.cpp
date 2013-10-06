@@ -1,4 +1,4 @@
-#include "PointsGrid.h"
+#include <panda/helper/PointsGrid.h>
 #include <math.h>
 #include <qglobal.h>
 

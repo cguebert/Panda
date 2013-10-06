@@ -10,7 +10,7 @@ namespace panda
 
 class PandaObject;
 class BaseData;
-class AbstractDataTrait;
+namespace types { class AbstractDataTrait; }
 
 class VoidDataAccessor
 {
@@ -82,7 +82,7 @@ public:
 
 	void update();
 
-	virtual const AbstractDataTrait* getDataTrait() const = 0;
+	virtual const types::AbstractDataTrait* getDataTrait() const = 0;
 	virtual const void* getVoidValue() const = 0;
 	VoidDataAccessor getVoidAccessor() { return VoidDataAccessor(this); }
 

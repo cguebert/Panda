@@ -8,6 +8,9 @@
 namespace panda
 {
 
+namespace types
+{
+
 template<class T> T lerp(const T& v1, const T& v2, double amt);
 
 template<>
@@ -55,6 +58,8 @@ protected:
 };
 
 typedef Animation<QColor> Gradient;
+
+} // namespace types
 
 } // namespace panda
 

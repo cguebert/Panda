@@ -1,9 +1,12 @@
 #include <panda/PandaDocument.h>
 #include <panda/GenericObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/Animation.h>
+#include <panda/types/Animation.h>
 
 namespace panda {
+
+using types::DataTypeId;
+using types::Animation;
 
 class AnimValue : public GenericObject
 {

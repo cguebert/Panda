@@ -2,8 +2,8 @@
 #define GENERICOBJECT_H
 
 #include <panda/PandaObject.h>
-#include <panda/Topology.h>
-#include <panda/DataTypeId.h>
+#include <panda/types/Topology.h>
+#include <panda/types/DataTypeId.h>
 
 #include <QList>
 #include <QMap>
@@ -123,7 +123,7 @@ private:
 
 //***************************************************************//
 
-typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString, QImage, Topology> allDataTypes;
+typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString, QImage, types::Topology> allDataTypes;
 typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString> allSearchableTypes;
 typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF> allNumericalTypes;
 typedef boost::mpl::vector<double, QColor, QPointF> allAnimationTypes;
@@ -138,7 +138,7 @@ typedef boost::mpl::vector<double, QColor, QPointF> allAnimationTypes;
 		functionCreatorWrapper(T* obj) : object(obj) {}		\
 		template<typename U> void operator()(U)				\
 		{													\
-			int type = DataTypeId::getIdOf<U>();		\
+			int type = types::DataTypeId::getIdOf<U>();		\
 			object->registerFunction(type, &T::updateT<U>);	\
 		}													\
 	};														\

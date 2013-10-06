@@ -2,15 +2,14 @@
 #define DATA_H
 
 #include <panda/BaseData.h>
-#include <helper/DataAccessor.h>
+#include <panda/helper/DataAccessor.h>
 
 namespace panda
 {
 
-template<class T> class DataAccessor;
+namespace helper { template<class T> class DataAccessor; }
 template<class T> class Data;
 template<class T> class RegisterData;
-class AbstractDataTrait;
 
 class AbstractDataCopier
 {
@@ -58,7 +57,7 @@ public:
 
 	virtual ~Data() {}
 
-	virtual const AbstractDataTrait* getDataTrait() const
+	virtual const types::AbstractDataTrait* getDataTrait() const
 	{ return dataTrait; }
 
 	virtual const void* getVoidValue() const
@@ -108,15 +107,9 @@ protected:
 	virtual void endVoidEdit()
 	{ endEdit(); }
 
-	static void setDataTrait(AbstractDataTrait* trait)
-	{ dataTrait = trait; }
-
-	static void setDataCopier(AbstractDataCopier* copier)
-	{ dataCopier = copier; }
-
 private:
 	T value;
-	static AbstractDataTrait* dataTrait;
+	static types::AbstractDataTrait* dataTrait;
 	static AbstractDataCopier* dataCopier;
 
 	Data();
@@ -125,7 +118,7 @@ private:
 };
 
 // Definition of the static members
-template<class T> AbstractDataTrait* Data<T>::dataTrait;
+template<class T> types::AbstractDataTrait* Data<T>::dataTrait;
 template<class T> AbstractDataCopier* Data<T>::dataCopier;
 
 //***************************************************************//

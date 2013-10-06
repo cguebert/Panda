@@ -55,7 +55,7 @@ public:
 	}
 	virtual void onShowDialog()
 	{
-		QColor tmp = QColorDialog::getColor(theColor, container);
+		QColor tmp = QColorDialog::getColor(theColor, container, "", QColorDialog::ShowAlphaChannel);
 		if(tmp.isValid())
 		{
 			theColor = tmp;

@@ -2,7 +2,7 @@
 #define DATAFACTORY_H
 
 #include <panda/BaseClass.h>
-#include <panda/DataTraits.h>
+#include <panda/types/DataTraits.h>
 #include <panda/Data.h>
 #include <panda/DataCopier.h>
 
@@ -83,12 +83,13 @@ public:
 	{
 		typedef T value_type;
 		typedef Data<value_type> data_type;
+		typedef types::DataTrait<value_type> data_trait;
 
-		data_type::setDataTrait(VirtualDataTrait<value_type>::get());
-		data_type::setDataCopier(VirtualDataCopier<value_type>::get());
+		data_type::dataTrait = types::VirtualDataTrait<value_type>::get();
+		data_type::dataCopier = VirtualDataCopier<value_type>::get();
 
-		DataFactory::getInstance()->registerData(DataTrait<value_type>::description(),
-												 DataTrait<value_type>::fullTypeId(),
+		DataFactory::getInstance()->registerData(data_trait::description(),
+												 data_trait::fullTypeId(),
 												 data_type::getClass(),
 												 QSharedPointer< DataCreator<data_type> >::create());
 		return 1;

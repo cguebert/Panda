@@ -3,7 +3,7 @@
 #include <panda/ObjectFactory.h>
 #include <QPointF>
 #include <QList>
-#include <helper/Random.h>
+#include <panda/helper/Random.h>
 #include <algorithm>
 
 #define _USE_MATH_DEFINES

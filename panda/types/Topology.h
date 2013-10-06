@@ -9,9 +9,12 @@
 #include <QTextStream>
 #include <QDomDocument>
 
-#include <panda/DataTraits.h>
+#include <panda/types/DataTraits.h>
 
 namespace panda
+{
+
+namespace types
 {
 
 class Topology
@@ -201,6 +204,8 @@ void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
 
 	v = std::move(tmp);
 }
+
+} // namespace types
 
 } // namespace panda
 

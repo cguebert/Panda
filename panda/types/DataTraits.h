@@ -1,8 +1,8 @@
 #ifndef DATATRAITS_H
 #define DATATRAITS_H
 
-#include <panda/DataTypeId.h>
-#include <panda/Animation.h>
+#include <panda/types/DataTypeId.h>
+#include <panda/types/Animation.h>
 
 #include <QRectF>
 #include <QPointF>
@@ -12,6 +12,9 @@
 #include <QDomDocument>
 
 namespace panda
+{
+
+namespace types
 {
 
 class AbstractDataTrait
@@ -534,6 +537,8 @@ QString valueToString(const T& val)
 	DataTrait<T>::writeValue(stream, val);
 	return tempString;
 }
+
+} // namespace types
 
 } // namespace panda
 

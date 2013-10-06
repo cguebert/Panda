@@ -2,7 +2,7 @@
 #define HELPER_ACCESSOR_H
 
 #include <panda/Data.h>
-#include <panda/Animation.h>
+#include <panda/types/Animation.h>
 
 namespace panda
 {
@@ -144,10 +144,10 @@ public:
 };
 
 template<class T>
-class DataAccessor< Animation<T> > : public DataAccessorAnimation< Animation<T> >
+class DataAccessor< types::Animation<T> > : public DataAccessorAnimation< types::Animation<T> >
 {
 public:
-	typedef DataAccessorAnimation< Animation<T> > Inherit;
+	typedef DataAccessorAnimation< types::Animation<T> > Inherit;
 	typedef typename Inherit::container_type container_type;
 	DataAccessor(container_type& c) : Inherit(c) {}
 	template<class U> void operator=(const U& v) { Inherit::operator=(v); }

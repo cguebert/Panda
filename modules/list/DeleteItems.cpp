@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/GenericObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/Animation.h>
+#include <panda/types/Animation.h>
 
 namespace panda {
 
@@ -20,7 +20,7 @@ public:
 		addInput(&generic);
 
 		GenericDataDefinitionList defList;
-		int listType = DataTypeId::getFullTypeOfVector(0);
+		int listType = types::DataTypeId::getFullTypeOfVector(0);
 		defList.append(GenericDataDefinition(listType,
 											 true, false,
 											 "input",

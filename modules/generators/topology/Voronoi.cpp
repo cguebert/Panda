@@ -2,7 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
-#include <panda/Topology.h>
+#include <panda/types/Topology.h>
 
 #include <vector>
 using std::vector;
@@ -12,6 +12,8 @@ using std::vector;
 using namespace boost::polygon;
 
 namespace panda {
+
+using types::Topology;
 
 class GeneratorTopology_Voronoi : public PandaObject
 {

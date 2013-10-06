@@ -2,12 +2,14 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
-#include <panda/Animation.h>
+#include <panda/types/Animation.h>
 
 #include <QPointF>
 #include <QPainter>
 
 namespace panda {
+
+using types::Gradient;
 
 class RenderGradient_Horizontal : public Renderer
 {

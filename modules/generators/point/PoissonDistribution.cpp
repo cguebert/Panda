@@ -3,8 +3,8 @@
 #include <panda/ObjectFactory.h>
 #include <QPointF>
 #include <QList>
-#include <helper/Random.h>
-#include <helper/PointsGrid.h>
+#include <panda/helper/Random.h>
+#include <panda/helper/PointsGrid.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>

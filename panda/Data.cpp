@@ -8,7 +8,7 @@
 #include <QImage>
 
 #include <QVector>
-#include <panda/Animation.h>
+#include <panda/types/Animation.h>
 
 namespace panda
 {
@@ -29,6 +29,7 @@ template class Data< QVector<QRectF> >;
 template class Data< QVector<QString> >;
 template class Data< QVector<QImage> >;
 
+using types::Animation;
 template class Data< Animation<double> >;
 template class Data< Animation<QColor> >;
 template class Data< Animation<QPointF> >;

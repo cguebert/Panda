@@ -23,7 +23,7 @@ public:
 
 		addOutput(&text);
 
-		int typeOfValue = DataTypeId::getFullTypeOfSingleValue(0);	// Create a copy of the data connected
+		int typeOfValue = types::DataTypeId::getFullTypeOfSingleValue(0);	// Create a copy of the data connected
 		GenericDataDefinitionList defList;
 		defList.append(GenericDataDefinition(typeOfValue,
 											 true, false,

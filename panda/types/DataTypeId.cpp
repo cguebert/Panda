@@ -1,10 +1,13 @@
-#include <panda/DataTypeId.h>
+#include <panda/types/DataTypeId.h>
 
 #include <QMap>
 
 #include <typeindex>
 
 namespace panda
+{
+
+namespace types
 {
 
 int DataTypeId::getId(const std::type_info &type)
@@ -60,5 +63,7 @@ int DataTypeId::replaceValueType(int fullType, int newType)
 {
 	return (fullType & 0xFFFF0000) + newType;
 }
+
+} // namespace types
 
 } // namespace panda

@@ -1,6 +1,6 @@
 #include <panda/BaseData.h>
 #include <panda/PandaObject.h>
-#include <panda/DataTraits.h>
+#include <panda/types/DataTraits.h>
 
 #include <QApplication>
 #include <iostream>

@@ -6,6 +6,9 @@
 namespace panda
 {
 
+namespace types
+{
+
 class DataTypeId
 {
 public:
@@ -27,6 +30,8 @@ public:
 private:
 	DataTypeId();
 };
+
+} // namespace types
 
 } // namespace panda
 

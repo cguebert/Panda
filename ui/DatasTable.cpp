@@ -4,7 +4,7 @@
 
 #include <panda/PandaObject.h>
 
-#include <helper/Factory.h>
+#include <panda/helper/Factory.h>
 
 DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 	: QWidget(parent)

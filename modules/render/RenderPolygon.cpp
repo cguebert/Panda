@@ -1,11 +1,13 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/Topology.h>
+#include <panda/types/Topology.h>
 #include <panda/Renderer.h>
 #include <QPainter>
 
 namespace panda {
+
+using types::Topology;
 
 class RenderPolygon : public Renderer
 {

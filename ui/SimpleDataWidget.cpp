@@ -1,5 +1,5 @@
 #include <ui/SimpleDataWidget.h>
-#include <panda/Animation.h>
+#include <panda/types/Animation.h>
 
 #include <QtWidgets>
 
@@ -140,6 +140,7 @@ Creator<DataWidgetFactory, SimpleDataWidget<double> > DWClass_double("default",t
 Creator<DataWidgetFactory, SimpleDataWidget<QString> > DWClass_string("default",true);
 
 // Temporary data widgets:
-Creator<DataWidgetFactory, SimpleDataWidget<panda::Animation<double> > > DWClass_doubles_animation("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<panda::Animation<QColor> > > DWClass_colors_animation("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<panda::Animation<QPointF> > > DWClass_points_animation("default",true);
+using panda::types::Animation;
+Creator<DataWidgetFactory, SimpleDataWidget<Animation<double> > > DWClass_doubles_animation("default",true);
+Creator<DataWidgetFactory, SimpleDataWidget<Animation<QColor> > > DWClass_colors_animation("default",true);
+Creator<DataWidgetFactory, SimpleDataWidget<Animation<QPointF> > > DWClass_points_animation("default",true);

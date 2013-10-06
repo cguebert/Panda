@@ -1,4 +1,4 @@
-#include <panda/Topology.h>
+#include <panda/types/Topology.h>
 #include <panda/Data.h>
 #include <panda/DataFactory.h>
 
@@ -7,6 +7,9 @@
 #include <set>
 
 namespace panda
+{
+
+namespace types
 {
 
 Topology::Topology()
@@ -809,5 +812,7 @@ template class Data< QVector<Topology> >;
 
 int topologyDataClass = RegisterData< Topology >();
 int topologyVectorDataClass = RegisterData< QVector<Topology> >();
+
+} // namespace types
 
 } // namespace panda

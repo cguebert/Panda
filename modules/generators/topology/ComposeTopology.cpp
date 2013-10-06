@@ -2,9 +2,11 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
-#include <panda/Topology.h>
+#include <panda/types/Topology.h>
 
 namespace panda {
+
+using types::Topology;
 
 class GeneratorTopology_OnePolygon : public PandaObject
 {

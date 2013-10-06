@@ -9,6 +9,8 @@
 namespace panda
 {
 
+using types::DataTypeId;
+
 GenericObject::GenericObject(PandaDocument *parent)
 	: PandaObject(parent)
 {
@@ -57,7 +59,7 @@ void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefin
 
 BaseData* GenericObject::createDatas(int type)
 {
-	int valueType = DataTypeId::getValueType(type);
+	int valueType = types::DataTypeId::getValueType(type);
 
 	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
 	createdDatasStruct->type = type;
@@ -81,7 +83,7 @@ BaseData* GenericObject::createDatas(int type)
 
 		int dataType = dataDefinitions_[i].type;
 		if(!DataTypeId::getValueType(dataType))	// Use the type of the connected Data
-			dataType = DataTypeId::replaceValueType(dataType, valueType);
+			dataType = types::DataTypeId::replaceValueType(dataType, valueType);
 
 		BaseData* data = DataFactory::getInstance()->create(dataType, dataName, dataDefinitions_[i].help, this);
 

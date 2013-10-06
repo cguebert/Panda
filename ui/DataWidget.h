@@ -3,7 +3,7 @@
 
 #include <panda/Data.h>
 #include <panda/PandaObject.h>
-#include <helper/Factory.h>
+#include <panda/helper/Factory.h>
 
 #include <QWidget>
 #include <QString>

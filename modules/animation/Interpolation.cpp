@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/Animation.h>
+#include <panda/types/Animation.h>
 
 #include <QPointF>
 #include <QEasingCurve>
@@ -60,7 +60,7 @@ public:
 				double prog = qBound(0.0, listProg[i%nbV], 1.0);
 				double amt = curve.valueForProgress(prog);
 
-				listResult[i] = lerp(listFrom[i%nbP], listTo[i%nbP], amt);
+				listResult[i] = types::lerp(listFrom[i%nbP], listTo[i%nbP], amt);
 			}
 		}
 

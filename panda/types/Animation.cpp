@@ -1,9 +1,12 @@
-#include <panda/Animation.h>
+#include <panda/types/Animation.h>
 
 #include <QColor>
 #include <QPointF>
 
 namespace panda
+{
+
+namespace types
 {
 
 template <class T>
@@ -97,5 +100,7 @@ QColor lerp(const QColor& v1, const QColor& v2, double amt)
 template class Animation<double>;
 template class Animation<QPointF>;
 template class Animation<QColor>;
+
+} // namespace types
 
 } // namespace panda

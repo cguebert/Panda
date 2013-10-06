@@ -4,6 +4,8 @@
 
 namespace panda {
 
+using types::DataTypeId;
+
 class ListSize : public GenericObject
 {
 	GENERIC_OBJECT(ListSize, allDataTypes)

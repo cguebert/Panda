@@ -2,7 +2,7 @@
 #define DATACOPIER_H
 
 #include <panda/Data.h>
-#include <panda/DataTraits.h>
+#include <panda/types/DataTraits.h>
 
 namespace panda
 {
@@ -31,7 +31,7 @@ public:
 template<class T>
 bool DataCopier<T>::copyData(Data<T> *dest, const BaseData* from)
 {
-	typedef DataTrait<T> DestTrait;
+	typedef types::DataTrait<T> DestTrait;
 	auto fromTrait = from->getDataTrait();
 	// First we try without conversion
 	if(fromTrait->isVector())
@@ -73,15 +73,20 @@ template<class T>
 class DataCopier< QVector<T> >
 {
 public:
-	static bool copyData(Data< QVector<T> >* dest, const BaseData* from)
+	typedef T value_type;
+	typedef QVector<value_type> vector_type;
+	typedef types::Animation<value_type> animation_type;
+	typedef Data<vector_type> data_type;
+
+	static bool copyData(data_type* dest, const BaseData* from)
 	{
-		typedef DataTrait< QVector<T> > DestTrait;
+		typedef types::DataTrait<vector_type> DestTrait;
 		auto fromTrait = from->getDataTrait();
 		// First we try without conversion
 		if(fromTrait->isVector())
 		{
 			// Same type (both vectors)
-			const Data< QVector<T> >* castedFrom = dynamic_cast<const Data< QVector<T> >*>(from);
+			const data_type* castedFrom = dynamic_cast<const data_type*>(from);
 			if(castedFrom)
 			{
 				dest->setValue(castedFrom->getValue());
@@ -91,7 +96,7 @@ public:
 		else if(fromTrait->isAnimation())
 		{
 			// The from is not a vector of T, but an animation of type T
-			const Data< Animation<T> >* castedAnimationFrom = dynamic_cast<const Data< Animation<T> >*>(from);
+			const Data<animation_type>* castedAnimationFrom = dynamic_cast<const Data<animation_type>*>(from);
 			if(castedAnimationFrom)
 			{
 				auto vec = dest->getAccessor();
@@ -102,7 +107,7 @@ public:
 		else if(fromTrait->isSingleValue())
 		{
 			// The from is not a vector of T, but a single value of type T
-			const Data<T>* castedSingleValueFrom = dynamic_cast<const Data<T>*>(from);
+			const Data<value_type>* castedSingleValueFrom = dynamic_cast<const Data<value_type>*>(from);
 			if(castedSingleValueFrom)
 			{
 				auto vec = dest->getAccessor();
@@ -129,17 +134,21 @@ public:
 };
 
 template<class T>
-class DataCopier< Animation<T> >
+class DataCopier< types::Animation<T> >
 {
 public:
-	static bool copyData(Data< Animation<T> >* dest, const BaseData* from)
+	typedef T value_type;
+	typedef types::Animation<value_type> animation_type;
+	typedef Data<animation_type> data_type;
+
+	static bool copyData(data_type* dest, const BaseData* from)
 	{
 		auto fromTrait = from->getDataTrait();
 		// Without conversion
 		if(fromTrait->isAnimation())
 		{
 			// Same type (both animations)
-			const Data< Animation<T> >* castedAnimationFrom = dynamic_cast<const Data< Animation<T> >*>(from);
+			const data_type* castedAnimationFrom = dynamic_cast<const data_type*>(from);
 			if(castedAnimationFrom)
 			{
 				dest->setValue(castedAnimationFrom->getValue());

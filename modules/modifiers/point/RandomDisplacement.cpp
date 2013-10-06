@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <helper/Random.h>
+#include <panda/helper/Random.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
