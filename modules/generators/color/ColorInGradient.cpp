@@ -48,6 +48,6 @@ protected:
 	Data< QVector<QColor> > color;
 };
 
-int GeneratorColors_InGradientClass = RegisterObject("Generator/Color/Color in gradient").setClass<GeneratorColors_InGradient>().setName("Gradient color").setDescription("Get colors in specific places in a gradient");
+int GeneratorColors_InGradientClass = RegisterObject<GeneratorColors_InGradient>("Generator/Color/Color in gradient").setName("Gradient color").setDescription("Get colors in specific places in a gradient");
 
 } // namespace Panda

@@ -51,6 +51,6 @@ protected:
 	Data< QVector<QPointF> > points;
 };
 
-int GeneratorPoints_RandomClass = RegisterObject("Generator/Point/Random").setClass<GeneratorPoints_Random>().setName("Rnd points").setDescription("Generate a list of random points");
+int GeneratorPoints_RandomClass = RegisterObject<GeneratorPoints_Random>("Generator/Point/Random").setName("Rnd points").setDescription("Generate a list of random points");
 
 } // namespace Panda

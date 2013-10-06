@@ -50,6 +50,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int ListSizeClass = RegisterObject("List/List size").setClass<ListSize>().setDescription("Get the size of some lists");
+int ListSizeClass = RegisterObject<ListSize>("List/List size").setDescription("Get the size of some lists");
 
 } // namespace Panda

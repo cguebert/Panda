@@ -33,7 +33,7 @@ protected:
 	Data<QPointF> renderSize;
 };
 
-int GeneratorPoint_RenderSizeClass = RegisterObject("Generator/Point/Render size").setClass<GeneratorPoint_RenderSize>().setDescription("Gives the dimensions of the render");
+int GeneratorPoint_RenderSizeClass = RegisterObject<GeneratorPoint_RenderSize>("Generator/Point/Render size").setDescription("Gives the dimensions of the render");
 
 } // namespace Panda
 

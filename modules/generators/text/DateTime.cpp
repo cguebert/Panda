@@ -55,6 +55,6 @@ protected:
 	QDateTime previousDate;
 };
 
-int GeneratorText_DateTimeClass = RegisterObject("Generator/Text/Date & time").setClass<GeneratorText_DateTime>().setDescription("Create a text using the current date");
+int GeneratorText_DateTimeClass = RegisterObject<GeneratorText_DateTime>("Generator/Text/Date & time").setDescription("Create a text using the current date");
 
 } // namespace Panda

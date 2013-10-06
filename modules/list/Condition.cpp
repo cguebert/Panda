@@ -57,6 +57,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int ListConditionClass = RegisterObject("List/Condition").setClass<ListCondition>().setDescription("Copy one of two lists based on the condition value");
+int ListConditionClass = RegisterObject<ListCondition>("List/Condition").setDescription("Copy one of two lists based on the condition value");
 
 } // namespace Panda

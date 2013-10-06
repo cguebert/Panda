@@ -32,6 +32,6 @@ protected:
 	Data<QImage> image;
 };
 
-int GeneratorImage_LoadClass = RegisterObject("Generator/Image/Load image").setClass<GeneratorImage_Load>().setDescription("Load an image from the disk");
+int GeneratorImage_LoadClass = RegisterObject<GeneratorImage_Load>("Generator/Image/Load image").setDescription("Load an image from the disk");
 
 } // namespace Panda

@@ -52,6 +52,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int ListConcatenationClass = RegisterObject("List/Concatenation").setClass<ListConcatenation>().setDescription("Concatenate two lists");
+int ListConcatenationClass = RegisterObject<ListConcatenation>("List/Concatenation").setDescription("Concatenate two lists");
 
 } // namespace Panda

@@ -61,6 +61,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int ListItemClass = RegisterObject("List/List item").setClass<ListItem>().setDescription("Extract an item from a list");
+int ListItemClass = RegisterObject<ListItem>("List/List item").setDescription("Extract an item from a list");
 
 } // namespace Panda

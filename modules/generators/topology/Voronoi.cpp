@@ -77,8 +77,7 @@ protected:
 	Data<Topology> topology;
 };
 
-int GeneratorTopology_VoronoiClass = RegisterObject("Generator/Topology/Voronoi")
-		.setClass<GeneratorTopology_Voronoi>()
+int GeneratorTopology_VoronoiClass = RegisterObject<GeneratorTopology_Voronoi>("Generator/Topology/Voronoi")
 		.setDescription("Create a topology from a Voronoi tessellation");
 
 //*************************************************************************//

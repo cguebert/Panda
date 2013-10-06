@@ -44,7 +44,7 @@ protected:
 	Data<Topology> topology;
 };
 
-int GeneratorTopology_OnePolygonClass = RegisterObject("Generator/Topology/Create one polygon").setName("Pts to polygon").setClass<GeneratorTopology_OnePolygon>().setDescription("Create a topology (of one polygon) using a list of points");
+int GeneratorTopology_OnePolygonClass = RegisterObject<GeneratorTopology_OnePolygon>("Generator/Topology/Create one polygon").setName("Pts to polygon").setDescription("Create a topology (of one polygon) using a list of points");
 
 //*************************************************************************//
 
@@ -87,7 +87,7 @@ protected:
 	Data< QVector<QPointF> > points;
 };
 
-int GeneratorTopology_WireframeClass = RegisterObject("Generator/Topology/Wireframe").setClass<GeneratorTopology_Wireframe>().setDescription("Extract the edges from a topology");
+int GeneratorTopology_WireframeClass = RegisterObject<GeneratorTopology_Wireframe>("Generator/Topology/Wireframe").setDescription("Extract the edges from a topology");
 
 //*************************************************************************//
 
@@ -121,7 +121,7 @@ protected:
 	Data< QVector<QPointF> > points;
 };
 
-int GeneratorTopology_VerticesClass = RegisterObject("Generator/Topology/Vertices").setClass<GeneratorTopology_Vertices>().setDescription("Extract the vertices of a topology");
+int GeneratorTopology_VerticesClass = RegisterObject<GeneratorTopology_Vertices>("Generator/Topology/Vertices").setDescription("Extract the vertices of a topology");
 
 //*************************************************************************//
 
@@ -167,9 +167,8 @@ protected:
 	Data< QVector<int> > polygons;
 };
 
-int GeneratorTopology_ExtractPolygonsClass = RegisterObject("Generator/Topology/Extract polygons")
-		.setName("Extract poly").setClass<GeneratorTopology_ExtractPolygons>()
-		.setDescription("Extract some polygons from a topology");
+int GeneratorTopology_ExtractPolygonsClass = RegisterObject<GeneratorTopology_ExtractPolygons>("Generator/Topology/Extract polygons")
+		.setName("Extract poly").setDescription("Extract some polygons from a topology");
 
 //*************************************************************************//
 

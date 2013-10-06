@@ -42,6 +42,6 @@ protected:
 	Data< QVector<double> > numbers;
 };
 
-int GeneratorReals_EnumerationClass = RegisterObject("Generator/Real/Enumeration").setClass<GeneratorReals_Enumeration>().setDescription("Create a list of numbers based on an enumeration");
+int GeneratorReals_EnumerationClass = RegisterObject<GeneratorReals_Enumeration>("Generator/Real/Enumeration").setDescription("Create a list of numbers based on an enumeration");
 
 } // namespace Panda

@@ -61,7 +61,7 @@ protected:
 	GenericVectorData generic;
 };
 
-int List2AnimClass = RegisterObject("Animation/List to Animation").setClass<List2Anim>().setName("List 2 Anim").setDescription("Create animations from lists");
+int List2AnimClass = RegisterObject<List2Anim>("Animation/List to Animation").setName("List 2 Anim").setDescription("Create animations from lists");
 
 //***************************************************************//
 
@@ -108,6 +108,6 @@ protected:
 	GenericAnimationData generic;
 };
 
-int Anim2ListClass = RegisterObject("Animation/Animation to List").setClass<Anim2List>().setName("Anim 2 List").setDescription("Extract the values from an animation");
+int Anim2ListClass = RegisterObject<Anim2List>("Animation/Animation to List").setName("Anim 2 List").setDescription("Extract the values from an animation");
 
 } // namespace Panda

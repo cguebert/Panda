@@ -75,6 +75,6 @@ protected:
 	Data< int > flags;
 };
 
-int RenderTextClass = RegisterObject("Render/Text").setClass<RenderText>().setDescription("Draw some text");
+int RenderTextClass = RegisterObject<RenderText>("Render/Text").setDescription("Draw some text");
 
 } // namespace panda

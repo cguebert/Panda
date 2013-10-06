@@ -36,6 +36,6 @@ protected:
 	Data<types::Gradient> gradient;
 };
 
-int GradientsSimple_2ColorsClass = RegisterObject("Generator/Gradient/2 colors").setClass<GradientsSimple_2Colors>().setName("2 colors grad").setDescription("Create a gradient between 2 colors");
+int GradientsSimple_2ColorsClass = RegisterObject<GradientsSimple_2Colors>("Generator/Gradient/2 colors").setName("2 colors grad").setDescription("Create a gradient between 2 colors");
 
 } // namespace Panda

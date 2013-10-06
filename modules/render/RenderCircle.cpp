@@ -86,6 +86,6 @@ protected:
 	Data< QVector<QColor> > lineColor, color;
 };
 
-int RenderCircleClass = RegisterObject("Render/Circle").setClass<RenderCircle>().setDescription("Draw a circle");
+int RenderCircleClass = RegisterObject<RenderCircle>("Render/Circle").setDescription("Draw a circle");
 
 } // namespace panda

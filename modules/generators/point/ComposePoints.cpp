@@ -40,7 +40,7 @@ protected:
 	Data< QVector<QPointF> > point;
 };
 
-int GeneratorPoints_ComposeClass = RegisterObject("Generator/Point/Create point").setName("Reals to point").setClass<GeneratorPoints_Compose>().setDescription("Create a point from 2 reals");
+int GeneratorPoints_ComposeClass = RegisterObject<GeneratorPoints_Compose>("Generator/Point/Create point").setName("Reals to point").setDescription("Create a point from 2 reals");
 
 //*************************************************************************//
 
@@ -85,7 +85,7 @@ protected:
 	Data< QVector<QPointF> > point;
 };
 
-int GeneratorPoints_DecomposeClass = RegisterObject("Generator/Point/Decompose point").setName("Point to reals").setClass<GeneratorPoints_Decompose>().setDescription("Extract the coordinates of a point");
+int GeneratorPoints_DecomposeClass = RegisterObject<GeneratorPoints_Decompose>("Generator/Point/Decompose point").setName("Point to reals").setDescription("Extract the coordinates of a point");
 
 
 } // namespace Panda

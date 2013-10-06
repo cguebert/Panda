@@ -64,6 +64,6 @@ protected:
 	GenericAnimationData generic;
 };
 
-int AnimValueClass = RegisterObject("Animation/Animation value").setClass<AnimValue>().setName("Anim value").setDescription("Extract a value from an animation");
+int AnimValueClass = RegisterObject<AnimValue>("Animation/Animation value").setName("Anim value").setDescription("Extract a value from an animation");
 
 } // namespace Panda

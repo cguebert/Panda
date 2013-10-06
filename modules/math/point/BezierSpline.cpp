@@ -94,7 +94,7 @@ protected:
 	QVector< QVector<double> > coefs;
 };
 
-int Curve_BezierSplineClass = RegisterObject("Math/List of points/Bezier spline").setClass<Curve_BezierSpline>().setDescription("Compute a bezier spline using the controls points");
+int Curve_BezierSplineClass = RegisterObject<Curve_BezierSpline>("Math/List of points/Bezier spline").setDescription("Compute a bezier spline using the controls points");
 
 } // namespace Panda
 

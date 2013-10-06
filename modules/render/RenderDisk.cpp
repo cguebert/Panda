@@ -63,6 +63,6 @@ protected:
 	Data< QVector<QColor> > color;
 };
 
-int RenderDiskClass = RegisterObject("Render/Disk").setClass<RenderDisk>().setDescription("Draw a plain disk");
+int RenderDiskClass = RegisterObject<RenderDisk>("Render/Disk").setDescription("Draw a plain disk");
 
 } // namespace panda

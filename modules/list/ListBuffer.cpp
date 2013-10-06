@@ -92,7 +92,7 @@ protected:
 	GenericVectorData generic;
 };
 
-int ListBufferClass = RegisterObject("List/Buffer").setClass<ListBuffer>().setName("Buffer").setDescription("Memorize a value and update it when the control value changes");
+int ListBufferClass = RegisterObject<ListBuffer>("List/Buffer").setName("Buffer").setDescription("Memorize a value and update it when the control value changes");
 
 } // namespace Panda
 

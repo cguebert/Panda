@@ -84,8 +84,7 @@ protected:
 	Data<double> maxDist;
 };
 
-int PointListMath_NearestClass = RegisterObject("Math/List of points/Nearest point")
-		.setClass<PointListMath_Nearest>()
+int PointListMath_NearestClass = RegisterObject<PointListMath_Nearest>("Math/List of points/Nearest point")
 		.setDescription("For each point in the first list, find the nearest point in the second list");
 
 } // namespace Panda

@@ -49,6 +49,6 @@ protected:
 	Data< QVector<double> > numbers;
 };
 
-int GeneratorReals_RandomClass = RegisterObject("Generator/Real/Random").setClass<GeneratorReals_Random>().setName("Rnd numbers").setDescription("Generate a list of random numbers");
+int GeneratorReals_RandomClass = RegisterObject<GeneratorReals_Random>("Generator/Real/Random").setName("Rnd numbers").setDescription("Generate a list of random numbers");
 
 } // namespace Panda

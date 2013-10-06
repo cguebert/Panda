@@ -525,7 +525,7 @@ QString Group::getGroupName()
 	return groupName.getValue();
 }
 
-int GroupClass = RegisterObject("Group").setClass<Group>().setDescription("Groups many object into a single one").setHidden(true);
+int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many object into a single one").setHidden(true);
 
 //*************************************************************************//
 
@@ -660,6 +660,6 @@ void GroupWithLayer::removeObject(PandaObject* obj)
 		parentDocument->getDefaultLayer()->addDockable(renderer);
 }
 
-int GroupWithLayerClass = RegisterObject("GroupWithLayer").setClass<GroupWithLayer>().setDescription("Groups many object into a single one (version with a layer)").setHidden(true);
+int GroupWithLayerClass = RegisterObject<GroupWithLayer>("GroupWithLayer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);
 
 } // namespace panda

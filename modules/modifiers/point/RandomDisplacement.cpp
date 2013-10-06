@@ -64,9 +64,7 @@ protected:
 	Data<int> seed;
 };
 
-int ModifierPoints_RandomDisplacementClass = RegisterObject("Modifier/Point/Random displacement")
-		.setClass<ModifierPoints_RandomDisplacement>()
-		.setName("Random disp")
-		.setDescription("Move points with a random displacement");
+int ModifierPoints_RandomDisplacementClass = RegisterObject<ModifierPoints_RandomDisplacement>("Modifier/Point/Random displacement")
+		.setName("Random disp").setDescription("Move points with a random displacement");
 
 } // namespace Panda

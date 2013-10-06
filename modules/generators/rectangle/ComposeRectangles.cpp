@@ -51,7 +51,7 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_ComposeClass = RegisterObject("Generator/Rectangle/Rectangle from 4 reals").setName("Reals to rect").setClass<GeneratorRectangles_Compose>().setDescription("Create a rectangle from 4 reals");
+int GeneratorRectangles_ComposeClass = RegisterObject<GeneratorRectangles_Compose>("Generator/Rectangle/Rectangle from 4 reals").setName("Reals to rect").setDescription("Create a rectangle from 4 reals");
 
 //*************************************************************************//
 
@@ -95,7 +95,7 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_ComposeCenterClass = RegisterObject("Generator/Rectangle/Rectangle from center and size").setName("Points to rect").setClass<GeneratorRectangles_ComposeCenter>().setDescription("Create a rectangle from center and size");
+int GeneratorRectangles_ComposeCenterClass = RegisterObject<GeneratorRectangles_ComposeCenter>("Generator/Rectangle/Rectangle from center and size").setName("Points to rect").setDescription("Create a rectangle from center and size");
 
 //*************************************************************************//
 
@@ -152,7 +152,7 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_DecomposeClass = RegisterObject("Generator/Rectangle/Rectangle to 4 reals").setName("Rect to reals").setClass<GeneratorRectangles_Decompose>().setDescription("Extract the boundary of a rectangles");
+int GeneratorRectangles_DecomposeClass = RegisterObject<GeneratorRectangles_Decompose>("Generator/Rectangle/Rectangle to 4 reals").setName("Rect to reals").setDescription("Extract the boundary of a rectangles");
 
 //*************************************************************************//
 
@@ -199,6 +199,6 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_DecomposeCenterClass = RegisterObject("Generator/Rectangle/Rectangle to center and size").setName("Rect to points").setClass<GeneratorRectangles_DecomposeCenter>().setDescription("Extract the center and size of a rectangle");
+int GeneratorRectangles_DecomposeCenterClass = RegisterObject<GeneratorRectangles_DecomposeCenter>("Generator/Rectangle/Rectangle to center and size").setName("Rect to points").setDescription("Extract the center and size of a rectangle");
 
 } // namespace Panda

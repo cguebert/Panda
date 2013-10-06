@@ -77,7 +77,7 @@ protected:
 	Data<double> sum, mean, stdDev, vMin, vMax;
 };
 
-int DoubleListMath_SumMeanStdDevClass = RegisterObject("Math/List of reals/Sum, mean and deviation").setClass<DoubleListMath_SumMeanStdDev>().setName("Sum & mean").setDescription("Compute the sum, mean and standard deviation of a list of reals");
+int DoubleListMath_SumMeanStdDevClass = RegisterObject<DoubleListMath_SumMeanStdDev>("Math/List of reals/Sum, mean and deviation").setName("Sum & mean").setDescription("Compute the sum, mean and standard deviation of a list of reals");
 
 //*************************************************************************//
 
@@ -123,7 +123,7 @@ protected:
 	Data<double> median;
 };
 
-int DoubleListMath_MedianClass = RegisterObject("Math/List of reals/Median").setClass<DoubleListMath_Median>().setDescription("Search the median value of a list of reals");
+int DoubleListMath_MedianClass = RegisterObject<DoubleListMath_Median>("Math/List of reals/Median").setDescription("Search the median value of a list of reals");
 
 //*************************************************************************//
 
@@ -164,7 +164,7 @@ protected:
 	Data< QVector<int> > sortedIndices;
 };
 
-int DoubleListMath_SortClass = RegisterObject("Math/List of reals/Sort").setClass<DoubleListMath_Sort>().setDescription("Sort a list of reals");
+int DoubleListMath_SortClass = RegisterObject<DoubleListMath_Sort>("Math/List of reals/Sort").setDescription("Sort a list of reals");
 
 
 } // namespace Panda

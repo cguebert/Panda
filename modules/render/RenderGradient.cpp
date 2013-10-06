@@ -45,7 +45,7 @@ protected:
 	Data<Gradient> gradient;
 };
 
-int RenderGradient_HorizontalClass = RegisterObject("Render/Horizontal Gradient").setClass<RenderGradient_Horizontal>().setName("Hor grad").setDescription("Draw a horizontal gradient taking the full screen");
+int RenderGradient_HorizontalClass = RegisterObject<RenderGradient_Horizontal>("Render/Horizontal Gradient").setName("Hor grad").setDescription("Draw a horizontal gradient taking the full screen");
 
 class RenderGradient_Vertical : public Renderer
 {
@@ -81,7 +81,7 @@ protected:
 	Data<Gradient> gradient;
 };
 
-int RenderGradient_VerticalClass = RegisterObject("Render/Vertical Gradient").setClass<RenderGradient_Vertical>().setName("Ver grad").setDescription("Draw a vertical gradient taking the full screen");
+int RenderGradient_VerticalClass = RegisterObject<RenderGradient_Vertical>("Render/Vertical Gradient").setName("Ver grad").setDescription("Draw a vertical gradient taking the full screen");
 
 
 } // namespace panda

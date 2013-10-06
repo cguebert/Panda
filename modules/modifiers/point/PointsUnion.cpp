@@ -59,6 +59,6 @@ protected:
 	Data< QVector<int> > outputIndices;
 };
 
-int ModifierPoints_UnionClass = RegisterObject("Modifier/Point/Union").setClass<ModifierPoints_Union>().setName("Points union").setDescription("Remove points that are in dark areas of the image");
+int ModifierPoints_UnionClass = RegisterObject<ModifierPoints_Union>("Modifier/Point/Union").setName("Points union").setDescription("Remove points that are in dark areas of the image");
 
 } // namespace Panda

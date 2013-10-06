@@ -59,6 +59,6 @@ protected:
 	GenericSingleValueData generic;
 };
 
-int GeneratorText_FormatClass = RegisterObject("Generator/Text/Format").setClass<GeneratorText_Format>().setDescription("Create a text by replacing markers by input values");
+int GeneratorText_FormatClass = RegisterObject<GeneratorText_Format>("Generator/Text/Format").setDescription("Create a text by replacing markers by input values");
 
 } // namespace Panda

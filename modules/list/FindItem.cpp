@@ -66,6 +66,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int FindItemClass = RegisterObject("List/Find item").setClass<FindItem>().setDescription("Find some values in a list");
+int FindItemClass = RegisterObject<FindItem>("List/Find item").setDescription("Find some values in a list");
 
 } // namespace Panda

@@ -54,7 +54,7 @@ protected:
 	Data< QVector<int> > outputIndices;
 };
 
-int ModifierPoints_PointsInRectClass = RegisterObject("Modifier/Point/Points in rectangle").setClass<ModifierPoints_PointsInRect>().setName("Pts in rect").setDescription("Select points that are inside a rectangle");
+int ModifierPoints_PointsInRectClass = RegisterObject<ModifierPoints_PointsInRect>("Modifier/Point/Points in rectangle").setName("Pts in rect").setDescription("Select points that are inside a rectangle");
 
 //*************************************************************************//
 
@@ -114,7 +114,7 @@ protected:
 	Data< QVector<int> > outputIndices;
 };
 
-int ModifierPoints_PointsInDiskClass = RegisterObject("Modifier/Point/Points in disk").setClass<ModifierPoints_PointsInDisk>().setName("Pts in disk").setDescription("Select points that are inside a disk");
+int ModifierPoints_PointsInDiskClass = RegisterObject<ModifierPoints_PointsInDisk>("Modifier/Point/Points in disk").setName("Pts in disk").setDescription("Select points that are inside a disk");
 
 
 } // namespace Panda

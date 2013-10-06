@@ -69,6 +69,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int DeleteItemsClass = RegisterObject("List/Delete items").setClass<DeleteItems>().setDescription("Remove some items from a list");
+int DeleteItemsClass = RegisterObject<DeleteItems>("List/Delete items").setDescription("Remove some items from a list");
 
 } // namespace Panda

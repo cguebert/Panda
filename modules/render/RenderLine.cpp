@@ -78,7 +78,7 @@ protected:
 	Data< QVector<QColor> > color;
 };
 
-int RenderLineClass = RegisterObject("Render/Line").setClass<RenderLine>().setDescription("Draw a line between 2 points");
+int RenderLineClass = RegisterObject<RenderLine>("Render/Line").setDescription("Draw a line between 2 points");
 
 //*************************************************************************//
 
@@ -130,6 +130,6 @@ protected:
 	Data<QColor> color;
 };
 
-int RenderConnectedLinesClass = RegisterObject("Render/Connected lines").setClass<RenderConnectedLines>().setName("Lines").setDescription("Draw a connected line based on a list of points");
+int RenderConnectedLinesClass = RegisterObject<RenderConnectedLines>("Render/Connected lines").setName("Lines").setDescription("Draw a connected line based on a list of points");
 
 } // namespace panda

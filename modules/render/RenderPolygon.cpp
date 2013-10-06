@@ -63,6 +63,6 @@ protected:
 	Data< QVector<QColor> > color;
 };
 
-int RenderPolygonClass = RegisterObject("Render/Polygon").setClass<RenderPolygon>().setDescription("Draw a polygon");
+int RenderPolygonClass = RegisterObject<RenderPolygon>("Render/Polygon").setDescription("Draw a polygon");
 
 } // namespace panda

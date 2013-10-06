@@ -83,7 +83,7 @@ protected:
 	Data<double> mean, stdDev;
 };
 
-int PointListMath_CenterClass = RegisterObject("Math/List of points/Mean position").setClass<PointListMath_Center>().setDescription("Compute the mean position of a list of points");
+int PointListMath_CenterClass = RegisterObject<PointListMath_Center>("Math/List of points/Mean position").setDescription("Compute the mean position of a list of points");
 
 //*************************************************************************//
 
@@ -136,7 +136,7 @@ protected:
 	Data<double> length;
 };
 
-int PointListMath_LengthClass = RegisterObject("Math/List of points/Curve length").setClass<PointListMath_Length>().setDescription("Compute the length of a series of segments");
+int PointListMath_LengthClass = RegisterObject<PointListMath_Length>("Math/List of points/Curve length").setDescription("Compute the length of a series of segments");
 
 //*************************************************************************//
 
@@ -223,7 +223,7 @@ protected:
 	Data< QVector<double> > abscissa, rotation;
 };
 
-int PointListMath_GetPointClass = RegisterObject("Math/List of points/Point on curve").setClass<PointListMath_GetPoint>().setDescription("Get the position and the rotation of a point on a curve based on his abscissa");
+int PointListMath_GetPointClass = RegisterObject<PointListMath_GetPoint>("Math/List of points/Point on curve").setDescription("Get the position and the rotation of a point on a curve based on his abscissa");
 
 
 } // namespace Panda

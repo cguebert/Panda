@@ -99,6 +99,6 @@ protected:
 	Data< int > drawCentered;
 };
 
-int RenderImageClass = RegisterObject("Render/Image").setClass<RenderImage>().setDescription("Renders an image");
+int RenderImageClass = RegisterObject<RenderImage>("Render/Image").setDescription("Renders an image");
 
 } // namespace panda

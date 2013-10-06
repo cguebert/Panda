@@ -62,6 +62,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int FillListClass = RegisterObject("List/Fill list").setClass<FillList>().setDescription("Fill a list with a value");
+int FillListClass = RegisterObject<FillList>("List/Fill list").setDescription("Fill a list with a value");
 
 } // namespace Panda

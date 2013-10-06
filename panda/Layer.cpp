@@ -136,6 +136,6 @@ void Layer::postCreate()
 	layerName.setValue(tr("Layer #%1").arg(i));
 }
 
-int LayerClass = RegisterObject("Layer").setClass<Layer>().setDescription("Organize renderers and change opacity and the composition mode");
+int LayerClass = RegisterObject<Layer>("Layer").setDescription("Organize renderers and change opacity and the composition mode");
 
 } // namespace panda

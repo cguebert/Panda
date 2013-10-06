@@ -80,6 +80,6 @@ protected:
 	Data< QVector<QColor> > lineColor, color;
 };
 
-int RenderRectClass = RegisterObject("Render/Rectangle").setClass<RenderRect>().setDescription("Draw a plain rectangle");
+int RenderRectClass = RegisterObject<RenderRect>("Render/Rectangle").setDescription("Draw a plain rectangle");
 
 } // namespace panda

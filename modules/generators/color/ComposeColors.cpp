@@ -53,7 +53,7 @@ protected:
 	Data< QVector<QColor> > color;
 };
 
-int GeneratorColors_ComposeRGBClass = RegisterObject("Generator/Color/From RGB").setClass<GeneratorColors_ComposeRGB>().setDescription("Create a color from red, green and blue components");
+int GeneratorColors_ComposeRGBClass = RegisterObject<GeneratorColors_ComposeRGB>("Generator/Color/From RGB").setDescription("Create a color from red, green and blue components");
 
 //*************************************************************************//
 
@@ -108,7 +108,7 @@ protected:
 	Data< QVector<QColor> > color;
 };
 
-int GeneratorColors_DecomposeRGBClass = RegisterObject("Generator/Color/To RGB").setClass<GeneratorColors_DecomposeRGB>().setDescription("Extract red, green and blue components from a color");
+int GeneratorColors_DecomposeRGBClass = RegisterObject<GeneratorColors_DecomposeRGB>("Generator/Color/To RGB").setDescription("Extract red, green and blue components from a color");
 
 
 } // namespace Panda

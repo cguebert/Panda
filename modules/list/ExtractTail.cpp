@@ -58,6 +58,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int ExtractTailClass = RegisterObject("List/Get tail").setClass<ExtractTail>().setDescription("Get the last items of a list");
+int ExtractTailClass = RegisterObject<ExtractTail>("List/Get tail").setDescription("Get the last items of a list");
 
 } // namespace Panda

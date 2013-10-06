@@ -71,23 +71,51 @@ public:
 	}
 };
 
+template <class T>
 class RegisterObject
 {
 public:
-	explicit RegisterObject(QString menuDisplay);
-
-	RegisterObject& setDescription(QString description);
-	RegisterObject& setName(QString name);
-	RegisterObject& setHidden(bool hid);
-
-	template <class T> RegisterObject& setClass()
+	explicit RegisterObject(QString menuDisplay)
 	{
 		entry.creator = QSharedPointer<ObjectCreator<T>>::create();
 		entry.theClass = T::getClass();
+		entry.menuDisplay = menuDisplay;
+		if(!menuDisplay.isEmpty())
+			entry.objectName = menuDisplay.split("/").last();
+	}
+
+	RegisterObject& setDescription(QString description)
+	{
+		entry.description = description;
 		return *this;
 	}
 
-	operator int();
+	RegisterObject& setName(QString name)
+	{
+		entry.objectName = name;
+		return *this;
+	}
+
+	RegisterObject& setHidden(bool hid)
+	{
+		entry.hidden = hid;
+		return *this;
+	}
+
+	operator int()
+	{
+		QString typeName = entry.theClass->getTypeName();
+		ObjectFactory::ClassEntry* reg = ObjectFactory::getInstance()->getEntry(typeName);
+		reg->creator = entry.creator;
+		reg->description = entry.description;
+		reg->objectName = entry.objectName;
+		reg->menuDisplay = entry.menuDisplay;
+		reg->theClass = entry.theClass;
+		reg->className = typeName;
+		reg->hidden = entry.hidden;
+
+		return 1;
+	}
 
 protected:
 	ObjectFactory::ClassEntry entry;

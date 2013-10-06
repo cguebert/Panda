@@ -98,8 +98,7 @@ protected:
 	Data<Topology> topology;
 };
 
-int GeneratorTopology_DelaunayClass = RegisterObject("Generator/Topology/Delaunay")
-		.setClass<GeneratorTopology_Delaunay>()
+int GeneratorTopology_DelaunayClass = RegisterObject<GeneratorTopology_Delaunay>("Generator/Topology/Delaunay")
 		.setDescription("Create a topology from a Delaunay triangulation");
 
 //*************************************************************************//

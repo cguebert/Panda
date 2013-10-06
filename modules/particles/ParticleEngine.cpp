@@ -142,6 +142,6 @@ protected:
 	Data< QVector<QPointF> > positions, velocities, accelerations;
 };
 
-int ParticleEngineClass = RegisterObject("Particles/Particle engine").setClass<ParticleEngine>().setName("Particle engine").setDescription("Animate a set of points based on physical properties and optional modifier objects");
+int ParticleEngineClass = RegisterObject<ParticleEngine>("Particles/Particle engine").setName("Particle engine").setDescription("Animate a set of points based on physical properties and optional modifier objects");
 
 } // namespace Panda

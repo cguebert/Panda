@@ -55,6 +55,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int ExtractHeadClass = RegisterObject("List/Get head").setClass<ExtractHead>().setDescription("Get the first items of a list");
+int ExtractHeadClass = RegisterObject<ExtractHead>("List/Get head").setDescription("Get the first items of a list");
 
 } // namespace Panda

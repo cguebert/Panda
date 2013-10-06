@@ -75,6 +75,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int ReplaceItemClass = RegisterObject("List/Replace item").setClass<ReplaceItem>().setDescription("Replace some items in a list by new values");
+int ReplaceItemClass = RegisterObject<ReplaceItem>("List/Replace item").setDescription("Replace some items in a list by new values");
 
 } // namespace Panda

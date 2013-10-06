@@ -52,7 +52,7 @@ protected:
 	Data< QVector<QPointF> > inputA, inputB, result;
 };
 
-int PointMath_AdditionClass = RegisterObject("Math/Point/Addition").setClass<PointMath_Addition>().setName("Add points").setDescription("Compute the addition of 2 points");
+int PointMath_AdditionClass = RegisterObject<PointMath_Addition>("Math/Point/Addition").setName("Add points").setDescription("Compute the addition of 2 points");
 
 //*************************************************************************//
 
@@ -100,7 +100,7 @@ protected:
 	Data< QVector<QPointF> > inputA, inputB, result;
 };
 
-int PointMath_SubstractionClass = RegisterObject("Math/Point/Substraction").setClass<PointMath_Substraction>().setName("Sub points").setDescription("Compute the substraction of 2 points");
+int PointMath_SubstractionClass = RegisterObject<PointMath_Substraction>("Math/Point/Substraction").setName("Sub points").setDescription("Compute the substraction of 2 points");
 
 //*************************************************************************//
 
@@ -151,7 +151,7 @@ protected:
 	Data< QVector<double> > factor;
 };
 
-int PointMath_ScaleClass = RegisterObject("Math/Point/Multiply").setClass<PointMath_Scale>().setName("Scale point").setDescription("Multiply a point by a real");
+int PointMath_ScaleClass = RegisterObject<PointMath_Scale>("Math/Point/Multiply").setName("Scale point").setDescription("Multiply a point by a real");
 
 //*************************************************************************//
 
@@ -202,7 +202,7 @@ protected:
 	Data< QVector<double> > factor;
 };
 
-int PointMath_DivisionClass = RegisterObject("Math/Point/Division").setClass<PointMath_Division>().setName("Divide point").setDescription("Divide a point by a real");
+int PointMath_DivisionClass = RegisterObject<PointMath_Division>("Math/Point/Division").setName("Divide point").setDescription("Divide a point by a real");
 
 //*************************************************************************//
 
@@ -255,7 +255,7 @@ protected:
 	Data< QVector<double> > result;
 };
 
-int PointMath_DistanceClass = RegisterObject("Math/Point/Distance").setClass<PointMath_Distance>().setDescription("Compute the distance between 2 points");
+int PointMath_DistanceClass = RegisterObject<PointMath_Distance>("Math/Point/Distance").setDescription("Compute the distance between 2 points");
 
 //*************************************************************************//
 
@@ -324,7 +324,7 @@ protected:
 	Data< QVector<double> > angle;
 };
 
-int PointMath_RotationClass = RegisterObject("Math/Point/Rotation").setClass<PointMath_Rotation>().setDescription("Rotation of a point around a center");
+int PointMath_RotationClass = RegisterObject<PointMath_Rotation>("Math/Point/Rotation").setDescription("Rotation of a point around a center");
 
 
 } // namespace Panda

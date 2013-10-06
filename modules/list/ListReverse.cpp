@@ -51,6 +51,6 @@ protected:
 	GenericVectorData generic;
 };
 
-int ListReverseClass = RegisterObject("List/Reverse").setClass<ListReverse>().setDescription("Reverse the order of items in a list");
+int ListReverseClass = RegisterObject<ListReverse>("List/Reverse").setDescription("Reverse the order of items in a list");
 
 } // namespace Panda

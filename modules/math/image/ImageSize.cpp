@@ -45,7 +45,7 @@ protected:
 	Data< QVector<QPointF> > size;
 };
 
-int ImageMath_GetSizeClass = RegisterObject("Math/Image/Image size").setClass<ImageMath_GetSize>().setDescription("Compute the size of the image");
+int ImageMath_GetSizeClass = RegisterObject<ImageMath_GetSize>("Math/Image/Image size").setDescription("Compute the size of the image");
 
 } // namespace Panda
 

@@ -101,7 +101,7 @@ public:
 	{ return valA + valB; }
 };
 
-int DoubleMath_AddClass = RegisterObject("Math/Real/Addition").setClass<DoubleMath_Add>().setDescription("Addition of 2 reals");
+int DoubleMath_AddClass = RegisterObject<DoubleMath_Add>("Math/Real/Addition").setDescription("Addition of 2 reals");
 
 //*************************************************************************//
 
@@ -117,7 +117,7 @@ public:
 	{ return valA - valB; }
 };
 
-int DoubleMath_SubClass = RegisterObject("Math/Real/Substraction").setClass<DoubleMath_Sub>().setDescription("Substraction of 2 reals");
+int DoubleMath_SubClass = RegisterObject<DoubleMath_Sub>("Math/Real/Substraction").setDescription("Substraction of 2 reals");
 
 //*************************************************************************//
 
@@ -133,7 +133,7 @@ public:
 	{ return valA * valB; }
 };
 
-int DoubleMath_MultClass = RegisterObject("Math/Real/Multiplication").setClass<DoubleMath_Mult>().setDescription("Multiplication of 2 reals");
+int DoubleMath_MultClass = RegisterObject<DoubleMath_Mult>("Math/Real/Multiplication").setDescription("Multiplication of 2 reals");
 
 //*************************************************************************//
 
@@ -149,7 +149,7 @@ public:
 	{ return valA / valB; }
 };
 
-int DoubleMath_DivClass = RegisterObject("Math/Real/Division").setClass<DoubleMath_Div>().setDescription("Division of 2 reals");
+int DoubleMath_DivClass = RegisterObject<DoubleMath_Div>("Math/Real/Division").setDescription("Division of 2 reals");
 
 //*************************************************************************//
 
@@ -165,7 +165,7 @@ public:
 	{ return fmod(valA, valB); }
 };
 
-int DoubleMath_ModClass = RegisterObject("Math/Real/Modulo").setClass<DoubleMath_Mod>().setDescription("Remainder of the division");
+int DoubleMath_ModClass = RegisterObject<DoubleMath_Mod>("Math/Real/Modulo").setDescription("Remainder of the division");
 
 //*************************************************************************//
 
@@ -181,7 +181,7 @@ public:
 	{ return qAbs(val); }
 };
 
-int DoubleMath_AbsClass = RegisterObject("Math/Real/Absolute").setClass<DoubleMath_Abs>().setDescription("Absolute value of the input");
+int DoubleMath_AbsClass = RegisterObject<DoubleMath_Abs>("Math/Real/Absolute").setDescription("Absolute value of the input");
 
 //*************************************************************************//
 
@@ -197,7 +197,7 @@ public:
 	{ return floor(val); }
 };
 
-int DoubleMath_FloorClass = RegisterObject("Math/Real/Floor").setClass<DoubleMath_Floor>().setDescription("Floor value of the input");
+int DoubleMath_FloorClass = RegisterObject<DoubleMath_Floor>("Math/Real/Floor").setDescription("Floor value of the input");
 
 //*************************************************************************//
 
@@ -213,7 +213,7 @@ public:
 	{ return ceil(val); }
 };
 
-int DoubleMath_CeilClass = RegisterObject("Math/Real/Ceiling").setClass<DoubleMath_Ceil>().setDescription("Ceiling value of the input");
+int DoubleMath_CeilClass = RegisterObject<DoubleMath_Ceil>("Math/Real/Ceiling").setDescription("Ceiling value of the input");
 
 //*************************************************************************//
 
@@ -229,7 +229,7 @@ public:
 	{ return floor(val+0.5); }
 };
 
-int DoubleMath_RoundClass = RegisterObject("Math/Real/Rounding").setClass<DoubleMath_Round>().setDescription("Rounded value of the input");
+int DoubleMath_RoundClass = RegisterObject<DoubleMath_Round>("Math/Real/Rounding").setDescription("Rounded value of the input");
 
 //*************************************************************************//
 
@@ -245,7 +245,7 @@ public:
 	{ return pow(valA, valB); }
 };
 
-int DoubleMath_PowerClass = RegisterObject("Math/Real/Power").setClass<DoubleMath_Power>().setDescription("First value raised by the exponent of the second");
+int DoubleMath_PowerClass = RegisterObject<DoubleMath_Power>("Math/Real/Power").setDescription("First value raised by the exponent of the second");
 
 //*************************************************************************//
 
@@ -261,7 +261,7 @@ public:
 	{ return sqrt(val); }
 };
 
-int DoubleMath_SqrtClass = RegisterObject("Math/Real/Square root").setClass<DoubleMath_Sqrt>().setDescription("Square root of the value");
+int DoubleMath_SqrtClass = RegisterObject<DoubleMath_Sqrt>("Math/Real/Square root").setDescription("Square root of the value");
 
 //*************************************************************************//
 
@@ -277,7 +277,7 @@ public:
 	{ return qMin(valA, valB); }
 };
 
-int DoubleMath_MinClass = RegisterObject("Math/Real/Minimum").setClass<DoubleMath_Min>().setDescription("Returns the lowest value of the 2 inputs");
+int DoubleMath_MinClass = RegisterObject<DoubleMath_Min>("Math/Real/Minimum").setDescription("Returns the lowest value of the 2 inputs");
 
 //*************************************************************************//
 
@@ -293,7 +293,7 @@ public:
 	{ return qMax(valA, valB); }
 };
 
-int DoubleMath_MaxClass = RegisterObject("Math/Real/Maximum").setClass<DoubleMath_Max>().setDescription("Returns the highest value of the 2 inputs");
+int DoubleMath_MaxClass = RegisterObject<DoubleMath_Max>("Math/Real/Maximum").setDescription("Returns the highest value of the 2 inputs");
 
 //*************************************************************************//
 
@@ -309,7 +309,7 @@ public:
 	{ return (valA >= valB); }
 };
 
-int DoubleMath_StepClass = RegisterObject("Math/Real/Step").setClass<DoubleMath_Step>().setDescription("Returns 0 if input1 < input2, 1 otherwise");
+int DoubleMath_StepClass = RegisterObject<DoubleMath_Step>("Math/Real/Step").setDescription("Returns 0 if input1 < input2, 1 otherwise");
 
 
 } // namespace Panda
