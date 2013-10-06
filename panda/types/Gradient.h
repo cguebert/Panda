@@ -31,6 +31,16 @@ public:
 	void setStops(GradientStops stopsPoints);
 	GradientStops getStops() const;
 
+	inline bool operator==(const Gradient& rhs)
+	{
+		return extend == rhs.extend && stops == rhs.stops;
+	}
+
+	inline bool operator!=(const Gradient& rhs)
+	{
+		return !(*this == rhs);
+	}
+
 protected:
 	qreal extendPos(qreal position) const;
 
