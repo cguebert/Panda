@@ -3,13 +3,8 @@
 
 #include <QVector>
 #include <QPointF>
-#include <utility>
 
-#include <QMetaType>
 #include <QTextStream>
-#include <QDomDocument>
-
-#include <panda/types/DataTraits.h>
 
 namespace panda
 {
@@ -127,83 +122,6 @@ protected:
 
 //***************************************************************//
 
-template<> QString DataTrait<Topology>::valueTypeName() { return "topology"; }
-template<> QString DataTrait<Topology>::valueTypeNamePlural() { return "topologies"; }
-template<> bool DataTrait<Topology>::isDisplayed() { return false; }
-
-template<>
-void DataTrait<Topology>::writeValue(QDomDocument& doc, QDomElement& elem, const Topology& v)
-{
-	for(const auto& p : v.getPoints())
-	{
-		QDomElement ptNode = doc.createElement("Point");
-		elem.appendChild(ptNode);
-		ptNode.setAttribute("x", p.x());
-		ptNode.setAttribute("y", p.y());
-	}
-
-	for(const auto& e : v.getEdges())
-	{
-		QDomElement edgeNode = doc.createElement("Edge");
-		elem.appendChild(edgeNode);
-		edgeNode.setAttribute("p1", e.first);
-		edgeNode.setAttribute("p2", e.second);
-	}
-
-	for(const auto& poly : v.getPolygons())
-	{
-		QDomElement polyNode = doc.createElement("Poly");
-		elem.appendChild(polyNode);
-		for(const auto& p : poly)
-		{
-			QDomElement indexNode = doc.createElement("Point");
-			polyNode.appendChild(indexNode);
-			indexNode.setAttribute("index", p);
-		}
-	}
-}
-
-template<>
-void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
-{
-	Topology tmp;
-
-	QDomElement ptNode = elem.firstChildElement("Point");
-	while(!ptNode.isNull())
-	{
-		QPointF pt;
-		pt.setX(ptNode.attribute("x").toDouble());
-		pt.setY(ptNode.attribute("y").toDouble());
-		tmp.addPoint(pt);
-		ptNode = ptNode.nextSiblingElement("Point");
-	}
-
-	QDomElement edgeNode = elem.firstChildElement("Edge");
-	while(!edgeNode.isNull())
-	{
-		Topology::Edge edge;
-		edge.first = edgeNode.attribute("p1").toInt();
-		edge.second = edgeNode.attribute("p2").toInt();
-		tmp.addEdge(edge);
-		edgeNode = edgeNode.nextSiblingElement("Edge");
-	}
-
-	QDomElement polyNode = elem.firstChildElement("Poly");
-	while(!polyNode.isNull())
-	{
-		Topology::Polygon poly;
-		QDomElement indexNode = elem.firstChildElement("Point");
-		while(!indexNode.isNull())
-		{
-			poly.push_back(indexNode.attribute("index").toInt());
-			indexNode = indexNode.nextSiblingElement("Point");
-		}
-		tmp.addPolygon(poly);
-		polyNode = polyNode.nextSiblingElement("Poly");
-	}
-
-	v = std::move(tmp);
-}
 
 } // namespace types
 

@@ -1,8 +1,9 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Animation.h>
 
+#include <panda/types/Animation.h>
+#include <panda/types/Gradient.h>
 #include <QPointF>
 #include <QColor>
 #include <QRectF>

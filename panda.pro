@@ -23,6 +23,7 @@ HEADERS       = \
 	panda/types/Animation.h \
 	panda/types/DataTraits.h \
 	panda/types/DataTypeId.h \
+	panda/types/Gradient.h \
 	panda/types/Topology.h \
 	ui/DataWidget.h \
 	ui/DatasTable.h \
@@ -47,6 +48,7 @@ SOURCES       = main.cpp \
 	modules/animation/Interpolation.cpp \
 	modules/animation/List2Anim.cpp \
 	modules/generators/UserValue.cpp \
+	modules/generators/color/ColorInGradient.cpp \
 	modules/generators/color/ComposeColors.cpp \
 	modules/generators/gradient/SimpleGradients.cpp \
 	modules/generators/image/LoadImage.cpp \
@@ -115,6 +117,7 @@ SOURCES       = main.cpp \
 	panda/helper/Random.cpp \
 	panda/types/Animation.cpp \
 	panda/types/DataTypeId.cpp \
+	panda/types/Gradient.cpp \
 	panda/types/Topology.cpp \
 	ui/DatasTable.cpp \
 	ui/DockableDrawStruct.cpp \

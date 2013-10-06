@@ -3,7 +3,6 @@
 #include <panda/DataFactory.h>
 
 #include <QMap>
-#include <QStack>
 #include <set>
 
 namespace panda
@@ -738,29 +737,22 @@ QTextStream& operator<<(QTextStream& stream, const Topology& topo)
 {
 	const int nbPts = topo.m_points.size();
 	stream << nbPts << " ";
-	for(int i=0; i<nbPts; ++i)
-	{
-		const QPointF& pt = topo.m_points[i];
+	for(const QPointF& pt : topo.m_points)
 		stream << pt.x() << " " << pt.y() << " ";
-	}
 
 	const int nbEdges = topo.m_edges.size();
 	stream << nbEdges << " ";
-	for(int i=0; i<nbEdges; ++i)
-	{
-		const Topology::Edge& e = topo.m_edges[i];
+	for(const Topology::Edge& e : topo.m_edges)
 		stream << e.first << " " << e.second << " ";
-	}
 
 	const int nbPolys = topo.m_polygons.size();
 	stream << nbPolys << " ";
-	for(int i=0; i<nbPolys; ++i)
+	for(const Topology::Polygon& p : topo.m_polygons)
 	{
-		const Topology::Polygon& p = topo.m_polygons[i];
 		const int nbP = p.size();
 		stream << nbP << " ";
-		for(int j=0; j<nbP; ++j)
-			stream << p[j] << " ";
+		for(int i=0; i<nbP; ++i)
+			stream << p[i] << " ";
 	}
 
 	return stream;
@@ -806,6 +798,84 @@ QTextStream& operator>>(QTextStream& stream, Topology& topo)
 }
 
 //***************************************************************//
+
+template<> QString DataTrait<Topology>::valueTypeName() { return "topology"; }
+template<> QString DataTrait<Topology>::valueTypeNamePlural() { return "topologies"; }
+template<> bool DataTrait<Topology>::isDisplayed() { return false; }
+
+template<>
+void DataTrait<Topology>::writeValue(QDomDocument& doc, QDomElement& elem, const Topology& v)
+{
+	for(const auto& p : v.getPoints())
+	{
+		QDomElement ptNode = doc.createElement("Point");
+		elem.appendChild(ptNode);
+		ptNode.setAttribute("x", p.x());
+		ptNode.setAttribute("y", p.y());
+	}
+
+	for(const auto& e : v.getEdges())
+	{
+		QDomElement edgeNode = doc.createElement("Edge");
+		elem.appendChild(edgeNode);
+		edgeNode.setAttribute("p1", e.first);
+		edgeNode.setAttribute("p2", e.second);
+	}
+
+	for(const auto& poly : v.getPolygons())
+	{
+		QDomElement polyNode = doc.createElement("Poly");
+		elem.appendChild(polyNode);
+		for(const auto& p : poly)
+		{
+			QDomElement indexNode = doc.createElement("Point");
+			polyNode.appendChild(indexNode);
+			indexNode.setAttribute("index", p);
+		}
+	}
+}
+
+template<>
+void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
+{
+	Topology tmp;
+
+	QDomElement ptNode = elem.firstChildElement("Point");
+	while(!ptNode.isNull())
+	{
+		QPointF pt;
+		pt.setX(ptNode.attribute("x").toDouble());
+		pt.setY(ptNode.attribute("y").toDouble());
+		tmp.addPoint(pt);
+		ptNode = ptNode.nextSiblingElement("Point");
+	}
+
+	QDomElement edgeNode = elem.firstChildElement("Edge");
+	while(!edgeNode.isNull())
+	{
+		Topology::Edge edge;
+		edge.first = edgeNode.attribute("p1").toInt();
+		edge.second = edgeNode.attribute("p2").toInt();
+		tmp.addEdge(edge);
+		edgeNode = edgeNode.nextSiblingElement("Edge");
+	}
+
+	QDomElement polyNode = elem.firstChildElement("Poly");
+	while(!polyNode.isNull())
+	{
+		Topology::Polygon poly;
+		QDomElement indexNode = elem.firstChildElement("Point");
+		while(!indexNode.isNull())
+		{
+			poly.push_back(indexNode.attribute("index").toInt());
+			indexNode = indexNode.nextSiblingElement("Point");
+		}
+		tmp.addPolygon(poly);
+		polyNode = polyNode.nextSiblingElement("Poly");
+	}
+
+	v = std::move(tmp);
+}
 
 template class Data< Topology >;
 template class Data< QVector<Topology> >;

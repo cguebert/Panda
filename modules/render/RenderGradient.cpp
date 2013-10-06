@@ -2,7 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
-#include <panda/types/Animation.h>
+#include <panda/types/Gradient.h>
 
 #include <QPointF>
 #include <QPainter>
@@ -28,7 +28,7 @@ public:
 	{
 		painter->save();
 
-		Gradient grad = gradient.getValue();
+		const Gradient& grad = gradient.getValue();
 		QSize size = document->getRenderSize();
 		for(int x=0; x<size.width(); ++x)
 		{
@@ -64,7 +64,7 @@ public:
 	{
 		painter->save();
 
-		Gradient grad = gradient.getValue();
+		const Gradient& grad = gradient.getValue();
 		QSize size = document->getRenderSize();
 		for(int y=0; y<size.height(); ++y)
 		{

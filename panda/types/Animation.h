@@ -57,8 +57,6 @@ protected:
 	QMap<double, T> map;
 };
 
-typedef Animation<QColor> Gradient;
-
 } // namespace types
 
 } // namespace panda
