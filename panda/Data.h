@@ -2,12 +2,12 @@
 #define DATA_H
 
 #include <panda/BaseData.h>
-#include <panda/helper/DataAccessor.h>
+#include <panda/DataAccessor.h>
 
 namespace panda
 {
 
-namespace helper { template<class T> class DataAccessor; }
+template<class T> class DataAccessor;
 template<class T> class Data;
 template<class T> class RegisterData;
 
@@ -63,8 +63,8 @@ public:
 	virtual const void* getVoidValue() const
 	{ return &getValue(); }
 
-	helper::DataAccessor<data_type> getAccessor()
-	{ return helper::DataAccessor<data_type>(*this); }
+	DataAccessor<data_type> getAccessor()
+	{ return DataAccessor<data_type>(*this); }
 
 	inline void setValue(const_reference v)
 	{
@@ -85,7 +85,7 @@ public:
 	}
 
 protected:
-	friend class helper::DataAccessor<data_type>;
+	friend class DataAccessor<data_type>;
 	friend class RegisterData<value_type>;
 
 	inline pointer beginEdit()
@@ -123,9 +123,6 @@ template<class T> AbstractDataCopier* Data<T>::dataCopier;
 
 //***************************************************************//
 
-namespace helper
-{
-
 template<class T>
 class DataAccessor<Data<T>> : public DataAccessor<T>
 {
@@ -143,8 +140,6 @@ public:
 
 	template<class U> void operator=(const U& v) { Inherit::operator=(v); }
 };
-
-} // namespace helper
 
 } // namespace panda
 

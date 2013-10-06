@@ -4,6 +4,7 @@
 #include <panda/Data.h>
 #include <panda/BaseClass.h>
 
+#include <QMap>
 #include <QObject>
 #include <QSharedPointer>
 #include <QPointF>

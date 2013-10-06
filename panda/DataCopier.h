@@ -3,6 +3,7 @@
 
 #include <panda/Data.h>
 #include <panda/types/DataTraits.h>
+#include <panda/types/Animation.h>
 
 namespace panda
 {

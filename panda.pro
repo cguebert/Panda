@@ -5,6 +5,7 @@ HEADERS       = \
 	panda/BaseClass.h \
 	panda/BaseData.h \
 	panda/Data.h \
+	panda/DataAccessor.h \
 	panda/DataCopier.h \
 	panda/DataFactory.h \
 	panda/DataNode.h \
@@ -16,11 +17,11 @@ HEADERS       = \
 	panda/PandaDocument.h \
 	panda/PandaObject.h \
 	panda/Renderer.h \
-	panda/helper/DataAccessor.h \
 	panda/helper/Factory.h \
 	panda/helper/PointsGrid.h \
 	panda/helper/Random.h \
 	panda/types/Animation.h \
+	panda/types/AnimationTraits.h \
 	panda/types/DataTraits.h \
 	panda/types/DataTypeId.h \
 	panda/types/Gradient.h \

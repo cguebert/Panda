@@ -1,4 +1,3 @@
-#include <panda/Data.h>
 #include <panda/DataFactory.h>
 
 #include <QColor>
@@ -8,7 +7,7 @@
 #include <QImage>
 
 #include <QVector>
-#include <panda/types/Animation.h>
+#include <panda/types/AnimationTraits.h>
 
 namespace panda
 {
