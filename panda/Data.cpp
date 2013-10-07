@@ -1,4 +1,5 @@
 #include <panda/DataFactory.h>
+#include <panda/Data.inl>
 
 #include <QColor>
 #include <QPointF>
@@ -7,7 +8,6 @@
 #include <QImage>
 
 #include <QVector>
-#include <panda/types/AnimationTraits.h>
 
 namespace panda
 {
@@ -28,11 +28,6 @@ template class Data< QVector<QRectF> >;
 template class Data< QVector<QString> >;
 template class Data< QVector<QImage> >;
 
-using types::Animation;
-template class Data< Animation<double> >;
-template class Data< Animation<QColor> >;
-template class Data< Animation<QPointF> >;
-
 int intDataClass = RegisterData< int >();
 int doubleDataClass = RegisterData< double >();
 int colorDataClass = RegisterData< QColor >();
@@ -48,9 +43,5 @@ int pointVectorDataClass = RegisterData< QVector<QPointF> >();
 int rectVectorDataClass = RegisterData< QVector<QRectF> >();
 int stringVectorDataClass = RegisterData< QVector<QString> >();
 int imageVectorDataClass = RegisterData< QVector<QImage> >();
-
-int doubleAnimationDataClass = RegisterData< Animation<double> >();
-int colorAnimationDataClass = RegisterData< Animation<QColor> >();
-int pointAnimationDataClass = RegisterData< Animation<QPointF> >();
 
 } // namespace panda

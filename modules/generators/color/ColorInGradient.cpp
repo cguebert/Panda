@@ -16,12 +16,10 @@ public:
 		: PandaObject(doc)
 		, gradient(initData(&gradient, "gradient", "The gradient from which to get the color"))
 		, position(initData(&position, "position", "Position in the gradient where to get the color"))
-		, extend(initData(&extend, 0, "extend", "Method to use when a position is outside the gradient's boundary"))
 		, color(initData(&color, "color", "Color extracted from the gradient"))
 	{
 		addInput(&gradient);
 		addInput(&position);
-		addInput(&extend);
 
 		addOutput(&color);
 	}
@@ -30,7 +28,6 @@ public:
 	{
 		Gradient grad = gradient.getValue();
 		const QVector<double>& pos = position.getValue();
-		grad.setExtend(extend.getValue());
 		auto colorsList = color.getAccessor();
 
 		int nb = pos.size();
@@ -44,7 +41,6 @@ public:
 protected:
 	Data< Gradient > gradient;
 	Data< QVector<double> > position;
-	Data< int > extend;
 	Data< QVector<QColor> > color;
 };
 

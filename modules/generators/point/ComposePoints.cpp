@@ -27,10 +27,13 @@ public:
 								&yVal = ptY.getValue();
 		auto pts = point.getAccessor();
 
-		int nb = qMin(xVal.size(), yVal.size());
+		int nbx = xVal.size(), nby = yVal.size();
+		int nb = qMax(nbx, nby);
+		if(nbx < nby) nbx = 1;
+		else if(nby < nbx) nby = 1;
 		pts.resize(nb);
 		for(int i=0; i<nb; ++i)
-			pts[i] = QPointF(xVal[i], yVal[i]);
+			pts[i] = QPointF(xVal[i%nbx], yVal[i%nby]);
 
 		this->cleanDirty();
 	}

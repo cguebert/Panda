@@ -14,10 +14,12 @@ public:
 		: PandaObject(doc)
 		, colorA(initData(&colorA, QColor(0,0,0), "color 1", "Start color of the gradient"))
 		, colorB(initData(&colorB, QColor(255,255,255), "color 2", "End color of the gradient"))
+		, extend(initData(&extend, 0, "extend", "What to do when a position asked is outside the boundaries"))
 		, gradient(initData(&gradient, "gradient", "Gradient created from the 2 input colors"))
 	{
 		addInput(&colorA);
 		addInput(&colorB);
+		addInput(&extend);
 
 		addOutput(&gradient);
 	}
@@ -25,6 +27,7 @@ public:
 	void update()
 	{
 		auto grad = gradient.getAccessor();
+		grad->setExtend(extend.getValue());
 		grad->clear();
 		grad->add(0.0, colorA.getValue());
 		grad->add(1.0, colorB.getValue());
@@ -33,6 +36,7 @@ public:
 
 protected:
 	Data<QColor> colorA, colorB;
+	Data<int> extend;
 	Data<types::Gradient> gradient;
 };
 

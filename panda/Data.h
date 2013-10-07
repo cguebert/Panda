@@ -35,77 +35,26 @@ public:
 		value_type value;
 	};
 
-	explicit Data(const BaseData::BaseInitData& init)
-		: BaseData(init)
-		, value(value_type())
-	{
-		initFlags();
-	}
+	explicit Data(const BaseData::BaseInitData& init);
+	explicit Data(const InitData& init);
+	Data(const QString& name, const QString& help, PandaObject* owner);
+	virtual ~Data();
 
-	explicit Data(const InitData& init)
-		: BaseData(init)
-	{
-		value = init.value;
-		initFlags();
-	}
-
-	Data(const QString& name, const QString& help, PandaObject* owner)
-		: BaseData(name, help, owner)
-	{
-		initFlags();
-	}
-
-	virtual ~Data() {}
-
-	virtual const types::AbstractDataTrait* getDataTrait() const
-	{ return dataTrait; }
-
-	virtual const void* getVoidValue() const
-	{ return &getValue(); }
-
-	DataAccessor<data_type> getAccessor()
-	{ return DataAccessor<data_type>(*this); }
-
-	inline void setValue(const_reference v)
-	{
-		*beginEdit() = v;
-		endEdit();
-	}
-
-	inline const_reference getValue() const
-	{
-		updateIfDirty();
-		return value;
-	}
-
-	virtual void copyValueFrom(const BaseData* from)
-	{
-		if(dataCopier->copyData(this, from))
-			isValueSet = true;
-	}
+	virtual const types::AbstractDataTrait* getDataTrait() const;
+	virtual const void* getVoidValue() const;
+	DataAccessor<data_type> getAccessor();
+	inline void setValue(const_reference v);
+	inline const_reference getValue() const;
+	virtual void copyValueFrom(const BaseData* from);
 
 protected:
 	friend class DataAccessor<data_type>;
 	friend class RegisterData<value_type>;
 
-	inline pointer beginEdit()
-	{
-		updateIfDirty();
-		++counter;
-		return &value;
-	}
-
-	inline void endEdit()
-	{
-		isValueSet = true;
-		BaseData::setDirtyOutputs();
-	}
-
-	virtual void* beginVoidEdit()
-	{ return beginEdit(); }
-
-	virtual void endVoidEdit()
-	{ endEdit(); }
+	inline pointer beginEdit();
+	inline void endEdit();
+	virtual void* beginVoidEdit();
+	virtual void endVoidEdit();
 
 private:
 	T value;
@@ -116,10 +65,6 @@ private:
 	Data(const Data&);
 	Data& operator=(const Data&);
 };
-
-// Definition of the static members
-template<class T> types::AbstractDataTrait* Data<T>::dataTrait;
-template<class T> AbstractDataCopier* Data<T>::dataCopier;
 
 //***************************************************************//
 

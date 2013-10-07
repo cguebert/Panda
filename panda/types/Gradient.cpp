@@ -1,6 +1,8 @@
 #include <panda/types/Gradient.h>
 #include <panda/Data.h>
+
 #include <panda/DataFactory.h>
+#include <panda/Data.inl>
 
 #include <qmath.h>
 
@@ -19,7 +21,7 @@ void Gradient::clear()
 	stops.clear();
 }
 
-void Gradient::add(qreal position, QColor color)
+void Gradient::add(double position, QColor color)
 {
 	if(position < 0 || position > 1)
 		return; // Ignore invalid insertions
@@ -38,9 +40,9 @@ void Gradient::add(qreal position, QColor color)
 	stops.push_back(qMakePair(position, color));
 }
 
-QColor Gradient::get(qreal position) const
+QColor Gradient::get(double position) const
 {
-	qreal pos = extendPos(position);
+	double pos = extendPos(position);
 
 	int nb = stops.size();
 	if(!nb)
@@ -76,7 +78,7 @@ int Gradient::getExtend() const
 	return extend;
 }
 
-inline bool compareStops(const QPair<qreal, QColor> &p1, const QPair<qreal, QColor> &p2)
+inline bool compareStops(const QPair<double, QColor> &p1, const QPair<double, QColor> &p2)
 {
 	return p1.first < p2.first;
 }
@@ -92,7 +94,7 @@ Gradient::GradientStops Gradient::getStops() const
 	return stops;
 }
 
-qreal Gradient::extendPos(qreal position) const
+double Gradient::extendPos(double position) const
 {
 	switch(extend)
 	{
@@ -104,28 +106,28 @@ qreal Gradient::extendPos(qreal position) const
 		return position - qFloor(position);
 
 	case EXTEND_REFLECT:
-		qreal p = qBound(0.0, position, 1.0);
-		return (qFloor(position) % 2 ? 1.0 - p : p);
+		double p = position - qFloor(position);
+		return ((qFloor(position) % 2) ? 1.0 - p : p);
 	}
 }
 
-qreal Gradient::interpolate(qreal v1, qreal v2, qreal amt)
+double Gradient::interpolate(double v1, double v2, double amt)
 {
 	return v1 * (1.0-amt) + v2 * amt;
 }
 
-QColor Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, qreal pos)
+QColor Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, double pos)
 {
-	qreal amt = (pos - s1.first) / (s2.first - s1.first);
+	double amt = (pos - s1.first) / (s2.first - s1.first);
 	return interpolate(s1.second, s2.second, amt);
 }
 
-QColor Gradient::interpolate(const QColor& v1, const QColor& v2, qreal amt)
+QColor Gradient::interpolate(const QColor& v1, const QColor& v2, double amt)
 {
-	qreal r1, r2, g1, g2, b1, b2, a1, a2;
+	double r1, r2, g1, g2, b1, b2, a1, a2;
 	v1.getRgbF(&r1, &g1, &b1, &a1);
 	v2.getRgbF(&r2, &g2, &b2, &a2);
-	qreal r, g, b, a;
+	double r, g, b, a;
 	r = interpolate(r1, r2, amt);
 	g = interpolate(g1, g2, amt);
 	b = interpolate(b1, b2, amt);
@@ -162,7 +164,7 @@ void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& grad)
 	QDomElement stopNode = elem.firstChildElement("Stop");
 	while(!stopNode.isNull())
 	{
-		qreal pos = stopNode.attribute("pos").toDouble();
+		double pos = stopNode.attribute("pos").toDouble();
 		QColor color;
 		DataTrait<QColor>::readValue(stopNode, color);
 

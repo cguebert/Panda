@@ -16,10 +16,14 @@ public:
 
 	List2Anim(PandaDocument *doc)
 		: GenericObject(doc)
-		, interval(initData(&interval, 1.0, "interval", "Interval between 2 animation keys"))
-		, generic(initData(&generic, "input", "Connect here the lists to get the values from"))
+		, keys(initData(&keys, "keys", "List of keys for the animations"))
+		, interpolation(initData(&interpolation, 0, "interpolation", "Interpolation method between two values"))
+		, extend(initData(&extend, 0, "extend", "What to do when a position is outside the boundaries"))
+		, generic(initData(&generic, "input", "Connect here the lists of values"))
 	{
-		addInput(&interval);
+		addInput(&keys);
+		addInput(&interpolation);
+		addInput(&extend);
 		addInput(&generic);
 
 		GenericDataDefinitionList defList;
@@ -49,19 +53,24 @@ public:
 		const QVector<T>& inVal = dataInput->getValue();
 		auto outVal = dataOutput->getAccessor();
 
-		double inter = interval.getValue();
-		int size = inVal.size();
+		outVal->setExtend(extend.getValue());
+		outVal->setInterpolation(interpolation.getValue());
+
+		const QVector<double>& keysList = keys.getValue();
+
+		int nb = qMin(keysList.size(), inVal.size());
 		outVal->clear();
-		for(int i=0; i<size; ++i)
-			outVal->add(i*inter, inVal[i]);
+		for(int i=0; i<nb; ++i)
+			outVal->add(keysList[i], inVal[i]);
 	}
 
 protected:
-	Data<double> interval;
+	Data< QVector<double> > keys;
+	Data<int> interpolation, extend;
 	GenericVectorData generic;
 };
 
-int List2AnimClass = RegisterObject<List2Anim>("Animation/List to Animation").setName("List 2 Anim").setDescription("Create animations from lists");
+int List2AnimClass = RegisterObject<List2Anim>("Animation/List to Animation").setName("Lists 2 Anim").setDescription("Create animations from lists of keys and values");
 
 //***************************************************************//
 
@@ -84,10 +93,15 @@ public:
 											 "input",
 											 "Animation from which to get the values"));
 		// Create an animation of the same type as the data connected
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<double>()),
+											 false, true,
+											 "keys",
+											 "List of keys of the given animation"));
+		// Create an animation of the same type as the data connected
 		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
 											 false, true,
-											 "output",
-											 "List created from the given animation"));
+											 "values",
+											 "List of values of the given animation"));
 
 		setupGenericObject(&generic, defList);
 	}
@@ -96,18 +110,22 @@ public:
 	void updateT(DataList& list)
 	{
 		typedef Data< Animation<T> > AnimData;
-		typedef Data< QVector<T> > VecData;
+		typedef Data< QVector<double> > KeysVecData;
+		typedef Data< QVector<T> > ValuesVecData;
 		AnimData* dataInput = dynamic_cast<AnimData*>(list[0]);
-		VecData* dataOutput = dynamic_cast<VecData*>(list[1]);
-		Q_ASSERT(dataInput && dataOutput);
+		KeysVecData* dataKeys = dynamic_cast<KeysVecData*>(list[1]);
+		ValuesVecData* dataValues = dynamic_cast<ValuesVecData*>(list[2]);
+		Q_ASSERT(dataInput && dataKeys && dataValues);
 
-		dataOutput->getAccessor() = dataInput->getValue().getValues();
+		const auto& anim = dataInput->getValue();
+		dataKeys->getAccessor() = anim.getKeys();
+		dataValues->getAccessor() = anim.getValues();
 	}
 
 protected:
 	GenericAnimationData generic;
 };
 
-int Anim2ListClass = RegisterObject<Anim2List>("Animation/Animation to List").setName("Anim 2 List").setDescription("Extract the values from an animation");
+int Anim2ListClass = RegisterObject<Anim2List>("Animation/Animation to List").setName("Anim 2 Lists").setDescription("Extract the values from an animation");
 
 } // namespace Panda

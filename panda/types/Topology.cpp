@@ -1,6 +1,8 @@
 #include <panda/types/Topology.h>
 #include <panda/Data.h>
+
 #include <panda/DataFactory.h>
+#include <panda/Data.inl>
 
 #include <QMap>
 #include <set>

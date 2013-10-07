@@ -103,6 +103,7 @@ SOURCES       = main.cpp \
 	panda/BaseClass.cpp \
 	panda/BaseData.cpp \
 	panda/Data.cpp \
+	panda/Data.inl \
 	panda/DataFactory.cpp \
 	panda/DataNode.cpp \
 	panda/Dockable.cpp \
@@ -117,6 +118,7 @@ SOURCES       = main.cpp \
 	panda/helper/PointsGrid.cpp \
 	panda/helper/Random.cpp \
 	panda/types/Animation.cpp \
+	panda/types/Animation.inl \
 	panda/types/DataTypeId.cpp \
 	panda/types/Gradient.cpp \
 	panda/types/Topology.cpp \

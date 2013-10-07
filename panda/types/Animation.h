@@ -28,9 +28,9 @@ public:
 	typedef T value_type;
 	typedef value_type& reference;
 	typedef const value_type& const_reference;
-	typedef QPair<qreal, value_type> AnimationStop;
+	typedef QPair<double, value_type> AnimationStop;
 	typedef QVector<AnimationStop> AnimationStops;
-	typedef QVector<qreal> KeysList;
+	typedef QVector<double> KeysList;
 	typedef QVector<value_type> ValuesList;
 
 	enum Extend { EXTEND_PAD = 0, EXTEND_REPEAT = 1, EXTEND_REFLECT = 2 };
@@ -40,8 +40,8 @@ public:
 	int size() const;
 	void clear();
 
-	void add(qreal position, value_type value);
-	value_type get(qreal position) const;
+	void add(double position, value_type value);
+	value_type get(double position) const;
 
 	reference getAtIndex(int index);
 	value_type getAtIndex(int index) const;
@@ -70,8 +70,8 @@ public:
 	}
 
 protected:
-	qreal extendPos(qreal position) const;
-	value_type interpolate(const AnimationStop& s1, const AnimationStop& s2, qreal pos) const;
+	double extendPos(double position, double pMin, double pMax) const;
+	value_type interpolate(const AnimationStop& s1, const AnimationStop& s2, double pos) const;
 
 	int interpolation;
 	Extend extend;
