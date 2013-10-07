@@ -51,6 +51,7 @@ SOURCES       = main.cpp \
 	modules/generators/UserValue.cpp \
 	modules/generators/color/ColorInGradient.cpp \
 	modules/generators/color/ComposeColors.cpp \
+	modules/generators/gradient/Anim2Gradient.cpp \
 	modules/generators/gradient/SimpleGradients.cpp \
 	modules/generators/image/LoadImage.cpp \
 	modules/generators/point/ComposePoints.cpp \
