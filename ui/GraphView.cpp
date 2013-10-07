@@ -59,6 +59,11 @@ const panda::BaseData* GraphView::getClickedData() const
 	return clickedData;
 }
 
+const panda::BaseData* GraphView::getContextMenuData() const
+{
+	return contextMenuData;
+}
+
 panda::PandaObject* GraphView::getObjectAtPos(const QPointF& pt)
 {
 	auto objects = pandaDocument->getObjects();

@@ -134,6 +134,7 @@ public slots:
 	void play(bool playing);
 	void step();
 	void rewind();
+	void copyDataToUserValue(const panda::BaseData* data);
 };
 
 } // namespace panda

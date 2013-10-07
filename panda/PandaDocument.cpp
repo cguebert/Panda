@@ -3,6 +3,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/DataFactory.h>
 #include <panda/Layer.h>
 #include <panda/Renderer.h>
 #include <panda/Group.h>
@@ -871,6 +872,26 @@ void PandaDocument::rewind()
 		object->reset();
 	setDirtyValue();
 	emit timeChanged();
+}
+
+void PandaDocument::copyDataToUserValue(const BaseData* data)
+{
+	if(!data)
+		return;
+
+	auto entry = DataFactory::getInstance()->getEntry(data->getDataTrait()->fullTypeId());
+	if(!entry)
+		return;
+
+	QString registryName = QString("panda::GeneratorUser<") + entry->className + ">";
+	PandaObject* object = createObject(registryName);
+
+	BaseData* valueData = object->getData("value");
+	if(valueData)
+	{
+		valueData->copyValueFrom(data);
+		valueData->setWidget(data->getWidget());
+	}
 }
 
 } // namespace panda

@@ -47,6 +47,7 @@ private slots:
 	void saveGroup();
 	void createGroupObject();
 	void showContextMenu(QPoint, int);
+	void copyDataToUserValue();
 
 private:
 	void createActions();
@@ -123,6 +124,7 @@ private:
 	QAction* editGroupAction;
 	QAction* saveGroupAction;
 	QAction* removeLinkAction;
+	QAction* copyDataAction;
 	QLabel* timeLabel;
 };
 

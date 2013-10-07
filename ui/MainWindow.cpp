@@ -352,6 +352,10 @@ void MainWindow::createActions()
 	removeLinkAction = new QAction(tr("Remove link"), this);
 	removeLinkAction->setStatusTip(tr("Remove the link to this data"));
 	connect(removeLinkAction, SIGNAL(triggered()), graphView, SLOT(removeLink()));
+
+	copyDataAction = new QAction(tr("Copy data"), this);
+	copyDataAction->setStatusTip(tr("Create a user value generator based on this data"));
+	connect(copyDataAction, SIGNAL(triggered()), this, SLOT(copyDataToUserValue()));
 }
 
 void MainWindow::createMenus()
@@ -741,6 +745,10 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 		menu.addAction(removeLinkAction);
 	}
 
+	const panda::BaseData* clickedData = graphView->getContextMenuData();
+	if(clickedData && clickedData->isDisplayed())
+		menu.addAction(copyDataAction);
+
 	int nbSelected = pandaDocument->getSelection().size();
 	if(dynamic_cast<panda::Group*>(obj) && nbSelected == 1)
 	{
@@ -756,4 +764,11 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 
 	if(!menu.actions().isEmpty())
 		menu.exec(pos);
+}
+
+void MainWindow::copyDataToUserValue()
+{
+	const panda::BaseData* clickedData = graphView->getContextMenuData();
+	if(clickedData)
+		pandaDocument->copyDataToUserValue(clickedData);
 }

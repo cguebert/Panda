@@ -30,6 +30,7 @@ public:
 	QPointF getViewDelta() const;
 	const panda::PandaDocument* getDocument() const;
 	const panda::BaseData* getClickedData() const;
+	const panda::BaseData* getContextMenuData() const;
 
 	static bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2);
 

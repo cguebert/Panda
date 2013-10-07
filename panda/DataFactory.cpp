@@ -39,7 +39,7 @@ BaseData* DataFactory::create(int type, const QString& name, const QString& help
 	return nullptr;
 }
 
-void DataFactory::registerData(QString typeName, int fullType, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator)
+void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator)
 {
 	QString className = theClass->getTemplateName();
 	DataEntry* entry = registry.value(className);
@@ -50,17 +50,17 @@ void DataFactory::registerData(QString typeName, int fullType, const BaseClass* 
 		entry = newEntry.data();
 	}
 
-	entry->typeName = typeName;
+	entry->typeName = dataTrait->description();
 	entry->className = className;
 	entry->creator = creator;
-	entry->fullType = fullType;
+	entry->fullType = dataTrait->fullTypeId();
 	entry->theClass = theClass;
 
 //	std::cout << typeName.toStdString() << "\t" << className.toStdString() << "\t" << fullType << std::endl;
 
 	registry[className] = entry;
-	typeRegistry[fullType] = entry;
-	nameRegistry[typeName] = entry;
+	typeRegistry[dataTrait->fullTypeId()] = entry;
+	nameRegistry[dataTrait->description()] = entry;
 }
 
 QString DataFactory::typeToName(int type)

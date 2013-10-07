@@ -58,7 +58,7 @@ protected:
 	QMap< int, DataEntry* > typeRegistry;
 
 	template<class T> friend class RegisterData;
-	void registerData(QString typeName, int fullType, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator);
+	void registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator);
 
 private:
 	DataFactory() {}
@@ -88,8 +88,7 @@ public:
 		data_type::dataTrait = types::VirtualDataTrait<value_type>::get();
 		data_type::dataCopier = VirtualDataCopier<value_type>::get();
 
-		DataFactory::getInstance()->registerData(data_trait::description(),
-												 data_trait::fullTypeId(),
+		DataFactory::getInstance()->registerData(data_type::dataTrait,
 												 data_type::getClass(),
 												 QSharedPointer< DataCreator<data_type> >::create());
 		return 1;
