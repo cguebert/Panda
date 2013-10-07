@@ -25,6 +25,7 @@ Data<T>::Data(const InitData& init)
 template<class T>
 Data<T>::Data(const QString& name, const QString& help, PandaObject* owner)
 	: BaseData(name, help, owner)
+	, value(T())
 {
 	initFlags();
 }

@@ -13,6 +13,26 @@
 namespace panda {
 
 template <class T>
+class CustomData : public Data<T>
+{
+public:
+	CustomData(const QString& name, const QString& help, PandaObject* owner)
+		: Data<T>(name, help, owner)
+	{ }
+	virtual void save(QDomDocument& doc, QDomElement& elem)
+	{
+		Data<T>::save(doc, elem);
+		elem.setAttribute("widget", getWidget());
+	}
+
+	virtual void load(QDomElement& elem)
+	{
+		Data<T>::load(elem);
+		setWidget(elem.attribute("widget"));
+	}
+};
+
+template <class T>
 class GeneratorUser : public PandaObject
 {
 public:
@@ -20,14 +40,14 @@ public:
 
 	GeneratorUser(PandaDocument *doc)
 		: PandaObject(doc)
-		, userValue(initData(&userValue, T(), "value", "The value you want to store"))
+		, userValue("value", "The value you want to store", this)
 	{
 		addOutput(&userValue);
 		userValue.setReadOnly(false);
 	}
 
 protected:
-	Data<T> userValue;
+	CustomData<T> userValue;
 };
 
 int GeneratorUser_IntegerClass = RegisterObject< GeneratorUser<int> >("Generator/Integer/Integer user value").setName("Integer value").setDescription("Lets you store a value for use in other objects");
@@ -44,8 +64,10 @@ int GeneratorUser_VectorPointClass = RegisterObject< GeneratorUser< QVector<QPoi
 int GeneratorUser_VectorColorClass = RegisterObject< GeneratorUser< QVector<QColor> > >("Generator/Color/Colors list user value").setName("Colors list").setDescription("Lets you store a value for use in other objects");
 int GeneratorUser_VectorRectClass = RegisterObject< GeneratorUser< QVector<QRectF> > >("Generator/Rectangle/Rectangles list user value").setName("Rectangles list").setDescription("Lets you store a value for use in other objects");
 int GeneratorUser_VectorStringClass = RegisterObject< GeneratorUser< QVector<QString> > >("Generator/Text/Texts list user value").setName("Texts list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorGradientClass = RegisterObject< GeneratorUser< QVector<types::Gradient> > >("Generator/Gradient/Gradients list user value").setName("Gradients list").setDescription("Lets you store a value for use in other objects");
 
 int GeneratorUser_AnimationDoubleClass = RegisterObject< GeneratorUser< types::Animation<double> > >("Generator/Real/Reals animation user value").setName("Reals animation").setDescription("Lets you store a value for use in other objects");
 int GeneratorUser_AnimationPointClass = RegisterObject< GeneratorUser< types::Animation<QPointF> > >("Generator/Point/Points animation user value").setName("Points animation").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_AnimationColorClass = RegisterObject< GeneratorUser< types::Animation<QColor> > >("Generator/Color/Colors animation user value").setName("Colors animation").setDescription("Lets you store a value for use in other objects");
 
 } // namespace Panda
