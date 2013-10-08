@@ -1,7 +1,12 @@
 #include <ui/ListDataWidgetDialog.h>
+#include <ui/AnimationDataWidgetDialog.h>
 #include <ui/SimpleDataWidget.h>
 
 #include <panda/types/Gradient.h>
+#include <panda/types/Animation.h>
+
+using panda::types::Gradient;
+using panda::types::Animation;
 
 class ObjectWithPreview
 {
@@ -111,14 +116,14 @@ public:
 //***************************************************************//
 
 template <bool openMode>
-class file_data_widget_container : public BaseOpenDialogObject
+class FileDataWidgetContainer : public BaseOpenDialogObject
 {
 public:
 	typedef QString value_type;
 	QWidget* container;
 	QLineEdit* lineEdit;
 
-	file_data_widget_container() : container(nullptr), lineEdit(nullptr) {}
+	FileDataWidgetContainer() : container(nullptr), lineEdit(nullptr) {}
 
 	QWidget* createWidgets(QWidget* parent, bool readOnly)
 	{
@@ -176,7 +181,7 @@ public:
 
 //***************************************************************//
 
-class font_data_widget_container : public BaseOpenDialogObject, public ObjectWithPreview
+class FontDataWidgetContainer : public BaseOpenDialogObject, public ObjectWithPreview
 {
 public:
 	typedef QString value_type;
@@ -184,7 +189,7 @@ public:
 	PreviewView* preview;
 	QFont theFont;
 
-	font_data_widget_container() : container(nullptr), preview(nullptr) {}
+	FontDataWidgetContainer() : container(nullptr), preview(nullptr) {}
 
 	QWidget* createWidgets(QWidget* parent, bool readOnly)
 	{
@@ -245,7 +250,6 @@ public:
 };
 
 //***************************************************************//
-using panda::types::Gradient;
 
 template<>
 class DataWidgetContainer< Gradient > : public BaseOpenDialogObject, public ObjectWithPreview
@@ -331,14 +335,36 @@ public:
 
 //***************************************************************//
 
+template<class T>
+class VectorDataTrait< Animation<T> >
+{
+public:
+	typedef Animation<T> animation_type;
+	typedef T row_type;
+
+	enum { is_vector = 1 };
+	enum { is_single = 0 };
+	static int size(const animation_type& a) { return a.size(); }
+	static QStringList header(const animation_type&) { return QStringList{}; }
+	static const row_type* get(const animation_type&, int) { return nullptr; }
+	static void set(animation_type&, const row_type&, int) { }
+	static void resize(animation_type&, int) { }
+};
+
+//***************************************************************//
+
 Creator<DataWidgetFactory, SimpleDataWidget<QColor> > DWClass_color("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QString, file_data_widget_container<true> > > DWClass_file_open("open file",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QString, file_data_widget_container<false> > > DWClass_file_save("save file",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QString, font_data_widget_container> > DWClass_font("font",true);
+Creator<DataWidgetFactory, SimpleDataWidget<QString, FileDataWidgetContainer<true> > > DWClass_file_open("open file",true);
+Creator<DataWidgetFactory, SimpleDataWidget<QString, FileDataWidgetContainer<false> > > DWClass_file_save("save file",true);
+Creator<DataWidgetFactory, SimpleDataWidget<QString, FontDataWidgetContainer> > DWClass_font("font",true);
 Creator<DataWidgetFactory, SimpleDataWidget<Gradient> > DWClass_gradient("default",true);
 
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QColor>, ListDataWidgetDialog<QVector<QColor> > > > DWClass_colors_list("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, file_data_widget_container<true> > > > DWClass_files_list_open("open file",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, file_data_widget_container<false> > > > DWClass_files_list_save("save file",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, font_data_widget_container> > > DWClass_fonts_list("font",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<true> > > > DWClass_files_list_open("open file",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<false> > > > DWClass_files_list_save("save file",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FontDataWidgetContainer> > > DWClass_fonts_list("font",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QColor>, ListDataWidgetDialog<QVector<QColor> > > > DWClass_gradients_list("default",true);
+
+Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<double>, AnimationDataWidgetDialog<Animation<double>, DoubleDataWidgetContainer > > > DWClass_reals_animation("default",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<QPointF>, AnimationDataWidgetDialog<Animation<QPointF>, PointDataWidgetContainer > > > DWClass_points_animation("default",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<QColor>, AnimationDataWidgetDialog<Animation<QColor> > > > DWClass_colors_animation("default",true);

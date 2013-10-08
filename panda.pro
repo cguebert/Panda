@@ -26,6 +26,7 @@ HEADERS       = \
 	panda/types/DataTypeId.h \
 	panda/types/Gradient.h \
 	panda/types/Topology.h \
+	ui/AnimationDataWidgetDialog.h \
 	ui/DataWidget.h \
 	ui/DatasTable.h \
 	ui/DockableDrawStruct.h \
