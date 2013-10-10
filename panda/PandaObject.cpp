@@ -174,6 +174,7 @@ void PandaObject::load(QDomElement& elem)
 void PandaObject::dataSetParent(BaseData* data, BaseData* parent)
 {
 	data->setParent(parent);
+	emitModified();
 }
 
 void PandaObject::changeDataName(BaseData* data, const QString& newName)

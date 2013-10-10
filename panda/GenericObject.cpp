@@ -168,6 +168,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	else if(parent || !createdDatasMap_.contains(data))
 	{
 		data->setParent(parent);
+		emitModified();
 	}
 	else // (nullptr), we remove the data
 	{

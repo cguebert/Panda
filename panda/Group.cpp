@@ -506,9 +506,11 @@ BaseData* Group::duplicateData(BaseData* data)
 	QString name = findAvailableDataName(data->getName());
 
 	QSharedPointer<BaseData> newData = QSharedPointer<BaseData>(
-				DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(), name, data->getHelp(), this) );
+		DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(),
+										   name, data->getHelp(), this) );
 	newData->setDisplayed(data->isDisplayed());
 	newData->setPersistent(data->isPersistent());
+	newData->setWidget(data->getWidget());
 	groupDatas.append(newData);
 
 	return newData.data();
