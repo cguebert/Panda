@@ -21,6 +21,26 @@ public slots:
 	virtual void resizeValue() {}
 };
 
+class ObjectWithPreview
+{
+public:
+	virtual void draw(QPainter& painter, QSize size) = 0;
+};
+
+class PreviewView : public QWidget
+{
+public:
+	PreviewView(ObjectWithPreview* obj) : object(obj) {}
+	void paintEvent(QPaintEvent*)
+	{
+		QStylePainter painter(this);
+		object->draw(painter, size());
+	}
+
+protected:
+	ObjectWithPreview* object;
+};
+
 template<class T, class Container = DataWidgetContainer< VectorDataTrait<T>::row_type > >
 class ListDataWidgetDialog : public BaseListDataWidgetDialog
 {

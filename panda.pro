@@ -30,6 +30,7 @@ HEADERS       = \
 	ui/DataWidget.h \
 	ui/DatasTable.h \
 	ui/DockableDrawStruct.h \
+	ui/EditGradientDialog.h \
 	ui/EditGroupDialog.h \
 	ui/GenericObjectDrawStruct.h \
 	ui/GraphView.h \
@@ -126,6 +127,7 @@ SOURCES       = main.cpp \
 	panda/types/Topology.cpp \
 	ui/DatasTable.cpp \
 	ui/DockableDrawStruct.cpp \
+	ui/EditGradientDialog.cpp \
 	ui/EditGroupDialog.cpp \
 	ui/GenericObjectDrawStruct.cpp \
 	ui/GraphView.cpp \
