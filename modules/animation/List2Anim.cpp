@@ -26,6 +26,9 @@ public:
 		addInput(&extend);
 		addInput(&generic);
 
+		interpolation.setWidget("enum_AnimationInterpolation");
+		extend.setWidget("enum_AnimationExtend");
+
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
 		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),

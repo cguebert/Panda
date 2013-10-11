@@ -57,6 +57,8 @@ public:
 
 	virtual void postCreate();
 
+	static const char* compositionModes[];
+
 protected:
 	Data<QString> layerName;
 	Data<QImage> image;

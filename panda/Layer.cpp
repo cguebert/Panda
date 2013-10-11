@@ -6,6 +6,7 @@
 #include <QPainter>
 
 #include <ui/GraphView.h>
+#include <ui/SimpleDataWidget.h>
 
 namespace panda
 {
@@ -55,6 +56,8 @@ Layer::Layer(PandaDocument *parent)
 	addInput(&layerName);
 	addInput(&opacity);
 	addInput(&compositionMode);
+
+	compositionMode.setWidget("enum_LayerComposition");
 
 	addOutput((DataNode*)parent);
 	addOutput(&image);
@@ -137,5 +140,17 @@ void Layer::postCreate()
 }
 
 int LayerClass = RegisterObject<Layer>("Layer").setDescription("Organize renderers and change opacity and the composition mode");
+
+//*************************************************************************//
+
+const char* Layer::compositionModes[] = { "SourceOver", "DestinationOver", "Clear", "Source", "Destination",
+										  "SourceIn", "DestinationIn", "DestinationOut", "SourceAtop", "DestinationAtop",
+										  "Xor", "Plus", "Multiply", "Screen", "Overlay", "Darken", "Lighten",
+										  "ColorDodge", "ColorBurn", "HardLight", "SoftLight", "Difference", "Exclusion",
+										  "SourceOrDestination", "SourceAndDestination", "SourceXorDestination",
+										  "NotSourceAndNotDestination", "NotSourceOrNotDestination", "NotSourceXorDestination",
+										  "NoSource", "NoSourceAndDestination", "SourceAndNotDestination" };
+
+Creator<DataWidgetFactory, SimpleDataWidget<int, EnumDataWidget<32, Layer::compositionModes> > > DWClass_enum_layer_composition("enum_LayerComposition",true);
 
 } // namespace panda

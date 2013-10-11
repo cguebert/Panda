@@ -265,9 +265,9 @@ void EditGradientDialog::setSelected(int sel)
 		posEdit->setText(QString());
 }
 
-void EditGradientDialog::changeExtend(int extend)
+void EditGradientDialog::changeExtend(int ext)
 {
-	extend = extend;
+	extend = ext;
 }
 
 void EditGradientDialog::chooseColor()

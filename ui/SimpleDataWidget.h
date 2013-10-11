@@ -5,9 +5,12 @@
 #include <panda/types/DataTraits.h>
 #include <ui/StructTraits.h>
 
+#include <QComboBox>
+
 class QLineEdit;
 class QPushButton;
 class QLabel;
+class QComboBox;
 
 /// This class is used to specify how to graphically represent a data type,
 template<class T>
@@ -170,6 +173,37 @@ public:
 				label->setText(item_trait::toString(*row));
 			}
 		}
+	}
+};
+
+//***************************************************************//
+
+template<int N, const char* const (&values)[N] >
+class EnumDataWidget
+{
+protected:
+	typedef int value_type;
+	QComboBox* comboBox;
+
+public:
+	EnumDataWidget() : comboBox(nullptr) {}
+
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
+	{
+		comboBox = new QComboBox(parent);
+		for(auto v : values)
+			comboBox->addItem(v);
+		comboBox->setEnabled(!readOnly);
+		QObject::connect(comboBox, SIGNAL(currentIndexChanged(int)), parent, SLOT(setWidgetDirty()));
+		return comboBox;
+	}
+	void readFromData(const value_type& v)
+	{
+		comboBox->setCurrentIndex(v);
+	}
+	void writeToData(value_type& v)
+	{
+		v = comboBox->currentIndex();
 	}
 };
 

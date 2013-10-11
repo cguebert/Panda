@@ -4,6 +4,8 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
 
+#include <ui/SimpleDataWidget.h>
+
 #include <qmath.h>
 
 namespace panda
@@ -178,6 +180,11 @@ template class Data< QVector<Gradient> >;
 
 int gradientDataClass = RegisterData< Gradient >();
 int gradientVectorDataClass = RegisterData< QVector<Gradient> >();
+
+//*************************************************************************//
+
+const char* Gradient::extendModes[] = { "Pad", "Repeat", "Reflect"};
+Creator<DataWidgetFactory, SimpleDataWidget<int, EnumDataWidget<3, Gradient::extendModes> > > DWClass_enum_gradient_extend("enum_GradientExtend",true);
 
 } // namespace types
 

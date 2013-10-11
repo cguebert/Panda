@@ -22,13 +22,9 @@ public:
 	virtual void save(QDomDocument& doc, QDomElement& elem)
 	{
 		Data<T>::save(doc, elem);
-		elem.setAttribute("widget", getWidget());
-	}
-
-	virtual void load(QDomElement& elem)
-	{
-		Data<T>::load(elem);
-		setWidget(elem.attribute("widget"));
+		QString w = getWidget();
+		if(w != "default")
+			elem.setAttribute("widget", w);
 	}
 };
 

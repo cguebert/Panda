@@ -41,6 +41,8 @@ public:
 		return !(*this == rhs);
 	}
 
+	static const char* extendModes[];
+
 protected:
 	double extendPos(double position) const;
 

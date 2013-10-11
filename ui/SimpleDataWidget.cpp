@@ -37,14 +37,14 @@ public:
 
 //***************************************************************//
 
-class checkbox_data_widget : public DataWidgetContainer< int >
+class CheckboxDataWidget : public DataWidgetContainer< int >
 {
 protected:
 	typedef int value_type;
 	QCheckBox* checkBox;
 
 public:
-	checkbox_data_widget() : checkBox(nullptr) {}
+	CheckboxDataWidget() : checkBox(nullptr) {}
 
 	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
@@ -133,6 +133,6 @@ public:
 //***************************************************************//
 
 Creator<DataWidgetFactory, SimpleDataWidget<int> > DWClass_int("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<int, checkbox_data_widget> > DWClass_checkbox("checkbox",true);
+Creator<DataWidgetFactory, SimpleDataWidget<int, CheckboxDataWidget> > DWClass_checkbox("checkbox",true);
 Creator<DataWidgetFactory, SimpleDataWidget<double> > DWClass_double("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString> > DWClass_string("default",true);

@@ -145,6 +145,9 @@ void BaseData::load(QDomElement& elem)
 {
 	auto acc = getVoidAccessor();
 	getDataTrait()->readValue(elem, acc);
+	QString w = elem.attribute("widget");
+	if(!w.isEmpty())
+		setWidget(w);
 }
 
 void BaseData::doAddInput(DataNode* node)
