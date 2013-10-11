@@ -2,7 +2,6 @@
 #define ANIMATION_H
 
 #include <QVector>
-#include <QEasingCurve>
 #include <QColor>
 
 namespace panda

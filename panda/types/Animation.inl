@@ -5,6 +5,7 @@
 
 #include <QColor>
 #include <QPointF>
+#include <QEasingCurve>
 
 #include <qmath.h>
 

@@ -4,8 +4,25 @@
 #include <panda/Data.h>
 #include <QtWidgets>
 
+class BaseAnimationDataWidgetDialog : public QDialog
+{
+	Q_OBJECT
+public:
+	BaseAnimationDataWidgetDialog(QWidget* parent)
+		: QDialog(parent)
+	{}
+
+signals:
+
+public slots:
+	virtual void refreshPreviews() {}
+	virtual void resizeValue() {}
+	virtual void changeExtend(int) {}
+	virtual void changeInterpolation(int) {}
+};
+
 template<class T, class Container = DataWidgetContainer< T::value_type > >
-class AnimationDataWidgetDialog : public BaseListDataWidgetDialog
+class AnimationDataWidgetDialog : public BaseAnimationDataWidgetDialog
 {
 protected:
 	typedef T animation_type;
@@ -21,10 +38,11 @@ protected:
 	QSpinBox* resizeSpinBox;
 	QVector<ContainerPtr> containers;
 	QVector<QLineEdit*> lineEdits;
+	QComboBox *extendBox, *interpolationBox;
 
 public:
 	AnimationDataWidgetDialog(QWidget* parent, const data_type& d, bool readOnly)
-		: BaseListDataWidgetDialog(parent)
+		: BaseAnimationDataWidgetDialog(parent)
 		, readOnly(readOnly)
 		, scrollArea(nullptr)
 		, gridLayout(nullptr)
@@ -61,6 +79,37 @@ public:
 		scrollArea->setWidget(layoutWidget);
 		mainLayout->addWidget(scrollArea);
 
+		QLabel* extendLabel = new QLabel(tr("Extend method:"));
+		extendBox = new QComboBox;
+		extendBox->addItem("Pad");
+		extendBox->addItem("Repeat");
+		extendBox->addItem("Reflect");
+		QHBoxLayout* extendLayout = new QHBoxLayout;
+		extendLayout->addWidget(extendLabel);
+		extendLayout->addWidget(extendBox);
+		mainLayout->addLayout(extendLayout);
+
+		QLabel* interpolationLabel = new QLabel(tr("Interpolation method:"));
+		interpolationBox = new QComboBox;
+		const char* interpolationTypes[] = {"Linear",
+						 "InQuad", "OutQuad", "InOutQuad", "OutInQuad",
+						 "InCubic", "OutCubic", "InOutCubic", "OutInCubic",
+						 "InQuart", "OutQuart", "InOutQuart", "OutInQuart",
+						 "InQuint", "OutQuint", "InOutQuint", "OutInQuint",
+						 "InSine", "OutSine", "InOutSine", "OutInSine",
+						 "InExpo", "OutExpo", "InOutExpo", "OutInExpo",
+						 "InCirc", "OutCirc", "InOutCirc", "OutInCirc",
+						 "InElastic", "OutElastic", "InOutElastic", "OutInElastic",
+						 "InBack", "OutBack", "InOutBack", "OutInBack",
+						 "InBounce", "OutBounce", "InOutBounce", "OutInBounce",
+						 "InCurve", "OutCurve", "SineCurve", "CosineCurve"};
+		for(auto type : interpolationTypes)
+			interpolationBox->addItem(type);
+		QHBoxLayout* interpolationLayout = new QHBoxLayout;
+		interpolationLayout->addWidget(interpolationLabel);
+		interpolationLayout->addWidget(interpolationBox);
+		mainLayout->addLayout(interpolationLayout);
+
 		QPushButton* okButton = new QPushButton(tr("Ok"), this);
 		okButton->setDefault(true);
 		connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -94,6 +143,9 @@ public:
 		resizeContainers(anim.size());
 		updateTable(anim);
 
+		extendBox->setCurrentIndex(anim.getExtend());
+		interpolationBox->setCurrentIndex(anim.getInterpolation());
+
 		if(resizeSpinBox)
 			resizeSpinBox->setValue(containers.size());
 	}
@@ -112,6 +164,8 @@ public:
 			anim.add(key, val);
 		}
 
+		anim.setExtend(extendBox->currentIndex());
+		anim.setInterpolation(interpolationBox->currentIndex());
 		return anim;
 	}
 
@@ -172,6 +226,16 @@ public:
 	{
 		foreach(ContainerPtr container, containers)
 			container->updatePreview();
+	}
+
+	virtual void changeExtend(int)
+	{
+
+	}
+
+	virtual void changeInterpolation(int)
+	{
+
 	}
 };
 
