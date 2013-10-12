@@ -151,7 +151,9 @@ void ObjectDrawStruct::drawDatas(QPainter* painter)
 
 void ObjectDrawStruct::drawText(QPainter* painter)
 {
-	painter->drawText(objectArea, Qt::AlignCenter, object->getName());
+	int margin = dataRectSize+dataRectMargin+3;
+	QRectF textArea = objectArea.adjusted(margin, 0, -margin, 0);
+	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, object->getName());
 }
 
 void ObjectDrawStruct::drawLinks(QPainter* painter)

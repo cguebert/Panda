@@ -76,16 +76,18 @@ public:
 	{
 		const QVector<QPointF> &c = center.getValue();
 		const QVector<QPointF> &s = size.getValue();
-		int nb = c.size();
+		int nbC = c.size();
 		int nbS = s.size();
-		if(nbS < nb) nbS = 1;
+		if(nbS < nbC) nbS = 1;
+		if(nbC < nbS) nbC = 1;
 
 		auto rect = rectangle.getAccessor();
 		rect.clear();
+		int nb = qMax(nbC, nbS);
 		rect.resize(nb);
 
 		for(int i=0; i<nb; ++i)
-			rect[i] = QRectF(c[i].x()-s[i%nbS].x()/2.0, c[i].y()-s[i%nbS].y()/2.0, s[i%nbS].x(), s[i%nbS].y());
+			rect[i] = QRectF(c[i%nbC].x()-s[i%nbS].x()/2.0, c[i%nbC].y()-s[i%nbS].y()/2.0, s[i%nbS].x(), s[i%nbS].y());
 
 		this->cleanDirty();
 	}
@@ -95,7 +97,53 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_ComposeCenterClass = RegisterObject<GeneratorRectangles_ComposeCenter>("Generator/Rectangle/Rectangle from center and size").setName("Points to rect").setDescription("Create a rectangle from center and size");
+int GeneratorRectangles_ComposeCenterClass = RegisterObject<GeneratorRectangles_ComposeCenter>("Generator/Rectangle/Rectangle from center and size").setName("Center to rect").setDescription("Create a rectangle from center and size");
+
+//*************************************************************************//
+
+class GeneratorRectangles_ComposeCorners : public PandaObject
+{
+public:
+	PANDA_CLASS(GeneratorRectangles_ComposeCorners, PandaObject)
+
+	GeneratorRectangles_ComposeCorners(PandaDocument *doc)
+		: PandaObject(doc)
+		, topleft(initData(&topleft, "top-left", "Top left corner of the rectangle"))
+		, bottomright(initData(&bottomright, "bottom-right", "Bottom right corner of the rectangle"))
+		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
+	{
+		addInput(&topleft);
+		addInput(&bottomright);
+
+		addOutput(&rectangle);
+	}
+
+	void update()
+	{
+		const QVector<QPointF> &tl = topleft.getValue();
+		const QVector<QPointF> &br = bottomright.getValue();
+		int nbTL = tl.size();
+		int nbBR = br.size();
+		if(nbTL < nbBR) nbTL = 1;
+		if(nbBR < nbTL) nbBR = 1;
+
+		auto rect = rectangle.getAccessor();
+		rect.clear();
+		int nb = qMax(nbTL, nbBR);
+		rect.resize(nb);
+
+		for(int i=0; i<nb; ++i)
+			rect[i] = QRectF(tl[i%nbTL], br[i%nbBR]);
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<QPointF> > topleft, bottomright;
+	Data< QVector<QRectF> > rectangle;
+};
+
+int GeneratorRectangles_ComposeCornersClass = RegisterObject<GeneratorRectangles_ComposeCorners>("Generator/Rectangle/Rectangle from corners").setName("Corners to rect").setDescription("Create a rectangle from 2 corners");
 
 //*************************************************************************//
 
@@ -199,6 +247,53 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_DecomposeCenterClass = RegisterObject<GeneratorRectangles_DecomposeCenter>("Generator/Rectangle/Rectangle to center and size").setName("Rect to points").setDescription("Extract the center and size of a rectangle");
+int GeneratorRectangles_DecomposeCenterClass = RegisterObject<GeneratorRectangles_DecomposeCenter>("Generator/Rectangle/Rectangle to center and size").setName("Rect to center").setDescription("Extract the center and size of a rectangle");
+
+//*************************************************************************//
+
+class GeneratorRectangles_DecomposeCorners : public PandaObject
+{
+public:
+	PANDA_CLASS(GeneratorRectangles_DecomposeCorners, PandaObject)
+
+	GeneratorRectangles_DecomposeCorners(PandaDocument *doc)
+		: PandaObject(doc)
+		, topleft(initData(&topleft, "top-left", "Top left corner of the rectangle"))
+		, bottomright(initData(&bottomright, "bottom-right", "Bottom right of the rectangle"))
+		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
+	{
+		addInput(&rectangle);
+
+		addOutput(&topleft);
+		addOutput(&bottomright);
+	}
+
+	void update()
+	{
+		const QVector<QRectF> &rect = rectangle.getValue();
+		int nb = rect.size();
+
+		auto tl = topleft.getAccessor();
+		auto br = bottomright.getAccessor();
+
+		tl.resize(nb);
+		br.resize(nb);
+
+		for(int i=0; i<nb; ++i)
+		{
+			const QRectF& tr = rect[i];
+			tl[i] = tr.topLeft();
+			br[i] = tr.bottomRight();
+		}
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<QPointF> > topleft, bottomright;
+	Data< QVector<QRectF> > rectangle;
+};
+
+int GeneratorRectangles_DecomposeCornersClass = RegisterObject<GeneratorRectangles_DecomposeCorners>("Generator/Rectangle/Rectangle to corners").setName("Rect to corners").setDescription("Extract two corners of a rectangle");
 
 } // namespace Panda
