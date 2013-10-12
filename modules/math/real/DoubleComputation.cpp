@@ -79,7 +79,7 @@ protected:
 	Data< QVector<double> > inputA, inputB, inputV, result;
 };
 
-int DoubleMath_SmoothStepClass = RegisterObject<DoubleMath_SmoothStep>("Math/Real/Smooth Step").setDescription("Compute the smooth step of the input between min and max");
+int DoubleMath_SmoothStepClass = RegisterObject<DoubleMath_SmoothStep>("Math/Real/Functions/Smooth Step").setDescription("Compute the smooth step of the input between min and max");
 
 //*************************************************************************//
 
@@ -137,7 +137,7 @@ protected:
 	Data< QVector<int> > count;
 };
 
-int DoubleMath_RiseCountClass = RegisterObject<DoubleMath_RiseCount>("Math/Real/Rise count").setDescription("Count the number of rise transitions of a value");
+int DoubleMath_RiseCountClass = RegisterObject<DoubleMath_RiseCount>("Math/Real/Functions/Rise count").setDescription("Count the number of rise transitions of a value");
 
 //*************************************************************************//
 
@@ -195,7 +195,7 @@ protected:
 	Data< QVector<int> > count;
 };
 
-int DoubleMath_FallCountClass = RegisterObject<DoubleMath_FallCount>("Math/Real/Fall count").setDescription("Count the number of fall transitions of a value");
+int DoubleMath_FallCountClass = RegisterObject<DoubleMath_FallCount>("Math/Real/Functions/Fall count").setDescription("Count the number of fall transitions of a value");
 
 //*************************************************************************//
 
@@ -258,7 +258,7 @@ protected:
 	Data< QVector<double> > inputA, inputB, inputV, result;
 };
 
-int DoubleMath_ConstrainClass = RegisterObject<DoubleMath_Constrain>("Math/Real/Constrain").setDescription("Constrain a value between a min and a max");
+int DoubleMath_ConstrainClass = RegisterObject<DoubleMath_Constrain>("Math/Real/Functions/Constrain").setDescription("Constrain a value between a min and a max");
 
 //*************************************************************************//
 
@@ -321,7 +321,7 @@ protected:
 	Data< QVector<int> > result;
 };
 
-int DoubleMath_PulseClass = RegisterObject<DoubleMath_Pulse>("Math/Real/Pulse").setDescription("Set the output to 1 if the value is between min and max, 0 otherwise");
+int DoubleMath_PulseClass = RegisterObject<DoubleMath_Pulse>("Math/Real/Functions/Pulse").setDescription("Set the output to 1 if the value is between min and max, 0 otherwise");
 
 //*************************************************************************//
 
@@ -393,7 +393,7 @@ protected:
 	Data< QVector<double> > inputV, inputMin, inputMax, outputMin, outputMax, result;
 };
 
-int DoubleMath_RemapClass = RegisterObject<DoubleMath_Remap>("Math/Real/Remap").setDescription("Re-maps a value from one range to another");
+int DoubleMath_RemapClass = RegisterObject<DoubleMath_Remap>("Math/Real/Functions/Remap").setDescription("Re-maps a value from one range to another");
 
 
 } // namespace Panda

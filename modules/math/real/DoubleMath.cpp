@@ -2,7 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <QVector>
-#include <math.h>
+#include <qmath.h>
 
 namespace panda {
 
@@ -194,7 +194,7 @@ public:
 		: DoubleMath_1Value(doc) { }
 
 	virtual double compute(const double& val)
-	{ return floor(val); }
+	{ return qFloor(val); }
 };
 
 int DoubleMath_FloorClass = RegisterObject<DoubleMath_Floor>("Math/Real/Floor").setDescription("Floor value of the input");
@@ -210,7 +210,7 @@ public:
 		: DoubleMath_1Value(doc) { }
 
 	virtual double compute(const double& val)
-	{ return ceil(val); }
+	{ return qCeil(val); }
 };
 
 int DoubleMath_CeilClass = RegisterObject<DoubleMath_Ceil>("Math/Real/Ceiling").setDescription("Ceiling value of the input");
@@ -226,7 +226,7 @@ public:
 		: DoubleMath_1Value(doc) { }
 
 	virtual double compute(const double& val)
-	{ return floor(val+0.5); }
+	{ return qRound(val); }
 };
 
 int DoubleMath_RoundClass = RegisterObject<DoubleMath_Round>("Math/Real/Rounding").setDescription("Rounded value of the input");
@@ -265,6 +265,65 @@ int DoubleMath_SqrtClass = RegisterObject<DoubleMath_Sqrt>("Math/Real/Square roo
 
 //*************************************************************************//
 
+class DoubleMath_Log : public DoubleMath_1Value
+{
+public:
+	PANDA_CLASS(DoubleMath_Log, DoubleMath_1Value)
+
+	DoubleMath_Log(PandaDocument *doc)
+		: DoubleMath_1Value(doc)
+	{}
+
+	virtual double compute(const double& val)
+	{ return qLn(val); }
+
+};
+
+int DoubleMath_LogClass = RegisterObject<DoubleMath_Log>("Math/Real/Natural logarithm").setDescription("Natural logarithm of the value");
+
+//*************************************************************************//
+
+class DoubleMath_LogBase : public DoubleMath_1Value
+{
+public:
+	PANDA_CLASS(DoubleMath_LogBase, DoubleMath_1Value)
+
+	DoubleMath_LogBase(PandaDocument *doc)
+		: DoubleMath_1Value(doc)
+		, base(initData(&base, 10.0, "base", "Base of the logarithm"))
+	{
+		addInput(&base);
+	}
+
+	virtual double compute(const double& val)
+	{ return qLn(val) / qLn(base.getValue()); }
+
+protected:
+	Data<double> base;
+};
+
+int DoubleMath_LogBaseClass = RegisterObject<DoubleMath_LogBase>("Math/Real/Logarithm").setDescription("Logarithm to a chosen base of the value");
+
+//*************************************************************************//
+
+class DoubleMath_Exp : public DoubleMath_1Value
+{
+public:
+	PANDA_CLASS(DoubleMath_Exp, DoubleMath_1Value)
+
+	DoubleMath_Exp(PandaDocument *doc)
+		: DoubleMath_1Value(doc)
+	{}
+
+	virtual double compute(const double& val)
+	{ return qExp(val); }
+
+};
+
+int DoubleMath_ExpClass = RegisterObject<DoubleMath_Exp>("Math/Real/Exponential").setDescription("Returns the exponential function of e to the power the value");
+
+//*************************************************************************//
+
 class DoubleMath_Min : public DoubleMath_2Values
 {
 public:
@@ -277,7 +336,7 @@ public:
 	{ return qMin(valA, valB); }
 };
 
-int DoubleMath_MinClass = RegisterObject<DoubleMath_Min>("Math/Real/Minimum").setDescription("Returns the lowest value of the 2 inputs");
+int DoubleMath_MinClass = RegisterObject<DoubleMath_Min>("Math/Real/Functions/Minimum").setDescription("Returns the lowest value of the 2 inputs");
 
 //*************************************************************************//
 
@@ -293,7 +352,7 @@ public:
 	{ return qMax(valA, valB); }
 };
 
-int DoubleMath_MaxClass = RegisterObject<DoubleMath_Max>("Math/Real/Maximum").setDescription("Returns the highest value of the 2 inputs");
+int DoubleMath_MaxClass = RegisterObject<DoubleMath_Max>("Math/Real/Functions/Maximum").setDescription("Returns the highest value of the 2 inputs");
 
 //*************************************************************************//
 
@@ -309,7 +368,103 @@ public:
 	{ return (valA >= valB); }
 };
 
-int DoubleMath_StepClass = RegisterObject<DoubleMath_Step>("Math/Real/Step").setDescription("Returns 0 if input1 < input2, 1 otherwise");
+int DoubleMath_StepClass = RegisterObject<DoubleMath_Step>("Math/Real/Functions/Step").setDescription("Returns 0 if input1 < input2, 1 otherwise");
+
+//*************************************************************************//
+
+class DoubleMath_Cos : public DoubleMath_1Value
+{
+public:
+	PANDA_CLASS(DoubleMath_Cos, DoubleMath_1Value)
+
+	DoubleMath_Cos(PandaDocument *doc)
+		: DoubleMath_1Value(doc) { }
+
+	virtual double compute(const double& val)
+	{ return qCos(val * M_PI / 180); }
+};
+
+int DoubleMath_CosClass = RegisterObject<DoubleMath_Cos>("Math/Real/Trigonometry/Cosine").setDescription("Cosine of the value (in degrees)");
+
+//*************************************************************************//
+
+class DoubleMath_Sin : public DoubleMath_1Value
+{
+public:
+	PANDA_CLASS(DoubleMath_Sin, DoubleMath_1Value)
+
+	DoubleMath_Sin(PandaDocument *doc)
+		: DoubleMath_1Value(doc) { }
+
+	virtual double compute(const double& val)
+	{ return qSin(val * M_PI / 180); }
+};
+
+int DoubleMath_SinClass = RegisterObject<DoubleMath_Sin>("Math/Real/Trigonometry/Sine").setDescription("Sine of the value (in degrees)");
+
+//*************************************************************************//
+
+class DoubleMath_Tan : public DoubleMath_1Value
+{
+public:
+	PANDA_CLASS(DoubleMath_Tan, DoubleMath_1Value)
+
+	DoubleMath_Tan(PandaDocument *doc)
+		: DoubleMath_1Value(doc) { }
+
+	virtual double compute(const double& val)
+	{ return qCos(val * M_PI / 180); }
+};
+
+int DoubleMath_TanClass = RegisterObject<DoubleMath_Tan>("Math/Real/Trigonometry/Tangent").setDescription("Tangent of the value (in degrees)");
+
+//*************************************************************************//
+
+class DoubleMath_Arccos : public DoubleMath_1Value
+{
+public:
+	PANDA_CLASS(DoubleMath_Arccos, DoubleMath_1Value)
+
+	DoubleMath_Arccos(PandaDocument *doc)
+		: DoubleMath_1Value(doc) { }
+
+	virtual double compute(const double& val)
+	{ return qAcos(val) * 180 / M_PI; }
+};
+
+int DoubleMath_ArccosClass = RegisterObject<DoubleMath_Arccos>("Math/Real/Trigonometry/Arccosine").setDescription("Arc-cosine of the value (result in degrees)");
+
+//*************************************************************************//
+
+class DoubleMath_Arcsin : public DoubleMath_1Value
+{
+public:
+	PANDA_CLASS(DoubleMath_Arcsin, DoubleMath_1Value)
+
+	DoubleMath_Arcsin(PandaDocument *doc)
+		: DoubleMath_1Value(doc) { }
+
+	virtual double compute(const double& val)
+	{ return qAsin(val) * 180 / M_PI; }
+};
+
+int DoubleMath_ArcsinClass = RegisterObject<DoubleMath_Arcsin>("Math/Real/Trigonometry/Arcsine").setDescription("Arc-sine of the value (result in degrees)");
+
+//*************************************************************************//
+
+class DoubleMath_Arctan : public DoubleMath_1Value
+{
+public:
+	PANDA_CLASS(DoubleMath_Arctan, DoubleMath_1Value)
+
+	DoubleMath_Arctan(PandaDocument *doc)
+		: DoubleMath_1Value(doc) { }
+
+	virtual double compute(const double& val)
+	{ return qAtan(val) * 180 / M_PI; }
+};
+
+int DoubleMath_ArctanClass = RegisterObject<DoubleMath_Arctan>("Math/Real/Trigonometry/Arctangent").setDescription("Arc-tangent of the value (result in degrees)");
 
 
 } // namespace Panda

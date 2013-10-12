@@ -3,8 +3,7 @@
 #include <panda/ObjectFactory.h>
 #include <QVector>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <qmath.h>
 
 namespace panda {
 
@@ -309,7 +308,7 @@ public:
 			{
 				const QPointF& cen = centers[i%nbC];
 				const double& ang = angles[i%nbA] * M_PI / 180.0;
-				double ca = cos(ang), sa = sin(ang);
+				double ca = qCos(ang), sa = qSin(ang);
 				QPointF pt = points[i%nbP] - cen;
 				res[i] = QPointF(pt.x()*ca-pt.y()*sa, pt.x()*sa+pt.y()*ca) + cen;
 			}
@@ -325,6 +324,101 @@ protected:
 };
 
 int PointMath_RotationClass = RegisterObject<PointMath_Rotation>("Math/Point/Rotation").setDescription("Rotation of a point around a center");
+
+//*************************************************************************//
+
+class PointMath_AngleOfVector : public PandaObject
+{
+public:
+	PANDA_CLASS(PointMath_AngleOfVector, PandaObject)
+
+	PointMath_AngleOfVector(PandaDocument *doc)
+		: PandaObject(doc)
+		, vector(initData(&vector, "vector", "Vector to analyse"))
+		, angle(initData(&angle, "angle", "Angle of the vector"))
+	{
+		addInput(&vector);
+
+		addOutput(&angle);
+	}
+
+	void update()
+	{
+		auto angleList = angle.getAccessor();
+		angleList.clear();
+
+		const QVector<QPointF>& vecList = vector.getValue();
+		int nb = vecList.size();
+
+		if(nb)
+		{
+			angleList.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+			{
+				const QPointF& pt = vecList[i];
+				if(pt.manhattanLength() < 1e-10)
+					angleList[i] = 0;
+				else
+					angleList[i] = -qAtan2(pt.y(), pt.x()) * 180 / M_PI;
+			}
+		}
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<QPointF> > vector;
+	Data< QVector<double> > angle;
+};
+
+int PointMath_AngleOfVectorClass = RegisterObject<PointMath_AngleOfVector>("Math/Point/Angle of vector").setDescription("Computes the angle of a vector");
+
+//*************************************************************************//
+
+class PointMath_AngleToVector : public PandaObject
+{
+public:
+	PANDA_CLASS(PointMath_AngleToVector, PandaObject)
+
+	PointMath_AngleToVector(PandaDocument *doc)
+		: PandaObject(doc)
+		, angle(initData(&angle, "angle", "Angle of the vector"))
+		, vector(initData(&vector, "vector", "Vector corresponding to the angle"))
+	{
+		addInput(&angle);
+
+		addOutput(&vector);
+	}
+
+	void update()
+	{
+		auto vecList = vector.getAccessor();
+		vecList.clear();
+
+		const QVector<double>& angleList = angle.getValue();
+		int nb = angleList.size();
+
+		if(nb)
+		{
+			vecList.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+			{
+				double a = -angleList[i] * M_PI / 180;
+				vecList[i] = QPointF(qCos(a), qSin(a));
+			}
+		}
+
+		this->cleanDirty();
+	}
+
+protected:
+	Data< QVector<double> > angle;
+	Data< QVector<QPointF> > vector;
+};
+
+int PointMath_AngleToVectorClass = RegisterObject<PointMath_AngleToVector>("Math/Point/Angle to vector").setDescription("Creates a vector corresponding to a rotation");
 
 
 } // namespace Panda
