@@ -23,7 +23,7 @@ public:
 
 		addOutput(&text);
 
-		int typeOfValue = types::DataTypeId::getFullTypeOfSingleValue(0);	// Create a copy of the data connected
+		int typeOfValue = types::DataTypeId::getFullTypeOfVector(0);	// Create a copy of the data connected
 		GenericDataDefinitionList defList;
 		defList.append(GenericDataDefinition(typeOfValue,
 											 true, false,
@@ -34,9 +34,9 @@ public:
 
 	void update()
 	{
-		tempText = format.getValue();
+		tempList.clear();
 		GenericObject::update();
-		text.setValue(tempText);
+		text.setValue(tempList);
 
 		this->cleanDirty();
 	}
@@ -44,19 +44,33 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data<T> ValueData;
+		typedef Data< QVector<T> > ValueData;
 		ValueData* dataInput = dynamic_cast<ValueData*>(list[0]);
 		Q_ASSERT(dataInput);
 
-		const T& inVal = dataInput->getValue();
+		const QVector<T>& inVal = dataInput->getValue();
+		int nb = inVal.size();
+		int prevNb = tempList.size();
 
-		tempText = tempText.arg(inVal);
+		if(!prevNb)
+			tempList.fill(format.getValue(), nb);
+		else if(prevNb == 1 && nb > 1)
+			tempList.fill(tempList[0], nb);
+		else if(nb == 1 && prevNb > 1)
+			nb = 1;
+		else
+			tempList.resize(qMin(prevNb, nb));
+		int size = tempList.size();
+
+		for(int i=0; i<size; ++i)
+			tempList[i] = tempList[i].arg(inVal[i%nb]);
 	}
 
 protected:
-	Data<QString> format, text;
-	QString tempText;
-	GenericSingleValueData generic;
+	Data<QString> format;
+	Data< QVector<QString> > text;
+	QVector<QString> tempList;
+	GenericVectorData generic;
 };
 
 int GeneratorText_FormatClass = RegisterObject<GeneratorText_Format>("Generator/Text/Format").setDescription("Create a text by replacing markers by input values");
