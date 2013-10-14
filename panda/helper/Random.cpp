@@ -14,18 +14,27 @@ void RandomGenerator::seed(unsigned int seed)
 
 unsigned int RandomGenerator::seedRandom(unsigned int limit)
 {
-	gen.seed( static_cast<unsigned int>(time(nullptr)) + reinterpret_cast<uintptr_t>(this) );
-	return static_cast<unsigned int>(random() * limit);
+	std::uniform_int_distribution<int> dist(0, limit);
+	std::random_device rnd;
+	return dist(rnd);
 }
 
 double RandomGenerator::random()
 {
+	std::uniform_real_distribution<double> dist(0, 1);
 	return dist(gen);
 }
 
 double RandomGenerator::random(double min, double max)
 {
-	return min + random() * (max - min);
+	std::uniform_real_distribution<double> dist(std::min(min, max), std::max(min, max));
+	return dist(gen);
+}
+
+int RandomGenerator::randomInt(int min, int max)
+{
+	std::uniform_int_distribution<int> dist(std::min(min, max), std::max(min, max));
+	return dist(gen);
 }
 
 } // namespace helper

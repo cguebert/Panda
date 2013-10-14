@@ -1,8 +1,7 @@
 #ifndef HELPER_RANDOM_H
 #define HELPER_RANDOM_H
 
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_01.hpp>
+#include <random>
 
 namespace panda
 {
@@ -15,12 +14,14 @@ class RandomGenerator
 public:
 	void seed(unsigned int seed);
 	unsigned int seedRandom(unsigned int limit);
+
 	double random();
 	double random(double min, double max);
 
+	int randomInt(int min, int max);
+
 protected:
-	boost::random::mt19937 gen;
-	boost::random::uniform_01<double> dist;
+	std::mt19937 gen;
 };
 
 } // namespace helper
