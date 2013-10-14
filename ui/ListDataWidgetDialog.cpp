@@ -2,8 +2,6 @@
 #include <ui/AnimationDataWidgetDialog.h>
 #include <ui/SimpleDataWidget.h>
 
-#include <panda/types/Animation.h>
-
 using panda::types::Animation;
 
 template<>
@@ -225,24 +223,6 @@ public:
 		painter.setFont(tmpFont);
 		painter.drawText(QRectF(QPoint(), size), Qt::AlignVCenter | Qt::TextDontClip, theFont.family());
 	}
-};
-
-//***************************************************************//
-
-template<class T>
-class VectorDataTrait< Animation<T> >
-{
-public:
-	typedef Animation<T> animation_type;
-	typedef T row_type;
-
-	enum { is_vector = 1 };
-	enum { is_single = 0 };
-	static int size(const animation_type& a) { return a.size(); }
-	static QStringList header(const animation_type&) { return QStringList{}; }
-	static const row_type* get(const animation_type&, int) { return nullptr; }
-	static void set(animation_type&, const row_type&, int) { }
-	static void resize(animation_type&, int) { }
 };
 
 //***************************************************************//

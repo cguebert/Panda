@@ -3,6 +3,7 @@
 
 #include <panda/PandaObject.h>
 #include <panda/types/Topology.h>
+#include <panda/types/Gradient.h>
 #include <panda/types/DataTypeId.h>
 
 #include <QList>
@@ -123,10 +124,10 @@ private:
 
 //***************************************************************//
 
-typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString, QImage, types::Topology> allDataTypes;
+typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString, QImage, types::Gradient, types::Topology> allDataTypes;
 typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString> allSearchableTypes;
 typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF> allNumericalTypes;
-typedef boost::mpl::vector<double, QColor, QPointF> allAnimationTypes;
+typedef boost::mpl::vector<double, QColor, QPointF, types::Gradient> allAnimationTypes;
 
 #define GENERIC_OBJECT(T, L)								\
 	protected:												\

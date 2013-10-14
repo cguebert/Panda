@@ -2,6 +2,8 @@
 #define ANIMATIONDATAWIDGETDIALOG_H
 
 #include <panda/Data.h>
+#include <panda/types/Animation.h>
+#include <ui/StructTraits.h>
 #include <QtWidgets>
 
 class BaseAnimationDataWidgetDialog : public QDialog
@@ -328,6 +330,24 @@ public:
 		v = QPointF(x, y);
 	}
 	void updatePreview() {}
+};
+
+//***************************************************************//
+
+template<class T>
+class VectorDataTrait< panda::types::Animation<T> >
+{
+public:
+	typedef panda::types::Animation<T> animation_type;
+	typedef T row_type;
+
+	enum { is_vector = 1 };
+	enum { is_single = 0 };
+	static int size(const animation_type& a) { return a.size(); }
+	static QStringList header(const animation_type&) { return QStringList{}; }
+	static const row_type* get(const animation_type&, int) { return nullptr; }
+	static void set(animation_type&, const row_type&, int) { }
+	static void resize(animation_type&, int) { }
 };
 
 #endif // ANIMATIONDATAWIDGETDIALOG_H

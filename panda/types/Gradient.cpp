@@ -1,4 +1,6 @@
 #include <panda/types/Gradient.h>
+#include <panda/types/Animation.inl>
+#include <panda/types/AnimationTraits.h>
 #include <panda/Data.h>
 
 #include <panda/DataFactory.h>
@@ -6,7 +8,13 @@
 
 #include <ui/SimpleDataWidget.h>
 
+#include <QSet>
 #include <qmath.h>
+
+inline uint qHash(const double& key)
+{
+	return uint(key * 10000);
+}
 
 namespace panda
 {
@@ -139,6 +147,38 @@ QColor Gradient::interpolate(const QColor& v1, const QColor& v2, double amt)
 	return temp;
 }
 
+Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, double amt)
+{
+	Gradient grad;
+	const auto& stops1 = g1.getStops();
+	const auto& stops2 = g2.getStops();
+
+	QSet<double> keys;
+	for(const auto& stop : stops1)
+	{
+		double key = stop.first;
+		if(!keys.contains(key))
+		{
+			keys.insert(key);
+			QColor color = interpolate(g1.get(key), g2.get(key), amt);
+			grad.add(key, color);
+		}
+	}
+
+	for(const auto& stop : stops2)
+	{
+		double key = stop.first;
+		if(!keys.contains(key))
+		{
+			keys.insert(key);
+			QColor color = interpolate(g1.get(key), g2.get(key), amt);
+			grad.add(key, color);
+		}
+	}
+
+	return grad;
+}
+
 //***************************************************************//
 
 template<> QString DataTrait<Gradient>::valueTypeName() { return "gradient"; }
@@ -180,6 +220,18 @@ template class Data< QVector<Gradient> >;
 
 int gradientDataClass = RegisterData< Gradient >();
 int gradientVectorDataClass = RegisterData< QVector<Gradient> >();
+
+//*************************************************************************//
+
+template<>
+Gradient interpolate(const Gradient& g1, const Gradient& g2, double amt)
+{
+	return Gradient::interpolate(g1, g2, amt);
+}
+
+template class Animation<Gradient>;
+template class Data< Animation<Gradient> >;
+int gradientAnimationDataClass = RegisterData< Animation<Gradient> >();
 
 //*************************************************************************//
 

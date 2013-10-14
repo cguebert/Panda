@@ -31,17 +31,18 @@ public:
 	void setStops(GradientStops stopsPoints);
 	GradientStops getStops() const;
 
-	inline bool operator==(const Gradient& rhs)
+	friend inline bool operator==(const Gradient& g1, const Gradient& g2)
 	{
-		return extend == rhs.extend && stops == rhs.stops;
+		return g1.extend == g2.extend && g1.stops == g2.stops;
 	}
-
-	inline bool operator!=(const Gradient& rhs)
+	friend inline bool operator!=(const Gradient& g1, const Gradient& g2)
 	{
-		return !(*this == rhs);
+		return !(g1 == g2);
 	}
 
 	static const char* extendModes[];
+
+	static Gradient interpolate(const Gradient& g1, const Gradient& g2, double amt);
 
 protected:
 	double extendPos(double position) const;

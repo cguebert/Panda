@@ -3,10 +3,12 @@
 #include <ui/ListDataWidgetDialog.h>
 #include <ui/SimpleDataWidget.h>
 #include <ui/EditGradientDialog.h>
+#include <ui/AnimationDataWidgetDialog.h>
 
 #include <panda/types/Gradient.h>
 
 using panda::types::Gradient;
+using panda::types::Animation;
 
 ColorPreviewWidget::ColorPreviewWidget(QWidget* parent)
 	: QWidget(parent)
@@ -446,3 +448,4 @@ public:
 
 Creator<DataWidgetFactory, SimpleDataWidget<Gradient> > DWClass_gradient("default",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<Gradient>, ListDataWidgetDialog<QVector<Gradient> > > > DWClass_gradients_list("default",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<Gradient>, AnimationDataWidgetDialog<Animation<Gradient> > > > DWClass_gradients_animation("default",true);
