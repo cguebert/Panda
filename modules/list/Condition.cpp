@@ -12,11 +12,13 @@ public:
 
 	ListCondition(PandaDocument *doc)
 		: GenericObject(doc)
-		, control(initData(&control, 1, "control", "If this value is non zero copy the first list, otherwise copy the second"))
+		, control(initData(&control, "control", "If this value is non zero copy the first list, otherwise copy the second"))
 		, generic(initData(&generic, "input", "Connect here the first list"))
 	{
 		addInput(&control);
 		addInput(&generic);
+
+		control.getAccessor().push_back(1);
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);
@@ -45,15 +47,36 @@ public:
 
 		Q_ASSERT(dataInTrue && dataInFalse && dataOutput);
 
+		const auto& c = control.getValue();
+		int nbC = c.size();
 		auto outVal = dataOutput->getAccessor();
-		if(control.getValue())
-			outVal = dataInTrue->getValue();
-		else
-			outVal = dataInFalse->getValue();
+		if(!nbC)
+		{
+			outVal.clear();
+			return;
+		}
+
+		const auto& inT = dataInTrue->getValue();
+		const auto& inF = dataInFalse->getValue();
+		int nb = qMin(inT.size(), inF.size());
+		if(nbC < nb)
+			outVal = c[0] ? inT : inF;
+		else if(nb == 1)
+		{
+			outVal.resize(nbC);
+			for(int i=0; i<nbC; ++i)
+				outVal[i] = c[i] ? inT[0] : inF[0];
+		}
+		else // nbC == nb
+		{
+			outVal.resize(nb);
+			for(int i=0; i<nb; ++i)
+				outVal[i] = c[i] ? inT[i] : inF[i];
+		}
 	}
 
 protected:
-	Data<int> control;
+	Data< QVector<int> > control;
 	GenericVectorData generic;
 };
 

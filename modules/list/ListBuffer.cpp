@@ -14,6 +14,7 @@ public:
 	ListBuffer(PandaDocument *doc)
 		: GenericObject(doc)
 		, resetValues(false)
+		, settingDirty(false)
 		, prevControl(-1.0)
 		, control(initData(&control, 0.0, "control", "The buffer will be updated each time this value changes"))
 		, resetData(initData(&resetData, 0, "reset", "Set this at 1 to reset the values"))
@@ -49,12 +50,17 @@ public:
 		VecData* dataInit = dynamic_cast<VecData*>(list[1]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[2]);
 		Q_ASSERT(dataInput && dataInit && dataOutput);
-		auto outVal = dataOutput->getAccessor();
 
 		if(resetValues)
-			outVal = dataInit->getValue();
+		{
+		//	if(dataInit->isDirty())
+				dataOutput->getAccessor() = dataInit->getValue();
+		}
 		else
-			outVal = dataInput->getValue();
+		{
+		//	if(dataInput->isDirty())
+				dataOutput->getAccessor() = dataInput->getValue();
+		}
 	}
 
 	void update()
@@ -74,18 +80,29 @@ public:
 		PandaObject::reset();
 
 		resetValues = true;
+		settingDirty = true;
 		PandaObject::setDirtyValue();
+		update();
+		settingDirty = false;
 	}
 
 	void setDirtyValue()
 	{
-		double newControl = control.getValue();
-		if(prevControl != newControl || resetValues)
-			PandaObject::setDirtyValue();
+		if(!settingDirty)
+		{
+			double newControl = control.getValue();
+			if(prevControl != newControl || resetValues || (resetData.getValue() != 0))
+			{
+				settingDirty = true;
+				PandaObject::setDirtyValue();
+				update();
+				settingDirty = false;
+			}
+		}
 	}
 
 protected:
-	bool resetValues;
+	bool resetValues, settingDirty;
 	double prevControl;
 	Data<double> control;
 	Data<int> resetData;
