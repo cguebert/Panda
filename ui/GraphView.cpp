@@ -350,6 +350,15 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
 	else if(movingAction == MOVING_LINK)
 	{
 		currentMousePos = event->localPos() / zoomFactor;
+
+		panda::PandaObject* object = getObjectAtPos(currentMousePos);
+		if(object)
+		{
+			QPointF linkStart;
+			panda::BaseData* data = objectDrawStructs[object]->getDataAtPos(currentMousePos, &linkStart);
+			if(data && isCompatible(clickedData, data))
+				currentMousePos = linkStart;
+		}
 		update();
 	}
 
