@@ -31,7 +31,8 @@ public:
 		addOutput(&nbPoints);
 		addOutput(&points);
 
-		seed.setValue(rnd.seedRandom(10000));
+		seed.setWidget("seed");
+		seed.setValue(rnd.getRandomSeed(10000));
 	}
 
 	QPointF randomPointAround(const QPointF& point, double minDist, double maxDist)

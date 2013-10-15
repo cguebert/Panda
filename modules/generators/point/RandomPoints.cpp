@@ -23,7 +23,8 @@ public:
 
 		addOutput(&points);
 
-		seed.setValue(rnd.seedRandom(10000));
+		seed.setWidget("seed");
+		seed.setValue(rnd.getRandomSeed(10000));
 
 		// The output is dependent on the document's size
 		BaseData* data = doc->getData("render size");

@@ -1,4 +1,5 @@
 #include <ui/SimpleDataWidget.h>
+#include <panda/helper/Random.h>
 
 #include <QtWidgets>
 
@@ -62,6 +63,58 @@ public:
 	void writeToData(value_type& v)
 	{
 		v = (checkBox->isChecked() ? 1 : 0);
+	}
+};
+
+//***************************************************************//
+
+class SeedDataWidget : public DataWidgetContainer< int >, public BaseOpenDialogObject
+{
+protected:
+	typedef int value_type;
+	QSpinBox* spinBox;
+	BaseDataWidget* m_parent;
+
+public:
+	SeedDataWidget() : spinBox(nullptr) {}
+
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
+	{
+		m_parent = parent;
+		QWidget* container = new QWidget(parent);
+
+		spinBox = new QSpinBox();
+		spinBox->setMinimum(INT_MIN);
+		spinBox->setMaximum(INT_MAX);
+		spinBox->setSingleStep(1);
+		spinBox->setEnabled(!readOnly);
+
+		QPushButton* button = new QPushButton("Random");
+		QObject::connect(button, SIGNAL(clicked()), this, SLOT(onShowDialog()));
+
+		QHBoxLayout* layout = new QHBoxLayout;
+		layout->setMargin(0);
+		layout->addWidget(spinBox, 1);
+		layout->addWidget(button);
+		container->setLayout(layout);
+
+		QObject::connect(spinBox, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
+
+		return container;
+	}
+	void readFromData(const value_type& v)
+	{
+		if(v != spinBox->value())
+			spinBox->setValue(v);
+	}
+	void writeToData(value_type& v)
+	{
+		v = spinBox->value();
+	}
+	void onShowDialog()
+	{
+		spinBox->setValue(panda::helper::RandomGenerator::getRandomSeed(10000));
+		m_parent->setWidgetDirty();
 	}
 };
 
@@ -134,5 +187,6 @@ public:
 
 Creator<DataWidgetFactory, SimpleDataWidget<int> > DWClass_int("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<int, CheckboxDataWidget> > DWClass_checkbox("checkbox",true);
+Creator<DataWidgetFactory, SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed",true);
 Creator<DataWidgetFactory, SimpleDataWidget<double> > DWClass_double("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString> > DWClass_string("default",true);

@@ -32,7 +32,8 @@ public:
 
 		addOutput(&outputPoints);
 
-		seed.setValue(rnd.seedRandom(10000));
+		seed.setWidget("seed");
+		seed.setValue(rnd.getRandomSeed(10000));
 	}
 
 	void update()

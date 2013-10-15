@@ -13,7 +13,7 @@ class RandomGenerator
 {
 public:
 	void seed(unsigned int seed);
-	unsigned int seedRandom(unsigned int limit);
+	static unsigned int getRandomSeed(unsigned int limit);
 
 	double random();
 	double random(double min, double max);

@@ -12,7 +12,7 @@ void RandomGenerator::seed(unsigned int seed)
 	gen.seed(seed);
 }
 
-unsigned int RandomGenerator::seedRandom(unsigned int limit)
+unsigned int RandomGenerator::getRandomSeed(unsigned int limit)
 {
 	std::uniform_int_distribution<int> dist(0, limit);
 	std::random_device rnd;
