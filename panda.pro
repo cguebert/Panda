@@ -92,6 +92,9 @@ SOURCES       = main.cpp \
 	modules/math/real/DoubleListMath.cpp \
 	modules/math/real/DoubleMath.cpp \
 	modules/math/topology/TopologyInfo.cpp \
+	modules/modifiers/image/ColorInImage.cpp \
+	modules/modifiers/image/ExtractImage.cpp \
+	modules/modifiers/image/SaveImage.cpp \
 	modules/modifiers/point/PointsInShapes.cpp \
 	modules/modifiers/point/PointsUnion.cpp \
 	modules/modifiers/point/RandomDisplacement.cpp \

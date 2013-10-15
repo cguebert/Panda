@@ -24,6 +24,7 @@ public:
 	{
 		auto img = image.getAccessor();
 		img->load(fileName.getValue());
+		img->swap(img->convertToFormat(QImage::Format_ARGB32));
 		this->cleanDirty();
 	}
 
