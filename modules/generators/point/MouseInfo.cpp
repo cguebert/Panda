@@ -11,7 +11,6 @@ public:
 
 	GeneratorPoint_MouseInfo(PandaDocument *doc)
 		: PandaObject(doc)
-		, document(doc)
 		, position(initData(&position, "position", "Position of the mouse this timestep"))
 		, movement(initData(&movement, "movement", "Movement of the mouse from the last timestep"))
 		, clickState(initData(&clickState, 0, "click", "1 if the mouse button is pressed"))
@@ -28,8 +27,8 @@ public:
 	void update()
 	{
 		this->cleanDirty();
-		double time = document->getAnimationTime();
-		QPointF oldPos = position.getValue(), newPos = document->getMousePosition();
+		double time = parentDocument->getAnimationTime();
+		QPointF oldPos = position.getValue(), newPos = parentDocument->getMousePosition();
 
 		position.setValue(newPos);
 
@@ -38,11 +37,10 @@ public:
 		else
 			movement.setValue(QPointF(0,0));
 
-		clickState.setValue(document->getMouseClick());
+		clickState.setValue(parentDocument->getMouseClick());
 	}
 
 protected:
-	PandaDocument* document;
 	Data<QPointF> position, movement;
 	Data<int> clickState;
 };

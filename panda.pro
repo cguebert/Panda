@@ -1,6 +1,7 @@
 TEMPLATE      = app
 HEADERS       = \
 	modules/particles/Particle.h \
+	modules/particles/ParticleEngine.h \
 	modules/particles/ParticleEffector.h \
 	panda/BaseClass.h \
 	panda/BaseData.h \
@@ -17,6 +18,7 @@ HEADERS       = \
 	panda/PandaDocument.h \
 	panda/PandaObject.h \
 	panda/Renderer.h \
+	panda/helper/Algorithm.h \
 	panda/helper/Factory.h \
 	panda/helper/PointsGrid.h \
 	panda/helper/Random.h \
@@ -98,7 +100,10 @@ SOURCES       = main.cpp \
 	modules/modifiers/point/PointsInShapes.cpp \
 	modules/modifiers/point/PointsUnion.cpp \
 	modules/modifiers/point/RandomDisplacement.cpp \
+	modules/particles/ParticleCreation.cpp \
+	modules/particles/ParticleDestruction.cpp \
 	modules/particles/ParticleEngine.cpp \
+	modules/particles/ParticleForceField.cpp \
 	modules/render/RenderCircle.cpp \
 	modules/render/RenderDisk.cpp \
 	modules/render/RenderGradient.cpp \
@@ -149,3 +154,4 @@ win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
     ../boost_1_53_0
 QT += widgets xml
+CONFIG += c++11

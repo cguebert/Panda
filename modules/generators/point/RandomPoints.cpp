@@ -13,7 +13,6 @@ public:
 
 	GeneratorPoints_Random(PandaDocument *doc)
 		: PandaObject(doc)
-		, document(doc)
 		, nbPoints(initData(&nbPoints, 10, "# points", "Number of points to generate"))
 		, seed(initData(&seed, 0, "seed", "Seed for the random points generator"))
 		, points(initData(&points, "points", "The list of points" ))
@@ -37,7 +36,7 @@ public:
 		auto valPoints = points.getAccessor();
 		int valNbPoints = nbPoints.getValue();
 		valPoints.clear();
-		QSize size = document->getRenderSize();
+		QSize size = parentDocument->getRenderSize();
 
 		for(int i=0; i<valNbPoints; ++i)
 			valPoints.push_back(QPointF(rnd.random()*size.width(), rnd.random()*size.height()));
@@ -47,7 +46,6 @@ public:
 
 protected:
 	helper::RandomGenerator rnd;
-	PandaDocument *document;
 	Data<int> nbPoints, seed;
 	Data< QVector<QPointF> > points;
 };

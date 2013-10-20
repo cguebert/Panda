@@ -35,7 +35,6 @@ public:
 
 	GeneratorTopology_Delaunay(PandaDocument *doc)
 		: PandaObject(doc)
-		, document(doc)
 		, vertices(initData(&vertices, "vertices", "Sites of the Delaunay triangulation"))
 		, topology(initData(&topology, "topology", "Topology created from the Delaunay triangulation"))
 	{
@@ -62,7 +61,7 @@ public:
 
 		topo->addPoints(pts);
 
-		QRectF area = QRectF(QPointF(0,0), document->getRenderSize());
+		QRectF area = QRectF(QPointF(0,0), parentDocument->getRenderSize());
 
 		for(EdgeIterator it = vd.edges().begin(); it != vd.edges().end(); ++it)
 		{
@@ -93,7 +92,6 @@ public:
 	}
 
 protected:
-	PandaDocument *document;
 	Data< QVector<QPointF> > vertices;
 	Data<Topology> topology;
 };

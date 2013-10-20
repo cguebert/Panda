@@ -11,7 +11,6 @@ public:
 
 	GeneratorPoint_RenderSize(PandaDocument *doc)
 		: PandaObject(doc)
-		, document(doc)
 		, renderSize(initData(&renderSize, "size", "Dimensions of the render"))
 	{
 		addOutput(&renderSize);
@@ -24,12 +23,11 @@ public:
 	void update()
 	{
 		this->cleanDirty();
-		QSize tmpSize = document->getRenderSize();
+		QSize tmpSize = parentDocument->getRenderSize();
 		renderSize.setValue(QPointF(tmpSize.width(), tmpSize.height()));
 	}
 
 protected:
-	PandaDocument* document;
 	Data<QPointF> renderSize;
 };
 

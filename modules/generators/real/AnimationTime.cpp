@@ -11,7 +11,6 @@ public:
 
 	GeneratorNumber_AnimationTime(PandaDocument *doc)
 		: PandaObject(doc)
-		, document(doc)
 		, animTime(initData(&animTime, 0.0, "time", "Current time of the animation"))
 		, timeStep(initData(&timeStep, 0.0, "timestep", "Duration between 2 consecutive timesteps"))
 	{
@@ -25,13 +24,12 @@ public:
 
 	void update()
 	{
-		animTime.setValue(document->getAnimationTime());
-		timeStep.setValue(document->getTimeStep());
+		animTime.setValue(parentDocument->getAnimationTime());
+		timeStep.setValue(parentDocument->getTimeStep());
 		this->cleanDirty();
 	}
 
 protected:
-	PandaDocument* document;
 	Data<double> animTime, timeStep;
 };
 

@@ -18,7 +18,6 @@ public:
 
 	RenderGradient_Horizontal(PandaDocument *parent)
 		: Renderer(parent)
-		, document(parent)
 		, gradient(initData(&gradient, "gradient", "Gradient to paint on the screen"))
 	{
 		addInput(&gradient);
@@ -29,7 +28,7 @@ public:
 		painter->save();
 
 		const Gradient& grad = gradient.getValue();
-		QSize size = document->getRenderSize();
+		QSize size = parentDocument->getRenderSize();
 		for(int x=0; x<size.width(); ++x)
 		{
 			double p = (double)x / size.width();
@@ -41,7 +40,6 @@ public:
 	}
 
 protected:
-	PandaDocument* document;
 	Data<Gradient> gradient;
 };
 
@@ -54,7 +52,6 @@ public:
 
 	RenderGradient_Vertical(PandaDocument *parent)
 		: Renderer(parent)
-		, document(parent)
 		, gradient(initData(&gradient, "gradient", "Gradient to paint on the screen"))
 	{
 		addInput(&gradient);
@@ -65,7 +62,7 @@ public:
 		painter->save();
 
 		const Gradient& grad = gradient.getValue();
-		QSize size = document->getRenderSize();
+		QSize size = parentDocument->getRenderSize();
 		for(int y=0; y<size.height(); ++y)
 		{
 			double p = (double)y / size.height();
@@ -77,7 +74,6 @@ public:
 	}
 
 protected:
-	PandaDocument* document;
 	Data<Gradient> gradient;
 };
 
