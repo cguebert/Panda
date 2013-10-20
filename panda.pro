@@ -45,7 +45,8 @@ HEADERS       = \
 	ui/RenderView.h \
 	ui/SimpleDataWidget.h \
 	ui/StructTraits.h \
-	ui/TableDataWidgetDialog.h
+	ui/TableDataWidgetDialog.h \
+    modules/generators/integer/RandomSeed.h
 SOURCES       = main.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
@@ -58,6 +59,7 @@ SOURCES       = main.cpp \
 	modules/generators/color/RandomColors.cpp \
 	modules/generators/gradient/Anim2Gradient.cpp \
 	modules/generators/gradient/SimpleGradients.cpp \
+	modules/generators/integer/RandomSeed.cpp \
 	modules/generators/image/LoadImage.cpp \
 	modules/generators/point/ComposePoints.cpp \
 	modules/generators/point/MouseInfo.cpp \

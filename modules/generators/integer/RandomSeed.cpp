@@ -1,55 +1,50 @@
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+
+#include <modules/generators/integer/RandomSeed.h>
+
+#include <random>
 #include <panda/helper/Random.h>
 
 namespace panda {
 
-class GeneratorReals_Random : public PandaObject
+GeneratorInteger_RandomSeed::GeneratorInteger_RandomSeed(PandaDocument *doc)
+	: PandaObject(doc)
+	, dist(0, 10000)
+	, seed(initData(&seed, 0, "seed", "Seed for the random numbers generator"))
+	, value(initData(&value, 0, "value", "Value generated this time step"))
 {
-public:
-	PANDA_CLASS(GeneratorReals_Random, PandaObject)
+	addInput(&seed);
 
-	GeneratorReals_Random(PandaDocument *doc)
-		: PandaObject(doc)
-		, nbNumbers(initData(&nbNumbers, 10, "# numbers", "How many numbers to generate"))
-		, seed(initData(&seed, 0, "seed", "Seed for the random numbers generator"))
-		, numMin(initData(&numMin, 0.0, "minimum", "Minimum limit of the numbers"))
-		, numMax(initData(&numMax, 1.0, "maximum", "Maximum limit of the numbers"))
-		, numbers(initData(&numbers, "numbers", "The list of numbers" ))
-	{
-		addInput(&nbNumbers);
-		addInput(&seed);
-		addInput(&numMin);
-		addInput(&numMax);
+	addOutput(&value);
 
-		addOutput(&numbers);
+	seed.setWidget("seed");
+	seed.setValue(helper::RandomGenerator::getRandomSeed(10000));
 
-		seed.setWidget("seed");
-		seed.setValue(rnd.getRandomSeed(10000));
-	}
+	connect(doc, SIGNAL(timeChanged()), this, SLOT(timeChanged()));
 
-	void update()
-	{
-		rnd.seed(seed.getValue());
-		auto valNumbers = numbers.getAccessor();
-		int valNbNumbers = nbNumbers.getValue();
-		valNumbers.resize(valNbNumbers);
+	reset();
+}
 
-		double min = numMin.getValue(), max = numMax.getValue();
-		for(int i=0; i<valNbNumbers; ++i)
-			valNumbers[i] = rnd.random(min, max);
+void GeneratorInteger_RandomSeed::reset()
+{
+	gen.seed(seed.getValue());
 
-		this->cleanDirty();
-	}
+	newValue();
+}
 
-protected:
-	helper::RandomGenerator rnd;
-	Data<int> nbNumbers, seed;
-	Data<double> numMin, numMax;
-	Data< QVector<double> > numbers;
-};
+void GeneratorInteger_RandomSeed::timeChanged()
+{
+	newValue();
+}
 
-int GeneratorReals_RandomClass = RegisterObject<GeneratorReals_Random>("Generator/Real/Random").setName("Random numbers").setDescription("Generate a list of random numbers");
+void GeneratorInteger_RandomSeed::newValue()
+{
+	value.setValue(dist(gen));
+	emit modified(this);
+}
+
+int GeneratorInteger_RandomSeedClass = RegisterObject<GeneratorInteger_RandomSeed>("Generator/Integer/Random seed each time step")
+		.setName("Random seed").setDescription("Create a new number at each time step");
 
 } // namespace Panda
