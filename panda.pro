@@ -1,5 +1,6 @@
 TEMPLATE      = app
 HEADERS       = \
+	modules/generators/integer/RandomSeed.h \
 	modules/particles/Particle.h \
 	modules/particles/ParticleEngine.h \
 	modules/particles/ParticleEffector.h \
@@ -22,6 +23,7 @@ HEADERS       = \
 	panda/helper/Factory.h \
 	panda/helper/PointsGrid.h \
 	panda/helper/Random.h \
+	panda/helper/UpdateLogger.h \
 	panda/types/Animation.h \
 	panda/types/AnimationTraits.h \
 	panda/types/DataTraits.h \
@@ -46,7 +48,7 @@ HEADERS       = \
 	ui/SimpleDataWidget.h \
 	ui/StructTraits.h \
 	ui/TableDataWidgetDialog.h \
-    modules/generators/integer/RandomSeed.h
+    ui/UpdateLoggerDialog.h
 SOURCES       = main.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
@@ -131,6 +133,7 @@ SOURCES       = main.cpp \
 	panda/helper/Factory.cpp \
 	panda/helper/PointsGrid.cpp \
 	panda/helper/Random.cpp \
+	panda/helper/UpdateLogger.cpp \
 	panda/types/Animation.cpp \
 	panda/types/Animation.inl \
 	panda/types/DataTypeId.cpp \
@@ -150,10 +153,12 @@ SOURCES       = main.cpp \
 	ui/QuickCreateDialog.cpp \
 	ui/RenderView.cpp \
 	ui/SimpleDataWidget.cpp \
-	ui/TableDataWidgetDialog.cpp
+	ui/TableDataWidgetDialog.cpp \
+    ui/UpdateLoggerDialog.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
     ../boost_1_53_0
 QT += widgets xml
 CONFIG += c++11
+DEFINES += PANDA_LOG_EVENTS

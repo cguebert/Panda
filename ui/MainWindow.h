@@ -10,6 +10,7 @@ class RenderView;
 class QDockWidget;
 class DatasTable;
 class LayersTab;
+class UpdateLoggerDialog;
 
 namespace panda
 {
@@ -48,6 +49,7 @@ private slots:
 	void createGroupObject();
 	void showContextMenu(QPoint, int);
 	void copyDataToUserValue();
+	void showLoggerDialog();
 
 private:
 	void createActions();
@@ -75,6 +77,7 @@ private:
 	QDockWidget* layersDock;
 	QStringList recentFiles;
 	QString curFile;
+	UpdateLoggerDialog* loggerDialog;
 
 	enum { MaxRecentFiles = 5 };
 	QAction* recentFileActions[MaxRecentFiles];
@@ -125,6 +128,7 @@ private:
 	QAction* saveGroupAction;
 	QAction* removeLinkAction;
 	QAction* copyDataAction;
+	QAction* showLoggerDialogAction;
 	QLabel* timeLabel;
 };
 

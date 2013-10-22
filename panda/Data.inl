@@ -3,6 +3,11 @@
 
 #include <panda/Data.h>
 
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#include <panda/PandaObject.h>
+#endif
+
 namespace panda
 {
 
@@ -63,6 +68,9 @@ void Data<T>::setValue(const_reference v)
 template<class T>
 typename Data<T>::const_reference Data<T>::getValue() const
 {
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log(helper::event_getValue, name, getOwner()->getIndex());
+#endif
 	updateIfDirty();
 	return value;
 }

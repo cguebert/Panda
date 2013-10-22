@@ -2,6 +2,10 @@
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#endif
+
 namespace panda {
 
 const QString dataMarkerStart("~~{");
@@ -85,6 +89,9 @@ void PandaObject::updateIfDirty() const
 	{
 		if(!isUpdating)
 		{
+#ifdef PANDA_LOG_EVENTS
+			helper::ScopedEvent log(helper::event_update, name, index);
+#endif
 			isUpdating = true;
 			const_cast<PandaObject*>(this)->update();
 			const_cast<PandaObject*>(this)->cleanDirty();	// Verify if we can remove this call

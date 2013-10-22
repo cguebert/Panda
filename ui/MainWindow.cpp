@@ -6,6 +6,7 @@
 #include <ui/DatasTable.h>
 #include <ui/EditGroupDialog.h>
 #include <ui/LayersTab.h>
+#include <ui/UpdateLoggerDialog.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -13,6 +14,7 @@
 
 MainWindow::MainWindow()
 	: groupsRegistryMenu(nullptr)
+	, loggerDialog(nullptr)
 {
 	pandaDocument = new panda::PandaDocument(this);
 
@@ -356,6 +358,10 @@ void MainWindow::createActions()
 	copyDataAction = new QAction(tr("Copy data"), this);
 	copyDataAction->setStatusTip(tr("Create a user value generator based on this data"));
 	connect(copyDataAction, SIGNAL(triggered()), this, SLOT(copyDataToUserValue()));
+
+	showLoggerDialogAction = new QAction(tr("Show log"), this);
+	showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
+	connect(showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
 }
 
 void MainWindow::createMenus()
@@ -402,6 +408,10 @@ void MainWindow::createMenus()
 	viewMenu->addSeparator();
 	viewMenu->addAction(showGraphView);
 	viewMenu->addAction(showRenderView);
+#ifdef PANDA_LOG_EVENTS
+	viewMenu->addSeparator();
+	viewMenu->addAction(showLoggerDialogAction);
+#endif
 
 	menuBar()->addSeparator();
 
@@ -771,4 +781,18 @@ void MainWindow::copyDataToUserValue()
 	const panda::BaseData* clickedData = graphView->getContextMenuData();
 	if(clickedData)
 		pandaDocument->copyDataToUserValue(clickedData);
+}
+
+void MainWindow::showLoggerDialog()
+{
+	if(!loggerDialog)
+		loggerDialog = new UpdateLoggerDialog(this);
+
+	if(loggerDialog->isVisible())
+		loggerDialog->hide();
+	else
+	{
+		loggerDialog->updateEvents();
+		loggerDialog->show();
+	}
 }
