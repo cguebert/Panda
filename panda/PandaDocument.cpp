@@ -8,6 +8,10 @@
 #include <panda/Renderer.h>
 #include <panda/Group.h>
 
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#endif
+
 namespace panda {
 
 PandaDocument::PandaDocument(QObject *parent)
@@ -850,6 +854,9 @@ void PandaDocument::play(bool playing)
 
 void PandaDocument::step()
 {
+#ifdef PANDA_LOG_EVENTS
+	panda::helper::UpdateLogger::getInstance()->startLog();
+#endif
 	animTime.setValue(animTime.getValue() + timestep.getValue());
 	mousePosition.setValue(mousePositionBuffer);
 	if(mouseClickBuffer < 0)
@@ -865,6 +872,9 @@ void PandaDocument::step()
 
 void PandaDocument::rewind()
 {
+#ifdef PANDA_LOG_EVENTS
+	panda::helper::UpdateLogger::getInstance()->startLog();
+#endif
 	animTime.setValue(0.0);
 	mousePosition.setValue(mousePositionBuffer);
 	mouseClick.setValue(0);

@@ -8,11 +8,13 @@ UpdateLoggerDialog::UpdateLoggerDialog(QWidget *parent) :
 {
 	m_view = new UpdateLoggerView(this);
 
+	QPushButton* resetZoomButton = new QPushButton("Reset zoom");
 	QPushButton* updateButton = new QPushButton("Update");
     QPushButton* okButton = new QPushButton("Ok");
     QHBoxLayout* buttonsLayout = new QHBoxLayout;
 
     buttonsLayout->addStretch();
+	buttonsLayout->addWidget(resetZoomButton);
 	buttonsLayout->addWidget(updateButton);
     buttonsLayout->addWidget(okButton);
 
@@ -22,6 +24,7 @@ UpdateLoggerDialog::UpdateLoggerDialog(QWidget *parent) :
 
     setLayout(mainLayout);
 
+	connect(resetZoomButton, SIGNAL(clicked()), m_view, SLOT(resetZoom()));
 	connect(updateButton, SIGNAL(clicked()), m_view, SLOT(updateEvents()));
 	connect(okButton, SIGNAL(clicked()), this, SLOT(hide()));
 
@@ -123,6 +126,7 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 		switch (event.m_type)
 		{
 			case panda::helper::event_update:
+			case panda::helper::event_render:
 			{
 				QColor c = getColorForStatus(event.m_index);
 				painter.setBrush(QBrush(c));
@@ -190,10 +194,6 @@ void UpdateLoggerView::mousePressEvent(QMouseEvent* event)
 			m_mouseAction = Action_MovingView;
 		}
     }
-    else if(event->button() == Qt::MiddleButton)
-    {
-		resetZoom();
-    }
 }
 
 void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
@@ -222,9 +222,10 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 			QString display;
 			switch (pEvent->m_type)
 			{
-				case panda::helper::event_update:	{ display = QString("Update of %1").arg(pEvent->m_name); break; }
-				case panda::helper::event_getValue: { display = QString("GetValue of %1").arg(pEvent->m_name); break; }
-				case panda::helper::event_setDirty: { display = QString("SetDirty %1").arg(pEvent->m_name); break; }
+				case panda::helper::event_update:	{ display = QString("Update of %1").arg(pEvent->m_objectName); break; }
+				case panda::helper::event_getValue: { display = QString("%1 asked the value of %2").arg(pEvent->m_objectName).arg(pEvent->m_dataName); break; }
+				case panda::helper::event_render:	{ display = QString("Render of %1").arg(pEvent->m_objectName); break; }
+				case panda::helper::event_setDirty: { display = QString("SetDirty %1").arg(pEvent->m_dataName); break; }
 			}
 
 			if(!display.isEmpty())
@@ -270,9 +271,10 @@ void UpdateLoggerView::wheelEvent(QWheelEvent* event)
     }
 }
 
-void UpdateLoggerView::keyPressEvent(QKeyEvent*)
+void UpdateLoggerView::keyPressEvent(QKeyEvent* event)
 {
-
+	if(event->key() == Qt::Key_1)
+		resetZoom();
 }
 
 qreal UpdateLoggerView::posOfTime(unsigned long long time)

@@ -11,25 +11,41 @@ namespace helper
 ScopedEvent::ScopedEvent(EventType type, QString name, quint32 index)
 {
 	m_event.m_type = type;
-	m_event.m_name = name;
+	auto* logger = UpdateLogger::getInstance();
+	m_event.m_level = logger->m_objectsStack.size()-1;
+
+	switch(type)
+	{
+	case event_update:
+	case event_render:
+		m_event.m_objectName = name;
+		break;
+	case event_getValue:
+	case event_setDirty:
+		m_event.m_dataName = name;
+		m_event.m_objectName = logger->m_objectsStack.top();
+		break;
+	}
+
+	logger->m_objectsStack.push(m_event.m_objectName);
 	m_event.m_index = index;
 	m_event.m_start = UpdateLogger::getTime();
-	m_event.m_level = UpdateLogger::getInstance()->m_level++;
 }
 
 ScopedEvent::~ScopedEvent()
 {
 	auto* logger = UpdateLogger::getInstance();
 	m_event.m_end = UpdateLogger::getTime();
-	--logger->m_level;
+	logger->m_objectsStack.pop();
 	logger->addEvent(m_event);
 }
 
 //***************************************************************//
 
 UpdateLogger::UpdateLogger()
-	: m_level(0)
+	: m_logging(false)
 {
+	m_objectsStack.push("Document");
 }
 
 UpdateLogger* UpdateLogger::getInstance()
@@ -38,19 +54,31 @@ UpdateLogger* UpdateLogger::getInstance()
 	return &instance;
 }
 
-void UpdateLogger::clear()
+void UpdateLogger::startLog()
 {
+	if(m_logging)
+		stopLog();
 	m_events.clear();
+	m_objectsStack.clear();
+	m_objectsStack.push("Document");
+	m_logging = true;
+}
+
+void UpdateLogger::stopLog()
+{
+	m_logging = false;
+	m_prevEvents.swap(m_events);
 }
 
 const UpdateLogger::UpdateEvents UpdateLogger::getEvents() const
 {
-	return m_events;
+	return m_prevEvents;
 }
 
 void UpdateLogger::addEvent(EventData event)
 {
-	m_events.push_back(event);
+	if(m_logging)
+		m_events.push_back(event);
 }
 
 unsigned long long UpdateLogger::getTicksPerSec()

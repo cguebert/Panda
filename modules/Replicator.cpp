@@ -7,6 +7,10 @@
 #include <QImage>
 #include <QPainter>
 
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#endif
+
 namespace panda {
 
 class Replicator : public Layer
@@ -50,6 +54,9 @@ public:
 					Renderer* renderer = dynamic_cast<Renderer*>(iter.previous());
 					if(renderer)
 					{
+#ifdef PANDA_LOG_EVENTS
+						helper::ScopedEvent log(helper::event_render, renderer->getName(), renderer->getIndex());
+#endif
 						renderer->render(&painter);
 						renderer->cleanDirty();
 					}

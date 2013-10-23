@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QStack>
 #include <atomic>
 
 namespace panda
@@ -15,6 +16,7 @@ enum EventType
 {
 	event_update,
 	event_getValue,
+	event_render,
 	event_setDirty
 };
 
@@ -24,7 +26,7 @@ struct EventData
 public:
 	EventType m_type;
 	unsigned long long m_start, m_end;
-	QString m_name;
+	QString m_dataName, m_objectName;
 	quint32 m_index, m_level;
 };
 
@@ -47,7 +49,8 @@ public:
 
 	static UpdateLogger* getInstance();
 
-	void clear();
+	void startLog();
+	void stopLog();
 	const UpdateEvents getEvents() const;
 
 	static unsigned long long getTicksPerSec();
@@ -59,8 +62,9 @@ protected:
 
 	void addEvent(EventData event);
 
-	UpdateEvents m_events;
-	std::atomic_uint32_t m_level;
+	UpdateEvents m_events, m_prevEvents;
+	QStack<QString> m_objectsStack;
+	bool m_logging;
 };
 
 } // namespace helper

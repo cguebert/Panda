@@ -8,6 +8,10 @@
 #include <ui/GraphView.h>
 #include <ui/SimpleDataWidget.h>
 
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#endif
+
 namespace panda
 {
 
@@ -27,6 +31,9 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	while(iter.hasPrevious())
 	{
 		Renderer* renderer = iter.previous();
+#ifdef PANDA_LOG_EVENTS
+		helper::ScopedEvent log(helper::event_render, renderer->getName(), renderer->getIndex());
+#endif
 		renderer->render(&painter);
 		renderer->cleanDirty();
 	}
