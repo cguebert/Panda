@@ -1,7 +1,6 @@
 #ifndef UPDATELOGGER_H
 #define UPDATELOGGER_H
 
-#include <chrono>
 #include <QString>
 #include <QVector>
 #include <atomic>
@@ -24,7 +23,7 @@ struct EventData
 {
 public:
 	EventType m_type;
-	std::chrono::high_resolution_clock::time_point m_start, m_end;
+	unsigned long long m_start, m_end;
 	QString m_name;
 	quint32 m_index, m_level;
 };
@@ -50,6 +49,9 @@ public:
 
 	void clear();
 	const UpdateEvents getEvents() const;
+
+	static unsigned long long getTicksPerSec();
+	static unsigned long long getTime();
 
 protected:
 	UpdateLogger();

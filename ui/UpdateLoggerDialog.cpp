@@ -1,6 +1,5 @@
 #include <ui/UpdateLoggerDialog.h>
 
-#include <chrono>
 #include <QVector>
 #include <algorithm>
 
@@ -50,6 +49,8 @@ UpdateLoggerView::UpdateLoggerView(QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
 
     setMouseTracking(true);
+
+	m_tps = 1000.0 / panda::helper::UpdateLogger::getTicksPerSec();
 }
 
 void UpdateLoggerView::updateEvents()
@@ -215,8 +216,8 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 		const EventData* pEvent = nullptr;
 		if(getEventAtPos(event->localPos(), rect, pEvent))
         {
-			qreal start = std::chrono::duration_cast<std::chrono::nanoseconds>(pEvent->m_start - m_minTime).count() / 10.0e6;
-			qreal end = std::chrono::duration_cast<std::chrono::nanoseconds>(pEvent->m_end - m_minTime).count() / 10.0e6;
+			qreal start = (pEvent->m_start - m_minTime) * m_tps;
+			qreal end = (pEvent->m_end - m_minTime) * m_tps;
 			QString times = QString("\n%1ms - %2ms").arg(start).arg(end);
 			QString display;
 			switch (pEvent->m_type)
@@ -274,11 +275,11 @@ void UpdateLoggerView::keyPressEvent(QKeyEvent*)
 
 }
 
-qreal UpdateLoggerView::posOfTime(std::chrono::high_resolution_clock::time_point time)
+qreal UpdateLoggerView::posOfTime(unsigned long long time)
 {
     qreal w = width() - 2 * view_margin;
-	qreal a = std::chrono::duration_cast<std::chrono::nanoseconds>(time - m_minTime).count();
-	qreal b = std::chrono::duration_cast<std::chrono::nanoseconds>(m_maxTime - m_minTime).count();
+	qreal a = time - m_minTime;
+	qreal b = m_maxTime - m_minTime;
 	return view_margin + (m_viewDelta + a / b * w) * m_zoomFactor;
 }
 

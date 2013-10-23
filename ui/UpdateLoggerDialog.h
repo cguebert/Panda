@@ -47,7 +47,7 @@ protected:
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent *event);
 
-    inline qreal posOfTime(std::chrono::high_resolution_clock::time_point time);
+	inline qreal posOfTime(unsigned long long time);
     QColor getColorForStatus(unsigned int index, qreal s=1.0, qreal v=1.0);
 
 	typedef panda::helper::EventData EventData;
@@ -65,15 +65,19 @@ protected:
     qreal m_zoomFactor, m_viewDelta;
 	QPointF m_previousMousePos, m_currentMousePos;
     MouseAction m_mouseAction;
+
 	typedef panda::helper::UpdateLogger::UpdateEvents UpdateEvents;
 	UpdateEvents m_events;
 	quint32 m_maxEventLevel;
-	std::chrono::high_resolution_clock::time_point m_minTime, m_maxTime;
+	unsigned long long m_minTime, m_maxTime;
+	qreal m_tps;
 
 	struct EventRect
     {
 		EventRect() : event(nullptr) {}
-		EventRect(const EventData& e, QRectF r) : event(&e), rect(r) {}
+		EventRect(const EventData& e, QRectF r)
+			: event(&e), rect(r.adjusted(-1, 0, 1, 0))
+		{}
 
 		const EventData* event;
         QRectF rect;
