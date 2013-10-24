@@ -312,6 +312,7 @@ void PandaDocument::resetDocument()
 	emit modified();
 	emit selectionChanged();
 	emit selectedObject(nullptr);
+	emit timeChanged();
 }
 
 PandaObject* PandaDocument::createObject(QString registryName)

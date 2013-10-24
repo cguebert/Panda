@@ -162,7 +162,6 @@ void MainWindow::documentModified()
 		renderView->update();
 
 	setWindowModified(true);
-	updateStatusBar();
 }
 
 void MainWindow::createActions()
