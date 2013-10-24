@@ -35,8 +35,9 @@ protected:
     enum
     {
         view_margin = 2,
-		event_height = 15,
-		event_margin = 1
+		update_height = 20,
+		value_height = 10,
+		event_margin = 4
     };
 
     void paintEvent(QPaintEvent *event);

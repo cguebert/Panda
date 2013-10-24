@@ -13,7 +13,6 @@ class ParticleEffector;
 
 class ParticleEngine : public DockObject
 {
-	Q_OBJECT
 public:
 	PANDA_CLASS(ParticleEngine, DockObject)
 
@@ -27,9 +26,6 @@ public:
 
 	void removeParticles();
 	void createNewParticles();
-
-private slots:
-	void timeChanged();
 
 protected:
 	QVector<ParticleEffector*> effectors;

@@ -87,7 +87,7 @@ void UpdateLoggerView::updateEvents()
 QSize UpdateLoggerView::minimumSizeHint() const
 {
     qreal y = view_margin * 2
-		+ (m_maxEventLevel + 1) * event_height
+		+ (m_maxEventLevel + 1) * update_height
 		+ m_maxEventLevel * event_margin;
     y = qMax(static_cast<qreal>(100.0), y);
     return QSize(300, y);
@@ -117,33 +117,37 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 
     m_eventRects.clear();
 
-	for(const auto& event : m_events)
+//	for(const auto& event : m_events)
+	QVectorIterator<EventData> iter(m_events);
+	iter.toBack();
+	while(iter.hasPrevious())
 	{
+		const EventData& event = iter.previous();
 		qreal x1 = posOfTime(event.m_start);
 		qreal x2 = posOfTime(event.m_end);
-		qreal y = view_margin + event.m_level * (event_height + event_margin);
+		qreal y = view_margin + event.m_level * (update_height + event_margin);
 
 		switch (event.m_type)
 		{
 			case panda::helper::event_update:
 			case panda::helper::event_render:
 			{
-				QColor c = getColorForStatus(event.m_index);
+				QColor c = getColorForStatus(event.m_index, 0.5);
 				painter.setBrush(QBrush(c));
 				painter.setPen(c);
 
-				QRectF rect(x1, y, x2 - x1, event_height);
+				QRectF rect(x1, y, x2 - x1, update_height);
 				painter.drawRect(rect);
 				m_eventRects.push_back(EventRect(event, rect));
 				break;
 			}
 			case panda::helper::event_getValue:
 			{
-				QColor c = getColorForStatus(event.m_index, 0.5);
+				QColor c = getColorForStatus(event.m_index);
 				painter.setBrush(QBrush(c));
 				painter.setPen(c);
 
-				QRectF rect(x1, y, x2 - x1, event_height);
+				QRectF rect(x1, y + (update_height-value_height), x2 - x1, value_height);
 				painter.drawRect(rect);
 				m_eventRects.push_back(EventRect(event, rect));
 				break;
@@ -154,7 +158,7 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 				painter.setBrush(QBrush(c));
 				painter.setPen(c);
 
-				QRectF rect(x1, y, x2 - x1, event_height);
+				QRectF rect(x1, y + (update_height-value_height), x2 - x1, value_height);
 				painter.drawRect(rect);
 				m_eventRects.push_back(EventRect(event, rect));
 				break;

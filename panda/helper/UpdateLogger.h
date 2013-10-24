@@ -63,6 +63,7 @@ protected:
 	void addEvent(EventData event);
 
 	UpdateEvents m_events, m_prevEvents;
+	int m_level;
 	QStack<QString> m_objectsStack;
 	bool m_logging;
 };

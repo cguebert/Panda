@@ -12,18 +12,19 @@ ScopedEvent::ScopedEvent(EventType type, QString name, quint32 index)
 {
 	m_event.m_type = type;
 	auto* logger = UpdateLogger::getInstance();
-	m_event.m_level = logger->m_objectsStack.size()-1;
 
 	switch(type)
 	{
 	case event_update:
 	case event_render:
 		m_event.m_objectName = name;
+		m_event.m_level = ++logger->m_level;
 		break;
 	case event_getValue:
 	case event_setDirty:
 		m_event.m_dataName = name;
 		m_event.m_objectName = logger->m_objectsStack.top();
+		m_event.m_level = logger->m_level;
 		break;
 	}
 
@@ -36,6 +37,8 @@ ScopedEvent::~ScopedEvent()
 {
 	auto* logger = UpdateLogger::getInstance();
 	m_event.m_end = UpdateLogger::getTime();
+	if(m_event.m_type == event_update || m_event.m_type == event_render)
+		--logger->m_level;
 	logger->m_objectsStack.pop();
 	logger->addEvent(m_event);
 }
@@ -43,7 +46,8 @@ ScopedEvent::~ScopedEvent()
 //***************************************************************//
 
 UpdateLogger::UpdateLogger()
-	: m_logging(false)
+	: m_level(-1)
+	, m_logging(false)
 {
 	m_objectsStack.push("Document");
 }
@@ -62,6 +66,7 @@ void UpdateLogger::startLog()
 	m_objectsStack.clear();
 	m_objectsStack.push("Document");
 	m_logging = true;
+	m_level = -1;
 }
 
 void UpdateLogger::stopLog()

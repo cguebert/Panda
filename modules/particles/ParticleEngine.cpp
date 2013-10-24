@@ -33,8 +33,6 @@ ParticleEngine::ParticleEngine(PandaDocument *doc)
 	BaseData* docTime = doc->getData("time");
 	if(docTime)
 		addInput(docTime);
-
-	connect(parentDocument, SIGNAL(timeChanged()), this, SLOT(timeChanged()));
 }
 
 void ParticleEngine::reset()
@@ -157,13 +155,6 @@ void ParticleEngine::update()
 	}
 
 	this->cleanDirty();
-}
-
-void ParticleEngine::timeChanged()
-{
-	double time = parentDocument->getAnimationTime();
-	if(prevTime != time)
-		updateIfDirty();
 }
 
 int ParticleEngineClass = RegisterObject<ParticleEngine>("Particles/Particle engine").setName("Particle engine").setDescription("Animate a set of points based on physical properties and optional modifier objects");
