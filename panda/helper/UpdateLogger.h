@@ -17,7 +17,7 @@ enum EventType
 	event_update,
 	event_getValue,
 	event_render,
-	event_setDirty
+	event_copyValue
 };
 
 // This is what will actually be stored

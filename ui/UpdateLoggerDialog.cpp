@@ -152,7 +152,7 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 				m_eventRects.push_back(EventRect(event, rect));
 				break;
 			}
-			case panda::helper::event_setDirty:
+			case panda::helper::event_copyValue:
 			{
 				QColor c = getColorForStatus(event.m_index, 1, 0.5);
 				painter.setBrush(QBrush(c));
@@ -229,7 +229,7 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 				case panda::helper::event_update:	{ display = QString("Update of %1").arg(pEvent->m_objectName); break; }
 				case panda::helper::event_getValue: { display = QString("%1 asked the value of %2").arg(pEvent->m_objectName).arg(pEvent->m_dataName); break; }
 				case panda::helper::event_render:	{ display = QString("Render of %1").arg(pEvent->m_objectName); break; }
-				case panda::helper::event_setDirty: { display = QString("SetDirty %1").arg(pEvent->m_dataName); break; }
+				case panda::helper::event_copyValue: { display = QString("Copy to data: %1").arg(pEvent->m_dataName); break; }
 			}
 
 			if(!display.isEmpty())
