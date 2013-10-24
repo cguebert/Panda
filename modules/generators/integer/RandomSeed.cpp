@@ -1,48 +1,69 @@
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 
-#include <modules/generators/integer/RandomSeed.h>
-
 #include <random>
 #include <panda/helper/Random.h>
 
 namespace panda {
 
-GeneratorInteger_RandomSeed::GeneratorInteger_RandomSeed(PandaDocument *doc)
-	: PandaObject(doc)
-	, dist(0, 10000)
-	, seed(initData(&seed, 0, "seed", "Seed for the random numbers generator"))
-	, value(initData(&value, 0, "value", "Value generated this time step"))
+class GeneratorInteger_RandomSeed : public PandaObject
 {
-	addInput(&seed);
+public:
+	PANDA_CLASS(GeneratorInteger_RandomSeed, PandaObject)
 
-	addOutput(&value);
+	GeneratorInteger_RandomSeed(PandaDocument *doc)
+		: PandaObject(doc)
+		, dist(0, 10000)
+		, seed(initData(&seed, 0, "seed", "Seed for the random numbers generator"))
+		, value(initData(&value, 0, "value", "Value generated this time step"))
+		, prevSeed(-1)
+	{
+		addInput(&seed);
 
-	seed.setWidget("seed");
-	seed.setValue(helper::RandomGenerator::getRandomSeed(10000));
+		addOutput(&value);
 
-	connect(doc, SIGNAL(timeChanged()), this, SLOT(timeChanged()));
+		seed.setWidget("seed");
+		seed.setValue(helper::RandomGenerator::getRandomSeed(10000));
 
-	reset();
-}
+		BaseData* docTime = doc->getData("time");
+		if(docTime)
+			addInput(docTime);
 
-void GeneratorInteger_RandomSeed::reset()
-{
-	gen.seed(seed.getValue());
+		reset();
+	}
 
-	newValue();
-}
+	void reset()
+	{
+		prevSeed = -1;
+		setDirtyValue();
+	}
 
-void GeneratorInteger_RandomSeed::timeChanged()
-{
-	newValue();
-}
+	void update()
+	{
+		int seedV = seed.getValue();
+		if(seedV != prevSeed)
+		{
+			gen.seed(seed.getValue());
+			prevSeed = seedV;
+		}
+		value.setValue(dist(gen));
 
-void GeneratorInteger_RandomSeed::newValue()
-{
-	value.setValue(dist(gen));
-	emit modified(this);
-}
+		cleanDirty();
+	}
+
+	void load(QDomElement &elem)
+	{
+		PandaObject::load(elem);
+
+		reset();
+	}
+
+protected:
+	std::mt19937 gen;
+	std::uniform_int_distribution<int> dist;
+	Data<int> seed, value;
+	int prevSeed;
+};
 
 int GeneratorInteger_RandomSeedClass = RegisterObject<GeneratorInteger_RandomSeed>("Generator/Integer/Random seed each time step")
 		.setName("Random seed").setDescription("Create a new number at each time step");

@@ -1,6 +1,5 @@
 TEMPLATE      = app
 HEADERS       = \
-	modules/generators/integer/RandomSeed.h \
 	modules/particles/Particle.h \
 	modules/particles/ParticleEngine.h \
 	modules/particles/ParticleEffector.h \

@@ -13,6 +13,10 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#endif
+
 namespace panda {
 
 ParticleEngine::ParticleEngine(PandaDocument *doc)
@@ -25,6 +29,10 @@ ParticleEngine::ParticleEngine(PandaDocument *doc)
 	addOutput(&positions);
 	addOutput(&velocities);
 	addOutput(&accelerations);
+
+	BaseData* docTime = doc->getData("time");
+	if(docTime)
+		addInput(docTime);
 
 	connect(parentDocument, SIGNAL(timeChanged()), this, SLOT(timeChanged()));
 }
@@ -155,7 +163,7 @@ void ParticleEngine::timeChanged()
 {
 	double time = parentDocument->getAnimationTime();
 	if(prevTime != time)
-		update();
+		updateIfDirty();
 }
 
 int ParticleEngineClass = RegisterObject<ParticleEngine>("Particles/Particle engine").setName("Particle engine").setDescription("Animate a set of points based on physical properties and optional modifier objects");
