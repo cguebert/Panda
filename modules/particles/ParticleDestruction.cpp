@@ -25,7 +25,7 @@ public:
 
 	virtual void reset()
 	{
-		gen.seed(0);
+		gen.seed(1);
 		birth.clear();
 	}
 

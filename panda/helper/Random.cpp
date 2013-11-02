@@ -9,7 +9,7 @@ namespace helper
 
 void RandomGenerator::seed(unsigned int seed)
 {
-	gen.seed(seed);
+	gen.seed(seed+1);
 }
 
 unsigned int RandomGenerator::getRandomSeed(unsigned int limit)

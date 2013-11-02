@@ -27,12 +27,12 @@ public:
 		int nbPos = posList.size();
 		int nbVel = velList.size();
 
-		if(nbPos < nbVel) nbPos = 1;
-		if(nbVel < nbPos) nbVel = 1;
-		int nb = qMax(nbPos, nbVel);
-
 		if(nbPos)
 		{
+			if(nbPos < nbVel) nbPos = 1;
+			if(nbVel > 0 && nbVel < nbPos) nbVel = 1;
+			int nb = qMax(nbPos, nbVel);
+		
 			newParticles.resize(nb);
 			for(int i=0; i<nb; ++i)
 			{
