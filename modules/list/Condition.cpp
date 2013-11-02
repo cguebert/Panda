@@ -59,7 +59,7 @@ public:
 		const auto& inT = dataInTrue->getValue();
 		const auto& inF = dataInFalse->getValue();
 		int nb = qMin(inT.size(), inF.size());
-		if(nbC < nb)
+		if(nbC == 1 || nbC < nb)
 			outVal = c[0] ? inT : inF;
 		else if(nb == 1)
 		{
