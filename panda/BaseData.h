@@ -80,8 +80,6 @@ public:
 	virtual void setParent(BaseData* parent);
 	BaseData* getParent() const { return parentBaseData; }
 
-	void update();
-
 	virtual const types::AbstractDataTrait* getDataTrait() const = 0;
 	virtual const void* getVoidValue() const = 0;
 	VoidDataAccessor getVoidAccessor() { return VoidDataAccessor(this); }

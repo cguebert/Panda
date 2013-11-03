@@ -15,6 +15,7 @@ template<class T>
 Data<T>::Data(const BaseData::BaseInitData& init)
 	: BaseData(init)
 	, value(value_type())
+	, parentData(nullptr)
 {
 	initFlags();
 }
@@ -22,6 +23,7 @@ Data<T>::Data(const BaseData::BaseInitData& init)
 template<class T>
 Data<T>::Data(const InitData& init)
 	: BaseData(init)
+	, parentData(nullptr)
 {
 	value = init.value;
 	initFlags();
@@ -31,6 +33,7 @@ template<class T>
 Data<T>::Data(const QString& name, const QString& help, PandaObject* owner)
 	: BaseData(name, help, owner)
 	, value(T())
+	, parentData(nullptr)
 {
 	initFlags();
 }
@@ -38,6 +41,36 @@ Data<T>::Data(const QString& name, const QString& help, PandaObject* owner)
 template<class T>
 Data<T>::~Data()
 {
+	// Give connected Datas a chance to copy the value before it is freed
+	for(DataNode* node : outputs)
+		node->doRemoveInput(this);
+	outputs.clear();
+}
+
+template<class T>
+void Data<T>::update()
+{
+	cleanDirty();
+	for(DataNode* node : inputs)
+		node->updateIfDirty();
+	if(parentData)
+	{	// TODO : we shouldn't have to do anything here, there is a bug somewhere...
+		beginEdit();
+		endEdit();	// As if we touched the data
+	}
+	else if(parentBaseData)
+		copyValueFrom(parentBaseData);
+}
+
+template<class T>
+void Data<T>::setParent(BaseData* parent)
+{
+	Data<T>* tmp = dynamic_cast< Data<T>* >(parent);
+	if(parentData && !tmp && !setParentProtection)	// If deconnecting, we copy the data first
+		value = parentData->getValue();
+	parentData = tmp;
+
+	BaseData::setParent(parent);
 }
 
 template<class T>
@@ -72,6 +105,8 @@ typename Data<T>::const_reference Data<T>::getValue() const
 	helper::ScopedEvent log(helper::event_getValue, name, getOwner()->getIndex());
 #endif
 	updateIfDirty();
+	if(parentData)
+		return parentData->getValue();
 	return value;
 }
 

@@ -22,6 +22,7 @@ class PandaObject : public QObject, public DataNode
 public:
 	PANDA_CLASS(PandaObject, DataNode)
 	explicit PandaObject(QObject *parent = 0);
+	~PandaObject();
 
 	static QString getTypeName();
 	static QString getClassName();
@@ -66,6 +67,7 @@ public:
 	}
 
 	virtual void postCreate() { }
+	virtual void preDestruction();
 	virtual void reset() { }
 	virtual void update();
 	virtual void updateIfDirty() const;

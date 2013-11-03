@@ -26,6 +26,7 @@ public:
 	typedef QMapIterator<QString, QString> GroupsIterator;
 
 	explicit PandaDocument(QObject *parent = 0);
+	~PandaDocument();
 
 	bool writeFile(const QString& fileName);
 	bool readFile(const QString& fileName);

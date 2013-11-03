@@ -87,10 +87,10 @@ void BaseData::setParent(BaseData* parent)
 		* This is for the special case of the Group objects
 		* where an output Data is connected to another Data
 		*/
-		foreach(DataNode* node, this->inputs)
+		for(DataNode* node : inputs)
 		{
 			if(!dynamic_cast<PandaObject*>(node))
-				this->removeInput(node);
+				removeInput(node);
 		}
 
 		if(parent && !validParent(parent))
@@ -107,20 +107,11 @@ void BaseData::setParent(BaseData* parent)
 	else
 	{
 		parentBaseData = nullptr;
-		while(!this->inputs.empty())
-			this->removeInput(this->inputs.front());
+		while(!inputs.empty())
+			removeInput(inputs.front());
 	}
 
 	setParentProtection = false;
-}
-
-void BaseData::update()
-{
-	cleanDirty();
-	foreach(DataNode* node, inputs)
-		node->updateIfDirty();
-	if(parentBaseData)
-		copyValueFrom(parentBaseData);
 }
 
 QString BaseData::getDescription() const

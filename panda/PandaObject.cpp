@@ -20,6 +20,10 @@ PandaObject::PandaObject(QObject *parent)
 	parentDocument = dynamic_cast<PandaDocument*>(parent);
 }
 
+PandaObject::~PandaObject()
+{
+}
+
 QString PandaObject::getTypeName()
 {
 	return getClass()->getTypeName();
@@ -78,9 +82,14 @@ void PandaObject::addOutput(BaseData* data)
 	DataNode::addOutput(data);
 }
 
+void PandaObject::preDestruction()
+{	// Some failsafe so the objects being destroyed don't try to update themselves during the operation
+	isUpdating = true;
+}
+
 void PandaObject::update()
 {
-	this->cleanDirty();
+	cleanDirty();
 }
 
 void PandaObject::updateIfDirty() const

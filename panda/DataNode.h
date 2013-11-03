@@ -32,12 +32,12 @@ public:
 	virtual void cleanDirty();
 	virtual void updateIfDirty() const;
 
-protected:
 	virtual void doAddInput(DataNode* node);
 	virtual void doRemoveInput(DataNode* node);
 	virtual void doAddOutput(DataNode* node);
 	virtual void doRemoveOutput(DataNode* node);
 
+protected:
 	bool dirtyValue;
 	NodesList inputs, outputs;
 };

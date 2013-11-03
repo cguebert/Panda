@@ -10,12 +10,10 @@ DataNode::DataNode()
 
 DataNode::~DataNode()
 {
-	foreach(DataNode* node, inputs)
-		node->removeOutput(this);
-		//node->doRemoveOutput(this);
-	foreach(DataNode* node, outputs)
-		node->removeInput(this);
-		//node->doRemoveInput(this);
+	for(DataNode* node : inputs)
+		node->doRemoveOutput(this);
+	for(DataNode* node : outputs)
+		node->doRemoveInput(this);
 }
 
 void DataNode::addInput(DataNode* node)
@@ -70,7 +68,7 @@ void DataNode::setDirtyValue()
 
 void DataNode::setDirtyOutputs()
 {
-	foreach(DataNode* node, outputs)
+	for(DataNode* node : outputs)
 		node->setDirtyValue();
 }
 

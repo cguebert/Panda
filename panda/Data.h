@@ -40,6 +40,8 @@ public:
 	Data(const QString& name, const QString& help, PandaObject* owner);
 	virtual ~Data();
 
+	virtual void update();
+	virtual void setParent(BaseData* parent);
 	virtual const types::AbstractDataTrait* getDataTrait() const;
 	virtual const void* getVoidValue() const;
 	DataAccessor<data_type> getAccessor();
@@ -57,7 +59,8 @@ protected:
 	virtual void endVoidEdit();
 
 private:
-	T value;
+	value_type value;
+	Data<value_type>* parentData;
 	static types::AbstractDataTrait* dataTrait;
 	static AbstractDataCopier* dataCopier;
 

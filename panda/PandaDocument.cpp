@@ -55,6 +55,11 @@ PandaDocument::PandaDocument(QObject *parent)
 	groupsDirPath = QCoreApplication::applicationDirPath() + "/groups/";
 }
 
+PandaDocument::~PandaDocument()
+{
+	for(PandaObject* object : pandaObjects)
+		object->preDestruction();
+}
 
 bool PandaDocument::writeFile(const QString& fileName)
 {
@@ -164,7 +169,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const QList<Pa
 		object->save(doc, elem, &selected);
 
 		// Preparing links
-		foreach(BaseData* data, object->getInputDatas())
+		for(BaseData* data : object->getInputDatas())
 		{
 			BaseData* parent = data->getParent();
 			if(parent && selected.contains(parent->getOwner()))
@@ -291,9 +296,10 @@ bool PandaDocument::loadDoc(QDomElement& root)
 void PandaDocument::resetDocument()
 {
 	selectedObjects.clear();
-	foreach(PandaObject* object, pandaObjects)
+	for(PandaObject* object : pandaObjects)
 	{
 		emit removedObject(object);
+		object->preDestruction();
 		object->disconnect(this);
 		delete object;
 	}
@@ -443,7 +449,7 @@ void PandaDocument::del()
 {
 	if(!selectedObjects.empty())
 	{
-		foreach(PandaObject* object, selectedObjects)
+		for(PandaObject* object : selectedObjects)
 			doRemoveObject(object);
 
 		selectedObjects.clear();
@@ -502,7 +508,7 @@ void PandaDocument::selectConnected()
 			openList.remove(object);
 			closedList.insert(object);
 
-			foreach(BaseData* data, object->getInputDatas())
+			for(BaseData* data : object->getInputDatas())
 			{
 				if(data->getParent())
 				{
@@ -512,9 +518,9 @@ void PandaDocument::selectConnected()
 				}
 			}
 
-			foreach(BaseData* data, object->getOutputDatas())
+			for(BaseData* data : object->getOutputDatas())
 			{
-				foreach(DataNode* otherNode, data->getOutputs())
+				for(DataNode* otherNode : data->getOutputs())
 				{
 					BaseData* otherData = dynamic_cast<BaseData*>(otherNode);
 					if(otherData)
@@ -562,7 +568,10 @@ void PandaDocument::doRemoveObject(PandaObject* object, bool del)
 	selectedObjects.removeAll(object);
 	object->disconnect(this);
 	if(del)
+	{
+		object->preDestruction();
 		delete object;
+	}
 }
 
 void PandaDocument::doAddObject(PandaObject* object)
@@ -879,7 +888,7 @@ void PandaDocument::rewind()
 	animTime.setValue(0.0);
 	mousePosition.setValue(mousePositionBuffer);
 	mouseClick.setValue(0);
-	foreach(PandaObject* object, pandaObjects)
+	for(PandaObject* object : pandaObjects)
 		object->reset();
 	setDirtyValue();
 	emit timeChanged();

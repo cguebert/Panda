@@ -1,5 +1,5 @@
 #include <panda/helper/Random.h>
-#include <time.h>
+#include <algorithm>
 
 namespace panda
 {
