@@ -8,22 +8,32 @@ UpdateLoggerDialog::UpdateLoggerDialog(QWidget *parent) :
 {
 	m_view = new UpdateLoggerView(this);
 
+	QPushButton* prevEventButton = new QPushButton("Previous");
+	QPushButton* nextEventButton = new QPushButton("Next");
 	QPushButton* resetZoomButton = new QPushButton("Reset zoom");
 	QPushButton* updateButton = new QPushButton("Update");
     QPushButton* okButton = new QPushButton("Ok");
     QHBoxLayout* buttonsLayout = new QHBoxLayout;
 
+	buttonsLayout->addWidget(prevEventButton);
+	buttonsLayout->addWidget(nextEventButton);
     buttonsLayout->addStretch();
 	buttonsLayout->addWidget(resetZoomButton);
 	buttonsLayout->addWidget(updateButton);
     buttonsLayout->addWidget(okButton);
 
+	m_label = new QLabel(this);
+
     QVBoxLayout* mainLayout = new QVBoxLayout;
     mainLayout->addWidget(m_view);
+	mainLayout->addWidget(m_label);
     mainLayout->addItem(buttonsLayout);
 
     setLayout(mainLayout);
 
+	connect(m_view, SIGNAL(setEventText(QString)), this, SLOT(setEventText(QString)));
+	connect(prevEventButton, SIGNAL(clicked()), m_view, SLOT(prevEvent()));
+	connect(nextEventButton, SIGNAL(clicked()), m_view, SLOT(nextEvent()));
 	connect(resetZoomButton, SIGNAL(clicked()), m_view, SLOT(resetZoom()));
 	connect(updateButton, SIGNAL(clicked()), m_view, SLOT(updateEvents()));
 	connect(okButton, SIGNAL(clicked()), this, SLOT(hide()));
@@ -36,6 +46,11 @@ void UpdateLoggerDialog::updateEvents()
 	m_view->updateEvents();
 }
 
+void UpdateLoggerDialog::setEventText(QString text)
+{
+	m_label->setText(text);
+}
+
 //***************************************************************//
 
 UpdateLoggerView::UpdateLoggerView(QWidget *parent)
@@ -45,6 +60,8 @@ UpdateLoggerView::UpdateLoggerView(QWidget *parent)
     , m_zoomFactor(1.0)
     , m_viewDelta(0.0)
 	, m_maxEventLevel(1)
+	, m_selectedTime(0)
+	, m_selectedIndex(-1)
 {
     setAutoFillBackground(true);
     setBackgroundRole(QPalette::Light);
@@ -78,6 +95,15 @@ void UpdateLoggerView::updateEvents()
 		if(event.m_end > m_maxTime) m_maxTime = event.m_end;
 		if(event.m_level > m_maxEventLevel) m_maxEventLevel = event.m_level;
 	}
+
+	m_selectedTime = m_minTime;
+	m_selectedIndex = 0;
+
+	sortEvents();
+
+	const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
+	QString display = eventDescription(event);
+	emit setEventText(display);
 
 	update();
 }
@@ -174,6 +200,13 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 		}
 	}
 
+	// Selection line
+	QRect viewRect = contentsRect();
+	int x = posOfTime(m_selectedTime);
+	painter.setPen(Qt::red);
+	painter.drawLine(x, 0, x, viewRect.height());
+
+	// Zoom rectangle
 	if (m_mouseAction == Action_Zooming)
 	{
 		QRectF zoomRect(m_previousMousePos, m_currentMousePos);
@@ -203,14 +236,25 @@ void UpdateLoggerView::mousePressEvent(QMouseEvent* event)
 		else
 		{
 			m_previousMousePos = m_currentMousePos = event->pos();
-			m_mouseAction = Action_MovingView;
+			m_mouseAction = Action_MovingStart;
 		}
     }
 }
 
 void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 {
-    if(m_mouseAction == Action_MovingView)
+	if(m_mouseAction == Action_MovingStart)
+	{
+		int x = (event->x() - m_previousMousePos.x());
+		if(qAbs(x) > 5)
+		{
+			m_mouseAction = Action_MovingView;
+			m_viewDelta += x / m_zoomFactor;
+			m_previousMousePos = event->pos();
+			update();
+		}
+	}
+	else if(m_mouseAction == Action_MovingView)
     {
 		QPointF delta = (event->pos() - m_previousMousePos) / m_zoomFactor;
         m_viewDelta += delta.x();
@@ -231,15 +275,7 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 			qreal start = (pEvent->m_start - m_minTime) * m_tps;
 			qreal end = (pEvent->m_end - m_minTime) * m_tps;
 			QString times = QString("\n%1ms - %2ms").arg(start).arg(end);
-			QString display;
-			switch (pEvent->m_type)
-			{
-				case panda::helper::event_update:	{ display = QString("Update of %1").arg(pEvent->m_objectName); break; }
-				case panda::helper::event_getValue: { display = QString("GetValue of %1").arg(pEvent->m_dataName); break; }
-				case panda::helper::event_render:	{ display = QString("Render of %1").arg(pEvent->m_objectName); break; }
-				case panda::helper::event_copyValue: { display = QString("Copy to data: %1").arg(pEvent->m_dataName); break; }
-				case panda::helper::event_setDirty:	{ display = QString("SetDirty of %1").arg(pEvent->m_objectName); break; }
-			}
+			QString display = eventDescription(*pEvent);
 
 			if(!display.isEmpty())
 				QToolTip::showText(event->globalPos(), display + times, this, rect.toRect());
@@ -247,7 +283,7 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
-void UpdateLoggerView::mouseReleaseEvent(QMouseEvent*)
+void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
 {
 	if (m_mouseAction == Action_Zooming)
 	{
@@ -261,6 +297,30 @@ void UpdateLoggerView::mouseReleaseEvent(QMouseEvent*)
 		m_zoomLevel = static_cast<int>(log(m_zoomFactor) / log(1.2) * 10);  // Inverse of "zf = 1.2 ^ (zl / 10)"
 
 		update();
+	}
+	else if(m_mouseAction == Action_MovingStart)
+	{
+		if(!m_events.isEmpty())
+		{
+			unsigned long long time = timeOfPos(event->x());
+			int nb = m_sortedEvents.size();
+			m_selectedIndex = 0;
+			for(int i=0; i<nb; ++i)
+			{
+				const EventData& event = m_events[m_sortedEvents[i]];
+				if(event.m_start < time)
+					m_selectedIndex = i;
+				else
+					break;
+			}
+
+			const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
+			m_selectedTime = event.m_start;
+			QString display = eventDescription(event);
+			emit setEventText(display);
+
+			update();
+		}
 	}
 
     m_mouseAction = Action_None;
@@ -290,12 +350,36 @@ void UpdateLoggerView::keyPressEvent(QKeyEvent* event)
 		resetZoom();
 }
 
+QString UpdateLoggerView::eventDescription(const EventData& event)
+{
+	QString display;
+	switch (event.m_type)
+	{
+		case panda::helper::event_update:		{ display = QString("Update of %1").arg(event.m_objectName);	break;	}
+		case panda::helper::event_getValue:		{ display = QString("GetValue of %1").arg(event.m_dataName);	break;	}
+		case panda::helper::event_render:		{ display = QString("Render of %1").arg(event.m_objectName);	break;	}
+		case panda::helper::event_copyValue:	{ display = QString("Copy to data: %1").arg(event.m_dataName);	break;	}
+		case panda::helper::event_setDirty:		{ display = QString("SetDirty of %1").arg(event.m_objectName);	break;	}
+	}
+
+	return display;
+}
+
 qreal UpdateLoggerView::posOfTime(unsigned long long time)
 {
     qreal w = width() - 2 * view_margin;
 	qreal a = time - m_minTime;
 	qreal b = m_maxTime - m_minTime;
 	return view_margin + (m_viewDelta + a / b * w) * m_zoomFactor;
+}
+
+unsigned long long UpdateLoggerView::timeOfPos(int x)
+{
+	qreal w = width() - 2 * view_margin;
+	qreal a = (x - view_margin) / m_zoomFactor - m_viewDelta;
+	qreal b = m_maxTime - m_minTime;
+
+	return m_minTime + a * b / w;
 }
 
 QColor UpdateLoggerView::getColorForStatus(unsigned int index, qreal s, qreal v)
@@ -322,3 +406,81 @@ bool UpdateLoggerView::getEventAtPos(QPointF pos, QRectF& rect, const EventData*
     return false;
 }
 
+class EventsComparator
+{
+public:
+	EventsComparator(panda::helper::UpdateLogger::UpdateEvents& events)
+		: m_events(events)
+	{}
+
+	bool operator()(const int& lhs, const int& rhs)
+	{
+		return m_events[lhs].m_start < m_events[rhs].m_start;
+	}
+
+protected:
+	panda::helper::UpdateLogger::UpdateEvents& m_events;
+};
+
+void UpdateLoggerView::sortEvents()
+{
+	int nb = m_events.size();
+	m_sortedEvents.resize(nb);
+	for(int i=0; i<nb; ++i)
+		m_sortedEvents[i] = i;
+
+	EventsComparator comparator(m_events);
+	qSort(m_sortedEvents.begin(), m_sortedEvents.end(), comparator);
+}
+
+void UpdateLoggerView::prevEvent()
+{
+	if(m_events.isEmpty())
+		return;
+
+	m_selectedIndex = qMax(0, m_selectedIndex-1);
+	const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
+	m_selectedTime = event.m_start;
+
+	// Move the view if the select line goes too far
+	int x = posOfTime(m_selectedTime);
+	int w = width();
+	if(x < 0.1 * w || x > w - view_margin)
+	{
+		qreal a = m_selectedTime - m_minTime;
+		qreal b = m_maxTime - m_minTime;
+		qreal c = w - 2 * view_margin;
+		m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
+	}
+
+	QString display = eventDescription(event);
+	emit setEventText(display);
+
+	update();
+}
+
+void UpdateLoggerView::nextEvent()
+{
+	if(m_events.isEmpty())
+		return;
+
+	m_selectedIndex = qMin(m_sortedEvents.size()-1, m_selectedIndex+1);
+	const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
+	m_selectedTime = event.m_start;
+
+	// Move the view if the select line goes too far
+	int x = posOfTime(m_selectedTime);
+	int w = width();
+	if(x > 0.9 * w || x < view_margin)
+	{
+		qreal a = m_selectedTime - m_minTime;
+		qreal b = m_maxTime - m_minTime;
+		qreal c = w - 2 * view_margin;
+		m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
+	}
+
+	QString display = eventDescription(event);
+	emit setEventText(display);
+
+	update();
+}

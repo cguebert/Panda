@@ -17,7 +17,10 @@ public:
 
 protected:
 	UpdateLoggerView* m_view;
+	QLabel* m_label;
 
+public slots:
+	void setEventText(QString);
 };
 
 //***************************************************************//
@@ -48,15 +51,21 @@ protected:
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent *event);
 
+	typedef panda::helper::EventData EventData;
+	QString eventDescription(const EventData &event);
+
 	inline qreal posOfTime(unsigned long long time);
+	inline unsigned long long timeOfPos(int x);
     QColor getColorForStatus(unsigned int index, qreal s=1.0, qreal v=1.0);
 
-	typedef panda::helper::EventData EventData;
 	bool getEventAtPos(QPointF pos, QRectF& rect, const EventData*& pEvent);
+
+	void sortEvents();
 
     enum MouseAction
     {
         Action_None,
+		Action_MovingStart,
 		Action_MovingView,
 		Action_Zooming
     };
@@ -70,8 +79,9 @@ protected:
 	typedef panda::helper::UpdateLogger::UpdateEvents UpdateEvents;
 	UpdateEvents m_events;
 	qint32 m_maxEventLevel;
-	unsigned long long m_minTime, m_maxTime;
 	qreal m_tps;
+	unsigned long long m_minTime, m_maxTime, m_selectedTime;
+	int m_selectedIndex;
 
 	struct EventRect
     {
@@ -84,12 +94,17 @@ protected:
         QRectF rect;
     };
 	QVector<EventRect> m_eventRects;
+
+	QVector<unsigned int> m_sortedEvents;
     
 signals:
+	void setEventText(QString);
     
 public slots:
 	void updateEvents();
 	void resetZoom();
+	void nextEvent();
+	void prevEvent();
 };
 
 #endif // UPDATELOGGERDIALOG_H
