@@ -1,4 +1,5 @@
 #include <panda/helper/UpdateLogger.h>
+#include <panda/PandaObject.h>
 
 #include <windows.h>
 
@@ -8,28 +9,30 @@ namespace panda
 namespace helper
 {
 
-ScopedEvent::ScopedEvent(EventType type, QString name, quint32 index)
+ScopedEvent::ScopedEvent(EventType type, const PandaObject *object)
 {
 	m_event.m_type = type;
-	auto* logger = UpdateLogger::getInstance();
+	m_event.m_objectIndex = object->getIndex();
+	m_event.m_objectName = object->getName();
+	m_event.m_level = ++UpdateLogger::getInstance()->m_level;
 
-	switch(type)
+	m_event.m_start = UpdateLogger::getTime();
+}
+
+ScopedEvent::ScopedEvent(EventType type, const BaseData* data)
+{
+	m_event.m_type = type;
+	m_event.m_dataName = data->getName();
+	PandaObject* object = data->getOwner();
+	if(object)
 	{
-	case event_update:
-	case event_render:
-		m_event.m_objectName = name;
-		m_event.m_level = ++logger->m_level;
-		break;
-	case event_getValue:
-	case event_copyValue:
-		m_event.m_dataName = name;
-		m_event.m_objectName = logger->m_objectsStack.top();
-		m_event.m_level = logger->m_level;
-		break;
+		m_event.m_objectIndex = object->getIndex();
+		m_event.m_objectName = object->getName();
 	}
+	else
+		m_event.m_objectIndex = -1;
+	m_event.m_level = UpdateLogger::getInstance()->m_level;
 
-	logger->m_objectsStack.push(m_event.m_objectName);
-	m_event.m_index = index;
 	m_event.m_start = UpdateLogger::getTime();
 }
 
@@ -37,9 +40,8 @@ ScopedEvent::~ScopedEvent()
 {
 	auto* logger = UpdateLogger::getInstance();
 	m_event.m_end = UpdateLogger::getTime();
-	if(m_event.m_type == event_update || m_event.m_type == event_render)
+	if(m_event.m_dataName.isEmpty())
 		--logger->m_level;
-	logger->m_objectsStack.pop();
 	logger->addEvent(m_event);
 }
 
@@ -49,7 +51,6 @@ UpdateLogger::UpdateLogger()
 	: m_level(-1)
 	, m_logging(false)
 {
-	m_objectsStack.push("Document");
 }
 
 UpdateLogger* UpdateLogger::getInstance()
@@ -63,8 +64,6 @@ void UpdateLogger::startLog()
 	if(m_logging)
 		stopLog();
 	m_events.clear();
-	m_objectsStack.clear();
-	m_objectsStack.push("Document");
 	m_logging = true;
 	m_level = -1;
 }

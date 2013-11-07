@@ -790,6 +790,7 @@ void PandaDocument::update()
 const QImage& PandaDocument::getRenderedImage()
 {
 	this->updateIfDirty();
+
 	return renderedImage;
 }
 
@@ -843,14 +844,9 @@ void PandaDocument::moveLayerDown(PandaObject *layer)
 
 void PandaDocument::setDirtyValue()
 {
+	PandaObject::setDirtyValue();
 	if(!getCurrentSelectedObject())
 		emit selectedObjectIsDirty(nullptr);
-
-	if(!this->dirtyValue)
-	{
-		DataNode::setDirtyValue();
-		emit modified();
-	}
 }
 
 void PandaDocument::play(bool playing)
@@ -877,6 +873,11 @@ void PandaDocument::step()
 	else
 		mouseClick.setValue(mouseClickBuffer);
 	setDirtyValue();
+	updateIfDirty();
+
+#ifdef PANDA_LOG_EVENTS
+	panda::helper::UpdateLogger::getInstance()->stopLog();
+#endif
 	emit timeChanged();
 }
 

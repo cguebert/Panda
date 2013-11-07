@@ -102,7 +102,7 @@ template<class T>
 typename Data<T>::const_reference Data<T>::getValue() const
 {
 #ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log(helper::event_getValue, name, getOwner()->getIndex());
+	helper::ScopedEvent log(helper::event_getValue, this);
 #endif
 	updateIfDirty();
 	if(parentData)
@@ -114,7 +114,7 @@ template<class T>
 void Data<T>::copyValueFrom(const BaseData* from)
 {
 #ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log(helper::event_copyValue, name, getOwner()->getIndex());
+	helper::ScopedEvent log(helper::event_copyValue, this);
 	if(dataCopier->copyData(this, from))
 		isValueSet = true;
 #endif

@@ -69,7 +69,7 @@ protected:
 
 	typedef panda::helper::UpdateLogger::UpdateEvents UpdateEvents;
 	UpdateEvents m_events;
-	quint32 m_maxEventLevel;
+	qint32 m_maxEventLevel;
 	unsigned long long m_minTime, m_maxTime;
 	qreal m_tps;
 

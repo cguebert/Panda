@@ -9,6 +9,9 @@
 namespace panda
 {
 
+class PandaObject;
+class BaseData;
+
 namespace helper
 {
 
@@ -17,7 +20,8 @@ enum EventType
 	event_update,
 	event_getValue,
 	event_render,
-	event_copyValue
+	event_copyValue,
+	event_setDirty
 };
 
 // This is what will actually be stored
@@ -27,14 +31,15 @@ public:
 	EventType m_type;
 	unsigned long long m_start, m_end;
 	QString m_dataName, m_objectName;
-	quint32 m_index, m_level;
+	qint32 m_objectIndex, m_level;
 };
 
 // To log an event, you only have to use this class
 class ScopedEvent
 {
 public:
-	ScopedEvent(EventType type, QString name, quint32 index);
+	ScopedEvent(EventType type, const PandaObject* object);
+	ScopedEvent(EventType type, const BaseData* data);
 	~ScopedEvent();
 
 private:
@@ -64,7 +69,6 @@ protected:
 
 	UpdateEvents m_events, m_prevEvents;
 	int m_level;
-	QStack<QString> m_objectsStack;
 	bool m_logging;
 };
 

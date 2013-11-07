@@ -32,7 +32,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	{
 		Renderer* renderer = iter.previous();
 #ifdef PANDA_LOG_EVENTS
-		helper::ScopedEvent log(helper::event_render, renderer->getName(), renderer->getIndex());
+		helper::ScopedEvent log(helper::event_render, renderer);
 #endif
 		renderer->render(&painter);
 		renderer->cleanDirty();

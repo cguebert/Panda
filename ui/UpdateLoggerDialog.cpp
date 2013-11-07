@@ -79,8 +79,6 @@ void UpdateLoggerView::updateEvents()
 		if(event.m_level > m_maxEventLevel) m_maxEventLevel = event.m_level;
 	}
 
-	setMinimumSize(minimumSizeHint());
-
 	update();
 }
 
@@ -117,7 +115,6 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 
     m_eventRects.clear();
 
-//	for(const auto& event : m_events)
 	QVectorIterator<EventData> iter(m_events);
 	iter.toBack();
 	while(iter.hasPrevious())
@@ -132,7 +129,7 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 			case panda::helper::event_update:
 			case panda::helper::event_render:
 			{
-				QColor c = getColorForStatus(event.m_index, 0.5);
+				QColor c = getColorForStatus(event.m_objectIndex, 0.5);
 				painter.setBrush(QBrush(c));
 				painter.setPen(c);
 
@@ -143,7 +140,7 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 			}
 			case panda::helper::event_getValue:
 			{
-				QColor c = getColorForStatus(event.m_index);
+				QColor c = getColorForStatus(event.m_objectIndex);
 				painter.setBrush(QBrush(c));
 				painter.setPen(c);
 
@@ -154,11 +151,22 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 			}
 			case panda::helper::event_copyValue:
 			{
-				QColor c = getColorForStatus(event.m_index, 1, 0.5);
+				QColor c = getColorForStatus(event.m_objectIndex, 1, 0.5);
 				painter.setBrush(QBrush(c));
 				painter.setPen(c);
 
 				QRectF rect(x1, y + (update_height-value_height), x2 - x1, value_height);
+				painter.drawRect(rect);
+				m_eventRects.push_back(EventRect(event, rect));
+				break;
+			}
+			case panda::helper::event_setDirty:
+			{
+				QColor c = getColorForStatus(event.m_objectIndex);
+				painter.setBrush(QBrush(c));
+				painter.setPen(c);
+
+				QRectF rect(x1, y, x2 - x1, value_height);
 				painter.drawRect(rect);
 				m_eventRects.push_back(EventRect(event, rect));
 				break;
@@ -227,9 +235,10 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 			switch (pEvent->m_type)
 			{
 				case panda::helper::event_update:	{ display = QString("Update of %1").arg(pEvent->m_objectName); break; }
-				case panda::helper::event_getValue: { display = QString("%1 asked the value of %2").arg(pEvent->m_objectName).arg(pEvent->m_dataName); break; }
+				case panda::helper::event_getValue: { display = QString("GetValue of %1").arg(pEvent->m_dataName); break; }
 				case panda::helper::event_render:	{ display = QString("Render of %1").arg(pEvent->m_objectName); break; }
 				case panda::helper::event_copyValue: { display = QString("Copy to data: %1").arg(pEvent->m_dataName); break; }
+				case panda::helper::event_setDirty:	{ display = QString("SetDirty of %1").arg(pEvent->m_objectName); break; }
 			}
 
 			if(!display.isEmpty())

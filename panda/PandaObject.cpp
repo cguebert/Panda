@@ -99,7 +99,7 @@ void PandaObject::updateIfDirty() const
 		if(!isUpdating)
 		{
 #ifdef PANDA_LOG_EVENTS
-			helper::ScopedEvent log(helper::event_update, name, index);
+			helper::ScopedEvent log(helper::event_update, this);
 #endif
 			isUpdating = true;
 			const_cast<PandaObject*>(this)->update();
@@ -112,7 +112,12 @@ void PandaObject::updateIfDirty() const
 void PandaObject::setDirtyValue()
 {
 	if(!dirtyValue)
+	{
+#ifdef PANDA_LOG_EVENTS
+		helper::ScopedEvent log(helper::event_setDirty, this);
+#endif
 		DataNode::setDirtyValue();
+	}
 
 	if(doEmitDirty)
 		emit dirty(this);
