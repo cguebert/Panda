@@ -861,7 +861,7 @@ void PandaDocument::play(bool playing)
 void PandaDocument::step()
 {
 #ifdef PANDA_LOG_EVENTS
-	panda::helper::UpdateLogger::getInstance()->startLog();
+	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
 	animTime.setValue(animTime.getValue() + timestep.getValue());
 	mousePosition.setValue(mousePositionBuffer);
@@ -884,7 +884,7 @@ void PandaDocument::step()
 void PandaDocument::rewind()
 {
 #ifdef PANDA_LOG_EVENTS
-	panda::helper::UpdateLogger::getInstance()->startLog();
+	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
 	animTime.setValue(0.0);
 	mousePosition.setValue(mousePositionBuffer);

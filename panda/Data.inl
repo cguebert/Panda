@@ -63,6 +63,18 @@ void Data<T>::update()
 }
 
 template<class T>
+void Data<T>::setDirtyValue()
+{
+	if(!dirtyValue)
+	{
+#ifdef PANDA_LOG_EVENTS
+		helper::ScopedEvent log(helper::event_setDirty, this);
+#endif
+		DataNode::setDirtyValue();
+	}
+}
+
+template<class T>
 void Data<T>::setParent(BaseData* parent)
 {
 	Data<T>* tmp = dynamic_cast< Data<T>* >(parent);

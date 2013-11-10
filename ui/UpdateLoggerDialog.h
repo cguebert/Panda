@@ -15,9 +15,19 @@ public:
 	explicit UpdateLoggerDialog(QWidget *parent = 0);
 	void updateEvents();
 
+	static UpdateLoggerDialog* getInstance();
+	static void setInstance(UpdateLoggerDialog* dlg);
+
+	const panda::helper::EventData* getSelectedEvent() const;
+	bool isNodeDirty(const panda::DataNode* node) const;
+
 protected:
 	UpdateLoggerView* m_view;
 	QLabel* m_label;
+	static UpdateLoggerDialog* m_instance;
+
+signals:
+	void changedSelectedEvent();
 
 public slots:
 	void setEventText(QString);
@@ -33,6 +43,9 @@ public:
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
+
+	const panda::helper::EventData *getSelectedEvent() const;
+	bool isNodeDirty(const panda::DataNode* node) const;
 
 protected:
     enum
@@ -61,6 +74,7 @@ protected:
 	bool getEventAtPos(QPointF pos, QRectF& rect, const EventData*& pEvent);
 
 	void sortEvents();
+	void updateStates(int prevSelection, unsigned long long time);
 
     enum MouseAction
     {
@@ -77,9 +91,14 @@ protected:
     MouseAction m_mouseAction;
 
 	typedef panda::helper::UpdateLogger::UpdateEvents UpdateEvents;
-	UpdateEvents m_events;
+	UpdateEvents m_events;	// This list is sorted by the end time of the events
+	QVector<unsigned int> m_sortedEvents;	// This list is sorted by the start time of the events (indices into m_events)
+
+	typedef panda::helper::UpdateLogger::NodeStates NodeStates;
+	NodeStates m_initialStates, m_currentStates;
+
 	qint32 m_maxEventLevel;
-	qreal m_tps;
+	qreal m_tps;	// Ticks per second
 	unsigned long long m_minTime, m_maxTime, m_selectedTime;
 	int m_selectedIndex;
 
@@ -94,11 +113,10 @@ protected:
         QRectF rect;
     };
 	QVector<EventRect> m_eventRects;
-
-	QVector<unsigned int> m_sortedEvents;
     
 signals:
 	void setEventText(QString);
+	void changedSelectedEvent();
     
 public slots:
 	void updateEvents();

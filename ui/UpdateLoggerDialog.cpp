@@ -3,6 +3,8 @@
 #include <QVector>
 #include <algorithm>
 
+UpdateLoggerDialog* UpdateLoggerDialog::m_instance = nullptr;
+
 UpdateLoggerDialog::UpdateLoggerDialog(QWidget *parent) :
     QDialog(parent)
 {
@@ -38,17 +40,40 @@ UpdateLoggerDialog::UpdateLoggerDialog(QWidget *parent) :
 	connect(updateButton, SIGNAL(clicked()), m_view, SLOT(updateEvents()));
 	connect(okButton, SIGNAL(clicked()), this, SLOT(hide()));
 
+	connect(m_view, SIGNAL(changedSelectedEvent()), this, SIGNAL(changedSelectedEvent()));
+
     m_view->setFocus();
 }
 
 void UpdateLoggerDialog::updateEvents()
 {
 	m_view->updateEvents();
+	emit changedSelectedEvent();
 }
 
 void UpdateLoggerDialog::setEventText(QString text)
 {
 	m_label->setText(text);
+}
+
+UpdateLoggerDialog* UpdateLoggerDialog::getInstance()
+{
+	return m_instance;
+}
+
+void UpdateLoggerDialog::setInstance(UpdateLoggerDialog* dlg)
+{
+	m_instance = dlg;
+}
+
+const panda::helper::EventData* UpdateLoggerDialog::getSelectedEvent() const
+{
+	return m_view->getSelectedEvent();
+}
+
+bool UpdateLoggerDialog::isNodeDirty(const panda::DataNode* node) const
+{
+	return m_view->isNodeDirty(node);
 }
 
 //***************************************************************//
@@ -75,7 +100,8 @@ UpdateLoggerView::UpdateLoggerView(QWidget *parent)
 
 void UpdateLoggerView::updateEvents()
 {
-	UpdateEvents events = panda::helper::UpdateLogger::getInstance()->getEvents();
+	panda::helper::UpdateLogger* logger = panda::helper::UpdateLogger::getInstance();
+	UpdateEvents events = logger->getEvents();
 	if(events.isEmpty())
 		return;
 
@@ -86,13 +112,13 @@ void UpdateLoggerView::updateEvents()
 	m_zoomFactor = 1.0;
 	m_viewDelta = 0.0;
 
-	m_minTime = events.front().m_start;
-	m_maxTime = events.front().m_end;
+	m_minTime = events.front().m_startTime;
+	m_maxTime = events.front().m_endTime;
 	m_maxEventLevel = 0;
 	for(auto& event : events)
 	{
-		if(event.m_start < m_minTime) m_minTime = event.m_end;
-		if(event.m_end > m_maxTime) m_maxTime = event.m_end;
+		if(event.m_startTime < m_minTime) m_minTime = event.m_startTime;
+		if(event.m_endTime > m_maxTime) m_maxTime = event.m_endTime;
 		if(event.m_level > m_maxEventLevel) m_maxEventLevel = event.m_level;
 	}
 
@@ -104,6 +130,8 @@ void UpdateLoggerView::updateEvents()
 	const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
 	QString display = eventDescription(event);
 	emit setEventText(display);
+
+	m_currentStates = m_initialStates = logger->getInitialNodeStates();
 
 	update();
 }
@@ -120,6 +148,19 @@ QSize UpdateLoggerView::minimumSizeHint() const
 QSize UpdateLoggerView::sizeHint() const
 {
     return QSize(600, 100);
+}
+
+const panda::helper::EventData* UpdateLoggerView::getSelectedEvent() const
+{
+	if(m_selectedIndex < 0 || m_events.isEmpty() || m_sortedEvents.isEmpty())
+		return nullptr;
+
+	return &m_events[m_sortedEvents[m_selectedIndex]];
+}
+
+bool UpdateLoggerView::isNodeDirty(const panda::DataNode* node) const
+{
+	return m_currentStates[node];
 }
 
 void UpdateLoggerView::resetZoom()
@@ -146,8 +187,8 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 	while(iter.hasPrevious())
 	{
 		const EventData& event = iter.previous();
-		qreal x1 = posOfTime(event.m_start);
-		qreal x2 = posOfTime(event.m_end);
+		qreal x1 = posOfTime(event.m_startTime);
+		qreal x2 = posOfTime(event.m_endTime);
 		qreal y = view_margin + event.m_level * (update_height + event_margin);
 
 		switch (event.m_type)
@@ -272,8 +313,8 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 		const EventData* pEvent = nullptr;
 		if(getEventAtPos(event->localPos(), rect, pEvent))
         {
-			qreal start = (pEvent->m_start - m_minTime) * m_tps;
-			qreal end = (pEvent->m_end - m_minTime) * m_tps;
+			qreal start = (pEvent->m_startTime - m_minTime) * m_tps;
+			qreal end = (pEvent->m_endTime - m_minTime) * m_tps;
 			QString times = QString("\n%1ms - %2ms").arg(start).arg(end);
 			QString display = eventDescription(*pEvent);
 
@@ -304,20 +345,27 @@ void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
 		{
 			unsigned long long time = timeOfPos(event->x());
 			int nb = m_sortedEvents.size();
+			int prevSelection = m_selectedIndex;
 			m_selectedIndex = 0;
 			for(int i=0; i<nb; ++i)
 			{
 				const EventData& event = m_events[m_sortedEvents[i]];
-				if(event.m_start < time)
+				if(event.m_startTime < time)
 					m_selectedIndex = i;
 				else
 					break;
 			}
 
-			const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
-			m_selectedTime = event.m_start;
-			QString display = eventDescription(event);
-			emit setEventText(display);
+			if(m_selectedIndex != prevSelection)
+			{
+				const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
+				m_selectedTime = event.m_startTime;
+				updateStates(prevSelection, m_selectedTime);
+
+				QString display = eventDescription(event);
+				emit setEventText(display);
+				emit changedSelectedEvent();
+			}
 
 			update();
 		}
@@ -415,7 +463,7 @@ public:
 
 	bool operator()(const int& lhs, const int& rhs)
 	{
-		return m_events[lhs].m_start < m_events[rhs].m_start;
+		return m_events[lhs].m_startTime < m_events[rhs].m_startTime;
 	}
 
 protected:
@@ -438,25 +486,33 @@ void UpdateLoggerView::prevEvent()
 	if(m_events.isEmpty())
 		return;
 
+	int prevSelection = m_selectedIndex;
 	m_selectedIndex = qMax(0, m_selectedIndex-1);
-	const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
-	m_selectedTime = event.m_start;
 
-	// Move the view if the select line goes too far
-	int x = posOfTime(m_selectedTime);
-	int w = width();
-	if(x < 0.1 * w || x > w - view_margin)
+	if(m_selectedIndex != prevSelection)
 	{
-		qreal a = m_selectedTime - m_minTime;
-		qreal b = m_maxTime - m_minTime;
-		qreal c = w - 2 * view_margin;
-		m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
+		const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
+		m_selectedTime = event.m_startTime;
+
+		updateStates(prevSelection, m_selectedTime);
+
+		// Move the view if the select line goes too far
+		int x = posOfTime(m_selectedTime);
+		int w = width();
+		if(x < 0.1 * w || x > w - view_margin)
+		{
+			qreal a = m_selectedTime - m_minTime;
+			qreal b = m_maxTime - m_minTime;
+			qreal c = w - 2 * view_margin;
+			m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
+		}
+
+		QString display = eventDescription(event);
+		emit setEventText(display);
+		emit changedSelectedEvent();
+
+		update();
 	}
-
-	QString display = eventDescription(event);
-	emit setEventText(display);
-
-	update();
 }
 
 void UpdateLoggerView::nextEvent()
@@ -464,23 +520,50 @@ void UpdateLoggerView::nextEvent()
 	if(m_events.isEmpty())
 		return;
 
+	int prevSelection = m_selectedIndex;
 	m_selectedIndex = qMin(m_sortedEvents.size()-1, m_selectedIndex+1);
-	const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
-	m_selectedTime = event.m_start;
 
-	// Move the view if the select line goes too far
-	int x = posOfTime(m_selectedTime);
-	int w = width();
-	if(x > 0.9 * w || x < view_margin)
+	if(m_selectedIndex != prevSelection)
 	{
-		qreal a = m_selectedTime - m_minTime;
-		qreal b = m_maxTime - m_minTime;
-		qreal c = w - 2 * view_margin;
-		m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
+		const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
+		m_selectedTime = event.m_startTime;
+
+		updateStates(prevSelection, m_selectedTime);
+
+		// Move the view if the select line goes too far
+		int x = posOfTime(m_selectedTime);
+		int w = width();
+		if(x > 0.9 * w || x < view_margin)
+		{
+			qreal a = m_selectedTime - m_minTime;
+			qreal b = m_maxTime - m_minTime;
+			qreal c = w - 2 * view_margin;
+			m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
+		}
+
+		QString display = eventDescription(event);
+		emit setEventText(display);
+		emit changedSelectedEvent();
+
+		update();
 	}
+}
 
-	QString display = eventDescription(event);
-	emit setEventText(display);
+void UpdateLoggerView::updateStates(int prevSelection, unsigned long long time)
+{
+	if(prevSelection < 0)
+		prevSelection = 0;
 
-	update();
+	unsigned long long prevTime = m_events[m_sortedEvents[prevSelection]].m_startTime;
+
+	if(time > prevTime)
+	{
+		for(int i=m_sortedEvents[prevSelection]; m_events[i].m_endTime < time; ++i)
+			m_currentStates[m_events[i].m_node] = m_events[i].m_dirtyEnd;
+	}
+	else if(time < prevTime)
+	{
+		for(int i=prevSelection; m_events[m_sortedEvents[i]].m_startTime > time; --i)
+			m_currentStates[m_events[m_sortedEvents[i]].m_node] = m_events[m_sortedEvents[i]].m_dirtyStart;
+	}
 }

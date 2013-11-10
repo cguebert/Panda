@@ -3,14 +3,16 @@
 
 #include <QString>
 #include <QVector>
-#include <QStack>
+#include <QMap>
 #include <atomic>
 
 namespace panda
 {
 
 class PandaObject;
+class PandaDocument;
 class BaseData;
+class DataNode;
 
 namespace helper
 {
@@ -29,9 +31,11 @@ struct EventData
 {
 public:
 	EventType m_type;
-	unsigned long long m_start, m_end;
+	unsigned long long m_startTime, m_endTime;
 	QString m_dataName, m_objectName;
 	qint32 m_objectIndex, m_level;
+	bool m_dirtyStart, m_dirtyEnd;
+	const DataNode* m_node;
 };
 
 // To log an event, you only have to use this class
@@ -51,12 +55,15 @@ class UpdateLogger
 {
 public:
 	typedef QVector<EventData> UpdateEvents;
+	typedef QMap<const DataNode*, bool> NodeStates;
 
 	static UpdateLogger* getInstance();
 
-	void startLog();
+	void startLog(PandaDocument* doc);
 	void stopLog();
+
 	const UpdateEvents getEvents() const;
+	const NodeStates getInitialNodeStates() const;
 
 	static unsigned long long getTicksPerSec();
 	static unsigned long long getTime();
@@ -70,6 +77,7 @@ protected:
 	UpdateEvents m_events, m_prevEvents;
 	int m_level;
 	bool m_logging;
+	NodeStates m_nodeStates, m_prevNodeStates;
 };
 
 } // namespace helper

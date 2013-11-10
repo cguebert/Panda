@@ -41,6 +41,8 @@ public:
 	virtual ~Data();
 
 	virtual void update();
+	virtual void setDirtyValue();
+
 	virtual void setParent(BaseData* parent);
 	virtual const types::AbstractDataTrait* getDataTrait() const;
 	virtual const void* getVoidValue() const;

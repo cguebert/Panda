@@ -1,5 +1,6 @@
 #include <panda/helper/UpdateLogger.h>
 #include <panda/PandaObject.h>
+#include <panda/PandaDocument.h>
 
 #include <windows.h>
 
@@ -12,16 +13,19 @@ namespace helper
 ScopedEvent::ScopedEvent(EventType type, const PandaObject *object)
 {
 	m_event.m_type = type;
+	m_event.m_node = object;
 	m_event.m_objectIndex = object->getIndex();
 	m_event.m_objectName = object->getName();
 	m_event.m_level = ++UpdateLogger::getInstance()->m_level;
 
-	m_event.m_start = UpdateLogger::getTime();
+	m_event.m_startTime = UpdateLogger::getTime();
+	m_event.m_dirtyStart = object->isDirty();
 }
 
 ScopedEvent::ScopedEvent(EventType type, const BaseData* data)
 {
 	m_event.m_type = type;
+	m_event.m_node = data;
 	m_event.m_dataName = data->getName();
 	PandaObject* object = data->getOwner();
 	if(object)
@@ -33,15 +37,19 @@ ScopedEvent::ScopedEvent(EventType type, const BaseData* data)
 		m_event.m_objectIndex = -1;
 	m_event.m_level = UpdateLogger::getInstance()->m_level;
 
-	m_event.m_start = UpdateLogger::getTime();
+	m_event.m_startTime = UpdateLogger::getTime();
+	m_event.m_dirtyStart = data->isDirty();
 }
 
 ScopedEvent::~ScopedEvent()
 {
 	auto* logger = UpdateLogger::getInstance();
-	m_event.m_end = UpdateLogger::getTime();
+	m_event.m_endTime = UpdateLogger::getTime();
+	m_event.m_dirtyEnd = m_event.m_node->isDirty();
+
 	if(m_event.m_dataName.isEmpty())
 		--logger->m_level;
+
 	logger->addEvent(m_event);
 }
 
@@ -59,24 +67,39 @@ UpdateLogger* UpdateLogger::getInstance()
 	return &instance;
 }
 
-void UpdateLogger::startLog()
+void UpdateLogger::startLog(PandaDocument *doc)
 {
 	if(m_logging)
 		stopLog();
 	m_events.clear();
 	m_logging = true;
 	m_level = -1;
+
+	m_nodeStates.clear();
+	for(PandaObject* object : doc->getObjects())
+	{
+		m_nodeStates[object] = object->isDirty();
+
+		for(BaseData* data : object->getDatas())
+			m_nodeStates[data] = data->isDirty();
+	}
 }
 
 void UpdateLogger::stopLog()
 {
 	m_logging = false;
 	m_prevEvents.swap(m_events);
+	m_prevNodeStates.swap(m_nodeStates);
 }
 
 const UpdateLogger::UpdateEvents UpdateLogger::getEvents() const
 {
 	return m_prevEvents;
+}
+
+const UpdateLogger::NodeStates UpdateLogger::getInitialNodeStates() const
+{
+	return m_prevNodeStates;
 }
 
 void UpdateLogger::addEvent(EventData event)

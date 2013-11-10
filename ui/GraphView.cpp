@@ -6,6 +6,10 @@
 #include <ui/QuickCreateDialog.h>
 #include <ui/DockableDrawStruct.h>
 
+#ifdef PANDA_LOG_EVENTS
+#include <ui/UpdateLoggerDialog.h>
+#endif
+
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 
@@ -188,7 +192,68 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 		painter.setPen(pen);
 		painter.drawLine(previousMousePos, currentMousePos);
 	}
+
+#ifdef PANDA_LOG_EVENTS
+	paintLogDebug(&painter);
+#endif
 }
+
+#ifdef PANDA_LOG_EVENTS
+void GraphView::paintLogDebug(QPainter* painter)
+{
+	UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
+	if(logDlg && logDlg->isVisible())
+	{
+		for(panda::PandaObject* object : pandaDocument->getObjects())
+		{
+			auto ods = objectDrawStructs[object];
+			if(logDlg->isNodeDirty(object))
+				painter->setBrush(QColor(255,0,0,32));
+			else
+				painter->setBrush(QColor(0,255,0,32));
+
+			QRectF area = ods->getObjectArea();
+			painter->drawRect(area);
+
+			for(panda::BaseData* data : object->getDatas())
+			{
+				if(ods->getDataRect(data, area))
+				{
+					if(logDlg->isNodeDirty(data))
+						painter->setBrush(QColor(255,0,0,64));
+					else
+						painter->setBrush(QColor(0,255,0,64));
+
+					painter->drawRect(area);
+				}
+			}
+		}
+
+		const panda::helper::EventData* event = logDlg->getSelectedEvent();
+		if(event)
+		{
+			panda::PandaObject* object = pandaDocument->findObject(event->m_objectIndex);
+			if(object)
+			{
+				auto ods = objectDrawStructs[object];
+				painter->setBrush(QColor(128, 128, 255, 128));
+				QRectF area;
+
+				panda::BaseData* data = nullptr;
+				bool drawData = false;
+				if(!event->m_dataName.isEmpty())
+					data = object->getData(event->m_dataName);
+				if(data)
+					drawData = ods->getDataRect(data, area);
+				if(!drawData)
+					area = ods->getObjectArea();
+
+				painter->drawRect(area);
+			}
+		}
+	}
+}
+#endif
 
 void GraphView::resizeEvent(QResizeEvent * /* event */)
 {

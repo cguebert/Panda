@@ -785,7 +785,12 @@ void MainWindow::copyDataToUserValue()
 void MainWindow::showLoggerDialog()
 {
 	if(!loggerDialog)
+	{
 		loggerDialog = new UpdateLoggerDialog(this);
+		UpdateLoggerDialog::setInstance(loggerDialog);
+
+		connect(loggerDialog, SIGNAL(changedSelectedEvent()), graphView, SLOT(update()));
+	}
 
 	if(loggerDialog->isVisible())
 		loggerDialog->hide();

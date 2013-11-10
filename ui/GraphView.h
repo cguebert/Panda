@@ -57,6 +57,10 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 	void contextMenuEvent(QContextMenuEvent *event);
 
+#ifdef PANDA_LOG_EVENTS
+	void paintLogDebug(QPainter* painter);
+#endif
+
 	panda::PandaObject* getObjectAtPos(const QPointF& pt);
 	void moveView(const QPointF& delta);
 
