@@ -1,9 +1,12 @@
 #ifndef GENERICOBJECTDRAWSTRUCT_H
 #define GENERICOBJECTDRAWSTRUCT_H
 
-#include <panda/GenericObject.h>
-
 #include <ui/ObjectDrawStruct.h>
+
+namespace panda
+{
+class GenericObject;
+}
 
 class GenericObjectDrawStruct : public ObjectDrawStruct
 {

@@ -21,6 +21,8 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget *parent)
 	, movingAction(MOVING_NONE)
 	, clickedData(nullptr)
 	, hoverData(nullptr)
+	, contextMenuData(nullptr)
+	, capturedDrawStruct(nullptr)
 	, recomputeTags(false)
 {
 	setAutoFillBackground(true);
@@ -255,12 +257,12 @@ void GraphView::paintLogDebug(QPainter* painter)
 }
 #endif
 
-void GraphView::resizeEvent(QResizeEvent * /* event */)
+void GraphView::resizeEvent(QResizeEvent*)
 {
 	update();
 }
 
-void GraphView::mousePressEvent(QMouseEvent *event)
+void GraphView::mousePressEvent(QMouseEvent* event)
 {
 	QPointF zoomedMouse = event->localPos() / zoomFactor;
 	if(event->button() == Qt::LeftButton)
@@ -278,9 +280,6 @@ void GraphView::mousePressEvent(QMouseEvent *event)
 				{
 					removeLinkTag(data->getParent(), data);
 					object->dataSetParent(data, nullptr);
-					emit modified();
-					update();
-					return;
 				}
 				else	// Creating a new Link
 				{
@@ -289,10 +288,9 @@ void GraphView::mousePressEvent(QMouseEvent *event)
 					previousMousePos = currentMousePos = linkStart;
 
 					pandaDocument->selectNone();
-					return;
 				}
 			}
-			else	// No Data, we still cliked on an object
+			else	// No Data, but we still clicked on an object
 			{
 				// Add the object to the selection
 				if(event->modifiers() == Qt::ControlModifier)
@@ -301,7 +299,6 @@ void GraphView::mousePressEvent(QMouseEvent *event)
 						pandaDocument->selectionRemove(object);
 					else
 						pandaDocument->selectionAdd(object);
-					return;
 				}
 				else	// Moving the object (or selecting only this one if we release the mouse without moving)
 				{
@@ -311,7 +308,13 @@ void GraphView::mousePressEvent(QMouseEvent *event)
 					pandaDocument->setCurrentSelectedObject(object);
 					movingAction = MOVING_START;
 					previousMousePos = zoomedMouse;
-					return;
+				}
+
+				// Maybe do a custom action ?
+				if(objectDrawStructs[object]->mousePressEvent(event))
+				{
+					movingAction = MOVING_CUSTOM;
+					capturedDrawStruct = objectDrawStructs[object].data();
 				}
 			}
 		}
@@ -345,7 +348,7 @@ void GraphView::mousePressEvent(QMouseEvent *event)
 	}
 }
 
-void GraphView::mouseMoveEvent(QMouseEvent * event)
+void GraphView::mouseMoveEvent(QMouseEvent* event)
 {
 	if(movingAction == MOVING_START)
 	{
@@ -426,6 +429,11 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
 		}
 		update();
 	}
+	else if(movingAction == MOVING_CUSTOM)
+	{
+		if(capturedDrawStruct)
+			capturedDrawStruct->mouseMoveEvent(event);
+	}
 
 	if(movingAction == MOVING_NONE || movingAction == MOVING_LINK)
 	{
@@ -469,7 +477,7 @@ void GraphView::mouseMoveEvent(QMouseEvent * event)
 	}
 }
 
-void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
+void GraphView::mouseReleaseEvent(QMouseEvent* event)
 {
 	if(movingAction == MOVING_START)
 	{
@@ -559,12 +567,19 @@ void GraphView::mouseReleaseEvent(QMouseEvent * /*event*/)
 					obj->dataSetParent(clickedData, secondData);
 				else if(secondData->isInput())
 					obj->dataSetParent(secondData, clickedData);
-				emit modified();
 				updateLinkTags();
 			}
 		}
 		clickedData = nullptr;
 		update();
+	}
+	else if(movingAction == MOVING_CUSTOM)
+	{
+		if(capturedDrawStruct)
+		{
+			capturedDrawStruct->mouseReleaseEvent(event);
+			capturedDrawStruct = nullptr;
+		}
 	}
 
 	QApplication::restoreOverrideCursor();
@@ -756,6 +771,8 @@ void GraphView::addedObject(panda::PandaObject* object)
 void GraphView::removeObject(panda::PandaObject* object)
 {
 	objectDrawStructs.remove(object);
+	capturedDrawStruct = nullptr;
+	movingAction = MOVING_NONE;
 	linkTags.clear();
 	recomputeTags = true;
 	update();
@@ -772,20 +789,14 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 	}
 }
 
-void GraphView::savingObject(QDomDocument&, QDomElement& elem, panda::PandaObject* object)
+void GraphView::savingObject(QDomDocument& doc, QDomElement& elem, panda::PandaObject* object)
 {
-	QPointF pos = objectDrawStructs[object]->getPosition();
-	elem.setAttribute("x", pos.x());
-	elem.setAttribute("y", pos.y());
+	objectDrawStructs[object]->save(doc, elem);
 }
 
 void GraphView::loadingObject(QDomElement& elem, panda::PandaObject* object)
 {
-	QPointF newPos, prevPos;
-	prevPos = objectDrawStructs[object]->getPosition();
-	newPos.setX(elem.attribute("x").toDouble());
-	newPos.setY(elem.attribute("y").toDouble());
-	objectDrawStructs[object]->move(newPos - prevPos);
+	objectDrawStructs[object]->load(elem);
 }
 
 int GraphView::getAvailableLinkTagIndex()
@@ -806,6 +817,11 @@ int GraphView::getAvailableLinkTagIndex()
 	}
 
 	return nb;
+}
+
+qreal GraphView::getZoom()
+{
+	return zoomFactor;
 }
 
 void GraphView::addLinkTag(panda::BaseData* input, panda::BaseData* output)
@@ -868,7 +884,6 @@ void GraphView::removeLink()
 		removeLinkTag(contextMenuData->getParent(), contextMenuData);
 		contextMenuData->getOwner()->dataSetParent(contextMenuData, nullptr);
 		contextMenuData = nullptr;
-		emit modified();
 		update();
 	}
 }

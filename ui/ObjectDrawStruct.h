@@ -2,6 +2,7 @@
 #define OBJECTDRAWSTRUCT_H
 
 #include <QWidget>
+#include <QDomDocument>
 
 class GraphView;
 
@@ -26,6 +27,13 @@ public:
 	virtual void move(const QPointF& delta);		// Move the position of the object in the view
 	virtual void moveVisual(const QPointF& delta);	// The view is moving (not the position of the object)
 	virtual bool contains(const QPointF& point);	// Is this point inside of the shape of this object ? (which can be complex)
+
+	virtual void save(QDomDocument& doc, QDomElement& elem);
+	virtual void load(QDomElement& elem);
+
+	virtual bool mousePressEvent(QMouseEvent*) { return false; }	// Return true to capture the mouse for this object
+	virtual void mouseMoveEvent(QMouseEvent*) {}
+	virtual void mouseReleaseEvent(QMouseEvent*) {}
 
 	virtual QSize getObjectSize();
 	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr);

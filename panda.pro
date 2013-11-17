@@ -30,6 +30,7 @@ HEADERS       = \
 	panda/types/Gradient.h \
 	panda/types/Topology.h \
 	ui/AnimationDataWidgetDialog.h \
+	ui/Annotation.h \
 	ui/DataWidget.h \
 	ui/DatasTable.h \
 	ui/DockableDrawStruct.h \
@@ -47,8 +48,7 @@ HEADERS       = \
 	ui/SimpleDataWidget.h \
 	ui/StructTraits.h \
 	ui/TableDataWidgetDialog.h \
-    ui/UpdateLoggerDialog.h \
-    ui/Annotation.h
+	ui/UpdateLoggerDialog.h
 SOURCES       = main.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
@@ -139,6 +139,7 @@ SOURCES       = main.cpp \
 	panda/types/DataTypeId.cpp \
 	panda/types/Gradient.cpp \
 	panda/types/Topology.cpp \
+	ui/Annotation.cpp \
 	ui/DatasTable.cpp \
 	ui/DockableDrawStruct.cpp \
 	ui/EditGradientDialog.cpp \
@@ -154,8 +155,7 @@ SOURCES       = main.cpp \
 	ui/RenderView.cpp \
 	ui/SimpleDataWidget.cpp \
 	ui/TableDataWidgetDialog.cpp \
-    ui/UpdateLoggerDialog.cpp \
-    ui/Annotation.cpp
+	ui/UpdateLoggerDialog.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

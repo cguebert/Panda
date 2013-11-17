@@ -1,16 +1,19 @@
 #ifndef GROUPOBJECTDRAWSTRUCT_H
 #define GROUPOBJECTDRAWSTRUCT_H
 
-#include <panda/GenericObject.h>
-
 #include <ui/ObjectDrawStruct.h>
+
+namespace panda
+{
+class Group;
+}
 
 class GraphView;
 
 class GroupObjectDrawStruct : public ObjectDrawStruct
 {
 public:
-	GroupObjectDrawStruct(GraphView* view, panda::PandaObject* object);
+	GroupObjectDrawStruct(GraphView* view, panda::Group* object);
 
 	virtual void drawShape(QPainter* painter);
 	virtual void drawText(QPainter* painter);
@@ -21,6 +24,7 @@ public:
 
 protected:
 	QPainterPath shapePath;
+	panda::Group* group;
 };
 
 #endif

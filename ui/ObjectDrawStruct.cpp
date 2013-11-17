@@ -18,7 +18,7 @@ ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 
 void ObjectDrawStruct::update()
 {
-	objectArea = QRectF(position + parentView->getViewDelta(), this->getObjectSize());
+	objectArea = QRectF(position + parentView->getViewDelta(), getObjectSize());
 
 	datas.clear();
 	QList<panda::BaseData*> inputDatas, outputDatas;
@@ -188,6 +188,20 @@ void ObjectDrawStruct::drawLinks(QPainter* painter)
 bool ObjectDrawStruct::contains(const QPointF& point)
 {
 	return objectArea.contains(point);
+}
+
+void ObjectDrawStruct::save(QDomDocument&, QDomElement& elem)
+{
+	elem.setAttribute("x", position.x());
+	elem.setAttribute("y", position.y());
+}
+
+void ObjectDrawStruct::load(QDomElement& elem)
+{
+	QPointF newPos;
+	newPos.setX(elem.attribute("x").toDouble());
+	newPos.setY(elem.attribute("y").toDouble());
+	move(newPos - position);
 }
 
 QRectF ObjectDrawStruct::getObjectArea() const

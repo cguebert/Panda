@@ -1,15 +1,14 @@
+#include <ui/GroupObjectDrawStruct.h>
+#include <ui/GraphView.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/Group.h>
 
-#include <ui/GraphView.h>
-#include <ui/GroupObjectDrawStruct.h>
-
 #include <QPainter>
 
-using panda::GenericObject;
-
-GroupObjectDrawStruct::GroupObjectDrawStruct(GraphView* view, panda::PandaObject* object)
-	: ObjectDrawStruct(view, (panda::PandaObject*)object)
+GroupObjectDrawStruct::GroupObjectDrawStruct(GraphView* view, panda::Group* object)
+	: ObjectDrawStruct(view, object)
+	, group(object)
 {
 	update();
 }
@@ -21,7 +20,6 @@ void GroupObjectDrawStruct::drawShape(QPainter* painter)
 
 void GroupObjectDrawStruct::drawText(QPainter* painter)
 {
-	panda::Group* group = dynamic_cast<panda::Group*>(this->object);
 	if(group && !group->groupName.getValue().isEmpty())
 		painter->drawText(objectArea, Qt::AlignCenter, group->groupName.getValue());
 	else

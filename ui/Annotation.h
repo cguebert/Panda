@@ -18,11 +18,11 @@ public:
 	Annotation(PandaDocument *doc);
 
 	Data<int> m_type;
-	Data<QPointF> m_centerPt, m_endPt;
-	Data<QRectF> m_textArea;
+
 	Data<QString> m_text, m_font;
 //	Data<QColor> m_color;
 
+	enum AnnotationType { ANNOTATION_TEXT=0, ANNOTATION_ARROW, ANNOTATION_RECTANGLE, ANNOTATION_ELLIPSE };
 	static const char* annotationTypes[];
 };
 
@@ -35,11 +35,28 @@ class AnnotationDrawStruct : public ObjectDrawStruct
 public:
 	AnnotationDrawStruct(GraphView* view, panda::PandaObject* object);
 
-	virtual void drawShape(QPainter* painter);
-	virtual void drawText(QPainter* painter);
+	virtual void draw(QPainter* painter);
 	virtual void moveVisual(const QPointF& delta);
 	virtual void update();
 	virtual bool contains(const QPointF& point);
+
+	virtual void save(QDomDocument& doc, QDomElement& elem);
+	virtual void load(QDomElement& elem);
+
+	virtual bool mousePressEvent(QMouseEvent* event);
+	virtual void mouseMoveEvent(QMouseEvent* event);
+	virtual void mouseReleaseEvent(QMouseEvent* event);
+
+	virtual QSize getObjectSize();
+
+protected:
+	panda::Annotation* annotation;
+	QPointF m_centerPt, m_endPt;
+	QSize m_textBoxSize;
+	QRectF m_textArea;
+	enum MovingAction { MOVING_NONE=0, MOVING_TEXT, MOVING_CENTER, MOVING_END };
+	MovingAction movingAction;
+	QPointF previousMousePos;
 };
 
 #endif // ANNOTATION_H

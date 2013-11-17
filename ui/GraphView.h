@@ -41,6 +41,8 @@ public:
 
 	int getAvailableLinkTagIndex();
 
+	qreal getZoom();
+
 	enum ContextMenuReason {
 		MENU_OBJECT = 0x1,
 		MENU_DATA = 0x2,
@@ -94,10 +96,11 @@ private:
 	qreal zoomFactor;
 	QPointF viewDelta;
 	QPointF previousMousePos, currentMousePos;
-	enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK, MOVING_ZOOM };
+	enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK, MOVING_ZOOM, MOVING_CUSTOM };
 	MovingAction movingAction;
 	panda::BaseData *clickedData, *hoverData, *contextMenuData;
 	QMap<panda::PandaObject*, QSharedPointer<ObjectDrawStruct> > objectDrawStructs;
+	ObjectDrawStruct* capturedDrawStruct;
 	QMap<panda::BaseData*, QSharedPointer<LinkTag> > linkTags;
 	bool recomputeTags;
 };
