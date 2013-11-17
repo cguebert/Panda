@@ -47,7 +47,8 @@ HEADERS       = \
 	ui/SimpleDataWidget.h \
 	ui/StructTraits.h \
 	ui/TableDataWidgetDialog.h \
-    ui/UpdateLoggerDialog.h
+    ui/UpdateLoggerDialog.h \
+    ui/Annotation.h
 SOURCES       = main.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
@@ -153,7 +154,8 @@ SOURCES       = main.cpp \
 	ui/RenderView.cpp \
 	ui/SimpleDataWidget.cpp \
 	ui/TableDataWidgetDialog.cpp \
-    ui/UpdateLoggerDialog.cpp
+    ui/UpdateLoggerDialog.cpp \
+    ui/Annotation.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
