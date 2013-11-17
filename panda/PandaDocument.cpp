@@ -449,7 +449,7 @@ void PandaDocument::del()
 {
 	if(!selectedObjects.empty())
 	{
-		for(PandaObject* object : selectedObjects)
+		foreach(PandaObject* object, selectedObjects)
 			doRemoveObject(object);
 
 		selectedObjects.clear();
