@@ -17,6 +17,8 @@ public:
 
 	Annotation(PandaDocument *doc);
 
+	virtual void setDirtyValue();
+
 	Data<int> m_type;
 
 	Data<QString> m_text, m_font;
@@ -51,10 +53,11 @@ public:
 
 protected:
 	panda::Annotation* annotation;
-	QPointF m_centerPt, m_endPt;
-	QSize m_textBoxSize;
+	QPointF m_deltaToEnd, m_endPos, m_startPos;
+	QSizeF m_textSize;
 	QRectF m_textArea;
-	enum MovingAction { MOVING_NONE=0, MOVING_TEXT, MOVING_CENTER, MOVING_END };
+	int m_textCounter;
+	enum MovingAction { MOVING_NONE=0, MOVING_TEXT, MOVING_POINT };
 	MovingAction movingAction;
 	QPointF previousMousePos;
 };
