@@ -27,10 +27,14 @@ Annotation::Annotation(PandaDocument *doc)
 
 void Annotation::setDirtyValue()
 {
-	PandaObject::setDirtyValue();
-
 	if(!dirtyValue)
+	{
+		PandaObject::setDirtyValue();
+
 		emitModified();
+	}
+	else
+		PandaObject::setDirtyValue();
 }
 
 const char* Annotation::annotationTypes[] = { "Text only", "Arrow", "Rectangle", "Ellipse" };
@@ -58,6 +62,7 @@ void AnnotationDrawStruct::drawBackground(QPainter* painter)
 	painter->save();
 	painter->setBrush(Qt::NoBrush);
 
+	// Compute the bounding box of the text, if it changed
 	const QString& text = annotation->m_text.getValue();
 	int textCounter = annotation->m_text.getCounter();
 	if(m_textSize.isEmpty() || m_textCounter != textCounter)
@@ -73,25 +78,9 @@ void AnnotationDrawStruct::drawBackground(QPainter* painter)
 		update();
 	}
 
-	switch(annotation->m_type.getValue())
-	{
-		case Annotation::ANNOTATION_TEXT:
-			break;
-		case Annotation::ANNOTATION_ARROW:
-			break;
-		case Annotation::ANNOTATION_RECTANGLE:
-		{
-			QRectF rect = QRectF(m_startPos, m_endPos);
-			painter->drawRect(rect);
-			break;
-		}
-		case Annotation::ANNOTATION_ELLIPSE:
-		{
-			QRectF rect = QRectF(m_startPos, m_endPos);
-			painter->drawEllipse(rect);
-			break;
-		}
-	}
+	// Draw the shape of the annotation
+	painter->setBrush(parentView->palette().light());
+	painter->drawPath(shapePath);
 
 	painter->restore();
 }
@@ -104,21 +93,25 @@ void AnnotationDrawStruct::drawForeground(QPainter* painter)
 	theFont.fromString(annotation->m_font.getValue());
 	painter->setFont(theFont);
 
-	const QString& text = annotation->m_text.getValue();
-
+	// Draw the box behind the text
 	painter->save();
 	painter->setPen(Qt::NoPen);
 	painter->setBrush(parentView->palette().midlight());
 	painter->drawRect(m_textArea);
 	painter->restore();
 
-	painter->drawText(m_textArea.adjusted(5, 5, -5, -5), Qt::AlignLeft | Qt::AlignTop, text);
+	// Draw the text
+	painter->drawText(m_textArea.adjusted(5, 5, -5, -5), Qt::AlignLeft | Qt::AlignTop, annotation->m_text.getValue());
 
+	// Draw the handle
 	const panda::PandaDocument* doc = parentView->getDocument();
 	if(annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
 			&& doc->getSelection().size() == 1
 			&& doc->isSelected(annotation))	// The annotation is the only selected object
+	{
+		painter->setBrush(parentView->palette().midlight());
 		painter->drawEllipse(m_endPos, 5, 5);
+	}
 
 	painter->restore();
 }
@@ -128,6 +121,7 @@ void AnnotationDrawStruct::moveVisual(const QPointF& delta)
 	ObjectDrawStruct::moveVisual(delta);
 
 	m_textArea.translate(delta);
+	shapePath.translate(delta);
 	m_startPos += delta;
 	m_endPos += delta;
 }
@@ -148,7 +142,7 @@ bool AnnotationDrawStruct::contains(const QPointF& point)
 
 void AnnotationDrawStruct::update()
 {
-//	ObjectDrawStruct::update();
+//	ObjectDrawStruct::update();	// No need to call it
 
 	QPointF viewDelta = parentView->getViewDelta();
 
@@ -158,6 +152,50 @@ void AnnotationDrawStruct::update()
 	m_textArea = QRectF(m_startPos, m_textSize);
 	m_textArea.translate(0, -m_textSize.height());
 	m_textArea.adjust(3, -13, 13, -3);
+
+	shapePath = QPainterPath();
+	switch(annotation->m_type.getValue())
+	{
+		case Annotation::ANNOTATION_TEXT:
+			break;
+		case Annotation::ANNOTATION_ARROW:
+		{
+			QPointF start = m_textArea.center();
+			QPointF dir = m_endPos - start;
+			const qreal w = 2.5;
+			qreal length = sqrt(dir.x()*dir.x() + dir.y()*dir.y());
+
+			if(length < w * 20)
+				break;
+
+			dir /= length;
+			QPointF dir2 = QPointF(-dir.y(), dir.x());
+			dir *= w;
+			dir2 *= w;
+
+			shapePath.moveTo(m_endPos);
+			shapePath.lineTo(m_endPos + 5*dir2 - 15*dir);
+			shapePath.lineTo(m_endPos + dir2 - 10*dir);
+			shapePath.lineTo(start + dir2);
+			shapePath.lineTo(start - dir2);
+			shapePath.lineTo(m_endPos - dir2 - 10*dir);
+			shapePath.lineTo(m_endPos - 5*dir2 - 15*dir);
+			shapePath.lineTo(m_endPos);
+			break;
+		}
+		case Annotation::ANNOTATION_RECTANGLE:
+		{
+			QRectF rect = QRectF(m_startPos, m_endPos);
+			shapePath.addRect(rect);
+			break;
+		}
+		case Annotation::ANNOTATION_ELLIPSE:
+		{
+			QRectF rect = QRectF(m_startPos, m_endPos);
+			shapePath.addEllipse(rect);
+			break;
+		}
+	}
 
 	annotation->cleanDirty();
 }
@@ -203,6 +241,10 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 {
 	QPointF zoomedMouse = event->localPos() / parentView->getZoom();
 	QPointF delta = zoomedMouse - previousMousePos;
+	previousMousePos = zoomedMouse;
+	if(delta.isNull())
+		return;
+
 	if(movingAction == MOVING_TEXT)
 	{
 		move(delta);
@@ -213,11 +255,10 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 	{
 		m_deltaToEnd += delta;
 		m_endPos += delta;
+		update();
 		emit parentView->modified();
 		parentView->update();
 	}
-
-	previousMousePos = zoomedMouse;
 }
 
 void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent*)

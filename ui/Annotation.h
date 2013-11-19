@@ -20,9 +20,7 @@ public:
 	virtual void setDirtyValue();
 
 	Data<int> m_type;
-
 	Data<QString> m_text, m_font;
-//	Data<QColor> m_color;
 
 	enum AnnotationType { ANNOTATION_TEXT=0, ANNOTATION_ARROW, ANNOTATION_RECTANGLE, ANNOTATION_ELLIPSE };
 	static const char* annotationTypes[];
@@ -59,6 +57,7 @@ protected:
 	QSizeF m_textSize;
 	QRectF m_textArea;
 	int m_textCounter;
+	QPainterPath shapePath;
 	enum MovingAction { MOVING_NONE=0, MOVING_TEXT, MOVING_POINT };
 	MovingAction movingAction;
 	QPointF previousMousePos;
