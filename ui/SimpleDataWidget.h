@@ -199,7 +199,9 @@ public:
 	}
 	void readFromData(const value_type& v)
 	{
+		comboBox->blockSignals(true);
 		comboBox->setCurrentIndex(v);
+		comboBox->blockSignals(false);
 	}
 	void writeToData(value_type& v)
 	{
