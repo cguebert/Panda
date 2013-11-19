@@ -115,7 +115,7 @@ void GenericObject::updateDataNames()
 {
 	int index = 1;
 	int nbDefs = dataDefinitions_.size();
-	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
+	for(CreatedDatasStructPtr created : createdDatasStructs_)
 	{
 		QString nameType = DataFactory::typeToName(created->type);
 		for(int i=0; i<nbDefs; ++i)
@@ -136,7 +136,7 @@ void GenericObject::update()
 {
 	int nbDefs = dataDefinitions_.size();
 
-	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
+	for(CreatedDatasStructPtr created : createdDatasStructs_)
 	{
 		for(int i=0; i<nbDefs; ++i)
 		{
@@ -145,7 +145,7 @@ void GenericObject::update()
 		}
 
 		DataList list;
-		foreach(BaseDataPtr ptr, created->datas)
+		for(BaseDataPtr ptr : created->datas)
 			list.append(ptr.data());
 		this->invokeFunction(created->type, list);
 	}
@@ -176,7 +176,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		CreatedDatasStructPtr createdDatasStruct = createdDatasMap_[data];
 		int nbConnectedInputs = 0;
-		foreach(BaseDataPtr d, createdDatasStruct->datas)
+		for(BaseDataPtr d : createdDatasStruct->datas)
 		{
 			if(d->getParent())
 				++nbConnectedInputs;
@@ -184,7 +184,13 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
-			foreach(BaseDataPtr d, createdDatasStruct->datas)
+			for(BaseDataPtr d : createdDatasStruct->datas)
+			{
+				for(DataNode* node : d->getOutputs())
+					node->doRemoveInput(d.data());
+			}
+
+			for(BaseDataPtr d : createdDatasStruct->datas)
 			{
 				removeData(d.data());
 				createdDatasMap_.remove(d.data());
@@ -201,7 +207,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 void GenericObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
 {
-	foreach(CreatedDatasStructPtr created, createdDatasStructs_)
+	for(CreatedDatasStructPtr created : createdDatasStructs_)
 	{
 		QDomElement e = doc.createElement("CreatedData");
 		e.setAttribute("type", DataFactory::typeToName(created->type));
