@@ -190,8 +190,8 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 				createdDatasMap_.remove(d.data());
 			}
 
-			createdDatasStruct->datas.clear();
 			createdDatasStructs_.removeAll(createdDatasStruct);
+			createdDatasStruct->datas.clear();
 			updateDataNames();
 		}
 

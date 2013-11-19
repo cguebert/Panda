@@ -449,10 +449,12 @@ void PandaDocument::del()
 {
 	if(!selectedObjects.empty())
 	{
-		foreach(PandaObject* object, selectedObjects)
+		ObjectsList selectedCopy = selectedObjects;
+		selectedObjects.clear();
+
+		for(PandaObject* object : selectedCopy)
 			doRemoveObject(object);
 
-		selectedObjects.clear();
 		emit selectedObject(nullptr);
 		emit selectionChanged();
 		emit modified();
