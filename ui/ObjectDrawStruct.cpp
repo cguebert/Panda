@@ -172,7 +172,7 @@ void ObjectDrawStruct::drawLinks(QPainter* painter)
 				QPen pen(parentView->palette().text().color());
 				painter->setPen(pen);
 				QPointF d1 = dataRect.center(), d2 = rectData.first.center();
-				if(d2.x()-d1.x() > 0)
+				if(d2.x()-d1.x() > 0) // We don't draw a link if it goes from right to left (see the LinkTag class)
 				{
 					double w = (d2.x()-d1.x()) / 2;
 					QPainterPath path;

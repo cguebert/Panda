@@ -18,11 +18,17 @@ class ObjectDrawStruct
 public:
 	ObjectDrawStruct(GraphView* view, panda::PandaObject* obj);
 
-	virtual void draw(QPainter* painter);
+	virtual void drawBackground(QPainter*) {}	// First called
+	virtual void draw(QPainter* painter);		// "Normal" draw
+	virtual void drawForeground(QPainter*) {}	// Last called
+
+	// The next 3 functions are here if we want to replace only part of the normal draw
 	virtual void drawShape(QPainter* painter);
 	virtual void drawDatas(QPainter* painter);
 	virtual void drawText(QPainter* painter);
-	virtual void drawLinks(QPainter* painter);
+
+	virtual void drawLinks(QPainter* painter);		// It is the job of the DrawStruct to draw the links coming to this object
+
 	virtual void update();							// Recompute the information about this object
 	virtual void move(const QPointF& delta);		// Move the position of the object in the view
 	virtual void moveVisual(const QPointF& delta);	// The view is moving (not the position of the object)

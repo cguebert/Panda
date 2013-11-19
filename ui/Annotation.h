@@ -37,7 +37,9 @@ class AnnotationDrawStruct : public ObjectDrawStruct
 public:
 	AnnotationDrawStruct(GraphView* view, panda::PandaObject* object);
 
-	virtual void draw(QPainter* painter);
+	virtual void drawBackground(QPainter* painter);
+	virtual void draw(QPainter*) {}	// Don't draw the normal object
+	virtual void drawForeground(QPainter* painter);
 	virtual void moveVisual(const QPointF& delta);
 	virtual void update();
 	virtual bool contains(const QPointF& point);

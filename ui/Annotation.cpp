@@ -53,18 +53,19 @@ AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* 
 	update();
 }
 
-void AnnotationDrawStruct::draw(QPainter* painter)
+void AnnotationDrawStruct::drawBackground(QPainter* painter)
 {
 	painter->save();
 	painter->setBrush(Qt::NoBrush);
-	QFont theFont;
-	theFont.fromString(annotation->m_font.getValue());
-	painter->setFont(theFont);
 
 	const QString& text = annotation->m_text.getValue();
 	int textCounter = annotation->m_text.getCounter();
 	if(m_textSize.isEmpty() || m_textCounter != textCounter)
 	{
+		QFont theFont;
+		theFont.fromString(annotation->m_font.getValue());
+		painter->setFont(theFont);
+
 		QRectF tempArea = QRectF(m_startPos, QSizeF(1000, 1000));
 		tempArea = painter->boundingRect(tempArea, Qt::AlignLeft | Qt::AlignTop, text);
 		m_textSize = tempArea.size();
@@ -72,8 +73,7 @@ void AnnotationDrawStruct::draw(QPainter* painter)
 		update();
 	}
 
-	int type = annotation->m_type.getValue();
-	switch(type)
+	switch(annotation->m_type.getValue())
 	{
 		case Annotation::ANNOTATION_TEXT:
 			break;
@@ -93,6 +93,19 @@ void AnnotationDrawStruct::draw(QPainter* painter)
 		}
 	}
 
+	painter->restore();
+}
+
+void AnnotationDrawStruct::drawForeground(QPainter* painter)
+{
+	painter->save();
+	painter->setBrush(Qt::NoBrush);
+	QFont theFont;
+	theFont.fromString(annotation->m_font.getValue());
+	painter->setFont(theFont);
+
+	const QString& text = annotation->m_text.getValue();
+
 	painter->save();
 	painter->setPen(Qt::NoPen);
 	painter->setBrush(parentView->palette().midlight());
@@ -102,7 +115,7 @@ void AnnotationDrawStruct::draw(QPainter* painter)
 	painter->drawText(m_textArea.adjusted(5, 5, -5, -5), Qt::AlignLeft | Qt::AlignTop, text);
 
 	const panda::PandaDocument* doc = parentView->getDocument();
-	if(type != Annotation::ANNOTATION_TEXT
+	if(annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
 			&& doc->getSelection().size() == 1
 			&& doc->isSelected(annotation))	// The annotation is the only selected object
 		painter->drawEllipse(m_endPos, 5, 5);
@@ -144,7 +157,7 @@ void AnnotationDrawStruct::update()
 
 	m_textArea = QRectF(m_startPos, m_textSize);
 	m_textArea.translate(0, -m_textSize.height());
-	m_textArea.adjust(0, -13, 10, -3);
+	m_textArea.adjust(3, -13, 13, -3);
 
 	annotation->cleanDirty();
 }

@@ -159,6 +159,10 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	// Zoom
 	painter.scale(zoomFactor, zoomFactor);
 
+	// Give a possibility to draw behind normal objects
+	for(auto object : pandaDocument->getObjects())
+		objectDrawStructs[object]->drawBackground(&painter);
+
 	// Draw the objects
 	for(auto object : pandaDocument->getObjects())
 		objectDrawStructs[object]->draw(&painter);
@@ -171,6 +175,10 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	painter.setBrush(Qt::NoBrush);
 	for(auto object : pandaDocument->getObjects())
 		objectDrawStructs[object]->drawLinks(&painter);
+
+	// Give a possibility to draw in front of normal objects
+	for(auto object : pandaDocument->getObjects())
+		objectDrawStructs[object]->drawForeground(&painter);
 
 	// Draw links tags
 	for(auto& tag : linkTags.values())
