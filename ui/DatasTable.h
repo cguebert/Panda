@@ -27,14 +27,16 @@ public:
 protected:
 	QStackedLayout* stackedLayout;
 	QLabel* nameLabel;
-	panda::PandaObject *document, *currentObject;
+	panda::PandaObject *document, *currentObject, *nextObject;
+	bool waitingPopulate;
 
 	QList<DataWidgetPtr> dataWidgets;
 
 signals:
 
 public slots:
-	void populateTable(panda::PandaObject*);
+	void queuePopulate(panda::PandaObject*);
+	void populateTable();
 	void onModifiedObject(panda::PandaObject*);
 };
 

@@ -10,6 +10,8 @@ DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 	: QWidget(parent)
 	, document(doc)
 	, currentObject(nullptr)
+	, nextObject(nullptr)
+	, waitingPopulate(false)
 {
 	nameLabel = new QLabel("Document");
 	stackedLayout =  new QStackedLayout();
@@ -19,19 +21,20 @@ DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 	mainLayout->addLayout(stackedLayout);
 	setLayout(mainLayout);
 
-	populateTable((panda::PandaObject*)doc);
+	queuePopulate((panda::PandaObject*)doc);
 
-	connect(doc, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(populateTable(panda::PandaObject*)));
-	connect(doc, SIGNAL(selectedObjectIsDirty(panda::PandaObject*)), this, SLOT(populateTable(panda::PandaObject*)));
+	connect(doc, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(queuePopulate(panda::PandaObject*)));
+	connect(doc, SIGNAL(selectedObjectIsDirty(panda::PandaObject*)), this, SLOT(queuePopulate(panda::PandaObject*)));
 	connect(doc, SIGNAL(modifiedObject(panda::PandaObject*)), this, SLOT(onModifiedObject(panda::PandaObject*)));
 }
 
-void DatasTable::populateTable(panda::PandaObject* object)
+void DatasTable::populateTable()
 {
-	if (!object)
-		object = document;
+	waitingPopulate = false;
+	if (!nextObject)
+		nextObject = document;
 
-	if(currentObject == object)
+	if(currentObject == nextObject)
 	{	// Only update widgets
 		// TODO : verify if there are no new datas
 		foreach(DataWidgetPtr dataWidget, dataWidgets)
@@ -39,7 +42,7 @@ void DatasTable::populateTable(panda::PandaObject* object)
 		return;
 	}
 
-	currentObject = object;
+	currentObject = nextObject;
 
 	QScrollArea* scrollArea = new QScrollArea(this);
 	scrollArea->setFrameShape(QFrame::NoFrame);
@@ -55,12 +58,12 @@ void DatasTable::populateTable(panda::PandaObject* object)
 		delete stackedLayout->currentWidget();
 	dataWidgets.clear();
 
-	nameLabel->setText(object->getName());
+	nameLabel->setText(currentObject->getName());
 	stackedLayout->addWidget(scrollArea);
 	stackedLayout->setCurrentWidget(scrollArea);
 
 	// inputs (or editable)
-	foreach (panda::BaseData* data, object->getDatas())
+	foreach (panda::BaseData* data, currentObject->getDatas())
 	{
 		if (!data->isDisplayed() || data->isReadOnly())
 			continue;
@@ -78,7 +81,7 @@ void DatasTable::populateTable(panda::PandaObject* object)
 	}
 
 	// outputs (or read only)
-	foreach (panda::BaseData* data, object->getDatas())
+	foreach (panda::BaseData* data, currentObject->getDatas())
 	{
 		if (!data->isDisplayed() || !data->isReadOnly())
 			continue;
@@ -96,13 +99,25 @@ void DatasTable::populateTable(panda::PandaObject* object)
 	}
 }
 
+void DatasTable::queuePopulate(panda::PandaObject* object)
+{
+	if(!waitingPopulate)
+	{
+		waitingPopulate = true;
+		// The update will happen as soon as all the events in the event queue have been processed
+		QTimer::singleShot(0, this, SLOT(populateTable()));
+	}
+
+	nextObject = object;
+}
+
 void DatasTable::onModifiedObject(panda::PandaObject* object)
 {
 	if(currentObject == object)
 	{
 		// Force the reconstruction of the table
 		currentObject = nullptr;
-		populateTable(object);
+		queuePopulate(object);
 	}
 }
 
