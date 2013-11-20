@@ -7,12 +7,13 @@ using panda::types::Animation;
 template<>
 class DataWidgetContainer< QColor > : public BaseOpenDialogObject, public ObjectWithPreview
 {
-public:
+protected:
 	typedef QColor value_type;
 	QWidget* container;
 	PreviewView* preview;
 	QColor theColor;
 
+public:
 	DataWidgetContainer() : container(nullptr), preview(nullptr) {}
 
 	QWidget* createWidgets(QWidget* parent, bool readOnly)
@@ -94,11 +95,12 @@ public:
 template <bool openMode>
 class FileDataWidgetContainer : public BaseOpenDialogObject
 {
-public:
+protected:
 	typedef QString value_type;
 	QWidget* container;
 	QLineEdit* lineEdit;
 
+public:
 	FileDataWidgetContainer() : container(nullptr), lineEdit(nullptr) {}
 
 	QWidget* createWidgets(QWidget* parent, bool readOnly)
@@ -159,12 +161,13 @@ public:
 
 class FontDataWidgetContainer : public BaseOpenDialogObject, public ObjectWithPreview
 {
-public:
+protected:
 	typedef QString value_type;
 	QWidget* container;
 	PreviewView* preview;
 	QFont theFont;
 
+public:
 	FontDataWidgetContainer() : container(nullptr), preview(nullptr) {}
 
 	QWidget* createWidgets(QWidget* parent, bool readOnly)
@@ -227,15 +230,122 @@ public:
 
 //***************************************************************//
 
+class MultilineDataWidgetDialog : public QDialog
+{
+protected:
+	typedef QString value_type;
+	QTextEdit* textEdit;
+
+public:
+	MultilineDataWidgetDialog(QWidget* parent, const value_type& v, bool readOnly)
+		: QDialog(parent)
+		, textEdit(nullptr)
+	{
+		QVBoxLayout* mainLayout = new QVBoxLayout();
+
+		textEdit = new QTextEdit;
+		textEdit->setPlainText(v);
+		textEdit->setEnabled(!readOnly);
+		mainLayout->addWidget(textEdit);
+
+		QPushButton* okButton = new QPushButton(tr("Ok"), this);
+		okButton->setDefault(true);
+		connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+		QPushButton* cancelButton = new QPushButton(tr("Cancel"), this);
+		connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+		QHBoxLayout* buttonsLayout = new QHBoxLayout;
+		buttonsLayout->addStretch();
+		buttonsLayout->addWidget(okButton);
+		buttonsLayout->addWidget(cancelButton);
+		mainLayout->addLayout(buttonsLayout);
+
+		setLayout(mainLayout);
+
+		setWindowTitle(tr("Multiline edit") + (readOnly ? tr(" (read-only)") : ""));
+	}
+
+	QString getText()
+	{
+		return textEdit->toPlainText();
+	}
+};
+
+class MultilineDataWidgetContainer : public BaseOpenDialogObject
+{
+protected:
+	typedef QString value_type;
+	QWidget* container;
+	QLabel* label;
+	QString theText;
+	bool isReadOnly;
+
+public:
+	MultilineDataWidgetContainer() : container(nullptr), label(nullptr) {}
+
+	QWidget* createWidgets(QWidget* parent, bool readOnly)
+	{
+		isReadOnly = readOnly;
+		container = new QWidget(parent);
+		label = new QLabel();
+		label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+
+		QPushButton* pushButton = new QPushButton("...");
+		pushButton->setEnabled(!readOnly);
+		pushButton->setMaximumWidth(40);
+
+		QHBoxLayout* layout = new QHBoxLayout(container);
+		layout->setMargin(0);
+		layout->addWidget(label, 1);
+		layout->addWidget(pushButton);
+		container->setLayout(layout);
+
+		QObject::connect(pushButton, SIGNAL(clicked()), this, SLOT(onShowDialog()) );
+		return container;
+	}
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
+	{
+		QWidget* parentWidget = dynamic_cast<QWidget*>(parent);
+		QWidget* widget = createWidgets(parentWidget, readOnly);
+		QObject::connect(this, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()) );
+		return widget;
+	}
+	void readFromData(const value_type& v)
+	{
+		theText = v;
+		label->setText(v);
+	}
+	void writeToData(value_type& v)
+	{
+		v = theText;
+	}
+	virtual void onShowDialog()
+	{
+		MultilineDataWidgetDialog dlg(container, theText, isReadOnly);
+		if(dlg.exec() == QDialog::Accepted)
+		{
+			theText = dlg.getText();
+			label->setText(theText);
+			emit editingFinished();
+		}
+	}
+	void updatePreview()
+	{
+	}
+};
+
+//***************************************************************//
+
 Creator<DataWidgetFactory, SimpleDataWidget<QColor> > DWClass_color("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString, FileDataWidgetContainer<true> > > DWClass_file_open("open file",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString, FileDataWidgetContainer<false> > > DWClass_file_save("save file",true);
 Creator<DataWidgetFactory, SimpleDataWidget<QString, FontDataWidgetContainer> > DWClass_font("font",true);
+Creator<DataWidgetFactory, SimpleDataWidget<QString, MultilineDataWidgetContainer> > DWClass_multiline("multiline",true);
 
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QColor>, ListDataWidgetDialog<QVector<QColor> > > > DWClass_colors_list("default",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<true> > > > DWClass_files_list_open("open file",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<false> > > > DWClass_files_list_save("save file",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FontDataWidgetContainer> > > DWClass_fonts_list("font",true);
+Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, MultilineDataWidgetContainer> > > DWClass_multilines_list("multiline",true);
 
 Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<double>, AnimationDataWidgetDialog<Animation<double>, DoubleDataWidgetContainer > > > DWClass_reals_animation("default",true);
 Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<QPointF>, AnimationDataWidgetDialog<Animation<QPointF>, PointDataWidgetContainer > > > DWClass_points_animation("default",true);
