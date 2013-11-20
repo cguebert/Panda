@@ -113,7 +113,7 @@ void LayersTab::updateTable()
 	int nbRows = layers.size();
 	tableWidget->setRowCount(nbRows);
 	int rowIndex = nbRows-1;
-	foreach(panda::BaseLayer* layer, layers)
+	for(panda::BaseLayer* layer : layers)
 	{
 		QTableWidgetItem *item = new QTableWidgetItem(layer->getLayerName());
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);

@@ -136,7 +136,7 @@ void ObjectDrawStruct::drawDatas(QPainter* painter)
 {
 	painter->setPen(QPen(parentView->palette().text().color()));
 	const panda::BaseData* clickedData = parentView->getClickedData();
-	foreach(RectDataPair dataPair, datas)
+	for(RectDataPair dataPair : datas)
 	{
 		if(clickedData
 			&& clickedData != dataPair.second
@@ -234,7 +234,7 @@ ObjectDrawStructFactory* ObjectDrawStructFactory::getInstance()
 
 ObjectDrawStruct* ObjectDrawStructFactory::createDrawStruct(GraphView* view, panda::PandaObject* obj)
 {
-	foreach(QSharedPointer<BaseObjectDrawCreator> creator, creators)
+	for(QSharedPointer<BaseObjectDrawCreator> creator : creators)
 	{
 		if(creator->getClass()->isInstance(obj))
 			return creator->create(view, obj);

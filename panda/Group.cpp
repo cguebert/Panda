@@ -100,7 +100,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 		group->positions[object] = delta;
 
 		// Adding input datas
-		foreach(BaseData* data, object->getInputDatas())
+		for(BaseData* data : object->getInputDatas())
 		{
 			BaseData* otherData = data->getParent();
 			if(otherData)
@@ -135,9 +135,9 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 		}
 
 		// Adding ouput datas
-		foreach(BaseData* data, object->getOutputDatas())
+		for(BaseData* data : object->getOutputDatas())
 		{
-			foreach(DataNode* otherNode, data->getOutputs())
+			for(DataNode* otherNode : data->getOutputs())
 			{
 				BaseData* otherData = dynamic_cast<BaseData*>(otherNode);
 				if(otherData)
@@ -240,10 +240,10 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		}
 
 		// Reconnecting datas
-		foreach(QSharedPointer<BaseData> data, group->groupDatas)
+		for(QSharedPointer<BaseData> data : group->groupDatas)
 		{
 			BaseData* parent = data->getParent();
-			foreach(DataNode* node, data->getOutputs())
+			for(DataNode* node : data->getOutputs())
 			{
 				BaseData* outData = dynamic_cast<BaseData*>(node);
 				if(outData)
@@ -262,7 +262,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
 {
 	// Saving group datas
-	foreach(QSharedPointer<BaseData> data, groupDatas)
+	for(QSharedPointer<BaseData> data : groupDatas)
 	{
 		QDomElement node = doc.createElement("GroupData");
 		elem.appendChild(node);
@@ -300,7 +300,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 		node.setAttribute("y", pos.y());
 
 		// Preparing links
-		foreach(BaseData* data, object->getInputDatas())
+		for(BaseData* data : object->getInputDatas())
 		{
 			BaseData* parent = data->getParent();
 			if(parent)
@@ -318,7 +318,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 	}
 
 	// Links from objects to the output of the group
-	foreach(BaseData* data, getOutputDatas())
+	for(BaseData* data : getOutputDatas())
 	{
 		BaseData* parent = data->getParent();
 		if(parent)
@@ -518,7 +518,7 @@ BaseData* Group::duplicateData(BaseData* data)
 
 void Group::reset()
 {
-	foreach(PandaObject* obj, objects)
+	for(PandaObject* obj : objects)
 		obj->reset();
 }
 

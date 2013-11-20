@@ -15,7 +15,7 @@ GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::Generic
 {
 	update();
 
-	foreach(GenericObject::GenericDataDefinition def, object->dataDefinitions_)
+	for(GenericObject::GenericDataDefinition def : object->dataDefinitions_)
 	{
 		if(def.input)
 			++nbDefInputs;
@@ -105,7 +105,7 @@ void GenericObjectDrawStruct::drawDatas(QPainter* painter)
 {
 	painter->setPen(QPen(parentView->palette().text().color()));
 	const panda::BaseData* clickedData = parentView->getClickedData();
-	foreach(RectDataPair dataPair, datas)
+	for(RectDataPair dataPair : datas)
 	{
 		if(clickedData
 			&& clickedData != dataPair.second

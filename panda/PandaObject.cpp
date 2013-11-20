@@ -138,7 +138,7 @@ QList<BaseData*> PandaObject::getDatas() const
 QList<BaseData*> PandaObject::getInputDatas() const
 {
 	QList<BaseData*> temp;
-	foreach(BaseData* data, datas)
+	for(BaseData* data : datas)
 	{
 		if(data->isInput())
 			temp.append(data);
@@ -150,7 +150,7 @@ QList<BaseData*> PandaObject::getInputDatas() const
 QList<BaseData*> PandaObject::getOutputDatas() const
 {
 	QList<BaseData*> temp;
-	foreach(BaseData* data, datas)
+	for(BaseData* data : datas)
 	{
 		if(data->isOutput())
 			temp.append(data);
@@ -167,7 +167,7 @@ void PandaObject::setInternalData(const QString& newName, const quint32& newInde
 
 void PandaObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
 {
-	foreach(BaseData* data, datas)
+	for(BaseData* data : datas)
 	{
 		if(data->isSet() && data->isPersistent() && !data->isReadOnly()
 				&& !(selected && data->getParent() && selected->contains(data->getParent()->getOwner())))

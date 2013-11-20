@@ -204,7 +204,7 @@ public:
 
 	virtual void refreshPreviews()
 	{
-		foreach(ContainerPtr container, containers)
+		for(ContainerPtr container : containers)
 			container->updatePreview();
 	}
 };

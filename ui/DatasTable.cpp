@@ -37,7 +37,7 @@ void DatasTable::populateTable()
 	if(currentObject == nextObject)
 	{	// Only update widgets
 		// TODO : verify if there are no new datas
-		foreach(DataWidgetPtr dataWidget, dataWidgets)
+		for(DataWidgetPtr dataWidget : dataWidgets)
 			dataWidget->updateWidgetValue();
 		return;
 	}
@@ -63,7 +63,7 @@ void DatasTable::populateTable()
 	stackedLayout->setCurrentWidget(scrollArea);
 
 	// inputs (or editable)
-	foreach (panda::BaseData* data, currentObject->getDatas())
+	for (panda::BaseData* data : currentObject->getDatas())
 	{
 		if (!data->isDisplayed() || data->isReadOnly())
 			continue;
@@ -81,7 +81,7 @@ void DatasTable::populateTable()
 	}
 
 	// outputs (or read only)
-	foreach (panda::BaseData* data, currentObject->getDatas())
+	for (panda::BaseData* data : currentObject->getDatas())
 	{
 		if (!data->isDisplayed() || !data->isReadOnly())
 			continue;

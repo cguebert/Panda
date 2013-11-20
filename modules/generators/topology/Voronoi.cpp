@@ -49,7 +49,7 @@ public:
 		topo->clear();
 
 		vector<Point> points;
-		foreach(QPointF p, pts)
+		for(QPointF p : pts)
 			points.push_back(Point(p.x(), p.y()));
 
 		vector<Segment> segments;

@@ -93,7 +93,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 void EditGroupDialog::populateTable()
 {
 	int rowIndex = 0;
-	foreach(QSharedPointer<panda::BaseData> data, group->groupDatas)
+	for(QSharedPointer<panda::BaseData> data : group->groupDatas)
 	{
 		populateRow(rowIndex, data.data());
 		++rowIndex;
@@ -177,7 +177,7 @@ void EditGroupDialog::updateGroup()
 
 	// As I used raw pointers before, I have to do additional work here to get the shared pointers in the right order
 	QMap< panda::BaseData*, QSharedPointer<panda::BaseData> > datasPtrMap;
-	foreach(QSharedPointer<panda::BaseData> dataPtr, group->groupDatas)
+	for(QSharedPointer<panda::BaseData> dataPtr : group->groupDatas)
 		datasPtrMap.insert(dataPtr.data(), dataPtr);
 
 	QList< QSharedPointer<panda::BaseData> > datasList;

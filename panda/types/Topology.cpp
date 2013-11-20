@@ -246,11 +246,11 @@ Topology::IndicesList Topology::getPolygonsAroundPolygon(int index)
 	IndicesList polyList;
 
 	const Polygon& poly = m_polygons[index];
-	foreach(int pt, poly)
+	for(int pt : poly)
 	{
 		const IndicesList& polyAP = m_polygonsAroundPoint[pt];
 
-		foreach(int p, polyAP)
+		for(int p : polyAP)
 		{
 			if(p != index && polySet.find(p) == polySet.end())
 			{
@@ -266,13 +266,13 @@ Topology::IndicesList Topology::getPolygonsAroundPolygon(int index)
 Topology::IndicesList Topology::getPolygonsAroundPolygons(const IndicesList& listID)
 {
 	std::set<int> polySet;
-	foreach(int index, listID)
+	for(int index : listID)
 	{
 		const IndicesList list = getPolygonsAroundPolygon(index);
 		polySet.insert(list.begin(), list.end());
 	}
 
-	foreach(int index, listID)
+	for(int index : listID)
 		polySet.erase(index);
 
 	IndicesList polyList;
@@ -298,7 +298,7 @@ Topology::IndicesList Topology::getPolygonsConnectedToPolygon(int index)
 	{
 		polyNext = getPolygonsAroundPolygons(polyOnFront);
 
-		foreach(int p, polyNext)
+		for(int p : polyNext)
 		{
 			if(!polyAll.contains(p))
 			{
@@ -352,7 +352,7 @@ void Topology::reorientPolygon(int polyId)
 	p.clear();
 	p.reserve(copy.size());
 
-	foreach(int pt, copy)
+	for(int pt : copy)
 		p.push_front(pt);
 }
 
@@ -439,7 +439,7 @@ void Topology::createEdgeList()
 	}
 
 	QMap<Edge, int> edgeMap;
-	foreach(Polygon p, m_polygons)
+	for(Polygon p : m_polygons)
 	{
 		int nbPts = p.size();
 		for(int i=0; i<nbPts; ++i)

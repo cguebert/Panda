@@ -153,7 +153,7 @@ public:
 		outTopo->clear();
 		outTopo->addPoints(inTopo.getPoints());
 
-		foreach(int i, polyId)
+		for(int i : polyId)
 			outTopo->addPolygon(inTopo.getPolygon(i));
 
 //		outTopo->createPolygonsAroundPointList();

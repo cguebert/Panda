@@ -52,7 +52,7 @@ public:
 
 	ObjectPtr createObject(Key key, Argument arg)
 	{
-		foreach(Creator* creator, registry.values(key))
+		for(Creator* creator : registry.values(key))
 		{
 			auto object = creator->createInstance(arg);
 			if(object)
@@ -63,7 +63,7 @@ public:
 
 	ObjectPtr createAnyObject(Argument arg)
 	{
-		foreach(Creator* creator, registry.values())
+		for(Creator* creator : registry.values())
 		{
 			auto object = creator->createInstance(arg);
 			if (object != nullptr)
