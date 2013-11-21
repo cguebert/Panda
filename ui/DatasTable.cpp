@@ -3,7 +3,6 @@
 #include <ui/DatasTable.h>
 
 #include <panda/PandaObject.h>
-
 #include <panda/helper/Factory.h>
 
 DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
@@ -109,6 +108,11 @@ void DatasTable::queuePopulate(panda::PandaObject* object)
 	}
 
 	nextObject = object;
+
+	// Bugfix : this is the case where we deselect the object, make sure to refresh later
+	//  the bug was that 2 objects (in different documents) were given the same pointer
+	if(currentObject && !object)
+		currentObject = nullptr;
 }
 
 void DatasTable::onModifiedObject(panda::PandaObject* object)
