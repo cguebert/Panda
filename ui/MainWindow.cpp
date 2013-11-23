@@ -3,6 +3,7 @@
 #include <ui/MainWindow.h>
 #include <ui/GraphView.h>
 #include <ui/RenderView.h>
+#include <ui/OpenGLRenderView.h>
 #include <ui/DatasTable.h>
 #include <ui/EditGroupDialog.h>
 #include <ui/LayersTab.h>
@@ -20,9 +21,11 @@ MainWindow::MainWindow()
 
 	graphView = new GraphView(pandaDocument);
 	renderView = new RenderView(pandaDocument);
+//	openGLRenderView = new OpenGLRenderView(pandaDocument);
 	tabWidget = new QTabWidget;
 	tabWidget->addTab(graphView, tr("Graph"));
 	tabWidget->addTab(renderView, tr("Render"));
+//	tabWidget->addTab(openGLRenderView, tr("OpenGL"));
 	setCentralWidget(tabWidget);
 
 	createActions();
@@ -34,8 +37,6 @@ MainWindow::MainWindow()
 	connect(graphView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
-
-	readSettings();
 
 	createGroupRegistryMenu();
 
@@ -57,6 +58,8 @@ MainWindow::MainWindow()
 	layersDock->setWidget(layersTab);
 	layersDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	addDockWidget(Qt::LeftDockWidgetArea, layersDock);
+
+	readSettings();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -160,6 +163,8 @@ void MainWindow::documentModified()
 {
 	if(tabWidget->currentWidget() == renderView)
 		renderView->update();
+//	if(tabWidget->currentWidget() == openGLRenderView)
+//		openGLRenderView->update();
 
 	setWindowModified(true);
 }
@@ -322,7 +327,13 @@ void MainWindow::createActions()
 	showRenderView->setStatusTip(tr("Switch to the render view"));
 
 	connect(showRenderView, SIGNAL(triggered()), this, SLOT(switchToRenderView()));
+/*
+	showOpenGLView = new QAction(tr("Show &OpenGL view"), this);
+	showOpenGLView->setShortcut(tr("Ctrl+3"));
+	showOpenGLView->setStatusTip(tr("Switch to the OpenGL view"));
 
+	connect(showOpenGLView, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
+*/
 	aboutAction = new QAction(tr("&About"), this);
 	aboutAction->setStatusTip(tr("Show the application's About box"));
 	connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -407,6 +418,7 @@ void MainWindow::createMenus()
 	viewMenu->addSeparator();
 	viewMenu->addAction(showGraphView);
 	viewMenu->addAction(showRenderView);
+//	viewMenu->addAction(showOpenGLView);
 #ifdef PANDA_LOG_EVENTS
 	viewMenu->addSeparator();
 	viewMenu->addAction(showLoggerDialogAction);
@@ -670,6 +682,11 @@ void MainWindow::switchToGraphView()
 void MainWindow::switchToRenderView()
 {
 	tabWidget->setCurrentWidget(renderView);
+}
+
+void MainWindow::switchToOpenGLView()
+{
+//	tabWidget->setCurrentWidget(openGLRenderView);
 }
 
 void MainWindow::showStatusBarMessage(QString text)

@@ -43,6 +43,7 @@ HEADERS       = \
 	ui/ListDataWidgetDialog.h \
 	ui/MainWindow.h \
 	ui/ObjectDrawStruct.h \
+	ui/OpenGLRenderView.h \
 	ui/QuickCreateDialog.h \
 	ui/RenderView.h \
 	ui/SimpleDataWidget.h \
@@ -151,6 +152,7 @@ SOURCES       = main.cpp \
 	ui/ListDataWidgetDialog.cpp \
 	ui/MainWindow.cpp \
 	ui/ObjectDrawStruct.cpp \
+	ui/OpenGLRenderView.cpp \
 	ui/QuickCreateDialog.cpp \
 	ui/RenderView.cpp \
 	ui/SimpleDataWidget.cpp \
@@ -159,7 +161,7 @@ SOURCES       = main.cpp \
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
-    ../boost_1_53_0
-QT += widgets xml
+	../boost
+QT += widgets xml opengl
 CONFIG += c++11
 DEFINES += PANDA_LOG_EVENTS
