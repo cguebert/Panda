@@ -233,11 +233,6 @@ template class Animation<Gradient>;
 template class Data< Animation<Gradient> >;
 int gradientAnimationDataClass = RegisterData< Animation<Gradient> >();
 
-//*************************************************************************//
-
-const char* Gradient::extendModes[] = { "Pad", "Repeat", "Reflect"};
-Creator<DataWidgetFactory, SimpleDataWidget<int, EnumDataWidget<3, Gradient::extendModes> > > DWClass_enum_gradient_extend("enum_GradientExtend",true);
-
 } // namespace types
 
 } // namespace panda

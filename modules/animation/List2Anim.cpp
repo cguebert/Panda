@@ -26,8 +26,22 @@ public:
 		addInput(&extend);
 		addInput(&generic);
 
-		interpolation.setWidget("enum_AnimationInterpolation");
-		extend.setWidget("enum_AnimationExtend");
+		interpolation.setWidget("enum");
+		interpolation.setWidgetData("Linear"
+									";InQuad;OutQuad;InOutQuad;OutInQuad"
+									";InCubic;OutCubic;InOutCubic;OutInCubic"
+									";InQuart;OutQuart;InOutQuart;OutInQuart"
+									";InQuint;OutQuint;InOutQuint;OutInQuint"
+									";InSine;OutSine;InOutSine;OutInSine"
+									";InExpo;OutExpo;InOutExpo;OutInExpo"
+									";InCirc;OutCirc;InOutCirc;OutInCirc"
+									";InElastic;OutElastic;InOutElastic;OutInElastic"
+									";InBack;OutBack;InOutBack;OutInBack"
+									";InBounce;OutBounce;InOutBounce;OutInBounce"
+									";InCurve;OutCurve;SineCurve;CosineCurve");
+
+		extend.setWidget("enum");
+		extend.setWidgetData("Pad;Repeat;Reflect");
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected

@@ -194,6 +194,42 @@ public:
 
 //***************************************************************//
 
+class EnumDataWidget
+{
+protected:
+	typedef int value_type;
+	QComboBox* comboBox;
+
+public:
+	EnumDataWidget() : comboBox(nullptr) {}
+
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
+	{
+		comboBox = new QComboBox(parent);
+		comboBox->setEnabled(!readOnly);
+
+		QString wd = parent->getBaseData()->getWidgetData();
+		QStringList list = wd.split(";", QString::SkipEmptyParts);
+		for(auto v : list)
+			comboBox->addItem(v);
+
+		QObject::connect(comboBox, SIGNAL(currentIndexChanged(int)), parent, SLOT(setWidgetDirty()));
+		return comboBox;
+	}
+	void readFromData(const value_type& v)
+	{
+		comboBox->blockSignals(true);
+		comboBox->setCurrentIndex(v);
+		comboBox->blockSignals(false);
+	}
+	void writeToData(value_type& v)
+	{
+		v = comboBox->currentIndex();
+	}
+};
+
+//***************************************************************//
+
 template <>
 class DataWidgetContainer< double >
 {
@@ -262,6 +298,7 @@ public:
 Creator<DataWidgetFactory, SimpleDataWidget<int> > DWClass_int("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<int, CheckboxDataWidget> > DWClass_checkbox("checkbox",true);
 Creator<DataWidgetFactory, SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed",true);
+Creator<DataWidgetFactory, SimpleDataWidget<int, EnumDataWidget> > DWClass_enum("enum",true);
 Creator<DataWidgetFactory, SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_int("slider",true);
 Creator<DataWidgetFactory, SimpleDataWidget<double> > DWClass_double("default",true);
 Creator<DataWidgetFactory, SimpleDataWidget<double, SliderDataWidget<double> > > DWClass_slider_double("slider",true);

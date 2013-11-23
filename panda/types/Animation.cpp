@@ -40,27 +40,6 @@ int doubleAnimationDataClass = RegisterData< Animation<double> >();
 int colorAnimationDataClass = RegisterData< Animation<QColor> >();
 int pointAnimationDataClass = RegisterData< Animation<QPointF> >();
 
-//*************************************************************************//
-
-namespace animation
-{
-const char* extendModes[] = { "Pad", "Repeat", "Reflect"};
-const char* interpolationModes[] = { "Linear",
-									 "InQuad", "OutQuad", "InOutQuad", "OutInQuad",
-									 "InCubic", "OutCubic", "InOutCubic", "OutInCubic",
-									 "InQuart", "OutQuart", "InOutQuart", "OutInQuart",
-									 "InQuint", "OutQuint", "InOutQuint", "OutInQuint",
-									 "InSine", "OutSine", "InOutSine", "OutInSine",
-									 "InExpo", "OutExpo", "InOutExpo", "OutInExpo",
-									 "InCirc", "OutCirc", "InOutCirc", "OutInCirc",
-									 "InElastic", "OutElastic", "InOutElastic", "OutInElastic",
-									 "InBack", "OutBack", "InOutBack", "OutInBack",
-									 "InBounce", "OutBounce", "InOutBounce", "OutInBounce",
-									 "InCurve", "OutCurve", "SineCurve", "CosineCurve"};
-}
-Creator<DataWidgetFactory, SimpleDataWidget<int, EnumDataWidget<3, animation::extendModes> > > DWClass_enum_animation_extend("enum_AnimationExtend",true);
-Creator<DataWidgetFactory, SimpleDataWidget<int, EnumDataWidget<45, animation::interpolationModes> > > DWClass_enum_animation_interpolation("enum_AnimationInterpolation",true);
-
 } // namespace types
 
 } // namespace panda

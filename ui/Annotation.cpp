@@ -21,7 +21,8 @@ Annotation::Annotation(PandaDocument *doc)
 	addInput(&m_text);
 	addInput(&m_font);
 
-	m_type.setWidget("enum_AnnotationTypes");
+	m_type.setWidget("enum");
+	m_type.setWidgetData("Text only;Arrow;Rectangle;Ellipse");
 	m_font.setWidget("font");
 }
 
@@ -36,8 +37,6 @@ void Annotation::setDirtyValue()
 	else
 		PandaObject::setDirtyValue();
 }
-
-const char* Annotation::annotationTypes[] = { "Text only", "Arrow", "Rectangle", "Ellipse" };
 
 int AnnotationClass = RegisterObject<Annotation>("Annotation").setName("Annotation").setDescription("Create an annotation in the graph view");
 
@@ -272,7 +271,3 @@ QSize AnnotationDrawStruct::getObjectSize()
 }
 
 int AnnotationDrawClass = RegisterDrawObject<panda::Annotation, AnnotationDrawStruct>();
-
-//*************************************************************************//
-
-Creator<DataWidgetFactory, SimpleDataWidget<int, EnumDataWidget<4, panda::Annotation::annotationTypes> > > DWClass_enum_annotation_types("enum_AnnotationTypes",true);

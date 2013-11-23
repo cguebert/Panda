@@ -40,8 +40,6 @@ public:
 		return !(g1 == g2);
 	}
 
-	static const char* extendModes[];
-
 	static Gradient interpolate(const Gradient& g1, const Gradient& g2, double amt);
 
 protected:

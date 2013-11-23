@@ -21,7 +21,8 @@ public:
 		addInput(&colorB);
 		addInput(&extend);
 
-		extend.setWidget("enum_GradientExtend");
+		extend.setWidget("enum");
+		extend.setWidgetData("Pad;Repeat;Reflect");
 
 		addOutput(&gradient);
 	}

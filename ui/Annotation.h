@@ -23,7 +23,6 @@ public:
 	Data<QString> m_text, m_font;
 
 	enum AnnotationType { ANNOTATION_TEXT=0, ANNOTATION_ARROW, ANNOTATION_RECTANGLE, ANNOTATION_ELLIPSE };
-	static const char* annotationTypes[];
 };
 
 } // namespace panda

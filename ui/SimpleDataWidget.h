@@ -176,37 +176,4 @@ public:
 	}
 };
 
-//***************************************************************//
-
-template<int N, const char* const (&values)[N] >
-class EnumDataWidget
-{
-protected:
-	typedef int value_type;
-	QComboBox* comboBox;
-
-public:
-	EnumDataWidget() : comboBox(nullptr) {}
-
-	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
-	{
-		comboBox = new QComboBox(parent);
-		for(auto v : values)
-			comboBox->addItem(v);
-		comboBox->setEnabled(!readOnly);
-		QObject::connect(comboBox, SIGNAL(currentIndexChanged(int)), parent, SLOT(setWidgetDirty()));
-		return comboBox;
-	}
-	void readFromData(const value_type& v)
-	{
-		comboBox->blockSignals(true);
-		comboBox->setCurrentIndex(v);
-		comboBox->blockSignals(false);
-	}
-	void writeToData(value_type& v)
-	{
-		v = comboBox->currentIndex();
-	}
-};
-
 #endif
