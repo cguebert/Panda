@@ -25,6 +25,9 @@ public:
 		QString w = getWidget();
 		if(w != "default")
 			elem.setAttribute("widget", w);
+		QString d = getWidgetData();
+		if(!d.isEmpty())
+			elem.setAttribute("widgetData", d);
 	}
 };
 

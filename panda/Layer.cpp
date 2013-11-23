@@ -65,6 +65,8 @@ Layer::Layer(PandaDocument *parent)
 	addInput(&compositionMode);
 
 	compositionMode.setWidget("enum_LayerComposition");
+	opacity.setWidget("slider");
+	opacity.setWidgetData("0 1 0.01");
 
 	addOutput((DataNode*)parent);
 	addOutput(&image);

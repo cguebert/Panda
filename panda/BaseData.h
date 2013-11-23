@@ -55,6 +55,8 @@ public:
 	void setGroup(const QString& g) { group = g; }
 	const QString getWidget() const { return widget; }
 	void setWidget(const QString& w) { widget = w; }
+	const QString getWidgetData() const { return widgetData; }
+	void setWidgetData(const QString& d) { widgetData = d; }
 
 	bool isSet() const { return isValueSet; }
 	void unset() { isValueSet = false; }
@@ -107,7 +109,7 @@ protected:
 	bool isValueSet;
 	bool setParentProtection;
 	int counter;
-	QString name, help, group, widget;
+	QString name, help, group, widget, widgetData;
 	PandaObject* owner;
 	BaseData* parentBaseData;
 

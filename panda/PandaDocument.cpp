@@ -914,6 +914,7 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 	{
 		valueData->copyValueFrom(data);
 		valueData->setWidget(data->getWidget());
+		valueData->setWidgetData(data->getWidgetData());
 	}
 }
 

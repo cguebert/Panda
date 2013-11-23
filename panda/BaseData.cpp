@@ -139,6 +139,10 @@ void BaseData::load(QDomElement& elem)
 	QString w = elem.attribute("widget");
 	if(!w.isEmpty())
 		setWidget(w);
+
+	QString d = elem.attribute("widgetData");
+	if(!d.isEmpty())
+		setWidgetData(d);
 }
 
 void BaseData::doAddInput(DataNode* node)
