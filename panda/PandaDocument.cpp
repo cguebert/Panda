@@ -58,7 +58,10 @@ PandaDocument::PandaDocument(QObject *parent)
 PandaDocument::~PandaDocument()
 {
 	for(PandaObject* object : pandaObjects)
+	{
 		object->preDestruction();
+		object->disconnect();
+	}
 }
 
 bool PandaDocument::writeFile(const QString& fileName)
