@@ -38,7 +38,7 @@ void Annotation::setDirtyValue()
 		PandaObject::setDirtyValue();
 }
 
-int AnnotationClass = RegisterObject<Annotation>("Annotation").setName("Annotation").setDescription("Create an annotation in the graph view");
+int AnnotationClass = RegisterObject<Annotation>("Annotation").setDescription("Create an annotation in the graph view");
 
 } // namespace panda
 

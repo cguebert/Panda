@@ -99,7 +99,7 @@ protected:
 	Data< QVector<QPointF> > inputA, inputB, result;
 };
 
-int PointMath_SubstractionClass = RegisterObject<PointMath_Substraction>("Math/Point/Substraction").setName("Sub points").setDescription("Compute the substraction of 2 points");
+int PointMath_SubstractionClass = RegisterObject<PointMath_Substraction>("Math/Point/Substraction").setName("Substract points").setDescription("Compute the substraction of 2 points");
 
 //*************************************************************************//
 

@@ -51,7 +51,7 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_ComposeClass = RegisterObject<GeneratorRectangles_Compose>("Generator/Rectangle/Rectangle from 4 reals").setName("Reals to rect").setDescription("Create a rectangle from 4 reals");
+int GeneratorRectangles_ComposeClass = RegisterObject<GeneratorRectangles_Compose>("Generator/Rectangle/Rectangle from 4 reals").setName("Reals to rectangle").setDescription("Create a rectangle from 4 reals");
 
 //*************************************************************************//
 
@@ -97,7 +97,7 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_ComposeCenterClass = RegisterObject<GeneratorRectangles_ComposeCenter>("Generator/Rectangle/Rectangle from center and size").setName("Center to rect").setDescription("Create a rectangle from center and size");
+int GeneratorRectangles_ComposeCenterClass = RegisterObject<GeneratorRectangles_ComposeCenter>("Generator/Rectangle/Rectangle from center and size").setName("Center to rectangle").setDescription("Create a rectangle from center and size");
 
 //*************************************************************************//
 
@@ -143,7 +143,7 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_ComposeCornersClass = RegisterObject<GeneratorRectangles_ComposeCorners>("Generator/Rectangle/Rectangle from corners").setName("Corners to rect").setDescription("Create a rectangle from 2 corners");
+int GeneratorRectangles_ComposeCornersClass = RegisterObject<GeneratorRectangles_ComposeCorners>("Generator/Rectangle/Rectangle from corners").setName("Corners to rectangle").setDescription("Create a rectangle from 2 corners");
 
 //*************************************************************************//
 
@@ -200,7 +200,7 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_DecomposeClass = RegisterObject<GeneratorRectangles_Decompose>("Generator/Rectangle/Rectangle to 4 reals").setName("Rect to reals").setDescription("Extract the boundary of a rectangles");
+int GeneratorRectangles_DecomposeClass = RegisterObject<GeneratorRectangles_Decompose>("Generator/Rectangle/Rectangle to 4 reals").setName("Rectangle to reals").setDescription("Extract the boundary of a rectangles");
 
 //*************************************************************************//
 
@@ -247,7 +247,7 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_DecomposeCenterClass = RegisterObject<GeneratorRectangles_DecomposeCenter>("Generator/Rectangle/Rectangle to center and size").setName("Rect to center").setDescription("Extract the center and size of a rectangle");
+int GeneratorRectangles_DecomposeCenterClass = RegisterObject<GeneratorRectangles_DecomposeCenter>("Generator/Rectangle/Rectangle to center and size").setName("Rectangle to center").setDescription("Extract the center and size of a rectangle");
 
 //*************************************************************************//
 
@@ -294,6 +294,6 @@ protected:
 	Data< QVector<QRectF> > rectangle;
 };
 
-int GeneratorRectangles_DecomposeCornersClass = RegisterObject<GeneratorRectangles_DecomposeCorners>("Generator/Rectangle/Rectangle to corners").setName("Rect to corners").setDescription("Extract two corners of a rectangle");
+int GeneratorRectangles_DecomposeCornersClass = RegisterObject<GeneratorRectangles_DecomposeCorners>("Generator/Rectangle/Rectangle to corners").setName("Rectangle to corners").setDescription("Extract two corners of a rectangle");
 
 } // namespace Panda

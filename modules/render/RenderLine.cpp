@@ -130,6 +130,6 @@ protected:
 	Data<QColor> color;
 };
 
-int RenderConnectedLinesClass = RegisterObject<RenderConnectedLines>("Render/Connected lines").setName("Lines").setDescription("Draw a connected line based on a list of points");
+int RenderConnectedLinesClass = RegisterObject<RenderConnectedLines>("Render/Connected lines").setDescription("Draw a connected line based on a list of points");
 
 } // namespace panda

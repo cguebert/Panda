@@ -33,7 +33,7 @@ protected:
 	Data<double> animTime, timeStep;
 };
 
-int GeneratorNumber_AnimationTimeClass = RegisterObject<GeneratorNumber_AnimationTime>("Generator/Real/Animation time").setName("Anim time").setDescription("Gives the current time of the animation");
+int GeneratorNumber_AnimationTimeClass = RegisterObject<GeneratorNumber_AnimationTime>("Generator/Real/Animation time").setDescription("Gives the current time of the animation");
 
 } // namespace Panda
 

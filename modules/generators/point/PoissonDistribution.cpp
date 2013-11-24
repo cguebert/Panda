@@ -94,6 +94,6 @@ protected:
 	Data< QVector<QPointF> > points;
 };
 
-int GeneratorPoints_PoissonClass = RegisterObject<GeneratorPoints_Poisson>("Generator/Point/Poisson distribution").setName("Poisson dist.").setDescription("Generate a list of random points, but with a minimal distance between neighbors");
+int GeneratorPoints_PoissonClass = RegisterObject<GeneratorPoints_Poisson>("Generator/Point/Poisson distribution").setDescription("Generate a list of random points, but with a minimal distance between neighbors");
 
 } // namespace Panda

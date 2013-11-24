@@ -44,7 +44,7 @@ protected:
 };
 
 int TopologyMath_NumberOfPrimitivesClass = RegisterObject<TopologyMath_NumberOfPrimitives>("Math/Topology/Number of primitives")
-		.setName("# of primitives").setDescription("Compute the number of points, edges and polygons in the topology");
+		.setDescription("Compute the number of points, edges and polygons in the topology");
 
 //*************************************************************************//
 

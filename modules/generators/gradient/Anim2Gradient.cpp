@@ -43,7 +43,7 @@ protected:
 	Data< Gradient > gradient;
 };
 
-int Anim2GradientClass = RegisterObject<Anim2Gradient>("Generator/Gradient/Animation to gradient").setName("Anim 2 gradient").setDescription("Convert an animation of colors to a gradient");
+int Anim2GradientClass = RegisterObject<Anim2Gradient>("Generator/Gradient/Animation to gradient").setDescription("Convert an animation of colors to a gradient");
 
 //*************************************************************************//
 
@@ -76,7 +76,7 @@ protected:
 	Data< Animation<QColor> > anim;
 };
 
-int Gradient2AnimClass = RegisterObject<Gradient2Anim>("Generator/Gradient/Gradient to animation").setName("Gradient 2 anim").setDescription("Convert gradient to an animation of colors");
+int Gradient2AnimClass = RegisterObject<Gradient2Anim>("Generator/Gradient/Gradient to animation").setDescription("Convert gradient to an animation of colors");
 
 
 } // namespace Panda

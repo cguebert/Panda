@@ -74,9 +74,9 @@ protected:
 	Data<int> mode;
 };
 
-int AnimationInterpolation_DoubleClass = RegisterObject< AnimationInterpolation<double> >("Animation/Interpolation/Reals").setName("Inter reals").setDescription("Interpolate between 2 reals");
-int AnimationInterpolation_PointsClass = RegisterObject< AnimationInterpolation<QPointF> >("Animation/Interpolation/Points").setName("Inter points").setDescription("Interpolate between 2 points");
-int AnimationInterpolation_ColorClass = RegisterObject< AnimationInterpolation<QColor> >("Animation/Interpolation/Colors").setName("Inter colors").setDescription("Interpolate between 2 colors");
+int AnimationInterpolation_DoubleClass = RegisterObject< AnimationInterpolation<double> >("Animation/Interpolation/Reals").setName("Interpolation reals").setDescription("Interpolate between 2 reals");
+int AnimationInterpolation_PointsClass = RegisterObject< AnimationInterpolation<QPointF> >("Animation/Interpolation/Points").setName("Interpolation points").setDescription("Interpolate between 2 points");
+int AnimationInterpolation_ColorClass = RegisterObject< AnimationInterpolation<QColor> >("Animation/Interpolation/Colors").setName("Interpolation colors").setDescription("Interpolate between 2 colors");
 
 
 } // namespace Panda

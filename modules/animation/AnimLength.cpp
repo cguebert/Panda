@@ -62,6 +62,6 @@ protected:
 	GenericAnimationData generic;
 };
 
-int AnimLengthClass = RegisterObject<AnimLength>("Animation/Animation length").setName("Anim length").setDescription("Get the length and size of a list of animations");
+int AnimLengthClass = RegisterObject<AnimLength>("Animation/Animation length").setDescription("Get the length and size of a list of animations");
 
 } // namespace Panda

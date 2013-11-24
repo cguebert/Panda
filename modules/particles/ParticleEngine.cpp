@@ -157,6 +157,6 @@ void ParticleEngine::update()
 	this->cleanDirty();
 }
 
-int ParticleEngineClass = RegisterObject<ParticleEngine>("Particles/Particle engine").setName("Particle engine").setDescription("Animate a set of points based on physical properties and optional modifier objects");
+int ParticleEngineClass = RegisterObject<ParticleEngine>("Particles/Particle engine").setDescription("Animate a set of points based on physical properties and optional modifier objects");
 
 } // namespace Panda

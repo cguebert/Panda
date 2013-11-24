@@ -71,7 +71,7 @@ protected:
 	Data<int> index, nbIterations;
 };
 
-int ReplicatorClass = RegisterObject<Replicator>("Replicator").setName("Replicator").setDescription("Draw multiple times the objects");
+int ReplicatorClass = RegisterObject<Replicator>("Replicator").setDescription("Draw multiple times the objects");
 
 } // namespace Panda
 

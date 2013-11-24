@@ -44,7 +44,7 @@ protected:
 	Data<Topology> topology;
 };
 
-int GeneratorTopology_OnePolygonClass = RegisterObject<GeneratorTopology_OnePolygon>("Generator/Topology/Create one polygon").setName("Pts to polygon").setDescription("Create a topology (of one polygon) using a list of points");
+int GeneratorTopology_OnePolygonClass = RegisterObject<GeneratorTopology_OnePolygon>("Generator/Topology/Create one polygon").setName("Points to polygon").setDescription("Create a topology (of one polygon) using a list of points");
 
 //*************************************************************************//
 
@@ -168,7 +168,7 @@ protected:
 };
 
 int GeneratorTopology_ExtractPolygonsClass = RegisterObject<GeneratorTopology_ExtractPolygons>("Generator/Topology/Extract polygons")
-		.setName("Extract poly").setDescription("Extract some polygons from a topology");
+		.setDescription("Extract some polygons from a topology");
 
 //*************************************************************************//
 
