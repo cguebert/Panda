@@ -3,7 +3,6 @@
 
 #include <ui/GraphView.h>
 #include <ui/Annotation.h>
-#include <ui/SimpleDataWidget.h>
 
 #include <QPainter>
 #include <QMouseEvent>

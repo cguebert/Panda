@@ -94,7 +94,7 @@ public:
 		slider->setOrientation(Qt::Horizontal);
 		slider->setTickInterval(QSlider::NoTicks);
 		slider->setEnabled(!readOnly);
-		readParameters(parent->getBaseData()->getWidgetData());
+		readParameters(parent->getParameters());
 
 		QHBoxLayout* layout = new QHBoxLayout(container);
 		layout->setMargin(0);
@@ -209,7 +209,7 @@ public:
 		comboBox = new QComboBox(parent);
 		comboBox->setEnabled(!readOnly);
 
-		QString wd = parent->getBaseData()->getWidgetData();
+		QString wd = parent->getParameters();
 		QStringList list = wd.split(";", QString::SkipEmptyParts);
 		for(auto v : list)
 			comboBox->addItem(v);

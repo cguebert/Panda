@@ -6,8 +6,6 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
 
-#include <ui/SimpleDataWidget.h>
-
 #include <QSet>
 #include <qmath.h>
 

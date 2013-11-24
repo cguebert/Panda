@@ -60,7 +60,7 @@ class DataWidgetCreator : public BaseDataWidgetCreator
 public:
 	virtual BaseDataWidget* create(panda::BaseData* data, QWidget* parent)
 	{
-		T::MyTData* tData = dynamic_cast<T::MyTData*>(data);
+		T::TData* tData = dynamic_cast<T::TData*>(data);
 		if(!data)
 			return nullptr;
 		return new T(parent, tData);
@@ -73,7 +73,7 @@ class RegisterWidget
 public:
 	explicit RegisterWidget(QString widgetName)
 	{
-		int fullType = panda::types::VirtualDataTrait<T::MyTData::value_type>::get()->fullTypeId();
+		int fullType = panda::types::VirtualDataTrait<T::TData::value_type>::get()->fullTypeId();
 		DataWidgetFactory::getInstance()->registerWidget(fullType, widgetName
 							, QSharedPointer<DataWidgetCreator<T>>::create());
 	}

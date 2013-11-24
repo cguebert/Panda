@@ -24,20 +24,13 @@ public:
 
 	virtual ~BaseDataWidget() {}
 
-	inline virtual void setData(panda::BaseData* d)
-	{
-		baseData = d;
-		readFromData();
-	}
+	QString getParameters() { return baseData->getWidgetData(); }
 
-	/// BaseData pointer accessor function.
-	const panda::BaseData* getBaseData() const { return baseData; }
-	panda::BaseData* getBaseData() { return baseData; }
+	QString getName() { return baseData->getName(); }
 
 	bool isDirty() { return dirty; }
 
-	/// The implementation of this method holds the widget creation and the signal / slot
-	/// connections.
+	/// The implementation of this method holds the widget creation and the signal / slot connections.
 	virtual QWidget* createWidgets(bool readOnly = true) = 0;
 
 public slots:
@@ -102,19 +95,21 @@ template<class T>
 class DataWidget : public BaseDataWidget
 {
 public:
-	typedef panda::Data<T> MyTData;
+	typedef panda::Data<T> TData;
 
-	DataWidget(QWidget* parent, MyTData* d)
+	DataWidget(QWidget* parent, TData* d)
 		: BaseDataWidget(parent, d)
-		, Tdata(d)
+		, data(d)
 	{}
 
-	panda::Data<T>* getData() { return Tdata; }
-	const panda::Data<T>* getData() const { return Tdata; }
-	inline virtual void setData(MyTData* d) { Tdata = d; }
+	typename TData::const_reference getValue()
+	{ return data->getValue(); }
+
+	typename TData::data_accessor getAccessor()
+	{ return data->getAccessor(); }
 
 protected:
-	MyTData* Tdata;
+	TData* data;
 };
 
 #endif // DATAWIDGET_H

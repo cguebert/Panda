@@ -4,8 +4,6 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
 
-#include <ui/SimpleDataWidget.h>
-
 namespace panda
 {
 

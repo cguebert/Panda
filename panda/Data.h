@@ -27,6 +27,7 @@ public:
 	typedef const value_type& const_reference;
 	typedef value_type* pointer;
 	typedef Data<value_type> data_type;
+	typedef DataAccessor<data_type> data_accessor;
 
 	class InitData : public BaseData::BaseInitData
 	{
@@ -46,7 +47,7 @@ public:
 	virtual void setParent(BaseData* parent);
 	virtual const types::AbstractDataTrait* getDataTrait() const;
 	virtual const void* getVoidValue() const;
-	DataAccessor<data_type> getAccessor();
+	data_accessor getAccessor();
 	inline void setValue(const_reference v);
 	inline const_reference getValue() const;
 	virtual void copyValueFrom(const BaseData* from);

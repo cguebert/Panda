@@ -38,7 +38,7 @@ protected:
 	QSpinBox* resizeSpinBox;
 
 public:
-	TableDataWidgetDialog(QWidget* parent, const data_type& d, bool readOnly)
+	TableDataWidgetDialog(QWidget* parent, bool readOnly, QString name)
 		: BaseTableDataWidgetDialog(parent)
 		, readOnly(readOnly)
 		, tableWidget(nullptr)
@@ -82,7 +82,7 @@ public:
 
 		setLayout(mainLayout);
 
-		setWindowTitle(d.getName() + (readOnly ? tr(" (read-only)") : ""));
+		setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
 	}
 
 	void updateTable(const value_type& v)

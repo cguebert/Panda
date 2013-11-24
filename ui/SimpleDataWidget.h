@@ -40,8 +40,8 @@ protected:
 	Container container;
 
 public:
-	typedef panda::Data<T> MyTData;
-	SimpleDataWidget(QWidget* parent, MyTData* d) :
+	typedef panda::Data<T> TData;
+	SimpleDataWidget(QWidget* parent, TData* d) :
 		DataWidget<T>(parent, d)
 	{}
 
@@ -51,18 +51,18 @@ public:
 		if(!w)
 			return nullptr;
 
-		container.readFromData(getData()->getValue());
+		container.readFromData(getValue());
 		return w;
 	}
 
 	virtual void readFromData()
 	{
-		container.readFromData(getData()->getValue());
+		container.readFromData(getValue());
 	}
 
 	virtual void writeToData()
 	{
-		auto v = getData()->getAccessor();
+		auto v = getAccessor();
 		container.writeToData(v.wref());
 	}
 };
@@ -92,7 +92,7 @@ protected:
 	bool isReadOnly;
 
 public:
-	OpenDialogDataWidget(QWidget* parent, MyTData* d)
+	OpenDialogDataWidget(QWidget* parent, TData* d)
 		: DataWidget<T>(parent, d)
 		, dialog(nullptr)
 		, container(nullptr)
@@ -131,14 +131,14 @@ public:
 	{
 		updatePreview();
 		if(dialog)
-			dialog->readFromData(getData()->getValue());
+			dialog->readFromData(getValue());
 	}
 
 	virtual void writeToData()
 	{
 		if(dialog)
 		{
-			auto v = getData()->getAccessor();
+			auto v = getAccessor();
 			dialog->writeToData(v.wref());
 
 			updatePreview();
@@ -148,16 +148,16 @@ public:
 	virtual void onShowDialog()
 	{
 		if(!dialog)
-			dialog = new Dialog(container, *getData(), isReadOnly);
+			dialog = new Dialog(container, isReadOnly, getName());
 
-		dialog->readFromData(getData()->getValue());
+		dialog->readFromData(getValue());
 		if(dialog->exec() == QDialog::Accepted && !isReadOnly)
 			emit editingFinished();
 	}
 
 	void updatePreview()
 	{
-		const value_type& v = getData()->getValue();
+		const value_type& v = getValue();
 		typedef VectorDataTrait<value_type> vector_trait;
 		if(vector_trait::is_vector)
 		{

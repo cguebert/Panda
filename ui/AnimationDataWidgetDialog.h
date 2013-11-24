@@ -43,7 +43,7 @@ protected:
 	QComboBox *extendBox, *interpolationBox;
 
 public:
-	AnimationDataWidgetDialog(QWidget* parent, const data_type& d, bool readOnly)
+	AnimationDataWidgetDialog(QWidget* parent, bool readOnly, QString name)
 		: BaseAnimationDataWidgetDialog(parent)
 		, readOnly(readOnly)
 		, scrollArea(nullptr)
@@ -125,7 +125,7 @@ public:
 
 		setLayout(mainLayout);
 
-		setWindowTitle(d.getName() + (readOnly ? tr(" (read-only)") : ""));
+		setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
 	}
 
 	void updateTable(const animation_type& anim)

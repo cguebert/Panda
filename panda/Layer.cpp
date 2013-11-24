@@ -6,7 +6,6 @@
 #include <QPainter>
 
 #include <ui/GraphView.h>
-#include <ui/SimpleDataWidget.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>

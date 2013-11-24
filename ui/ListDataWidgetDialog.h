@@ -60,7 +60,7 @@ protected:
 	QVector<ContainerPtr> containers;
 
 public:
-	ListDataWidgetDialog(QWidget* parent, const data_type& d, bool readOnly)
+	ListDataWidgetDialog(QWidget* parent, bool readOnly, QString name)
 		: BaseListDataWidgetDialog(parent)
 		, readOnly(readOnly)
 		, scrollArea(nullptr)
@@ -112,7 +112,7 @@ public:
 
 		setLayout(mainLayout);
 
-		setWindowTitle(d.getName() + (readOnly ? tr(" (read-only)") : ""));
+		setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
 	}
 
 	void updateTable(const value_type& v)
