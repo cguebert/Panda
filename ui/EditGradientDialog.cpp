@@ -4,6 +4,7 @@
 #include <ui/SimpleDataWidget.h>
 #include <ui/EditGradientDialog.h>
 #include <ui/AnimationDataWidgetDialog.h>
+#include <ui/DataWidgetFactory.h>
 
 #include <panda/types/Gradient.h>
 
@@ -446,6 +447,6 @@ public:
 
 //***************************************************************//
 
-Creator<DataWidgetFactory, SimpleDataWidget<Gradient> > DWClass_gradient("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<Gradient>, ListDataWidgetDialog<QVector<Gradient> > > > DWClass_gradients_list("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<Gradient>, AnimationDataWidgetDialog<Animation<Gradient> > > > DWClass_gradients_animation("default",true);
+RegisterWidget<SimpleDataWidget<Gradient> > DWClass_gradient("default");
+RegisterWidget<OpenDialogDataWidget<QVector<Gradient>, ListDataWidgetDialog<QVector<Gradient> > > > DWClass_gradients_list("default");
+RegisterWidget<OpenDialogDataWidget<Animation<Gradient>, AnimationDataWidgetDialog<Animation<Gradient> > > > DWClass_gradients_animation("default");

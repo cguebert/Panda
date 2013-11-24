@@ -2,6 +2,8 @@
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 
+#include <iostream>
+
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>
 #endif

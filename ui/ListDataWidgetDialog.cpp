@@ -1,6 +1,7 @@
 #include <ui/ListDataWidgetDialog.h>
 #include <ui/AnimationDataWidgetDialog.h>
 #include <ui/SimpleDataWidget.h>
+#include <ui/DataWidgetFactory.h>
 
 using panda::types::Animation;
 
@@ -335,18 +336,18 @@ public:
 
 //***************************************************************//
 
-Creator<DataWidgetFactory, SimpleDataWidget<QColor> > DWClass_color("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QString, FileDataWidgetContainer<true> > > DWClass_file_open("open file",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QString, FileDataWidgetContainer<false> > > DWClass_file_save("save file",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QString, FontDataWidgetContainer> > DWClass_font("font",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QString, MultilineDataWidgetContainer> > DWClass_multiline("multiline",true);
+RegisterWidget<SimpleDataWidget<QColor> > DWClass_color("default");
+RegisterWidget<SimpleDataWidget<QString, FileDataWidgetContainer<true> > > DWClass_file_open("open file");
+RegisterWidget<SimpleDataWidget<QString, FileDataWidgetContainer<false> > > DWClass_file_save("save file");
+RegisterWidget<SimpleDataWidget<QString, FontDataWidgetContainer> > DWClass_font("font");
+RegisterWidget<SimpleDataWidget<QString, MultilineDataWidgetContainer> > DWClass_multiline("multiline");
 
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QColor>, ListDataWidgetDialog<QVector<QColor> > > > DWClass_colors_list("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<true> > > > DWClass_files_list_open("open file",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<false> > > > DWClass_files_list_save("save file",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FontDataWidgetContainer> > > DWClass_fonts_list("font",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, MultilineDataWidgetContainer> > > DWClass_multilines_list("multiline",true);
+RegisterWidget<OpenDialogDataWidget<QVector<QColor>, ListDataWidgetDialog<QVector<QColor> > > > DWClass_colors_list("default");
+RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<true> > > > DWClass_files_list_open("open file");
+RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<false> > > > DWClass_files_list_save("save file");
+RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FontDataWidgetContainer> > > DWClass_fonts_list("font");
+RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, MultilineDataWidgetContainer> > > DWClass_multilines_list("multiline");
 
-Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<double>, AnimationDataWidgetDialog<Animation<double>, DoubleDataWidgetContainer > > > DWClass_reals_animation("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<QPointF>, AnimationDataWidgetDialog<Animation<QPointF>, PointDataWidgetContainer > > > DWClass_points_animation("default",true);
-Creator<DataWidgetFactory, OpenDialogDataWidget<Animation<QColor>, AnimationDataWidgetDialog<Animation<QColor> > > > DWClass_colors_animation("default",true);
+RegisterWidget<OpenDialogDataWidget<Animation<double>, AnimationDataWidgetDialog<Animation<double>, DoubleDataWidgetContainer > > > DWClass_reals_animation("default");
+RegisterWidget<OpenDialogDataWidget<Animation<QPointF>, AnimationDataWidgetDialog<Animation<QPointF>, PointDataWidgetContainer > > > DWClass_points_animation("default");
+RegisterWidget<OpenDialogDataWidget<Animation<QColor>, AnimationDataWidgetDialog<Animation<QColor> > > > DWClass_colors_animation("default");

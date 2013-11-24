@@ -31,8 +31,9 @@ HEADERS       = \
 	panda/types/Topology.h \
 	ui/AnimationDataWidgetDialog.h \
 	ui/Annotation.h \
-	ui/DataWidget.h \
 	ui/DatasTable.h \
+	ui/DataWidget.h \
+	ui/DataWidgetFactory.h \
 	ui/DockableDrawStruct.h \
 	ui/EditGradientDialog.h \
 	ui/EditGroupDialog.h \
@@ -142,6 +143,7 @@ SOURCES       = main.cpp \
 	panda/types/Topology.cpp \
 	ui/Annotation.cpp \
 	ui/DatasTable.cpp \
+	ui/DataWidgetFactory.cpp \
 	ui/DockableDrawStruct.cpp \
 	ui/EditGradientDialog.cpp \
 	ui/EditGroupDialog.cpp \
@@ -157,7 +159,8 @@ SOURCES       = main.cpp \
 	ui/RenderView.cpp \
 	ui/SimpleDataWidget.cpp \
 	ui/TableDataWidgetDialog.cpp \
-	ui/UpdateLoggerDialog.cpp
+	ui/UpdateLoggerDialog.cpp \
+	ui/DataWidgetFactory.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

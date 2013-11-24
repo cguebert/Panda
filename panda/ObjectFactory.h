@@ -5,8 +5,6 @@
 
 #include <QSharedPointer>
 #include <QMap>
-#include <iostream>
-#include <typeinfo>
 
 namespace panda
 {

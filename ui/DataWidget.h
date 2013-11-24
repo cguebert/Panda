@@ -15,34 +15,32 @@ class BaseDataWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	struct CreatorArgument
-	{
-		panda::BaseData* data;
-		QWidget* parent;
-	};
+	BaseDataWidget(QWidget* parent, panda::BaseData* d)
+		: QWidget(parent)
+		, baseData(d)
+		, dirty(false)
+		, counter(-1)
+	{ }
 
-	typedef panda::helper::Factory<BaseDataWidget, BaseDataWidget::CreatorArgument> DataWidgetFactory;
+	virtual ~BaseDataWidget() {}
 
-	template<class T>
-	static T* create(T*, const BaseDataWidget::CreatorArgument& arg)
+	inline virtual void setData(panda::BaseData* d)
 	{
-		typename T::MyData* data = dynamic_cast<typename T::MyData*>(arg.data);
-		if(!data)
-			return nullptr;
-		return new T(arg.parent, data);
+		baseData = d;
+		readFromData();
 	}
 
-	static BaseDataWidget* CreateDataWidget(const BaseDataWidget::CreatorArgument &arg)
-	{
-		BaseDataWidget *dataWidget = nullptr;
-		const QString &widgetName = arg.data->getWidget();
-		if (widgetName.isEmpty())
-			dataWidget = DataWidgetFactory::CreateAnyObject(arg);
-		else
-			dataWidget = DataWidgetFactory::CreateObject(widgetName, arg);
+	/// BaseData pointer accessor function.
+	const panda::BaseData* getBaseData() const { return baseData; }
+	panda::BaseData* getBaseData() { return baseData; }
 
-		return dataWidget;
-	}
+	bool isDirty() { return dirty; }
+
+	virtual void setWidgetEnabled(QWidget* /*widget*/, bool /*enable*/ = true) {}
+
+	/// The implementation of this method holds the widget creation and the signal / slot
+	/// connections.
+	virtual QWidget* createWidgets(bool readOnly = true) = 0;
 
 public slots:
 	/// Checks that widget has been edited
@@ -85,51 +83,6 @@ signals:
 	/// the underlying data value.
 	void WidgetDirty(bool);
 
-public:
-	typedef panda::BaseData MyData;
-
-	BaseDataWidget(QWidget* parent, MyData* d)
-		: QWidget(parent)
-		, baseData(d)
-		, dirty(false)
-		, counter(-1)
-	{
-	}
-
-	virtual ~BaseDataWidget()
-	{
-	}
-
-	inline virtual void setData(MyData* d)
-	{
-		baseData = d;
-		readFromData();
-	}
-
-	/// BaseData pointer accessor function.
-	const panda::BaseData* getBaseData() const
-	{
-		return baseData;
-	}
-
-	panda::BaseData* getBaseData()
-	{
-		return baseData;
-	}
-
-	bool isDirty()
-	{
-		return dirty;
-	}
-
-	virtual void setWidgetEnabled(QWidget* /*widget*/, bool /*enable*/ = true)
-	{
-	}
-
-	/// The implementation of this method holds the widget creation and the signal / slot
-	/// connections.
-	virtual QWidget* createWidgets(bool readOnly = true) = 0;
-
 protected:
 	/// The implementation of this method tells how the widget reads the value of the data.
 	virtual void readFromData() = 0;
@@ -157,39 +110,15 @@ public:
 	DataWidget(QWidget* parent, MyTData* d)
 		: BaseDataWidget(parent, d)
 		, Tdata(d)
-	{
-	}
+	{}
 
-	template <class RealObject>
-	static RealObject* create(RealObject*, CreatorArgument& arg)
-	{
-		typename RealObject::MyTData* realData = dynamic_cast<typename RealObject::MyTData*>(arg.data);
-		if(!realData)
-			return nullptr;
-		else
-			return new RealObject(arg.parent, realData);
-	}
-
-	panda::Data<T>* getData()
-	{
-		return Tdata;
-	}
-
-	const panda::Data<T>* getData() const
-	{
-		return Tdata;
-	}
-
-	inline virtual void setData(MyTData* d)
-	{
-		Tdata = d;
-	}
+	panda::Data<T>* getData() { return Tdata; }
+	const panda::Data<T>* getData() const { return Tdata; }
+	inline virtual void setData(MyTData* d) { Tdata = d; }
 
 protected:
 	MyTData* Tdata;
 };
-
-typedef panda::helper::Factory<BaseDataWidget, BaseDataWidget::CreatorArgument> DataWidgetFactory;
 
 #endif // DATAWIDGET_H
 

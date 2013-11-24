@@ -1,3 +1,4 @@
+#include <ui/DataWidgetFactory.h>
 #include <ui/SimpleDataWidget.h>
 #include <panda/helper/Random.h>
 
@@ -295,11 +296,11 @@ public:
 
 //***************************************************************//
 
-Creator<DataWidgetFactory, SimpleDataWidget<int> > DWClass_int("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<int, CheckboxDataWidget> > DWClass_checkbox("checkbox",true);
-Creator<DataWidgetFactory, SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed",true);
-Creator<DataWidgetFactory, SimpleDataWidget<int, EnumDataWidget> > DWClass_enum("enum",true);
-Creator<DataWidgetFactory, SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_int("slider",true);
-Creator<DataWidgetFactory, SimpleDataWidget<double> > DWClass_double("default",true);
-Creator<DataWidgetFactory, SimpleDataWidget<double, SliderDataWidget<double> > > DWClass_slider_double("slider",true);
-Creator<DataWidgetFactory, SimpleDataWidget<QString> > DWClass_string("default",true);
+RegisterWidget<SimpleDataWidget<int> > DWClass_int("default");
+RegisterWidget<SimpleDataWidget<int, CheckboxDataWidget> > DWClass_checkbox("checkbox");
+RegisterWidget<SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed");
+RegisterWidget<SimpleDataWidget<int, EnumDataWidget> > DWClass_enum("enum");
+RegisterWidget<SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_int("slider");
+RegisterWidget<SimpleDataWidget<double> > DWClass_double("default");
+RegisterWidget<SimpleDataWidget<double, SliderDataWidget<double> > > DWClass_slider_double("slider");
+RegisterWidget<SimpleDataWidget<QString> > DWClass_string("default");

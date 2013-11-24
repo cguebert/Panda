@@ -1,9 +1,9 @@
 #include <QtWidgets>
 
 #include <ui/DatasTable.h>
+#include <ui/DataWidgetFactory.h>
 
 #include <panda/PandaObject.h>
-#include <panda/helper/Factory.h>
 
 DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 	: QWidget(parent)
@@ -67,13 +67,12 @@ void DatasTable::populateTable()
 		if (!data->isDisplayed() || data->isReadOnly())
 			continue;
 
-		BaseDataWidget::CreatorArgument arg = { data, this };
-		DataWidgetPtr dataWidget = DataWidgetPtr(BaseDataWidget::CreateDataWidget(arg));
-		bool readOnly = (data->getParent() != nullptr);
+		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()->create(data, this));
 
 		if (dataWidget)
 		{
 			dataWidgets.append(dataWidget);
+			bool readOnly = (data->getParent() != nullptr);
 			QWidget* widget = dataWidget->createWidgets(readOnly);
 			formLayout->addRow(data->getName(), widget);
 		}
@@ -85,8 +84,7 @@ void DatasTable::populateTable()
 		if (!data->isDisplayed() || !data->isReadOnly())
 			continue;
 
-		BaseDataWidget::CreatorArgument arg = { data, this };
-		DataWidgetPtr dataWidget = DataWidgetPtr(BaseDataWidget::CreateDataWidget(arg));
+		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()->create(data, this));
 
 		if (dataWidget)
 		{

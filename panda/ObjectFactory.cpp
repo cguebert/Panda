@@ -2,6 +2,8 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 
+#include <iostream>
+
 namespace panda
 {
 
