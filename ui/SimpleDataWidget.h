@@ -41,8 +41,12 @@ protected:
 
 public:
 	typedef panda::Data<T> TData;
-	SimpleDataWidget(QWidget* parent, TData* d) :
-		DataWidget<T>(parent, d)
+	SimpleDataWidget(QWidget* parent, TData* d)
+		: DataWidget<T>(parent, d)
+	{}
+
+	SimpleDataWidget(QWidget* parent, value_type* pValue, QString name, QString parameters)
+		: DataWidget<T>(parent, pValue, name, parameters)
 	{}
 
 	virtual QWidget* createWidgets(bool readOnly)
@@ -62,8 +66,9 @@ public:
 
 	virtual void writeToData()
 	{
-		auto v = getAccessor();
-		container.writeToData(v.wref());
+		value_type value = getValue();
+		container.writeToData(value);
+		setValue(value);
 	}
 };
 
@@ -94,6 +99,14 @@ protected:
 public:
 	OpenDialogDataWidget(QWidget* parent, TData* d)
 		: DataWidget<T>(parent, d)
+		, dialog(nullptr)
+		, container(nullptr)
+		, label(nullptr)
+		, isReadOnly(false)
+	{}
+
+	OpenDialogDataWidget(QWidget* parent, value_type* pValue, QString name, QString parameters)
+		: DataWidget<T>(parent, pValue, name, parameters)
 		, dialog(nullptr)
 		, container(nullptr)
 		, label(nullptr)
@@ -138,8 +151,9 @@ public:
 	{
 		if(dialog)
 		{
-			auto v = getAccessor();
-			dialog->writeToData(v.wref());
+			value_type value = getValue();
+			dialog->writeToData(value);
+			setValue(value);
 
 			updatePreview();
 		}

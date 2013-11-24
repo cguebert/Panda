@@ -67,7 +67,7 @@ void DatasTable::populateTable()
 		if (!data->isDisplayed() || data->isReadOnly())
 			continue;
 
-		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()->create(data, this));
+		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()->create(this, data));
 
 		if (dataWidget)
 		{
@@ -84,7 +84,7 @@ void DatasTable::populateTable()
 		if (!data->isDisplayed() || !data->isReadOnly())
 			continue;
 
-		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()->create(data, this));
+		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()->create(this, data));
 
 		if (dataWidget)
 		{

@@ -124,6 +124,7 @@ public:
 		mainLayout->addLayout(buttonsLayout);
 
 		setLayout(mainLayout);
+		setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 		setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
 	}

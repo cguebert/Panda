@@ -97,25 +97,48 @@ class DataWidget : public BaseDataWidget
 {
 public:
 	typedef panda::Data<T> TData;
+	typedef typename TData::value_type value_type;
 	typedef typename TData::const_reference const_reference;
-	typedef typename TData::data_accessor accessor;
 
 	DataWidget(QWidget* parent, TData* d)
 		: BaseDataWidget(parent, d->getName(), d->getWidgetData())
 		, data(d)
+		, value(nullptr)
+	{}
+
+	DataWidget(QWidget* parent, value_type* pValue, QString name, QString parameters)
+		: BaseDataWidget(parent, name, parameters)
+		, data(nullptr)
+		, value(pValue)
 	{}
 
 	const_reference getValue()
-	{ return data->getValue(); }
+	{
+		if(data)
+			return data->getValue();
+		else
+			return *value;
+	}
 
-	accessor getAccessor()
-	{ return data->getAccessor(); }
+	void setValue(const_reference v)
+	{
+		if(data)
+			data->setValue(v);
+		else
+			*value = v;
+	}
 
 	int getCounter()
-	{ return data->getCounter(); }
+	{
+		if(data)
+			return data->getCounter();
+		else
+			return -1;
+	}
 
 protected:
 	TData* data;
+	value_type* value;
 };
 
 #endif // DATAWIDGET_H

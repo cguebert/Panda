@@ -19,7 +19,8 @@ class BaseDataWidgetCreator
 {
 public:
 	virtual ~BaseDataWidgetCreator() {}
-	virtual BaseDataWidget* create(panda::BaseData* data, QWidget* parent) = 0;
+	virtual BaseDataWidget* create(QWidget* parent, panda::BaseData* data) const = 0;
+	virtual BaseDataWidget* create(QWidget* parent, void* pValue, QString name, QString parameters) const = 0;
 };
 
 class DataWidgetFactory
@@ -41,10 +42,14 @@ public:
 	};
 
 	static DataWidgetFactory* getInstance();
-	DataWidgetEntry* getEntry(int fullType, QString widgetName);
-	QList<QString> getWidgetNames(int fullType);
+	const DataWidgetEntry* getEntry(int fullType, QString widgetName) const;
+	const BaseDataWidgetCreator* getCreator(int fullType, QString widgetName) const;
+	QList<QString> getWidgetNames(int fullType) const;
 
-	BaseDataWidget* create(panda::BaseData* data, QWidget* parent);
+	BaseDataWidget* create(QWidget* parent, panda::BaseData* data) const;
+	BaseDataWidget* create(QWidget* parent, void* pValue, int fullType,
+						   QString widget, QString name, QString parameters) const;
+
 protected:
 	typedef QSharedPointer<DataWidgetEntry> DataWidgetEntryPtr;
 	typedef QMap< int, QMap<QString, DataWidgetEntryPtr> > RegistryMap;
@@ -58,12 +63,20 @@ template<class T>
 class DataWidgetCreator : public BaseDataWidgetCreator
 {
 public:
-	virtual BaseDataWidget* create(panda::BaseData* data, QWidget* parent)
+	virtual BaseDataWidget* create(QWidget* parent, panda::BaseData* data) const
 	{
 		T::TData* tData = dynamic_cast<T::TData*>(data);
 		if(!data)
 			return nullptr;
 		return new T(parent, tData);
+	}
+
+	virtual BaseDataWidget* create(QWidget* parent, void* pValue, QString name, QString parameters) const
+	{
+		T::TData::value_type* tValue = reinterpret_cast<T::TData::value_type*>(pValue);
+		if(!tValue)
+			return nullptr;
+		return new T(parent, tValue, name, parameters);
 	}
 };
 

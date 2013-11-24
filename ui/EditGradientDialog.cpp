@@ -234,6 +234,7 @@ EditGradientDialog::EditGradientDialog(Gradient grad, QWidget *parent)
 
 	setLayout(vLayout);
 	setMaximumHeight(sizeHint().height());
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	installEventFilter(this);
 }
