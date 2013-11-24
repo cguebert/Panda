@@ -9,7 +9,7 @@
 #include <QString>
 
 /**
-*\brief Abstract Interface of a qwidget which allows to edit a data.
+*\brief Abstract Interface of a QWidget which allows to edit a data.
 */
 class BaseDataWidget : public QWidget
 {
@@ -84,8 +84,7 @@ signals:
 protected:
 	/// The implementation of this method tells how the widget reads the value of the data.
 	virtual void readFromData() = 0;
-	/// The implementation of this methods needs to tell how the widget can write its value
-	/// in the data
+	/// The implementation of this methods needs to tell how the widget can write its value in the data
 	virtual void writeToData() = 0;
 
 	panda::BaseData* baseData;

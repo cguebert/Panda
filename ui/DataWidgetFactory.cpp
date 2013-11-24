@@ -3,8 +3,6 @@
 #include <panda/BaseData.h>
 #include <panda/DataFactory.h>
 
-#include <iostream>
-
 DataWidgetFactory* DataWidgetFactory::getInstance()
 {
 	static DataWidgetFactory instance;
@@ -14,17 +12,20 @@ DataWidgetFactory* DataWidgetFactory::getInstance()
 BaseDataWidget* DataWidgetFactory::create(panda::BaseData* data, QWidget* parent)
 {
 	int fullType = data->getDataTrait()->fullTypeId();
-	QString widgetName = data->getWidget();
-	DataWidgetEntry* entry = getEntry(fullType, widgetName);
-	if(!entry)
-	{
-		entry = getEntry(fullType, "default");
-		if(entry)
-			std::cerr << "No widget named " << widgetName.toStdString() << ", using the default one." << std::endl;
-		else
-			std::cerr << "No widget for the type " << panda::DataFactory::typeToName(fullType).toStdString() << std::endl;
-	}
+	const QMap<QString, DataWidgetEntryPtr>& map = registry.value(fullType);
+	if(map.isEmpty())
+		return nullptr;
 
+	// Special case : for lists and animations, we use the same DataWidget which will create other ones later
+	if(map.size() == 1)
+		return map.begin().value()->creator->create(data, parent);
+
+	QString widgetName = data->getWidget();
+	DataWidgetEntry* entry = map.value(widgetName).data();
+	if(!entry)	// If the custom widget doesn't exist, use the default one
+		entry = map.value("default").data();
+
+	// If a default one doesn't exist, we don't know which one to use
 	if(entry)
 		return entry->creator->create(data, parent);
 

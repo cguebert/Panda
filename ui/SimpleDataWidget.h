@@ -105,7 +105,7 @@ public:
 		isReadOnly = readOnly;
 		container = new QWidget(this);
 
-		label = new QLabel("toto");
+		label = new QLabel("    ");
 		label->setEnabled(!readOnly);
 
 		QPushButton* pushButton = new QPushButton("...");
