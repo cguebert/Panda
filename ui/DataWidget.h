@@ -15,18 +15,19 @@ class BaseDataWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	BaseDataWidget(QWidget* parent, panda::BaseData* d)
+	BaseDataWidget(QWidget* parent, QString name, QString parameters)
 		: QWidget(parent)
-		, baseData(d)
+		, m_name(name)
+		, m_parameters(parameters)
 		, dirty(false)
 		, counter(-1)
 	{ }
 
 	virtual ~BaseDataWidget() {}
 
-	QString getParameters() { return baseData->getWidgetData(); }
-
-	QString getName() { return baseData->getName(); }
+	QString getName() { return m_name; }
+	QString getParameters() { return m_parameters; }
+	virtual int getCounter() { return -1; }	// If <0, always update
 
 	bool isDirty() { return dirty; }
 
@@ -41,7 +42,7 @@ public slots:
 			writeToData();
 
 		dirty = false;
-		counter = baseData->getCounter();
+		counter = getCounter();
 	}
 
 	/// First checks that the widget is not currently being edited
@@ -52,7 +53,8 @@ public slots:
 	{
 		if(!dirty)
 		{
-			if(counter != baseData->getCounter())
+			int newCounter = getCounter();
+			if(counter != newCounter || newCounter < 0)
 			{
 				readFromData();
 				this->update();
@@ -80,33 +82,37 @@ protected:
 	/// The implementation of this methods needs to tell how the widget can write its value in the data
 	virtual void writeToData() = 0;
 
-	panda::BaseData* baseData;
+	QString m_name, m_parameters;
 	bool dirty;
 	int counter;
 };
 
 /**
 *\brief This class is basically the same as DataWidget, except that it
-* takes a template parameter so the actual type of Data can be retrieved
-* through the getData() accessor. In most cases you will need to derive
-* from this class to implement the edition of your data in the GUI.
+* takes a template parameter so the actual type of the value is known.
+* It can be read via getValue and read with getAccessor.
 **/
 template<class T>
 class DataWidget : public BaseDataWidget
 {
 public:
 	typedef panda::Data<T> TData;
+	typedef typename TData::const_reference const_reference;
+	typedef typename TData::data_accessor accessor;
 
 	DataWidget(QWidget* parent, TData* d)
-		: BaseDataWidget(parent, d)
+		: BaseDataWidget(parent, d->getName(), d->getWidgetData())
 		, data(d)
 	{}
 
-	typename TData::const_reference getValue()
+	const_reference getValue()
 	{ return data->getValue(); }
 
-	typename TData::data_accessor getAccessor()
+	accessor getAccessor()
 	{ return data->getAccessor(); }
+
+	int getCounter()
+	{ return data->getCounter(); }
 
 protected:
 	TData* data;
