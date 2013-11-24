@@ -36,8 +36,6 @@ public:
 
 	bool isDirty() { return dirty; }
 
-	virtual void setWidgetEnabled(QWidget* /*widget*/, bool /*enable*/ = true) {}
-
 	/// The implementation of this method holds the widget creation and the signal / slot
 	/// connections.
 	virtual QWidget* createWidgets(bool readOnly = true) = 0;

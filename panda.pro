@@ -159,8 +159,7 @@ SOURCES       = main.cpp \
 	ui/RenderView.cpp \
 	ui/SimpleDataWidget.cpp \
 	ui/TableDataWidgetDialog.cpp \
-	ui/UpdateLoggerDialog.cpp \
-	ui/DataWidgetFactory.cpp
+	ui/UpdateLoggerDialog.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
