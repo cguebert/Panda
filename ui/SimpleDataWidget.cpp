@@ -165,6 +165,7 @@ public:
 		spinBox->setEnabled(!readOnly);
 
 		QPushButton* button = new QPushButton("Random");
+		button->setEnabled(!readOnly);
 		QObject::connect(button, SIGNAL(clicked()), this, SLOT(onShowDialog()));
 
 		QHBoxLayout* layout = new QHBoxLayout;
