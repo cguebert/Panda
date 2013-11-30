@@ -20,7 +20,8 @@ class BaseDataWidgetCreator
 public:
 	virtual ~BaseDataWidgetCreator() {}
 	virtual BaseDataWidget* create(QWidget* parent, panda::BaseData* data) const = 0;
-	virtual BaseDataWidget* create(QWidget* parent, void* pValue, QString name, QString parameters) const = 0;
+	virtual BaseDataWidget* create(QWidget* parent, void* pValue,
+								   QString widgetName, QString name, QString parameters) const = 0;
 };
 
 class DataWidgetFactory
@@ -48,7 +49,7 @@ public:
 
 	BaseDataWidget* create(QWidget* parent, panda::BaseData* data) const;
 	BaseDataWidget* create(QWidget* parent, void* pValue, int fullType,
-						   QString widget, QString name, QString parameters) const;
+						   QString widget, QString displayName, QString parameters) const;
 
 protected:
 	typedef QSharedPointer<DataWidgetEntry> DataWidgetEntryPtr;
@@ -71,12 +72,13 @@ public:
 		return new T(parent, tData);
 	}
 
-	virtual BaseDataWidget* create(QWidget* parent, void* pValue, QString name, QString parameters) const
+	virtual BaseDataWidget* create(QWidget* parent, void* pValue,
+								   QString widgetName, QString name, QString parameters) const
 	{
 		T::TData::value_type* tValue = reinterpret_cast<T::TData::value_type*>(pValue);
 		if(!tValue)
 			return nullptr;
-		return new T(parent, tValue, name, parameters);
+		return new T(parent, tValue, widgetName, name, parameters);
 	}
 };
 

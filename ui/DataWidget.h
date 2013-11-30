@@ -15,21 +15,23 @@ class BaseDataWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	BaseDataWidget(QWidget* parent, QString name, QString parameters)
+	BaseDataWidget(QWidget* parent, QString widgetName, QString name, QString parameters)
 		: QWidget(parent)
-		, m_name(name)
+		, m_widgetName(widgetName)
+		, m_displayName(name)
 		, m_parameters(parameters)
-		, dirty(false)
-		, counter(-1)
+		, m_dirty(false)
+		, m_counter(-1)
 	{ }
 
 	virtual ~BaseDataWidget() {}
 
-	QString getName() { return m_name; }
+	QString getDisplayName() { return m_displayName; }
 	QString getParameters() { return m_parameters; }
+	QString getWidgetName() { return m_widgetName; }
 	virtual int getCounter() { return -1; }	// If <0, always update
 
-	bool isDirty() { return dirty; }
+	bool isDirty() { return m_dirty; }
 
 	/// The implementation of this method holds the widget creation and the signal / slot connections.
 	virtual QWidget* createWidgets(bool readOnly = true) = 0;
@@ -38,11 +40,11 @@ public slots:
 	/// Checks that widget has been edited
 	void updateDataValue()
 	{
-		if(dirty)
+		if(m_dirty)
 			writeToData();
 
-		dirty = false;
-		counter = getCounter();
+		m_dirty = false;
+		m_counter = getCounter();
 	}
 
 	/// First checks that the widget is not currently being edited
@@ -51,12 +53,13 @@ public slots:
 	/// ultimately read the data value.
 	void updateWidgetValue()
 	{
-		if(!dirty)
+		if(!m_dirty)
 		{
 			int newCounter = getCounter();
-			if(counter != newCounter || newCounter < 0)
+			if(m_counter != newCounter || newCounter < 0)
 			{
 				readFromData();
+				m_counter = newCounter;
 				this->update();
 			}
 		}
@@ -65,7 +68,7 @@ public slots:
 	/// value is out of sync with the underlying data value.
 	void setWidgetDirty(bool b = true)
 	{
-		dirty = b;
+		m_dirty = b;
 		updateDataValue();
 		emit WidgetDirty(b);
 	}
@@ -82,9 +85,9 @@ protected:
 	/// The implementation of this methods needs to tell how the widget can write its value in the data
 	virtual void writeToData() = 0;
 
-	QString m_name, m_parameters;
-	bool dirty;
-	int counter;
+	QString m_widgetName, m_displayName, m_parameters;
+	bool m_dirty;
+	int m_counter;
 };
 
 /**
@@ -101,44 +104,64 @@ public:
 	typedef typename TData::const_reference const_reference;
 
 	DataWidget(QWidget* parent, TData* d)
-		: BaseDataWidget(parent, d->getName(), d->getWidgetData())
-		, data(d)
-		, value(nullptr)
+		: BaseDataWidget(parent, d->getWidget(), d->getName(), d->getWidgetData())
+		, m_data(d)
+		, m_value(nullptr)
 	{}
 
-	DataWidget(QWidget* parent, value_type* pValue, QString name, QString parameters)
-		: BaseDataWidget(parent, name, parameters)
-		, data(nullptr)
-		, value(pValue)
+	DataWidget(QWidget* parent, value_type* pValue, QString widgetName, QString name, QString parameters)
+		: BaseDataWidget(parent, widgetName, name, parameters)
+		, m_data(nullptr)
+		, m_value(pValue)
 	{}
 
 	const_reference getValue()
 	{
-		if(data)
-			return data->getValue();
+		if(m_data)
+			return m_data->getValue();
 		else
-			return *value;
+			return *m_value;
 	}
 
 	void setValue(const_reference v)
 	{
-		if(data)
-			data->setValue(v);
+		if(m_data)
+			m_data->setValue(v);
 		else
-			*value = v;
+			*m_value = v;
 	}
 
 	int getCounter()
 	{
-		if(data)
-			return data->getCounter();
+		if(m_data)
+			return m_data->getCounter();
 		else
 			return -1;
 	}
 
+	void changeDataPointer(TData* newData)
+	{
+		if(newData != m_data)
+		{
+			m_data = newData;
+			m_value = nullptr;
+			updateWidgetValue();
+		}
+	}
+
+	void changeValuePointer(value_type* newValue)
+	{
+		if(newValue != m_value)
+		{
+			m_data = nullptr;
+			m_value = newValue;
+			updateWidgetValue();
+		}
+	}
+
 protected:
-	TData* data;
-	value_type* value;
+	TData* m_data;
+	value_type* m_value;
 };
 
 #endif // DATAWIDGET_H

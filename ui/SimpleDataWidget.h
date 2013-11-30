@@ -45,8 +45,8 @@ public:
 		: DataWidget<T>(parent, d)
 	{}
 
-	SimpleDataWidget(QWidget* parent, value_type* pValue, QString name, QString parameters)
-		: DataWidget<T>(parent, pValue, name, parameters)
+	SimpleDataWidget(QWidget* parent, value_type* pValue, QString widgetName, QString name, QString parameters)
+		: DataWidget<T>(parent, pValue, widgetName, name, parameters)
 	{}
 
 	virtual QWidget* createWidgets(bool readOnly)
@@ -105,8 +105,8 @@ public:
 		, isReadOnly(false)
 	{}
 
-	OpenDialogDataWidget(QWidget* parent, value_type* pValue, QString name, QString parameters)
-		: DataWidget<T>(parent, pValue, name, parameters)
+	OpenDialogDataWidget(QWidget* parent, value_type* pValue, QString widgetName, QString name, QString parameters)
+		: DataWidget<T>(parent, pValue, widgetName, name, parameters)
 		, dialog(nullptr)
 		, container(nullptr)
 		, label(nullptr)
@@ -162,7 +162,7 @@ public:
 	virtual void onShowDialog()
 	{
 		if(!dialog)
-			dialog = new Dialog(container, isReadOnly, getName());
+			dialog = new Dialog(this, isReadOnly, getDisplayName());
 
 		dialog->readFromData(getValue());
 		if(dialog->exec() == QDialog::Accepted && !isReadOnly)

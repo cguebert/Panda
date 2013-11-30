@@ -342,12 +342,19 @@ RegisterWidget<SimpleDataWidget<QString, FileDataWidgetContainer<false> > > DWCl
 RegisterWidget<SimpleDataWidget<QString, FontDataWidgetContainer> > DWClass_font("font");
 RegisterWidget<SimpleDataWidget<QString, MultilineDataWidgetContainer> > DWClass_multiline("multiline");
 
+RegisterWidget<OpenDialogDataWidget<QVector<int>, ListDataWidgetDialog<QVector<int> > > > DWClass_ints_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<QVector<double>, ListDataWidgetDialog<QVector<double> > > > DWClass_doubles_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<QVector<QColor>, ListDataWidgetDialog<QVector<QColor> > > > DWClass_colors_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<QVector<QPointF>, ListDataWidgetDialog<QVector<QPointF> > > > DWClass_points_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<QVector<QRectF>, ListDataWidgetDialog<QVector<QRectF> > > > DWClass_rects_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString> > > > DWClass_strings_list_generic("generic");
+/*
 RegisterWidget<OpenDialogDataWidget<QVector<QColor>, ListDataWidgetDialog<QVector<QColor> > > > DWClass_colors_list("default");
 RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<true> > > > DWClass_files_list_open("open file");
 RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FileDataWidgetContainer<false> > > > DWClass_files_list_save("save file");
 RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, FontDataWidgetContainer> > > DWClass_fonts_list("font");
 RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString>, MultilineDataWidgetContainer> > > DWClass_multilines_list("multiline");
-
+*/
 RegisterWidget<OpenDialogDataWidget<Animation<double>, AnimationDataWidgetDialog<Animation<double>, DoubleDataWidgetContainer > > > DWClass_reals_animation("default");
 RegisterWidget<OpenDialogDataWidget<Animation<QPointF>, AnimationDataWidgetDialog<Animation<QPointF>, PointDataWidgetContainer > > > DWClass_points_animation("default");
 RegisterWidget<OpenDialogDataWidget<Animation<QColor>, AnimationDataWidgetDialog<Animation<QColor> > > > DWClass_colors_animation("default");

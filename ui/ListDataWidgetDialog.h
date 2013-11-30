@@ -2,7 +2,9 @@
 #define LISTDATAWIDGETDIALOG_H
 
 #include <ui/DataWidget.h>
+#include <ui/DataWidgetFactory.h>
 #include <ui/StructTraits.h>
+#include <panda/types/DataTraits.h>
 
 #include <QtWidgets>
 
@@ -14,10 +16,7 @@ public:
 		: QDialog(parent)
 	{}
 
-signals:
-
 public slots:
-	virtual void refreshPreviews() {}
 	virtual void resizeValue() {}
 };
 
@@ -41,7 +40,7 @@ protected:
 	ObjectWithPreview* object;
 };
 
-template<class T, class Container = DataWidgetContainer< VectorDataTrait<T>::row_type > >
+template<class T>
 class ListDataWidgetDialog : public BaseListDataWidgetDialog
 {
 protected:
@@ -50,23 +49,29 @@ protected:
 	typedef VectorDataTrait<value_type> row_trait;
 	typedef typename row_trait::row_type row_type;
 
-	typedef QSharedPointer<Container> ContainerPtr;
+	typedef DataWidget<row_type> ChildDataWidget;
+	typedef QSharedPointer<ChildDataWidget> DataWidgetPtr;
 
 	bool readOnly;
 	QScrollArea* scrollArea;
 	QFormLayout* formLayout;
 	QWidget* resizeWidget;
 	QSpinBox* resizeSpinBox;
-	QVector<ContainerPtr> containers;
+	DataWidget<value_type>* parentDW;
+	value_type copyValue;
+	QVector<DataWidgetPtr> dataWidgets;
+	int rowTypeFullId;
+	const BaseDataWidgetCreator* dataWidgetCreator;
 
 public:
-	ListDataWidgetDialog(QWidget* parent, bool readOnly, QString name)
+	ListDataWidgetDialog(DataWidget<value_type>* parent, bool readOnly, QString name)
 		: BaseListDataWidgetDialog(parent)
 		, readOnly(readOnly)
 		, scrollArea(nullptr)
 		, formLayout(nullptr)
 		, resizeWidget(nullptr)
 		, resizeSpinBox(nullptr)
+		, parentDW(parent)
 	{
 		QVBoxLayout* mainLayout = new QVBoxLayout();
 
@@ -114,63 +119,47 @@ public:
 		setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 		setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
-	}
 
-	void updateTable(const value_type& v)
-	{
-		int nb = row_trait::size(v);
-
-		for(int i = 0; i < nb; ++i)
-		{
-			const row_type* row = row_trait::get(v, i);
-			if(row)
-				containers[i]->readFromData(*row);
-		}
+		rowTypeFullId = panda::types::DataTrait<row_type>::fullTypeId();
+		dataWidgetCreator = DataWidgetFactory::getInstance()->getCreator(rowTypeFullId, parentDW->getWidgetName());
 	}
 
 	virtual void readFromData(const value_type& v)
 	{
-		resizeContainers(row_trait::size(v));
-		updateTable(v);
+		copyValue = v;
+		resize(row_trait::size(v));
+
+		for(auto child : dataWidgets)
+			child->updateWidgetValue();
 
 		if(resizeSpinBox)
-			resizeSpinBox->setValue(containers.size());
-	}
-
-	value_type readFromTable()
-	{
-		value_type v;
-		int nbRows = containers.size();
-		row_trait::resize(v, nbRows);
-
-		for(int i = 0; i < nbRows; ++i)
-		{
-			const row_type* row = row_trait::get(v, i);
-			if(row)
-			{
-				row_type val;
-				containers[i]->writeToData(val);
-				row_trait::set(v, val, i);
-			}
-		}
-
-		return v;
+			resizeSpinBox->setValue(dataWidgets.size());
 	}
 
 	virtual void writeToData(value_type& v)
 	{
-		v = readFromTable();
+		for(auto child : dataWidgets)
+			child->updateDataValue();
+
+		v = copyValue;
 	}
 
-	void resizeContainers(int nb)
+	void resize(int nb)
 	{
-		int oldSize = containers.size();
+		int oldSize = dataWidgets.size();
 		if(oldSize == nb)
 			return;
 
+		row_trait::resize(copyValue, nb);
+
+		// Update value pointers if they changed
+		int updateNb = qMin(nb, oldSize);
+		for(int i=0; i<updateNb; ++i)
+			dataWidgets[i]->changeValuePointer(row_trait::get(copyValue, i));
+
 		if(oldSize > nb)
 		{	// Removing
-			containers.resize(nb);
+			dataWidgets.resize(nb);
 			for(int i=oldSize-1; i>=nb; --i)
 			{
 				QLayoutItem* label = formLayout->itemAt(i, QFormLayout::LabelRole);
@@ -183,16 +172,26 @@ public:
 				delete field;
 			}
 		}
-		else
+		else if(dataWidgetCreator)
 		{	// Adding
+			QString widget = parentDW->getWidgetName(),
+					parentName = parentDW->getDisplayName(),
+					parameters = parentDW->getParameters();
 			for(int i=oldSize; i<nb; ++i)
 			{
-				ContainerPtr container = ContainerPtr(new Container());
-				containers.push_back(container);
-				QWidget* widget = container->createWidgets(this, readOnly);
-				container->updatePreview();
-				connect(container.data(), SIGNAL(editingFinished()), this, SLOT(refreshPreviews()));
-				formLayout->addRow(QString::number(i), widget);
+				QString displayName = parentName + " / " + QString::number(i);
+				row_type* pValue = row_trait::get(copyValue, i);
+				BaseDataWidget* baseDataWidget = DataWidgetFactory::getInstance()
+						->create(this, pValue, rowTypeFullId, widget, displayName, parameters);
+				ChildDataWidget* dataWidget = dynamic_cast<ChildDataWidget*>(baseDataWidget);
+				if(dataWidget)
+				{
+					dataWidgets.push_back(DataWidgetPtr(dataWidget));
+					QWidget* widget = dataWidget->createWidgets(readOnly);
+					formLayout->addRow(QString::number(i), widget);
+				}
+				else
+					delete baseDataWidget;
 			}
 		}
 	}
@@ -200,13 +199,7 @@ public:
 	virtual void resizeValue()
 	{
 		int nb = resizeSpinBox->value();
-		resizeContainers(nb);
-	}
-
-	virtual void refreshPreviews()
-	{
-		for(ContainerPtr container : containers)
-			container->updatePreview();
+		resize(nb);
 	}
 };
 

@@ -21,11 +21,11 @@ BaseDataWidget* DataWidgetFactory::create(QWidget* parent, panda::BaseData* data
 }
 
 BaseDataWidget* DataWidgetFactory::create(QWidget* parent, void* pValue, int fullType,
-										  QString widget, QString name, QString parameters) const
+										  QString widget, QString displayName, QString parameters) const
 {
 	const BaseDataWidgetCreator* creator = getCreator(fullType, widget);
 	if(creator)
-		return creator->create(parent, pValue, name, parameters);
+		return creator->create(parent, pValue, widget, displayName, parameters);
 	return nullptr;
 }
 
@@ -40,7 +40,10 @@ const BaseDataWidgetCreator* DataWidgetFactory::getCreator(int fullType, QString
 		return map.begin().value()->creator.data();
 
 	DataWidgetEntry* entry = map.value(widgetName).data();
-	if(!entry)	// If the custom widget doesn't exist, use the default one
+	if(!entry)	// If the custom widget doesn't exist, first look for a generic one
+		entry = map.value("generic").data();
+
+	if(!entry)	// Then use the default one
 		entry = map.value("default").data();
 
 	// If a default one doesn't exist, we don't know which one to use

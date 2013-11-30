@@ -126,6 +126,10 @@ public:
 	{
 		return !i ? &v : nullptr;
 	}
+	static row_type* get(vector_type& v, int i=0)
+	{
+		return !i ? &v : nullptr;
+	}
 	static void set(vector_type& v, const row_type& r, int i=0)
 	{
 		if(!i)
@@ -148,6 +152,10 @@ public:
 	static int size(const vector_type& v) { return v.size(); }
 	static QStringList header(const vector_type&) { return QStringList{}; }
 	static const row_type* get(const vector_type& v, int i=0)
+	{
+		return (i<size(v)) ? &(v[i]) : nullptr;
+	}
+	static row_type* get(vector_type& v, int i=0)
 	{
 		return (i<size(v)) ? &(v[i]) : nullptr;
 	}
