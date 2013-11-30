@@ -1,4 +1,4 @@
-#include <ui/GenericObjectDrawStruct.h>
+#include <ui/drawstruct/GenericObjectDrawStruct.h>
 #include <ui/GraphView.h>
 
 #include <panda/GenericObject.h>

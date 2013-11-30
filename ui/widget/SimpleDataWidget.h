@@ -1,9 +1,9 @@
 #ifndef SIMPLEDATAWIDGET_H
 #define SIMPLEDATAWIDGET_H
 
-#include <ui/DataWidget.h>
+#include <ui/widget/DataWidget.h>
+#include <ui/widget/StructTraits.h>
 #include <panda/types/DataTraits.h>
-#include <ui/StructTraits.h>
 
 #include <QComboBox>
 

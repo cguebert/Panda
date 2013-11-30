@@ -1,7 +1,7 @@
 #include <QtWidgets>
 
 #include <ui/DatasTable.h>
-#include <ui/DataWidgetFactory.h>
+#include <ui/widget/DataWidgetFactory.h>
 
 #include <panda/PandaObject.h>
 

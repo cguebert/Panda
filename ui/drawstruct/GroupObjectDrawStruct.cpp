@@ -1,4 +1,4 @@
-#include <ui/GroupObjectDrawStruct.h>
+#include <ui/drawstruct/GroupObjectDrawStruct.h>
 #include <ui/GraphView.h>
 
 #include <panda/PandaDocument.h>

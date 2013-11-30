@@ -1,9 +1,10 @@
 #ifndef GRAPHVIEW_H
 #define GRAPHVIEW_H
 
+#include <ui/drawstruct/ObjectDrawStruct.h>
+
 #include <QWidget>
 #include <QMap>
-#include <ui/ObjectDrawStruct.h>
 #include <QDomDocument>
 
 namespace panda

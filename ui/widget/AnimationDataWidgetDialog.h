@@ -3,7 +3,9 @@
 
 #include <panda/Data.h>
 #include <panda/types/Animation.h>
-#include <ui/StructTraits.h>
+
+#include <ui/widget/StructTraits.h>
+
 #include <QtWidgets>
 
 class BaseAnimationDataWidgetDialog : public QDialog

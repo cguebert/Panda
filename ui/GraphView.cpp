@@ -2,9 +2,9 @@
 #include <cmath>
 
 #include <ui/GraphView.h>
-#include <ui/ObjectDrawStruct.h>
 #include <ui/QuickCreateDialog.h>
-#include <ui/DockableDrawStruct.h>
+#include <ui/drawstruct/ObjectDrawStruct.h>
+#include <ui/drawstruct/DockableDrawStruct.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <ui/UpdateLoggerDialog.h>

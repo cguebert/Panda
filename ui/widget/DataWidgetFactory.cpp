@@ -1,4 +1,4 @@
-#include <ui/DataWidgetFactory.h>
+#include <ui/widget/DataWidgetFactory.h>
 
 #include <panda/BaseData.h>
 #include <panda/DataFactory.h>

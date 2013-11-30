@@ -5,7 +5,7 @@
 #include <QList>
 #include <QSharedPointer>
 
-#include <ui/DataWidget.h>
+#include <ui/widget/DataWidget.h>
 
 class QStackedLayout;
 class QLabel;

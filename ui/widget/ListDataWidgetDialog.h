@@ -1,9 +1,9 @@
 #ifndef LISTDATAWIDGETDIALOG_H
 #define LISTDATAWIDGETDIALOG_H
 
-#include <ui/DataWidget.h>
-#include <ui/DataWidgetFactory.h>
-#include <ui/StructTraits.h>
+#include <ui/widget/DataWidget.h>
+#include <ui/widget/DataWidgetFactory.h>
+#include <ui/widget/StructTraits.h>
 #include <panda/types/DataTraits.h>
 
 #include <QtWidgets>

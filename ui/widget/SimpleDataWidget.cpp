@@ -1,5 +1,5 @@
-#include <ui/DataWidgetFactory.h>
-#include <ui/SimpleDataWidget.h>
+#include <ui/widget/DataWidgetFactory.h>
+#include <ui/widget/SimpleDataWidget.h>
 #include <panda/helper/Random.h>
 
 #include <QtWidgets>

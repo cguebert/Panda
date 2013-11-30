@@ -1,7 +1,7 @@
 #ifndef GENERICOBJECTDRAWSTRUCT_H
 #define GENERICOBJECTDRAWSTRUCT_H
 
-#include <ui/ObjectDrawStruct.h>
+#include <ui/drawstruct/ObjectDrawStruct.h>
 
 namespace panda
 {

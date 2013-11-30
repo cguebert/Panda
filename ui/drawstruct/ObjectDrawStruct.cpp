@@ -1,6 +1,6 @@
 #include <QtWidgets>
 
-#include <ui/ObjectDrawStruct.h>
+#include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/GraphView.h>
 
 #include <panda/PandaObject.h>

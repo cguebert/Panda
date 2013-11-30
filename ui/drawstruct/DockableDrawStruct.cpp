@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 
 #include <ui/GraphView.h>
-#include <ui/DockableDrawStruct.h>
+#include <ui/drawstruct/DockableDrawStruct.h>
 
 #include <QPainter>
 

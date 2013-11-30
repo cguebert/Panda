@@ -1,7 +1,7 @@
-#include <ui/ListDataWidgetDialog.h>
-#include <ui/AnimationDataWidgetDialog.h>
-#include <ui/SimpleDataWidget.h>
-#include <ui/DataWidgetFactory.h>
+#include <ui/widget/ListDataWidgetDialog.h>
+#include <ui/widget/AnimationDataWidgetDialog.h>
+#include <ui/widget/SimpleDataWidget.h>
+#include <ui/widget/DataWidgetFactory.h>
 
 using panda::types::Animation;
 

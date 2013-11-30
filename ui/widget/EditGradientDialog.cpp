@@ -1,10 +1,10 @@
 #include <QtWidgets>
 
-#include <ui/ListDataWidgetDialog.h>
-#include <ui/SimpleDataWidget.h>
-#include <ui/EditGradientDialog.h>
-#include <ui/AnimationDataWidgetDialog.h>
-#include <ui/DataWidgetFactory.h>
+#include <ui/widget/ListDataWidgetDialog.h>
+#include <ui/widget/SimpleDataWidget.h>
+#include <ui/widget/EditGradientDialog.h>
+#include <ui/widget/AnimationDataWidgetDialog.h>
+#include <ui/widget/DataWidgetFactory.h>
 
 #include <panda/types/Gradient.h>
 

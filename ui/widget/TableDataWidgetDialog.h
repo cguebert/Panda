@@ -1,8 +1,8 @@
 #ifndef TABLEDATAWIDGETDIALOG_H
 #define TABLEDATAWIDGETDIALOG_H
 
-#include <ui/DataWidget.h>
-#include <ui/StructTraits.h>
+#include <ui/widget/DataWidget.h>
+#include <ui/widget/StructTraits.h>
 #include <panda/types/DataTraits.h>
 
 #include <QtWidgets>

@@ -29,28 +29,29 @@ HEADERS       = \
 	panda/types/DataTypeId.h \
 	panda/types/Gradient.h \
 	panda/types/Topology.h \
-	ui/AnimationDataWidgetDialog.h \
 	ui/Annotation.h \
 	ui/DatasTable.h \
-	ui/DataWidget.h \
-	ui/DataWidgetFactory.h \
-	ui/DockableDrawStruct.h \
-	ui/EditGradientDialog.h \
 	ui/EditGroupDialog.h \
-	ui/GenericObjectDrawStruct.h \
 	ui/GraphView.h \
-	ui/GroupObjectDrawStruct.h \
 	ui/LayersTab.h \
-	ui/ListDataWidgetDialog.h \
 	ui/MainWindow.h \
-	ui/ObjectDrawStruct.h \
 	ui/OpenGLRenderView.h \
 	ui/QuickCreateDialog.h \
 	ui/RenderView.h \
-	ui/SimpleDataWidget.h \
-	ui/StructTraits.h \
-	ui/TableDataWidgetDialog.h \
-	ui/UpdateLoggerDialog.h
+	ui/UpdateLoggerDialog.h \
+	ui/drawstruct/AnnotationDrawStruct.h \
+	ui/drawstruct/DockableDrawStruct.h \
+	ui/drawstruct/GenericObjectDrawStruct.h \
+	ui/drawstruct/GroupObjectDrawStruct.h \
+	ui/drawstruct/ObjectDrawStruct.h \
+	ui/widget/AnimationDataWidgetDialog.h \
+	ui/widget/DataWidget.h \
+	ui/widget/DataWidgetFactory.h \
+	ui/widget/EditGradientDialog.h \
+	ui/widget/ListDataWidgetDialog.h \
+	ui/widget/SimpleDataWidget.h \
+	ui/widget/StructTraits.h \
+	ui/widget/TableDataWidgetDialog.h
 SOURCES       = main.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
@@ -143,23 +144,24 @@ SOURCES       = main.cpp \
 	panda/types/Topology.cpp \
 	ui/Annotation.cpp \
 	ui/DatasTable.cpp \
-	ui/DataWidgetFactory.cpp \
-	ui/DockableDrawStruct.cpp \
-	ui/EditGradientDialog.cpp \
 	ui/EditGroupDialog.cpp \
-	ui/GenericObjectDrawStruct.cpp \
 	ui/GraphView.cpp \
-	ui/GroupObjectDrawStruct.cpp \
 	ui/LayersTab.cpp \
-	ui/ListDataWidgetDialog.cpp \
 	ui/MainWindow.cpp \
-	ui/ObjectDrawStruct.cpp \
 	ui/OpenGLRenderView.cpp \
 	ui/QuickCreateDialog.cpp \
 	ui/RenderView.cpp \
-	ui/SimpleDataWidget.cpp \
-	ui/TableDataWidgetDialog.cpp \
-	ui/UpdateLoggerDialog.cpp
+	ui/UpdateLoggerDialog.cpp \
+	ui/drawstruct/AnnotationDrawStruct.cpp \
+	ui/drawstruct/DockableDrawStruct.cpp \
+	ui/drawstruct/GenericObjectDrawStruct.cpp \
+	ui/drawstruct/GroupObjectDrawStruct.cpp \
+	ui/drawstruct/ObjectDrawStruct.cpp \
+	ui/widget/EditGradientDialog.cpp \
+	ui/widget/DataWidgetFactory.cpp \
+	ui/widget/ListDataWidgetDialog.cpp \
+	ui/widget/SimpleDataWidget.cpp \
+	ui/widget/TableDataWidgetDialog.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \
