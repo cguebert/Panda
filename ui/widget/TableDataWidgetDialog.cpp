@@ -1,8 +1,8 @@
 #include <ui/widget/TableDataWidgetDialog.h>
-#include <ui/widget/SimpleDataWidget.h>
+#include <ui/widget/OpenDialogDataWidget.h>
 #include <ui/widget/DataWidgetFactory.h>
 
-RegisterWidget<OpenDialogDataWidget<QPointF, TableDataWidgetDialog<QPointF> > > DWClass_point("default");
+//RegisterWidget<OpenDialogDataWidget<QPointF, TableDataWidgetDialog<QPointF> > > DWClass_point("default");
 RegisterWidget<OpenDialogDataWidget<QRectF, TableDataWidgetDialog<QRectF> > > DWClass_rect("default");
 
 RegisterWidget<OpenDialogDataWidget<QVector<int>, TableDataWidgetDialog<QVector<int> > > > DWClass_ints_list("default");

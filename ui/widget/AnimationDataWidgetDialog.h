@@ -1,10 +1,12 @@
 #ifndef ANIMATIONDATAWIDGETDIALOG_H
 #define ANIMATIONDATAWIDGETDIALOG_H
 
-#include <panda/Data.h>
-#include <panda/types/Animation.h>
-
+#include <ui/widget/DataWidget.h>
+#include <ui/widget/DataWidgetFactory.h>
 #include <ui/widget/StructTraits.h>
+
+#include <panda/types/Animation.h>
+#include <panda/types/DataTraits.h>
 
 #include <QtWidgets>
 
@@ -21,37 +23,43 @@ signals:
 public slots:
 	virtual void refreshPreviews() {}
 	virtual void resizeValue() {}
-	virtual void changeExtend(int) {}
-	virtual void changeInterpolation(int) {}
 };
 
-template<class T, class Container = DataWidgetContainer< T::value_type > >
+template<class T>
 class AnimationDataWidgetDialog : public BaseAnimationDataWidgetDialog
 {
 protected:
 	typedef T animation_type;
 	typedef panda::Data<T> data_type;
 	typedef typename animation_type::value_type value_type;
+	typedef typename animation_type::ValuesList ValuesList;
+	typedef VectorDataTrait<ValuesList> values_list_trait;
 
-	typedef QSharedPointer<Container> ContainerPtr;
+	typedef DataWidget<value_type> ChildDataWidget;
+	typedef QSharedPointer<ChildDataWidget> DataWidgetPtr;
 
 	bool readOnly;
 	QScrollArea* scrollArea;
 	QGridLayout* gridLayout;
 	QWidget* resizeWidget;
 	QSpinBox* resizeSpinBox;
-	QVector<ContainerPtr> containers;
+	QVector<DataWidgetPtr> dataWidgets;
 	QVector<QLineEdit*> lineEdits;
+	DataWidget<animation_type>* parentDW;
+	int valueTypeFullId;
+	ValuesList valuesCopy;
 	QComboBox *extendBox, *interpolationBox;
+	const BaseDataWidgetCreator* dataWidgetCreator;
 
 public:
-	AnimationDataWidgetDialog(QWidget* parent, bool readOnly, QString name)
+	AnimationDataWidgetDialog(DataWidget<animation_type>* parent, bool readOnly, QString name)
 		: BaseAnimationDataWidgetDialog(parent)
 		, readOnly(readOnly)
 		, scrollArea(nullptr)
 		, gridLayout(nullptr)
 		, resizeWidget(nullptr)
 		, resizeSpinBox(nullptr)
+		, parentDW(parent)
 	{
 		QVBoxLayout* mainLayout = new QVBoxLayout();
 
@@ -129,65 +137,66 @@ public:
 		setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 		setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
+
+		valueTypeFullId = panda::types::DataTrait<value_type>::fullTypeId();
+		dataWidgetCreator = DataWidgetFactory::getInstance()->getCreator(valueTypeFullId, parentDW->getWidgetName());
 	}
 
-	void updateTable(const animation_type& anim)
+	virtual void readFromData(const animation_type& anim)
 	{
+		valuesCopy = anim.getValues();
+		resize(anim.size());
+
 		auto stops = anim.getStops();
 		int nb = stops.size();
 
 		for(int i=0; i<nb; ++i)
 		{
 			lineEdits[i]->setText(QString::number(stops[i].first));
-			containers[i]->readFromData(stops[i].second);
+			dataWidgets[i]->updateWidgetValue();
 		}
-	}
-
-	virtual void readFromData(const animation_type& anim)
-	{
-		resizeContainers(anim.size());
-		updateTable(anim);
 
 		extendBox->setCurrentIndex(anim.getExtend());
 		interpolationBox->setCurrentIndex(anim.getInterpolation());
 
 		if(resizeSpinBox)
-			resizeSpinBox->setValue(containers.size());
-	}
-
-	animation_type readFromTable()
-	{
-		animation_type anim;
-
-		int nb = containers.size();
-
-		for(int i=0; i<nb; ++i)
-		{
-			value_type val;
-			containers[i]->writeToData(val);
-			double key = lineEdits[i]->text().toDouble();
-			anim.add(key, val);
-		}
-
-		anim.setExtend(extendBox->currentIndex());
-		anim.setInterpolation(interpolationBox->currentIndex());
-		return anim;
+			resizeSpinBox->setValue(dataWidgets.size());
 	}
 
 	virtual void writeToData(animation_type& anim)
 	{
-		anim = readFromTable();
+		anim.clear();
+
+		int nb = dataWidgets.size();
+
+		for(int i=0; i<nb; ++i)
+		{
+			dataWidgets[i]->updateDataValue();
+			double key = lineEdits[i]->text().toDouble();
+			anim.add(key, valuesCopy[i]);
+		}
+
+		anim.setExtend(extendBox->currentIndex());
+		anim.setInterpolation(interpolationBox->currentIndex());
 	}
 
-	void resizeContainers(int nb)
+	void resize(int nb)
 	{
-		int oldSize = containers.size();
+		int oldSize = dataWidgets.size();
+
+		values_list_trait::resize(valuesCopy, nb);
+
+		// Update value pointers if they changed
+		int updateNb = qMin(nb, oldSize);
+		for(int i=0; i<updateNb; ++i)
+			dataWidgets[i]->changeValuePointer(values_list_trait::get(valuesCopy, i));
+
 		if(oldSize == nb)
 			return;
 
 		if(oldSize > nb)
 		{	// Removing
-			containers.resize(nb);
+			dataWidgets.resize(nb);
 			lineEdits.resize(nb);
 			for(int i=oldSize-1; i>=nb; --i)
 			{
@@ -203,17 +212,27 @@ public:
 		}
 		else
 		{	// Adding
+			QString widget = parentDW->getWidgetName(),
+					parentName = parentDW->getDisplayName(),
+					parameters = parentDW->getParameters();
 			for(int i=oldSize; i<nb; ++i)
 			{
-				ContainerPtr container = ContainerPtr(new Container());
-				containers.push_back(container);
-				QWidget* widget = container->createWidgets(this, readOnly);
-				container->updatePreview();
-				connect(container.data(), SIGNAL(editingFinished()), this, SLOT(refreshPreviews()));
-				QLineEdit* lineEdit = new QLineEdit("0.0");
-				lineEdits.push_back(lineEdit);
-				gridLayout->addWidget(lineEdit, i, 0);
-				gridLayout->addWidget(widget, i, 1);
+				QString displayName = parentName + " / " + QString::number(i);
+				value_type* pValue = values_list_trait::get(valuesCopy, i);
+				BaseDataWidget* baseDataWidget = DataWidgetFactory::getInstance()
+						->create(this, pValue, valueTypeFullId, widget, displayName, parameters);
+				ChildDataWidget* dataWidget = dynamic_cast<ChildDataWidget*>(baseDataWidget);
+				if(dataWidget)
+				{
+					dataWidgets.push_back(DataWidgetPtr(dataWidget));
+					QWidget* widget = dataWidget->createWidgets(readOnly);
+					QLineEdit* lineEdit = new QLineEdit("0.0");
+					lineEdits.push_back(lineEdit);
+					gridLayout->addWidget(lineEdit, i, 0);
+					gridLayout->addWidget(widget, i, 1);
+				}
+				else
+					delete baseDataWidget;
 			}
 		}
 
@@ -224,115 +243,8 @@ public:
 	virtual void resizeValue()
 	{
 		int nb = resizeSpinBox->value();
-		resizeContainers(nb);
+		resize(nb);
 	}
-
-	virtual void refreshPreviews()
-	{
-		for(ContainerPtr container : containers)
-			container->updatePreview();
-	}
-
-	virtual void changeExtend(int)
-	{
-
-	}
-
-	virtual void changeInterpolation(int)
-	{
-
-	}
-};
-
-//***************************************************************//
-
-class DoubleDataWidgetContainer : public QObject
-{
-	Q_OBJECT
-signals:
-	void editingFinished();
-
-protected:
-	typedef double value_type;
-	QLineEdit* lineEdit;
-
-public:
-	DoubleDataWidgetContainer() : lineEdit(nullptr) {}
-
-	QWidget* createWidgets(QWidget* parent, bool readOnly)
-	{
-		lineEdit = new QLineEdit("0.0", parent);
-		lineEdit->setEnabled(!readOnly);
-		return lineEdit;
-	}
-	void readFromData(const value_type& v)
-	{
-		QString t = lineEdit->text();
-		value_type n = t.toDouble();
-		if (v != n || t.isEmpty())
-			lineEdit->setText(QString::number(v));
-	}
-	void writeToData(value_type& v)
-	{
-		bool ok;
-		value_type n = lineEdit->text().toDouble(&ok);
-		if(ok)
-			v = n;
-	}
-	void updatePreview() {}
-};
-
-//***************************************************************//
-
-class PointDataWidgetContainer : public QObject
-{
-	Q_OBJECT
-signals:
-	void editingFinished();
-
-protected:
-	typedef QPointF value_type;
-	QWidget* container;
-	QLineEdit *lineEditX, *lineEditY;
-
-public:
-	PointDataWidgetContainer() : lineEditX(nullptr), lineEditY(nullptr) {}
-
-	QWidget* createWidgets(QWidget* parent, bool readOnly)
-	{
-		container = new QWidget(parent);
-		lineEditX = new QLineEdit("0.0", parent);
-		lineEditX->setEnabled(!readOnly);
-
-		lineEditY = new QLineEdit("0.0", parent);
-		lineEditY->setEnabled(!readOnly);
-
-		QHBoxLayout* layout = new QHBoxLayout(container);
-		layout->setMargin(0);
-		layout->addWidget(lineEditX);
-		layout->addWidget(lineEditY);
-		container->setLayout(layout);
-
-		return container;
-	}
-	void readFromData(const value_type& v)
-	{
-		QString tx = lineEditX->text();
-		QString ty = lineEditY->text();
-		double x = tx.toDouble();
-		double y = ty.toDouble();
-		if(v.x() != x || tx.isEmpty())
-			lineEditX->setText(QString::number(v.x()));
-		if(v.y() != y || ty.isEmpty())
-			lineEditY->setText(QString::number(v.y()));
-	}
-	void writeToData(value_type& v)
-	{
-		double x = lineEditX->text().toDouble();
-		double y = lineEditY->text().toDouble();
-		v = QPointF(x, y);
-	}
-	void updatePreview() {}
 };
 
 //***************************************************************//
@@ -349,6 +261,7 @@ public:
 	static int size(const animation_type& a) { return a.size(); }
 	static QStringList header(const animation_type&) { return QStringList{}; }
 	static const row_type* get(const animation_type&, int) { return nullptr; }
+	static row_type* get(animation_type&, int) { return nullptr; }
 	static void set(animation_type&, const row_type&, int) { }
 	static void resize(animation_type&, int) { }
 };

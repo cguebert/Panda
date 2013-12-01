@@ -2,6 +2,7 @@
 
 #include <ui/widget/ListDataWidgetDialog.h>
 #include <ui/widget/SimpleDataWidget.h>
+#include <ui/widget/OpenDialogDataWidget.h>
 #include <ui/widget/EditGradientDialog.h>
 #include <ui/widget/AnimationDataWidgetDialog.h>
 #include <ui/widget/DataWidgetFactory.h>
@@ -449,5 +450,5 @@ public:
 //***************************************************************//
 
 RegisterWidget<SimpleDataWidget<Gradient> > DWClass_gradient("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Gradient>, ListDataWidgetDialog<QVector<Gradient> > > > DWClass_gradients_list("default");
+RegisterWidget<OpenDialogDataWidget<QVector<Gradient>, ListDataWidgetDialog<QVector<Gradient> > > > DWClass_gradients_list("generic");
 RegisterWidget<OpenDialogDataWidget<Animation<Gradient>, AnimationDataWidgetDialog<Animation<Gradient> > > > DWClass_gradients_animation("default");

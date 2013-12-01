@@ -49,6 +49,7 @@ HEADERS       = \
 	ui/widget/DataWidgetFactory.h \
 	ui/widget/EditGradientDialog.h \
 	ui/widget/ListDataWidgetDialog.h \
+	ui/widget/OpenDialogDataWidget.h \
 	ui/widget/SimpleDataWidget.h \
 	ui/widget/StructTraits.h \
 	ui/widget/TableDataWidgetDialog.h
@@ -157,11 +158,14 @@ SOURCES       = main.cpp \
 	ui/drawstruct/GenericObjectDrawStruct.cpp \
 	ui/drawstruct/GroupObjectDrawStruct.cpp \
 	ui/drawstruct/ObjectDrawStruct.cpp \
+	ui/widget/ColorDataWidget.cpp \
 	ui/widget/EditGradientDialog.cpp \
 	ui/widget/DataWidgetFactory.cpp \
 	ui/widget/ListDataWidgetDialog.cpp \
-	ui/widget/SimpleDataWidget.cpp \
-	ui/widget/TableDataWidgetDialog.cpp
+	ui/widget/NumericalDataWidget.cpp \
+	ui/widget/StringDataWidget.cpp \
+	ui/widget/TableDataWidgetDialog.cpp \
+	ui/widget/AnimationDataWidgetDialog.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = . \

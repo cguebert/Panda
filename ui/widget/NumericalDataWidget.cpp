@@ -1,5 +1,6 @@
 #include <ui/widget/DataWidgetFactory.h>
 #include <ui/widget/SimpleDataWidget.h>
+#include <ui/widget/OpenDialogDataWidget.h>
 #include <panda/helper/Random.h>
 
 #include <QtWidgets>
@@ -267,31 +268,52 @@ public:
 
 //***************************************************************//
 
-template<>
-class DataWidgetContainer< QString >
+template <>
+class DataWidgetContainer< QPointF >
 {
 protected:
-	typedef QString value_type;
-	QLineEdit* lineEdit;
+	typedef QPointF value_type;
+	QWidget* container;
+	QLineEdit *lineEditX, *lineEditY;
 
 public:
-	DataWidgetContainer() : lineEdit(nullptr) {}
+	DataWidgetContainer() : lineEditX(nullptr), lineEditY(nullptr) {}
 
 	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
-		lineEdit = new QLineEdit(parent);
-		lineEdit->setEnabled(!readOnly);
-		QObject::connect(lineEdit, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()) );
-		return lineEdit;
+		container = new QWidget(parent);
+		lineEditX = new QLineEdit("0.0", parent);
+		lineEditX->setEnabled(!readOnly);
+		QObject::connect(lineEditX, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
+
+		lineEditY = new QLineEdit("0.0", parent);
+		lineEditY->setEnabled(!readOnly);
+		QObject::connect(lineEditY, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
+
+		QHBoxLayout* layout = new QHBoxLayout(container);
+		layout->setMargin(0);
+		layout->addWidget(lineEditX);
+		layout->addWidget(lineEditY);
+		container->setLayout(layout);
+
+		return container;
 	}
 	void readFromData(const value_type& v)
 	{
-		if (lineEdit->text() != v)
-			lineEdit->setText(v);
+		QString tx = lineEditX->text();
+		QString ty = lineEditY->text();
+		double x = tx.toDouble();
+		double y = ty.toDouble();
+		if(v.x() != x || tx.isEmpty())
+			lineEditX->setText(QString::number(v.x()));
+		if(v.y() != y || ty.isEmpty())
+			lineEditY->setText(QString::number(v.y()));
 	}
 	void writeToData(value_type& v)
 	{
-		v = lineEdit->text();
+		double x = lineEditX->text().toDouble();
+		double y = lineEditY->text().toDouble();
+		v = QPointF(x, y);
 	}
 };
 
@@ -302,6 +324,9 @@ RegisterWidget<SimpleDataWidget<int, CheckboxDataWidget> > DWClass_checkbox("che
 RegisterWidget<SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed");
 RegisterWidget<SimpleDataWidget<int, EnumDataWidget> > DWClass_enum("enum");
 RegisterWidget<SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_int("slider");
+
 RegisterWidget<SimpleDataWidget<double> > DWClass_double("default");
 RegisterWidget<SimpleDataWidget<double, SliderDataWidget<double> > > DWClass_slider_double("slider");
-RegisterWidget<SimpleDataWidget<QString> > DWClass_string("default");
+
+RegisterWidget<SimpleDataWidget<QPointF> > DWClass_point("default");
+

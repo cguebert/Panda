@@ -6,7 +6,11 @@
 #include <ui/widget/StructTraits.h>
 #include <panda/types/DataTraits.h>
 
-#include <QtWidgets>
+#include <QDialog>
+#include <QScrollArea>
+#include <QFormLayout>
+#include <QWidget>
+#include <QSpinBox>
 
 class BaseListDataWidgetDialog : public QDialog
 {
@@ -18,26 +22,6 @@ public:
 
 public slots:
 	virtual void resizeValue() {}
-};
-
-class ObjectWithPreview
-{
-public:
-	virtual void draw(QPainter& painter, QSize size) = 0;
-};
-
-class PreviewView : public QWidget
-{
-public:
-	PreviewView(ObjectWithPreview* obj) : object(obj) {}
-	void paintEvent(QPaintEvent*)
-	{
-		QStylePainter painter(this);
-		object->draw(painter, size());
-	}
-
-protected:
-	ObjectWithPreview* object;
 };
 
 template<class T>
@@ -58,9 +42,9 @@ protected:
 	QWidget* resizeWidget;
 	QSpinBox* resizeSpinBox;
 	DataWidget<value_type>* parentDW;
-	value_type copyValue;
-	QVector<DataWidgetPtr> dataWidgets;
 	int rowTypeFullId;
+	value_type valueCopy;
+	QVector<DataWidgetPtr> dataWidgets;
 	const BaseDataWidgetCreator* dataWidgetCreator;
 
 public:
@@ -126,7 +110,7 @@ public:
 
 	virtual void readFromData(const value_type& v)
 	{
-		copyValue = v;
+		valueCopy = v;
 		resize(row_trait::size(v));
 
 		for(auto child : dataWidgets)
@@ -141,7 +125,7 @@ public:
 		for(auto child : dataWidgets)
 			child->updateDataValue();
 
-		v = copyValue;
+		v = valueCopy;
 	}
 
 	void resize(int nb)
@@ -150,12 +134,12 @@ public:
 		if(oldSize == nb)
 			return;
 
-		row_trait::resize(copyValue, nb);
+		row_trait::resize(valueCopy, nb);
 
 		// Update value pointers if they changed
 		int updateNb = qMin(nb, oldSize);
 		for(int i=0; i<updateNb; ++i)
-			dataWidgets[i]->changeValuePointer(row_trait::get(copyValue, i));
+			dataWidgets[i]->changeValuePointer(row_trait::get(valueCopy, i));
 
 		if(oldSize > nb)
 		{	// Removing
@@ -180,7 +164,7 @@ public:
 			for(int i=oldSize; i<nb; ++i)
 			{
 				QString displayName = parentName + " / " + QString::number(i);
-				row_type* pValue = row_trait::get(copyValue, i);
+				row_type* pValue = row_trait::get(valueCopy, i);
 				BaseDataWidget* baseDataWidget = DataWidgetFactory::getInstance()
 						->create(this, pValue, rowTypeFullId, widget, displayName, parameters);
 				ChildDataWidget* dataWidget = dynamic_cast<ChildDataWidget*>(baseDataWidget);
