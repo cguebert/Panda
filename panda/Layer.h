@@ -4,6 +4,7 @@
 #include <panda/Dockable.h>
 #include <QList>
 #include <QImage>
+#include <QOpenGLFramebufferObject>
 
 class QPainter;
 
@@ -17,6 +18,9 @@ class BaseLayer
 public:
 	virtual void updateLayer(PandaDocument* doc);
 	virtual void mergeLayer(QPainter* docPainter);
+
+	virtual void updateLayerOpenGL(PandaDocument* doc);
+	virtual void mergeLayerOpenGL();
 
 	virtual QList<Renderer*> getRenderers() = 0;
 
@@ -58,6 +62,7 @@ public:
 	virtual void postCreate();
 
 protected:
+	QSharedPointer<QOpenGLFramebufferObject> frameBuffer;
 	Data<QString> layerName;
 	Data<QImage> image;
 	Data<int> compositionMode;

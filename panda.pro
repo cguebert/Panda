@@ -168,8 +168,14 @@ SOURCES       = main.cpp \
 	ui/widget/AnimationDataWidgetDialog.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
-INCLUDEPATH = . \
-	../boost
+INCLUDEPATH = .
 QT += widgets xml opengl
 CONFIG += c++11
-DEFINES += PANDA_LOG_EVENTS
+DEFINES +=	PANDA_LOG_EVENTS \
+			_CRT_SECURE_NO_WARNINGS \
+			_SCL_SECURE_NO_WARNINGS
+
+BOOST="C:\Users\Christophe\Documents\Programmation\boost_1_55_0"
+
+INCLUDEPATH += $${BOOST}/
+LIBPATH += $${BOOST}/stage/lib

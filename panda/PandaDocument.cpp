@@ -1,4 +1,5 @@
 #include <QtWidgets>
+#include <QOpenGLFramebufferObject>
 
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
@@ -797,6 +798,55 @@ const QImage& PandaDocument::getRenderedImage()
 	this->updateIfDirty();
 
 	return renderedImage;
+}
+
+QOpenGLFramebufferObject* PandaDocument::getFBO()
+{
+	if(!renderFrameBuffer || renderFrameBuffer->size() != getRenderSize())
+	{
+		QOpenGLFramebufferObjectFormat fmt;
+		fmt.setSamples(16);
+		renderFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize(), fmt));
+		displayFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
+	}
+
+//	this->updateIfDirty();
+
+	renderFrameBuffer->bind();
+	renderOpenGL();
+	renderFrameBuffer->release();
+
+	// We have to blit the document's multisample fbo to another fbo
+	QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
+
+	return displayFrameBuffer.data();
+}
+
+void PandaDocument::renderOpenGL()
+{
+	glViewport(0, 0, renderFrameBuffer->width(), renderFrameBuffer->height());
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, renderFrameBuffer->width(), renderFrameBuffer->height(), 0, -10, 10);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	QColor col = backgroundColor.getValue();
+	glClearColor(col.redF(), col.greenF(), col.blueF(), col.alphaF());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	defaultLayer->mergeLayerOpenGL();
+
+	for(auto obj : pandaObjects)
+	{
+		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj);
+		if(layer)
+		{
+			obj->updateIfDirty();
+			layer->mergeLayerOpenGL();
+		}
+	}
 }
 
 Layer* PandaDocument::getDefaultLayer()

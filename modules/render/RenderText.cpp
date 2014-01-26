@@ -67,6 +67,10 @@ public:
 		painter->restore();
 	}
 
+	void renderOpenGL()
+	{
+	}
+
 protected:
 	Data< QVector<QString> > text;
 	Data< QString > font;

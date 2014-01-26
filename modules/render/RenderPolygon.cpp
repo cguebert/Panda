@@ -58,6 +58,10 @@ public:
 		}
 	}
 
+	void renderOpenGL()
+	{
+	}
+
 protected:
 	Data<Topology> topology;
 	Data< QVector<QColor> > color;

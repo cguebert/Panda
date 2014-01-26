@@ -72,6 +72,51 @@ public:
 		}
 	}
 
+	void renderOpenGL()
+	{
+		const QVector<QPointF>& valA = inputA.getValue();
+		const QVector<QPointF>& valB = inputB.getValue();
+		const QVector<double>& listWidth = width.getValue();
+		const QVector<QColor>& listColor = color.getValue();
+
+		int nbA = valA.size(), nbB = valB.size();
+		int nbLines = qMin(valA.size(), valB.size());
+		bool useTwoLists = true;
+		if(nbA && !nbB)
+		{
+			useTwoLists = false;
+			nbLines = nbA / 2;
+		}
+
+		int nbWidth = listWidth.size();
+		int nbColor = listColor.size();
+
+		if(nbLines && nbWidth && nbColor)
+		{
+			if(nbWidth < nbLines) nbWidth = 1;
+			if(nbColor < nbLines) nbColor = 1;
+
+			glBegin(GL_LINES);
+			for(int i=0; i<nbLines; ++i)
+			{
+				QColor col = listColor[i % nbColor];
+				glColor4ub(col.red(), col.green(), col.blue(), col.alpha());
+
+				if(useTwoLists)
+				{
+					glVertex2d(valA[i].x(), valA[i].y());
+					glVertex2d(valB[i].x(), valB[i].y());
+				}
+				else
+				{
+					glVertex2d(valA[i*2].x(), valA[i*2].y());
+					glVertex2d(valA[i*2+1].x(), valA[i*2+1].y());
+				}
+			}
+			glEnd();
+		}
+	}
+
 protected:
 	Data< QVector<QPointF> > inputA, inputB;
 	Data< QVector<double> > width;
@@ -121,7 +166,28 @@ public:
 
 			painter->drawPath(path);
 		}
+
 		painter->restore();
+	}
+
+	void renderOpenGL()
+	{
+		const QVector<QPointF>& points = input.getValue();
+		int nb = points.size();
+
+		if(nb)
+		{
+			glLineWidth(width.getValue());
+			QColor col = color.getValue();
+			glColor4ub(col.red(), col.green(), col.blue(), col.alpha());
+
+			glBegin(GL_LINE_STRIP);
+			for(int i=0; i<nb; ++i)
+				glVertex2d(points[i].x(), points[i].y());
+			glEnd();
+
+			glLineWidth(0);
+		}
 	}
 
 protected:

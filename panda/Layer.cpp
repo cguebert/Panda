@@ -50,6 +50,24 @@ void BaseLayer::mergeLayer(QPainter* docPainter)
 	docPainter->restore();
 }
 
+void BaseLayer::updateLayerOpenGL(PandaDocument* /*doc*/)
+{
+
+}
+
+void BaseLayer::mergeLayerOpenGL()
+{
+	QList<Renderer*> renderers = this->getRenderers();
+	QListIterator<Renderer*> iter = QListIterator<Renderer*>(renderers);
+	iter.toBack();
+	while(iter.hasPrevious())
+	{
+		Renderer* renderer = iter.previous();
+		renderer->renderOpenGL();
+		renderer->cleanDirty();
+	}
+}
+
 //*************************************************************************//
 
 Layer::Layer(PandaDocument *parent)

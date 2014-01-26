@@ -21,11 +21,11 @@ MainWindow::MainWindow()
 
 	graphView = new GraphView(pandaDocument);
 	renderView = new RenderView(pandaDocument);
-//	openGLRenderView = new OpenGLRenderView(pandaDocument);
+	openGLRenderView = new OpenGLRenderView(pandaDocument);
 	tabWidget = new QTabWidget;
 	tabWidget->addTab(graphView, tr("Graph"));
 	tabWidget->addTab(renderView, tr("Render"));
-//	tabWidget->addTab(openGLRenderView, tr("OpenGL"));
+	tabWidget->addTab(openGLRenderView, tr("OpenGL"));
 	setCentralWidget(tabWidget);
 
 	createActions();
@@ -163,8 +163,8 @@ void MainWindow::documentModified()
 {
 	if(tabWidget->currentWidget() == renderView)
 		renderView->update();
-//	if(tabWidget->currentWidget() == openGLRenderView)
-//		openGLRenderView->update();
+	if(tabWidget->currentWidget() == openGLRenderView)
+		openGLRenderView->update();
 
 	setWindowModified(true);
 }
@@ -327,13 +327,13 @@ void MainWindow::createActions()
 	showRenderView->setStatusTip(tr("Switch to the render view"));
 
 	connect(showRenderView, SIGNAL(triggered()), this, SLOT(switchToRenderView()));
-/*
+
 	showOpenGLView = new QAction(tr("Show &OpenGL view"), this);
 	showOpenGLView->setShortcut(tr("Ctrl+3"));
 	showOpenGLView->setStatusTip(tr("Switch to the OpenGL view"));
 
 	connect(showOpenGLView, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
-*/
+
 	aboutAction = new QAction(tr("&About"), this);
 	aboutAction->setStatusTip(tr("Show the application's About box"));
 	connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -418,7 +418,7 @@ void MainWindow::createMenus()
 	viewMenu->addSeparator();
 	viewMenu->addAction(showGraphView);
 	viewMenu->addAction(showRenderView);
-//	viewMenu->addAction(showOpenGLView);
+	viewMenu->addAction(showOpenGLView);
 #ifdef PANDA_LOG_EVENTS
 	viewMenu->addSeparator();
 	viewMenu->addAction(showLoggerDialogAction);
@@ -686,7 +686,7 @@ void MainWindow::switchToRenderView()
 
 void MainWindow::switchToOpenGLView()
 {
-//	tabWidget->setCurrentWidget(openGLRenderView);
+	tabWidget->setCurrentWidget(openGLRenderView);
 }
 
 void MainWindow::showStatusBarMessage(QString text)

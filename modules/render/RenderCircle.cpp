@@ -80,6 +80,10 @@ public:
 		}
 	}
 
+	void renderOpenGL()
+	{
+	}
+
 protected:
 	Data< QVector<QPointF> > center;
 	Data< QVector<double> > radius, lineWidth;

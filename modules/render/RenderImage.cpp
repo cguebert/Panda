@@ -92,6 +92,10 @@ public:
 		}
 	}
 
+	void renderOpenGL()
+	{
+	}
+
 protected:
 	Data< QVector<QImage> > image;
 	Data< QVector<QPointF> > center;

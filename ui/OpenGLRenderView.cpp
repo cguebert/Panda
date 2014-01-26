@@ -1,7 +1,10 @@
 #include <QtWidgets>
+#include <QOpenGLFramebufferObject>
 
 #include <ui/OpenGLRenderView.h>
 #include <panda/PandaDocument.h>
+
+#include <iostream>
 
 OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 	: QGLWidget(parent)
@@ -11,6 +14,10 @@ OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	setMouseTracking(true);
+}
+
+OpenGLRenderView::~OpenGLRenderView()
+{
 }
 
 QSize OpenGLRenderView::minimumSizeHint() const
@@ -23,18 +30,37 @@ QSize OpenGLRenderView::sizeHint() const
 	return QSize(600, 400);
 }
 
-void OpenGLRenderView::paintEvent(QPaintEvent* /*event*/)
+void OpenGLRenderView::initializeGL()
 {
-	QStylePainter painter(this);
+	glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);
+}
 
-	QImage image = pandaDocument->getRenderedImage();
-	if(!image.isNull())
-	{
-		QRect viewRect = contentsRect();
-		painter.drawImage(viewRect.center().x() - image.width() / 2,
-						   viewRect.center().y() - image.height() / 2,
-						   image);
-	}
+void OpenGLRenderView::paintGL()
+{
+	QColor col = palette().window().color();
+	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
+	glDepthMask( GL_TRUE );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	QOpenGLFramebufferObject* fbo = pandaDocument->getFBO();
+
+	QRect viewRect = contentsRect();
+	glViewport(0, 0, viewRect.width(), viewRect.height());
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, viewRect.width(), viewRect.height(), 0, -10, 10);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	QSize renderSize = fbo->size();
+	drawTexture(QPointF(viewRect.center().x() - renderSize.width() / 2,
+						viewRect.center().y() - renderSize.height() / 2), fbo->texture());
+}
+
+void OpenGLRenderView::resizeGL(int /*width*/, int /*height*/)
+{
 }
 
 void OpenGLRenderView::mousePressEvent(QMouseEvent *event)

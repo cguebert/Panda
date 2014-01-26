@@ -74,6 +74,10 @@ public:
 		painter->restore();
 	}
 
+	void renderOpenGL()
+	{
+	}
+
 protected:
 	Data< QVector<QRectF> > rect;
 	Data< QVector<double> > lineWidth;

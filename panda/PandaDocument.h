@@ -10,6 +10,8 @@
 #include <QImage>
 #include <QDomDocument>
 
+class QOpenGLFramebufferObject;
+
 namespace panda {
 
 class BaseLayer;
@@ -69,6 +71,8 @@ public:
 	virtual void setDirtyValue();
 
 	const QImage& getRenderedImage();
+	QOpenGLFramebufferObject* getFBO();
+	void renderOpenGL();
 
 	Layer* getDefaultLayer();
 	void moveLayerUp(PandaObject *layer);
@@ -89,6 +93,7 @@ protected:
 	quint32 currentIndex;
 	QImage renderedImage;
 	Layer* defaultLayer;
+	QScopedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
 
 	Data<QPointF> renderSize;
 	Data<QColor> backgroundColor;

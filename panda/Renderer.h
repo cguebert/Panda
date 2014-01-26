@@ -22,6 +22,7 @@ public:
 	virtual void setDirtyValue();
 
 	virtual void render(QPainter* /*painter*/) = 0;
+	virtual void renderOpenGL() = 0;
 };
 
 } // namespace panda

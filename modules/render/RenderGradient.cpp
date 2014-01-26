@@ -39,6 +39,10 @@ public:
 		painter->restore();
 	}
 
+	void renderOpenGL()
+	{
+	}
+
 protected:
 	Data<Gradient> gradient;
 };
@@ -71,6 +75,10 @@ public:
 		}
 
 		painter->restore();
+	}
+
+	void renderOpenGL()
+	{
 	}
 
 protected:
