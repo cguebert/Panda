@@ -7,6 +7,9 @@
 #include <QPointF>
 #include <QPainter>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 using panda::types::Gradient;
 
 namespace panda {
@@ -62,6 +65,46 @@ public:
 
 	void renderOpenGL()
 	{
+		const QVector<QPointF>& listCenter = center.getValue();
+		const QVector<double>& listRadius = radius.getValue();
+		const QVector<QColor>& listColor = color.getValue();
+
+		int nbCenter = listCenter.size();
+		int nbRadius = listRadius.size();
+		int nbColor = listColor.size();
+
+		if(nbCenter && nbRadius && nbColor)
+		{
+			if(nbRadius < nbCenter) nbRadius = 1;
+			if(nbColor < nbCenter) nbColor = 1;
+			std::vector<double> vertices;
+
+			for(int i=0; i<nbCenter; ++i)
+			{
+				QColor valCol = listColor[i % nbColor];
+				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
+
+				double valRadius = listRadius[i % nbRadius];
+				int nbSeg = static_cast<int>(floor(valRadius * M_PI * 2));
+				vertices.resize((nbSeg + 2) * 2);
+
+				QPointF valCenter = listCenter[i];
+				vertices[0] = valCenter.x();
+				vertices[1] = valCenter.y();
+
+				for(int s=0; s<=nbSeg; ++s)
+				{
+					double t = s / static_cast<double>(nbSeg) * 2 * M_PI;
+					vertices[(s+1)*2+0] = valCenter.x() + cos(t) * valRadius;
+					vertices[(s+1)*2+1] = valCenter.y() + sin(t) * valRadius;
+				}
+				glEnableClientState( GL_VERTEX_ARRAY );
+				glVertexPointer( 2, GL_DOUBLE, 0, vertices.data() );
+				glDrawArrays( GL_TRIANGLE_FAN, 0, nbSeg + 2 );
+				glDisableClientState( GL_VERTEX_ARRAY );
+			}
+
+		}
 	}
 
 protected:
