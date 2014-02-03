@@ -16,13 +16,27 @@ namespace panda
 
 void BaseLayer::updateLayer(PandaDocument* doc)
 {
-	auto editImage = this->getImage()->getAccessor();
-	editImage = QImage(doc->getRenderSize(), QImage::Format_ARGB32);
-	editImage->fill(QColor(0,0,0,0));
-	QPainter painter(&*editImage);
-	painter.setRenderHint(QPainter::Antialiasing, true);
-	painter.setRenderHint(QPainter::TextAntialiasing, true);
-	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+	QSize renderSize = doc->getRenderSize();
+	if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)
+	{
+		QOpenGLFramebufferObjectFormat fmt;
+		fmt.setSamples(16);
+		renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
+		displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
+	}
+
+	renderFrameBuffer->bind();
+
+	glViewport(0, 0, renderSize.width(), renderSize.height());
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	QList<Renderer*> renderers = this->getRenderers();
 	QListIterator<Renderer*> iter = QListIterator<Renderer*>(renderers);
@@ -33,39 +47,44 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 #ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_render, renderer);
 #endif
-		renderer->render(&painter);
-		renderer->cleanDirty();
-	}
-}
-
-void BaseLayer::mergeLayer(QPainter* docPainter)
-{
-	double valOpacity = qBound(0.0, this->getOpacity(), 1.0);
-	int valCompoMode = qBound(0, this->getCompositionMode(), 32);
-
-	docPainter->save();
-	docPainter->setOpacity(valOpacity);
-	docPainter->setCompositionMode((QPainter::CompositionMode)valCompoMode);
-	docPainter->drawImage(0, 0, this->getImage()->getValue());
-	docPainter->restore();
-}
-
-void BaseLayer::updateLayerOpenGL(PandaDocument* /*doc*/)
-{
-
-}
-
-void BaseLayer::mergeLayerOpenGL()
-{
-	QList<Renderer*> renderers = this->getRenderers();
-	QListIterator<Renderer*> iter = QListIterator<Renderer*>(renderers);
-	iter.toBack();
-	while(iter.hasPrevious())
-	{
-		Renderer* renderer = iter.previous();
 		renderer->renderOpenGL();
 		renderer->cleanDirty();
 	}
+	renderFrameBuffer->release();
+
+	QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
+
+	// Convert to an image if necessary
+	Data<QImage>* pImage = getImage();
+	if(!pImage->getOutputs().empty())
+		pImage->setValue(displayFrameBuffer->toImage());
+}
+
+void BaseLayer::mergeLayer()
+{
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, displayFrameBuffer->texture());
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+	GLfloat w = displayFrameBuffer->width(), h = displayFrameBuffer->height();
+	GLfloat verts[8], texCoords[8];
+
+	verts[0*2+0] = w; verts[0*2+1] = h;
+	verts[1*2+0] = 0; verts[1*2+1] = h;
+	verts[2*2+0] = w; verts[2*2+1] = 0;
+	verts[3*2+0] = 0; verts[3*2+1] = 0;
+
+	texCoords[0*2+0] = 1; texCoords[0*2+1] = 0;
+	texCoords[1*2+0] = 0; texCoords[1*2+1] = 0;
+	texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
+	texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	glDisable(GL_TEXTURE_2D);
 }
 
 //*************************************************************************//

@@ -17,10 +17,7 @@ class BaseLayer
 {
 public:
 	virtual void updateLayer(PandaDocument* doc);
-	virtual void mergeLayer(QPainter* docPainter);
-
-	virtual void updateLayerOpenGL(PandaDocument* doc);
-	virtual void mergeLayerOpenGL();
+	virtual void mergeLayer();
 
 	virtual QList<Renderer*> getRenderers() = 0;
 
@@ -34,6 +31,9 @@ public:
 	virtual void setOpacity(double opa) = 0;
 
 	virtual Data<QImage>* getImage() = 0;
+
+protected:
+	QScopedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
 };
 
 class Layer : public DockObject, public BaseLayer
@@ -62,7 +62,6 @@ public:
 	virtual void postCreate();
 
 protected:
-	QSharedPointer<QOpenGLFramebufferObject> frameBuffer;
 	Data<QString> layerName;
 	Data<QImage> image;
 	Data<int> compositionMode;

@@ -72,7 +72,6 @@ public:
 
 	const QImage& getRenderedImage();
 	QOpenGLFramebufferObject* getFBO();
-	void renderOpenGL();
 
 	Layer* getDefaultLayer();
 	void moveLayerUp(PandaObject *layer);
@@ -92,6 +91,7 @@ protected:
 	QMap<quint32, PandaObject*> pandaObjectsMap;
 	quint32 currentIndex;
 	QImage renderedImage;
+	bool imageIsDirty;
 	Layer* defaultLayer;
 	QScopedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
 
@@ -110,6 +110,7 @@ protected:
 	QMap<QString, QString> groupsMap;
 
 	bool getGroupDescription(const QString &fileName, QString& description);
+	void renderOpenGL();
 
 private:
 	QString groupsDirPath;

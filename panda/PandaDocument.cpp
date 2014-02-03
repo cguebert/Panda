@@ -18,6 +18,7 @@ namespace panda {
 PandaDocument::PandaDocument(QObject *parent)
 	: PandaObject(parent)
 	, currentIndex(1)
+	, imageIsDirty(true)
 	, renderSize(initData(&renderSize, QPointF(800,600), "render size", "Size of the image to be rendered"))
 	, backgroundColor(initData(&backgroundColor, QColor(255,255,255), "background color", "Background color of the image to be rendered"))
 	, animTime(initData(&animTime, 0.0, "time", "Time of the animation"))
@@ -772,36 +773,6 @@ void PandaDocument::onDirtyObject(panda::PandaObject* object)
 
 void PandaDocument::update()
 {
-	if(getRenderSize() != renderedImage.size())
-		renderedImage = QImage(getRenderSize(), QImage::Format_ARGB32);
-	renderedImage.fill(backgroundColor.getValue());
-
-	QPainter painter(&renderedImage);
-	defaultLayer->updateIfDirty();
-	defaultLayer->mergeLayer(&painter);
-
-	for(auto obj : pandaObjects)
-	{
-		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj);
-		if(layer)
-		{
-			obj->updateIfDirty();
-			layer->mergeLayer(&painter);
-		}
-	}
-
-	this->cleanDirty();
-}
-
-const QImage& PandaDocument::getRenderedImage()
-{
-	this->updateIfDirty();
-
-	return renderedImage;
-}
-
-QOpenGLFramebufferObject* PandaDocument::getFBO()
-{
 	if(!renderFrameBuffer || renderFrameBuffer->size() != getRenderSize())
 	{
 		QOpenGLFramebufferObjectFormat fmt;
@@ -810,7 +781,13 @@ QOpenGLFramebufferObject* PandaDocument::getFBO()
 		displayFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
 	}
 
-//	this->updateIfDirty();
+	defaultLayer->updateIfDirty();
+
+	for(auto obj : pandaObjects)
+	{
+		if(dynamic_cast<BaseLayer*>(obj))
+			obj->updateIfDirty();
+	}
 
 	renderFrameBuffer->bind();
 	renderOpenGL();
@@ -818,6 +795,26 @@ QOpenGLFramebufferObject* PandaDocument::getFBO()
 
 	// We have to blit the document's multisample fbo to another fbo
 	QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
+
+	imageIsDirty = true;
+	this->cleanDirty();
+}
+
+const QImage& PandaDocument::getRenderedImage()
+{
+	this->updateIfDirty();
+	if(imageIsDirty)
+	{
+		renderedImage = displayFrameBuffer->toImage();
+		imageIsDirty = false;
+	}
+
+	return renderedImage;
+}
+
+QOpenGLFramebufferObject* PandaDocument::getFBO()
+{
+	this->updateIfDirty();
 
 	return displayFrameBuffer.data();
 }
@@ -836,16 +833,13 @@ void PandaDocument::renderOpenGL()
 	glClearColor(col.redF(), col.greenF(), col.blueF(), col.alphaF());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	defaultLayer->mergeLayerOpenGL();
+	defaultLayer->mergeLayer();
 
 	for(auto obj : pandaObjects)
 	{
 		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj);
 		if(layer)
-		{
-			obj->updateIfDirty();
-			layer->mergeLayerOpenGL();
-		}
+			layer->mergeLayer();
 	}
 }
 

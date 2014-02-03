@@ -55,6 +55,7 @@ void OpenGLRenderView::paintGL()
 	glLoadIdentity();
 
 	QSize renderSize = fbo->size();
+	glColor4f(1, 1, 1, 1);
 	drawTexture(QPointF(viewRect.center().x() - renderSize.width() / 2,
 						viewRect.center().y() - renderSize.height() / 2), fbo->texture());
 }
