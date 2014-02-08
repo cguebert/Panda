@@ -53,8 +53,8 @@ QColor Gradient::get(double position) const
 	double pos = extendPos(position);
 
 	int nb = stops.size();
-	if(!nb)
-		return QColor();
+	if(!nb)	// Same rule as Qt's: when empty, do instead a gradient from black to white
+		return interpolate(QColor(0,0,0), QColor(255,255,255), pos);
 	else if(nb == 1)
 		return stops.front().second;
 	else if(pos <= stops.front().first)
@@ -99,6 +99,19 @@ void Gradient::setStops(GradientStops stopsPoints)
 
 Gradient::GradientStops Gradient::getStops() const
 {
+	if(stops.empty())
+	{	// Same rule as Qt's: when empty, do instead a gradient from black to white
+		GradientStops temp;
+		temp.append(qMakePair(0, QColor(0,0,0)));
+		temp.append(qMakePair(1, QColor(255,255,255)));
+		return temp;
+	}
+
+	return stops;
+}
+
+Gradient::GradientStops Gradient::getStopsForEdit() const
+{
 	return stops;
 }
 
@@ -119,11 +132,6 @@ double Gradient::extendPos(double position) const
 	}
 }
 
-double Gradient::interpolate(double v1, double v2, double amt)
-{
-	return v1 * (1.0-amt) + v2 * amt;
-}
-
 QColor Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, double pos)
 {
 	double amt = (pos - s1.first) / (s2.first - s1.first);
@@ -132,17 +140,14 @@ QColor Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, dou
 
 QColor Gradient::interpolate(const QColor& v1, const QColor& v2, double amt)
 {
-	double r1, r2, g1, g2, b1, b2, a1, a2;
-	v1.getRgbF(&r1, &g1, &b1, &a1);
-	v2.getRgbF(&r2, &g2, &b2, &a2);
-	double r, g, b, a;
-	r = interpolate(r1, r2, amt);
-	g = interpolate(g1, g2, amt);
-	b = interpolate(b1, b2, amt);
-	a = interpolate(a1, a2, amt);
-	QColor temp;
-	temp.setRgbF(r, g, b, a);
-	return temp;
+	int r1, r2, g1, g2, b1, b2, a1, a2;
+	int fact = amt * 255;
+	v1.getRgb(&r1, &g1, &b1, &a1);
+	v2.getRgb(&r2, &g2, &b2, &a2);
+	return QColor(r1 + ( r2 - r1 ) * fact / 255,
+				  g1 + ( g2 - g1 ) * fact / 255,
+				  b1 + ( b2 - b1 ) * fact / 255,
+				  a1 + ( a2 - a1 ) * fact / 255);
 }
 
 Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, double amt)

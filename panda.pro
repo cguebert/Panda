@@ -52,7 +52,8 @@ HEADERS       = \
 	ui/widget/OpenDialogDataWidget.h \
 	ui/widget/SimpleDataWidget.h \
 	ui/widget/StructTraits.h \
-	ui/widget/TableDataWidgetDialog.h
+	ui/widget/TableDataWidgetDialog.h \
+    panda/helper/GradientCache.h
 SOURCES       = main.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
@@ -165,7 +166,8 @@ SOURCES       = main.cpp \
 	ui/widget/NumericalDataWidget.cpp \
 	ui/widget/StringDataWidget.cpp \
 	ui/widget/TableDataWidgetDialog.cpp \
-	ui/widget/AnimationDataWidgetDialog.cpp
+	ui/widget/AnimationDataWidgetDialog.cpp \
+    panda/helper/GradientCache.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = .

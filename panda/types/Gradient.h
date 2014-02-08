@@ -30,6 +30,7 @@ public:
 
 	void setStops(GradientStops stopsPoints);
 	GradientStops getStops() const;
+	GradientStops getStopsForEdit() const; // this one doesn't lie
 
 	friend inline bool operator==(const Gradient& g1, const Gradient& g2)
 	{
@@ -41,13 +42,11 @@ public:
 	}
 
 	static Gradient interpolate(const Gradient& g1, const Gradient& g2, double amt);
+	static QColor interpolate(const GradientStop& s1, const GradientStop& s2, double pos);
+	static QColor interpolate(const QColor& v1, const QColor& v2, double amt);
 
 protected:
 	double extendPos(double position) const;
-
-	static double interpolate(double v1, double v2, double amt);
-	static QColor interpolate(const GradientStop& s1, const GradientStop& s2, double pos);
-	static QColor interpolate(const QColor& v1, const QColor& v2, double amt);
 
 	GradientStops stops;
 	Extend extend;

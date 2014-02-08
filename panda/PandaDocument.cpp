@@ -8,6 +8,7 @@
 #include <panda/Layer.h>
 #include <panda/Renderer.h>
 #include <panda/Group.h>
+#include <panda/helper/GradientCache.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>
@@ -912,6 +913,8 @@ void PandaDocument::step()
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
+	helper::GradientCache::getInstance()->setUsedFlag();
+
 	animTime.setValue(animTime.getValue() + timestep.getValue());
 	mousePosition.setValue(mousePositionBuffer);
 	if(mouseClickBuffer < 0)
@@ -924,6 +927,7 @@ void PandaDocument::step()
 	setDirtyValue();
 	updateIfDirty();
 
+	helper::GradientCache::getInstance()->clearUnused();
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->stopLog();
 #endif

@@ -171,9 +171,9 @@ void EditGradientView::setSelected(int sel)
 
 EditGradientDialog::EditGradientDialog(Gradient grad, QWidget *parent)
 	: QDialog(parent)
-	, stops(grad.getStops())
+	, stops(grad.getStopsForEdit())
 	, extend(grad.getExtend())
-	, selected(-1)
+	, selected(0)
 {
 	QVBoxLayout* vLayout = new QVBoxLayout;
 	view = new EditGradientView(this, stops);
@@ -238,6 +238,8 @@ EditGradientDialog::EditGradientDialog(Gradient grad, QWidget *parent)
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	installEventFilter(this);
+
+	setSelected(-1);
 }
 
 Gradient EditGradientDialog::getGradient()
