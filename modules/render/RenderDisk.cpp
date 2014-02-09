@@ -3,14 +3,16 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
 #include <panda/types/Gradient.h>
+#include <panda/helper/GradientCache.h>
 
 #include <QPointF>
 #include <QPainter>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+//#define _USE_MATH_DEFINES
+//#include <math.h>
 
 using panda::types::Gradient;
+using panda::helper::GradientCache;
 
 namespace panda {
 
@@ -22,7 +24,7 @@ public:
 	RenderDisk(PandaDocument *parent)
 		: Renderer(parent)
 		, center(initData(&center, "center", "Center position of the disk"))
-		, radius(initData(&radius, "radius", "Radius of the disk" ))
+		, radius(initData(&radius, "radius", "Radius of the disk"))
 		, color(initData(&color, "color", "Color of the plain disk"))
 	{
 		addInput(&center);
@@ -94,11 +96,12 @@ public:
 				vertices[0] = valCenter.x();
 				vertices[1] = valCenter.y();
 
-				for(int s=0; s<=nbSeg; ++s)
+				for(int i=0; i<=nbSeg; ++i)
 				{
-					double t = s / static_cast<double>(nbSeg) * 2 * M_PI;
-					vertices[(s+1)*2+0] = valCenter.x() + cos(t) * valRadius;
-					vertices[(s+1)*2+1] = valCenter.y() + sin(t) * valRadius;
+					double t = i / static_cast<double>(nbSeg) * 2 * M_PI;
+					int index = (i+1)*2;
+					vertices[index  ] = valCenter.x() + cos(t) * valRadius;
+					vertices[index+1] = valCenter.y() + sin(t) * valRadius;
 				}
 
 				glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
@@ -126,7 +129,7 @@ public:
 	RenderDisk_Gradient(PandaDocument *parent)
 		: Renderer(parent)
 		, center(initData(&center, "center", "Center position of the disk"))
-		, radius(initData(&radius, "radius", "Radius of the disk" ))
+		, radius(initData(&radius, "radius", "Radius of the disk"))
 		, gradient(initData(&gradient, "gradient", "Gradient used to fill the disk"))
 	{
 		addInput(&center);
@@ -181,6 +184,64 @@ public:
 
 	void renderOpenGL()
 	{
+		const QVector<QPointF>& listCenter = center.getValue();
+		const QVector<double>& listRadius = radius.getValue();
+		const QVector<Gradient>& listGradient = gradient.getValue();
+
+		int nbCenter = listCenter.size();
+		int nbRadius = listRadius.size();
+		int nbGradient = listGradient.size();
+
+		if(nbCenter && nbRadius && nbGradient)
+		{
+			if(nbRadius < nbCenter) nbRadius = 1;
+			if(nbGradient < nbCenter) nbGradient = 1;
+			std::vector<double> vertices, texCoords;
+
+			glEnable(GL_TEXTURE_2D);
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			for(int i=0; i<nbCenter; ++i)
+			{
+				double valRadius = listRadius[i % nbRadius];
+				int nbSeg = static_cast<int>(floor(valRadius * M_PI * 2));
+				if(nbSeg < 3) continue;
+				int nbPoints = (nbSeg + 2) * 2;
+				vertices.resize(nbPoints);
+				texCoords.resize(nbPoints);
+
+				GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(ceil(valRadius)));
+				if(texture == -1)
+					continue;
+				glBindTexture(GL_TEXTURE_2D, texture);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+				QPointF valCenter = listCenter[i];
+				vertices[0] = valCenter.x();
+				vertices[1] = valCenter.y();
+				texCoords[0] = 0; texCoords[1] = 0;
+
+				for(int i=0; i<=nbSeg; ++i)
+				{
+					double t = i / static_cast<double>(nbSeg) * 2 * M_PI;
+					int index = (i+1)*2;
+					vertices[index] = valCenter.x() + cos(t) * valRadius;
+					vertices[index+1] = valCenter.y() + sin(t) * valRadius;
+					texCoords[index] = 1; texCoords[index+1] = 0;
+				}
+
+				glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
+				glTexCoordPointer(2, GL_DOUBLE, 0, texCoords.data());
+				glDrawArrays(GL_TRIANGLE_FAN, 0, nbSeg+2);
+			}
+			glDisableClientState(GL_VERTEX_ARRAY);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			glDisable(GL_TEXTURE_2D);
+		}
 	}
 
 protected:
