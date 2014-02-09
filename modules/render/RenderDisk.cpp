@@ -79,6 +79,7 @@ public:
 			if(nbColor < nbCenter) nbColor = 1;
 			std::vector<double> vertices;
 
+			glEnableClientState(GL_VERTEX_ARRAY);
 			for(int i=0; i<nbCenter; ++i)
 			{
 				QColor valCol = listColor[i % nbColor];
@@ -86,6 +87,7 @@ public:
 
 				double valRadius = listRadius[i % nbRadius];
 				int nbSeg = static_cast<int>(floor(valRadius * M_PI * 2));
+				if(nbSeg < 3) continue;
 				vertices.resize((nbSeg + 2) * 2);
 
 				QPointF valCenter = listCenter[i];
@@ -98,12 +100,11 @@ public:
 					vertices[(s+1)*2+0] = valCenter.x() + cos(t) * valRadius;
 					vertices[(s+1)*2+1] = valCenter.y() + sin(t) * valRadius;
 				}
-				glEnableClientState( GL_VERTEX_ARRAY );
-				glVertexPointer( 2, GL_DOUBLE, 0, vertices.data() );
-				glDrawArrays( GL_TRIANGLE_FAN, 0, nbSeg + 2 );
-				glDisableClientState( GL_VERTEX_ARRAY );
-			}
 
+				glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
+				glDrawArrays(GL_TRIANGLE_FAN, 0, nbSeg+2);
+			}
+			glDisableClientState(GL_VERTEX_ARRAY);
 		}
 	}
 
