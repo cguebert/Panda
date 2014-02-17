@@ -20,7 +20,7 @@ public:
 		: Renderer(parent)
 		, center(initData(&center, "center", "Center position of the circle"))
 		, radius(initData(&radius, "radius", "Radius of the circle" ))
-		, lineWidth(initData(&lineWidth, "lineWidth", "Width of the circle's line"))
+		, lineWidth(initData(&lineWidth, "lineWidth", "Width of the line"))
 		, color(initData(&color, "color", "Color of the circle"))
 	{
 		addInput(&center);

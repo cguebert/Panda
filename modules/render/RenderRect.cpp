@@ -15,17 +15,15 @@ public:
 	RenderRect(PandaDocument *parent)
 		: Renderer(parent)
 		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
-		, lineWidth(initData(&lineWidth, "lineWidth", "Width of the outline of the rectangle"))
-		, lineColor(initData(&lineColor, "lineColor", "Color of the outline of the rectangle"))
-		, color(initData(&color, "color", "Color inside the rectangle"))
+		, lineWidth(initData(&lineWidth, "lineWidth", "Width of the line"))
+		, color(initData(&color, "color", "Color of the rectangle"))
 	{
 		addInput(&rect);
 		addInput(&lineWidth);
-		addInput(&lineColor);
 		addInput(&color);
 
 		rect.getAccessor().push_back(QRectF(100, 100, 50, 50));
-		lineColor.getAccessor().push_back(QColor(0,0,0));
+		color.getAccessor().push_back(QColor(0,0,0));
 		lineWidth.getAccessor().push_back(0.0);
 	}
 
@@ -34,38 +32,26 @@ public:
 		painter->save();
 
 		const QVector<QRectF>& listRect = rect.getValue();
-		const QVector<QColor>& listLineColor = lineColor.getValue();
 		const QVector<QColor>& listColor = color.getValue();
-		const QVector<double>& listLineWidth = lineWidth.getValue();
+		const QVector<double>& listWidth = lineWidth.getValue();
 
 		int nbRect = listRect.size();
-		int nbLineColor = listLineColor.size();
 		int nbColor = listColor.size();
-		int nbLineWidth = listLineWidth.size();
+		int nbWidth = listWidth.size();
 
-		bool drawOutline = (nbLineWidth && nbLineColor);
-		bool drawInside = (nbColor > 0);
-
-		if(nbRect && (drawOutline || drawInside) )
+		if(nbRect && nbColor && nbWidth)
 		{
 			painter->setBrush(Qt::NoBrush);
 			painter->setPen(Qt::NoPen);
 
-			if(nbLineColor < nbRect) nbLineColor = 1;
-			if(nbLineWidth < nbRect) nbLineWidth = 1;
 			if(nbColor < nbRect) nbColor = 1;
+			if(nbWidth < nbRect) nbWidth = 1;
 
 			for(int i=0; i<nbRect; ++i)
 			{
-				if(drawOutline)
-				{
-					QPen pen(listLineColor[i % nbLineColor]);
-					pen.setWidthF(listLineWidth[i % nbLineWidth]);
-					painter->setPen(pen);
-				}
-
-				if(drawInside)
-					painter->setBrush(QBrush(listColor[i % nbColor]));
+				QPen pen(listColor[i % nbColor]);
+				pen.setWidthF(listWidth[i % nbWidth]);
+				painter->setPen(pen);
 
 				painter->drawRect(listRect[i]);
 			}
@@ -76,14 +62,134 @@ public:
 
 	void renderOpenGL()
 	{
+		const QVector<QRectF>& listRect = rect.getValue();
+		const QVector<QColor>& listColor = color.getValue();
+		const QVector<double>& listWidth = lineWidth.getValue();
+
+		int nbRect = listRect.size();
+		int nbColor = listColor.size();
+		int nbWidth = listWidth.size();
+
+		if(nbRect && nbColor || nbWidth)
+		{
+			if(nbColor < nbRect) nbColor = 1;
+			if(nbWidth < nbRect) nbWidth = 1;
+			double verts[8];
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(2, GL_DOUBLE, 0, verts);
+			for(int i=0; i<nbRect; ++i)
+			{
+				QColor valCol = listColor[i % nbColor];
+				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
+
+				glLineWidth(listWidth[i % nbWidth]);
+
+				QRectF rect = listRect[i % nbRect];
+				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
+				verts[1*2+0] = rect.left(); verts[1*2+1] = rect.top();
+				verts[2*2+0] = rect.left(); verts[2*2+1] = rect.bottom();
+				verts[3*2+0] = rect.right(); verts[3*2+1] = rect.bottom();
+
+				glDrawArrays(GL_LINE_LOOP, 0, 4);
+			}
+			glDisableClientState(GL_VERTEX_ARRAY);
+		}
 	}
 
 protected:
 	Data< QVector<QRectF> > rect;
 	Data< QVector<double> > lineWidth;
-	Data< QVector<QColor> > lineColor, color;
+	Data< QVector<QColor> > color;
 };
 
-int RenderRectClass = RegisterObject<RenderRect>("Render/Rectangle").setDescription("Draw a plain rectangle");
+int RenderRectClass = RegisterObject<RenderRect>("Render/Rectangle").setDescription("Draw a rectangle");
+
+//*************************************************************************//
+
+class RenderFilledRect : public Renderer
+{
+public:
+	PANDA_CLASS(RenderFilledRect, Renderer)
+
+	RenderFilledRect(PandaDocument *parent)
+		: Renderer(parent)
+		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
+		, color(initData(&color, "color", "Color of the rectangle"))
+	{
+		addInput(&rect);
+		addInput(&color);
+
+		rect.getAccessor().push_back(QRectF(100, 100, 50, 50));
+		color.getAccessor().push_back(QColor(0,0,0));
+	}
+
+	void render(QPainter* painter)
+	{
+		painter->save();
+
+		const QVector<QRectF>& listRect = rect.getValue();
+		const QVector<QColor>& listColor = color.getValue();
+
+		int nbRect = listRect.size();
+		int nbColor = listColor.size();
+
+		if(nbRect && nbColor)
+		{
+			painter->setBrush(Qt::NoBrush);
+			painter->setPen(Qt::NoPen);
+
+			if(nbColor < nbRect) nbColor = 1;
+
+			for(int i=0; i<nbRect; ++i)
+			{
+				painter->setPen(listColor[i % nbColor]);
+
+				painter->drawRect(listRect[i]);
+			}
+		}
+
+		painter->restore();
+	}
+
+	void renderOpenGL()
+	{
+		const QVector<QRectF>& listRect = rect.getValue();
+		const QVector<QColor>& listColor = color.getValue();
+
+		int nbRect = listRect.size();
+		int nbColor = listColor.size();
+
+		if(nbRect && nbColor)
+		{
+			if(nbColor < nbRect) nbColor = 1;
+			double verts[8];
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(2, GL_DOUBLE, 0, verts);
+			for(int i=0; i<nbRect; ++i)
+			{
+				QColor valCol = listColor[i % nbColor];
+				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
+
+				QRectF rect = listRect[i % nbRect];
+				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
+				verts[1*2+0] = rect.left(); verts[1*2+1] = rect.top();
+				verts[2*2+0] = rect.right(); verts[2*2+1] = rect.bottom();
+				verts[3*2+0] = rect.left(); verts[3*2+1] = rect.bottom();
+
+				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			}
+			glDisableClientState(GL_VERTEX_ARRAY);
+		}
+	}
+
+protected:
+	Data< QVector<QRectF> > rect;
+	Data< QVector<QColor> > color;
+};
+
+int RenderFilledRectClass = RegisterObject<RenderFilledRect>("Render/Filled rectangle").setDescription("Draw a filled rectangle");
+
 
 } // namespace panda
