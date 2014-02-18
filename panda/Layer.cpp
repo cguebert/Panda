@@ -79,12 +79,16 @@ void BaseLayer::mergeLayer()
 	texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
 	texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, verts );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
 }
 
 //*************************************************************************//

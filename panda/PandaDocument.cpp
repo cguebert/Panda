@@ -775,12 +775,7 @@ void PandaDocument::onDirtyObject(panda::PandaObject* object)
 void PandaDocument::update()
 {
 	if(!renderFrameBuffer || renderFrameBuffer->size() != getRenderSize())
-	{
-		QOpenGLFramebufferObjectFormat fmt;
-		fmt.setSamples(16);
-		renderFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize(), fmt));
-		displayFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
-	}
+		renderFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
 
 	defaultLayer->updateIfDirty();
 
@@ -794,9 +789,6 @@ void PandaDocument::update()
 	renderOpenGL();
 	renderFrameBuffer->release();
 
-	// We have to blit the document's multisample fbo to another fbo
-	QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
-
 	imageIsDirty = true;
 	this->cleanDirty();
 }
@@ -806,7 +798,7 @@ const QImage& PandaDocument::getRenderedImage()
 	this->updateIfDirty();
 	if(imageIsDirty)
 	{
-		renderedImage = displayFrameBuffer->toImage();
+		renderedImage = renderFrameBuffer->toImage();
 		imageIsDirty = false;
 	}
 
@@ -817,7 +809,7 @@ QOpenGLFramebufferObject* PandaDocument::getFBO()
 {
 	this->updateIfDirty();
 
-	return displayFrameBuffer.data();
+	return renderFrameBuffer.data();
 }
 
 void PandaDocument::renderOpenGL()

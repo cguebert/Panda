@@ -93,7 +93,7 @@ protected:
 	QImage renderedImage;
 	bool imageIsDirty;
 	Layer* defaultLayer;
-	QScopedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
+	QScopedPointer<QOpenGLFramebufferObject> renderFrameBuffer;
 
 	Data<QPointF> renderSize;
 	Data<QColor> backgroundColor;
