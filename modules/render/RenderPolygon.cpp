@@ -60,6 +60,45 @@ public:
 
 	void renderOpenGL()
 	{
+		const Topology& topo = topology.getValue();
+		const QVector<QColor>& listColor = color.getValue();
+
+		int nbPoly = topo.getNumberOfPolygons();
+		int nbColor = listColor.size();
+
+		const QVector<QPointF>& pts = topo.getPoints();
+
+		if(nbPoly && nbColor)
+		{
+			if(nbColor < nbPoly) nbColor = 1;
+
+			std::vector<double> vertices;
+			glEnableClientState(GL_VERTEX_ARRAY);
+
+			for(int i=0; i<nbPoly; ++i)
+			{
+				const Topology::Polygon& poly = topo.getPolygon(i);
+				int nbPts = poly.size();
+				if(!nbPts)
+					continue;
+
+				QColor valCol = listColor[i % nbColor];
+				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
+
+				vertices.resize(nbPts * 2);
+
+				for(int j=0; j<nbPts; ++j)
+				{
+					const QPointF& pt = pts[poly[j]];
+					vertices[j*2  ] = pt.x();
+					vertices[j*2+1] = pt.y();
+				}
+
+				glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
+				glDrawArrays(GL_TRIANGLE_FAN, 0, nbPts);
+			}
+			glDisableClientState(GL_VERTEX_ARRAY);
+		}
 	}
 
 protected:
