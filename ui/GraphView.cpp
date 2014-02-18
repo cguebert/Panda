@@ -531,7 +531,8 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				{
 					if(prevDock)
 						prevDock->removeDockable(dockable);
-					newDock->addDockable(dockable, newIndex);
+					if(newDock)
+						newDock->addDockable(dockable, newIndex);
 					dockable->setParentDock(newDock);
 				}
 				else if(prevDock != defaultDock)
