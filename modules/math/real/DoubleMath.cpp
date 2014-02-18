@@ -31,7 +31,7 @@ public:
 		for(int i=0; i<size; ++i)
 			valOut[i] = compute(valIn[i]);
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 	virtual double compute(const double& value) = 0;
@@ -78,7 +78,7 @@ public:
 				valOut[i] = compute(valInA[i%nbA], valInB[i%nbB]);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 	virtual double compute(const double& valA, const double& valB) = 0;

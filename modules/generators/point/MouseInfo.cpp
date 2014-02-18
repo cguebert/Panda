@@ -26,7 +26,7 @@ public:
 
 	void update()
 	{
-		this->cleanDirty();
+		cleanDirty();
 		double time = parentDocument->getAnimationTime();
 		QPointF oldPos = position.getValue(), newPos = parentDocument->getMousePosition();
 

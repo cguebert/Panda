@@ -82,7 +82,7 @@ public:
 
 		nbPoints.setValue(valPoints.size());
 		grid.clear();
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

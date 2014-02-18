@@ -35,7 +35,7 @@ public:
 				grad->add(stop.first, stop.second);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -68,7 +68,7 @@ public:
 		auto acc = anim.getAccessor();
 		acc->setStops(grad.getStops());
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

@@ -22,7 +22,7 @@ public:
 
 	void update()
 	{
-		this->cleanDirty();
+		cleanDirty();
 		QSize tmpSize = parentDocument->getRenderSize();
 		renderSize.setValue(QPointF(tmpSize.width(), tmpSize.height()));
 	}

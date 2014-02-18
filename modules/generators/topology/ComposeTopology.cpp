@@ -36,7 +36,7 @@ public:
 			poly.push_back(i);
 		topo->addPolygon(poly);
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -79,7 +79,7 @@ public:
 			pts.push_back(topoPts[e.second]);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -113,7 +113,7 @@ public:
 		auto pts = points.getAccessor();
 		pts = topo.getPoints();
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -159,7 +159,7 @@ public:
 //		outTopo->createPolygonsAroundPointList();
 //		const QVector<Topology::IndicesList>& papl = outTopo->getPolygonsAroundPointList();
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

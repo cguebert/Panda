@@ -68,7 +68,7 @@ public:
 			vMax.setValue(0.0);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -114,7 +114,7 @@ public:
 		else
 			median.setValue(0);
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -156,7 +156,7 @@ public:
 		output.setValue(tmpMap.keys().toVector());
 		sortedIndices.setValue(tmpMap.values().toVector());
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

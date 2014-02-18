@@ -26,7 +26,7 @@ GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::Generic
 
 void GenericObjectDrawStruct::update()
 {
-	objectArea = QRectF(position + parentView->getViewDelta(), this->getObjectSize());
+	objectArea = QRectF(position + parentView->getViewDelta(), getObjectSize());
 
 	datas.clear();
 	QList<panda::BaseData*> inputDatas, outputDatas;

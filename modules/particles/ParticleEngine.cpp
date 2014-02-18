@@ -154,7 +154,7 @@ void ParticleEngine::update()
 		acc[i] = p.acceleration;
 	}
 
-	this->cleanDirty();
+	cleanDirty();
 }
 
 int ParticleEngineClass = RegisterObject<ParticleEngine>("Particles/Particle engine").setDescription("Animate a set of points based on physical properties and optional modifier objects");

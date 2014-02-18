@@ -38,7 +38,7 @@ public:
 		GenericObject::update();
 		text.setValue(tempList);
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 	template <class T>

@@ -45,7 +45,7 @@ public:
 						 qBound(0.0, a[i], 1.0));
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -100,7 +100,7 @@ public:
 			a[i] = c[i].alphaF();
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

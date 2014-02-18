@@ -44,7 +44,7 @@ public:
 				res[i] = valA[i%nbA] + valB[i%nbB];
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -92,7 +92,7 @@ public:
 				res[i] = valA[i%nbA] - valB[i%nbB];
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -142,7 +142,7 @@ public:
 				res[i] = points[i%nbP] * reals[i%nbR];
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -193,7 +193,7 @@ public:
 				res[i] = points[i%nbP] / reals[i%nbR];
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -246,7 +246,7 @@ public:
 			}
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -314,7 +314,7 @@ public:
 			}
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -364,7 +364,7 @@ public:
 			}
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -410,7 +410,7 @@ public:
 			}
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

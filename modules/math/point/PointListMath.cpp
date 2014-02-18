@@ -73,7 +73,7 @@ public:
 			stdDev.setValue(0);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -127,7 +127,7 @@ public:
 		else
 			length.setValue(0.0);
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -215,7 +215,7 @@ public:
 			listRot.clear();
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

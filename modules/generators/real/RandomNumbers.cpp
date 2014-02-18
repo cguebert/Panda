@@ -40,7 +40,7 @@ public:
 		for(int i=0; i<valNbNumbers; ++i)
 			valNumbers[i] = rnd.random(min, max);
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

@@ -543,13 +543,13 @@ GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 
 void GroupWithLayer::setLayer(Layer* newLayer)
 {
-	this->layer = newLayer;
+	layer = newLayer;
 }
 
 void GroupWithLayer::update()
 {
-	this->updateLayer(parentDocument);
-	this->cleanDirty();
+	updateLayer(parentDocument);
+	cleanDirty();
 }
 
 QList<Renderer*> GroupWithLayer::getRenderers()

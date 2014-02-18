@@ -41,7 +41,7 @@ public:
 		for(int i=0; i<valNbPoints; ++i)
 			valPoints.push_back(QPointF(rnd.random()*size.width(), rnd.random()*size.height()));
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

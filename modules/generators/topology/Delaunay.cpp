@@ -88,7 +88,7 @@ public:
 
 		topo->createTriangles();
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

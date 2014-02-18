@@ -26,7 +26,7 @@ public:
 	{
 		animTime.setValue(parentDocument->getAnimationTime());
 		timeStep.setValue(parentDocument->getTimeStep());
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

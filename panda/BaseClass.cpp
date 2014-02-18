@@ -54,9 +54,9 @@ bool BaseClass::operator==(const BaseClass& c) const
 	if(this == &c)
 		return true;
 
-	return (this->getNamespaceName() == c.getNamespaceName())
-			&& (this->getClassName() == c.getClassName())
-			&& (this->getTemplateName() == c.getTemplateName());
+	return (getNamespaceName() == c.getNamespaceName())
+			&& (getClassName() == c.getClassName())
+			&& (getTemplateName() == c.getTemplateName());
 }
 
 bool BaseClass::operator!=(const BaseClass& c) const

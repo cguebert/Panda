@@ -35,7 +35,7 @@ public:
 		for(int i=0; i<nb; ++i)
 			colorsList[i] = grad.get(pos[i]);
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

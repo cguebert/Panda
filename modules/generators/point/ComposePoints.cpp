@@ -35,7 +35,7 @@ public:
 		for(int i=0; i<nb; ++i)
 			pts[i] = QPointF(xVal[i%nbx], yVal[i%nby]);
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -80,7 +80,7 @@ public:
 			yVal[i] = pt.y();
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

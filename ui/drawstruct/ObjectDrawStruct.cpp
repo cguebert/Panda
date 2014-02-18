@@ -9,7 +9,7 @@
 ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 	: parentView(view), object(obj)
 {
-	QSize objSize = this->getObjectSize();
+	QSize objSize = getObjectSize();
 	QPointF center = view->contentsRect().center();
 	position = QPointF(center.x() - objSize.width()/2, center.y() - objSize.height()/2) - view->getViewDelta();
 

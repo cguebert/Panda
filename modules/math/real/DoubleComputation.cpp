@@ -72,7 +72,7 @@ public:
 				valOut[i] = smoothStep(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -113,7 +113,7 @@ public:
 			prevValues[i] = valIn[i];
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 	void reset()
@@ -171,7 +171,7 @@ public:
 			prevValues[i] = valIn[i];
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 	void reset()
@@ -251,7 +251,7 @@ public:
 				valOut[i] = constrain(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -313,7 +313,7 @@ public:
 				valOut[i] = pulse(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -386,7 +386,7 @@ public:
 								  valOutMin[i%nbP], valOutMax[i%nbP]);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

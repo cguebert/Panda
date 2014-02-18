@@ -35,7 +35,7 @@ public:
 		nbEdges.setValue(topo.getNumberOfEdges());
 		nbPolygons.setValue(topo.getNumberOfPolygons());
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

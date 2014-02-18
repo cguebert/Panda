@@ -69,7 +69,7 @@ public:
 			topo->addEdge(it->vertex0() - firstVertex, it->vertex1() - firstVertex);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

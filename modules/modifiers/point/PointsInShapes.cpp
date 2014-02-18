@@ -45,7 +45,7 @@ public:
 			}
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -104,7 +104,7 @@ public:
 			}
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

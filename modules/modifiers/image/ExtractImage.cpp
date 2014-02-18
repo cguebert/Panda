@@ -39,7 +39,7 @@ public:
 			painter.drawImage(0, 0, img, rect.left(), rect.top(), rect.width(), rect.height());
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

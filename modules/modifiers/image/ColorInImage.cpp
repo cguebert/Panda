@@ -39,7 +39,7 @@ public:
 				colorsList[i] = QColor();
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -92,7 +92,7 @@ public:
 				res->setPixel(pt, col[i%nbC].rgba());
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -167,7 +167,7 @@ public:
 				col[i] = QColor();
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

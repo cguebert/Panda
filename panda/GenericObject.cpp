@@ -48,7 +48,7 @@ void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefin
 		QCoreApplication::exit(-3);
 	}
 
-	this->registerFunctions();	// Create template functions
+	registerFunctions();	// Create template functions
 
 	genericData_ = data;
 	genericData_->setDisplayed(false);
@@ -147,10 +147,10 @@ void GenericObject::update()
 		DataList list;
 		for(BaseDataPtr ptr : created->datas)
 			list.append(ptr.data());
-		this->invokeFunction(created->type, list);
+		invokeFunction(created->type, list);
 	}
 
-	this->cleanDirty();
+	cleanDirty();
 }
 
 void GenericObject::dataSetParent(BaseData* data, BaseData* parent)

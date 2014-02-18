@@ -38,7 +38,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	QList<Renderer*> renderers = this->getRenderers();
+	QList<Renderer*> renderers = getRenderers();
 	QListIterator<Renderer*> iter = QListIterator<Renderer*>(renderers);
 	iter.toBack();
 	while(iter.hasPrevious())
@@ -122,8 +122,8 @@ Layer::Layer(PandaDocument *parent)
 
 void Layer::update()
 {
-	this->updateLayer(parentDocument);
-	this->cleanDirty();
+	updateLayer(parentDocument);
+	cleanDirty();
 }
 
 bool Layer::accepts(DockableObject* dockable) const

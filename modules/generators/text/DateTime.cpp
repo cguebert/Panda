@@ -46,7 +46,7 @@ public:
 
 		text.setValue(date.toString(format.getValue()));
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

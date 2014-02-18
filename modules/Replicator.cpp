@@ -63,7 +63,7 @@ public:
 				}
 			}
 		}
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

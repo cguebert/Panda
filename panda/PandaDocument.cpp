@@ -790,12 +790,12 @@ void PandaDocument::update()
 	renderFrameBuffer->release();
 
 	imageIsDirty = true;
-	this->cleanDirty();
+	cleanDirty();
 }
 
 const QImage& PandaDocument::getRenderedImage()
 {
-	this->updateIfDirty();
+	updateIfDirty();
 	if(imageIsDirty)
 	{
 		renderedImage = renderFrameBuffer->toImage();
@@ -807,7 +807,7 @@ const QImage& PandaDocument::getRenderedImage()
 
 QOpenGLFramebufferObject* PandaDocument::getFBO()
 {
-	this->updateIfDirty();
+	updateIfDirty();
 
 	return renderFrameBuffer.data();
 }

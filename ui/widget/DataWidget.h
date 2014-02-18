@@ -60,7 +60,7 @@ public slots:
 			{
 				readFromData();
 				m_counter = newCounter;
-				this->update();
+				update();
 			}
 		}
 	}

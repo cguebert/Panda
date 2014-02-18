@@ -33,7 +33,7 @@ public:
 		for(int i=0; i<valNbNumbers; ++i)
 			valNumbers[i] = valStart + valStep * i;
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

@@ -45,7 +45,7 @@ public:
 		else
 			outPts.clear();
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 	void computeCoefficients(int c, int p)

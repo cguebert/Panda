@@ -55,7 +55,7 @@ public:
 			outPts[i] = inPts[i] + disp;
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

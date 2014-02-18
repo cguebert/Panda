@@ -51,7 +51,7 @@ public:
 							 rnd.randomInt(minA, maxA));
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

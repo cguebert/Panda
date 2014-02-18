@@ -43,7 +43,7 @@ public:
 			rect[i] = QRectF(tl, tt, r[i] - tl, b[i] - tt);
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -89,7 +89,7 @@ public:
 		for(int i=0; i<nb; ++i)
 			rect[i] = QRectF(c[i%nbC].x()-s[i%nbS].x()/2.0, c[i%nbC].y()-s[i%nbS].y()/2.0, s[i%nbS].x(), s[i%nbS].y());
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -135,7 +135,7 @@ public:
 		for(int i=0; i<nb; ++i)
 			rect[i] = QRectF(tl[i%nbTL], br[i%nbBR]);
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -192,7 +192,7 @@ public:
 			b[i] = tr.bottom();
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -239,7 +239,7 @@ public:
 			s[i] = QPointF(tr.width(), tr.height());
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
@@ -286,7 +286,7 @@ public:
 			br[i] = tr.bottomRight();
 		}
 
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:

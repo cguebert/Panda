@@ -34,7 +34,7 @@ public:
 		grad->clear();
 		grad->add(0.0, colorA.getValue());
 		grad->add(1.0, colorB.getValue());
-		this->cleanDirty();
+		cleanDirty();
 	}
 
 protected:
