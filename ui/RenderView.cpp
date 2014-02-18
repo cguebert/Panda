@@ -31,9 +31,15 @@ void RenderView::paintEvent(QPaintEvent* /*event*/)
 	if(!image.isNull())
 	{
 		QRect viewRect = contentsRect();
-		painter.drawImage(viewRect.center().x() - image.width() / 2,
-						   viewRect.center().y() - image.height() / 2,
-						   image);
+		QPoint topLeft = QPoint(viewRect.center().x() - image.width() / 2,
+								viewRect.center().y() - image.height() / 2);
+		QRect drawRect = QRect(topLeft, image.size());
+		QColor col = pandaDocument->getBackgroundColor();
+		col.setAlpha(255);
+		painter.setBrush(col);
+		painter.setPen(Qt::NoPen);
+		painter.drawRect(drawRect);
+		painter.drawImage(topLeft, image);
 	}
 }
 
