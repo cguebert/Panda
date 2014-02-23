@@ -601,6 +601,7 @@ bool MainWindow::loadFile(const QString &fileName, bool import)
 
 	if(!import)
 	{
+		pandaDocument->selectNone();
 		setCurrentFile(fileName);
 		statusBar()->showMessage(tr("File loaded"), 2000);
 	}
