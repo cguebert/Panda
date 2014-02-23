@@ -20,7 +20,7 @@ DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 	mainLayout->addLayout(stackedLayout);
 	setLayout(mainLayout);
 
-	queuePopulate((panda::PandaObject*)doc);
+	queuePopulate(nullptr);
 
 	connect(doc, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(queuePopulate(panda::PandaObject*)));
 	connect(doc, SIGNAL(selectedObjectIsDirty(panda::PandaObject*)), this, SLOT(queuePopulate(panda::PandaObject*)));

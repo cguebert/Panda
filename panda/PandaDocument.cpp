@@ -302,6 +302,9 @@ bool PandaDocument::loadDoc(QDomElement& root)
 void PandaDocument::resetDocument()
 {
 	selectedObjects.clear();
+	emit selectedObject(nullptr);
+	emit selectionChanged();
+
 	for(PandaObject* object : pandaObjects)
 	{
 		emit removedObject(object);
@@ -322,8 +325,6 @@ void PandaDocument::resetDocument()
 	animTimer->stop();
 
 	emit modified();
-	emit selectionChanged();
-	emit selectedObject(nullptr);
 	emit timeChanged();
 }
 
