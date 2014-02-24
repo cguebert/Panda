@@ -13,65 +13,78 @@ namespace types
 class Topology
 {
 public:
-	typedef std::pair<int, int> Edge;
-	typedef QVector<int> IndicesList;
-	typedef IndicesList Polygon;
+	typedef unsigned int index_type;
+	enum { InvalidID = (unsigned)-1 };
+	typedef index_type PointID;
+	typedef index_type EdgeID;
+	typedef index_type PolygonID;
+
+	typedef std::pair<PointID, PointID> Edge;
+	typedef QVector<PointID> PointsIndicesList;
+	typedef QVector<EdgeID> EdgesIndicesList;
+	typedef QVector<PolygonID> PolygonsIndicesList;
+	typedef PointsIndicesList Polygon;
+
+	typedef QVector<QPointF> SeqPoints;
+	typedef QVector<Edge> SeqEdges;
+	typedef QVector<Polygon> SeqPolygons;
 
 	Topology();
 	virtual ~Topology();
 
-	int addPoint(const QPointF& point);
+	PointID addPoint(const QPointF& point);
 	void addPoints(const QVector<QPointF>& pts);
 
-	int addEdge(int a, int b);
-	int addEdge(Edge e);
+	EdgeID addEdge(PointID a, PointID b);
+	EdgeID addEdge(Edge e);
 	void addEdges(const QVector<Edge>& e);
 
-	int addPolygon(const Polygon& p);
+	PolygonID addPolygon(const Polygon& p);
 	void addPolygons(const QVector<Polygon>& p);
 
 	int getNumberOfPoints() const;
 	int getNumberOfEdges() const;
 	int getNumberOfPolygons() const;
 
-	const QVector<QPointF>& getPoints() const;
-	const QVector<Edge>& getEdges() const;
-	const QVector<Polygon>& getPolygons() const;
+	const SeqPoints& getPoints() const;
+	const SeqEdges& getEdges() const;
+	const SeqPolygons& getPolygons() const;
 
-	QPointF& getPoint(int index);
-	QPointF getPoint(int index) const;
-	Edge getEdge(int index) const;
-	Polygon getPolygon(int index) const;
+	QPointF& getPoint(PointID index);
+	QPointF getPoint(PointID index) const;
+	Edge getEdge(EdgeID index) const;
+	Polygon getPolygon(PolygonID index) const;
 
-	int getPointIndex(QPointF pt) const;
-	int getEdgeIndex(int a, int b) const;
-	int getEdgeIndex(const Edge& e) const;
-	int getPolygonIndex(const Polygon& p) const;
+	PointID getPointIndex(const QPointF& pt) const;
+	EdgeID getEdgeIndex(PointID a, PointID b) const;
+	EdgeID getEdgeIndex(const Edge& e) const;
+	PolygonID getPolygonIndex(const Polygon& p) const;
 
-	const IndicesList& getEdgesInPolygon(int index);
-	const QVector<IndicesList>& getEdgesInPolygonList();
+	const EdgesIndicesList& getEdgesInPolygon(int index);
+	const QVector<EdgesIndicesList>& getEdgesInPolygonList();
 
-	const IndicesList& getEdgesAroundPoint(int index);
-	const QVector<IndicesList>& getEdgesAroundPointList();
+	const EdgesIndicesList& getEdgesAroundPoint(int index);
+	const QVector<EdgesIndicesList>& getEdgesAroundPointList();
 
-	const IndicesList& getPolygonsAroundPoint(int index);
-	const QVector<IndicesList>& getPolygonsAroundPointList();
+	const PolygonsIndicesList& getPolygonsAroundPoint(int index);
+	const QVector<PolygonsIndicesList>& getPolygonsAroundPointList();
 
-	const IndicesList& getPolygonsAroundEdge(int index);
-	const QVector<IndicesList>& getPolygonsAroundEdgeList();
+	const PolygonsIndicesList& getPolygonsAroundEdge(int index);
+	const QVector<PolygonsIndicesList>& getPolygonsAroundEdgeList();
 
-	const IndicesList& getPointsOnBorder();
-	const IndicesList& getEdgesOnBorder();
-	const IndicesList& getPolygonsOnBorder();
+	const QVector<PointID>& getPointsOnBorder();
+	const QVector<EdgeID>& getEdgesOnBorder();
+	const QVector<PolygonID>& getPolygonsOnBorder();
 
-	IndicesList getPolygonsAroundPolygon(int index);
-	IndicesList getPolygonsAroundPolygons(const IndicesList& listID);
-	IndicesList getPolygonsConnectedToPolygon(int index);
+	PolygonsIndicesList getPolygonsAroundPolygon(int index);
+	PolygonsIndicesList getPolygonsAroundPolygons(const PolygonsIndicesList& listID);
+	PolygonsIndicesList getPolygonsConnectedToPolygon(int index);
 
-	int getOtherPointInEdge(int edge, int point) const;
-	double areaOfPolygon(int polyId) const;
-	void reorientPolygon(int polyId);
+	PointID getOtherPointInEdge(const Edge& edge, PointID point) const;
+	double areaOfPolygon(const Polygon& poly) const;
+	void reorientPolygon(Polygon& poly);
 	static bool comparePolygon(Polygon p1, Polygon p2);
+	bool polygonContainsPoint(const Polygon& poly, QPointF pt) const;
 
 	bool hasPoints() const;
 	bool hasEdges() const;
@@ -101,18 +114,16 @@ public:
 	void clear();
 
 protected:
-	QVector<QPointF> m_points;
-	QVector<Edge> m_edges;
-	QVector<Polygon> m_polygons;
+	SeqPoints m_points;
+	SeqEdges m_edges;
+	SeqPolygons m_polygons;
 
-	QVector<IndicesList> m_edgesInPolygon,
-		m_edgesAroundPoint,
-		m_polygonsAroundPoint,
-		m_polygonsAroundEdge;
+	QVector<EdgesIndicesList> m_edgesInPolygon, m_edgesAroundPoint;
+	QVector<PolygonsIndicesList> m_polygonsAroundPoint, m_polygonsAroundEdge;
 
-	IndicesList m_pointsOnBorder,
-		m_edgesOnBorder,
-		m_polygonsOnBorder;
+	PointsIndicesList m_pointsOnBorder;
+	EdgesIndicesList m_edgesOnBorder;
+	PolygonsIndicesList m_polygonsOnBorder;
 };
 
 //***************************************************************//

@@ -1,5 +1,5 @@
 #include <panda/types/Topology.h>
-#include <panda/Data.h>
+#include <panda/helper/Point.h>
 
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
@@ -21,7 +21,7 @@ Topology::~Topology()
 {
 }
 
-int Topology::addPoint(const QPointF& point)
+Topology::PointID Topology::addPoint(const QPointF& point)
 {
 	m_points.push_back(point);
 	return m_points.size() - 1;
@@ -32,14 +32,14 @@ void Topology::addPoints(const QVector<QPointF>& pts)
 	m_points += pts;
 }
 
-int Topology::addEdge(int a, int b)
+Topology::EdgeID Topology::addEdge(PointID a, PointID b)
 {
 	Q_ASSERT(a != b);
 	m_edges.push_back(std::make_pair(a, b));
 	return m_edges.size() - 1;
 }
 
-int Topology::addEdge(Edge e)
+Topology::EdgeID Topology::addEdge(Edge e)
 {
 	Q_ASSERT(e.first != e.second);
 	m_edges.push_back(e);
@@ -51,7 +51,7 @@ void Topology::addEdges(const QVector<Edge>& e)
 	m_edges += e;
 }
 
-int Topology::addPolygon(const Polygon& p)
+Topology::PolygonID Topology::addPolygon(const Polygon& p)
 {
 	m_polygons.push_back(p);
 	return m_polygons.size() - 1;
@@ -80,12 +80,12 @@ int Topology::getNumberOfPolygons() const
 	return m_polygons.size();
 }
 
-const QVector<QPointF>& Topology::getPoints() const
+const Topology::SeqPoints &Topology::getPoints() const
 {
 	return m_points;
 }
 
-const QVector<typename Topology::Edge>& Topology::getEdges() const
+const Topology::SeqEdges &Topology::getEdges() const
 {
 	if(!hasEdges())
 		const_cast<Topology*>(this)->createEdgeList();
@@ -93,22 +93,22 @@ const QVector<typename Topology::Edge>& Topology::getEdges() const
 	return m_edges;
 }
 
-const QVector<typename Topology::Polygon>& Topology::getPolygons() const
+const Topology::SeqPolygons &Topology::getPolygons() const
 {
 	return m_polygons;
 }
 
-QPointF& Topology::getPoint(int index)
+QPointF& Topology::getPoint(PointID index)
 {
 	return m_points[index];
 }
 
-QPointF Topology::getPoint(int index) const
+QPointF Topology::getPoint(PointID index) const
 {
 	return m_points[index];
 }
 
-Topology::Edge Topology::getEdge(int index) const
+Topology::Edge Topology::getEdge(EdgeID index) const
 {
 	if(!hasEdges())
 		const_cast<Topology*>(this)->createEdgeList();
@@ -116,17 +116,17 @@ Topology::Edge Topology::getEdge(int index) const
 	return m_edges[index];
 }
 
-Topology::Polygon Topology::getPolygon(int index) const
+Topology::Polygon Topology::getPolygon(PolygonID index) const
 {
 	return m_polygons[index];
 }
 
-int Topology::getPointIndex(QPointF pt) const
+Topology::PointID Topology::getPointIndex(const QPointF &pt) const
 {
 	return m_points.indexOf(pt);
 }
 
-int Topology::getEdgeIndex(int a, int b) const
+Topology::EdgeID Topology::getEdgeIndex(PointID a, PointID b) const
 {
 	Edge e1 = Edge(a, b), e2 = Edge(b, a);
 	int id = m_edges.indexOf(e1);
@@ -135,7 +135,7 @@ int Topology::getEdgeIndex(int a, int b) const
 	return id;
 }
 
-int Topology::getEdgeIndex(const Edge& e) const
+Topology::EdgeID Topology::getEdgeIndex(const Edge& e) const
 {
 	Edge e2 = Edge(e.second, e.first);
 	int id = m_edges.indexOf(e);
@@ -144,12 +144,12 @@ int Topology::getEdgeIndex(const Edge& e) const
 	return id;
 }
 
-int Topology::getPolygonIndex(const Polygon& p) const
+Topology::PolygonID Topology::getPolygonIndex(const Polygon& p) const
 {
 	return m_polygons.indexOf(p);
 }
 
-const Topology::IndicesList& Topology::getEdgesInPolygon(int index)
+const Topology::EdgesIndicesList &Topology::getEdgesInPolygon(int index)
 {
 	if(hasEdgesInPolygon())
 		createEdgesInPolygonList();
@@ -160,12 +160,12 @@ const Topology::IndicesList& Topology::getEdgesInPolygon(int index)
 	return m_edgesInPolygon[index];
 }
 
-const QVector<Topology::IndicesList>& Topology::getEdgesInPolygonList()
+const QVector<Topology::EdgesIndicesList>& Topology::getEdgesInPolygonList()
 {
 	return m_edgesInPolygon;
 }
 
-const Topology::IndicesList& Topology::getEdgesAroundPoint(int index)
+const Topology::EdgesIndicesList& Topology::getEdgesAroundPoint(int index)
 {
 	if(!hasEdgesAroundPoint())
 		createEdgesAroundPointList();
@@ -176,12 +176,12 @@ const Topology::IndicesList& Topology::getEdgesAroundPoint(int index)
 	return m_edgesAroundPoint[index];
 }
 
-const QVector<Topology::IndicesList>& Topology::getEdgesAroundPointList()
+const QVector<Topology::EdgesIndicesList>& Topology::getEdgesAroundPointList()
 {
 	return m_edgesAroundPoint;
 }
 
-const Topology::IndicesList& Topology::getPolygonsAroundPoint(int index)
+const Topology::PolygonsIndicesList &Topology::getPolygonsAroundPoint(int index)
 {
 	if(!hasPolygonsAroundPoint())
 		createPolygonsAroundPointList();
@@ -192,12 +192,12 @@ const Topology::IndicesList& Topology::getPolygonsAroundPoint(int index)
 	return m_polygonsAroundPoint[index];
 }
 
-const QVector<Topology::IndicesList>& Topology::getPolygonsAroundPointList()
+const QVector<Topology::PolygonsIndicesList>& Topology::getPolygonsAroundPointList()
 {
 	return m_polygonsAroundPoint;
 }
 
-const Topology::IndicesList& Topology::getPolygonsAroundEdge(int index)
+const Topology::PolygonsIndicesList& Topology::getPolygonsAroundEdge(int index)
 {
 	if(!hasPolygonsAroundEdge())
 		createPolygonsAroundEdgeList();
@@ -208,12 +208,12 @@ const Topology::IndicesList& Topology::getPolygonsAroundEdge(int index)
 	return m_polygonsAroundEdge[index];
 }
 
-const QVector<Topology::IndicesList>& Topology::getPolygonsAroundEdgeList()
+const QVector<Topology::PolygonsIndicesList>& Topology::getPolygonsAroundEdgeList()
 {
 	return m_polygonsAroundEdge;
 }
 
-const Topology::IndicesList& Topology::getPointsOnBorder()
+const QVector<Topology::PointID> &Topology::getPointsOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -221,7 +221,7 @@ const Topology::IndicesList& Topology::getPointsOnBorder()
 	return m_pointsOnBorder;
 }
 
-const Topology::IndicesList& Topology::getEdgesOnBorder()
+const QVector<Topology::EdgeID> &Topology::getEdgesOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -229,7 +229,7 @@ const Topology::IndicesList& Topology::getEdgesOnBorder()
 	return m_edgesOnBorder;
 }
 
-const Topology::IndicesList& Topology::getPolygonsOnBorder()
+const QVector<Topology::PolygonID> &Topology::getPolygonsOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -237,18 +237,18 @@ const Topology::IndicesList& Topology::getPolygonsOnBorder()
 	return m_polygonsOnBorder;
 }
 
-Topology::IndicesList Topology::getPolygonsAroundPolygon(int index)
+Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygon(int index)
 {
 	if(!hasPolygonsAroundPoint())
 		createPolygonsAroundPointList();
 
 	std::set<int> polySet;
-	IndicesList polyList;
+	PolygonsIndicesList polyList;
 
 	const Polygon& poly = m_polygons[index];
 	for(int pt : poly)
 	{
-		const IndicesList& polyAP = m_polygonsAroundPoint[pt];
+		const PolygonsIndicesList& polyAP = m_polygonsAroundPoint[pt];
 
 		for(int p : polyAP)
 		{
@@ -263,31 +263,31 @@ Topology::IndicesList Topology::getPolygonsAroundPolygon(int index)
 	return polyList;
 }
 
-Topology::IndicesList Topology::getPolygonsAroundPolygons(const IndicesList& listID)
+Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygons(const PolygonsIndicesList& listID)
 {
 	std::set<int> polySet;
 	for(int index : listID)
 	{
-		const IndicesList list = getPolygonsAroundPolygon(index);
+		const PolygonsIndicesList list = getPolygonsAroundPolygon(index);
 		polySet.insert(list.begin(), list.end());
 	}
 
 	for(int index : listID)
 		polySet.erase(index);
 
-	IndicesList polyList;
+	PolygonsIndicesList polyList;
 	for(std::set<int>::iterator iter=polySet.begin(); iter!=polySet.end(); ++iter)
 		polyList.push_back(*iter);
 
 	return polyList;
 }
 
-Topology::IndicesList Topology::getPolygonsConnectedToPolygon(int index)
+Topology::PolygonsIndicesList Topology::getPolygonsConnectedToPolygon(int index)
 {
 	if(!hasPolygonsAroundPoint())
 		createPolygonsAroundPointList();
 
-	IndicesList polyAll, polyOnFront, polyPrev, polyNext;
+	PolygonsIndicesList polyAll, polyOnFront, polyPrev, polyNext;
 	bool end = false;
 	int cpt = 1, nb = m_polygons.size();
 
@@ -319,41 +319,37 @@ Topology::IndicesList Topology::getPolygonsConnectedToPolygon(int index)
 	return polyAll;
 }
 
-int Topology::getOtherPointInEdge(int edge, int point) const
+Topology::PointID Topology::getOtherPointInEdge(const Edge &edge, PointID point) const
 {
-	Edge e = getEdge(edge);
-	if(e.first == point)
-		return e.second;
-	else if(e.second == point)
-		return e.first;
+	if(edge.first == point)
+		return edge.second;
+	else if(edge.second == point)
+		return edge.first;
 	else
 		return -1;
 }
 
-double Topology::areaOfPolygon(int polyId) const
+double Topology::areaOfPolygon(const Polygon& poly) const
 {
-	const Polygon& p = getPolygon(polyId);
-
-	int nbPts = p.size();
+	int nbPts = poly.size();
 	double area = 0;
 	for(int i=0; i<nbPts; ++i)
 	{
-		QPointF p1 = getPoint(p[i]), p2 = getPoint(p[(i+1)%nbPts]);
+		QPointF p1 = getPoint(poly[i]), p2 = getPoint(poly[(i+1)%nbPts]);
 		area += p1.x()*p2.y() - p2.x()*p1.y();
 	}
 
 	return area / 2;
 }
 
-void Topology::reorientPolygon(int polyId)
+void Topology::reorientPolygon(Polygon& poly)
 {
-	Polygon& p = getPolygon(polyId);
-	Polygon copy = p;
-	p.clear();
-	p.reserve(copy.size());
+	Polygon copy = poly;
+	poly.clear();
+	poly.reserve(copy.size());
 
 	for(int pt : copy)
-		p.push_front(pt);
+		poly.push_front(pt);
 }
 
 bool Topology::comparePolygon(Polygon p1, Polygon p2)
@@ -382,6 +378,21 @@ bool Topology::comparePolygon(Polygon p1, Polygon p2)
 			return false;
 	}
 
+	return true;
+}
+
+bool Topology::polygonContainsPoint(const Polygon &poly, QPointF pt) const
+{
+	int nb = poly.size();
+	for(int i1=0, i0=nb-1; i1<nb; i0=i1++)
+	{
+		const QPointF &p0 = getPoint(poly[i0]), &p1 = getPoint(poly[i1]);
+		QPointF n = QPointF(p1.y() - p0.y(), p0.x() - p1.x());
+		QPointF d = pt - p0;
+
+		if(helper::dot(n, d) > (qreal)0)
+			return false;
+	}
 	return true;
 }
 
@@ -495,18 +506,18 @@ void Topology::createEdgesInPolygonList()
 	}
 	else
 	{
-		const QVector<IndicesList>& eapl = getEdgesAroundPointList();
+		const QVector<EdgesIndicesList>& eapl = getEdgesAroundPointList();
 
 		for(int i=0; i<nbPolys; ++i)
 		{
-			IndicesList& eip = m_edgesInPolygon[i];
+			EdgesIndicesList& eip = m_edgesInPolygon[i];
 			const Polygon& p = m_polygons[i];
 			const int nbP = p.size();
 			for(int j=0; j<nbP; ++j)
 			{
 				bool found = false;
 				const int p1 = p[j], p2 = p[(j+1)%nbP];
-				const IndicesList& eap = eapl[p1];
+				const EdgesIndicesList& eap = eapl[p1];
 				const int nbE = eap.size();
 				for(int k=0; k<nbE; ++k)
 				{
@@ -579,7 +590,7 @@ void Topology::createPolygonsAroundEdgeList()
 	m_polygonsAroundEdge.resize(nbEdges);
 	for(int i=0; i<nbPolys; ++i)
 	{
-		const IndicesList& eip = m_edgesInPolygon[i];
+		const EdgesIndicesList& eip = m_edgesInPolygon[i];
 		const int nb = eip.size();
 		for(int j=0; j<nb; ++j)
 			m_polygonsAroundEdge[eip[j]].push_back(i);
@@ -638,12 +649,13 @@ void Topology::createTriangles()
 		Edge e = getEdge(eid);
 		tmpEdgesId.pop_front();
 
-		const IndicesList& neighbors = getEdgesAroundPoint(e.first);
+		const EdgesIndicesList& neighbors = getEdgesAroundPoint(e.first);
 		int nbNgh = neighbors.size();
 		for(int i=0; i<nbNgh; ++i)
 		{
 			int e2id = neighbors[i];
-			int p2id = getOtherPointInEdge(e2id, e.first);
+			Edge e2 = getEdge(e2id);
+			int p2id = getOtherPointInEdge(e2, e.first);
 			int e3id = getEdgeIndex(p2id, e.second);
 
 			if(e3id != -1)
@@ -660,10 +672,10 @@ void Topology::createTriangles()
 						continue;
 				}
 
-				int polyid = addPolygon(poly);
+				if(areaOfPolygon(poly) < 0)
+					reorientPolygon(poly);
 
-				if(areaOfPolygon(polyid) < 0)
-					reorientPolygon(polyid);
+				int polyid = addPolygon(poly);
 
 				m_polygonsAroundEdge[eid].push_back(polyid);
 				if(m_polygonsAroundEdge[eid].size() == 2)
