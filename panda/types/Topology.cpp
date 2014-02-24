@@ -396,6 +396,35 @@ bool Topology::polygonContainsPoint(const Polygon &poly, QPointF pt) const
 	return true;
 }
 
+void Topology::removeUnusedPoints()
+{
+	clearEdges();
+	clearEdgesAroundPoint();
+	clearEdgesInPolygon();
+	clearPolygonsAroundPoint();
+	clearPolygonsAroundEdge();
+	clearBorderElementLists();
+
+	QMap<PointID, PointID> pointsMap;
+	SeqPoints newPoints;
+	int nbPoints = 0;
+	for(Polygon& p : m_polygons)
+	{
+		for(auto& id : p)
+		{
+			if(!pointsMap.contains(id))
+			{
+				pointsMap[id] = nbPoints++;
+				newPoints.push_back(m_points[id]);
+			}
+
+			id = pointsMap[id];
+		}
+	}
+
+	m_points.swap(newPoints);
+}
+
 bool Topology::hasPoints() const
 {
 	return !m_points.empty();

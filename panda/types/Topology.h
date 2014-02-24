@@ -87,6 +87,8 @@ public:
 	static bool comparePolygon(Polygon p1, Polygon p2);
 	bool polygonContainsPoint(const Polygon& poly, QPointF pt) const;
 
+	void removeUnusedPoints();
+
 	bool hasPoints() const;
 	bool hasEdges() const;
 	bool hasPolygons() const;

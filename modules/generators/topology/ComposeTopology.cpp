@@ -159,6 +159,8 @@ public:
 				outTopo->addPolygon(inTopo.getPolygon(i));
 		}
 
+		outTopo->removeUnusedPoints();
+
 		cleanDirty();
 	}
 
