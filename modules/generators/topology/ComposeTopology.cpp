@@ -154,10 +154,10 @@ public:
 		outTopo->addPoints(inTopo.getPoints());
 
 		for(int i : polyId)
-			outTopo->addPolygon(inTopo.getPolygon(i));
-
-//		outTopo->createPolygonsAroundPointList();
-//		const QVector<Topology::IndicesList>& papl = outTopo->getPolygonsAroundPointList();
+		{
+			if(i != Topology::InvalidID)
+				outTopo->addPolygon(inTopo.getPolygon(i));
+		}
 
 		cleanDirty();
 	}

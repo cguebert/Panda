@@ -20,6 +20,8 @@ HEADERS       = \
 	panda/Renderer.h \
 	panda/helper/Algorithm.h \
 	panda/helper/Factory.h \
+	panda/helper/GradientCache.h \
+	panda/helper/Point.h \
 	panda/helper/PointsGrid.h \
 	panda/helper/Random.h \
 	panda/helper/UpdateLogger.h \
@@ -52,8 +54,7 @@ HEADERS       = \
 	ui/widget/OpenDialogDataWidget.h \
 	ui/widget/SimpleDataWidget.h \
 	ui/widget/StructTraits.h \
-	ui/widget/TableDataWidgetDialog.h \
-    panda/helper/GradientCache.h
+	ui/widget/TableDataWidgetDialog.h
 SOURCES       = main.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
@@ -109,6 +110,7 @@ SOURCES       = main.cpp \
 	modules/modifiers/point/PointsInShapes.cpp \
 	modules/modifiers/point/PointsUnion.cpp \
 	modules/modifiers/point/RandomDisplacement.cpp \
+	modules/modifiers/topology/FindPolygon.cpp \
 	modules/particles/ParticleCreation.cpp \
 	modules/particles/ParticleDestruction.cpp \
 	modules/particles/ParticleEngine.cpp \
@@ -136,6 +138,7 @@ SOURCES       = main.cpp \
 	panda/PandaObject.cpp \
 	panda/Renderer.cpp \
 	panda/helper/Factory.cpp \
+	panda/helper/GradientCache.cpp \
 	panda/helper/PointsGrid.cpp \
 	panda/helper/Random.cpp \
 	panda/helper/UpdateLogger.cpp \
@@ -166,8 +169,7 @@ SOURCES       = main.cpp \
 	ui/widget/NumericalDataWidget.cpp \
 	ui/widget/StringDataWidget.cpp \
 	ui/widget/TableDataWidgetDialog.cpp \
-	ui/widget/AnimationDataWidgetDialog.cpp \
-    panda/helper/GradientCache.cpp
+	ui/widget/AnimationDataWidgetDialog.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = .
