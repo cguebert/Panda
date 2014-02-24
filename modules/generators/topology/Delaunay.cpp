@@ -81,7 +81,7 @@ public:
 			{
 				const Cell* c2 = it->twin()->cell();
 				Topology::Edge e(c1->source_index(), c2->source_index());
-				if(topo->getEdgeIndex(e) == -1)
+				if(topo->getEdgeIndex(e) == Topology::InvalidID)
 					topo->addEdge(e);
 			}
 		}

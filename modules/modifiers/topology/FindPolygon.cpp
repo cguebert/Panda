@@ -1,7 +1,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QPointF>
 #include <panda/types/Topology.h>
 
 namespace panda {
@@ -32,7 +31,7 @@ public:
 		const QVector<QPointF>& pts = points.getValue();
 		auto output = indices.getAccessor();
 		int nbPts = pts.size();
-		output.wref().fill(-1, nbPts);
+		output.wref().fill(Topology::InvalidID, nbPts);
 
 		int nbPoly = topo.getNumberOfPolygons();
 
