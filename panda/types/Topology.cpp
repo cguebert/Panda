@@ -27,7 +27,7 @@ Topology::PointID Topology::addPoint(const QPointF& point)
 	return m_points.size() - 1;
 }
 
-void Topology::addPoints(const QVector<QPointF>& pts)
+void Topology::addPoints(const SeqPoints& pts)
 {
 	m_points += pts;
 }
@@ -46,7 +46,7 @@ Topology::EdgeID Topology::addEdge(Edge e)
 	return m_edges.size() - 1;
 }
 
-void Topology::addEdges(const QVector<Edge>& e)
+void Topology::addEdges(const SeqEdges& e)
 {
 	m_edges += e;
 }
@@ -57,7 +57,7 @@ Topology::PolygonID Topology::addPolygon(const Polygon& p)
 	return m_polygons.size() - 1;
 }
 
-void Topology::addPolygons(const QVector<Polygon>& p)
+void Topology::addPolygons(const SeqPolygons& p)
 {
 	m_polygons += p;
 }

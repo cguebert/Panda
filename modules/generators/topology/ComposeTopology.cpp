@@ -125,7 +125,6 @@ int GeneratorTopology_VerticesClass = RegisterObject<GeneratorTopology_Vertices>
 
 //*************************************************************************//
 
-
 class GeneratorTopology_ExtractPolygons : public PandaObject
 {
 public:

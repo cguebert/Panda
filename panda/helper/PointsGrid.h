@@ -29,7 +29,7 @@ public:
 	bool getNearest(const QPointF& point, double maxDist, QPointF& result);
 
 protected:
-	int index(const QPointF& point);
+	int cellIndex(const QPointF& point);
 
 	typedef QList<QPointF> Cell;
 

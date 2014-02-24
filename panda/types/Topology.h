@@ -34,14 +34,14 @@ public:
 	virtual ~Topology();
 
 	PointID addPoint(const QPointF& point);
-	void addPoints(const QVector<QPointF>& pts);
+	void addPoints(const SeqPoints& pts);
 
 	EdgeID addEdge(PointID a, PointID b);
 	EdgeID addEdge(Edge e);
-	void addEdges(const QVector<Edge>& e);
+	void addEdges(const SeqEdges& e);
 
 	PolygonID addPolygon(const Polygon& p);
-	void addPolygons(const QVector<Polygon>& p);
+	void addPolygons(const SeqPolygons& p);
 
 	int getNumberOfPoints() const;
 	int getNumberOfEdges() const;

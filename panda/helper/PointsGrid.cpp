@@ -1,4 +1,5 @@
 #include <panda/helper/PointsGrid.h>
+#include <panda/helper/Point.h>
 #include <math.h>
 #include <qglobal.h>
 
@@ -36,7 +37,7 @@ void PointsGrid::clear()
 
 void PointsGrid::addPoint(const QPointF& point)
 {
-	cells[index(point)].append(point);
+	cells[cellIndex(point)].append(point);
 }
 
 void PointsGrid::addPoints(const QVector<QPointF>& points)
@@ -48,19 +49,12 @@ void PointsGrid::addPoints(const QVector<QPointF>& points)
 
 int PointsGrid::removePoint(const QPointF& point)
 {
-	return cells[index(point)].removeAll(point);
+	return cells[cellIndex(point)].removeAll(point);
 }
 
 bool PointsGrid::hasPoint(const QPointF& point)
 {
-	return cells[index(point)].contains(point);
-}
-
-double distance2(const QPointF& ptA, const QPointF& ptB)
-{
-	double dx = ptA.x()-ptB.x();
-	double dy = ptA.y()-ptB.y();
-	return dx*dx+dy*dy;
+	return cells[cellIndex(point)].contains(point);
 }
 
 bool PointsGrid::testNeighbor(const QPointF& point, double distance)
@@ -77,7 +71,7 @@ bool PointsGrid::testNeighbor(const QPointF& point, double distance)
 		{
 			const Cell& cell = cells[y * width + x];
 			for(Cell::const_iterator iter=cell.begin(); iter!=cell.end(); ++iter)
-				if(distance2(*iter, point) < dist2)
+				if(norm2(*iter - point) < dist2)
 					return true;
 		}
 	}
@@ -101,7 +95,7 @@ bool PointsGrid::getNearest(const QPointF& point, double maxDist, QPointF& resul
 			const Cell& cell = cells[y * width + x];
 			for(Cell::const_iterator iter=cell.begin(); iter!=cell.end(); ++iter)
 			{
-				double d = distance2(*iter, point);
+				double d = norm2(*iter - point);
 				if(d < minDist)
 				{
 					result = *iter;
@@ -115,7 +109,7 @@ bool PointsGrid::getNearest(const QPointF& point, double maxDist, QPointF& resul
 	return found;
 }
 
-int PointsGrid::index(const QPointF& point)
+int PointsGrid::cellIndex(const QPointF& point)
 {
 	double x = qBound(area.left(), point.x(), area.right());
 	double y = qBound(area.top(), point.y(), area.bottom());

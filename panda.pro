@@ -82,6 +82,7 @@ SOURCES       = main.cpp \
 	modules/generators/text/Format.cpp \
 	modules/generators/topology/ComposeTopology.cpp \
 	modules/generators/topology/Delaunay.cpp \
+	modules/generators/topology/MergeTopologies.cpp \
 	modules/generators/topology/Voronoi.cpp \
 	modules/list/Concatenation.cpp \
 	modules/list/Condition.cpp \
@@ -140,6 +141,7 @@ SOURCES       = main.cpp \
 	panda/Renderer.cpp \
 	panda/helper/Factory.cpp \
 	panda/helper/GradientCache.cpp \
+	panda/helper/Point.cpp \
 	panda/helper/PointsGrid.cpp \
 	panda/helper/Random.cpp \
 	panda/helper/UpdateLogger.cpp \
