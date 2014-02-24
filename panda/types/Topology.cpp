@@ -149,12 +149,12 @@ Topology::PolygonID Topology::getPolygonIndex(const Polygon& p) const
 	return m_polygons.indexOf(p);
 }
 
-const Topology::EdgesIndicesList &Topology::getEdgesInPolygon(int index)
+const Topology::EdgesIndicesList &Topology::getEdgesInPolygon(PolygonID index)
 {
 	if(hasEdgesInPolygon())
 		createEdgesInPolygonList();
 
-	if(index >= m_edgesInPolygon.size())
+	if((int)index < getNumberOfPolygons() && (int)index >= m_edgesInPolygon.size())
 		createEdgesInPolygonList();
 
 	return m_edgesInPolygon[index];
@@ -165,12 +165,12 @@ const QVector<Topology::EdgesIndicesList>& Topology::getEdgesInPolygonList()
 	return m_edgesInPolygon;
 }
 
-const Topology::EdgesIndicesList& Topology::getEdgesAroundPoint(int index)
+const Topology::EdgesIndicesList& Topology::getEdgesAroundPoint(PointID index)
 {
 	if(!hasEdgesAroundPoint())
 		createEdgesAroundPointList();
 
-	if(index >= m_edgesAroundPoint.size())
+	if((int)index < getNumberOfPoints() && (int)index >= m_edgesAroundPoint.size())
 		createEdgesAroundPointList();
 
 	return m_edgesAroundPoint[index];
@@ -181,12 +181,12 @@ const QVector<Topology::EdgesIndicesList>& Topology::getEdgesAroundPointList()
 	return m_edgesAroundPoint;
 }
 
-const Topology::PolygonsIndicesList &Topology::getPolygonsAroundPoint(int index)
+const Topology::PolygonsIndicesList &Topology::getPolygonsAroundPoint(PointID index)
 {
 	if(!hasPolygonsAroundPoint())
 		createPolygonsAroundPointList();
 
-	if(index >= m_polygonsAroundPoint.size())
+	if((int)index < getNumberOfPoints() && (int)index >= m_polygonsAroundPoint.size())
 		createPolygonsAroundPointList();
 
 	return m_polygonsAroundPoint[index];
@@ -197,12 +197,12 @@ const QVector<Topology::PolygonsIndicesList>& Topology::getPolygonsAroundPointLi
 	return m_polygonsAroundPoint;
 }
 
-const Topology::PolygonsIndicesList& Topology::getPolygonsAroundEdge(int index)
+const Topology::PolygonsIndicesList& Topology::getPolygonsAroundEdge(EdgeID index)
 {
 	if(!hasPolygonsAroundEdge())
 		createPolygonsAroundEdgeList();
 
-	if(index >= m_polygonsAroundEdge.size())
+	if((int)index < getNumberOfEdges() && (int)index >= m_polygonsAroundEdge.size())
 		createPolygonsAroundEdgeList();
 
 	return m_polygonsAroundEdge[index];
@@ -237,7 +237,7 @@ const QVector<Topology::PolygonID> &Topology::getPolygonsOnBorder()
 	return m_polygonsOnBorder;
 }
 
-Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygon(int index)
+Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygon(PolygonID index)
 {
 	if(!hasPolygonsAroundPoint())
 		createPolygonsAroundPointList();
@@ -265,24 +265,24 @@ Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygon(int index)
 
 Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygons(const PolygonsIndicesList& listID)
 {
-	std::set<int> polySet;
-	for(int index : listID)
+	std::set<PolygonID> polySet;
+	for(auto index : listID)
 	{
 		const PolygonsIndicesList list = getPolygonsAroundPolygon(index);
 		polySet.insert(list.begin(), list.end());
 	}
 
-	for(int index : listID)
+	for(auto index : listID)
 		polySet.erase(index);
 
 	PolygonsIndicesList polyList;
-	for(std::set<int>::iterator iter=polySet.begin(); iter!=polySet.end(); ++iter)
-		polyList.push_back(*iter);
+	for(auto polyId : polySet)
+		polyList.push_back(polyId);
 
 	return polyList;
 }
 
-Topology::PolygonsIndicesList Topology::getPolygonsConnectedToPolygon(int index)
+Topology::PolygonsIndicesList Topology::getPolygonsConnectedToPolygon(PolygonID index)
 {
 	if(!hasPolygonsAroundPoint())
 		createPolygonsAroundPointList();

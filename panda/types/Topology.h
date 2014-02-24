@@ -19,11 +19,12 @@ public:
 	typedef index_type EdgeID;
 	typedef index_type PolygonID;
 
-	typedef std::pair<PointID, PointID> Edge;
 	typedef QVector<PointID> PointsIndicesList;
 	typedef QVector<EdgeID> EdgesIndicesList;
 	typedef QVector<PolygonID> PolygonsIndicesList;
-	typedef PointsIndicesList Polygon;
+
+	typedef std::pair<PointID, PointID> Edge;
+	typedef QVector<PointID> Polygon;
 
 	typedef QVector<QPointF> SeqPoints;
 	typedef QVector<Edge> SeqEdges;
@@ -60,25 +61,25 @@ public:
 	EdgeID getEdgeIndex(const Edge& e) const;
 	PolygonID getPolygonIndex(const Polygon& p) const;
 
-	const EdgesIndicesList& getEdgesInPolygon(int index);
+	const EdgesIndicesList& getEdgesInPolygon(PolygonID index);
 	const QVector<EdgesIndicesList>& getEdgesInPolygonList();
 
-	const EdgesIndicesList& getEdgesAroundPoint(int index);
+	const EdgesIndicesList& getEdgesAroundPoint(PointID index);
 	const QVector<EdgesIndicesList>& getEdgesAroundPointList();
 
-	const PolygonsIndicesList& getPolygonsAroundPoint(int index);
+	const PolygonsIndicesList& getPolygonsAroundPoint(PointID index);
 	const QVector<PolygonsIndicesList>& getPolygonsAroundPointList();
 
-	const PolygonsIndicesList& getPolygonsAroundEdge(int index);
+	const PolygonsIndicesList& getPolygonsAroundEdge(EdgeID index);
 	const QVector<PolygonsIndicesList>& getPolygonsAroundEdgeList();
 
 	const QVector<PointID>& getPointsOnBorder();
 	const QVector<EdgeID>& getEdgesOnBorder();
 	const QVector<PolygonID>& getPolygonsOnBorder();
 
-	PolygonsIndicesList getPolygonsAroundPolygon(int index);
+	PolygonsIndicesList getPolygonsAroundPolygon(PolygonID index);
 	PolygonsIndicesList getPolygonsAroundPolygons(const PolygonsIndicesList& listID);
-	PolygonsIndicesList getPolygonsConnectedToPolygon(int index);
+	PolygonsIndicesList getPolygonsConnectedToPolygon(PolygonID index);
 
 	PointID getOtherPointInEdge(const Edge& edge, PointID point) const;
 	double areaOfPolygon(const Polygon& poly) const;
