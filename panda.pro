@@ -96,6 +96,7 @@ SOURCES       = main.cpp \
 	modules/list/ListReverse.cpp \
 	modules/list/ListSize.cpp \
 	modules/list/ReplaceItem.cpp \
+	modules/list/RemoveDuplicates.cpp \
 	modules/math/image/ImageSize.cpp \
 	modules/math/point/BezierSpline.cpp \
 	modules/math/point/NearestPoint.cpp \
