@@ -889,7 +889,7 @@ void PandaDocument::setDirtyValue()
 {
 	PandaObject::setDirtyValue();
 	if(!getCurrentSelectedObject())
-		emit selectedObjectIsDirty(nullptr);
+		emit selectedObjectIsDirty(this);
 }
 
 void PandaDocument::play(bool playing)
