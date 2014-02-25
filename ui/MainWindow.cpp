@@ -594,7 +594,7 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile(const QString &fileName, bool import)
 {
-	if (!pandaDocument->readFile(fileName)) {
+	if (!pandaDocument->readFile(fileName, import)) {
 		statusBar()->showMessage(tr("Loading failed"), 2000);
 		return false;
 	}

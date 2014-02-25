@@ -31,7 +31,7 @@ public:
 	~PandaDocument();
 
 	bool writeFile(const QString& fileName);
-	bool readFile(const QString& fileName);
+	bool readFile(const QString& fileName, bool isImport=false);
 
 	QString writeTextDocument();
 	bool readTextDocument(QString &text);

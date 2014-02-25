@@ -90,7 +90,7 @@ bool PandaDocument::writeFile(const QString& fileName)
 	return true;
 }
 
-bool PandaDocument::readFile(const QString& fileName)
+bool PandaDocument::readFile(const QString& fileName, bool isImport)
 {
 	QFile file(fileName);
 	if (!file.open(QIODevice::ReadOnly))
@@ -115,7 +115,8 @@ bool PandaDocument::readFile(const QString& fileName)
 	}
 
 	QDomElement root = doc.documentElement();
-	load(root);		// Only the document's Datas
+	if(!isImport)	// Bugfix: don't read the doc's datas if we are merging 2 documents
+		load(root);		// Only the document's Datas
 	loadDoc(root);	// All the document's objects
 
 	emit selectionChanged();
