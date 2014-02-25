@@ -152,9 +152,11 @@ public:
 		outTopo->clear();
 		outTopo->addPoints(inTopo.getPoints());
 
+		int nbPoly = inTopo.getNumberOfPolygons();
+
 		for(int i : polyId)
 		{
-			if(i != Topology::InvalidID)
+			if(i != Topology::InvalidID && i < nbPoly)
 				outTopo->addPolygon(inTopo.getPolygon(i));
 		}
 
@@ -172,5 +174,108 @@ int GeneratorTopology_ExtractPolygonsClass = RegisterObject<GeneratorTopology_Ex
 		.setDescription("Extract some polygons from a topology");
 
 //*************************************************************************//
+
+class GeneratorTopology_BorderElements : public PandaObject
+{
+public:
+	PANDA_CLASS(GeneratorTopology_BorderElements, PandaObject)
+
+	GeneratorTopology_BorderElements(PandaDocument *doc)
+		: PandaObject(doc)
+		, topology(initData(&topology, "topology", "Input topology"))
+		, points(initData(&points, "points", "Indices of the points on the border"))
+		, edges(initData(&edges, "edges", "Indices of the edges on the border"))
+		, polygons(initData(&polygons, "polygons", "Indices of the polygons on the border"))
+	{
+		addInput(&topology);
+
+		addOutput(&points);
+		addOutput(&edges);
+		addOutput(&polygons);
+	}
+
+	QVector<int> toIntVector(const QVector<unsigned int>& in)
+	{
+		QVector<int> tmp;
+		tmp.reserve(in.size());
+		for(auto v : in)
+			tmp.push_back(v);
+		return tmp;
+	}
+
+	void update()
+	{
+		Topology inTopo = topology.getValue();
+
+		auto outPoints = points.getAccessor();
+		auto outEdges = edges.getAccessor();
+		auto outPolygons = polygons.getAccessor();
+
+		outPoints.wref() = toIntVector(inTopo.getPointsOnBorder());
+		outEdges.wref() = toIntVector(inTopo.getEdgesOnBorder());
+		outPolygons.wref() = toIntVector(inTopo.getPolygonsOnBorder());
+
+		cleanDirty();
+	}
+
+protected:
+	Data<Topology> topology;
+	Data< QVector<int> > points, edges, polygons;
+};
+
+int GeneratorTopology_BorderElementsClass = RegisterObject<GeneratorTopology_BorderElements>("Generator/Topology/Border elements")
+		.setDescription("Get the indices of the elements on the border");
+
+//*************************************************************************//
+
+class GeneratorTopology_ExtractEdges : public PandaObject
+{
+public:
+	PANDA_CLASS(GeneratorTopology_ExtractEdges, PandaObject)
+
+	GeneratorTopology_ExtractEdges(PandaDocument *doc)
+		: PandaObject(doc)
+		, input(initData(&input, "input", "Input topology"))
+		, output(initData(&output, "output", "Points pairs forming the extracted edges"))
+		, edges(initData(&edges, "edges", "Indices of the edges to extract"))
+	{
+		addInput(&input);
+		addInput(&edges);
+
+		addOutput(&output);
+	}
+
+	void update()
+	{
+		const Topology& inTopo = input.getValue();
+		const QVector<int>& edgesId = edges.getValue();
+
+		auto outPts = output.getAccessor();
+
+		outPts.clear();
+
+		int nbEdges = inTopo.getNumberOfEdges();
+
+		for(int i : edgesId)
+		{
+			if(i != Topology::InvalidID && i < nbEdges)
+			{
+				Topology::Edge e = inTopo.getEdge(i);
+				outPts.push_back(inTopo.getPoint(e.first));
+				outPts.push_back(inTopo.getPoint(e.second));
+			}
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data<Topology> input;
+	Data< QVector<QPointF> > output;
+	Data< QVector<int> > edges;
+};
+
+int GeneratorTopology_ExtractEdgesClass = RegisterObject<GeneratorTopology_ExtractEdges>("Generator/Topology/Extract edges")
+		.setDescription("Extract some edges from a topology");
 
 } // namespace Panda

@@ -535,6 +535,9 @@ void Topology::createEdgesInPolygonList()
 	}
 	else
 	{
+		if(!hasEdgesAroundPoint())
+			createEdgesAroundPointList();
+
 		const QVector<EdgesIndicesList>& eapl = getEdgesAroundPointList();
 
 		for(int i=0; i<nbPolys; ++i)
@@ -631,24 +634,35 @@ void Topology::createElementsOnBorder()
 	if(!hasPolygonsAroundEdge())
 		createPolygonsAroundEdgeList();
 
+	if(!hasPolygonsAroundPoint())
+		createPolygonsAroundPointList();
+
 	m_pointsOnBorder.clear();
 	m_edgesOnBorder.clear();
 	m_polygonsOnBorder.clear();
 
-	const int nbEdges = getNumberOfEdges();
-	for(int i=0; i<nbEdges; ++i)
+	for(int i=0, nb=getNumberOfEdges(); i<nb; ++i)
 	{
 		if(m_polygonsAroundEdge[i].size() == 1) // On a border
 		{
 			m_edgesOnBorder.push_back(i);
 
-			const int ptId = m_edges[i].first;
-			if(!m_pointsOnBorder.contains(ptId))
-				m_pointsOnBorder.push_back(ptId);
+			const int pt1Id = m_edges[i].first;
+			if(!m_pointsOnBorder.contains(pt1Id))
+				m_pointsOnBorder.push_back(pt1Id);
 
-			const int plId = m_polygonsAroundEdge[i][0];
-			if(m_polygonsOnBorder.contains(plId))
-				m_polygonsOnBorder.push_back(plId);
+			const int pt2Id = m_edges[i].second;
+			if(!m_pointsOnBorder.contains(pt2Id))
+				m_pointsOnBorder.push_back(pt2Id);
+		}
+	}
+
+	for(auto pt : m_pointsOnBorder)
+	{
+		for(auto poly : m_polygonsAroundPoint[pt])
+		{
+			if(!m_polygonsOnBorder.contains(poly))
+				m_polygonsOnBorder.push_back(poly);
 		}
 	}
 }
