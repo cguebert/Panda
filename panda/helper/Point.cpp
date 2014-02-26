@@ -3,6 +3,14 @@
 #include <QPointF>
 #include <qmath.h>
 
+#include <QMap>
+
+template<>
+bool qMapLessThanKey<QPointF>(const QPointF& p1, const QPointF& p2)
+{
+	return p1.x() < p2.x() || (p1.x() == p2.x() && p1.y() < p2.y());
+}
+
 namespace panda
 {
 

@@ -6,11 +6,8 @@
 
 #include <map>
 
-template<>
-bool qMapLessThanKey<QPointF>(const QPointF& p1, const QPointF& p2)
-{
-	return p1.x() < p2.x() || (p1.x() == p2.x() && p1.y() < p2.y());
-}
+// To be able to use QPointF in QMaps (actual definition in helper/Point.cpp)
+template<> bool qMapLessThanKey<QPointF>(const QPointF& p1, const QPointF& p2);
 
 namespace panda {
 
