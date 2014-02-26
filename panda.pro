@@ -99,6 +99,7 @@ SOURCES       = main.cpp \
 	modules/list/RemoveDuplicates.cpp \
 	modules/math/image/ImageSize.cpp \
 	modules/math/point/BezierSpline.cpp \
+	modules/math/point/CubicBSpline.cpp \
 	modules/math/point/NearestPoint.cpp \
 	modules/math/point/PointListMath.cpp \
 	modules/math/point/PointMath.cpp \
