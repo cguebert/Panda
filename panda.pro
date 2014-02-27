@@ -116,6 +116,7 @@ SOURCES       = main.cpp \
 	modules/modifiers/point/RandomDisplacement.cpp \
 	modules/modifiers/topology/FindPolygon.cpp \
 	modules/modifiers/topology/Neighbors.cpp \
+	modules/modifiers/topology/Relaxation.cpp \
 	modules/particles/ParticleCreation.cpp \
 	modules/particles/ParticleDestruction.cpp \
 	modules/particles/ParticleEngine.cpp \
