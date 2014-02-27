@@ -20,6 +20,7 @@ public:
 		addInput(&input);
 		addInput(&steps);
 		addInput(&close);
+		close.setWidget("checkbox");
 
 		addOutput(&output);
 	}
