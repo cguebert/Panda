@@ -125,48 +125,6 @@ protected:
 
 int DoubleListMath_MedianClass = RegisterObject<DoubleListMath_Median>("Math/List of reals/Median").setDescription("Search the median value of a list of reals");
 
-//*************************************************************************//
-
-class DoubleListMath_Sort : public PandaObject
-{
-public:
-	PANDA_CLASS(DoubleListMath_Sort, PandaObject)
-
-	DoubleListMath_Sort(PandaDocument *doc)
-		: PandaObject(doc)
-		, input(initData(&input, "input", "List of reals to sort"))
-		, output(initData(&output, "output", "Sorted list of reals"))
-		, sortedIndices(initData(&sortedIndices, "indices", "Indices corresponding to the sorted list"))
-	{
-		addInput(&input);
-
-		addOutput(&output);
-		addOutput(&sortedIndices);
-	}
-
-	void update()
-	{
-		const QVector<double>& list = input.getValue();
-		QMap<double, int> tmpMap;
-		int nb = list.size();
-
-		for(int i=0; i<nb; ++i)
-			tmpMap.insertMulti(list[i], i);
-
-		output.setValue(tmpMap.keys().toVector());
-		sortedIndices.setValue(tmpMap.values().toVector());
-
-		cleanDirty();
-	}
-
-protected:
-	Data< QVector<double> > input, output;
-	Data< QVector<int> > sortedIndices;
-};
-
-int DoubleListMath_SortClass = RegisterObject<DoubleListMath_Sort>("Math/List of reals/Sort").setDescription("Sort a list of reals");
-
-
 } // namespace Panda
 
 
