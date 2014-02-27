@@ -107,6 +107,7 @@ SOURCES       = main.cpp \
 	modules/math/real/DoubleComputation.cpp \
 	modules/math/real/DoubleListMath.cpp \
 	modules/math/real/DoubleMath.cpp \
+	modules/math/topology/Centroids.cpp \
 	modules/math/topology/TopologyInfo.cpp \
 	modules/modifiers/image/ColorInImage.cpp \
 	modules/modifiers/image/ExtractImage.cpp \

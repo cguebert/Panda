@@ -352,6 +352,19 @@ void Topology::reorientPolygon(Polygon& poly)
 		poly.push_front(pt);
 }
 
+QPointF Topology::centroidOfPolygon(const Polygon& poly) const
+{
+	int nbPts = poly.size();
+	QPointF pt;
+	for(int i=0; i<nbPts; ++i)
+	{
+		QPointF p1 = getPoint(poly[i]), p2 = getPoint(poly[(i+1)%nbPts]);
+		pt += (p1 + p2) * (p1.x()*p2.y() - p2.x()*p1.y());
+	}
+
+	return pt / (6 * areaOfPolygon(poly));
+}
+
 bool Topology::comparePolygon(Polygon p1, Polygon p2)
 {
 	if(p1.size() != p2.size())

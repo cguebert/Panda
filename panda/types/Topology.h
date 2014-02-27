@@ -84,6 +84,7 @@ public:
 	PointID getOtherPointInEdge(const Edge& edge, PointID point) const;
 	double areaOfPolygon(const Polygon& poly) const;
 	void reorientPolygon(Polygon& poly);
+	QPointF centroidOfPolygon(const Polygon& poly) const;
 	static bool comparePolygon(Polygon p1, Polygon p2);
 	bool polygonContainsPoint(const Polygon& poly, QPointF pt) const;
 
