@@ -4,8 +4,10 @@
 #include <QMap>
 #include <set>
 
-// To be able to use QPointF in QMaps (actual definition in helper/Point.cpp)
-template<> bool qMapLessThanKey<QPointF>(const QPointF& p1, const QPointF& p2);
+template<> static bool qMapLessThanKey<QPointF>(const QPointF& p1, const QPointF& p2)
+{
+	return p1.x() < p2.x() || (p1.x() == p2.x() && p1.y() < p2.y());
+}
 
 namespace panda {
 
