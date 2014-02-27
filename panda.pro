@@ -82,6 +82,7 @@ SOURCES       = main.cpp \
 	modules/generators/text/Format.cpp \
 	modules/generators/topology/ComposeTopology.cpp \
 	modules/generators/topology/Delaunay.cpp \
+	modules/generators/topology/Grid.cpp \
 	modules/generators/topology/MergeTopologies.cpp \
 	modules/generators/topology/Voronoi.cpp \
 	modules/list/Concatenation.cpp \
