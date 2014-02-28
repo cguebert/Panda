@@ -179,7 +179,8 @@ SOURCES       = main.cpp \
 	ui/widget/NumericalDataWidget.cpp \
 	ui/widget/StringDataWidget.cpp \
 	ui/widget/TableDataWidgetDialog.cpp \
-	ui/widget/AnimationDataWidgetDialog.cpp
+	ui/widget/AnimationDataWidgetDialog.cpp \
+    modules/math/point/Extrude.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = .

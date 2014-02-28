@@ -41,6 +41,7 @@ public:
 	void addEdges(const SeqEdges& e);
 
 	PolygonID addPolygon(const Polygon& p);
+	PolygonID addPolygon(PolygonID p1, PolygonID p2, PolygonID p3);
 	void addPolygons(const SeqPolygons& p);
 
 	int getNumberOfPoints() const;

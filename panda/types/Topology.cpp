@@ -57,6 +57,15 @@ Topology::PolygonID Topology::addPolygon(const Polygon& p)
 	return m_polygons.size() - 1;
 }
 
+Topology::PolygonID Topology::addPolygon(PolygonID p1, PolygonID p2, PolygonID p3)
+{
+	Polygon p;
+	p.push_back(p1);
+	p.push_back(p2);
+	p.push_back(p3);
+	return addPolygon(p);
+}
+
 void Topology::addPolygons(const SeqPolygons& p)
 {
 	m_polygons += p;
