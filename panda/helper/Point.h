@@ -10,6 +10,7 @@ namespace helper
 {
 
 qreal dot(const QPointF& p1, const QPointF& p2);
+qreal cross(const QPointF& p1, const QPointF& p2);
 
 QPointF linearProduct(const QPointF& p1, const QPointF& p2);
 QPointF linearDivision(const QPointF& p1, const QPointF& p2);

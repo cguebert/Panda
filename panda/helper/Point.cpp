@@ -14,6 +14,11 @@ qreal dot(const QPointF& p1, const QPointF& p2)
 	return p1.x()*p2.x() + p1.y()*p2.y();
 }
 
+qreal cross(const QPointF& p1, const QPointF& p2)
+{
+	return p1.x()*p2.y() - p1.y()*p2.x();
+}
+
 QPointF linearProduct(const QPointF& p1, const QPointF& p2)
 {
 	return QPointF(p1.x()*p2.x(), p1.y()*p2.y());
