@@ -34,15 +34,20 @@ public:
 		const QVector<double> &b = B.getValue();
 		const QVector<double> &a = A.getValue();
 
-		int nb = qMin(r.size(), qMin(g.size(), qMin(b.size(), a.size())));
+		int nbR = r.size(), nbG = g.size(), nbB = b.size(), nbA = a.size();
+		int nb = qMax(nbR, qMax(nbG, qMax(nbB, nbA)));
+		if(nbR < nb) nbR = 1;
+		if(nbG < nb) nbG = 1;
+		if(nbB < nb) nbB = 1;
+		if(nbA < nb) nbA = 1;
 		auto c = color.getAccessor();
 		c.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
-			c[i].setRgbF(qBound(0.0, r[i], 1.0),
-						 qBound(0.0, g[i], 1.0),
-						 qBound(0.0, b[i], 1.0),
-						 qBound(0.0, a[i], 1.0));
+			c[i].setRgbF(qBound(0.0, r[i%nbR], 1.0),
+						 qBound(0.0, g[i%nbG], 1.0),
+						 qBound(0.0, b[i%nbB], 1.0),
+						 qBound(0.0, a[i%nbA], 1.0));
 		}
 
 		cleanDirty();
