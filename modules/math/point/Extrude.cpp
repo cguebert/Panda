@@ -3,6 +3,7 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/Topology.h>
 #include <panda/helper/Point.h>
+#include <panda/types/Animation.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -10,6 +11,7 @@
 namespace panda {
 
 using types::Topology;
+using types::Animation;
 
 class PointListMath_Extrude : public PandaObject
 {
@@ -20,7 +22,7 @@ public:
 		: PandaObject(doc)
 		, input(initData(&input, "input", "List of control points"))
 		, output(initData(&output, "output", "Topology created from the extrusion"))
-		, width(initData(&width, 10.0, "width", "Width of the line"))
+		, width(initData(&width, "width", "Width of the line"))
 		, capStyle(initData(&capStyle, "cap", "Style of the caps"))
 		, joinStyle(initData(&joinStyle, "join", "Style of the joins"))
 	{
@@ -35,28 +37,40 @@ public:
 		joinStyle.setWidgetData("Miter join;Round join;Bevel join");
 
 		addOutput(&output);
+
+		width.getAccessor()->add(0, 10.0);
 	}
 
 	void update()
 	{
 		const QVector<QPointF>& pts = input.getValue();
-		const double w = width.getValue() / 2;
+		const Animation<double>& widthAnim = width.getValue();
+		double w = widthAnim.get(0) / 2;
 		int cap = capStyle.getValue();
 		int join = joinStyle.getValue();
 		auto topo = output.getAccessor();
 		topo->clear();
 
 		int nbPts = pts.size();
-		if(!nbPts || w < 1)
+		if(!nbPts || !widthAnim.size())
 			return;
 
 		QVector<QPointF> normals;
+		QVector<double> abscissa;
 		normals.resize(nbPts-1);
+		abscissa.resize(nbPts);
+		abscissa[0] = 0;
 		for(int i=0; i<nbPts-1; ++i)
 		{
 			const QPointF &pt1=pts[i], &pt2=pts[i+1];
 			normals[i] = helper::normalize(QPointF(pt2.y()-pt1.y(), pt1.x()-pt2.x()));
+			abscissa[i+1] = abscissa[i] + helper::norm(pt2-pt1);
 		}
+		double length = abscissa.back();
+		if(length < 1e-3)
+			return;
+		for(auto& a : abscissa)
+			a /= length;
 
 		// Start cap
 		Topology::PointID prevPtsId[3];
@@ -110,6 +124,8 @@ public:
 			double side = helper::cross(normals[i-1], normals[i]);
 			if(fabs(side) < 1e-3)	// Don't create a join (nor points) if these 2 segments are aligned
 				continue;
+
+			w = widthAnim.get(abscissa[i]) / 2;
 
 			// Interior of the curvature
 			Topology::PointID nextPtsId[3];
@@ -267,6 +283,7 @@ public:
 		}
 
 		// Last segment
+		w = widthAnim.get(abscissa[nbPts-1]) / 2;
 		Topology::PointID nextPtsId[3];
 		dir = normals[nbPts-2] * w;
 		nextPtsId[0] = topo->addPoint(pts[nbPts-1] + dir);
@@ -325,7 +342,7 @@ public:
 protected:
 	Data< QVector<QPointF> > input;
 	Data< Topology > output;
-	Data< double > width;
+	Data< Animation<double> > width;
 	Data< int > capStyle, joinStyle;
 };
 
