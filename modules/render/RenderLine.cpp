@@ -16,7 +16,7 @@ public:
 		: Renderer(parent)
 		, inputA(initData(&inputA, "point 1", "Start of the line"))
 		, inputB(initData(&inputB, "point 2", "End of the line"))
-		, width(initData(&width, "width", "Width of the line" ))
+		, width(initData(&width, 1.0, "width", "Width of the line" ))
 		, color(initData(&color, "color", "Color of the line"))
 	{
 		addInput(&inputA);
@@ -24,7 +24,6 @@ public:
 		addInput(&width);
 		addInput(&color);
 
-		width.getAccessor().push_back(0.0);
 		color.getAccessor().push_back(QColor());
 	}
 
@@ -32,7 +31,8 @@ public:
 	{
 		const QVector<QPointF>& valA = inputA.getValue();
 		const QVector<QPointF>& valB = inputB.getValue();
-		const QVector<double>& listWidth = width.getValue();
+		double valWidth = width.getValue();
+		if(!valWidth) valWidth = 1.0;
 		const QVector<QColor>& listColor = color.getValue();
 
 		int nbA = valA.size(), nbB = valB.size();
@@ -44,12 +44,10 @@ public:
 			nbLines = nbA / 2;
 		}
 
-		int nbWidth = listWidth.size();
 		int nbColor = listColor.size();
 
-		if(nbLines && nbWidth && nbColor)
+		if(nbLines && nbColor)
 		{
-			if(nbWidth < nbLines) nbWidth = 1;
 			if(nbColor < nbLines) nbColor = 1;
 
 			painter->save();
@@ -58,7 +56,7 @@ public:
 			for(int i=0; i<nbLines; ++i)
 			{
 				QPen pen(listColor[i % nbColor]);
-				pen.setWidthF(listWidth[i % nbWidth]);
+				pen.setWidthF(valWidth);
 				pen.setCapStyle(Qt::RoundCap);
 				painter->setPen(pen);
 
@@ -76,7 +74,8 @@ public:
 	{
 		const QVector<QPointF>& valA = inputA.getValue();
 		const QVector<QPointF>& valB = inputB.getValue();
-		const QVector<double>& listWidth = width.getValue();
+		double valWidth = width.getValue();
+		if(!valWidth) valWidth = 1.0;
 		const QVector<QColor>& listColor = color.getValue();
 
 		int nbA = valA.size(), nbB = valB.size();
@@ -88,14 +87,13 @@ public:
 			nbLines = nbA / 2;
 		}
 
-		int nbWidth = listWidth.size();
 		int nbColor = listColor.size();
 
-		if(nbLines && nbWidth && nbColor)
+		if(nbLines && nbColor)
 		{
-			if(nbWidth < nbLines) nbWidth = 1;
 			if(nbColor < nbLines) nbColor = 1;
 
+			glLineWidth(valWidth);
 			glBegin(GL_LINES);
 			for(int i=0; i<nbLines; ++i)
 			{
@@ -114,12 +112,13 @@ public:
 				}
 			}
 			glEnd();
+			glLineWidth(0);
 		}
 	}
 
 protected:
 	Data< QVector<QPointF> > inputA, inputB;
-	Data< QVector<double> > width;
+	Data<double> width;
 	Data< QVector<QColor> > color;
 };
 
@@ -135,7 +134,7 @@ public:
 	RenderConnectedLines(PandaDocument *parent)
 		: Renderer(parent)
 		, input(initData(&input, "points", "Vertices of the connected lines"))
-		, width(initData(&width, 0.0, "width", "Width of the line" ))
+		, width(initData(&width, 1.0, "width", "Width of the line" ))
 		, color(initData(&color, "color", "Color of the line"))
 	{
 		addInput(&input);
@@ -185,7 +184,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				glVertex2d(points[i].x(), points[i].y());
 			glEnd();
-
 			glLineWidth(0);
 		}
 	}
