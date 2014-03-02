@@ -76,7 +76,7 @@ public:
 			double ca = cos(angle), sa = sin(angle);
 			QPointF center = pts[0];
 			Topology::PointID ptId = prevPtsId[0];
-			for(int i=0; i<nb; ++i)
+			for(int i=0; i<nb-1; ++i)
 			{
 				QPointF pt = QPointF(dir.x()*ca+dir.y()*sa, dir.y()*ca-dir.x()*sa);
 				Topology::PointID newPtId = topo->addPoint(center + pt);
@@ -85,6 +85,7 @@ public:
 				dir = pt;
 				ptId = newPtId;
 			}
+			topo->addPolygon(ptId, prevPtsId[2], prevPtsId[1]);
 			break;
 		}
 		case 2: // Square cap
@@ -134,13 +135,79 @@ public:
 					prevPtsId[j] = nextPtsId[j];
 				break;
 			}
-	/*		case 1: // Round join
+			case 1: // Round join
 			{
-				for(int j=0; j<3; ++j)
-					prevPtsId[j] = nextPtsId[j];
+				if(side > 0)
+				{
+					double angle = acos(helper::dot(normals[i-1], normals[i]));
+					Topology::PointID addPtId;
+					addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
+					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
+					nextPtsId[1] = topo->addPoint(pts[i]);
+					nextPtsId[2] = topo->addPoint(pts[i] - dir);
+
+					topo->addPolygon(addPtId, prevPtsId[0], prevPtsId[1]);
+					topo->addPolygon(addPtId, prevPtsId[1], nextPtsId[1]);
+					topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
+					topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
+
+					int nb = static_cast<int>(floor(w * angle));
+					angle /= nb;
+					double ca = cos(angle), sa = sin(angle);
+					QPointF center = pts[i];
+					QPointF r = normals[i] * w;
+					Topology::PointID ptId = nextPtsId[0];
+					for(int j=0; j<nb-1; ++j)
+					{
+						QPointF nr = QPointF(r.x()*ca+r.y()*sa, r.y()*ca-r.x()*sa);
+						Topology::PointID newPtId = topo->addPoint(center + nr);
+						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
+
+						r = nr;
+						ptId = newPtId;
+					}
+					topo->addPolygon(ptId, addPtId, nextPtsId[1]);
+
+					for(int j=0; j<3; ++j)
+						prevPtsId[j] = nextPtsId[j];
+				}
+				else if(side < 0)
+				{
+					double angle = acos(helper::dot(normals[i-1], normals[i]));
+					Topology::PointID addPtId;
+					nextPtsId[0] = topo->addPoint(pts[i] + dir);
+					nextPtsId[1] = topo->addPoint(pts[i]);
+					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
+					addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+
+					topo->addPolygon(nextPtsId[0], prevPtsId[0], prevPtsId[1]);
+					topo->addPolygon(nextPtsId[0], prevPtsId[1], nextPtsId[1]);
+					topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
+					topo->addPolygon(nextPtsId[1], prevPtsId[2], addPtId);
+
+					int nb = static_cast<int>(floor(w * angle));
+					angle /= nb;
+					double ca = cos(angle), sa = sin(angle);
+					QPointF center = pts[i];
+					QPointF r = normals[i-1] * w;
+					Topology::PointID ptId = addPtId;
+					for(int j=0; j<nb-1; ++j)
+					{
+						QPointF nr = QPointF(r.x()*ca+r.y()*sa, r.y()*ca-r.x()*sa);
+						Topology::PointID newPtId = topo->addPoint(center - nr);
+						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
+
+						r = nr;
+						ptId = newPtId;
+					}
+					topo->addPolygon(ptId, nextPtsId[2], nextPtsId[1]);
+
+					for(int j=0; j<3; ++j)
+						prevPtsId[j] = nextPtsId[j];
+				}
 				break;
 			}
-	*/		case 2: // Bevel join
+			case 2: // Bevel join
 			{
 				if(side > 0)
 				{
@@ -206,7 +273,7 @@ public:
 			QPointF center = pts[nbPts-1];
 			dir = -dir;
 			Topology::PointID ptId = nextPtsId[2];
-			for(int i=0; i<nb; ++i)
+			for(int i=0; i<nb-1; ++i)
 			{
 				QPointF pt = QPointF(dir.x()*ca+dir.y()*sa, dir.y()*ca-dir.x()*sa);
 				Topology::PointID newPtId = topo->addPoint(center + pt);
@@ -215,6 +282,7 @@ public:
 				dir = pt;
 				ptId = newPtId;
 			}
+			topo->addPolygon(ptId, nextPtsId[0], nextPtsId[1]);
 			break;
 		}
 		case 2: // Square cap
