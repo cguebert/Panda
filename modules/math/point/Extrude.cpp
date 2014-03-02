@@ -96,43 +96,94 @@ public:
 			addPtsId[1] = topo->addPoint(pts[0]	      + dir2);
 			addPtsId[2] = topo->addPoint(pts[0] - dir + dir2);
 
-			topo->addPolygon(prevPtsId[0], addPtsId[0], addPtsId[1]);
-			topo->addPolygon(prevPtsId[0], addPtsId[1], prevPtsId[1]);
-			topo->addPolygon(prevPtsId[1], addPtsId[1], addPtsId[2]);
+			topo->addPolygon(prevPtsId[0], addPtsId[0], prevPtsId[1]);
+			topo->addPolygon(prevPtsId[1], addPtsId[0], addPtsId[1]);
+			topo->addPolygon(addPtsId[1], addPtsId[2], prevPtsId[1]);
 			topo->addPolygon(prevPtsId[1], addPtsId[2], prevPtsId[2]);
 			break;
 		}
-		} // switch
+		} // end switch
 
 		// Line
 		for(int i=1; i<nbPts-1; ++i)
 		{
-			Topology::PointID nextPtsId[3];
-			// Main extrusion
-			dir = normals[i-1] + normals[i];
-			dir = w / helper::dot(dir, normals[i-1]) * normals[i-1]
-				+ w / helper::dot(dir, normals[i]) * normals[i];
 			double side = helper::cross(normals[i-1], normals[i]);
+			if(fabs(side) < 1e-3)	// Don't create a join (nor points) if these 2 segments are aligned
+				continue;
+
+			// Interior of the curvature
+			Topology::PointID nextPtsId[3];
+			dir = normals[i-1] + normals[i];
+			dir = w * (normals[i-1] / helper::dot(dir, normals[i-1])
+				+ normals[i] / helper::dot(dir, normals[i]) );
+			double norm2Dir = helper::norm2(dir)
+				 , norm2Seg1 = helper::norm2(pts[i]-pts[i-1])
+				 , norm2Seg2 = helper::norm2(pts[i+1]-pts[i]);
+			bool hasInteriorPt = true;
+			if(norm2Dir > norm2Seg1 || norm2Dir > norm2Seg2)
+				hasInteriorPt = false;	// I don't know what to do in this degenerated case!
+
+			// Main extrusion (without the exterior of the curvature)
+			if(side > 0)
+			{
+				nextPtsId[1] = topo->addPoint(pts[i]);
+				topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
+				topo->addPolygon(nextPtsId[1], prevPtsId[0], prevPtsId[1]);
+
+				if(hasInteriorPt)
+				{
+					nextPtsId[2] = topo->addPoint(pts[i] - dir);
+					topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
+				}
+				else
+				{
+					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					topo->addPolygon(nextPtsId[1], prevPtsId[2], addPtId);
+					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
+				}
+
+			}
+			else // side < 0
+			{
+				nextPtsId[1] = topo->addPoint(pts[i]);
+				topo->addPolygon(prevPtsId[0], prevPtsId[1], nextPtsId[1]);
+				topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
+
+				if(hasInteriorPt)
+				{
+					nextPtsId[0] = topo->addPoint(pts[i] + dir);
+					topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
+				}
+				else
+				{
+					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
+					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
+					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
+				}
+			}
+
+			 // Do a Bevel join instead of a miter join if the angle is too small
+			int tmpJoin = join;
+			if(helper::dot(normals[i-1], normals[i]) < -0.9 && join == 0)
+				tmpJoin = 2;
 
 			// Join
-			switch(join)
+			switch(tmpJoin)
 			{
 			default:
 			case 0: // Miter join
 			{
-				// TODO : do a Bevel join if the angle is too small
-				nextPtsId[0] = topo->addPoint(pts[i] + dir);
-				nextPtsId[1] = topo->addPoint(pts[i]);
-				nextPtsId[2] = topo->addPoint(pts[i] - dir);
+				if(side > 0)
+				{
+					nextPtsId[0] = topo->addPoint(pts[i] + dir);
+					topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
+				}
+				else // side < 0
+				{
+					nextPtsId[2] = topo->addPoint(pts[i] - dir);
+					topo->addPolygon(nextPtsId[2], nextPtsId[1], prevPtsId[2]);
+				}
 
-				// Create the triangles
-				topo->addPolygon(nextPtsId[0], prevPtsId[0], prevPtsId[1]);
-				topo->addPolygon(nextPtsId[0], prevPtsId[1], nextPtsId[1]);
-				topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
-				topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
-
-				for(int j=0; j<3; ++j)
-					prevPtsId[j] = nextPtsId[j];
 				break;
 			}
 			case 1: // Round join
@@ -140,16 +191,10 @@ public:
 				if(side > 0)
 				{
 					double angle = acos(helper::dot(normals[i-1], normals[i]));
-					Topology::PointID addPtId;
-					addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
+					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
-					nextPtsId[1] = topo->addPoint(pts[i]);
-					nextPtsId[2] = topo->addPoint(pts[i] - dir);
 
-					topo->addPolygon(addPtId, prevPtsId[0], prevPtsId[1]);
-					topo->addPolygon(addPtId, prevPtsId[1], nextPtsId[1]);
-					topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
-					topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
+					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
 
 					int nb = static_cast<int>(floor(w * angle));
 					angle /= nb;
@@ -167,23 +212,14 @@ public:
 						ptId = newPtId;
 					}
 					topo->addPolygon(ptId, addPtId, nextPtsId[1]);
-
-					for(int j=0; j<3; ++j)
-						prevPtsId[j] = nextPtsId[j];
 				}
-				else if(side < 0)
+				else // side < 0
 				{
 					double angle = acos(helper::dot(normals[i-1], normals[i]));
-					Topology::PointID addPtId;
-					nextPtsId[0] = topo->addPoint(pts[i] + dir);
-					nextPtsId[1] = topo->addPoint(pts[i]);
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
-					addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
 
-					topo->addPolygon(nextPtsId[0], prevPtsId[0], prevPtsId[1]);
-					topo->addPolygon(nextPtsId[0], prevPtsId[1], nextPtsId[1]);
-					topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
-					topo->addPolygon(nextPtsId[1], prevPtsId[2], addPtId);
+					topo->addPolygon(addPtId, nextPtsId[1], prevPtsId[2]);
 
 					int nb = static_cast<int>(floor(w * angle));
 					angle /= nb;
@@ -201,9 +237,6 @@ public:
 						ptId = newPtId;
 					}
 					topo->addPolygon(ptId, nextPtsId[2], nextPtsId[1]);
-
-					for(int j=0; j<3; ++j)
-						prevPtsId[j] = nextPtsId[j];
 				}
 				break;
 			}
@@ -211,41 +244,26 @@ public:
 			{
 				if(side > 0)
 				{
-					Topology::PointID addPtId;
-					addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
+					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
-					nextPtsId[1] = topo->addPoint(pts[i]);
-					nextPtsId[2] = topo->addPoint(pts[i] - dir);
 
 					topo->addPolygon(nextPtsId[0], addPtId, nextPtsId[1]);
-					topo->addPolygon(addPtId, prevPtsId[0], prevPtsId[1]);
-					topo->addPolygon(addPtId, prevPtsId[1], nextPtsId[1]);
-					topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
-					topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
-
-					for(int j=0; j<3; ++j)
-						prevPtsId[j] = nextPtsId[j];
+					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
 				}
-				else if(side < 0)
+				else // side < 0
 				{
-					Topology::PointID addPtId;
-					nextPtsId[0] = topo->addPoint(pts[i] + dir);
-					nextPtsId[1] = topo->addPoint(pts[i]);
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
-					addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
 
 					topo->addPolygon(nextPtsId[2], nextPtsId[1], addPtId);
-					topo->addPolygon(nextPtsId[0], prevPtsId[0], prevPtsId[1]);
-					topo->addPolygon(nextPtsId[0], prevPtsId[1], nextPtsId[1]);
-					topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
-					topo->addPolygon(nextPtsId[1], prevPtsId[2], addPtId);
-
-					for(int j=0; j<3; ++j)
-						prevPtsId[j] = nextPtsId[j];
+					topo->addPolygon(addPtId, nextPtsId[1], prevPtsId[2]);
 				}
 				break;
 			}
-			}
+			} // end switch
+
+			for(int j=0; j<3; ++j)
+				prevPtsId[j] = nextPtsId[j];
 		}
 
 		// Last segment
@@ -254,8 +272,8 @@ public:
 		nextPtsId[0] = topo->addPoint(pts[nbPts-1] + dir);
 		nextPtsId[1] = topo->addPoint(pts[nbPts-1]);
 		nextPtsId[2] = topo->addPoint(pts[nbPts-1] - dir);
-		topo->addPolygon(nextPtsId[0], prevPtsId[0], prevPtsId[1]);
-		topo->addPolygon(nextPtsId[0], prevPtsId[1], nextPtsId[1]);
+		topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
+		topo->addPolygon(prevPtsId[0], prevPtsId[1], nextPtsId[1]);
 		topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
 		topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
 
@@ -293,13 +311,13 @@ public:
 			addPtsId[1] = topo->addPoint(pts[nbPts-1]	    - dir2);
 			addPtsId[2] = topo->addPoint(pts[nbPts-1] - dir - dir2);
 
-			topo->addPolygon(addPtsId[0], nextPtsId[0], nextPtsId[1]);
-			topo->addPolygon(addPtsId[0], nextPtsId[1], addPtsId[1]);
+			topo->addPolygon(addPtsId[0], nextPtsId[0], addPtsId[1]);
+			topo->addPolygon(nextPtsId[0], nextPtsId[1], addPtsId[1]);
 			topo->addPolygon(addPtsId[1], nextPtsId[1], nextPtsId[2]);
 			topo->addPolygon(addPtsId[1], nextPtsId[2], addPtsId[2]);
 			break;
 		}
-		} // switch
+		} // end switch
 
 		cleanDirty();
 	}
