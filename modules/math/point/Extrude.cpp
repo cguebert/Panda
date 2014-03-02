@@ -20,11 +20,12 @@ public:
 
 	PointListMath_Extrude(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "List of control points"))
-		, output(initData(&output, "output", "Topology created from the extrusion"))
+		, input(initData(&input, "input", "List of control points"))		
 		, width(initData(&width, "width", "Width of the line"))
 		, capStyle(initData(&capStyle, "cap", "Style of the caps"))
 		, joinStyle(initData(&joinStyle, "join", "Style of the joins"))
+		, output(initData(&output, "output", "Topology created from the extrusion"))
+		, coordUV(initData(&coordUV, "UV coords", "UV coords of the points in the topology"))
 	{
 		addInput(&input);
 		addInput(&width);
@@ -37,6 +38,7 @@ public:
 		joinStyle.setWidgetData("Miter join;Round join;Bevel join");
 
 		addOutput(&output);
+		addOutput(&coordUV);
 
 		width.getAccessor()->add(0, 10.0);
 	}
@@ -49,7 +51,9 @@ public:
 		int cap = capStyle.getValue();
 		int join = joinStyle.getValue();
 		auto topo = output.getAccessor();
+		auto UV = coordUV.getAccessor();
 		topo->clear();
+		UV.clear();
 
 		int nbPts = pts.size();
 		if(!nbPts || !widthAnim.size())
@@ -78,6 +82,9 @@ public:
 		prevPtsId[0] = topo->addPoint(pts[0] + dir);
 		prevPtsId[1] = topo->addPoint(pts[0]);
 		prevPtsId[2] = topo->addPoint(pts[0] - dir);
+		UV.push_back(QPointF(abscissa[0], 1));
+		UV.push_back(QPointF(abscissa[0], 0));
+		UV.push_back(QPointF(abscissa[0], 1));
 		switch(cap)
 		{
 		default:
@@ -94,6 +101,7 @@ public:
 			{
 				QPointF pt = QPointF(dir.x()*ca+dir.y()*sa, dir.y()*ca-dir.x()*sa);
 				Topology::PointID newPtId = topo->addPoint(center + pt);
+				UV.push_back(QPointF(abscissa[0], 1));
 				topo->addPolygon(ptId, newPtId, prevPtsId[1]);
 
 				dir = pt;
@@ -109,6 +117,9 @@ public:
 			addPtsId[0] = topo->addPoint(pts[0] + dir + dir2);
 			addPtsId[1] = topo->addPoint(pts[0]	      + dir2);
 			addPtsId[2] = topo->addPoint(pts[0] - dir + dir2);
+			UV.push_back(QPointF(abscissa[0], 1));
+			UV.push_back(QPointF(abscissa[0], 1));
+			UV.push_back(QPointF(abscissa[0], 1));
 
 			topo->addPolygon(prevPtsId[0], addPtsId[0], prevPtsId[1]);
 			topo->addPolygon(prevPtsId[1], addPtsId[0], addPtsId[1]);
@@ -140,41 +151,44 @@ public:
 				hasInteriorPt = false;	// I don't know what to do in this degenerated case!
 
 			// Main extrusion (without the exterior of the curvature)
+			nextPtsId[1] = topo->addPoint(pts[i]);
+			UV.push_back(QPointF(abscissa[i], 0));
+			topo->addPolygon(nextPtsId[1], prevPtsId[0], prevPtsId[1]);
+			topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
+
 			if(side > 0)
 			{
-				nextPtsId[1] = topo->addPoint(pts[i]);
-				topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
-				topo->addPolygon(nextPtsId[1], prevPtsId[0], prevPtsId[1]);
-
 				if(hasInteriorPt)
 				{
 					nextPtsId[2] = topo->addPoint(pts[i] - dir);
+					UV.push_back(QPointF(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
 				}
 				else
 				{
 					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					UV.push_back(QPointF(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[1], prevPtsId[2], addPtId);
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
+					UV.push_back(QPointF(abscissa[i], 1));
 				}
 
 			}
 			else // side < 0
 			{
-				nextPtsId[1] = topo->addPoint(pts[i]);
-				topo->addPolygon(prevPtsId[0], prevPtsId[1], nextPtsId[1]);
-				topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
-
 				if(hasInteriorPt)
 				{
 					nextPtsId[0] = topo->addPoint(pts[i] + dir);
+					UV.push_back(QPointF(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
 				}
 				else
 				{
 					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
+					UV.push_back(QPointF(abscissa[i], 1));
 					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
+					UV.push_back(QPointF(abscissa[i], 1));
 				}
 			}
 
@@ -192,11 +206,13 @@ public:
 				if(side > 0)
 				{
 					nextPtsId[0] = topo->addPoint(pts[i] + dir);
+					UV.push_back(QPointF(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
 				}
 				else // side < 0
 				{
 					nextPtsId[2] = topo->addPoint(pts[i] - dir);
+					UV.push_back(QPointF(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[2], nextPtsId[1], prevPtsId[2]);
 				}
 
@@ -209,6 +225,8 @@ public:
 					double angle = acos(helper::dot(normals[i-1], normals[i]));
 					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
+					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(QPointF(abscissa[i], 1));
 
 					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
 
@@ -222,6 +240,7 @@ public:
 					{
 						QPointF nr = QPointF(r.x()*ca+r.y()*sa, r.y()*ca-r.x()*sa);
 						Topology::PointID newPtId = topo->addPoint(center + nr);
+						UV.push_back(QPointF(abscissa[i], 1));
 						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
 
 						r = nr;
@@ -234,6 +253,8 @@ public:
 					double angle = acos(helper::dot(normals[i-1], normals[i]));
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
 					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(QPointF(abscissa[i], 1));
 
 					topo->addPolygon(addPtId, nextPtsId[1], prevPtsId[2]);
 
@@ -247,6 +268,7 @@ public:
 					{
 						QPointF nr = QPointF(r.x()*ca+r.y()*sa, r.y()*ca-r.x()*sa);
 						Topology::PointID newPtId = topo->addPoint(center - nr);
+						UV.push_back(QPointF(abscissa[i], 1));
 						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
 
 						r = nr;
@@ -262,6 +284,8 @@ public:
 				{
 					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
+					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(QPointF(abscissa[i], 1));
 
 					topo->addPolygon(nextPtsId[0], addPtId, nextPtsId[1]);
 					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
@@ -270,6 +294,8 @@ public:
 				{
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
 					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(QPointF(abscissa[i], 1));
 
 					topo->addPolygon(nextPtsId[2], nextPtsId[1], addPtId);
 					topo->addPolygon(addPtId, nextPtsId[1], prevPtsId[2]);
@@ -289,6 +315,9 @@ public:
 		nextPtsId[0] = topo->addPoint(pts[nbPts-1] + dir);
 		nextPtsId[1] = topo->addPoint(pts[nbPts-1]);
 		nextPtsId[2] = topo->addPoint(pts[nbPts-1] - dir);
+		UV.push_back(QPointF(abscissa[nbPts-1], 1));
+		UV.push_back(QPointF(abscissa[nbPts-1], 0));
+		UV.push_back(QPointF(abscissa[nbPts-1], 1));
 		topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
 		topo->addPolygon(prevPtsId[0], prevPtsId[1], nextPtsId[1]);
 		topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
@@ -312,6 +341,7 @@ public:
 			{
 				QPointF pt = QPointF(dir.x()*ca+dir.y()*sa, dir.y()*ca-dir.x()*sa);
 				Topology::PointID newPtId = topo->addPoint(center + pt);
+				UV.push_back(QPointF(abscissa[nbPts-1], 1));
 				topo->addPolygon(ptId, newPtId, nextPtsId[1]);
 
 				dir = pt;
@@ -327,6 +357,9 @@ public:
 			addPtsId[0] = topo->addPoint(pts[nbPts-1] + dir - dir2);
 			addPtsId[1] = topo->addPoint(pts[nbPts-1]	    - dir2);
 			addPtsId[2] = topo->addPoint(pts[nbPts-1] - dir - dir2);
+			UV.push_back(QPointF(abscissa[nbPts-1], 1));
+			UV.push_back(QPointF(abscissa[nbPts-1], 1));
+			UV.push_back(QPointF(abscissa[nbPts-1], 1));
 
 			topo->addPolygon(addPtsId[0], nextPtsId[0], addPtsId[1]);
 			topo->addPolygon(nextPtsId[0], nextPtsId[1], addPtsId[1]);
@@ -341,9 +374,10 @@ public:
 
 protected:
 	Data< QVector<QPointF> > input;
-	Data< Topology > output;
 	Data< Animation<double> > width;
 	Data< int > capStyle, joinStyle;
+	Data< Topology > output;
+	Data< QVector<QPointF> > coordUV;
 };
 
 int PointListMath_ExtrudeClass = RegisterObject<PointListMath_Extrude>("Math/List of points/Extrude")
