@@ -62,7 +62,6 @@ SOURCES       = main.cpp \
 	modules/animation/Interpolation.cpp \
 	modules/animation/List2Anim.cpp \
 	modules/generators/UserValue.cpp \
-	modules/generators/color/ColorInGradient.cpp \
 	modules/generators/color/ComposeColors.cpp \
 	modules/generators/color/RandomColors.cpp \
 	modules/generators/gradient/Anim2Gradient.cpp \
@@ -102,6 +101,7 @@ SOURCES       = main.cpp \
 	modules/math/image/ImageSize.cpp \
 	modules/math/point/BezierSpline.cpp \
 	modules/math/point/CubicBSpline.cpp \
+	modules/math/point/Extrude.cpp \
 	modules/math/point/NearestPoint.cpp \
 	modules/math/point/PointListMath.cpp \
 	modules/math/point/PointMath.cpp \
@@ -110,6 +110,7 @@ SOURCES       = main.cpp \
 	modules/math/real/DoubleMath.cpp \
 	modules/math/topology/Centroids.cpp \
 	modules/math/topology/TopologyInfo.cpp \
+	modules/modifiers/color/ColorInGradient.cpp \
 	modules/modifiers/image/ColorInImage.cpp \
 	modules/modifiers/image/ExtractImage.cpp \
 	modules/modifiers/image/SaveImage.cpp \
@@ -179,8 +180,7 @@ SOURCES       = main.cpp \
 	ui/widget/NumericalDataWidget.cpp \
 	ui/widget/StringDataWidget.cpp \
 	ui/widget/TableDataWidgetDialog.cpp \
-	ui/widget/AnimationDataWidgetDialog.cpp \
-    modules/math/point/Extrude.cpp
+	ui/widget/AnimationDataWidgetDialog.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = .

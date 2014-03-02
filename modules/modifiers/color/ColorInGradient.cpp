@@ -7,12 +7,12 @@ namespace panda {
 
 using types::Gradient;
 
-class GeneratorColors_InGradient : public PandaObject
+class ModifierColor_InGradient : public PandaObject
 {
 public:
-	PANDA_CLASS(GeneratorColors_InGradient, PandaObject)
+	PANDA_CLASS(ModifierColor_InGradient, PandaObject)
 
-	GeneratorColors_InGradient(PandaDocument *doc)
+	ModifierColor_InGradient(PandaDocument *doc)
 		: PandaObject(doc)
 		, gradient(initData(&gradient, "gradient", "The gradient from which to get the color"))
 		, position(initData(&position, "position", "Position in the gradient where to get the color"))
@@ -44,6 +44,6 @@ protected:
 	Data< QVector<QColor> > color;
 };
 
-int GeneratorColors_InGradientClass = RegisterObject<GeneratorColors_InGradient>("Generator/Color/Color in gradient").setDescription("Get colors in specific places in a gradient");
+int ModifierColor_InGradientClass = RegisterObject<ModifierColor_InGradient>("Modifier/Color/Color in gradient").setDescription("Get colors in specific places in a gradient");
 
 } // namespace Panda
