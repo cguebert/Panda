@@ -130,6 +130,7 @@ SOURCES       = main.cpp \
 	modules/render/RenderGradient.cpp \
 	modules/render/RenderImage.cpp \
 	modules/render/RenderLine.cpp \
+	modules/render/RenderMesh.cpp \
 	modules/render/RenderPolygon.cpp \
 	modules/render/RenderRect.cpp \
 	modules/render/RenderText.cpp \
