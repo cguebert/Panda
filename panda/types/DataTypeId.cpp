@@ -1,9 +1,5 @@
 #include <panda/types/DataTypeId.h>
 
-#include <QMap>
-
-#include <typeindex>
-
 namespace panda
 {
 
@@ -12,14 +8,14 @@ namespace types
 
 int DataTypeId::getId(const std::type_info &type)
 {
-	static QMap<std::type_index, int> typesId;
+	TypesIdMap& typesIdMap = getTypesIdMap();
 	std::type_index index(type);
-	if(typesId.contains(index))
-		return typesId.value(index);
+	if(typesIdMap.contains(index))
+		return typesIdMap.value(index);
 	else
 	{
-		int i = typesId.size() + 1; // start at 1
-		typesId[index] = i;
+		int i = typesIdMap.size() + 1; // start at 1
+		typesIdMap[index] = i;
 		return i;
 	}
 }
@@ -62,6 +58,20 @@ bool DataTypeId::isAnimation(int fullType)
 int DataTypeId::replaceValueType(int fullType, int newType)
 {
 	return (fullType & 0xFFFF0000) + newType;
+}
+
+void DataTypeId::registerType(const std::type_info& type, int fullType)
+{
+	TypesIdMap& typesIdMap = getTypesIdMap();
+	std::type_index index(type);
+	if(!typesIdMap.contains(index))
+		typesIdMap[index] = fullType;
+}
+
+DataTypeId::TypesIdMap& DataTypeId::getTypesIdMap()
+{
+	static TypesIdMap typesIdMap;
+	return typesIdMap;
 }
 
 } // namespace types
