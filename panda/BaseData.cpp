@@ -109,7 +109,6 @@ void BaseData::setParent(BaseData* parent)
 		update();
 		++counter;
 		isValueSet = true;
-		setDirtyValue();
 	}
 	else
 	{

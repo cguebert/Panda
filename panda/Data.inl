@@ -59,7 +59,10 @@ void Data<T>::update()
 		endEdit();	// As if we touched the data
 	}
 	else if(parentBaseData)
+	{
 		copyValueFrom(parentBaseData);
+		cleanDirty(); // Bugfix: copying a value will most often make this Data dirty
+	}
 }
 
 template<class T>
