@@ -29,7 +29,6 @@ public:
 	enum { is_animation = 1 };
 	static bool isDisplayed() { return base_trait::isDisplayed(); }
 	static bool isPersistent() { return base_trait::isPersistent(); }
-	static bool isNumerical() { return base_trait::isNumerical(); }
 
 	static QString valueTypeName() { return base_trait::valueTypeName(); }
 	static QString valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
@@ -41,8 +40,18 @@ public:
 	{
 		a.clear();
 	}
-	static double getNumerical(const animation_type& /*anim*/, int /*index*/) { return 0.0; }
-	static void setNumerical(animation_type& /*anim*/, double /*val*/, int /*index*/) { }
+	static const void* getVoidValue(const animation_type& anim, int index)
+	{
+		if(index < 0 || index >= anim.size())
+			return nullptr;
+		return &anim.getAtIndex(index);
+	}
+	static void* getVoidValue(animation_type& anim, int index)
+	{
+		if(index < 0 || index >= anim.size())
+			return nullptr;
+		return &anim.getAtIndex(index);
+	}
 	static void writeValue(QDomDocument& doc, QDomElement& elem, const animation_type& anim)
 	{
 		elem.setAttribute("extend", anim.getExtend());
@@ -72,23 +81,6 @@ public:
 		}
 	}
 };
-
-//***************************************************************//
-
-template<>
-double DataTrait< Animation<double> >::getNumerical(const animation_type& anim, int index)
-{
-	if(index < 0 || index >= anim.size())
-		return 0.0;
-	return anim.getAtIndex(index);
-}
-
-template<>
-void DataTrait< Animation<double> >::setNumerical(animation_type& anim, double val, int index)
-{
-	if(index >= 0 && index < anim.size())
-		anim.getAtIndex(index) = val;
-}
 
 } // namespace types
 

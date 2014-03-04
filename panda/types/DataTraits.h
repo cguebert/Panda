@@ -26,7 +26,6 @@ public:
 	virtual bool isAnimation() const = 0;
 	virtual bool isDisplayed() const = 0;
 	virtual bool isPersistent() const = 0;
-	virtual bool isNumerical() const = 0;
 
 	virtual QString valueTypeName() const = 0;
 	virtual QString valueTypeNamePlural() const = 0;
@@ -36,8 +35,8 @@ public:
 
 	virtual int size(const void* value) const = 0;
 	virtual void clear(void* value, int size, bool init) const = 0;
-	virtual double getNumerical(const void* value, int index) const = 0;
-	virtual void setNumerical(void* value, double num, int index) const = 0;
+	virtual const void* getVoidValue(const void* value, int index) const = 0;
+	virtual void* getVoidValue(void* value, int index) const = 0;
 
 	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const = 0;
 	virtual void readValue(QDomElement& elem, void* value) const = 0;
@@ -57,7 +56,6 @@ public:
 	enum { is_animation = 0 };
 	static bool isDisplayed() { return true; }
 	static bool isPersistent() { return true; }
-	static bool isNumerical() { return false; }
 
 	static QString valueTypeName() { return ""; } // Override for each type
 	static QString valueTypeNamePlural() { return valueTypeName() + "s"; }
@@ -66,8 +64,8 @@ public:
 	static int fullTypeId() { return DataTypeId::getFullTypeOfSingleValue(valueTypeId()); }
 	static int size(const value_type& /*v*/) { return 1; }
 	static void clear(value_type& v, int /*size*/, bool init) { if(init) v = T(); }
-	static double getNumerical(const value_type& /*v*/, int /*index*/) { return 0; }
-	static void setNumerical(value_type& /*v*/, double /*val*/, int /*index*/) { }
+	static const void* getVoidValue(const value_type& v, int /*index*/) { return &v; }
+	static void* getVoidValue(value_type& v, int /*index*/) { return &v; }
 	static void writeValue(QDomDocument&, QDomElement&, const value_type&) {}
 	static void readValue(QDomElement&, value_type&) {}
 };
@@ -93,7 +91,6 @@ public:
 	virtual bool isAnimation() const	{ return value_trait::is_animation; }
 	virtual bool isDisplayed() const	{ return value_trait::isDisplayed(); }
 	virtual bool isPersistent() const	{ return value_trait::isPersistent(); }
-	virtual bool isNumerical() const	{ return value_trait::isNumerical(); }
 
 	virtual QString valueTypeName() const { return value_trait::valueTypeName(); }
 	virtual QString valueTypeNamePlural() const { return value_trait::valueTypeNamePlural(); }
@@ -105,10 +102,10 @@ public:
 	{ return value_trait::size(*static_cast<const value_type*>(value)); }
 	virtual void clear(void* value, int size, bool init) const
 	{ return value_trait::clear(*static_cast<value_type*>(value), size, init); }
-	virtual double getNumerical(const void* value, int index) const
-	{ return value_trait::getNumerical(*static_cast<const value_type*>(value), index); }
-	virtual void setNumerical(void* value, double num, int index) const
-	{ return value_trait::setNumerical(*static_cast<value_type*>(value), num, index); }
+	virtual const void* getVoidValue(const void* value, int index) const
+	{ return value_trait::getVoidValue(*static_cast<const value_type*>(value), index); }
+	virtual void* getVoidValue(void* value, int index) const
+	{ return value_trait::getVoidValue(*static_cast<value_type*>(value), index); }
 
 	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const
 	{ return value_trait::writeValue(doc, elem, *static_cast<const value_type*>(value)); }
@@ -133,7 +130,6 @@ public:
 	enum { is_animation = 0 };
 	static bool isDisplayed() { return base_trait::isDisplayed(); }
 	static bool isPersistent() { return base_trait::isPersistent(); }
-	static bool isNumerical() { return base_trait::isNumerical(); }
 
 	static QString valueTypeName() { return base_trait::valueTypeName(); }
 	static QString valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
@@ -147,16 +143,17 @@ public:
 			v.clear();
 		v.resize(size);
 	}
-	static double getNumerical(const vector_type& vec, int index)
+	static const void* getVoidValue(const vector_type& vec, int index)
 	{
 		if(index < 0 || index >= vec.size())
-			return 0.0;
-		return base_trait::getNumerical(vec[index], 0);
+			return nullptr;
+		return &vec[index];
 	}
-	static void setNumerical(vector_type& vec, double val, int index)
+	static void* getVoidValue(vector_type& vec, int index)
 	{
-		if(index >= 0 && index < vec.size())
-			base_trait::setNumerical(vec[index], val, 0);
+		if(index < 0 || index >= vec.size())
+			return nullptr;
+		return &vec[index];
 	}
 	static void writeValue(QDomDocument& doc, QDomElement& elem, const vector_type& vec)
 	{
@@ -193,42 +190,6 @@ template<> QString DataTrait<QImage>::valueTypeName() { return "image"; }
 
 template<> bool DataTrait<QImage>::isDisplayed() { return false; }
 template<> bool DataTrait<QImage>::isPersistent() { return false; }
-
-template<> bool DataTrait<int>::isNumerical() { return true; }
-template<> bool DataTrait<double>::isNumerical() { return true; }
-
-//***************************************************************//
-// Overrides for get/setNumerical
-
-template<>
-double DataTrait<int>::getNumerical(const value_type& v, int index)
-{
-	if(index == 0)
-		return v;
-	return 0;
-}
-
-template<>
-void DataTrait<int>::setNumerical(value_type& v, double val, int index)
-{
-	if(index == 0)
-		v = static_cast<int>(val);
-}
-
-template<>
-double DataTrait<double>::getNumerical(const value_type& v, int index)
-{
-	if(index == 0)
-		return v;
-	return 0;
-}
-
-template<>
-void DataTrait<double>::setNumerical(value_type& v, double val, int index)
-{
-	if(index == 0)
-		v = val;
-}
 
 //***************************************************************//
 // Overrides for writeValue xml

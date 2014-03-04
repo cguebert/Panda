@@ -1,5 +1,6 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
+#include <panda/types/TypeConverter.h>
 
 #include <QColor>
 #include <QPointF>
@@ -45,3 +46,11 @@ int stringVectorDataClass = RegisterData< QVector<QString> >();
 int imageVectorDataClass = RegisterData< QVector<QImage> >();
 
 } // namespace panda
+
+void convertType(const int& from, double& to)
+{ to = static_cast<double>(from); }
+void convertType(const double& from, int& to)
+{ to = static_cast<int>(from); }
+
+panda::types::RegisterTypeConverter<int, double> intDoubleConverter;
+panda::types::RegisterTypeConverter<double, int> doubleIntConverter;

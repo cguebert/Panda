@@ -43,7 +43,7 @@ public:
 	value_type get(double position) const;
 
 	reference getAtIndex(int index);
-	value_type getAtIndex(int index) const;
+	const_reference getAtIndex(int index) const;
 
 	void setInterpolation(int method);
 	int getInterpolation() const;

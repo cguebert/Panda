@@ -4,9 +4,12 @@
 #include <panda/Data.h>
 #include <panda/types/DataTraits.h>
 #include <panda/types/Animation.h>
+#include <panda/types/TypeConverter.h>
 
 namespace panda
 {
+
+using types::TypeConverter;
 
 template<class T>
 class DataCopier
@@ -36,8 +39,19 @@ bool DataCopier<T>::copyData(Data<T> *dest, const BaseData* from)
 {
 	typedef types::DataTrait<T> DestTrait;
 	auto fromTrait = from->getDataTrait();
+
 	// First we try without conversion
-	if(fromTrait->isVector())
+	if(fromTrait->isSingleValue())
+	{
+		// Same type
+		const Data<T>* castedFrom = dynamic_cast<const Data<T>*>(from);
+		if(castedFrom)
+		{
+			dest->setValue(castedFrom->getValue());
+			return true;
+		}
+	}
+	else if(fromTrait->isVector())
 	{
 		// The from is a vector of T
 		const Data< QVector<T> >* castedVectorFrom = dynamic_cast<const Data< QVector<T> >*>(from);
@@ -50,23 +64,28 @@ bool DataCopier<T>::copyData(Data<T> *dest, const BaseData* from)
 			return true;
 		}
 	}
-	else if(fromTrait->isSingleValue())
-	{
-		// Same type
-		const Data<T>* castedFrom = dynamic_cast<const Data<T>*>(from);
-		if(castedFrom)
-		{
-			dest->setValue(castedFrom->getValue());
-			return true;
-		}
-	}
 
 	// Else we try a conversion
-	if(DestTrait::isNumerical() && fromTrait->isNumerical())
+	// From something X to single value Y
+	int fromTypeId = fromTrait->fullTypeId(), destTypeId = DestTrait::fullTypeId();
+	if(TypeConverter::canConvert(fromTypeId, destTypeId))
 	{
-		auto value = dest->getAccessor();
-		DestTrait::setNumerical(value.wref(), fromTrait->getNumerical(from->getVoidValue(), 0), 0);
+		auto toValue = dest->getAccessor();
+		TypeConverter::convert(fromTypeId, destTypeId, from->getVoidValue(), &toValue.wref());
 		return true;
+	}
+
+	// From a vector of X to single value Y
+	fromTypeId = fromTrait->valueTypeId();
+	if(TypeConverter::canConvert(fromTypeId, destTypeId))
+	{
+		const void* fromValuePtr = fromTrait->getVoidValue(from->getVoidValue(), 0);
+		if(fromValuePtr)
+		{
+			auto toValue = dest->getAccessor();
+			TypeConverter::convert(fromTypeId, destTypeId, fromValuePtr, &toValue.wref());
+			return true;
+		}
 	}
 
 	return false;
@@ -112,15 +131,56 @@ public:
 		}
 
 		// Else we try a conversion
-		if(DestTrait::isNumerical() && fromTrait->isNumerical())
+		int fromFullTypeId = fromTrait->fullTypeId(), fromValueTypeId = fromTrait->valueTypeId();
+		int destFullTypeId = DestTrait::fullTypeId(), destValueTypeId = DestTrait::valueTypeId();
+		// From something X to vector Y
+		if(TypeConverter::canConvert(fromFullTypeId, destFullTypeId))
 		{
-			auto fromValue = from->getVoidValue();
-			auto value = dest->getAccessor();
-			int size = fromTrait->size(fromValue);
-			value.resize(size);
-			for(int i=0; i<size; ++i)
-				DestTrait::setNumerical(value.wref(), fromTrait->getNumerical(fromValue, i), i);
+			auto toValue = dest->getAccessor();
+			TypeConverter::convert(fromFullTypeId, destFullTypeId, from->getVoidValue(), &toValue.wref());
 			return true;
+		}
+
+		// From a single value or vector of X to vector of Y
+		if(TypeConverter::canConvert(fromValueTypeId, destValueTypeId))
+		{
+			const void* fromPtr = from->getVoidValue();
+			auto toValue = dest->getAccessor();
+			int size = fromTrait->size(fromPtr);
+			DestTrait::clear(toValue.wref(), size, true);
+			for(int i=0; i<size; ++i)
+			{
+				const void* fromValuePtr = fromTrait->getVoidValue(fromPtr, i);
+				void* toValuePtr = DestTrait::getVoidValue(toValue.wref(), i);
+				if(fromValuePtr && toValuePtr)
+					TypeConverter::convert(fromValueTypeId, destValueTypeId, fromValuePtr, toValuePtr);
+			}
+			return true;
+		}
+
+		// From a single value or vector of X to vector Y
+		if(TypeConverter::canConvert(fromValueTypeId, destFullTypeId))
+		{
+			const void* fromValuePtr = fromTrait->getVoidValue(from->getVoidValue(), 0);
+			if(fromValuePtr)
+			{
+				auto toValue = dest->getAccessor();
+				TypeConverter::convert(fromValueTypeId, destFullTypeId, fromValuePtr, &toValue.wref());
+				return true;
+			}
+		}
+
+		// From something X to first value of vector Y
+		if(TypeConverter::canConvert(fromFullTypeId, destValueTypeId))
+		{
+			auto toValue = dest->getAccessor();
+			DestTrait::clear(toValue.wref(), 1, true);
+			void* toValuePtr = DestTrait::getVoidValue(toValue.wref(), 0);
+			if(toValuePtr)
+			{
+				TypeConverter::convert(fromFullTypeId, destValueTypeId, from->getVoidValue(), toValuePtr);
+				return true;
+			}
 		}
 
 		return false;

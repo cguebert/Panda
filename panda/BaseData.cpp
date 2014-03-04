@@ -1,6 +1,7 @@
 #include <panda/BaseData.h>
 #include <panda/PandaObject.h>
 #include <panda/types/DataTraits.h>
+#include <panda/types/TypeConverter.h>
 
 #include <QApplication>
 #include <iostream>
@@ -65,12 +66,18 @@ bool BaseData::validParent(const BaseData* parent) const
 {
 	auto trait = getDataTrait();
 	auto parentTrait = parent->getDataTrait();
-	if( (trait->isAnimation() && !parentTrait->isAnimation())
-			|| (!trait->isAnimation() && parentTrait->isAnimation()) )
+	if(trait->isAnimation() != parentTrait->isAnimation())
 		return false; // Can not convert to or from animation
 
-	return (trait->valueTypeId() == parentTrait->valueTypeId())		// Either the 2 Datas have the same base type (int & vector of ints for example)
-			|| (trait->isNumerical() && parentTrait->isNumerical());	// Or we can convert from one to the other (double & vector of ints)
+	using types::TypeConverter;
+	int parentValueType = parentTrait->valueTypeId(), parentFullType = parentTrait->fullTypeId();
+	int valueType = trait->valueTypeId(), fullType = trait->fullTypeId();
+	return (fullType == parentFullType)		// Either the 2 Datas have the same type
+		|| (valueType == parentValueType)	// Or the same base type
+		|| TypeConverter::canConvert(parentFullType, fullType)	// Or we have a direct converter from a type to the other
+		|| TypeConverter::canConvert(parentValueType, valueType)// Or the base types are convertible
+		|| TypeConverter::canConvert(parentValueType, fullType)	// Or we can convert one type to the other's value type
+		|| TypeConverter::canConvert(parentFullType, valueType);// Or vice-versa
 }
 
 void BaseData::setParent(BaseData* parent)

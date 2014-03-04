@@ -96,10 +96,13 @@ typename Animation<T>::reference Animation<T>::getAtIndex(int index)
 }
 
 template <class T>
-typename Animation<T>::value_type Animation<T>::getAtIndex(int index) const
+typename Animation<T>::const_reference Animation<T>::getAtIndex(int index) const
 {
 	if(index < 0 || index >= stops.size())
-		return value_type();
+	{
+		static value_type tmp = value_type();
+		return tmp;
+	}
 	return stops[index].second;
 }
 
