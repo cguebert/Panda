@@ -24,37 +24,35 @@ template<> void DataTrait<Path>::clear(Path& v, int size, bool init)
 		v.clear();
 	v.resize(size);
 }
-/*
+
 template<>
-void DataTrait<Path>::writeValue(QDomDocument& doc, QDomElement& elem, const Gradient& grad)
+void DataTrait<Path>::writeValue(QDomDocument& doc, QDomElement& elem, const Path& path)
 {
-	for(const auto& s : grad.getStops())
+	for(const auto& pt : path)
 	{
-		QDomElement stopNode = doc.createElement("Stop");
-		elem.appendChild(stopNode);
-		stopNode.setAttribute("pos", s.first);
-		DataTrait<QColor>::writeValue(doc, stopNode, s.second);
+		QDomElement ptNode = doc.createElement("Point");
+		ptNode.setAttribute("x", pt.x());
+		ptNode.setAttribute("y", pt.y());
+		elem.appendChild(ptNode);
 	}
 }
 
 template<>
-void DataTrait<Path>::readValue(QDomElement& elem, Gradient& grad)
+void DataTrait<Path>::readValue(QDomElement& elem, Path& path)
 {
-	grad.clear();
-	grad.setExtend(elem.attribute("extend").toInt());
+	path.clear();
 
-	QDomElement stopNode = elem.firstChildElement("Stop");
-	while(!stopNode.isNull())
+	QDomElement ptNode = elem.firstChildElement("Point");
+	while(!ptNode.isNull())
 	{
-		double pos = stopNode.attribute("pos").toDouble();
-		QColor color;
-		DataTrait<QColor>::readValue(stopNode, color);
+		double x = ptNode.attribute("x").toDouble();
+		double y = ptNode.attribute("y").toDouble();
 
-		grad.add(pos, color);
-		stopNode = stopNode.nextSiblingElement("Stop");
+		path.push_back(QPointF(x, y));
+		ptNode = ptNode.nextSiblingElement("Point");
 	}
 }
-*/
+
 template class Data< Path >;
 template class Data< QVector<Path> >;
 
