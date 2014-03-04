@@ -1,11 +1,15 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QPointF>
 #include <panda/Renderer.h>
+#include <QPointF>
 #include <QPainter>
 
+#include <panda/types/Path.h>
+
 namespace panda {
+
+using types::Path;
 
 class RenderLine : public Renderer
 {
@@ -74,8 +78,6 @@ public:
 	{
 		const QVector<QPointF>& valA = inputA.getValue();
 		const QVector<QPointF>& valB = inputB.getValue();
-		double valWidth = width.getValue();
-		if(!valWidth) valWidth = 1.0;
 		const QVector<QColor>& listColor = color.getValue();
 
 		int nbA = valA.size(), nbB = valB.size();
@@ -93,7 +95,7 @@ public:
 		{
 			if(nbColor < nbLines) nbColor = 1;
 
-			glLineWidth(valWidth);
+			glLineWidth(qMax(1.0, width.getValue()));
 			glBegin(GL_LINES);
 			for(int i=0; i<nbLines; ++i)
 			{
@@ -126,74 +128,62 @@ int RenderLineClass = RegisterObject<RenderLine>("Render/Line").setDescription("
 
 //*************************************************************************//
 
-class RenderConnectedLines : public Renderer
+class RenderPath : public Renderer
 {
 public:
-	PANDA_CLASS(RenderConnectedLines, Renderer)
+	PANDA_CLASS(RenderPath, Renderer)
 
-	RenderConnectedLines(PandaDocument *parent)
+	RenderPath(PandaDocument *parent)
 		: Renderer(parent)
-		, input(initData(&input, "points", "Vertices of the connected lines"))
+		, input(initData(&input, "path", "Path to be drawn"))
 		, width(initData(&width, 1.0, "width", "Width of the line" ))
 		, color(initData(&color, "color", "Color of the line"))
 	{
 		addInput(&input);
 		addInput(&width);
 		addInput(&color);
+
+		color.getAccessor().push_back(QColor());
 	}
 
-	void render(QPainter* painter)
+	void render(QPainter* /*painter*/)
 	{
-		painter->save();
-
-		const QVector<QPointF>& points = input.getValue();
-		int nb = points.size();
-
-		if(nb)
-		{
-			QPen pen;
-			pen.setWidthF(width.getValue());
-			pen.setColor(color.getValue());
-			pen.setCapStyle(Qt::RoundCap);
-			painter->setBrush(Qt::NoBrush);
-			painter->setPen(pen);
-
-			QPainterPath path;
-			path.moveTo(points[0]);
-			for(int i=1; i<nb; ++i)
-				path.lineTo(points[i]);
-
-			painter->drawPath(path);
-		}
-
-		painter->restore();
 	}
 
 	void renderOpenGL()
 	{
-		const QVector<QPointF>& points = input.getValue();
-		int nb = points.size();
+		const QVector<Path>& paths = input.getValue();
+		const QVector<QColor>& listColor = color.getValue();
+		int nb = paths.size();
+		int nbColor = listColor.size();
 
-		if(nb)
+		if(nb && nbColor)
 		{
-			glLineWidth(width.getValue());
-			QColor col = color.getValue();
-			glColor4ub(col.red(), col.green(), col.blue(), col.alpha());
+			if(nbColor < nb) nbColor = 1;
 
-			glBegin(GL_LINE_STRIP);
+			glLineWidth(qMax(1.0, width.getValue()));
+
 			for(int i=0; i<nb; ++i)
-				glVertex2d(points[i].x(), points[i].y());
-			glEnd();
-			glLineWidth(0);
+			{
+				const Path& path = paths[i];
+				QColor col = listColor[i % nbColor];
+				glColor4ub(col.red(), col.green(), col.blue(), col.alpha());
+
+				glBegin(GL_LINE_STRIP);
+				for(int j=0, nbPts=path.size(); j<nbPts; ++j)
+					glVertex2d(path[j].x(), path[j].y());
+				glEnd();
+				glLineWidth(0);
+			}
 		}
 	}
 
 protected:
-	Data< QVector<QPointF> > input;
+	Data< QVector<Path> > input;
 	Data<double> width;
-	Data<QColor> color;
+	Data< QVector<QColor> > color;
 };
 
-int RenderConnectedLinesClass = RegisterObject<RenderConnectedLines>("Render/Connected lines").setDescription("Draw a connected line based on a list of points");
+int RenderPathClass = RegisterObject<RenderPath>("Render/Path").setDescription("Draw a path");
 
 } // namespace panda
