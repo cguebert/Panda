@@ -3,7 +3,6 @@
 
 #include <panda/types/DataTypeId.h>
 
-#include <QMap>
 #include <QSharedPointer>
 
 namespace panda
@@ -24,13 +23,10 @@ public:
 	static bool canConvert(int fromType, int toType);
 	static void convert(int fromType, int toType, const void* valueFrom, void* valueTo);
 
+	typedef QSharedPointer<BaseConverterFunctor> FunctorPtr;
 private:
 	template<class F, class T> friend class RegisterTypeConverter;
 
-	typedef QSharedPointer<BaseConverterFunctor> FunctorPtr;
-	typedef QMap<int, QMap<int, FunctorPtr> > FunctorMap;
-
-	static FunctorMap& getFunctorMap();
 	static void registerFunctor(int fromType, int toType, FunctorPtr ptr);
 };
 

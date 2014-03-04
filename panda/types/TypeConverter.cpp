@@ -1,4 +1,5 @@
 #include <panda/types/TypeConverter.h>
+#include <QMap>
 
 namespace panda
 {
@@ -6,7 +7,9 @@ namespace panda
 namespace types
 {
 
-TypeConverter::FunctorMap& TypeConverter::getFunctorMap()
+typedef QMap<int, QMap<int, TypeConverter::FunctorPtr> > FunctorMap;
+
+static FunctorMap& getFunctorMap()
 {
 	static FunctorMap theMap;
 	return theMap;
