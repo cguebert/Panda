@@ -25,7 +25,7 @@ public:
 		color.getAccessor().push_back(QColor());
 	}
 
-	void render(QPainter* painter)
+	void render(QPainter* /*painter*/)
 	{
 	}
 

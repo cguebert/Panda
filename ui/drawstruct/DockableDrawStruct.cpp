@@ -19,9 +19,11 @@ void DockObjectDrawStruct::drawShape(QPainter* painter)
 
 void DockObjectDrawStruct::drawText(QPainter* painter)
 {
+	int margin = dataRectSize+dataRectMargin+3;
 	QRectF textArea = objectArea;
 	textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
-	painter->drawText(textArea, Qt::AlignCenter, object->getName());
+	textArea.adjust(margin, 0, -margin, 0);
+	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, object->getName());
 }
 
 QSize DockObjectDrawStruct::getObjectSize()
