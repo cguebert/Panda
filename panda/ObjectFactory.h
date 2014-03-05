@@ -48,10 +48,10 @@ public:
 	}
 	static QString getRegistryName(PandaObject* object);
 
-	PandaObject* create(QString className, PandaDocument* parent);
+	PandaObject* create(QString className, PandaDocument* parent) const;
 
 	typedef QMapIterator< QString, ClassEntry > RegistryMapIterator;
-	RegistryMapIterator getRegistryIterator();
+	RegistryMapIterator getRegistryIterator() const;
 protected:
 	template<class T> friend class RegisterObject;
 	void registerObject(QString className, ClassEntry entry);

@@ -13,7 +13,7 @@ ObjectFactory* ObjectFactory::getInstance()
 	return &instance;
 }
 
-PandaObject* ObjectFactory::create(QString className, PandaDocument* parent)
+PandaObject* ObjectFactory::create(QString className, PandaDocument* parent) const
 {
 	if(registry.contains(className))
 	{
@@ -39,7 +39,7 @@ QString ObjectFactory::getRegistryName(PandaObject* object)
 	return object->getBaseClass()->getTypeName();
 }
 
-ObjectFactory::RegistryMapIterator ObjectFactory::getRegistryIterator()
+ObjectFactory::RegistryMapIterator ObjectFactory::getRegistryIterator() const
 {
 	return RegistryMapIterator(registry);
 }

@@ -21,7 +21,7 @@ const DataFactory::DataEntry* DataFactory::getEntry(int type) const
 	return typeRegistry.value(type);
 }
 
-BaseData* DataFactory::create(QString className, const QString& name, const QString& help, PandaObject* owner)
+BaseData* DataFactory::create(QString className, const QString& name, const QString& help, PandaObject* owner) const
 {
 	if(registry.contains(className))
 		return registry.value(className)->creator->create(name, help, owner);
@@ -30,7 +30,7 @@ BaseData* DataFactory::create(QString className, const QString& name, const QStr
 	return nullptr;
 }
 
-BaseData* DataFactory::create(int type, const QString& name, const QString& help, PandaObject* owner)
+BaseData* DataFactory::create(int type, const QString& name, const QString& help, PandaObject* owner) const
 {
 	if(typeRegistry.contains(type))
 		return typeRegistry.value(type)->creator->create(name, help, owner);
@@ -55,8 +55,6 @@ void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseCl
 	entry->creator = creator;
 	entry->fullType = dataTrait->fullTypeId();
 	entry->theClass = theClass;
-
-//	std::cout << typeName.toStdString() << "\t" << className.toStdString() << "\t" << fullType << std::endl;
 
 	registry[className] = entry;
 	typeRegistry[dataTrait->fullTypeId()] = entry;

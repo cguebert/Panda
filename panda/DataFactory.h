@@ -42,14 +42,14 @@ public:
 	const DataEntry* getEntry(QString className) const;
 	const DataEntry* getEntry(int type) const;
 
-	BaseData* create(QString className, const QString& name, const QString& help, PandaObject* owner);
-	BaseData* create(int type, const QString& name, const QString& help, PandaObject* owner);
+	BaseData* create(QString className, const QString& name, const QString& help, PandaObject* owner) const;
+	BaseData* create(int type, const QString& name, const QString& help, PandaObject* owner) const;
 
 	static QString typeToName(int type);
 	static int nameToType(QString name);
 
 	typedef QList< QSharedPointer<DataEntry> > EntriesList;
-	const EntriesList getEntries() { return entries; }
+	const EntriesList getEntries() const { return entries; }
 
 protected:
 	EntriesList entries;
