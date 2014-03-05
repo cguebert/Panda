@@ -461,20 +461,20 @@ void MainWindow::createRegistryMenu()
 		while(iter.hasNext())
 		{
 			iter.next();
-			const panda::ObjectFactory::ClassEntry* entry = iter.value().data();
-			if(entry->hidden)
+			const panda::ObjectFactory::ClassEntry entry = iter.value();
+			if(entry.hidden)
 				continue;
 
-			QString display = entry->menuDisplay;
+			QString display = entry.menuDisplay;
 			QStringList hierarchy = display.split("/");
 			menuItemInfo* currentMenu = &menuTree;
 			for(int i=0; i<hierarchy.count()-1; ++i)
 				currentMenu = &currentMenu->childs[hierarchy[i]];
 
 			QAction* tempAction = new QAction(hierarchy.last(), this);
-			if(entry)
-				tempAction->setStatusTip(entry->description);
-			tempAction->setData(entry->className);
+			if(!entry.description.isEmpty())
+				tempAction->setStatusTip(entry.description);
+			tempAction->setData(entry.className);
 			currentMenu->actions[hierarchy.last()] = tempAction;
 
 			connect(tempAction, SIGNAL(triggered()), this, SLOT(createObject()));

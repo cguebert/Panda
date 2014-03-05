@@ -49,8 +49,8 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 	while(iter.hasNext())
 	{
 		iter.next();
-		if(!iter.value()->hidden)
-			menuStringsList << iter.value()->menuDisplay;
+		if(!iter.value().hidden)
+			menuStringsList << iter.value().menuDisplay;
 	}
 
 	// Adding groups
@@ -67,18 +67,21 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 	updateDescLabel();
 }
 
-const ObjectFactory::ClassEntry* getFactoryEntry(QString menu)
+bool getFactoryEntry(QString menu, ObjectFactory::ClassEntry& entry)
 {
 	ObjectFactory* factory = ObjectFactory::getInstance();
 	ObjectFactory::RegistryMapIterator iter = factory->getRegistryIterator();
 	while(iter.hasNext())
 	{
 		iter.next();
-		if(menu == iter.value()->menuDisplay)
-			return iter.value().data();
+		if(menu == iter.value().menuDisplay)
+		{
+			entry = iter.value();
+			return true;
+		}
 	}
 
-	return nullptr;
+	return false;
 }
 
 void QuickCreateDialog::updateDescLabel()
@@ -98,9 +101,9 @@ void QuickCreateDialog::updateDescLabel()
 		}
 		else
 		{
-			const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
-			if(entry)
-				descLabel->setText(entry->description);
+			ObjectFactory::ClassEntry entry;
+			if(getFactoryEntry(selectedItemText, entry))
+				descLabel->setText(entry.description);
 			else
 				descLabel->setText("");
 		}
@@ -158,9 +161,9 @@ void QuickCreateDialog::createObject()
 		}
 		else
 		{
-			const ObjectFactory::ClassEntry* entry = getFactoryEntry(selectedItemText);
-			if(entry)
-				document->createObject(entry->className);
+			ObjectFactory::ClassEntry entry;
+			if(getFactoryEntry(selectedItemText, entry))
+				document->createObject(entry.className);
 		}
 	}
 

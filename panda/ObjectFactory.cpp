@@ -17,13 +17,13 @@ PandaObject* ObjectFactory::create(QString className, PandaDocument* parent)
 {
 	if(registry.contains(className))
 	{
-		QSharedPointer<ClassEntry> entry = registry.value(className);
-		if(!entry->creator.isNull())
+		ClassEntry entry = registry.value(className);
+		if(!entry.creator.isNull())
 		{
-			PandaObject* object = entry->creator->create(parent);
+			PandaObject* object = entry.creator->create(parent);
 			if(object)
 			{
-				object->setInternalData(entry->objectName, parent->getNextIndex());
+				object->setInternalData(entry.objectName, parent->getNextIndex());
 				object->postCreate();
 			}
 			return object;
@@ -34,21 +34,20 @@ PandaObject* ObjectFactory::create(QString className, PandaDocument* parent)
 	return nullptr;
 }
 
-ObjectFactory::ClassEntry* ObjectFactory::getEntry(QString className)
-{
-	if(!registry.contains(className))
-	{
-		ClassEntryPtr entry = ClassEntryPtr::create();
-		registry.insert(className, entry);
-		return entry.data();
-	}
-
-	return registry.value(className).data();
-}
-
 QString ObjectFactory::getRegistryName(PandaObject* object)
 {
 	return object->getBaseClass()->getTypeName();
+}
+
+ObjectFactory::RegistryMapIterator ObjectFactory::getRegistryIterator()
+{
+	return RegistryMapIterator(registry);
+}
+
+void ObjectFactory::registerObject(QString className, ClassEntry entry)
+{
+	entry.className = className;
+	registry.insert(className, entry);
 }
 
 } // namespace panda

@@ -28,7 +28,7 @@ public:
 	class ClassEntry
 	{
 	public:
-		ClassEntry() : hidden(false) {}
+		ClassEntry() : hidden(false), theClass(nullptr) {}
 
 		QString menuDisplay;
 		QString objectName;
@@ -40,7 +40,6 @@ public:
 	};
 
 	static ObjectFactory* getInstance();
-	ClassEntry* getEntry(QString className);
 
 	template <class T>
 	static QString getRegistryName()
@@ -51,11 +50,13 @@ public:
 
 	PandaObject* create(QString className, PandaDocument* parent);
 
-	typedef QSharedPointer<ClassEntry> ClassEntryPtr;
-	typedef QMapIterator< QString, ClassEntryPtr > RegistryMapIterator;
-	RegistryMapIterator getRegistryIterator() { return RegistryMapIterator(registry); }
+	typedef QMapIterator< QString, ClassEntry > RegistryMapIterator;
+	RegistryMapIterator getRegistryIterator();
 protected:
-	typedef QMap< QString, ClassEntryPtr > RegistryMap;
+	template<class T> friend class RegisterObject;
+	void registerObject(QString className, ClassEntry entry);
+
+	typedef QMap< QString, ClassEntry > RegistryMap;
 	RegistryMap registry;
 };
 
@@ -103,14 +104,7 @@ public:
 	operator int()
 	{
 		QString typeName = entry.theClass->getTypeName();
-		ObjectFactory::ClassEntry* reg = ObjectFactory::getInstance()->getEntry(typeName);
-		reg->creator = entry.creator;
-		reg->description = entry.description;
-		reg->objectName = entry.objectName;
-		reg->menuDisplay = entry.menuDisplay;
-		reg->theClass = entry.theClass;
-		reg->className = typeName;
-		reg->hidden = entry.hidden;
+		ObjectFactory::getInstance()->registerObject(typeName, entry);
 
 		return 1;
 	}
