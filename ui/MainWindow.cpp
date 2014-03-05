@@ -828,6 +828,6 @@ void MainWindow::showLoggerDialog()
 
 void MainWindow::showObjectsAndTypes()
 {
-	QString fileName = "file:///" + createObjectsAndTypesPage();
+	QString fileName = "file:///" + createObjectsAndTypesPage(pandaDocument);
 	QDesktopServices::openUrl(QUrl(fileName));
 }

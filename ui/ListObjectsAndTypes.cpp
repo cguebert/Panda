@@ -7,6 +7,7 @@
 #include <panda/ObjectFactory.h>
 #include <panda/DataFactory.h>
 #include <panda/types/TypeConverter.h>
+#include <panda/PandaObject.h>
 
 using namespace panda;
 using namespace panda::types;
@@ -64,7 +65,7 @@ bool canConvert(const AbstractDataTrait* from, const AbstractDataTrait* to)
 		|| TypeConverter::canConvert(fromValue, toValue);
 }
 
-QString createObjectsAndTypesPage()
+QString createObjectsAndTypesPage(PandaDocument* document)
 {
 	static QTemporaryFile file(QDir::tempPath() + "/pandaRef_XXXXXX.html");
 	file.open();
@@ -165,6 +166,24 @@ QString createObjectsAndTypesPage()
 		out << "   <h2>" << o.menuDisplay << "</h2>\n";
 		out << "    <p>Type: " << toHtml(o.className) << "</p>\n";
 		out << "    <p>" << o.description << "</p>\n";
+
+		if(o.creator)
+		{
+			PandaObject* object = o.creator->create(document);
+
+			auto datas = object->getDatas();
+			if(!datas.empty())
+				out << "    <h3>Datas</h3>\n";
+			for(auto d : datas)
+			{
+				out << "     <p>" << d->getName() << ": "
+					<< d->getDescription() << ". "
+					<< d->getHelp() << "</p>\n";
+			}
+
+			object->preDestruction();
+			delete object;
+		}
 	}
 
 	out << " </body>\n"

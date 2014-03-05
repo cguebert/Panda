@@ -18,7 +18,7 @@ PandaObject* ObjectFactory::create(QString className, PandaDocument* parent) con
 	if(registry.contains(className))
 	{
 		ClassEntry entry = registry.value(className);
-		if(!entry.creator.isNull())
+		if(entry.creator)
 		{
 			PandaObject* object = entry.creator->create(parent);
 			if(object)
