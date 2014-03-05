@@ -38,6 +38,7 @@ HEADERS       = \
 	ui/EditGroupDialog.h \
 	ui/GraphView.h \
 	ui/LayersTab.h \
+	ui/ListObjectsAndTypes.h \
 	ui/MainWindow.h \
 	ui/OpenGLRenderView.h \
 	ui/QuickCreateDialog.h \
@@ -168,6 +169,7 @@ SOURCES       = main.cpp \
 	ui/EditGroupDialog.cpp \
 	ui/GraphView.cpp \
 	ui/LayersTab.cpp \
+	ui/ListObjectsAndTypes.cpp \
 	ui/MainWindow.cpp \
 	ui/OpenGLRenderView.cpp \
 	ui/QuickCreateDialog.cpp \

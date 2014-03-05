@@ -52,6 +52,7 @@ private slots:
 	void showContextMenu(QPoint, int);
 	void copyDataToUserValue();
 	void showLoggerDialog();
+	void showObjectsAndTypes();
 
 private:
 	void createActions();
@@ -133,6 +134,7 @@ private:
 	QAction* removeLinkAction;
 	QAction* copyDataAction;
 	QAction* showLoggerDialogAction;
+	QAction* showObjectsAndTypesAction;
 	QLabel* timeLabel;
 };
 

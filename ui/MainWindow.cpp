@@ -8,6 +8,7 @@
 #include <ui/EditGroupDialog.h>
 #include <ui/LayersTab.h>
 #include <ui/UpdateLoggerDialog.h>
+#include <ui/ListObjectsAndTypes.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -372,6 +373,10 @@ void MainWindow::createActions()
 	showLoggerDialogAction = new QAction(tr("Show log"), this);
 	showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
 	connect(showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
+
+	showObjectsAndTypesAction = new QAction(tr("List types and objects"), this);
+	showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
+	connect(showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
 }
 
 void MainWindow::createMenus()
@@ -427,6 +432,8 @@ void MainWindow::createMenus()
 	menuBar()->addSeparator();
 
 	helpMenu = menuBar()->addMenu(tr("&Help"));
+	helpMenu->addAction(showObjectsAndTypesAction);
+	helpMenu->addSeparator();
 	helpMenu->addAction(aboutAction);
 	helpMenu->addAction(aboutQtAction);
 }
@@ -817,4 +824,10 @@ void MainWindow::showLoggerDialog()
 		loggerDialog->updateEvents();
 		loggerDialog->show();
 	}
+}
+
+void MainWindow::showObjectsAndTypes()
+{
+	QString fileName = "file:///" + createObjectsAndTypesPage();
+	QDesktopServices::openUrl(QUrl(fileName));
 }
