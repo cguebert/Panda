@@ -114,12 +114,12 @@ private:
 		DataPtrList datas;
 	};
 
-	GenericData* genericData_;
-	GenericDataDefinitionList dataDefinitions_;
+	GenericData* m_genericData;
+	GenericDataDefinitionList m_dataDefinitions;
 
 	typedef QSharedPointer<CreatedDatasStruct> CreatedDatasStructPtr;
-	QList<CreatedDatasStructPtr> createdDatasStructs_;
-	QMap<BaseData*, CreatedDatasStructPtr> createdDatasMap_;
+	QList<CreatedDatasStructPtr> m_createdDatasStructs;
+	QMap<BaseData*, CreatedDatasStructPtr> m_createdDatasMap;
 };
 
 //***************************************************************//
@@ -132,7 +132,7 @@ typedef boost::mpl::vector<double, QColor, QPointF, types::Gradient> allAnimatio
 #define GENERIC_OBJECT(T, L)								\
 	protected:												\
 	typedef void(T::*funcPtr)(DataList&);					\
-	QMap<int, funcPtr> functions;							\
+	QMap<int, funcPtr> m_functions;							\
 	struct functionCreatorWrapper							\
 	{														\
 		T* object;											\
@@ -145,7 +145,7 @@ typedef boost::mpl::vector<double, QColor, QPointF, types::Gradient> allAnimatio
 	};														\
 	void registerFunction(int type, funcPtr ptr)			\
 	{														\
-		functions[type] = ptr;								\
+		m_functions[type] = ptr;								\
 	}														\
 	private:												\
 	virtual void registerFunctions()						\
@@ -156,11 +156,11 @@ typedef boost::mpl::vector<double, QColor, QPointF, types::Gradient> allAnimatio
 	public:													\
 	virtual QList<int> getRegisteredTypes()					\
 	{														\
-		return functions.keys();							\
+		return m_functions.keys();							\
 	}														\
 	virtual void invokeFunction(int type, DataList& list)	\
 	{														\
-		(this->*functions[type])(list);						\
+		(this->*m_functions[type])(list);						\
 	}
 
 } // namespace panda
