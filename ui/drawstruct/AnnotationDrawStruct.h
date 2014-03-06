@@ -39,7 +39,7 @@ protected:
 	QPointF m_deltaToEnd, m_endPos, m_startPos;
 	QSizeF m_textSize;
 	QRectF m_textArea;
-	int m_textCounter;
+	int m_textCounter, m_fontCounter;
 	QPainterPath shapePath;
 	enum MovingAction { MOVING_NONE=0, MOVING_TEXT, MOVING_POINT };
 	MovingAction movingAction;

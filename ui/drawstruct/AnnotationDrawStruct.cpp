@@ -14,6 +14,7 @@ AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* 
 	, annotation(dynamic_cast<Annotation*>(object))
 	, m_deltaToEnd(200, 100)
 	, m_textCounter(-1)
+	, m_fontCounter(-1)
 	, movingAction(MOVING_NONE)
 {
 	update();
@@ -27,7 +28,8 @@ void AnnotationDrawStruct::drawBackground(QPainter* painter)
 	// Compute the bounding box of the text, if it changed
 	const QString& text = annotation->m_text.getValue();
 	int textCounter = annotation->m_text.getCounter();
-	if(m_textSize.isEmpty() || m_textCounter != textCounter)
+	int fontCounter = annotation->m_font.getCounter();
+	if(m_textSize.isEmpty() || m_textCounter != textCounter || m_fontCounter != fontCounter)
 	{
 		QFont theFont;
 		theFont.fromString(annotation->m_font.getValue());
@@ -37,6 +39,7 @@ void AnnotationDrawStruct::drawBackground(QPainter* painter)
 		tempArea = painter->boundingRect(tempArea, Qt::AlignLeft | Qt::AlignTop, text);
 		m_textSize = tempArea.size();
 		m_textCounter = textCounter;
+		m_fontCounter = fontCounter;
 		update();
 	}
 
