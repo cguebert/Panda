@@ -49,17 +49,25 @@ public:
 		const QVector<T>& inList = dataInput->getValue();
 		const QVector<T>& inVal = dataValues->getValue();
 		auto id = dataOutput->getAccessor();
+		id.clear();
 
 		int size = inList.size();
 		if(size)
 		{
-			int nb = inVal.size();
-			id.resize(nb);
-			for(int i=0; i<nb; ++i)
-				id[i] = inList.indexOf(inVal[i]);
+			int nbVal = inVal.size();
+			for(int i=0; i<size; ++i)
+			{
+				const T& listItem = inList[i];
+				for(int j=0; j<nbVal; ++j)
+				{
+					if(listItem == inVal[j])
+					{
+						id.push_back(i);
+						break;
+					}
+				}
+			}
 		}
-		else
-			id.clear();
 	}
 
 protected:
