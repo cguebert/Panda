@@ -108,6 +108,7 @@ SOURCES       = main.cpp \
 	modules/math/point/NearestPoint.cpp \
 	modules/math/point/PointListMath.cpp \
 	modules/math/point/PointMath.cpp \
+	modules/math/real/BooleanMath.cpp \
 	modules/math/real/DoubleComputation.cpp \
 	modules/math/real/DoubleListMath.cpp \
 	modules/math/real/DoubleMath.cpp \
