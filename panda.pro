@@ -93,6 +93,7 @@ SOURCES       = main.cpp \
 	modules/list/ExtractHead.cpp \
 	modules/list/ExtractTail.cpp \
 	modules/list/FillList.cpp \
+	modules/list/FilterItems.cpp \
 	modules/list/FindItem.cpp \
 	modules/list/ListBuffer.cpp \
 	modules/list/ListItem.cpp \
