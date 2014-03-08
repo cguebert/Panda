@@ -187,6 +187,7 @@ SOURCES       = main.cpp \
 	ui/widget/DataWidgetFactory.cpp \
 	ui/widget/ListDataWidgetDialog.cpp \
 	ui/widget/NumericalDataWidget.cpp \
+	ui/widget/PathDataWidget.cpp \
 	ui/widget/StringDataWidget.cpp \
 	ui/widget/TableDataWidgetDialog.cpp \
 	ui/widget/AnimationDataWidgetDialog.cpp
