@@ -11,12 +11,12 @@ public:
 
 	Curve_BezierSpline(PandaDocument *doc)
 		: PandaObject(doc)
-		, steps(initData(&steps, 4, "steps", "Number of points on each segment"))
 		, input(initData(&input, "input", "List of control points"))
 		, output(initData(&output, "output", "List of points on the spline"))
+		, steps(initData(&steps, 4, "steps", "Number of points on each segment"))
 	{
-		addInput(&steps);
 		addInput(&input);
+		addInput(&steps);
 
 		addOutput(&output);
 	}
@@ -86,14 +86,14 @@ public:
 	}
 
 protected:
-	Data<int> steps;
 	Data< QVector<QPointF> > input, output;
+	Data<int> steps;
 
 	QVector<double> binomials;
 	QVector< QVector<double> > coefs;
 };
 
-int Curve_BezierSplineClass = RegisterObject<Curve_BezierSpline>("Math/List of points/Bezier spline").setDescription("Compute a bezier spline using the controls points");
+int Curve_BezierSplineClass = RegisterObject<Curve_BezierSpline>("Math/Path/Bezier spline").setDescription("Compute a bezier spline using the controls points");
 
 } // namespace Panda
 

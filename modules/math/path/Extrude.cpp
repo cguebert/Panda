@@ -380,7 +380,7 @@ protected:
 	Data< QVector<QPointF> > coordUV;
 };
 
-int PointListMath_ExtrudeClass = RegisterObject<PointListMath_Extrude>("Math/List of points/Extrude")
+int PointListMath_ExtrudeClass = RegisterObject<PointListMath_Extrude>("Math/Path/Extrude")
 		.setDescription("Add width to a line");
 
 } // namespace Panda

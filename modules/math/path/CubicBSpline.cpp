@@ -119,7 +119,7 @@ protected:
 	QVector<vec4> coefs;
 };
 
-int Curve_CubicBSplineClass = RegisterObject<Curve_CubicBSpline>("Math/List of points/Cubic B-spline").setDescription("Compute a cubic B-spline using the controls points");
+int Curve_CubicBSplineClass = RegisterObject<Curve_CubicBSpline>("Math/Path/Cubic B-spline").setDescription("Compute a cubic B-spline using the controls points");
 
 } // namespace Panda
 
