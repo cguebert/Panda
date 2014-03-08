@@ -4,6 +4,7 @@
 #include <panda/types/Topology.h>
 #include <panda/helper/Point.h>
 #include <panda/types/Animation.h>
+#include <panda/types/Path.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -12,6 +13,7 @@ namespace panda {
 
 using types::Topology;
 using types::Animation;
+using types::Path;
 
 class PointListMath_Extrude : public PandaObject
 {
@@ -373,7 +375,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > input;
+	Data< Path > input;
 	Data< Animation<double> > width;
 	Data< int > capStyle, joinStyle;
 	Data< Topology > output;

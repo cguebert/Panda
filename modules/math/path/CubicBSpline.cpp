@@ -1,9 +1,12 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/Path.h>
 #include <array>
 
 namespace panda {
+
+using types::Path;
 
 class Curve_CubicBSpline : public PandaObject
 {
@@ -30,7 +33,7 @@ public:
 		const auto& ctrlPts = input.getValue();
 		auto outPts = output.getAccessor();
 		int nbCtrlPts = ctrlPts.size();
-		outPts.clear();
+		outPts->clear();
 		if(nbCtrlPts < 4)
 		{
 			cleanDirty();
@@ -58,7 +61,7 @@ public:
 						pt += ctrlPts[index] * coef[k];
 					}
 
-					outPts.push_back(pt);
+					outPts->push_back(pt);
 				}
 			}
 		}
@@ -73,12 +76,12 @@ public:
 					for(int k=0; k<4; ++k)
 						pt += ctrlPts[i-1+k] * coef[k];
 
-					outPts.push_back(pt);
+					outPts->push_back(pt);
 				}
 			}
 
 			// Add the last point
-			outPts.push_back(ctrlPts[nbCtrlPts-3] * 1/6.0
+			outPts->push_back(ctrlPts[nbCtrlPts-3] * 1/6.0
 							+ ctrlPts[nbCtrlPts-2] * 4/6.0
 							+ ctrlPts[nbCtrlPts-1] * 1/6.0);
 		}
@@ -112,7 +115,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > input, output;
+	Data<Path> input, output;
 	Data<int> steps, close;
 
 	typedef std::array<double, 4> vec4;

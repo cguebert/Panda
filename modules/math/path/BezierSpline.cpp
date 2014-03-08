@@ -1,8 +1,11 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/Path.h>
 
 namespace panda {
+
+using types::Path;
 
 class Curve_BezierSpline : public PandaObject
 {
@@ -23,7 +26,7 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF>& ctrlPts = input.getValue();
+		const Path& ctrlPts = input.getValue();
 		auto outPts = output.getAccessor();
 		int nbCtrlPts = ctrlPts.size();
 		if(nbCtrlPts > 2)
@@ -31,18 +34,18 @@ public:
 			int nbSteps = steps.getValue();
 			int nbPts = (nbCtrlPts - 1) * nbSteps + 1;
 			computeCoefficients(nbCtrlPts, nbPts);
-			outPts.resize(nbPts);
+			outPts->resize(nbPts);
 
 			for(int i=0; i<nbPts; ++i)
 			{
 				QPointF pt;
 				for(int j=0; j<nbCtrlPts; ++j)
 					pt += coefs[i][j] * ctrlPts[j];
-				outPts[i] = pt;
+				outPts.wref()[i] = pt;
 			}
 		}
 		else
-			outPts.clear();
+			outPts->clear();
 
 		cleanDirty();
 	}
@@ -86,7 +89,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > input, output;
+	Data<Path> input, output;
 	Data<int> steps;
 
 	QVector<double> binomials;
