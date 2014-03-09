@@ -1,5 +1,4 @@
 #include <panda/types/Path.h>
-#include <panda/Data.h>
 
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>

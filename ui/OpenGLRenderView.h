@@ -11,8 +11,6 @@ class PandaObject;
 class BaseData;
 }
 
-class QOpenGLFramebufferObject;
-
 class OpenGLRenderView : public QGLWidget
 {
 	Q_OBJECT

@@ -30,6 +30,7 @@ HEADERS       = \
 	panda/types/DataTraits.h \
 	panda/types/DataTypeId.h \
 	panda/types/Gradient.h \
+	panda/types/ImageWrapper.h \
 	panda/types/Path.h \
 	panda/types/Topology.h \
 	panda/types/TypeConverter.h \
@@ -164,6 +165,7 @@ SOURCES       = main.cpp \
 	panda/types/Animation.inl \
 	panda/types/DataTypeId.cpp \
 	panda/types/Gradient.cpp \
+	panda/types/ImageWrapper.cpp \
 	panda/types/Path.cpp \
 	panda/types/Topology.cpp \
 	panda/types/TypeConverter.cpp \
