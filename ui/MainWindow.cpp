@@ -2,7 +2,6 @@
 
 #include <ui/MainWindow.h>
 #include <ui/GraphView.h>
-#include <ui/RenderView.h>
 #include <ui/OpenGLRenderView.h>
 #include <ui/DatasTable.h>
 #include <ui/EditGroupDialog.h>
@@ -21,12 +20,10 @@ MainWindow::MainWindow()
 	pandaDocument = new panda::PandaDocument(this);
 
 	graphView = new GraphView(pandaDocument);
-	renderView = new RenderView(pandaDocument);
 	openGLRenderView = new OpenGLRenderView(pandaDocument);
 	tabWidget = new QTabWidget;
 	tabWidget->addTab(graphView, tr("Graph"));
-	tabWidget->addTab(renderView, tr("Render"));
-	tabWidget->addTab(openGLRenderView, tr("OpenGL"));
+	tabWidget->addTab(openGLRenderView, tr("Render"));
 	setCentralWidget(tabWidget);
 
 	createActions();
@@ -162,8 +159,6 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::documentModified()
 {
-	if(tabWidget->currentWidget() == renderView)
-		renderView->update();
 	if(tabWidget->currentWidget() == openGLRenderView)
 		openGLRenderView->update();
 
@@ -323,15 +318,9 @@ void MainWindow::createActions()
 
 	connect(showGraphView, SIGNAL(triggered()), this, SLOT(switchToGraphView()));
 
-	showRenderView = new QAction(tr("Show &render view"), this);
-	showRenderView->setShortcut(tr("Ctrl+2"));
-	showRenderView->setStatusTip(tr("Switch to the render view"));
-
-	connect(showRenderView, SIGNAL(triggered()), this, SLOT(switchToRenderView()));
-
-	showOpenGLView = new QAction(tr("Show &OpenGL view"), this);
-	showOpenGLView->setShortcut(tr("Ctrl+3"));
-	showOpenGLView->setStatusTip(tr("Switch to the OpenGL view"));
+	showOpenGLView = new QAction(tr("Show &render view"), this);
+	showOpenGLView->setShortcut(tr("Ctrl+2"));
+	showOpenGLView->setStatusTip(tr("Switch to the render view"));
 
 	connect(showOpenGLView, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
 
@@ -422,7 +411,6 @@ void MainWindow::createMenus()
 	viewMenu->addAction(showAllSelectedAction);
 	viewMenu->addSeparator();
 	viewMenu->addAction(showGraphView);
-	viewMenu->addAction(showRenderView);
 	viewMenu->addAction(showOpenGLView);
 #ifdef PANDA_LOG_EVENTS
 	viewMenu->addSeparator();
@@ -685,11 +673,6 @@ void MainWindow::createObject()
 void MainWindow::switchToGraphView()
 {
 	tabWidget->setCurrentWidget(graphView);
-}
-
-void MainWindow::switchToRenderView()
-{
-	tabWidget->setCurrentWidget(renderView);
 }
 
 void MainWindow::switchToOpenGLView()

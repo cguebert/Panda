@@ -43,7 +43,6 @@ HEADERS       = \
 	ui/MainWindow.h \
 	ui/OpenGLRenderView.h \
 	ui/QuickCreateDialog.h \
-	ui/RenderView.h \
 	ui/UpdateLoggerDialog.h \
 	ui/drawstruct/AnnotationDrawStruct.h \
 	ui/drawstruct/DockableDrawStruct.h \
@@ -178,7 +177,6 @@ SOURCES       = main.cpp \
 	ui/MainWindow.cpp \
 	ui/OpenGLRenderView.cpp \
 	ui/QuickCreateDialog.cpp \
-	ui/RenderView.cpp \
 	ui/UpdateLoggerDialog.cpp \
 	ui/drawstruct/AnnotationDrawStruct.cpp \
 	ui/drawstruct/DockableDrawStruct.cpp \

@@ -6,7 +6,6 @@
 class QAction;
 class QLabel;
 class GraphView;
-class RenderView;
 class OpenGLRenderView;
 class QDockWidget;
 class DatasTable;
@@ -40,7 +39,6 @@ private slots:
 	void documentModified();
 	void createObject();
 	void switchToGraphView();
-	void switchToRenderView();
 	void switchToOpenGLView();
 	void showStatusBarMessage(QString);
 	void paste();
@@ -72,7 +70,6 @@ private:
 
 	QTabWidget* tabWidget;
 	GraphView* graphView;
-	RenderView* renderView;
 	OpenGLRenderView* openGLRenderView;
 	panda::PandaDocument* pandaDocument;
 	DatasTable* datasTable;
@@ -120,7 +117,6 @@ private:
 	QAction* showAllAction;
 	QAction* showAllSelectedAction;
 	QAction* showGraphView;
-	QAction* showRenderView;
 	QAction* showOpenGLView;
 	QAction* aboutAction;
 	QAction* aboutQtAction;
