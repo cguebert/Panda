@@ -37,6 +37,7 @@ public:
 		{
 			const QRect rect = rectList[i].toRect();
 			QImage tmpImg(rect.width(), rect.height(), QImage::Format_ARGB32);
+			tmpImg.fill(QColor(0,0,0,0));
 			QPainter painter(&tmpImg);
 			painter.drawImage(0, 0, img, rect.left(), rect.top(), rect.width(), rect.height());
 			resList[i].setImage(tmpImg);
