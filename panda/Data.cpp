@@ -6,7 +6,6 @@
 #include <QPointF>
 #include <QRectF>
 #include <QString>
-#include <QImage>
 
 #include <QVector>
 

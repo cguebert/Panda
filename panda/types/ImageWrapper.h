@@ -22,6 +22,8 @@ public:
 	GLuint getTexture() const;
 	const QImage &getImage() const;
 
+	QSize size() const;
+
 	void setImage(const QImage& img);
 	void setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo);
 

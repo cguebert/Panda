@@ -15,9 +15,7 @@ namespace types
 ImageWrapper::ImageWrapper()
 	: m_imageSource(false)
 	, m_fboSource(false)
-{
-
-}
+{}
 
 GLuint ImageWrapper::getTexture() const
 {
@@ -40,6 +38,15 @@ const QImage& ImageWrapper::getImage() const
 		const_cast<ImageWrapper*>(this)->m_image = m_fbo->toImage();
 
 	return m_image;
+}
+
+QSize ImageWrapper::size() const
+{
+	if(m_fboSource && m_fbo)
+		return m_fbo->size();
+	if(m_imageSource && !m_image.isNull())
+		return m_image.size();
+	return QSize();
 }
 
 void ImageWrapper::setImage(const QImage& img)

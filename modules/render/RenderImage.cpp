@@ -4,7 +4,7 @@
 #include <panda/Renderer.h>
 #include <panda/types/ImageWrapper.h>
 
-#include <QtGui/qopengl.h>
+#include <QOpenGLContext>
 
 namespace panda {
 
@@ -27,12 +27,39 @@ public:
 		addInput(&rotation);
 		addInput(&drawCentered);
 
+		drawCentered.setWidget("checkbox");
+
 		center.getAccessor().push_back(QPointF(0, 0));
 	}
-/*
-	void render(QPainter* painter)
+
+	void drawTexture(GLuint texId, QRectF area)
 	{
-		const QVector<QImage>& listImage = image.getValue();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texId);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		GLfloat verts[8];
+		glVertexPointer(2, GL_FLOAT, 0, verts);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		GLfloat texCoords[8];
+		glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+
+		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
+		verts[1*2+0] = area.left(); verts[1*2+1] = area.top();
+		verts[2*2+0] = area.right(); verts[2*2+1] = area.bottom();
+		verts[3*2+0] = area.left(); verts[3*2+1] = area.bottom();
+
+		texCoords[0*2+0] = 1; texCoords[0*2+1] = 0;
+		texCoords[1*2+0] = 0; texCoords[1*2+1] = 0;
+		texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
+		texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDisable(GL_TEXTURE_2D);
+	}
+
+	void render()
+	{
+		const QVector<ImageWrapper>& listImage = image.getValue();
 		const QVector<QPointF>& listCenter = center.getValue();
 		const QVector<double>& listRotation = rotation.getValue();
 
@@ -53,24 +80,29 @@ public:
 				{
 					for(int i=0; i<nbCenter; ++i)
 					{
-						QSize s = listImage[i % nbImage].size();
-						painter->save();
-						painter->translate(listCenter[i].x(),
-										   listCenter[i].y());
-						painter->rotate(listRotation[i % nbRotation]);
-						painter->drawImage(-s.width()/2, -s.height()/2, listImage[i % nbImage]);
-						painter->restore();
+						const ImageWrapper& img = listImage[i % nbImage];
+						QSize s = img.size();
+						glPushMatrix();
+						glTranslated(listCenter[i].x(), listCenter[i].y(), 0);
+						glRotated(listRotation[i % nbRotation], 0, 0, 1);
+						QRectF area = QRectF(-s.width()/2, -s.height()/2,
+											 s.width(), s.height());
+						drawTexture(img.getTexture(), area);
+						glPopMatrix();
 					}
 				}
 				else
 				{
 					for(int i=0; i<nbCenter; ++i)
 					{
-						painter->save();
-						painter->translate(listCenter[i]);
-						painter->rotate(listRotation[i % nbRotation]);
-						painter->drawImage(0, 0, listImage[i % nbImage]);
-						painter->restore();
+						const ImageWrapper& img = listImage[i % nbImage];
+						QSize s = img.size();
+						glPushMatrix();
+						glTranslated(listCenter[i].x(), listCenter[i].y(), 0);
+						glRotated(listRotation[i % nbRotation], 0, 0, 1);
+						QRectF area = QRectF(0, 0, s.width(), s.height());
+						drawTexture(img.getTexture(), area);
+						glPopMatrix();
 					}
 				}
 			}
@@ -80,23 +112,25 @@ public:
 				{
 					for(int i=0; i<nbCenter; ++i)
 					{
-						QSize s = listImage[i % nbImage].size();
-						painter->drawImage(listCenter[i].x() - s.width()/2,
-										   listCenter[i].y() - s.height()/2,
-										   listImage[i % nbImage]);
+						const ImageWrapper& img = listImage[i % nbImage];
+						QSize s = img.size();
+						QRectF area = QRectF(listCenter[i].x() - s.width()/2,
+											 listCenter[i].y() - s.height()/2,
+											 s.width(), s.height());
+						drawTexture(img.getTexture(), area);
 					}
 				}
 				else
 				{
 					for(int i=0; i<nbCenter; ++i)
-						painter->drawImage(listCenter[i], listImage[i % nbImage]);
+					{
+						const ImageWrapper& img = listImage[i % nbImage];
+						QRectF area(listCenter[i], img.size());
+						drawTexture(img.getTexture(), area);
+					}
 				}
 			}
 		}
-	}
-*/
-	void render()
-	{
 	}
 
 protected:
