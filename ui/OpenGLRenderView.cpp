@@ -43,14 +43,14 @@ void OpenGLRenderView::paintGL()
 	glDepthMask( GL_TRUE );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	QOpenGLFramebufferObject* fbo = pandaDocument->getFBO();
+	QOpenGLFramebufferObject* fbo = pandaDocument->getFBO().data();
 
 	QRect viewRect = contentsRect();
 	glViewport(0, 0, viewRect.width(), viewRect.height());
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, viewRect.width(), viewRect.height(), 0, -10, 10);
+	glOrtho(0, viewRect.width(), 0, viewRect.height(), -10, 10);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 

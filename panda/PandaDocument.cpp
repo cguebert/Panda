@@ -19,13 +19,13 @@ namespace panda {
 PandaDocument::PandaDocument(QObject *parent)
 	: PandaObject(parent)
 	, currentIndex(1)
-	, imageIsDirty(true)
 	, renderSize(initData(&renderSize, QPointF(800,600), "render size", "Size of the image to be rendered"))
 	, backgroundColor(initData(&backgroundColor, QColor(255,255,255), "background color", "Background color of the image to be rendered"))
 	, animTime(initData(&animTime, 0.0, "time", "Time of the animation"))
 	, timestep(initData(&timestep, 0.1, "timestep", "Time step of the animation"))
-	, mousePosition(initData(&mousePosition, "mousePosition", "Current position of the mouse in the render view"))
-	, mouseClick(initData(&mouseClick, 0, "mouseClick", "1 if the left mouse button is pressed"))
+	, mousePosition(initData(&mousePosition, "mouse position", "Current position of the mouse in the render view"))
+	, mouseClick(initData(&mouseClick, 0, "mouse click", "1 if the left mouse button is pressed"))
+	, renderedImage(initData(&renderedImage, "rendered image", "Current image displayed"))
 	, mouseClickBuffer(0)
 	, animPlaying(false)
 {
@@ -779,7 +779,10 @@ void PandaDocument::onDirtyObject(panda::PandaObject* object)
 void PandaDocument::update()
 {
 	if(!renderFrameBuffer || renderFrameBuffer->size() != getRenderSize())
+	{
 		renderFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
+		renderedImage.getAccessor()->setFbo(renderFrameBuffer);
+	}
 
 	defaultLayer->updateIfDirty();
 
@@ -793,27 +796,19 @@ void PandaDocument::update()
 	render();
 	renderFrameBuffer->release();
 
-	imageIsDirty = true;
 	cleanDirty();
 }
 
-const QImage& PandaDocument::getRenderedImage()
+const types::ImageWrapper& PandaDocument::getRenderedImage()
 {
 	updateIfDirty();
-	if(imageIsDirty)
-	{
-		renderedImage = renderFrameBuffer->toImage();
-		imageIsDirty = false;
-	}
-
-	return renderedImage;
+	return renderedImage.getValue();
 }
 
-QOpenGLFramebufferObject* PandaDocument::getFBO()
+QSharedPointer<QOpenGLFramebufferObject> PandaDocument::getFBO()
 {
 	updateIfDirty();
-
-	return renderFrameBuffer.data();
+	return renderFrameBuffer;
 }
 
 void PandaDocument::render()
@@ -941,6 +936,7 @@ void PandaDocument::rewind()
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
+	renderFrameBuffer.reset();
 	animTime.setValue(0.0);
 	mousePosition.setValue(mousePositionBuffer);
 	mouseClick.setValue(0);

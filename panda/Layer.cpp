@@ -34,14 +34,19 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
+	glOrtho(0, renderSize.width(), 0, renderSize.height(), -10, 10);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	iterateRenderers();
+
+	glDisable(GL_BLEND);
 
 	renderFrameBuffer->release();
 
@@ -73,15 +78,15 @@ void BaseLayer::mergeLayer()
 	GLfloat w = displayFrameBuffer->width(), h = displayFrameBuffer->height();
 	GLfloat verts[8], texCoords[8];
 
-	verts[0*2+0] = w; verts[0*2+1] = h;
-	verts[1*2+0] = 0; verts[1*2+1] = h;
 	verts[2*2+0] = w; verts[2*2+1] = 0;
 	verts[3*2+0] = 0; verts[3*2+1] = 0;
+	verts[1*2+0] = 0; verts[1*2+1] = h;
+	verts[0*2+0] = w; verts[0*2+1] = h;
 
 	texCoords[0*2+0] = 1; texCoords[0*2+1] = 0;
 	texCoords[1*2+0] = 0; texCoords[1*2+1] = 0;
-	texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
 	texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
+	texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

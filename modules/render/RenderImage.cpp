@@ -34,6 +34,9 @@ public:
 
 	void drawTexture(GLuint texId, QRectF area)
 	{
+		if(!texId)
+			return;
+
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texId);
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -45,13 +48,13 @@ public:
 
 		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
 		verts[1*2+0] = area.left(); verts[1*2+1] = area.top();
-		verts[2*2+0] = area.right(); verts[2*2+1] = area.bottom();
 		verts[3*2+0] = area.left(); verts[3*2+1] = area.bottom();
+		verts[2*2+0] = area.right(); verts[2*2+1] = area.bottom();
 
 		texCoords[0*2+0] = 1; texCoords[0*2+1] = 0;
 		texCoords[1*2+0] = 0; texCoords[1*2+1] = 0;
-		texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
 		texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
+		texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glDisable(GL_TEXTURE_2D);

@@ -2,12 +2,13 @@
 #define PANDADOCUMENT_H
 
 #include <panda/PandaObject.h>
+#include <panda/types/ImageWrapper.h>
+
 #include <QObject>
 #include <QColor>
 #include <QPointF>
 #include <QSize>
 #include <QMap>
-#include <QImage>
 #include <QDomDocument>
 
 class QOpenGLFramebufferObject;
@@ -70,8 +71,8 @@ public:
 	virtual void update();
 	virtual void setDirtyValue();
 
-	const QImage& getRenderedImage();
-	QOpenGLFramebufferObject* getFBO();
+	const types::ImageWrapper& getRenderedImage();
+	QSharedPointer<QOpenGLFramebufferObject> getFBO();
 
 	Layer* getDefaultLayer();
 	void moveLayerUp(PandaObject *layer);
@@ -90,8 +91,6 @@ protected:
 	ObjectsList pandaObjects, selectedObjects;
 	QMap<quint32, PandaObject*> pandaObjectsMap;
 	quint32 currentIndex;
-	QImage renderedImage;
-	bool imageIsDirty;
 	Layer* defaultLayer;
 	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer;
 
@@ -100,6 +99,7 @@ protected:
 	Data<double> animTime, timestep;
 	Data<QPointF> mousePosition;
 	Data<int> mouseClick;
+	Data<types::ImageWrapper> renderedImage;
 
 	QPointF mousePositionBuffer;
 	int mouseClickBuffer;

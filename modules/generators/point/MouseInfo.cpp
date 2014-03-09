@@ -20,7 +20,7 @@ public:
 		addOutput(&clickState);
 
 		// Connect only 1 input, otherwise update is called twice and movement can't be computed correctly
-		BaseData* data = doc->getData("mousePosition");
+		BaseData* data = doc->getData("mouse position");
 		if(data) addInput(data);
 	}
 
