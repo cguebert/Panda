@@ -311,8 +311,10 @@ void PandaDocument::resetDocument()
 		emit removedObject(object);
 		object->preDestruction();
 		object->disconnect(this);
-		delete object;
 	}
+
+	for(PandaObject* object : pandaObjects)
+		delete object;
 
 	pandaObjectsMap.clear();
 	pandaObjects.clear();
