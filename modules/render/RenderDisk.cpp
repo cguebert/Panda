@@ -6,10 +6,6 @@
 #include <panda/helper/GradientCache.h>
 
 #include <QPointF>
-#include <QPainter>
-
-//#define _USE_MATH_DEFINES
-//#include <math.h>
 
 using panda::types::Gradient;
 using panda::helper::GradientCache;

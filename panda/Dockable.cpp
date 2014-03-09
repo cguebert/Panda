@@ -3,8 +3,6 @@
 
 #include <ui/GraphView.h>
 
-#include <QPainter>
-
 namespace panda
 {
 

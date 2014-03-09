@@ -5,7 +5,6 @@
 #include <panda/types/Path.h>
 
 #include <QPointF>
-#include <QPainter>
 #include <QtGui/qopengl.h>
 
 namespace panda {

@@ -4,7 +4,6 @@
 #include <panda/Renderer.h>
 
 #include <QPointF>
-#include <QPainter>
 #include <QtGui/qopengl.h>
 
 #define _USE_MATH_DEFINES

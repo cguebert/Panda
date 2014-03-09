@@ -5,7 +5,6 @@
 #include <QList>
 #include <QImage>
 
-class QPainter;
 class QOpenGLFramebufferObject;
 
 namespace panda

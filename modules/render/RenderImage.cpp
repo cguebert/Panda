@@ -3,7 +3,7 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
 
-#include <QPainter>
+#include <QtGui/qopengl.h>
 
 namespace panda {
 

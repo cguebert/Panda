@@ -3,7 +3,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 
-#include <QPainter>
 #include <QOpenGLFramebufferObject>
 
 #include <ui/GraphView.h>

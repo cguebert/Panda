@@ -2,7 +2,9 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
-#include <QPainter>
+
+#include <QtGui/qopengl.h>
+#include <QFont>
 
 namespace panda {
 

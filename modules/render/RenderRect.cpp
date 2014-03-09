@@ -4,7 +4,6 @@
 #include <panda/Renderer.h>
 
 #include <QPointF>
-#include <QPainter>
 #include <QtGui/qopengl.h>
 
 namespace panda {

@@ -8,7 +8,6 @@
 #include <panda/DataFactory.h>
 
 #include <QMessageBox>
-#include <QPainter>
 
 namespace panda
 {

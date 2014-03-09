@@ -6,7 +6,6 @@
 #include <panda/helper/GradientCache.h>
 
 #include <QPointF>
-#include <QPainter>
 
 namespace panda {
 

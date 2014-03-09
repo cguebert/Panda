@@ -3,9 +3,6 @@
 
 #include <panda/Dockable.h>
 #include <panda/Layer.h>
-#include <QPointer>
-
-class QPainter;
 
 namespace panda
 {
