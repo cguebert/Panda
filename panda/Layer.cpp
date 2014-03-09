@@ -41,6 +41,15 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	iterateRenderers();
+
+	renderFrameBuffer->release();
+
+	QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
+}
+
+void BaseLayer::iterateRenderers()
+{
 	QList<Renderer*> renderers = getRenderers();
 	QListIterator<Renderer*> iter = QListIterator<Renderer*>(renderers);
 	iter.toBack();
@@ -53,9 +62,6 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 		renderer->render();
 		renderer->cleanDirty();
 	}
-	renderFrameBuffer->release();
-
-	QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
 }
 
 void BaseLayer::mergeLayer()

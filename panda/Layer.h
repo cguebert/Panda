@@ -32,6 +32,7 @@ public:
 	virtual Data<types::ImageWrapper>* getImage() = 0;
 
 protected:
+	virtual void iterateRenderers();
 	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
 };
 

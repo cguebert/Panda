@@ -18,18 +18,18 @@ public:
 
 	GeneratorPoints_Poisson(PandaDocument *doc)
 		: PandaObject(doc)
-		, nbPoints(initData(&nbPoints, 10, "# points", "Number of points generated"))
 		, seed(initData(&seed, 0, "seed", "Seed for the random points generator"))
 		, samples(initData(&samples, 20, "samples", "Number of samples to test (higher means tighter, but longer generation)"))
 		, minimumDistance(initData(&minimumDistance, 50.0, "min distance", "Minimum distance between 2 points"))
-		, points(initData(&points, "points", "The list of points" ))
+		, points(initData(&points, "points", "The list of points"))
+		, nbPoints(initData(&nbPoints, 10, "# points", "Number of points generated"))
 	{
 		addInput(&seed);
 		addInput(&minimumDistance);
 		addInput(&samples);
 
-		addOutput(&nbPoints);
 		addOutput(&points);
+		addOutput(&nbPoints);
 
 		seed.setWidget("seed");
 		seed.setValue(rnd.getRandomSeed(10000));
@@ -89,9 +89,10 @@ protected:
 	helper::RandomGenerator rnd;
 	helper::PointsGrid grid;
 
-	Data<int> nbPoints, seed, samples;
+	Data<int> seed, samples;
 	Data<double> minimumDistance;
 	Data< QVector<QPointF> > points;
+	Data<int> nbPoints;
 };
 
 int GeneratorPoints_PoissonClass = RegisterObject<GeneratorPoints_Poisson>("Generator/Point/Poisson distribution").setDescription("Generate a list of random points, but with a minimal distance between neighbors");

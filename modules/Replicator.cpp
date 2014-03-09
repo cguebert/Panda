@@ -20,7 +20,6 @@ public:
 
 	Replicator(PandaDocument *doc)
 		: Layer(doc)
-		, iterating(false)
 		, index(initData(&index, 0, "index", "0-based index of the current iteration"))
 		, nbIterations(initData(&nbIterations, 1, "# iterations", "Number of times the objects have to be rendered"))
 	{
@@ -30,44 +29,31 @@ public:
 		index.setReadOnly(true);
 	}
 
-	void update()
+	void iterateRenderers()
 	{
-/*		PandaDocument* doc = dynamic_cast<PandaDocument*>(parent());
-		if(doc)
+		DockablesIterator iter = getDockablesIterator();
+		int nb = nbIterations.getValue();
+		for(int i=0; i<nb; ++i)
 		{
-			auto editImage = image.getAccessor();
-			editImage = QImage(doc->getRenderSize(), QImage::Format_ARGB32);
-			editImage->fill(QColor(0,0,0,0));
-			QPainter painter(&*editImage);
-			painter.setRenderHint(QPainter::Antialiasing, true);
-			painter.setRenderHint(QPainter::TextAntialiasing, true);
+			index.setValue(i);
 
-			DockablesIterator iter = getDockablesIterator();
-			int nb = nbIterations.getValue();
-			for(int i=0; i<nb; ++i)
+			iter.toBack();
+			while(iter.hasPrevious())
 			{
-				index.setValue(i);
-
-				iter.toBack();
-				while(iter.hasPrevious())
+				Renderer* renderer = dynamic_cast<Renderer*>(iter.previous());
+				if(renderer)
 				{
-					Renderer* renderer = dynamic_cast<Renderer*>(iter.previous());
-					if(renderer)
-					{
 #ifdef PANDA_LOG_EVENTS
-						helper::ScopedEvent log(helper::event_render, renderer);
+					helper::ScopedEvent log(helper::event_render, renderer);
 #endif
-						renderer->render(&painter);
-						renderer->cleanDirty();
-					}
+					renderer->render();
+					renderer->cleanDirty();
 				}
 			}
 		}
-		cleanDirty();*/
 	}
 
 protected:
-	bool iterating;
 	Data<int> index, nbIterations;
 };
 
