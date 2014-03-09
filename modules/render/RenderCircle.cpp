@@ -5,6 +5,7 @@
 
 #include <QPointF>
 #include <QPainter>
+#include <QtGui/qopengl.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -34,43 +35,7 @@ public:
 		color.getAccessor().push_back(QColor(0,0,0));
 	}
 
-	void render(QPainter* painter)
-	{
-		const QVector<QPointF>& listCenter = center.getValue();
-		const QVector<double>& listRadius = radius.getValue();
-		const QVector<double>& listWidth = lineWidth.getValue();
-		const QVector<QColor>& listColor = color.getValue();
-
-		int nbCenter = listCenter.size();
-		int nbRadius = listRadius.size();
-		int nbWidth = listWidth.size();
-		int nbColor = listColor.size();
-
-		if(nbCenter && nbRadius && nbColor && nbWidth)
-		{
-			painter->save();
-			painter->setBrush(Qt::NoBrush);
-			painter->setPen(Qt::NoPen);
-
-			if(nbRadius < nbCenter) nbRadius = 1;
-			if(nbWidth < nbCenter) nbWidth = 1;
-			if(nbColor < nbCenter) nbColor = 1;
-
-			for(int i=0; i<nbCenter; ++i)
-			{
-				QPen pen(listColor[i % nbColor]);
-				pen.setWidthF(listWidth[i % nbWidth]);
-				painter->setPen(pen);
-
-				double valRadius = listRadius[i % nbRadius];
-				painter->drawEllipse(listCenter[i], valRadius, valRadius);
-			}
-
-			painter->restore();
-		}
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const QVector<QPointF>& listCenter = center.getValue();
 		const QVector<double>& listRadius = radius.getValue();

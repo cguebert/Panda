@@ -21,8 +21,7 @@ public:
 	virtual DockObject* getDefaultDock();
 	virtual void setDirtyValue();
 
-	virtual void render(QPainter* /*painter*/) = 0;
-	virtual void renderOpenGL() = 0;
+	virtual void render() = 0;
 };
 
 } // namespace panda

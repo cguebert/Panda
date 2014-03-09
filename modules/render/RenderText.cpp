@@ -31,7 +31,7 @@ public:
 
 		color.getAccessor().push_back(QColor());
 	}
-
+/*
 	void render(QPainter* painter)
 	{
 		painter->save();
@@ -66,8 +66,8 @@ public:
 
 		painter->restore();
 	}
-
-	void renderOpenGL()
+*/
+	void render()
 	{
 	}
 

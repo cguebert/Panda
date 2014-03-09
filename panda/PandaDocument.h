@@ -93,7 +93,7 @@ protected:
 	QImage renderedImage;
 	bool imageIsDirty;
 	Layer* defaultLayer;
-	QScopedPointer<QOpenGLFramebufferObject> renderFrameBuffer;
+	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer;
 
 	Data<QPointF> renderSize;
 	Data<QColor> backgroundColor;
@@ -110,7 +110,7 @@ protected:
 	QMap<QString, QString> groupsMap;
 
 	bool getGroupDescription(const QString &fileName, QString& description);
-	void renderOpenGL();
+	void render();
 
 private:
 	QString groupsDirPath;

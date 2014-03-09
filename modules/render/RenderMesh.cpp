@@ -3,7 +3,9 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/Topology.h>
 #include <panda/Renderer.h>
+
 #include <QPainter>
+#include <QtGui/qopengl.h>
 
 namespace panda {
 
@@ -25,11 +27,7 @@ public:
 		color.getAccessor().push_back(QColor());
 	}
 
-	void render(QPainter* /*painter*/)
-	{
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const Topology& topo = topology.getValue();
 		const QVector<QColor>& listColor = color.getValue();

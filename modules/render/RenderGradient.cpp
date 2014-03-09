@@ -24,23 +24,7 @@ public:
 		addInput(&gradient);
 	}
 
-	void render(QPainter* painter)
-	{
-		painter->save();
-
-		const Gradient& grad = gradient.getValue();
-		QSize size = parentDocument->getRenderSize();
-		for(int x=0; x<size.width(); ++x)
-		{
-			double p = (double)x / size.width();
-			QColor c = grad.get(p);
-			painter->fillRect(x, 0, 1, size.height(), c);
-		}
-
-		painter->restore();
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const Gradient& grad = gradient.getValue();
 
@@ -95,23 +79,7 @@ public:
 		addInput(&gradient);
 	}
 
-	void render(QPainter* painter)
-	{
-		painter->save();
-
-		const Gradient& grad = gradient.getValue();
-		QSize size = parentDocument->getRenderSize();
-		for(int y=0; y<size.height(); ++y)
-		{
-			double p = (double)y / size.height();
-			QColor c = grad.get(p);
-			painter->fillRect(0, y, size.width(), 1, c);
-		}
-
-		painter->restore();
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const Gradient& grad = gradient.getValue();
 

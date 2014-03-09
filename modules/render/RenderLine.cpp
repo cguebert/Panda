@@ -2,10 +2,11 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Path.h>
+
 #include <QPointF>
 #include <QPainter>
-
-#include <panda/types/Path.h>
+#include <QtGui/qopengl.h>
 
 namespace panda {
 
@@ -31,50 +32,7 @@ public:
 		color.getAccessor().push_back(QColor());
 	}
 
-	void render(QPainter* painter)
-	{
-		const QVector<QPointF>& valA = inputA.getValue();
-		const QVector<QPointF>& valB = inputB.getValue();
-		double valWidth = width.getValue();
-		if(!valWidth) valWidth = 1.0;
-		const QVector<QColor>& listColor = color.getValue();
-
-		int nbA = valA.size(), nbB = valB.size();
-		int nbLines = qMin(valA.size(), valB.size());
-		bool useTwoLists = true;
-		if(nbA && !nbB)
-		{
-			useTwoLists = false;
-			nbLines = nbA / 2;
-		}
-
-		int nbColor = listColor.size();
-
-		if(nbLines && nbColor)
-		{
-			if(nbColor < nbLines) nbColor = 1;
-
-			painter->save();
-			painter->setBrush(Qt::NoBrush);
-
-			for(int i=0; i<nbLines; ++i)
-			{
-				QPen pen(listColor[i % nbColor]);
-				pen.setWidthF(valWidth);
-				pen.setCapStyle(Qt::RoundCap);
-				painter->setPen(pen);
-
-				if(useTwoLists)
-					painter->drawLine(valA[i], valB[i]);
-				else
-					painter->drawLine(valA[i*2], valA[i*2+1]);
-			}
-
-			painter->restore();
-		}
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const QVector<QPointF>& valA = inputA.getValue();
 		const QVector<QPointF>& valB = inputB.getValue();
@@ -146,11 +104,7 @@ public:
 		color.getAccessor().push_back(QColor());
 	}
 
-	void render(QPainter* /*painter*/)
-	{
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const QVector<Path>& paths = input.getValue();
 		const QVector<QColor>& listColor = color.getValue();

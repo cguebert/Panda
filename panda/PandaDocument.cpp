@@ -790,7 +790,7 @@ void PandaDocument::update()
 	}
 
 	renderFrameBuffer->bind();
-	renderOpenGL();
+	render();
 	renderFrameBuffer->release();
 
 	imageIsDirty = true;
@@ -816,7 +816,7 @@ QOpenGLFramebufferObject* PandaDocument::getFBO()
 	return renderFrameBuffer.data();
 }
 
-void PandaDocument::renderOpenGL()
+void PandaDocument::render()
 {
 	glViewport(0, 0, renderFrameBuffer->width(), renderFrameBuffer->height());
 

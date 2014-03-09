@@ -1,9 +1,11 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QPointF>
 #include <panda/Renderer.h>
+
+#include <QPointF>
 #include <QPainter>
+#include <QtGui/qopengl.h>
 
 namespace panda {
 
@@ -27,40 +29,7 @@ public:
 		lineWidth.getAccessor().push_back(0.0);
 	}
 
-	void render(QPainter* painter)
-	{
-		painter->save();
-
-		const QVector<QRectF>& listRect = rect.getValue();
-		const QVector<QColor>& listColor = color.getValue();
-		const QVector<double>& listWidth = lineWidth.getValue();
-
-		int nbRect = listRect.size();
-		int nbColor = listColor.size();
-		int nbWidth = listWidth.size();
-
-		if(nbRect && nbColor && nbWidth)
-		{
-			painter->setBrush(Qt::NoBrush);
-			painter->setPen(Qt::NoPen);
-
-			if(nbColor < nbRect) nbColor = 1;
-			if(nbWidth < nbRect) nbWidth = 1;
-
-			for(int i=0; i<nbRect; ++i)
-			{
-				QPen pen(listColor[i % nbColor]);
-				pen.setWidthF(listWidth[i % nbWidth]);
-				painter->setPen(pen);
-
-				painter->drawRect(listRect[i]);
-			}
-		}
-
-		painter->restore();
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const QVector<QRectF>& listRect = rect.getValue();
 		const QVector<QColor>& listColor = color.getValue();
@@ -124,35 +93,7 @@ public:
 		color.getAccessor().push_back(QColor(0,0,0));
 	}
 
-	void render(QPainter* painter)
-	{
-		painter->save();
-
-		const QVector<QRectF>& listRect = rect.getValue();
-		const QVector<QColor>& listColor = color.getValue();
-
-		int nbRect = listRect.size();
-		int nbColor = listColor.size();
-
-		if(nbRect && nbColor)
-		{
-			painter->setBrush(Qt::NoBrush);
-			painter->setPen(Qt::NoPen);
-
-			if(nbColor < nbRect) nbColor = 1;
-
-			for(int i=0; i<nbRect; ++i)
-			{
-				painter->setPen(listColor[i % nbColor]);
-
-				painter->drawRect(listRect[i]);
-			}
-		}
-
-		painter->restore();
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const QVector<QRectF>& listRect = rect.getValue();
 		const QVector<QColor>& listColor = color.getValue();

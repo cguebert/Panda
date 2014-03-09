@@ -4,9 +4,9 @@
 #include <panda/Dockable.h>
 #include <QList>
 #include <QImage>
-#include <QOpenGLFramebufferObject>
 
 class QPainter;
+class QOpenGLFramebufferObject;
 
 namespace panda
 {
@@ -33,7 +33,7 @@ public:
 	virtual Data<QImage>* getImage() = 0;
 
 protected:
-	QScopedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
+	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
 };
 
 class Layer : public DockObject, public BaseLayer

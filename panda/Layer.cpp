@@ -4,6 +4,7 @@
 #include <panda/ObjectFactory.h>
 
 #include <QPainter>
+#include <QOpenGLFramebufferObject>
 
 #include <ui/GraphView.h>
 
@@ -47,7 +48,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 #ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_render, renderer);
 #endif
-		renderer->renderOpenGL();
+		renderer->render();
 		renderer->cleanDirty();
 	}
 	renderFrameBuffer->release();

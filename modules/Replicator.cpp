@@ -32,7 +32,7 @@ public:
 
 	void update()
 	{
-		PandaDocument* doc = dynamic_cast<PandaDocument*>(parent());
+/*		PandaDocument* doc = dynamic_cast<PandaDocument*>(parent());
 		if(doc)
 		{
 			auto editImage = image.getAccessor();
@@ -63,7 +63,7 @@ public:
 				}
 			}
 		}
-		cleanDirty();
+		cleanDirty();*/
 	}
 
 protected:

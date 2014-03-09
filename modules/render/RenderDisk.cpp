@@ -36,36 +36,7 @@ public:
 		color.getAccessor().push_back(QColor(0,0,0));
 	}
 
-	void render(QPainter* painter)
-	{
-		const QVector<QPointF>& listCenter = center.getValue();
-		const QVector<double>& listRadius = radius.getValue();
-		const QVector<QColor>& listColor = color.getValue();
-
-		int nbCenter = listCenter.size();
-		int nbRadius = listRadius.size();
-		int nbColor = listColor.size();
-
-		if(nbCenter && nbRadius && nbColor)
-		{
-			painter->save();
-			painter->setPen(Qt::NoPen);
-
-			if(nbRadius < nbCenter) nbRadius = 1;
-			if(nbColor < nbCenter) nbColor = 1;
-
-			for(int i=0; i<nbCenter; ++i)
-			{
-				painter->setBrush(listColor[i % nbColor]);
-				double valRadius = listRadius[i % nbRadius];
-				painter->drawEllipse(listCenter[i], valRadius, valRadius);
-			}
-
-			painter->restore();
-		}
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const QVector<QPointF>& listCenter = center.getValue();
 		const QVector<double>& listRadius = radius.getValue();
@@ -145,44 +116,7 @@ public:
 		gradient.getAccessor().push_back(grad);
 	}
 
-	void render(QPainter* painter)
-	{
-		const QVector<QPointF>& listCenter = center.getValue();
-		const QVector<double>& listRadius = radius.getValue();
-		const QVector<Gradient>& listGradient = gradient.getValue();
-
-		int nbCenter = listCenter.size();
-		int nbRadius = listRadius.size();
-		int nbGradient = listGradient.size();
-
-		if(nbCenter && nbRadius && nbGradient)
-		{
-			painter->save();
-			painter->setPen(Qt::NoPen);
-
-			if(nbRadius < nbCenter) nbRadius = 1;
-			if(nbGradient < nbCenter) nbGradient = 1;
-
-			QRadialGradient grad;
-			grad.setStops(listGradient[0].getStops());
-
-			for(int i=0; i<nbCenter; ++i)
-			{
-				double valRadius = listRadius[i % nbRadius];
-				if(nbGradient > 1 && i)
-					grad.setStops(listGradient[i % nbGradient].getStops());
-				grad.setCenter(listCenter[i]);
-				grad.setFocalPoint(listCenter[i]);
-				grad.setCenterRadius(valRadius);
-				painter->setBrush(grad);
-				painter->drawEllipse(listCenter[i], valRadius, valRadius);
-			}
-
-			painter->restore();
-		}
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const QVector<QPointF>& listCenter = center.getValue();
 		const QVector<double>& listRadius = radius.getValue();

@@ -26,7 +26,7 @@ public:
 
 		center.getAccessor().push_back(QPointF(0, 0));
 	}
-
+/*
 	void render(QPainter* painter)
 	{
 		const QVector<QImage>& listImage = image.getValue();
@@ -91,8 +91,8 @@ public:
 			}
 		}
 	}
-
-	void renderOpenGL()
+*/
+	void render()
 	{
 	}
 

@@ -3,7 +3,9 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/Topology.h>
 #include <panda/Renderer.h>
+
 #include <QPainter>
+#include <QtGui/qopengl.h>
 
 namespace panda {
 
@@ -25,40 +27,7 @@ public:
 		color.getAccessor().push_back(QColor());
 	}
 
-	void render(QPainter* painter)
-	{
-		const Topology& topo = topology.getValue();
-		const QVector<QColor>& listColor = color.getValue();
-
-		int nbPoly = topo.getNumberOfPolygons();
-		int nbColor = listColor.size();
-
-		const QVector<QPointF>& pts = topo.getPoints();
-
-		if(nbPoly && nbColor)
-		{
-			if(nbColor < nbPoly) nbColor = 1;
-
-			painter->save();
-			painter->setPen(Qt::NoPen);
-
-			for(int i=0; i<nbPoly; ++i)
-			{
-				painter->setBrush(QBrush(listColor[i % nbColor]));
-
-				QPolygonF qpoly;
-				const Topology::Polygon& poly = topo.getPolygon(i);
-				for(int j=0; j<poly.size(); ++j)
-					qpoly << pts[poly[j]];
-
-				painter->drawPolygon(qpoly);
-			}
-
-			painter->restore();
-		}
-	}
-
-	void renderOpenGL()
+	void render()
 	{
 		const Topology& topo = topology.getValue();
 		const QVector<QColor>& listColor = color.getValue();
