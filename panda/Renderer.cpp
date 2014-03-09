@@ -8,6 +8,8 @@ namespace panda
 Renderer::Renderer(PandaDocument* doc)
 	: DockableObject(doc)
 {
+	BaseData* data = doc->getData("render size");
+	if(data) addInput(data);
 }
 
 void Renderer::setDirtyValue()
