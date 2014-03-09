@@ -1,9 +1,12 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/ImageWrapper.h>
 #include <QPointF>
 
 namespace panda {
+
+using types::ImageWrapper;
 
 class ModifierPoints_Union : public PandaObject
 {
@@ -26,7 +29,7 @@ public:
 
 	void update()
 	{
-		const QImage& img = image.getValue();
+		const QImage& img = image.getValue().getImage();
 
 		const QVector<QPointF>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
@@ -54,7 +57,7 @@ public:
 	}
 
 protected:
-	Data<QImage> image;
+	Data<ImageWrapper> image;
 	Data< QVector<QPointF> > inputPoints, outputPoints;
 	Data< QVector<int> > outputIndices;
 };

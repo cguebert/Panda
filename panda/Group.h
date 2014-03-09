@@ -69,13 +69,13 @@ public:
 	virtual double getOpacity() const;
 	virtual void setOpacity(double opa);
 
-	virtual Data<QImage>* getImage();
+	virtual Data<types::ImageWrapper>* getImage();
 
 protected:
 	virtual void addObject(PandaObject* obj);
 	virtual void removeObject(PandaObject* obj);
 
-	Data<QImage> image;
+	Data<types::ImageWrapper> image;
 	int compositionMode;
 	double opacity;
 

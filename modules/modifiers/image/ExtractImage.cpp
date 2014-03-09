@@ -1,10 +1,12 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QImage>
+#include <panda/types/ImageWrapper.h>
 #include <QPainter>
 
 namespace panda {
+
+using types::ImageWrapper;
 
 class ModifierImage_ExtractImage : public PandaObject
 {
@@ -25,7 +27,7 @@ public:
 
 	void update()
 	{
-		const QImage& img = image.getValue();
+		const QImage& img = image.getValue().getImage();
 		const QVector<QRectF>& rectList = rectangle.getValue();
 		auto resList = result.getAccessor();
 
@@ -34,18 +36,19 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			const QRect rect = rectList[i].toRect();
-			resList[i] = QImage(rect.width(), rect.height(), QImage::Format_ARGB32);
-			QPainter painter(&resList[i]);
+			QImage tmpImg(rect.width(), rect.height(), QImage::Format_ARGB32);
+			QPainter painter(&tmpImg);
 			painter.drawImage(0, 0, img, rect.left(), rect.top(), rect.width(), rect.height());
+			resList[i].setImage(tmpImg);
 		}
 
 		cleanDirty();
 	}
 
 protected:
-	Data< QImage > image;
+	Data< ImageWrapper > image;
 	Data< QVector< QRectF > > rectangle;
-	Data< QVector< QImage > > result;
+	Data< QVector< ImageWrapper > > result;
 };
 
 int ModifierImage_ExtractImageClass = RegisterObject<ModifierImage_ExtractImage>("Modifier/Image/Extract image").setDescription("Extract a region of an image to create a new one.");

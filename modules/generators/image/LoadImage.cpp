@@ -1,8 +1,11 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/ImageWrapper.h>
 
 namespace panda {
+
+using types::ImageWrapper;
 
 class GeneratorImage_Load : public PandaObject
 {
@@ -22,15 +25,14 @@ public:
 
 	void update()
 	{
-		auto img = image.getAccessor();
-		img->load(fileName.getValue());
-		img->swap(img->convertToFormat(QImage::Format_ARGB32));
+		QImage tmp(fileName.getValue());
+		image.getAccessor()->setImage(tmp.convertToFormat(QImage::Format_ARGB32));
 		cleanDirty();
 	}
 
 protected:
 	Data<QString> fileName;
-	Data<QImage> image;
+	Data<ImageWrapper> image;
 };
 
 int GeneratorImage_LoadClass = RegisterObject<GeneratorImage_Load>("Generator/Image/Load image").setDescription("Load an image from the disk");

@@ -1,9 +1,11 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QImage>
+#include <panda/types/ImageWrapper.h>
 
 namespace panda {
+
+using types::ImageWrapper;
 
 class ModifierImage_GetPixel : public PandaObject
 {
@@ -24,7 +26,7 @@ public:
 
 	void update()
 	{
-		const QImage& img = image.getValue();
+		const QImage& img = image.getValue().getImage();
 		const QVector<QPointF>& pos = position.getValue();
 		auto colorsList = color.getAccessor();
 
@@ -43,7 +45,7 @@ public:
 	}
 
 protected:
-	Data< QImage > image;
+	Data< ImageWrapper > image;
 	Data< QVector< QPointF > > position;
 	Data< QVector<QColor> > color;
 };
@@ -73,12 +75,11 @@ public:
 
 	void update()
 	{
-		const QImage& img = image.getValue();
+		const QImage& img = image.getValue().getImage();
 		const QVector<QPointF>& pos = position.getValue();
 		const QVector<QColor>& col = color.getValue();
 
-		auto res = result.getAccessor();
-		res = img;
+		QImage tmp = img;
 
 		int nbP = pos.size();
 		int nbC = col.size();
@@ -88,15 +89,17 @@ public:
 		for(int i=0; i<nbP; ++i)
 		{
 			const QPoint pt = pos[i].toPoint();
-			if(res->valid(pt))
-				res->setPixel(pt, col[i%nbC].rgba());
+			if(tmp.valid(pt))
+				tmp.setPixel(pt, col[i%nbC].rgba());
 		}
+
+		result.getAccessor()->setImage(tmp);
 
 		cleanDirty();
 	}
 
 protected:
-	Data< QImage > image, result;
+	Data< ImageWrapper > image, result;
 	Data< QVector< QPointF > > position;
 	Data< QVector<QColor> > color;
 };
@@ -124,7 +127,7 @@ public:
 
 	void update()
 	{
-		const QImage& img = image.getValue();
+		const QImage& img = image.getValue().getImage();
 		const QVector<QRectF>& rectList = rectangle.getValue();
 		auto col = color.getAccessor();
 
@@ -171,7 +174,7 @@ public:
 	}
 
 protected:
-	Data< QImage > image;
+	Data< ImageWrapper > image;
 	Data< QVector<QRectF> > rectangle;
 	Data< QVector<QColor> > color;
 };

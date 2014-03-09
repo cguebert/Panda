@@ -1,8 +1,11 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/ImageWrapper.h>
 
 namespace panda {
+
+using types::ImageWrapper;
 
 class ModifierImage_Save : public PandaObject
 {
@@ -26,12 +29,12 @@ public:
 
 		int nb = qMin(names.size(), images.size());
 		for(int i=0; i<nb; ++i)
-			images[i].save(names[i]);
+			images[i].getImage().save(names[i]);
 	}
 
 protected:
 	Data< QVector<QString> > fileName;
-	Data< QVector<QImage> > image;
+	Data< QVector<ImageWrapper> > image;
 };
 
 int ModifierImage_SaveClass = RegisterObject<ModifierImage_Save>("Modifier/Image/Save image").setDescription("Save an image to the disk");

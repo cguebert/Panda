@@ -23,6 +23,9 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 		fmt.setSamples(16);
 		renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
 		displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
+
+		// Setting the image Data to the display Fbo
+		getImage()->getAccessor()->setFbo(displayFrameBuffer);
 	}
 
 	renderFrameBuffer->bind();
@@ -53,11 +56,6 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	renderFrameBuffer->release();
 
 	QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
-
-	// Convert to an image if necessary
-	Data<QImage>* pImage = getImage();
-	if(!pImage->getOutputs().empty())
-		pImage->setValue(displayFrameBuffer->toImage());
 }
 
 void BaseLayer::mergeLayer()
@@ -179,7 +177,7 @@ void Layer::setOpacity(double opa)
 		opacity.setValue(tmp);
 }
 
-Data<QImage>* Layer::getImage()
+Data<types::ImageWrapper>* Layer::getImage()
 {
 	return &image;
 }

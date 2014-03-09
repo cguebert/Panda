@@ -9,8 +9,6 @@
 namespace panda
 {
 
-using types::TypeConverter;
-
 template<class T>
 class DataCopier
 {
@@ -68,22 +66,22 @@ bool DataCopier<T>::copyData(Data<T> *dest, const BaseData* from)
 	// Else we try a conversion
 	// From something X to single value Y
 	int fromTypeId = fromTrait->fullTypeId(), destTypeId = DestTrait::fullTypeId();
-	if(TypeConverter::canConvert(fromTypeId, destTypeId))
+	if(types::TypeConverter::canConvert(fromTypeId, destTypeId))
 	{
 		auto toValue = dest->getAccessor();
-		TypeConverter::convert(fromTypeId, destTypeId, from->getVoidValue(), &toValue.wref());
+		types::TypeConverter::convert(fromTypeId, destTypeId, from->getVoidValue(), &toValue.wref());
 		return true;
 	}
 
 	// From a vector of X to single value Y
 	fromTypeId = fromTrait->valueTypeId();
-	if(TypeConverter::canConvert(fromTypeId, destTypeId))
+	if(types::TypeConverter::canConvert(fromTypeId, destTypeId))
 	{
 		const void* fromValuePtr = fromTrait->getVoidValue(from->getVoidValue(), 0);
 		if(fromValuePtr)
 		{
 			auto toValue = dest->getAccessor();
-			TypeConverter::convert(fromTypeId, destTypeId, fromValuePtr, &toValue.wref());
+			types::TypeConverter::convert(fromTypeId, destTypeId, fromValuePtr, &toValue.wref());
 			return true;
 		}
 	}
@@ -134,15 +132,15 @@ public:
 		int fromFullTypeId = fromTrait->fullTypeId(), fromValueTypeId = fromTrait->valueTypeId();
 		int destFullTypeId = DestTrait::fullTypeId(), destValueTypeId = DestTrait::valueTypeId();
 		// From something X to vector Y
-		if(TypeConverter::canConvert(fromFullTypeId, destFullTypeId))
+		if(types::TypeConverter::canConvert(fromFullTypeId, destFullTypeId))
 		{
 			auto toValue = dest->getAccessor();
-			TypeConverter::convert(fromFullTypeId, destFullTypeId, from->getVoidValue(), &toValue.wref());
+			types::TypeConverter::convert(fromFullTypeId, destFullTypeId, from->getVoidValue(), &toValue.wref());
 			return true;
 		}
 
 		// From a single value or vector of X to vector of Y
-		if(TypeConverter::canConvert(fromValueTypeId, destValueTypeId))
+		if(types::TypeConverter::canConvert(fromValueTypeId, destValueTypeId))
 		{
 			const void* fromPtr = from->getVoidValue();
 			auto toValue = dest->getAccessor();
@@ -153,32 +151,32 @@ public:
 				const void* fromValuePtr = fromTrait->getVoidValue(fromPtr, i);
 				void* toValuePtr = DestTrait::getVoidValue(toValue.wref(), i);
 				if(fromValuePtr && toValuePtr)
-					TypeConverter::convert(fromValueTypeId, destValueTypeId, fromValuePtr, toValuePtr);
+					types::TypeConverter::convert(fromValueTypeId, destValueTypeId, fromValuePtr, toValuePtr);
 			}
 			return true;
 		}
 
 		// From a single value or vector of X to vector Y
-		if(TypeConverter::canConvert(fromValueTypeId, destFullTypeId))
+		if(types::TypeConverter::canConvert(fromValueTypeId, destFullTypeId))
 		{
 			const void* fromValuePtr = fromTrait->getVoidValue(from->getVoidValue(), 0);
 			if(fromValuePtr)
 			{
 				auto toValue = dest->getAccessor();
-				TypeConverter::convert(fromValueTypeId, destFullTypeId, fromValuePtr, &toValue.wref());
+				types::TypeConverter::convert(fromValueTypeId, destFullTypeId, fromValuePtr, &toValue.wref());
 				return true;
 			}
 		}
 
 		// From something X to first value of vector Y
-		if(TypeConverter::canConvert(fromFullTypeId, destValueTypeId))
+		if(types::TypeConverter::canConvert(fromFullTypeId, destValueTypeId))
 		{
 			auto toValue = dest->getAccessor();
 			DestTrait::clear(toValue.wref(), 1, true);
 			void* toValuePtr = DestTrait::getVoidValue(toValue.wref(), 0);
 			if(toValuePtr)
 			{
-				TypeConverter::convert(fromFullTypeId, destValueTypeId, from->getVoidValue(), toValuePtr);
+				types::TypeConverter::convert(fromFullTypeId, destValueTypeId, from->getVoidValue(), toValuePtr);
 				return true;
 			}
 		}

@@ -2,10 +2,13 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/ImageWrapper.h>
 
 #include <QtGui/qopengl.h>
 
 namespace panda {
+
+using types::ImageWrapper;
 
 class RenderImage : public Renderer
 {
@@ -97,7 +100,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QImage> > image;
+	Data< QVector<ImageWrapper> > image;
 	Data< QVector<QPointF> > center;
 	Data< QVector<double> > rotation;
 	Data< int > drawCentered;

@@ -66,6 +66,9 @@ ImageWrapper& ImageWrapper::operator=(const ImageWrapper& rhs)
 
 template<> QString DataTrait<ImageWrapper>::valueTypeName() { return "image"; }
 
+template<> bool DataTrait<ImageWrapper>::isDisplayed() { return false; }
+template<> bool DataTrait<ImageWrapper>::isPersistent() { return false; }
+
 template class Data< ImageWrapper >;
 template class Data< QVector<ImageWrapper> >;
 

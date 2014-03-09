@@ -2,8 +2,8 @@
 #define LAYER_H
 
 #include <panda/Dockable.h>
+#include <panda/types/ImageWrapper.h>
 #include <QList>
-#include <QImage>
 
 class QOpenGLFramebufferObject;
 
@@ -29,7 +29,7 @@ public:
 	virtual double getOpacity() const = 0;
 	virtual void setOpacity(double opa) = 0;
 
-	virtual Data<QImage>* getImage() = 0;
+	virtual Data<types::ImageWrapper>* getImage() = 0;
 
 protected:
 	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
@@ -56,13 +56,13 @@ public:
 	virtual double getOpacity() const;
 	virtual void setOpacity(double opa);
 
-	virtual Data<QImage>* getImage();
+	virtual Data<types::ImageWrapper>* getImage();
 
 	virtual void postCreate();
 
 protected:
 	Data<QString> layerName;
-	Data<QImage> image;
+	Data<types::ImageWrapper> image;
 	Data<int> compositionMode;
 	Data<double> opacity;
 };

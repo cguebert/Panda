@@ -1,8 +1,11 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/ImageWrapper.h>
 
 namespace panda {
+
+using types::ImageWrapper;
 
 class ImageMath_GetSize : public PandaObject
 {
@@ -21,7 +24,7 @@ public:
 
 	void update()
 	{
-		const QVector<QImage>& listImage = image.getValue();
+		const QVector<ImageWrapper>& listImage = image.getValue();
 		auto listSize = size.getAccessor();
 
 		unsigned int nb = listImage.size();
@@ -30,9 +33,10 @@ public:
 
 		for(unsigned int i=0; i<nb; ++i)
 		{
-			if(!listImage[i].isNull())
+			const QImage img = listImage[i].getImage();
+			if(!img.isNull())
 			{
-				QSize s = listImage[i].size();
+				QSize s = img.size();
 				listSize[i] = QPointF(s.width(), s.height());
 			}
 		}
@@ -41,7 +45,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QImage> > image;
+	Data< QVector<ImageWrapper> > image;
 	Data< QVector<QPointF> > size;
 };
 

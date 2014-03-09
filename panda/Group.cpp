@@ -629,7 +629,7 @@ void GroupWithLayer::setOpacity(double opa)
 	}
 }
 
-Data<QImage>* GroupWithLayer::getImage()
+Data<types::ImageWrapper>* GroupWithLayer::getImage()
 {
 	if(layer)
 		return layer->getImage();
