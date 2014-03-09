@@ -66,12 +66,14 @@ public:
 		return init;
 	}
 
-	virtual void postCreate() { }
+	virtual void postCreate() {}
 	virtual void preDestruction();
-	virtual void reset() { }
+	virtual void reset() {}
 	virtual void update();
 	virtual void updateIfDirty() const;
 	virtual void setDirtyValue();
+	virtual void beginStep() {}
+	virtual void endStep() {}
 
 	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject *> *selected = nullptr);
 	virtual void load(QDomElement &elem);

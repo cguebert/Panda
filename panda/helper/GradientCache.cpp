@@ -19,7 +19,7 @@ void GradientCache::clear()
 	m_cache.clear();
 }
 
-void GradientCache::setUsedFlag()
+void GradientCache::resetUsedFlag()
 {
 	for(auto item : m_cache)
 		item.m_used = false;

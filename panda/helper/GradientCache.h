@@ -18,9 +18,9 @@ class GradientCache
 public:
 	static GradientCache* getInstance();
 
-	void clear();		// Remove all textures
-	void setUsedFlag();	// Prepare the flags at the start of a render
-	void clearUnused(); // Remove textures not used during the last render
+	void clear();			// Remove all textures
+	void resetUsedFlag();	// Prepare the flags at the start of a render
+	void clearUnused();		// Remove textures not used during the last render
 
 	GLuint getTexture(const panda::types::Gradient& gradient, int size);
 

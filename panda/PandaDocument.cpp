@@ -909,7 +909,10 @@ void PandaDocument::step()
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
-	helper::GradientCache::getInstance()->setUsedFlag();
+	helper::GradientCache::getInstance()->resetUsedFlag();
+
+	for(auto object : pandaObjects)
+		object->beginStep();
 
 	animTime.setValue(animTime.getValue() + timestep.getValue());
 	mousePosition.setValue(mousePositionBuffer);
@@ -922,6 +925,9 @@ void PandaDocument::step()
 		mouseClick.setValue(mouseClickBuffer);
 	setDirtyValue();
 	updateIfDirty();
+
+	for(auto object : pandaObjects)
+		object->endStep();
 
 	helper::GradientCache::getInstance()->clearUnused();
 #ifdef PANDA_LOG_EVENTS

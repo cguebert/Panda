@@ -3,6 +3,10 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
 
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#endif
+
 namespace panda {
 
 using types::ImageWrapper;
@@ -16,25 +20,52 @@ public:
 		: PandaObject(doc)
 		, fileName(initData(&fileName, "fileName", "Path where the image has to be saved"))
 		, image(initData(&image, "image", "The image to be saved"))
+		, inStep(false)
 	{
 		addInput(&image);
 		addInput(&fileName);
 		fileName.setWidget("save file");
 	}
 
+	void beginStep()
+	{
+		inStep = true;
+	}
+
+	void endStep()
+	{
+		if(isDirty())
+			saveImages();
+		inStep = false;
+	}
+
 	void setDirtyValue()
 	{
+		PandaObject::setDirtyValue();
+		if(!inStep)
+			saveImages();
+	}
+
+	void saveImages()
+	{
+#ifdef PANDA_LOG_EVENTS
+			helper::ScopedEvent log(helper::event_update, this);
+#endif
 		const auto& names = fileName.getValue();
 		const auto& images = image.getValue();
 
 		int nb = qMin(names.size(), images.size());
 		for(int i=0; i<nb; ++i)
-			images[i].getImage().save(names[i]);
+		{
+			if(!names[i].isEmpty())
+				images[i].getImage().save(names[i]);
+		}
 	}
 
 protected:
 	Data< QVector<QString> > fileName;
 	Data< QVector<ImageWrapper> > image;
+	bool inStep;
 };
 
 int ModifierImage_SaveClass = RegisterObject<ModifierImage_Save>("Modifier/Image/Save image").setDescription("Save an image to the disk");
