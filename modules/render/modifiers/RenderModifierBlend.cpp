@@ -1,14 +1,11 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Topology.h>
 #include <panda/Renderer.h>
 
 #include <QtGui/qopengl.h>
 
 namespace panda {
-
-using types::Topology;
 
 class RenderModifier_BlendMode : public Renderer
 {
@@ -43,7 +40,9 @@ public:
 								GL_SRC_ALPHA_SATURATE,
 								GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
 								GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA};
-		glBlendFunc(srcVals[source.getValue()], destVals[destination.getValue()]);
+		int src = qBound(0, source.getValue(), 7);
+		int dest = qBound(0, destination.getValue(), 8);
+		glBlendFunc(srcVals[src], destVals[dest]);
 	}
 
 protected:

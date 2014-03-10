@@ -142,6 +142,7 @@ SOURCES       = main.cpp \
 	modules/render/RenderRect.cpp \
 	modules/render/RenderText.cpp \
 	modules/render/modifiers/RenderModifierBlend.cpp \
+	modules/render/modifiers/RenderModifierTransformations.cpp \
 	panda/BaseClass.cpp \
 	panda/BaseData.cpp \
 	panda/Data.cpp \
