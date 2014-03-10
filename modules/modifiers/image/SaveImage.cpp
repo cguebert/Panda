@@ -27,22 +27,17 @@ public:
 		fileName.setWidget("save file");
 	}
 
-	void beginStep()
-	{
-		inStep = true;
-	}
-
 	void endStep()
 	{
+		PandaObject::endStep();
 		if(isDirty())
 			saveImages();
-		inStep = false;
 	}
 
 	void setDirtyValue()
 	{
 		PandaObject::setDirtyValue();
-		if(!inStep)
+		if(!isInStep)
 			saveImages();
 	}
 

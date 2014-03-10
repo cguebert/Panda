@@ -97,6 +97,7 @@ protected:
 	Data<QPointF> renderSize;
 	Data<QColor> backgroundColor;
 	Data<double> animTime, timestep;
+	Data<int> useTimer;
 	Data<QPointF> mousePosition;
 	Data<int> mouseClick;
 	Data<types::ImageWrapper> renderedImage;

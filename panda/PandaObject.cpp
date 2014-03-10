@@ -121,8 +121,18 @@ void PandaObject::setDirtyValue()
 		DataNode::setDirtyValue();
 	}
 
-	if(doEmitDirty)
+	if(doEmitDirty && !isInStep)
 		emit dirty(this);
+}
+
+void PandaObject::beginStep()
+{
+	isInStep = true;
+}
+
+void PandaObject::endStep()
+{
+	isInStep = false;
 }
 
 BaseData* PandaObject::getData(const QString& name) const

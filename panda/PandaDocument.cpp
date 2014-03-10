@@ -1,5 +1,6 @@
 #include <QtWidgets>
 #include <QOpenGLFramebufferObject>
+#include <QElapsedTimer>
 
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
@@ -22,7 +23,8 @@ PandaDocument::PandaDocument(QObject *parent)
 	, renderSize(initData(&renderSize, QPointF(800,600), "render size", "Size of the image to be rendered"))
 	, backgroundColor(initData(&backgroundColor, QColor(255,255,255), "background color", "Background color of the image to be rendered"))
 	, animTime(initData(&animTime, 0.0, "time", "Time of the animation"))
-	, timestep(initData(&timestep, 0.1, "timestep", "Time step of the animation"))
+	, timestep(initData(&timestep, 0.01, "timestep", "Time step of the animation"))
+	, useTimer(initData(&useTimer, 1, "use timer", "If true, wait before the next timestep. If false, compute the next one as soon as the previous finished."))
 	, mousePosition(initData(&mousePosition, "mouse position", "Current position of the mouse in the render view"))
 	, mouseClick(initData(&mouseClick, 0, "mouse click", "1 if the left mouse button is pressed"))
 	, renderedImage(initData(&renderedImage, "rendered image", "Current image displayed"))
@@ -32,6 +34,9 @@ PandaDocument::PandaDocument(QObject *parent)
 	addInput(&renderSize);
 	addInput(&backgroundColor);
 	addInput(&timestep);
+	addInput(&useTimer);
+
+	useTimer.setWidget("checkbox");
 
 	// Not connecting to the document, otherwise it would update the layers each time we get the time.
 	animTime.setOutput(true);
@@ -886,21 +891,29 @@ void PandaDocument::moveLayerDown(PandaObject *layer)
 void PandaDocument::setDirtyValue()
 {
 	PandaObject::setDirtyValue();
-	if(!getCurrentSelectedObject())
+	if(!isInStep && !getCurrentSelectedObject())
 		emit selectedObjectIsDirty(this);
 }
 
 void PandaDocument::play(bool playing)
 {
 	animPlaying = playing;
-	if(playing)
-		animTimer->start(timestep.getValue() * 1000);
+	if(animPlaying)
+	{
+		// TODO: consider the time it took to render the previous frame
+		if(useTimer.getValue())
+			animTimer->start(timestep.getValue() * 1000);
+		else
+			animTimer->start(0);
+	}
 	else
 		animTimer->stop();
 }
 
 void PandaDocument::step()
 {
+	QElapsedTimer durationTimer;
+	durationTimer.start();
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
@@ -928,7 +941,19 @@ void PandaDocument::step()
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->stopLog();
 #endif
+
+	unsigned int lastFrameDuration = durationTimer.elapsed();
 	emit timeChanged();
+
+	const auto obj = getCurrentSelectedObject();
+	if(obj)
+		emit selectedObjectIsDirty(obj);
+	else
+		emit selectedObjectIsDirty(this);
+	emit modified();
+
+	if(animPlaying && useTimer.getValue())	// Restart the timer taking into consideration the time it tokk to render this frame
+		animTimer->start(timestep.getValue() * 1000 - lastFrameDuration);
 }
 
 void PandaDocument::rewind()

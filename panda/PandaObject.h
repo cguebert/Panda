@@ -72,8 +72,8 @@ public:
 	virtual void update();
 	virtual void updateIfDirty() const;
 	virtual void setDirtyValue();
-	virtual void beginStep() {}
-	virtual void endStep() {}
+	virtual void beginStep();
+	virtual void endStep();
 
 	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject *> *selected = nullptr);
 	virtual void load(QDomElement &elem);
@@ -88,7 +88,7 @@ protected:
 	QList<BaseData*> datas;
 	QMap<QString, BaseData*> datasMap;
 	quint32 index;
-	bool doEmitModified, doEmitDirty;
+	bool doEmitModified, doEmitDirty, isInStep;
 	mutable bool isUpdating;
 	PandaDocument* parentDocument;
 

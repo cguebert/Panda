@@ -15,7 +15,8 @@ Renderer::Renderer(PandaDocument* doc)
 void Renderer::setDirtyValue()
 {
 	DataNode::setDirtyValue();
-	emit dirty(this);
+	if(!isInStep)
+		emit dirty(this);
 }
 
 DockObject* Renderer::getDefaultDock()

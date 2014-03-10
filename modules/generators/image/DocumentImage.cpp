@@ -28,17 +28,12 @@ public:
 
 	void beginStep()
 	{
+		PandaObject::beginStep();
 		if(previous.getValue())
 		{
 			image.getAccessor()->setFbo(parentDocument->getFBO());
 			cleanDirty();
 		}
-	}
-
-	void endStep()
-	{
-	//	if(!previous.getValue())
-	//		image.getAccessor()->setFbo(parentDocument->getFBO());
 	}
 
 	void update()
