@@ -141,6 +141,7 @@ SOURCES       = main.cpp \
 	modules/render/RenderPolygon.cpp \
 	modules/render/RenderRect.cpp \
 	modules/render/RenderText.cpp \
+	modules/render/modifiers/RenderModifierBlend.cpp \
 	panda/BaseClass.cpp \
 	panda/BaseData.cpp \
 	panda/Data.cpp \
