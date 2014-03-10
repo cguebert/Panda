@@ -900,9 +900,8 @@ void PandaDocument::play(bool playing)
 	animPlaying = playing;
 	if(animPlaying)
 	{
-		// TODO: consider the time it took to render the previous frame
 		if(useTimer.getValue())
-			animTimer->start(timestep.getValue() * 1000);
+			animTimer->start(qMax(0.0, timestep.getValue() * 1000));
 		else
 			animTimer->start(0);
 	}
@@ -952,8 +951,8 @@ void PandaDocument::step()
 		emit selectedObjectIsDirty(this);
 	emit modified();
 
-	if(animPlaying && useTimer.getValue())	// Restart the timer taking into consideration the time it tokk to render this frame
-		animTimer->start(timestep.getValue() * 1000 - lastFrameDuration);
+	if(animPlaying && useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
+		animTimer->start(qMax(0.0, timestep.getValue() * 1000 - lastFrameDuration));
 }
 
 void PandaDocument::rewind()
