@@ -35,19 +35,20 @@ public:
 		const QVector<Path>& paths = input.getValue();
 		int nb = paths.size();
 
-		if(nb > 1)
+		auto nbPtsList = nbPoints.getAccessor();
+		auto lengthList = length.getAccessor();
+		nbPtsList.resize(nb);
+		lengthList.resize(nb);
+		for(int i=0; i<nb; ++i)
 		{
-			auto nbPtsList = nbPoints.getAccessor();
-			auto lengthList = length.getAccessor();
-			nbPtsList.resize(nb);
-			lengthList.resize(nb);
-			for(int i=0; i<nb; ++i)
+			const Path& path = paths[i];
+			int nbPts = path.size();
+			nbPtsList[i] = nbPts;
+			if(nbPts > 1)
 			{
-				const Path& path = paths[i];
-				nbPtsList[i] = path.size();
 				QPointF pt1 = path[0];
 				double l = 0.0;
-				for(int j=1; j<nb; ++j)
+				for(int j=1; j<nbPts; ++j)
 				{
 					const QPointF& pt2 = path[j];
 					l += helper::norm(pt2-pt1);
@@ -55,11 +56,8 @@ public:
 				}
 				lengthList[i] = l;
 			}
-		}
-		else
-		{
-			nbPoints.getAccessor().clear();
-			length.getAccessor().clear();
+			else
+				lengthList[i] = 0;
 		}
 
 		cleanDirty();
@@ -131,7 +129,7 @@ public:
 
 			for(unsigned int i=0; i<nbAbscissa; ++i)
 			{
-				double a = qBound(0.0, listAbscissa[i], totalLength);
+				double a = qBound(0.0, listAbscissa[i], totalLength - 1e-5);
 				QVector<double>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
 
 				unsigned int index = iter - ends.begin();
