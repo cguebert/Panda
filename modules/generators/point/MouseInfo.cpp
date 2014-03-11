@@ -19,6 +19,8 @@ public:
 		addOutput(&movement);
 		addOutput(&clickState);
 
+		clickState.setWidget("checkbox");
+
 		// Connect only 1 input, otherwise update is called twice and movement can't be computed correctly
 		BaseData* data = doc->getData("mouse position");
 		if(data) addInput(data);

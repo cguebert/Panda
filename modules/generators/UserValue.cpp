@@ -40,14 +40,20 @@ public:
 
 	GeneratorUser(PandaDocument *doc)
 		: PandaObject(doc)
-		, userValue("value", "The value you want to store", this)
+		, userValue("input", "The value you want to store", this)
+		, output(initData(&output, "value", "The value stored"))
 	{
-		addOutput(&userValue);
-		userValue.setReadOnly(false);
+		addInput(&userValue);
+		addOutput(&output);
+
+		output.setDisplayed(false);
+
+		dataSetParent(&output, &userValue);
 	}
 
 protected:
 	CustomData<T> userValue;
+	Data<T> output;
 };
 
 int GeneratorUser_IntegerClass = RegisterObject< GeneratorUser<int> >("Generator/Integer/Integer user value").setName("Integer value").setDescription("Lets you store a value for use in other objects");

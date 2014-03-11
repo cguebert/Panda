@@ -983,12 +983,12 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 	QString registryName = QString("panda::GeneratorUser<") + entry->className + ">";
 	PandaObject* object = createObject(registryName);
 
-	BaseData* valueData = object->getData("value");
-	if(valueData)
+	BaseData* inputData = object->getData("input");
+	if(inputData)
 	{
-		valueData->copyValueFrom(data);
-		valueData->setWidget(data->getWidget());
-		valueData->setWidgetData(data->getWidgetData());
+		inputData->copyValueFrom(data);
+		inputData->setWidget(data->getWidget());
+		inputData->setWidgetData(data->getWidgetData());
 	}
 }
 

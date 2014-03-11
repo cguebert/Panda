@@ -572,9 +572,9 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 			panda::BaseData* secondData = objectDrawStructs[obj]->getDataAtPos(currentMousePos);
 			if(secondData && isCompatible(clickedData, secondData))
 			{
-				if(clickedData->isInput())
+				if(clickedData->isInput() && secondData->isOutput())
 					obj->dataSetParent(clickedData, secondData);
-				else if(secondData->isInput())
+				else if(secondData->isInput() && clickedData->isOutput())
 					obj->dataSetParent(secondData, clickedData);
 				updateLinkTags();
 			}
