@@ -140,6 +140,7 @@ SOURCES       = main.cpp \
 	modules/render/RenderMesh.cpp \
 	modules/render/RenderPolygon.cpp \
 	modules/render/RenderRect.cpp \
+	modules/render/RenderSprite.cpp \
 	modules/render/RenderText.cpp \
 	modules/render/modifiers/RenderModifierBlend.cpp \
 	modules/render/modifiers/RenderModifierTransformations.cpp \
