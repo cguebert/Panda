@@ -68,19 +68,19 @@ public:
 
 	RenderModifier_Scale(PandaDocument *parent)
 		: Renderer(parent)
-		, scale(initData(&scale, 1.0, "scaling", "Scaling to apply for the next objects"))
+		, scale(initData(&scale, QPointF(1.0, 1.0), "scaling", "Scaling to apply for the next objects"))
 	{
 		addInput(&scale);
 	}
 
 	void render()
 	{
-		const double& sc = scale.getValue();
-		glScaled(sc, sc, 1);
+		const QPointF& sc = scale.getValue();
+		glScaled(sc.x(), sc.y(), 1);
 	}
 
 protected:
-	Data<double> scale;
+	Data<QPointF> scale;
 };
 
 int RenderModifier_ScaleClass = RegisterObject<RenderModifier_Scale>("Render/Modifier/Scale").setDescription("Add a scale transformation");

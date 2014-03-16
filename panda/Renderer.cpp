@@ -12,13 +12,6 @@ Renderer::Renderer(PandaDocument* doc)
 	if(data) addInput(data);
 }
 
-void Renderer::setDirtyValue()
-{
-	DataNode::setDirtyValue();
-	if(!isInStep)
-		emit dirty(this);
-}
-
 DockObject* Renderer::getDefaultDock()
 {
 	return parentDocument->getDefaultLayer();

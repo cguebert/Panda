@@ -10,13 +10,11 @@
 
 namespace panda {
 
-const QString dataMarkerStart("~~{");
-const QString dataMarkerEnd("}~~");
-
 PandaObject::PandaObject(QObject *parent)
 	: QObject(parent)
 	, doEmitModified(true)
 	, doEmitDirty(true)
+	, isInStep(false)
 	, isUpdating(false)
 {
 	parentDocument = dynamic_cast<PandaDocument*>(parent);

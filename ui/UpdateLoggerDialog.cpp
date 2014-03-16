@@ -407,7 +407,14 @@ QString UpdateLoggerView::eventDescription(const EventData& event)
 		case panda::helper::event_getValue:		{ display = QString("GetValue of %1").arg(event.m_dataName);	break;	}
 		case panda::helper::event_render:		{ display = QString("Render of %1").arg(event.m_objectName);	break;	}
 		case panda::helper::event_copyValue:	{ display = QString("Copy to data: %1").arg(event.m_dataName);	break;	}
-		case panda::helper::event_setDirty:		{ display = QString("SetDirty of %1").arg(event.m_objectName);	break;	}
+		case panda::helper::event_setDirty:
+		{
+			if(!event.m_dataName.isEmpty())
+				display = QString("SetDirty of %1 / %2").arg(event.m_objectName).arg(event.m_dataName);
+			else
+				display = QString("SetDirty of %1").arg(event.m_objectName);
+			break;
+		}
 	}
 
 	return display;

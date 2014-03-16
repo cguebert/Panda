@@ -17,7 +17,6 @@ public:
 
 	explicit Renderer(PandaDocument* doc);
 	virtual DockObject* getDefaultDock();
-	virtual void setDirtyValue();
 
 	virtual void render() = 0;
 
