@@ -24,6 +24,8 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget *parent)
 	, contextMenuData(nullptr)
 	, capturedDrawStruct(nullptr)
 	, recomputeTags(false)
+	, hoverTimer(new QTimer(this))
+	, highlightConnectedDatas(false)
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -36,6 +38,9 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget *parent)
 	connect(pandaDocument, SIGNAL(modifiedObject(panda::PandaObject*)), this, SLOT(modifiedObject(panda::PandaObject*)));
 	connect(pandaDocument, SIGNAL(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)), this, SLOT(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)));
 	connect(pandaDocument, SIGNAL(loadingObject(QDomElement&,panda::PandaObject*)), this, SLOT(loadingObject(QDomElement&,panda::PandaObject*)));
+	connect(hoverTimer, SIGNAL(timeout()), this, SLOT(hoverDataInfo()));
+
+	hoverTimer->setSingleShot(true);
 
 	setMouseTracking(true);
 }
@@ -115,6 +120,7 @@ void GraphView::resetView()
 	hoverData = nullptr;
 	contextMenuData = nullptr;
 	recomputeTags = false;
+	highlightConnectedDatas = false;
 }
 
 ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* obj)
@@ -183,6 +189,10 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	// Draw links tags
 	for(auto& tag : linkTags.values())
 		tag->draw(&painter);
+
+	// Highlight connected Datas
+	if(highlightConnectedDatas)
+		drawConnectedDatas(&painter, hoverData);
 
 	// Selection rubber band
 	if(movingAction == MOVING_SELECTION)
@@ -449,7 +459,20 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		panda::PandaObject* object = getObjectAtPos(zoomedMouse);
 		if(object)
 		{
-			hoverData = objectDrawStructs[object]->getDataAtPos(zoomedMouse);
+			panda::BaseData* data = objectDrawStructs[object]->getDataAtPos(zoomedMouse);
+			if(hoverData != data)
+			{
+				hoverTimer->stop();
+				if(highlightConnectedDatas)
+				{
+					highlightConnectedDatas = false;
+					update();
+				}
+				hoverData = data;
+				if(hoverData)
+					hoverTimer->start(1000);
+			}
+
 			if(hoverData)
 			{
 				QRectF dataRect;
@@ -467,6 +490,13 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		else
 		{
 			hoverData = nullptr;
+			if(highlightConnectedDatas)
+			{
+				highlightConnectedDatas = false;
+				update();
+			}
+			if(hoverTimer->isActive())
+				hoverTimer->stop();
 
 			if(movingAction == MOVING_NONE)
 			{
@@ -784,6 +814,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 	movingAction = MOVING_NONE;
 	linkTags.clear();
 	recomputeTags = true;
+	highlightConnectedDatas = false;
 	update();
 }
 
@@ -894,6 +925,87 @@ void GraphView::removeLink()
 		contextMenuData->getOwner()->dataSetParent(contextMenuData, nullptr);
 		contextMenuData = nullptr;
 		update();
+	}
+}
+
+void GraphView::hoverDataInfo()
+{
+	if(hoverData)
+	{
+		highlightConnectedDatas = true;
+		update();
+	}
+}
+
+void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sourceData)
+{
+	QVector<QRectF> highlightRects;
+	QVector< QPair<QPointF, QPointF> > highlightLinks;
+
+	QRectF sourceRect;
+	if(objectDrawStructs[sourceData->getOwner()]->getDataRect(sourceData, sourceRect))
+		highlightRects.push_back(sourceRect);
+	else
+		return;
+
+	// Get outputs
+	if(sourceData->isOutput())
+	{
+		for(const auto node : sourceData->getOutputs())
+		{
+			panda::BaseData* data = dynamic_cast<panda::BaseData*>(node);
+			if(data)
+			{
+				panda::PandaObject* object = data->getOwner();
+				if(objectDrawStructs.contains(object))
+				{
+					QRectF rect;
+					if(objectDrawStructs[object]->getDataRect(data, rect))
+					{
+						highlightRects.push_back(rect);
+						highlightLinks.push_back(qMakePair(rect.center(), sourceRect.center()));
+					}
+				}
+			}
+		}
+	}
+	// Or the one input
+	else if(sourceData->isInput())
+	{
+		panda::BaseData* data = sourceData->getParent();
+		if(data)
+		{
+			panda::PandaObject* object = data->getOwner();
+			if(objectDrawStructs.contains(object))
+			{
+				QRectF rect;
+				if(objectDrawStructs[object]->getDataRect(data, rect))
+				{
+					highlightRects.push_back(rect);
+					highlightLinks.push_back(qMakePair(sourceRect.center(), rect.center()));
+				}
+			}
+		}
+	}
+
+	// Now draw everything
+	painter->setBrush(palette().highlight().color());
+	painter->setPen(palette().text().color());
+	for(const auto& rect : highlightRects)
+		painter->drawRect(rect);
+
+	painter->setPen(QPen(palette().highlight(), 3));
+	painter->setBrush(Qt::NoBrush);
+	for(const auto& link : highlightLinks)
+	{
+		if(link.first.x()-link.second.x() > 0) // We don't draw a link if it goes from right to left (see the LinkTag class)
+		{
+			double w = (link.second.x()-link.first.x()) / 2;
+			QPainterPath path;
+			path.moveTo(link.first);
+			path.cubicTo(link.first+QPointF(w,0), link.second-QPointF(w,0), link.second);
+			painter->drawPath(path);
+		}
 	}
 }
 

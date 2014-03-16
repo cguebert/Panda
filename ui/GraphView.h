@@ -17,6 +17,7 @@ class Renderer;
 }
 
 class LinkTag;
+class QStylePainter;
 
 class GraphView : public QWidget
 {
@@ -70,6 +71,8 @@ protected:
 	void addLinkTag(panda::BaseData* input, panda::BaseData* output);
 	void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
 
+	void drawConnectedDatas(QStylePainter* painter, panda::BaseData* sourceData);
+
 signals:
 	void modified();
 	void showStatusBarMessage(QString);
@@ -90,6 +93,7 @@ public slots:
 	void loadingObject(QDomElement&, panda::PandaObject*);
 	void updateLinkTags(bool reset=false);
 	void removeLink();
+	void hoverDataInfo();
 
 private:
 	panda::PandaDocument* pandaDocument;
@@ -101,9 +105,11 @@ private:
 	MovingAction movingAction;
 	panda::BaseData *clickedData, *hoverData, *contextMenuData;
 	QMap<panda::PandaObject*, QSharedPointer<ObjectDrawStruct> > objectDrawStructs;
-	ObjectDrawStruct* capturedDrawStruct;
+	ObjectDrawStruct* capturedDrawStruct; /// Clicked ObjectDrawStruct that want to intercept mouse events
 	QMap<panda::BaseData*, QSharedPointer<LinkTag> > linkTags;
-	bool recomputeTags;
+	bool recomputeTags; /// Should we recompute the linkTags next PaintEvent?
+	QTimer* hoverTimer; /// Counting how long the mouse is staying over a Data
+	bool highlightConnectedDatas;
 };
 
 class LinkTag
