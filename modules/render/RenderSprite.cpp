@@ -63,7 +63,7 @@ public:
 										"uniform sampler2D tex0;"
 										"varying vec4 f_color;"
 										"void main(void){"
-										"   gl_FragColor = texture(tex0, gl_PointCoord);" // texture(tex0, gl_PointCoord) * f_color
+										"   gl_FragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y));" // texture(tex0, gl_PointCoord) * f_color
 										"}"
 									   );
 

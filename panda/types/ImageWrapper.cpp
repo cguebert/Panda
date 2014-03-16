@@ -25,7 +25,7 @@ GLuint ImageWrapper::getTexture() const
 	{
 		if(!m_texture)
 			const_cast<ImageWrapper*>(this)->m_texture
-				= QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(m_image));
+				= QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(m_image.mirrored()));
 
 		return m_texture->textureId();
 	}

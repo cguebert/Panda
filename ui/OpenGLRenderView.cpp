@@ -50,7 +50,7 @@ void OpenGLRenderView::paintGL()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, viewRect.width(), 0, viewRect.height(), -10, 10);
+	glOrtho(0, viewRect.width(), viewRect.height(), 0, -10, 10);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 

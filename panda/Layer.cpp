@@ -34,13 +34,13 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, renderSize.width(), 0, renderSize.height(), -10, 10);
+	glOrtho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	QMatrix4x4& mvp = getMVPMatrix();
 	mvp = QMatrix4x4();
-	mvp.ortho(0, renderSize.width(), 0, renderSize.height(), -10, 10);
+	mvp.ortho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
 
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
