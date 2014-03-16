@@ -45,8 +45,9 @@ public:
 		shader.addShaderFromSourceCode(QOpenGLShader::Vertex,
 										"attribute vec2 position;"
 										"uniform float size;"
+										"uniform mat4 MVP;"
 										"void main(void){"
-										"	gl_Position = vec4(position.x/400-1, position.y/300-1, 0, 1); " // vec4(position.x, position.y, 0, 1); vec4(-0.95, 0.95, 0, 1);
+										"	gl_Position = MVP * vec4(position.x, position.y, 0, 1);"
 										"	gl_PointSize = max(1.0, size);"
 										"}"
 									   );
@@ -59,6 +60,9 @@ public:
 
 		shader.link();
 		attribute_pos = shader.attributeLocation("position");
+		uniform_texture = shader.uniformLocation("texture");
+		uniform_size = shader.uniformLocation("size");
+		uniform_MVP = shader.uniformLocation("MVP");
 	}
 
 	void render()
@@ -86,8 +90,8 @@ public:
 
 			glColor3f(1, 1, 1);
 
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//			glEnable(GL_BLEND);
+//			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			glEnable(GL_POINT_SPRITE);
 			glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
@@ -102,8 +106,9 @@ public:
 			shader.enableAttributeArray(attribute_pos);
 			shader.setAttributeArray(attribute_pos, GL_DOUBLE, 0, 2);
 
-			shader.setUniformValue("size", static_cast<float>(listSize[0]));
-			shader.setUniformValue("texture", 0);
+			shader.setUniformValue(uniform_size, static_cast<float>(listSize[0]));
+			shader.setUniformValue(uniform_texture, 0);
+			shader.setUniformValue(uniform_MVP, getMVPMatrix());
 
 			glDrawArrays(GL_POINTS, 0, nbPosition);
 
@@ -130,7 +135,7 @@ protected:
 	QOpenGLShaderProgram shader;
 	QOpenGLFunctions functions;
 	int attribute_pos, attribute_color, attribute_size;
-	int uniform_texture, uniform_size;
+	int uniform_texture, uniform_size, uniform_MVP;
 };
 
 int RenderSpriteClass = RegisterObject<RenderSprite>("Render/Sprite").setDescription("Draw a sprite");

@@ -70,12 +70,14 @@ public:
 	virtual void setOpacity(double opa);
 
 	virtual Data<types::ImageWrapper>* getImage();
+	virtual QMatrix4x4& getMVPMatrix();
 
 protected:
 	virtual void addObject(PandaObject* obj);
 	virtual void removeObject(PandaObject* obj);
 
 	Data<types::ImageWrapper> image;
+	QMatrix4x4 mvpMatrix;
 	int compositionMode;
 	double opacity;
 

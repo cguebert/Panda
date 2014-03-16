@@ -24,4 +24,10 @@ DockObject* Renderer::getDefaultDock()
 	return parentDocument->getDefaultLayer();
 }
 
+QMatrix4x4& Renderer::getMVPMatrix()
+{
+	BaseLayer* layer = dynamic_cast<BaseLayer*>(getParentDock());
+	return layer->getMVPMatrix();
+}
+
 } // namespace panda

@@ -38,6 +38,10 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	QMatrix4x4& mvp = getMVPMatrix();
+	mvp = QMatrix4x4();
+	mvp.ortho(0, renderSize.width(), 0, renderSize.height(), -10, 10);
+
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -191,6 +195,11 @@ void Layer::setOpacity(double opa)
 Data<types::ImageWrapper>* Layer::getImage()
 {
 	return &image;
+}
+
+QMatrix4x4& Layer::getMVPMatrix()
+{
+	return mvpMatrix;
 }
 
 void Layer::postCreate()

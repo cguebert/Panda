@@ -637,6 +637,14 @@ Data<types::ImageWrapper>* GroupWithLayer::getImage()
 		return &image;
 }
 
+QMatrix4x4& GroupWithLayer::getMVPMatrix()
+{
+	if(layer)
+		return layer->getMVPMatrix();
+	else
+		return mvpMatrix;
+}
+
 void GroupWithLayer::addObject(PandaObject* obj)
 {
 	Group::addObject(obj);

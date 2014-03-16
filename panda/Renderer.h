@@ -3,6 +3,7 @@
 
 #include <panda/Dockable.h>
 #include <panda/Layer.h>
+#include <QMatrix4x4>
 
 namespace panda
 {
@@ -19,6 +20,9 @@ public:
 	virtual void setDirtyValue();
 
 	virtual void render() = 0;
+
+protected:
+	QMatrix4x4& getMVPMatrix();
 };
 
 } // namespace panda

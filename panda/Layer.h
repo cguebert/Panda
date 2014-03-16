@@ -4,6 +4,7 @@
 #include <panda/Dockable.h>
 #include <panda/types/ImageWrapper.h>
 #include <QList>
+#include <QMatrix4x4>
 
 class QOpenGLFramebufferObject;
 
@@ -30,6 +31,7 @@ public:
 	virtual void setOpacity(double opa) = 0;
 
 	virtual Data<types::ImageWrapper>* getImage() = 0;
+	virtual QMatrix4x4& getMVPMatrix() = 0;
 
 protected:
 	virtual void iterateRenderers();
@@ -58,6 +60,7 @@ public:
 	virtual void setOpacity(double opa);
 
 	virtual Data<types::ImageWrapper>* getImage();
+	virtual QMatrix4x4& getMVPMatrix();
 
 	virtual void postCreate();
 
@@ -66,6 +69,7 @@ protected:
 	Data<types::ImageWrapper> image;
 	Data<int> compositionMode;
 	Data<double> opacity;
+	QMatrix4x4 mvpMatrix;
 };
 
 } // namespace panda
