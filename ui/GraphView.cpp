@@ -676,6 +676,9 @@ void GraphView::contextMenuEvent(QContextMenuEvent *event)
 		}
 	}
 
+	if(hoverTimer->isActive())
+		hoverTimer->stop();
+
 	emit showContextMenu(event->globalPos(), flags);
 }
 
@@ -987,6 +990,9 @@ void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sour
 			}
 		}
 	}
+
+	if(highlightLinks.empty())
+		return;
 
 	// Now draw everything
 	painter->setBrush(palette().highlight().color());
