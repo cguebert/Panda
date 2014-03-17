@@ -44,11 +44,14 @@ public:
 			{
 				QPointF pt = inPts[i];
 				QPoint iPt(qRound(pt.x()), qRound(pt.y()));
-				QRgb color = img.pixel(iPt);
-				if(qGray(color) > 128)
+				if(img.valid(iPt))
 				{
-					outPts.push_back(pt);
-					outId.push_back(i);
+					QRgb color = img.pixel(iPt);
+					if(qGray(color) > 128)
+					{
+						outPts.push_back(pt);
+						outId.push_back(i);
+					}
 				}
 			}
 		}

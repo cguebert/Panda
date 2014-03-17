@@ -78,8 +78,6 @@ public:
 			for(int i=0; i<nbRect; ++i)
 			{
 				painter.setPen(QPen(listColor[i % nbColor]));
-				painter.drawRect(listRect[i]);
-
 				painter.drawText(listRect[i], alignment, listText[i % nbText]);
 			}
 		}

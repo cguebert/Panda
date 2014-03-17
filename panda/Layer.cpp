@@ -76,9 +76,13 @@ void BaseLayer::iterateRenderers()
 
 void BaseLayer::mergeLayer()
 {
+	double opacity = getOpacity();
+	if(!opacity)
+		return;
+
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, displayFrameBuffer->texture());
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glColor4f(1.0f, 1.0f, 1.0f, opacity);
 
 	GLfloat w = displayFrameBuffer->width(), h = displayFrameBuffer->height();
 	GLfloat verts[8], texCoords[8];
