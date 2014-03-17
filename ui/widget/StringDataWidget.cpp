@@ -150,7 +150,7 @@ public:
 	virtual void onShowDialog()
 	{
 		bool ok;
-		QFont tmpFont = QFontDialog::getFont(&ok, theFont, container);
+		QFont tmpFont = QFontDialog::getFont(&ok, theFont);
 		if(ok)
 		{
 			theFont = tmpFont;
