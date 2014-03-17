@@ -6,6 +6,7 @@
 #include <panda/helper/GradientCache.h>
 
 #include <QPointF>
+#include <QOpenGLFunctions_3_3_Core>
 
 using panda::types::Gradient;
 using panda::helper::GradientCache;
@@ -30,6 +31,10 @@ public:
 		center.getAccessor().push_back(QPointF(100, 100));
 		radius.getAccessor().push_back(5.0);
 		color.getAccessor().push_back(QColor(0,0,0));
+
+		QOpenGLContext* context = QOpenGLContext::currentContext();
+		functions = context->versionFunctions<QOpenGLFunctions_3_3_Core>();
+		functions->initializeOpenGLFunctions();
 	}
 
 	void render()
@@ -46,34 +51,38 @@ public:
 		{
 			if(nbRadius < nbCenter) nbRadius = 1;
 			if(nbColor < nbCenter) nbColor = 1;
-			std::vector<double> vertices;
+			QVector<float> vertices;
+			QVector<int> first, count;
+			first.resize(nbCenter);
+			count.resize(nbCenter);
 
-			glEnableClientState(GL_VERTEX_ARRAY);
 			for(int i=0; i<nbCenter; ++i)
 			{
+				first[i] = vertices.size() / 2;
 				QColor valCol = listColor[i % nbColor];
 				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
 
-				double valRadius = listRadius[i % nbRadius];
+				float valRadius = listRadius[i % nbRadius];
 				int nbSeg = static_cast<int>(floor(valRadius * M_PI * 2));
 				if(nbSeg < 3) continue;
-				vertices.resize((nbSeg + 2) * 2);
 
 				QPointF valCenter = listCenter[i];
-				vertices[0] = valCenter.x();
-				vertices[1] = valCenter.y();
+				vertices.push_back(valCenter.x());
+				vertices.push_back(valCenter.y());
 
-				for(int i=0; i<=nbSeg; ++i)
+				for(int j=0; j<=nbSeg; ++j)
 				{
-					double t = i / static_cast<double>(nbSeg) * 2 * M_PI;
-					int index = (i+1)*2;
-					vertices[index  ] = valCenter.x() + cos(t) * valRadius;
-					vertices[index+1] = valCenter.y() + sin(t) * valRadius;
+					float t = j / static_cast<float>(nbSeg) * 2 * M_PI;
+					vertices.push_back(valCenter.x() + cos(t) * valRadius);
+					vertices.push_back(valCenter.y() + sin(t) * valRadius);
 				}
 
-				glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
-				glDrawArrays(GL_TRIANGLE_FAN, 0, nbSeg+2);
+				count[i] = vertices.size() / 2 - first[i];
 			}
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(2, GL_FLOAT, 0, vertices.data());
+			functions->glMultiDrawArrays(GL_TRIANGLE_FAN, first.data(), count.data(), nbCenter);
 			glDisableClientState(GL_VERTEX_ARRAY);
 		}
 	}
@@ -82,6 +91,8 @@ protected:
 	Data< QVector<QPointF> > center;
 	Data< QVector<double> > radius;
 	Data< QVector<QColor> > color;
+
+	QOpenGLFunctions_3_3_Core* functions;
 };
 
 int RenderDiskClass = RegisterObject<RenderDisk>("Render/Disk").setDescription("Draw a plain disk");
