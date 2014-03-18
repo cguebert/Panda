@@ -68,6 +68,7 @@ SOURCES       = main.cpp \
 	modules/generators/color/ComposeColors.cpp \
 	modules/generators/color/RandomColors.cpp \
 	modules/generators/gradient/Anim2Gradient.cpp \
+	modules/generators/gradient/ComposeGradient.cpp \
 	modules/generators/gradient/SimpleGradients.cpp \
 	modules/generators/integer/RandomSeed.cpp \
 	modules/generators/image/DocumentImage.cpp \
