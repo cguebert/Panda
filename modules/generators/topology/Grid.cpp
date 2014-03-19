@@ -39,14 +39,12 @@ public:
 		auto topo = topology.getAccessor();
 		topo->clear();
 
+		qreal dx = (nx > 0 ? dx = bounds.width() / (nx-1) : 0);
+		qreal dy = (ny > 0 ? dy = bounds.height() / (ny-1) : 0);
+
 		for(int y=0; y<ny; ++y)
-		{
 			for(int x=0; x<nx; ++x)
-			{
-				topo->addPoint(QPointF(bounds.left() + x * bounds.width() / nx,
-									   bounds.top() + y * bounds.height() / ny));
-			}
-		}
+				topo->addPoint(QPointF(bounds.left() + x * dx, bounds.top() + y * dy));
 
 		for(int y=1; y<ny; ++y)
 		{
