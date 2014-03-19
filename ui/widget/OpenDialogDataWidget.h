@@ -49,6 +49,7 @@ protected:
 
 	QWidget* container;
 	QLabel* label;
+	QPushButton* pushButton;
 	Dialog* dialog;
 	bool isReadOnly;
 
@@ -77,7 +78,7 @@ public:
 		label = new QLabel("    ");
 		label->setEnabled(!readOnly);
 
-		QPushButton* pushButton = new QPushButton("...");
+		pushButton = new QPushButton("...");
 		pushButton->setMaximumWidth(40);
 
 		QHBoxLayout* layout = new QHBoxLayout(container);
@@ -133,6 +134,7 @@ public:
 		{
 			QString text = QString(container->tr("<i>%1 elements</i>")).arg(vector_trait::size(v));
 			label->setText(text);
+			pushButton->setEnabled(vector_trait::size(v) != 0);
 		}
 		else
 		{

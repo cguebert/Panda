@@ -131,15 +131,15 @@ public:
 	void resize(int nb)
 	{
 		int oldSize = dataWidgets.size();
-		if(oldSize == nb)
-			return;
-
 		row_trait::resize(valueCopy, nb);
 
 		// Update value pointers if they changed
 		int updateNb = qMin(nb, oldSize);
 		for(int i=0; i<updateNb; ++i)
 			dataWidgets[i]->changeValuePointer(row_trait::get(valueCopy, i));
+
+		if(oldSize == nb)
+			return;
 
 		if(oldSize > nb)
 		{	// Removing
@@ -148,12 +148,15 @@ public:
 			{
 				QLayoutItem* label = formLayout->itemAt(i, QFormLayout::LabelRole);
 				QLayoutItem* field = formLayout->itemAt(i, QFormLayout::FieldRole);
-				label->widget()->hide();
-				field->widget()->hide();
-				formLayout->removeItem(label);
-				formLayout->removeItem(field);
-				delete label;
-				delete field;
+				if(label && field)
+				{
+					label->widget()->hide();
+					field->widget()->hide();
+					formLayout->removeItem(label);
+					formLayout->removeItem(field);
+					delete label;
+					delete field;
+				}
 			}
 		}
 		else if(dataWidgetCreator)
