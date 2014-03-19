@@ -76,6 +76,7 @@ SOURCES       = main.cpp \
 	modules/generators/image/LoadImage.cpp \
 	modules/generators/point/ComposePoints.cpp \
 	modules/generators/point/MouseInfo.cpp \
+	modules/generators/point/Noise.cpp \
 	modules/generators/point/PoissonDistribution.cpp \
 	modules/generators/point/RandomPoints.cpp \
 	modules/generators/point/RenderSize.cpp \

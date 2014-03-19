@@ -63,8 +63,11 @@ void Perlin::initPermutationTable()
 
 void Perlin::setSeed(int32_t seed)
 {
-	m_seed = seed;
-	initPermutationTable();
+	if(m_seed != seed)
+	{
+		m_seed = seed;
+		initPermutationTable();
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////

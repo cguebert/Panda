@@ -134,7 +134,10 @@ public:
 		{
 			QString text = QString(container->tr("<i>%1 elements</i>")).arg(vector_trait::size(v));
 			label->setText(text);
-			pushButton->setEnabled(vector_trait::size(v) != 0);
+			if(isReadOnly)
+				pushButton->setEnabled(vector_trait::size(v) != 0);
+			else
+				pushButton->setEnabled(true);
 		}
 		else
 		{
