@@ -21,6 +21,7 @@ HEADERS       = \
 	panda/helper/Algorithm.h \
 	panda/helper/Factory.h \
 	panda/helper/GradientCache.h \
+	panda/helper/Perlin.h \
 	panda/helper/Point.h \
 	panda/helper/PointsGrid.h \
 	panda/helper/Random.h \
@@ -161,6 +162,7 @@ SOURCES       = main.cpp \
 	panda/Renderer.cpp \
 	panda/helper/Factory.cpp \
 	panda/helper/GradientCache.cpp \
+	panda/helper/Perlin.cpp \
 	panda/helper/Point.cpp \
 	panda/helper/PointsGrid.cpp \
 	panda/helper/Random.cpp \
