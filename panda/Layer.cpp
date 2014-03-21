@@ -21,7 +21,6 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	{
 		QOpenGLFramebufferObjectFormat fmt;
 		fmt.setSamples(16);
-		fmt.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
 		renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
 		displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
 

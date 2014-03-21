@@ -38,7 +38,7 @@ public:
 		outPts.clear();
 		outId.clear();
 
-		if(image.getParent() && !img.isNull())
+		if(!img.isNull())
 		{
 			for(int i=0; i<nb; ++i)
 			{

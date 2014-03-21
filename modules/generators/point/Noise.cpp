@@ -15,10 +15,12 @@ public:
 		: PandaObject(doc)
 		, input(initData(&input, "input", "The list of positions at which to compute the noise" ))
 		, seed(initData(&seed, 0, "seed", "Seed for the random points generator"))
+		, scale(initData(&scale, 0.001, "scale", "Input points are scaled by this value before computing the noise"))
 		, output(initData(&output, "output", "The values of the noise at the given positions" ))
 	{
 		addInput(&input);
 		addInput(&seed);
+		addInput(&scale);
 
 		addOutput(&output);
 
@@ -30,12 +32,13 @@ public:
 	{
 		perlin.setSeed(seed.getValue());
 		const auto& valInput = input.getValue();
+		const double& valScale = scale.getValue();
 		auto valOutput = output.getAccessor();
 		int nb = valInput.size();
 		valOutput.resize(nb);
 
 		for(int i=0; i<nb; ++i)
-			valOutput[i] = perlin.fBm(valInput[i]);
+			valOutput[i] = perlin.fBm(valInput[i] * valScale);
 
 		cleanDirty();
 	}
@@ -44,6 +47,7 @@ protected:
 	helper::Perlin perlin;
 	Data< QVector<QPointF> > input;
 	Data<int> seed;
+	Data<double> scale;
 	Data< QVector<double> > output;
 };
 

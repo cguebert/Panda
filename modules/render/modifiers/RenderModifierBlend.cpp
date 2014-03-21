@@ -42,6 +42,8 @@ public:
 								GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA};
 		int src = qBound(0, source.getValue(), 7);
 		int dest = qBound(0, destination.getValue(), 8);
+
+		glEnable(GL_BLEND);
 		glBlendFunc(srcVals[src], destVals[dest]);
 	}
 
