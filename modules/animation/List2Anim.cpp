@@ -73,7 +73,7 @@ public:
 		outVal->setExtend(extend.getValue());
 		outVal->setInterpolation(interpolation.getValue());
 
-		const QVector<double>& keysList = keys.getValue();
+		const QVector<PReal>& keysList = keys.getValue();
 
 		int nb = qMin(keysList.size(), inVal.size());
 		outVal->clear();
@@ -82,7 +82,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > keys;
+	Data< QVector<PReal> > keys;
 	Data<int> interpolation, extend;
 	GenericVectorData generic;
 };
@@ -110,7 +110,7 @@ public:
 											 "input",
 											 "Animation from which to get the values"));
 		// Create an animation of the same type as the data connected
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<double>()),
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<PReal>()),
 											 false, true,
 											 "keys",
 											 "List of keys of the given animation"));
@@ -127,7 +127,7 @@ public:
 	void updateT(DataList& list)
 	{
 		typedef Data< Animation<T> > AnimData;
-		typedef Data< QVector<double> > KeysVecData;
+		typedef Data< QVector<PReal> > KeysVecData;
 		typedef Data< QVector<T> > ValuesVecData;
 		AnimData* dataInput = dynamic_cast<AnimData*>(list[0]);
 		KeysVecData* dataKeys = dynamic_cast<KeysVecData*>(list[1]);

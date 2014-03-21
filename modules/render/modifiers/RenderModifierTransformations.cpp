@@ -3,9 +3,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
 
-#include <QtGui/qopengl.h>
-
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 namespace panda {
@@ -54,7 +51,7 @@ public:
 	}
 
 protected:
-	Data<double> rotation;
+	Data<PReal> rotation;
 };
 
 int RenderModifier_RotationClass = RegisterObject<RenderModifier_Rotation>("Render/Modifier/Rotation").setDescription("Add a rotation transformation");

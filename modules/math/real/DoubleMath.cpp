@@ -22,7 +22,7 @@ public:
 
 	void update()
 	{
-		const QVector<double> &valIn = input.getValue();
+		const QVector<PReal> &valIn = input.getValue();
 		auto valOut = result.getAccessor();
 
 		int size = valIn.size();
@@ -37,7 +37,7 @@ public:
 	virtual double compute(const double& value) = 0;
 
 protected:
-	Data< QVector<double> > input, result;
+	Data< QVector<PReal> > input, result;
 };
 
 //*************************************************************************//
@@ -61,7 +61,7 @@ public:
 
 	void update()
 	{
-		const QVector<double>	&valInA = inputA.getValue(),
+		const QVector<PReal>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
@@ -84,7 +84,7 @@ public:
 	virtual double compute(const double& valA, const double& valB) = 0;
 
 protected:
-	Data< QVector<double> > inputA, inputB, result;
+	Data< QVector<PReal> > inputA, inputB, result;
 };
 
 //*************************************************************************//
@@ -290,7 +290,7 @@ public:
 
 	DoubleMath_LogBase(PandaDocument *doc)
 		: DoubleMath_1Value(doc)
-		, base(initData(&base, 10.0, "base", "Base of the logarithm"))
+		, base(initData(&base, (PReal)10.0, "base", "Base of the logarithm"))
 	{
 		addInput(&base);
 	}
@@ -299,7 +299,7 @@ public:
 	{ return qLn(val) / qLn(base.getValue()); }
 
 protected:
-	Data<double> base;
+	Data<PReal> base;
 };
 
 int DoubleMath_LogBaseClass = RegisterObject<DoubleMath_LogBase>("Math/Real/Logarithm").setDescription("Logarithm to a chosen base of the value");

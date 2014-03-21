@@ -4,7 +4,6 @@
 #include <panda/Renderer.h>
 
 #include <QPointF>
-#include <QtGui/qopengl.h>
 
 namespace panda {
 
@@ -32,7 +31,7 @@ public:
 	{
 		const QVector<QRectF>& listRect = rect.getValue();
 		const QVector<QColor>& listColor = color.getValue();
-		const QVector<double>& listWidth = lineWidth.getValue();
+		const QVector<PReal>& listWidth = lineWidth.getValue();
 
 		int nbRect = listRect.size();
 		int nbColor = listColor.size();
@@ -42,10 +41,10 @@ public:
 		{
 			if(nbColor < nbRect) nbColor = 1;
 			if(nbWidth < nbRect) nbWidth = 1;
-			double verts[8];
+			PReal verts[8];
 
 			glEnableClientState(GL_VERTEX_ARRAY);
-			glVertexPointer(2, GL_DOUBLE, 0, verts);
+			glVertexPointer(2, GL_PREAL, 0, verts);
 			for(int i=0; i<nbRect; ++i)
 			{
 				QColor valCol = listColor[i % nbColor];
@@ -67,7 +66,7 @@ public:
 
 protected:
 	Data< QVector<QRectF> > rect;
-	Data< QVector<double> > lineWidth;
+	Data< QVector<PReal> > lineWidth;
 	Data< QVector<QColor> > color;
 };
 
@@ -103,10 +102,10 @@ public:
 		if(nbRect && nbColor)
 		{
 			if(nbColor < nbRect) nbColor = 1;
-			double verts[8];
+			PReal verts[8];
 
 			glEnableClientState(GL_VERTEX_ARRAY);
-			glVertexPointer(2, GL_DOUBLE, 0, verts);
+			glVertexPointer(2, GL_PREAL, 0, verts);
 			for(int i=0; i<nbRect; ++i)
 			{
 				QColor valCol = listColor[i % nbColor];

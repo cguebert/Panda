@@ -19,15 +19,15 @@ unsigned int RandomGenerator::getRandomSeed(unsigned int limit)
 	return dist(rnd);
 }
 
-double RandomGenerator::random()
+PReal RandomGenerator::random()
 {
-	std::uniform_real_distribution<double> dist(0, 1);
+	std::uniform_real_distribution<PReal> dist(0, 1);
 	return dist(gen);
 }
 
-double RandomGenerator::random(double min, double max)
+PReal RandomGenerator::random(PReal min, PReal max)
 {
-	std::uniform_real_distribution<double> dist(std::min(min, max), std::max(min, max));
+	std::uniform_real_distribution<PReal> dist(std::min(min, max), std::max(min, max));
 	return dist(gen);
 }
 

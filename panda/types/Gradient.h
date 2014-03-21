@@ -1,6 +1,7 @@
 #ifndef GRADIENT_H
 #define GRADIENT_H
 
+#include <panda/helper/system/Config.h>
 #include <QVector>
 #include <QColor>
 
@@ -13,7 +14,7 @@ namespace types
 class Gradient
 {
 public:
-	typedef QPair<double, QColor> GradientStop;
+	typedef QPair<PReal, QColor> GradientStop;
 	typedef QVector<GradientStop> GradientStops;
 
 	enum Extend { EXTEND_PAD = 0, EXTEND_REPEAT = 1, EXTEND_REFLECT = 2 };
@@ -22,8 +23,8 @@ public:
 
 	void clear();
 
-	void add(double position, QColor color);
-	QColor get(double position) const;
+	void add(PReal position, QColor color);
+	QColor get(PReal position) const;
 
 	void setExtend(int method);
 	int getExtend() const;
@@ -41,12 +42,12 @@ public:
 		return !(g1 == g2);
 	}
 
-	static Gradient interpolate(const Gradient& g1, const Gradient& g2, double amt);
-	static QColor interpolate(const GradientStop& s1, const GradientStop& s2, double pos);
-	static QColor interpolate(const QColor& v1, const QColor& v2, double amt);
+	static Gradient interpolate(const Gradient& g1, const Gradient& g2, PReal amt);
+	static QColor interpolate(const GradientStop& s1, const GradientStop& s2, PReal pos);
+	static QColor interpolate(const QColor& v1, const QColor& v2, PReal amt);
 
 protected:
-	double extendPos(double position) const;
+	PReal extendPos(PReal position) const;
 
 	GradientStops stops;
 	Extend extend;

@@ -4,8 +4,6 @@
 #include <panda/types/Topology.h>
 #include <panda/Renderer.h>
 
-#include <QtGui/qopengl.h>
-
 namespace panda {
 
 using types::Topology;
@@ -41,7 +39,7 @@ public:
 		{
 			if(nbColor < nbPts) nbColor = 1;
 
-			std::vector<double> vertices;
+			std::vector<PReal> vertices;
 			std::vector<unsigned char> colors;
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_COLOR_ARRAY);
@@ -69,7 +67,7 @@ public:
 					colors[j*4+3] = valCol.alpha();
 				}
 
-				glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
+				glVertexPointer(2, GL_PREAL, 0, vertices.data());
 				glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
 				glDrawArrays(GL_TRIANGLE_FAN, 0, nbPts);
 			}

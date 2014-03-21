@@ -2,7 +2,6 @@
 #define HELPER_GRADIENTCACHE_H
 
 #include <QMultiHash>
-#include <QtOpenGL/QtOpenGL>
 
 #include <panda/types/Gradient.h>
 
@@ -22,7 +21,7 @@ public:
 	void resetUsedFlag();	// Prepare the flags at the start of a render
 	void clearUnused();		// Remove textures not used during the last render
 
-	GLuint getTexture(const panda::types::Gradient& gradient, int size);
+	unsigned int getTexture(const panda::types::Gradient& gradient, int size);
 
 private:
 	struct CacheItem
@@ -32,7 +31,7 @@ private:
 
 		panda::types::Gradient m_gradient;
 		int m_size;
-		GLuint m_textureId;
+		unsigned int m_textureId;
 		bool m_used;
 	};
 
@@ -41,7 +40,7 @@ private:
 
 	int nextPowerOf2(unsigned int v);
 	quint64 computeHash(const panda::types::Gradient& gradient);
-	GLuint addGradient(quint64 hash, const panda::types::Gradient& gradient, int size);
+	unsigned int addGradient(quint64 hash, const panda::types::Gradient& gradient, int size);
 };
 
 } // namespace helper

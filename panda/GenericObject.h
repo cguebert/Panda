@@ -126,10 +126,10 @@ private:
 
 //***************************************************************//
 
-typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString, types::ImageWrapper, types::Gradient, types::Topology, types::Path> allDataTypes;
-typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF, QString> allSearchableTypes;
-typedef boost::mpl::vector<int, double, QColor, QPointF, QRectF> allNumericalTypes;
-typedef boost::mpl::vector<double, QColor, QPointF, types::Gradient> allAnimationTypes;
+typedef boost::mpl::vector<int, PReal, QColor, QPointF, QRectF, QString, types::ImageWrapper, types::Gradient, types::Topology, types::Path> allDataTypes;
+typedef boost::mpl::vector<int, PReal, QColor, QPointF, QRectF, QString> allSearchableTypes;
+typedef boost::mpl::vector<int, PReal, QColor, QPointF, QRectF> allNumericalTypes;
+typedef boost::mpl::vector<PReal, QColor, QPointF, types::Gradient> allAnimationTypes;
 
 #define GENERIC_OBJECT(T, L)								\
 	protected:												\

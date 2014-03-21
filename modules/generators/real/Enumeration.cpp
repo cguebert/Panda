@@ -12,8 +12,8 @@ public:
 	GeneratorReals_Enumeration(PandaDocument *doc)
 		: PandaObject(doc)
 		, nbNumbers(initData(&nbNumbers, 10, "# numbers", "How many numbers to generate"))
-		, start(initData(&start, 0.0, "start", "Start value of the enumeration"))
-		, step(initData(&step, 1.0, "step", "Interval between 2 numbers"))
+		, start(initData(&start, (PReal)0.0, "start", "Start value of the enumeration"))
+		, step(initData(&step, (PReal)1.0, "step", "Interval between 2 numbers"))
 		, numbers(initData(&numbers, "numbers", "The list of numbers" ))
 	{
 		addInput(&nbNumbers);
@@ -38,8 +38,8 @@ public:
 
 protected:
 	Data<int> nbNumbers;
-	Data<double> start, step;
-	Data< QVector<double> > numbers;
+	Data<PReal> start, step;
+	Data< QVector<PReal> > numbers;
 };
 
 int GeneratorReals_EnumerationClass = RegisterObject<GeneratorReals_Enumeration>("Generator/Real/Enumeration").setDescription("Create a list of numbers based on an enumeration");

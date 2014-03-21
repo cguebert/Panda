@@ -64,7 +64,7 @@ public:
 	{
 		const QVector<ImageWrapper>& listImage = image.getValue();
 		const QVector<QPointF>& listCenter = center.getValue();
-		const QVector<double>& listRotation = rotation.getValue();
+		const QVector<PReal>& listRotation = rotation.getValue();
 
 		bool centered = (drawCentered.getValue() != 0);
 
@@ -139,7 +139,7 @@ public:
 protected:
 	Data< QVector<ImageWrapper> > image;
 	Data< QVector<QPointF> > center;
-	Data< QVector<double> > rotation;
+	Data< QVector<PReal> > rotation;
 	Data< int > drawCentered;
 };
 

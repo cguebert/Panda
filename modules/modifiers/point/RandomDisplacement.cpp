@@ -3,7 +3,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/helper/Random.h>
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 namespace panda {
@@ -17,10 +16,10 @@ public:
 		: PandaObject(doc)
 		, inputPoints(initData(&inputPoints, "input", "List of points to move"))
 		, outputPoints(initData(&outputPoints, "output", "List of moved points"))
-		, minAngle(initData(&minAngle, 0.0, "minAngle", "Minimum angle of the direction in which to move the points"))
-		, maxAngle(initData(&maxAngle, 360.0, "maxAngle", "Maximum angle of the direction in which to move the points"))
-		, minDist(initData(&minDist, 0.0, "minDist", "Minimum distance over which to move the points"))
-		, maxDist(initData(&maxDist, 100.0, "maxDist", "Maximum distance over which to move the points"))
+		, minAngle(initData(&minAngle, (PReal)0.0, "minAngle", "Minimum angle of the direction in which to move the points"))
+		, maxAngle(initData(&maxAngle, (PReal)360.0, "maxAngle", "Maximum angle of the direction in which to move the points"))
+		, minDist(initData(&minDist, (PReal)0.0, "minDist", "Minimum distance over which to move the points"))
+		, maxDist(initData(&maxDist, (PReal)100.0, "maxDist", "Maximum distance over which to move the points"))
 		, seed(initData(&seed, 0, "seed", "Seed for the random number generator"))
 	{
 		addInput(&inputPoints);
@@ -61,7 +60,7 @@ public:
 protected:
 	helper::RandomGenerator rnd;
 	Data< QVector<QPointF> > inputPoints, outputPoints;
-	Data<double> minAngle, maxAngle, minDist, maxDist;
+	Data<PReal> minAngle, maxAngle, minDist, maxDist;
 	Data<int> seed;
 };
 

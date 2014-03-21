@@ -18,7 +18,7 @@ public:
 		: PandaObject(doc)
 		, input(initData(&input, "input", "Input topology"))
 		, output(initData(&output, "output", "Output topology"))
-		, factor(initData(&factor, 0.1, "factor", "Portion of each edge added to a point"))
+		, factor(initData(&factor, (PReal)0.1, "factor", "Portion of each edge added to a point"))
 		, iterations(initData(&iterations, 1, "iterations", "Number of times to do the relaxation"))
 		, fixBorder(initData(&fixBorder, 0, "fix border", "If true, the points on the border will not move"))
 	{
@@ -75,7 +75,7 @@ public:
 
 protected:
 	Data< Topology > input, output;
-	Data< double > factor;
+	Data< PReal > factor;
 	Data< int > iterations, fixBorder;
 };
 

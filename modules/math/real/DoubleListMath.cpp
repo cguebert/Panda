@@ -34,7 +34,7 @@ public:
 
 	void update()
 	{
-		const QVector<double>& list = input.getValue();
+		const QVector<PReal>& list = input.getValue();
 		int nb = list.size();
 		nbElements.setValue(nb);
 
@@ -72,9 +72,9 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > input;
+	Data< QVector<PReal> > input;
 	Data<int> nbElements;
-	Data<double> sum, mean, stdDev, vMin, vMax;
+	Data<PReal> sum, mean, stdDev, vMin, vMax;
 };
 
 int DoubleListMath_SumMeanStdDevClass = RegisterObject<DoubleListMath_SumMeanStdDev>("Math/List of reals/Sum, mean and deviation").setName("Sum & mean").setDescription("Compute the sum, mean and standard deviation of a list of reals");
@@ -100,7 +100,7 @@ public:
 
 	void update()
 	{
-		QVector<double> list = input.getValue();
+		QVector<PReal> list = input.getValue();
 		int nb = list.size();
 		nbElements.setValue(nb);
 
@@ -118,9 +118,9 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > input;
+	Data< QVector<PReal> > input;
 	Data<int> nbElements;
-	Data<double> median;
+	Data<PReal> median;
 };
 
 int DoubleListMath_MedianClass = RegisterObject<DoubleListMath_Median>("Math/List of reals/Median").setDescription("Search the median value of a list of reals");

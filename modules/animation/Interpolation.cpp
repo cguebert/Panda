@@ -46,11 +46,11 @@ public:
 
 	void update()
 	{
-		QEasingCurve curve((QEasingCurve::Type)mode.getValue());
+		QEasingCurve curve(static_cast<QEasingCurve::Type>(mode.getValue()));
 
 		const QVector<T>& listFrom = inputA.getValue();
 		const QVector<T>& listTo = inputB.getValue();
-		const QVector<double>& listProg = progress.getValue();
+		const QVector<PReal>& listProg = progress.getValue();
 		auto listResult = result.getAccessor();
 		listResult.clear();
 
@@ -71,8 +71,8 @@ public:
 
 			for(int i=0; i<nb; ++i)
 			{
-				double prog = qBound(0.0, listProg[i%nbV], 1.0);
-				double amt = curve.valueForProgress(prog);
+				PReal prog = qBound<PReal>(0.0, listProg[i%nbV], 1.0);
+				PReal amt = curve.valueForProgress(prog);
 
 				listResult[i] = types::interpolate(listFrom[i%nbP], listTo[i%nbP], amt);
 			}
@@ -83,12 +83,12 @@ public:
 
 protected:
 	Data< QVector<T> > inputA, inputB;
-	Data< QVector<double> > progress;
+	Data< QVector<PReal> > progress;
 	Data< QVector<T> > result;
 	Data<int> mode;
 };
 
-int AnimationInterpolation_DoubleClass = RegisterObject< AnimationInterpolation<double> >("Animation/Interpolation/Reals").setName("Interpolation reals").setDescription("Interpolate between 2 reals");
+int AnimationInterpolation_DoubleClass = RegisterObject< AnimationInterpolation<PReal> >("Animation/Interpolation/Reals").setName("Interpolation reals").setDescription("Interpolate between 2 reals");
 int AnimationInterpolation_PointsClass = RegisterObject< AnimationInterpolation<QPointF> >("Animation/Interpolation/Points").setName("Interpolation points").setDescription("Interpolate between 2 points");
 int AnimationInterpolation_ColorClass = RegisterObject< AnimationInterpolation<QColor> >("Animation/Interpolation/Colors").setName("Interpolation colors").setDescription("Interpolate between 2 colors");
 

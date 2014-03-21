@@ -1,4 +1,5 @@
 #include <panda/helper/GradientCache.h>
+#include <QtGui/qopengl.h>
 
 namespace panda
 {
@@ -38,9 +39,9 @@ void GradientCache::clearUnused()
 	}
 }
 
-GLuint GradientCache::getTexture(const types::Gradient &gradient, int size)
+unsigned int GradientCache::getTexture(const types::Gradient &gradient, int size)
 {
-	if(gradient.getStops().size() < 2)
+	if(gradient.getStops().empty())
 		return -1;
 	quint64 hash = computeHash(gradient);
 	GradientTableHash::iterator it = m_cache.find(hash), itEnd = m_cache.end();
@@ -124,7 +125,7 @@ static inline uint qtToGlColor(uint c)
 	return o;
 }
 
-GLuint GradientCache::addGradient(quint64 hash, const types::Gradient &gradient, int size)
+unsigned int GradientCache::addGradient(quint64 hash, const types::Gradient &gradient, int size)
 {
 	size = qBound(64, nextPowerOf2(size), 1024);
 	CacheItem item(gradient, size);
@@ -139,8 +140,8 @@ GLuint GradientCache::addGradient(quint64 hash, const types::Gradient &gradient,
 	int pos = 0;
 	uint prevColor = colors[0];
 	buffer[pos++] = qtToGlColor(prevColor);
-	qreal incr = 1.0 / qreal(size);
-	qreal fpos = 1.5 * incr;
+	PReal incr = 1.0 / PReal(size);
+	PReal fpos = 1.5 * incr;
 
 	while(fpos <= stops.first().first)
 	{
@@ -150,8 +151,8 @@ GLuint GradientCache::addGradient(quint64 hash, const types::Gradient &gradient,
 
 	for(int i=0; i<nbStops-1; ++i)
 	{
-		qreal prevPos = stops[i].first, nextPos = stops[i+1].first;
-		qreal delta = 1/(nextPos - prevPos);
+		PReal prevPos = stops[i].first, nextPos = stops[i+1].first;
+		PReal delta = 1/(nextPos - prevPos);
 		uint nextColor = colors[i+1];
 		while(fpos < nextPos && pos < size)
 		{

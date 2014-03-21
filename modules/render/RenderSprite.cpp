@@ -9,7 +9,6 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 namespace panda {
@@ -63,7 +62,7 @@ public:
 										"uniform sampler2D tex0;"
 										"varying vec4 f_color;"
 										"void main(void){"
-										"   gl_FragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y));" // texture(tex0, gl_PointCoord) * f_color
+										"   gl_FragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y));" //  * f_color
 										"}"
 									   );
 
@@ -83,7 +82,7 @@ public:
 	void render()
 	{
 		const QVector<QPointF>& listPosition = position.getValue();
-		QVector<double> listSize = size.getValue();
+		QVector<PReal> listSize = size.getValue();
 		const QVector<QColor>& listColor = color.getValue();
 		GLuint texId = texture.getValue().getTexture();
 
@@ -106,7 +105,7 @@ public:
 			}
 
 			int posBytes = nbPosition * sizeof(qreal) * 2;
-			int sizeBytes = nbPosition * sizeof(double);
+			int sizeBytes = nbPosition * sizeof(PReal);
 			int colorBytes = nbPosition * sizeof(float) * 4;
 			posBuffer.bind();
 			if(posBuffer.size() < posBytes)
@@ -128,15 +127,14 @@ public:
 				colorBuffer.write(0, tmpColors.data(), colorBytes);
 			}
 
-//			glEnable(GL_BLEND);
-//			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 			glEnable(GL_POINT_SPRITE);
 			glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 			functions.glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, texId);
 			glEnable(GL_TEXTURE_2D);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 			shader.bind();
 
@@ -146,7 +144,7 @@ public:
 
 			sizeBuffer.bind();
 			shader.enableAttributeArray(attribute_size);
-			shader.setAttributeArray(attribute_size, GL_DOUBLE, 0, 1);
+			shader.setAttributeArray(attribute_size, GL_PREAL, 0, 1);
 
 			colorBuffer.bind();
 			shader.enableAttributeArray(attribute_color);
@@ -174,7 +172,7 @@ public:
 
 protected:
 	Data< QVector<QPointF> > position;
-	Data< QVector<double> > size;
+	Data< QVector<PReal> > size;
 	Data< QVector<QColor> > color;
 	Data< ImageWrapper > texture;
 

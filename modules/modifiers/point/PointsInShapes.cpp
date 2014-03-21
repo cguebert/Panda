@@ -66,7 +66,7 @@ public:
 	ModifierPoints_PointsInDisk(PandaDocument *doc)
 		: PandaObject(doc)
 		, center(initData(&center, "center", "Center of the disk used to select valid points"))
-		, radius(initData(&radius, "radius", "Radius of the disk used to select valid points"))
+		, radius(initData(&radius, (PReal)50, "radius", "Radius of the disk used to select valid points"))
 		, inputPoints(initData(&inputPoints, "input", "List of points to test"))
 		, outputPoints(initData(&outputPoints, "output", "List of valid points" ))
 		, outputIndices(initData(&outputIndices, "indices", "Indices of the valid points"))
@@ -109,7 +109,7 @@ public:
 
 protected:
 	Data< QPointF > center;
-	Data< double > radius;
+	Data< PReal > radius;
 	Data< QVector<QPointF> > inputPoints, outputPoints;
 	Data< QVector<int> > outputIndices;
 };

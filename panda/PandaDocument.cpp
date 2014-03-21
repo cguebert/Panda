@@ -22,8 +22,8 @@ PandaDocument::PandaDocument(QObject *parent)
 	, currentIndex(1)
 	, renderSize(initData(&renderSize, QPointF(800,600), "render size", "Size of the image to be rendered"))
 	, backgroundColor(initData(&backgroundColor, QColor(255,255,255), "background color", "Background color of the image to be rendered"))
-	, animTime(initData(&animTime, 0.0, "time", "Time of the animation"))
-	, timestep(initData(&timestep, 0.01, "timestep", "Time step of the animation"))
+	, animTime(initData(&animTime, (PReal)0.0, "time", "Time of the animation"))
+	, timestep(initData(&timestep, (PReal)0.01, "timestep", "Time step of the animation"))
 	, useTimer(initData(&useTimer, 1, "use timer", "If true, wait before the next timestep. If false, compute the next one as soon as the previous finished."))
 	, mousePosition(initData(&mousePosition, "mouse position", "Current position of the mouse in the render view"))
 	, mouseClick(initData(&mouseClick, 0, "mouse click", "1 if the left mouse button is pressed"))
@@ -325,7 +325,7 @@ void PandaDocument::resetDocument()
 	pandaObjects.clear();
 	currentIndex = 1;
 	animTime.setValue(0.0);
-	timestep.setValue(0.01);
+	timestep.setValue((PReal)0.01);
 	useTimer.setValue(1);
 	renderSize.setValue(QPointF(800,600));
 	backgroundColor.setValue(QColor(255,255,255));
@@ -902,7 +902,7 @@ void PandaDocument::play(bool playing)
 	if(animPlaying)
 	{
 		if(useTimer.getValue())
-			animTimer->start(qMax(0.0, timestep.getValue() * 1000));
+			animTimer->start(qMax((PReal)0.0, timestep.getValue() * 1000));
 		else
 			animTimer->start(0);
 	}
@@ -953,7 +953,7 @@ void PandaDocument::step()
 	emit modified();
 
 	if(animPlaying && useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
-		animTimer->start(qMax(0.0, timestep.getValue() * 1000 - lastFrameDuration));
+		animTimer->start(qMax((PReal)0.0, timestep.getValue() * 1000 - lastFrameDuration));
 }
 
 void PandaDocument::rewind()

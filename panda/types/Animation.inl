@@ -34,7 +34,7 @@ void Animation<T>::clear()
 }
 
 template <class T>
-void Animation<T>::add(double position, value_type value)
+void Animation<T>::add(PReal position, value_type value)
 {
 	// Insert already at the right place
 	for(int i=0, nb=stops.size(); i<nb; ++i)
@@ -51,7 +51,7 @@ void Animation<T>::add(double position, value_type value)
 }
 
 template <class T>
-typename Animation<T>::value_type Animation<T>::get(double position) const
+typename Animation<T>::value_type Animation<T>::get(PReal position) const
 {
 	int nb = stops.size();
 	if(!nb)
@@ -59,9 +59,9 @@ typename Animation<T>::value_type Animation<T>::get(double position) const
 	else if(nb == 1)
 		return stops.front().second;
 
-	double pMin = stops.front().first;
-	double pMax = stops.back().first;
-	double pos = 0.5;
+	PReal pMin = stops.front().first;
+	PReal pMax = stops.back().first;
+	PReal pos = 0.5;
 	if(pMax - pMin > 1e-10) // If the interval is too small, consider pos to be in the middle
 		pos = extendPos(position, pMin, pMax);
 
@@ -131,7 +131,7 @@ int Animation<T>::getExtend() const
 }
 
 template <class T>
-inline bool compareStops(const QPair<double, T> &p1, const QPair<double, T> &p2)
+inline bool compareStops(const QPair<PReal, T> &p1, const QPair<PReal, T> &p2)
 {
 	return p1.first < p2.first;
 }
@@ -168,7 +168,7 @@ typename Animation<T>::ValuesList Animation<T>::getValues() const
 }
 
 template <class T>
-double Animation<T>::extendPos(double position, double pMin, double pMax) const
+PReal Animation<T>::extendPos(PReal position, PReal pMin, PReal pMax) const
 {
 	switch(extend)
 	{
@@ -178,17 +178,17 @@ double Animation<T>::extendPos(double position, double pMin, double pMax) const
 
 	case EXTEND_REPEAT:
 	{
-		double w = pMax - pMin;
-		double p = (position - pMin) / w;
+		PReal w = pMax - pMin;
+		PReal p = (position - pMin) / w;
 		p = p - qFloor(p);
 		return pMin + p * w;
 	}
 
 	case EXTEND_REFLECT:
 	{
-		double w = pMax - pMin;
-		double p = (position - pMin) / w;
-		double t = position - qFloor(position);
+		PReal w = pMax - pMin;
+		PReal p = (position - pMin) / w;
+		PReal t = position - qFloor(position);
 		p = ((qFloor(p) % 2) ? 1.0 - t : t);
 		return pMin + p * w;
 	}
@@ -196,9 +196,9 @@ double Animation<T>::extendPos(double position, double pMin, double pMax) const
 }
 
 template <class T>
-typename Animation<T>::value_type Animation<T>::interpolate(const AnimationStop& s1, const AnimationStop& s2, double pos) const
+typename Animation<T>::value_type Animation<T>::interpolate(const AnimationStop& s1, const AnimationStop& s2, PReal pos) const
 {
-	double amt = (pos - s1.first) / (s2.first - s1.first);
+	PReal amt = (pos - s1.first) / (s2.first - s1.first);
 	QEasingCurve ec(static_cast<QEasingCurve::Type>(interpolation));
 	amt = ec.valueForProgress(amt);
 	return types::interpolate(s1.second, s2.second, amt);

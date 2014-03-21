@@ -16,7 +16,7 @@ public:
 		, resetValues(false)
 		, settingDirty(false)
 		, prevControl(-1.0)
-		, control(initData(&control, 0.0, "control", "The buffer will be updated each time this value changes"))
+		, control(initData(&control, (PReal)0.0, "control", "The buffer will be updated each time this value changes"))
 		, resetData(initData(&resetData, 0, "reset", "Set this at 1 to reset the values"))
 		, generic(initData(&generic, "input", "Connect here the lists to put in the buffer"))
 	{
@@ -104,7 +104,7 @@ public:
 protected:
 	bool resetValues, settingDirty;
 	double prevControl;
-	Data<double> control;
+	Data<PReal> control;
 	Data<int> resetData;
 	GenericVectorData generic;
 };

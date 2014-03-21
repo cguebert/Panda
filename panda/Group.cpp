@@ -397,8 +397,13 @@ void Group::load(QDomElement& elem)
 			object->load(objectNode);
 
 			QPointF pos;
+#ifdef PANDA_DOUBLE
 			pos.setX(objectNode.attribute("x").toDouble());
 			pos.setY(objectNode.attribute("y").toDouble());
+#else
+			pos.setX(objectNode.attribute("x").toFloat());
+			pos.setY(objectNode.attribute("y").toFloat());
+#endif
 			positions[object] = pos;
 		}
 		else

@@ -4,9 +4,7 @@
 #include <panda/Renderer.h>
 
 #include <QPointF>
-#include <QtGui/qopengl.h>
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 namespace panda {
@@ -37,8 +35,8 @@ public:
 	void render()
 	{
 		const QVector<QPointF>& listCenter = center.getValue();
-		const QVector<double>& listRadius = radius.getValue();
-		const QVector<double>& listWidth = lineWidth.getValue();
+		const QVector<PReal>& listRadius = radius.getValue();
+		const QVector<PReal>& listWidth = lineWidth.getValue();
 		const QVector<QColor>& listColor = color.getValue();
 
 		int nbCenter = listCenter.size();
@@ -51,7 +49,7 @@ public:
 			if(nbRadius < nbCenter) nbRadius = 1;
 			if(nbWidth < nbCenter) nbWidth = 1;
 			if(nbColor < nbCenter) nbColor = 1;
-			std::vector<double> vertices;
+			std::vector<PReal> vertices;
 
 			glEnableClientState(GL_VERTEX_ARRAY);
 			for(int i=0; i<nbCenter; ++i)
@@ -69,11 +67,11 @@ public:
 				QPointF valCenter = listCenter[i];
 				for(int i=0; i<nbSeg; i++)
 				{
-					double t = i / static_cast<double>(nbSeg) * 2 * M_PI;
+					double t = i / static_cast<PReal>(nbSeg) * 2 * M_PI;
 					vertices[i*2  ] = valCenter.x() + cos(t) * valRadius;
 					vertices[i*2+1] = valCenter.y() + sin(t) * valRadius;
 				}
-				glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
+				glVertexPointer(2, GL_PREAL, 0, vertices.data());
 				glDrawArrays(GL_LINE_LOOP, 0, nbSeg);
 			}
 			glDisableClientState(GL_VERTEX_ARRAY);
@@ -82,7 +80,7 @@ public:
 
 protected:
 	Data< QVector<QPointF> > center;
-	Data< QVector<double> > radius, lineWidth;
+	Data< QVector<PReal> > radius, lineWidth;
 	Data< QVector<QColor> > color;
 };
 

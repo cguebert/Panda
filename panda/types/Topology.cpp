@@ -859,8 +859,13 @@ void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
 	while(!ptNode.isNull())
 	{
 		QPointF pt;
+#ifdef PANDA_DOUBLE
 		pt.setX(ptNode.attribute("x").toDouble());
 		pt.setY(ptNode.attribute("y").toDouble());
+#else
+		pt.setX(ptNode.attribute("x").toFloat());
+		pt.setY(ptNode.attribute("y").toFloat());
+#endif
 		tmp.addPoint(pt);
 		ptNode = ptNode.nextSiblingElement("Point");
 	}

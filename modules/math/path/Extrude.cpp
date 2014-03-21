@@ -6,7 +6,6 @@
 #include <panda/types/Animation.h>
 #include <panda/types/Path.h>
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 namespace panda {
@@ -48,7 +47,7 @@ public:
 	void update()
 	{
 		const QVector<QPointF>& pts = input.getValue();
-		const Animation<double>& widthAnim = width.getValue();
+		const Animation<PReal>& widthAnim = width.getValue();
 		double w = widthAnim.get(0) / 2;
 		int cap = capStyle.getValue();
 		int join = joinStyle.getValue();
@@ -62,7 +61,7 @@ public:
 			return;
 
 		QVector<QPointF> normals;
-		QVector<double> abscissa;
+		QVector<PReal> abscissa;
 		normals.resize(nbPts-1);
 		abscissa.resize(nbPts);
 		abscissa[0] = 0;
@@ -376,7 +375,7 @@ public:
 
 protected:
 	Data< Path > input;
-	Data< Animation<double> > width;
+	Data< Animation<PReal> > width;
 	Data< int > capStyle, joinStyle;
 	Data< Topology > output;
 	Data< QVector<QPointF> > coordUV;

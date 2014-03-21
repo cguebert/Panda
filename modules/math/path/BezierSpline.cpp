@@ -92,8 +92,8 @@ protected:
 	Data<Path> input, output;
 	Data<int> steps;
 
-	QVector<double> binomials;
-	QVector< QVector<double> > coefs;
+	QVector<PReal> binomials;
+	QVector< QVector<PReal> > coefs;
 };
 
 int Curve_BezierSplineClass = RegisterObject<Curve_BezierSpline>("Math/Path/Bezier spline").setDescription("Compute a bezier spline using the controls points");

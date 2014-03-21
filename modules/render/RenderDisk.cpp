@@ -6,7 +6,7 @@
 #include <panda/helper/GradientCache.h>
 
 #include <QPointF>
-#include <QOpenGLFunctions_3_3_Core>
+#include <math.h>
 
 using panda::types::Gradient;
 using panda::helper::GradientCache;
@@ -31,16 +31,12 @@ public:
 		center.getAccessor().push_back(QPointF(100, 100));
 		radius.getAccessor().push_back(5.0);
 		color.getAccessor().push_back(QColor(0,0,0));
-
-		QOpenGLContext* context = QOpenGLContext::currentContext();
-		functions = context->versionFunctions<QOpenGLFunctions_3_3_Core>();
-		functions->initializeOpenGLFunctions();
 	}
 
 	void render()
 	{
 		const QVector<QPointF>& listCenter = center.getValue();
-		const QVector<double>& listRadius = radius.getValue();
+		const QVector<PReal>& listRadius = radius.getValue();
 		const QVector<QColor>& listColor = color.getValue();
 
 		int nbCenter = listCenter.size();
@@ -51,48 +47,43 @@ public:
 		{
 			if(nbRadius < nbCenter) nbRadius = 1;
 			if(nbColor < nbCenter) nbColor = 1;
-			QVector<float> vertices;
-			QVector<int> first, count;
-			first.resize(nbCenter);
-			count.resize(nbCenter);
+			std::vector<PReal> vertices;
 
+			PReal PI2 = static_cast<PReal>(M_PI) * 2;
+			glEnableClientState(GL_VERTEX_ARRAY);
 			for(int i=0; i<nbCenter; ++i)
 			{
-				first[i] = vertices.size() / 2;
 				QColor valCol = listColor[i % nbColor];
 				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
 
-				float valRadius = listRadius[i % nbRadius];
-				int nbSeg = static_cast<int>(floor(valRadius * M_PI * 2));
+				PReal valRadius = listRadius[i % nbRadius];
+				int nbSeg = static_cast<int>(floor(valRadius * PI2));
 				if(nbSeg < 3) continue;
+				vertices.resize((nbSeg + 2) * 2);
 
 				QPointF valCenter = listCenter[i];
-				vertices.push_back(valCenter.x());
-				vertices.push_back(valCenter.y());
+				vertices[0] = valCenter.x();
+				vertices[1] = valCenter.y();
 
-				for(int j=0; j<=nbSeg; ++j)
+				for(int i=0; i<=nbSeg; ++i)
 				{
-					float t = j / static_cast<float>(nbSeg) * 2 * M_PI;
-					vertices.push_back(valCenter.x() + cos(t) * valRadius);
-					vertices.push_back(valCenter.y() + sin(t) * valRadius);
+					PReal t = i / static_cast<PReal>(nbSeg) * PI2;
+					int index = (i+1)*2;
+					vertices[index  ] = valCenter.x() + cos(t) * valRadius;
+					vertices[index+1] = valCenter.y() + sin(t) * valRadius;
 				}
 
-				count[i] = vertices.size() / 2 - first[i];
+				glVertexPointer(2, GL_PREAL, 0, vertices.data());
+				glDrawArrays(GL_TRIANGLE_FAN, 0, nbSeg+2);
 			}
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glVertexPointer(2, GL_FLOAT, 0, vertices.data());
-			functions->glMultiDrawArrays(GL_TRIANGLE_FAN, first.data(), count.data(), nbCenter);
 			glDisableClientState(GL_VERTEX_ARRAY);
 		}
 	}
 
 protected:
 	Data< QVector<QPointF> > center;
-	Data< QVector<double> > radius;
+	Data< QVector<PReal> > radius;
 	Data< QVector<QColor> > color;
-
-	QOpenGLFunctions_3_3_Core* functions;
 };
 
 int RenderDiskClass = RegisterObject<RenderDisk>("Render/Disk").setDescription("Draw a plain disk");
@@ -126,7 +117,7 @@ public:
 	void render()
 	{
 		const QVector<QPointF>& listCenter = center.getValue();
-		const QVector<double>& listRadius = radius.getValue();
+		const QVector<PReal>& listRadius = radius.getValue();
 		const QVector<Gradient>& listGradient = gradient.getValue();
 
 		int nbCenter = listCenter.size();
@@ -137,16 +128,17 @@ public:
 		{
 			if(nbRadius < nbCenter) nbRadius = 1;
 			if(nbGradient < nbCenter) nbGradient = 1;
-			std::vector<double> vertices, texCoords;
+			std::vector<PReal> vertices, texCoords;
 
 			glEnable(GL_TEXTURE_2D);
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+			PReal PI2 = static_cast<PReal>(M_PI) * 2;
 			for(int i=0; i<nbCenter; ++i)
 			{
-				double valRadius = listRadius[i % nbRadius];
-				int nbSeg = static_cast<int>(floor(valRadius * M_PI * 2));
+				PReal valRadius = listRadius[i % nbRadius];
+				int nbSeg = static_cast<int>(floor(valRadius * PI2));
 				if(nbSeg < 3) continue;
 				int nbPoints = (nbSeg + 2) * 2;
 				vertices.resize(nbPoints);
@@ -168,15 +160,15 @@ public:
 
 				for(int i=0; i<=nbSeg; ++i)
 				{
-					double t = i / static_cast<double>(nbSeg) * 2 * M_PI;
+					PReal t = i / static_cast<PReal>(nbSeg) * PI2;
 					int index = (i+1)*2;
 					vertices[index] = valCenter.x() + cos(t) * valRadius;
 					vertices[index+1] = valCenter.y() + sin(t) * valRadius;
 					texCoords[index] = 1; texCoords[index+1] = 0;
 				}
 
-				glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
-				glTexCoordPointer(2, GL_DOUBLE, 0, texCoords.data());
+				glVertexPointer(2, GL_PREAL, 0, vertices.data());
+				glTexCoordPointer(2, GL_PREAL, 0, texCoords.data());
 				glDrawArrays(GL_TRIANGLE_FAN, 0, nbSeg+2);
 			}
 			glDisableClientState(GL_VERTEX_ARRAY);
@@ -187,7 +179,7 @@ public:
 
 protected:
 	Data< QVector<QPointF> > center;
-	Data< QVector<double> > radius;
+	Data< QVector<PReal> > radius;
 	Data< QVector<Gradient> > gradient;
 };
 

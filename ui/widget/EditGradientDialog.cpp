@@ -83,7 +83,8 @@ void EditGradientView::paintEvent(QPaintEvent *)
 	painter.fillRect(hm, vm, gradW, gradH, pm);
 
 	QLinearGradient grad(0, 0, gradW, 0);
-	grad.setStops(stops);
+	for(const auto&s : stops)
+		grad.setColorAt(s.first, s.second);
 	painter.fillRect(hm, vm, gradW, gradH, grad);
 
 	paths.clear();
@@ -145,7 +146,7 @@ void EditGradientView::mouseMoveEvent(QMouseEvent *event)
 	if(moving)
 	{
 		int dx = event->x() - initialMouseX;
-		double dfx = dx / static_cast<double>(width()-10);
+		double dfx = dx / static_cast<PReal>(width()-10);
 		double pos = qBound(0.0, initialPos + dfx, 1.0);
 		if(pos != prevPos)
 		{
@@ -297,7 +298,11 @@ void EditGradientDialog::changePosition()
 		return;
 
 	bool ok;
+#ifdef PANDA_DOUBLE
 	double pos = posEdit->text().toDouble(&ok);
+#else
+	double pos = posEdit->text().toFloat(&ok);
+#endif
 	if(ok)
 	{
 		stops[selected].first = pos;
@@ -444,7 +449,8 @@ public:
 		painter.fillRect(0, 0, size.width(), size.height(), QBrush(pm));
 
 		QLinearGradient grad(0, 0, size.width(), 0);
-		grad.setStops(theGradient.getStops());
+		for(const auto&s : theGradient.getStops())
+			grad.setColorAt(s.first, s.second);
 		painter.fillRect(0, 0, size.width(), size.height(), QBrush(grad));
 	}
 };

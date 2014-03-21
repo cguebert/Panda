@@ -29,7 +29,7 @@ public:
 											 true, false,
 											 "color",
 											 "Color to add to the gradient"));
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<double>()),
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<PReal>()),
 											 true, false,
 											 "position",
 											 "Position where to insert the color"));
@@ -50,9 +50,9 @@ public:
 	void updateT(DataList& list)
 	{
 		typedef Data< QVector<QColor> > VecColorData;
-		typedef Data< double > VecDoubleData;
+		typedef Data< PReal > VecRealData;
 		VecColorData* dataColor = dynamic_cast<VecColorData*>(list[0]);
-		VecDoubleData* dataPosition = dynamic_cast<VecDoubleData*>(list[1]);
+		VecRealData* dataPosition = dynamic_cast<VecRealData*>(list[1]);
 
 		Q_ASSERT(dataColor && dataPosition);
 

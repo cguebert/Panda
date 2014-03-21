@@ -5,7 +5,6 @@
 #include <panda/types/Path.h>
 
 #include <QPointF>
-#include <QtGui/qopengl.h>
 
 namespace panda {
 
@@ -20,7 +19,7 @@ public:
 		: Renderer(parent)
 		, inputA(initData(&inputA, "point 1", "Start of the line"))
 		, inputB(initData(&inputB, "point 2", "End of the line"))
-		, width(initData(&width, 1.0, "width", "Width of the line" ))
+		, width(initData(&width, (PReal)1.0, "width", "Width of the line" ))
 		, color(initData(&color, "color", "Color of the line"))
 	{
 		addInput(&inputA);
@@ -52,7 +51,7 @@ public:
 		{
 			if(nbColor < nbLines) nbColor = 1;
 
-			glLineWidth(qMax(1.0, width.getValue()));
+			glLineWidth(qMax((PReal)1.0, width.getValue()));
 			glBegin(GL_LINES);
 			for(int i=0; i<nbLines; ++i)
 			{
@@ -77,7 +76,7 @@ public:
 
 protected:
 	Data< QVector<QPointF> > inputA, inputB;
-	Data<double> width;
+	Data<PReal> width;
 	Data< QVector<QColor> > color;
 };
 
@@ -93,7 +92,7 @@ public:
 	RenderPath(PandaDocument *parent)
 		: Renderer(parent)
 		, input(initData(&input, "path", "Path to be drawn"))
-		, width(initData(&width, 1.0, "width", "Width of the line" ))
+		, width(initData(&width, (PReal)1.0, "width", "Width of the line" ))
 		, color(initData(&color, "color", "Color of the line"))
 	{
 		addInput(&input);
@@ -114,7 +113,7 @@ public:
 		{
 			if(nbColor < nb) nbColor = 1;
 
-			glLineWidth(qMax(1.0, width.getValue()));
+			glLineWidth(qMax((PReal)1.0, width.getValue()));
 
 			for(int i=0; i<nb; ++i)
 			{
@@ -133,7 +132,7 @@ public:
 
 protected:
 	Data< QVector<Path> > input;
-	Data<double> width;
+	Data<PReal> width;
 	Data< QVector<QColor> > color;
 };
 

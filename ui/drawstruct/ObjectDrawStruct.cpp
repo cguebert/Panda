@@ -199,8 +199,13 @@ void ObjectDrawStruct::save(QDomDocument&, QDomElement& elem)
 void ObjectDrawStruct::load(QDomElement& elem)
 {
 	QPointF newPos;
+#ifdef PANDA_DOUBLE
 	newPos.setX(elem.attribute("x").toDouble());
 	newPos.setY(elem.attribute("y").toDouble());
+#else
+	newPos.setX(elem.attribute("x").toFloat());
+	newPos.setY(elem.attribute("y").toFloat());
+#endif
 	move(newPos - position);
 }
 

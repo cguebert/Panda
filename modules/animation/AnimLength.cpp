@@ -26,8 +26,8 @@ public:
 											 true, false,
 											 "input",
 											 "Animation to analyse"));
-		// Create a single double value
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<double>()),
+		// Create a single real value
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<PReal>()),
 											 false, true,
 											 "length",
 											 "Length of this animation"));
@@ -43,10 +43,10 @@ public:
 	void updateT(DataList& list)
 	{
 		typedef Data< Animation<T> > AnimData;
-		typedef Data< double > DoubleData;
+		typedef Data< PReal > RealData;
 		typedef Data< int > IntData;
 		AnimData* dataInput = dynamic_cast<AnimData*>(list[0]);
-		DoubleData* dataLength = dynamic_cast<DoubleData*>(list[1]);
+		RealData* dataLength = dynamic_cast<RealData*>(list[1]);
 		IntData* dataSize = dynamic_cast<IntData*>(list[2]);
 
 		Q_ASSERT(dataInput && dataLength && dataSize);

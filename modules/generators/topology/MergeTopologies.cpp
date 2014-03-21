@@ -24,7 +24,7 @@ public:
 	GeneratorTopology_MergeTopologies(PandaDocument *doc)
 		: PandaObject(doc)
 		, inputs(initData(&inputs, "inputs", "Topologies to merge"))
-		, threshold(initData(&threshold, 0.1, "threshold", "Distance under which 2 points are considered the same"))
+		, threshold(initData(&threshold, (PReal)0.1, "threshold", "Distance under which 2 points are considered the same"))
 		, output(initData(&output, "output", "Merged topology"))
 	{
 		addInput(&inputs);
@@ -99,7 +99,7 @@ public:
 
 protected:
 	Data< QVector<Topology> > inputs;
-	Data< double > threshold;
+	Data< PReal > threshold;
 	Data< Topology > output;
 };
 

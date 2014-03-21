@@ -23,7 +23,7 @@ public:
 
 	void update()
 	{
-		const QVector<double>	&xVal = ptX.getValue(),
+		const QVector<PReal>	&xVal = ptX.getValue(),
 								&yVal = ptY.getValue();
 		auto pts = point.getAccessor();
 
@@ -39,7 +39,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > ptX, ptY;
+	Data< QVector<PReal> > ptX, ptY;
 	Data< QVector<QPointF> > point;
 };
 
@@ -84,7 +84,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > ptX, ptY;
+	Data< QVector<PReal> > ptX, ptY;
 	Data< QVector<QPointF> > point;
 };
 

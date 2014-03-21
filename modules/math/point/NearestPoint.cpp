@@ -19,7 +19,7 @@ public:
 		, unique(initData(&unique, 0, "unique", "Set to 1 if multiple points can not find the same result"))
 		, notSelf(initData(&notSelf, 0, "notSelf", "Set to 1 if a point can not return itself as the result"))
 		, found(initData(&found, "found", "For each input point, this is 1 if a point was found, 0 otherwise"))
-		, maxDist(initData(&maxDist, 100.0, "maxDist", "Distance maximum for the search"))
+		, maxDist(initData(&maxDist, (PReal)100.0, "maxDist", "Distance maximum for the search"))
 	{
 		addInput(&input);
 		addInput(&points);
@@ -81,7 +81,7 @@ protected:
 	Data< QVector<QPointF> > input, points, output;
 	Data<int> unique, notSelf;
 	Data< QVector<int> > found;
-	Data<double> maxDist;
+	Data<PReal> maxDist;
 };
 
 int PointListMath_NearestClass = RegisterObject<PointListMath_Nearest>("Math/List of points/Nearest point")

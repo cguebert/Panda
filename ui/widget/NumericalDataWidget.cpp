@@ -234,10 +234,10 @@ public:
 //***************************************************************//
 
 template <>
-class DataWidgetContainer< double >
+class DataWidgetContainer< PReal >
 {
 protected:
-	typedef double value_type;
+	typedef PReal value_type;
 	QLineEdit* lineEdit;
 
 public:
@@ -253,14 +253,22 @@ public:
 	void readFromData(const value_type& v)
 	{
 		QString t = lineEdit->text();
+#ifdef PANDA_DOUBLE
 		value_type n = t.toDouble();
+#else
+		value_type n = t.toFloat();
+#endif
 		if (v != n || t.isEmpty())
 			lineEdit->setText(QString::number(v));
 	}
 	void writeToData(value_type& v)
 	{
 		bool ok;
+#ifdef PANDA_DOUBLE
 		value_type n = lineEdit->text().toDouble(&ok);
+#else
+		value_type n = lineEdit->text().toFloat(&ok);
+#endif
 		if(ok)
 			v = n;
 	}
@@ -302,8 +310,13 @@ public:
 	{
 		QString tx = lineEditX->text();
 		QString ty = lineEditY->text();
+#ifdef PANDA_DOUBLE
 		double x = tx.toDouble();
 		double y = ty.toDouble();
+#else
+		double x = tx.toFloat();
+		double y = ty.toFloat();
+#endif
 		if(v.x() != x || tx.isEmpty())
 			lineEditX->setText(QString::number(v.x()));
 		if(v.y() != y || ty.isEmpty())
@@ -311,8 +324,13 @@ public:
 	}
 	void writeToData(value_type& v)
 	{
+#ifdef PANDA_DOUBLE
 		double x = lineEditX->text().toDouble();
 		double y = lineEditY->text().toDouble();
+#else
+		double x = lineEditX->text().toFloat();
+		double y = lineEditY->text().toFloat();
+#endif
 		v = QPointF(x, y);
 	}
 };
@@ -325,8 +343,8 @@ RegisterWidget<SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed");
 RegisterWidget<SimpleDataWidget<int, EnumDataWidget> > DWClass_enum("enum");
 RegisterWidget<SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_int("slider");
 
-RegisterWidget<SimpleDataWidget<double> > DWClass_double("default");
-RegisterWidget<SimpleDataWidget<double, SliderDataWidget<double> > > DWClass_slider_double("slider");
+RegisterWidget<SimpleDataWidget<PReal> > DWClass_double("default");
+RegisterWidget<SimpleDataWidget<PReal, SliderDataWidget<PReal> > > DWClass_slider_double("slider");
 
 RegisterWidget<SimpleDataWidget<QPointF> > DWClass_point("default");
 

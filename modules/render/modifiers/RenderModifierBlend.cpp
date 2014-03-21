@@ -3,8 +3,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
 
-#include <QtGui/qopengl.h>
-
 namespace panda {
 
 class RenderModifier_BlendMode : public Renderer

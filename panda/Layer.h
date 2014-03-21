@@ -68,7 +68,7 @@ protected:
 	Data<QString> layerName;
 	Data<types::ImageWrapper> image;
 	Data<int> compositionMode;
-	Data<double> opacity;
+	Data<PReal> opacity;
 	QMatrix4x4 mvpMatrix;
 };
 

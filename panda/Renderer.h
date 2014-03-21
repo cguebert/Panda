@@ -3,6 +3,7 @@
 
 #include <panda/Dockable.h>
 #include <panda/Layer.h>
+#include <panda/helper/Gl.h>
 #include <QMatrix4x4>
 
 namespace panda

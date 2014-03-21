@@ -48,7 +48,7 @@ public:
 
 	void update()
 	{
-		const QVector<double>	&valInA = inputA.getValue(),
+		const QVector<PReal>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
 		auto valOut = result.getAccessor();
@@ -76,7 +76,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > inputA, inputB, inputV, result;
+	Data< QVector<PReal> > inputA, inputB, inputV, result;
 };
 
 int DoubleMath_SmoothStepClass = RegisterObject<DoubleMath_SmoothStep>("Math/Real/Functions/Smooth Step").setDescription("Compute the smooth step of the input between min and max");
@@ -99,7 +99,7 @@ public:
 
 	void update()
 	{
-		const QVector<double> &valIn = input.getValue();
+		const QVector<PReal> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 
 		int size = valIn.size();
@@ -120,7 +120,7 @@ public:
 	{
 		PandaObject::reset();
 
-		const QVector<double> &valIn = input.getValue();
+		const QVector<PReal> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 		int size = valIn.size();
 		prevValues.resize(size);
@@ -132,8 +132,8 @@ public:
 	}
 
 protected:
-	QVector<double> prevValues;
-	Data< QVector<double> > input;
+	QVector<PReal> prevValues;
+	Data< QVector<PReal> > input;
 	Data< QVector<int> > count;
 };
 
@@ -157,7 +157,7 @@ public:
 
 	void update()
 	{
-		const QVector<double> &valIn = input.getValue();
+		const QVector<PReal> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 
 		int size = valIn.size();
@@ -178,7 +178,7 @@ public:
 	{
 		PandaObject::reset();
 
-		const QVector<double> &valIn = input.getValue();
+		const QVector<PReal> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 		int size = valIn.size();
 		prevValues.resize(size);
@@ -190,8 +190,8 @@ public:
 	}
 
 protected:
-	QVector<double> prevValues;
-	Data< QVector<double> > input;
+	QVector<PReal> prevValues;
+	Data< QVector<PReal> > input;
 	Data< QVector<int> > count;
 };
 
@@ -227,7 +227,7 @@ public:
 
 	void update()
 	{
-		const QVector<double>	&valInA = inputA.getValue(),
+		const QVector<PReal>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
 		auto valOut = result.getAccessor();
@@ -255,7 +255,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > inputA, inputB, inputV, result;
+	Data< QVector<PReal> > inputA, inputB, inputV, result;
 };
 
 int DoubleMath_ConstrainClass = RegisterObject<DoubleMath_Constrain>("Math/Real/Functions/Constrain").setDescription("Constrain a value between a min and a max");
@@ -289,7 +289,7 @@ public:
 
 	void update()
 	{
-		const QVector<double>	&valInA = inputA.getValue(),
+		const QVector<PReal>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
 		auto valOut = result.getAccessor();
@@ -317,7 +317,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > inputA, inputB, inputV;
+	Data< QVector<PReal> > inputA, inputB, inputV;
 	Data< QVector<int> > result;
 };
 
@@ -356,7 +356,7 @@ public:
 
 	void update()
 	{
-		const QVector<double>	&valInV = inputV.getValue(),
+		const QVector<PReal>	&valInV = inputV.getValue(),
 								&valInMin = inputMin.getValue(),
 								&valInMax = inputMax.getValue(),
 								&valOutMin = outputMin.getValue(),
@@ -390,7 +390,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > inputV, inputMin, inputMax, outputMin, outputMax, result;
+	Data< QVector<PReal> > inputV, inputMin, inputMax, outputMin, outputMax, result;
 };
 
 int DoubleMath_RemapClass = RegisterObject<DoubleMath_Remap>("Math/Real/Functions/Remap").setDescription("Re-maps a value from one range to another");

@@ -1,6 +1,7 @@
 #ifndef HELPER_RANDOM_H
 #define HELPER_RANDOM_H
 
+#include <panda/helper/system/Config.h>
 #include <random>
 
 namespace panda
@@ -15,8 +16,8 @@ public:
 	void seed(unsigned int seed);
 	static unsigned int getRandomSeed(unsigned int limit);
 
-	double random();
-	double random(double min, double max);
+	PReal random();
+	PReal random(PReal min, PReal max);
 
 	int randomInt(int min, int max);
 

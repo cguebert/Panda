@@ -11,8 +11,8 @@ public:
 
 	GeneratorNumber_AnimationTime(PandaDocument *doc)
 		: PandaObject(doc)
-		, animTime(initData(&animTime, 0.0, "time", "Current time of the animation"))
-		, timeStep(initData(&timeStep, 0.0, "timestep", "Duration between 2 consecutive timesteps"))
+		, animTime(initData(&animTime, (PReal)0.0, "time", "Current time of the animation"))
+		, timeStep(initData(&timeStep, (PReal)0.0, "timestep", "Duration between 2 consecutive timesteps"))
 	{
 		addOutput(&animTime);
 		addOutput(&timeStep);
@@ -30,7 +30,7 @@ public:
 	}
 
 protected:
-	Data<double> animTime, timeStep;
+	Data<PReal> animTime, timeStep;
 };
 
 int GeneratorNumber_AnimationTimeClass = RegisterObject<GeneratorNumber_AnimationTime>("Generator/Real/Animation time").setDescription("Gives the current time of the animation");

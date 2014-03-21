@@ -27,10 +27,10 @@ public:
 
 	void update()
 	{
-		const QVector<double> &l = left.getValue();
-		const QVector<double> &t = top.getValue();
-		const QVector<double> &r = right.getValue();
-		const QVector<double> &b = bottom.getValue();
+		const QVector<PReal> &l = left.getValue();
+		const QVector<PReal> &t = top.getValue();
+		const QVector<PReal> &r = right.getValue();
+		const QVector<PReal> &b = bottom.getValue();
 
 		int nb = qMin(l.size(), qMin(t.size(), qMin(r.size(), b.size())));
 
@@ -47,7 +47,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > left, top, right, bottom;
+	Data< QVector<PReal> > left, top, right, bottom;
 	Data< QVector<QRectF> > rectangle;
 };
 
@@ -196,7 +196,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > left, top, right, bottom;
+	Data< QVector<PReal> > left, top, right, bottom;
 	Data< QVector<QRectF> > rectangle;
 };
 

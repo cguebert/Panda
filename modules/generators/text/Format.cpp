@@ -4,7 +4,7 @@
 
 namespace panda {
 
-typedef boost::mpl::vector<int, double, QString> formatTypes;
+typedef boost::mpl::vector<int, PReal, QString> formatTypes;
 
 class GeneratorText_Format : public GenericObject
 {

@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <panda/helper/Algorithm.h>
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 #ifdef PANDA_LOG_EVENTS

@@ -128,7 +128,7 @@ public:
 		res.clear();
 
 		const QVector<QPointF>& points = input.getValue();
-		const QVector<double>& reals = factor.getValue();
+		const QVector<PReal>& reals = factor.getValue();
 		int nbP = points.size(), nbR = reals.size();
 
 		if(nbP && nbR)
@@ -147,7 +147,7 @@ public:
 
 protected:
 	Data< QVector<QPointF> > input, result;
-	Data< QVector<double> > factor;
+	Data< QVector<PReal> > factor;
 };
 
 int PointMath_ScaleClass = RegisterObject<PointMath_Scale>("Math/Point/Multiply").setName("Scale point").setDescription("Multiply a point by a real");
@@ -179,7 +179,7 @@ public:
 		res.clear();
 
 		const QVector<QPointF>& points = input.getValue();
-		const QVector<double>& reals = factor.getValue();
+		const QVector<PReal>& reals = factor.getValue();
 		int nbP = points.size(), nbR = reals.size();
 
 		if(nbP && nbR)
@@ -198,7 +198,7 @@ public:
 
 protected:
 	Data< QVector<QPointF> > input, result;
-	Data< QVector<double> > factor;
+	Data< QVector<PReal> > factor;
 };
 
 int PointMath_DivisionClass = RegisterObject<PointMath_Division>("Math/Point/Division").setName("Divide point").setDescription("Divide a point by a real");
@@ -251,7 +251,7 @@ public:
 
 protected:
 	Data< QVector<QPointF> > inputA, inputB;
-	Data< QVector<double> > result;
+	Data< QVector<PReal> > result;
 };
 
 int PointMath_DistanceClass = RegisterObject<PointMath_Distance>("Math/Point/Distance").setDescription("Compute the distance between 2 points");
@@ -284,7 +284,7 @@ public:
 
 		const QVector<QPointF>& points = input.getValue();
 		const QVector<QPointF>& centers = center.getValue();
-		const QVector<double>& angles = angle.getValue();
+		const QVector<PReal>& angles = angle.getValue();
 		int nbP = points.size(), nbC = centers.size(), nbA = angles.size();
 
 		if(nbP && nbC && nbA)
@@ -304,10 +304,11 @@ public:
 
 			res.resize(nb);
 
+			PReal PI180 = static_cast<PReal>(M_PI) / static_cast<PReal>(180.0);
 			for(int i=0; i<nb; ++i)
 			{
 				const QPointF& cen = centers[i%nbC];
-				const double& ang = angles[i%nbA] * M_PI / 180.0;
+				const PReal& ang = angles[i%nbA] * PI180;
 				double ca = qCos(ang), sa = qSin(ang);
 				QPointF pt = points[i%nbP] - cen;
 				res[i] = QPointF(pt.x()*ca-pt.y()*sa, pt.x()*sa+pt.y()*ca) + cen;
@@ -320,7 +321,7 @@ public:
 protected:
 	Data< QVector<QPointF> > input, result;
 	Data< QVector<QPointF> > center;
-	Data< QVector<double> > angle;
+	Data< QVector<PReal> > angle;
 };
 
 int PointMath_RotationClass = RegisterObject<PointMath_Rotation>("Math/Point/Rotation").setDescription("Rotation of a point around a center");
@@ -369,7 +370,7 @@ public:
 
 protected:
 	Data< QVector<QPointF> > vector;
-	Data< QVector<double> > angle;
+	Data< QVector<PReal> > angle;
 };
 
 int PointMath_AngleOfVectorClass = RegisterObject<PointMath_AngleOfVector>("Math/Point/Angle of vector").setDescription("Computes the angle of a vector");
@@ -396,7 +397,7 @@ public:
 		auto vecList = vector.getAccessor();
 		vecList.clear();
 
-		const QVector<double>& angleList = angle.getValue();
+		const QVector<PReal>& angleList = angle.getValue();
 		int nb = angleList.size();
 
 		if(nb)
@@ -414,7 +415,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > angle;
+	Data< QVector<PReal> > angle;
 	Data< QVector<QPointF> > vector;
 };
 

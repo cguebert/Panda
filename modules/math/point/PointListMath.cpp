@@ -3,7 +3,6 @@
 #include <panda/ObjectFactory.h>
 #include <QVector>
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm>
 
@@ -80,7 +79,7 @@ protected:
 	Data< QVector<QPointF> > input;
 	Data<int> nbElements;
 	Data<QPointF> center;
-	Data<double> mean, stdDev;
+	Data<PReal> mean, stdDev;
 };
 
 int PointListMath_CenterClass = RegisterObject<PointListMath_Center>("Math/List of points/Mean position").setDescription("Compute the mean position of a list of points");

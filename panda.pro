@@ -20,12 +20,14 @@ HEADERS       = \
 	panda/Renderer.h \
 	panda/helper/Algorithm.h \
 	panda/helper/Factory.h \
+	panda/helper/Gl.h \
 	panda/helper/GradientCache.h \
 	panda/helper/Perlin.h \
 	panda/helper/Point.h \
 	panda/helper/PointsGrid.h \
 	panda/helper/Random.h \
 	panda/helper/UpdateLogger.h \
+	panda/helper/system/Config.h \
 	panda/types/Animation.h \
 	panda/types/AnimationTraits.h \
 	panda/types/DataTraits.h \

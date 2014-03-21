@@ -1,6 +1,7 @@
 #ifndef PANDAOBJECT_H
 #define PANDAOBJECT_H
 
+#include <panda/helper/system/Config.h>
 #include <panda/Data.h>
 #include <panda/BaseClass.h>
 

@@ -29,10 +29,10 @@ public:
 
 	void update()
 	{
-		const QVector<double> &r = R.getValue();
-		const QVector<double> &g = G.getValue();
-		const QVector<double> &b = B.getValue();
-		const QVector<double> &a = A.getValue();
+		const QVector<PReal> &r = R.getValue();
+		const QVector<PReal> &g = G.getValue();
+		const QVector<PReal> &b = B.getValue();
+		const QVector<PReal> &a = A.getValue();
 
 		int nbR = r.size(), nbG = g.size(), nbB = b.size(), nbA = a.size();
 		int nb = qMax(nbR, qMax(nbG, qMax(nbB, nbA)));
@@ -44,17 +44,17 @@ public:
 		c.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
-			c[i].setRgbF(qBound(0.0, r[i%nbR], 1.0),
-						 qBound(0.0, g[i%nbG], 1.0),
-						 qBound(0.0, b[i%nbB], 1.0),
-						 qBound(0.0, a[i%nbA], 1.0));
+			c[i].setRgbF(qBound<PReal>(0.0, r[i%nbR], 1.0),
+						 qBound<PReal>(0.0, g[i%nbG], 1.0),
+						 qBound<PReal>(0.0, b[i%nbB], 1.0),
+						 qBound<PReal>(0.0, a[i%nbA], 1.0));
 		}
 
 		cleanDirty();
 	}
 
 protected:
-	Data< QVector<double> > R, G, B, A;
+	Data< QVector<PReal> > R, G, B, A;
 	Data< QVector<QColor> > color;
 };
 
@@ -109,7 +109,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > R, G, B, A;
+	Data< QVector<PReal> > R, G, B, A;
 	Data< QVector<QColor> > color;
 };
 

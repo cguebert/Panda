@@ -15,7 +15,7 @@ public:
 		: PandaObject(doc)
 		, input(initData(&input, "input", "The list of positions at which to compute the noise" ))
 		, seed(initData(&seed, 0, "seed", "Seed for the random points generator"))
-		, scale(initData(&scale, 0.001, "scale", "Input points are scaled by this value before computing the noise"))
+		, scale(initData(&scale, (PReal)0.001, "scale", "Input points are scaled by this value before computing the noise"))
 		, output(initData(&output, "output", "The values of the noise at the given positions" ))
 	{
 		addInput(&input);
@@ -47,8 +47,8 @@ protected:
 	helper::Perlin perlin;
 	Data< QVector<QPointF> > input;
 	Data<int> seed;
-	Data<double> scale;
-	Data< QVector<double> > output;
+	Data<PReal> scale;
+	Data< QVector<PReal> > output;
 };
 
 int GeneratorPoints_Noise2dClass = RegisterObject<GeneratorPoints_Noise2d>("Generator/Point/Noise 2d")

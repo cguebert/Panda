@@ -14,8 +14,8 @@ public:
 
 	ParticleDestruction_Age(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, maxAge(initData(&maxAge, 1.0, "max age", "Remove particles older than this age"))
-		, variation(initData(&variation, 0.0, "variation", "Particles can randomly live longer by this amount"))
+		, maxAge(initData(&maxAge, (PReal)1.0, "max age", "Remove particles older than this age"))
+		, variation(initData(&variation, (PReal)0.0, "variation", "Particles can randomly live longer by this amount"))
 	{
 		addInput(&maxAge);
 		addInput(&variation);
@@ -36,7 +36,7 @@ public:
 		int newNb = oldNb + particles.size();
 		birth.resize(newNb);
 
-		std::uniform_real_distribution<double> dist(0, variation.getValue());
+		std::uniform_real_distribution<PReal> dist(0, variation.getValue());
 		for(int i=oldNb; i<newNb; ++i)
 			birth[i] = time - dist(gen);	// Giving them negative age based on the variation value
 	}
@@ -63,8 +63,8 @@ public:
 	}
 
 protected:
-	Data<double> maxAge, variation;
-	QVector<double> birth;
+	Data<PReal> maxAge, variation;
+	QVector<PReal> birth;
 	std::mt19937 gen;
 };
 

@@ -3,7 +3,6 @@
 
 #include <QImage>
 #include <QSharedPointer>
-#include <QtGui/qopengl.h>
 
 class QOpenGLTexture;
 class QOpenGLFramebufferObject;
@@ -19,7 +18,7 @@ class ImageWrapper
 public:
 	ImageWrapper();
 
-	GLuint getTexture() const;
+	unsigned int getTexture() const;
 	const QImage &getImage() const;
 
 	QSize size() const;

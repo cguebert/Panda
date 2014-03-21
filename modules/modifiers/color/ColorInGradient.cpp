@@ -27,7 +27,7 @@ public:
 	void update()
 	{
 		Gradient grad = gradient.getValue();
-		const QVector<double>& pos = position.getValue();
+		const QVector<PReal>& pos = position.getValue();
 		auto colorsList = color.getAccessor();
 
 		int nb = pos.size();
@@ -40,7 +40,7 @@ public:
 
 protected:
 	Data< Gradient > gradient;
-	Data< QVector<double> > position;
+	Data< QVector<PReal> > position;
 	Data< QVector<QColor> > color;
 };
 

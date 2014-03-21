@@ -49,7 +49,7 @@ public:
 
 		Q_ASSERT(dataInput && dataOutput);
 
-		const QVector<double>& key = progress.getValue();
+		const QVector<PReal>& key = progress.getValue();
 		const Animation<T>& inVal = dataInput->getValue();
 		auto outVal = dataOutput->getAccessor();
 
@@ -60,7 +60,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > progress;
+	Data< QVector<PReal> > progress;
 	GenericAnimationData generic;
 };
 

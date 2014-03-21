@@ -74,7 +74,11 @@ public:
 		QDomElement e = elem.firstChildElement("Value");
 		while(!e.isNull())
 		{
+#ifdef PANDA_DOUBLE
 			key = e.attribute("key").toDouble();
+#else
+			key = e.attribute("key").toFloat();
+#endif
 			base_trait::readValue(e, val);
 			anim.add(key, val);
 			e = e.nextSiblingElement("Value");

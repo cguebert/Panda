@@ -26,6 +26,7 @@
 #ifndef HELPER_PERLIN_H
 #define HELPER_PERLIN_H
 
+#include <panda/helper/system/Config.h>
 #include <QPointF>
 #include <QVector2D>
 #include <QVector3D>
@@ -48,34 +49,34 @@ class Perlin
 	void setOctaves(uint8_t octaves) { m_octaves = octaves; }
 
 	/// Class Perlin look: fractal Brownian motion by summing 'mOctaves' worth of noise
-	float fBm(float v) const;
-	float fBm(float x, float y) const;
-	float fBm(const QVector2D &v) const { return fBm(v.x(), v.y()); }
-	float fBm(const QPointF &v) const { return fBm(v.x(), v.y()); }
-	float fBm(float x, float y, float z) const;
-	float fBm(const QVector3D &v) const { return fBm(v.x(), v.y(), v.z()); }
+	PReal fBm(PReal v) const;
+	PReal fBm(PReal x, PReal y) const;
+	PReal fBm(const QVector2D &v) const { return fBm(v.x(), v.y()); }
+	PReal fBm(const QPointF &v) const { return fBm(v.x(), v.y()); }
+	PReal fBm(PReal x, PReal y, PReal z) const;
+	PReal fBm(const QVector3D &v) const { return fBm(v.x(), v.y(), v.z()); }
 
 	/// Derivative of fractal Brownian motion, corresponding with the values returned by fBm()
-	QVector2D dfBm(float x, float y) const;
+	QVector2D dfBm(PReal x, PReal y) const;
 	QVector2D dfBm(const QVector2D &v) const { return dfBm(v.x(), v.y()); }
-	QVector3D dfBm(float x, float y, float z) const;
+	QVector3D dfBm(PReal x, PReal y, PReal z) const;
 	QVector3D dfBm(const QVector3D &v) const { return dfBm(v.x(), v.y(), v.z()); }
 
 	/// Calculates a single octave of noise
-	float noise(float x) const;
-	float noise(float x, float y) const;
-	float noise(float x, float y, float z) const;
+	PReal noise(PReal x) const;
+	PReal noise(PReal x, PReal y) const;
+	PReal noise(PReal x, PReal y, PReal z) const;
 
 	/// Calculates the derivative of a single octave of noise
-	QVector2D dnoise(float x, float y) const;
-	QVector3D dnoise(float x, float y, float z) const;
+	QVector2D dnoise(PReal x, PReal y) const;
+	QVector3D dnoise(PReal x, PReal y, PReal z) const;
 
  private:
 	void initPermutationTable();
 
-	float grad(int32_t hash, float x) const;
-	float grad(int32_t hash, float x, float y) const;
-	float grad(int32_t hash, float x, float y, float z) const;
+	PReal grad(int32_t hash, PReal x) const;
+	PReal grad(int32_t hash, PReal x, PReal y) const;
+	PReal grad(int32_t hash, PReal x, PReal y, PReal z) const;
 
 	uint8_t m_octaves;
 	int32_t	m_seed;

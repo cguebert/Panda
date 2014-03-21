@@ -1,6 +1,7 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
 
+#include <panda/helper/system/Config.h>
 #include <QVector>
 #include <QColor>
 
@@ -10,12 +11,12 @@ namespace panda
 namespace types
 {
 
-template<class T> T interpolate(const T& v1, const T& v2, double amt);
+template<class T> T interpolate(const T& v1, const T& v2, PReal amt);
 
 template<>
-QColor interpolate(const QColor& v1, const QColor& v2, double amt);
+QColor interpolate(const QColor& v1, const QColor& v2, PReal amt);
 
-template<class T> T interpolate(const T& v1, const T& v2, double amt)
+template<class T> T interpolate(const T& v1, const T& v2, PReal amt)
 {
 	return v1 * (1.0-amt) + v2 * amt;
 }
@@ -27,9 +28,9 @@ public:
 	typedef T value_type;
 	typedef value_type& reference;
 	typedef const value_type& const_reference;
-	typedef QPair<double, value_type> AnimationStop;
+	typedef QPair<PReal, value_type> AnimationStop;
 	typedef QVector<AnimationStop> AnimationStops;
-	typedef QVector<double> KeysList;
+	typedef QVector<PReal> KeysList;
 	typedef QVector<value_type> ValuesList;
 
 	enum Extend { EXTEND_PAD = 0, EXTEND_REPEAT = 1, EXTEND_REFLECT = 2 };
@@ -39,8 +40,8 @@ public:
 	int size() const;
 	void clear();
 
-	void add(double position, value_type value);
-	value_type get(double position) const;
+	void add(PReal position, value_type value);
+	value_type get(PReal position) const;
 
 	reference getAtIndex(int index);
 	const_reference getAtIndex(int index) const;
@@ -69,8 +70,8 @@ public:
 	}
 
 protected:
-	double extendPos(double position, double pMin, double pMax) const;
-	value_type interpolate(const AnimationStop& s1, const AnimationStop& s2, double pos) const;
+	PReal extendPos(PReal position, PReal pMin, PReal pMax) const;
+	value_type interpolate(const AnimationStop& s1, const AnimationStop& s2, PReal pos) const;
 
 	int interpolation;
 	Extend extend;

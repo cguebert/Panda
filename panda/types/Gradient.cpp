@@ -8,7 +8,7 @@
 #include <QSet>
 #include <qmath.h>
 
-inline uint qHash(const double& key)
+inline uint qHash(const PReal& key)
 {
 	return uint(key * 10000);
 }
@@ -28,7 +28,7 @@ void Gradient::clear()
 	stops.clear();
 }
 
-void Gradient::add(double position, QColor color)
+void Gradient::add(PReal position, QColor color)
 {
 	if(position < 0 || position > 1)
 		return; // Ignore invalid insertions
@@ -47,9 +47,9 @@ void Gradient::add(double position, QColor color)
 	stops.push_back(qMakePair(position, color));
 }
 
-QColor Gradient::get(double position) const
+QColor Gradient::get(PReal position) const
 {
-	double pos = extendPos(position);
+	PReal pos = extendPos(position);
 
 	int nb = stops.size();
 	if(!nb)	// Same rule as Qt's: when empty, do instead a gradient from black to white
@@ -85,7 +85,7 @@ int Gradient::getExtend() const
 	return extend;
 }
 
-inline bool compareStops(const QPair<double, QColor> &p1, const QPair<double, QColor> &p2)
+inline bool compareStops(const QPair<PReal, QColor> &p1, const QPair<PReal, QColor> &p2)
 {
 	return p1.first < p2.first;
 }
@@ -114,30 +114,30 @@ Gradient::GradientStops Gradient::getStopsForEdit() const
 	return stops;
 }
 
-double Gradient::extendPos(double position) const
+PReal Gradient::extendPos(PReal position) const
 {
 	switch(extend)
 	{
 	default:
 	case EXTEND_PAD:
-		return qBound(0.0, position, 1.0);
+		return qBound<PReal>(0.0, position, 1.0);
 
 	case EXTEND_REPEAT:
 		return position - qFloor(position);
 
 	case EXTEND_REFLECT:
-		double p = position - qFloor(position);
+		PReal p = position - qFloor(position);
 		return ((qFloor(position) % 2) ? 1.0 - p : p);
 	}
 }
 
-QColor Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, double pos)
+QColor Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, PReal pos)
 {
-	double amt = (pos - s1.first) / (s2.first - s1.first);
+	PReal amt = (pos - s1.first) / (s2.first - s1.first);
 	return interpolate(s1.second, s2.second, amt);
 }
 
-QColor Gradient::interpolate(const QColor& v1, const QColor& v2, double amt)
+QColor Gradient::interpolate(const QColor& v1, const QColor& v2, PReal amt)
 {
 	int r1, r2, g1, g2, b1, b2, a1, a2;
 	int fact = amt * 255;
@@ -149,16 +149,16 @@ QColor Gradient::interpolate(const QColor& v1, const QColor& v2, double amt)
 				  a1 + ( a2 - a1 ) * fact / 255);
 }
 
-Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, double amt)
+Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, PReal amt)
 {
 	Gradient grad;
 	const auto& stops1 = g1.getStops();
 	const auto& stops2 = g2.getStops();
 
-	QSet<double> keys;
+	QSet<PReal> keys;
 	for(const auto& stop : stops1)
 	{
-		double key = stop.first;
+		PReal key = stop.first;
 		if(!keys.contains(key))
 		{
 			keys.insert(key);
@@ -169,7 +169,7 @@ Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, double am
 
 	for(const auto& stop : stops2)
 	{
-		double key = stop.first;
+		PReal key = stop.first;
 		if(!keys.contains(key))
 		{
 			keys.insert(key);
@@ -208,7 +208,11 @@ void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& grad)
 	QDomElement stopNode = elem.firstChildElement("Stop");
 	while(!stopNode.isNull())
 	{
-		double pos = stopNode.attribute("pos").toDouble();
+#ifdef PANDA_DOUBLE
+		PReal pos = stopNode.attribute("pos").toDouble();
+#else
+		PReal pos = stopNode.attribute("pos").toFloat();
+#endif
 		QColor color;
 		DataTrait<QColor>::readValue(stopNode, color);
 
@@ -226,7 +230,7 @@ int gradientVectorDataClass = RegisterData< QVector<Gradient> >();
 //*************************************************************************//
 
 template<>
-Gradient interpolate(const Gradient& g1, const Gradient& g2, double amt)
+Gradient interpolate(const Gradient& g1, const Gradient& g2, PReal amt)
 {
 	return Gradient::interpolate(g1, g2, amt);
 }

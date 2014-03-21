@@ -14,8 +14,8 @@ public:
 		: PandaObject(doc)
 		, nbNumbers(initData(&nbNumbers, 10, "# numbers", "How many numbers to generate"))
 		, seed(initData(&seed, 0, "seed", "Seed for the random numbers generator"))
-		, numMin(initData(&numMin, 0.0, "minimum", "Minimum limit of the numbers"))
-		, numMax(initData(&numMax, 1.0, "maximum", "Maximum limit of the numbers"))
+		, numMin(initData(&numMin, (PReal)0.0, "minimum", "Minimum limit of the numbers"))
+		, numMax(initData(&numMax, (PReal)1.0, "maximum", "Maximum limit of the numbers"))
 		, numbers(initData(&numbers, "numbers", "The list of numbers" ))
 	{
 		addInput(&nbNumbers);
@@ -46,8 +46,8 @@ public:
 protected:
 	helper::RandomGenerator rnd;
 	Data<int> nbNumbers, seed;
-	Data<double> numMin, numMax;
-	Data< QVector<double> > numbers;
+	Data<PReal> numMin, numMax;
+	Data< QVector<PReal> > numbers;
 };
 
 int GeneratorReals_RandomClass = RegisterObject<GeneratorReals_Random>("Generator/Real/Random").setName("Random numbers").setDescription("Generate a list of random numbers");

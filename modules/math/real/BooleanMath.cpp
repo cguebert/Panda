@@ -23,8 +23,8 @@ public:
 
 	void update()
 	{
-		const QVector<double> &valInA = inputA.getValue();
-		const QVector<double> &valInB = inputB.getValue();
+		const QVector<PReal> &valInA = inputA.getValue();
+		const QVector<PReal> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 
 		int nbA = valInA.size(), nbB = valInB.size();
@@ -41,7 +41,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > inputA, inputB, result;
+	Data< QVector<PReal> > inputA, inputB, result;
 };
 
 int BooleanMath_GreaterClass = RegisterObject<BooleanMath_Greater>("Math/Boolean/Greater").setDescription("Compare 2 reals; output is 1 if A > B, 0 otherwise");
@@ -66,8 +66,8 @@ public:
 
 	void update()
 	{
-		const QVector<double> &valInA = inputA.getValue();
-		const QVector<double> &valInB = inputB.getValue();
+		const QVector<PReal> &valInA = inputA.getValue();
+		const QVector<PReal> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 
 		int nbA = valInA.size(), nbB = valInB.size();
@@ -84,7 +84,7 @@ public:
 	}
 
 protected:
-	Data< QVector<double> > inputA, inputB, result;
+	Data< QVector<PReal> > inputA, inputB, result;
 };
 
 int BooleanMath_EqualClass = RegisterObject<BooleanMath_Equal>("Math/Boolean/Equal").setDescription("Compare 2 reals; output is 1 if A is equal to B, 0 otherwise");

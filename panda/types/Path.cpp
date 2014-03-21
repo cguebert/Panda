@@ -44,8 +44,13 @@ void DataTrait<Path>::readValue(QDomElement& elem, Path& path)
 	QDomElement ptNode = elem.firstChildElement("Point");
 	while(!ptNode.isNull())
 	{
+#ifdef PANDA_DOUBLE
 		double x = ptNode.attribute("x").toDouble();
 		double y = ptNode.attribute("y").toDouble();
+#else
+		double x = ptNode.attribute("x").toFloat();
+		double y = ptNode.attribute("y").toFloat();
+#endif
 
 		path.push_back(QPointF(x, y));
 		ptNode = ptNode.nextSiblingElement("Point");

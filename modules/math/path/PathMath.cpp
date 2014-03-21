@@ -5,7 +5,6 @@
 #include <panda/helper/Point.h>
 #include <QVector>
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm>
 
@@ -66,7 +65,7 @@ public:
 protected:
 	Data< QVector<Path> > input;
 	Data< QVector<int> > nbPoints;
-	Data< QVector<double> > length;
+	Data< QVector<PReal> > length;
 };
 
 int PathMath_LengthClass = RegisterObject<PathMath_Length>("Math/Path/Curve length").setDescription("Compute the length of a series of segments");
@@ -95,7 +94,7 @@ public:
 	void update()
 	{
 		const Path& curve = input.getValue();
-		const QVector<double>& listAbscissa = abscissa.getValue();
+		const QVector<PReal>& listAbscissa = abscissa.getValue();
 		unsigned int nbPts = curve.size();
 		unsigned int nbAbscissa = listAbscissa.size();
 
@@ -109,7 +108,7 @@ public:
 
 			// Some precomputation
 			double totalLength = 0.0;
-			QVector<double> lengths, starts, ends;
+			QVector<PReal> lengths, starts, ends;
 			lengths.resize(nbPts - 1);
 			starts.resize(nbPts - 1);
 			ends.resize(nbPts - 1);
@@ -129,8 +128,8 @@ public:
 
 			for(unsigned int i=0; i<nbAbscissa; ++i)
 			{
-				double a = qBound(0.0, listAbscissa[i], totalLength - 1e-5);
-				QVector<double>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
+				double a = qBound<PReal>(0.0, listAbscissa[i], totalLength - 1e-5);
+				QVector<PReal>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
 
 				unsigned int index = iter - ends.begin();
 				double p = 0.0;
@@ -153,7 +152,7 @@ public:
 
 protected:
 	Data< Path > input, position;
-	Data< QVector<double> > abscissa, rotation;
+	Data< QVector<PReal> > abscissa, rotation;
 };
 
 int PathMath_GetPointClass = RegisterObject<PathMath_GetPoint>("Math/Path/Point on curve").setDescription("Get the position and the rotation of a point on a curve based on his abscissa");
