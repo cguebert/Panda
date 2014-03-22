@@ -5,7 +5,6 @@
 #include <modules/particles/ParticleEngine.h>
 #include <modules/particles/ParticleEffector.h>
 
-#include <QPointF>
 #include <QList>
 #include <algorithm>
 #include <panda/helper/Algorithm.h>
@@ -17,6 +16,8 @@
 #endif
 
 namespace panda {
+
+using types::Point;
 
 ParticleEngine::ParticleEngine(PandaDocument *doc)
 	: DockObject(doc)
@@ -116,7 +117,7 @@ void ParticleEngine::update()
 	createNewParticles();
 
 	for(auto& p : particles)
-		p.force = QPointF(0,0);
+		p.force = Point(0,0);
 
 	for(auto effector : effectors)
 		effector->accumulateForces(particles);
@@ -128,9 +129,9 @@ void ParticleEngine::update()
 	qreal dt = parentDocument->getTimeStep();
 	for(auto& p : particles)
 	{
-		QPointF oldVel = p.velocity;
+		Point oldVel = p.velocity;
 		p.acceleration = p.force;
-		p.force = QPointF(0,0);
+		p.force = Point(0,0);
 		p.velocity += p.acceleration * dt;
 		p.position += (p.velocity + oldVel) * 0.5 * dt;
 	}

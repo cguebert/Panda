@@ -2,7 +2,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Path.h>
-#include <panda/helper/Point.h>
 #include <QVector>
 
 #include <cmath>
@@ -10,6 +9,7 @@
 
 namespace panda {
 
+using types::Point;
 using types::Path;
 
 class PathMath_Length : public PandaObject
@@ -45,12 +45,12 @@ public:
 			nbPtsList[i] = nbPts;
 			if(nbPts > 1)
 			{
-				QPointF pt1 = path[0];
+				Point pt1 = path[0];
 				double l = 0.0;
 				for(int j=1; j<nbPts; ++j)
 				{
-					const QPointF& pt2 = path[j];
-					l += helper::norm(pt2-pt1);
+					const Point& pt2 = path[j];
+					l += (pt2-pt1).norm();
 					pt1 = pt2;
 				}
 				lengthList[i] = l;
@@ -112,14 +112,12 @@ public:
 			lengths.resize(nbPts - 1);
 			starts.resize(nbPts - 1);
 			ends.resize(nbPts - 1);
-			QPointF pt1 = curve[0];
+			Point pt1 = curve[0];
 			for(unsigned int i=0; i<nbPts-1; ++i)
 			{
 				starts[i] = totalLength;
-				const QPointF& pt2 = curve[i+1];
-				double dx = pt2.x()-pt1.x(), dy = pt2.y()-pt1.y();
-				double d2 = dx*dx+dy*dy;
-				double l = sqrt(d2);
+				const Point& pt2 = curve[i+1];
+				double l = (pt2-pt1).norm();
 				lengths[i] = l;
 				pt1 = pt2;
 				totalLength += l;
@@ -128,17 +126,17 @@ public:
 
 			for(unsigned int i=0; i<nbAbscissa; ++i)
 			{
-				double a = qBound<PReal>(0.0, listAbscissa[i], totalLength - 1e-5);
+				double a = qBound<PReal>(0.0, listAbscissa[i], totalLength - 1e-3);
 				QVector<PReal>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
 
 				unsigned int index = iter - ends.begin();
 				double p = 0.0;
 				if(lengths[index] > 0.1)
 					p = (a - starts[index]) / lengths[index];
-				const QPointF& pt1 = curve[index];
-				const QPointF& pt2 = curve[index+1];
+				const Point& pt1 = curve[index];
+				const Point& pt2 = curve[index+1];
 				listPos.wref()[i] = pt1 * (1.0 - p) + pt2 * p;
-				listRot[i] = atan2(pt2.y()-pt1.y(), pt2.x()-pt1.x()) * 180.0 / M_PI;
+				listRot[i] = atan2(pt2.y-pt1.y, pt2.x-pt1.x) * 180.0 / M_PI;
 			}
 		}
 		else

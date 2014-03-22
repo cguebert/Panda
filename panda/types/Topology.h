@@ -2,7 +2,7 @@
 #define TYPES_TOPOLOGY_H
 
 #include <QVector>
-#include <QPointF>
+#include <panda/types/Point.h>
 
 namespace panda
 {
@@ -26,14 +26,14 @@ public:
 	typedef std::pair<PointID, PointID> Edge;
 	typedef QVector<PointID> Polygon;
 
-	typedef QVector<QPointF> SeqPoints;
+	typedef QVector<Point> SeqPoints;
 	typedef QVector<Edge> SeqEdges;
 	typedef QVector<Polygon> SeqPolygons;
 
 	Topology();
 	virtual ~Topology();
 
-	PointID addPoint(const QPointF& point);
+	PointID addPoint(const Point& point);
 	void addPoints(const SeqPoints& pts);
 
 	EdgeID addEdge(PointID a, PointID b);
@@ -52,12 +52,12 @@ public:
 	const SeqEdges& getEdges() const;
 	const SeqPolygons& getPolygons() const;
 
-	QPointF& getPoint(PointID index);
-	QPointF getPoint(PointID index) const;
+	Point& getPoint(PointID index);
+	Point getPoint(PointID index) const;
 	Edge getEdge(EdgeID index) const;
 	Polygon getPolygon(PolygonID index) const;
 
-	PointID getPointIndex(const QPointF& pt) const;
+	PointID getPointIndex(const Point& pt) const;
 	EdgeID getEdgeIndex(PointID a, PointID b) const;
 	EdgeID getEdgeIndex(const Edge& e) const;
 	PolygonID getPolygonIndex(const Polygon& p) const;
@@ -85,9 +85,9 @@ public:
 	PointID getOtherPointInEdge(const Edge& edge, PointID point) const;
 	double areaOfPolygon(const Polygon& poly) const;
 	void reorientPolygon(Polygon& poly);
-	QPointF centroidOfPolygon(const Polygon& poly) const;
+	Point centroidOfPolygon(const Polygon& poly) const;
 	static bool comparePolygon(Polygon p1, Polygon p2);
-	bool polygonContainsPoint(const Polygon& poly, QPointF pt) const;
+	bool polygonContainsPoint(const Polygon& poly, Point pt) const;
 
 	void removeUnusedPoints();
 

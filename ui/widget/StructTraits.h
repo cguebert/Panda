@@ -1,8 +1,6 @@
 #ifndef STRUCTTRAITS_H
 #define STRUCTTRAITS_H
 
-#include <QRectF>
-#include <QPointF>
 #include <QVector>
 #include <QStringList>
 
@@ -23,92 +21,6 @@ public:
 template<>
 static QString FlatDataTrait<QString>::toString(const value_type& d)
 { return d; }
-
-//***************************************************************//
-
-template<>
-class FlatDataTrait<QPointF>
-{
-public:
-	typedef QPointF value_type;
-	typedef qreal item_type;
-
-	static int size() { return 2; }
-	static QStringList header()
-	{
-		QStringList header;
-		header << "X" << "Y";
-		return header;
-	}
-	static const item_type get(const value_type& d, int i = 0)
-	{
-		switch(i)
-		{
-		case 0: return d.x();
-		case 1: return d.y();
-		}
-
-		return 0.;
-	}
-	static void set(value_type& d, const item_type& v, int i = 0)
-	{
-		switch(i)
-		{
-		case 0: return d.setX(v);
-		case 1: return d.setY(v);
-		}
-	}
-	static QString toString(const value_type& d)
-	{
-		return QString("%1 %2").arg(d.x()).arg(d.y());
-	}
-};
-
-//***************************************************************//
-
-template<>
-class FlatDataTrait<QRectF>
-{
-public:
-	typedef QRectF value_type;
-	typedef qreal item_type;
-
-	static int size() { return 4; }
-	static QStringList header()
-	{
-		QStringList header;
-		header << "Left" << "Top" << "Right" << "Bottom";
-		return header;
-	}
-	static const item_type get(const value_type& d, int i = 0)
-	{
-		switch(i)
-		{
-		case 0: return d.left();
-		case 1: return d.top();
-		case 2: return d.right();
-		case 3: return d.bottom();
-		}
-
-		return 0.;
-	}
-	static void set(value_type& d, const item_type& v, int i = 0)
-	{
-		switch(i)
-		{
-		case 0: return d.setLeft(v);
-		case 1: return d.setTop(v);
-		case 2: return d.setRight(v);
-		case 3: return d.setBottom(v);
-		}
-	}
-	static QString toString(const value_type& d)
-	{
-		return QString("%1 %2 %3 %4")
-				.arg(d.left()).arg(d.top())
-				.arg(d.right()).arg(d.bottom());
-	}
-};
 
 //***************************************************************//
 

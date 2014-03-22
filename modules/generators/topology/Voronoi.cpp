@@ -14,13 +14,14 @@ using namespace boost::polygon;
 namespace panda {
 
 using types::Topology;
+using types::Point;
 
 class GeneratorTopology_Voronoi : public PandaObject
 {
 public:
 	PANDA_CLASS(GeneratorTopology_Voronoi, PandaObject)
 
-	typedef point_data<int> Point;
+	typedef point_data<int> IPoint;
 	typedef segment_data<int> Segment;
 	typedef voronoi_diagram<double> Diagram;
 
@@ -43,14 +44,14 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF>& pts = sites.getValue();
+		const QVector<Point>& pts = sites.getValue();
 		auto topo = topology.getAccessor();
 
 		topo->clear();
 
-		vector<Point> points;
-		for(QPointF p : pts)
-			points.push_back(Point(p.x(), p.y()));
+		vector<IPoint> points;
+		for(Point p : pts)
+			points.push_back(IPoint(p.x, p.y));
 
 		vector<Segment> segments;
 
@@ -58,7 +59,7 @@ public:
 		construct_voronoi(points.begin(), points.end(), segments.begin(), segments.end(), &vd);
 
 		for(VertexIterator it = vd.vertices().begin(); it != vd.vertices().end(); ++it)
-			topo->addPoint(QPointF(it->x(), it->y()));
+			topo->addPoint(Point(it->x(), it->y()));
 
 		const Vertex* firstVertex = &vd.vertices().front();
 		for(EdgeIterator it = vd.edges().begin(); it != vd.edges().end(); ++it)
@@ -73,7 +74,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > sites;
+	Data< QVector<Point> > sites;
 	Data<Topology> topology;
 };
 

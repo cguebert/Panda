@@ -6,6 +6,9 @@
 
 namespace panda {
 
+using types::Point;
+using types::Rect;
+
 class PointListMath_Nearest : public PandaObject
 {
 public:
@@ -33,15 +36,15 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF>& inPts = input.getValue();
-		const QVector<QPointF>& searchPts = points.getValue();
+		const QVector<Point>& inPts = input.getValue();
+		const QVector<Point>& searchPts = points.getValue();
 		int nb = inPts.size();
 
 		if(nb && searchPts.size())
 		{
 			double maxD = maxDist.getValue();
 			QSize size = parentDocument->getRenderSize();
-			QRectF area = QRectF(0, 0, size.width()-1, size.height()-1);
+			Rect area = Rect(0, 0, size.width()-1, size.height()-1);
 			grid.initGrid(area, qMax(maxD, 10.0));
 			grid.addPoints(searchPts);
 
@@ -63,7 +66,7 @@ public:
 				outFound[i] = grid.getNearest(inPts[i], maxD, outPts[i]);
 				if(removePts && outFound[i])
 				{
-					QPointF pt = outPts[i];
+					Point pt = outPts[i];
 					grid.removePoint(pt);
 				}
 
@@ -78,7 +81,7 @@ public:
 protected:
 	helper::PointsGrid grid;
 
-	Data< QVector<QPointF> > input, points, output;
+	Data< QVector<Point> > input, points, output;
 	Data<int> unique, notSelf;
 	Data< QVector<int> > found;
 	Data<PReal> maxDist;

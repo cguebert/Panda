@@ -5,8 +5,6 @@
 #include <panda/types/Gradient.h>
 #include <panda/helper/GradientCache.h>
 
-#include <QPointF>
-
 namespace panda {
 
 using types::Gradient;

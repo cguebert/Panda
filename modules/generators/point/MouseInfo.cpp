@@ -4,6 +4,8 @@
 
 namespace panda {
 
+using types::Point;
+
 class GeneratorPoint_MouseInfo : public PandaObject
 {
 public:
@@ -30,20 +32,20 @@ public:
 	{
 		cleanDirty();
 		double time = parentDocument->getAnimationTime();
-		QPointF oldPos = position.getValue(), newPos = parentDocument->getMousePosition();
+		Point oldPos = position.getValue(), newPos = parentDocument->getMousePosition();
 
 		position.setValue(newPos);
 
 		if(time)
 			movement.setValue(newPos - oldPos);
 		else
-			movement.setValue(QPointF(0,0));
+			movement.setValue(Point(0,0));
 
 		clickState.setValue(parentDocument->getMouseClick());
 	}
 
 protected:
-	Data<QPointF> position, movement;
+	Data<Point> position, movement;
 	Data<int> clickState;
 };
 

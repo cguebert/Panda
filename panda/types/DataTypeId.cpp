@@ -3,7 +3,6 @@
 #include <QMap>
 #include <typeindex>
 
-
 namespace panda
 {
 
@@ -20,15 +19,164 @@ static TypesIdMap& getTypesIdMap()
 
 int DataTypeId::getId(const std::type_info &type)
 {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	TypesIdMap& typesIdMap = getTypesIdMap();
 	std::type_index index(type);
 	if(typesIdMap.contains(index))
 		return typesIdMap.value(index);
 	else
 	{
-		int i = typesIdMap.size() + 1; // start at 1
+		static int i = 1; // start at 1
 		typesIdMap[index] = i;
-		return i;
+		++i;
+		return i-1;
 	}
 }
 

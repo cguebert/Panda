@@ -1,11 +1,14 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/Point.h>
 #include <QVector>
 
 #include <qmath.h>
 
 namespace panda {
+
+using types::Point;
 
 class PointMath_Addition : public PandaObject
 {
@@ -29,8 +32,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<QPointF>& valA = inputA.getValue();
-		const QVector<QPointF>& valB = inputB.getValue();
+		const QVector<Point>& valA = inputA.getValue();
+		const QVector<Point>& valB = inputB.getValue();
 		int nbA = valA.size(), nbB = valB.size();
 
 		if(nbA && nbB)
@@ -48,7 +51,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > inputA, inputB, result;
+	Data< QVector<Point> > inputA, inputB, result;
 };
 
 int PointMath_AdditionClass = RegisterObject<PointMath_Addition>("Math/Point/Addition").setName("Add points").setDescription("Compute the addition of 2 points");
@@ -77,8 +80,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<QPointF>& valA = inputA.getValue();
-		const QVector<QPointF>& valB = inputB.getValue();
+		const QVector<Point>& valA = inputA.getValue();
+		const QVector<Point>& valB = inputB.getValue();
 		int nbA = valA.size(), nbB = valB.size();
 
 		if(nbA && nbB)
@@ -96,7 +99,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > inputA, inputB, result;
+	Data< QVector<Point> > inputA, inputB, result;
 };
 
 int PointMath_SubstractionClass = RegisterObject<PointMath_Substraction>("Math/Point/Substraction").setName("Substract points").setDescription("Compute the substraction of 2 points");
@@ -127,7 +130,7 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<QPointF>& points = input.getValue();
+		const QVector<Point>& points = input.getValue();
 		const QVector<PReal>& reals = factor.getValue();
 		int nbP = points.size(), nbR = reals.size();
 
@@ -146,7 +149,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > input, result;
+	Data< QVector<Point> > input, result;
 	Data< QVector<PReal> > factor;
 };
 
@@ -178,7 +181,7 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<QPointF>& points = input.getValue();
+		const QVector<Point>& points = input.getValue();
 		const QVector<PReal>& reals = factor.getValue();
 		int nbP = points.size(), nbR = reals.size();
 
@@ -197,7 +200,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > input, result;
+	Data< QVector<Point> > input, result;
 	Data< QVector<PReal> > factor;
 };
 
@@ -227,8 +230,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<QPointF>& valA = inputA.getValue();
-		const QVector<QPointF>& valB = inputB.getValue();
+		const QVector<Point>& valA = inputA.getValue();
+		const QVector<Point>& valB = inputB.getValue();
 		int nbA = valA.size(), nbB = valB.size();
 
 		if(nbA && nbB)
@@ -239,18 +242,14 @@ public:
 			res.resize(nb);
 
 			for(int i=0; i<nb; ++i)
-			{
-				const QPointF& ptA = valA[i%nbA], ptB = valB[i%nbB];
-				double dx = ptA.x()-ptB.x(), dy = ptA.y()-ptB.y();
-				res[i] = sqrt(dx*dx+dy*dy);
-			}
+				res[i] = (valA[i%nbA] - valB[i%nbB]).norm();
 		}
 
 		cleanDirty();
 	}
 
 protected:
-	Data< QVector<QPointF> > inputA, inputB;
+	Data< QVector<Point> > inputA, inputB;
 	Data< QVector<PReal> > result;
 };
 
@@ -282,8 +281,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<QPointF>& points = input.getValue();
-		const QVector<QPointF>& centers = center.getValue();
+		const QVector<Point>& points = input.getValue();
+		const QVector<Point>& centers = center.getValue();
 		const QVector<PReal>& angles = angle.getValue();
 		int nbP = points.size(), nbC = centers.size(), nbA = angles.size();
 
@@ -307,11 +306,11 @@ public:
 			PReal PI180 = static_cast<PReal>(M_PI) / static_cast<PReal>(180.0);
 			for(int i=0; i<nb; ++i)
 			{
-				const QPointF& cen = centers[i%nbC];
+				const Point& cen = centers[i%nbC];
 				const PReal& ang = angles[i%nbA] * PI180;
-				double ca = qCos(ang), sa = qSin(ang);
-				QPointF pt = points[i%nbP] - cen;
-				res[i] = QPointF(pt.x()*ca-pt.y()*sa, pt.x()*sa+pt.y()*ca) + cen;
+				PReal ca = qCos(ang), sa = qSin(ang);
+				Point pt = points[i%nbP] - cen;
+				res[i] = cen + Point(pt.x*ca-pt.y*sa, pt.x*sa+pt.y*ca);
 			}
 		}
 
@@ -319,8 +318,8 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > input, result;
-	Data< QVector<QPointF> > center;
+	Data< QVector<Point> > input, result;
+	Data< QVector<Point> > center;
 	Data< QVector<PReal> > angle;
 };
 
@@ -348,7 +347,7 @@ public:
 		auto angleList = angle.getAccessor();
 		angleList.clear();
 
-		const QVector<QPointF>& vecList = vector.getValue();
+		const QVector<Point>& vecList = vector.getValue();
 		int nb = vecList.size();
 
 		if(nb)
@@ -357,11 +356,11 @@ public:
 
 			for(int i=0; i<nb; ++i)
 			{
-				const QPointF& pt = vecList[i];
-				if(pt.manhattanLength() < 1e-10)
+				const Point& pt = vecList[i];
+				if(pt.norm2() < 1e-10)
 					angleList[i] = 0;
 				else
-					angleList[i] = -qAtan2(pt.y(), pt.x()) * 180 / M_PI;
+					angleList[i] = -qAtan2(pt.y, pt.x) * 180 / M_PI;
 			}
 		}
 
@@ -369,7 +368,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > vector;
+	Data< QVector<Point> > vector;
 	Data< QVector<PReal> > angle;
 };
 
@@ -406,8 +405,8 @@ public:
 
 			for(int i=0; i<nb; ++i)
 			{
-				double a = -angleList[i] * M_PI / 180;
-				vecList[i] = QPointF(qCos(a), qSin(a));
+				PReal a = -angleList[i] * M_PI / 180;
+				vecList[i] = Point(qCos(a), qSin(a));
 			}
 		}
 
@@ -416,7 +415,7 @@ public:
 
 protected:
 	Data< QVector<PReal> > angle;
-	Data< QVector<QPointF> > vector;
+	Data< QVector<Point> > vector;
 };
 
 int PointMath_AngleToVectorClass = RegisterObject<PointMath_AngleToVector>("Math/Point/Angle to vector").setDescription("Creates a vector corresponding to a rotation");

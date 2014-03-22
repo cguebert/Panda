@@ -5,6 +5,7 @@
 
 namespace panda {
 
+using types::Point;
 using types::Path;
 
 class Curve_BezierSpline : public PandaObject
@@ -38,7 +39,7 @@ public:
 
 			for(int i=0; i<nbPts; ++i)
 			{
-				QPointF pt;
+				Point pt;
 				for(int j=0; j<nbCtrlPts; ++j)
 					pt += coefs[i][j] * ctrlPts[j];
 				outPts.wref()[i] = pt;

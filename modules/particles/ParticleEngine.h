@@ -30,7 +30,7 @@ public:
 protected:
 	QVector<ParticleEffector*> effectors;
 	QVector<Particle> particles;
-	Data< QVector<QPointF> > positions, velocities, accelerations;
+	Data< QVector<types::Point> > positions, velocities, accelerations;
 	double prevTime;
 };
 

@@ -4,6 +4,8 @@
 
 namespace panda {
 
+using types::Point;
+
 class GeneratorPoint_RenderSize : public PandaObject
 {
 public:
@@ -24,11 +26,11 @@ public:
 	{
 		cleanDirty();
 		QSize tmpSize = parentDocument->getRenderSize();
-		renderSize.setValue(QPointF(tmpSize.width(), tmpSize.height()));
+		renderSize.setValue(Point(tmpSize.width(), tmpSize.height()));
 	}
 
 protected:
-	Data<QPointF> renderSize;
+	Data<Point> renderSize;
 };
 
 int GeneratorPoint_RenderSizeClass = RegisterObject<GeneratorPoint_RenderSize>("Generator/Point/Render size").setDescription("Gives the dimensions of the render");

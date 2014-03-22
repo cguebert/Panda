@@ -4,6 +4,8 @@
 
 namespace panda {
 
+using types::Point;
+
 class ParticleForceField_ConstantForce : public ParticleEffector
 {
 public:
@@ -18,13 +20,13 @@ public:
 
 	void accumulateForces(Particles& particles)
 	{
-		QPointF f = force.getValue();
+		Point f = force.getValue();
 		for(auto& p : particles)
 			p.force += f;
 	}
 
 protected:
-	Data<QPointF> force;
+	Data<Point> force;
 };
 
 int ParticleForceField_ConstantForceClass = RegisterObject<ParticleForceField_ConstantForce>("Particles/Forces/Constant force")

@@ -27,16 +27,13 @@ QColor interpolate(const QColor& v1, const QColor& v2, PReal amt)
 }
 
 template class Animation<PReal>;
-template class Animation<QPointF>;
 template class Animation<QColor>;
 
 template class Data< Animation<PReal> >;
 template class Data< Animation<QColor> >;
-template class Data< Animation<QPointF> >;
 
 int realAnimationDataClass = RegisterData< Animation<PReal> >();
 int colorAnimationDataClass = RegisterData< Animation<QColor> >();
-int pointAnimationDataClass = RegisterData< Animation<QPointF> >();
 
 } // namespace types
 

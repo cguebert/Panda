@@ -7,6 +7,7 @@
 namespace panda {
 
 using types::Path;
+using types::Point;
 
 class Curve_CubicBSpline : public PandaObject
 {
@@ -51,7 +52,7 @@ public:
 			{
 				for(int j=0; j<nbSteps; ++j)
 				{
-					QPointF pt;
+					Point pt;
 					vec4 coef = coefs[j];
 					for(int k=0; k<4; ++k)
 					{
@@ -71,7 +72,7 @@ public:
 			{
 				for(int j=0; j<nbSteps; ++j)
 				{
-					QPointF pt;
+					Point pt;
 					vec4 coef = coefs[j];
 					for(int k=0; k<4; ++k)
 						pt += ctrlPts[i-1+k] * coef[k];

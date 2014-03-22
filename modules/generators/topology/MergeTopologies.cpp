@@ -6,14 +6,16 @@
 
 #include <QMap>
 
-// To be able to use QPointF in QMaps
-template<> static bool qMapLessThanKey<QPointF>(const QPointF& p1, const QPointF& p2)
+// To be able to use Point in QMaps
+template<> static bool qMapLessThanKey<panda::types::Point>(const panda::types::Point& p1, const panda::types::Point& p2)
 {
-	return p1.x() < p2.x() || (p1.x() == p2.x() && p1.y() < p2.y());
+	return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
 }
 
 namespace panda {
 
+using types::Point;
+using types::Rect;
 using types::Topology;
 
 class GeneratorTopology_MergeTopologies : public PandaObject
@@ -37,15 +39,15 @@ public:
 	{
 		helper::PointsGrid grid;
 		QSize size = parentDocument->getRenderSize();
-		QRectF area(0, 0, size.width(), size.height());
+		Rect area(0, 0, size.width(), size.height());
 		grid.initGrid(area, 10);
 
-		double thres = threshold.getValue();
+		PReal thres = threshold.getValue();
 
 		Topology::SeqPoints newPoints;
 		Topology::SeqPolygons newPolygons;
 
-		QMap<QPointF, Topology::PointID> pointsMap;
+		QMap<Point, Topology::PointID> pointsMap;
 
 		const QVector<Topology>& topoList = inputs.getValue();
 		for(const Topology& topo : topoList)
@@ -63,8 +65,8 @@ public:
 				QMap<Topology::PointID, Topology::PointID> tmpIDMap;
 				for(int i=0, nb=topo.getNumberOfPoints(); i<nb; ++i)
 				{
-					const QPointF& pt = topo.getPoint(i);
-					QPointF res;
+					const Point& pt = topo.getPoint(i);
+					Point res;
 					if(grid.getNearest(pt, thres, res))
 					{
 						tmpIDMap[i] = pointsMap[res];

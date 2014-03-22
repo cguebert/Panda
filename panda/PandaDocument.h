@@ -2,11 +2,11 @@
 #define PANDADOCUMENT_H
 
 #include <panda/PandaObject.h>
+#include <panda/types/Point.h>
 #include <panda/types/ImageWrapper.h>
 
 #include <QObject>
 #include <QColor>
-#include <QPointF>
 #include <QSize>
 #include <QMap>
 #include <QDomDocument>
@@ -59,8 +59,8 @@ public:
 	double getAnimationTime();
 	double getTimeStep();
 
-	QPointF getMousePosition();
-	void setMousePosition(const QPointF& pos);
+	types::Point getMousePosition();
+	void setMousePosition(const types::Point& pos);
 	int getMouseClick();
 	void setMouseClick(int state);
 
@@ -94,15 +94,15 @@ protected:
 	Layer* defaultLayer;
 	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer;
 
-	Data<QPointF> renderSize;
+	Data<types::Point> renderSize;
 	Data<QColor> backgroundColor;
 	Data<PReal> animTime, timestep;
 	Data<int> useTimer;
-	Data<QPointF> mousePosition;
+	Data<types::Point> mousePosition;
 	Data<int> mouseClick;
 	Data<types::ImageWrapper> renderedImage;
 
-	QPointF mousePositionBuffer;
+	types::Point mousePositionBuffer;
 	int mouseClickBuffer;
 
 	bool animPlaying;

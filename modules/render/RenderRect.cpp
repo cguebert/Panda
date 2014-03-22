@@ -2,10 +2,11 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
-
-#include <QPointF>
+#include <panda/types/Rect.h>
 
 namespace panda {
+
+using types::Rect;
 
 class RenderRect : public Renderer
 {
@@ -22,14 +23,14 @@ public:
 		addInput(&lineWidth);
 		addInput(&color);
 
-		rect.getAccessor().push_back(QRectF(100, 100, 50, 50));
+		rect.getAccessor().push_back(Rect(100, 100, 50, 50));
 		color.getAccessor().push_back(QColor(0,0,0));
 		lineWidth.getAccessor().push_back(0.0);
 	}
 
 	void render()
 	{
-		const QVector<QRectF>& listRect = rect.getValue();
+		const QVector<Rect>& listRect = rect.getValue();
 		const QVector<QColor>& listColor = color.getValue();
 		const QVector<PReal>& listWidth = lineWidth.getValue();
 
@@ -52,7 +53,7 @@ public:
 
 				glLineWidth(listWidth[i % nbWidth]);
 
-				QRectF rect = listRect[i % nbRect];
+				Rect rect = listRect[i % nbRect];
 				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
 				verts[1*2+0] = rect.left(); verts[1*2+1] = rect.top();
 				verts[2*2+0] = rect.left(); verts[2*2+1] = rect.bottom();
@@ -65,7 +66,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QRectF> > rect;
+	Data< QVector<Rect> > rect;
 	Data< QVector<PReal> > lineWidth;
 	Data< QVector<QColor> > color;
 };
@@ -87,13 +88,13 @@ public:
 		addInput(&rect);
 		addInput(&color);
 
-		rect.getAccessor().push_back(QRectF(100, 100, 50, 50));
+		rect.getAccessor().push_back(Rect(100, 100, 50, 50));
 		color.getAccessor().push_back(QColor(0,0,0));
 	}
 
 	void render()
 	{
-		const QVector<QRectF>& listRect = rect.getValue();
+		const QVector<Rect>& listRect = rect.getValue();
 		const QVector<QColor>& listColor = color.getValue();
 
 		int nbRect = listRect.size();
@@ -111,7 +112,7 @@ public:
 				QColor valCol = listColor[i % nbColor];
 				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
 
-				QRectF rect = listRect[i % nbRect];
+				Rect rect = listRect[i % nbRect];
 				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
 				verts[1*2+0] = rect.left(); verts[1*2+1] = rect.top();
 				verts[2*2+0] = rect.right(); verts[2*2+1] = rect.bottom();
@@ -124,7 +125,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QRectF> > rect;
+	Data< QVector<Rect> > rect;
 	Data< QVector<QColor> > color;
 };
 

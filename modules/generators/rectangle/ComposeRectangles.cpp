@@ -1,8 +1,12 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/Rect.h>
 
 namespace panda {
+
+using types::Point;
+using types::Rect;
 
 class GeneratorRectangles_Compose : public PandaObject
 {
@@ -40,7 +44,7 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			double tl = l[i], tt = t[i];
-			rect[i] = QRectF(tl, tt, r[i] - tl, b[i] - tt);
+			rect[i] = Rect(tl, tt, r[i] - tl, b[i] - tt);
 		}
 
 		cleanDirty();
@@ -48,7 +52,7 @@ public:
 
 protected:
 	Data< QVector<PReal> > left, top, right, bottom;
-	Data< QVector<QRectF> > rectangle;
+	Data< QVector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_ComposeClass = RegisterObject<GeneratorRectangles_Compose>("Generator/Rectangle/Rectangle from 4 reals").setName("Reals to rectangle").setDescription("Create a rectangle from 4 reals");
@@ -74,8 +78,8 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF> &c = center.getValue();
-		const QVector<QPointF> &s = size.getValue();
+		const QVector<Point> &c = center.getValue();
+		const QVector<Point> &s = size.getValue();
 		int nbC = c.size();
 		int nbS = s.size();
 		if(nbS < nbC) nbS = 1;
@@ -87,14 +91,14 @@ public:
 		rect.resize(nb);
 
 		for(int i=0; i<nb; ++i)
-			rect[i] = QRectF(c[i%nbC].x()-s[i%nbS].x()/2.0, c[i%nbC].y()-s[i%nbS].y()/2.0, s[i%nbS].x(), s[i%nbS].y());
+			rect[i] = Rect(c[i%nbC]-s[i%nbS]/2, s[i%nbS].x, s[i%nbS].y);
 
 		cleanDirty();
 	}
 
 protected:
-	Data< QVector<QPointF> > center, size;
-	Data< QVector<QRectF> > rectangle;
+	Data< QVector<Point> > center, size;
+	Data< QVector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_ComposeCenterClass = RegisterObject<GeneratorRectangles_ComposeCenter>("Generator/Rectangle/Rectangle from center and size").setName("Center to rectangle").setDescription("Create a rectangle from center and size");
@@ -120,8 +124,8 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF> &tl = topleft.getValue();
-		const QVector<QPointF> &br = bottomright.getValue();
+		const QVector<Point> &tl = topleft.getValue();
+		const QVector<Point> &br = bottomright.getValue();
 		int nbTL = tl.size();
 		int nbBR = br.size();
 		if(nbTL < nbBR) nbTL = 1;
@@ -133,14 +137,14 @@ public:
 		rect.resize(nb);
 
 		for(int i=0; i<nb; ++i)
-			rect[i] = QRectF(tl[i%nbTL], br[i%nbBR]);
+			rect[i] = Rect(tl[i%nbTL], br[i%nbBR]);
 
 		cleanDirty();
 	}
 
 protected:
-	Data< QVector<QPointF> > topleft, bottomright;
-	Data< QVector<QRectF> > rectangle;
+	Data< QVector<Point> > topleft, bottomright;
+	Data< QVector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_ComposeCornersClass = RegisterObject<GeneratorRectangles_ComposeCorners>("Generator/Rectangle/Rectangle from corners").setName("Corners to rectangle").setDescription("Create a rectangle from 2 corners");
@@ -170,7 +174,7 @@ public:
 
 	void update()
 	{
-		const QVector<QRectF> &rect = rectangle.getValue();
+		const QVector<Rect> &rect = rectangle.getValue();
 		int nb = rect.size();
 
 		auto l = left.getAccessor();
@@ -185,7 +189,7 @@ public:
 
 		for(int i=0; i<nb; ++i)
 		{
-			const QRectF& tr = rect[i];
+			const Rect& tr = rect[i];
 			l[i] = tr.left();
 			t[i] = tr.top();
 			r[i] = tr.right();
@@ -197,7 +201,7 @@ public:
 
 protected:
 	Data< QVector<PReal> > left, top, right, bottom;
-	Data< QVector<QRectF> > rectangle;
+	Data< QVector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_DecomposeClass = RegisterObject<GeneratorRectangles_Decompose>("Generator/Rectangle/Rectangle to 4 reals").setName("Rectangle to reals").setDescription("Extract the boundary of a rectangles");
@@ -223,7 +227,7 @@ public:
 
 	void update()
 	{
-		const QVector<QRectF> &rect = rectangle.getValue();
+		const QVector<Rect> &rect = rectangle.getValue();
 		int nb = rect.size();
 
 		auto c = center.getAccessor();
@@ -234,17 +238,17 @@ public:
 
 		for(int i=0; i<nb; ++i)
 		{
-			const QRectF& tr = rect[i];
+			const Rect& tr = rect[i];
 			c[i] = tr.center();
-			s[i] = QPointF(tr.width(), tr.height());
+			s[i] = Point(tr.width(), tr.height());
 		}
 
 		cleanDirty();
 	}
 
 protected:
-	Data< QVector<QPointF> > center, size;
-	Data< QVector<QRectF> > rectangle;
+	Data< QVector<Point> > center, size;
+	Data< QVector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_DecomposeCenterClass = RegisterObject<GeneratorRectangles_DecomposeCenter>("Generator/Rectangle/Rectangle to center and size").setName("Rectangle to center").setDescription("Extract the center and size of a rectangle");
@@ -270,7 +274,7 @@ public:
 
 	void update()
 	{
-		const QVector<QRectF> &rect = rectangle.getValue();
+		const QVector<Rect> &rect = rectangle.getValue();
 		int nb = rect.size();
 
 		auto tl = topleft.getAccessor();
@@ -281,7 +285,7 @@ public:
 
 		for(int i=0; i<nb; ++i)
 		{
-			const QRectF& tr = rect[i];
+			const Rect& tr = rect[i];
 			tl[i] = tr.topLeft();
 			br[i] = tr.bottomRight();
 		}
@@ -290,8 +294,8 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > topleft, bottomright;
-	Data< QVector<QRectF> > rectangle;
+	Data< QVector<Point> > topleft, bottomright;
+	Data< QVector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_DecomposeCornersClass = RegisterObject<GeneratorRectangles_DecomposeCorners>("Generator/Rectangle/Rectangle to corners").setName("Rectangle to corners").setDescription("Extract two corners of a rectangle");

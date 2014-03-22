@@ -3,6 +3,7 @@
 #include <panda/ObjectFactory.h>
 
 #include <panda/types/Topology.h>
+#include <panda/types/Rect.h>
 
 #include <vector>
 using std::vector;
@@ -16,13 +17,15 @@ using namespace boost::polygon;
 namespace panda {
 
 using types::Topology;
+using types::Point;
+using types::Rect;
 
 class GeneratorTopology_Delaunay : public PandaObject
 {
 public:
 	PANDA_CLASS(GeneratorTopology_Delaunay, PandaObject)
 
-	typedef point_data<int> Point;
+	typedef point_data<int> IPoint;
 	typedef segment_data<int> Segment;
 	typedef voronoi_diagram<double> Diagram;
 
@@ -45,14 +48,14 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF>& pts = vertices.getValue();
+		const QVector<Point>& pts = vertices.getValue();
 		auto topo = topology.getAccessor();
 
 		topo->clear();
 
-		vector<Point> points;
-		for(QPointF p : pts)
-			points.push_back(Point(p.x(), p.y()));
+		vector<IPoint> points;
+		for(const auto& p : pts)
+			points.push_back(IPoint(p.x, p.y));
 
 		vector<Segment> segments;
 
@@ -61,7 +64,8 @@ public:
 
 		topo->addPoints(pts);
 
-		QRectF area = QRectF(QPointF(0,0), parentDocument->getRenderSize());
+		QSize s = parentDocument->getRenderSize();
+		Rect area = Rect(0, 0, s.width(), s.height());
 
 		for(EdgeIterator it = vd.edges().begin(); it != vd.edges().end(); ++it)
 		{
@@ -69,12 +73,12 @@ public:
 			bool bp1 = false, bp2 = false;
 			if(it->vertex0())
 			{
-				QPointF pt = QPointF(it->vertex0()->x(), it->vertex0()->y());
+				Point pt = Point(it->vertex0()->x(), it->vertex0()->y());
 				bp1 = area.contains(pt);
 			}
 			if(it->vertex1())
 			{
-				QPointF pt = QPointF(it->vertex1()->x(), it->vertex1()->y());
+				Point pt = Point(it->vertex1()->x(), it->vertex1()->y());
 				bp2 = area.contains(pt);
 			}
 			if(it->twin() && (bp1 || bp2))
@@ -92,7 +96,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > vertices;
+	Data< QVector<Point> > vertices;
 	Data<Topology> topology;
 };
 

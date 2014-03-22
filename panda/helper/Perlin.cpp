@@ -33,6 +33,8 @@ namespace panda
 namespace helper
 {
 
+using types::Point;
+
 static inline PReal fade(PReal t) { return t * t * t * (t * (t * 6 - 15) + 10); }
 static inline PReal dfade(PReal t) { return 30.0f * t * t * (t * (t - 2.0f) + 1.0f); }
 inline PReal nlerp(PReal t, PReal a, PReal b) { return a + t * (b - a); }
@@ -119,9 +121,9 @@ PReal Perlin::fBm(PReal x, PReal y, PReal z) const
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // dfBm
-QVector2D Perlin::dfBm(PReal x, PReal y) const
+Point Perlin::dfBm(PReal x, PReal y) const
 {
-	QVector2D result;
+	Point result;
 	PReal amp = 0.5f;
 
 	for(uint8_t i = 0; i < m_octaves; i++)
@@ -202,7 +204,7 @@ PReal Perlin::noise(PReal x, PReal y, PReal z) const
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // dnoise
 // Credit for the ideas for analytical Perlin derivatives below are due to Iñigo Quílez
-QVector2D Perlin::dnoise(PReal x, PReal y) const
+Point Perlin::dnoise(PReal x, PReal y) const
 {
 	int32_t X = ((int32_t)x) & 255, Y = ((int32_t)y) & 255;
 	x -= floorf(x); y -= floorf(y);
@@ -223,7 +225,7 @@ QVector2D Perlin::dnoise(PReal x, PReal y) const
 	const PReal k2 =   c - a;
 	const PReal k4 =   a - b - c + d;
 
-	return QVector2D(du * (k1 + k4 * v), dv * (k2 + k4 * u));
+	return Point(du * (k1 + k4 * v), dv * (k2 + k4 * u));
 }
 
 QVector3D Perlin::dnoise(PReal x, PReal y, PReal z) const

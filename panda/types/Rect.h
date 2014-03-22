@@ -4,8 +4,6 @@
 #include <panda/types/Point.h>
 #include <utility>
 
-#define EQUALITY_THRESHOLD 1e-6
-
 namespace panda
 {
 
@@ -206,13 +204,13 @@ public:
 		return contains(Point(x, y));
 	}
 
-	bool operator==(const Rect& r)
+	bool operator==(const Rect& r) const
 	{
 		return pFuzzyIsNull(x1 - r.x1) && pFuzzyIsNull(y1 - r.y1)
 				&& pFuzzyIsNull(x2 - r.x2) && pFuzzyIsNull(y2 - r.y2);
 	}
 
-	bool operator!=(const Rect& r)
+	bool operator!=(const Rect& r) const
 	{
 		return !pFuzzyIsNull(x1 - r.x1) || !pFuzzyIsNull(y1 - r.y1)
 				|| !pFuzzyIsNull(x2 - r.x2) || !pFuzzyIsNull(y2 - r.y2);
@@ -222,7 +220,5 @@ public:
 } // namespace types
 
 } // namespace panda
-
-#undef EQUALITY_THRESHOLD
 
 #endif // TYPES_RECT_H

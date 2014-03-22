@@ -6,6 +6,7 @@
 namespace panda {
 
 using types::ImageWrapper;
+using types::Point;
 
 class ImageMath_GetSize : public PandaObject
 {
@@ -37,7 +38,7 @@ public:
 			if(!img.isNull())
 			{
 				QSize s = img.size();
-				listSize[i] = QPointF(s.width(), s.height());
+				listSize[i] = Point(s.width(), s.height());
 			}
 		}
 
@@ -46,7 +47,7 @@ public:
 
 protected:
 	Data< QVector<ImageWrapper> > image;
-	Data< QVector<QPointF> > size;
+	Data< QVector<Point> > size;
 };
 
 int ImageMath_GetSizeClass = RegisterObject<ImageMath_GetSize>("Math/Image/Image size").setDescription("Compute the size of the image");

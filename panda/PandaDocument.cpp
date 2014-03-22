@@ -17,10 +17,12 @@
 
 namespace panda {
 
+using types::Point;
+
 PandaDocument::PandaDocument(QObject *parent)
 	: PandaObject(parent)
 	, currentIndex(1)
-	, renderSize(initData(&renderSize, QPointF(800,600), "render size", "Size of the image to be rendered"))
+	, renderSize(initData(&renderSize, Point(800,600), "render size", "Size of the image to be rendered"))
 	, backgroundColor(initData(&backgroundColor, QColor(255,255,255), "background color", "Background color of the image to be rendered"))
 	, animTime(initData(&animTime, (PReal)0.0, "time", "Time of the animation"))
 	, timestep(initData(&timestep, (PReal)0.01, "timestep", "Time step of the animation"))
@@ -327,7 +329,7 @@ void PandaDocument::resetDocument()
 	animTime.setValue(0.0);
 	timestep.setValue((PReal)0.01);
 	useTimer.setValue(1);
-	renderSize.setValue(QPointF(800,600));
+	renderSize.setValue(Point(800,600));
 	backgroundColor.setValue(QColor(255,255,255));
 
 	animPlaying = false;
@@ -399,8 +401,8 @@ void PandaDocument::setBackgroundColor(QColor color)
 
 QSize PandaDocument::getRenderSize()
 {
-	QPointF pt = renderSize.getValue();
-	return QSize(qMax(1, (int)pt.x()), qMax(1, (int)pt.y()));
+	Point pt = renderSize.getValue();
+	return QSize(qMax<PReal>(1, floor(pt.x)), qMax<PReal>(1, floor(pt.y)));
 }
 
 double PandaDocument::getAnimationTime()
@@ -413,12 +415,12 @@ double PandaDocument::getTimeStep()
 	return timestep.getValue();
 }
 
-QPointF PandaDocument::getMousePosition()
+Point PandaDocument::getMousePosition()
 {
 	return mousePosition.getValue();
 }
 
-void PandaDocument::setMousePosition(const QPointF& pos)
+void PandaDocument::setMousePosition(const Point& pos)
 {
 	mousePositionBuffer = pos;
 }

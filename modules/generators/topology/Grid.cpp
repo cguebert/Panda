@@ -2,10 +2,13 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
+#include <panda/types/Rect.h>
 #include <panda/types/Topology.h>
 
 namespace panda {
 
+using types::Point;
+using types::Rect;
 using types::Topology;
 
 class GeneratorTopology_Grid : public PandaObject
@@ -16,7 +19,7 @@ public:
 
 	GeneratorTopology_Grid(PandaDocument *doc)
 		: PandaObject(doc)
-		, area(initData(&area, QRectF(100, 100, 200, 200), "area", "Position and size of the grid"))
+		, area(initData(&area, Rect(100, 100, 200, 200), "area", "Position and size of the grid"))
 		, nbX(initData(&nbX, 5, "nbX", "Number of cells horizontally"))
 		, nbY(initData(&nbY, 5, "nbY", "Number of cells vertically"))
 		, triangulate(initData(&triangulate, 0, "triangulate", "Create triangles instead of quads"))
@@ -33,7 +36,7 @@ public:
 
 	void update()
 	{
-		QRectF bounds = area.getValue();
+		Rect bounds = area.getValue();
 		int nx = nbX.getValue(), ny = nbY.getValue();
 		bool tri = triangulate.getValue();
 		auto topo = topology.getAccessor();
@@ -44,7 +47,7 @@ public:
 
 		for(int y=0; y<ny; ++y)
 			for(int x=0; x<nx; ++x)
-				topo->addPoint(QPointF(bounds.left() + x * dx, bounds.top() + y * dy));
+				topo->addPoint(Point(bounds.left() + x * dx, bounds.top() + y * dy));
 
 		for(int y=1; y<ny; ++y)
 		{
@@ -83,7 +86,7 @@ public:
 	}
 
 protected:
-	Data<QRectF> area;
+	Data<Rect> area;
 	Data<int> nbX, nbY, triangulate;
 	Data<Topology> topology;
 };

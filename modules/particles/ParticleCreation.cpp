@@ -4,6 +4,8 @@
 
 namespace panda {
 
+using types::Point;
+
 class ParticleCreation_FromLists : public ParticleEffector
 {
 public:
@@ -46,7 +48,7 @@ public:
 	}
 
 protected:
-	Data<QVector<QPointF>> position, velocity;
+	Data< QVector<Point> > position, velocity;
 };
 
 int ParticleCreation_FromListsClass = RegisterObject<ParticleCreation_FromLists>("Particles/Creation/Particles from lists")

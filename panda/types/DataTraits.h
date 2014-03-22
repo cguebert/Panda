@@ -5,8 +5,6 @@
 #include <panda/types/DataTypeId.h>
 
 #include <QColor>
-#include <QRectF>
-#include <QPointF>
 #include <QVector>
 #include <QDomDocument>
 
@@ -184,8 +182,6 @@ public:
 template<> QString DataTrait<int>::valueTypeName() { return "integer"; }
 template<> QString DataTrait<PReal>::valueTypeName() { return "real"; }
 template<> QString DataTrait<QColor>::valueTypeName() { return "color"; }
-template<> QString DataTrait<QPointF>::valueTypeName() { return "point"; }
-template<> QString DataTrait<QRectF>::valueTypeName() { return "rectangle"; }
 template<> QString DataTrait<QString>::valueTypeName() { return "text"; }
 
 //***************************************************************//
@@ -205,17 +201,6 @@ void DataTrait<QColor>::writeValue(QDomDocument&, QDomElement& elem, const QColo
 	elem.setAttribute("g", v.green());
 	elem.setAttribute("b", v.blue());
 	elem.setAttribute("a", v.alpha()); }
-
-template<>
-void DataTrait<QPointF>::writeValue(QDomDocument&, QDomElement& elem, const QPointF& v)
-{ elem.setAttribute("x", v.x()); elem.setAttribute("y", v.y()); }
-
-template<>
-void DataTrait<QRectF>::writeValue(QDomDocument&, QDomElement& elem, const QRectF& v)
-{	elem.setAttribute("l", v.left());
-	elem.setAttribute("t", v.top());
-	elem.setAttribute("r", v.right());
-	elem.setAttribute("b", v.bottom()); }
 
 template<>
 void DataTrait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const QString& v)
@@ -245,32 +230,6 @@ void DataTrait<QColor>::readValue(QDomElement& elem, QColor& v)
 	v.setGreen(elem.attribute("g").toInt());
 	v.setBlue( elem.attribute("b").toInt());
 	v.setAlpha(elem.attribute("a").toInt()); }
-
-template<>
-void DataTrait<QPointF>::readValue(QDomElement& elem, QPointF& v)
-#ifdef PANDA_DOUBLE
-{	v.setX(elem.attribute("x").toDouble());
-	v.setY(elem.attribute("y").toDouble()); }
-#else
-{	v.setX(elem.attribute("x").toFloat());
-	v.setY(elem.attribute("y").toFloat()); }
-#endif
-
-template<>
-void DataTrait<QRectF>::readValue(QDomElement& elem, QRectF& v)
-{
-#ifdef PANDA_DOUBLE
-	v.setLeft(  elem.attribute("l").toDouble());
-	v.setTop(   elem.attribute("t").toDouble());
-	v.setRight( elem.attribute("r").toDouble());
-	v.setBottom(elem.attribute("b").toDouble());
-#else
-	v.setLeft(  elem.attribute("l").toFloat());
-	v.setTop(   elem.attribute("t").toFloat());
-	v.setRight( elem.attribute("r").toFloat());
-	v.setBottom(elem.attribute("b").toFloat());
-#endif
-}
 
 template<>
 void DataTrait<QString>::readValue(QDomElement& elem, QString& v)

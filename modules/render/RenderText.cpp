@@ -2,6 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Rect.h>
 
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLPaintDevice>
@@ -10,6 +11,8 @@
 #include <QFont>
 
 namespace panda {
+
+using types::Rect;
 
 class RenderText : public Renderer
 {
@@ -109,7 +112,9 @@ public:
 			for(int i=0; i<nbRect; ++i)
 			{
 				painter.setPen(QPen(listColor[i % nbColor]));
-				painter.drawText(listRect[i], alignment, listText[i % nbText]);
+				Rect r = listRect[i];
+				QRectF rect = QRectF(r.left(), r.top(), r.width(), r.height());
+				painter.drawText(rect, alignment, listText[i % nbText]);
 			}
 
 			painter.end();
@@ -162,7 +167,7 @@ public:
 protected:
 	Data< QVector<QString> > text;
 	Data< QString > font;
-	Data< QVector<QRectF> > rect;
+	Data< QVector<Rect> > rect;
 	Data< QVector<QColor> > color;
 	Data< int > alignH, alignV;
 

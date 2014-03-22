@@ -1,10 +1,12 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QPointF>
+#include <panda/types/Point.h>
 #include <panda/helper/Random.h>
 
 namespace panda {
+
+using types::Point;
 
 class GeneratorPoints_Random : public PandaObject
 {
@@ -39,7 +41,7 @@ public:
 		QSize size = parentDocument->getRenderSize();
 
 		for(int i=0; i<valNbPoints; ++i)
-			valPoints.push_back(QPointF(rnd.random()*size.width(), rnd.random()*size.height()));
+			valPoints.push_back(Point(rnd.random()*size.width(), rnd.random()*size.height()));
 
 		cleanDirty();
 	}
@@ -47,7 +49,7 @@ public:
 protected:
 	helper::RandomGenerator rnd;
 	Data<int> nbPoints, seed;
-	Data< QVector<QPointF> > points;
+	Data< QVector<Point> > points;
 };
 
 int GeneratorPoints_RandomClass = RegisterObject<GeneratorPoints_Random>("Generator/Point/Random").setName("Random points").setDescription("Generate a list of random points");

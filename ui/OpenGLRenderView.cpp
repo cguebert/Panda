@@ -74,10 +74,10 @@ void OpenGLRenderView::mouseMoveEvent(QMouseEvent *event)
 {
 	QRect viewRect = contentsRect();
 	QSize renderSize = pandaDocument->getRenderSize();
-	QPointF delta = QPointF(viewRect.center().x() - renderSize.width() / 2,
+	QPointF pos = event->localPos() - QPointF(viewRect.center().x() - renderSize.width() / 2,
 							viewRect.center().y() - renderSize.height() / 2);
 
-	pandaDocument->setMousePosition(event->localPos() - delta);
+	pandaDocument->setMousePosition(panda::types::Point(pos.x(), pos.y()));
 }
 
 void OpenGLRenderView:: mouseReleaseEvent(QMouseEvent *event)

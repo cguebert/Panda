@@ -4,7 +4,6 @@
 #include <panda/Renderer.h>
 #include <panda/types/ImageWrapper.h>
 
-#include <QPointF>
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
@@ -13,6 +12,7 @@
 
 namespace panda {
 
+using types::Point;
 using types::ImageWrapper;
 
 class RenderSprite : public Renderer
@@ -33,7 +33,7 @@ public:
 		addInput(&color);
 		addInput(&texture);
 
-		position.getAccessor().push_back(QPointF(100, 100));
+		position.getAccessor().push_back(Point(100, 100));
 		size.getAccessor().push_back(5.0);
 		color.getAccessor().push_back(QColor(255, 255, 255));
 
@@ -81,7 +81,7 @@ public:
 
 	void render()
 	{
-		const QVector<QPointF>& listPosition = position.getValue();
+		const QVector<Point>& listPosition = position.getValue();
 		QVector<PReal> listSize = size.getValue();
 		const QVector<QColor>& listColor = color.getValue();
 		GLuint texId = texture.getValue().getTexture();
@@ -171,7 +171,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > position;
+	Data< QVector<Point> > position;
 	Data< QVector<PReal> > size;
 	Data< QVector<QColor> > color;
 	Data< ImageWrapper > texture;

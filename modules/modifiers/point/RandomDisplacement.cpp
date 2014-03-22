@@ -7,6 +7,8 @@
 
 namespace panda {
 
+using types::Point;
+
 class ModifierPoints_RandomDisplacement : public PandaObject
 {
 public:
@@ -37,7 +39,7 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF>& inPts = inputPoints.getValue();
+		const QVector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
 		int nb = inPts.size();
 		outPts.resize(nb);
@@ -50,7 +52,7 @@ public:
 		{
 			double a = rnd.random(minA, maxA) * M_PI / 180.0;
 			double d = rnd.random(minD, maxD);
-			QPointF disp(cos(a)*d, sin(a)*d);
+			Point disp(cos(a)*d, sin(a)*d);
 			outPts[i] = inPts[i] + disp;
 		}
 
@@ -59,7 +61,7 @@ public:
 
 protected:
 	helper::RandomGenerator rnd;
-	Data< QVector<QPointF> > inputPoints, outputPoints;
+	Data< QVector<Point> > inputPoints, outputPoints;
 	Data<PReal> minAngle, maxAngle, minDist, maxDist;
 	Data<int> seed;
 };

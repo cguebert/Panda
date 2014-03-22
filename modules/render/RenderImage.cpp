@@ -2,12 +2,15 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Rect.h>
 #include <panda/types/ImageWrapper.h>
 
 #include <QOpenGLContext>
 
 namespace panda {
 
+using types::Point;
+using types::Rect;
 using types::ImageWrapper;
 
 class RenderImage : public Renderer
@@ -29,10 +32,10 @@ public:
 
 		drawCentered.setWidget("checkbox");
 
-		center.getAccessor().push_back(QPointF(0, 0));
+		center.getAccessor().push_back(Point(0, 0));
 	}
 
-	void drawTexture(GLuint texId, QRectF area)
+	void drawTexture(GLuint texId, Rect area)
 	{
 		if(!texId)
 			return;
@@ -63,7 +66,7 @@ public:
 	void render()
 	{
 		const QVector<ImageWrapper>& listImage = image.getValue();
-		const QVector<QPointF>& listCenter = center.getValue();
+		const QVector<Point>& listCenter = center.getValue();
 		const QVector<PReal>& listRotation = rotation.getValue();
 
 		bool centered = (drawCentered.getValue() != 0);
@@ -86,10 +89,10 @@ public:
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size();
 						glPushMatrix();
-						glTranslated(listCenter[i].x(), listCenter[i].y(), 0);
-						glRotated(listRotation[i % nbRotation], 0, 0, 1);
-						QRectF area = QRectF(-s.width()/2, -s.height()/2,
-											 s.width(), s.height());
+						glTranslateReal(listCenter[i].x, listCenter[i].y, 0);
+						glRotateReal(listRotation[i % nbRotation], 0, 0, 1);
+						Rect area = Rect(-s.width()/2, -s.height()/2,
+											 s.width()/2, s.height()/2);
 						drawTexture(img.getTexture(), area);
 						glPopMatrix();
 					}
@@ -101,9 +104,9 @@ public:
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size();
 						glPushMatrix();
-						glTranslated(listCenter[i].x(), listCenter[i].y(), 0);
-						glRotated(listRotation[i % nbRotation], 0, 0, 1);
-						QRectF area = QRectF(0, 0, s.width(), s.height());
+						glTranslateReal(listCenter[i].x, listCenter[i].y, 0);
+						glRotateReal(listRotation[i % nbRotation], 0, 0, 1);
+						Rect area = Rect(0, 0, s.width(), s.height());
 						drawTexture(img.getTexture(), area);
 						glPopMatrix();
 					}
@@ -117,8 +120,8 @@ public:
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size();
-						QRectF area = QRectF(listCenter[i].x() - s.width()/2,
-											 listCenter[i].y() - s.height()/2,
+						Rect area = Rect(listCenter[i].x - s.width()/2,
+											 listCenter[i].y - s.height()/2,
 											 s.width(), s.height());
 						drawTexture(img.getTexture(), area);
 					}
@@ -128,7 +131,8 @@ public:
 					for(int i=0; i<nbCenter; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
-						QRectF area(listCenter[i], img.size());
+						QSize size = img.size();
+						Rect area(listCenter[i], size.width(), size.height());
 						drawTexture(img.getTexture(), area);
 					}
 				}
@@ -138,7 +142,7 @@ public:
 
 protected:
 	Data< QVector<ImageWrapper> > image;
-	Data< QVector<QPointF> > center;
+	Data< QVector<Point> > center;
 	Data< QVector<PReal> > rotation;
 	Data< int > drawCentered;
 };

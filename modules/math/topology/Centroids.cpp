@@ -7,6 +7,7 @@
 namespace panda {
 
 using types::Topology;
+using types::Point;
 
 class TopologyMath_Centroids : public PandaObject
 {
@@ -39,7 +40,7 @@ public:
 
 protected:
 	Data<Topology> topology;
-	Data< QVector<QPointF> > centroids;
+	Data< QVector<Point> > centroids;
 };
 
 int TopologyMath_CentroidsClass = RegisterObject<TopologyMath_Centroids>("Math/Topology/Centroids")

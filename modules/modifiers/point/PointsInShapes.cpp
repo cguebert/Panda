@@ -1,9 +1,12 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QPointF>
+#include <panda/types/Rect.h>
 
 namespace panda {
+
+using types::Point;
+using types::Rect;
 
 class ModifierPoints_PointsInRect : public PandaObject
 {
@@ -26,9 +29,9 @@ public:
 
 	void update()
 	{
-		const QRectF& rect = rectangle.getValue();
+		const Rect& rect = rectangle.getValue();
 
-		const QVector<QPointF>& inPts = inputPoints.getValue();
+		const QVector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
 		auto outId = outputIndices.getAccessor();
 		int nb = inPts.size();
@@ -37,7 +40,7 @@ public:
 
 		for(int i=0; i<nb; ++i)
 		{
-			QPointF pt = inPts[i];
+			Point pt = inPts[i];
 			if(rect.contains(pt))
 			{
 				outPts.push_back(pt);
@@ -49,8 +52,8 @@ public:
 	}
 
 protected:
-	Data< QRectF > rectangle;
-	Data< QVector<QPointF> > inputPoints, outputPoints;
+	Data< Rect > rectangle;
+	Data< QVector<Point> > inputPoints, outputPoints;
 	Data< QVector<int> > outputIndices;
 };
 
@@ -81,11 +84,11 @@ public:
 
 	void update()
 	{
-		const QPointF& c = center.getValue();
+		const Point& c = center.getValue();
 		double r = radius.getValue();
 		double r2 = r*r;
 
-		const QVector<QPointF>& inPts = inputPoints.getValue();
+		const QVector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
 		auto outId = outputIndices.getAccessor();
 		int nb = inPts.size();
@@ -94,9 +97,8 @@ public:
 
 		for(int i=0; i<nb; ++i)
 		{
-			QPointF pt = inPts[i];
-			double dx = pt.x()-c.x(), dy = pt.y()-c.y();
-			double d2 = dx*dx+dy*dy;
+			Point pt = inPts[i];
+			double d2 = (pt - c).norm2();
 			if(d2 < r2)
 			{
 				outPts.push_back(pt);
@@ -108,9 +110,9 @@ public:
 	}
 
 protected:
-	Data< QPointF > center;
+	Data< Point > center;
 	Data< PReal > radius;
-	Data< QVector<QPointF> > inputPoints, outputPoints;
+	Data< QVector<Point> > inputPoints, outputPoints;
 	Data< QVector<int> > outputIndices;
 };
 

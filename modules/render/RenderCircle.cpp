@@ -2,12 +2,13 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
-
-#include <QPointF>
+#include <panda/types/Point.h>
 
 #include <cmath>
 
 namespace panda {
+
+using types::Point;
 
 class RenderCircle : public Renderer
 {
@@ -26,7 +27,7 @@ public:
 		addInput(&lineWidth);
 		addInput(&color);
 
-		center.getAccessor().push_back(QPointF(100, 100));
+		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
 		lineWidth.getAccessor().push_back(0.0);
 		color.getAccessor().push_back(QColor(0,0,0));
@@ -34,7 +35,7 @@ public:
 
 	void render()
 	{
-		const QVector<QPointF>& listCenter = center.getValue();
+		const QVector<Point>& listCenter = center.getValue();
 		const QVector<PReal>& listRadius = radius.getValue();
 		const QVector<PReal>& listWidth = lineWidth.getValue();
 		const QVector<QColor>& listColor = color.getValue();
@@ -64,12 +65,12 @@ public:
 				if(nbSeg < 3) continue;
 				vertices.resize((nbSeg + 2) * 2);
 
-				QPointF valCenter = listCenter[i];
+				Point valCenter = listCenter[i];
 				for(int i=0; i<nbSeg; i++)
 				{
 					double t = i / static_cast<PReal>(nbSeg) * 2 * M_PI;
-					vertices[i*2  ] = valCenter.x() + cos(t) * valRadius;
-					vertices[i*2+1] = valCenter.y() + sin(t) * valRadius;
+					vertices[i*2  ] = valCenter.x + cos(t) * valRadius;
+					vertices[i*2+1] = valCenter.y + sin(t) * valRadius;
 				}
 				glVertexPointer(2, GL_PREAL, 0, vertices.data());
 				glDrawArrays(GL_LINE_LOOP, 0, nbSeg);
@@ -79,7 +80,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > center;
+	Data< QVector<Point> > center;
 	Data< QVector<PReal> > radius, lineWidth;
 	Data< QVector<QColor> > color;
 };

@@ -2,7 +2,7 @@
 #define TYPES_PATH_H
 
 #include <QVector>
-#include <QPointF>
+#include <panda/types/Point.h>
 
 namespace panda
 {
@@ -10,10 +10,10 @@ namespace panda
 namespace types
 {
 
-class Path : public QVector<QPointF>
+class Path : public QVector<Point>
 {
 public:
-	Path& operator=(const QVector<QPointF>& v);
+	Path& operator=(const QVector<Point>& v);
 };
 
 } // namespace types

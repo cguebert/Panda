@@ -1,12 +1,15 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/Point.h>
 #include <QVector>
 
 #include <cmath>
 #include <algorithm>
 
 namespace panda {
+
+using types::Point;
 
 class PointListMath_Center : public PandaObject
 {
@@ -31,31 +34,25 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF>& list = input.getValue();
+		const QVector<Point>& list = input.getValue();
 		int nb = list.size();
 		nbElements.setValue(nb);
 
 		if(nb)
 		{
-			double sumX=0, sumY=0;
+			Point sum;
+			for(const auto& pt : list)
+				sum += pt;
+
+			sum /= nb;
+
+			center.setValue(sum);
+
+			PReal E=0, E2=0;
 			for(int i=0; i<nb; ++i)
 			{
-				QPointF pt = list[i];
-				sumX += pt.x();
-				sumY += pt.y();
-			}
-
-			sumX /= nb;
-			sumY /= nb;
-
-			center.setValue(QPointF(sumX, sumY));
-
-			double E=0, E2=0;
-			for(int i=0; i<nb; ++i)
-			{
-				QPointF pt = list[i];
-				double dx = pt.x()-sumX, dy = pt.y()-sumY;
-				double d2 = dx*dx+dy*dy;
+				Point pt = list[i];
+				PReal d2 = (pt - sum).norm2();
 				E += sqrt(d2);
 				E2 += d2;
 			}
@@ -67,7 +64,7 @@ public:
 		}
 		else
 		{
-			center.setValue(QPointF(0,0));
+			center.setValue(Point(0,0));
 			mean.setValue(0);
 			stdDev.setValue(0);
 		}
@@ -76,9 +73,9 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > input;
+	Data< QVector<Point> > input;
 	Data<int> nbElements;
-	Data<QPointF> center;
+	Data<Point> center;
 	Data<PReal> mean, stdDev;
 };
 

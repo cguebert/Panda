@@ -7,6 +7,7 @@
 namespace panda {
 
 using types::Topology;
+using types::Point;
 
 class GeneratorTopology_OnePolygon : public PandaObject
 {
@@ -25,7 +26,7 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF>& pts = points.getValue();
+		const QVector<Point>& pts = points.getValue();
 		auto topo = topology.getAccessor();
 
 		topo->clear();
@@ -40,7 +41,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > points;
+	Data< QVector<Point> > points;
 	Data<Topology> topology;
 };
 
@@ -66,7 +67,7 @@ public:
 	void update()
 	{
 		Topology topo = topology.getValue();
-		const QVector<QPointF>& topoPts = topo.getPoints();
+		const QVector<Point>& topoPts = topo.getPoints();
 		auto pts = points.getAccessor();
 
 		pts.clear();
@@ -84,7 +85,7 @@ public:
 
 protected:
 	Data<Topology> topology;
-	Data< QVector<QPointF> > points;
+	Data< QVector<Point> > points;
 };
 
 int GeneratorTopology_WireframeClass = RegisterObject<GeneratorTopology_Wireframe>("Generator/Topology/Wireframe").setDescription("Extract the edges from a topology");
@@ -118,7 +119,7 @@ public:
 
 protected:
 	Data<Topology> topology;
-	Data< QVector<QPointF> > points;
+	Data< QVector<Point> > points;
 };
 
 int GeneratorTopology_VerticesClass = RegisterObject<GeneratorTopology_Vertices>("Generator/Topology/Vertices").setDescription("Extract the vertices of a topology");
@@ -271,7 +272,7 @@ public:
 
 protected:
 	Data<Topology> input;
-	Data< QVector<QPointF> > output;
+	Data< QVector<Point> > output;
 	Data< QVector<int> > edges;
 };
 

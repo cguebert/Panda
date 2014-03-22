@@ -2,11 +2,12 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
-#include <QPointF>
+#include <panda/types/Point.h>
 
 namespace panda {
 
 using types::ImageWrapper;
+using types::Point;
 
 class ModifierPoints_Union : public PandaObject
 {
@@ -31,7 +32,7 @@ public:
 	{
 		const QImage& img = image.getValue().getImage();
 
-		const QVector<QPointF>& inPts = inputPoints.getValue();
+		const QVector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
 		auto outId = outputIndices.getAccessor();
 		int nb = inPts.size();
@@ -42,8 +43,8 @@ public:
 		{
 			for(int i=0; i<nb; ++i)
 			{
-				QPointF pt = inPts[i];
-				QPoint iPt(qRound(pt.x()), qRound(pt.y()));
+				Point pt = inPts[i];
+				QPoint iPt(qRound(pt.x), qRound(pt.y));
 				if(img.valid(iPt))
 				{
 					QRgb color = img.pixel(iPt);
@@ -61,7 +62,7 @@ public:
 
 protected:
 	Data<ImageWrapper> image;
-	Data< QVector<QPointF> > inputPoints, outputPoints;
+	Data< QVector<Point> > inputPoints, outputPoints;
 	Data< QVector<int> > outputIndices;
 };
 

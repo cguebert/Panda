@@ -6,6 +6,8 @@
 
 namespace panda {
 
+using types::Point;
+
 class GeneratorPoints_Noise2d : public PandaObject
 {
 public:
@@ -45,7 +47,7 @@ public:
 
 protected:
 	helper::Perlin perlin;
-	Data< QVector<QPointF> > input;
+	Data< QVector<Point> > input;
 	Data<int> seed;
 	Data<PReal> scale;
 	Data< QVector<PReal> > output;

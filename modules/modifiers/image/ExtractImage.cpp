@@ -2,10 +2,13 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/types/Rect.h>
 #include <QPainter>
+#include <cmath>
 
 namespace panda {
 
+using types::Rect;
 using types::ImageWrapper;
 
 class ModifierImage_ExtractImage : public PandaObject
@@ -28,15 +31,15 @@ public:
 	void update()
 	{
 		const QImage& img = image.getValue().getImage();
-		const QVector<QRectF>& rectList = rectangle.getValue();
+		const QVector<Rect>& rectList = rectangle.getValue();
 		auto resList = result.getAccessor();
 
 		int nb = rectList.size();
 		resList.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
-			const QRect rect = rectList[i].toRect();
-			QImage tmpImg(rect.width(), rect.height(), QImage::Format_ARGB32);
+			const Rect rect = rectList[i];
+			QImage tmpImg(std::floor(rect.width()), std::floor(rect.height()), QImage::Format_ARGB32);
 			tmpImg.fill(QColor(0,0,0,0));
 			QPainter painter(&tmpImg);
 			painter.drawImage(0, 0, img, rect.left(), rect.top(), rect.width(), rect.height());
@@ -48,7 +51,7 @@ public:
 
 protected:
 	Data< ImageWrapper > image;
-	Data< QVector< QRectF > > rectangle;
+	Data< QVector< Rect > > rectangle;
 	Data< QVector< ImageWrapper > > result;
 };
 

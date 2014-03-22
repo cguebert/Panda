@@ -1,15 +1,18 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/Point.h>
 #include <QMap>
 #include <set>
 
-template<> static bool qMapLessThanKey<QPointF>(const QPointF& p1, const QPointF& p2)
+template<> static bool qMapLessThanKey<panda::types::Point>(const panda::types::Point& p1, const panda::types::Point& p2)
 {
-	return p1.x() < p2.x() || (p1.x() == p2.x() && p1.y() < p2.y());
+	return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
 }
 
 namespace panda {
+
+using types::Point;
 
 class ModifierPoints_ConnectSegments : public PandaObject
 {
@@ -42,12 +45,12 @@ public:
 			return;
 		}
 
-		QMap<QPointF, int> pointsMap;
-		QVector<QPointF> points;
+		QMap<Point, int> pointsMap;
+		QVector<Point> points;
 		QMap<int, QVector<int> > neighbours;
 		for(int i=0, nb=inList.size()/2; i<nb; ++i)
 		{
-			const QPointF &pt1 = inList[i*2], &pt2 = inList[i*2+1];
+			const Point &pt1 = inList[i*2], &pt2 = inList[i*2+1];
 			if(!pointsMap.contains(pt1))
 			{
 				pointsMap[pt1] = points.size();
@@ -107,7 +110,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > input, output, required;
+	Data< QVector<Point> > input, output, required;
 };
 
 int ModifierPoints_ConnectSegmentsClass = RegisterObject<ModifierPoints_ConnectSegments>("Modifier/Point/Connect segments")

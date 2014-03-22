@@ -2,16 +2,17 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Point.h>
 #include <panda/types/Gradient.h>
 #include <panda/helper/GradientCache.h>
 
-#include <QPointF>
 #include <cmath>
 
+namespace panda {
+
+using types::Point;
 using panda::types::Gradient;
 using panda::helper::GradientCache;
-
-namespace panda {
 
 class RenderDisk : public Renderer
 {
@@ -28,14 +29,14 @@ public:
 		addInput(&radius);
 		addInput(&color);
 
-		center.getAccessor().push_back(QPointF(100, 100));
+		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
 		color.getAccessor().push_back(QColor(0,0,0));
 	}
 
 	void render()
 	{
-		const QVector<QPointF>& listCenter = center.getValue();
+		const QVector<Point>& listCenter = center.getValue();
 		const QVector<PReal>& listRadius = radius.getValue();
 		const QVector<QColor>& listColor = color.getValue();
 
@@ -61,16 +62,16 @@ public:
 				if(nbSeg < 3) continue;
 				vertices.resize((nbSeg + 2) * 2);
 
-				QPointF valCenter = listCenter[i];
-				vertices[0] = valCenter.x();
-				vertices[1] = valCenter.y();
+				Point valCenter = listCenter[i];
+				vertices[0] = valCenter.x;
+				vertices[1] = valCenter.y;
 
 				for(int i=0; i<=nbSeg; ++i)
 				{
 					PReal t = i / static_cast<PReal>(nbSeg) * PI2;
 					int index = (i+1)*2;
-					vertices[index  ] = valCenter.x() + cos(t) * valRadius;
-					vertices[index+1] = valCenter.y() + sin(t) * valRadius;
+					vertices[index  ] = valCenter.x + cos(t) * valRadius;
+					vertices[index+1] = valCenter.y + sin(t) * valRadius;
 				}
 
 				glVertexPointer(2, GL_PREAL, 0, vertices.data());
@@ -81,7 +82,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > center;
+	Data< QVector<Point> > center;
 	Data< QVector<PReal> > radius;
 	Data< QVector<QColor> > color;
 };
@@ -105,7 +106,7 @@ public:
 		addInput(&radius);
 		addInput(&gradient);
 
-		center.getAccessor().push_back(QPointF(100, 100));
+		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
 
 		Gradient grad;
@@ -116,7 +117,7 @@ public:
 
 	void render()
 	{
-		const QVector<QPointF>& listCenter = center.getValue();
+		const QVector<Point>& listCenter = center.getValue();
 		const QVector<PReal>& listRadius = radius.getValue();
 		const QVector<Gradient>& listGradient = gradient.getValue();
 
@@ -153,17 +154,17 @@ public:
 				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-				QPointF valCenter = listCenter[i];
-				vertices[0] = valCenter.x();
-				vertices[1] = valCenter.y();
+				Point valCenter = listCenter[i];
+				vertices[0] = valCenter.x;
+				vertices[1] = valCenter.y;
 				texCoords[0] = 0; texCoords[1] = 0;
 
 				for(int i=0; i<=nbSeg; ++i)
 				{
 					PReal t = i / static_cast<PReal>(nbSeg) * PI2;
 					int index = (i+1)*2;
-					vertices[index] = valCenter.x() + cos(t) * valRadius;
-					vertices[index+1] = valCenter.y() + sin(t) * valRadius;
+					vertices[index] = valCenter.x + cos(t) * valRadius;
+					vertices[index+1] = valCenter.y + sin(t) * valRadius;
 					texCoords[index] = 1; texCoords[index+1] = 0;
 				}
 
@@ -178,7 +179,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QPointF> > center;
+	Data< QVector<Point> > center;
 	Data< QVector<PReal> > radius;
 	Data< QVector<Gradient> > gradient;
 };

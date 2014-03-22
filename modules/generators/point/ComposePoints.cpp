@@ -4,6 +4,8 @@
 
 namespace panda {
 
+using types::Point;
+
 class GeneratorPoints_Compose : public PandaObject
 {
 public:
@@ -33,14 +35,14 @@ public:
 		else if(nby < nbx) nby = 1;
 		pts.resize(nb);
 		for(int i=0; i<nb; ++i)
-			pts[i] = QPointF(xVal[i%nbx], yVal[i%nby]);
+			pts[i] = Point(xVal[i%nbx], yVal[i%nby]);
 
 		cleanDirty();
 	}
 
 protected:
 	Data< QVector<PReal> > ptX, ptY;
-	Data< QVector<QPointF> > point;
+	Data< QVector<Point> > point;
 };
 
 int GeneratorPoints_ComposeClass = RegisterObject<GeneratorPoints_Compose>("Generator/Point/Create point").setName("Reals to point").setDescription("Create a point from 2 reals");
@@ -68,16 +70,16 @@ public:
 	{
 		auto xVal = ptX.getAccessor();
 		auto yVal = ptY.getAccessor();
-		const QVector<QPointF>& pts = point.getValue();
+		const QVector<Point>& pts = point.getValue();
 
 		int nb = pts.size();
 		xVal.resize(nb);
 		yVal.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
-			const QPointF pt = pts[i];
-			xVal[i] = pt.x();
-			yVal[i] = pt.y();
+			const Point pt = pts[i];
+			xVal[i] = pt.x;
+			yVal[i] = pt.y;
 		}
 
 		cleanDirty();
@@ -85,7 +87,7 @@ public:
 
 protected:
 	Data< QVector<PReal> > ptX, ptY;
-	Data< QVector<QPointF> > point;
+	Data< QVector<Point> > point;
 };
 
 int GeneratorPoints_DecomposeClass = RegisterObject<GeneratorPoints_Decompose>("Generator/Point/Decompose point").setName("Point to reals").setDescription("Extract the coordinates of a point");

@@ -1,14 +1,11 @@
 #ifndef TYPES_POINT_H
 #define TYPES_POINT_H
-#pragma once
 
 #include <panda/helper/system/Config.h>
 
 #include <cassert>
 #include <cmath>
 #include <limits>
-
-#define EQUALITY_THRESHOLD 1e-6
 
 namespace panda
 {
@@ -123,6 +120,16 @@ public:
 		return *this;
 	}
 
+	friend Point operator*(PReal v, const Point& p)
+	{
+		return p * v;
+	}
+
+	friend Point operator/(PReal v, const Point& p)
+	{
+		return p / v;
+	}
+
 	// Negation
 	Point operator-() const
 	{
@@ -226,40 +233,13 @@ public:
 };
 
 // Converts a coordinate from rectangular (Cartesian) coordinates to polar coordinates of the form (radius, theta)
-Point toPolar(Point car)
-{
-	const PReal epsilon = (PReal)0.0000001;
-	PReal theta;
-
-	if(abs(car.x) < epsilon)
-	{	// x == 0
-		if(abs(car.y) < epsilon) theta = 0;
-		else if(car.y > 0) theta = (PReal)M_PI / 2;
-		else theta = ((PReal)M_PI * 3) / 2;
-	}
-	else if(car.x > 0)
-	{
-		if(car.y < 0) theta = atan(car.y / car.x) + 2 * (PReal)M_PI;
-		else theta = atan(car.y / car.x);
-	}
-	else // car.x < 0
-	{
-		theta = (atan(car.y / car.x) + (PReal)M_PI);
-	}
-
-	return Point(car.norm(), theta);
-}
+Point toPolar(Point car);
 
 // Converts a coordinate from polar coordinates of the form (radius, theta) to rectangular coordinates
-Point fromPolar(Point pol)
-{
-	return Point(cos(pol.y) * pol.x, sin(pol.y) * pol.x);
-}
+Point fromPolar(Point pol);
 
 } // namespace types
 
 } // namespace panda
-
-#undef EQUALITY_THRESHOLD
 
 #endif // TYPES_POINT_H

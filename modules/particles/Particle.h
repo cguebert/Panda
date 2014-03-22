@@ -1,7 +1,7 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-#include <QPointF>
+#include <panda/types/Point.h>
 
 namespace panda {
 
@@ -13,7 +13,7 @@ public:
 	{ }
 
 	int index;
-	QPointF position, velocity, acceleration, force;
+	types::Point position, velocity, acceleration, force;
 };
 
 } // namespace Panda

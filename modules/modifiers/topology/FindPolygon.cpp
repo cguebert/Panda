@@ -6,6 +6,7 @@
 namespace panda {
 
 using types::Topology;
+using types::Point;
 
 class ModifierTopology_FindPolygon : public PandaObject
 {
@@ -28,7 +29,7 @@ public:
 	{
 		const Topology& topo = topology.getValue();
 
-		const QVector<QPointF>& pts = points.getValue();
+		const QVector<Point>& pts = points.getValue();
 		auto output = indices.getAccessor();
 		int nbPts = pts.size();
 		output.wref().fill(Topology::InvalidID, nbPts);
@@ -37,7 +38,7 @@ public:
 
 		for(int i=0; i<nbPts; ++i)
 		{
-			QPointF pt = pts[i];
+			Point pt = pts[i];
 			for(int j=0; j<nbPoly; ++j)
 			{
 				const Topology::Polygon& poly = topo.getPolygon(j);
@@ -54,7 +55,7 @@ public:
 
 protected:
 	Data< Topology > topology;
-	Data< QVector<QPointF> > points;
+	Data< QVector<Point> > points;
 	Data< QVector<int> > indices;
 };
 

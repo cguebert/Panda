@@ -3,6 +3,9 @@
 #include <panda/ObjectFactory.h>
 #include <set>
 
+using panda::types::Point;
+using panda::types::Rect;
+
 namespace std {
 
 template<>
@@ -15,18 +18,18 @@ struct less<QColor> : public binary_function<QColor, QColor, bool>
 };
 
 template<>
-struct less<QPointF> : public binary_function<QPointF, QPointF, bool>
+struct less<Point> : public binary_function<Point, Point, bool>
 {
-	bool operator()(const QPointF& lhs, const QPointF& rhs) const
+	bool operator()(const Point& lhs, const Point& rhs) const
 	{
-		return lhs.x() < rhs.x() || (lhs.x() == rhs.x() && lhs.y() < rhs.y());
+		return lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y);
 	}
 };
 
 template<>
-struct less<QRectF> : public binary_function<QRectF, QRectF, bool>
+struct less<Rect> : public binary_function<Rect, Rect, bool>
 {
-	bool operator()(const QRectF& lhs, const QRectF& rhs) const
+	bool operator()(const Rect& lhs, const Rect& rhs) const
 	{
 		if(lhs.left() < rhs.left()) return true;
 		if(rhs.left() < lhs.left()) return false;

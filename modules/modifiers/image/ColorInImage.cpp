@@ -2,9 +2,13 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/types/Rect.h>
+#include <cmath>
 
 namespace panda {
 
+using types::Point;
+using types::Rect;
 using types::ImageWrapper;
 
 class ModifierImage_GetPixel : public PandaObject
@@ -27,14 +31,15 @@ public:
 	void update()
 	{
 		const QImage& img = image.getValue().getImage();
-		const QVector<QPointF>& pos = position.getValue();
+		const QVector<Point>& pos = position.getValue();
 		auto colorsList = color.getAccessor();
 
 		int nb = pos.size();
 		colorsList.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
-			const QPoint pt = pos[i].toPoint();
+			const Point p = pos[i];
+			const QPoint pt = QPoint(std::floor(p.x), std::floor(p.y));
 			if(img.valid(pt))
 				colorsList[i] = img.pixel(pt);
 			else
@@ -46,7 +51,7 @@ public:
 
 protected:
 	Data< ImageWrapper > image;
-	Data< QVector< QPointF > > position;
+	Data< QVector<Point> > position;
 	Data< QVector<QColor> > color;
 };
 
@@ -76,7 +81,7 @@ public:
 	void update()
 	{
 		const QImage& img = image.getValue().getImage();
-		const QVector<QPointF>& pos = position.getValue();
+		const QVector<Point>& pos = position.getValue();
 		const QVector<QColor>& col = color.getValue();
 
 		QImage tmp = img;
@@ -88,7 +93,8 @@ public:
 
 		for(int i=0; i<nbP; ++i)
 		{
-			const QPoint pt = pos[i].toPoint();
+			const Point p = pos[i];
+			const QPoint pt = QPoint(std::floor(p.x), std::floor(p.y));
 			if(tmp.valid(pt))
 				tmp.setPixel(pt, col[i%nbC].rgba());
 		}
@@ -100,7 +106,7 @@ public:
 
 protected:
 	Data< ImageWrapper > image, result;
-	Data< QVector< QPointF > > position;
+	Data< QVector<Point> > position;
 	Data< QVector<QColor> > color;
 };
 
@@ -128,7 +134,7 @@ public:
 	void update()
 	{
 		const QImage& img = image.getValue().getImage();
-		const QVector<QRectF>& rectList = rectangle.getValue();
+		const QVector<Rect>& rectList = rectangle.getValue();
 		auto col = color.getAccessor();
 
 		if(img.format() != QImage::Format_ARGB32)
@@ -142,11 +148,11 @@ public:
 
 		for(int i=0; i<nb; ++i)
 		{
-			QRect rect = rectList[i].toRect();
-			int x1 = qMax(0, rect.left());
-			int y1 = qMax(0, rect.top());
-			int x2 = qMin(img.width()-1, rect.right());
-			int y2 = qMin(img.height()-1, rect.bottom());
+			Rect rect = rectList[i];
+			int x1 = qMax<int>(0, std::floor(rect.left()));
+			int y1 = qMax<int>(0, std::floor(rect.top()));
+			int x2 = qMin<int>(img.width()-1, std::floor(rect.right()));
+			int y2 = qMin<int>(img.height()-1, std::floor(rect.bottom()));
 
 			int nb = 0;
 			ulong a=0, r=0, g=0, b=0;
@@ -175,7 +181,7 @@ public:
 
 protected:
 	Data< ImageWrapper > image;
-	Data< QVector<QRectF> > rectangle;
+	Data< QVector<Rect> > rectangle;
 	Data< QVector<QColor> > color;
 };
 

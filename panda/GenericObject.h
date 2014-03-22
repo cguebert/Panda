@@ -2,6 +2,7 @@
 #define GENERICOBJECT_H
 
 #include <panda/PandaObject.h>
+#include <panda/types/Rect.h>
 #include <panda/types/Topology.h>
 #include <panda/types/Gradient.h>
 #include <panda/types/Path.h>
@@ -126,10 +127,10 @@ private:
 
 //***************************************************************//
 
-typedef boost::mpl::vector<int, PReal, QColor, QPointF, QRectF, QString, types::ImageWrapper, types::Gradient, types::Topology, types::Path> allDataTypes;
-typedef boost::mpl::vector<int, PReal, QColor, QPointF, QRectF, QString> allSearchableTypes;
-typedef boost::mpl::vector<int, PReal, QColor, QPointF, QRectF> allNumericalTypes;
-typedef boost::mpl::vector<PReal, QColor, QPointF, types::Gradient> allAnimationTypes;
+typedef boost::mpl::vector<int, PReal, QColor, types::Point, types::Rect, QString, types::ImageWrapper, types::Gradient, types::Topology, types::Path> allDataTypes;
+typedef boost::mpl::vector<int, PReal, QColor, types::Point, types::Rect, QString> allSearchableTypes;
+typedef boost::mpl::vector<int, PReal, QColor, types::Point, types::Rect> allNumericalTypes;
+typedef boost::mpl::vector<PReal, QColor, types::Point, types::Gradient> allAnimationTypes;
 
 #define GENERIC_OBJECT(T, L)								\
 	protected:												\

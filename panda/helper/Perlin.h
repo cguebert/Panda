@@ -27,10 +27,10 @@
 #define HELPER_PERLIN_H
 
 #include <panda/helper/system/Config.h>
-#include <QPointF>
-#include <QVector2D>
+#include <panda/types/Point.h>
+
 #include <QVector3D>
-#include <cstdint>
+#include <stdint.h>
 
 namespace panda
 {
@@ -51,16 +51,13 @@ class Perlin
 	/// Class Perlin look: fractal Brownian motion by summing 'mOctaves' worth of noise
 	PReal fBm(PReal v) const;
 	PReal fBm(PReal x, PReal y) const;
-	PReal fBm(const QVector2D &v) const { return fBm(v.x(), v.y()); }
-	PReal fBm(const QPointF &v) const { return fBm(v.x(), v.y()); }
+	PReal fBm(const types::Point& p) const { return fBm(p.x, p.y); }
 	PReal fBm(PReal x, PReal y, PReal z) const;
-	PReal fBm(const QVector3D &v) const { return fBm(v.x(), v.y(), v.z()); }
 
 	/// Derivative of fractal Brownian motion, corresponding with the values returned by fBm()
-	QVector2D dfBm(PReal x, PReal y) const;
-	QVector2D dfBm(const QVector2D &v) const { return dfBm(v.x(), v.y()); }
+	types::Point dfBm(PReal x, PReal y) const;
+	types::Point dfBm(const types::Point& p) const { return dfBm(p.x, p.y); }
 	QVector3D dfBm(PReal x, PReal y, PReal z) const;
-	QVector3D dfBm(const QVector3D &v) const { return dfBm(v.x(), v.y(), v.z()); }
 
 	/// Calculates a single octave of noise
 	PReal noise(PReal x) const;
@@ -68,7 +65,7 @@ class Perlin
 	PReal noise(PReal x, PReal y, PReal z) const;
 
 	/// Calculates the derivative of a single octave of noise
-	QVector2D dnoise(PReal x, PReal y) const;
+	types::Point dnoise(PReal x, PReal y) const;
 	QVector3D dnoise(PReal x, PReal y, PReal z) const;
 
  private:

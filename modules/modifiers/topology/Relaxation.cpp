@@ -7,6 +7,7 @@
 
 namespace panda {
 
+using types::Point;
 using types::Topology;
 
 class ModifierTopology_EdgeRelaxation : public PandaObject
@@ -56,15 +57,15 @@ public:
 				if(borderSet.find(j) != borderSet.end())
 					continue;
 
-				QPointF& pt = outTopo->getPoint(j);
-				QPointF pt1 = ptsCopy[j];
+				Point& pt = outTopo->getPoint(j);
+				Point pt1 = ptsCopy[j];
 				for(auto eid : outTopo->getEdgesAroundPoint(j))
 				{
 					Topology::Edge e = outTopo->getEdge(eid);
 					Topology::PointID p2id = outTopo->getOtherPointInEdge(e, j);
-					QPointF pt2 = ptsCopy[p2id];
+					Point pt2 = ptsCopy[p2id];
 
-					QPointF dir = pt2 - pt1;
+					Point dir = pt2 - pt1;
 					pt += dir * fact;
 				}
 			}

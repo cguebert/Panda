@@ -4,6 +4,9 @@
 
 #include <QMap>
 
+using panda::types::Point;
+using panda::types::Rect;
+
 template<>
 static bool qMapLessThanKey<QColor>(const QColor& lhs, const QColor& rhs)
 {
@@ -11,13 +14,13 @@ static bool qMapLessThanKey<QColor>(const QColor& lhs, const QColor& rhs)
 }
 
 template<>
-static bool qMapLessThanKey<QPointF>(const QPointF& p1, const QPointF& p2)
+static bool qMapLessThanKey<Point>(const Point& p1, const Point& p2)
 {
-	return p1.x() < p2.x() || (p1.x() == p2.x() && p1.y() < p2.y());
+	return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
 }
 
 template<>
-static bool qMapLessThanKey<QRectF>(const QRectF& lhs, const QRectF& rhs)
+static bool qMapLessThanKey<Rect>(const Rect& lhs, const Rect& rhs)
 {
 	if(lhs.left() < rhs.left()) return true;
 	if(rhs.left() < lhs.left()) return false;

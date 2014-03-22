@@ -6,6 +6,7 @@
 
 namespace panda {
 
+using types::Point;
 using types::Topology;
 
 class RenderMesh : public Renderer
@@ -33,7 +34,7 @@ public:
 		int nbPoly = topo.getNumberOfPolygons();
 		int nbColor = listColor.size();
 
-		const QVector<QPointF>& pts = topo.getPoints();
+		const QVector<Point>& pts = topo.getPoints();
 
 		if(nbPoly && nbColor)
 		{
@@ -56,9 +57,9 @@ public:
 
 				for(int j=0; j<nbPts; ++j)
 				{
-					const QPointF& pt = pts[poly[j]];
-					vertices[j*2  ] = pt.x();
-					vertices[j*2+1] = pt.y();
+					const Point& pt = pts[poly[j]];
+					vertices[j*2  ] = pt.x;
+					vertices[j*2+1] = pt.y;
 
 					QColor valCol = listColor[poly[j] % nbColor];
 					colors[j*4  ] = valCol.red();

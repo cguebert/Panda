@@ -2,7 +2,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Topology.h>
-#include <panda/helper/Point.h>
 #include <panda/types/Animation.h>
 #include <panda/types/Path.h>
 
@@ -10,6 +9,7 @@
 
 namespace panda {
 
+using types::Point;
 using types::Topology;
 using types::Animation;
 using types::Path;
@@ -46,9 +46,9 @@ public:
 
 	void update()
 	{
-		const QVector<QPointF>& pts = input.getValue();
+		const QVector<Point>& pts = input.getValue();
 		const Animation<PReal>& widthAnim = width.getValue();
-		double w = widthAnim.get(0) / 2;
+		PReal w = widthAnim.get(0) / 2;
 		int cap = capStyle.getValue();
 		int join = joinStyle.getValue();
 		auto topo = output.getAccessor();
@@ -60,18 +60,18 @@ public:
 		if(!nbPts || !widthAnim.size())
 			return;
 
-		QVector<QPointF> normals;
+		QVector<Point> normals;
 		QVector<PReal> abscissa;
 		normals.resize(nbPts-1);
 		abscissa.resize(nbPts);
 		abscissa[0] = 0;
 		for(int i=0; i<nbPts-1; ++i)
 		{
-			const QPointF &pt1=pts[i], &pt2=pts[i+1];
-			normals[i] = helper::normalize(QPointF(pt2.y()-pt1.y(), pt1.x()-pt2.x()));
-			abscissa[i+1] = abscissa[i] + helper::norm(pt2-pt1);
+			const Point &pt1=pts[i], &pt2=pts[i+1];
+			normals[i] = Point(pt2.y-pt1.y, pt1.x-pt2.x).normalized();
+			abscissa[i+1] = abscissa[i] + (pt2-pt1).norm();
 		}
-		double length = abscissa.back();
+		PReal length = abscissa.back();
 		if(length < 1e-3)
 			return;
 		for(auto& a : abscissa)
@@ -79,13 +79,13 @@ public:
 
 		// Start cap
 		Topology::PointID prevPtsId[3];
-		QPointF dir = normals[0] * w;
+		Point dir = normals[0] * w;
 		prevPtsId[0] = topo->addPoint(pts[0] + dir);
 		prevPtsId[1] = topo->addPoint(pts[0]);
 		prevPtsId[2] = topo->addPoint(pts[0] - dir);
-		UV.push_back(QPointF(abscissa[0], 1));
-		UV.push_back(QPointF(abscissa[0], 0));
-		UV.push_back(QPointF(abscissa[0], 1));
+		UV.push_back(Point(abscissa[0], 1));
+		UV.push_back(Point(abscissa[0], 0));
+		UV.push_back(Point(abscissa[0], 1));
 		switch(cap)
 		{
 		default:
@@ -94,15 +94,15 @@ public:
 		case 1:	// Round cap
 		{
 			int nb = static_cast<int>(floor(w * M_PI));
-			double angle = M_PI / nb; // We do a half turn
-			double ca = cos(angle), sa = sin(angle);
-			QPointF center = pts[0];
+			PReal angle = M_PI / nb; // We do a half turn
+			PReal ca = cos(angle), sa = sin(angle);
+			Point center = pts[0];
 			Topology::PointID ptId = prevPtsId[0];
 			for(int i=0; i<nb-1; ++i)
 			{
-				QPointF pt = QPointF(dir.x()*ca+dir.y()*sa, dir.y()*ca-dir.x()*sa);
+				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
 				Topology::PointID newPtId = topo->addPoint(center + pt);
-				UV.push_back(QPointF(abscissa[0], 1));
+				UV.push_back(Point(abscissa[0], 1));
 				topo->addPolygon(ptId, newPtId, prevPtsId[1]);
 
 				dir = pt;
@@ -113,14 +113,14 @@ public:
 		}
 		case 2: // Square cap
 		{
-			QPointF dir2 = QPointF(dir.y(), -dir.x());
+			Point dir2 = Point(dir.y, -dir.x);
 			Topology::PointID addPtsId[3];
 			addPtsId[0] = topo->addPoint(pts[0] + dir + dir2);
 			addPtsId[1] = topo->addPoint(pts[0]	      + dir2);
 			addPtsId[2] = topo->addPoint(pts[0] - dir + dir2);
-			UV.push_back(QPointF(abscissa[0], 1));
-			UV.push_back(QPointF(abscissa[0], 1));
-			UV.push_back(QPointF(abscissa[0], 1));
+			UV.push_back(Point(abscissa[0], 1));
+			UV.push_back(Point(abscissa[0], 1));
+			UV.push_back(Point(abscissa[0], 1));
 
 			topo->addPolygon(prevPtsId[0], addPtsId[0], prevPtsId[1]);
 			topo->addPolygon(prevPtsId[1], addPtsId[0], addPtsId[1]);
@@ -133,7 +133,7 @@ public:
 		// Line
 		for(int i=1; i<nbPts-1; ++i)
 		{
-			double side = helper::cross(normals[i-1], normals[i]);
+			PReal side = normals[i-1].cross(normals[i]);
 			if(fabs(side) < 1e-3)	// Don't create a join (nor points) if these 2 segments are aligned
 				continue;
 
@@ -142,18 +142,18 @@ public:
 			// Interior of the curvature
 			Topology::PointID nextPtsId[3];
 			dir = normals[i-1] + normals[i];
-			dir = w * (normals[i-1] / helper::dot(dir, normals[i-1])
-				+ normals[i] / helper::dot(dir, normals[i]) );
-			double norm2Dir = helper::norm2(dir)
-				 , norm2Seg1 = helper::norm2(pts[i]-pts[i-1])
-				 , norm2Seg2 = helper::norm2(pts[i+1]-pts[i]);
+			dir = w * (normals[i-1] / dir.dot(normals[i-1])
+				+ normals[i] / dir.dot(normals[i]) );
+			PReal norm2Dir = dir.norm2()
+				 , norm2Seg1 = (pts[i]-pts[i-1]).norm2()
+				 , norm2Seg2 = (pts[i+1]-pts[i]).norm2();
 			bool hasInteriorPt = true;
 			if(norm2Dir > norm2Seg1 || norm2Dir > norm2Seg2)
 				hasInteriorPt = false;	// I don't know what to do in this degenerated case!
 
 			// Main extrusion (without the exterior of the curvature)
 			nextPtsId[1] = topo->addPoint(pts[i]);
-			UV.push_back(QPointF(abscissa[i], 0));
+			UV.push_back(Point(abscissa[i], 0));
 			topo->addPolygon(nextPtsId[1], prevPtsId[0], prevPtsId[1]);
 			topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
 
@@ -162,16 +162,16 @@ public:
 				if(hasInteriorPt)
 				{
 					nextPtsId[2] = topo->addPoint(pts[i] - dir);
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
 				}
 				else
 				{
 					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[1], prevPtsId[2], addPtId);
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 				}
 
 			}
@@ -180,22 +180,22 @@ public:
 				if(hasInteriorPt)
 				{
 					nextPtsId[0] = topo->addPoint(pts[i] + dir);
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
 				}
 				else
 				{
 					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 				}
 			}
 
 			 // Do a Bevel join instead of a miter join if the angle is too small
 			int tmpJoin = join;
-			if(helper::dot(normals[i-1], normals[i]) < -0.9 && join == 0)
+			if(normals[i-1].dot(normals[i]) < -0.9 && join == 0)
 				tmpJoin = 2;
 
 			// Join
@@ -207,13 +207,13 @@ public:
 				if(side > 0)
 				{
 					nextPtsId[0] = topo->addPoint(pts[i] + dir);
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
 				}
 				else // side < 0
 				{
 					nextPtsId[2] = topo->addPoint(pts[i] - dir);
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[2], nextPtsId[1], prevPtsId[2]);
 				}
 
@@ -223,25 +223,25 @@ public:
 			{
 				if(side > 0)
 				{
-					double angle = acos(helper::dot(normals[i-1], normals[i]));
+					PReal angle = acos(normals[i-1].dot(normals[i]));
 					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
-					UV.push_back(QPointF(abscissa[i], 1));
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 
 					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
 
 					int nb = static_cast<int>(floor(w * angle));
 					angle /= nb;
-					double ca = cos(angle), sa = sin(angle);
-					QPointF center = pts[i];
-					QPointF r = normals[i] * w;
+					PReal ca = cos(angle), sa = sin(angle);
+					Point center = pts[i];
+					Point r = normals[i] * w;
 					Topology::PointID ptId = nextPtsId[0];
 					for(int j=0; j<nb-1; ++j)
 					{
-						QPointF nr = QPointF(r.x()*ca+r.y()*sa, r.y()*ca-r.x()*sa);
+						Point nr = Point(r.x*ca+r.y*sa, r.y*ca-r.x*sa);
 						Topology::PointID newPtId = topo->addPoint(center + nr);
-						UV.push_back(QPointF(abscissa[i], 1));
+						UV.push_back(Point(abscissa[i], 1));
 						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
 
 						r = nr;
@@ -251,25 +251,25 @@ public:
 				}
 				else // side < 0
 				{
-					double angle = acos(helper::dot(normals[i-1], normals[i]));
+					PReal angle = acos(normals[i-1].dot(normals[i]));
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
 					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
-					UV.push_back(QPointF(abscissa[i], 1));
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 
 					topo->addPolygon(addPtId, nextPtsId[1], prevPtsId[2]);
 
 					int nb = static_cast<int>(floor(w * angle));
 					angle /= nb;
-					double ca = cos(angle), sa = sin(angle);
-					QPointF center = pts[i];
-					QPointF r = normals[i-1] * w;
+					PReal ca = cos(angle), sa = sin(angle);
+					Point center = pts[i];
+					Point r = normals[i-1] * w;
 					Topology::PointID ptId = addPtId;
 					for(int j=0; j<nb-1; ++j)
 					{
-						QPointF nr = QPointF(r.x()*ca+r.y()*sa, r.y()*ca-r.x()*sa);
+						Point nr = Point(r.x*ca+r.y*sa, r.y*ca-r.x*sa);
 						Topology::PointID newPtId = topo->addPoint(center - nr);
-						UV.push_back(QPointF(abscissa[i], 1));
+						UV.push_back(Point(abscissa[i], 1));
 						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
 
 						r = nr;
@@ -285,8 +285,8 @@ public:
 				{
 					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
-					UV.push_back(QPointF(abscissa[i], 1));
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 
 					topo->addPolygon(nextPtsId[0], addPtId, nextPtsId[1]);
 					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
@@ -295,8 +295,8 @@ public:
 				{
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
 					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
-					UV.push_back(QPointF(abscissa[i], 1));
-					UV.push_back(QPointF(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 1));
 
 					topo->addPolygon(nextPtsId[2], nextPtsId[1], addPtId);
 					topo->addPolygon(addPtId, nextPtsId[1], prevPtsId[2]);
@@ -316,9 +316,9 @@ public:
 		nextPtsId[0] = topo->addPoint(pts[nbPts-1] + dir);
 		nextPtsId[1] = topo->addPoint(pts[nbPts-1]);
 		nextPtsId[2] = topo->addPoint(pts[nbPts-1] - dir);
-		UV.push_back(QPointF(abscissa[nbPts-1], 1));
-		UV.push_back(QPointF(abscissa[nbPts-1], 0));
-		UV.push_back(QPointF(abscissa[nbPts-1], 1));
+		UV.push_back(Point(abscissa[nbPts-1], 1));
+		UV.push_back(Point(abscissa[nbPts-1], 0));
+		UV.push_back(Point(abscissa[nbPts-1], 1));
 		topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
 		topo->addPolygon(prevPtsId[0], prevPtsId[1], nextPtsId[1]);
 		topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
@@ -333,16 +333,16 @@ public:
 		case 1:	// Round cap
 		{
 			int nb = static_cast<int>(floor(w * M_PI));
-			double angle = M_PI / nb; // We do a half turn
-			double ca = cos(angle), sa = sin(angle);
-			QPointF center = pts[nbPts-1];
+			PReal angle = M_PI / nb; // We do a half turn
+			PReal ca = cos(angle), sa = sin(angle);
+			Point center = pts[nbPts-1];
 			dir = -dir;
 			Topology::PointID ptId = nextPtsId[2];
 			for(int i=0; i<nb-1; ++i)
 			{
-				QPointF pt = QPointF(dir.x()*ca+dir.y()*sa, dir.y()*ca-dir.x()*sa);
+				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
 				Topology::PointID newPtId = topo->addPoint(center + pt);
-				UV.push_back(QPointF(abscissa[nbPts-1], 1));
+				UV.push_back(Point(abscissa[nbPts-1], 1));
 				topo->addPolygon(ptId, newPtId, nextPtsId[1]);
 
 				dir = pt;
@@ -353,14 +353,14 @@ public:
 		}
 		case 2: // Square cap
 		{
-			QPointF dir2 = QPointF(dir.y(), -dir.x());
+			Point dir2 = Point(dir.y, -dir.x);
 			Topology::PointID addPtsId[3];
 			addPtsId[0] = topo->addPoint(pts[nbPts-1] + dir - dir2);
 			addPtsId[1] = topo->addPoint(pts[nbPts-1]	    - dir2);
 			addPtsId[2] = topo->addPoint(pts[nbPts-1] - dir - dir2);
-			UV.push_back(QPointF(abscissa[nbPts-1], 1));
-			UV.push_back(QPointF(abscissa[nbPts-1], 1));
-			UV.push_back(QPointF(abscissa[nbPts-1], 1));
+			UV.push_back(Point(abscissa[nbPts-1], 1));
+			UV.push_back(Point(abscissa[nbPts-1], 1));
+			UV.push_back(Point(abscissa[nbPts-1], 1));
 
 			topo->addPolygon(addPtsId[0], nextPtsId[0], addPtsId[1]);
 			topo->addPolygon(nextPtsId[0], nextPtsId[1], addPtsId[1]);
@@ -378,7 +378,7 @@ protected:
 	Data< Animation<PReal> > width;
 	Data< int > capStyle, joinStyle;
 	Data< Topology > output;
-	Data< QVector<QPointF> > coordUV;
+	Data< QVector<Point> > coordUV;
 };
 
 int PointListMath_ExtrudeClass = RegisterObject<PointListMath_Extrude>("Math/Path/Extrude")

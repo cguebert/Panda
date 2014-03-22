@@ -276,67 +276,6 @@ public:
 
 //***************************************************************//
 
-template <>
-class DataWidgetContainer< QPointF >
-{
-protected:
-	typedef QPointF value_type;
-	QWidget* container;
-	QLineEdit *lineEditX, *lineEditY;
-
-public:
-	DataWidgetContainer() : lineEditX(nullptr), lineEditY(nullptr) {}
-
-	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
-	{
-		container = new QWidget(parent);
-		lineEditX = new QLineEdit("0.0", parent);
-		lineEditX->setEnabled(!readOnly);
-		QObject::connect(lineEditX, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
-
-		lineEditY = new QLineEdit("0.0", parent);
-		lineEditY->setEnabled(!readOnly);
-		QObject::connect(lineEditY, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
-
-		QHBoxLayout* layout = new QHBoxLayout(container);
-		layout->setMargin(0);
-		layout->addWidget(lineEditX);
-		layout->addWidget(lineEditY);
-		container->setLayout(layout);
-
-		return container;
-	}
-	void readFromData(const value_type& v)
-	{
-		QString tx = lineEditX->text();
-		QString ty = lineEditY->text();
-#ifdef PANDA_DOUBLE
-		double x = tx.toDouble();
-		double y = ty.toDouble();
-#else
-		double x = tx.toFloat();
-		double y = ty.toFloat();
-#endif
-		if(v.x() != x || tx.isEmpty())
-			lineEditX->setText(QString::number(v.x()));
-		if(v.y() != y || ty.isEmpty())
-			lineEditY->setText(QString::number(v.y()));
-	}
-	void writeToData(value_type& v)
-	{
-#ifdef PANDA_DOUBLE
-		double x = lineEditX->text().toDouble();
-		double y = lineEditY->text().toDouble();
-#else
-		double x = lineEditX->text().toFloat();
-		double y = lineEditY->text().toFloat();
-#endif
-		v = QPointF(x, y);
-	}
-};
-
-//***************************************************************//
-
 RegisterWidget<SimpleDataWidget<int> > DWClass_int("default");
 RegisterWidget<SimpleDataWidget<int, CheckboxDataWidget> > DWClass_checkbox("checkbox");
 RegisterWidget<SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed");
@@ -345,6 +284,3 @@ RegisterWidget<SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_in
 
 RegisterWidget<SimpleDataWidget<PReal> > DWClass_double("default");
 RegisterWidget<SimpleDataWidget<PReal, SliderDataWidget<PReal> > > DWClass_slider_double("slider");
-
-RegisterWidget<SimpleDataWidget<QPointF> > DWClass_point("default");
-

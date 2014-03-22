@@ -2,10 +2,8 @@
 #define TYPES_ANIMATIONTRAITS_H
 
 #include <panda/types/DataTraits.h>
-#include <panda/Data.h>
 #include <panda/types/Animation.h>
 
-#include <QPointF>
 #include <QVector>
 #include <QDomDocument>
 

@@ -1,14 +1,15 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QPointF>
-#include <QList>
 #include <panda/helper/Random.h>
 #include <panda/helper/PointsGrid.h>
 
 #include <cmath>
 
 namespace panda {
+
+using types::Point;
+using types::Rect;
 
 class GeneratorPoints_Poisson : public PandaObject
 {
@@ -34,11 +35,11 @@ public:
 		seed.setValue(rnd.getRandomSeed(10000));
 	}
 
-	QPointF randomPointAround(const QPointF& point, double minDist, double maxDist)
+	Point randomPointAround(const Point& point, double minDist, double maxDist)
 	{
 		double a = rnd.random() * 2 * M_PI;
 		double r = rnd.random(minDist, maxDist);
-		return QPointF(point.x() + r*cos(a), point.y() + r*sin(a));
+		return point + r * Point(cos(a), sin(a));
 	}
 
 	void update()
@@ -47,12 +48,12 @@ public:
 		auto valPoints = points.getAccessor();
 		valPoints.clear();
 		QSize size = parentDocument->getRenderSize();
-		QRectF area = QRectF(0, 0, size.width()-1, size.height()-1);
+		Rect area = Rect(0, 0, size.width()-1, size.height()-1);
 		grid.initGrid(area, minimumDistance.getValue() / sqrt(2.0));
 
-		QList<QPointF> processList;
+		QList<Point> processList;
 
-		QPointF firstPoint(rnd.random(area.left(), area.right())
+		Point firstPoint(rnd.random(area.left(), area.right())
 						   , rnd.random(area.top(), area.bottom()));
 		processList.push_back(firstPoint);
 		valPoints.push_back(firstPoint);
@@ -65,11 +66,11 @@ public:
 		while(!processList.empty())
 		{
 			int i = floor(rnd.random() * processList.size());
-			QPointF pt = processList.at(i);
+			Point pt = processList.at(i);
 			processList.removeAt(i);
 			for(i=0; i<rejectionLimit; ++i)
 			{
-				QPointF nPt = randomPointAround(pt, minDist, maxDist);
+				Point nPt = randomPointAround(pt, minDist, maxDist);
 				if(area.contains(nPt) && !grid.testNeighbor(nPt, minDist))
 				{
 					processList.push_back(nPt);
@@ -90,7 +91,7 @@ protected:
 
 	Data<int> seed, samples;
 	Data<PReal> minimumDistance;
-	Data< QVector<QPointF> > points;
+	Data< QVector<Point> > points;
 	Data<int> nbPoints;
 };
 

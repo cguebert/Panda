@@ -1,5 +1,4 @@
 #include <panda/types/Topology.h>
-#include <panda/helper/Point.h>
 
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
@@ -21,7 +20,7 @@ Topology::~Topology()
 {
 }
 
-Topology::PointID Topology::addPoint(const QPointF& point)
+Topology::PointID Topology::addPoint(const Point& point)
 {
 	m_points.push_back(point);
 	return m_points.size() - 1;
@@ -107,12 +106,12 @@ const Topology::SeqPolygons &Topology::getPolygons() const
 	return m_polygons;
 }
 
-QPointF& Topology::getPoint(PointID index)
+Point& Topology::getPoint(PointID index)
 {
 	return m_points[index];
 }
 
-QPointF Topology::getPoint(PointID index) const
+Point Topology::getPoint(PointID index) const
 {
 	return m_points[index];
 }
@@ -130,7 +129,7 @@ Topology::Polygon Topology::getPolygon(PolygonID index) const
 	return m_polygons[index];
 }
 
-Topology::PointID Topology::getPointIndex(const QPointF &pt) const
+Topology::PointID Topology::getPointIndex(const Point &pt) const
 {
 	return m_points.indexOf(pt);
 }
@@ -344,8 +343,8 @@ double Topology::areaOfPolygon(const Polygon& poly) const
 	double area = 0;
 	for(int i=0; i<nbPts; ++i)
 	{
-		QPointF p1 = getPoint(poly[i]), p2 = getPoint(poly[(i+1)%nbPts]);
-		area += p1.x()*p2.y() - p2.x()*p1.y();
+		Point p1 = getPoint(poly[i]), p2 = getPoint(poly[(i+1)%nbPts]);
+		area += p1.cross(p2);
 	}
 
 	return area / 2;
@@ -361,14 +360,14 @@ void Topology::reorientPolygon(Polygon& poly)
 		poly.push_front(pt);
 }
 
-QPointF Topology::centroidOfPolygon(const Polygon& poly) const
+Point Topology::centroidOfPolygon(const Polygon& poly) const
 {
 	int nbPts = poly.size();
-	QPointF pt;
+	Point pt;
 	for(int i=0; i<nbPts; ++i)
 	{
-		QPointF p1 = getPoint(poly[i]), p2 = getPoint(poly[(i+1)%nbPts]);
-		pt += (p1 + p2) * (p1.x()*p2.y() - p2.x()*p1.y());
+		Point p1 = getPoint(poly[i]), p2 = getPoint(poly[(i+1)%nbPts]);
+		pt += (p1 + p2) * p1.cross(p2);
 	}
 
 	return pt / (6 * areaOfPolygon(poly));
@@ -403,16 +402,16 @@ bool Topology::comparePolygon(Polygon p1, Polygon p2)
 	return true;
 }
 
-bool Topology::polygonContainsPoint(const Polygon &poly, QPointF pt) const
+bool Topology::polygonContainsPoint(const Polygon &poly, Point pt) const
 {
 	int nb = poly.size();
 	for(int i1=0, i0=nb-1; i1<nb; i0=i1++)
 	{
-		const QPointF &p0 = getPoint(poly[i0]), &p1 = getPoint(poly[i1]);
-		QPointF n = QPointF(p1.y() - p0.y(), p0.x() - p1.x());
-		QPointF d = pt - p0;
+		const Point &p0 = getPoint(poly[i0]), &p1 = getPoint(poly[i1]);
+		Point n = Point(p1.y - p0.y, p0.x - p1.x);
+		Point d = pt - p0;
 
-		if(helper::dot(n, d) > (qreal)0)
+		if(n.dot(d) > 0)
 			return false;
 	}
 	return true;
@@ -825,8 +824,8 @@ void DataTrait<Topology>::writeValue(QDomDocument& doc, QDomElement& elem, const
 	{
 		QDomElement ptNode = doc.createElement("Point");
 		elem.appendChild(ptNode);
-		ptNode.setAttribute("x", p.x());
-		ptNode.setAttribute("y", p.y());
+		ptNode.setAttribute("x", p.x);
+		ptNode.setAttribute("y", p.y);
 	}
 
 	for(const auto& e : v.getEdges())
@@ -858,13 +857,13 @@ void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
 	QDomElement ptNode = elem.firstChildElement("Point");
 	while(!ptNode.isNull())
 	{
-		QPointF pt;
+		Point pt;
 #ifdef PANDA_DOUBLE
-		pt.setX(ptNode.attribute("x").toDouble());
-		pt.setY(ptNode.attribute("y").toDouble());
+		pt.x = ptNode.attribute("x").toDouble();
+		pt.y = ptNode.attribute("y").toDouble();
 #else
-		pt.setX(ptNode.attribute("x").toFloat());
-		pt.setY(ptNode.attribute("y").toFloat());
+		pt.x = ptNode.attribute("x").toFloat();
+		pt.y = ptNode.attribute("y").toFloat();
 #endif
 		tmp.addPoint(pt);
 		ptNode = ptNode.nextSiblingElement("Point");

@@ -3,8 +3,7 @@
 
 #include <QList>
 #include <QVector>
-#include <QPointF>
-#include <QRectF>
+#include <panda/types/Rect.h>
 
 namespace panda
 {
@@ -16,24 +15,24 @@ class PointsGrid
 {
 public:
 	PointsGrid();
-	void initGrid(QRectF area, double cellSize);
+	void initGrid(types::Rect area, double cellSize);
 	void clear();
-	void addPoint(const QPointF& point);
-	void addPoints(const QVector<QPointF>& points);
-	int removePoint(const QPointF& point);
-	bool hasPoint(const QPointF& point);
+	void addPoint(const types::Point& point);
+	void addPoints(const QVector<types::Point>& points);
+	int removePoint(const types::Point& point);
+	bool hasPoint(const types::Point& point);
 
 	// Return true if there is another point inside the disk a radius "distance" around "point"
-	bool testNeighbor(const QPointF& point, double distance);
+	bool testNeighbor(const types::Point& point, double distance);
 
-	bool getNearest(const QPointF& point, double maxDist, QPointF& result);
+	bool getNearest(const types::Point& point, double maxDist, types::Point& result);
 
 protected:
-	int cellIndex(const QPointF& point);
+	int cellIndex(const types::Point& point);
 
-	typedef QList<QPointF> Cell;
+	typedef QList<types::Point> Cell;
 
-	QRectF area;
+	types::Rect area;
 	double cellSize;
 	int width, height;
 	QVector<Cell> cells;

@@ -23,7 +23,6 @@ HEADERS       = \
 	panda/helper/Gl.h \
 	panda/helper/GradientCache.h \
 	panda/helper/Perlin.h \
-	panda/helper/Point.h \
 	panda/helper/PointsGrid.h \
 	panda/helper/Random.h \
 	panda/helper/UpdateLogger.h \
@@ -168,7 +167,6 @@ SOURCES       = main.cpp \
 	panda/helper/Factory.cpp \
 	panda/helper/GradientCache.cpp \
 	panda/helper/Perlin.cpp \
-	panda/helper/Point.cpp \
 	panda/helper/PointsGrid.cpp \
 	panda/helper/Random.cpp \
 	panda/helper/UpdateLogger.cpp \
@@ -177,7 +175,6 @@ SOURCES       = main.cpp \
 	panda/types/DataTypeId.cpp \
 	panda/types/Gradient.cpp \
 	panda/types/ImageWrapper.cpp \
-	panda/types/Path.cpp \
 	panda/types/Point.cpp \
 	panda/types/Rect.cpp \
 	panda/types/Topology.cpp \
@@ -202,7 +199,8 @@ SOURCES       = main.cpp \
 	ui/widget/DataWidgetFactory.cpp \
 	ui/widget/ListDataWidgetDialog.cpp \
 	ui/widget/NumericalDataWidget.cpp \
-	ui/widget/PathDataWidget.cpp \
+	ui/widget/PointDataWidget.cpp \
+	ui/widget/RectDataWidget.cpp \
 	ui/widget/StringDataWidget.cpp \
 	ui/widget/TableDataWidgetDialog.cpp \
 	ui/widget/AnimationDataWidgetDialog.cpp
