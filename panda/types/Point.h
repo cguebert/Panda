@@ -1,5 +1,6 @@
 #ifndef TYPES_POINT_H
 #define TYPES_POINT_H
+#pragma once
 
 #include <panda/helper/system/Config.h>
 
@@ -14,6 +15,12 @@ namespace panda
 
 namespace types
 {
+
+inline bool pFuzzyIsNull(double d)
+{ return abs(d) <= 0.000000000001; }
+
+inline bool pFuzzyIsNull(float f)
+{ return abs(f) <= 0.00001f; }
 
 enum NoInit { NOINIT };
 
@@ -198,16 +205,12 @@ public:
 
 	bool operator==(const Point& p) const
 	{
-		if(abs(x - p.x) > EQUALITY_THRESHOLD) return false;
-		if(abs(y - p.y) > EQUALITY_THRESHOLD) return false;
-		return true;
+		return pFuzzyIsNull(x - p.x) && pFuzzyIsNull(y - p.y);
 	}
 
 	bool operator!=(const Point& p) const
 	{
-		if(abs(x - p.x) > EQUALITY_THRESHOLD) return true;
-		if(abs(y - p.y) > EQUALITY_THRESHOLD) return true;
-		return false;
+		return !pFuzzyIsNull(x - p.x) || !pFuzzyIsNull(y - p.y);
 	}
 
 	static Point max()
