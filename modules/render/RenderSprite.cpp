@@ -9,7 +9,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 
-#include <math.h>
+#include <cmath>
 
 namespace panda {
 

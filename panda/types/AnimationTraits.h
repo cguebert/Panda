@@ -1,5 +1,5 @@
-#ifndef ANIMATIONTRAITS_H
-#define ANIMATIONTRAITS_H
+#ifndef TYPES_ANIMATIONTRAITS_H
+#define TYPES_ANIMATIONTRAITS_H
 
 #include <panda/types/DataTraits.h>
 #include <panda/Data.h>
@@ -90,4 +90,4 @@ public:
 
 } // namespace panda
 
-#endif // ANIMATIONTRAITS_H
+#endif // TYPES_ANIMATIONTRAITS_H

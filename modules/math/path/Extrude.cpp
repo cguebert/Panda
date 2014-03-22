@@ -6,7 +6,7 @@
 #include <panda/types/Animation.h>
 #include <panda/types/Path.h>
 
-#include <math.h>
+#include <cmath>
 
 namespace panda {
 

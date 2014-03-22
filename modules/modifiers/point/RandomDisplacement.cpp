@@ -3,7 +3,7 @@
 #include <panda/ObjectFactory.h>
 #include <panda/helper/Random.h>
 
-#include <math.h>
+#include <cmath>
 
 namespace panda {
 

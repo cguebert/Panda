@@ -1,5 +1,5 @@
-#ifndef IMAGEWRAPPER_H
-#define IMAGEWRAPPER_H
+#ifndef TYPES_IMAGEWRAPPER_H
+#define TYPES_IMAGEWRAPPER_H
 
 #include <QImage>
 #include <QSharedPointer>
@@ -40,4 +40,4 @@ private:
 
 } // namespace panda
 
-#endif // IMAGEWRAPPER_H
+#endif // TYPES_IMAGEWRAPPER_H

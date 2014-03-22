@@ -6,7 +6,7 @@
 #include <panda/helper/Random.h>
 #include <panda/helper/PointsGrid.h>
 
-#include <math.h>
+#include <cmath>
 
 namespace panda {
 

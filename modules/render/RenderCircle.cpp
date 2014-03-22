@@ -5,7 +5,7 @@
 
 #include <QPointF>
 
-#include <math.h>
+#include <cmath>
 
 namespace panda {
 

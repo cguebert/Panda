@@ -1,5 +1,5 @@
-#ifndef DATATRAITS_H
-#define DATATRAITS_H
+#ifndef TYPES_DATATRAITS_H
+#define TYPES_DATATRAITS_H
 
 #include <panda/helper/system/Config.h>
 #include <panda/types/DataTypeId.h>
@@ -187,10 +187,6 @@ template<> QString DataTrait<QColor>::valueTypeName() { return "color"; }
 template<> QString DataTrait<QPointF>::valueTypeName() { return "point"; }
 template<> QString DataTrait<QRectF>::valueTypeName() { return "rectangle"; }
 template<> QString DataTrait<QString>::valueTypeName() { return "text"; }
-template<> QString DataTrait<QImage>::valueTypeName() { return "image"; }
-
-template<> bool DataTrait<QImage>::isDisplayed() { return false; }
-template<> bool DataTrait<QImage>::isPersistent() { return false; }
 
 //***************************************************************//
 // Overrides for writeValue xml
@@ -286,4 +282,4 @@ void DataTrait<QString>::readValue(QDomElement& elem, QString& v)
 
 } // namespace panda
 
-#endif // DATATRAITS_H
+#endif // TYPES_DATATRAITS_H

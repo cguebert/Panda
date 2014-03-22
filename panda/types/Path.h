@@ -1,5 +1,5 @@
-#ifndef PATH_H
-#define PATH_H
+#ifndef TYPES_PATH_H
+#define TYPES_PATH_H
 
 #include <QVector>
 #include <QPointF>
@@ -20,4 +20,4 @@ public:
 
 } // namespace panda
 
-#endif // PATH_H
+#endif // TYPES_PATH_H

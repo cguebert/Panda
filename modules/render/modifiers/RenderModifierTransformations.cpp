@@ -3,7 +3,7 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
 
-#include <math.h>
+#include <cmath>
 
 namespace panda {
 

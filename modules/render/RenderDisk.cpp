@@ -6,7 +6,7 @@
 #include <panda/helper/GradientCache.h>
 
 #include <QPointF>
-#include <math.h>
+#include <cmath>
 
 using panda::types::Gradient;
 using panda::helper::GradientCache;

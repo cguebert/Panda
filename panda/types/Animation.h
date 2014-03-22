@@ -1,5 +1,5 @@
-#ifndef ANIMATION_H
-#define ANIMATION_H
+#ifndef TYPES_ANIMATION_H
+#define TYPES_ANIMATION_H
 
 #include <panda/helper/system/Config.h>
 #include <QVector>
@@ -82,4 +82,4 @@ protected:
 
 } // namespace panda
 
-#endif // ANIMATION_H
+#endif // TYPES_ANIMATION_H

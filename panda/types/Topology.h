@@ -1,5 +1,5 @@
-#ifndef TOPOLOGY_H
-#define TOPOLOGY_H
+#ifndef TYPES_TOPOLOGY_H
+#define TYPES_TOPOLOGY_H
 
 #include <QVector>
 #include <QPointF>
@@ -138,4 +138,4 @@ protected:
 
 } // namespace panda
 
-#endif // ANIMATION_H
+#endif // TYPES_TOPOLOGY_H

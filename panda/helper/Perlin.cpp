@@ -22,7 +22,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <math.h>
+#include <cmath>
 
 #include <panda/helper/Perlin.h>
 #include <random>

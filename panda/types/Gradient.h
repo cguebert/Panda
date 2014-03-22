@@ -1,5 +1,5 @@
-#ifndef GRADIENT_H
-#define GRADIENT_H
+#ifndef TYPES_GRADIENT_H
+#define TYPES_GRADIENT_H
 
 #include <panda/helper/system/Config.h>
 #include <QVector>
@@ -57,4 +57,4 @@ protected:
 
 } // namespace panda
 
-#endif // GRADIENT_H
+#endif // TYPES_GRADIENT_H

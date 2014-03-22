@@ -1,5 +1,5 @@
-#ifndef DATATYPEID_H
-#define DATATYPEID_H
+#ifndef TYPES_DATATYPEID_H
+#define TYPES_DATATYPEID_H
 
 #include <typeinfo>
 
@@ -44,4 +44,4 @@ private:
 
 } // namespace panda
 
-#endif // DATATYPEID_H
+#endif // TYPES_DATATYPEID_H

@@ -4,7 +4,6 @@
 #include <panda/Renderer.h>
 #include <panda/Layer.h>
 
-#include <QImage>
 #include <QPainter>
 
 #ifdef PANDA_LOG_EVENTS

@@ -1,5 +1,5 @@
-#ifndef TYPECONVERTER_H
-#define TYPECONVERTER_H
+#ifndef TYPES_TYPECONVERTER_H
+#define TYPES_TYPECONVERTER_H
 
 #include <panda/types/DataTypeId.h>
 
@@ -85,4 +85,4 @@ public:
 
 } // namespace panda
 
-#endif // TYPECONVERTER_H
+#endif // TYPES_TYPECONVERTER_H

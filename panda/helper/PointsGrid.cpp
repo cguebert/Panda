@@ -1,6 +1,6 @@
 #include <panda/helper/PointsGrid.h>
 #include <panda/helper/Point.h>
-#include <math.h>
+#include <cmath>
 #include <qglobal.h>
 
 namespace panda

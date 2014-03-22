@@ -2,7 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <QVector>
-#include <math.h>
+#include <cmath>
 
 /* Rules when there are many input parameters :
   (1 list of input values + X lists of parameters)

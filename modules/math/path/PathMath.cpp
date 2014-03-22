@@ -5,7 +5,7 @@
 #include <panda/helper/Point.h>
 #include <QVector>
 
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 
 namespace panda {

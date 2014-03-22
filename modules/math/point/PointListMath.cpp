@@ -3,7 +3,7 @@
 #include <panda/ObjectFactory.h>
 #include <QVector>
 
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 
 namespace panda {
