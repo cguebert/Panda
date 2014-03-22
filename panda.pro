@@ -35,6 +35,7 @@ HEADERS       = \
 	panda/types/Gradient.h \
 	panda/types/ImageWrapper.h \
 	panda/types/Path.h \
+	panda/types/Point.h \
 	panda/types/Topology.h \
 	panda/types/TypeConverter.h \
 	ui/Annotation.h \
@@ -176,6 +177,7 @@ SOURCES       = main.cpp \
 	panda/types/Gradient.cpp \
 	panda/types/ImageWrapper.cpp \
 	panda/types/Path.cpp \
+	panda/types/Point.cpp \
 	panda/types/Topology.cpp \
 	panda/types/TypeConverter.cpp \
 	ui/Annotation.cpp \
