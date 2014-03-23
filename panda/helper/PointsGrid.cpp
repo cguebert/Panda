@@ -18,7 +18,7 @@ PointsGrid::PointsGrid()
 {
 }
 
-void PointsGrid::initGrid(Rect newArea, double newCellSize)
+void PointsGrid::initGrid(Rect newArea, PReal newCellSize)
 {
 	cells.clear();
 	area = newArea;
@@ -59,14 +59,14 @@ bool PointsGrid::hasPoint(const Point& point)
 	return cells[cellIndex(point)].contains(point);
 }
 
-bool PointsGrid::testNeighbor(const Point& point, double distance)
+bool PointsGrid::testNeighbor(const Point& point, PReal distance)
 {
-	int minX = floor(qMax(0.0, (point.x - distance - area.left()) / cellSize));
-	int maxX = ceil(qMin(width - 1.0, (point.x + distance - area.left()) / cellSize));
-	int minY = floor(qMax(0.0, (point.y - distance - area.top()) / cellSize));
-	int maxY = ceil(qMin(height - 1.0, (point.y + distance - area.top()) / cellSize));
+	int minX = floor(qMax<PReal>(0.0, (point.x - distance - area.left()) / cellSize));
+	int maxX = ceil(qMin<PReal>(width - 1.0, (point.x + distance - area.left()) / cellSize));
+	int minY = floor(qMax<PReal>(0.0, (point.y - distance - area.top()) / cellSize));
+	int maxY = ceil(qMin<PReal>(height - 1.0, (point.y + distance - area.top()) / cellSize));
 
-	double dist2 = distance*distance;
+	PReal dist2 = distance*distance;
 	for(int y=minY; y<=maxY; y++)
 	{
 		for(int x=minX; x<=maxX; x++)
@@ -81,14 +81,14 @@ bool PointsGrid::testNeighbor(const Point& point, double distance)
 	return false;
 }
 
-bool PointsGrid::getNearest(const Point& point, double maxDist, Point& result)
+bool PointsGrid::getNearest(const Point& point, PReal maxDist, Point& result)
 {
-	int minX = floor(qMax(0.0, (point.x - maxDist - area.left()) / cellSize));
-	int maxX = ceil(qMin(width - 1.0, (point.x + maxDist - area.left()) / cellSize));
-	int minY = floor(qMax(0.0, (point.y - maxDist - area.top()) / cellSize));
-	int maxY = ceil(qMin(height - 1.0, (point.y + maxDist - area.top()) / cellSize));
+	int minX = floor(qMax<PReal>(0.0, (point.x - maxDist - area.left()) / cellSize));
+	int maxX = ceil(qMin<PReal>(width - 1.0, (point.x + maxDist - area.left()) / cellSize));
+	int minY = floor(qMax<PReal>(0.0, (point.y - maxDist - area.top()) / cellSize));
+	int maxY = ceil(qMin<PReal>(height - 1.0, (point.y + maxDist - area.top()) / cellSize));
 
-	double minDist = maxDist*maxDist;
+	PReal minDist = maxDist*maxDist;
 	bool found = false;
 	for(int y=minY; y<=maxY; y++)
 	{
@@ -97,7 +97,7 @@ bool PointsGrid::getNearest(const Point& point, double maxDist, Point& result)
 			const Cell& cell = cells[y * width + x];
 			for(Cell::const_iterator iter=cell.begin(); iter!=cell.end(); ++iter)
 			{
-				double d = (*iter - point).norm2();
+				PReal d = (*iter - point).norm2();
 				if(d < minDist)
 				{
 					result = *iter;
@@ -113,8 +113,8 @@ bool PointsGrid::getNearest(const Point& point, double maxDist, Point& result)
 
 int PointsGrid::cellIndex(const Point& point)
 {
-	double x = qBound(area.left(), point.x, area.right());
-	double y = qBound(area.top(), point.y, area.bottom());
+	PReal x = qBound(area.left(), point.x, area.right());
+	PReal y = qBound(area.top(), point.y, area.bottom());
 
 	int gx = floor((x - area.left()) / cellSize);
 	int gy = floor((y - area.top()) / cellSize);

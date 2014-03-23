@@ -85,8 +85,8 @@ public:
 	void update()
 	{
 		const Point& c = center.getValue();
-		double r = radius.getValue();
-		double r2 = r*r;
+		PReal r = radius.getValue();
+		PReal r2 = r*r;
 
 		const QVector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
@@ -98,7 +98,7 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			Point pt = inPts[i];
-			double d2 = (pt - c).norm2();
+			PReal d2 = (pt - c).norm2();
 			if(d2 < r2)
 			{
 				outPts.push_back(pt);

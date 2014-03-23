@@ -58,11 +58,11 @@ public:
 		if(coefs.size() != p || coefs[0].size() != c)
 		{
 			coefs.resize(p);
-			double s = 1.0 / (double)(p - 1);
+			PReal s = 1.0 / (PReal)(p - 1);
 			for(int i=0; i<p; ++i)
 			{
 				coefs[i].resize(c);
-				double t = i * s;
+				PReal t = i * s;
 				for(int j=0; j<c; ++j)
 					coefs[i][j] = bernstein(j, c-1, t);
 			}
@@ -84,7 +84,7 @@ public:
 		}
 	}
 
-	double bernstein(int i, int n, double t)
+	PReal bernstein(int i, int n, PReal t)
 	{
 		return binomials[i] * pow(t, i) * pow(1-t, n-i);
 	}

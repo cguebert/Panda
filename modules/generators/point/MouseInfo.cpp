@@ -31,7 +31,7 @@ public:
 	void update()
 	{
 		cleanDirty();
-		double time = parentDocument->getAnimationTime();
+		PReal time = parentDocument->getAnimationTime();
 		Point oldPos = position.getValue(), newPos = parentDocument->getMousePosition();
 
 		position.setValue(newPos);

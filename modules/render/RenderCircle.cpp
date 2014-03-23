@@ -60,7 +60,7 @@ public:
 
 				glLineWidth(listWidth[i % nbWidth]);
 
-				double valRadius = listRadius[i % nbRadius];
+				PReal valRadius = listRadius[i % nbRadius];
 				int nbSeg = static_cast<int>(floor(valRadius * M_PI * 2));
 				if(nbSeg < 3) continue;
 				vertices.resize((nbSeg + 2) * 2);
@@ -68,7 +68,7 @@ public:
 				Point valCenter = listCenter[i];
 				for(int i=0; i<nbSeg; i++)
 				{
-					double t = i / static_cast<PReal>(nbSeg) * 2 * M_PI;
+					PReal t = i / static_cast<PReal>(nbSeg) * 2 * M_PI;
 					vertices[i*2  ] = valCenter.x + cos(t) * valRadius;
 					vertices[i*2+1] = valCenter.y + sin(t) * valRadius;
 				}

@@ -27,8 +27,8 @@ public:
 	virtual int getCompositionMode() const = 0;
 	virtual void setCompositionMode(int mode) = 0;
 
-	virtual double getOpacity() const = 0;
-	virtual void setOpacity(double opa) = 0;
+	virtual PReal getOpacity() const = 0;
+	virtual void setOpacity(PReal opa) = 0;
 
 	virtual Data<types::ImageWrapper>* getImage() = 0;
 	virtual QMatrix4x4& getMVPMatrix() = 0;
@@ -56,8 +56,8 @@ public:
 	virtual int getCompositionMode() const;
 	virtual void setCompositionMode(int mode);
 
-	virtual double getOpacity() const;
-	virtual void setOpacity(double opa);
+	virtual PReal getOpacity() const;
+	virtual void setOpacity(PReal opa);
 
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();

@@ -146,8 +146,8 @@ void EditGradientView::mouseMoveEvent(QMouseEvent *event)
 	if(moving)
 	{
 		int dx = event->x() - initialMouseX;
-		double dfx = dx / static_cast<PReal>(width()-10);
-		double pos = qBound(0.0, initialPos + dfx, 1.0);
+		PReal dfx = dx / static_cast<PReal>(width()-10);
+		PReal pos = qBound<PReal>(0.0, initialPos + dfx, 1.0);
 		if(pos != prevPos)
 		{
 			stops[selected].first = pos;
@@ -299,9 +299,9 @@ void EditGradientDialog::changePosition()
 
 	bool ok;
 #ifdef PANDA_DOUBLE
-	double pos = posEdit->text().toDouble(&ok);
+	PReal pos = posEdit->text().toDouble(&ok);
 #else
-	double pos = posEdit->text().toFloat(&ok);
+	PReal pos = posEdit->text().toFloat(&ok);
 #endif
 	if(ok)
 	{

@@ -612,7 +612,7 @@ void GroupWithLayer::setCompositionMode(int mode)
 	}
 }
 
-double GroupWithLayer::getOpacity() const
+PReal GroupWithLayer::getOpacity() const
 {
 	if(layer)
 		return layer->getOpacity();
@@ -620,7 +620,7 @@ double GroupWithLayer::getOpacity() const
 		return opacity;
 }
 
-void GroupWithLayer::setOpacity(double opa)
+void GroupWithLayer::setOpacity(PReal opa)
 {
 	if(layer)
 		layer->setOpacity(opa);

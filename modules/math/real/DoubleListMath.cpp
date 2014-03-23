@@ -40,11 +40,11 @@ public:
 
 		if(nb)
 		{
-			double tMin = list[0], tMax = list[0];
-			double E=0, E2=0;
+			PReal tMin = list[0], tMax = list[0];
+			PReal E=0, E2=0;
 			for(int i=0; i<nb; ++i)
 			{
-				double v = list[i];
+				PReal v = list[i];
 				E += v;
 				E2 += v*v;
 				tMin = qMin(tMin, v);

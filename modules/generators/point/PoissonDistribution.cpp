@@ -35,10 +35,10 @@ public:
 		seed.setValue(rnd.getRandomSeed(10000));
 	}
 
-	Point randomPointAround(const Point& point, double minDist, double maxDist)
+	Point randomPointAround(const Point& point, PReal minDist, PReal maxDist)
 	{
-		double a = rnd.random() * 2 * M_PI;
-		double r = rnd.random(minDist, maxDist);
+		PReal a = rnd.random() * 2 * M_PI;
+		PReal r = rnd.random(minDist, maxDist);
 		return point + r * Point(cos(a), sin(a));
 	}
 
@@ -60,8 +60,8 @@ public:
 		grid.addPoint(firstPoint);
 
 		int rejectionLimit = samples.getValue();
-		double minDist = minimumDistance.getValue();
-		double maxDist = minDist * 2.0;
+		PReal minDist = minimumDistance.getValue();
+		PReal maxDist = minDist * 2.0;
 
 		while(!processList.empty())
 		{

@@ -44,7 +44,7 @@ protected:
 	int selected;
 	bool moving;
 	int initialMouseX;
-	double initialPos, prevPos;
+	PReal initialPos, prevPos;
 };
 
 class EditGradientDialog : public QDialog

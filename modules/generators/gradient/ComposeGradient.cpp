@@ -57,7 +57,7 @@ public:
 		Q_ASSERT(dataColor && dataPosition);
 
 		const QVector<QColor>& inColor = dataColor->getValue();
-		const double pos = dataPosition->getValue();
+		const PReal pos = dataPosition->getValue();
 		int nbColors = inColor.size();
 		int nbGrads = tempList.size();
 

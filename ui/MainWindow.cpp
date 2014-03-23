@@ -153,7 +153,7 @@ void MainWindow::openRecentFile()
 
 void MainWindow::updateStatusBar()
 {
-	double time = pandaDocument->getAnimationTime();
+	PReal time = pandaDocument->getAnimationTime();
 	timeLabel->setText(tr("time : %1").arg(time));
 }
 

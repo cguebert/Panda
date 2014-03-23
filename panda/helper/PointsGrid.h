@@ -15,7 +15,7 @@ class PointsGrid
 {
 public:
 	PointsGrid();
-	void initGrid(types::Rect area, double cellSize);
+	void initGrid(types::Rect area, PReal cellSize);
 	void clear();
 	void addPoint(const types::Point& point);
 	void addPoints(const QVector<types::Point>& points);
@@ -23,9 +23,9 @@ public:
 	bool hasPoint(const types::Point& point);
 
 	// Return true if there is another point inside the disk a radius "distance" around "point"
-	bool testNeighbor(const types::Point& point, double distance);
+	bool testNeighbor(const types::Point& point, PReal distance);
 
-	bool getNearest(const types::Point& point, double maxDist, types::Point& result);
+	bool getNearest(const types::Point& point, PReal maxDist, types::Point& result);
 
 protected:
 	int cellIndex(const types::Point& point);
@@ -33,7 +33,7 @@ protected:
 	typedef QList<types::Point> Cell;
 
 	types::Rect area;
-	double cellSize;
+	PReal cellSize;
 	int width, height;
 	QVector<Cell> cells;
 };

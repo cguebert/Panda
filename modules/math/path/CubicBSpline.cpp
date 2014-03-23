@@ -100,12 +100,12 @@ public:
 		vec4 first = {1/6.0, 4/6.0, 1/6.0, 0};
 		coefs.front() = first;
 
-		double fstep = 1.0 / nbSteps;
+		PReal fstep = 1.0 / nbSteps;
 		int i=1;
-		for(double t=fstep; t<1; t+=fstep)
+		for(PReal t=fstep; t<1; t+=fstep)
 		{
-			double t2=t*t, t3=t2*t;
-			double k1=1-3*t+3*t2-t3, k2=4-6*t2+3*t3, k3=1+3*t+3*t2-3*t3;
+			PReal t2=t*t, t3=t2*t;
+			PReal k1=1-3*t+3*t2-t3, k2=4-6*t2+3*t3, k3=1+3*t+3*t2-3*t3;
 
 			vec4 tmp = {1/6.0 * k1, 1/6.0 * k2, 1/6.0 * k3, 1/6.0 * t3};
 			coefs[i++] = tmp;
@@ -119,7 +119,7 @@ protected:
 	Data<Path> input, output;
 	Data<int> steps, close;
 
-	typedef std::array<double, 4> vec4;
+	typedef std::array<PReal, 4> vec4;
 	QVector<vec4> coefs;
 };
 

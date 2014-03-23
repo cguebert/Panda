@@ -31,7 +31,7 @@ protected:
 	QVector<ParticleEffector*> effectors;
 	QVector<Particle> particles;
 	Data< QVector<types::Point> > positions, velocities, accelerations;
-	double prevTime;
+	PReal prevTime;
 };
 
 } // namespace Panda

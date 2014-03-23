@@ -56,7 +56,7 @@ template<>
 void DataTrait<Point>::readValue(QDomElement& elem, Point& v)
 #ifdef PANDA_DOUBLE
 {	v.x = elem.attribute("x").toDouble();
-	v;y = elem.attribute("y").toDouble(); }
+	v.y = elem.attribute("y").toDouble(); }
 #else
 {	v.x = elem.attribute("x").toFloat();
 	v.y = elem.attribute("y").toFloat(); }
@@ -111,11 +111,11 @@ void DataTrait<Path>::readValue(QDomElement& elem, Path& path)
 	while(!ptNode.isNull())
 	{
 #ifdef PANDA_DOUBLE
-		double x = ptNode.attribute("x").toDouble();
-		double y = ptNode.attribute("y").toDouble();
+		PReal x = ptNode.attribute("x").toDouble();
+		PReal y = ptNode.attribute("y").toDouble();
 #else
-		double x = ptNode.attribute("x").toFloat();
-		double y = ptNode.attribute("y").toFloat();
+		PReal x = ptNode.attribute("x").toFloat();
+		PReal y = ptNode.attribute("y").toFloat();
 #endif
 
 		path.push_back(Point(x, y));

@@ -83,7 +83,7 @@ public:
 	PolygonsIndicesList getPolygonsConnectedToPolygon(PolygonID index);
 
 	PointID getOtherPointInEdge(const Edge& edge, PointID point) const;
-	double areaOfPolygon(const Polygon& poly) const;
+	PReal areaOfPolygon(const Polygon& poly) const;
 	void reorientPolygon(Polygon& poly);
 	Point centroidOfPolygon(const Polygon& poly) const;
 	static bool comparePolygon(Polygon p1, Polygon p2);

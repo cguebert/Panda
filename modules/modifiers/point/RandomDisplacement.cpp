@@ -45,13 +45,13 @@ public:
 		outPts.resize(nb);
 
 		rnd.seed(seed.getValue());
-		double minA = minAngle.getValue(), maxA = maxAngle.getValue();
-		double minD = minDist.getValue(), maxD = maxDist.getValue();
+		PReal minA = minAngle.getValue(), maxA = maxAngle.getValue();
+		PReal minD = minDist.getValue(), maxD = maxDist.getValue();
 
 		for(int i=0; i<nb; ++i)
 		{
-			double a = rnd.random(minA, maxA) * M_PI / 180.0;
-			double d = rnd.random(minD, maxD);
+			PReal a = rnd.random(minA, maxA) * M_PI / 180.0;
+			PReal d = rnd.random(minD, maxD);
 			Point disp(cos(a)*d, sin(a)*d);
 			outPts[i] = inPts[i] + disp;
 		}

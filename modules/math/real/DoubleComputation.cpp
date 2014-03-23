@@ -38,7 +38,7 @@ public:
 		addOutput(&result);
 	}
 
-	double smoothStep(double a, double b, double x)
+	PReal smoothStep(PReal a, PReal b, PReal x)
 	{
 		if (x < a)	return 0;
 		if (x >= b)	return 1;
@@ -218,7 +218,7 @@ public:
 		addOutput(&result);
 	}
 
-	double constrain(double a, double b, double x)
+	PReal constrain(PReal a, PReal b, PReal x)
 	{
 		if (x < a)	return a;
 		if (x > b)	return b;
@@ -281,7 +281,7 @@ public:
 		addOutput(&result);
 	}
 
-	int pulse(double a, double b, double x)
+	int pulse(PReal a, PReal b, PReal x)
 	{
 		if (x < a || x > b)	return 0;
 		return 1;
@@ -348,9 +348,9 @@ public:
 		addOutput(&result);
 	}
 
-	double remap(double v, double iMin, double iMax, double oMin, double oMax)
+	PReal remap(PReal v, PReal iMin, PReal iMax, PReal oMin, PReal oMax)
 	{
-		double p = (v - iMin) / (iMax - iMin);
+		PReal p = (v - iMin) / (iMax - iMin);
 		return oMin + p * (oMax - oMin);
 	}
 

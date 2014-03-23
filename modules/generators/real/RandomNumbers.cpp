@@ -36,7 +36,7 @@ public:
 		int valNbNumbers = nbNumbers.getValue();
 		valNumbers.resize(valNbNumbers);
 
-		double min = numMin.getValue(), max = numMax.getValue();
+		PReal min = numMin.getValue(), max = numMax.getValue();
 		for(int i=0; i<valNbNumbers; ++i)
 			valNumbers[i] = rnd.random(min, max);
 

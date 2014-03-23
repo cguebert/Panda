@@ -48,7 +48,7 @@ public:
 
 		int nbIter = iterations.getValue();
 		int nbPts = outTopo->getNumberOfPoints();
-		double fact = factor.getValue();
+		PReal fact = factor.getValue();
 		for(int i=0; i<nbIter; ++i)
 		{
 			auto ptsCopy = outTopo->getPoints();

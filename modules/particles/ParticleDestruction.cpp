@@ -31,7 +31,7 @@ public:
 
 	virtual void onInitParticles(Particles& particles)
 	{
-		const double time = parentDocument->getAnimationTime();
+		const PReal time = parentDocument->getAnimationTime();
 		int oldNb = birth.size();
 		int newNb = oldNb + particles.size();
 		birth.resize(newNb);
@@ -45,9 +45,9 @@ public:
 	{
 		Indices indices;
 
-		const double time = parentDocument->getAnimationTime();
+		const PReal time = parentDocument->getAnimationTime();
 		int nb = birth.size();
-		double age = maxAge.getValue();
+		PReal age = maxAge.getValue();
 		for(int i=0; i<nb; ++i)
 		{
 			if(time >= birth[i] + age)

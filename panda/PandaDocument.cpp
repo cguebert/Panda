@@ -405,12 +405,12 @@ QSize PandaDocument::getRenderSize()
 	return QSize(qMax<PReal>(1, floor(pt.x)), qMax<PReal>(1, floor(pt.y)));
 }
 
-double PandaDocument::getAnimationTime()
+PReal PandaDocument::getAnimationTime()
 {
 	return animTime.getValue();
 }
 
-double PandaDocument::getTimeStep()
+PReal PandaDocument::getTimeStep()
 {
 	return timestep.getValue();
 }

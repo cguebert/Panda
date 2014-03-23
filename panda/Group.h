@@ -66,8 +66,8 @@ public:
 	virtual int getCompositionMode() const;
 	virtual void setCompositionMode(int mode);
 
-	virtual double getOpacity() const;
-	virtual void setOpacity(double opa);
+	virtual PReal getOpacity() const;
+	virtual void setOpacity(PReal opa);
 
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();
@@ -79,7 +79,7 @@ protected:
 	Data<types::ImageWrapper> image;
 	QMatrix4x4 mvpMatrix;
 	int compositionMode;
-	double opacity;
+	PReal opacity;
 
 	Layer* layer;
 };

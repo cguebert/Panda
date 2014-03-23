@@ -68,7 +68,7 @@ public:
 		anim.setInterpolation(elem.attribute("interpolation").toInt());
 		anim.clear();
 		T val = T();
-		double key;
+		PReal key;
 		QDomElement e = elem.firstChildElement("Value");
 		while(!e.isNull())
 		{

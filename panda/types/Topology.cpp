@@ -337,10 +337,10 @@ Topology::PointID Topology::getOtherPointInEdge(const Edge &edge, PointID point)
 		return -1;
 }
 
-double Topology::areaOfPolygon(const Polygon& poly) const
+PReal Topology::areaOfPolygon(const Polygon& poly) const
 {
 	int nbPts = poly.size();
-	double area = 0;
+	PReal area = 0;
 	for(int i=0; i<nbPts; ++i)
 	{
 		Point p1 = getPoint(poly[i]), p2 = getPoint(poly[(i+1)%nbPts]);

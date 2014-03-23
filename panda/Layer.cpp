@@ -75,7 +75,7 @@ void BaseLayer::iterateRenderers()
 
 void BaseLayer::mergeLayer()
 {
-	double opacity = getOpacity();
+	PReal opacity = getOpacity();
 	if(!opacity)
 		return;
 
@@ -184,14 +184,14 @@ void Layer::setCompositionMode(int mode)
 		compositionMode.setValue(mode);
 }
 
-double Layer::getOpacity() const
+PReal Layer::getOpacity() const
 {
 	return opacity.getValue();
 }
 
-void Layer::setOpacity(double opa)
+void Layer::setOpacity(PReal opa)
 {
-	double tmp = qBound(0.0, opa, 1.0);
+	PReal tmp = qBound<PReal>(0.0, opa, 1.0);
 	if(opacity.getValue() != opa)
 		opacity.setValue(tmp);
 }

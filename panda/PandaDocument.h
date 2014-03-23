@@ -56,8 +56,8 @@ public:
 	void setBackgroundColor(QColor color);
 	QSize getRenderSize();
 
-	double getAnimationTime();
-	double getTimeStep();
+	PReal getAnimationTime();
+	PReal getTimeStep();
 
 	types::Point getMousePosition();
 	void setMousePosition(const types::Point& pos);

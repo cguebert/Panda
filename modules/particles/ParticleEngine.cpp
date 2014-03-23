@@ -105,7 +105,7 @@ void ParticleEngine::createNewParticles()
 
 void ParticleEngine::update()
 {
-	double time = parentDocument->getAnimationTime();
+	PReal time = parentDocument->getAnimationTime();
 	if(prevTime == time)
 		return;
 

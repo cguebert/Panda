@@ -29,7 +29,7 @@ public:
 		int valNbNumbers = std::max(0, nbNumbers.getValue());
 		valNumbers.resize(valNbNumbers);
 
-		double valStart = start.getValue(), valStep = step.getValue();
+		PReal valStart = start.getValue(), valStep = step.getValue();
 		for(int i=0; i<valNbNumbers; ++i)
 			valNumbers[i] = valStart + valStep * i;
 

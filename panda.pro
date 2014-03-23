@@ -213,6 +213,7 @@ CONFIG += c++11
 DEFINES +=	PANDA_LOG_EVENTS \
 			_CRT_SECURE_NO_WARNINGS \
 			_SCL_SECURE_NO_WARNINGS
+#DEFINES += PANDA_DOUBLE
 
 BOOST="C:\Users\Christophe\Documents\Programmation\boost_1_55_0"
 

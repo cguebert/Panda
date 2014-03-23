@@ -46,7 +46,7 @@ public:
 			if(nbPts > 1)
 			{
 				Point pt1 = path[0];
-				double l = 0.0;
+				PReal l = 0.0;
 				for(int j=1; j<nbPts; ++j)
 				{
 					const Point& pt2 = path[j];
@@ -107,7 +107,7 @@ public:
 			listRot.resize(nbAbscissa);
 
 			// Some precomputation
-			double totalLength = 0.0;
+			PReal totalLength = 0.0;
 			QVector<PReal> lengths, starts, ends;
 			lengths.resize(nbPts - 1);
 			starts.resize(nbPts - 1);
@@ -117,7 +117,7 @@ public:
 			{
 				starts[i] = totalLength;
 				const Point& pt2 = curve[i+1];
-				double l = (pt2-pt1).norm();
+				PReal l = (pt2-pt1).norm();
 				lengths[i] = l;
 				pt1 = pt2;
 				totalLength += l;
@@ -126,11 +126,11 @@ public:
 
 			for(unsigned int i=0; i<nbAbscissa; ++i)
 			{
-				double a = qBound<PReal>(0.0, listAbscissa[i], totalLength - 1e-3);
+				PReal a = qBound<PReal>(0.0, listAbscissa[i], totalLength - 1e-3);
 				QVector<PReal>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
 
 				unsigned int index = iter - ends.begin();
-				double p = 0.0;
+				PReal p = 0.0;
 				if(lengths[index] > 0.1)
 					p = (a - starts[index]) / lengths[index];
 				const Point& pt1 = curve[index];

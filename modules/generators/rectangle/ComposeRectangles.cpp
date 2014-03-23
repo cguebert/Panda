@@ -43,7 +43,7 @@ public:
 
 		for(int i=0; i<nb; ++i)
 		{
-			double tl = l[i], tt = t[i];
+			PReal tl = l[i], tt = t[i];
 			rect[i] = Rect(tl, tt, r[i] - tl, b[i] - tt);
 		}
 

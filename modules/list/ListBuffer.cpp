@@ -66,7 +66,7 @@ public:
 	void update()
 	{
 		resetValues = resetValues || (resetData.getValue() != 0);	// Either from the data, or if the reset function was called
-		double newControl = control.getValue();
+		PReal newControl = control.getValue();
 		if(prevControl != newControl || resetValues)
 		{
 			prevControl = newControl;
@@ -90,7 +90,7 @@ public:
 	{
 		if(!settingDirty)
 		{
-			double newControl = control.getValue();
+			PReal newControl = control.getValue();
 			if(prevControl != newControl || resetValues || (resetData.getValue() != 0))
 			{
 				settingDirty = true;
@@ -103,7 +103,7 @@ public:
 
 protected:
 	bool resetValues, settingDirty;
-	double prevControl;
+	PReal prevControl;
 	Data<PReal> control;
 	Data<int> resetData;
 	GenericVectorData generic;

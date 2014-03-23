@@ -34,7 +34,7 @@ public:
 	{
 		perlin.setSeed(seed.getValue());
 		const auto& valInput = input.getValue();
-		const double& valScale = scale.getValue();
+		const PReal& valScale = scale.getValue();
 		auto valOutput = output.getAccessor();
 		int nb = valInput.size();
 		valOutput.resize(nb);
