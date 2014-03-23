@@ -123,6 +123,7 @@ SOURCES       = main.cpp \
 	modules/math/real/DoubleMath.cpp \
 	modules/math/topology/Centroids.cpp \
 	modules/math/topology/TopologyInfo.cpp \
+	modules/modifiers/color/BlendColors.cpp \
 	modules/modifiers/color/ColorInGradient.cpp \
 	modules/modifiers/image/ColorInImage.cpp \
 	modules/modifiers/image/ExtractImage.cpp \
