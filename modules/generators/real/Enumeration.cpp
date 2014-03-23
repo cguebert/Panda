@@ -26,7 +26,7 @@ public:
 	void update()
 	{
 		auto valNumbers = numbers.getAccessor();
-		int valNbNumbers = nbNumbers.getValue();
+		int valNbNumbers = std::max(0, nbNumbers.getValue());
 		valNumbers.resize(valNbNumbers);
 
 		double valStart = start.getValue(), valStep = step.getValue();
