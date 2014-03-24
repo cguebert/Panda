@@ -1,6 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <modules/generators/UserValue.h>
 
 #include <panda/types/Animation.h>
 #include <panda/types/Gradient.h>
@@ -9,6 +10,10 @@
 #include <QColor>
 #include <QString>
 #include <QVector>
+
+#include <QTimer>
+#include <QFile>
+#include <QDomDocument>
 
 namespace panda {
 
@@ -77,5 +82,169 @@ int GeneratorUser_AnimationDoubleClass = RegisterObject< GeneratorUser< types::A
 int GeneratorUser_AnimationPointClass = RegisterObject< GeneratorUser< types::Animation<types::Point> > >("Generator/Point/Points animation user value").setName("Points animation").setDescription("Lets you store a value for use in other objects");
 int GeneratorUser_AnimationColorClass = RegisterObject< GeneratorUser< types::Animation<QColor> > >("Generator/Color/Colors animation user value").setName("Colors animation").setDescription("Lets you store a value for use in other objects");
 int GeneratorUser_AnimationGradientClass = RegisterObject< GeneratorUser< types::Animation<types::Gradient> > >("Generator/Gradient/Gradients animation user value").setName("Gradients animation").setDescription("Lets you store a value for use in other objects");
+
+//*************************************************************************//
+
+template <class T>
+class StoreValue : public PandaObject, public TimedMethodObject
+{
+public:
+	PANDA_CLASS(PANDA_TEMPLATE(StoreValue, T), PandaObject)
+
+	StoreValue(PandaDocument *doc)
+		: PandaObject(doc)
+		, input(initData(&input, "input", "The value you want to store"))
+		, fileName(initData(&fileName, "file name", "File where to store the value"))
+		, singleValue(initData(&singleValue, 1, "single value", "If false save all the values during the animation"))
+		, saveTimer(nullptr)
+	{
+		addInput(&input);
+		addInput(&fileName);
+		addInput(&singleValue);
+
+		fileName.setWidget("save file");
+		singleValue.setWidget("checkbox");
+
+		TimedMethodObject* tmo = dynamic_cast<TimedMethodObject*>(this);
+
+		saveTimer = new QTimer(tmo);
+		saveTimer->setSingleShot(true);
+
+		QObject::connect(saveTimer, SIGNAL(timeout()), tmo, SLOT(onTimeout()));
+	}
+
+	void removeChilds(QDomNode& node)
+	{
+		auto children = node.childNodes();
+		int nb=children.size();
+		for(int i=nb-1; i>=0; --i)
+			node.removeChild(children.at(i));
+	}
+
+	void reset()
+	{
+		if(!xmlRoot.isNull())
+			removeChilds(xmlRoot);
+	}
+
+	void addValue()
+	{
+		if(xmlRoot.isNull())
+		{
+			xmlRoot = xmlDoc.createElement("PandaValue");
+			xmlDoc.appendChild(xmlRoot);
+		}
+
+		if(singleValue.getValue() || !isInStep)
+			removeChilds(xmlRoot);
+
+		QDomElement xmlData = xmlDoc.createElement("SavedData");
+		input.save(xmlDoc, xmlData);
+		xmlRoot.appendChild(xmlData);
+	}
+
+/*	void setDirtyValue()
+	{
+		PandaObject::setDirtyValue();
+		if(!isInStep && !singleValue.getValue())
+		{
+			addValue();
+			saveToFile();
+		}
+	}
+*/
+	void endStep()
+	{
+		addValue();
+		PandaObject::endStep();
+
+		saveTimer->stop();
+		saveTimer->start(500);
+	}
+
+	void saveToFile()
+	{
+		QString tmpFileName = fileName.getValue();
+		if(tmpFileName.isEmpty())
+			return;
+		QFile file(tmpFileName);
+		if (!file.open(QIODevice::WriteOnly))
+			return;
+
+		file.write(xmlDoc.toByteArray(4));
+	}
+
+	void onTimeout()
+	{
+		saveToFile();
+	}
+
+protected:
+	Data<T> input;
+	Data<QString> fileName;
+	Data<int> singleValue;
+	QDomDocument xmlDoc;
+	QDomElement xmlRoot;
+	QTimer* saveTimer;
+};
+
+int StoreValue_IntegerClass = RegisterObject< StoreValue<int> >("File/Save integer").setDescription("Save a value in a file for later use");
+
+//*************************************************************************//
+
+template <class T>
+class LoadValue : public PandaObject
+{
+public:
+	PANDA_CLASS(PANDA_TEMPLATE(LoadValue, T), PandaObject)
+
+	LoadValue(PandaDocument *doc)
+		: PandaObject(doc)
+		, output(initData(&output, "output", "The loaded value"))
+		, fileName(initData(&fileName, "file name", "File where to read the value"))
+	{
+		addInput(&fileName);
+		fileName.setWidget("open file");
+
+		addOutput(&output);
+	}
+
+	void reset()
+	{
+		QString tmpFileName = fileName.getValue();
+		if(tmpFileName.isEmpty())
+			return;
+		QFile file(tmpFileName);
+		if (!file.open(QIODevice::ReadOnly))
+			return;
+
+		QDomDocument doc;
+		int errLine, errCol;
+		if (!doc.setContent(&file, nullptr, &errLine, &errCol))
+			return;
+
+		QDomElement root = doc.documentElement();
+		xmlData = root.firstChildElement("SavedData");
+	}
+
+	void beginStep()
+	{
+		PandaObject::beginStep();
+
+		if(!xmlData.isNull())
+		{
+			output.load(xmlData);
+
+			xmlData = xmlData.nextSiblingElement("SavedData");
+		}
+	}
+
+protected:
+	Data<T> output;
+	Data<QString> fileName;
+	QDomElement xmlData;
+};
+
+int LoadValue_IntegerClass = RegisterObject< LoadValue<int> >("File/Load integer").setDescription("Load a value from a file");
 
 } // namespace Panda

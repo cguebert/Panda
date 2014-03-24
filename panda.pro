@@ -1,5 +1,6 @@
 TEMPLATE      = app
 HEADERS       = \
+	modules/generators/UserValue.h \
 	modules/particles/Particle.h \
 	modules/particles/ParticleEngine.h \
 	modules/particles/ParticleEffector.h \
