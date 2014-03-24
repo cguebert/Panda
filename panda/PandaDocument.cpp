@@ -126,6 +126,9 @@ bool PandaDocument::readFile(const QString& fileName, bool isImport)
 		load(root);		// Only the document's Datas
 	loadDoc(root);	// All the document's objects
 
+	for(PandaObject* object : pandaObjects)
+		object->reset();
+
 	emit selectionChanged();
 	emit selectedObject(getCurrentSelectedObject());
 
@@ -154,6 +157,9 @@ bool PandaDocument::readTextDocument(QString& text)
 
 	QDomElement root = doc.documentElement();
 	bool bVal = loadDoc(root);
+
+	for(PandaObject* object : selectedObjects)
+		object->reset();
 
 	if(bSelected || !selectedObjects.empty())
 	{
