@@ -188,7 +188,28 @@ protected:
 	QTimer* saveTimer;
 };
 
-int StoreValue_IntegerClass = RegisterObject< StoreValue<int> >("File/Save integer").setDescription("Save a value in a file for later use");
+int StoreValue_IntegerClass = RegisterObject< StoreValue<int> >("File/Integer/Save integer").setDescription("Save a value in a file for later use");
+int StoreValue_DoubleClass = RegisterObject< StoreValue<PReal> >("File/Real/Save real").setDescription("Save a value in a file for later use");
+int StoreValue_PointClass = RegisterObject< StoreValue<types::Point> >("File/Point/Save point").setDescription("Save a value in a file for later use");
+int StoreValue_ColorClass = RegisterObject< StoreValue<QColor> >("File/Color/Save color").setDescription("Save a value in a file for later use");
+int StoreValue_RectClass = RegisterObject< StoreValue<types::Rect> >("File/Rectangle/Save rectangle").setDescription("Save a value in a file for later use");
+int StoreValue_StringClass = RegisterObject< StoreValue<QString> >("File/Text/Save text").setDescription("Save a value in a file for later use");
+int StoreValue_GradientClass = RegisterObject< StoreValue<types::Gradient> >("File/Gradient/Save gradient").setDescription("Save a value in a file for later use");
+int StoreValue_PathClass = RegisterObject< StoreValue<types::Path> >("File/Path/Save path").setDescription("Save a value in a file for later use");
+
+int StoreValue_VectorIntegerClass = RegisterObject< StoreValue< QVector<int> > >("File/Integer/Save integers list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorDoubleClass = RegisterObject< StoreValue< QVector<PReal> > >("File/Real/Save reals list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorPointClass = RegisterObject< StoreValue< QVector<types::Point> > >("File/Point/Save points list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorColorClass = RegisterObject< StoreValue< QVector<QColor> > >("File/Color/Save colors list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorRectClass = RegisterObject< StoreValue< QVector<types::Rect> > >("File/Rectangle/Save rectangles list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorStringClass = RegisterObject< StoreValue< QVector<QString> > >("File/Text/Save texts list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorGradientClass = RegisterObject< StoreValue< QVector<types::Gradient> > >("File/Gradient/Save gradients list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorPathClass = RegisterObject< StoreValue< QVector<types::Path> > >("File/Path/Save paths list").setDescription("Save a value in a file for later use");
+
+int StoreValue_AnimationDoubleClass = RegisterObject< StoreValue< types::Animation<PReal> > >("File/Real/Save reals animation").setDescription("Save a value in a file for later use");
+int StoreValue_AnimationPointClass = RegisterObject< StoreValue< types::Animation<types::Point> > >("File/Point/Save points animation").setDescription("Save a value in a file for later use");
+int StoreValue_AnimationColorClass = RegisterObject< StoreValue< types::Animation<QColor> > >("File/Color/Save colors animation").setDescription("Save a value in a file for later use");
+int StoreValue_AnimationGradientClass = RegisterObject< StoreValue< types::Animation<types::Gradient> > >("File/Gradient/Save gradients animation").setDescription("Save a value in a file for later use");
 
 //*************************************************************************//
 
@@ -223,8 +244,8 @@ public:
 		if (!doc.setContent(&file, nullptr, &errLine, &errCol))
 			return;
 
-		QDomElement root = doc.documentElement();
-		xmlData = root.firstChildElement("SavedData");
+		xmlRoot = doc.documentElement();
+		xmlData = xmlRoot.firstChildElement("SavedData");
 	}
 
 	void beginStep()
@@ -242,9 +263,32 @@ public:
 protected:
 	Data<T> output;
 	Data<QString> fileName;
+	QDomElement xmlRoot;
 	QDomElement xmlData;
 };
 
-int LoadValue_IntegerClass = RegisterObject< LoadValue<int> >("File/Load integer").setDescription("Load a value from a file");
+int LoadValue_IntegerClass = RegisterObject< LoadValue<int> >("File/Integer/Load integer").setDescription("Load a value from a file");
+int LoadValue_DoubleClass = RegisterObject< LoadValue<PReal> >("File/Real/Load real").setDescription("Load a value from a file");
+int LoadValue_PointClass = RegisterObject< LoadValue<types::Point> >("File/Point/Load point").setDescription("Load a value from a file");
+int LoadValue_ColorClass = RegisterObject< LoadValue<QColor> >("File/Color/Load color").setDescription("Load a value from a file");
+int LoadValue_RectClass = RegisterObject< LoadValue<types::Rect> >("File/Rectangle/Load rectangle").setDescription("Load a value from a file");
+int LoadValue_StringClass = RegisterObject< LoadValue<QString> >("File/Text/Load text").setDescription("Load a value from a file");
+int LoadValue_GradientClass = RegisterObject< LoadValue<types::Gradient> >("File/Gradient/Load gradient").setDescription("Load a value from a file");
+int LoadValue_PathClass = RegisterObject< LoadValue<types::Path> >("File/Path/Load path").setDescription("Load a value from a file");
+
+int LoadValue_VectorIntegerClass = RegisterObject< LoadValue< QVector<int> > >("File/Integer/Load integers list").setDescription("Load a value from a file");
+int LoadValue_VectorDoubleClass = RegisterObject< LoadValue< QVector<PReal> > >("File/Real/Load reals list").setDescription("Load a value from a file");
+int LoadValue_VectorPointClass = RegisterObject< LoadValue< QVector<types::Point> > >("File/Point/Load points list").setDescription("Load a value from a file");
+int LoadValue_VectorColorClass = RegisterObject< LoadValue< QVector<QColor> > >("File/Color/Load colors list").setDescription("Load a value from a file");
+int LoadValue_VectorRectClass = RegisterObject< LoadValue< QVector<types::Rect> > >("File/Rectangle/Load rectangles list").setDescription("Load a value from a file");
+int LoadValue_VectorStringClass = RegisterObject< LoadValue< QVector<QString> > >("File/Text/Load texts list").setDescription("Load a value from a file");
+int LoadValue_VectorGradientClass = RegisterObject< LoadValue< QVector<types::Gradient> > >("File/Gradient/Load gradients list").setDescription("Load a value from a file");
+int LoadValue_VectorPathClass = RegisterObject< LoadValue< QVector<types::Path> > >("File/Path/Load paths list").setDescription("Load a value from a file");
+
+int LoadValue_AnimationDoubleClass = RegisterObject< LoadValue< types::Animation<PReal> > >("File/Real/Load reals animation").setDescription("Load a value from a file");
+int LoadValue_AnimationPointClass = RegisterObject< LoadValue< types::Animation<types::Point> > >("File/Point/Load points animation").setDescription("Load a value from a file");
+int LoadValue_AnimationColorClass = RegisterObject< LoadValue< types::Animation<QColor> > >("File/Color/Load colors animation").setDescription("Load a value from a file");
+int LoadValue_AnimationGradientClass = RegisterObject< LoadValue< types::Animation<types::Gradient> > >("File/Gradient/Load gradients animation").setDescription("Load a value from a file");
 
 } // namespace Panda
+
