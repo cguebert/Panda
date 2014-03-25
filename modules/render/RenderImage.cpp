@@ -119,10 +119,11 @@ public:
 					for(int i=0; i<nbCenter; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
-						QSize s = img.size();
-						Rect area = Rect(listCenter[i].x - s.width()/2,
-											 listCenter[i].y - s.height()/2,
-											 s.width(), s.height());
+						QSize s = img.size() / 2;
+						Rect area = Rect(listCenter[i].x - s.width(),
+										 listCenter[i].y - s.height(),
+										 listCenter[i].x + s.width(),
+										 listCenter[i].y + s.height());
 						drawTexture(img.getTexture(), area);
 					}
 				}
