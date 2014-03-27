@@ -34,12 +34,9 @@ public:
 
 		for(unsigned int i=0; i<nb; ++i)
 		{
-			const QImage img = listImage[i].getImage();
-			if(!img.isNull())
-			{
-				QSize s = img.size();
-				listSize[i] = Point(s.width(), s.height());
-			}
+			const ImageWrapper& imgWrapper = listImage[i];
+			QSize size = imgWrapper.size();
+			listSize[i] = Point(size.width(), size.height());
 		}
 
 		cleanDirty();

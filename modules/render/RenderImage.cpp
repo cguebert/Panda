@@ -60,6 +60,8 @@ public:
 		texCoords[2*2+0] = 1; texCoords[2*2+1] = 0;
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisable(GL_TEXTURE_2D);
 	}
 
@@ -79,6 +81,8 @@ public:
 		{
 			if(nbImage < nbCenter) nbImage = 1;
 			if(nbRotation && nbRotation < nbCenter) nbRotation = 1;
+
+			glColor4f(1, 1, 1, 1);
 
 			if(nbRotation)
 			{

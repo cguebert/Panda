@@ -56,6 +56,7 @@ PandaDocument::PandaDocument(QObject *parent)
 
 	defaultLayer = new Layer(this);
 	defaultLayer->setInternalData("Default Layer", 0);
+	defaultLayer->setLayerName("Default Layer");
 
 	setInternalData("Document", 0);
 
@@ -806,10 +807,7 @@ void PandaDocument::update()
 			obj->updateIfDirty();
 	}
 
-	renderFrameBuffer->bind();
 	render();
-	renderFrameBuffer->release();
-
 	cleanDirty();
 }
 
@@ -827,6 +825,7 @@ QSharedPointer<QOpenGLFramebufferObject> PandaDocument::getFBO()
 
 void PandaDocument::render()
 {
+	renderFrameBuffer->bind();
 	glViewport(0, 0, renderFrameBuffer->width(), renderFrameBuffer->height());
 
 	glMatrixMode(GL_PROJECTION);
@@ -847,6 +846,8 @@ void PandaDocument::render()
 		if(layer)
 			layer->mergeLayer();
 	}
+
+	renderFrameBuffer->release();
 }
 
 Layer* PandaDocument::getDefaultLayer()

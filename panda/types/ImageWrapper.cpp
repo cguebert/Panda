@@ -49,6 +49,24 @@ QSize ImageWrapper::size() const
 	return QSize();
 }
 
+int ImageWrapper::width() const
+{
+	if(m_imageSource)
+		return m_image.width();
+	if(m_fboSource && m_fbo)
+		return m_fbo->width();
+	return -1;
+}
+
+int ImageWrapper::height() const
+{
+	if(m_imageSource)
+		return m_image.height();
+	if(m_fboSource && m_fbo)
+		return m_fbo->width();
+	return -1;
+}
+
 void ImageWrapper::setImage(const QImage& img)
 {
 	m_image = img;
@@ -64,10 +82,25 @@ void ImageWrapper::setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo)
 	m_imageSource = false;
 }
 
+bool ImageWrapper::hasImageSource() const
+{
+	return m_imageSource;
+}
+
+bool ImageWrapper::hasFboSource() const
+{
+	return m_fboSource;
+}
+
 ImageWrapper& ImageWrapper::operator=(const ImageWrapper& rhs)
 {
 	m_image = rhs.getImage();
 	return *this;
+}
+
+const QOpenGLFramebufferObject* ImageWrapper::getFbo() const
+{
+	return m_fbo.data();
 }
 
 //***************************************************************//

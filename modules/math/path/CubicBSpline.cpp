@@ -97,7 +97,7 @@ public:
 
 		coefs.resize(nbSteps+1);
 
-		vec4 first = {1/6.0, 4/6.0, 1/6.0, 0};
+		vec4 first = {1/(PReal)6.0, 4/(PReal)6.0, 1/(PReal)6.0, 0};
 		coefs.front() = first;
 
 		PReal fstep = 1.0 / nbSteps;
@@ -107,11 +107,11 @@ public:
 			PReal t2=t*t, t3=t2*t;
 			PReal k1=1-3*t+3*t2-t3, k2=4-6*t2+3*t3, k3=1+3*t+3*t2-3*t3;
 
-			vec4 tmp = {1/6.0 * k1, 1/6.0 * k2, 1/6.0 * k3, 1/6.0 * t3};
+			vec4 tmp = {1/(PReal)6.0 * k1, 1/(PReal)6.0 * k2, 1/(PReal)6.0 * k3, 1/(PReal)6.0 * t3};
 			coefs[i++] = tmp;
 		}
 
-		vec4 last = {0, 1/6.0, 4/6.0, 1/6.0};
+		vec4 last = {0, 1/(PReal)6.0, 4/(PReal)6.0, 1/(PReal)6.0};
 		coefs.back() = last;
 	}
 

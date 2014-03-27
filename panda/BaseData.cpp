@@ -106,7 +106,7 @@ void BaseData::setParent(BaseData* parent)
 		parentBaseData = parent;
 		addInput(parent);
 		BaseData::setDirtyValue();
-		update();
+//		update();
 		++counter;
 		isValueSet = true;
 	}

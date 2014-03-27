@@ -22,11 +22,18 @@ public:
 	const QImage &getImage() const;
 
 	QSize size() const;
+	int width() const;
+	int height() const;
 
 	void setImage(const QImage& img);
 	void setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo);
 
+	bool hasImageSource() const;
+	bool hasFboSource() const;
+
 	ImageWrapper& operator=(const ImageWrapper& rhs);
+
+	const QOpenGLFramebufferObject* getFbo() const; // will return null if image source
 
 private:
 	QImage m_image;
