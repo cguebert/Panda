@@ -98,7 +98,7 @@ ImageWrapper& ImageWrapper::operator=(const ImageWrapper& rhs)
 	return *this;
 }
 
-const QOpenGLFramebufferObject* ImageWrapper::getFbo() const
+QOpenGLFramebufferObject* ImageWrapper::getFbo() const
 {
 	return m_fbo.data();
 }

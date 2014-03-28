@@ -33,7 +33,7 @@ public:
 
 	ImageWrapper& operator=(const ImageWrapper& rhs);
 
-	const QOpenGLFramebufferObject* getFbo() const; // will return null if image source
+	QOpenGLFramebufferObject* getFbo() const; // will return null if image source
 
 private:
 	QImage m_image;

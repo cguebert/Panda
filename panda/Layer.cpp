@@ -43,7 +43,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	mvp.ortho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
 
 	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
