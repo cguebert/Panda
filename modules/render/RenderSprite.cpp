@@ -104,7 +104,7 @@ public:
 					tmpColors[i] = colorToVector4(listColor[i]);
 			}
 
-			int posBytes = nbPosition * sizeof(qreal) * 2;
+			int posBytes = nbPosition * sizeof(PReal) * 2;
 			int sizeBytes = nbPosition * sizeof(PReal);
 			int colorBytes = nbPosition * sizeof(float) * 4;
 			posBuffer.bind();
@@ -140,7 +140,7 @@ public:
 
 			posBuffer.bind();
 			shader.enableAttributeArray(attribute_pos);
-			shader.setAttributeArray(attribute_pos, GL_DOUBLE, 0, 2);
+			shader.setAttributeArray(attribute_pos, GL_PREAL, 0, 2);
 
 			sizeBuffer.bind();
 			shader.enableAttributeArray(attribute_size);
