@@ -78,7 +78,16 @@ void ImageWrapper::setImage(const QImage& img)
 void ImageWrapper::setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo)
 {
 	m_fbo = fbo;
+	m_image = QImage();
 	m_fboSource = true;
+	m_imageSource = false;
+}
+
+void ImageWrapper::clear()
+{
+	m_image = QImage();
+	m_fbo.reset();
+	m_fboSource = false;
 	m_imageSource = false;
 }
 

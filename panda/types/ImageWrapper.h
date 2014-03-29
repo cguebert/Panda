@@ -27,6 +27,7 @@ public:
 
 	void setImage(const QImage& img);
 	void setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo);
+	void clear();	// Remove all sources
 
 	bool hasImageSource() const;
 	bool hasFboSource() const;

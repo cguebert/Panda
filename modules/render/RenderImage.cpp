@@ -91,12 +91,13 @@ public:
 					for(int i=0; i<nbCenter; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
-						QSize s = img.size();
+						QSize s = img.size() / 2;
+						if(!s.isValid()) continue;
 						glPushMatrix();
 						glTranslateReal(listCenter[i].x, listCenter[i].y, 0);
 						glRotateReal(listRotation[i % nbRotation], 0, 0, 1);
-						Rect area = Rect(-s.width()/2, -s.height()/2,
-											 s.width()/2, s.height()/2);
+						Rect area = Rect(-s.width(), -s.height(),
+											 s.width(), s.height());
 						drawTexture(img.getTexture(), area);
 						glPopMatrix();
 					}
@@ -107,6 +108,7 @@ public:
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size();
+						if(!s.isValid()) continue;
 						glPushMatrix();
 						glTranslateReal(listCenter[i].x, listCenter[i].y, 0);
 						glRotateReal(listRotation[i % nbRotation], 0, 0, 1);
@@ -124,6 +126,7 @@ public:
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size() / 2;
+						if(!s.isValid()) continue;
 						Rect area = Rect(listCenter[i].x - s.width(),
 										 listCenter[i].y - s.height(),
 										 listCenter[i].x + s.width(),
@@ -136,8 +139,9 @@ public:
 					for(int i=0; i<nbCenter; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
-						QSize size = img.size();
-						Rect area(listCenter[i], size.width(), size.height());
+						QSize s = img.size();
+						if(!s.isValid()) continue;
+						Rect area(listCenter[i], s.width(), s.height());
 						drawTexture(img.getTexture(), area);
 					}
 				}

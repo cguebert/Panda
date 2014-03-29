@@ -338,6 +338,8 @@ void PandaDocument::resetDocument()
 	useTimer.setValue(1);
 	renderSize.setValue(Point(800,600));
 	backgroundColor.setValue(QColor(255,255,255));
+	renderedImage.getAccessor()->clear();
+	renderFrameBuffer.clear();
 
 	animPlaying = false;
 	animTimer->stop();
