@@ -14,14 +14,18 @@ public:
 		: PandaObject(doc)
 		, nbColors(initData(&nbColors, 1, "number", "Number of colors to generate"))
 		, seed(initData(&seed, "seed", "Seed for the random points generator"))
+		, hsvMode(initData(&hsvMode, 0, "HSV", "Use HSV instead of RGB"))
 		, colorMin(initData(&colorMin, QColor(0, 0, 0), "min color", "Color defining the minimum possible value of each component"))
 		, colorMax(initData(&colorMax, QColor(255, 255, 255), "max color", "Color defining the maximum possible value of each component"))
 		, colors(initData(&colors, "colors", "Randomly generated colors"))
 	{
 		addInput(&nbColors);
 		addInput(&seed);
+		addInput(&hsvMode);
 		addInput(&colorMin);
 		addInput(&colorMax);
+
+		hsvMode.setWidget("checkbox");
 
 		addOutput(&colors);
 
@@ -39,16 +43,43 @@ public:
 		const auto& cMin = colorMin.getValue();
 		const auto& cMax = colorMax.getValue();
 
-		int minA, minR, minG, minB, maxA, maxR, maxG, maxB;
-		cMin.getRgb(&minR, &minG, &minB, &minA);
-		cMax.getRgb(&maxR, &maxG, &maxB, &maxA);
+		bool useHSV = hsvMode.getValue();
 
-		for(int i=0; i<nb; ++i)
+		int minA, minR, minG, minB, maxA, maxR, maxG, maxB;
+		if(useHSV)
 		{
-			list[i] = QColor(rnd.randomInt(minR, maxR),
-							 rnd.randomInt(minG, maxG),
-							 rnd.randomInt(minB, maxB),
-							 rnd.randomInt(minA, maxA));
+			cMin.getHsv(&minR, &minG, &minB, &minA);
+			cMax.getHsv(&maxR, &maxG, &maxB, &maxA);
+		}
+		else
+		{
+			cMin.getRgb(&minR, &minG, &minB, &minA);
+			cMax.getRgb(&maxR, &maxG, &maxB, &maxA);
+		}
+		if(minR > maxR) std::swap(minR, maxR);
+		if(minG > maxG) std::swap(minG, maxG);
+		if(minB > maxB) std::swap(minB, maxB);
+		if(minA > maxA) std::swap(minA, maxA);
+
+		if(useHSV)
+		{
+			for(int i=0; i<nb; ++i)
+			{
+				list[i] = QColor::fromHsv(rnd.randomInt(minR, maxR),
+										  rnd.randomInt(minG, maxG),
+										  rnd.randomInt(minB, maxB),
+										  rnd.randomInt(minA, maxA));
+			}
+		}
+		else
+		{
+			for(int i=0; i<nb; ++i)
+			{
+				list[i] = QColor(rnd.randomInt(minR, maxR),
+								 rnd.randomInt(minG, maxG),
+								 rnd.randomInt(minB, maxB),
+								 rnd.randomInt(minA, maxA));
+			}
 		}
 
 		cleanDirty();
@@ -56,7 +87,7 @@ public:
 
 protected:
 	helper::RandomGenerator rnd;
-	Data< int > nbColors, seed;
+	Data< int > nbColors, seed, hsvMode;
 	Data< QColor > colorMin, colorMax;
 	Data< QVector<QColor> > colors;
 };
