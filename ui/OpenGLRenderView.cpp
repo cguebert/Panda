@@ -38,12 +38,12 @@ void OpenGLRenderView::initializeGL()
 
 void OpenGLRenderView::paintGL()
 {
+	QOpenGLFramebufferObject* fbo = pandaDocument->getFBO().data();
+
 	QColor col = palette().window().color();
 	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
 	glDepthMask( GL_TRUE );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	QOpenGLFramebufferObject* fbo = pandaDocument->getFBO().data();
 
 	QRect viewRect = contentsRect();
 	glViewport(0, 0, viewRect.width(), viewRect.height());

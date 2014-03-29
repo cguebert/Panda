@@ -139,6 +139,15 @@ Layer::Layer(PandaDocument *parent)
 
 void Layer::update()
 {
+	// Bugfix : we update the input Datas of the renderers before setting the opengl context
+	//  as getting the image from an ImageWrapper can screw it up
+	auto renderers = getRenderers();
+	for(const auto& renderer : renderers)
+	{
+		for(const auto* input : renderer->getInputDatas())
+			input->updateIfDirty();
+	}
+
 	updateLayer(parentDocument);
 	cleanDirty();
 }
