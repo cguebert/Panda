@@ -122,6 +122,7 @@ SOURCES       = main.cpp \
 	modules/math/real/DoubleComputation.cpp \
 	modules/math/real/DoubleListMath.cpp \
 	modules/math/real/DoubleMath.cpp \
+	modules/math/rect/RectangleMath.cpp \
 	modules/math/topology/Centroids.cpp \
 	modules/math/topology/TopologyInfo.cpp \
 	modules/modifiers/color/BlendColors.cpp \

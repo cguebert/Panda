@@ -166,9 +166,19 @@ public:
 		x1 += dx1; y1 += dy1;
 		x2 += dx2; y2 += dy2;
 	}
+	void adjust(const Rect& r)
+	{
+		x1 += r.x1; y1 += r.y1;
+		x2 += r.x2; y2 += r.y2;
+	}
+
 	Rect adjusted(PReal dx1, PReal dy1, PReal dx2, PReal dy2) const
 	{
 		return Rect(x1 + dx1, y1 + dy1, x2 + dx2, y2 + dy2);
+	}
+	Rect adjusted(const Rect& r) const
+	{
+		return Rect(x1 + r.x1, y1 + r.y1, x2 + r.x2, y2 + r.y2);
 	}
 
 	Rect operator|(const Rect &r) const;
