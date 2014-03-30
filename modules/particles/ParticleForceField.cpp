@@ -135,5 +135,76 @@ protected:
 int ParticleForceField_ForceInCircleClass = RegisterObject<ParticleForceField_ForceInCircle>("Particles/Forces/Force in circle")
 		.setDescription("Apply a constant force to particles that are inside a circle.");
 
+//*************************************************************************//
+
+class ParticleForceField_Attraction : public ParticleEffector
+{
+public:
+	PANDA_CLASS(ParticleForceField_Attraction, ParticleEffector)
+
+	ParticleForceField_Attraction(PandaDocument *doc)
+		: ParticleEffector(doc)
+		, force(initData(&force, "force", "Maximum attraction force"))
+		, center(initData(&center, "center", "Center of the circle in which particles are attracted"))
+		, radius(initData(&radius, "radius", "Radius of the circle in which particles are attracted"))
+		, linear(initData(&linear, 1, "linear", "How the force change depending on the distance to the center: true = linear law, false = quadratic"))
+	{
+		addInput(&force);
+		addInput(&center);
+		addInput(&radius);
+		addInput(&linear);
+
+		linear.setWidget("checkbox");
+	}
+
+	void accumulateForces(Particles& particles)
+	{
+		const QVector<PReal>& forces = force.getValue();
+		const QVector<Point>& centers = center.getValue();
+		const QVector<PReal>& radiuses = radius.getValue();
+
+		bool linearLaw = linear.getValue();
+		int nbForces = forces.size();
+		int nbCenters = centers.size();
+		int nbRadiuses = radiuses.size();
+		if(nbForces && nbCenters && nbRadiuses)
+		{
+			if(nbForces < nbCenters) nbForces = 1;
+			if(nbRadiuses < nbCenters) nbRadiuses = 1;
+			for(int i=0; i<nbCenters; ++i)
+			{
+				const Point& c = centers[i];
+				const PReal& r = radiuses[i%nbRadiuses];
+				PReal r2 = r * r;
+				const PReal& f = forces[i%nbForces];
+				for(auto& p : particles)
+				{
+					Point n = c - p.position;
+					PReal d2 = n.norm2();
+					if(d2 < r2)
+					{
+						PReal d = sqrt(d2);
+						n.normalizeWithNorm(d);
+						if(linearLaw)
+							p.force += n * f * (1 - d / r);
+						else
+							p.force += n * f * (1 - d2 / r2);
+					}
+				}
+			}
+		}
+	}
+
+protected:
+	Data< QVector<PReal> > force;
+	Data< QVector<Point> > center;
+	Data< QVector<PReal> > radius;
+	Data< int > linear;
+};
+
+int ParticleForceField_AttractionClass = RegisterObject<ParticleForceField_Attraction>("Particles/Forces/Attraction")
+		.setDescription("Attract particles toward a point");
+
+
 } // namespace Panda
 
