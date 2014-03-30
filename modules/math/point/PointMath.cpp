@@ -420,6 +420,131 @@ protected:
 
 int PointMath_AngleToVectorClass = RegisterObject<PointMath_AngleToVector>("Math/Point/Angle to vector").setDescription("Creates a vector corresponding to a rotation");
 
+//*************************************************************************//
+
+class PointMath_Norm : public PandaObject
+{
+public:
+	PANDA_CLASS(PointMath_Norm, PandaObject)
+
+	PointMath_Norm(PandaDocument *doc)
+		: PandaObject(doc)
+		, input(initData(&input, "input", "Input point"))
+		, output(initData(&output, "output", "Norm of the input point"))
+	{
+		addInput(&input);
+
+		addOutput(&output);
+	}
+
+	void update()
+	{
+		auto res = output.getAccessor();
+		res.clear();
+
+		const QVector<Point>& val = input.getValue();
+		int nb = val.size();
+
+		if(nb)
+		{
+			res.resize(nb);
+			for(int i=0; i<nb; ++i)
+				res[i] = val[i].norm();
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Point> > input;
+	Data< QVector<PReal> > output;
+};
+
+int PointMath_NormClass = RegisterObject<PointMath_Norm>("Math/Point/Norm").setDescription("Compute the norm of a point");
+
+//*************************************************************************//
+
+class PointMath_Norm2 : public PandaObject
+{
+public:
+	PANDA_CLASS(PointMath_Norm2, PandaObject)
+
+	PointMath_Norm2(PandaDocument *doc)
+		: PandaObject(doc)
+		, input(initData(&input, "input", "Input point"))
+		, output(initData(&output, "output", "Square of the norm of the input point"))
+	{
+		addInput(&input);
+
+		addOutput(&output);
+	}
+
+	void update()
+	{
+		auto res = output.getAccessor();
+		res.clear();
+
+		const QVector<Point>& val = input.getValue();
+		int nb = val.size();
+
+		if(nb)
+		{
+			res.resize(nb);
+			for(int i=0; i<nb; ++i)
+				res[i] = val[i].norm2();
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Point> > input;
+	Data< QVector<PReal> > output;
+};
+
+int PointMath_Norm2Class = RegisterObject<PointMath_Norm2>("Math/Point/Norm2").setDescription("Compute the square of the norm of a point");
+
+//*************************************************************************//
+
+class PointMath_Normalize : public PandaObject
+{
+public:
+	PANDA_CLASS(PointMath_Normalize, PandaObject)
+
+	PointMath_Normalize(PandaDocument *doc)
+		: PandaObject(doc)
+		, input(initData(&input, "input", "Input point"))
+		, output(initData(&output, "output", "Square of the norm of the input point"))
+	{
+		addInput(&input);
+
+		addOutput(&output);
+	}
+
+	void update()
+	{
+		auto res = output.getAccessor();
+		res.clear();
+
+		const QVector<Point>& val = input.getValue();
+		int nb = val.size();
+
+		if(nb)
+		{
+			res.resize(nb);
+			for(int i=0; i<nb; ++i)
+				res[i] = val[i].normalized();
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Point> > input, output;
+};
+
+int PointMath_NormalizeClass = RegisterObject<PointMath_Normalize>("Math/Point/Normalize").setDescription("Normalize a point");
+
 
 } // namespace Panda
 

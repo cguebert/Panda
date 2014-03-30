@@ -2,10 +2,13 @@
 
 #include <modules/particles/ParticleEffector.h>
 
+#include <panda/types/Rect.h>
 #include <panda/helper/Algorithm.h>
 #include <random>
 
 namespace panda {
+
+using types::Rect;
 
 class ParticleDestruction_Age : public ParticleEffector
 {
@@ -100,6 +103,65 @@ protected:
 
 int ParticleDestruction_IndexClass = RegisterObject<ParticleDestruction_Index>("Particles/Destruction/Remove particles by index")
 		.setDescription("Remove specific particles based on their index");
+
+//*************************************************************************//
+
+class ParticleDestruction_InRectangle : public ParticleEffector
+{
+public:
+	PANDA_CLASS(ParticleDestruction_InRectangle, ParticleEffector)
+
+	ParticleDestruction_InRectangle(PandaDocument *doc)
+		: ParticleEffector(doc)
+		, rectangle(initData(&rectangle, "rectangle", "Remove particles that are in this rectangle"))
+		, inverse(initData(&inverse, "inverse", "If true, remove particles that are outside the rectangle instead"))
+	{
+		addInput(&rectangle);
+		addInput(&inverse);
+
+		inverse.setWidget("checkbox");
+	}
+
+	virtual Indices filterParticles(const Particles& particles)
+	{
+		Indices tmp;
+		int nb = particles.size();
+		const QVector<Rect>& rectangles = rectangle.getValue();
+		for(const Rect& r : rectangles)
+		{
+			for(int i=0; i<nb; ++i)
+			{
+				if(r.contains(particles[i].position))
+					tmp.insert(i);
+			}
+		}
+
+		if(!inverse.getValue())
+			return tmp;
+
+		// Inverse selection
+		Indices tmp2;
+		int i=0;
+		for(auto it=tmp.begin(); it!=tmp.end(); ++it)
+		{
+			int v = *it;
+			while(i<v)
+				tmp2.insert(i++);
+			i = v+1;
+		}
+		while(i<nb)
+			tmp2.insert(i++);
+
+		return tmp2;
+	}
+
+protected:
+	Data< QVector<Rect> > rectangle;
+	Data< int > inverse;
+};
+
+int ParticleDestruction_InRectangleClass = RegisterObject<ParticleDestruction_InRectangle>("Particles/Destruction/Remove particles in rectangle")
+		.setDescription("Remove particles that are in an area");
 
 } // namespace Panda
 
