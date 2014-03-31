@@ -104,6 +104,10 @@ bool ImageWrapper::hasFboSource() const
 ImageWrapper& ImageWrapper::operator=(const ImageWrapper& rhs)
 {
 	m_image = rhs.getImage();
+	m_imageSource = true;
+	m_fbo.clear();
+	m_fboSource = false;
+	m_texture.clear();
 	return *this;
 }
 
