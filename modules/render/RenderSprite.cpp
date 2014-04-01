@@ -43,14 +43,11 @@ public:
 		sizeBuffer.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 		sizeBuffer.create();
 
-		colorBuffer.setUsagePattern(QOpenGLBuffer::DynamicDraw);
-		colorBuffer.create();
-
 		shader.addShaderFromSourceCode(QOpenGLShader::Vertex,
-										"attribute vec2 position;"
-										"attribute float size;"
-										"attribute vec4 color;"
-										"varying vec4 f_color;"
+										"in vec2 position;"
+										"in float size;"
+										"in vec4 color;"
+										"out vec4 f_color;"
 										"uniform mat4 MVP;"
 										"void main(void){"
 										"	f_color = color;"
@@ -60,9 +57,10 @@ public:
 									   );
 		shader.addShaderFromSourceCode(QOpenGLShader::Fragment,
 										"uniform sampler2D tex0;"
-										"varying vec4 f_color;"
+										"in vec4 f_color;"
+										"out vec4 fragColor;"
 										"void main(void){"
-										"   gl_FragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y));" //  * f_color
+										"   fragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y)) * f_color;"
 										"}"
 									   );
 
@@ -106,16 +104,12 @@ public:
 
 			int posBytes = nbPosition * sizeof(PReal) * 2;
 			int sizeBytes = nbPosition * sizeof(PReal);
-			int colorBytes = nbPosition * sizeof(float) * 4;
-			posBuffer.bind();
 			if(posBuffer.size() < posBytes)
 			{
 				posBuffer.bind();
 				posBuffer.allocate(listPosition.data(), posBytes);
 				sizeBuffer.bind();
 				sizeBuffer.allocate(listSize.data(), sizeBytes);
-				colorBuffer.bind();
-				colorBuffer.allocate(tmpColors.data(), colorBytes);
 			}
 			else
 			{
@@ -123,9 +117,8 @@ public:
 				posBuffer.write(0, listPosition.data(), posBytes);
 				sizeBuffer.bind();
 				sizeBuffer.write(0, listSize.data(), sizeBytes);
-				colorBuffer.bind();
-				colorBuffer.write(0, tmpColors.data(), colorBytes);
 			}
+			QOpenGLBuffer::release(QOpenGLBuffer::VertexBuffer);
 
 			glEnable(GL_POINT_SPRITE);
 			glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
@@ -140,19 +133,19 @@ public:
 
 			posBuffer.bind();
 			shader.enableAttributeArray(attribute_pos);
-			shader.setAttributeArray(attribute_pos, GL_PREAL, 0, 2);
+			shader.setAttributeArray(attribute_pos, GL_PREAL, nullptr, 2);
+			posBuffer.release();
 
 			sizeBuffer.bind();
 			shader.enableAttributeArray(attribute_size);
-			shader.setAttributeArray(attribute_size, GL_PREAL, 0, 1);
-
-			colorBuffer.bind();
-			shader.enableAttributeArray(attribute_color);
-			shader.setAttributeArray(attribute_color, GL_FLOAT, 0, 4);
-			colorBuffer.release();
+			shader.setAttributeArray(attribute_size, GL_PREAL, nullptr, 1);
+			sizeBuffer.release();
 
 			shader.setUniformValue(uniform_texture, 0);
 			shader.setUniformValue(uniform_MVP, getMVPMatrix());
+
+			shader.enableAttributeArray(attribute_color);
+			shader.setAttributeArray(attribute_color, tmpColors.data());
 
 			glDrawArrays(GL_POINTS, 0, nbPosition);
 
@@ -176,7 +169,7 @@ protected:
 	Data< QVector<QColor> > color;
 	Data< ImageWrapper > texture;
 
-	QOpenGLBuffer posBuffer, sizeBuffer, colorBuffer;
+	QOpenGLBuffer posBuffer, sizeBuffer;
 	QOpenGLShaderProgram shader;
 	QOpenGLFunctions functions;
 	int attribute_pos, attribute_color, attribute_size;
