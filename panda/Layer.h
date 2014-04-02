@@ -13,7 +13,13 @@ namespace panda
 
 class Renderer;
 
-class BaseLayer
+class BaseDrawTarget
+{
+public:
+	virtual QMatrix4x4& getMVPMatrix() = 0;
+};
+
+class BaseLayer : public BaseDrawTarget
 {
 public:
 	virtual void updateLayer(PandaDocument* doc);
@@ -31,7 +37,6 @@ public:
 	virtual void setOpacity(PReal opa) = 0;
 
 	virtual Data<types::ImageWrapper>* getImage() = 0;
-	virtual QMatrix4x4& getMVPMatrix() = 0;
 
 protected:
 	virtual void iterateRenderers();

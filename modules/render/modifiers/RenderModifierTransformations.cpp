@@ -26,6 +26,9 @@ public:
 	{
 		const Point tr = translation.getValue();
 		glTranslateReal(tr.x, tr.y, 0);
+
+		QMatrix4x4& mvpMatrix = getMVPMatrix();
+		mvpMatrix.translate(tr.x, tr.y);
 	}
 
 protected:
@@ -51,6 +54,9 @@ public:
 	void render()
 	{
 		glRotateReal(rotation.getValue(), 0, 0, -1);
+
+		QMatrix4x4& mvpMatrix = getMVPMatrix();
+		mvpMatrix.rotate(rotation.getValue(), 0, 0, -1);
 	}
 
 protected:
@@ -77,6 +83,9 @@ public:
 	{
 		const Point& sc = scale.getValue();
 		glScaleReal(sc.x, sc.y, 1);
+
+		QMatrix4x4& mvpMatrix = getMVPMatrix();
+		mvpMatrix.scale(sc.x, sc.y, 1);
 	}
 
 protected:
