@@ -39,7 +39,7 @@ QColor interpolate(const QColor& v1, const QColor& v2, PReal amt)
 {
 	int dist = static_cast<int>(256 * amt);
 	int idist = 256 - dist;
-	return QColor::fromRgba(interpolateColor(v1.rgba(), dist, v2.rgba(), idist));
+	return QColor::fromRgba(interpolateColor(v1.rgba(), idist, v2.rgba(), dist));
 }
 
 template class Animation<PReal>;
