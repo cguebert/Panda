@@ -111,17 +111,23 @@ template<> QString DataTrait<Color>::valueTypeName() { return "color"; }
 
 template<>
 void DataTrait<Color>::writeValue(QDomDocument&, QDomElement& elem, const Color& v)
-{	elem.setAttribute("r", v.r);
+{
+	elem.setAttribute("r", v.r);
 	elem.setAttribute("g", v.g);
 	elem.setAttribute("b", v.b);
-	elem.setAttribute("a", v.a); }
+	elem.setAttribute("a", v.a);
+}
 
 template<>
 void DataTrait<Color>::readValue(QDomElement& elem, Color& v)
-{	v.r = elem.attribute("r").toFloat();
-	v.g = elem.attribute("g").toFloat();
-	v.b = elem.attribute("b").toFloat();
-	v.a = elem.attribute("a").toFloat(); }
+{
+	Color c;
+	c.r = elem.attribute("r").toFloat();
+	c.g = elem.attribute("g").toFloat();
+	c.b = elem.attribute("b").toFloat();
+	c.a = elem.attribute("a").toFloat();
+	v = c.bounded();
+}
 
 //***************************************************************//
 

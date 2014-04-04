@@ -26,7 +26,10 @@ public:
 	void update()
 	{
 		QImage tmp(fileName.getValue());
-		image.getAccessor()->setImage(tmp.convertToFormat(QImage::Format_ARGB32));
+		if(!tmp.isNull())
+			image.getAccessor()->setImage(tmp.convertToFormat(QImage::Format_ARGB32));
+		else
+			image.getAccessor()->clear();
 		cleanDirty();
 	}
 
