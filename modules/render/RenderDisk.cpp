@@ -2,6 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Color.h>
 #include <panda/types/Point.h>
 #include <panda/types/Gradient.h>
 #include <panda/helper/GradientCache.h>
@@ -10,9 +11,10 @@
 
 namespace panda {
 
+using types::Color;
 using types::Point;
-using panda::types::Gradient;
-using panda::helper::GradientCache;
+using types::Gradient;
+using helper::GradientCache;
 
 class RenderDisk : public Renderer
 {
@@ -31,14 +33,14 @@ public:
 
 		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
-		color.getAccessor().push_back(QColor(0,0,0));
+		color.getAccessor().push_back(Color::black());
 	}
 
 	void render()
 	{
 		const QVector<Point>& listCenter = center.getValue();
 		const QVector<PReal>& listRadius = radius.getValue();
-		const QVector<QColor>& listColor = color.getValue();
+		const QVector<Color>& listColor = color.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
@@ -54,8 +56,7 @@ public:
 			glEnableClientState(GL_VERTEX_ARRAY);
 			for(int i=0; i<nbCenter; ++i)
 			{
-				QColor valCol = listColor[i % nbColor];
-				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
+				glColor4fv(listColor[i % nbColor].ptr());
 
 				PReal valRadius = listRadius[i % nbRadius];
 				int nbSeg = static_cast<int>(floor(valRadius * PI2));
@@ -84,7 +85,7 @@ public:
 protected:
 	Data< QVector<Point> > center;
 	Data< QVector<PReal> > radius;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int RenderDiskClass = RegisterObject<RenderDisk>("Render/Disk").setDescription("Draw a plain disk");
@@ -110,8 +111,8 @@ public:
 		radius.getAccessor().push_back(5.0);
 
 		Gradient grad;
-		grad.add(0, QColor());
-		grad.add(1, QColor(255, 255, 255));
+		grad.add(0, Color::black());
+		grad.add(1, Color::white());
 		gradient.getAccessor().push_back(grad);
 	}
 

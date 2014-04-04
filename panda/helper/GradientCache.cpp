@@ -82,7 +82,7 @@ quint64 GradientCache::computeHash(const panda::types::Gradient& gradient)
 	quint64 hash = 0;
 	auto stops = gradient.getStops();
 	for(int i=0, nb=stops.size(); i<nb && i<3; ++i)
-		hash += stops[i].second.rgba();
+		hash += stops[i].second.toHex();
 
 	return hash;
 }
@@ -135,7 +135,7 @@ unsigned int GradientCache::addGradient(quint64 hash, const types::Gradient &gra
 	QVector<uint> buffer(size), colors(nbStops);
 
 	for(int i=0; i<nbStops; ++i)
-		colors[i] = stops[i].second.rgba();
+		colors[i] = stops[i].second.toHex();
 
 	int pos = 0;
 	uint prevColor = colors[0];

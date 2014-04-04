@@ -1,6 +1,7 @@
 #include <ui/widget/DataWidgetFactory.h>
-#include <ui/widget/SimpleDataWidget.h>
 #include <ui/widget/OpenDialogDataWidget.h>
+#include <ui/widget/ListDataWidgetDialog.h>
+#include <ui/widget/SimpleDataWidget.h>
 
 #include <QtWidgets>
 
@@ -282,3 +283,5 @@ RegisterWidget<SimpleDataWidget<QString, FileDataWidgetContainer<true> > > DWCla
 RegisterWidget<SimpleDataWidget<QString, FileDataWidgetContainer<false> > > DWClass_file_save("save file");
 RegisterWidget<SimpleDataWidget<QString, FontDataWidgetContainer> > DWClass_font("font");
 RegisterWidget<SimpleDataWidget<QString, MultilineDataWidgetContainer> > DWClass_multiline("multiline");
+
+RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString> > > > DWClass_strings_list_generic("generic");

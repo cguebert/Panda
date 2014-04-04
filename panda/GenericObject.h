@@ -2,12 +2,14 @@
 #define GENERICOBJECT_H
 
 #include <panda/PandaObject.h>
-#include <panda/types/Rect.h>
-#include <panda/types/Topology.h>
-#include <panda/types/Gradient.h>
-#include <panda/types/Path.h>
-#include <panda/types/ImageWrapper.h>
 #include <panda/types/DataTypeId.h>
+
+#include <panda/types/Color.h>
+#include <panda/types/Gradient.h>
+#include <panda/types/ImageWrapper.h>
+#include <panda/types/Path.h>
+#include <panda/types/Topology.h>
+#include <panda/types/Rect.h>
 
 #include <QList>
 #include <QMap>
@@ -127,10 +129,10 @@ private:
 
 //***************************************************************//
 
-typedef boost::mpl::vector<int, PReal, QColor, types::Point, types::Rect, QString, types::ImageWrapper, types::Gradient, types::Topology, types::Path> allDataTypes;
-typedef boost::mpl::vector<int, PReal, QColor, types::Point, types::Rect, QString> allSearchableTypes;
-typedef boost::mpl::vector<int, PReal, QColor, types::Point, types::Rect> allNumericalTypes;
-typedef boost::mpl::vector<PReal, QColor, types::Point, types::Gradient> allAnimationTypes;
+typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString, types::ImageWrapper, types::Gradient, types::Topology, types::Path> allDataTypes;
+typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString> allSearchableTypes;
+typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect> allNumericalTypes;
+typedef boost::mpl::vector<PReal, types::Color, types::Point, types::Gradient> allAnimationTypes;
 
 #define GENERIC_OBJECT(T, L)								\
 	protected:												\
@@ -148,7 +150,7 @@ typedef boost::mpl::vector<PReal, QColor, types::Point, types::Gradient> allAnim
 	};														\
 	void registerFunction(int type, funcPtr ptr)			\
 	{														\
-		m_functions[type] = ptr;								\
+		m_functions[type] = ptr;							\
 	}														\
 	private:												\
 	virtual void registerFunctions()						\
@@ -163,7 +165,7 @@ typedef boost::mpl::vector<PReal, QColor, types::Point, types::Gradient> allAnim
 	}														\
 	virtual void invokeFunction(int type, DataList& list)	\
 	{														\
-		(this->*m_functions[type])(list);						\
+		(this->*m_functions[type])(list);					\
 	}
 
 } // namespace panda

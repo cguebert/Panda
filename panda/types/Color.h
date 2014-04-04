@@ -15,14 +15,16 @@ namespace types
 class Color
 {
 public:
-	float a, r, g, b;
+	float r, g, b, a; // Format of OpenGL
 
 	Color();
 	Color(float r, float g, float b, float a = 1.0f);
 	Color(const Color& c);
 
-	void set(float a, float r, float g, float b);
+	void set(float r, float g, float b, float a);
 	void set(const Color& c);
+
+	void get(float& r, float& g, float& b, float& a) const;
 
 	Color& operator=(const Color& c);
 
@@ -59,17 +61,24 @@ public:
 	operator const float*() const;
 
 	Color premultiplied() const;
+	Color bounded() const;	/// make sure all components are [0:1]
 
 	void getHsv(float& hue, float& saturation, float& value, float& alpha) const;
 	static Color fromHsv(float hue, float saturation, float value, float alpha = 1.0f);
+
+	uint32_t toHex() const;
 	static Color fromHex(uint32_t hexValue);
+
+	static Color null();
+	static Color black();
+	static Color white();
 };
 
 template <typename T> inline Color operator*(T f, const Color& c)
 { return Color(c.r * f, c.g * f, c.b * f, c.a * f); }
 
 inline Color::Color()
-: r(0), g(0), b(0), a(0) { }
+: r(0), g(0), b(0), a(1) { }
 
 inline Color::Color(float r, float g, float b, float a)
 : r(r), g(g), b(b), a(a) { }
@@ -77,11 +86,14 @@ inline Color::Color(float r, float g, float b, float a)
 inline Color::Color(const Color& c)
 : r(c.r), g(c.g), b(c.b), a(c.a) { }
 
-inline void Color::set(float aA, float aR, float aG, float aB)
+inline void Color::set(float aR, float aG, float aB, float aA)
 { r = aR; g = aG; b = aB; a = aA; }
 
 inline void Color::set(const Color &c)
 { r = c.r; g = c.g; b = c.b; a = c.a; }
+
+inline void Color::get(float &aR, float &aG, float &aB, float &aA) const
+{ aR = r; aG = g; aB = b; aA = a; }
 
 inline Color& Color::operator=(const Color& c)
 { set(c); return *this; }
@@ -143,20 +155,20 @@ inline bool Color::operator!=(const Color& c) const
 inline float& Color::operator[](int n)
 {
 	assert(n >= 0 && n <= 3);
-	return (&a)[n];
+	return (&r)[n];
 }
 
 inline const float& Color::operator[](int n) const
 {
 	assert(n >= 0 && n <= 3);
-	return (&a)[n];
+	return (&r)[n];
 }
 
 inline float* Color::ptr()
-{ return &a; }
+{ return &r; }
 
 inline const float* Color::ptr() const
-{ return &a; }
+{ return &r; }
 
 inline Color::operator float*()
 { return ptr(); }
@@ -166,6 +178,15 @@ inline Color::operator const float*() const
 
 inline Color Color::premultiplied() const
 { return Color(r * a, g * a, b * a, a); }
+
+inline Color Color::null()
+{ return Color(0, 0, 0, 0); }
+
+inline Color Color::black()
+{ return Color(0, 0, 0, 1); }
+
+inline Color Color::white()
+{ return Color(1, 1, 1, 1); }
 
 } // namespace types
 

@@ -2,10 +2,12 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Color.h>
 #include <panda/types/Path.h>
 
 namespace panda {
 
+using types::Color;
 using types::Point;
 using types::Path;
 
@@ -26,14 +28,14 @@ public:
 		addInput(&width);
 		addInput(&color);
 
-		color.getAccessor().push_back(QColor());
+		color.getAccessor().push_back(Color::black());
 	}
 
 	void render()
 	{
 		const QVector<Point>& valA = inputA.getValue();
 		const QVector<Point>& valB = inputB.getValue();
-		const QVector<QColor>& listColor = color.getValue();
+		const QVector<Color>& listColor = color.getValue();
 
 		int nbA = valA.size(), nbB = valB.size();
 		int nbLines = qMin(valA.size(), valB.size());
@@ -54,18 +56,17 @@ public:
 			glBegin(GL_LINES);
 			for(int i=0; i<nbLines; ++i)
 			{
-				QColor col = listColor[i % nbColor];
-				glColor4ub(col.red(), col.green(), col.blue(), col.alpha());
+				glColor4fv(listColor[i % nbColor].ptr());
 
 				if(useTwoLists)
 				{
-					glVertex2d(valA[i].x, valA[i].y);
-					glVertex2d(valB[i].x, valB[i].y);
+					glVertex2r(valA[i].x, valA[i].y);
+					glVertex2r(valB[i].x, valB[i].y);
 				}
 				else
 				{
-					glVertex2d(valA[i*2].x, valA[i*2].y);
-					glVertex2d(valA[i*2+1].x, valA[i*2+1].y);
+					glVertex2r(valA[i*2].x, valA[i*2].y);
+					glVertex2r(valA[i*2+1].x, valA[i*2+1].y);
 				}
 			}
 			glEnd();
@@ -76,7 +77,7 @@ public:
 protected:
 	Data< QVector<Point> > inputA, inputB;
 	Data<PReal> width;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int RenderLineClass = RegisterObject<RenderLine>("Render/Line").setDescription("Draw a line between 2 points");
@@ -98,13 +99,13 @@ public:
 		addInput(&width);
 		addInput(&color);
 
-		color.getAccessor().push_back(QColor());
+		color.getAccessor().push_back(Color::black());
 	}
 
 	void render()
 	{
 		const QVector<Path>& paths = input.getValue();
-		const QVector<QColor>& listColor = color.getValue();
+		const QVector<Color>& listColor = color.getValue();
 		int nb = paths.size();
 		int nbColor = listColor.size();
 
@@ -117,8 +118,7 @@ public:
 			for(int i=0; i<nb; ++i)
 			{
 				const Path& path = paths[i];
-				QColor col = listColor[i % nbColor];
-				glColor4ub(col.red(), col.green(), col.blue(), col.alpha());
+				glColor4fv(listColor[i % nbColor].ptr());
 
 				glBegin(GL_LINE_STRIP);
 				for(int j=0, nbPts=path.size(); j<nbPts; ++j)
@@ -132,7 +132,7 @@ public:
 protected:
 	Data< QVector<Path> > input;
 	Data<PReal> width;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int RenderPathClass = RegisterObject<RenderPath>("Render/Path").setDescription("Draw a path");

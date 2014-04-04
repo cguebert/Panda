@@ -4,13 +4,14 @@
 
 #include <QMap>
 
+using panda::types::Color;
 using panda::types::Point;
 using panda::types::Rect;
 
 template<>
-static bool qMapLessThanKey<QColor>(const QColor& lhs, const QColor& rhs)
+static bool qMapLessThanKey<Color>(const Color& lhs, const Color& rhs)
 {
-	return lhs.rgb() < rhs.rgb();
+	return lhs.toHex() < rhs.toHex();
 }
 
 template<>

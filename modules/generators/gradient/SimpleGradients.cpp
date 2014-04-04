@@ -5,6 +5,9 @@
 
 namespace panda {
 
+using types::Color;
+using types::Gradient;
+
 class GradientsSimple_2Colors : public PandaObject
 {
 public:
@@ -12,8 +15,8 @@ public:
 
 	GradientsSimple_2Colors(PandaDocument *doc)
 		: PandaObject(doc)
-		, colorA(initData(&colorA, QColor(0,0,0), "color 1", "Start color of the gradient"))
-		, colorB(initData(&colorB, QColor(255,255,255), "color 2", "End color of the gradient"))
+		, colorA(initData(&colorA, Color::black(), "color 1", "Start color of the gradient"))
+		, colorB(initData(&colorB, Color::white(), "color 2", "End color of the gradient"))
 		, extend(initData(&extend, 0, "extend", "What to do when a position asked is outside the boundaries"))
 		, gradient(initData(&gradient, "gradient", "Gradient created from the 2 input colors"))
 	{
@@ -38,9 +41,9 @@ public:
 	}
 
 protected:
-	Data<QColor> colorA, colorB;
+	Data<Color> colorA, colorB;
 	Data<int> extend;
-	Data<types::Gradient> gradient;
+	Data<Gradient> gradient;
 };
 
 int GradientsSimple_2ColorsClass = RegisterObject<GradientsSimple_2Colors>("Generator/Gradient/2 colors").setName("2 colors gradient").setDescription("Create a gradient between 2 colors");

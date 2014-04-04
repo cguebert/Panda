@@ -19,6 +19,8 @@ namespace panda
 namespace types
 {
 
+using types::Color;
+
 Gradient::Gradient()
 	: extend(EXTEND_PAD)
 { }
@@ -28,7 +30,7 @@ void Gradient::clear()
 	stops.clear();
 }
 
-void Gradient::add(PReal position, QColor color)
+void Gradient::add(PReal position, Color color)
 {
 	if(position < 0 || position > 1)
 		return; // Ignore invalid insertions
@@ -47,13 +49,13 @@ void Gradient::add(PReal position, QColor color)
 	stops.push_back(qMakePair(position, color));
 }
 
-QColor Gradient::get(PReal position) const
+Color Gradient::get(PReal position) const
 {
 	PReal pos = extendPos(position);
 
 	int nb = stops.size();
 	if(!nb)	// Same rule as Qt's: when empty, do instead a gradient from black to white
-		return interpolate(QColor(0,0,0), QColor(255,255,255), pos);
+		return interpolate(Color::black(), Color::white(), pos);
 	else if(nb == 1)
 		return stops.front().second;
 	else if(pos <= stops.front().first)
@@ -85,7 +87,7 @@ int Gradient::getExtend() const
 	return extend;
 }
 
-inline bool compareStops(const QPair<PReal, QColor> &p1, const QPair<PReal, QColor> &p2)
+inline bool compareStops(const QPair<PReal, Color> &p1, const QPair<PReal, Color> &p2)
 {
 	return p1.first < p2.first;
 }
@@ -101,8 +103,8 @@ Gradient::GradientStops Gradient::getStops() const
 	if(stops.empty())
 	{	// Same rule as Qt's: when empty, do instead a gradient from black to white
 		GradientStops temp;
-		temp.append(qMakePair(0, QColor(0,0,0)));
-		temp.append(qMakePair(1, QColor(255,255,255)));
+		temp.append(qMakePair(0, Color::black()));
+		temp.append(qMakePair(1, Color::white()));
 		return temp;
 	}
 
@@ -131,22 +133,15 @@ PReal Gradient::extendPos(PReal position) const
 	}
 }
 
-QColor Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, PReal pos)
+Color Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, PReal pos)
 {
 	PReal amt = (pos - s1.first) / (s2.first - s1.first);
 	return interpolate(s1.second, s2.second, amt);
 }
 
-QColor Gradient::interpolate(const QColor& v1, const QColor& v2, PReal amt)
+Color Gradient::interpolate(const Color& v1, const Color& v2, PReal amt)
 {
-	int r1, r2, g1, g2, b1, b2, a1, a2;
-	int fact = amt * 255;
-	v1.getRgb(&r1, &g1, &b1, &a1);
-	v2.getRgb(&r2, &g2, &b2, &a2);
-	return QColor(r1 + ( r2 - r1 ) * fact / 255,
-				  g1 + ( g2 - g1 ) * fact / 255,
-				  b1 + ( b2 - b1 ) * fact / 255,
-				  a1 + ( a2 - a1 ) * fact / 255);
+	return v1 + (v2 - v1) * amt;
 }
 
 Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, PReal amt)
@@ -162,7 +157,7 @@ Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, PReal amt
 		if(!keys.contains(key))
 		{
 			keys.insert(key);
-			QColor color = interpolate(g1.get(key), g2.get(key), amt);
+			Color color = interpolate(g1.get(key), g2.get(key), amt);
 			grad.add(key, color);
 		}
 	}
@@ -173,7 +168,7 @@ Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, PReal amt
 		if(!keys.contains(key))
 		{
 			keys.insert(key);
-			QColor color = interpolate(g1.get(key), g2.get(key), amt);
+			Color color = interpolate(g1.get(key), g2.get(key), amt);
 			grad.add(key, color);
 		}
 	}
@@ -195,7 +190,7 @@ void DataTrait<Gradient>::writeValue(QDomDocument& doc, QDomElement& elem, const
 		QDomElement stopNode = doc.createElement("Stop");
 		elem.appendChild(stopNode);
 		stopNode.setAttribute("pos", s.first);
-		DataTrait<QColor>::writeValue(doc, stopNode, s.second);
+		DataTrait<Color>::writeValue(doc, stopNode, s.second);
 	}
 }
 
@@ -213,8 +208,8 @@ void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& grad)
 #else
 		PReal pos = stopNode.attribute("pos").toFloat();
 #endif
-		QColor color;
-		DataTrait<QColor>::readValue(stopNode, color);
+		Color color;
+		DataTrait<Color>::readValue(stopNode, color);
 
 		grad.add(pos, color);
 		stopNode = stopNode.nextSiblingElement("Stop");

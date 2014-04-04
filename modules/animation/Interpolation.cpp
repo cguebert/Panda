@@ -7,6 +7,7 @@
 
 namespace panda {
 
+using types::Color;
 using types::Point;
 
 template<class T>
@@ -91,7 +92,7 @@ protected:
 
 int AnimationInterpolation_DoubleClass = RegisterObject< AnimationInterpolation<PReal> >("Animation/Interpolation/Reals").setName("Interpolation reals").setDescription("Interpolate between 2 reals");
 int AnimationInterpolation_PointsClass = RegisterObject< AnimationInterpolation<Point> >("Animation/Interpolation/Points").setName("Interpolation points").setDescription("Interpolate between 2 points");
-int AnimationInterpolation_ColorClass = RegisterObject< AnimationInterpolation<QColor> >("Animation/Interpolation/Colors").setName("Interpolation colors").setDescription("Interpolate between 2 colors");
+int AnimationInterpolation_ColorClass = RegisterObject< AnimationInterpolation<Color> >("Animation/Interpolation/Colors").setName("Interpolation colors").setDescription("Interpolate between 2 colors");
 
 
 } // namespace Panda

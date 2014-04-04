@@ -17,7 +17,8 @@ public:
 	static unsigned int getRandomSeed(unsigned int limit);
 
 	PReal random();
-	PReal random(PReal min, PReal max);
+	float random(float min, float max);
+	double random(double min, double max);
 
 	int randomInt(int min, int max);
 

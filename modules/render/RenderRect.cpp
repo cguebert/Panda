@@ -2,10 +2,12 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Color.h>
 #include <panda/types/Rect.h>
 
 namespace panda {
 
+using types::Color;
 using types::Rect;
 
 class RenderRect : public Renderer
@@ -23,15 +25,15 @@ public:
 		addInput(&lineWidth);
 		addInput(&color);
 
-		rect.getAccessor().push_back(Rect(100, 100, 50, 50));
-		color.getAccessor().push_back(QColor(0,0,0));
+		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
+		color.getAccessor().push_back(Color::black());
 		lineWidth.getAccessor().push_back(0.0);
 	}
 
 	void render()
 	{
 		const QVector<Rect>& listRect = rect.getValue();
-		const QVector<QColor>& listColor = color.getValue();
+		const QVector<Color>& listColor = color.getValue();
 		const QVector<PReal>& listWidth = lineWidth.getValue();
 
 		int nbRect = listRect.size();
@@ -48,9 +50,7 @@ public:
 			glVertexPointer(2, GL_PREAL, 0, verts);
 			for(int i=0; i<nbRect; ++i)
 			{
-				QColor valCol = listColor[i % nbColor];
-				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
-
+				glColor4fv(listColor[i % nbColor].ptr());
 				glLineWidth(listWidth[i % nbWidth]);
 
 				Rect rect = listRect[i % nbRect];
@@ -68,7 +68,7 @@ public:
 protected:
 	Data< QVector<Rect> > rect;
 	Data< QVector<PReal> > lineWidth;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int RenderRectClass = RegisterObject<RenderRect>("Render/Rectangle").setDescription("Draw a rectangle");
@@ -88,14 +88,14 @@ public:
 		addInput(&rect);
 		addInput(&color);
 
-		rect.getAccessor().push_back(Rect(100, 100, 50, 50));
-		color.getAccessor().push_back(QColor(0,0,0));
+		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
+		color.getAccessor().push_back(Color::black());
 	}
 
 	void render()
 	{
 		const QVector<Rect>& listRect = rect.getValue();
-		const QVector<QColor>& listColor = color.getValue();
+		const QVector<Color>& listColor = color.getValue();
 
 		int nbRect = listRect.size();
 		int nbColor = listColor.size();
@@ -109,8 +109,7 @@ public:
 			glVertexPointer(2, GL_PREAL, 0, verts);
 			for(int i=0; i<nbRect; ++i)
 			{
-				QColor valCol = listColor[i % nbColor];
-				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
+				glColor4fv(listColor[i % nbColor].ptr());
 
 				Rect rect = listRect[i % nbRect];
 				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
@@ -126,7 +125,7 @@ public:
 
 protected:
 	Data< QVector<Rect> > rect;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int RenderFilledRectClass = RegisterObject<RenderFilledRect>("Render/Filled rectangle").setDescription("Draw a filled rectangle");

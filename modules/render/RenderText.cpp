@@ -2,6 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Color.h>
 #include <panda/types/Rect.h>
 
 #include <QOpenGLFramebufferObject>
@@ -12,6 +13,7 @@
 
 namespace panda {
 
+using types::Color;
 using types::Rect;
 
 class RenderText : public Renderer
@@ -46,7 +48,7 @@ public:
 		alignV.setWidget("enum");
 		alignV.setWidgetData("Top;Bottom;Center;Baseline");
 
-		color.getAccessor().push_back(QColor());
+		color.getAccessor().push_back(Color::black());
 	}
 
 	void render()
@@ -111,7 +113,9 @@ public:
 
 			for(int i=0; i<nbRect; ++i)
 			{
-				painter.setPen(QPen(listColor[i % nbColor]));
+				const Color& c = listColor[i % nbColor];
+				QColor col = QColor::fromRgbF(c.r, c.g, c.b, c.a);
+				painter.setPen(QPen(col));
 				Rect r = listRect[i];
 				QRectF rect = QRectF(r.left(), r.top(), r.width(), r.height());
 				painter.drawText(rect, alignment, listText[i % nbText]);
@@ -168,7 +172,7 @@ protected:
 	Data< QVector<QString> > text;
 	Data< QString > font;
 	Data< QVector<Rect> > rect;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 	Data< int > alignH, alignV;
 
 	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;

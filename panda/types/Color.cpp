@@ -1,5 +1,8 @@
 #include <panda/types/Color.h>
 
+#include <panda/types/Animation.inl>
+#include <panda/types/AnimationTraits.h>
+
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
 
@@ -10,6 +13,15 @@ namespace panda
 
 namespace types
 {
+
+Color Color::bounded() const
+{
+	return Color(
+				qBound(0.0f, r, 1.0f),
+				qBound(0.0f, g, 1.0f),
+				qBound(0.0f, b, 1.0f),
+				qBound(0.0f, a, 1.0f));
+}
 
 void Color::getHsv(float& hue, float& sat, float& val, float& alpha) const
 {
@@ -72,6 +84,18 @@ Color Color::fromHsv(float hue, float sat, float val, float alpha)
 	return Color(r, g, b, alpha);
 }
 
+uint32_t Color::toHex() const
+{
+	uint8_t alpha = a * 0xFF;
+	uint8_t red = r * 0xFF;
+	uint8_t green = g * 0xFF;
+	uint8_t blue = b * 0xFF;
+	return  (alpha & 0xFF) << 24 |
+			(red   & 0xFF) << 16 |
+			(green & 0xFF) << 8  |
+			(blue  & 0xFF);
+}
+
 Color Color::fromHex(uint32_t hexValue)
 {
 	uint8_t alpha = (hexValue >> 24) & 0xFF;
@@ -104,8 +128,12 @@ void DataTrait<Color>::readValue(QDomElement& elem, Color& v)
 template class Data<Color>;
 template class Data< QVector<Color> >;
 
-//int colorDataClass = RegisterData< Color >();
-//int colorVectorDataClass = RegisterData< QVector<Color> >();
+template class Animation<Color>;
+template class Data< Animation<Color> >;
+
+int colorDataClass = RegisterData< Color >();
+int colorVectorDataClass = RegisterData< QVector<Color> >();
+int colorAnimationDataClass = RegisterData< Animation<Color> >();
 
 } // namespace types
 

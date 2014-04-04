@@ -3,17 +3,18 @@
 #include <panda/ObjectFactory.h>
 #include <set>
 
+using panda::types::Color;
 using panda::types::Point;
 using panda::types::Rect;
 
 namespace std {
 
 template<>
-struct less<QColor> : public binary_function<QColor, QColor, bool>
+struct less<Color> : public binary_function<Color, Color, bool>
 {
-	bool operator()(const QColor& lhs, const QColor& rhs) const
+	bool operator()(const Color& lhs, const Color& rhs) const
 	{
-		return lhs.rgb() < rhs.rgb();
+		return lhs.toHex() < rhs.toHex();
 	}
 };
 

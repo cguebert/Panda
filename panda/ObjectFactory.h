@@ -3,6 +3,7 @@
 
 #include <panda/BaseClass.h>
 
+#include <QStringList>
 #include <QSharedPointer>
 #include <QMap>
 

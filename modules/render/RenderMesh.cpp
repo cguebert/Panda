@@ -1,11 +1,13 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/Color.h>
 #include <panda/types/Topology.h>
 #include <panda/Renderer.h>
 
 namespace panda {
 
+using types::Color;
 using types::Point;
 using types::Topology;
 
@@ -22,13 +24,13 @@ public:
 		addInput(&topology);
 		addInput(&color);
 
-		color.getAccessor().push_back(QColor());
+		color.getAccessor().push_back(Color::black());
 	}
 
 	void render()
 	{
 		const Topology& topo = topology.getValue();
-		const QVector<QColor>& listColor = color.getValue();
+		const QVector<Color>& listColor = color.getValue();
 
 		int nbPts = topo.getNumberOfPoints();
 		int nbPoly = topo.getNumberOfPolygons();
@@ -41,7 +43,7 @@ public:
 			if(nbColor < nbPts) nbColor = 1;
 
 			std::vector<PReal> vertices;
-			std::vector<unsigned char> colors;
+			std::vector<float> colors;
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_COLOR_ARRAY);
 
@@ -61,15 +63,13 @@ public:
 					vertices[j*2  ] = pt.x;
 					vertices[j*2+1] = pt.y;
 
-					QColor valCol = listColor[poly[j] % nbColor];
-					colors[j*4  ] = valCol.red();
-					colors[j*4+1] = valCol.green();
-					colors[j*4+2] = valCol.blue();
-					colors[j*4+3] = valCol.alpha();
+					Color valCol = listColor[poly[j] % nbColor];
+					for(int k=0; k<4; ++k)
+						colors[j*4+k] = valCol[k];
 				}
 
 				glVertexPointer(2, GL_PREAL, 0, vertices.data());
-				glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
+				glColorPointer(4, GL_FLOAT, 0, colors.data());
 				glDrawArrays(GL_TRIANGLE_FAN, 0, nbPts);
 			}
 			glDisableClientState(GL_VERTEX_ARRAY);
@@ -79,7 +79,7 @@ public:
 
 protected:
 	Data<Topology> topology;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int RenderMeshClass = RegisterObject<RenderMesh>("Render/Mesh").setDescription("Draw a mesh");

@@ -1,7 +1,8 @@
-#include <ui/widget/TableDataWidgetDialog.h>
+#include <ui/widget/DataWidgetFactory.h>
 #include <ui/widget/ListDataWidgetDialog.h>
 #include <ui/widget/OpenDialogDataWidget.h>
-#include <ui/widget/DataWidgetFactory.h>
+#include <ui/widget/TableDataWidgetDialog.h>
+
 #include <panda/types/Rect.h>
 
 using panda::types::Rect;

@@ -1,12 +1,15 @@
-#include <ui/widget/TableDataWidgetDialog.h>
+#include <ui/widget/AnimationDataWidgetDialog.h>
+#include <ui/widget/DataWidgetFactory.h>
 #include <ui/widget/ListDataWidgetDialog.h>
 #include <ui/widget/OpenDialogDataWidget.h>
-#include <ui/widget/DataWidgetFactory.h>
 #include <ui/widget/SimpleDataWidget.h>
+#include <ui/widget/TableDataWidgetDialog.h>
+
 #include <panda/types/Path.h>
 
-using panda::types::Point;
+using panda::types::Animation;
 using panda::types::Path;
+using panda::types::Point;
 
 template<>
 class FlatDataTrait<Point>
@@ -111,6 +114,7 @@ public:
 RegisterWidget<SimpleDataWidget<Point> > DWClass_point("default");
 RegisterWidget<OpenDialogDataWidget<QVector<Point>, TableDataWidgetDialog<QVector<Point> > > > DWClass_points_list("default");
 RegisterWidget<OpenDialogDataWidget<QVector<Point>, ListDataWidgetDialog<QVector<Point> > > > DWClass_points_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<Animation<Point>, AnimationDataWidgetDialog<Animation<Point> > > > DWClass_points_animation("default");
 
 //*************************************************************************//
 

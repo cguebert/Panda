@@ -25,9 +25,15 @@ PReal RandomGenerator::random()
 	return dist(gen);
 }
 
-PReal RandomGenerator::random(PReal min, PReal max)
+float RandomGenerator::random(float min, float max)
 {
-	std::uniform_real_distribution<PReal> dist(std::min(min, max), std::max(min, max));
+	std::uniform_real_distribution<float> dist(std::min(min, max), std::max(min, max));
+	return dist(gen);
+}
+
+double RandomGenerator::random(double min, double max)
+{
+	std::uniform_real_distribution<double> dist(std::min(min, max), std::max(min, max));
 	return dist(gen);
 }
 

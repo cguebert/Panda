@@ -2,11 +2,12 @@
 #define PANDADOCUMENT_H
 
 #include <panda/PandaObject.h>
+
+#include <panda/types/Color.h>
 #include <panda/types/Point.h>
 #include <panda/types/ImageWrapper.h>
 
 #include <QObject>
-#include <QColor>
 #include <QSize>
 #include <QMap>
 #include <QDomDocument>
@@ -52,8 +53,8 @@ public:
 	int getNbSelected() const;
 	const ObjectsList getSelection() const;
 
-	QColor getBackgroundColor();
-	void setBackgroundColor(QColor color);
+	types::Color getBackgroundColor();
+	void setBackgroundColor(types::Color color);
 	QSize getRenderSize();
 
 	PReal getAnimationTime();
@@ -95,7 +96,7 @@ protected:
 	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer;
 
 	Data<types::Point> renderSize;
-	Data<QColor> backgroundColor;
+	Data<types::Color> backgroundColor;
 	Data<PReal> animTime, timestep;
 	Data<int> useTimer;
 	Data<types::Point> mousePosition;

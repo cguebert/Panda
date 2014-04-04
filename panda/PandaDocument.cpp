@@ -17,13 +17,15 @@
 
 namespace panda {
 
+using types::Color;
+using types::ImageWrapper;
 using types::Point;
 
 PandaDocument::PandaDocument(QObject *parent)
 	: PandaObject(parent)
 	, currentIndex(1)
 	, renderSize(initData(&renderSize, Point(800,600), "render size", "Size of the image to be rendered"))
-	, backgroundColor(initData(&backgroundColor, QColor(255,255,255), "background color", "Background color of the image to be rendered"))
+	, backgroundColor(initData(&backgroundColor, Color::white(), "background color", "Background color of the image to be rendered"))
 	, animTime(initData(&animTime, (PReal)0.0, "time", "Time of the animation"))
 	, timestep(initData(&timestep, (PReal)0.01, "timestep", "Time step of the animation"))
 	, useTimer(initData(&useTimer, 1, "use timer", "If true, wait before the next timestep. If false, compute the next one as soon as the previous finished."))
@@ -337,7 +339,7 @@ void PandaDocument::resetDocument()
 	timestep.setValue((PReal)0.01);
 	useTimer.setValue(1);
 	renderSize.setValue(Point(800,600));
-	backgroundColor.setValue(QColor(255,255,255));
+	backgroundColor.setValue(Color::white());
 	renderedImage.getAccessor()->clear();
 	renderFrameBuffer.clear();
 
@@ -398,12 +400,12 @@ const PandaDocument::ObjectsList PandaDocument::getSelection() const
 	return selectedObjects;
 }
 
-QColor PandaDocument::getBackgroundColor()
+Color PandaDocument::getBackgroundColor()
 {
 	return backgroundColor.getValue();
 }
 
-void PandaDocument::setBackgroundColor(QColor color)
+void PandaDocument::setBackgroundColor(Color color)
 {
 	backgroundColor.setValue(color);
 }
@@ -813,7 +815,7 @@ void PandaDocument::update()
 	cleanDirty();
 }
 
-const types::ImageWrapper& PandaDocument::getRenderedImage()
+const ImageWrapper& PandaDocument::getRenderedImage()
 {
 	updateIfDirty();
 	return renderedImage.getValue();
@@ -836,8 +838,8 @@ void PandaDocument::render()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	QColor col = backgroundColor.getValue();
-	glClearColor(col.redF(), col.greenF(), col.blueF(), col.alphaF());
+	Color col = backgroundColor.getValue();
+	glClearColor(col.r, col.g, col.b, col.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	defaultLayer->mergeLayer();

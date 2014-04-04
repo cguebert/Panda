@@ -204,7 +204,6 @@ SOURCES       = main.cpp \
 	ui/widget/ColorDataWidget.cpp \
 	ui/widget/EditGradientDialog.cpp \
 	ui/widget/DataWidgetFactory.cpp \
-	ui/widget/ListDataWidgetDialog.cpp \
 	ui/widget/NumericalDataWidget.cpp \
 	ui/widget/PointDataWidget.cpp \
 	ui/widget/RectDataWidget.cpp \

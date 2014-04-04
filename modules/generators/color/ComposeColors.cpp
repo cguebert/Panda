@@ -2,7 +2,11 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
+#include <panda/types/Color.h>
+
 namespace panda {
+
+using types::Color;
 
 class GeneratorColors_ComposeRGB : public PandaObject
 {
@@ -52,10 +56,10 @@ public:
 		c.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
-			c[i].setRgbF(qBound<PReal>(0.0, r[i%nbR], 1.0),
-						 qBound<PReal>(0.0, g[i%nbG], 1.0),
-						 qBound<PReal>(0.0, b[i%nbB], 1.0),
-						 qBound<PReal>(0.0, a[i%nbA], 1.0));
+			c[i].set(qBound<float>(0.0f, r[i%nbR], 1.0f),
+					 qBound<float>(0.0f, g[i%nbG], 1.0f),
+					 qBound<float>(0.0f, b[i%nbB], 1.0f),
+					 qBound<float>(0.0f, a[i%nbA], 1.0f));
 		}
 
 		cleanDirty();
@@ -63,7 +67,7 @@ public:
 
 protected:
 	Data< QVector<PReal> > R, G, B, A;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int GeneratorColors_ComposeRGBClass = RegisterObject<GeneratorColors_ComposeRGB>("Generator/Color/From RGB").setDescription("Create a color from red, green and blue components");
@@ -93,7 +97,7 @@ public:
 
 	void update()
 	{
-		const QVector<QColor>& c = color.getValue();
+		const QVector<Color>& c = color.getValue();
 		auto r = R.getAccessor();
 		auto g = G.getAccessor();
 		auto b = B.getAccessor();
@@ -106,19 +110,14 @@ public:
 		a.resize(nb);
 
 		for(int i=0; i<nb; ++i)
-		{
-			r[i] = c[i].redF();
-			g[i] = c[i].greenF();
-			b[i] = c[i].blueF();
-			a[i] = c[i].alphaF();
-		}
+			c[i].get(r[i], g[i], b[i], a[i]);
 
 		cleanDirty();
 	}
 
 protected:
 	Data< QVector<PReal> > R, G, B, A;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int GeneratorColors_DecomposeRGBClass = RegisterObject<GeneratorColors_DecomposeRGB>("Generator/Color/To RGB").setDescription("Extract red, green and blue components from a color");
@@ -173,10 +172,11 @@ public:
 		c.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
-			c[i].setHsvF(qBound<PReal>(0.0, h[i%nbH], 1.0),
-						 qBound<PReal>(0.0, s[i%nbS], 1.0),
-						 qBound<PReal>(0.0, v[i%nbV], 1.0),
-						 qBound<PReal>(0.0, a[i%nbA], 1.0));
+			c[i] = Color::fromHsv(
+					qBound<float>(0.0f, h[i%nbH], 1.0f),
+					qBound<float>(0.0f, s[i%nbS], 1.0f),
+					qBound<float>(0.0f, v[i%nbV], 1.0f),
+					qBound<float>(0.0f, a[i%nbA], 1.0f));
 		}
 
 		cleanDirty();
@@ -184,7 +184,7 @@ public:
 
 protected:
 	Data< QVector<PReal> > H, S, V, A;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int GeneratorColors_ComposeHSVClass = RegisterObject<GeneratorColors_ComposeHSV>("Generator/Color/From HSV").setDescription("Create a color from hue, saturation and value components");
@@ -214,7 +214,7 @@ public:
 
 	void update()
 	{
-		const QVector<QColor>& c = color.getValue();
+		const QVector<Color>& c = color.getValue();
 		auto h = H.getAccessor();
 		auto s = S.getAccessor();
 		auto v = V.getAccessor();
@@ -227,19 +227,14 @@ public:
 		a.resize(nb);
 
 		for(int i=0; i<nb; ++i)
-		{
-			h[i] = c[i].hsvHueF();
-			s[i] = c[i].hsvSaturationF();
-			v[i] = c[i].valueF();
-			a[i] = c[i].alphaF();
-		}
+			c[i].getHsv(h[i], s[i], v[i], a[i]);
 
 		cleanDirty();
 	}
 
 protected:
 	Data< QVector<PReal> > H, S, V, A;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int GeneratorColors_DecomposeHSVClass = RegisterObject<GeneratorColors_DecomposeHSV>("Generator/Color/To HSV").setDescription("Extract hue, saturation and value components from a color");

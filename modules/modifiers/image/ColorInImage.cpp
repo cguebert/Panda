@@ -1,15 +1,19 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+
+#include <panda/types/Color.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Rect.h>
+
 #include <cmath>
 
 namespace panda {
 
+using types::Color;
+using types::ImageWrapper;
 using types::Point;
 using types::Rect;
-using types::ImageWrapper;
 
 class ModifierImage_GetPixel : public PandaObject
 {
@@ -41,9 +45,9 @@ public:
 			const Point p = pos[i];
 			const QPoint pt = QPoint(std::floor(p.x), std::floor(p.y));
 			if(img.valid(pt))
-				colorsList[i] = img.pixel(pt);
+				colorsList[i] = Color::fromHex(img.pixel(pt));
 			else
-				colorsList[i] = QColor();
+				colorsList[i] = Color::null();
 		}
 
 		cleanDirty();
@@ -52,7 +56,7 @@ public:
 protected:
 	Data< ImageWrapper > image;
 	Data< QVector<Point> > position;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int ModifierImage_GetPixelClass = RegisterObject<ModifierImage_GetPixel>("Modifier/Image/Get pixel").setDescription("Get colors in specific places in an image");
@@ -82,7 +86,7 @@ public:
 	{
 		const QImage& img = image.getValue().getImage();
 		const QVector<Point>& pos = position.getValue();
-		const QVector<QColor>& col = color.getValue();
+		const QVector<Color>& col = color.getValue();
 
 		QImage tmp = img;
 
@@ -96,7 +100,7 @@ public:
 			const Point p = pos[i];
 			const QPoint pt = QPoint(std::floor(p.x), std::floor(p.y));
 			if(tmp.valid(pt))
-				tmp.setPixel(pt, col[i%nbC].rgba());
+				tmp.setPixel(pt, col[i%nbC].toHex());
 		}
 
 		result.getAccessor()->setImage(tmp);
@@ -107,7 +111,7 @@ public:
 protected:
 	Data< ImageWrapper > image, result;
 	Data< QVector<Point> > position;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int ModifierImage_SetPixelClass = RegisterObject<ModifierImage_SetPixel>("Modifier/Image/Set pixel").setDescription("Set colors in specific places in an image");
@@ -171,9 +175,9 @@ public:
 			}
 
 			if(nb)
-				col[i] = QColor(r/nb, g/nb, b/nb, a/nb);
+				col[i] = Color(r/nb, g/nb, b/nb, a/nb);
 			else
-				col[i] = QColor();
+				col[i] = Color::null();
 		}
 
 		cleanDirty();
@@ -182,7 +186,7 @@ public:
 protected:
 	Data< ImageWrapper > image;
 	Data< QVector<Rect> > rectangle;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int ModifierImage_ColorInRectClass = RegisterObject<ModifierImage_ColorInRect>("Modifier/Image/Color in rectangle")

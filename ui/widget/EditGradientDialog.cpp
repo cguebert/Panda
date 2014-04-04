@@ -1,5 +1,3 @@
-#include <QtWidgets>
-
 #include <ui/widget/ListDataWidgetDialog.h>
 #include <ui/widget/SimpleDataWidget.h>
 #include <ui/widget/OpenDialogDataWidget.h>
@@ -9,8 +7,20 @@
 
 #include <panda/types/Gradient.h>
 
+#include <QtWidgets>
+
+using panda::types::Color;
 using panda::types::Gradient;
 using panda::types::Animation;
+
+static QColor toQColor(const Color& c)
+{
+	Color bc = c.bounded();
+	return QColor::fromRgbF(bc.r, bc.g, bc.b, bc.a);
+}
+
+static Color fromQColor(const QColor& c)
+{ return Color(c.redF(), c.greenF(), c.blueF(), c.alphaF()); }
 
 ColorPreviewWidget::ColorPreviewWidget(QWidget* parent)
 	: QWidget(parent)
@@ -84,7 +94,7 @@ void EditGradientView::paintEvent(QPaintEvent *)
 
 	QLinearGradient grad(0, 0, gradW, 0);
 	for(const auto&s : stops)
-		grad.setColorAt(s.first, s.second);
+		grad.setColorAt(s.first, toQColor(s.second));
 	painter.fillRect(hm, vm, gradW, gradH, grad);
 
 	paths.clear();
@@ -99,7 +109,7 @@ void EditGradientView::paintEvent(QPaintEvent *)
 		else
 			painter.setPen(palette().color(QPalette::Text));
 
-		QColor col = stop.second;
+		QColor col = toQColor(stop.second);
 		col.setAlphaF(1.0);
 		painter.setBrush(col);
 		QPainterPath path;
@@ -267,7 +277,7 @@ void EditGradientDialog::setSelected(int sel)
 	{
 		auto stop = stops[sel];
 		posEdit->setText(QString::number(stop.first));
-		colorPreview->setColor(stop.second);
+		colorPreview->setColor(toQColor(stop.second));
 	}
 	else
 		posEdit->setText(QString());
@@ -283,10 +293,10 @@ void EditGradientDialog::chooseColor()
 	if(selected < 0 || selected >= stops.size())
 		return;
 
-	QColor color = QColorDialog::getColor(stops[selected].second, this, "", QColorDialog::ShowAlphaChannel);
+	QColor color = QColorDialog::getColor(toQColor(stops[selected].second), this, "", QColorDialog::ShowAlphaChannel);
 	if(color.isValid())
 	{
-		stops[selected].second = color;
+		stops[selected].second = fromQColor(color);
 		colorPreview->setColor(color);
 		view->update();
 	}
@@ -450,7 +460,7 @@ public:
 
 		QLinearGradient grad(0, 0, size.width(), 0);
 		for(const auto&s : theGradient.getStops())
-			grad.setColorAt(s.first, s.second);
+			grad.setColorAt(s.first, toQColor(s.second));
 		painter.fillRect(0, 0, size.width(), size.height(), QBrush(grad));
 	}
 };

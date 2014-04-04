@@ -2,6 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Color.h>
 #include <panda/types/ImageWrapper.h>
 
 #include <QOpenGLBuffer>
@@ -12,6 +13,7 @@
 
 namespace panda {
 
+using types::Color;
 using types::Point;
 using types::ImageWrapper;
 
@@ -35,7 +37,7 @@ public:
 
 		position.getAccessor().push_back(Point(100, 100));
 		size.getAccessor().push_back(5.0);
-		color.getAccessor().push_back(QColor(255, 255, 255));
+		color.getAccessor().push_back(Color::white());
 
 		posBuffer.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 		posBuffer.create();
@@ -72,16 +74,16 @@ public:
 		uniform_MVP = shader.uniformLocation("MVP");
 	}
 
-	inline QVector4D colorToVector4(const QColor& c)
+	inline QVector4D colorToVector4(const Color& c)
 	{
-		return QVector4D(c.redF(), c.greenF(), c.blueF(), c.alphaF());
+		return QVector4D(c.r, c.g, c.b, c.a);
 	}
 
 	void render()
 	{
 		const QVector<Point>& listPosition = position.getValue();
 		QVector<PReal> listSize = size.getValue();
-		const QVector<QColor>& listColor = color.getValue();
+		const QVector<Color>& listColor = color.getValue();
 		GLuint texId = texture.getValue().getTexture();
 
 		int nbPosition = listPosition.size();
@@ -166,7 +168,7 @@ public:
 protected:
 	Data< QVector<Point> > position;
 	Data< QVector<PReal> > size;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 	Data< ImageWrapper > texture;
 
 	QOpenGLBuffer posBuffer, sizeBuffer;

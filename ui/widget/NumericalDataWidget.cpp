@@ -1,6 +1,8 @@
 #include <ui/widget/DataWidgetFactory.h>
-#include <ui/widget/SimpleDataWidget.h>
 #include <ui/widget/OpenDialogDataWidget.h>
+#include <ui/widget/ListDataWidgetDialog.h>
+#include <ui/widget/SimpleDataWidget.h>
+
 #include <panda/helper/Random.h>
 
 #include <QtWidgets>
@@ -281,6 +283,9 @@ RegisterWidget<SimpleDataWidget<int, CheckboxDataWidget> > DWClass_checkbox("che
 RegisterWidget<SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed");
 RegisterWidget<SimpleDataWidget<int, EnumDataWidget> > DWClass_enum("enum");
 RegisterWidget<SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_int("slider");
+RegisterWidget<OpenDialogDataWidget<QVector<int>, ListDataWidgetDialog<QVector<int> > > > DWClass_ints_list_generic("generic");
 
 RegisterWidget<SimpleDataWidget<PReal> > DWClass_double("default");
 RegisterWidget<SimpleDataWidget<PReal, SliderDataWidget<PReal> > > DWClass_slider_double("slider");
+RegisterWidget<OpenDialogDataWidget<QVector<PReal>, ListDataWidgetDialog<QVector<PReal> > > > DWClass_doubles_list_generic("generic");
+

@@ -1,17 +1,33 @@
-#include <ui/widget/SimpleDataWidget.h>
-#include <ui/widget/OpenDialogDataWidget.h>
+#include <ui/widget/AnimationDataWidgetDialog.h>
 #include <ui/widget/DataWidgetFactory.h>
+#include <ui/widget/OpenDialogDataWidget.h>
+#include <ui/widget/ListDataWidgetDialog.h>
+#include <ui/widget/SimpleDataWidget.h>
+
+#include <panda/types/Color.h>
 
 #include <QtWidgets>
 
+using panda::types::Animation;
+using panda::types::Color;
+
+static QColor toQColor(const Color& c)
+{
+	Color bc = c.bounded();
+	return QColor::fromRgbF(bc.r, bc.g, bc.b, bc.a);
+}
+
+static Color fromQColor(const QColor& c)
+{ return Color(c.redF(), c.greenF(), c.blueF(), c.alphaF()); }
+
 template<>
-class DataWidgetContainer< QColor > : public BaseOpenDialogObject, public ObjectWithPreview
+class DataWidgetContainer< Color > : public BaseOpenDialogObject, public ObjectWithPreview
 {
 protected:
-	typedef QColor value_type;
+	typedef Color value_type;
 	QWidget* container;
 	PreviewView* preview;
-	QColor theColor;
+	Color theColor;
 
 public:
 	DataWidgetContainer() : container(nullptr), preview(nullptr) {}
@@ -59,10 +75,10 @@ public:
 	}
 	virtual void onShowDialog()
 	{
-		QColor tmp = QColorDialog::getColor(theColor, container, "", QColorDialog::ShowAlphaChannel);
+		QColor tmp = QColorDialog::getColor(toQColor(theColor), container, "", QColorDialog::ShowAlphaChannel);
 		if(tmp.isValid())
 		{
-			theColor = tmp;
+			theColor = fromQColor(tmp);
 			emit editingFinished();
 		}
 	}
@@ -86,10 +102,13 @@ public:
 			pmp.fillRect(s, 0, s, s, c2);
 		}
 		painter.fillRect(0, 0, size.width(), size.height(), QBrush(pm));
-		painter.fillRect(0, 0, size.width(), size.height(), QBrush(theColor));
+		painter.fillRect(0, 0, size.width(), size.height(), QBrush(toQColor(theColor)));
 	}
 };
 
 //***************************************************************//
 
-RegisterWidget<SimpleDataWidget<QColor> > DWClass_color("default");
+RegisterWidget<SimpleDataWidget<Color> > DWClass_color("default");
+RegisterWidget<OpenDialogDataWidget<QVector<Color>, ListDataWidgetDialog<QVector<Color> > > > DWClass_colors_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<Animation<Color>, AnimationDataWidgetDialog<Animation<Color> > > > DWClass_colors_animation("default");
+

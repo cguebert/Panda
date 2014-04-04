@@ -5,11 +5,12 @@
 
 namespace panda {
 
+using types::Color;
 using types::DataTypeId;
 
 class Gradients_Compose : public GenericObject
 {
-	GENERIC_OBJECT(Gradients_Compose, boost::mpl::vector<QColor>)
+	GENERIC_OBJECT(Gradients_Compose, boost::mpl::vector<Color>)
 public:
 	PANDA_CLASS(Gradients_Compose, GenericObject)
 
@@ -25,7 +26,7 @@ public:
 		addOutput(&gradients);
 
 		GenericDataDefinitionList defList;
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<QColor>()),
+		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<Color>()),
 											 true, false,
 											 "color",
 											 "Color to add to the gradient"));
@@ -49,14 +50,14 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<QColor> > VecColorData;
+		typedef Data< QVector<Color> > VecColorData;
 		typedef Data< PReal > VecRealData;
 		VecColorData* dataColor = dynamic_cast<VecColorData*>(list[0]);
 		VecRealData* dataPosition = dynamic_cast<VecRealData*>(list[1]);
 
 		Q_ASSERT(dataColor && dataPosition);
 
-		const QVector<QColor>& inColor = dataColor->getValue();
+		const QVector<Color>& inColor = dataColor->getValue();
 		const PReal pos = dataPosition->getValue();
 		int nbColors = inColor.size();
 		int nbGrads = tempList.size();

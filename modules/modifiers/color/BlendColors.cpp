@@ -2,7 +2,11 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
+#include <panda/types/Color.h>
+
 namespace panda {
+
+using types::Color;
 
 class ModifierColor_Blend : public PandaObject
 {
@@ -46,51 +50,15 @@ public:
 			{
 			case 0:	// Multiply
 				for(int i=0; i<nb; ++i)
-				{
-					const QRgb& inA = inListA[i%nbA].rgba();
-					const QRgb& inB = inListB[i%nbB].rgba();
-					int r1 = qRed(inA), r2 = qRed(inB);
-					int g1 = qGreen(inA), g2 = qGreen(inB);
-					int b1 = qBlue(inA), b2 = qBlue(inB);
-					int a1 = qAlpha(inA), a2 = qAlpha(inB);
-					int r = (r1 * r2) >> 8;
-					int g = (g1 * g2) >> 8;
-					int b = (b1 * b2) >> 8;
-					int a = (a1 * a2) >> 8;
-					outList[i] = qRgba(r, g, b, a);
-				}
+					outList[i] = inListA[i%nbA] * inListB[i%nbB];
 				break;
 			case 1:	// Addition
 				for(int i=0; i<nb; ++i)
-				{
-					const QRgb& inA = inListA[i%nbA].rgba();
-					const QRgb& inB = inListB[i%nbB].rgba();
-					int r1 = qRed(inA), r2 = qRed(inB);
-					int g1 = qGreen(inA), g2 = qGreen(inB);
-					int b1 = qBlue(inA), b2 = qBlue(inB);
-					int a1 = qAlpha(inA), a2 = qAlpha(inB);
-					int r = (r1 + r2);
-					int g = (g1 + g2);
-					int b = (b1 + b2);
-					int a = (a1 + a2);
-					outList[i] = qRgba(r, g, b, a);
-				}
+					outList[i] = (inListA[i%nbA] + inListB[i%nbB]).bounded();
 				break;
 			case 2:	// Substraction
 				for(int i=0; i<nb; ++i)
-				{
-					const QRgb& inA = inListA[i%nbA].rgba();
-					const QRgb& inB = inListB[i%nbB].rgba();
-					int r1 = qRed(inA), r2 = qRed(inB);
-					int g1 = qGreen(inA), g2 = qGreen(inB);
-					int b1 = qBlue(inA), b2 = qBlue(inB);
-					int a1 = qAlpha(inA), a2 = qAlpha(inB);
-					int r = std::max(r1 - r2, 0);
-					int g = std::max(g1 - g2, 0);
-					int b = std::max(b1 - b2, 0);
-					int a = std::max(a1 - a2, 0);
-					outList[i] = qRgba(r, g, b, a);
-				}
+					outList[i] = (inListA[i%nbA] - inListB[i%nbB]).bounded();
 				break;
 			}
 		}
@@ -99,7 +67,7 @@ public:
 	}
 
 protected:
-	Data< QVector<QColor> > inputA, inputB, output;
+	Data< QVector<Color> > inputA, inputB, output;
 	Data< int > blendMode;
 };
 

@@ -6,6 +6,7 @@
 
 namespace panda {
 
+using types::Color;
 using types::Gradient;
 using types::Animation;
 
@@ -26,7 +27,7 @@ public:
 
 	void update()
 	{
-		const Animation<QColor>& colors = anim.getValue();
+		const Animation<Color>& colors = anim.getValue();
 		auto grad = gradient.getAccessor();
 		grad->clear();
 		for(auto stop : colors.getStops())
@@ -39,7 +40,7 @@ public:
 	}
 
 protected:
-	Data< Animation<QColor> > anim;
+	Data< Animation<Color> > anim;
 	Data< Gradient > gradient;
 };
 
@@ -73,7 +74,7 @@ public:
 
 protected:
 	Data< Gradient > gradient;
-	Data< Animation<QColor> > anim;
+	Data< Animation<Color> > anim;
 };
 
 int Gradient2AnimClass = RegisterObject<Gradient2Anim>("Generator/Gradient/Gradient to animation").setDescription("Convert gradient to an animation of colors");

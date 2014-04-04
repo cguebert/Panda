@@ -2,8 +2,11 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/helper/Random.h>
+#include <panda/types/Color.h>
 
 namespace panda {
+
+using types::Color;
 
 class GeneratorColors_Random : public PandaObject
 {
@@ -15,8 +18,8 @@ public:
 		, nbColors(initData(&nbColors, 1, "number", "Number of colors to generate"))
 		, seed(initData(&seed, "seed", "Seed for the random points generator"))
 		, hsvMode(initData(&hsvMode, 0, "HSV", "Use HSV instead of RGB"))
-		, colorMin(initData(&colorMin, QColor(0, 0, 0), "min color", "Color defining the minimum possible value of each component"))
-		, colorMax(initData(&colorMax, QColor(255, 255, 255), "max color", "Color defining the maximum possible value of each component"))
+		, colorMin(initData(&colorMin, Color::black(), "min color", "Color defining the minimum possible value of each component"))
+		, colorMax(initData(&colorMax, Color::white(), "max color", "Color defining the maximum possible value of each component"))
 		, colors(initData(&colors, "colors", "Randomly generated colors"))
 	{
 		addInput(&nbColors);
@@ -45,16 +48,16 @@ public:
 
 		bool useHSV = hsvMode.getValue();
 
-		int minA, minR, minG, minB, maxA, maxR, maxG, maxB;
+		float minA, minR, minG, minB, maxA, maxR, maxG, maxB;
 		if(useHSV)
 		{
-			cMin.getHsv(&minR, &minG, &minB, &minA);
-			cMax.getHsv(&maxR, &maxG, &maxB, &maxA);
+			cMin.getHsv(minR, minG, minB, minA);
+			cMax.getHsv(maxR, maxG, maxB, maxA);
 		}
 		else
 		{
-			cMin.getRgb(&minR, &minG, &minB, &minA);
-			cMax.getRgb(&maxR, &maxG, &maxB, &maxA);
+			cMin.get(minR, minG, minB, minA);
+			cMax.get(maxR, maxG, maxB, maxA);
 		}
 		if(minR > maxR) std::swap(minR, maxR);
 		if(minG > maxG) std::swap(minG, maxG);
@@ -65,20 +68,22 @@ public:
 		{
 			for(int i=0; i<nb; ++i)
 			{
-				list[i] = QColor::fromHsv(rnd.randomInt(minR, maxR),
-										  rnd.randomInt(minG, maxG),
-										  rnd.randomInt(minB, maxB),
-										  rnd.randomInt(minA, maxA));
+				list[i] = Color::fromHsv(
+							rnd.random(minR, maxR),
+							rnd.random(minG, maxG),
+							rnd.random(minB, maxB),
+							rnd.random(minA, maxA));
 			}
 		}
 		else
 		{
 			for(int i=0; i<nb; ++i)
 			{
-				list[i] = QColor(rnd.randomInt(minR, maxR),
-								 rnd.randomInt(minG, maxG),
-								 rnd.randomInt(minB, maxB),
-								 rnd.randomInt(minA, maxA));
+				list[i] = Color(
+							rnd.random(minR, maxR),
+							rnd.random(minG, maxG),
+							rnd.random(minB, maxB),
+							rnd.random(minA, maxA));
 			}
 		}
 
@@ -88,8 +93,8 @@ public:
 protected:
 	helper::RandomGenerator rnd;
 	Data< int > nbColors, seed, hsvMode;
-	Data< QColor > colorMin, colorMax;
-	Data< QVector<QColor> > colors;
+	Data< Color > colorMin, colorMax;
+	Data< QVector<Color> > colors;
 };
 
 int GeneratorColors_RandomClass = RegisterObject<GeneratorColors_Random>("Generator/Color/Random").setName("Random colors").setDescription("Generate colors by choosing randomly each component");

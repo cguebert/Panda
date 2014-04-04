@@ -2,12 +2,14 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
+#include <panda/types/Color.h>
 #include <panda/types/Point.h>
 
 #include <cmath>
 
 namespace panda {
 
+using types::Color;
 using types::Point;
 
 class RenderCircle : public Renderer
@@ -30,7 +32,7 @@ public:
 		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
 		lineWidth.getAccessor().push_back(0.0);
-		color.getAccessor().push_back(QColor(0,0,0));
+		color.getAccessor().push_back(Color::black());
 	}
 
 	void render()
@@ -38,7 +40,7 @@ public:
 		const QVector<Point>& listCenter = center.getValue();
 		const QVector<PReal>& listRadius = radius.getValue();
 		const QVector<PReal>& listWidth = lineWidth.getValue();
-		const QVector<QColor>& listColor = color.getValue();
+		const QVector<Color>& listColor = color.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
@@ -55,9 +57,7 @@ public:
 			glEnableClientState(GL_VERTEX_ARRAY);
 			for(int i=0; i<nbCenter; ++i)
 			{
-				QColor valCol = listColor[i % nbColor];
-				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
-
+				glColor4fv(listColor[i % nbColor].ptr());
 				glLineWidth(listWidth[i % nbWidth]);
 
 				PReal valRadius = listRadius[i % nbRadius];
@@ -82,7 +82,7 @@ public:
 protected:
 	Data< QVector<Point> > center;
 	Data< QVector<PReal> > radius, lineWidth;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int RenderCircleClass = RegisterObject<RenderCircle>("Render/Circle").setDescription("Draw a circle");

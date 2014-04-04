@@ -13,9 +13,6 @@ namespace types
 
 template<class T> T interpolate(const T& v1, const T& v2, PReal amt);
 
-template<>
-QColor interpolate(const QColor& v1, const QColor& v2, PReal amt);
-
 template<class T> T interpolate(const T& v1, const T& v2, PReal amt)
 {
 	return v1 + (v2 - v1) * amt;

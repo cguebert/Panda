@@ -1,11 +1,13 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/Color.h>
 #include <panda/types/Topology.h>
 #include <panda/Renderer.h>
 
 namespace panda {
 
+using types::Color;
 using types::Point;
 using types::Topology;
 
@@ -22,13 +24,13 @@ public:
 		addInput(&topology);
 		addInput(&color);
 
-		color.getAccessor().push_back(QColor());
+		color.getAccessor().push_back(Color::black());
 	}
 
 	void render()
 	{
 		const Topology& topo = topology.getValue();
-		const QVector<QColor>& listColor = color.getValue();
+		const QVector<Color>& listColor = color.getValue();
 
 		int nbPoly = topo.getNumberOfPolygons();
 		int nbColor = listColor.size();
@@ -49,8 +51,7 @@ public:
 				if(!nbPts)
 					continue;
 
-				QColor valCol = listColor[i % nbColor];
-				glColor4ub(valCol.red(), valCol.green(), valCol.blue(), valCol.alpha());
+				glColor4fv(listColor[i % nbColor].ptr());
 
 				vertices.resize(nbPts * 2);
 
@@ -70,7 +71,7 @@ public:
 
 protected:
 	Data<Topology> topology;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int RenderPolygonClass = RegisterObject<RenderPolygon>("Render/Polygon").setDescription("Draw a polygon");

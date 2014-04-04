@@ -5,6 +5,7 @@
 
 namespace panda {
 
+using types::Color;
 using types::Gradient;
 
 class ModifierColor_InGradient : public PandaObject
@@ -41,7 +42,7 @@ public:
 protected:
 	Data< Gradient > gradient;
 	Data< QVector<PReal> > position;
-	Data< QVector<QColor> > color;
+	Data< QVector<Color> > color;
 };
 
 int ModifierColor_InGradientClass = RegisterObject<ModifierColor_InGradient>("Modifier/Color/Color in gradient").setDescription("Get colors in specific places in a gradient");
