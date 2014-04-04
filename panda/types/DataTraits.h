@@ -1,10 +1,8 @@
 #ifndef TYPES_DATATRAITS_H
 #define TYPES_DATATRAITS_H
 
-#include <panda/helper/system/Config.h>
 #include <panda/types/DataTypeId.h>
 
-#include <QColor>
 #include <QVector>
 #include <QDomDocument>
 
@@ -176,66 +174,6 @@ public:
 		}
 	}
 };
-
-//***************************************************************//
-
-template<> QString DataTrait<int>::valueTypeName() { return "integer"; }
-template<> QString DataTrait<PReal>::valueTypeName() { return "real"; }
-template<> QString DataTrait<QColor>::valueTypeName() { return "color"; }
-template<> QString DataTrait<QString>::valueTypeName() { return "text"; }
-
-//***************************************************************//
-// Overrides for writeValue xml
-
-template<>
-void DataTrait<int>::writeValue(QDomDocument&, QDomElement& elem, const int& v)
-{ elem.setAttribute("int", v); }
-
-template<>
-void DataTrait<PReal>::writeValue(QDomDocument&, QDomElement& elem, const PReal& v)
-{ elem.setAttribute("real", v); }
-
-template<>
-void DataTrait<QColor>::writeValue(QDomDocument&, QDomElement& elem, const QColor& v)
-{	elem.setAttribute("r", v.red());
-	elem.setAttribute("g", v.green());
-	elem.setAttribute("b", v.blue());
-	elem.setAttribute("a", v.alpha()); }
-
-template<>
-void DataTrait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const QString& v)
-{
-	QDomText node = doc.createTextNode(v);
-	elem.appendChild(node);
-}
-
-//***************************************************************//
-// Overrides for readValue xml
-
-template<>
-void DataTrait<int>::readValue(QDomElement& elem, int& v)
-{ v = elem.attribute("int").toInt(); }
-
-template<>
-void DataTrait<PReal>::readValue(QDomElement& elem, PReal& v)
-#ifdef PANDA_DOUBLE
-{ v = elem.attribute("real").toDouble(); }
-#else
-{ v = elem.attribute("real").toFloat(); }
-#endif
-
-template<>
-void DataTrait<QColor>::readValue(QDomElement& elem, QColor& v)
-{	v.setRed(  elem.attribute("r").toInt());
-	v.setGreen(elem.attribute("g").toInt());
-	v.setBlue( elem.attribute("b").toInt());
-	v.setAlpha(elem.attribute("a").toInt()); }
-
-template<>
-void DataTrait<QString>::readValue(QDomElement& elem, QString& v)
-{
-	v = elem.text();
-}
 
 } // namespace types
 
