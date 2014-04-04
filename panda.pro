@@ -158,7 +158,6 @@ SOURCES       = main.cpp \
 	modules/render/modifiers/RenderModifierTransformations.cpp \
 	panda/BaseClass.cpp \
 	panda/BaseData.cpp \
-	panda/Data.cpp \
 	panda/Data.inl \
 	panda/DataFactory.cpp \
 	panda/DataNode.cpp \
@@ -176,7 +175,6 @@ SOURCES       = main.cpp \
 	panda/helper/PointsGrid.cpp \
 	panda/helper/Random.cpp \
 	panda/helper/UpdateLogger.cpp \
-	panda/types/Animation.cpp \
 	panda/types/Animation.inl \
 	panda/types/Color.cpp \
 	panda/types/DataTypeId.cpp \
@@ -184,6 +182,7 @@ SOURCES       = main.cpp \
 	panda/types/ImageWrapper.cpp \
 	panda/types/Point.cpp \
 	panda/types/Rect.cpp \
+	panda/types/StandardTypes.cpp \
 	panda/types/Topology.cpp \
 	panda/types/TypeConverter.cpp \
 	ui/Annotation.cpp \

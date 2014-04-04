@@ -3,6 +3,9 @@
 #include <panda/Data.inl>
 #include <panda/types/TypeConverter.h>
 
+#include <panda/types/Animation.inl>
+#include <panda/types/AnimationTraits.h>
+
 #include <QString>
 #include <QVector>
 
@@ -70,6 +73,10 @@ int stringDataClass = RegisterData< QString >();
 int intVectorDataClass = RegisterData< QVector<int> >();
 int doubleVectorDataClass = RegisterData< QVector<PReal> >();
 int stringVectorDataClass = RegisterData< QVector<QString> >();
+
+template class Animation<PReal>;
+template class Data< Animation<PReal> >;
+int realAnimationDataClass = RegisterData< Animation<PReal> >();
 
 } // namespace types
 
