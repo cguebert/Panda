@@ -1,0 +1,112 @@
+#include <panda/types/Color.h>
+
+#include <panda/DataFactory.h>
+#include <panda/Data.inl>
+
+#include <cmath>
+
+namespace panda
+{
+
+namespace types
+{
+
+void Color::getHsv(float& hue, float& sat, float& val, float& alpha) const
+{
+	alpha = a;
+
+	float max = std::max(r, std::max(g, b));
+	float min = std::min(r, std::min(g, b));
+
+	float range = max - min;
+	val = max;
+	sat = 0.0f;
+	hue = 0.0f;
+
+	if(max != 0)
+		sat = range / max;
+
+	if(sat != 0)
+	{
+		float h;
+
+		if(r == max)
+			h = (g - b) / range;
+		else if(g == max)
+			h = 2 + (b - r) / range;
+		else
+			h = 4 + (r - g) / range;
+
+		hue = h / 6.0f;
+
+		if(hue < 0.0f)
+			hue += 1.0f;
+	}
+}
+
+Color Color::fromHsv(float hue, float sat, float val, float alpha)
+{
+	if(hue == 1)
+		hue = 0;
+	else
+		hue *= 6;
+
+	int i = static_cast<int>(std::floor(hue));
+	float f = hue - i;
+	float p = val * (1 - sat);
+	float q = val * (1 - (sat * f) );
+	float t = val * (1 - (sat * (1 - f)));
+
+	float r = 0.0f, g = 0.0f, b = 0.0f;
+
+	switch( i )
+	{
+		case 0: r = val; g = t;   b = p; break;
+		case 1: r = q;   g = val; b = p; break;
+		case 2: r = p;   g = val; b = t; break;
+		case 3: r = p;   g = q;   b = val; break;
+		case 4: r = t;   g = p;   b = val; break;
+		case 5: r = val; g = p;   b = q; break;
+	}
+
+	return Color(r, g, b, alpha);
+}
+
+Color Color::fromHex(uint32_t hexValue)
+{
+	uint8_t alpha = (hexValue >> 24) & 0xFF;
+	uint8_t red = (hexValue >> 16) & 0xFF;
+	uint8_t green = (hexValue >> 8) & 0xFF;
+	uint8_t blue = hexValue & 0xFF;
+	return Color(red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f);
+}
+
+//***************************************************************//
+
+template<> QString DataTrait<Color>::valueTypeName() { return "color"; }
+
+template<>
+void DataTrait<Color>::writeValue(QDomDocument&, QDomElement& elem, const Color& v)
+{	elem.setAttribute("r", v.r);
+	elem.setAttribute("g", v.g);
+	elem.setAttribute("b", v.b);
+	elem.setAttribute("a", v.a); }
+
+template<>
+void DataTrait<Color>::readValue(QDomElement& elem, Color& v)
+{	v.r = elem.attribute("r").toFloat();
+	v.g = elem.attribute("g").toFloat();
+	v.b = elem.attribute("b").toFloat();
+	v.a = elem.attribute("a").toFloat(); }
+
+//***************************************************************//
+
+template class Data<Color>;
+template class Data< QVector<Color> >;
+
+//int colorDataClass = RegisterData< Color >();
+//int colorVectorDataClass = RegisterData< QVector<Color> >();
+
+} // namespace types
+
+} // namespace panda

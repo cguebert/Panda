@@ -30,6 +30,7 @@ HEADERS       = \
 	panda/helper/system/Config.h \
 	panda/types/Animation.h \
 	panda/types/AnimationTraits.h \
+	panda/types/Color.h \
 	panda/types/DataTraits.h \
 	panda/types/DataTypeId.h \
 	panda/types/Gradient.h \
@@ -177,6 +178,7 @@ SOURCES       = main.cpp \
 	panda/helper/UpdateLogger.cpp \
 	panda/types/Animation.cpp \
 	panda/types/Animation.inl \
+	panda/types/Color.cpp \
 	panda/types/DataTypeId.cpp \
 	panda/types/Gradient.cpp \
 	panda/types/ImageWrapper.cpp \
