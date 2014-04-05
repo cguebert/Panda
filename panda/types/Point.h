@@ -13,12 +13,6 @@ namespace panda
 namespace types
 {
 
-inline bool pFuzzyIsNull(double d)
-{ return abs(d) <= 0.000000000001; }
-
-inline bool pFuzzyIsNull(float f)
-{ return abs(f) <= 0.00001f; }
-
 enum NoInit { NOINIT };
 
 class Point
@@ -28,209 +22,216 @@ public:
 
 	static const int DIM = 2;
 
-	Point() : x(0), y(0) {}
-	explicit Point(NoInit) {}
-	Point(PReal x, PReal y) : x(x), y(y) {}
-	Point(const Point& p) : x(p.x), y(p.y) {}
-	explicit Point(const PReal* d) : x(d[0]), y(d[1]) {}
+	Point();
+	explicit Point(NoInit);
+	Point(PReal x, PReal y);
+	Point(const Point& p);
+	explicit Point(const PReal* d);
 
-	void set(PReal nx, PReal ny)
-	{
-		x = nx; y = ny;
-	}
+	void set(PReal nx, PReal ny);
+	void set(const Point& p);
 
-	void set(const Point& p)
-	{
-		x = p.x; y = p.y;
-	}
+	Point& operator=(const Point& p);
 
-	Point& operator=(const Point& p)
-	{
-		x = p.x; y = p.y;
-		return *this;
-	}
+	PReal& operator[](int n);
+	const PReal& operator[](int n) const;
 
-	PReal& operator[](int n)
-	{
-		assert(n >= 0 && n <= 1);
-		return (&x)[n];
-	}
+	PReal* ptr();
+	const PReal* ptr() const;
 
-	const PReal& operator[](int n) const
-	{
-		assert(n >= 0 && n <= 1);
-		return (&x)[n];
-	}
+	Point operator+(const Point& p) const;
+	Point operator-(const Point& p) const;
+	Point& operator+=(const Point& p);
+	Point& operator-=(const Point& p);
 
-	PReal* ptr()
-	{
-		return &x;
-	}
+	Point operator*(PReal v) const;
+	Point operator/(PReal v) const;
+	Point& operator*=(PReal v);
+	Point& operator/=(PReal v);
 
-	const PReal* ptr() const
-	{
-		return &x;
-	}
-
-	Point operator+(const Point& p) const
-	{
-		return Point(x + p.x, y + p.y);
-	}
-
-	Point operator-(const Point& p) const
-	{
-		return Point(x - p.x, y - p.y);
-	}
-
-	Point& operator+=(const Point& p)
-	{
-		x += p.x;
-		y += p.y;
-		return *this;
-	}
-
-	Point& operator-=(const Point& p)
-	{
-		x -= p.x;
-		y -= p.y;
-		return *this;
-	}
-
-	Point operator*(PReal v) const
-	{
-		return Point(x * v, y * v);
-	}
-
-	Point operator/(PReal v) const
-	{
-		return Point(x / v, y / v);
-	}
-
-	Point& operator*=(PReal v)
-	{
-		x *= v;
-		y *= v;
-		return *this;
-	}
-
-	Point& operator/=(PReal v)
-	{
-		x /= v;
-		y /= v;
-		return *this;
-	}
-
-	friend Point operator*(PReal v, const Point& p)
-	{
-		return p * v;
-	}
-
-	friend Point operator/(PReal v, const Point& p)
-	{
-		return p / v;
-	}
+	friend Point operator*(PReal v, const Point& p);
+	friend Point operator/(PReal v, const Point& p);
 
 	// Negation
-	Point operator-() const
-	{
-		return Point(-x, -y);
-	}
+	Point operator-() const;
 
-	Point linearProduct(const Point& p) const
-	{
-		return Point(x * p.x, y * p.y);
-	}
-
-	Point linearDivision(const Point& p) const
-	{
-		return Point(x / p.x, y / p.y);
-	}
+	Point linearProduct(const Point& p) const;
+	Point linearDivision(const Point& p) const;
 
 	// Dot product
-	PReal operator*(const Point& p) const
-	{
-		return x * p.x + y * p.y;
-	}
-
-	PReal dot(const Point& p) const
-	{
-		return x * p.x + y * p.y;
-	}
+	PReal operator*(const Point& p) const;
+	PReal dot(const Point& p) const;
 
 	// Z component of the cross product of two vectors on the XY plane
-	PReal cross(const Point& p) const
-	{
-		return x * p.y - y * p.x;
-	}
+	PReal cross(const Point& p) const;
 
-	PReal norm2() const
-	{
-		return x * x + y * y;
-	}
+	PReal norm2() const;
+	PReal norm() const;
 
-	PReal norm() const
-	{
-		return sqrt(norm2());
-	}
+	void normalizeWithNorm(PReal norm, PReal threshold=std::numeric_limits<PReal>::epsilon());
+	Point normalizedWithNorm(PReal norm, PReal threshold=std::numeric_limits<PReal>::epsilon()) const;
 
-	void normalizeWithNorm(PReal norm, PReal threshold=std::numeric_limits<PReal>::epsilon())
-	{
-		if(norm > threshold)
-		{
-			PReal invN = 1 / norm;
-			x *= invN;
-			y *= invN;
-		}
-	}
-
-	Point normalizedWithNorm(PReal norm, PReal threshold=std::numeric_limits<PReal>::epsilon()) const
-	{
-		if(norm > threshold)
-		{
-			PReal invN = 1 / norm;
-			return Point(x * invN, y * invN);
-		}
-
-		return Point();
-	}
-
-	void normalize(PReal threshold=std::numeric_limits<PReal>::epsilon())
-	{
-		normalizeWithNorm(norm(), threshold);
-	}
-
-	Point normalized(PReal threshold=std::numeric_limits<PReal>::epsilon()) const
-	{
-		return normalizedWithNorm(norm(), threshold);
-	}
+	void normalize(PReal threshold=std::numeric_limits<PReal>::epsilon());
+	Point normalized(PReal threshold=std::numeric_limits<PReal>::epsilon()) const;
 
 	// True if norm() is very close to 1
-	bool isNormalized(PReal threshold=std::numeric_limits<PReal>::epsilon()*(PReal)10)
-	{
-		return abs(norm2() - static_cast<PReal>(1)) <= threshold;
-	}
+	bool isNormalized(PReal threshold=std::numeric_limits<PReal>::epsilon()*(PReal)10);
 
-	bool operator==(const Point& p) const
-	{
-		return pFuzzyIsNull(x - p.x) && pFuzzyIsNull(y - p.y);
-	}
+	bool operator==(const Point& p) const;
+	bool operator!=(const Point& p) const;
 
-	bool operator!=(const Point& p) const
-	{
-		return !pFuzzyIsNull(x - p.x) || !pFuzzyIsNull(y - p.y);
-	}
+	static Point max();
 
-	static Point max()
-	{
-		return Point(std::numeric_limits<PReal>::max(), std::numeric_limits<PReal>::max());
-	}
+	static Point zero();
+	static Point one();
 
-	static Point zero() { return Point(0, 0); }
-	static Point one() { return Point(1, 1); }
-
-	static Point xAxis() { return Point(1, 0); }
-	static Point yAxis() { return Point(0, 1); }
+	static Point xAxis();
+	static Point yAxis();
 };
+
+inline bool pFuzzyIsNull(double d)
+{ return abs(d) <= 0.000000000001; }
+
+inline bool pFuzzyIsNull(float f)
+{ return abs(f) <= 0.00001f; }
+
+inline Point::Point()
+: x(0), y(0) { }
+
+inline Point::Point(NoInit)
+{ }
+
+inline Point::Point(PReal x, PReal y)
+: x(x), y(y) { }
+
+inline Point::Point(const Point& p)
+: x(p.x), y(p.y) { }
+
+inline Point::Point(const PReal* d)
+: x(d[0]), y(d[1]) { }
+
+inline void Point::set(PReal nx, PReal ny)
+{ x = nx; y = ny; }
+
+inline void Point::set(const Point& p)
+{ x = p.x; y = p.y; }
+
+inline Point& Point::operator=(const Point& p)
+{ x = p.x; y = p.y; return *this; }
+
+inline PReal& Point::operator[](int n)
+{ assert(n >= 0 && n <= 1); return (&x)[n]; }
+
+inline const PReal& Point::operator[](int n) const
+{ assert(n >= 0 && n <= 1); return (&x)[n]; }
+
+inline PReal* Point::ptr()
+{ return &x; }
+
+inline const PReal* Point::ptr() const
+{ return &x; }
+
+inline Point Point::operator+(const Point& p) const
+{ return Point(x + p.x, y + p.y); }
+
+inline Point Point::operator-(const Point& p) const
+{ return Point(x - p.x, y - p.y); }
+
+inline Point& Point::operator+=(const Point& p)
+{ x += p.x; y += p.y; return *this; }
+
+inline Point& Point::operator-=(const Point& p)
+{ x -= p.x; y -= p.y; return *this; }
+
+inline Point Point::operator*(PReal v) const
+{ return Point(x * v, y * v); }
+
+inline Point Point::operator/(PReal v) const
+{ return Point(x / v, y / v); }
+
+inline Point& Point::operator*=(PReal v)
+{ x *= v; y *= v; return *this; }
+
+inline Point& Point::operator/=(PReal v)
+{ x /= v; y /= v; return *this; }
+
+inline Point operator*(PReal v, const Point& p)
+{ return p * v; }
+
+inline Point operator/(PReal v, const Point& p)
+{ return p / v; }
+
+inline Point Point::operator-() const
+{ return Point(-x, -y); }
+
+inline Point Point::linearProduct(const Point& p) const
+{ return Point(x * p.x, y * p.y); }
+
+inline Point Point::linearDivision(const Point& p) const
+{ return Point(x / p.x, y / p.y); }
+
+inline PReal Point::operator*(const Point& p) const
+{ return x * p.x + y * p.y; }
+
+inline PReal Point::dot(const Point& p) const
+{ return x * p.x + y * p.y; }
+
+inline PReal Point::cross(const Point& p) const
+{ return x * p.y - y * p.x; }
+
+inline PReal Point::norm2() const
+{ return x * x + y * y; }
+
+inline PReal Point::norm() const
+{ return sqrt(norm2()); }
+
+inline void Point::normalizeWithNorm(PReal norm, PReal threshold)
+{
+	if(norm > threshold) {
+		PReal invN = 1 / norm;
+		x *= invN;
+		y *= invN;
+	}
+}
+
+inline Point Point::normalizedWithNorm(PReal norm, PReal threshold) const
+{
+	if(norm > threshold) {
+		PReal invN = 1 / norm;
+		return Point(x * invN, y * invN);
+	}
+	return Point();
+}
+
+inline void Point::normalize(PReal threshold)
+{ normalizeWithNorm(norm(), threshold); }
+
+inline Point Point::normalized(PReal threshold) const
+{ return normalizedWithNorm(norm(), threshold); }
+
+inline bool Point::isNormalized(PReal threshold)
+{ return abs(norm2() - static_cast<PReal>(1)) <= threshold; }
+
+inline bool Point::operator==(const Point& p) const
+{ return pFuzzyIsNull(x - p.x) && pFuzzyIsNull(y - p.y); }
+
+inline bool Point::operator!=(const Point& p) const
+{ return !pFuzzyIsNull(x - p.x) || !pFuzzyIsNull(y - p.y); }
+
+inline Point Point::max()
+{ return Point(std::numeric_limits<PReal>::max(), std::numeric_limits<PReal>::max()); }
+
+inline Point Point::zero()
+{ return Point(0, 0); }
+
+inline Point Point::one()
+{ return Point(1, 1); }
+
+inline Point Point::xAxis()
+{ return Point(1, 0); }
+
+inline Point Point::yAxis()
+{ return Point(0, 1); }
 
 // Converts a coordinate from rectangular (Cartesian) coordinates to polar coordinates of the form (radius, theta)
 Point toPolar(Point car);
