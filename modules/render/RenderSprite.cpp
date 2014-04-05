@@ -50,55 +50,28 @@ public:
 		sizeBuffer.create();
 
 		auto shaderAcc = shader.getAccessor();
+		shaderAcc->setShaderTypes(QOpenGLShader::Vertex | QOpenGLShader::Fragment);
 		shaderAcc->addSource(QOpenGLShader::Vertex,
-							 "in vec2 position;"
-							 "in float size;"
-							 "in vec4 color;"
-							 "out vec4 f_color;"
-							 "uniform mat4 MVP;"
-							 "void main(void){"
-							 "	f_color = color;"
-							 "	gl_Position = MVP * vec4(position.xy, 0, 1);"
-							 "	gl_PointSize = max(1.0, size);"
+							 "in vec2 position;\n"
+							 "in float size;\n"
+							 "in vec4 color;\n"
+							 "out vec4 f_color;\n"
+							 "uniform mat4 MVP;\n"
+							 "void main(void){\n"
+							 "	f_color = color;\n"
+							 "	gl_Position = MVP * vec4(position.xy, 0, 1);\n"
+							 "	gl_PointSize = max(1.0, size);\n"
 							 "}"
 							);
 
 		shaderAcc->addSource(QOpenGLShader::Fragment,
-							 "uniform sampler2D tex0;"
-							 "in vec4 f_color;"
-							 "out vec4 fragColor;"
-							 "void main(void){"
-							 "   fragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y)) * f_color;"
+							 "uniform sampler2D tex0;\n"
+							 "in vec4 f_color;\n"
+							 "out vec4 fragColor;\n"
+							 "void main(void){\n"
+							 "   fragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y)) * f_color;\n"
 							 "}"
 							);
-
-		shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,
-										"in vec2 position;"
-										"in float size;"
-										"in vec4 color;"
-										"out vec4 f_color;"
-										"uniform mat4 MVP;"
-										"void main(void){"
-										"	f_color = color;"
-										"	gl_Position = MVP * vec4(position.xy, 0, 1);"
-										"	gl_PointSize = max(1.0, size);"
-										"}"
-									   );
-		shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,
-										"uniform sampler2D tex0;"
-										"in vec4 f_color;"
-										"out vec4 fragColor;"
-										"void main(void){"
-										"   fragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y)) * f_color;"
-										"}"
-									   );
-
-		shaderProgram.link();
-		attribute_pos = shaderProgram.attributeLocation("position");
-		attribute_size = shaderProgram.attributeLocation("size");
-		attribute_color = shaderProgram.attributeLocation("color");
-		uniform_texture = shaderProgram.uniformLocation("tex0");
-		uniform_MVP = shaderProgram.uniformLocation("MVP");
 	}
 
 	inline QVector4D colorToVector4(const Color& c)
@@ -119,6 +92,14 @@ public:
 
 		if(nbPosition && nbSize && nbColor && texId)
 		{
+			shader.getValue().apply(shaderProgram);
+
+			attribute_pos = shaderProgram.attributeLocation("position");
+			attribute_size = shaderProgram.attributeLocation("size");
+			attribute_color = shaderProgram.attributeLocation("color");
+			uniform_texture = shaderProgram.uniformLocation("tex0");
+			uniform_MVP = shaderProgram.uniformLocation("MVP");
+
 			if(nbSize < nbPosition)
 				listSize.fill(listSize[0], nbPosition);
 

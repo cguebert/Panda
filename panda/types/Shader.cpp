@@ -21,6 +21,11 @@ void Shader::setShaderTypes(QOpenGLShader::ShaderType flags)
 	m_flags = flags;
 }
 
+QOpenGLShader::ShaderType Shader::getShaderTypes() const
+{
+	return m_flags;
+}
+
 void Shader::clear()
 {
 	m_sourcesMap.clear();
@@ -40,7 +45,7 @@ void Shader::removeSource(QOpenGLShader::ShaderType type)
 	m_sourcesMap.remove(type);
 }
 
-void Shader::apply(QOpenGLShaderProgram& program)
+void Shader::apply(QOpenGLShaderProgram& program) const
 {
 	QList<QOpenGLShader*> currentShaders = program.shaders();
 	QList<QOpenGLShader*> newShaders;
@@ -75,22 +80,48 @@ void Shader::apply(QOpenGLShaderProgram& program)
 		program.link();
 }
 
+const QList<Shader::ShaderSource> Shader::getSources() const
+{
+	return m_sourcesMap.values();
+}
+
 //***************************************************************//
 
 template<> QString DataTrait<Shader>::valueTypeName() { return "shader"; }
 
 template<>
-void DataTrait<Shader>::writeValue(QDomDocument&, QDomElement& elem, const Shader& v)
+void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement& elem, const Shader& v)
 {
-	Q_UNUSED(elem)
-	Q_UNUSED(v)
+	auto sources = v.getSources();
+	int types = v.getShaderTypes();
+
+	elem.setAttribute("types", types);
+
+	for(const auto& source : sources)
+	{
+		QDomElement sourceNode = doc.createElement("Source");
+		elem.appendChild(sourceNode);
+		sourceNode.setAttribute("type", (int)source.type);
+
+		QDomText node = doc.createTextNode(source.sourceCode);
+		sourceNode.appendChild(node);
+	}
 }
 
 template<>
 void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
 {
-	Q_UNUSED(elem)
-	Q_UNUSED(v)
+	v.clear();
+	int type = elem.attribute("types").toInt();
+	v.setShaderTypes(QOpenGLShader::ShaderType(type));
+
+	QDomElement sourceNode = elem.firstChildElement("Source");
+	while(!sourceNode.isNull())
+	{
+		int type = sourceNode.attribute("type").toInt();
+		v.addSource(QOpenGLShader::ShaderType(type), sourceNode.text());
+		sourceNode = sourceNode.nextSiblingElement("Source");
+	}
 }
 
 //***************************************************************//
