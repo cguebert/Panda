@@ -180,6 +180,7 @@ SOURCES       = main.cpp \
 	panda/helper/UpdateLogger.cpp \
 	panda/types/Animation.inl \
 	panda/types/Color.cpp \
+	panda/types/DataTraits.cpp \
 	panda/types/DataTypeId.cpp \
 	panda/types/Gradient.cpp \
 	panda/types/ImageWrapper.cpp \

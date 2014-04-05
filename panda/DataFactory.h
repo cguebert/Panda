@@ -88,6 +88,7 @@ public:
 		data_type::dataTrait = types::VirtualDataTrait<value_type>::get();
 		data_type::dataCopier = VirtualDataCopier<value_type>::get();
 
+		types::DataTraitsList::registerTrait<T>(data_type::dataTrait);
 		types::DataTypeId::registerType<T>(data_type::dataTrait->fullTypeId());
 
 		DataFactory::getInstance()->registerData(data_type::dataTrait,

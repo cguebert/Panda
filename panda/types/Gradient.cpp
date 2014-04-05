@@ -183,7 +183,7 @@ template<> QString DataTrait<Gradient>::valueTypeName() { return "gradient"; }
 template<>
 void DataTrait<Gradient>::writeValue(QDomDocument& doc, QDomElement& elem, const Gradient& grad)
 {
-	auto colorTrait = VirtualDataTrait<Color>::get();
+	auto colorTrait = DataTraitsList::getTraitOf<Color>();
 
 	elem.setAttribute("extend", grad.getExtend());
 
@@ -192,14 +192,14 @@ void DataTrait<Gradient>::writeValue(QDomDocument& doc, QDomElement& elem, const
 		QDomElement stopNode = doc.createElement("Stop");
 		elem.appendChild(stopNode);
 		stopNode.setAttribute("pos", s.first);
-		colorTrait->writeValue(doc, stopNode, s.second);
+		colorTrait->writeValue(doc, stopNode, &s.second);
 	}
 }
 
 template<>
 void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& grad)
 {
-	auto colorTrait = VirtualDataTrait<Color>::get();
+	auto colorTrait = DataTraitsList::getTraitOf<Color>();
 
 	grad.clear();
 	grad.setExtend(elem.attribute("extend").toInt());
@@ -213,7 +213,7 @@ void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& grad)
 		PReal pos = stopNode.attribute("pos").toFloat();
 #endif
 		Color color;
-		colorTrait->readValue(stopNode, color);
+		colorTrait->readValue(stopNode, &color);
 
 		grad.add(pos, color);
 		stopNode = stopNode.nextSiblingElement("Stop");

@@ -112,7 +112,6 @@ public:
 
 //***************************************************************//
 
-
 template<class T>
 class DataTrait< QVector<T> >
 {
@@ -173,6 +172,25 @@ public:
 			e = e.nextSiblingElement("Value");
 		}
 	}
+};
+
+//***************************************************************//
+
+class DataTraitsList
+{
+public:
+	static AbstractDataTrait* getTrait(const std::type_info& type);
+	template <class T>
+	static AbstractDataTrait* getTraitOf() { return getTrait(typeid(T)); }
+
+private:
+	DataTraitsList();
+
+	template<class T> friend class RegisterData;
+
+	static void registerTrait(const std::type_info& type, AbstractDataTrait* trait);
+	template <class T>
+	static void registerTrait(AbstractDataTrait* trait) { registerTrait(typeid(T), trait); }
 };
 
 } // namespace types

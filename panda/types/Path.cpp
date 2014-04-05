@@ -33,11 +33,11 @@ template<> void DataTrait<Path>::clear(Path& v, int size, bool init)
 template<>
 void DataTrait<Path>::writeValue(QDomDocument& doc, QDomElement& elem, const Path& path)
 {
+	auto pointTrait = DataTraitsList::getTraitOf<Point>();
 	for(const auto& pt : path)
 	{
 		QDomElement ptNode = doc.createElement("Point");
-		ptNode.setAttribute("x", pt.x);
-		ptNode.setAttribute("y", pt.y);
+		pointTrait->writeValue(doc, ptNode, &pt);
 		elem.appendChild(ptNode);
 	}
 }
@@ -46,19 +46,14 @@ template<>
 void DataTrait<Path>::readValue(QDomElement& elem, Path& path)
 {
 	path.clear();
+	auto pointTrait = DataTraitsList::getTraitOf<Point>();
 
 	QDomElement ptNode = elem.firstChildElement("Point");
 	while(!ptNode.isNull())
 	{
-#ifdef PANDA_DOUBLE
-		PReal x = ptNode.attribute("x").toDouble();
-		PReal y = ptNode.attribute("y").toDouble();
-#else
-		PReal x = ptNode.attribute("x").toFloat();
-		PReal y = ptNode.attribute("y").toFloat();
-#endif
-
-		path.push_back(Point(x, y));
+		Point pt;
+		pointTrait->readValue(ptNode, &pt);
+		path.push_back(pt);
 		ptNode = ptNode.nextSiblingElement("Point");
 	}
 }
