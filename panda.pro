@@ -26,6 +26,7 @@ HEADERS       = \
 	panda/helper/Perlin.h \
 	panda/helper/PointsGrid.h \
 	panda/helper/Random.h \
+	panda/helper/ShaderCache.h \
 	panda/helper/UpdateLogger.h \
 	panda/helper/system/Config.h \
 	panda/types/Animation.h \
@@ -38,6 +39,7 @@ HEADERS       = \
 	panda/types/Path.h \
 	panda/types/Point.h \
 	panda/types/Rect.h \
+	panda/types/Shader.h \
 	panda/types/Topology.h \
 	panda/types/TypeConverter.h \
 	ui/Annotation.h \
@@ -174,6 +176,7 @@ SOURCES       = main.cpp \
 	panda/helper/Perlin.cpp \
 	panda/helper/PointsGrid.cpp \
 	panda/helper/Random.cpp \
+	panda/helper/ShaderCache.cpp \
 	panda/helper/UpdateLogger.cpp \
 	panda/types/Animation.inl \
 	panda/types/Color.cpp \
@@ -182,6 +185,7 @@ SOURCES       = main.cpp \
 	panda/types/ImageWrapper.cpp \
 	panda/types/Point.cpp \
 	panda/types/Rect.cpp \
+	panda/types/Shader.cpp \
 	panda/types/StandardTypes.cpp \
 	panda/types/Topology.cpp \
 	panda/types/TypeConverter.cpp \

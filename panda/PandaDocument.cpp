@@ -10,6 +10,7 @@
 #include <panda/Renderer.h>
 #include <panda/Group.h>
 #include <panda/helper/GradientCache.h>
+#include <panda/helper/ShaderCache.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>
@@ -803,6 +804,9 @@ void PandaDocument::update()
 		renderedImage.getAccessor()->setFbo(renderFrameBuffer);
 	}
 
+	helper::GradientCache::getInstance()->resetUsedFlag();
+	helper::ShaderCache::getInstance()->resetUsedFlag();
+
 	defaultLayer->updateIfDirty();
 
 	for(auto obj : pandaObjects)
@@ -812,6 +816,9 @@ void PandaDocument::update()
 	}
 
 	render();
+
+	helper::GradientCache::getInstance()->clearUnused();
+	helper::ShaderCache::getInstance()->clearUnused();
 	cleanDirty();
 }
 
@@ -930,7 +937,6 @@ void PandaDocument::step()
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
-	helper::GradientCache::getInstance()->resetUsedFlag();
 
 	for(auto object : pandaObjects)
 		object->beginStep();
@@ -950,7 +956,6 @@ void PandaDocument::step()
 	for(auto object : pandaObjects)
 		object->endStep();
 
-	helper::GradientCache::getInstance()->clearUnused();
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->stopLog();
 #endif

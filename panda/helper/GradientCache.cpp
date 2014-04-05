@@ -28,14 +28,17 @@ void GradientCache::resetUsedFlag()
 
 void GradientCache::clearUnused()
 {
-	for(GradientTableHash::iterator it = m_cache.begin(), itEnd = m_cache.end(); it!=itEnd; ++it)
+	GradientTableHash::iterator it = m_cache.begin(), itEnd = m_cache.end();
+	while(it != itEnd)
 	{
 		const CacheItem& item = it.value();
 		if(!item.m_used)
 		{
 			glDeleteTextures(1, &item.m_textureId);
-			m_cache.erase(it);
+			it = m_cache.erase(it);
 		}
+		else
+			++it;
 	}
 }
 
