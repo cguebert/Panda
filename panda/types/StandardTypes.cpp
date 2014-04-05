@@ -1,7 +1,6 @@
 #include <panda/helper/system/Config.h>
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
-#include <panda/types/TypeConverter.h>
 
 #include <panda/types/Animation.inl>
 #include <panda/types/AnimationTraits.h>

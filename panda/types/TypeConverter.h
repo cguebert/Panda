@@ -2,6 +2,7 @@
 #define TYPES_TYPECONVERTER_H
 
 #include <panda/types/DataTypeId.h>
+#include <panda/types/DataTraits.h>
 
 #include <QSharedPointer>
 
@@ -38,6 +39,7 @@ public:
 
 	RegisterTypeConverter()
 	{
+		ensureTypesAreRegistered();
 		int fromType = DataTypeId::getIdOf<From>();
 		int toType = DataTypeId::getIdOf<To>();
 		QSharedPointer<BaseConverterFunctor> functor(new TypeConverterGlobal<From, To>);
@@ -47,11 +49,20 @@ public:
 
 	RegisterTypeConverter(convertType* function)
 	{
+		ensureTypesAreRegistered();
 		int fromType = DataTypeId::getIdOf<From>();
 		int toType = DataTypeId::getIdOf<To>();
 		QSharedPointer<BaseConverterFunctor> functor(new TypeConverterFunctor<From, To>(function));
 
 		TypeConverter::registerFunctor(fromType, toType, functor);
+	}
+
+protected:
+	/// If we create a converter before the 2 types are fully registered, we do it here
+	void ensureTypesAreRegistered()
+	{
+		DataTypeId::registerType<From>(DataTrait<From>::fullTypeId());
+		DataTypeId::registerType<To>(DataTrait<To>::fullTypeId());
 	}
 };
 

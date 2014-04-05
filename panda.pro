@@ -183,6 +183,7 @@ SOURCES       = main.cpp \
 	panda/types/DataTypeId.cpp \
 	panda/types/Gradient.cpp \
 	panda/types/ImageWrapper.cpp \
+	panda/types/Path.cpp \
 	panda/types/Point.cpp \
 	panda/types/Rect.cpp \
 	panda/types/Shader.cpp \

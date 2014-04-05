@@ -33,6 +33,7 @@ private:
 	DataTypeId();
 
 	template<class T> friend class RegisterData;
+	template<class From, class To> friend class RegisterTypeConverter;
 
 	// To register vectors and animations
 	static void registerType(const std::type_info& type, int fullType);
