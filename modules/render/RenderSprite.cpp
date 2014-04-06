@@ -49,8 +49,8 @@ public:
 		sizeBuffer.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 		sizeBuffer.create();
 
+		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setShaderTypes(QOpenGLShader::Vertex | QOpenGLShader::Fragment);
 		shaderAcc->addSource(QOpenGLShader::Vertex,
 							 "in vec2 position;\n"
 							 "in float size;\n"

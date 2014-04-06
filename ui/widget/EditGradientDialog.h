@@ -72,8 +72,6 @@ protected:
 	QLineEdit* posEdit;
 	QPushButton *removeButton, *colorButton;
 	int extend, selected;
-
-public slots:
 };
 
 #endif // EDITGRADIENTDIALOG_H

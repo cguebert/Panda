@@ -13,18 +13,7 @@ namespace types
 {
 
 Shader::Shader()
-	: m_flags(0)
 { }
-
-void Shader::setShaderTypes(QOpenGLShader::ShaderType flags)
-{
-	m_flags = flags;
-}
-
-QOpenGLShader::ShaderType Shader::getShaderTypes() const
-{
-	return m_flags;
-}
 
 void Shader::clear()
 {
@@ -93,9 +82,6 @@ template<>
 void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement& elem, const Shader& v)
 {
 	auto sources = v.getSources();
-	int types = v.getShaderTypes();
-
-	elem.setAttribute("types", types);
 
 	for(const auto& source : sources)
 	{
@@ -112,8 +98,6 @@ template<>
 void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
 {
 	v.clear();
-	int type = elem.attribute("types").toInt();
-	v.setShaderTypes(QOpenGLShader::ShaderType(type));
 
 	QDomElement sourceNode = elem.firstChildElement("Source");
 	while(!sourceNode.isNull())

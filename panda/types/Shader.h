@@ -19,9 +19,6 @@ class Shader
 public:
 	Shader();
 
-	void setShaderTypes(QOpenGLShader::ShaderType flags);
-	QOpenGLShader::ShaderType getShaderTypes() const;
-
 	void clear(); /// Remove all sources & all data
 	void addSource(QOpenGLShader::ShaderType type, QString sourceCode);
 	void removeSource(QOpenGLShader::ShaderType type);
@@ -38,8 +35,6 @@ public:
 	const QList<ShaderSource> getSources() const;
 
 protected:
-	QOpenGLShader::ShaderType m_flags;
-
 	typedef QMap<QOpenGLShader::ShaderType, ShaderSource> SourcesMap;
 	SourcesMap m_sourcesMap;
 };

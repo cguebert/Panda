@@ -61,6 +61,7 @@ HEADERS       = \
 	ui/widget/DataWidget.h \
 	ui/widget/DataWidgetFactory.h \
 	ui/widget/EditGradientDialog.h \
+	ui/widget/EditShaderDialog.h \
 	ui/widget/ListDataWidgetDialog.h \
 	ui/widget/OpenDialogDataWidget.h \
 	ui/widget/SimpleDataWidget.h \
@@ -208,6 +209,7 @@ SOURCES       = main.cpp \
 	ui/drawstruct/ObjectDrawStruct.cpp \
 	ui/widget/ColorDataWidget.cpp \
 	ui/widget/EditGradientDialog.cpp \
+	ui/widget/EditShaderDialog.cpp \
 	ui/widget/DataWidgetFactory.cpp \
 	ui/widget/NumericalDataWidget.cpp \
 	ui/widget/PointDataWidget.cpp \

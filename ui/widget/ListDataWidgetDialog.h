@@ -108,7 +108,7 @@ public:
 		dataWidgetCreator = DataWidgetFactory::getInstance()->getCreator(rowTypeFullId, parentDW->getWidgetName());
 	}
 
-	virtual void readFromData(const value_type& v)
+	void readFromData(const value_type& v)
 	{
 		valueCopy = v;
 		resize(row_trait::size(v));
@@ -120,7 +120,7 @@ public:
 			resizeSpinBox->setValue(dataWidgets.size());
 	}
 
-	virtual void writeToData(value_type& v)
+	void writeToData(value_type& v)
 	{
 		for(auto child : dataWidgets)
 			child->updateDataValue();
