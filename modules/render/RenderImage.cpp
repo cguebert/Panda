@@ -4,14 +4,16 @@
 #include <panda/Renderer.h>
 #include <panda/types/Rect.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/types/Shader.h>
 
-#include <QOpenGLContext>
+#include <QOpenGLShaderProgram>
 
 namespace panda {
 
 using types::Point;
 using types::Rect;
 using types::ImageWrapper;
+using types::Shader;
 
 class RenderImage : public Renderer
 {
@@ -24,15 +26,36 @@ public:
 		, center(initData(&center, "center", "Center position of the image"))
 		, rotation(initData(&rotation, "rotation", "Rotation of the image"))
 		, drawCentered(initData(&drawCentered, 0, "drawCentered", "If non zero use the center of the image, else use the top-left corner"))
+		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
 		addInput(&image);
 		addInput(&center);
 		addInput(&rotation);
 		addInput(&drawCentered);
+		addInput(&shader);
 
 		drawCentered.setWidget("checkbox");
 
 		center.getAccessor().push_back(Point(0, 0));
+
+		shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = shader.getAccessor();
+		shaderAcc->addSource(QOpenGLShader::Vertex,
+							 "uniform mat4 MVP;\n"
+							 "void main(void)\n"
+							 "{\n"
+							 "  gl_TexCoord[0] = gl_MultiTexCoord0;\n"
+							 "  gl_Position = MVP * vec4(gl_Vertex.xy, 0, 1);\n"
+							 "}"
+							);
+
+		shaderAcc->addSource(QOpenGLShader::Fragment,
+							 "uniform sampler2D tex0;\n"
+							 "void main(void)\n"
+							 "{\n"
+							 "  gl_FragColor = texture(tex0, gl_TexCoord[0].st);\n"
+							 "}"
+							);
 	}
 
 	void drawTexture(GLuint texId, Rect area)
@@ -82,6 +105,12 @@ public:
 			if(nbImage < nbCenter) nbImage = 1;
 			if(nbRotation && nbRotation < nbCenter) nbRotation = 1;
 
+			shader.getValue().apply(shaderProgram);
+
+			shaderProgram.bind();
+			const QMatrix4x4& MVP = getMVPMatrix();
+			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+
 			glColor4f(1, 1, 1, 1);
 
 			if(nbRotation)
@@ -93,13 +122,13 @@ public:
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size() / 2;
 						if(!s.isValid()) continue;
-						glPushMatrix();
-						glTranslateReal(listCenter[i].x, listCenter[i].y, 0);
-						glRotateReal(listRotation[i % nbRotation], 0, 0, 1);
+						QMatrix4x4 tmpMVP = MVP;
+						tmpMVP.translate(listCenter[i].x, listCenter[i].y, 0);
+						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
+						shaderProgram.setUniformValue("MVP", tmpMVP);
 						Rect area = Rect(-s.width(), -s.height(),
 											 s.width(), s.height());
 						drawTexture(img.getTexture(), area);
-						glPopMatrix();
 					}
 				}
 				else
@@ -109,12 +138,12 @@ public:
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size();
 						if(!s.isValid()) continue;
-						glPushMatrix();
-						glTranslateReal(listCenter[i].x, listCenter[i].y, 0);
-						glRotateReal(listRotation[i % nbRotation], 0, 0, 1);
+						QMatrix4x4 tmpMVP = MVP;
+						tmpMVP.translate(listCenter[i].x, listCenter[i].y, 0);
+						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
+						shaderProgram.setUniformValue("MVP", tmpMVP);
 						Rect area = Rect(0, 0, s.width(), s.height());
 						drawTexture(img.getTexture(), area);
-						glPopMatrix();
 					}
 				}
 			}
@@ -146,6 +175,8 @@ public:
 					}
 				}
 			}
+
+			shaderProgram.release();
 		}
 	}
 
@@ -154,6 +185,9 @@ protected:
 	Data< QVector<Point> > center;
 	Data< QVector<PReal> > rotation;
 	Data< int > drawCentered;
+	Data< Shader > shader;
+
+	QOpenGLShaderProgram shaderProgram;
 };
 
 int RenderImageClass = RegisterObject<RenderImage>("Render/Image").setDescription("Renders an image");

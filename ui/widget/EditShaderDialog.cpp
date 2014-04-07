@@ -13,6 +13,7 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 	QVBoxLayout* mainLayout = new QVBoxLayout();
 
 	m_tabWidget = new QTabWidget;
+	m_tabWidget->setMinimumWidth(400);
 	mainLayout->addWidget(m_tabWidget);
 
 	QPushButton* okButton = new QPushButton(tr("Ok"), this);

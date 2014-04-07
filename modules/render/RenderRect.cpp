@@ -4,11 +4,15 @@
 #include <panda/Renderer.h>
 #include <panda/types/Color.h>
 #include <panda/types/Rect.h>
+#include <panda/types/Shader.h>
+
+#include <QOpenGLShaderProgram>
 
 namespace panda {
 
 using types::Color;
 using types::Rect;
+using types::Shader;
 
 class RenderRect : public Renderer
 {
@@ -84,12 +88,34 @@ public:
 		: Renderer(parent)
 		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
 		, color(initData(&color, "color", "Color of the rectangle"))
+		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
 		addInput(&rect);
 		addInput(&color);
+		addInput(&shader);
 
 		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
 		color.getAccessor().push_back(Color::black());
+
+		shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = shader.getAccessor();
+		shaderAcc->addSource(QOpenGLShader::Vertex,
+							 "out vec4 f_color;\n"
+							 "uniform mat4 MVP;\n"
+							 "void main(void)\n"
+							 "{\n"
+							 "	f_color = gl_Color;\n"
+							 "	gl_Position = MVP * vec4(gl_Vertex.xy, 0, 1);\n"
+							 "}"
+							);
+
+		shaderAcc->addSource(QOpenGLShader::Fragment,
+							 "in vec4 f_color;\n"
+							 "void main(void)\n"
+							 "{\n"
+							 "   gl_FragColor = f_color;\n"
+							 "}"
+							);
 	}
 
 	void render()
@@ -102,8 +128,13 @@ public:
 
 		if(nbRect && nbColor)
 		{
+			shader.getValue().apply(shaderProgram);
+
 			if(nbColor < nbRect) nbColor = 1;
 			PReal verts[8];
+
+			shaderProgram.bind();
+			shaderProgram.setUniformValue("MVP", getMVPMatrix());
 
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glVertexPointer(2, GL_PREAL, 0, verts);
@@ -120,12 +151,17 @@ public:
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			}
 			glDisableClientState(GL_VERTEX_ARRAY);
+
+			shaderProgram.release();
 		}
 	}
 
 protected:
 	Data< QVector<Rect> > rect;
 	Data< QVector<Color> > color;
+	Data< Shader > shader;
+
+	QOpenGLShaderProgram shaderProgram;
 };
 
 int RenderFilledRectClass = RegisterObject<RenderFilledRect>("Render/Filled rectangle").setDescription("Draw a filled rectangle");

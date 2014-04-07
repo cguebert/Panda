@@ -57,7 +57,8 @@ public:
 							 "in vec4 color;\n"
 							 "out vec4 f_color;\n"
 							 "uniform mat4 MVP;\n"
-							 "void main(void){\n"
+							 "void main(void)\n"
+							 "{\n"
 							 "	f_color = color;\n"
 							 "	gl_Position = MVP * vec4(position.xy, 0, 1);\n"
 							 "	gl_PointSize = max(1.0, size);\n"
@@ -68,7 +69,8 @@ public:
 							 "uniform sampler2D tex0;\n"
 							 "in vec4 f_color;\n"
 							 "out vec4 fragColor;\n"
-							 "void main(void){\n"
+							 "void main(void)\n"
+							 "{\n"
 							 "   fragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y)) * f_color;\n"
 							 "}"
 							);
@@ -165,9 +167,9 @@ public:
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glDisable(GL_TEXTURE_2D);
 
-			functions.glDisableVertexAttribArray(attribute_pos);
-			functions.glDisableVertexAttribArray(attribute_size);
-			functions.glDisableVertexAttribArray(attribute_color);
+			shaderProgram.disableAttributeArray(attribute_pos);
+			shaderProgram.disableAttributeArray(attribute_size);
+			shaderProgram.disableAttributeArray(attribute_color);
 			glDisable(GL_POINT_SPRITE);
 			glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 		}
