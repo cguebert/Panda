@@ -68,6 +68,13 @@ void Shader::apply(QOpenGLShaderProgram& program) const
 
 	if(needLink)
 		program.link();
+
+	if(program.isLinked())
+	{
+		program.bind();
+		for(auto value : m_shaderValues)
+			value->apply(program);
+	}
 }
 
 const QList<Shader::ShaderSource> Shader::getSources() const

@@ -106,6 +106,8 @@ public:
 			if(nbRotation && nbRotation < nbCenter) nbRotation = 1;
 
 			shader.getValue().apply(shaderProgram);
+			if(!shaderProgram.isLinked())
+				return;
 
 			shaderProgram.bind();
 			const QMatrix4x4& MVP = getMVPMatrix();

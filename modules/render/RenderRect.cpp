@@ -130,6 +130,9 @@ public:
 		{
 			shader.getValue().apply(shaderProgram);
 
+			if(!shaderProgram.isLinked())
+				return;
+
 			if(nbColor < nbRect) nbColor = 1;
 			PReal verts[8];
 

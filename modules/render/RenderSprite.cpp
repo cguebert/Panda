@@ -96,6 +96,9 @@ public:
 		{
 			shader.getValue().apply(shaderProgram);
 
+			if(!shaderProgram.isLinked())
+				return;
+
 			attribute_pos = shaderProgram.attributeLocation("position");
 			attribute_size = shaderProgram.attributeLocation("size");
 			attribute_color = shaderProgram.attributeLocation("color");

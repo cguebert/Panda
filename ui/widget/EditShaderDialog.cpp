@@ -40,6 +40,8 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 	const int nbTypes = sizeof(typesNames) / sizeof(const char*);
 
 	QString params = parent->getParameters();
+	if(params.isEmpty())
+		params = "Vertex:Fragment"; // By default, create vertex & fragment shaders
 	QStringList typesList = params.split(";");
 	for(const QString& type : typesList)
 	{
