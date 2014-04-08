@@ -95,6 +95,7 @@ SOURCES       = main.cpp \
 	modules/generators/rectangle/ComposeRectangles.cpp \
 	modules/generators/text/DateTime.cpp \
 	modules/generators/text/Format.cpp \
+	modules/generators/shader/SetShaderValues.cpp \
 	modules/generators/topology/ComposeTopology.cpp \
 	modules/generators/topology/Delaunay.cpp \
 	modules/generators/topology/Grid.cpp \

@@ -18,6 +18,7 @@ Shader::Shader()
 void Shader::clear()
 {
 	m_sourcesMap.clear();
+	m_shaderValues.clear();
 }
 
 void Shader::addSource(QOpenGLShader::ShaderType type, QString sourceCode)
@@ -72,6 +73,46 @@ void Shader::apply(QOpenGLShaderProgram& program) const
 const QList<Shader::ShaderSource> Shader::getSources() const
 {
 	return m_sourcesMap.values();
+}
+
+template<> void ShaderValue<int>::apply(QOpenGLShaderProgram& program) const
+{ program.setUniformValue(program.uniformLocation(m_name), m_value); }
+
+template<> void ShaderValue<PReal>::apply(QOpenGLShaderProgram& program) const
+{ program.setUniformValue(program.uniformLocation(m_name), (float)m_value); }
+
+template<> void ShaderValue<Color>::apply(QOpenGLShaderProgram& program) const
+{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.ptr(), 1, 4); }
+
+template<> void ShaderValue<Point>::apply(QOpenGLShaderProgram& program) const
+{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.ptr(), 1, 2); }
+
+template<> void ShaderValue< QVector<int> >::apply(QOpenGLShaderProgram& program) const
+{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), m_value.size()); }
+
+template<> void ShaderValue< QVector<PReal> >::apply(QOpenGLShaderProgram& program) const
+{
+	int nb = m_value.size();
+#ifdef PANDA_DOUBLE
+	QVector<float> copy(nb);
+	for(int i++; i<nb; ++i)
+		copy[i] = m_value[i]:
+	program.setUniformValueArray(program.uniformLocation(m_name), copy.data(), nb, 1);
+#else
+	program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), nb, 1);
+#endif
+}
+
+template<> void ShaderValue< QVector<Color> >::apply(QOpenGLShaderProgram& program) const
+{
+	if(!m_value.empty())
+		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].ptr(), m_value.size(), 4);
+}
+
+template<> void ShaderValue< QVector<Point> >::apply(QOpenGLShaderProgram& program) const
+{
+	if(!m_value.empty())
+		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].ptr(), m_value.size(), 2);
 }
 
 //***************************************************************//

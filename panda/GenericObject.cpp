@@ -1,6 +1,7 @@
 #include <panda/GenericObject.h>
 #include <panda/PandaDocument.h>
 #include <panda/DataFactory.h>
+#include <panda/types/TypeConverter.h>
 
 #include <QApplication>
 
@@ -10,6 +11,7 @@ namespace panda
 {
 
 using types::DataTypeId;
+using types::TypeConverter;
 
 GenericObject::GenericObject(PandaDocument *parent)
 	: PandaObject(parent)
@@ -82,7 +84,9 @@ BaseData* GenericObject::createDatas(int type)
 		dataName += QString(" #%2").arg(index);	// Add the count
 
 		int dataType = m_dataDefinitions[i].type;
-		if(!DataTypeId::getValueType(dataType))	// Use the type of the connected Data
+		if(!dataType) // If the type in the definition is 0, use the full type of the connected Data
+			dataType = type;
+		else if(!DataTypeId::getValueType(dataType))	// Replace with the value type of the connected Data
 			dataType = types::DataTypeId::replaceValueType(dataType, valueType);
 
 		BaseData* data = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
@@ -286,6 +290,27 @@ bool GenericAnimationData::validParent(const BaseData* parent) const
 QString GenericAnimationData::getDescription() const
 {
 	return QString("Accepting animations" + getTypesName());
+}
+
+bool GenericSpecificData::validParent(const BaseData* parent) const
+{
+	int fromType = parent->getDataTrait()->fullTypeId();
+	if(allowedTypes.contains(fromType)) // Directly contains this type
+		return true;
+
+	// Or we can convert to this type
+	for(int type : allowedTypes)
+	{
+		if(TypeConverter::canConvert(fromType, type))
+			return true;
+	}
+
+	return false;
+}
+
+QString GenericSpecificData::getDescription() const
+{
+	return QString("Accepting these types :" + getTypesName());
 }
 
 } // namespace panda

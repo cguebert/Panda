@@ -66,6 +66,16 @@ public:
 	virtual QString getDescription() const;
 };
 
+class GenericSpecificData : public GenericData	// Accepts only the specific types given allowedTypes
+{
+public:
+	explicit GenericSpecificData(const BaseData::BaseInitData& init)
+		: GenericData(init) {}
+
+	virtual bool validParent(const BaseData* parent) const;
+	virtual QString getDescription() const;
+};
+
 //***************************************************************//
 
 class GenericObject : public PandaObject
