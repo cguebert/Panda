@@ -11,6 +11,9 @@
 #include <QMap>
 #include <QSharedPointer>
 #include <QOpenGLShader>
+#include <QDomElement>
+
+#include <boost/mpl/vector.hpp>
 
 class QOpenGLShaderProgram;
 
@@ -52,6 +55,9 @@ protected:
 	T m_value;
 };
 
+typedef boost::mpl::vector<int, PReal, types::Color, types::Point,
+	QVector<int>, QVector<PReal>, QVector<types::Color>, QVector<types::Point> > shaderValuesTypes;
+
 class Shader
 {
 public:
@@ -81,11 +87,40 @@ public:
 	typedef QVector< QSharedPointer< BaseShaderValue > > ValuesVector;
 	const ValuesVector& getValues() const;
 
+	void loadValue(QString type, QDomElement &elem);
+
 protected:
 	typedef QMap<QOpenGLShader::ShaderType, ShaderSource> SourcesMap;
 	SourcesMap m_sourcesMap;
 
 	ValuesVector m_shaderValues;
+
+	typedef void(Shader::*loadValueFuncPtr)(QDomElement& elem);
+	QMap<QString, loadValueFuncPtr> m_loadValueFunctions;
+	struct functionCreatorWrapper
+	{
+		Shader* object;
+		functionCreatorWrapper(Shader* obj) : object(obj) {}
+		template<typename T> void operator()(T)
+		{
+			QString type = DataTraitsList::getTraitOf<T>()->description();
+			object->registerFunction(type, &Shader::loadValue<T>);
+		}
+	};
+
+	void registerFunction(QString type, loadValueFuncPtr ptr);
+
+	template<class T>
+	void loadValue(QDomElement& elem)
+	{
+		QString name = elem.attribute("name");
+		T value;
+		DataTraitsList::getTraitOf<T>()->readValue(elem, &value);
+		setUniform(name, value);
+	}
+
+private:
+	void registerLoadFunctions();
 };
 
 

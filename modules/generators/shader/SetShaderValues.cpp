@@ -11,11 +11,9 @@ using types::Point;
 using types::Shader;
 using types::DataTypeId;
 
-typedef boost::mpl::vector<int, PReal, types::Color, types::Point, QVector<int> > shaderValuesTypes;
-
 class ModifierShader_SetUniform : public GenericObject
 {
-	GENERIC_OBJECT(ModifierShader_SetUniform, shaderValuesTypes)
+	GENERIC_OBJECT(ModifierShader_SetUniform, types::shaderValuesTypes)
 public:
 	PANDA_CLASS(ModifierShader_SetUniform, GenericObject)
 

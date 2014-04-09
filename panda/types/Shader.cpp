@@ -4,7 +4,11 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
 
+#include <boost/mpl/for_each.hpp>
+
 #include <QOpenGLShaderProgram>
+
+#include <iostream>
 
 namespace panda
 {
@@ -13,7 +17,9 @@ namespace types
 {
 
 Shader::Shader()
-{ }
+{
+	registerLoadFunctions();
+}
 
 void Shader::clear()
 {
@@ -85,6 +91,22 @@ const QList<Shader::ShaderSource> Shader::getSources() const
 const Shader::ValuesVector& Shader::getValues() const
 {
 	return m_shaderValues;
+}
+
+void Shader::loadValue(QString type, QDomElement& elem)
+{
+	if(m_loadValueFunctions.contains(type))
+		(this->*m_loadValueFunctions[type])(elem);
+}
+
+void Shader::registerFunction(QString type, loadValueFuncPtr ptr)
+{
+	m_loadValueFunctions[type] = ptr;
+}
+
+void Shader::registerLoadFunctions()
+{
+	boost::mpl::for_each<shaderValuesTypes>(functionCreatorWrapper(this));
 }
 
 //***************************************************************//
@@ -171,6 +193,14 @@ void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
 		int type = sourceNode.attribute("type").toInt();
 		v.addSource(QOpenGLShader::ShaderType(type), sourceNode.text());
 		sourceNode = sourceNode.nextSiblingElement("Source");
+	}
+
+	QDomElement valueNode = elem.firstChildElement("Uniform");
+	while(!valueNode.isNull())
+	{
+		QString type = valueNode.attribute("type");
+		v.loadValue(type, valueNode);
+		valueNode = valueNode.nextSiblingElement("Uniform");
 	}
 }
 
