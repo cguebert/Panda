@@ -82,6 +82,13 @@ const QList<Shader::ShaderSource> Shader::getSources() const
 	return m_sourcesMap.values();
 }
 
+const Shader::ValuesVector& Shader::getValues() const
+{
+	return m_shaderValues;
+}
+
+//***************************************************************//
+
 template<> void ShaderValue<int>::apply(QOpenGLShaderProgram& program) const
 { program.setUniformValue(program.uniformLocation(m_name), m_value); }
 
@@ -139,6 +146,17 @@ void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement& elem, const S
 
 		QDomText node = doc.createTextNode(source.sourceCode);
 		sourceNode.appendChild(node);
+	}
+
+	const auto& values = v.getValues();
+	for(const auto& value : values)
+	{
+		QDomElement valueNode = doc.createElement("Uniform");
+		valueNode.setAttribute("name", value->getName());
+		valueNode.setAttribute("type", value->dataTrait()->description());
+		elem.appendChild(valueNode);
+
+		value->dataTrait()->writeValue(doc, valueNode, value->getValue());
 	}
 }
 

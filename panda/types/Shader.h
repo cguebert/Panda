@@ -4,6 +4,7 @@
 #include <panda/helper/system/Config.h>
 #include <panda/types/Color.h>
 #include <panda/types/Point.h>
+#include <panda/types/DataTraits.h>
 
 #include <QFlags>
 #include <QString>
@@ -24,6 +25,10 @@ class BaseShaderValue
 public:
 	virtual void apply(QOpenGLShaderProgram& program) const = 0; // Add the value to the shader program
 	virtual void cleanup() const = 0;	// Disable the array from the shader after rendering
+	virtual QString getName() const = 0;
+	virtual AbstractDataTrait* dataTrait() const = 0;
+	virtual const void* getValue() const = 0;
+	virtual void* getValue() = 0;
 };
 
 template<class T>
@@ -33,6 +38,14 @@ public:
 	ShaderValue(QString name, const T& val) : m_name(name), m_value(val) { }
 	virtual void apply(QOpenGLShaderProgram& program) const;
 	virtual void cleanup() const {}
+	virtual QString getName() const
+	{ return m_name; }
+	virtual AbstractDataTrait* dataTrait() const
+	{ return DataTraitsList::getTraitOf<T>(); }
+	virtual const void* getValue() const
+	{ return &m_value; }
+	virtual void* getValue()
+	{ return &m_value; }
 
 protected:
 	QString m_name;
@@ -65,11 +78,14 @@ public:
 		m_shaderValues.push_back(QSharedPointer<BaseShaderValue>(new ShaderValue<T>(name, value)));
 	}
 
+	typedef QVector< QSharedPointer< BaseShaderValue > > ValuesVector;
+	const ValuesVector& getValues() const;
+
 protected:
 	typedef QMap<QOpenGLShader::ShaderType, ShaderSource> SourcesMap;
 	SourcesMap m_sourcesMap;
 
-	QVector< QSharedPointer< BaseShaderValue > > m_shaderValues;
+	ValuesVector m_shaderValues;
 };
 
 
