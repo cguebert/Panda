@@ -294,7 +294,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 			if(data)
 			{
 				// Remove
-				if(data->getParent() && event->modifiers() == Qt::ControlModifier)
+				if(data->isInput() && data->getParent() && event->modifiers() == Qt::ControlModifier)
 				{
 					removeLinkTag(data->getParent(), data);
 					object->dataSetParent(data, nullptr);
@@ -671,7 +671,7 @@ void GraphView::contextMenuEvent(QContextMenuEvent *event)
 		{
 			flags |= MENU_DATA;
 			contextMenuData = data;
-			if(contextMenuData->getParent())
+			if(contextMenuData->isInput() && contextMenuData->getParent())
 				flags |= MENU_LINK;
 		}
 	}
