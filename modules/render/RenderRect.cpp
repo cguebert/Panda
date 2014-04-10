@@ -99,7 +99,7 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->addSource(QOpenGLShader::Vertex,
+		shaderAcc->setSource(QOpenGLShader::Vertex,
 							 "out vec4 f_color;\n"
 							 "uniform mat4 MVP;\n"
 							 "void main(void)\n"
@@ -109,7 +109,7 @@ public:
 							 "}"
 							);
 
-		shaderAcc->addSource(QOpenGLShader::Fragment,
+		shaderAcc->setSource(QOpenGLShader::Fragment,
 							 "in vec4 f_color;\n"
 							 "void main(void)\n"
 							 "{\n"

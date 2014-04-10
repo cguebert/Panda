@@ -9,6 +9,7 @@ using panda::types::Shader;
 
 EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QString name)
 	: QDialog(parent)
+	, m_readOnly(readOnly)
 {
 	QVBoxLayout* mainLayout = new QVBoxLayout();
 
@@ -58,6 +59,47 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 			}
 		}
 	}
+
+	QWidget* dummyContainer = new QWidget();
+	m_valuesLayout = new QStackedLayout();
+	dummyContainer->setLayout(m_valuesLayout);
+	m_tabWidget->addTab(dummyContainer, "Uniforms");
+}
+
+void EditShaderDialog::updateValuesTab(const Shader::ValuesVector& values)
+{
+	QScrollArea* scrollArea = new QScrollArea(this);
+	scrollArea->setFrameShape(QFrame::NoFrame);
+	scrollArea->setWidgetResizable(true);
+	QWidget *layoutWidget = new QWidget(scrollArea);
+	QFormLayout *formLayout = new QFormLayout(layoutWidget);
+//	formLayout->setMargin(0);
+	formLayout->setSizeConstraint(QLayout::SetMinimumSize);
+
+	scrollArea->setWidget(layoutWidget);
+
+	if (m_valuesLayout->currentWidget())
+		delete m_valuesLayout->currentWidget();
+	m_dataWidgets.clear();
+
+	m_valuesLayout->addWidget(scrollArea);
+	m_valuesLayout->setCurrentWidget(scrollArea);
+
+	for(auto value : values)
+	{
+		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()
+												 ->create(this, value->getValue(),
+														  value->dataTrait()->fullTypeId(),
+														  "", value->getName(), "")
+												 );
+
+		if (dataWidget)
+		{
+			m_dataWidgets.append(dataWidget);
+			QWidget* widget = dataWidget->createWidgets(m_readOnly);
+			formLayout->addRow(value->getName(), widget);
+		}
+	}
 }
 
 void EditShaderDialog::readFromData(const Shader& shader)
@@ -70,12 +112,15 @@ void EditShaderDialog::readFromData(const Shader& shader)
 			m_sourceWidgets[source.type].sourceEdit->setPlainText(source.sourceCode);
 		}
 	}
+
+	auto values = shader.getValues();
+	updateValuesTab(values);
 }
 
 void EditShaderDialog::writeToData(Shader& shader)
 {
 	for(auto it = m_sourceWidgets.cbegin(), itEnd = m_sourceWidgets.cend(); it != itEnd; ++it)
-		shader.addSource(it.key(), it.value().sourceEdit->toPlainText());
+		shader.setSource(it.key(), it.value().sourceEdit->toPlainText());
 }
 
 //***************************************************************//

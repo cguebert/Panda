@@ -63,8 +63,10 @@ class Shader
 public:
 	Shader();
 
+	Shader& operator=(const Shader& shader);
+
 	void clear(); /// Remove all sources & all data
-	void addSource(QOpenGLShader::ShaderType type, QString sourceCode);
+	void setSource(QOpenGLShader::ShaderType type, QString sourceCode);
 	void removeSource(QOpenGLShader::ShaderType type);
 
 	void apply(QOpenGLShaderProgram& program) const;
@@ -88,6 +90,7 @@ public:
 	const ValuesVector& getValues() const;
 
 	void loadValue(QString type, QDomElement &elem);
+	void copyValue(QString type, QString name, const void* value);
 
 protected:
 	typedef QMap<QOpenGLShader::ShaderType, ShaderSource> SourcesMap;
@@ -95,8 +98,12 @@ protected:
 
 	ValuesVector m_shaderValues;
 
-	typedef void(Shader::*loadValueFuncPtr)(QDomElement& elem);
+	typedef void(Shader::*loadValueFuncPtr)(QDomElement&);
 	QMap<QString, loadValueFuncPtr> m_loadValueFunctions;
+
+	typedef void(Shader::*copyValueFuncPtr)(QString, const void*);
+	QMap<QString, copyValueFuncPtr> m_copyValueFunctions;
+
 	struct functionCreatorWrapper
 	{
 		Shader* object;
@@ -104,11 +111,13 @@ protected:
 		template<typename T> void operator()(T)
 		{
 			QString type = DataTraitsList::getTraitOf<T>()->description();
-			object->registerFunction(type, &Shader::loadValue<T>);
+			loadValueFuncPtr loadPtr = &Shader::loadValue<T>;
+			object->m_loadValueFunctions[type] = loadPtr;
+
+			copyValueFuncPtr copyPtr = &Shader::copyValue<T>;
+			object->m_copyValueFunctions[type] = copyPtr;
 		}
 	};
-
-	void registerFunction(QString type, loadValueFuncPtr ptr);
 
 	template<class T>
 	void loadValue(QDomElement& elem)
@@ -119,8 +128,11 @@ protected:
 		setUniform(name, value);
 	}
 
-private:
-	void registerLoadFunctions();
+	template<class T>
+	void copyValue(QString name, const void* value)
+	{
+		setUniform(name, *static_cast<const T*>(value));
+	}
 };
 
 

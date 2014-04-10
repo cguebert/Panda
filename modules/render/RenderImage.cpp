@@ -40,7 +40,7 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->addSource(QOpenGLShader::Vertex,
+		shaderAcc->setSource(QOpenGLShader::Vertex,
 							 "uniform mat4 MVP;\n"
 							 "void main(void)\n"
 							 "{\n"
@@ -49,7 +49,7 @@ public:
 							 "}"
 							);
 
-		shaderAcc->addSource(QOpenGLShader::Fragment,
+		shaderAcc->setSource(QOpenGLShader::Fragment,
 							 "uniform sampler2D tex0;\n"
 							 "void main(void)\n"
 							 "{\n"

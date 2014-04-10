@@ -18,7 +18,18 @@ namespace types
 
 Shader::Shader()
 {
-	registerLoadFunctions();
+	boost::mpl::for_each<shaderValuesTypes>(functionCreatorWrapper(this));
+}
+
+Shader& Shader::operator=(const Shader& shader)
+{
+	clear();
+	m_sourcesMap = shader.m_sourcesMap;
+	auto values = shader.getValues();
+	for(auto value : values)
+		copyValue(value->dataTrait()->description(), value->getName(), value->getValue());
+
+	return *this;
 }
 
 void Shader::clear()
@@ -27,7 +38,7 @@ void Shader::clear()
 	m_shaderValues.clear();
 }
 
-void Shader::addSource(QOpenGLShader::ShaderType type, QString sourceCode)
+void Shader::setSource(QOpenGLShader::ShaderType type, QString sourceCode)
 {
 	ShaderSource shaderSource;
 	shaderSource.type = type;
@@ -99,14 +110,10 @@ void Shader::loadValue(QString type, QDomElement& elem)
 		(this->*m_loadValueFunctions[type])(elem);
 }
 
-void Shader::registerFunction(QString type, loadValueFuncPtr ptr)
+void Shader::copyValue(QString type, QString name, const void* value)
 {
-	m_loadValueFunctions[type] = ptr;
-}
-
-void Shader::registerLoadFunctions()
-{
-	boost::mpl::for_each<shaderValuesTypes>(functionCreatorWrapper(this));
+	if(m_copyValueFunctions.contains(type))
+		(this->*m_copyValueFunctions[type])(name, value);
 }
 
 //***************************************************************//
@@ -191,7 +198,7 @@ void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
 	while(!sourceNode.isNull())
 	{
 		int type = sourceNode.attribute("type").toInt();
-		v.addSource(QOpenGLShader::ShaderType(type), sourceNode.text());
+		v.setSource(QOpenGLShader::ShaderType(type), sourceNode.text());
 		sourceNode = sourceNode.nextSiblingElement("Source");
 	}
 

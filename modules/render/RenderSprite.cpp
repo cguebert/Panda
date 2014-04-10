@@ -51,7 +51,7 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->addSource(QOpenGLShader::Vertex,
+		shaderAcc->setSource(QOpenGLShader::Vertex,
 							 "in vec2 position;\n"
 							 "in float size;\n"
 							 "in vec4 color;\n"
@@ -65,7 +65,7 @@ public:
 							 "}"
 							);
 
-		shaderAcc->addSource(QOpenGLShader::Fragment,
+		shaderAcc->setSource(QOpenGLShader::Fragment,
 							 "uniform sampler2D tex0;\n"
 							 "in vec4 f_color;\n"
 							 "out vec4 fragColor;\n"

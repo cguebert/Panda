@@ -10,6 +10,7 @@
 
 class QTabWidget;
 class QTextEdit;
+class QStackedLayout;
 
 class EditShaderDialog : public QDialog
 {
@@ -23,8 +24,15 @@ public:
 public slots:
 
 protected:
+	void updateValuesTab(const panda::types::Shader::ValuesVector& values);
+
+	bool m_readOnly;
 	QTabWidget* m_tabWidget;
 	QOpenGLShader::ShaderType m_flags;
+	QStackedLayout* m_valuesLayout;
+
+	typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
+	QList<DataWidgetPtr> m_dataWidgets;
 
 	struct ShaderSourceItem
 	{

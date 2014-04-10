@@ -161,7 +161,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 {
 	if(data == m_genericData)
 	{
-		int type = parent->getDataTrait()->valueTypeId();
+		int type = parent->getDataTrait()->fullTypeId();
 		BaseData *inputData = createDatas(type);
 
 		if(inputData)
