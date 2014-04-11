@@ -60,35 +60,25 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 		}
 	}
 
-	QWidget* dummyContainer = new QWidget();
-	m_valuesLayout = new QStackedLayout();
-	dummyContainer->setLayout(m_valuesLayout);
-	m_tabWidget->addTab(dummyContainer, "Uniforms");
+	m_valuesArea = new QScrollArea();
+	m_valuesArea->setFrameShape(QFrame::NoFrame);
+	m_valuesArea->setWidgetResizable(true);
+	m_tabWidget->addTab(m_valuesArea, "Uniforms");
 }
 
 void EditShaderDialog::updateValuesTab(const Shader::ValuesVector& values)
 {
-	QScrollArea* scrollArea = new QScrollArea(this);
-	scrollArea->setFrameShape(QFrame::NoFrame);
-	scrollArea->setWidgetResizable(true);
-	QWidget *layoutWidget = new QWidget(scrollArea);
-	QFormLayout *formLayout = new QFormLayout(layoutWidget);
-//	formLayout->setMargin(0);
-	formLayout->setSizeConstraint(QLayout::SetMinimumSize);
+	QWidget* dummyContainer = new QWidget();
+	QFormLayout* valuesLayout = new QFormLayout();
+	dummyContainer->setLayout(valuesLayout);
+	m_valuesArea->setWidget(dummyContainer);
 
-	scrollArea->setWidget(layoutWidget);
-
-	if (m_valuesLayout->currentWidget())
-		delete m_valuesLayout->currentWidget();
 	m_dataWidgets.clear();
-
-	m_valuesLayout->addWidget(scrollArea);
-	m_valuesLayout->setCurrentWidget(scrollArea);
 
 	for(auto value : values)
 	{
 		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()
-												 ->create(this, value->getValue(),
+												 ->create(dummyContainer, value->getValue(),
 														  value->dataTrait()->fullTypeId(),
 														  "", value->getName(), "")
 												 );
@@ -97,7 +87,7 @@ void EditShaderDialog::updateValuesTab(const Shader::ValuesVector& values)
 		{
 			m_dataWidgets.append(dataWidget);
 			QWidget* widget = dataWidget->createWidgets(m_readOnly);
-			formLayout->addRow(value->getName(), widget);
+			valuesLayout->addRow(value->getName(), widget);
 		}
 	}
 }

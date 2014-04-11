@@ -10,7 +10,7 @@
 
 class QTabWidget;
 class QTextEdit;
-class QStackedLayout;
+class QScrollArea;
 
 class EditShaderDialog : public QDialog
 {
@@ -29,7 +29,7 @@ protected:
 	bool m_readOnly;
 	QTabWidget* m_tabWidget;
 	QOpenGLShader::ShaderType m_flags;
-	QStackedLayout* m_valuesLayout;
+	QScrollArea* m_valuesArea;
 
 	typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
 	QList<DataWidgetPtr> m_dataWidgets;
