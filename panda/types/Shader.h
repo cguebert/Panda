@@ -110,7 +110,7 @@ protected:
 		functionCreatorWrapper(Shader* obj) : object(obj) {}
 		template<typename T> void operator()(T)
 		{
-			QString type = DataTraitsList::getTraitOf<T>()->description();
+			QString type = DataTraitsList::getTraitOf<T>()->typeName();
 			loadValueFuncPtr loadPtr = &Shader::loadValue<T>;
 			object->m_loadValueFunctions[type] = loadPtr;
 

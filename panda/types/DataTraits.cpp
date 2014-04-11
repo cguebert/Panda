@@ -1,4 +1,5 @@
 #include <panda/types/DataTraits.h>
+#include <panda/types/DataTypeId.h>
 
 #include <QMap>
 #include <typeindex>
@@ -9,7 +10,7 @@ namespace panda
 namespace types
 {
 
-typedef QMap<std::type_index, AbstractDataTrait*> TraitsMap;
+typedef QMap<int, AbstractDataTrait*> TraitsMap;
 
 static TraitsMap& getTraitsMap()
 {
@@ -17,20 +18,24 @@ static TraitsMap& getTraitsMap()
 	return traitsMap;
 }
 
-AbstractDataTrait* DataTraitsList::getTrait(const std::type_info& type)
+AbstractDataTrait* DataTraitsList::getTrait(int fullTypeId)
 {
 	const TraitsMap& traitsMap = getTraitsMap();
-	std::type_index index(type);
-	if(traitsMap.contains(index))
-		return traitsMap.value(index);
+	if(traitsMap.contains(fullTypeId))
+		return traitsMap.value(fullTypeId);
 	else
 		return nullptr;
 }
 
-void DataTraitsList::registerTrait(const std::type_info& type, AbstractDataTrait* trait)
+AbstractDataTrait* DataTraitsList::getTrait(const std::type_info& type)
+{
+	return getTrait(DataTypeId::getId(type));
+}
+
+void DataTraitsList::registerTrait(AbstractDataTrait* trait)
 {
 	TraitsMap& traitsMap = getTraitsMap();
-	std::type_index index(type);
+	int index = trait->fullTypeId();
 	if(!traitsMap.contains(index))
 		traitsMap[index] = trait;
 }

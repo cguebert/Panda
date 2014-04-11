@@ -27,7 +27,7 @@ Shader& Shader::operator=(const Shader& shader)
 	m_sourcesMap = shader.m_sourcesMap;
 	auto values = shader.getValues();
 	for(auto value : values)
-		copyValue(value->dataTrait()->description(), value->getName(), value->getValue());
+		copyValue(value->dataTrait()->typeName(), value->getName(), value->getValue());
 
 	return *this;
 }
@@ -182,7 +182,7 @@ void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement& elem, const S
 	{
 		QDomElement valueNode = doc.createElement("Uniform");
 		valueNode.setAttribute("name", value->getName());
-		valueNode.setAttribute("type", value->dataTrait()->description());
+		valueNode.setAttribute("type", value->dataTrait()->typeName());
 		elem.appendChild(valueNode);
 
 		value->dataTrait()->writeValue(doc, valueNode, value->getValue());

@@ -50,7 +50,7 @@ void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseCl
 		entry = newEntry.data();
 	}
 
-	entry->typeName = dataTrait->description();
+	entry->typeName = dataTrait->typeName();
 	entry->className = className;
 	entry->creator = creator;
 	entry->fullType = dataTrait->fullTypeId();
@@ -58,7 +58,7 @@ void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseCl
 
 	registry[className] = entry;
 	typeRegistry[dataTrait->fullTypeId()] = entry;
-	nameRegistry[dataTrait->description()] = entry;
+	nameRegistry[dataTrait->typeName()] = entry;
 }
 
 QString DataFactory::typeToName(int type)

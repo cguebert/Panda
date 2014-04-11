@@ -24,9 +24,10 @@ public:
 	virtual bool isDisplayed() const = 0;
 	virtual bool isPersistent() const = 0;
 
-	virtual QString valueTypeName() const = 0;
-	virtual QString valueTypeNamePlural() const = 0;
-	virtual QString description() const = 0;
+	virtual QString valueTypeName() const = 0;			/// Readable form of the value type ("integer")
+	virtual QString valueTypeNamePlural() const = 0;	/// Plural form ("integers")
+	virtual QString typeName() const = 0;				/// When we save the type ("integer_vector")
+	virtual QString typeDescription() const = 0;		/// Full display string ("vector of integers")
 	virtual int valueTypeId() const = 0;
 	virtual int fullTypeId() const = 0;
 
@@ -56,7 +57,8 @@ public:
 
 	static QString valueTypeName() { return ""; } // Override for each type
 	static QString valueTypeNamePlural() { return valueTypeName() + "s"; }
-	static QString description() { return valueTypeName(); }
+	static QString typeName() { return valueTypeName(); }
+	static QString typeDescription() { return valueTypeName() + " value"; }
 	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
 	static int fullTypeId() { return DataTypeId::getFullTypeOfSingleValue(valueTypeId()); }
 	static int size(const value_type& /*v*/) { return 1; }
@@ -91,7 +93,8 @@ public:
 
 	virtual QString valueTypeName() const { return value_trait::valueTypeName(); }
 	virtual QString valueTypeNamePlural() const { return value_trait::valueTypeNamePlural(); }
-	virtual QString description() const { return value_trait::description(); }
+	virtual QString typeName() const { return value_trait::typeName(); }
+	virtual QString typeDescription() const { return value_trait::typeDescription(); }
 	virtual int valueTypeId() const { return value_trait::valueTypeId(); }
 	virtual int fullTypeId() const { return value_trait::fullTypeId(); }
 
@@ -129,7 +132,8 @@ public:
 
 	static QString valueTypeName() { return base_trait::valueTypeName(); }
 	static QString valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
-	static QString description() { return valueTypeName() + "_vector"; }
+	static QString typeName() { return valueTypeName() + "_vector"; }
+	static QString typeDescription() { return "vector of " + valueTypeNamePlural(); }
 	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
 	static int fullTypeId() { return DataTypeId::getFullTypeOfVector(valueTypeId()); }
 	static int size(const vector_type& v) { return v.size(); }
@@ -179,6 +183,7 @@ public:
 class DataTraitsList
 {
 public:
+	static AbstractDataTrait* getTrait(int fullTypeId);
 	static AbstractDataTrait* getTrait(const std::type_info& type);
 	template <class T>
 	static AbstractDataTrait* getTraitOf() { return getTrait(typeid(T)); }
@@ -188,9 +193,7 @@ private:
 
 	template<class T> friend class RegisterData;
 
-	static void registerTrait(const std::type_info& type, AbstractDataTrait* trait);
-	template <class T>
-	static void registerTrait(AbstractDataTrait* trait) { registerTrait(typeid(T), trait); }
+	static void registerTrait(AbstractDataTrait* trait);
 };
 
 } // namespace types

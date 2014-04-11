@@ -31,7 +31,7 @@ public:
 
 	virtual bool validParent(const BaseData* parent) const;
 	virtual QString getDescription() const;
-	virtual QString getTypesName() const;
+	virtual QString getTypesName(bool useFullDescription = false) const;
 
 	QList<int> allowedTypes;
 };

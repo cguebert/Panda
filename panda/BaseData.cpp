@@ -122,15 +122,7 @@ void BaseData::setParent(BaseData* parent)
 
 QString BaseData::getDescription() const
 {
-	auto trait = getDataTrait();
-	if(trait->isSingleValue())
-		return QString("Single %1 value").arg(trait->valueTypeName());
-	if(trait->isVector())
-		return QString("List of %1").arg(trait->valueTypeNamePlural());
-	if(trait->isAnimation())
-		return QString("Animation of %1").arg(trait->valueTypeNamePlural());
-
-	return QString();
+	return getDataTrait()->typeDescription();
 }
 
 void BaseData::save(QDomDocument& doc, QDomElement& elem)

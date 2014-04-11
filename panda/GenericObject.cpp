@@ -1,6 +1,7 @@
 #include <panda/GenericObject.h>
 #include <panda/PandaDocument.h>
 #include <panda/DataFactory.h>
+#include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
 
 #include <QApplication>
@@ -11,6 +12,7 @@ namespace panda
 {
 
 using types::DataTypeId;
+using types::DataTraitsList;
 using types::TypeConverter;
 
 GenericObject::GenericObject(PandaDocument *parent)
@@ -241,22 +243,37 @@ QString GenericData::getDescription() const
 	return QString("Accepting single values, lists & animations" + getTypesName());
 }
 
-QString GenericData::getTypesName() const
+QString GenericData::getTypesName(bool useFullDescription) const
 {
 	if(allowedTypes.isEmpty())
 		return "";
-	QString temp("\n (");
-	for(int i=0, nb=allowedTypes.size(); i<nb; ++i)
+
+	QVector<QString> sortedTypeNames;
+	for(auto type : allowedTypes)
+	{
+		auto trait = DataTraitsList::getTrait(type);
+		if(trait)
+		{
+			if(useFullDescription)
+				sortedTypeNames.push_back(trait->typeDescription());
+			else
+				sortedTypeNames.push_back(trait->typeName());
+		}
+	}
+	qSort(sortedTypeNames);
+
+	QString types("\n (");
+	for(int i=0, nb=sortedTypeNames.size(); i<nb; ++i)
 	{
 		if(i)
-			temp += ", ";
+			types += ", ";
 		if(i && !(i%3))
-			temp += "\n  ";
-		temp += DataFactory::typeToName(allowedTypes[i]);
+			types += "\n  ";
+		types += sortedTypeNames[i];
 	}
 
-	temp += ")";
-	return temp;
+	types += ")";
+	return types;
 }
 
 bool GenericSingleValueData::validParent(const BaseData* parent) const
@@ -310,7 +327,7 @@ bool GenericSpecificData::validParent(const BaseData* parent) const
 
 QString GenericSpecificData::getDescription() const
 {
-	return QString("Accepting these types :" + getTypesName());
+	return QString("Accepting these types :" + getTypesName(true));
 }
 
 } // namespace panda
