@@ -315,13 +315,6 @@ bool GenericSpecificData::validParent(const BaseData* parent) const
 	if(allowedTypes.contains(fromType)) // Directly contains this type
 		return true;
 
-	// Or we can convert to this type
-	for(int type : allowedTypes)
-	{
-		if(TypeConverter::canConvert(fromType, type))
-			return true;
-	}
-
 	return false;
 }
 
