@@ -67,12 +67,17 @@ public:
 				vertices[0] = valCenter.x;
 				vertices[1] = valCenter.y;
 
+				PReal angle = PI2 / nbSeg;
+				PReal ca = cos(angle), sa = sin(angle);
+				Point dir = Point(valRadius, 0);
+
 				for(int i=0; i<=nbSeg; ++i)
 				{
-					PReal t = i / static_cast<PReal>(nbSeg) * PI2;
 					int index = (i+1)*2;
-					vertices[index  ] = valCenter.x + cos(t) * valRadius;
-					vertices[index+1] = valCenter.y + sin(t) * valRadius;
+					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
+					vertices[index  ] = valCenter.x + pt.x;
+					vertices[index+1] = valCenter.y + pt.y;
+					dir = pt;
 				}
 
 				glVertexPointer(2, GL_PREAL, 0, vertices.data());
@@ -160,12 +165,17 @@ public:
 				vertices[1] = valCenter.y;
 				texCoords[0] = 0; texCoords[1] = 0;
 
+				PReal angle = PI2 / nbSeg;
+				PReal ca = cos(angle), sa = sin(angle);
+				Point dir = Point(valRadius, 0);
+
 				for(int i=0; i<=nbSeg; ++i)
 				{
-					PReal t = i / static_cast<PReal>(nbSeg) * PI2;
 					int index = (i+1)*2;
-					vertices[index] = valCenter.x + cos(t) * valRadius;
-					vertices[index+1] = valCenter.y + sin(t) * valRadius;
+					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
+					vertices[index  ] = valCenter.x + pt.x;
+					vertices[index+1] = valCenter.y + pt.y;
+					dir = pt;
 					texCoords[index] = 1; texCoords[index+1] = 0;
 				}
 

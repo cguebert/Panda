@@ -65,12 +65,16 @@ public:
 				if(nbSeg < 3) continue;
 				vertices.resize((nbSeg + 2) * 2);
 
+				PReal angle = M_PI * 2 / nbSeg;
+				PReal ca = cos(angle), sa = sin(angle);
+				Point dir = Point(valRadius, 0);
 				Point valCenter = listCenter[i];
 				for(int i=0; i<nbSeg; i++)
 				{
-					PReal t = i / static_cast<PReal>(nbSeg) * 2 * M_PI;
-					vertices[i*2  ] = valCenter.x + cos(t) * valRadius;
-					vertices[i*2+1] = valCenter.y + sin(t) * valRadius;
+					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
+					vertices[i*2  ] = valCenter.x + pt.x;
+					vertices[i*2+1] = valCenter.y + pt.y;
+					dir = pt;
 				}
 				glVertexPointer(2, GL_PREAL, 0, vertices.data());
 				glDrawArrays(GL_LINE_LOOP, 0, nbSeg);
