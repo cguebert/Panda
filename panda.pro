@@ -36,11 +36,11 @@ HEADERS       = \
 	panda/types/DataTypeId.h \
 	panda/types/Gradient.h \
 	panda/types/ImageWrapper.h \
+	panda/types/Mesh.h \
 	panda/types/Path.h \
 	panda/types/Point.h \
 	panda/types/Rect.h \
 	panda/types/Shader.h \
-	panda/types/Topology.h \
 	panda/types/TypeConverter.h \
 	ui/Annotation.h \
 	ui/DatasTable.h \
@@ -96,11 +96,11 @@ SOURCES       = main.cpp \
 	modules/generators/text/DateTime.cpp \
 	modules/generators/text/Format.cpp \
 	modules/generators/shader/SetShaderValues.cpp \
-	modules/generators/topology/ComposeTopology.cpp \
-	modules/generators/topology/Delaunay.cpp \
-	modules/generators/topology/Grid.cpp \
-	modules/generators/topology/MergeTopologies.cpp \
-	modules/generators/topology/Voronoi.cpp \
+	modules/generators/mesh/ComposeMesh.cpp \
+	modules/generators/mesh/Delaunay.cpp \
+	modules/generators/mesh/Grid.cpp \
+	modules/generators/mesh/MergeMeshes.cpp \
+	modules/generators/mesh/Voronoi.cpp \
 	modules/list/Concatenation.cpp \
 	modules/list/Condition.cpp \
 	modules/list/DeleteItems.cpp \
@@ -129,8 +129,8 @@ SOURCES       = main.cpp \
 	modules/math/real/DoubleListMath.cpp \
 	modules/math/real/DoubleMath.cpp \
 	modules/math/rect/RectangleMath.cpp \
-	modules/math/topology/Centroids.cpp \
-	modules/math/topology/TopologyInfo.cpp \
+	modules/math/mesh/Centroids.cpp \
+	modules/math/mesh/MeshInfo.cpp \
 	modules/modifiers/color/BlendColors.cpp \
 	modules/modifiers/color/ColorInGradient.cpp \
 	modules/modifiers/image/ColorInImage.cpp \
@@ -140,9 +140,9 @@ SOURCES       = main.cpp \
 	modules/modifiers/point/PointsInShapes.cpp \
 	modules/modifiers/point/PointsUnion.cpp \
 	modules/modifiers/point/RandomDisplacement.cpp \
-	modules/modifiers/topology/FindPolygon.cpp \
-	modules/modifiers/topology/Neighbors.cpp \
-	modules/modifiers/topology/Relaxation.cpp \
+	modules/modifiers/mesh/FindPolygon.cpp \
+	modules/modifiers/mesh/Neighbors.cpp \
+	modules/modifiers/mesh/Relaxation.cpp \
 	modules/particles/ParticleCollision.cpp \
 	modules/particles/ParticleCreation.cpp \
 	modules/particles/ParticleDestruction.cpp \
@@ -186,12 +186,12 @@ SOURCES       = main.cpp \
 	panda/types/DataTypeId.cpp \
 	panda/types/Gradient.cpp \
 	panda/types/ImageWrapper.cpp \
+	panda/types/Mesh.cpp \
 	panda/types/Path.cpp \
 	panda/types/Point.cpp \
 	panda/types/Rect.cpp \
 	panda/types/Shader.cpp \
 	panda/types/StandardTypes.cpp \
-	panda/types/Topology.cpp \
 	panda/types/TypeConverter.cpp \
 	ui/Annotation.cpp \
 	ui/DatasTable.cpp \

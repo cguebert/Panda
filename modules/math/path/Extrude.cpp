@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 #include <panda/types/Animation.h>
 #include <panda/types/Path.h>
 
@@ -10,7 +10,7 @@
 namespace panda {
 
 using types::Point;
-using types::Topology;
+using types::Mesh;
 using types::Animation;
 using types::Path;
 
@@ -25,8 +25,8 @@ public:
 		, width(initData(&width, "width", "Width of the line"))
 		, capStyle(initData(&capStyle, "cap", "Style of the caps"))
 		, joinStyle(initData(&joinStyle, "join", "Style of the joins"))
-		, output(initData(&output, "output", "Topology created from the extrusion"))
-		, coordUV(initData(&coordUV, "UV coords", "UV coords of the points in the topology"))
+		, output(initData(&output, "output", "Mesh created from the extrusion"))
+		, coordUV(initData(&coordUV, "UV coords", "UV coords of the points in the mesh"))
 	{
 		addInput(&input);
 		addInput(&width);
@@ -78,7 +78,7 @@ public:
 			a /= length;
 
 		// Start cap
-		Topology::PointID prevPtsId[3];
+		Mesh::PointID prevPtsId[3];
 		Point dir = normals[0] * w;
 		prevPtsId[0] = topo->addPoint(pts[0] + dir);
 		prevPtsId[1] = topo->addPoint(pts[0]);
@@ -97,11 +97,11 @@ public:
 			PReal angle = M_PI / nb; // We do a half turn
 			PReal ca = cos(angle), sa = sin(angle);
 			Point center = pts[0];
-			Topology::PointID ptId = prevPtsId[0];
+			Mesh::PointID ptId = prevPtsId[0];
 			for(int i=0; i<nb-1; ++i)
 			{
 				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-				Topology::PointID newPtId = topo->addPoint(center + pt);
+				Mesh::PointID newPtId = topo->addPoint(center + pt);
 				UV.push_back(Point(abscissa[0], 1));
 				topo->addPolygon(ptId, newPtId, prevPtsId[1]);
 
@@ -114,7 +114,7 @@ public:
 		case 2: // Square cap
 		{
 			Point dir2 = Point(dir.y, -dir.x);
-			Topology::PointID addPtsId[3];
+			Mesh::PointID addPtsId[3];
 			addPtsId[0] = topo->addPoint(pts[0] + dir + dir2);
 			addPtsId[1] = topo->addPoint(pts[0]	      + dir2);
 			addPtsId[2] = topo->addPoint(pts[0] - dir + dir2);
@@ -140,7 +140,7 @@ public:
 			w = widthAnim.get(abscissa[i]) / 2;
 
 			// Interior of the curvature
-			Topology::PointID nextPtsId[3];
+			Mesh::PointID nextPtsId[3];
 			dir = normals[i-1] + normals[i];
 			dir = w * (normals[i-1] / dir.dot(normals[i-1])
 				+ normals[i] / dir.dot(normals[i]) );
@@ -167,7 +167,7 @@ public:
 				}
 				else
 				{
-					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					Mesh::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					topo->addPolygon(nextPtsId[1], prevPtsId[2], addPtId);
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
@@ -185,7 +185,7 @@ public:
 				}
 				else
 				{
-					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
+					Mesh::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
@@ -224,7 +224,7 @@ public:
 				if(side > 0)
 				{
 					PReal angle = acos(normals[i-1].dot(normals[i]));
-					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
+					Mesh::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					UV.push_back(Point(abscissa[i], 1));
@@ -236,11 +236,11 @@ public:
 					PReal ca = cos(angle), sa = sin(angle);
 					Point center = pts[i];
 					Point r = normals[i] * w;
-					Topology::PointID ptId = nextPtsId[0];
+					Mesh::PointID ptId = nextPtsId[0];
 					for(int j=0; j<nb-1; ++j)
 					{
 						Point nr = Point(r.x*ca+r.y*sa, r.y*ca-r.x*sa);
-						Topology::PointID newPtId = topo->addPoint(center + nr);
+						Mesh::PointID newPtId = topo->addPoint(center + nr);
 						UV.push_back(Point(abscissa[i], 1));
 						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
 
@@ -253,7 +253,7 @@ public:
 				{
 					PReal angle = acos(normals[i-1].dot(normals[i]));
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
-					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					Mesh::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					UV.push_back(Point(abscissa[i], 1));
 
@@ -264,11 +264,11 @@ public:
 					PReal ca = cos(angle), sa = sin(angle);
 					Point center = pts[i];
 					Point r = normals[i-1] * w;
-					Topology::PointID ptId = addPtId;
+					Mesh::PointID ptId = addPtId;
 					for(int j=0; j<nb-1; ++j)
 					{
 						Point nr = Point(r.x*ca+r.y*sa, r.y*ca-r.x*sa);
-						Topology::PointID newPtId = topo->addPoint(center - nr);
+						Mesh::PointID newPtId = topo->addPoint(center - nr);
 						UV.push_back(Point(abscissa[i], 1));
 						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
 
@@ -283,7 +283,7 @@ public:
 			{
 				if(side > 0)
 				{
-					Topology::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
+					Mesh::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
 					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					UV.push_back(Point(abscissa[i], 1));
@@ -294,7 +294,7 @@ public:
 				else // side < 0
 				{
 					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
-					Topology::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					Mesh::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					UV.push_back(Point(abscissa[i], 1));
 
@@ -311,7 +311,7 @@ public:
 
 		// Last segment
 		w = widthAnim.get(abscissa[nbPts-1]) / 2;
-		Topology::PointID nextPtsId[3];
+		Mesh::PointID nextPtsId[3];
 		dir = normals[nbPts-2] * w;
 		nextPtsId[0] = topo->addPoint(pts[nbPts-1] + dir);
 		nextPtsId[1] = topo->addPoint(pts[nbPts-1]);
@@ -337,11 +337,11 @@ public:
 			PReal ca = cos(angle), sa = sin(angle);
 			Point center = pts[nbPts-1];
 			dir = -dir;
-			Topology::PointID ptId = nextPtsId[2];
+			Mesh::PointID ptId = nextPtsId[2];
 			for(int i=0; i<nb-1; ++i)
 			{
 				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-				Topology::PointID newPtId = topo->addPoint(center + pt);
+				Mesh::PointID newPtId = topo->addPoint(center + pt);
 				UV.push_back(Point(abscissa[nbPts-1], 1));
 				topo->addPolygon(ptId, newPtId, nextPtsId[1]);
 
@@ -354,7 +354,7 @@ public:
 		case 2: // Square cap
 		{
 			Point dir2 = Point(dir.y, -dir.x);
-			Topology::PointID addPtsId[3];
+			Mesh::PointID addPtsId[3];
 			addPtsId[0] = topo->addPoint(pts[nbPts-1] + dir - dir2);
 			addPtsId[1] = topo->addPoint(pts[nbPts-1]	    - dir2);
 			addPtsId[2] = topo->addPoint(pts[nbPts-1] - dir - dir2);
@@ -377,7 +377,7 @@ protected:
 	Data< Path > input;
 	Data< Animation<PReal> > width;
 	Data< int > capStyle, joinStyle;
-	Data< Topology > output;
+	Data< Mesh > output;
 	Data< QVector<Point> > coordUV;
 };
 

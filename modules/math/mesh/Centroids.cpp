@@ -2,31 +2,31 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 
 namespace panda {
 
-using types::Topology;
+using types::Mesh;
 using types::Point;
 
-class TopologyMath_Centroids : public PandaObject
+class MeshMath_Centroids : public PandaObject
 {
 public:
-	PANDA_CLASS(TopologyMath_Centroids, PandaObject)
+	PANDA_CLASS(MeshMath_Centroids, PandaObject)
 
-	TopologyMath_Centroids(PandaDocument *doc)
+	MeshMath_Centroids(PandaDocument *doc)
 		: PandaObject(doc)
-		, topology(initData(&topology, "topology", "Topology to analyse"))
+		, mesh(initData(&mesh, "mesh", "Mesh to analyse"))
 		, centroids(initData(&centroids, "centroids", "Centroids of the polygons"))
 	{
-		addInput(&topology);
+		addInput(&mesh);
 
 		addOutput(&centroids);
 	}
 
 	void update()
 	{
-		const Topology& topo = topology.getValue();
+		const Mesh& topo = mesh.getValue();
 		auto pts = centroids.getAccessor();
 		pts.clear();
 		pts.resize(topo.getNumberOfPolygons());
@@ -39,11 +39,11 @@ public:
 	}
 
 protected:
-	Data<Topology> topology;
+	Data<Mesh> mesh;
 	Data< QVector<Point> > centroids;
 };
 
-int TopologyMath_CentroidsClass = RegisterObject<TopologyMath_Centroids>("Math/Topology/Centroids")
+int MeshMath_CentroidsClass = RegisterObject<MeshMath_Centroids>("Math/Mesh/Centroids")
 		.setDescription("Compute the centroid of each polygon");
 
 } // namespace Panda

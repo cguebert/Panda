@@ -1,26 +1,26 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 
 #include <set>
 
 namespace panda {
 
-using types::Topology;
+using types::Mesh;
 
-class ModifierTopology_FindNeighbors : public PandaObject
+class ModifierMesh_FindNeighbors : public PandaObject
 {
 public:
-	PANDA_CLASS(ModifierTopology_FindNeighbors, PandaObject)
+	PANDA_CLASS(ModifierMesh_FindNeighbors, PandaObject)
 
-	ModifierTopology_FindNeighbors(PandaDocument *doc)
+	ModifierMesh_FindNeighbors(PandaDocument *doc)
 		: PandaObject(doc)
-		, topology(initData(&topology, "topology", "Topology in which to search"))
+		, mesh(initData(&mesh, "mesh", "Mesh in which to search"))
 		, polygons(initData(&polygons, "input", "Polygons indices to test"))
 		, neighbors(initData(&neighbors, "neighbors", "Indices of the polygons, neighbors of the input"))
 	{
-		addInput(&topology);
+		addInput(&mesh);
 		addInput(&polygons);
 
 		addOutput(&neighbors);
@@ -28,17 +28,17 @@ public:
 
 	void update()
 	{
-		Topology topo = topology.getValue();
+		Mesh topo = mesh.getValue();
 
 		const QVector<int>& polyIDs = polygons.getValue();
 
-		Topology::PolygonsIndicesList inputList;
+		Mesh::PolygonsIndicesList inputList;
 		for(auto p : polyIDs)
 		{
-			if(p != Topology::InvalidID)
+			if(p != Mesh::InvalidID)
 				inputList.push_back(p);
 		}
-		Topology::PolygonsIndicesList outputList = topo.getPolygonsAroundPolygons(inputList);
+		Mesh::PolygonsIndicesList outputList = topo.getPolygonsAroundPolygons(inputList);
 
 		auto output = neighbors.getAccessor();
 		output.clear();
@@ -49,26 +49,26 @@ public:
 	}
 
 protected:
-	Data< Topology > topology;
+	Data< Mesh > mesh;
 	Data< QVector<int> > polygons, neighbors;
 };
 
-int ModifierTopology_FindNeighborsClass = RegisterObject<ModifierTopology_FindNeighbors>("Modifier/Topology/Find neighbors").setDescription("Find neighboring polygons to the input list");
+int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Find neighbors").setDescription("Find neighboring polygons to the input list");
 
 //*************************************************************************//
 
-class ModifierTopology_GetConnected : public PandaObject
+class ModifierMesh_GetConnected : public PandaObject
 {
 public:
-	PANDA_CLASS(ModifierTopology_GetConnected, PandaObject)
+	PANDA_CLASS(ModifierMesh_GetConnected, PandaObject)
 
-	ModifierTopology_GetConnected(PandaDocument *doc)
+	ModifierMesh_GetConnected(PandaDocument *doc)
 		: PandaObject(doc)
-		, topology(initData(&topology, "topology", "Topology in which to search"))
+		, mesh(initData(&mesh, "mesh", "Mesh in which to search"))
 		, polygons(initData(&polygons, "input", "Polygons indices to test"))
 		, connected(initData(&connected, "connected", "Indices of the polygons connected to the input"))
 	{
-		addInput(&topology);
+		addInput(&mesh);
 		addInput(&polygons);
 
 		addOutput(&connected);
@@ -76,16 +76,16 @@ public:
 
 	void update()
 	{
-		Topology topo = topology.getValue();
+		Mesh topo = mesh.getValue();
 
 		const QVector<int>& polyIDs = polygons.getValue();
-		std::set<Topology::PolygonID> outputSet;
+		std::set<Mesh::PolygonID> outputSet;
 
 		for(auto polyID : polyIDs)
 		{
-			if(polyID == Topology::InvalidID)
+			if(polyID == Mesh::InvalidID)
 				continue;
-			Topology::PolygonsIndicesList tmp = topo.getPolygonsConnectedToPolygon(polyID);
+			Mesh::PolygonsIndicesList tmp = topo.getPolygonsConnectedToPolygon(polyID);
 			outputSet.insert(tmp.begin(), tmp.end());
 		}
 
@@ -98,23 +98,23 @@ public:
 	}
 
 protected:
-	Data< Topology > topology;
+	Data< Mesh > mesh;
 	Data< QVector<int> > polygons, connected;
 };
 
-int ModifierTopology_GetConnectedClass = RegisterObject<ModifierTopology_GetConnected>("Modifier/Topology/Get connected").setDescription("Get connected polygons to the input list");
+int ModifierMesh_GetConnectedClass = RegisterObject<ModifierMesh_GetConnected>("Modifier/Mesh/Get connected").setDescription("Get connected polygons to the input list");
 
 //*************************************************************************//
 
-class ModifierTopology_SeparateDisconnected : public PandaObject
+class ModifierMesh_SeparateDisconnected : public PandaObject
 {
 public:
-	PANDA_CLASS(ModifierTopology_SeparateDisconnected, PandaObject)
+	PANDA_CLASS(ModifierMesh_SeparateDisconnected, PandaObject)
 
-	ModifierTopology_SeparateDisconnected(PandaDocument *doc)
+	ModifierMesh_SeparateDisconnected(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input topology"))
-		, outputs(initData(&outputs, "output", "List of separated topologies"))
+		, input(initData(&input, "input", "Input mesh"))
+		, outputs(initData(&outputs, "output", "List of separated meshes"))
 	{
 		addInput(&input);
 
@@ -123,19 +123,19 @@ public:
 
 	void update()
 	{
-		Topology topo = input.getValue();
+		Mesh topo = input.getValue();
 
 		auto topoList = outputs.getAccessor();
 		topoList.clear();
 
-		std::set<Topology::PolygonID> polySet;
+		std::set<Mesh::PolygonID> polySet;
 		for(int i=0, nb=topo.getNumberOfPolygons(); i<nb; ++i)
 			polySet.insert(i);
 
 		while(!polySet.empty())
 		{
-			Topology::PolygonID polyID = *polySet.begin();
-			Topology newTopo;
+			Mesh::PolygonID polyID = *polySet.begin();
+			Mesh newTopo;
 			newTopo.addPoints(topo.getPoints());
 			newTopo.addPolygon(topo.getPolygon(polyID));
 			auto list = topo.getPolygonsConnectedToPolygon(polyID);
@@ -154,12 +154,12 @@ public:
 	}
 
 protected:
-	Data< Topology > input;
-	Data< QVector<Topology> > outputs;
+	Data< Mesh > input;
+	Data< QVector<Mesh> > outputs;
 };
 
-int ModifierTopology_SeparateDisconnectedClass = RegisterObject<ModifierTopology_SeparateDisconnected>("Modifier/Topology/Separate disconnected")
-		.setDescription("Separate the disconnected parts of a topology into many topologies");
+int ModifierMesh_SeparateDisconnectedClass = RegisterObject<ModifierMesh_SeparateDisconnected>("Modifier/Mesh/Separate disconnected")
+		.setDescription("Separate the disconnected parts of a mesh into many meshes");
 
 
 } // namespace Panda

@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 #include <panda/helper/PointsGrid.h>
 
 #include <QMap>
@@ -16,18 +16,18 @@ namespace panda {
 
 using types::Point;
 using types::Rect;
-using types::Topology;
+using types::Mesh;
 
-class GeneratorTopology_MergeTopologies : public PandaObject
+class GeneratorMesh_MergeMeshes : public PandaObject
 {
 public:
-	PANDA_CLASS(GeneratorTopology_MergeTopologies, PandaObject)
+	PANDA_CLASS(GeneratorMesh_MergeMeshes, PandaObject)
 
-	GeneratorTopology_MergeTopologies(PandaDocument *doc)
+	GeneratorMesh_MergeMeshes(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputs(initData(&inputs, "inputs", "Topologies to merge"))
+		, inputs(initData(&inputs, "inputs", "Meshes to merge"))
 		, threshold(initData(&threshold, (PReal)0.1, "threshold", "Distance under which 2 points are considered the same"))
-		, output(initData(&output, "output", "Merged topology"))
+		, output(initData(&output, "output", "Merged mesh"))
 	{
 		addInput(&inputs);
 		addInput(&threshold);
@@ -44,13 +44,13 @@ public:
 
 		PReal thres = threshold.getValue();
 
-		Topology::SeqPoints newPoints;
-		Topology::SeqPolygons newPolygons;
+		Mesh::SeqPoints newPoints;
+		Mesh::SeqPolygons newPolygons;
 
-		QMap<Point, Topology::PointID> pointsMap;
+		QMap<Point, Mesh::PointID> pointsMap;
 
-		const QVector<Topology>& topoList = inputs.getValue();
-		for(const Topology& topo : topoList)
+		const QVector<Mesh>& topoList = inputs.getValue();
+		for(const Mesh& topo : topoList)
 		{
 			if(newPoints.empty())
 			{
@@ -62,7 +62,7 @@ public:
 			}
 			else
 			{
-				QMap<Topology::PointID, Topology::PointID> tmpIDMap;
+				QMap<Mesh::PointID, Mesh::PointID> tmpIDMap;
 				for(int i=0, nb=topo.getNumberOfPoints(); i<nb; ++i)
 				{
 					const Point& pt = topo.getPoint(i);
@@ -100,11 +100,11 @@ public:
 	}
 
 protected:
-	Data< QVector<Topology> > inputs;
+	Data< QVector<Mesh> > inputs;
 	Data< PReal > threshold;
-	Data< Topology > output;
+	Data< Mesh > output;
 };
 
-int GeneratorTopology_MergeTopologiesClass = RegisterObject<GeneratorTopology_MergeTopologies>("Generator/Topology/Merge topologies").setDescription("Merge multiple topologies into one");
+int GeneratorMesh_MergeMeshesClass = RegisterObject<GeneratorMesh_MergeMeshes>("Generator/Mesh/Merge meshes").setDescription("Merge multiple meshes into one");
 
 } // namespace Panda

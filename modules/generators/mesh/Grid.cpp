@@ -3,27 +3,27 @@
 #include <panda/ObjectFactory.h>
 
 #include <panda/types/Rect.h>
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 
 namespace panda {
 
 using types::Point;
 using types::Rect;
-using types::Topology;
+using types::Mesh;
 
-class GeneratorTopology_Grid : public PandaObject
+class GeneratorMesh_Grid : public PandaObject
 {
 public:
-	PANDA_CLASS(GeneratorTopology_Grid, PandaObject)
+	PANDA_CLASS(GeneratorMesh_Grid, PandaObject)
 
 
-	GeneratorTopology_Grid(PandaDocument *doc)
+	GeneratorMesh_Grid(PandaDocument *doc)
 		: PandaObject(doc)
 		, area(initData(&area, Rect(100, 100, 200, 200), "area", "Position and size of the grid"))
 		, nbX(initData(&nbX, 5, "nbX", "Number of cells horizontally"))
 		, nbY(initData(&nbY, 5, "nbY", "Number of cells vertically"))
 		, triangulate(initData(&triangulate, 0, "triangulate", "Create triangles instead of quads"))
-		, topology(initData(&topology, "topology", "Topology created"))
+		, mesh(initData(&mesh, "mesh", "Mesh created"))
 	{
 		addInput(&area);
 		addInput(&nbX);
@@ -31,7 +31,7 @@ public:
 		addInput(&triangulate);
 		triangulate.setWidget("checkbox");
 
-		addOutput(&topology);
+		addOutput(&mesh);
 	}
 
 	void update()
@@ -39,7 +39,7 @@ public:
 		Rect bounds = area.getValue();
 		int nx = nbX.getValue(), ny = nbY.getValue();
 		bool tri = triangulate.getValue();
-		auto topo = topology.getAccessor();
+		auto topo = mesh.getAccessor();
 		topo->clear();
 
 		qreal dx = (nx > 0 ? dx = bounds.width() / (nx-1) : 0);
@@ -55,7 +55,7 @@ public:
 			{
 				if(tri)
 				{
-					Topology::Polygon poly;
+					Mesh::Polygon poly;
 					poly.push_back((y-1)*nx + x);
 					poly.push_back((y-1)*nx + x - 1);
 					poly.push_back(y*nx + x - 1);
@@ -69,7 +69,7 @@ public:
 				}
 				else
 				{
-					Topology::Polygon poly;
+					Mesh::Polygon poly;
 					poly.push_back((y-1)*nx + x);
 					poly.push_back((y-1)*nx + x - 1);
 					poly.push_back(y*nx + x - 1);
@@ -88,11 +88,11 @@ public:
 protected:
 	Data<Rect> area;
 	Data<int> nbX, nbY, triangulate;
-	Data<Topology> topology;
+	Data<Mesh> mesh;
 };
 
-int GeneratorTopology_GridClass = RegisterObject<GeneratorTopology_Grid>("Generator/Topology/Grid")
-		.setDescription("Create a topology from a regular grid");
+int GeneratorMesh_GridClass = RegisterObject<GeneratorMesh_Grid>("Generator/Mesh/Grid")
+		.setDescription("Create a mesh from a regular grid");
 
 //*************************************************************************//
 

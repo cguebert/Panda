@@ -2,14 +2,14 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Color.h>
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 #include <panda/Renderer.h>
 
 namespace panda {
 
 using types::Color;
 using types::Point;
-using types::Topology;
+using types::Mesh;
 
 class RenderMesh : public Renderer
 {
@@ -18,10 +18,10 @@ public:
 
 	RenderMesh(PandaDocument *parent)
 		: Renderer(parent)
-		, topology(initData(&topology, "topology", "Topology to render"))
+		, mesh(initData(&mesh, "mesh", "Mesh to render"))
 		, color(initData(&color, "color", "Color of the points"))
 	{
-		addInput(&topology);
+		addInput(&mesh);
 		addInput(&color);
 
 		color.getAccessor().push_back(Color::black());
@@ -29,7 +29,7 @@ public:
 
 	void render()
 	{
-		const Topology& topo = topology.getValue();
+		const Mesh& topo = mesh.getValue();
 		const QVector<Color>& listColor = color.getValue();
 
 		int nbPts = topo.getNumberOfPoints();
@@ -49,7 +49,7 @@ public:
 
 			for(int i=0; i<nbPoly; ++i)
 			{
-				const Topology::Polygon& poly = topo.getPolygon(i);
+				const Mesh::Polygon& poly = topo.getPolygon(i);
 				int nbPts = poly.size();
 				if(!nbPts)
 					continue;
@@ -78,7 +78,7 @@ public:
 	}
 
 protected:
-	Data<Topology> topology;
+	Data<Mesh> mesh;
 	Data< QVector<Color> > color;
 };
 

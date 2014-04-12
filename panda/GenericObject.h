@@ -8,7 +8,7 @@
 #include <panda/types/Gradient.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Path.h>
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 #include <panda/types/Rect.h>
 
 #include <QList>
@@ -139,7 +139,7 @@ private:
 
 //***************************************************************//
 
-typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString, types::ImageWrapper, types::Gradient, types::Topology, types::Path> allDataTypes;
+typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString, types::ImageWrapper, types::Gradient, types::Mesh, types::Path> allDataTypes;
 typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString> allSearchableTypes;
 typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect> allNumericalTypes;
 typedef boost::mpl::vector<PReal, types::Color, types::Point, types::Gradient> allAnimationTypes;

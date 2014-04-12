@@ -2,7 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 
 #include <vector>
 using std::vector;
@@ -13,13 +13,13 @@ using namespace boost::polygon;
 
 namespace panda {
 
-using types::Topology;
+using types::Mesh;
 using types::Point;
 
-class GeneratorTopology_Voronoi : public PandaObject
+class GeneratorMesh_Voronoi : public PandaObject
 {
 public:
-	PANDA_CLASS(GeneratorTopology_Voronoi, PandaObject)
+	PANDA_CLASS(GeneratorMesh_Voronoi, PandaObject)
 
 	typedef point_data<int> IPoint;
 	typedef segment_data<int> Segment;
@@ -32,20 +32,20 @@ public:
 	typedef Diagram::const_vertex_iterator VertexIterator;
 	typedef Diagram::const_edge_iterator EdgeIterator;
 
-	GeneratorTopology_Voronoi(PandaDocument *doc)
+	GeneratorMesh_Voronoi(PandaDocument *doc)
 		: PandaObject(doc)
 		, sites(initData(&sites, "sites", "Sites of the Voronoi tessellation"))
-		, topology(initData(&topology, "topology", "Topology created from the Voronoi tessellation"))
+		, mesh(initData(&mesh, "mesh", "Mesh created from the Voronoi tessellation"))
 	{
 		addInput(&sites);
 
-		addOutput(&topology);
+		addOutput(&mesh);
 	}
 
 	void update()
 	{
 		const QVector<Point>& pts = sites.getValue();
-		auto topo = topology.getAccessor();
+		auto topo = mesh.getAccessor();
 
 		topo->clear();
 
@@ -75,11 +75,11 @@ public:
 
 protected:
 	Data< QVector<Point> > sites;
-	Data<Topology> topology;
+	Data<Mesh> mesh;
 };
 
-int GeneratorTopology_VoronoiClass = RegisterObject<GeneratorTopology_Voronoi>("Generator/Topology/Voronoi")
-		.setDescription("Create a topology from a Voronoi tessellation");
+int GeneratorMesh_VoronoiClass = RegisterObject<GeneratorMesh_Voronoi>("Generator/Mesh/Voronoi")
+		.setDescription("Create a mesh from a Voronoi tessellation");
 
 //*************************************************************************//
 

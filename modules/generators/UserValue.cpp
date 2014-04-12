@@ -9,7 +9,7 @@
 #include <panda/types/Path.h>
 #include <panda/types/Rect.h>
 #include <panda/types/Shader.h>
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 
 #include <QString>
 #include <QVector>
@@ -202,7 +202,7 @@ int StoreValue_PointClass = RegisterObject< StoreValue<types::Point> >("File/Poi
 int StoreValue_RectClass = RegisterObject< StoreValue<types::Rect> >("File/Rectangle/Save rectangle").setDescription("Save a value in a file for later use");
 int StoreValue_ShaderClass = RegisterObject< StoreValue<types::Shader> >("File/Shader/Save shader").setDescription("Save a value in a file for later use");
 int StoreValue_StringClass = RegisterObject< StoreValue<QString> >("File/Text/Save text").setDescription("Save a value in a file for later use");
-int StoreValue_TopologyClass = RegisterObject< StoreValue<types::Topology> >("File/Topology/Save topology").setDescription("Save a value in a file for later use");
+int StoreValue_MeshClass = RegisterObject< StoreValue<types::Mesh> >("File/Mesh/Save mesh").setDescription("Save a value in a file for later use");
 
 int StoreValue_VectorColorClass = RegisterObject< StoreValue< QVector<types::Color> > >("File/Color/Save colors list").setDescription("Save a value in a file for later use");
 int StoreValue_VectorDoubleClass = RegisterObject< StoreValue< QVector<PReal> > >("File/Real/Save reals list").setDescription("Save a value in a file for later use");
@@ -213,7 +213,7 @@ int StoreValue_VectorPointClass = RegisterObject< StoreValue< QVector<types::Poi
 int StoreValue_VectorRectClass = RegisterObject< StoreValue< QVector<types::Rect> > >("File/Rectangle/Save rectangles list").setDescription("Save a value in a file for later use");
 int StoreValue_VectorShaderClass = RegisterObject< StoreValue< QVector<types::Shader> > >("File/Shader/Save shaders list").setDescription("Save a value in a file for later use");
 int StoreValue_VectorStringClass = RegisterObject< StoreValue< QVector<QString> > >("File/Text/Save texts list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorTopologyClass = RegisterObject< StoreValue< QVector<types::Topology> > >("File/Topology/Save topologies list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorMeshClass = RegisterObject< StoreValue< QVector<types::Mesh> > >("File/Mesh/Save meshes list").setDescription("Save a value in a file for later use");
 
 int StoreValue_AnimationColorClass = RegisterObject< StoreValue< types::Animation<types::Color> > >("File/Color/Save colors animation").setDescription("Save a value in a file for later use");
 int StoreValue_AnimationDoubleClass = RegisterObject< StoreValue< types::Animation<PReal> > >("File/Real/Save reals animation").setDescription("Save a value in a file for later use");
@@ -285,7 +285,7 @@ int LoadValue_StringClass = RegisterObject< LoadValue<QString> >("File/Text/Load
 int LoadValue_GradientClass = RegisterObject< LoadValue<types::Gradient> >("File/Gradient/Load gradient").setDescription("Load a value from a file");
 int LoadValue_PathClass = RegisterObject< LoadValue<types::Path> >("File/Path/Load path").setDescription("Load a value from a file");
 int LoadValue_ShaderClass = RegisterObject< LoadValue<types::Shader> >("File/Shader/Load shader").setDescription("Load a value from a file");
-int LoadValue_TopologyClass = RegisterObject< LoadValue<types::Topology> >("File/Topology/Load topology").setDescription("Load a value from a file");
+int LoadValue_MeshClass = RegisterObject< LoadValue<types::Mesh> >("File/Mesh/Load mesh").setDescription("Load a value from a file");
 
 int LoadValue_VectorColorClass = RegisterObject< LoadValue< QVector<types::Color> > >("File/Color/Load colors list").setDescription("Load a value from a file");
 int LoadValue_VectorDoubleClass = RegisterObject< LoadValue< QVector<PReal> > >("File/Real/Load reals list").setDescription("Load a value from a file");
@@ -296,7 +296,7 @@ int LoadValue_VectorPointClass = RegisterObject< LoadValue< QVector<types::Point
 int LoadValue_VectorRectClass = RegisterObject< LoadValue< QVector<types::Rect> > >("File/Rectangle/Load rectangles list").setDescription("Load a value from a file");
 int LoadValue_VectorShaderClass = RegisterObject< LoadValue< QVector<types::Shader> > >("File/Shader/Load shaders list").setDescription("Load a value from a file");
 int LoadValue_VectorStringClass = RegisterObject< LoadValue< QVector<QString> > >("File/Text/Load texts list").setDescription("Load a value from a file");
-int LoadValue_VectorTopologyClass = RegisterObject< LoadValue< QVector<types::Topology> > >("File/Topology/Load topologies list").setDescription("Load a value from a file");
+int LoadValue_VectorMeshClass = RegisterObject< LoadValue< QVector<types::Mesh> > >("File/Mesh/Load meshes list").setDescription("Load a value from a file");
 
 int LoadValue_AnimationColorClass = RegisterObject< LoadValue< types::Animation<types::Color> > >("File/Color/Load colors animation").setDescription("Load a value from a file");
 int LoadValue_AnimationDoubleClass = RegisterObject< LoadValue< types::Animation<PReal> > >("File/Real/Load reals animation").setDescription("Load a value from a file");

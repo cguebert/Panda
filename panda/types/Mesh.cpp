@@ -1,4 +1,4 @@
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 
 #include <panda/DataFactory.h>
 #include <panda/Data.inl>
@@ -12,51 +12,51 @@ namespace panda
 namespace types
 {
 
-Topology::Topology()
+Mesh::Mesh()
 {
 }
 
-Topology::~Topology()
+Mesh::~Mesh()
 {
 }
 
-Topology::PointID Topology::addPoint(const Point& point)
+Mesh::PointID Mesh::addPoint(const Point& point)
 {
 	m_points.push_back(point);
 	return m_points.size() - 1;
 }
 
-void Topology::addPoints(const SeqPoints& pts)
+void Mesh::addPoints(const SeqPoints& pts)
 {
 	m_points += pts;
 }
 
-Topology::EdgeID Topology::addEdge(PointID a, PointID b)
+Mesh::EdgeID Mesh::addEdge(PointID a, PointID b)
 {
 	Q_ASSERT(a != b);
 	m_edges.push_back(std::make_pair(a, b));
 	return m_edges.size() - 1;
 }
 
-Topology::EdgeID Topology::addEdge(Edge e)
+Mesh::EdgeID Mesh::addEdge(Edge e)
 {
 	Q_ASSERT(e.first != e.second);
 	m_edges.push_back(e);
 	return m_edges.size() - 1;
 }
 
-void Topology::addEdges(const SeqEdges& e)
+void Mesh::addEdges(const SeqEdges& e)
 {
 	m_edges += e;
 }
 
-Topology::PolygonID Topology::addPolygon(const Polygon& p)
+Mesh::PolygonID Mesh::addPolygon(const Polygon& p)
 {
 	m_polygons.push_back(p);
 	return m_polygons.size() - 1;
 }
 
-Topology::PolygonID Topology::addPolygon(PolygonID p1, PolygonID p2, PolygonID p3)
+Mesh::PolygonID Mesh::addPolygon(PolygonID p1, PolygonID p2, PolygonID p3)
 {
 	Polygon p;
 	p.push_back(p1);
@@ -65,76 +65,76 @@ Topology::PolygonID Topology::addPolygon(PolygonID p1, PolygonID p2, PolygonID p
 	return addPolygon(p);
 }
 
-void Topology::addPolygons(const SeqPolygons& p)
+void Mesh::addPolygons(const SeqPolygons& p)
 {
 	m_polygons += p;
 }
 
-int Topology::getNumberOfPoints() const
+int Mesh::getNumberOfPoints() const
 {
 	return m_points.size();
 }
 
-int Topology::getNumberOfEdges() const
+int Mesh::getNumberOfEdges() const
 {
 	if(!hasEdges() && getNumberOfPolygons() > 0)
-		const_cast<Topology*>(this)->createEdgeList();
+		const_cast<Mesh*>(this)->createEdgeList();
 
 	return m_edges.size();
 }
 
-int Topology::getNumberOfPolygons() const
+int Mesh::getNumberOfPolygons() const
 {
 	return m_polygons.size();
 }
 
-const Topology::SeqPoints &Topology::getPoints() const
+const Mesh::SeqPoints &Mesh::getPoints() const
 {
 	return m_points;
 }
 
-const Topology::SeqEdges &Topology::getEdges() const
+const Mesh::SeqEdges &Mesh::getEdges() const
 {
 	if(!hasEdges())
-		const_cast<Topology*>(this)->createEdgeList();
+		const_cast<Mesh*>(this)->createEdgeList();
 
 	return m_edges;
 }
 
-const Topology::SeqPolygons &Topology::getPolygons() const
+const Mesh::SeqPolygons &Mesh::getPolygons() const
 {
 	return m_polygons;
 }
 
-Point& Topology::getPoint(PointID index)
+Point& Mesh::getPoint(PointID index)
 {
 	return m_points[index];
 }
 
-Point Topology::getPoint(PointID index) const
+Point Mesh::getPoint(PointID index) const
 {
 	return m_points[index];
 }
 
-Topology::Edge Topology::getEdge(EdgeID index) const
+Mesh::Edge Mesh::getEdge(EdgeID index) const
 {
 	if(!hasEdges())
-		const_cast<Topology*>(this)->createEdgeList();
+		const_cast<Mesh*>(this)->createEdgeList();
 
 	return m_edges[index];
 }
 
-Topology::Polygon Topology::getPolygon(PolygonID index) const
+Mesh::Polygon Mesh::getPolygon(PolygonID index) const
 {
 	return m_polygons[index];
 }
 
-Topology::PointID Topology::getPointIndex(const Point &pt) const
+Mesh::PointID Mesh::getPointIndex(const Point &pt) const
 {
 	return m_points.indexOf(pt);
 }
 
-Topology::EdgeID Topology::getEdgeIndex(PointID a, PointID b) const
+Mesh::EdgeID Mesh::getEdgeIndex(PointID a, PointID b) const
 {
 	Edge e1 = Edge(a, b), e2 = Edge(b, a);
 	int id = m_edges.indexOf(e1);
@@ -143,7 +143,7 @@ Topology::EdgeID Topology::getEdgeIndex(PointID a, PointID b) const
 	return id;
 }
 
-Topology::EdgeID Topology::getEdgeIndex(const Edge& e) const
+Mesh::EdgeID Mesh::getEdgeIndex(const Edge& e) const
 {
 	Edge e2 = Edge(e.second, e.first);
 	int id = m_edges.indexOf(e);
@@ -152,12 +152,12 @@ Topology::EdgeID Topology::getEdgeIndex(const Edge& e) const
 	return id;
 }
 
-Topology::PolygonID Topology::getPolygonIndex(const Polygon& p) const
+Mesh::PolygonID Mesh::getPolygonIndex(const Polygon& p) const
 {
 	return m_polygons.indexOf(p);
 }
 
-const Topology::EdgesIndicesList &Topology::getEdgesInPolygon(PolygonID index)
+const Mesh::EdgesIndicesList &Mesh::getEdgesInPolygon(PolygonID index)
 {
 	if(hasEdgesInPolygon())
 		createEdgesInPolygonList();
@@ -168,12 +168,12 @@ const Topology::EdgesIndicesList &Topology::getEdgesInPolygon(PolygonID index)
 	return m_edgesInPolygon[index];
 }
 
-const QVector<Topology::EdgesIndicesList>& Topology::getEdgesInPolygonList()
+const QVector<Mesh::EdgesIndicesList>& Mesh::getEdgesInPolygonList()
 {
 	return m_edgesInPolygon;
 }
 
-const Topology::EdgesIndicesList& Topology::getEdgesAroundPoint(PointID index)
+const Mesh::EdgesIndicesList& Mesh::getEdgesAroundPoint(PointID index)
 {
 	if(!hasEdgesAroundPoint())
 		createEdgesAroundPointList();
@@ -184,12 +184,12 @@ const Topology::EdgesIndicesList& Topology::getEdgesAroundPoint(PointID index)
 	return m_edgesAroundPoint[index];
 }
 
-const QVector<Topology::EdgesIndicesList>& Topology::getEdgesAroundPointList()
+const QVector<Mesh::EdgesIndicesList>& Mesh::getEdgesAroundPointList()
 {
 	return m_edgesAroundPoint;
 }
 
-const Topology::PolygonsIndicesList &Topology::getPolygonsAroundPoint(PointID index)
+const Mesh::PolygonsIndicesList &Mesh::getPolygonsAroundPoint(PointID index)
 {
 	if(!hasPolygonsAroundPoint())
 		createPolygonsAroundPointList();
@@ -200,12 +200,12 @@ const Topology::PolygonsIndicesList &Topology::getPolygonsAroundPoint(PointID in
 	return m_polygonsAroundPoint[index];
 }
 
-const QVector<Topology::PolygonsIndicesList>& Topology::getPolygonsAroundPointList()
+const QVector<Mesh::PolygonsIndicesList>& Mesh::getPolygonsAroundPointList()
 {
 	return m_polygonsAroundPoint;
 }
 
-const Topology::PolygonsIndicesList& Topology::getPolygonsAroundEdge(EdgeID index)
+const Mesh::PolygonsIndicesList& Mesh::getPolygonsAroundEdge(EdgeID index)
 {
 	if(!hasPolygonsAroundEdge())
 		createPolygonsAroundEdgeList();
@@ -216,12 +216,12 @@ const Topology::PolygonsIndicesList& Topology::getPolygonsAroundEdge(EdgeID inde
 	return m_polygonsAroundEdge[index];
 }
 
-const QVector<Topology::PolygonsIndicesList>& Topology::getPolygonsAroundEdgeList()
+const QVector<Mesh::PolygonsIndicesList>& Mesh::getPolygonsAroundEdgeList()
 {
 	return m_polygonsAroundEdge;
 }
 
-const QVector<Topology::PointID> &Topology::getPointsOnBorder()
+const QVector<Mesh::PointID> &Mesh::getPointsOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -229,7 +229,7 @@ const QVector<Topology::PointID> &Topology::getPointsOnBorder()
 	return m_pointsOnBorder;
 }
 
-const QVector<Topology::EdgeID> &Topology::getEdgesOnBorder()
+const QVector<Mesh::EdgeID> &Mesh::getEdgesOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -237,7 +237,7 @@ const QVector<Topology::EdgeID> &Topology::getEdgesOnBorder()
 	return m_edgesOnBorder;
 }
 
-const QVector<Topology::PolygonID> &Topology::getPolygonsOnBorder()
+const QVector<Mesh::PolygonID> &Mesh::getPolygonsOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -245,7 +245,7 @@ const QVector<Topology::PolygonID> &Topology::getPolygonsOnBorder()
 	return m_polygonsOnBorder;
 }
 
-Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygon(PolygonID index)
+Mesh::PolygonsIndicesList Mesh::getPolygonsAroundPolygon(PolygonID index)
 {
 	if(!hasPolygonsAroundPoint())
 		createPolygonsAroundPointList();
@@ -271,7 +271,7 @@ Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygon(PolygonID index
 	return polyList;
 }
 
-Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygons(const PolygonsIndicesList& listID)
+Mesh::PolygonsIndicesList Mesh::getPolygonsAroundPolygons(const PolygonsIndicesList& listID)
 {
 	std::set<PolygonID> polySet;
 	for(auto index : listID)
@@ -290,7 +290,7 @@ Topology::PolygonsIndicesList Topology::getPolygonsAroundPolygons(const Polygons
 	return polyList;
 }
 
-Topology::PolygonsIndicesList Topology::getPolygonsConnectedToPolygon(PolygonID index)
+Mesh::PolygonsIndicesList Mesh::getPolygonsConnectedToPolygon(PolygonID index)
 {
 	if(!hasPolygonsAroundPoint())
 		createPolygonsAroundPointList();
@@ -327,7 +327,7 @@ Topology::PolygonsIndicesList Topology::getPolygonsConnectedToPolygon(PolygonID 
 	return polyAll;
 }
 
-Topology::PointID Topology::getOtherPointInEdge(const Edge &edge, PointID point) const
+Mesh::PointID Mesh::getOtherPointInEdge(const Edge &edge, PointID point) const
 {
 	if(edge.first == point)
 		return edge.second;
@@ -337,7 +337,7 @@ Topology::PointID Topology::getOtherPointInEdge(const Edge &edge, PointID point)
 		return -1;
 }
 
-PReal Topology::areaOfPolygon(const Polygon& poly) const
+PReal Mesh::areaOfPolygon(const Polygon& poly) const
 {
 	int nbPts = poly.size();
 	PReal area = 0;
@@ -350,7 +350,7 @@ PReal Topology::areaOfPolygon(const Polygon& poly) const
 	return area / 2;
 }
 
-void Topology::reorientPolygon(Polygon& poly)
+void Mesh::reorientPolygon(Polygon& poly)
 {
 	Polygon copy = poly;
 	poly.clear();
@@ -360,7 +360,7 @@ void Topology::reorientPolygon(Polygon& poly)
 		poly.push_front(pt);
 }
 
-Point Topology::centroidOfPolygon(const Polygon& poly) const
+Point Mesh::centroidOfPolygon(const Polygon& poly) const
 {
 	int nbPts = poly.size();
 	Point pt;
@@ -373,7 +373,7 @@ Point Topology::centroidOfPolygon(const Polygon& poly) const
 	return pt / (6 * areaOfPolygon(poly));
 }
 
-bool Topology::comparePolygon(Polygon p1, Polygon p2)
+bool Mesh::comparePolygon(Polygon p1, Polygon p2)
 {
 	if(p1.size() != p2.size())
 		return false;
@@ -402,7 +402,7 @@ bool Topology::comparePolygon(Polygon p1, Polygon p2)
 	return true;
 }
 
-bool Topology::polygonContainsPoint(const Polygon &poly, Point pt) const
+bool Mesh::polygonContainsPoint(const Polygon &poly, Point pt) const
 {
 	int nb = poly.size();
 	for(int i1=0, i0=nb-1; i1<nb; i0=i1++)
@@ -417,7 +417,7 @@ bool Topology::polygonContainsPoint(const Polygon &poly, Point pt) const
 	return true;
 }
 
-void Topology::removeUnusedPoints()
+void Mesh::removeUnusedPoints()
 {
 	clearEdges();
 	clearEdgesAroundPoint();
@@ -446,47 +446,47 @@ void Topology::removeUnusedPoints()
 	m_points.swap(newPoints);
 }
 
-bool Topology::hasPoints() const
+bool Mesh::hasPoints() const
 {
 	return !m_points.empty();
 }
 
-bool Topology::hasEdges() const
+bool Mesh::hasEdges() const
 {
 	return !m_edges.empty();
 }
 
-bool Topology::hasPolygons() const
+bool Mesh::hasPolygons() const
 {
 	return !m_polygons.empty();
 }
 
-bool Topology::hasEdgesInPolygon() const
+bool Mesh::hasEdgesInPolygon() const
 {
 	return !m_edgesInPolygon.empty();
 }
 
-bool Topology::hasEdgesAroundPoint() const
+bool Mesh::hasEdgesAroundPoint() const
 {
 	return !m_edgesAroundPoint.empty();
 }
 
-bool Topology::hasPolygonsAroundPoint() const
+bool Mesh::hasPolygonsAroundPoint() const
 {
 	return !m_polygonsAroundPoint.empty();
 }
 
-bool Topology::hasPolygonsAroundEdge() const
+bool Mesh::hasPolygonsAroundEdge() const
 {
 	return !m_polygonsAroundEdge.empty();
 }
 
-bool Topology::hasBorderElementsLists() const
+bool Mesh::hasBorderElementsLists() const
 {
 	return !m_pointsOnBorder.empty() && !m_edgesOnBorder.empty() && !m_polygonsOnBorder.empty();
 }
 
-void Topology::createEdgeList()
+void Mesh::createEdgeList()
 {
 	if(!hasPolygons())
 		return;
@@ -520,7 +520,7 @@ void Topology::createEdgeList()
 	}
 }
 
-void Topology::createEdgesInPolygonList()
+void Mesh::createEdgesInPolygonList()
 {
 	if(hasEdgesInPolygon())
 		clearEdgesInPolygon();
@@ -590,7 +590,7 @@ void Topology::createEdgesInPolygonList()
 	}
 }
 
-void Topology::createEdgesAroundPointList()
+void Mesh::createEdgesAroundPointList()
 {
 	if(!hasEdges())
 		createEdgeList();
@@ -607,7 +607,7 @@ void Topology::createEdgesAroundPointList()
 	}
 }
 
-void Topology::createPolygonsAroundPointList()
+void Mesh::createPolygonsAroundPointList()
 {
 	if(!hasPolygons())
 		return;
@@ -626,7 +626,7 @@ void Topology::createPolygonsAroundPointList()
 	}
 }
 
-void Topology::createPolygonsAroundEdgeList()
+void Mesh::createPolygonsAroundEdgeList()
 {
 	if(!hasPolygons())
 		return;
@@ -650,7 +650,7 @@ void Topology::createPolygonsAroundEdgeList()
 	}
 }
 
-void Topology::createElementsOnBorder()
+void Mesh::createElementsOnBorder()
 {
 	if(!hasPolygonsAroundEdge())
 		createPolygonsAroundEdgeList();
@@ -688,7 +688,7 @@ void Topology::createElementsOnBorder()
 	}
 }
 
-void Topology::createTriangles()
+void Mesh::createTriangles()
 {
 	if(!hasEdges())
 		return;
@@ -757,49 +757,49 @@ void Topology::createTriangles()
 	}
 }
 
-void Topology::clearPoints()
+void Mesh::clearPoints()
 {
 	m_points.clear();
 }
 
-void Topology::clearEdges()
+void Mesh::clearEdges()
 {
 	m_edges.clear();
 }
 
-void Topology::clearPolygons()
+void Mesh::clearPolygons()
 {
 	m_polygons.clear();
 }
 
-void Topology::clearEdgesInPolygon()
+void Mesh::clearEdgesInPolygon()
 {
 	m_edgesInPolygon.clear();
 }
 
-void Topology::clearEdgesAroundPoint()
+void Mesh::clearEdgesAroundPoint()
 {
 	m_edgesAroundPoint.clear();
 }
 
-void Topology::clearPolygonsAroundPoint()
+void Mesh::clearPolygonsAroundPoint()
 {
 	m_polygonsAroundPoint.clear();
 }
 
-void Topology::clearPolygonsAroundEdge()
+void Mesh::clearPolygonsAroundEdge()
 {
 	m_polygonsAroundEdge.clear();
 }
 
-void Topology::clearBorderElementLists()
+void Mesh::clearBorderElementLists()
 {
 	m_pointsOnBorder.clear();
 	m_edgesOnBorder.clear();
 	m_polygonsOnBorder.clear();
 }
 
-void Topology::clear()
+void Mesh::clear()
 {
 	clearPoints();
 	clearEdges();
@@ -813,12 +813,12 @@ void Topology::clear()
 
 //***************************************************************//
 
-template<> QString DataTrait<Topology>::valueTypeName() { return "topology"; }
-template<> QString DataTrait<Topology>::valueTypeNamePlural() { return "topologies"; }
-template<> bool DataTrait<Topology>::isDisplayed() { return false; }
+template<> QString DataTrait<Mesh>::valueTypeName() { return "mesh"; }
+template<> QString DataTrait<Mesh>::valueTypeNamePlural() { return "meshes"; }
+template<> bool DataTrait<Mesh>::isDisplayed() { return false; }
 
 template<>
-void DataTrait<Topology>::writeValue(QDomDocument& doc, QDomElement& elem, const Topology& v)
+void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& elem, const Mesh& v)
 {
 	for(const auto& p : v.getPoints())
 	{
@@ -850,9 +850,9 @@ void DataTrait<Topology>::writeValue(QDomDocument& doc, QDomElement& elem, const
 }
 
 template<>
-void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
+void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
 {
-	Topology tmp;
+	Mesh tmp;
 
 	QDomElement ptNode = elem.firstChildElement("Point");
 	while(!ptNode.isNull())
@@ -872,7 +872,7 @@ void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
 	QDomElement edgeNode = elem.firstChildElement("Edge");
 	while(!edgeNode.isNull())
 	{
-		Topology::Edge edge;
+		Mesh::Edge edge;
 		edge.first = edgeNode.attribute("p1").toInt();
 		edge.second = edgeNode.attribute("p2").toInt();
 		tmp.addEdge(edge);
@@ -882,7 +882,7 @@ void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
 	QDomElement polyNode = elem.firstChildElement("Poly");
 	while(!polyNode.isNull())
 	{
-		Topology::Polygon poly;
+		Mesh::Polygon poly;
 		QDomElement indexNode = elem.firstChildElement("Point");
 		while(!indexNode.isNull())
 		{
@@ -896,11 +896,11 @@ void DataTrait<Topology>::readValue(QDomElement& elem, Topology& v)
 	v = std::move(tmp);
 }
 
-template class Data< Topology >;
-template class Data< QVector<Topology> >;
+template class Data< Mesh >;
+template class Data< QVector<Mesh> >;
 
-int topologyDataClass = RegisterData< Topology >();
-int topologyVectorDataClass = RegisterData< QVector<Topology> >();
+int meshDataClass = RegisterData< Mesh >();
+int meshVectorDataClass = RegisterData< QVector<Mesh> >();
 
 } // namespace types
 

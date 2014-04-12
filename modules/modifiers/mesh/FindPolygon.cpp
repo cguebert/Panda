@@ -1,25 +1,25 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 
 namespace panda {
 
-using types::Topology;
+using types::Mesh;
 using types::Point;
 
-class ModifierTopology_FindPolygon : public PandaObject
+class ModifierMesh_FindPolygon : public PandaObject
 {
 public:
-	PANDA_CLASS(ModifierTopology_FindPolygon, PandaObject)
+	PANDA_CLASS(ModifierMesh_FindPolygon, PandaObject)
 
-	ModifierTopology_FindPolygon(PandaDocument *doc)
+	ModifierMesh_FindPolygon(PandaDocument *doc)
 		: PandaObject(doc)
-		, topology(initData(&topology, "topology", "Topology in which to search"))
+		, mesh(initData(&mesh, "mesh", "Mesh in which to search"))
 		, points(initData(&points, "points", "List of points to test"))
 		, indices(initData(&indices, "indices", "Indices of the polygons are the corresponding points"))
 	{
-		addInput(&topology);
+		addInput(&mesh);
 		addInput(&points);
 
 		addOutput(&indices);
@@ -27,12 +27,12 @@ public:
 
 	void update()
 	{
-		const Topology& topo = topology.getValue();
+		const Mesh& topo = mesh.getValue();
 
 		const QVector<Point>& pts = points.getValue();
 		auto output = indices.getAccessor();
 		int nbPts = pts.size();
-		output.wref().fill(Topology::InvalidID, nbPts);
+		output.wref().fill(Mesh::InvalidID, nbPts);
 
 		int nbPoly = topo.getNumberOfPolygons();
 
@@ -41,7 +41,7 @@ public:
 			Point pt = pts[i];
 			for(int j=0; j<nbPoly; ++j)
 			{
-				const Topology::Polygon& poly = topo.getPolygon(j);
+				const Mesh::Polygon& poly = topo.getPolygon(j);
 				if(topo.polygonContainsPoint(poly, pt))
 				{
 					output[i] = j;
@@ -54,11 +54,11 @@ public:
 	}
 
 protected:
-	Data< Topology > topology;
+	Data< Mesh > mesh;
 	Data< QVector<Point> > points;
 	Data< QVector<int> > indices;
 };
 
-int ModifierTopology_FindPolygonClass = RegisterObject<ModifierTopology_FindPolygon>("Modifier/Topology/Find polygon").setDescription("Find polygons are specific positions");
+int ModifierMesh_FindPolygonClass = RegisterObject<ModifierMesh_FindPolygon>("Modifier/Mesh/Find polygon").setDescription("Find polygons are specific positions");
 
 } // namespace Panda

@@ -1,24 +1,24 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 
 #include <set>
 
 namespace panda {
 
 using types::Point;
-using types::Topology;
+using types::Mesh;
 
-class ModifierTopology_EdgeRelaxation : public PandaObject
+class ModifierMesh_EdgeRelaxation : public PandaObject
 {
 public:
-	PANDA_CLASS(ModifierTopology_EdgeRelaxation, PandaObject)
+	PANDA_CLASS(ModifierMesh_EdgeRelaxation, PandaObject)
 
-	ModifierTopology_EdgeRelaxation(PandaDocument *doc)
+	ModifierMesh_EdgeRelaxation(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input topology"))
-		, output(initData(&output, "output", "Output topology"))
+		, input(initData(&input, "input", "Input mesh"))
+		, output(initData(&output, "output", "Output mesh"))
 		, factor(initData(&factor, (PReal)0.1, "factor", "Portion of each edge added to a point"))
 		, iterations(initData(&iterations, 1, "iterations", "Number of times to do the relaxation"))
 		, fixBorder(initData(&fixBorder, 0, "fix border", "If true, the points on the border will not move"))
@@ -61,8 +61,8 @@ public:
 				Point pt1 = ptsCopy[j];
 				for(auto eid : outTopo->getEdgesAroundPoint(j))
 				{
-					Topology::Edge e = outTopo->getEdge(eid);
-					Topology::PointID p2id = outTopo->getOtherPointInEdge(e, j);
+					Mesh::Edge e = outTopo->getEdge(eid);
+					Mesh::PointID p2id = outTopo->getOtherPointInEdge(e, j);
 					Point pt2 = ptsCopy[p2id];
 
 					Point dir = pt2 - pt1;
@@ -75,12 +75,12 @@ public:
 	}
 
 protected:
-	Data< Topology > input, output;
+	Data< Mesh > input, output;
 	Data< PReal > factor;
 	Data< int > iterations, fixBorder;
 };
 
-int ModifierTopology_EdgeRelaxationClass = RegisterObject<ModifierTopology_EdgeRelaxation>("Modifier/Topology/Edge relaxation")
+int ModifierMesh_EdgeRelaxationClass = RegisterObject<ModifierMesh_EdgeRelaxation>("Modifier/Mesh/Edge relaxation")
 		.setDescription("Pull each point a little bit closer to its neighbors");
 
 } // namespace Panda

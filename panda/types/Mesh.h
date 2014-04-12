@@ -1,5 +1,5 @@
-#ifndef TYPES_TOPOLOGY_H
-#define TYPES_TOPOLOGY_H
+#ifndef TYPES_MESH_H
+#define TYPES_MESH_H
 
 #include <QVector>
 #include <panda/types/Point.h>
@@ -10,7 +10,7 @@ namespace panda
 namespace types
 {
 
-class Topology
+class Mesh
 {
 public:
 	typedef unsigned int index_type;
@@ -30,8 +30,8 @@ public:
 	typedef QVector<Edge> SeqEdges;
 	typedef QVector<Polygon> SeqPolygons;
 
-	Topology();
-	virtual ~Topology();
+	Mesh();
+	virtual ~Mesh();
 
 	PointID addPoint(const Point& point);
 	void addPoints(const SeqPoints& pts);
@@ -138,4 +138,4 @@ protected:
 
 } // namespace panda
 
-#endif // TYPES_TOPOLOGY_H
+#endif // TYPES_MESH_H

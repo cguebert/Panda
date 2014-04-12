@@ -2,7 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
-#include <panda/types/Topology.h>
+#include <panda/types/Mesh.h>
 #include <panda/types/Rect.h>
 
 #include <vector>
@@ -16,14 +16,14 @@ using namespace boost::polygon;
 
 namespace panda {
 
-using types::Topology;
+using types::Mesh;
 using types::Point;
 using types::Rect;
 
-class GeneratorTopology_Delaunay : public PandaObject
+class GeneratorMesh_Delaunay : public PandaObject
 {
 public:
-	PANDA_CLASS(GeneratorTopology_Delaunay, PandaObject)
+	PANDA_CLASS(GeneratorMesh_Delaunay, PandaObject)
 
 	typedef point_data<int> IPoint;
 	typedef segment_data<int> Segment;
@@ -36,20 +36,20 @@ public:
 	typedef Diagram::const_vertex_iterator VertexIterator;
 	typedef Diagram::const_edge_iterator EdgeIterator;
 
-	GeneratorTopology_Delaunay(PandaDocument *doc)
+	GeneratorMesh_Delaunay(PandaDocument *doc)
 		: PandaObject(doc)
 		, vertices(initData(&vertices, "vertices", "Sites of the Delaunay triangulation"))
-		, topology(initData(&topology, "topology", "Topology created from the Delaunay triangulation"))
+		, mesh(initData(&mesh, "mesh", "Mesh created from the Delaunay triangulation"))
 	{
 		addInput(&vertices);
 
-		addOutput(&topology);
+		addOutput(&mesh);
 	}
 
 	void update()
 	{
 		const QVector<Point>& pts = vertices.getValue();
-		auto topo = topology.getAccessor();
+		auto topo = mesh.getAccessor();
 
 		topo->clear();
 
@@ -84,8 +84,8 @@ public:
 			if(it->twin() && (bp1 || bp2))
 			{
 				const Cell* c2 = it->twin()->cell();
-				Topology::Edge e(c1->source_index(), c2->source_index());
-				if(topo->getEdgeIndex(e) == Topology::InvalidID)
+				Mesh::Edge e(c1->source_index(), c2->source_index());
+				if(topo->getEdgeIndex(e) == Mesh::InvalidID)
 					topo->addEdge(e);
 			}
 		}
@@ -97,11 +97,11 @@ public:
 
 protected:
 	Data< QVector<Point> > vertices;
-	Data<Topology> topology;
+	Data<Mesh> mesh;
 };
 
-int GeneratorTopology_DelaunayClass = RegisterObject<GeneratorTopology_Delaunay>("Generator/Topology/Delaunay")
-		.setDescription("Create a topology from a Delaunay triangulation");
+int GeneratorMesh_DelaunayClass = RegisterObject<GeneratorMesh_Delaunay>("Generator/Mesh/Delaunay")
+		.setDescription("Create a mesh from a Delaunay triangulation");
 
 //*************************************************************************//
 
