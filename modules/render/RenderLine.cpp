@@ -56,7 +56,7 @@ public:
 			glBegin(GL_LINES);
 			for(int i=0; i<nbLines; ++i)
 			{
-				glColor4fv(listColor[i % nbColor].ptr());
+				glColor4fv(listColor[i % nbColor].data());
 
 				if(useTwoLists)
 				{
@@ -118,7 +118,7 @@ public:
 			for(int i=0; i<nb; ++i)
 			{
 				const Path& path = paths[i];
-				glColor4fv(listColor[i % nbColor].ptr());
+				glColor4fv(listColor[i % nbColor].data());
 
 				glBegin(GL_LINE_STRIP);
 				for(int j=0, nbPts=path.size(); j<nbPts; ++j)

@@ -57,7 +57,7 @@ public:
 			glEnableClientState(GL_VERTEX_ARRAY);
 			for(int i=0; i<nbCenter; ++i)
 			{
-				glColor4fv(listColor[i % nbColor].ptr());
+				glColor4fv(listColor[i % nbColor].data());
 				glLineWidth(listWidth[i % nbWidth]);
 
 				PReal valRadius = listRadius[i % nbRadius];

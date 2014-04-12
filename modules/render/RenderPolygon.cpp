@@ -51,7 +51,7 @@ public:
 				if(!nbPts)
 					continue;
 
-				glColor4fv(listColor[i % nbColor].ptr());
+				glColor4fv(listColor[i % nbColor].data());
 
 				vertices.resize(nbPts * 2);
 

@@ -36,8 +36,8 @@ public:
 	PReal& operator[](int n);
 	const PReal& operator[](int n) const;
 
-	PReal* ptr();
-	const PReal* ptr() const;
+	PReal* data();
+	const PReal* data() const;
 
 	Point operator+(const Point& p) const;
 	Point operator-(const Point& p) const;
@@ -125,10 +125,10 @@ inline PReal& Point::operator[](int n)
 inline const PReal& Point::operator[](int n) const
 { assert(n >= 0 && n <= 1); return (&x)[n]; }
 
-inline PReal* Point::ptr()
+inline PReal* Point::data()
 { return &x; }
 
-inline const PReal* Point::ptr() const
+inline const PReal* Point::data() const
 { return &x; }
 
 inline Point Point::operator+(const Point& p) const

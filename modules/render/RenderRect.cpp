@@ -54,7 +54,7 @@ public:
 			glVertexPointer(2, GL_PREAL, 0, verts);
 			for(int i=0; i<nbRect; ++i)
 			{
-				glColor4fv(listColor[i % nbColor].ptr());
+				glColor4fv(listColor[i % nbColor].data());
 				glLineWidth(listWidth[i % nbWidth]);
 
 				Rect rect = listRect[i % nbRect];
@@ -143,7 +143,7 @@ public:
 			glVertexPointer(2, GL_PREAL, 0, verts);
 			for(int i=0; i<nbRect; ++i)
 			{
-				glColor4fv(listColor[i % nbColor].ptr());
+				glColor4fv(listColor[i % nbColor].data());
 
 				Rect rect = listRect[i % nbRect];
 				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();

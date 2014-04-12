@@ -54,11 +54,8 @@ public:
 	float& operator[](int n);
 	const float& operator[](int n) const;
 
-	float* ptr();
-	const float* ptr() const;
-
-	operator float*();
-	operator const float*() const;
+	float* data();
+	const float* data() const;
 
 	Color premultiplied() const;
 	Color bounded() const;	/// make sure all components are [0:1]
@@ -164,17 +161,11 @@ inline const float& Color::operator[](int n) const
 	return (&r)[n];
 }
 
-inline float* Color::ptr()
+inline float* Color::data()
 { return &r; }
 
-inline const float* Color::ptr() const
+inline const float* Color::data() const
 { return &r; }
-
-inline Color::operator float*()
-{ return ptr(); }
-
-inline Color::operator const float*() const
-{ return ptr(); }
 
 inline Color Color::premultiplied() const
 { return Color(r * a, g * a, b * a, a); }

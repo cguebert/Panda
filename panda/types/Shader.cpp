@@ -125,10 +125,10 @@ template<> void ShaderValue<PReal>::apply(QOpenGLShaderProgram& program) const
 { program.setUniformValue(program.uniformLocation(m_name), (float)m_value); }
 
 template<> void ShaderValue<Color>::apply(QOpenGLShaderProgram& program) const
-{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.ptr(), 1, 4); }
+{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), 1, 4); }
 
 template<> void ShaderValue<Point>::apply(QOpenGLShaderProgram& program) const
-{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.ptr(), 1, 2); }
+{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), 1, 2); }
 
 template<> void ShaderValue< QVector<int> >::apply(QOpenGLShaderProgram& program) const
 { program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), m_value.size()); }
@@ -149,13 +149,13 @@ template<> void ShaderValue< QVector<PReal> >::apply(QOpenGLShaderProgram& progr
 template<> void ShaderValue< QVector<Color> >::apply(QOpenGLShaderProgram& program) const
 {
 	if(!m_value.empty())
-		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].ptr(), m_value.size(), 4);
+		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 4);
 }
 
 template<> void ShaderValue< QVector<Point> >::apply(QOpenGLShaderProgram& program) const
 {
 	if(!m_value.empty())
-		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].ptr(), m_value.size(), 2);
+		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 2);
 }
 
 //***************************************************************//
