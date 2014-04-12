@@ -76,8 +76,8 @@ public:
 		for(int i=0; i<nbEdges; ++i)
 		{
 			const Mesh::Edge& e = topo.getEdge(i);
-			pts.push_back(topoPts[e.first]);
-			pts.push_back(topoPts[e.second]);
+			pts.push_back(topoPts[e[0]]);
+			pts.push_back(topoPts[e[1]]);
 		}
 
 		cleanDirty();
@@ -262,8 +262,8 @@ public:
 			if(i != Mesh::InvalidID && i < nbEdges)
 			{
 				Mesh::Edge e = inTopo.getEdge(i);
-				outPts.push_back(inTopo.getPoint(e.first));
-				outPts.push_back(inTopo.getPoint(e.second));
+				outPts.push_back(inTopo.getPoint(e[0]));
+				outPts.push_back(inTopo.getPoint(e[1]));
 			}
 		}
 

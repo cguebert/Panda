@@ -4,6 +4,8 @@
 #include <QVector>
 #include <panda/types/Point.h>
 
+#include <array>
+
 namespace panda
 {
 
@@ -23,7 +25,7 @@ public:
 	typedef QVector<EdgeID> EdgesIndicesList;
 	typedef QVector<PolygonID> PolygonsIndicesList;
 
-	typedef std::pair<PointID, PointID> Edge;
+	typedef std::array<PointID, 2> Edge;
 	typedef QVector<PointID> Polygon;
 
 	typedef QVector<Point> SeqPoints;
@@ -43,6 +45,8 @@ public:
 	PolygonID addPolygon(const Polygon& p);
 	PolygonID addPolygon(PolygonID p1, PolygonID p2, PolygonID p3);
 	void addPolygons(const SeqPolygons& p);
+
+	static Edge makeEdge(PointID a, PointID b);
 
 	int getNumberOfPoints() const;
 	int getNumberOfEdges() const;

@@ -34,13 +34,13 @@ void Mesh::addPoints(const SeqPoints& pts)
 Mesh::EdgeID Mesh::addEdge(PointID a, PointID b)
 {
 	Q_ASSERT(a != b);
-	m_edges.push_back(std::make_pair(a, b));
+	m_edges.push_back(makeEdge(a, b));
 	return m_edges.size() - 1;
 }
 
 Mesh::EdgeID Mesh::addEdge(Edge e)
 {
-	Q_ASSERT(e.first != e.second);
+	Q_ASSERT(e[0] != e[1]);
 	m_edges.push_back(e);
 	return m_edges.size() - 1;
 }
@@ -68,6 +68,12 @@ Mesh::PolygonID Mesh::addPolygon(PolygonID p1, PolygonID p2, PolygonID p3)
 void Mesh::addPolygons(const SeqPolygons& p)
 {
 	m_polygons += p;
+}
+
+Mesh::Edge Mesh::makeEdge(PointID a, PointID b)
+{
+	Edge tmp = { { a, b } };
+	return tmp;
 }
 
 int Mesh::getNumberOfPoints() const
@@ -136,7 +142,7 @@ Mesh::PointID Mesh::getPointIndex(const Point &pt) const
 
 Mesh::EdgeID Mesh::getEdgeIndex(PointID a, PointID b) const
 {
-	Edge e1 = Edge(a, b), e2 = Edge(b, a);
+	Edge e1 = makeEdge(a, b), e2 = makeEdge(b, a);
 	int id = m_edges.indexOf(e1);
 	if(id < 0)
 		return m_edges.indexOf(e2);
@@ -145,7 +151,7 @@ Mesh::EdgeID Mesh::getEdgeIndex(PointID a, PointID b) const
 
 Mesh::EdgeID Mesh::getEdgeIndex(const Edge& e) const
 {
-	Edge e2 = Edge(e.second, e.first);
+	Edge e2 = makeEdge(e[0], e[1]);
 	int id = m_edges.indexOf(e);
 	if(id < 0)
 		return m_edges.indexOf(e2);
@@ -329,10 +335,10 @@ Mesh::PolygonsIndicesList Mesh::getPolygonsConnectedToPolygon(PolygonID index)
 
 Mesh::PointID Mesh::getOtherPointInEdge(const Edge &edge, PointID point) const
 {
-	if(edge.first == point)
-		return edge.second;
-	else if(edge.second == point)
-		return edge.first;
+	if(edge[0] == point)
+		return edge[1];
+	else if(edge[1] == point)
+		return edge[0];
 	else
 		return -1;
 }
@@ -508,13 +514,13 @@ void Mesh::createEdgeList()
 			const int p1 = p[i];
 			const int p2 = p[(i+1)%nbPts];
 
-			const Edge e = ((p1<p2) ? Edge(p1, p2) : Edge(p2, p1));
+			const Edge e = ((p1<p2) ? makeEdge(p1, p2) : makeEdge(p2, p1));
 
 			if(!edgeMap.contains(e))
 			{
 				const int edgeId = edgeMap.size();
 				edgeMap[e] = edgeId;
-				m_edges.push_back(Edge(p1, p2));
+				m_edges.push_back(makeEdge(p1, p2));
 			}
 		}
 	}
@@ -541,13 +547,13 @@ void Mesh::createEdgesInPolygonList()
 				const int p1 = p[j];
 				const int p2 = p[(j+1)%nbPts];
 
-				const Edge e = ((p1<p2) ? Edge(p1, p2) : Edge(p2, p1));
+				const Edge e = ((p1<p2) ? makeEdge(p1, p2) : makeEdge(p2, p1));
 
 				if(!edgeMap.contains(e))
 				{
 					const int edgeId = edgeMap.size();
 					edgeMap[e] = edgeId;
-					m_edges.push_back(Edge(p1, p2));
+					m_edges.push_back(makeEdge(p1, p2));
 				}
 
 				m_edgesInPolygon[i].push_back(edgeMap[e]);
@@ -576,7 +582,7 @@ void Mesh::createEdgesInPolygonList()
 				{
 					const int eid = eap[k];
 					const Edge& e = m_edges[eid];
-					if(e.first == p1 && e.second == p2 || e.first == p2 && e.second == p1)
+					if(e[0] == p1 && e[1] == p2 || e[0] == p2 && e[1] == p1)
 					{
 						found = true;
 						eip.push_back(eid);
@@ -602,8 +608,8 @@ void Mesh::createEdgesAroundPointList()
 	int nbEdges = getNumberOfEdges();
 	for(int i=0; i<nbEdges; ++i)
 	{
-		m_edgesAroundPoint[m_edges[i].first].push_back(i);
-		m_edgesAroundPoint[m_edges[i].second].push_back(i);
+		m_edgesAroundPoint[m_edges[i][0]].push_back(i);
+		m_edgesAroundPoint[m_edges[i][1]].push_back(i);
 	}
 }
 
@@ -668,11 +674,11 @@ void Mesh::createElementsOnBorder()
 		{
 			m_edgesOnBorder.push_back(i);
 
-			const int pt1Id = m_edges[i].first;
+			const int pt1Id = m_edges[i][0];
 			if(!m_pointsOnBorder.contains(pt1Id))
 				m_pointsOnBorder.push_back(pt1Id);
 
-			const int pt2Id = m_edges[i].second;
+			const int pt2Id = m_edges[i][1];
 			if(!m_pointsOnBorder.contains(pt2Id))
 				m_pointsOnBorder.push_back(pt2Id);
 		}
@@ -713,21 +719,21 @@ void Mesh::createTriangles()
 		Edge e = getEdge(eid);
 		tmpEdgesId.pop_front();
 
-		const EdgesIndicesList& neighbors = getEdgesAroundPoint(e.first);
+		const EdgesIndicesList& neighbors = getEdgesAroundPoint(e[0]);
 		int nbNgh = neighbors.size();
 		for(int i=0; i<nbNgh; ++i)
 		{
 			int e2id = neighbors[i];
 			Edge e2 = getEdge(e2id);
-			int p2id = getOtherPointInEdge(e2, e.first);
-			int e3id = getEdgeIndex(p2id, e.second);
+			int p2id = getOtherPointInEdge(e2, e[0]);
+			int e3id = getEdgeIndex(p2id, e[1]);
 
 			if(e3id != -1)
 			{
 				Polygon poly;
-				poly.push_back(e.first);
+				poly.push_back(e[0]);
 				poly.push_back(p2id);
-				poly.push_back(e.second);
+				poly.push_back(e[1]);
 
 				if(!m_polygonsAroundEdge[eid].empty())
 				{
@@ -832,8 +838,8 @@ void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& elem, const Mes
 	{
 		QDomElement edgeNode = doc.createElement("Edge");
 		elem.appendChild(edgeNode);
-		edgeNode.setAttribute("p1", e.first);
-		edgeNode.setAttribute("p2", e.second);
+		edgeNode.setAttribute("p1", e[0]);
+		edgeNode.setAttribute("p2", e[1]);
 	}
 
 	for(const auto& poly : v.getPolygons())
@@ -873,8 +879,8 @@ void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
 	while(!edgeNode.isNull())
 	{
 		Mesh::Edge edge;
-		edge.first = edgeNode.attribute("p1").toInt();
-		edge.second = edgeNode.attribute("p2").toInt();
+		edge[0] = edgeNode.attribute("p1").toInt();
+		edge[1] = edgeNode.attribute("p2").toInt();
 		tmp.addEdge(edge);
 		edgeNode = edgeNode.nextSiblingElement("Edge");
 	}

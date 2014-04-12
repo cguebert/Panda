@@ -84,7 +84,7 @@ public:
 			if(it->twin() && (bp1 || bp2))
 			{
 				const Cell* c2 = it->twin()->cell();
-				Mesh::Edge e(c1->source_index(), c2->source_index());
+				Mesh::Edge e = Mesh::makeEdge(c1->source_index(), c2->source_index());
 				if(topo->getEdgeIndex(e) == Mesh::InvalidID)
 					topo->addEdge(e);
 			}
