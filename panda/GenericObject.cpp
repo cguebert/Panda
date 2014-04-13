@@ -163,7 +163,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 {
 	if(data == m_genericData)
 	{
-		int type = parent->getDataTrait()->fullTypeId();
+		int type = m_genericData->getCompatibleType(parent);
 		BaseData *inputData = createDatas(type);
 
 		if(inputData)
@@ -276,6 +276,13 @@ QString GenericData::getTypesName(bool useFullDescription) const
 	return types;
 }
 
+int GenericData::getCompatibleType(const BaseData* parent) const
+{
+	return parent->getDataTrait()->valueTypeId();
+}
+
+//***************************************************************//
+
 bool GenericSingleValueData::validParent(const BaseData* parent) const
 {
 	return parent->getDataTrait()->isSingleValue() && GenericData::validParent(parent);
@@ -285,6 +292,8 @@ QString GenericSingleValueData::getDescription() const
 {
 	return QString("Accepting single values" + getTypesName());
 }
+
+//***************************************************************//
 
 bool GenericVectorData::validParent(const BaseData* parent) const
 {
@@ -299,6 +308,8 @@ QString GenericVectorData::getDescription() const
 	return QString("Accepting lists" + getTypesName());
 }
 
+//***************************************************************//
+
 bool GenericAnimationData::validParent(const BaseData* parent) const
 {
 	return parent->getDataTrait()->isAnimation() && GenericData::validParent(parent);
@@ -308,6 +319,8 @@ QString GenericAnimationData::getDescription() const
 {
 	return QString("Accepting animations" + getTypesName());
 }
+
+//***************************************************************//
 
 bool GenericSpecificData::validParent(const BaseData* parent) const
 {
@@ -321,6 +334,11 @@ bool GenericSpecificData::validParent(const BaseData* parent) const
 QString GenericSpecificData::getDescription() const
 {
 	return QString("Accepting these types :" + getTypesName(true));
+}
+
+int GenericSpecificData::getCompatibleType(const BaseData* parent) const
+{
+	return parent->getDataTrait()->fullTypeId();
 }
 
 } // namespace panda
