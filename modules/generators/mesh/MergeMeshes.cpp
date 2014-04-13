@@ -45,17 +45,17 @@ public:
 		PReal thres = threshold.getValue();
 
 		Mesh::SeqPoints newPoints;
-		Mesh::SeqPolygons newPolygons;
+		Mesh::SeqTriangles newTriangles;
 
 		QMap<Point, Mesh::PointID> pointsMap;
 
-		const QVector<Mesh>& topoList = inputs.getValue();
-		for(const Mesh& topo : topoList)
+		const QVector<Mesh>& meshesList = inputs.getValue();
+		for(const Mesh& mesh : meshesList)
 		{
 			if(newPoints.empty())
 			{
-				newPoints = topo.getPoints();
-				newPolygons = topo.getPolygons();
+				newPoints = mesh.getPoints();
+				newTriangles = mesh.getTriangles();
 				grid.addPoints(newPoints);
 				for(int i=0, nb=newPoints.size(); i<nb; ++i)
 					pointsMap[newPoints[i]] = i;
@@ -63,9 +63,9 @@ public:
 			else
 			{
 				QMap<Mesh::PointID, Mesh::PointID> tmpIDMap;
-				for(int i=0, nb=topo.getNumberOfPoints(); i<nb; ++i)
+				for(int i=0, nb=mesh.getNumberOfPoints(); i<nb; ++i)
 				{
-					const Point& pt = topo.getPoint(i);
+					const Point& pt = mesh.getPoint(i);
 					Point res;
 					if(grid.getNearest(pt, thres, res))
 					{
@@ -81,20 +81,20 @@ public:
 					}
 				}
 
-				for(auto poly : topo.getPolygons())
+				for(auto triangle : mesh.getTriangles())
 				{
-					for(auto& id : poly)
+					for(auto& id : triangle)
 						id = tmpIDMap[id];
 
-					newPolygons.push_back(poly);
+					newTriangles.push_back(triangle);
 				}
 			}
 		}
 
-		auto outTopo = output.getAccessor();
-		outTopo->clear();
-		outTopo->addPoints(newPoints);
-		outTopo->addPolygons(newPolygons);
+		auto outMesh = output.getAccessor();
+		outMesh->clear();
+		outMesh->addPoints(newPoints);
+		outMesh->addTriangles(newTriangles);
 
 		cleanDirty();
 	}

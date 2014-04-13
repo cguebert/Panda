@@ -49,9 +49,9 @@ public:
 	void update()
 	{
 		const QVector<Point>& pts = vertices.getValue();
-		auto topo = mesh.getAccessor();
+		auto outMesh = mesh.getAccessor();
 
-		topo->clear();
+		outMesh->clear();
 
 		vector<IPoint> points;
 		for(const auto& p : pts)
@@ -62,7 +62,7 @@ public:
 		Diagram vd;
 		construct_voronoi(points.begin(), points.end(), segments.begin(), segments.end(), &vd);
 
-		topo->addPoints(pts);
+		outMesh->addPoints(pts);
 
 		QSize s = parentDocument->getRenderSize();
 		Rect area = Rect(0, 0, s.width(), s.height());
@@ -85,12 +85,12 @@ public:
 			{
 				const Cell* c2 = it->twin()->cell();
 				Mesh::Edge e = Mesh::makeEdge(c1->source_index(), c2->source_index());
-				if(topo->getEdgeIndex(e) == Mesh::InvalidID)
-					topo->addEdge(e);
+				if(outMesh->getEdgeIndex(e) == Mesh::InvalidID)
+					outMesh->addEdge(e);
 			}
 		}
 
-		topo->createTriangles();
+		outMesh->createTriangles();
 
 		cleanDirty();
 	}

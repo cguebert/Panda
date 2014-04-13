@@ -51,9 +51,9 @@ public:
 		PReal w = widthAnim.get(0) / 2;
 		int cap = capStyle.getValue();
 		int join = joinStyle.getValue();
-		auto topo = output.getAccessor();
+		auto mesh = output.getAccessor();
 		auto UV = coordUV.getAccessor();
-		topo->clear();
+		mesh->clear();
 		UV.clear();
 
 		int nbPts = pts.size();
@@ -80,9 +80,9 @@ public:
 		// Start cap
 		Mesh::PointID prevPtsId[3];
 		Point dir = normals[0] * w;
-		prevPtsId[0] = topo->addPoint(pts[0] + dir);
-		prevPtsId[1] = topo->addPoint(pts[0]);
-		prevPtsId[2] = topo->addPoint(pts[0] - dir);
+		prevPtsId[0] = mesh->addPoint(pts[0] + dir);
+		prevPtsId[1] = mesh->addPoint(pts[0]);
+		prevPtsId[2] = mesh->addPoint(pts[0] - dir);
 		UV.push_back(Point(abscissa[0], 1));
 		UV.push_back(Point(abscissa[0], 0));
 		UV.push_back(Point(abscissa[0], 1));
@@ -101,31 +101,31 @@ public:
 			for(int i=0; i<nb-1; ++i)
 			{
 				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-				Mesh::PointID newPtId = topo->addPoint(center + pt);
+				Mesh::PointID newPtId = mesh->addPoint(center + pt);
 				UV.push_back(Point(abscissa[0], 1));
-				topo->addPolygon(ptId, newPtId, prevPtsId[1]);
+				mesh->addTriangle(ptId, newPtId, prevPtsId[1]);
 
 				dir = pt;
 				ptId = newPtId;
 			}
-			topo->addPolygon(ptId, prevPtsId[2], prevPtsId[1]);
+			mesh->addTriangle(ptId, prevPtsId[2], prevPtsId[1]);
 			break;
 		}
 		case 2: // Square cap
 		{
 			Point dir2 = Point(dir.y, -dir.x);
 			Mesh::PointID addPtsId[3];
-			addPtsId[0] = topo->addPoint(pts[0] + dir + dir2);
-			addPtsId[1] = topo->addPoint(pts[0]	      + dir2);
-			addPtsId[2] = topo->addPoint(pts[0] - dir + dir2);
+			addPtsId[0] = mesh->addPoint(pts[0] + dir + dir2);
+			addPtsId[1] = mesh->addPoint(pts[0]	      + dir2);
+			addPtsId[2] = mesh->addPoint(pts[0] - dir + dir2);
 			UV.push_back(Point(abscissa[0], 1));
 			UV.push_back(Point(abscissa[0], 1));
 			UV.push_back(Point(abscissa[0], 1));
 
-			topo->addPolygon(prevPtsId[0], addPtsId[0], prevPtsId[1]);
-			topo->addPolygon(prevPtsId[1], addPtsId[0], addPtsId[1]);
-			topo->addPolygon(addPtsId[1], addPtsId[2], prevPtsId[1]);
-			topo->addPolygon(prevPtsId[1], addPtsId[2], prevPtsId[2]);
+			mesh->addTriangle(prevPtsId[0], addPtsId[0], prevPtsId[1]);
+			mesh->addTriangle(prevPtsId[1], addPtsId[0], addPtsId[1]);
+			mesh->addTriangle(addPtsId[1], addPtsId[2], prevPtsId[1]);
+			mesh->addTriangle(prevPtsId[1], addPtsId[2], prevPtsId[2]);
 			break;
 		}
 		} // end switch
@@ -152,25 +152,25 @@ public:
 				hasInteriorPt = false;	// I don't know what to do in this degenerated case!
 
 			// Main extrusion (without the exterior of the curvature)
-			nextPtsId[1] = topo->addPoint(pts[i]);
+			nextPtsId[1] = mesh->addPoint(pts[i]);
 			UV.push_back(Point(abscissa[i], 0));
-			topo->addPolygon(nextPtsId[1], prevPtsId[0], prevPtsId[1]);
-			topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
+			mesh->addTriangle(nextPtsId[1], prevPtsId[0], prevPtsId[1]);
+			mesh->addTriangle(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
 
 			if(side > 0)
 			{
 				if(hasInteriorPt)
 				{
-					nextPtsId[2] = topo->addPoint(pts[i] - dir);
+					nextPtsId[2] = mesh->addPoint(pts[i] - dir);
 					UV.push_back(Point(abscissa[i], 1));
-					topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
+					mesh->addTriangle(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
 				}
 				else
 				{
-					Mesh::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					Mesh::PointID addPtId = mesh->addPoint(pts[i] - normals[i-1] * w);
 					UV.push_back(Point(abscissa[i], 1));
-					topo->addPolygon(nextPtsId[1], prevPtsId[2], addPtId);
-					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
+					mesh->addTriangle(nextPtsId[1], prevPtsId[2], addPtId);
+					nextPtsId[2] = mesh->addPoint(pts[i] - normals[i] * w);
 					UV.push_back(Point(abscissa[i], 1));
 				}
 
@@ -179,16 +179,16 @@ public:
 			{
 				if(hasInteriorPt)
 				{
-					nextPtsId[0] = topo->addPoint(pts[i] + dir);
+					nextPtsId[0] = mesh->addPoint(pts[i] + dir);
 					UV.push_back(Point(abscissa[i], 1));
-					topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
+					mesh->addTriangle(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
 				}
 				else
 				{
-					Mesh::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
+					Mesh::PointID addPtId = mesh->addPoint(pts[i] + normals[i-1] * w);
 					UV.push_back(Point(abscissa[i], 1));
-					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
-					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
+					mesh->addTriangle(addPtId, prevPtsId[0], nextPtsId[1]);
+					nextPtsId[0] = mesh->addPoint(pts[i] + normals[i] * w);
 					UV.push_back(Point(abscissa[i], 1));
 				}
 			}
@@ -206,15 +206,15 @@ public:
 			{
 				if(side > 0)
 				{
-					nextPtsId[0] = topo->addPoint(pts[i] + dir);
+					nextPtsId[0] = mesh->addPoint(pts[i] + dir);
 					UV.push_back(Point(abscissa[i], 1));
-					topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
+					mesh->addTriangle(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
 				}
 				else // side < 0
 				{
-					nextPtsId[2] = topo->addPoint(pts[i] - dir);
+					nextPtsId[2] = mesh->addPoint(pts[i] - dir);
 					UV.push_back(Point(abscissa[i], 1));
-					topo->addPolygon(nextPtsId[2], nextPtsId[1], prevPtsId[2]);
+					mesh->addTriangle(nextPtsId[2], nextPtsId[1], prevPtsId[2]);
 				}
 
 				break;
@@ -224,12 +224,12 @@ public:
 				if(side > 0)
 				{
 					PReal angle = acos(normals[i-1].dot(normals[i]));
-					Mesh::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
-					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
+					Mesh::PointID addPtId = mesh->addPoint(pts[i] + normals[i-1] * w);
+					nextPtsId[0] = mesh->addPoint(pts[i] + normals[i] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					UV.push_back(Point(abscissa[i], 1));
 
-					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
+					mesh->addTriangle(addPtId, prevPtsId[0], nextPtsId[1]);
 
 					int nb = static_cast<int>(floor(w * angle));
 					angle /= nb;
@@ -240,24 +240,24 @@ public:
 					for(int j=0; j<nb-1; ++j)
 					{
 						Point nr = Point(r.x*ca+r.y*sa, r.y*ca-r.x*sa);
-						Mesh::PointID newPtId = topo->addPoint(center + nr);
+						Mesh::PointID newPtId = mesh->addPoint(center + nr);
 						UV.push_back(Point(abscissa[i], 1));
-						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
+						mesh->addTriangle(ptId, newPtId, nextPtsId[1]);
 
 						r = nr;
 						ptId = newPtId;
 					}
-					topo->addPolygon(ptId, addPtId, nextPtsId[1]);
+					mesh->addTriangle(ptId, addPtId, nextPtsId[1]);
 				}
 				else // side < 0
 				{
 					PReal angle = acos(normals[i-1].dot(normals[i]));
-					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
-					Mesh::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					nextPtsId[2] = mesh->addPoint(pts[i] - normals[i] * w);
+					Mesh::PointID addPtId = mesh->addPoint(pts[i] - normals[i-1] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					UV.push_back(Point(abscissa[i], 1));
 
-					topo->addPolygon(addPtId, nextPtsId[1], prevPtsId[2]);
+					mesh->addTriangle(addPtId, nextPtsId[1], prevPtsId[2]);
 
 					int nb = static_cast<int>(floor(w * angle));
 					angle /= nb;
@@ -268,14 +268,14 @@ public:
 					for(int j=0; j<nb-1; ++j)
 					{
 						Point nr = Point(r.x*ca+r.y*sa, r.y*ca-r.x*sa);
-						Mesh::PointID newPtId = topo->addPoint(center - nr);
+						Mesh::PointID newPtId = mesh->addPoint(center - nr);
 						UV.push_back(Point(abscissa[i], 1));
-						topo->addPolygon(ptId, newPtId, nextPtsId[1]);
+						mesh->addTriangle(ptId, newPtId, nextPtsId[1]);
 
 						r = nr;
 						ptId = newPtId;
 					}
-					topo->addPolygon(ptId, nextPtsId[2], nextPtsId[1]);
+					mesh->addTriangle(ptId, nextPtsId[2], nextPtsId[1]);
 				}
 				break;
 			}
@@ -283,23 +283,23 @@ public:
 			{
 				if(side > 0)
 				{
-					Mesh::PointID addPtId = topo->addPoint(pts[i] + normals[i-1] * w);
-					nextPtsId[0] = topo->addPoint(pts[i] + normals[i] * w);
+					Mesh::PointID addPtId = mesh->addPoint(pts[i] + normals[i-1] * w);
+					nextPtsId[0] = mesh->addPoint(pts[i] + normals[i] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					UV.push_back(Point(abscissa[i], 1));
 
-					topo->addPolygon(nextPtsId[0], addPtId, nextPtsId[1]);
-					topo->addPolygon(addPtId, prevPtsId[0], nextPtsId[1]);
+					mesh->addTriangle(nextPtsId[0], addPtId, nextPtsId[1]);
+					mesh->addTriangle(addPtId, prevPtsId[0], nextPtsId[1]);
 				}
 				else // side < 0
 				{
-					nextPtsId[2] = topo->addPoint(pts[i] - normals[i] * w);
-					Mesh::PointID addPtId = topo->addPoint(pts[i] - normals[i-1] * w);
+					nextPtsId[2] = mesh->addPoint(pts[i] - normals[i] * w);
+					Mesh::PointID addPtId = mesh->addPoint(pts[i] - normals[i-1] * w);
 					UV.push_back(Point(abscissa[i], 1));
 					UV.push_back(Point(abscissa[i], 1));
 
-					topo->addPolygon(nextPtsId[2], nextPtsId[1], addPtId);
-					topo->addPolygon(addPtId, nextPtsId[1], prevPtsId[2]);
+					mesh->addTriangle(nextPtsId[2], nextPtsId[1], addPtId);
+					mesh->addTriangle(addPtId, nextPtsId[1], prevPtsId[2]);
 				}
 				break;
 			}
@@ -313,16 +313,16 @@ public:
 		w = widthAnim.get(abscissa[nbPts-1]) / 2;
 		Mesh::PointID nextPtsId[3];
 		dir = normals[nbPts-2] * w;
-		nextPtsId[0] = topo->addPoint(pts[nbPts-1] + dir);
-		nextPtsId[1] = topo->addPoint(pts[nbPts-1]);
-		nextPtsId[2] = topo->addPoint(pts[nbPts-1] - dir);
+		nextPtsId[0] = mesh->addPoint(pts[nbPts-1] + dir);
+		nextPtsId[1] = mesh->addPoint(pts[nbPts-1]);
+		nextPtsId[2] = mesh->addPoint(pts[nbPts-1] - dir);
 		UV.push_back(Point(abscissa[nbPts-1], 1));
 		UV.push_back(Point(abscissa[nbPts-1], 0));
 		UV.push_back(Point(abscissa[nbPts-1], 1));
-		topo->addPolygon(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
-		topo->addPolygon(prevPtsId[0], prevPtsId[1], nextPtsId[1]);
-		topo->addPolygon(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
-		topo->addPolygon(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
+		mesh->addTriangle(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
+		mesh->addTriangle(prevPtsId[0], prevPtsId[1], nextPtsId[1]);
+		mesh->addTriangle(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
+		mesh->addTriangle(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
 
 		// End cap
 		switch(cap)
@@ -341,31 +341,31 @@ public:
 			for(int i=0; i<nb-1; ++i)
 			{
 				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-				Mesh::PointID newPtId = topo->addPoint(center + pt);
+				Mesh::PointID newPtId = mesh->addPoint(center + pt);
 				UV.push_back(Point(abscissa[nbPts-1], 1));
-				topo->addPolygon(ptId, newPtId, nextPtsId[1]);
+				mesh->addTriangle(ptId, newPtId, nextPtsId[1]);
 
 				dir = pt;
 				ptId = newPtId;
 			}
-			topo->addPolygon(ptId, nextPtsId[0], nextPtsId[1]);
+			mesh->addTriangle(ptId, nextPtsId[0], nextPtsId[1]);
 			break;
 		}
 		case 2: // Square cap
 		{
 			Point dir2 = Point(dir.y, -dir.x);
 			Mesh::PointID addPtsId[3];
-			addPtsId[0] = topo->addPoint(pts[nbPts-1] + dir - dir2);
-			addPtsId[1] = topo->addPoint(pts[nbPts-1]	    - dir2);
-			addPtsId[2] = topo->addPoint(pts[nbPts-1] - dir - dir2);
+			addPtsId[0] = mesh->addPoint(pts[nbPts-1] + dir - dir2);
+			addPtsId[1] = mesh->addPoint(pts[nbPts-1]	    - dir2);
+			addPtsId[2] = mesh->addPoint(pts[nbPts-1] - dir - dir2);
 			UV.push_back(Point(abscissa[nbPts-1], 1));
 			UV.push_back(Point(abscissa[nbPts-1], 1));
 			UV.push_back(Point(abscissa[nbPts-1], 1));
 
-			topo->addPolygon(addPtsId[0], nextPtsId[0], addPtsId[1]);
-			topo->addPolygon(nextPtsId[0], nextPtsId[1], addPtsId[1]);
-			topo->addPolygon(addPtsId[1], nextPtsId[1], nextPtsId[2]);
-			topo->addPolygon(addPtsId[1], nextPtsId[2], addPtsId[2]);
+			mesh->addTriangle(addPtsId[0], nextPtsId[0], addPtsId[1]);
+			mesh->addTriangle(nextPtsId[0], nextPtsId[1], addPtsId[1]);
+			mesh->addTriangle(addPtsId[1], nextPtsId[1], nextPtsId[2]);
+			mesh->addTriangle(addPtsId[1], nextPtsId[2], addPtsId[2]);
 			break;
 		}
 		} // end switch

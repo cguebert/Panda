@@ -3,6 +3,7 @@
 #include <panda/ObjectFactory.h>
 
 #include <panda/types/Mesh.h>
+#include <panda/helper/Polygon.h>
 
 namespace panda {
 
@@ -27,15 +28,33 @@ public:
 	void update()
 	{
 		const QVector<Point>& pts = points.getValue();
-		auto topo = mesh.getAccessor();
+		int nbPts = pts.size();
+		auto outMesh = mesh.getAccessor();
 
-		topo->clear();
-		topo->addPoints(pts);
+		outMesh->clear();
 
-		Mesh::Polygon poly;
-		for(int i=0; i<pts.size(); ++i)
-			poly.push_back(i);
-		topo->addPolygon(poly);
+		if(nbPts < 3)
+		{
+			cleanDirty();
+			return;
+		}
+
+		outMesh->addPoints(pts);
+
+		if(nbPts == 3)
+		{
+			outMesh->addTriangle(0, 1, 2);
+		}
+		else
+		{
+			Point center = helper::centroidOfPolygon(pts);
+			Mesh::PointID centerId = outMesh->addPoint(center);
+			for(int i=0; i<nbPts; ++i)
+			{
+				int j = (i+1) % nbPts;
+				outMesh->addTriangle(i, j, centerId);
+			}
+		}
 
 		cleanDirty();
 	}
@@ -66,18 +85,20 @@ public:
 
 	void update()
 	{
-		Mesh topo = mesh.getValue();
-		const QVector<Point>& topoPts = topo.getPoints();
+		Mesh inMesh = mesh.getValue();
+		const QVector<Point>& meshPts = inMesh.getPoints();
 		auto pts = points.getAccessor();
 
 		pts.clear();
 
-		int nbEdges = topo.getNumberOfEdges();
+		if(!inMesh.hasEdges())
+			inMesh.createEdgeList();
+		int nbEdges = inMesh.getNumberOfEdges();
 		for(int i=0; i<nbEdges; ++i)
 		{
-			const Mesh::Edge& e = topo.getEdge(i);
-			pts.push_back(topoPts[e[0]]);
-			pts.push_back(topoPts[e[1]]);
+			const Mesh::Edge& e = inMesh.getEdge(i);
+			pts.push_back(meshPts[e[0]]);
+			pts.push_back(meshPts[e[1]]);
 		}
 
 		cleanDirty();
@@ -109,10 +130,10 @@ public:
 
 	void update()
 	{
-		const Mesh& topo = mesh.getValue();
+		const Mesh& inMesh = mesh.getValue();
 
 		auto pts = points.getAccessor();
-		pts = topo.getPoints();
+		pts = inMesh.getPoints();
 
 		cleanDirty();
 	}
@@ -126,53 +147,53 @@ int GeneratorMesh_VerticesClass = RegisterObject<GeneratorMesh_Vertices>("Genera
 
 //*************************************************************************//
 
-class GeneratorMesh_ExtractPolygons : public PandaObject
+class GeneratorMesh_ExtractTriangles : public PandaObject
 {
 public:
-	PANDA_CLASS(GeneratorMesh_ExtractPolygons, PandaObject)
+	PANDA_CLASS(GeneratorMesh_ExtractTriangles, PandaObject)
 
-	GeneratorMesh_ExtractPolygons(PandaDocument *doc)
+	GeneratorMesh_ExtractTriangles(PandaDocument *doc)
 		: PandaObject(doc)
 		, input(initData(&input, "input", "Input mesh"))
 		, output(initData(&output, "output", "Output mesh"))
-		, polygons(initData(&polygons, "polygons", "Indices of the polygons to extract"))
+		, triangles(initData(&triangles, "triangles", "Indices of the triangles to extract"))
 	{
 		addInput(&input);
-		addInput(&polygons);
+		addInput(&triangles);
 
 		addOutput(&output);
 	}
 
 	void update()
 	{
-		const Mesh& inTopo = input.getValue();
-		const QVector<int>& polyId = polygons.getValue();
+		const Mesh& inMesh = input.getValue();
+		const QVector<int>& triId = triangles.getValue();
 
-		auto outTopo = output.getAccessor();
+		auto outMesh = output.getAccessor();
 
-		outTopo->clear();
-		outTopo->addPoints(inTopo.getPoints());
+		outMesh->clear();
+		outMesh->addPoints(inMesh.getPoints());
 
-		int nbPoly = inTopo.getNumberOfPolygons();
+		int nbTri = inMesh.getNumberOfTriangles();
 
-		for(int i : polyId)
+		for(int i : triId)
 		{
-			if(i != Mesh::InvalidID && i < nbPoly)
-				outTopo->addPolygon(inTopo.getPolygon(i));
+			if(i != Mesh::InvalidID && i < nbTri)
+				outMesh->addTriangle(inMesh.getTriangle(i));
 		}
 
-		outTopo->removeUnusedPoints();
+		outMesh->removeUnusedPoints();
 
 		cleanDirty();
 	}
 
 protected:
 	Data<Mesh> input, output;
-	Data< QVector<int> > polygons;
+	Data< QVector<int> > triangles;
 };
 
-int GeneratorMesh_ExtractPolygonsClass = RegisterObject<GeneratorMesh_ExtractPolygons>("Generator/Mesh/Extract polygons")
-		.setDescription("Extract some polygons from a mesh");
+int GeneratorMesh_ExtractTrianglesClass = RegisterObject<GeneratorMesh_ExtractTriangles>("Generator/Mesh/Extract triangles")
+		.setDescription("Extract some triangles from a mesh");
 
 //*************************************************************************//
 
@@ -186,13 +207,13 @@ public:
 		, mesh(initData(&mesh, "mesh", "Input mesh"))
 		, points(initData(&points, "points", "Indices of the points on the border"))
 		, edges(initData(&edges, "edges", "Indices of the edges on the border"))
-		, polygons(initData(&polygons, "polygons", "Indices of the polygons on the border"))
+		, triangles(initData(&triangles, "triangles", "Indices of the triangles on the border"))
 	{
 		addInput(&mesh);
 
 		addOutput(&points);
 		addOutput(&edges);
-		addOutput(&polygons);
+		addOutput(&triangles);
 	}
 
 	QVector<int> toIntVector(const QVector<unsigned int>& in)
@@ -206,22 +227,22 @@ public:
 
 	void update()
 	{
-		Mesh inTopo = mesh.getValue();
+		Mesh inMesh = mesh.getValue();
 
 		auto outPoints = points.getAccessor();
 		auto outEdges = edges.getAccessor();
-		auto outPolygons = polygons.getAccessor();
+		auto outTriangles = triangles.getAccessor();
 
-		outPoints.wref() = toIntVector(inTopo.getPointsOnBorder());
-		outEdges.wref() = toIntVector(inTopo.getEdgesOnBorder());
-		outPolygons.wref() = toIntVector(inTopo.getPolygonsOnBorder());
+		outPoints.wref() = toIntVector(inMesh.getPointsOnBorder());
+		outEdges.wref() = toIntVector(inMesh.getEdgesOnBorder());
+		outTriangles.wref() = toIntVector(inMesh.getTrianglesOnBorder());
 
 		cleanDirty();
 	}
 
 protected:
 	Data<Mesh> mesh;
-	Data< QVector<int> > points, edges, polygons;
+	Data< QVector<int> > points, edges, triangles;
 };
 
 int GeneratorMesh_BorderElementsClass = RegisterObject<GeneratorMesh_BorderElements>("Generator/Mesh/Border elements")
@@ -248,22 +269,24 @@ public:
 
 	void update()
 	{
-		const Mesh& inTopo = input.getValue();
+		Mesh inMesh = input.getValue();
 		const QVector<int>& edgesId = edges.getValue();
 
 		auto outPts = output.getAccessor();
 
 		outPts.clear();
 
-		int nbEdges = inTopo.getNumberOfEdges();
+		if(!inMesh.hasEdges())
+			inMesh.createEdgeList();
+		int nbEdges = inMesh.getNumberOfEdges();
 
 		for(int i : edgesId)
 		{
 			if(i != Mesh::InvalidID && i < nbEdges)
 			{
-				Mesh::Edge e = inTopo.getEdge(i);
-				outPts.push_back(inTopo.getPoint(e[0]));
-				outPts.push_back(inTopo.getPoint(e[1]));
+				Mesh::Edge e = inMesh.getEdge(i);
+				outPts.push_back(inMesh.getPoint(e[0]));
+				outPts.push_back(inMesh.getPoint(e[1]));
 			}
 		}
 

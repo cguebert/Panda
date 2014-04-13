@@ -25,6 +25,7 @@ HEADERS       = \
 	panda/helper/GradientCache.h \
 	panda/helper/Perlin.h \
 	panda/helper/PointsGrid.h \
+	panda/helper/Polygon.h \
 	panda/helper/Random.h \
 	panda/helper/ShaderCache.h \
 	panda/helper/UpdateLogger.h \
@@ -140,7 +141,7 @@ SOURCES       = main.cpp \
 	modules/modifiers/point/PointsInShapes.cpp \
 	modules/modifiers/point/PointsUnion.cpp \
 	modules/modifiers/point/RandomDisplacement.cpp \
-	modules/modifiers/mesh/FindPolygon.cpp \
+	modules/modifiers/mesh/FindTriangle.cpp \
 	modules/modifiers/mesh/Neighbors.cpp \
 	modules/modifiers/mesh/Relaxation.cpp \
 	modules/particles/ParticleCollision.cpp \
@@ -154,10 +155,10 @@ SOURCES       = main.cpp \
 	modules/render/RenderImage.cpp \
 	modules/render/RenderLine.cpp \
 	modules/render/RenderMesh.cpp \
-	modules/render/RenderPolygon.cpp \
 	modules/render/RenderRect.cpp \
 	modules/render/RenderSprite.cpp \
 	modules/render/RenderText.cpp \
+	modules/render/RenderTriangle.cpp \
 	modules/render/modifiers/RenderModifierBlend.cpp \
 	modules/render/modifiers/RenderModifierTransformations.cpp \
 	panda/BaseClass.cpp \
@@ -177,6 +178,7 @@ SOURCES       = main.cpp \
 	panda/helper/GradientCache.cpp \
 	panda/helper/Perlin.cpp \
 	panda/helper/PointsGrid.cpp \
+	panda/helper/Polygon.cpp \
 	panda/helper/Random.cpp \
 	panda/helper/ShaderCache.cpp \
 	panda/helper/UpdateLogger.cpp \

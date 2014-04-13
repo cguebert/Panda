@@ -12,143 +12,6 @@ namespace panda
 namespace types
 {
 
-Mesh::Mesh()
-{
-}
-
-Mesh::~Mesh()
-{
-}
-
-Mesh::PointID Mesh::addPoint(const Point& point)
-{
-	m_points.push_back(point);
-	return m_points.size() - 1;
-}
-
-void Mesh::addPoints(const SeqPoints& pts)
-{
-	m_points += pts;
-}
-
-Mesh::EdgeID Mesh::addEdge(PointID a, PointID b)
-{
-	Q_ASSERT(a != b);
-	m_edges.push_back(makeEdge(a, b));
-	return m_edges.size() - 1;
-}
-
-Mesh::EdgeID Mesh::addEdge(Edge e)
-{
-	Q_ASSERT(e[0] != e[1]);
-	m_edges.push_back(e);
-	return m_edges.size() - 1;
-}
-
-void Mesh::addEdges(const SeqEdges& e)
-{
-	m_edges += e;
-}
-
-Mesh::PolygonID Mesh::addPolygon(const Polygon& p)
-{
-	m_polygons.push_back(p);
-	return m_polygons.size() - 1;
-}
-
-Mesh::PolygonID Mesh::addPolygon(PolygonID p1, PolygonID p2, PolygonID p3)
-{
-	Polygon p;
-	p.push_back(p1);
-	p.push_back(p2);
-	p.push_back(p3);
-	return addPolygon(p);
-}
-
-void Mesh::addPolygons(const SeqPolygons& p)
-{
-	m_polygons += p;
-}
-
-Mesh::Edge Mesh::makeEdge(PointID a, PointID b)
-{
-	Edge tmp = { { a, b } };
-	return tmp;
-}
-
-int Mesh::getNumberOfPoints() const
-{
-	return m_points.size();
-}
-
-int Mesh::getNumberOfEdges() const
-{
-	if(!hasEdges() && getNumberOfPolygons() > 0)
-		const_cast<Mesh*>(this)->createEdgeList();
-
-	return m_edges.size();
-}
-
-int Mesh::getNumberOfPolygons() const
-{
-	return m_polygons.size();
-}
-
-const Mesh::SeqPoints &Mesh::getPoints() const
-{
-	return m_points;
-}
-
-const Mesh::SeqEdges &Mesh::getEdges() const
-{
-	if(!hasEdges())
-		const_cast<Mesh*>(this)->createEdgeList();
-
-	return m_edges;
-}
-
-const Mesh::SeqPolygons &Mesh::getPolygons() const
-{
-	return m_polygons;
-}
-
-Point& Mesh::getPoint(PointID index)
-{
-	return m_points[index];
-}
-
-Point Mesh::getPoint(PointID index) const
-{
-	return m_points[index];
-}
-
-Mesh::Edge Mesh::getEdge(EdgeID index) const
-{
-	if(!hasEdges())
-		const_cast<Mesh*>(this)->createEdgeList();
-
-	return m_edges[index];
-}
-
-Mesh::Polygon Mesh::getPolygon(PolygonID index) const
-{
-	return m_polygons[index];
-}
-
-Mesh::PointID Mesh::getPointIndex(const Point &pt) const
-{
-	return m_points.indexOf(pt);
-}
-
-Mesh::EdgeID Mesh::getEdgeIndex(PointID a, PointID b) const
-{
-	Edge e1 = makeEdge(a, b), e2 = makeEdge(b, a);
-	int id = m_edges.indexOf(e1);
-	if(id < 0)
-		return m_edges.indexOf(e2);
-	return id;
-}
-
 Mesh::EdgeID Mesh::getEdgeIndex(const Edge& e) const
 {
 	Edge e2 = makeEdge(e[0], e[1]);
@@ -158,25 +21,15 @@ Mesh::EdgeID Mesh::getEdgeIndex(const Edge& e) const
 	return id;
 }
 
-Mesh::PolygonID Mesh::getPolygonIndex(const Polygon& p) const
+const Mesh::EdgesInTriangle &Mesh::getEdgesInTriangle(TriangleID index)
 {
-	return m_polygons.indexOf(p);
-}
+	if(hasEdgesInTriangle())
+		createEdgesInTriangleList();
 
-const Mesh::EdgesIndicesList &Mesh::getEdgesInPolygon(PolygonID index)
-{
-	if(hasEdgesInPolygon())
-		createEdgesInPolygonList();
+	if((int)index < getNumberOfTriangles() && (int)index >= m_edgesInTriangle.size())
+		createEdgesInTriangleList();
 
-	if((int)index < getNumberOfPolygons() && (int)index >= m_edgesInPolygon.size())
-		createEdgesInPolygonList();
-
-	return m_edgesInPolygon[index];
-}
-
-const QVector<Mesh::EdgesIndicesList>& Mesh::getEdgesInPolygonList()
-{
-	return m_edgesInPolygon;
+	return m_edgesInTriangle[index];
 }
 
 const Mesh::EdgesIndicesList& Mesh::getEdgesAroundPoint(PointID index)
@@ -190,41 +43,26 @@ const Mesh::EdgesIndicesList& Mesh::getEdgesAroundPoint(PointID index)
 	return m_edgesAroundPoint[index];
 }
 
-const QVector<Mesh::EdgesIndicesList>& Mesh::getEdgesAroundPointList()
+const Mesh::TrianglesIndicesList &Mesh::getTrianglesAroundPoint(PointID index)
 {
-	return m_edgesAroundPoint;
+	if(!hasTrianglesAroundPoint())
+		createTrianglesAroundPointList();
+
+	if((int)index < getNumberOfPoints() && (int)index >= m_trianglesAroundPoint.size())
+		createTrianglesAroundPointList();
+
+	return m_trianglesAroundPoint[index];
 }
 
-const Mesh::PolygonsIndicesList &Mesh::getPolygonsAroundPoint(PointID index)
+const Mesh::TrianglesIndicesList& Mesh::getTrianglesAroundEdge(EdgeID index)
 {
-	if(!hasPolygonsAroundPoint())
-		createPolygonsAroundPointList();
+	if(!hasTrianglesAroundEdge())
+		createTrianglesAroundEdgeList();
 
-	if((int)index < getNumberOfPoints() && (int)index >= m_polygonsAroundPoint.size())
-		createPolygonsAroundPointList();
+	if((int)index < getNumberOfEdges() && (int)index >= m_trianglesAroundEdge.size())
+		createTrianglesAroundEdgeList();
 
-	return m_polygonsAroundPoint[index];
-}
-
-const QVector<Mesh::PolygonsIndicesList>& Mesh::getPolygonsAroundPointList()
-{
-	return m_polygonsAroundPoint;
-}
-
-const Mesh::PolygonsIndicesList& Mesh::getPolygonsAroundEdge(EdgeID index)
-{
-	if(!hasPolygonsAroundEdge())
-		createPolygonsAroundEdgeList();
-
-	if((int)index < getNumberOfEdges() && (int)index >= m_polygonsAroundEdge.size())
-		createPolygonsAroundEdgeList();
-
-	return m_polygonsAroundEdge[index];
-}
-
-const QVector<Mesh::PolygonsIndicesList>& Mesh::getPolygonsAroundEdgeList()
-{
-	return m_polygonsAroundEdge;
+	return m_trianglesAroundEdge[index];
 }
 
 const QVector<Mesh::PointID> &Mesh::getPointsOnBorder()
@@ -243,94 +81,94 @@ const QVector<Mesh::EdgeID> &Mesh::getEdgesOnBorder()
 	return m_edgesOnBorder;
 }
 
-const QVector<Mesh::PolygonID> &Mesh::getPolygonsOnBorder()
+const QVector<Mesh::TriangleID> &Mesh::getTrianglesOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
 
-	return m_polygonsOnBorder;
+	return m_trianglesOnBorder;
 }
 
-Mesh::PolygonsIndicesList Mesh::getPolygonsAroundPolygon(PolygonID index)
+Mesh::TrianglesIndicesList Mesh::getTrianglesAroundTriangle(TriangleID index)
 {
-	if(!hasPolygonsAroundPoint())
-		createPolygonsAroundPointList();
+	if(!hasTrianglesAroundPoint())
+		createTrianglesAroundPointList();
 
-	std::set<int> polySet;
-	PolygonsIndicesList polyList;
+	std::set<int> trianSet;
+	TrianglesIndicesList trianList;
 
-	const Polygon& poly = m_polygons[index];
-	for(int pt : poly)
+	const Triangle& trian = m_triangles[index];
+	for(int pt : trian)
 	{
-		const PolygonsIndicesList& polyAP = m_polygonsAroundPoint[pt];
+		const TrianglesIndicesList& trianAP = m_trianglesAroundPoint[pt];
 
-		for(int p : polyAP)
+		for(int t : trianAP)
 		{
-			if(p != index && polySet.find(p) == polySet.end())
+			if(t != index && trianSet.find(t) == trianSet.end())
 			{
-				polySet.insert(p);
-				polyList.push_back(p);
+				trianSet.insert(t);
+				trianList.push_back(t);
 			}
 		}
 	}
 
-	return polyList;
+	return trianList;
 }
 
-Mesh::PolygonsIndicesList Mesh::getPolygonsAroundPolygons(const PolygonsIndicesList& listID)
+Mesh::TrianglesIndicesList Mesh::getTrianglesAroundTriangles(const TrianglesIndicesList& listID)
 {
-	std::set<PolygonID> polySet;
+	std::set<TriangleID> trianSet;
 	for(auto index : listID)
 	{
-		const PolygonsIndicesList list = getPolygonsAroundPolygon(index);
-		polySet.insert(list.begin(), list.end());
+		const TrianglesIndicesList list = getTrianglesAroundTriangle(index);
+		trianSet.insert(list.begin(), list.end());
 	}
 
 	for(auto index : listID)
-		polySet.erase(index);
+		trianSet.erase(index);
 
-	PolygonsIndicesList polyList;
-	for(auto polyId : polySet)
-		polyList.push_back(polyId);
+	TrianglesIndicesList trianList;
+	for(auto trianId : trianSet)
+		trianList.push_back(trianId);
 
-	return polyList;
+	return trianList;
 }
 
-Mesh::PolygonsIndicesList Mesh::getPolygonsConnectedToPolygon(PolygonID index)
+Mesh::TrianglesIndicesList Mesh::getTrianglesConnectedToTriangle(TriangleID index)
 {
-	if(!hasPolygonsAroundPoint())
-		createPolygonsAroundPointList();
+	if(!hasTrianglesAroundPoint())
+		createTrianglesAroundPointList();
 
-	PolygonsIndicesList polyAll, polyOnFront, polyPrev, polyNext;
+	TrianglesIndicesList trianAll, trianOnFront, trianPrev, trianNext;
 	bool end = false;
-	int cpt = 1, nb = m_polygons.size();
+	int cpt = 1, nb = m_triangles.size();
 
-	polyAll.push_back(index);
-	polyOnFront.push_back(index);
+	trianAll.push_back(index);
+	trianOnFront.push_back(index);
 
 	while(!end && cpt < nb)
 	{
-		polyNext = getPolygonsAroundPolygons(polyOnFront);
+		trianNext = getTrianglesAroundTriangles(trianOnFront);
 
-		for(int p : polyNext)
+		for(int t : trianNext)
 		{
-			if(!polyAll.contains(p))
+			if(!trianAll.contains(t))
 			{
-				polyAll.push_back(p);
-				polyPrev.push_back(p);
+				trianAll.push_back(t);
+				trianPrev.push_back(t);
 			}
 		}
 
-		cpt += polyPrev.size();
+		cpt += trianPrev.size();
 
-		if(polyPrev.empty())
+		if(trianPrev.empty())
 			end = true;
 
-		polyOnFront = polyPrev;
-		polyPrev.clear();
+		trianOnFront = trianPrev;
+		trianPrev.clear();
 	}
 
-	return polyAll;
+	return trianAll;
 }
 
 Mesh::PointID Mesh::getOtherPointInEdge(const Edge &edge, PointID point) const
@@ -343,77 +181,35 @@ Mesh::PointID Mesh::getOtherPointInEdge(const Edge &edge, PointID point) const
 		return -1;
 }
 
-PReal Mesh::areaOfPolygon(const Polygon& poly) const
+PReal Mesh::areaOfTriangle(const Triangle& trian) const
 {
-	int nbPts = poly.size();
 	PReal area = 0;
-	for(int i=0; i<nbPts; ++i)
+	for(int i=0; i<3; ++i)
 	{
-		Point p1 = getPoint(poly[i]), p2 = getPoint(poly[(i+1)%nbPts]);
+		Point p1 = getPoint(trian[i]), p2 = getPoint(trian[(i+1)%3]);
 		area += p1.cross(p2);
 	}
 
 	return area / 2;
 }
 
-void Mesh::reorientPolygon(Polygon& poly)
+Point Mesh::centroidOfTriangle(const Triangle& trian) const
 {
-	Polygon copy = poly;
-	poly.clear();
-	poly.reserve(copy.size());
-
-	for(int pt : copy)
-		poly.push_front(pt);
-}
-
-Point Mesh::centroidOfPolygon(const Polygon& poly) const
-{
-	int nbPts = poly.size();
 	Point pt;
-	for(int i=0; i<nbPts; ++i)
+	for(int i=0; i<3; ++i)
 	{
-		Point p1 = getPoint(poly[i]), p2 = getPoint(poly[(i+1)%nbPts]);
+		Point p1 = getPoint(trian[i]), p2 = getPoint(trian[(i+1)%3]);
 		pt += (p1 + p2) * p1.cross(p2);
 	}
 
-	return pt / (6 * areaOfPolygon(poly));
+	return pt / (6 * areaOfTriangle(trian));
 }
 
-bool Mesh::comparePolygon(Polygon p1, Polygon p2)
+bool Mesh::triangleContainsPoint(const Triangle &trian, Point pt) const
 {
-	if(p1.size() != p2.size())
-		return false;
-
-	while(!p1.empty())
+	for(int i1=0, i0=2; i1<3; i0=i1++)
 	{
-		int pt1 = p1.back();
-		p1.pop_back();
-
-		bool found = false;
-
-		for(int i=0; i<p2.size(); ++i)
-		{
-			if(p2[i] == pt1)
-			{
-				p2.remove(i);
-				found = true;
-				break;
-			}
-		}
-
-		if(!found)
-			return false;
-	}
-
-	return true;
-}
-
-bool Mesh::polygonContainsPoint(const Polygon &poly, Point pt) const
-{
-	int nb = poly.size();
-	for(int i1=0, i0=nb-1; i1<nb; i0=i1++)
-	{
-		const Point &p0 = getPoint(poly[i0]), &p1 = getPoint(poly[i1]);
+		const Point &p0 = getPoint(trian[i0]), &p1 = getPoint(trian[i1]);
 		Point n = Point(p1.y - p0.y, p0.x - p1.x);
 		Point d = pt - p0;
 
@@ -427,17 +223,17 @@ void Mesh::removeUnusedPoints()
 {
 	clearEdges();
 	clearEdgesAroundPoint();
-	clearEdgesInPolygon();
-	clearPolygonsAroundPoint();
-	clearPolygonsAroundEdge();
+	clearEdgesInTriangle();
+	clearTrianglesAroundPoint();
+	clearTrianglesAroundEdge();
 	clearBorderElementLists();
 
 	QMap<PointID, PointID> pointsMap;
 	SeqPoints newPoints;
 	int nbPoints = 0;
-	for(Polygon& p : m_polygons)
+	for(Triangle& t : m_triangles)
 	{
-		for(auto& id : p)
+		for(auto& id : t)
 		{
 			if(!pointsMap.contains(id))
 			{
@@ -452,67 +248,26 @@ void Mesh::removeUnusedPoints()
 	m_points.swap(newPoints);
 }
 
-bool Mesh::hasPoints() const
-{
-	return !m_points.empty();
-}
-
-bool Mesh::hasEdges() const
-{
-	return !m_edges.empty();
-}
-
-bool Mesh::hasPolygons() const
-{
-	return !m_polygons.empty();
-}
-
-bool Mesh::hasEdgesInPolygon() const
-{
-	return !m_edgesInPolygon.empty();
-}
-
-bool Mesh::hasEdgesAroundPoint() const
-{
-	return !m_edgesAroundPoint.empty();
-}
-
-bool Mesh::hasPolygonsAroundPoint() const
-{
-	return !m_polygonsAroundPoint.empty();
-}
-
-bool Mesh::hasPolygonsAroundEdge() const
-{
-	return !m_polygonsAroundEdge.empty();
-}
-
-bool Mesh::hasBorderElementsLists() const
-{
-	return !m_pointsOnBorder.empty() && !m_edgesOnBorder.empty() && !m_polygonsOnBorder.empty();
-}
-
 void Mesh::createEdgeList()
 {
-	if(!hasPolygons())
+	if(!hasTriangles())
 		return;
 
 	if(hasEdges())
 	{
 		clearEdges();
 		clearEdgesAroundPoint();
-		clearEdgesInPolygon();
-		clearPolygonsAroundEdge();
+		clearEdgesInTriangle();
+		clearTrianglesAroundEdge();
 	}
 
 	QMap<Edge, int> edgeMap;
-	for(Polygon p : m_polygons)
+	for(Triangle t : m_triangles)
 	{
-		int nbPts = p.size();
-		for(int i=0; i<nbPts; ++i)
+		for(int i=0; i<3; ++i)
 		{
-			const int p1 = p[i];
-			const int p2 = p[(i+1)%nbPts];
+			const int p1 = t[i];
+			const int p2 = t[(i+1)%3];
 
 			const Edge e = ((p1<p2) ? makeEdge(p1, p2) : makeEdge(p2, p1));
 
@@ -526,26 +281,25 @@ void Mesh::createEdgeList()
 	}
 }
 
-void Mesh::createEdgesInPolygonList()
+void Mesh::createEdgesInTriangleList()
 {
-	if(hasEdgesInPolygon())
-		clearEdgesInPolygon();
+	if(hasEdgesInTriangle())
+		clearEdgesInTriangle();
 
-	int nbPolys = m_polygons.size();
-	m_edgesInPolygon.resize(nbPolys);
+	int nbTri = m_triangles.size();
+	m_edgesInTriangle.resize(nbTri);
 
 	if(!hasEdges())
 	{
 		QMap<Edge, int> edgeMap;
 
-		for(int i=0; i<nbPolys; ++i)
+		for(int i=0; i<nbTri; ++i)
 		{
-			const Polygon& p = m_polygons[i];
-			int nbPts = p.size();
-			for(int j=0; j<nbPts; ++j)
+			const Triangle& t = m_triangles[i];
+			for(int j=0; j<3; ++j)
 			{
-				const int p1 = p[j];
-				const int p2 = p[(j+1)%nbPts];
+				const int p1 = t[j];
+				const int p2 = t[(j+1)%3];
 
 				const Edge e = ((p1<p2) ? makeEdge(p1, p2) : makeEdge(p2, p1));
 
@@ -556,7 +310,7 @@ void Mesh::createEdgesInPolygonList()
 					m_edges.push_back(makeEdge(p1, p2));
 				}
 
-				m_edgesInPolygon[i].push_back(edgeMap[e]);
+				m_edgesInTriangle[i][j] = edgeMap[e];
 			}
 		}
 	}
@@ -567,15 +321,14 @@ void Mesh::createEdgesInPolygonList()
 
 		const QVector<EdgesIndicesList>& eapl = getEdgesAroundPointList();
 
-		for(int i=0; i<nbPolys; ++i)
+		for(int i=0; i<nbTri; ++i)
 		{
-			EdgesIndicesList& eip = m_edgesInPolygon[i];
-			const Polygon& p = m_polygons[i];
-			const int nbP = p.size();
-			for(int j=0; j<nbP; ++j)
+			EdgesInTriangle& eit = m_edgesInTriangle[i];
+			const Triangle& t = m_triangles[i];
+			for(int j=0; j<3; ++j)
 			{
 				bool found = false;
-				const int p1 = p[j], p2 = p[(j+1)%nbP];
+				const int p1 = t[j], p2 = t[(j+1)%3];
 				const EdgesIndicesList& eap = eapl[p1];
 				const int nbE = eap.size();
 				for(int k=0; k<nbE; ++k)
@@ -585,7 +338,7 @@ void Mesh::createEdgesInPolygonList()
 					if(e[0] == p1 && e[1] == p2 || e[0] == p2 && e[1] == p1)
 					{
 						found = true;
-						eip.push_back(eid);
+						eit[j] = eid;
 						break;
 					}
 				}
@@ -613,64 +366,62 @@ void Mesh::createEdgesAroundPointList()
 	}
 }
 
-void Mesh::createPolygonsAroundPointList()
+void Mesh::createTrianglesAroundPointList()
 {
-	if(!hasPolygons())
+	if(!hasTriangles())
 		return;
 
-	if(hasPolygonsAroundPoint())
-		clearPolygonsAroundPoint();
+	if(hasTrianglesAroundPoint())
+		clearTrianglesAroundPoint();
 
-	m_polygonsAroundPoint.resize(getNumberOfPoints());
-	int nbPolys = getNumberOfPolygons();
-	for(int i=0; i<nbPolys; ++i)
+	m_trianglesAroundPoint.resize(getNumberOfPoints());
+	int nbTri = getNumberOfTriangles();
+	for(int i=0; i<nbTri; ++i)
 	{
-		const Polygon& p = m_polygons[i];
-		int nb = p.size();
-		for(int j=0; j<nb; ++j)
-			m_polygonsAroundPoint[p[j]].push_back(i);
+		const Triangle& t = m_triangles[i];
+		for(int j=0; j<3; ++j)
+			m_trianglesAroundPoint[t[j]].push_back(i);
 	}
 }
 
-void Mesh::createPolygonsAroundEdgeList()
+void Mesh::createTrianglesAroundEdgeList()
 {
-	if(!hasPolygons())
+	if(!hasTriangles())
 		return;
 
 	if(!hasEdges())
 		createEdgeList();
 
-	if(!hasEdgesInPolygon())
-		createEdgesInPolygonList();
+	if(!hasEdgesInTriangle())
+		createEdgesInTriangleList();
 
-	const int nbPolys = getNumberOfPolygons();
+	const int nbTri = getNumberOfTriangles();
 	const int nbEdges = getNumberOfEdges();
 
-	m_polygonsAroundEdge.resize(nbEdges);
-	for(int i=0; i<nbPolys; ++i)
+	m_trianglesAroundEdge.resize(nbEdges);
+	for(int i=0; i<nbTri; ++i)
 	{
-		const EdgesIndicesList& eip = m_edgesInPolygon[i];
-		const int nb = eip.size();
-		for(int j=0; j<nb; ++j)
-			m_polygonsAroundEdge[eip[j]].push_back(i);
+		const EdgesInTriangle& eit = m_edgesInTriangle[i];
+		for(int j=0; j<3; ++j)
+			m_trianglesAroundEdge[eit[j]].push_back(i);
 	}
 }
 
 void Mesh::createElementsOnBorder()
 {
-	if(!hasPolygonsAroundEdge())
-		createPolygonsAroundEdgeList();
+	if(!hasTrianglesAroundEdge())
+		createTrianglesAroundEdgeList();
 
-	if(!hasPolygonsAroundPoint())
-		createPolygonsAroundPointList();
+	if(!hasTrianglesAroundPoint())
+		createTrianglesAroundPointList();
 
 	m_pointsOnBorder.clear();
 	m_edgesOnBorder.clear();
-	m_polygonsOnBorder.clear();
+	m_trianglesOnBorder.clear();
 
 	for(int i=0, nb=getNumberOfEdges(); i<nb; ++i)
 	{
-		if(m_polygonsAroundEdge[i].size() == 1) // On a border
+		if(m_trianglesAroundEdge[i].size() == 1) // On a border
 		{
 			m_edgesOnBorder.push_back(i);
 
@@ -686,10 +437,10 @@ void Mesh::createElementsOnBorder()
 
 	for(auto pt : m_pointsOnBorder)
 	{
-		for(auto poly : m_polygonsAroundPoint[pt])
+		for(auto trian : m_trianglesAroundPoint[pt])
 		{
-			if(!m_polygonsOnBorder.contains(poly))
-				m_polygonsOnBorder.push_back(poly);
+			if(!m_trianglesOnBorder.contains(trian))
+				m_trianglesOnBorder.push_back(trian);
 		}
 	}
 }
@@ -702,16 +453,16 @@ void Mesh::createTriangles()
 	if(!hasEdgesAroundPoint())
 		createEdgesAroundPointList();
 
-	if(hasPolygons())
-		clearPolygons();
+	if(hasTriangles())
+		clearTriangles();
 
 	const int nbEdges = getNumberOfEdges();
 	QList<int> tmpEdgesId;
 	for(int i=0; i<nbEdges; ++i)
 		tmpEdgesId.push_back(i);
 
-	clearPolygonsAroundEdge();
-	m_polygonsAroundEdge.resize(nbEdges);
+	clearTrianglesAroundEdge();
+	m_trianglesAroundEdge.resize(nbEdges);
 
 	while(!tmpEdgesId.empty())
 	{
@@ -730,90 +481,52 @@ void Mesh::createTriangles()
 
 			if(e3id != -1)
 			{
-				Polygon poly;
-				poly.push_back(e[0]);
-				poly.push_back(p2id);
-				poly.push_back(e[1]);
+				Triangle tri = makeTriangle(e[0], p2id, e[1]);
 
-				if(!m_polygonsAroundEdge[eid].empty())
+				if(!m_trianglesAroundEdge[eid].empty())
 				{
-					int poly2 = m_polygonsAroundEdge[eid][0];
-					if(comparePolygon(poly, getPolygon(poly2)))
+					int tri2 = m_trianglesAroundEdge[eid][0];
+					if(tri == getTriangle(tri2))
 						continue;
 				}
 
-				if(areaOfPolygon(poly) < 0)
-					reorientPolygon(poly);
+				if(areaOfTriangle(tri) < 0)
+					reorientTriangle(tri);
 
-				int polyid = addPolygon(poly);
+				int triId = addTriangle(tri);
 
-				m_polygonsAroundEdge[eid].push_back(polyid);
-				if(m_polygonsAroundEdge[eid].size() == 2)
+				m_trianglesAroundEdge[eid].push_back(triId);
+				if(m_trianglesAroundEdge[eid].size() == 2)
 					tmpEdgesId.removeOne(eid);
 
-				m_polygonsAroundEdge[e2id].push_back(polyid);
-				if(m_polygonsAroundEdge[e2id].size() == 2)
+				m_trianglesAroundEdge[e2id].push_back(triId);
+				if(m_trianglesAroundEdge[e2id].size() == 2)
 					tmpEdgesId.removeOne(e2id);
 
-				m_polygonsAroundEdge[e3id].push_back(polyid);
-				if(m_polygonsAroundEdge[e3id].size() == 2)
+				m_trianglesAroundEdge[e3id].push_back(triId);
+				if(m_trianglesAroundEdge[e3id].size() == 2)
 					tmpEdgesId.removeOne(e3id);
 			}
 		}
 	}
 }
 
-void Mesh::clearPoints()
-{
-	m_points.clear();
-}
-
-void Mesh::clearEdges()
-{
-	m_edges.clear();
-}
-
-void Mesh::clearPolygons()
-{
-	m_polygons.clear();
-}
-
-void Mesh::clearEdgesInPolygon()
-{
-	m_edgesInPolygon.clear();
-}
-
-void Mesh::clearEdgesAroundPoint()
-{
-	m_edgesAroundPoint.clear();
-}
-
-void Mesh::clearPolygonsAroundPoint()
-{
-	m_polygonsAroundPoint.clear();
-}
-
-void Mesh::clearPolygonsAroundEdge()
-{
-	m_polygonsAroundEdge.clear();
-}
-
 void Mesh::clearBorderElementLists()
 {
 	m_pointsOnBorder.clear();
 	m_edgesOnBorder.clear();
-	m_polygonsOnBorder.clear();
+	m_trianglesOnBorder.clear();
 }
 
 void Mesh::clear()
 {
 	clearPoints();
 	clearEdges();
-	clearPolygons();
-	clearEdgesInPolygon();
+	clearTriangles();
+	clearEdgesInTriangle();
 	clearEdgesAroundPoint();
-	clearPolygonsAroundPoint();
-	clearPolygonsAroundEdge();
+	clearTrianglesAroundPoint();
+	clearTrianglesAroundEdge();
 	clearBorderElementLists();
 }
 
@@ -842,23 +555,20 @@ void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& elem, const Mes
 		edgeNode.setAttribute("p2", e[1]);
 	}
 
-	for(const auto& poly : v.getPolygons())
+	for(const auto& t : v.getTriangles())
 	{
-		QDomElement polyNode = doc.createElement("Poly");
-		elem.appendChild(polyNode);
-		for(const auto& p : poly)
-		{
-			QDomElement indexNode = doc.createElement("Point");
-			polyNode.appendChild(indexNode);
-			indexNode.setAttribute("index", p);
-		}
+		QDomElement triangleNode = doc.createElement("Triangle");
+		elem.appendChild(triangleNode);
+		triangleNode.setAttribute("p1", t[0]);
+		triangleNode.setAttribute("p2", t[1]);
+		triangleNode.setAttribute("p3", t[2]);
 	}
 }
 
 template<>
 void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
 {
-	Mesh tmp;
+	Mesh tmpMesh;
 
 	QDomElement ptNode = elem.firstChildElement("Point");
 	while(!ptNode.isNull())
@@ -871,7 +581,7 @@ void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
 		pt.x = ptNode.attribute("x").toFloat();
 		pt.y = ptNode.attribute("y").toFloat();
 #endif
-		tmp.addPoint(pt);
+		tmpMesh.addPoint(pt);
 		ptNode = ptNode.nextSiblingElement("Point");
 	}
 
@@ -881,25 +591,22 @@ void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
 		Mesh::Edge edge;
 		edge[0] = edgeNode.attribute("p1").toInt();
 		edge[1] = edgeNode.attribute("p2").toInt();
-		tmp.addEdge(edge);
+		tmpMesh.addEdge(edge);
 		edgeNode = edgeNode.nextSiblingElement("Edge");
 	}
 
-	QDomElement polyNode = elem.firstChildElement("Poly");
-	while(!polyNode.isNull())
+	QDomElement triangleNode = elem.firstChildElement("Triangle");
+	while(!triangleNode.isNull())
 	{
-		Mesh::Polygon poly;
-		QDomElement indexNode = elem.firstChildElement("Point");
-		while(!indexNode.isNull())
-		{
-			poly.push_back(indexNode.attribute("index").toInt());
-			indexNode = indexNode.nextSiblingElement("Point");
-		}
-		tmp.addPolygon(poly);
-		polyNode = polyNode.nextSiblingElement("Poly");
+		Mesh::Triangle triangle;
+		triangle[0] = triangleNode.attribute("p1").toInt();
+		triangle[1] = triangleNode.attribute("p2").toInt();
+		triangle[2] = triangleNode.attribute("p3").toInt();
+		tmpMesh.addTriangle(triangle);
+		triangleNode = triangleNode.nextSiblingElement("Triangle");
 	}
 
-	v = std::move(tmp);
+	v = std::move(tmpMesh);
 }
 
 template class Data< Mesh >;

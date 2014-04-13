@@ -34,35 +34,35 @@ public:
 
 	void update()
 	{
-		auto outTopo = output.getAccessor();
-		outTopo.wref() = input.getValue();
-		if(!outTopo->hasEdgesAroundPoint())
-			outTopo->createEdgesAroundPointList();
+		auto outMesh = output.getAccessor();
+		outMesh.wref() = input.getValue();
+		if(!outMesh->hasEdgesAroundPoint())
+			outMesh->createEdgesAroundPointList();
 
 		std::set<int> borderSet;
 		if(fixBorder.getValue())
 		{
-			auto borderPts = outTopo->getPointsOnBorder();
+			auto borderPts = outMesh->getPointsOnBorder();
 			borderSet.insert(borderPts.begin(), borderPts.end());
 		}
 
 		int nbIter = iterations.getValue();
-		int nbPts = outTopo->getNumberOfPoints();
+		int nbPts = outMesh->getNumberOfPoints();
 		PReal fact = factor.getValue();
 		for(int i=0; i<nbIter; ++i)
 		{
-			auto ptsCopy = outTopo->getPoints();
+			auto ptsCopy = outMesh->getPoints();
 			for(int j=0; j<nbPts; ++j)
 			{
 				if(borderSet.find(j) != borderSet.end())
 					continue;
 
-				Point& pt = outTopo->getPoint(j);
+				Point& pt = outMesh->getPoint(j);
 				Point pt1 = ptsCopy[j];
-				for(auto eid : outTopo->getEdgesAroundPoint(j))
+				for(auto eid : outMesh->getEdgesAroundPoint(j))
 				{
-					Mesh::Edge e = outTopo->getEdge(eid);
-					Mesh::PointID p2id = outTopo->getOtherPointInEdge(e, j);
+					Mesh::Edge e = outMesh->getEdge(eid);
+					Mesh::PointID p2id = outMesh->getOtherPointInEdge(e, j);
 					Point pt2 = ptsCopy[p2id];
 
 					Point dir = pt2 - pt1;

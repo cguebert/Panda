@@ -17,28 +17,28 @@ public:
 	ModifierMesh_FindNeighbors(PandaDocument *doc)
 		: PandaObject(doc)
 		, mesh(initData(&mesh, "mesh", "Mesh in which to search"))
-		, polygons(initData(&polygons, "input", "Polygons indices to test"))
-		, neighbors(initData(&neighbors, "neighbors", "Indices of the polygons, neighbors of the input"))
+		, triangles(initData(&triangles, "input", "Triangles indices to test"))
+		, neighbors(initData(&neighbors, "neighbors", "Indices of the triangles, neighbors of the input"))
 	{
 		addInput(&mesh);
-		addInput(&polygons);
+		addInput(&triangles);
 
 		addOutput(&neighbors);
 	}
 
 	void update()
 	{
-		Mesh topo = mesh.getValue();
+		Mesh inMesh = mesh.getValue();
 
-		const QVector<int>& polyIDs = polygons.getValue();
+		const QVector<int>& polyIDs = triangles.getValue();
 
-		Mesh::PolygonsIndicesList inputList;
+		Mesh::TrianglesIndicesList inputList;
 		for(auto p : polyIDs)
 		{
 			if(p != Mesh::InvalidID)
 				inputList.push_back(p);
 		}
-		Mesh::PolygonsIndicesList outputList = topo.getPolygonsAroundPolygons(inputList);
+		Mesh::TrianglesIndicesList outputList = inMesh.getTrianglesAroundTriangles(inputList);
 
 		auto output = neighbors.getAccessor();
 		output.clear();
@@ -50,10 +50,10 @@ public:
 
 protected:
 	Data< Mesh > mesh;
-	Data< QVector<int> > polygons, neighbors;
+	Data< QVector<int> > triangles, neighbors;
 };
 
-int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Find neighbors").setDescription("Find neighboring polygons to the input list");
+int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Find neighbors").setDescription("Find neighboring triangles to the input list");
 
 //*************************************************************************//
 
@@ -65,27 +65,27 @@ public:
 	ModifierMesh_GetConnected(PandaDocument *doc)
 		: PandaObject(doc)
 		, mesh(initData(&mesh, "mesh", "Mesh in which to search"))
-		, polygons(initData(&polygons, "input", "Polygons indices to test"))
-		, connected(initData(&connected, "connected", "Indices of the polygons connected to the input"))
+		, triangles(initData(&triangles, "input", "Triangles indices to test"))
+		, connected(initData(&connected, "connected", "Indices of the triangles connected to the input"))
 	{
 		addInput(&mesh);
-		addInput(&polygons);
+		addInput(&triangles);
 
 		addOutput(&connected);
 	}
 
 	void update()
 	{
-		Mesh topo = mesh.getValue();
+		Mesh inMesh = mesh.getValue();
 
-		const QVector<int>& polyIDs = polygons.getValue();
-		std::set<Mesh::PolygonID> outputSet;
+		const QVector<int>& triIDs = triangles.getValue();
+		std::set<Mesh::TriangleID> outputSet;
 
-		for(auto polyID : polyIDs)
+		for(auto triID : triIDs)
 		{
-			if(polyID == Mesh::InvalidID)
+			if(triID == Mesh::InvalidID)
 				continue;
-			Mesh::PolygonsIndicesList tmp = topo.getPolygonsConnectedToPolygon(polyID);
+			Mesh::TrianglesIndicesList tmp = inMesh.getTrianglesConnectedToTriangle(triID);
 			outputSet.insert(tmp.begin(), tmp.end());
 		}
 
@@ -99,10 +99,10 @@ public:
 
 protected:
 	Data< Mesh > mesh;
-	Data< QVector<int> > polygons, connected;
+	Data< QVector<int> > triangles, connected;
 };
 
-int ModifierMesh_GetConnectedClass = RegisterObject<ModifierMesh_GetConnected>("Modifier/Mesh/Get connected").setDescription("Get connected polygons to the input list");
+int ModifierMesh_GetConnectedClass = RegisterObject<ModifierMesh_GetConnected>("Modifier/Mesh/Get connected").setDescription("Get connected triangles to the input list");
 
 //*************************************************************************//
 
@@ -123,31 +123,31 @@ public:
 
 	void update()
 	{
-		Mesh topo = input.getValue();
+		Mesh inMesh = input.getValue();
 
-		auto topoList = outputs.getAccessor();
-		topoList.clear();
+		auto outMeshes = outputs.getAccessor();
+		outMeshes.clear();
 
-		std::set<Mesh::PolygonID> polySet;
-		for(int i=0, nb=topo.getNumberOfPolygons(); i<nb; ++i)
-			polySet.insert(i);
+		std::set<Mesh::TriangleID> triSet;
+		for(int i=0, nb=inMesh.getNumberOfTriangles(); i<nb; ++i)
+			triSet.insert(i);
 
-		while(!polySet.empty())
+		while(!triSet.empty())
 		{
-			Mesh::PolygonID polyID = *polySet.begin();
-			Mesh newTopo;
-			newTopo.addPoints(topo.getPoints());
-			newTopo.addPolygon(topo.getPolygon(polyID));
-			auto list = topo.getPolygonsConnectedToPolygon(polyID);
+			Mesh::TriangleID triID = *triSet.begin();
+			Mesh newMesh;
+			newMesh.addPoints(inMesh.getPoints());
+			newMesh.addTriangle(inMesh.getTriangle(triID));
+			auto list = inMesh.getTrianglesConnectedToTriangle(triID);
 
 			for(auto i : list)
 			{
-				newTopo.addPolygon(topo.getPolygon(i));
-				polySet.erase(i);
+				newMesh.addTriangle(inMesh.getTriangle(i));
+				triSet.erase(i);
 			}
 
-			newTopo.removeUnusedPoints();
-			topoList.push_back(newTopo);
+			newMesh.removeUnusedPoints();
+			outMeshes.push_back(newMesh);
 		}
 
 		cleanDirty();

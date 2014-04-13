@@ -17,7 +17,7 @@ public:
 	MeshMath_Centroids(PandaDocument *doc)
 		: PandaObject(doc)
 		, mesh(initData(&mesh, "mesh", "Mesh to analyse"))
-		, centroids(initData(&centroids, "centroids", "Centroids of the polygons"))
+		, centroids(initData(&centroids, "centroids", "Centroids of the triangles"))
 	{
 		addInput(&mesh);
 
@@ -26,14 +26,14 @@ public:
 
 	void update()
 	{
-		const Mesh& topo = mesh.getValue();
+		const Mesh& inMesh = mesh.getValue();
 		auto pts = centroids.getAccessor();
 		pts.clear();
-		pts.resize(topo.getNumberOfPolygons());
+		pts.resize(inMesh.getNumberOfTriangles());
 
 		int i=0;
-		for(auto poly : topo.getPolygons())
-			pts[i++] = topo.centroidOfPolygon(poly);
+		for(auto triangle : inMesh.getTriangles())
+			pts[i++] = inMesh.centroidOfTriangle(triangle);
 
 		cleanDirty();
 	}
@@ -44,6 +44,6 @@ protected:
 };
 
 int MeshMath_CentroidsClass = RegisterObject<MeshMath_Centroids>("Math/Mesh/Centroids")
-		.setDescription("Compute the centroid of each polygon");
+		.setDescription("Compute the centroid of each triangle");
 
 } // namespace Panda
