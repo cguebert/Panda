@@ -21,7 +21,7 @@ void ShaderCache::clear()
 
 void ShaderCache::resetUsedFlag()
 {
-	for(auto item : m_cache)
+	for(auto& item : m_cache)
 		item.m_used = false;
 }
 
