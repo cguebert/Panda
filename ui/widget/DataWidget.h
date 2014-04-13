@@ -93,7 +93,7 @@ protected:
 /**
 *\brief This class is basically the same as DataWidget, except that it
 * takes a template parameter so the actual type of the value is known.
-* It can be read via getValue and read with getAccessor.
+* It can be read via getValue and set with setValue.
 **/
 template<class T>
 class DataWidget : public BaseDataWidget

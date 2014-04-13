@@ -534,7 +534,6 @@ void Mesh::clear()
 
 template<> QString DataTrait<Mesh>::valueTypeName() { return "mesh"; }
 template<> QString DataTrait<Mesh>::valueTypeNamePlural() { return "meshes"; }
-template<> bool DataTrait<Mesh>::isDisplayed() { return false; }
 
 template<>
 void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& elem, const Mesh& v)
