@@ -9,6 +9,7 @@
 #include <panda/Layer.h>
 #include <panda/Renderer.h>
 #include <panda/Group.h>
+#include <panda/Scheduler.h>
 #include <panda/helper/GradientCache.h>
 #include <panda/helper/ShaderCache.h>
 
@@ -33,6 +34,7 @@ PandaDocument::PandaDocument(QObject *parent)
 	, mousePosition(initData(&mousePosition, "mouse position", "Current position of the mouse in the render view"))
 	, mouseClick(initData(&mouseClick, 0, "mouse click", "1 if the left mouse button is pressed"))
 	, renderedImage(initData(&renderedImage, "rendered image", "Current image displayed"))
+	, useMultithread(initData(&useMultithread, 0, "use multithread", "Optimize computation for multiple CPU cores"))
 	, mouseClickBuffer(0)
 	, animPlaying(false)
 {
@@ -53,6 +55,8 @@ PandaDocument::PandaDocument(QObject *parent)
 	mouseClick.setOutput(true);
 	mouseClick.setReadOnly(true);
 	mouseClick.setWidget("checkbox");
+
+	useMultithread.setWidget("checkbox");
 
 	connect(this, SIGNAL(modifiedObject(panda::PandaObject*)), this, SIGNAL(modified()));
 	connect(this, SIGNAL(addedObject(panda::PandaObject*)), this, SIGNAL(modified()));
@@ -342,6 +346,7 @@ void PandaDocument::resetDocument()
 	renderSize.setValue(Point(800,600));
 	backgroundColor.setValue(Color::white());
 	renderedImage.getAccessor()->clear();
+	useMultithread.setValue(0);
 	renderFrameBuffer.clear();
 
 	animPlaying = false;
@@ -807,6 +812,9 @@ void PandaDocument::update()
 	helper::GradientCache::getInstance()->resetUsedFlag();
 	helper::ShaderCache::getInstance()->resetUsedFlag();
 
+	if(useMultithread.getValue() && m_scheduler)
+		m_scheduler->update();
+
 	defaultLayer->updateIfDirty();
 
 	for(auto obj : pandaObjects)
@@ -921,6 +929,12 @@ void PandaDocument::play(bool playing)
 	animPlaying = playing;
 	if(animPlaying)
 	{
+		if(useMultithread.getValue())
+		{
+			if(!m_scheduler)
+				m_scheduler.reset(new Scheduler(this));
+			m_scheduler->init();
+		}
 		if(useTimer.getValue())
 			animTimer->start(qMax((PReal)0.0, timestep.getValue() * 1000));
 		else
@@ -940,6 +954,9 @@ void PandaDocument::step()
 
 	for(auto object : pandaObjects)
 		object->beginStep();
+
+	if(useMultithread.getValue() && m_scheduler)
+		m_scheduler->setDirty();
 
 	animTime.setValue(animTime.getValue() + timestep.getValue());
 	mousePosition.setValue(mousePositionBuffer);
@@ -971,7 +988,7 @@ void PandaDocument::step()
 	emit modified();
 
 	if(animPlaying && useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
-		animTimer->start(qMax((PReal)0.0, timestep.getValue() * 1000 - lastFrameDuration));
+		animTimer->start(qMax((PReal)0.0, timestep.getValue() * 1000 - lastFrameDuration - 1));
 }
 
 void PandaDocument::rewind()

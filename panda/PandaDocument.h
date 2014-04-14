@@ -19,6 +19,7 @@ namespace panda {
 class BaseLayer;
 class Layer;
 class Group;
+class Scheduler;
 
 class PandaDocument : public PandaObject
 {
@@ -102,6 +103,7 @@ protected:
 	Data<types::Point> mousePosition;
 	Data<int> mouseClick;
 	Data<types::ImageWrapper> renderedImage;
+	Data<int> useMultithread;
 
 	types::Point mousePositionBuffer;
 	int mouseClickBuffer;
@@ -110,6 +112,8 @@ protected:
 	QTimer* animTimer;
 
 	QMap<QString, QString> groupsMap;
+
+	QSharedPointer<Scheduler> m_scheduler;
 
 	bool getGroupDescription(const QString &fileName, QString& description);
 	void render();

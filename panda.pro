@@ -19,6 +19,7 @@ HEADERS       = \
 	panda/PandaDocument.h \
 	panda/PandaObject.h \
 	panda/Renderer.h \
+	panda/Scheduler.h \
 	panda/helper/Algorithm.h \
 	panda/helper/Factory.h \
 	panda/helper/Gl.h \
@@ -175,6 +176,7 @@ SOURCES       = main.cpp \
 	panda/PandaDocument.cpp \
 	panda/PandaObject.cpp \
 	panda/Renderer.cpp \
+	panda/Scheduler.cpp \
 	panda/helper/Factory.cpp \
 	panda/helper/GradientCache.cpp \
 	panda/helper/Perlin.cpp \
