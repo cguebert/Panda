@@ -648,13 +648,45 @@ void GraphView::wheelEvent(QWheelEvent * event)
 
 void GraphView::keyPressEvent(QKeyEvent * event)
 {
-	if(event->key() == Qt::Key_Space)
+	switch(event->key())
+	{
+	case Qt::Key_Space:
 	{
 		QuickCreateDialog dlg(pandaDocument, this);
 		dlg.exec();
+		break;
 	}
-	else
+	case Qt::Key_Left:
+		if(event->modifiers() & Qt::ControlModifier)
+		{
+			moveView(QPointF(-100, 0));
+			update();
+		}
+		break;
+	case Qt::Key_Right:
+		if(event->modifiers() & Qt::ControlModifier)
+		{
+			moveView(QPointF(100, 0));
+			update();
+		}
+		break;
+	case Qt::Key_Up:
+		if(event->modifiers() & Qt::ControlModifier)
+		{
+			moveView(QPointF(0, -100));
+			update();
+		}
+		break;
+	case Qt::Key_Down:
+		if(event->modifiers() & Qt::ControlModifier)
+		{
+			moveView(QPointF(0, 100));
+			update();
+		}
+		break;
+	default:
 		QWidget::keyPressEvent(event);
+	}
 }
 
 void GraphView::contextMenuEvent(QContextMenuEvent *event)
