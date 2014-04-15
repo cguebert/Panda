@@ -33,7 +33,7 @@ protected:
 	PandaDocument* m_document;
 	QVector<DataNode*> m_setDirtyList; // At each step, all these nodes will always be dirty (connected to the mouse position or the animation time)
 
-	QVector<PandaObject*> m_updateList;
+	QVector<PandaObject*> m_updateList; // TEST: works only for monothread for now
 };
 
 } // namespace panda

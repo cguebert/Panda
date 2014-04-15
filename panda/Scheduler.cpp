@@ -1,5 +1,6 @@
 #include <panda/Scheduler.h>
 #include <panda/PandaDocument.h>
+#include <panda/Renderer.h>
 
 #include <QList>
 #include <QSet>
@@ -79,7 +80,19 @@ void Scheduler::buildDirtyList()
 
 void Scheduler::buildUpdateGraph()
 {
+	auto tempNodeList = m_setDirtyList;
+	std::reverse(tempNodeList.begin(), tempNodeList.end());
+	m_updateList.clear();
+	for(auto node : tempNodeList)
+	{
+		if(dynamic_cast<PandaDocument*>(node)) continue;
+		if(dynamic_cast<Renderer*>(node)) continue;
+		if(dynamic_cast<BaseLayer*>(node)) continue;
 
+		PandaObject* object = dynamic_cast<PandaObject*>(node);
+		if(object)
+			m_updateList.push_back(object);
+	}
 }
 
 void Scheduler::setDirty()
@@ -90,7 +103,8 @@ void Scheduler::setDirty()
 
 void Scheduler::update()
 {
-
+	for(auto object : m_updateList)
+		object->updateIfDirty();
 }
 
 } // namespace panda
