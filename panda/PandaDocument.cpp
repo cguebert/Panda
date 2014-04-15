@@ -955,7 +955,7 @@ void PandaDocument::step()
 	for(auto object : pandaObjects)
 		object->beginStep();
 
-	if(useMultithread.getValue() && m_scheduler)
+	if(animPlaying && useMultithread.getValue() && m_scheduler)
 		m_scheduler->setDirty();
 
 	animTime.setValue(animTime.getValue() + timestep.getValue());

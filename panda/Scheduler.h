@@ -20,6 +20,9 @@ public:
 	void update();
 
 protected:
+	void buildDirtyList();
+	void buildUpdateGraph();
+
 	struct SchedulerTask
 	{
 		int nbInputs;
@@ -29,6 +32,8 @@ protected:
 
 	PandaDocument* m_document;
 	QVector<DataNode*> m_setDirtyList; // At each step, all these nodes will always be dirty (connected to the mouse position or the animation time)
+
+	QVector<PandaObject*> m_updateList;
 };
 
 } // namespace panda

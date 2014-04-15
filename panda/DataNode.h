@@ -28,6 +28,7 @@ public:
 
 	virtual bool isDirty() const;
 	virtual void setDirtyValue();
+	virtual void doSetDirty();
 	virtual void setDirtyOutputs();
 	virtual void cleanDirty();
 	virtual void updateIfDirty() const;
@@ -41,6 +42,56 @@ protected:
 	bool dirtyValue;
 	NodesList inputs, outputs;
 };
+
+//***************************************************************//
+
+inline const DataNode::NodesList& DataNode::getInputs()
+{ return inputs; }
+
+inline const DataNode::NodesList& DataNode::getOutputs()
+{ return outputs; }
+
+inline bool DataNode::isDirty() const
+{ return dirtyValue; }
+
+inline void DataNode::setDirtyValue()
+{
+	if(!dirtyValue)
+	{
+		doSetDirty();
+		setDirtyOutputs();
+	}
+}
+
+inline void DataNode::doSetDirty()
+{ dirtyValue = true; }
+
+inline void DataNode::setDirtyOutputs()
+{
+	for(DataNode* node : outputs)
+		node->setDirtyValue();
+}
+
+inline void DataNode::cleanDirty()
+{ dirtyValue = false; }
+
+inline void DataNode::updateIfDirty() const
+{
+	if(isDirty())
+		const_cast<DataNode*>(this)->update();
+}
+
+inline void DataNode::doAddInput(DataNode* node)
+{ inputs.append(node); }
+
+inline void DataNode::doRemoveInput(DataNode* node)
+{ inputs.removeAll(node); }
+
+inline void DataNode::doAddOutput(DataNode* node)
+{ outputs.append(node); }
+
+inline void DataNode::doRemoveOutput(DataNode* node)
+{ outputs.removeAll(node); }
 
 } // namespace panda
 
