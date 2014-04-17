@@ -659,28 +659,28 @@ void GraphView::keyPressEvent(QKeyEvent * event)
 	case Qt::Key_Left:
 		if(event->modifiers() & Qt::ControlModifier)
 		{
-			moveView(QPointF(-100, 0));
+			moveView(QPointF(100, 0));
 			update();
 		}
 		break;
 	case Qt::Key_Right:
 		if(event->modifiers() & Qt::ControlModifier)
 		{
-			moveView(QPointF(100, 0));
+			moveView(QPointF(-100, 0));
 			update();
 		}
 		break;
 	case Qt::Key_Up:
 		if(event->modifiers() & Qt::ControlModifier)
 		{
-			moveView(QPointF(0, -100));
+			moveView(QPointF(0, 100));
 			update();
 		}
 		break;
 	case Qt::Key_Down:
 		if(event->modifiers() & Qt::ControlModifier)
 		{
-			moveView(QPointF(0, 100));
+			moveView(QPointF(0, -100));
 			update();
 		}
 		break;
