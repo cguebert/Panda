@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QVector>
+#include <atomic>
 
 namespace panda
 {
@@ -25,15 +26,18 @@ protected:
 
 	struct SchedulerTask
 	{
-		int nbInputs;
-		int nbDirtyInputs; // When this equal 0, we can update the object
+		SchedulerTask() : object(nullptr) { nbInputs = 0; nbDirtyInputs = 0; }
+		std::atomic_int nbInputs;
+		std::atomic_int nbDirtyInputs; // When this equal 0, we can update the object
 		PandaObject* object;
+		QVector<int> outputs; // Indices of other SchedulerTasks
 	};
 
 	PandaDocument* m_document;
 	QVector<DataNode*> m_setDirtyList; // At each step, all these nodes will always be dirty (connected to the mouse position or the animation time)
 
 	QVector<PandaObject*> m_updateList; // TEST: works only for monothread for now
+	QVector<SchedulerTask> m_updateTasks;
 };
 
 } // namespace panda
