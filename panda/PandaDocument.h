@@ -60,6 +60,7 @@ public:
 
 	PReal getAnimationTime();
 	PReal getTimeStep();
+	bool animationIsPlaying() const;
 
 	types::Point getMousePosition();
 	void setMousePosition(const types::Point& pos);

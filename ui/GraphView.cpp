@@ -293,19 +293,22 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 			panda::BaseData* data = objectDrawStructs[object]->getDataAtPos(zoomedMouse, &linkStart);
 			if(data)
 			{
-				// Remove
-				if(data->isInput() && data->getParent() && event->modifiers() == Qt::ControlModifier)
+				if(!pandaDocument->animationIsPlaying())
 				{
-					removeLinkTag(data->getParent(), data);
-					object->dataSetParent(data, nullptr);
-				}
-				else	// Creating a new Link
-				{
-					clickedData = data;
-					movingAction = MOVING_LINK;
-					previousMousePos = currentMousePos = linkStart;
+					// Remove
+					if(data->isInput() && data->getParent() && event->modifiers() == Qt::ControlModifier)
+					{
+						removeLinkTag(data->getParent(), data);
+						object->dataSetParent(data, nullptr);
+					}
+					else	// Creating a new Link
+					{
+						clickedData = data;
+						movingAction = MOVING_LINK;
+						previousMousePos = currentMousePos = linkStart;
 
-					pandaDocument->selectNone();
+						pandaDocument->selectNone();
+					}
 				}
 			}
 			else	// No Data, but we still clicked on an object
@@ -652,8 +655,11 @@ void GraphView::keyPressEvent(QKeyEvent * event)
 	{
 	case Qt::Key_Space:
 	{
-		QuickCreateDialog dlg(pandaDocument, this);
-		dlg.exec();
+		if(!pandaDocument->animationIsPlaying())
+		{
+			QuickCreateDialog dlg(pandaDocument, this);
+			dlg.exec();
+		}
 		break;
 	}
 	case Qt::Key_Left:

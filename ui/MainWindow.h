@@ -51,6 +51,7 @@ private slots:
 	void copyDataToUserValue();
 	void showLoggerDialog();
 	void showObjectsAndTypes();
+	void play(bool);
 
 private:
 	void createActions();

@@ -432,6 +432,11 @@ PReal PandaDocument::getTimeStep()
 	return timestep.getValue();
 }
 
+bool PandaDocument::animationIsPlaying() const
+{
+	return animPlaying;
+}
+
 Point PandaDocument::getMousePosition()
 {
 	return mousePosition.getValue();

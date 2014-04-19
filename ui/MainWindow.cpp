@@ -74,6 +74,7 @@ void MainWindow::newFile()
 {
 	if (okToContinue()) {
 		playAction->setChecked(false);
+		play(false);
 		graphView->resetView();
 		pandaDocument->resetDocument();
 		setCurrentFile("");
@@ -338,6 +339,7 @@ void MainWindow::createActions()
 	playAction->setStatusTip(tr("Start the animation"));
 	playAction->setCheckable(true);
 	connect(playAction, SIGNAL(triggered(bool)), pandaDocument, SLOT(play(bool)));
+	connect(playAction, SIGNAL(triggered(bool)), this, SLOT(play(bool)));
 
 	stepAction = new QAction(tr("Step"), this);
 	stepAction->setIcon(QIcon(":/images/step.png"));
@@ -813,4 +815,17 @@ void MainWindow::showObjectsAndTypes()
 {
 	QString fileName = "file:///" + createObjectsAndTypesPage(pandaDocument);
 	QDesktopServices::openUrl(QUrl(fileName));
+}
+
+void MainWindow::play(bool playing)
+{
+	cutAction->setEnabled(!playing);
+	pasteAction->setEnabled(!playing);
+	deleteAction->setEnabled(!playing);
+	removeLinkAction->setEnabled(!playing);
+	copyDataAction->setEnabled(!playing);
+
+	registryMenu->setEnabled(!playing);
+
+	importAction->setEnabled(!playing);
 }
