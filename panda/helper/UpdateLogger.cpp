@@ -41,11 +41,26 @@ ScopedEvent::ScopedEvent(EventType type, const BaseData* data)
 	m_event.m_dirtyStart = data->isDirty();
 }
 
+ScopedEvent::ScopedEvent(EventType type, int index, QString name)
+{
+	m_event.m_type = type;
+	m_event.m_node = nullptr;
+	m_event.m_objectIndex = index;
+	m_event.m_objectName = name;
+	m_event.m_level = ++UpdateLogger::getInstance()->m_level;
+
+	m_event.m_startTime = UpdateLogger::getTime();
+	m_event.m_dirtyStart = true;
+}
+
 ScopedEvent::~ScopedEvent()
 {
 	auto* logger = UpdateLogger::getInstance();
 	m_event.m_endTime = UpdateLogger::getTime();
-	m_event.m_dirtyEnd = m_event.m_node->isDirty();
+	if(m_event.m_node)
+		m_event.m_dirtyEnd = m_event.m_node->isDirty();
+	else
+		m_event.m_dirtyEnd = false;
 
 	if(m_event.m_dataName.isEmpty())
 		--logger->m_level;

@@ -3,7 +3,12 @@
 #include <panda/Renderer.h>
 
 #include <QList>
+#include <QQueue>
 #include <QSet>
+
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#endif
 
 #include <iostream>
 
@@ -65,7 +70,8 @@ bool containsInput(const QVector<InputsListNode>& inputsList, int currentNodeId,
 void Scheduler::buildDirtyList()
 {
 	m_setDirtyList.clear();
-	QList<DataNode*> openSet, closedSet;
+	QQueue<DataNode*> openSet;
+	QList<DataNode*> closedSet;
 	QVector<InputsListNode> inputsList;
 	QMap<DataNode*, int> indexMap;
 
@@ -76,7 +82,7 @@ void Scheduler::buildDirtyList()
 		BaseData* data = m_document->getData(name);
 		if(data)
 		{
-			openSet.push_back(data);
+			openSet.enqueue(data);
 			indexMap[data] = inputsList.size();
 			InputsListNode node;
 			node.node = data;
@@ -88,8 +94,7 @@ void Scheduler::buildDirtyList()
 	// Get all the connected nodes
 	while(!openSet.empty())
 	{
-		DataNode* node = openSet.front();
-		openSet.pop_front();
+		DataNode* node = openSet.dequeue();
 
 		int parentId = indexMap[node];
 		int dist = inputsList[parentId].distance + 1;
@@ -103,7 +108,7 @@ void Scheduler::buildDirtyList()
 			{
 				// Move the node on the back of the open list
 				openSet.removeOne(output);
-				openSet.push_back(output);
+				openSet.enqueue(output);
 
 				// If node was already treated, update it
 				if(indexMap.contains(output))
@@ -166,12 +171,19 @@ void Scheduler::buildUpdateGraph()
 
 void Scheduler::setDirty()
 {
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log(helper::event_update, -1, "Scheduler/SetDirty");
+#endif
 	for(DataNode* node : m_setDirtyList)
 		node->doSetDirty(); // Warning: this bypasses PandaObject::setDirtyValue
 }
 
 void Scheduler::update()
 {
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log(helper::event_update, -1, "Scheduler");
+#endif
+
 	for(auto& task : m_updateTasks)
 		task.nbDirtyInputs = task.nbInputs;
 

@@ -44,6 +44,7 @@ class ScopedEvent
 public:
 	ScopedEvent(EventType type, const PandaObject* object);
 	ScopedEvent(EventType type, const BaseData* data);
+	ScopedEvent(EventType type, int index, QString name);
 	~ScopedEvent();
 
 private:
