@@ -957,6 +957,7 @@ void PandaDocument::step()
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
 
+	isInStep = true;
 	for(auto object : pandaObjects)
 		object->beginStep();
 
@@ -975,6 +976,7 @@ void PandaDocument::step()
 	setDirtyValue();
 	updateIfDirty();
 
+	isInStep = false;
 	for(auto object : pandaObjects)
 		object->endStep();
 
