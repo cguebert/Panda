@@ -26,8 +26,8 @@ protected:
 
 	struct SchedulerTask
 	{
-		SchedulerTask() : object(nullptr) { nbInputs = 0; nbDirtyInputs = 0; }
-		std::atomic_int nbInputs;
+		SchedulerTask() : nbInputs(0), object(nullptr) { nbDirtyInputs = 0; }
+		int nbInputs;
 		std::atomic_int nbDirtyInputs; // When this equal 0, we can update the object
 		PandaObject* object;
 		QVector<int> outputs; // Indices of other SchedulerTasks

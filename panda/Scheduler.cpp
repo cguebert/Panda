@@ -144,6 +144,7 @@ void Scheduler::buildDirtyList()
 
 void Scheduler::buildUpdateGraph()
 {
+	// We copy the dirty list computed previously, reverse it and extract only objects
 	auto tempNodeList = m_setDirtyList;
 	std::reverse(tempNodeList.begin(), tempNodeList.end());
 	m_updateList.clear();
@@ -156,8 +157,10 @@ void Scheduler::buildUpdateGraph()
 			m_updateList.push_back(object);
 	}
 
+	// Initialize the tasks list
 	QMap<PandaObject*, int> objectsIndexMap;
 	int nb = m_updateList.size();
+	m_updateTasks.clear();
 	m_updateTasks.resize(nb);
 	for(int i=0; i<nb; ++i)
 	{
@@ -166,7 +169,51 @@ void Scheduler::buildUpdateGraph()
 		objectsIndexMap[object] = i;
 	}
 
-	// TODO: compute outputs objects of each object
+	// Compute outputs of each object
+	for(auto& task : m_updateTasks)
+	{
+		for(auto output : task.object->getOutputs())
+		{
+			PandaObject* object = dynamic_cast<PandaObject*>(output);
+			BaseData* data = dynamic_cast<BaseData*>(output);
+			if(object) // Some objects can be directly connected to others objects (Docks and Dockable for example)
+			{
+				if(objectsIndexMap.contains(object))
+				{
+					int id = objectsIndexMap[object];
+					task.outputs.push_back(id);
+					++m_updateTasks[id].nbInputs;
+				}
+			}
+			else if(data)
+			{
+				for(auto node : data->getOutputs())
+				{
+					BaseData* data2 = dynamic_cast<BaseData*>(node);
+					if(data2 && data2->getOwner())
+					{
+						PandaObject* object2 = data2->getOwner();
+						if(objectsIndexMap.contains(object2))
+						{
+							int id = objectsIndexMap[object2];
+							task.outputs.push_back(id);
+							++m_updateTasks[id].nbInputs;
+						}
+					}
+				}
+			}
+		}
+	}
+/*
+	// Debug
+	for(int i=0; i<nb; ++i)
+	{
+		const auto& task = m_updateTasks[i];
+		std::cout << i << " " << task.object->getName().toStdString() << std::endl;
+		for(auto output : task.outputs)
+			std::cout << output << " ";
+		std::cout << std::endl;
+	}*/
 }
 
 void Scheduler::setDirty()
