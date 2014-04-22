@@ -231,6 +231,7 @@ public:
 					dataWidgets.push_back(DataWidgetPtr(dataWidget));
 					QWidget* widget = dataWidget->createWidgets(readOnly);
 					QLineEdit* lineEdit = new QLineEdit("0.0");
+					lineEdit->setEnabled(!readOnly);
 					lineEdits.push_back(lineEdit);
 					gridLayout->addWidget(lineEdit, i, 0);
 					gridLayout->addWidget(widget, i, 1);
