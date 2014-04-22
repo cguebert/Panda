@@ -13,6 +13,7 @@ class PandaObject;
 class PandaDocument;
 class BaseData;
 class DataNode;
+class Scheduler;
 
 namespace helper
 {
@@ -63,7 +64,8 @@ public:
 	void startLog(PandaDocument* doc);
 	void stopLog();
 
-	const UpdateEvents getEvents() const;
+	const int nbThreads() const;
+	const UpdateEvents getEvents(int id) const;
 	const NodeStates getInitialNodeStates() const;
 
 	static unsigned long long getTicksPerSec();
@@ -72,11 +74,14 @@ public:
 protected:
 	UpdateLogger();
 	friend class ScopedEvent;
+	friend class Scheduler;
 
+	void setNbThreads(int nbThreads);
+	void setThreadId(int id);
 	void addEvent(EventData event);
 
-	UpdateEvents m_events, m_prevEvents;
-	int m_level;
+	QVector<UpdateEvents> m_events, m_prevEvents;
+	int m_level, m_nbThreads;
 	bool m_logging;
 	NodeStates m_nodeStates, m_prevNodeStates;
 };

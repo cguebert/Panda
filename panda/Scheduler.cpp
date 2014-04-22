@@ -37,6 +37,8 @@ void Scheduler::init()
 {
 	buildDirtyList();
 	buildUpdateGraph();
+
+	prepareThreads();
 }
 
 struct InputsListNode
@@ -214,6 +216,16 @@ void Scheduler::buildUpdateGraph()
 			std::cout << output << " ";
 		std::cout << std::endl;
 	}*/
+}
+
+void Scheduler::prepareThreads()
+{
+	int nbThreads = qMax(1, QThread::idealThreadCount() / 2);
+
+#ifdef PANDA_LOG_EVENTS
+	helper::UpdateLogger::getInstance()->setNbThreads(nbThreads);
+	helper::UpdateLogger::getInstance()->setThreadId(0);
+#endif
 }
 
 void Scheduler::setDirty()

@@ -101,7 +101,7 @@ UpdateLoggerView::UpdateLoggerView(QWidget *parent)
 void UpdateLoggerView::updateEvents()
 {
 	panda::helper::UpdateLogger* logger = panda::helper::UpdateLogger::getInstance();
-	UpdateEvents events = logger->getEvents();
+	UpdateEvents events = logger->getEvents(0);
 	if(events.isEmpty())
 		return;
 

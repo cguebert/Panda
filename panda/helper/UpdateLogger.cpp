@@ -3,6 +3,7 @@
 #include <panda/PandaDocument.h>
 
 #include <windows.h>
+#include <QThreadStorage>
 
 namespace panda
 {
@@ -72,6 +73,7 @@ ScopedEvent::~ScopedEvent()
 
 UpdateLogger::UpdateLogger()
 	: m_level(-1)
+	, m_nbThreads(1)
 	, m_logging(false)
 {
 }
@@ -87,6 +89,7 @@ void UpdateLogger::startLog(PandaDocument *doc)
 	if(m_logging)
 		stopLog();
 	m_events.clear();
+	m_events.resize(m_nbThreads);
 	m_logging = true;
 	m_level = -1;
 
@@ -107,9 +110,9 @@ void UpdateLogger::stopLog()
 	m_prevNodeStates.swap(m_nodeStates);
 }
 
-const UpdateLogger::UpdateEvents UpdateLogger::getEvents() const
+const UpdateLogger::UpdateEvents UpdateLogger::getEvents(int id) const
 {
-	return m_prevEvents;
+	return m_prevEvents[id];
 }
 
 const UpdateLogger::NodeStates UpdateLogger::getInitialNodeStates() const
@@ -117,10 +120,27 @@ const UpdateLogger::NodeStates UpdateLogger::getInitialNodeStates() const
 	return m_prevNodeStates;
 }
 
+void UpdateLogger::setNbThreads(int nbThreads)
+{
+	if(m_nbThreads != nbThreads)
+	{
+		m_events.clear();
+		m_events.resize(nbThreads);
+		m_nbThreads = nbThreads;
+	}
+}
+
+QThreadStorage<int> threadId;
+
+void UpdateLogger::setThreadId(int id)
+{
+	threadId.setLocalData(id);
+}
+
 void UpdateLogger::addEvent(EventData event)
 {
-	if(m_logging)
-		m_events.push_back(event);
+	if(m_logging && threadId.hasLocalData())
+		m_events[threadId.localData()].push_back(event);
 }
 
 unsigned long long UpdateLogger::getTicksPerSec()

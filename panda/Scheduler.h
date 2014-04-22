@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QVector>
+#include <QThread>
 #include <atomic>
 
 namespace panda
@@ -23,6 +24,7 @@ public:
 protected:
 	void buildDirtyList();
 	void buildUpdateGraph();
+	void prepareThreads();
 
 	struct SchedulerTask
 	{
