@@ -37,6 +37,7 @@ PandaDocument::PandaDocument(QObject *parent)
 	, useMultithread(initData(&useMultithread, 0, "use multithread", "Optimize computation for multiple CPU cores"))
 	, mouseClickBuffer(0)
 	, animPlaying(false)
+	, animMultithread(false)
 {
 	addInput(&renderSize);
 	addInput(&backgroundColor);
@@ -350,6 +351,7 @@ void PandaDocument::resetDocument()
 	renderFrameBuffer.clear();
 
 	animPlaying = false;
+	animMultithread = false;
 	animTimer->stop();
 
 	emit modified();
@@ -363,16 +365,6 @@ PandaObject* PandaDocument::createObject(QString registryName)
 		doAddObject(object);
 
 	return object;
-}
-
-int PandaDocument::getNbObjects() const
-{
-	return pandaObjects.size();
-}
-
-const PandaDocument::ObjectsList PandaDocument::getObjects() const
-{
-	return pandaObjects;
 }
 
 PandaObject* PandaDocument::getCurrentSelectedObject()
@@ -391,65 +383,10 @@ void PandaDocument::setCurrentSelectedObject(PandaObject* object)
 	emit selectionChanged();
 }
 
-bool PandaDocument::isSelected(PandaObject* object) const
-{
-	return selectedObjects.contains(object);
-}
-
-int PandaDocument::getNbSelected() const
-{
-	return selectedObjects.size();
-}
-
-const PandaDocument::ObjectsList PandaDocument::getSelection() const
-{
-	return selectedObjects;
-}
-
-Color PandaDocument::getBackgroundColor()
-{
-	return backgroundColor.getValue();
-}
-
-void PandaDocument::setBackgroundColor(Color color)
-{
-	backgroundColor.setValue(color);
-}
-
 QSize PandaDocument::getRenderSize()
 {
 	Point pt = renderSize.getValue();
 	return QSize(qMax<PReal>(1, floor(pt.x)), qMax<PReal>(1, floor(pt.y)));
-}
-
-PReal PandaDocument::getAnimationTime()
-{
-	return animTime.getValue();
-}
-
-PReal PandaDocument::getTimeStep()
-{
-	return timestep.getValue();
-}
-
-bool PandaDocument::animationIsPlaying() const
-{
-	return animPlaying;
-}
-
-Point PandaDocument::getMousePosition()
-{
-	return mousePosition.getValue();
-}
-
-void PandaDocument::setMousePosition(const Point& pos)
-{
-	mousePositionBuffer = pos;
-}
-
-int PandaDocument::getMouseClick()
-{
-	return mouseClick.getValue();
 }
 
 void PandaDocument::setMouseClick(int state)
@@ -659,11 +596,6 @@ void PandaDocument::createGroupsList()
 	}
 }
 
-PandaDocument::GroupsIterator PandaDocument::getGroupsIterator()
-{
-	return GroupsIterator(groupsMap);
-}
-
 bool PandaDocument::getGroupDescription(const QString &fileName, QString& description)
 {
 	QFile file(fileName);
@@ -680,11 +612,6 @@ bool PandaDocument::getGroupDescription(const QString &fileName, QString& descri
 	description = root.attribute("description");
 
 	return true;
-}
-
-QString PandaDocument::getGroupDescription(const QString& groupName)
-{
-	return groupsMap.value(groupName);
 }
 
 bool PandaDocument::saveGroup(Group *group)
@@ -777,11 +704,6 @@ PandaObject* PandaDocument::createGroupObject(QString groupPath)
 	return object;
 }
 
-quint32 PandaDocument::getNextIndex()
-{
-	return currentIndex++;
-}
-
 PandaObject* PandaDocument::findObject(quint32 objectIndex)
 {
 	if(pandaObjectsMap.contains(objectIndex))
@@ -817,7 +739,7 @@ void PandaDocument::update()
 	helper::GradientCache::getInstance()->resetUsedFlag();
 	helper::ShaderCache::getInstance()->resetUsedFlag();
 
-	if(useMultithread.getValue() && m_scheduler)
+	if(animMultithread && m_scheduler)
 		m_scheduler->update();
 
 	defaultLayer->updateIfDirty();
@@ -872,11 +794,6 @@ void PandaDocument::render()
 	}
 
 	renderFrameBuffer->release();
-}
-
-Layer* PandaDocument::getDefaultLayer()
-{
-	return defaultLayer;
 }
 
 void PandaDocument::moveLayerUp(PandaObject* layer)
@@ -934,7 +851,8 @@ void PandaDocument::play(bool playing)
 	animPlaying = playing;
 	if(animPlaying)
 	{
-		if(useMultithread.getValue())
+		animMultithread = useMultithread.getValue();
+		if(animMultithread)
 		{
 			if(!m_scheduler)
 				m_scheduler.reset(new Scheduler(this));
@@ -961,7 +879,7 @@ void PandaDocument::step()
 	for(auto object : pandaObjects)
 		object->beginStep();
 
-	if(animPlaying && useMultithread.getValue() && m_scheduler)
+	if(animPlaying && animMultithread && m_scheduler)
 		m_scheduler->setDirty();
 
 	animTime.setValue(animTime.getValue() + timestep.getValue());

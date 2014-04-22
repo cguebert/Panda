@@ -61,6 +61,7 @@ public:
 	PReal getAnimationTime();
 	PReal getTimeStep();
 	bool animationIsPlaying() const;
+	bool animationIsMultithread() const;
 
 	types::Point getMousePosition();
 	void setMousePosition(const types::Point& pos);
@@ -109,7 +110,7 @@ protected:
 	types::Point mousePositionBuffer;
 	int mouseClickBuffer;
 
-	bool animPlaying;
+	bool animPlaying, animMultithread;
 	QTimer* animTimer;
 
 	QMap<QString, QString> groupsMap;
@@ -150,6 +151,60 @@ public slots:
 	void rewind();
 	void copyDataToUserValue(const panda::BaseData* data);
 };
+
+inline int PandaDocument::getNbObjects() const
+{ return pandaObjects.size(); }
+
+inline const PandaDocument::ObjectsList PandaDocument::getObjects() const
+{ return pandaObjects; }
+
+inline bool PandaDocument::isSelected(PandaObject* object) const
+{ return selectedObjects.contains(object); }
+
+inline int PandaDocument::getNbSelected() const
+{ return selectedObjects.size(); }
+
+inline const PandaDocument::ObjectsList PandaDocument::getSelection() const
+{ return selectedObjects; }
+
+inline types::Color PandaDocument::getBackgroundColor()
+{ return backgroundColor.getValue(); }
+
+inline void PandaDocument::setBackgroundColor(types::Color color)
+{ backgroundColor.setValue(color); }
+
+inline PReal PandaDocument::getAnimationTime()
+{ return animTime.getValue(); }
+
+inline PReal PandaDocument::getTimeStep()
+{ return timestep.getValue(); }
+
+inline bool PandaDocument::animationIsPlaying() const
+{ return animPlaying; }
+
+inline bool PandaDocument::animationIsMultithread() const
+{ return animMultithread; }
+
+inline types::Point PandaDocument::getMousePosition()
+{ return mousePosition.getValue(); }
+
+inline void PandaDocument::setMousePosition(const types::Point& pos)
+{ mousePositionBuffer = pos; }
+
+inline int PandaDocument::getMouseClick()
+{ return mouseClick.getValue(); }
+
+inline PandaDocument::GroupsIterator PandaDocument::getGroupsIterator()
+{ return GroupsIterator(groupsMap); }
+
+inline QString PandaDocument::getGroupDescription(const QString& groupName)
+{ return groupsMap.value(groupName); }
+
+inline quint32 PandaDocument::getNextIndex()
+{ return currentIndex++; }
+
+inline Layer* PandaDocument::getDefaultLayer()
+{ return defaultLayer; }
 
 } // namespace panda
 
