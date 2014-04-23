@@ -81,6 +81,9 @@ PandaDocument::~PandaDocument()
 		object->preDestruction();
 		object->disconnect();
 	}
+
+	if(m_scheduler)
+		m_scheduler->stop();
 }
 
 bool PandaDocument::writeFile(const QString& fileName)
@@ -353,6 +356,8 @@ void PandaDocument::resetDocument()
 	animPlaying = false;
 	animMultithread = false;
 	animTimer->stop();
+	if(m_scheduler)
+		m_scheduler->stop();
 
 	emit modified();
 	emit timeChanged();
@@ -858,13 +863,24 @@ void PandaDocument::play(bool playing)
 				m_scheduler.reset(new Scheduler(this));
 			m_scheduler->init();
 		}
+#ifdef PANDA_LOG_EVENTS
+		else
+		{
+			helper::UpdateLogger::getInstance()->setNbThreads(1);
+			helper::UpdateLogger::getInstance()->setThreadId(0);
+		}
+#endif
 		if(useTimer.getValue())
 			animTimer->start(qMax((PReal)0.0, timestep.getValue() * 1000));
 		else
 			animTimer->start(0);
 	}
 	else
+	{
 		animTimer->stop();
+		if(animMultithread && m_scheduler)
+			m_scheduler->stop();
+	}
 }
 
 void PandaDocument::step()

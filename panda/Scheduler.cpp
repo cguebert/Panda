@@ -5,6 +5,8 @@
 #include <QList>
 #include <QQueue>
 #include <QSet>
+#include <QMutexLocker>
+#include <QThreadPool>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>
@@ -17,6 +19,8 @@ namespace panda
 
 Scheduler::Scheduler(PandaDocument* document)
 	: m_document(document)
+	, m_readyTasks(256)
+	, m_readyMainTasks(128)
 {
 }
 
@@ -39,6 +43,19 @@ void Scheduler::init()
 	buildUpdateGraph();
 
 	prepareThreads();
+}
+
+void Scheduler::stop()
+{
+	if(!m_updateThreads.empty())
+	{
+		for(auto& thread : m_updateThreads)
+			thread->close();
+
+		delete m_updateThreads[0];
+
+		m_updateThreads.clear();
+	}
 }
 
 struct InputsListNode
@@ -166,8 +183,11 @@ void Scheduler::buildUpdateGraph()
 	m_updateTasks.resize(nb);
 	for(int i=0; i<nb; ++i)
 	{
+		m_updateTasks[i].index = i;
 		PandaObject* object = m_updateList[i];
 		m_updateTasks[i].object = object;
+		if(dynamic_cast<Layer*>(object) || dynamic_cast<Renderer*>(object))
+			m_updateTasks[i].restrictToMainThread = true;
 		objectsIndexMap[object] = i;
 	}
 
@@ -222,6 +242,17 @@ void Scheduler::prepareThreads()
 {
 	int nbThreads = qMax(1, QThread::idealThreadCount() / 2);
 
+	m_updateThreads.push_back(new SchedulerThread(this, 0));
+/*	for(int i=1; i<nbThreads; ++i)
+	{
+		SchedulerThread* thread = new SchedulerThread(this, i);
+
+		if(QThreadPool::globalInstance()->tryStart(thread))
+			m_updateThreads.push_back(thread);
+		else
+			delete thread;
+	}
+*/
 #ifdef PANDA_LOG_EVENTS
 	helper::UpdateLogger::getInstance()->setNbThreads(nbThreads);
 	helper::UpdateLogger::getInstance()->setThreadId(0);
@@ -244,10 +275,144 @@ void Scheduler::update()
 #endif
 
 	for(auto& task : m_updateTasks)
+	{
 		task.nbDirtyInputs = task.nbInputs;
+		if(!task.nbInputs)
+			readyTask(&task, false);
+	}
 
-	for(auto object : m_updateList)
-		object->updateIfDirty();
+	for(auto& thread : m_updateThreads)
+		thread->wakeUp();
+
+	if(!m_updateThreads.empty())
+		m_updateThreads[0]->run();
+	else
+	{
+		for(auto object : m_updateList)
+			object->updateIfDirty();
+	}
+}
+
+const Scheduler::SchedulerTask* Scheduler::getTask(int threadId)
+{
+	Scheduler::SchedulerTask* task;
+	if(!threadId) // Main thread
+	{
+		if(m_readyMainTasks.pop(task))
+			return task;
+	}
+
+	if(m_readyTasks.pop(task))
+		return task;
+
+	return nullptr;
+}
+
+void Scheduler::finishTask(const SchedulerTask* task)
+{
+	for(auto output : task->outputs)
+	{
+		auto& outputTask = m_updateTasks[output];
+		if(! (--outputTask.nbDirtyInputs))
+			readyTask(&outputTask);
+	}
+
+	// Detect end of update
+	if(m_readyMainTasks.empty() && m_readyTasks.empty())
+	{
+		bool canSleep = true;
+		for(const auto& thread : m_updateThreads)
+		{
+			if(thread->isWorking())
+				canSleep = false;
+		}
+
+		if(canSleep)
+		{
+			for(auto& thread : m_updateThreads)
+				thread->sleep();
+		}
+	}
+}
+
+void Scheduler::readyTask(const SchedulerTask* task, bool wakeUp)
+{
+	if(task->restrictToMainThread)
+	{
+		m_readyMainTasks.push(task);
+		if(wakeUp)
+			m_updateThreads[0]->wakeUp();
+	}
+	else
+	{
+		m_readyTasks.push(task);
+
+		if(wakeUp)
+		{
+			for(auto& thread : m_updateThreads)
+				thread->wakeUp();
+		}
+	}
+}
+
+//***************************************************************//
+
+SchedulerThread::SchedulerThread(Scheduler* scheduler, int threadId)
+	: m_scheduler(scheduler)
+	, m_threadId(threadId)
+{
+	m_closing = false;
+	m_canSleep = false;
+	m_mustWakeUp = false;
+	m_working = false;
+}
+
+void SchedulerThread::run()
+{
+#ifdef PANDA_LOG_EVENTS
+	helper::UpdateLogger::getInstance()->setThreadId(m_threadId);
+#endif
+
+	while(!m_closing)
+	{
+		if(m_threadId)
+			idle();
+
+		if(m_closing)
+			break;
+
+		while(true)
+		{
+			doWork();
+
+			if(m_closing || m_canSleep)
+			{
+				if(!m_threadId)
+					return;
+				m_canSleep = false;
+				break;
+			}
+		}
+	}
+}
+
+void SchedulerThread::idle()
+{
+	while(!m_mustWakeUp)
+		QThread::yieldCurrentThread();
+
+	m_mustWakeUp = false;
+}
+
+void SchedulerThread::doWork()
+{
+	while(const Scheduler::SchedulerTask* task = m_scheduler->getTask(m_threadId))
+	{
+		m_working = true;
+		task->object->updateIfDirty();
+		m_working = false;
+		m_scheduler->finishTask(task);
+	}
 }
 
 } // namespace panda

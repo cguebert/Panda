@@ -64,7 +64,10 @@ public:
 	void startLog(PandaDocument* doc);
 	void stopLog();
 
+	void setNbThreads(int nbThreads);
+	void setThreadId(int id);
 	const int nbThreads() const;
+
 	const UpdateEvents getEvents(int id) const;
 	const NodeStates getInitialNodeStates() const;
 
@@ -76,8 +79,6 @@ protected:
 	friend class ScopedEvent;
 	friend class Scheduler;
 
-	void setNbThreads(int nbThreads);
-	void setThreadId(int id);
 	void addEvent(EventData event);
 
 	QVector<UpdateEvents> m_events, m_prevEvents;
