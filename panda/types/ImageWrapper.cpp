@@ -120,6 +120,9 @@ QOpenGLFramebufferObject* ImageWrapper::getFbo() const
 
 template<> QString DataTrait<ImageWrapper>::valueTypeName() { return "image"; }
 
+template<> void DataTrait<ImageWrapper>::writeValue(QDomDocument&, QDomElement&, const ImageWrapper&) {}
+template<> void DataTrait<ImageWrapper>::readValue(QDomElement&, ImageWrapper&) {}
+
 template<> bool DataTrait<ImageWrapper>::isDisplayed() { return false; }
 template<> bool DataTrait<ImageWrapper>::isPersistent() { return false; }
 

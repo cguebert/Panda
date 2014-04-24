@@ -42,6 +42,11 @@ public:
 
 //***************************************************************//
 
+/*
+ * Class used to describe a type
+ * 3 functions have to be written for each type:
+ *   valueTypeName, writeValue & readValue
+ */
 template<class T>
 class DataTrait
 {
@@ -55,7 +60,7 @@ public:
 	static bool isDisplayed() { return true; }
 	static bool isPersistent() { return true; }
 
-	static QString valueTypeName() { return ""; } // Override for each type
+	static QString valueTypeName(); // Override for each type
 	static QString valueTypeNamePlural() { return valueTypeName() + "s"; }
 	static QString typeName() { return valueTypeName(); }
 	static QString typeDescription() { return valueTypeName() + " value"; }
@@ -65,8 +70,8 @@ public:
 	static void clear(value_type& v, int /*size*/, bool init) { if(init) v = T(); }
 	static const void* getVoidValue(const value_type& v, int /*index*/) { return &v; }
 	static void* getVoidValue(value_type& v, int /*index*/) { return &v; }
-	static void writeValue(QDomDocument&, QDomElement&, const value_type&) {}
-	static void readValue(QDomElement&, value_type&) {}
+	static void writeValue(QDomDocument&, QDomElement&, const value_type&); // Override for each type
+	static void readValue(QDomElement&, value_type&); // Override for each type
 };
 
 //***************************************************************//

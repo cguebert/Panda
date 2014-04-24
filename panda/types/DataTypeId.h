@@ -3,6 +3,8 @@
 
 #include <typeinfo>
 
+template<class T> class RegisterWidget;
+
 namespace panda
 {
 
@@ -33,6 +35,7 @@ private:
 	DataTypeId();
 
 	template<class T> friend class RegisterData;
+	template<class T> friend class RegisterWidget;
 	template<class From, class To> friend class RegisterTypeConverter;
 
 	// To register vectors and animations

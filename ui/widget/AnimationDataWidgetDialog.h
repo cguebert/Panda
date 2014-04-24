@@ -5,8 +5,7 @@
 #include <ui/widget/DataWidgetFactory.h>
 #include <ui/widget/StructTraits.h>
 
-#include <panda/types/Animation.h>
-#include <panda/types/DataTraits.h>
+#include <panda/types/AnimationTraits.h>
 
 #include <QtWidgets>
 

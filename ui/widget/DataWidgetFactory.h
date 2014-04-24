@@ -88,6 +88,11 @@ class RegisterWidget
 public:
 	explicit RegisterWidget(QString widgetName)
 	{
+		// Ensure the value type is already registered
+		typedef panda::types::DataTrait<T::TData::value_type> Trait;
+		panda::types::DataTypeId::registerType<Trait::value_type>(panda::types::DataTrait<Trait::value_type>::fullTypeId());
+		panda::types::DataTypeId::registerType<T::TData::value_type>(panda::types::DataTrait<T::TData::value_type>::fullTypeId());
+
 		int fullType = panda::types::VirtualDataTrait<T::TData::value_type>::get()->fullTypeId();
 		DataWidgetFactory::getInstance()->registerWidget(fullType, widgetName
 							, QSharedPointer<DataWidgetCreator<T>>::create());
