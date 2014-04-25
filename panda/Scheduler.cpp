@@ -173,7 +173,10 @@ void Scheduler::buildUpdateGraph()
 
 		PandaObject* object = dynamic_cast<PandaObject*>(node);
 		if(object)
-			m_updateList.push_back(object);
+		{
+			if (!dynamic_cast<Layer*>(object) && !dynamic_cast<Renderer*>(object))	// TEMP
+				m_updateList.push_back(object);
+		}
 	}
 
 	// Initialize the tasks list
@@ -241,9 +244,10 @@ void Scheduler::buildUpdateGraph()
 void Scheduler::prepareThreads()
 {
 	int nbThreads = qMax(1, QThread::idealThreadCount() / 2);
+//	nbThreads = 2; // TEMP
 
 	m_updateThreads.push_back(new SchedulerThread(this, 0));
-/*	for(int i=1; i<nbThreads; ++i)
+	for(int i=1; i<nbThreads; ++i)
 	{
 		SchedulerThread* thread = new SchedulerThread(this, i);
 
@@ -252,7 +256,7 @@ void Scheduler::prepareThreads()
 		else
 			delete thread;
 	}
-*/
+	
 #ifdef PANDA_LOG_EVENTS
 	helper::UpdateLogger::getInstance()->setNbThreads(nbThreads);
 	helper::UpdateLogger::getInstance()->setThreadId(0);
@@ -274,11 +278,15 @@ void Scheduler::update()
 	helper::ScopedEvent log(helper::event_update, -1, "Scheduler");
 #endif
 
+	m_nbReadyTasks = 0;
+
+	for(auto& task : m_updateTasks)
+		task.nbDirtyInputs = task.nbInputs;
+
 	for(auto& task : m_updateTasks)
 	{
-		task.nbDirtyInputs = task.nbInputs;
 		if(!task.nbInputs)
-			readyTask(&task, false);
+			readyTask(&task);
 	}
 
 	for(auto& thread : m_updateThreads)
@@ -293,10 +301,10 @@ void Scheduler::update()
 	}
 }
 
-const Scheduler::SchedulerTask* Scheduler::getTask(int threadId)
+const Scheduler::SchedulerTask* Scheduler::getTask(bool mainThread)
 {
 	Scheduler::SchedulerTask* task;
-	if(!threadId) // Main thread
+	if(mainThread) // Main thread
 	{
 		if(m_readyMainTasks.pop(task))
 			return task;
@@ -316,42 +324,25 @@ void Scheduler::finishTask(const SchedulerTask* task)
 		if(! (--outputTask.nbDirtyInputs))
 			readyTask(&outputTask);
 	}
-
-	// Detect end of update
-	if(m_readyMainTasks.empty() && m_readyTasks.empty())
-	{
-		bool canSleep = true;
-		for(const auto& thread : m_updateThreads)
-		{
-			if(thread->isWorking())
-				canSleep = false;
-		}
-
-		if(canSleep)
-		{
-			for(auto& thread : m_updateThreads)
-				thread->sleep();
-		}
-	}
+	m_nbReadyTasks--;
 }
 
-void Scheduler::readyTask(const SchedulerTask* task, bool wakeUp)
+void Scheduler::readyTask(const SchedulerTask* task)
 {
-	if(task->restrictToMainThread)
-	{
-		m_readyMainTasks.push(task);
-		if(wakeUp)
-			m_updateThreads[0]->wakeUp();
-	}
-	else
-	{
-		m_readyTasks.push(task);
+	m_nbReadyTasks++;
 
-		if(wakeUp)
-		{
-			for(auto& thread : m_updateThreads)
-				thread->wakeUp();
-		}
+	if(task->restrictToMainThread)
+		m_readyMainTasks.push(task);
+	else
+		m_readyTasks.push(task);
+}
+
+void Scheduler::testForEnd()
+{
+	if (!m_nbReadyTasks)
+	{
+		for(auto& thread : m_updateThreads)
+			thread->sleep();
 	}
 }
 
@@ -360,11 +351,11 @@ void Scheduler::readyTask(const SchedulerTask* task, bool wakeUp)
 SchedulerThread::SchedulerThread(Scheduler* scheduler, int threadId)
 	: m_scheduler(scheduler)
 	, m_threadId(threadId)
+	, m_mainThread(threadId == 0)
 {
 	m_closing = false;
 	m_canSleep = false;
 	m_mustWakeUp = false;
-	m_working = false;
 }
 
 void SchedulerThread::run()
@@ -375,7 +366,7 @@ void SchedulerThread::run()
 
 	while(!m_closing)
 	{
-		if(m_threadId)
+		if(!m_mainThread)
 			idle();
 
 		if(m_closing)
@@ -385,13 +376,19 @@ void SchedulerThread::run()
 		{
 			doWork();
 
-			if(m_closing || m_canSleep)
+			if (m_mainThread)
+				m_scheduler->testForEnd();
+
+			if(m_canSleep)
 			{
-				if(!m_threadId)
-					return;
 				m_canSleep = false;
+				if(m_mainThread)
+					return;
 				break;
 			}
+
+			if (m_closing)
+				return;
 		}
 	}
 }
@@ -406,11 +403,9 @@ void SchedulerThread::idle()
 
 void SchedulerThread::doWork()
 {
-	while(const Scheduler::SchedulerTask* task = m_scheduler->getTask(m_threadId))
+	while(const Scheduler::SchedulerTask* task = m_scheduler->getTask(m_mainThread))
 	{
-		m_working = true;
 		task->object->updateIfDirty();
-		m_working = false;
 		m_scheduler->finishTask(task);
 	}
 }

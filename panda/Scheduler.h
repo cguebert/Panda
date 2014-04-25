@@ -37,9 +37,10 @@ protected:
 
 	friend class SchedulerThread;
 	struct SchedulerTask;
-	const SchedulerTask* getTask(int threadId); // Get the next ready task
+	const SchedulerTask* getTask(bool mainThread); // Get the next ready task
 	void finishTask(const SchedulerTask *task); // Call by a thread when a task is finished
-	void readyTask(const SchedulerTask *task, bool wakeUp = true); // Add the task to the ready queue
+	void readyTask(const SchedulerTask *task); // Add the task to the ready queue
+	void testForEnd();
 
 	struct SchedulerTask
 	{
@@ -61,6 +62,7 @@ protected:
 	QVector<SchedulerThread*> m_updateThreads;
 
 	boost::lockfree::queue<const SchedulerTask*> m_readyTasks, m_readyMainTasks;
+	std::atomic_int m_nbReadyTasks;
 };
 
 //***************************************************************//
@@ -74,7 +76,8 @@ public:
 	void close();
 	void sleep();
 	void wakeUp();
-	bool isWorking() const;
+
+	int threadId() const;
 
 protected:
 	void idle();
@@ -82,20 +85,21 @@ protected:
 
 	Scheduler* m_scheduler;
 	int m_threadId;
-	std::atomic_bool m_closing, m_canSleep, m_mustWakeUp, m_working;
+	bool m_mainThread;
+	std::atomic_bool m_closing, m_canSleep, m_mustWakeUp;
 };
 
 inline void SchedulerThread::close()
 { m_closing = true; m_mustWakeUp = true; }
 
 inline void SchedulerThread::sleep()
-{ m_canSleep = true; }
+{ m_canSleep = true; m_mustWakeUp = false;  }
 
 inline void SchedulerThread::wakeUp()
 { m_mustWakeUp = true; }
 
-inline bool SchedulerThread::isWorking() const
-{ return m_working; }
+inline int SchedulerThread::threadId() const
+{ return m_threadId; }
 
 } // namespace panda
 
