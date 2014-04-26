@@ -282,6 +282,20 @@ void UpdateLoggerView::mousePressEvent(QMouseEvent* event)
     }
 }
 
+QString getReadableTime(double time)
+{
+	if(time > 1e3)
+		return QString("%1s").arg(QString::number(time / 1e3, 'f', 2));
+	else if(time > 1)
+		return QString("%1ms").arg(QString::number(time, 'f', 2));
+	else if(time > 1e-3)
+		return QString("%1µs").arg(QString::number(time * 1e3, 'f', 2));
+	else if(time > 1e-6)
+		return QString("%1ns").arg(QString::number(time * 1e6, 'f', 2));
+
+	return QString("0ms");
+}
+
 void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 {
 	if(m_mouseAction == Action_MovingStart)
@@ -315,7 +329,9 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
         {
 			qreal start = (pEvent->m_startTime - m_minTime) * m_tps;
 			qreal end = (pEvent->m_endTime - m_minTime) * m_tps;
-			QString times = QString("\n%1ms - %2ms").arg(start).arg(end);
+			QString times = QString("\n%1ms - %2ms\n(%3)")
+					.arg(start).arg(end)
+					.arg(getReadableTime(end-start));
 			QString display = eventDescription(*pEvent);
 
 			if(!display.isEmpty())

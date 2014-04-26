@@ -867,7 +867,7 @@ void PandaDocument::play(bool playing)
 		else
 		{
 			helper::UpdateLogger::getInstance()->setNbThreads(1);
-			helper::UpdateLogger::getInstance()->setThreadId(0);
+			helper::UpdateLogger::getInstance()->setupThread(0);
 		}
 #endif
 		if(useTimer.getValue())

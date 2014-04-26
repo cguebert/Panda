@@ -244,7 +244,6 @@ void Scheduler::buildUpdateGraph()
 void Scheduler::prepareThreads()
 {
 	int nbThreads = qMax(1, QThread::idealThreadCount() / 2);
-//	nbThreads = 2; // TEMP
 
 	m_updateThreads.push_back(new SchedulerThread(this, 0));
 	for(int i=1; i<nbThreads; ++i)
@@ -259,7 +258,7 @@ void Scheduler::prepareThreads()
 	
 #ifdef PANDA_LOG_EVENTS
 	helper::UpdateLogger::getInstance()->setNbThreads(nbThreads);
-	helper::UpdateLogger::getInstance()->setThreadId(0);
+	helper::UpdateLogger::getInstance()->setupThread(0);
 #endif
 }
 
@@ -304,7 +303,7 @@ void Scheduler::update()
 const Scheduler::SchedulerTask* Scheduler::getTask(bool mainThread)
 {
 	Scheduler::SchedulerTask* task;
-	if(mainThread) // Main thread
+	if(mainThread)
 	{
 		if(m_readyMainTasks.pop(task))
 			return task;
@@ -361,7 +360,7 @@ SchedulerThread::SchedulerThread(Scheduler* scheduler, int threadId)
 void SchedulerThread::run()
 {
 #ifdef PANDA_LOG_EVENTS
-	helper::UpdateLogger::getInstance()->setThreadId(m_threadId);
+	helper::UpdateLogger::getInstance()->setupThread(m_threadId);
 #endif
 
 	while(!m_closing)

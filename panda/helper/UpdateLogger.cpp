@@ -3,7 +3,7 @@
 #include <panda/PandaDocument.h>
 
 #include <windows.h>
-#include <QThreadStorage>
+#include <thread>
 
 namespace panda
 {
@@ -17,7 +17,8 @@ ScopedEvent::ScopedEvent(EventType type, const PandaObject *object)
 	m_event.m_node = object;
 	m_event.m_objectIndex = object->getIndex();
 	m_event.m_objectName = object->getName();
-	m_event.m_level = ++UpdateLogger::getInstance()->m_level;
+	m_event.m_threadId = UpdateLogger::getThreadId();
+	m_event.m_level = ++UpdateLogger::getInstance()->logLevel(m_event.m_threadId);
 
 	m_event.m_startTime = UpdateLogger::getTime();
 	m_event.m_dirtyStart = object->isDirty();
@@ -36,7 +37,8 @@ ScopedEvent::ScopedEvent(EventType type, const BaseData* data)
 	}
 	else
 		m_event.m_objectIndex = -1;
-	m_event.m_level = UpdateLogger::getInstance()->m_level;
+	m_event.m_threadId = UpdateLogger::getThreadId();
+	m_event.m_level = UpdateLogger::getInstance()->logLevel(m_event.m_threadId);
 
 	m_event.m_startTime = UpdateLogger::getTime();
 	m_event.m_dirtyStart = data->isDirty();
@@ -48,7 +50,8 @@ ScopedEvent::ScopedEvent(EventType type, int index, QString name)
 	m_event.m_node = nullptr;
 	m_event.m_objectIndex = index;
 	m_event.m_objectName = name;
-	m_event.m_level = ++UpdateLogger::getInstance()->m_level;
+	m_event.m_threadId = UpdateLogger::getThreadId();
+	m_event.m_level = ++UpdateLogger::getInstance()->logLevel(m_event.m_threadId);
 
 	m_event.m_startTime = UpdateLogger::getTime();
 	m_event.m_dirtyStart = true;
@@ -64,7 +67,7 @@ ScopedEvent::~ScopedEvent()
 		m_event.m_dirtyEnd = false;
 
 	if(m_event.m_dataName.isEmpty())
-		--logger->m_level;
+		--logger->logLevel(m_event.m_threadId);
 
 	logger->addEvent(m_event);
 }
@@ -72,10 +75,10 @@ ScopedEvent::~ScopedEvent()
 //***************************************************************//
 
 UpdateLogger::UpdateLogger()
-	: m_level(-1)
-	, m_nbThreads(1)
+	: m_nbThreads(1)
 	, m_logging(false)
 {
+	m_logLevelMap.push_back(-1);
 }
 
 UpdateLogger* UpdateLogger::getInstance()
@@ -91,7 +94,8 @@ void UpdateLogger::startLog(PandaDocument *doc)
 	m_events.clear();
 	m_events.resize(m_nbThreads);
 	m_logging = true;
-	m_level = -1;
+
+	m_logLevelMap.fill(-1, m_nbThreads);
 
 	m_nodeStates.clear();
 	for(PandaObject* object : doc->getObjects())
@@ -130,17 +134,27 @@ void UpdateLogger::setNbThreads(int nbThreads)
 	}
 }
 
-QThreadStorage<int> threadId;
-
-void UpdateLogger::setThreadId(int id)
+typedef QMap<std::thread::id, int> ThreadIdMap;
+inline ThreadIdMap& getThreadIdMap()
 {
-	threadId.setLocalData(id);
+	static ThreadIdMap theMap;
+	return theMap;
+}
+
+void UpdateLogger::setupThread(int id)
+{
+	getThreadIdMap()[std::this_thread::get_id()] = id;
+}
+
+int UpdateLogger::getThreadId()
+{
+	return getThreadIdMap()[std::this_thread::get_id()];
 }
 
 void UpdateLogger::addEvent(EventData event)
 {
-	if(m_logging && threadId.hasLocalData())
-		m_events[threadId.localData()].push_back(event);
+	if(m_logging)
+		m_events[getThreadId()].push_back(event);
 }
 
 unsigned long long UpdateLogger::getTicksPerSec()

@@ -4,7 +4,6 @@
 #include <QString>
 #include <QVector>
 #include <QMap>
-#include <atomic>
 
 namespace panda
 {
@@ -37,6 +36,7 @@ public:
 	qint32 m_objectIndex, m_level;
 	bool m_dirtyStart, m_dirtyEnd;
 	const DataNode* m_node;
+	int m_threadId;
 };
 
 // To log an event, you only have to use this class
@@ -60,12 +60,13 @@ public:
 	typedef QMap<const DataNode*, bool> NodeStates;
 
 	static UpdateLogger* getInstance();
+	static int getThreadId();
 
 	void startLog(PandaDocument* doc);
 	void stopLog();
 
 	void setNbThreads(int nbThreads);
-	void setThreadId(int id);
+	void setupThread(int id);
 	const int nbThreads() const;
 
 	const UpdateEvents getEvents(int id) const;
@@ -80,12 +81,17 @@ protected:
 	friend class Scheduler;
 
 	void addEvent(EventData event);
+	int& logLevel(int threadId);
 
 	QVector<UpdateEvents> m_events, m_prevEvents;
-	int m_level, m_nbThreads;
+	int m_nbThreads;
 	bool m_logging;
 	NodeStates m_nodeStates, m_prevNodeStates;
+	QVector<int> m_logLevelMap;
 };
+
+inline int& UpdateLogger::logLevel(int threadId)
+{ return m_logLevelMap[threadId]; }
 
 } // namespace helper
 
