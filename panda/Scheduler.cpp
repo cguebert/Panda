@@ -173,10 +173,7 @@ void Scheduler::buildUpdateGraph()
 
 		PandaObject* object = dynamic_cast<PandaObject*>(node);
 		if(object)
-		{
-			if (!dynamic_cast<Layer*>(object) && !dynamic_cast<Renderer*>(object))	// TEMP
-				m_updateList.push_back(object);
-		}
+			m_updateList.push_back(object);
 	}
 
 	// Initialize the tasks list
@@ -189,7 +186,7 @@ void Scheduler::buildUpdateGraph()
 		m_updateTasks[i].index = i;
 		PandaObject* object = m_updateList[i];
 		m_updateTasks[i].object = object;
-		if(dynamic_cast<Layer*>(object) || dynamic_cast<Renderer*>(object))
+		if(dynamic_cast<Layer*>(object))
 			m_updateTasks[i].restrictToMainThread = true;
 		objectsIndexMap[object] = i;
 	}

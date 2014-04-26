@@ -101,7 +101,11 @@ UpdateLoggerView::UpdateLoggerView(QWidget *parent)
 void UpdateLoggerView::updateEvents()
 {
 	panda::helper::UpdateLogger* logger = panda::helper::UpdateLogger::getInstance();
-	UpdateEvents events = logger->getEvents(0);
+	UpdateEvents events;
+	m_nbThreads = logger->getNbThreads();
+	for(int i=0; i<m_nbThreads; ++i)
+		events += logger->getEvents(i);
+
 	if(events.isEmpty())
 		return;
 
@@ -114,13 +118,22 @@ void UpdateLoggerView::updateEvents()
 
 	m_minTime = events.front().m_startTime;
 	m_maxTime = events.front().m_endTime;
-	m_maxEventLevel = 0;
+	m_maxEventLevel.fill(0, m_nbThreads);
 	for(auto& event : events)
 	{
 		if(event.m_startTime < m_minTime) m_minTime = event.m_startTime;
 		if(event.m_endTime > m_maxTime) m_maxTime = event.m_endTime;
-		if(event.m_level > m_maxEventLevel) m_maxEventLevel = event.m_level;
+		if(event.m_level > m_maxEventLevel[event.m_threadId]) m_maxEventLevel[event.m_threadId] = event.m_level;
 	}
+
+	m_startingLevel.fill(0, m_nbThreads);
+	for(int i=1; i<m_nbThreads; ++i)
+		m_startingLevel[i] = m_startingLevel[i-1] + m_maxEventLevel[i-1] + 2;
+
+	m_requiredHeight = 0;
+	for(auto l : m_maxEventLevel)
+		m_requiredHeight += l + 1;
+	m_requiredHeight += m_nbThreads - 1;
 
 	m_selectedTime = m_minTime;
 	m_selectedIndex = 0;
@@ -139,8 +152,8 @@ void UpdateLoggerView::updateEvents()
 QSize UpdateLoggerView::minimumSizeHint() const
 {
     qreal y = view_margin * 2
-		+ (m_maxEventLevel + 1) * update_height
-		+ m_maxEventLevel * event_margin;
+		+ (m_requiredHeight + 1) * update_height
+		+ m_requiredHeight * event_margin;
     y = qMax(static_cast<qreal>(100.0), y);
     return QSize(300, y);
 }
@@ -189,7 +202,7 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 		const EventData& event = iter.previous();
 		qreal x1 = posOfTime(event.m_startTime);
 		qreal x2 = posOfTime(event.m_endTime);
-		qreal y = view_margin + event.m_level * (update_height + event_margin);
+		qreal y = view_margin + (event.m_level + m_startingLevel[event.m_threadId]) * (update_height + event_margin);
 
 		switch (event.m_type)
 		{
@@ -241,8 +254,18 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 		}
 	}
 
-	// Selection line
 	QRect viewRect = contentsRect();
+
+	// Threads separation lines
+	painter.setPen(QPen(Qt::black, 3));
+	for(int i=1; i<m_nbThreads; ++i)
+	{
+		int eventHeight = (update_height + event_margin);
+		int y = (m_startingLevel[i] - 1) * eventHeight + eventHeight/2 - 2;
+		painter.drawLine(0, y, viewRect.width(), y);
+	}
+
+	// Selection line
 	int x = posOfTime(m_selectedTime);
 	painter.setPen(Qt::red);
 	painter.drawLine(x, 0, x, viewRect.height());

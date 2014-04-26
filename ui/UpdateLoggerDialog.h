@@ -97,7 +97,9 @@ protected:
 	typedef panda::helper::UpdateLogger::NodeStates NodeStates;
 	NodeStates m_initialStates, m_currentStates;
 
-	qint32 m_maxEventLevel;
+	int m_nbThreads;
+	QVector<int> m_maxEventLevel, m_startingLevel;
+	int m_requiredHeight; // In number of events in the vertical dimension
 	qreal m_tps;	// Ticks per second
 	unsigned long long m_minTime, m_maxTime, m_selectedTime;
 	int m_selectedIndex;

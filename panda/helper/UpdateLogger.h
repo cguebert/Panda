@@ -33,10 +33,9 @@ public:
 	EventType m_type;
 	unsigned long long m_startTime, m_endTime;
 	QString m_dataName, m_objectName;
-	qint32 m_objectIndex, m_level;
+	int m_objectIndex, m_level, m_threadId;
 	bool m_dirtyStart, m_dirtyEnd;
 	const DataNode* m_node;
-	int m_threadId;
 };
 
 // To log an event, you only have to use this class
@@ -66,8 +65,8 @@ public:
 	void stopLog();
 
 	void setNbThreads(int nbThreads);
+	int getNbThreads() const;
 	void setupThread(int id);
-	const int nbThreads() const;
 
 	const UpdateEvents getEvents(int id) const;
 	const NodeStates getInitialNodeStates() const;
@@ -92,6 +91,9 @@ protected:
 
 inline int& UpdateLogger::logLevel(int threadId)
 { return m_logLevelMap[threadId]; }
+
+inline int UpdateLogger::getNbThreads() const
+{ return m_nbThreads; }
 
 } // namespace helper
 
