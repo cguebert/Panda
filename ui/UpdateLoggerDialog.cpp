@@ -147,6 +147,7 @@ void UpdateLoggerView::updateEvents()
 	m_currentStates = m_initialStates = logger->getInitialNodeStates();
 
 	update();
+	updateGeometry();
 }
 
 QSize UpdateLoggerView::minimumSizeHint() const
