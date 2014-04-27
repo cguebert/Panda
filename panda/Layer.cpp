@@ -146,6 +146,7 @@ void Layer::update()
 	{
 		for(const auto* input : renderer->getInputDatas())
 			input->updateIfDirty();
+		renderer->updateIfDirty();
 	}
 
 	updateLayer(parentDocument);

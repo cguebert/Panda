@@ -36,7 +36,7 @@ public:
 		color.getAccessor().push_back(Color::black());
 	}
 
-	void render()
+	void update()
 	{
 		const QVector<Point>& listCenter = center.getValue();
 		const QVector<PReal>& listRadius = radius.getValue();
@@ -46,26 +46,33 @@ public:
 		int nbRadius = listRadius.size();
 		int nbColor = listColor.size();
 
+		vertexBuffer.clear();
+		firstBuffer.clear();
+		countBuffer.clear();
+		colorBuffer.clear();
+
 		if(nbCenter && nbRadius && nbColor)
 		{
 			if(nbRadius < nbCenter) nbRadius = 1;
 			if(nbColor < nbCenter) nbColor = 1;
-			std::vector<PReal> vertices;
 
 			PReal PI2 = static_cast<PReal>(M_PI) * 2;
-			glEnableClientState(GL_VERTEX_ARRAY);
 			for(int i=0; i<nbCenter; ++i)
 			{
-				glColor4fv(listColor[i % nbColor].data());
-
 				PReal valRadius = listRadius[i % nbRadius];
 				int nbSeg = static_cast<int>(floor(valRadius * PI2));
 				if(nbSeg < 3) continue;
-				vertices.resize((nbSeg + 2) * 2);
 
-				Point valCenter = listCenter[i];
-				vertices[0] = valCenter.x;
-				vertices[1] = valCenter.y;
+				colorBuffer.push_back(listColor[i % nbColor]);
+
+				int nbVertices = vertexBuffer.size();
+				firstBuffer.push_back(nbVertices * 2);
+				countBuffer.push_back(nbSeg + 2);
+
+				vertexBuffer.resize(nbVertices + nbSeg + 2);
+
+				const Point& valCenter = listCenter[i];
+				vertexBuffer[nbVertices] = valCenter;
 
 				PReal angle = PI2 / nbSeg;
 				PReal ca = cos(angle), sa = sin(angle);
@@ -73,24 +80,42 @@ public:
 
 				for(int i=0; i<=nbSeg; ++i)
 				{
-					int index = (i+1)*2;
 					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-					vertices[index  ] = valCenter.x + pt.x;
-					vertices[index+1] = valCenter.y + pt.y;
+					vertexBuffer[nbVertices + 1 + i] = valCenter + pt;
 					dir = pt;
 				}
-
-				glVertexPointer(2, GL_PREAL, 0, vertices.data());
-				glDrawArrays(GL_TRIANGLE_FAN, 0, nbSeg+2);
 			}
-			glDisableClientState(GL_VERTEX_ARRAY);
 		}
+
+		cleanDirty();
+	}
+
+	void render()
+	{
+		if(vertexBuffer.empty())
+			return;
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+
+		int nb = countBuffer.size();
+		for(int i=0; i<nb; ++i)
+		{
+			glColor4fv(colorBuffer[i].data());
+
+			glVertexPointer(2, GL_PREAL, 0, vertexBuffer[firstBuffer[i] / 2].data());
+			glDrawArrays(GL_TRIANGLE_FAN, 0, countBuffer[i]);
+		}
+		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
 protected:
 	Data< QVector<Point> > center;
 	Data< QVector<PReal> > radius;
 	Data< QVector<Color> > color;
+
+	QVector<Point> vertexBuffer;
+	QVector<int> firstBuffer, countBuffer;
+	QVector<Color> colorBuffer;
 };
 
 int RenderDiskClass = RegisterObject<RenderDisk>("Render/Disk").setDescription("Draw a plain disk");
