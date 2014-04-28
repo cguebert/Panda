@@ -7,6 +7,7 @@
 #include <panda/types/Gradient.h>
 #include <panda/helper/GradientCache.h>
 
+#include <QOpenGLFunctions_1_4>
 #include <cmath>
 
 namespace panda {
@@ -66,7 +67,7 @@ public:
 				colorBuffer.push_back(listColor[i % nbColor]);
 
 				int nbVertices = vertexBuffer.size();
-				firstBuffer.push_back(nbVertices * 2);
+				firstBuffer.push_back(nbVertices);
 				countBuffer.push_back(nbSeg + 2);
 
 				vertexBuffer.resize(nbVertices + nbSeg + 2);
@@ -97,14 +98,22 @@ public:
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 
+/*		glColor4fv(colorBuffer.front().data());
+		glVertexPointer(2, GL_PREAL, 0, vertexBuffer.front().data());
+
+		QOpenGLFunctions_1_4* glFuncs = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_1_4>();
+		glFuncs->initializeOpenGLFunctions();
+		glFuncs->glMultiDrawArrays(GL_TRIANGLE_FAN, firstBuffer.data(), countBuffer.data(), countBuffer.size());
+*/
 		int nb = countBuffer.size();
 		for(int i=0; i<nb; ++i)
 		{
 			glColor4fv(colorBuffer[i].data());
 
-			glVertexPointer(2, GL_PREAL, 0, vertexBuffer[firstBuffer[i] / 2].data());
+			glVertexPointer(2, GL_PREAL, 0, vertexBuffer[firstBuffer[i]].data());
 			glDrawArrays(GL_TRIANGLE_FAN, 0, countBuffer[i]);
 		}
+
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
@@ -114,7 +123,8 @@ protected:
 	Data< QVector<Color> > color;
 
 	QVector<Point> vertexBuffer;
-	QVector<int> firstBuffer, countBuffer;
+	QVector<GLint> firstBuffer;
+	QVector<GLsizei> countBuffer;
 	QVector<Color> colorBuffer;
 };
 
@@ -146,37 +156,86 @@ public:
 		gradient.getAccessor().push_back(grad);
 	}
 
-	void render()
+	void update()
 	{
 		const QVector<Point>& listCenter = center.getValue();
 		const QVector<PReal>& listRadius = radius.getValue();
-		const QVector<Gradient>& listGradient = gradient.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
-		int nbGradient = listGradient.size();
 
-		if(nbCenter && nbRadius && nbGradient)
+		vertexBuffer.clear();
+		texCoordsBuffer.clear();
+		firstBuffer.clear();
+		countBuffer.clear();
+
+		if(nbCenter && nbRadius)
 		{
 			if(nbRadius < nbCenter) nbRadius = 1;
-			if(nbGradient < nbCenter) nbGradient = 1;
-			std::vector<PReal> vertices, texCoords;
-
-			glEnable(GL_TEXTURE_2D);
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 			PReal PI2 = static_cast<PReal>(M_PI) * 2;
 			for(int i=0; i<nbCenter; ++i)
 			{
 				PReal valRadius = listRadius[i % nbRadius];
 				int nbSeg = static_cast<int>(floor(valRadius * PI2));
-				if(nbSeg < 3) continue;
-				int nbPoints = (nbSeg + 2) * 2;
-				vertices.resize(nbPoints);
-				texCoords.resize(nbPoints);
+				if(nbSeg < 3)
+				{
+					firstBuffer.push_back(0);
+					countBuffer.push_back(0);
+					continue;
+				}
 
-				GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(ceil(valRadius)));
+				int nbVertices = vertexBuffer.size();
+				firstBuffer.push_back(nbVertices);
+				countBuffer.push_back(nbSeg + 2);
+
+				vertexBuffer.resize(nbVertices + nbSeg + 2);
+				texCoordsBuffer.resize(nbVertices + nbSeg + 2);
+
+				const Point& valCenter = listCenter[i];
+				vertexBuffer[nbVertices] = valCenter;
+				texCoordsBuffer[nbVertices] = Point(0, 0);
+
+				PReal angle = PI2 / nbSeg;
+				PReal ca = cos(angle), sa = sin(angle);
+				Point dir = Point(valRadius, 0);
+
+				for(int i=0; i<=nbSeg; ++i)
+				{
+					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
+					vertexBuffer[nbVertices + 1 + i] = valCenter + pt;
+					texCoordsBuffer[nbVertices + 1 + i] = Point(1, 1);
+					dir = pt;
+				}
+			}
+		}
+
+		cleanDirty();
+	}
+
+	void render()
+	{
+		const QVector<PReal>& listRadius = radius.getValue();
+		const QVector<Gradient>& listGradient = gradient.getValue();
+
+		int nbRadius = listRadius.size();
+		int nbGradient = listGradient.size();
+		int nbDisks = countBuffer.size();
+
+		if(nbDisks && nbGradient)
+		{
+			if(nbRadius < nbDisks) nbRadius = 1;
+			if(nbGradient < nbDisks) nbGradient = 1;
+
+			glColor3f(1, 1, 1);
+
+			glEnable(GL_TEXTURE_2D);
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			for(int i=0; i<nbDisks; ++i)
+			{
+				GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(ceil(listRadius[i % nbRadius])));
 				if(texture == -1)
 					continue;
 				glBindTexture(GL_TEXTURE_2D, texture);
@@ -185,28 +244,9 @@ public:
 				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-				Point valCenter = listCenter[i];
-				vertices[0] = valCenter.x;
-				vertices[1] = valCenter.y;
-				texCoords[0] = 0; texCoords[1] = 0;
-
-				PReal angle = PI2 / nbSeg;
-				PReal ca = cos(angle), sa = sin(angle);
-				Point dir = Point(valRadius, 0);
-
-				for(int i=0; i<=nbSeg; ++i)
-				{
-					int index = (i+1)*2;
-					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-					vertices[index  ] = valCenter.x + pt.x;
-					vertices[index+1] = valCenter.y + pt.y;
-					dir = pt;
-					texCoords[index] = 1; texCoords[index+1] = 0;
-				}
-
-				glVertexPointer(2, GL_PREAL, 0, vertices.data());
-				glTexCoordPointer(2, GL_PREAL, 0, texCoords.data());
-				glDrawArrays(GL_TRIANGLE_FAN, 0, nbSeg+2);
+				glVertexPointer(2, GL_PREAL, 0, vertexBuffer[firstBuffer[i]].data());
+				glTexCoordPointer(2, GL_PREAL, 0, texCoordsBuffer[firstBuffer[i]].data());
+				glDrawArrays(GL_TRIANGLE_FAN, 0, countBuffer[i]);
 			}
 			glDisableClientState(GL_VERTEX_ARRAY);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -218,6 +258,10 @@ protected:
 	Data< QVector<Point> > center;
 	Data< QVector<PReal> > radius;
 	Data< QVector<Gradient> > gradient;
+
+	QVector<Point> vertexBuffer, texCoordsBuffer;
+	QVector<GLint> firstBuffer;
+	QVector<GLsizei> countBuffer;
 };
 
 int RenderDisk_GradientClass = RegisterObject<RenderDisk_Gradient>("Render/Gradient disk").setDescription("Draw a disk filled with a radial gradient");
