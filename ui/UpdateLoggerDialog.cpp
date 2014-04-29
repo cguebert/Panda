@@ -85,6 +85,7 @@ UpdateLoggerView::UpdateLoggerView(QWidget *parent)
     , m_zoomFactor(1.0)
     , m_viewDelta(0.0)
 	, m_maxEventLevel(1)
+	, m_requiredHeight(0)
 	, m_selectedTime(0)
 	, m_selectedIndex(-1)
 {
