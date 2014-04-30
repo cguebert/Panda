@@ -709,6 +709,18 @@ PandaObject* PandaDocument::createGroupObject(QString groupPath)
 	return object;
 }
 
+void PandaDocument::setNodeDirty(DataNode* node)
+{
+	if(m_scheduler)
+		m_scheduler->setNodeDirty(node);
+}
+
+void PandaDocument::setNodeReady(DataNode* node)
+{
+	if(m_scheduler)
+		m_scheduler->setNodeReady(node);
+}
+
 PandaObject* PandaDocument::findObject(quint32 objectIndex)
 {
 	if(pandaObjectsMap.contains(objectIndex))

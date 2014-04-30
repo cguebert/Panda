@@ -91,6 +91,10 @@ public:
 	bool saveGroup(Group* group);
 	PandaObject* createGroupObject(QString groupPath);
 
+	// When an object is set to laterUpdate, use these functions to help the Scheduler
+	void setNodeDirty(DataNode* node); // Set the outputs to dirty before setting the value (so it doesn't propagate)
+	void setNodeReady(DataNode* node); // Launch the tasks connected to this node
+
 protected:
 	ObjectsList pandaObjects, selectedObjects;
 	QMap<quint32, PandaObject*> pandaObjectsMap;

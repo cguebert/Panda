@@ -26,6 +26,8 @@ public:
 
 		index.setOutput(true); // But not really connecting
 		index.setReadOnly(true);
+
+		laterUpdate = true;
 	}
 
 	void iterateRenderers()
@@ -34,7 +36,9 @@ public:
 		int nb = nbIterations.getValue();
 		for(int i=0; i<nb; ++i)
 		{
+			parentDocument->setNodeDirty(&index);
 			index.setValue(i);
+			parentDocument->setNodeReady(&index);
 
 			iter.toBack();
 			while(iter.hasPrevious())
@@ -45,6 +49,7 @@ public:
 #ifdef PANDA_LOG_EVENTS
 					helper::ScopedEvent log(helper::event_render, renderer);
 #endif
+					renderer->updateIfDirty();
 					renderer->render();
 					renderer->cleanDirty();
 				}

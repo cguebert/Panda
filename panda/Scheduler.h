@@ -30,6 +30,9 @@ public:
 	void setDirty();
 	void update();
 
+	void setNodeDirty(DataNode* node); // Set the outputs to dirty before setting the value (so it doesn't propagate)
+	void setNodeReady(DataNode* node); // Launch the tasks connected to this node
+
 protected:
 	void buildDirtyList();
 	void buildUpdateGraph();
@@ -41,6 +44,11 @@ protected:
 	void finishTask(const SchedulerTask *task); // Call by a thread when a task is finished
 	void readyTask(const SchedulerTask *task); // Add the task to the ready queue
 	void testForEnd();
+
+	QVector<DataNode*> computeConnected(QVector<DataNode*> nodes) const; // Get the outputs of the nodes, sorted by distance
+	QVector<DataNode*> computeConnected(DataNode* node) const;
+	QVector<int> getTasks(QVector<DataNode*> nodes) const;
+	void prepareLaterUpdate(DataNode* node);
 
 	struct SchedulerTask
 	{
@@ -55,9 +63,10 @@ protected:
 
 	PandaDocument* m_document;
 	QVector<DataNode*> m_setDirtyList; // At each step, all these nodes will always be dirty (connected to the mouse position or the animation time)
+	QMap< DataNode*, QPair<QVector<DataNode*>, QVector<int> > > m_laterUpdatesMap; // For nodes that will get dirty later (like Buffer or Replicator)
 
-	QVector<PandaObject*> m_updateList; // TEST: works only for monothread for now
 	QVector<SchedulerTask> m_updateTasks;
+	QMap<PandaObject*, int> m_objectsIndexMap;
 
 	QVector<SchedulerThread*> m_updateThreads;
 

@@ -83,12 +83,15 @@ public:
 	void changeDataName(BaseData* data, const QString& newName);
 	void emitModified();
 
+	bool doesLaterUpdate();
+
 protected:
 	QString name;
 	QList<BaseData*> datas;
 	QMap<QString, BaseData*> datasMap;
 	quint32 index;
 	bool doEmitModified, doEmitDirty, isInStep;
+	bool laterUpdate; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
 	mutable bool isUpdating;
 	PandaDocument* parentDocument;
 

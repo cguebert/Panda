@@ -40,6 +40,8 @@ public:
 											 "Value stored in the buffer"));
 
 		setupGenericObject(&generic, defList);
+
+		laterUpdate = true;
 	}
 
 	template <class T>
@@ -54,12 +56,20 @@ public:
 		if(resetValues)
 		{
 		//	if(dataInit->isDirty())
+			{
+				parentDocument->setNodeDirty(dataOutput);
 				dataOutput->getAccessor() = dataInit->getValue();
+				parentDocument->setNodeReady(dataOutput);
+			}
 		}
 		else
 		{
 		//	if(dataInput->isDirty())
+			{
+				parentDocument->setNodeDirty(dataOutput);
 				dataOutput->getAccessor() = dataInput->getValue();
+				parentDocument->setNodeReady(dataOutput);
+			}
 		}
 	}
 

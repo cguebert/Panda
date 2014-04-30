@@ -79,6 +79,8 @@ UpdateLogger::UpdateLogger()
 	, m_logging(false)
 {
 	m_logLevelMap.push_back(-1);
+	m_events.resize(m_nbThreads);
+	m_prevEvents.resize(m_nbThreads);
 }
 
 UpdateLogger* UpdateLogger::getInstance()

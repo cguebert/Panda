@@ -61,7 +61,7 @@ void Scheduler::stop()
 struct InputsListNode
 {
 	DataNode* node;
-	int distance; // number of nodes between this node and the document
+	int distance; // number of nodes between this node and the first node
 	QVector<int> parentsId;
 };
 
@@ -86,28 +86,23 @@ bool containsInput(const QVector<InputsListNode>& inputsList, int currentNodeId,
 	return false;
 }
 
-void Scheduler::buildDirtyList()
+QVector<DataNode*> Scheduler::computeConnected(QVector<DataNode*> nodes) const
 {
-	m_setDirtyList.clear();
 	QQueue<DataNode*> openSet;
 	QList<DataNode*> closedSet;
 	QVector<InputsListNode> inputsList;
 	QMap<DataNode*, int> indexMap;
 
-	// Initialize the open list with the 3 document datas we modify at each time step
-	const char* names[] = {"time", "mouse position", "mouse click"};
-	for(auto name : names)
+	// Initialize the open list with the input nodes
+	for(int i=0, nb=nodes.size(); i<nb; ++i)
 	{
-		BaseData* data = m_document->getData(name);
-		if(data)
-		{
-			openSet.enqueue(data);
-			indexMap[data] = inputsList.size();
-			InputsListNode node;
-			node.node = data;
-			node.distance = 0;
-			inputsList.push_back(node);
-		}
+		DataNode* node = nodes[i];
+		indexMap[node] = i;
+		openSet.enqueue(node);
+		InputsListNode iln;
+		iln.node = node;
+		iln.distance = 0;
+		inputsList.push_back(iln);
 	}
 
 	// Get all the connected nodes
@@ -121,8 +116,13 @@ void Scheduler::buildDirtyList()
 		closedSet.removeOne(node);
 		closedSet.push_back(node);
 
+		PandaObject* object = dynamic_cast<PandaObject*>(node);
+		if(object && object->doesLaterUpdate())
+			continue;
+
 		for(auto output : node->getOutputs())
 		{
+			// We detect when there are loops in the graph
 			if(!containsInput(inputsList, parentId, output))
 			{
 				// Move the node on the back of the open list
@@ -148,47 +148,68 @@ void Scheduler::buildDirtyList()
 					inputsList.push_back(node);
 				}
 			}
-			else
-			{
-			//	std::cout << "Detected a loop in the graph starting at: " << getName(output).toStdString() << std::endl;
-			}
 		}
 	}
 
-	m_setDirtyList = closedSet.toVector();
+	QVector<DataNode*> result = closedSet.toVector();
 
-	// Reverse the list (start from the node furthest from the document datas)
-	std::reverse(m_setDirtyList.begin(), m_setDirtyList.end());
+	// Reverse the list (start from the node furthest from the input nodes)
+	std::reverse(result.begin(), result.end());
+
+	return result;
+}
+
+QVector<DataNode*> Scheduler::computeConnected(DataNode* node) const
+{
+	QVector<DataNode*> nodes;
+	nodes.push_back(node);
+
+	return computeConnected(nodes);
+}
+
+QVector<int> Scheduler::getTasks(QVector<DataNode*> nodes) const
+{
+	QVector<int> tasks;
+	for(DataNode* node : nodes)
+	{
+		PandaObject* object = dynamic_cast<PandaObject*>(node);
+		if(object)
+			tasks.push_back(m_objectsIndexMap[object]);
+	}
+
+	return tasks;
+}
+
+void Scheduler::buildDirtyList()
+{
+	// Initialize the open list with the 3 document datas we modify at each time step
+	QVector<DataNode*> nodes;
+	const char* names[] = {"time", "mouse position", "mouse click"};
+	for(auto name : names)
+	{
+		BaseData* data = m_document->getData(name);
+		if(data)
+			nodes.push_back(data);
+	}
+
+	m_setDirtyList = computeConnected(nodes);
 }
 
 void Scheduler::buildUpdateGraph()
 {
-	// We copy the dirty list computed previously, reverse it and extract only objects
-	auto tempNodeList = m_setDirtyList;
-	std::reverse(tempNodeList.begin(), tempNodeList.end());
-	m_updateList.clear();
-	for(auto node : tempNodeList)
-	{
-		if(dynamic_cast<PandaDocument*>(node)) continue;
-
-		PandaObject* object = dynamic_cast<PandaObject*>(node);
-		if(object)
-			m_updateList.push_back(object);
-	}
-
 	// Initialize the tasks list
-	QMap<PandaObject*, int> objectsIndexMap;
-	int nb = m_updateList.size();
+	auto objects = m_document->getObjects();
+	int nb = objects.size();
 	m_updateTasks.clear();
 	m_updateTasks.resize(nb);
 	for(int i=0; i<nb; ++i)
 	{
 		m_updateTasks[i].index = i;
-		PandaObject* object = m_updateList[i];
+		PandaObject* object = objects[i];
 		m_updateTasks[i].object = object;
 		if(dynamic_cast<Layer*>(object))
 			m_updateTasks[i].restrictToMainThread = true;
-		objectsIndexMap[object] = i;
+		m_objectsIndexMap[object] = i;
 	}
 
 	// Compute outputs of each object
@@ -200,9 +221,9 @@ void Scheduler::buildUpdateGraph()
 			BaseData* data = dynamic_cast<BaseData*>(output);
 			if(object) // Some objects can be directly connected to others objects (Docks and Dockable for example)
 			{
-				if(objectsIndexMap.contains(object))
+				if(m_objectsIndexMap.contains(object))
 				{
-					int id = objectsIndexMap[object];
+					int id = m_objectsIndexMap[object];
 					task.outputs.push_back(id);
 					++m_updateTasks[id].nbInputs;
 				}
@@ -215,15 +236,27 @@ void Scheduler::buildUpdateGraph()
 					if(data2 && data2->getOwner())
 					{
 						PandaObject* object2 = data2->getOwner();
-						if(objectsIndexMap.contains(object2))
+						if(m_objectsIndexMap.contains(object2))
 						{
-							int id = objectsIndexMap[object2];
+							int id = m_objectsIndexMap[object2];
 							task.outputs.push_back(id);
 							++m_updateTasks[id].nbInputs;
 						}
 					}
 				}
 			}
+		}
+	}
+
+	// Take care of laterUpdate objects
+	m_laterUpdatesMap.clear();
+	for(int i=0; i<nb; ++i)
+	{
+		PandaObject* object = objects[i];
+		if(object->doesLaterUpdate())
+		{
+			for(DataNode* node : object->getOutputs())
+				prepareLaterUpdate(node);
 		}
 	}
 /*
@@ -290,11 +323,34 @@ void Scheduler::update()
 
 	if(!m_updateThreads.empty())
 		m_updateThreads[0]->run();
-	else
-	{
-		for(auto object : m_updateList)
-			object->updateIfDirty();
-	}
+}
+
+void Scheduler::prepareLaterUpdate(DataNode* node)
+{
+	auto connected = computeConnected(node);
+	m_laterUpdatesMap[node] = qMakePair(connected, getTasks(connected));
+/*
+	// Debug
+	std::cout << "Tasks for " << getName(node).toStdString() << std::endl;
+	for(auto taskId : m_laterUpdatesMap[node].second)
+		std::cout << m_updateTasks[taskId].object->getName().toStdString() << std::endl; */
+}
+
+void Scheduler::setNodeDirty(DataNode* dirtyNode)
+{
+	if(!m_laterUpdatesMap.contains(dirtyNode))
+		prepareLaterUpdate(dirtyNode);
+
+	auto pair = m_laterUpdatesMap[dirtyNode];
+	for(auto* node : pair.first)
+		node->doSetDirty();
+	for(auto taskId : pair.second)
+		++m_updateTasks[taskId].nbDirtyInputs;
+}
+
+void Scheduler::setNodeReady(DataNode* node)
+{
+	Q_UNUSED(node)
 }
 
 const Scheduler::SchedulerTask* Scheduler::getTask(bool mainThread)

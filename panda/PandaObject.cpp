@@ -16,6 +16,7 @@ PandaObject::PandaObject(QObject *parent)
 	, doEmitDirty(true)
 	, isInStep(false)
 	, isUpdating(false)
+	, laterUpdate(false)
 {
 	parentDocument = dynamic_cast<PandaDocument*>(parent);
 }
@@ -218,6 +219,11 @@ void PandaObject::emitModified()
 {
 	if(doEmitModified)
 		emit modified(this);
+}
+
+bool PandaObject::doesLaterUpdate()
+{
+	return laterUpdate;
 }
 
 } // namespace Panda
