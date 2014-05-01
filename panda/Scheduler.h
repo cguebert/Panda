@@ -40,9 +40,9 @@ protected:
 
 	friend class SchedulerThread;
 	struct SchedulerTask;
-	const SchedulerTask* getTask(bool mainThread); // Get the next ready task
-	void finishTask(const SchedulerTask *task); // Call by a thread when a task is finished
-	void readyTask(const SchedulerTask *task); // Add the task to the ready queue
+	SchedulerTask* getTask(bool mainThread); // Get the next ready task
+	void finishTask(SchedulerTask* task); // Call by a thread when a task is finished
+	void readyTask(const SchedulerTask* task); // Add the task to the ready queue
 	void testForEnd();
 
 	QVector<DataNode*> computeConnected(QVector<DataNode*> nodes) const; // Get the outputs of the nodes, sorted by distance
@@ -52,13 +52,14 @@ protected:
 
 	struct SchedulerTask
 	{
-		SchedulerTask() : nbInputs(0), restrictToMainThread(false), object(nullptr) { nbDirtyInputs = 0; }
-		int index;
-		int nbInputs;
-		std::atomic_int nbDirtyInputs; // When this equal 0, we can update the object
+		SchedulerTask() : restrictToMainThread(false), object(nullptr) { nbDirtyInputs = 0; }
+		std::atomic_int nbDirtyInputs; // When this equal 0 (and is dirty), we can update the object
+		int nbDirtyAtStart; // Value of nbDirtyInputs at the start of the timestep
+		bool dirty; // First this has to become true to update the object
+		bool dirtyAtStart; // Value of dirty at the start of the timestep
 		bool restrictToMainThread; // For Objects that use OpenGL, update them only on the main thread
-		PandaObject* object;
-		QVector<int> outputs; // Indices of other SchedulerTasks
+		PandaObject* object; // Object concerned by this task
+		QVector<int> outputs; // Indices of other SchedulerTasks	
 	};
 
 	PandaDocument* m_document;

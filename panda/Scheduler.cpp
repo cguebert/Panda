@@ -204,7 +204,6 @@ void Scheduler::buildUpdateGraph()
 	m_updateTasks.resize(nb);
 	for(int i=0; i<nb; ++i)
 	{
-		m_updateTasks[i].index = i;
 		PandaObject* object = objects[i];
 		m_updateTasks[i].object = object;
 		if(dynamic_cast<Layer*>(object))
@@ -225,7 +224,6 @@ void Scheduler::buildUpdateGraph()
 				{
 					int id = m_objectsIndexMap[object];
 					task.outputs.push_back(id);
-					++m_updateTasks[id].nbInputs;
 				}
 			}
 			else if(data)
@@ -235,17 +233,63 @@ void Scheduler::buildUpdateGraph()
 					BaseData* data2 = dynamic_cast<BaseData*>(node);
 					if(data2 && data2->getOwner())
 					{
-						PandaObject* object2 = data2->getOwner();
-						if(m_objectsIndexMap.contains(object2))
+						PandaObject* owner = data2->getOwner();
+						if(m_objectsIndexMap.contains(owner))
 						{
-							int id = m_objectsIndexMap[object2];
+							int id = m_objectsIndexMap[owner];
 							task.outputs.push_back(id);
-							++m_updateTasks[id].nbInputs;
 						}
 					}
 				}
 			}
 		}
+	}
+
+
+	for(auto& task : m_updateTasks)
+	{
+		task.nbDirtyAtStart = 0;
+		task.dirtyAtStart = false;
+	}
+
+	// Prepare the number of inputs that are dirty at the start of each time step
+	for(auto node : m_setDirtyList)
+	{
+		PandaObject* parent = dynamic_cast<PandaObject*>(node);
+		if(!parent || !m_objectsIndexMap.contains(parent))
+			continue;
+
+		m_updateTasks[m_objectsIndexMap[parent]].dirtyAtStart = true;
+
+		for(auto output : parent->getOutputs())
+		{
+			PandaObject* object = dynamic_cast<PandaObject*>(output);
+			BaseData* data = dynamic_cast<BaseData*>(output);
+			if(object) // Some objects can be directly connected to others objects (Docks and Dockable for example)
+			{
+				if(m_objectsIndexMap.contains(object))
+					++m_updateTasks[m_objectsIndexMap[object]].nbDirtyAtStart;
+			}
+			else if(data)
+			{
+				for(auto node : data->getOutputs())
+				{
+					BaseData* data2 = dynamic_cast<BaseData*>(node);
+					if(data2 && data2->getOwner())
+					{
+						PandaObject* owner = data2->getOwner();
+						if(m_objectsIndexMap.contains(owner))
+							++m_updateTasks[m_objectsIndexMap[owner]].nbDirtyAtStart;
+					}
+				}
+			}
+		}
+	}
+
+	for(auto& task : m_updateTasks)
+	{
+		if(task.nbDirtyAtStart > 0)
+			task.dirtyAtStart = true;
 	}
 
 	// Take care of laterUpdate objects
@@ -265,6 +309,8 @@ void Scheduler::buildUpdateGraph()
 	{
 		const auto& task = m_updateTasks[i];
 		std::cout << i << " " << task.object->getName().toStdString() << std::endl;
+		std::cout << "\tDirtyInputs: " << task.nbDirtyAtStart << "\t" << (task.dirtyAtStart?"dirtyAtStart":"") << std::endl;
+		std::cout << "\tOutputs: ";
 		for(auto output : task.outputs)
 			std::cout << output << " ";
 		std::cout << std::endl;
@@ -299,6 +345,12 @@ void Scheduler::setDirty()
 #endif
 	for(DataNode* node : m_setDirtyList)
 		node->doSetDirty(); // Warning: this bypasses PandaObject::setDirtyValue
+
+	for(auto& task : m_updateTasks)
+	{
+		task.nbDirtyInputs = task.nbDirtyAtStart;
+		task.dirty = task.dirtyAtStart;
+	}
 }
 
 void Scheduler::update()
@@ -310,11 +362,8 @@ void Scheduler::update()
 	m_nbReadyTasks = 0;
 
 	for(auto& task : m_updateTasks)
-		task.nbDirtyInputs = task.nbInputs;
-
-	for(auto& task : m_updateTasks)
 	{
-		if(!task.nbInputs)
+		if(task.dirty && !task.nbDirtyInputs)
 			readyTask(&task);
 	}
 
@@ -329,11 +378,6 @@ void Scheduler::prepareLaterUpdate(DataNode* node)
 {
 	auto connected = computeConnected(node);
 	m_laterUpdatesMap[node] = qMakePair(connected, getTasks(connected));
-/*
-	// Debug
-	std::cout << "Tasks for " << getName(node).toStdString() << std::endl;
-	for(auto taskId : m_laterUpdatesMap[node].second)
-		std::cout << m_updateTasks[taskId].object->getName().toStdString() << std::endl; */
 }
 
 void Scheduler::setNodeDirty(DataNode* dirtyNode)
@@ -345,7 +389,11 @@ void Scheduler::setNodeDirty(DataNode* dirtyNode)
 	for(auto* node : pair.first)
 		node->doSetDirty();
 	for(auto taskId : pair.second)
-		++m_updateTasks[taskId].nbDirtyInputs;
+	{
+		auto& task = m_updateTasks[taskId];
+		++task.nbDirtyInputs;
+		task.dirty = true;
+	}
 }
 
 void Scheduler::setNodeReady(DataNode* node)
@@ -353,7 +401,7 @@ void Scheduler::setNodeReady(DataNode* node)
 	Q_UNUSED(node)
 }
 
-const Scheduler::SchedulerTask* Scheduler::getTask(bool mainThread)
+Scheduler::SchedulerTask* Scheduler::getTask(bool mainThread)
 {
 	Scheduler::SchedulerTask* task;
 	if(mainThread)
@@ -368,12 +416,13 @@ const Scheduler::SchedulerTask* Scheduler::getTask(bool mainThread)
 	return nullptr;
 }
 
-void Scheduler::finishTask(const SchedulerTask* task)
+void Scheduler::finishTask(SchedulerTask* task)
 {
+	task->dirty = false;
 	for(auto output : task->outputs)
 	{
 		auto& outputTask = m_updateTasks[output];
-		if(! (--outputTask.nbDirtyInputs))
+		if(outputTask.dirty && (--outputTask.nbDirtyInputs) <= 0)
 			readyTask(&outputTask);
 	}
 	m_nbReadyTasks--;
@@ -455,7 +504,7 @@ void SchedulerThread::idle()
 
 void SchedulerThread::doWork()
 {
-	while(const Scheduler::SchedulerTask* task = m_scheduler->getTask(m_mainThread))
+	while(Scheduler::SchedulerTask* task = m_scheduler->getTask(m_mainThread))
 	{
 		task->object->updateIfDirty();
 		m_scheduler->finishTask(task);

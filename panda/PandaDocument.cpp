@@ -711,13 +711,13 @@ PandaObject* PandaDocument::createGroupObject(QString groupPath)
 
 void PandaDocument::setNodeDirty(DataNode* node)
 {
-	if(m_scheduler)
+	if(animMultithread && m_scheduler)
 		m_scheduler->setNodeDirty(node);
 }
 
 void PandaDocument::setNodeReady(DataNode* node)
 {
-	if(m_scheduler)
+	if(animMultithread && m_scheduler)
 		m_scheduler->setNodeReady(node);
 }
 
@@ -892,6 +892,7 @@ void PandaDocument::play(bool playing)
 		animTimer->stop();
 		if(animMultithread && m_scheduler)
 			m_scheduler->stop();
+		animMultithread = false;
 	}
 }
 
