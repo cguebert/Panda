@@ -18,6 +18,7 @@ namespace panda
 class PandaDocument;
 class PandaObject;
 class DataNode;
+class BaseData;
 class SchedulerThread;
 
 class Scheduler
@@ -30,12 +31,13 @@ public:
 	void setDirty();
 	void update();
 
-	void setNodeDirty(DataNode* node); // Set the outputs to dirty before setting the value (so it doesn't propagate)
-	void setNodeReady(DataNode* node); // Launch the tasks connected to this node
+	void setDataDirty(BaseData* data); // Set the outputs to dirty before setting the value (so it doesn't propagate)
+	void setDataReady(BaseData* data); // Launch the tasks connected to this node
 
 protected:
 	void buildDirtyList();
 	void buildUpdateGraph();
+	void computeStartValues();
 	void prepareThreads();
 
 	friend class SchedulerThread;
@@ -48,7 +50,7 @@ protected:
 	QVector<DataNode*> computeConnected(QVector<DataNode*> nodes) const; // Get the outputs of the nodes, sorted by distance
 	QVector<DataNode*> computeConnected(DataNode* node) const;
 	QVector<int> getTasks(QVector<DataNode*> nodes) const;
-	void prepareLaterUpdate(DataNode* node);
+	void prepareLaterUpdate(BaseData* data);
 
 	struct SchedulerTask
 	{
@@ -64,7 +66,7 @@ protected:
 
 	PandaDocument* m_document;
 	QVector<DataNode*> m_setDirtyList; // At each step, all these nodes will always be dirty (connected to the mouse position or the animation time)
-	QMap< DataNode*, QPair<QVector<DataNode*>, QVector<int> > > m_laterUpdatesMap; // For nodes that will get dirty later (like Buffer or Replicator)
+	QMap< BaseData*, QPair<QVector<DataNode*>, QVector<int> > > m_laterUpdatesMap; // For nodes that will get dirty later (like Buffer or Replicator)
 
 	QVector<SchedulerTask> m_updateTasks;
 	QMap<PandaObject*, int> m_objectsIndexMap;

@@ -36,9 +36,9 @@ public:
 		int nb = nbIterations.getValue();
 		for(int i=0; i<nb; ++i)
 		{
-			parentDocument->setNodeDirty(&index);
+			parentDocument->setDataDirty(&index);
 			index.setValue(i);
-			parentDocument->setNodeReady(&index);
+			parentDocument->setDataReady(&index);
 
 			iter.toBack();
 			while(iter.hasPrevious())

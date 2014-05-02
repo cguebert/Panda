@@ -709,16 +709,16 @@ PandaObject* PandaDocument::createGroupObject(QString groupPath)
 	return object;
 }
 
-void PandaDocument::setNodeDirty(DataNode* node)
+void PandaDocument::setDataDirty(BaseData* data)
 {
 	if(animMultithread && m_scheduler)
-		m_scheduler->setNodeDirty(node);
+		m_scheduler->setDataDirty(data);
 }
 
-void PandaDocument::setNodeReady(DataNode* node)
+void PandaDocument::setDataReady(BaseData* data)
 {
 	if(animMultithread && m_scheduler)
-		m_scheduler->setNodeReady(node);
+		m_scheduler->setDataReady(data);
 }
 
 PandaObject* PandaDocument::findObject(quint32 objectIndex)
