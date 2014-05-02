@@ -396,6 +396,19 @@ void Scheduler::update()
 		m_updateThreads[0]->run();
 }
 
+void Scheduler::waitForOtherTasks()
+{
+	while(m_nbReadyTasks > 1)
+	{
+		while(SchedulerTask* task = getTask(true))
+		{
+			task->dirty = false;
+			task->object->updateIfDirty();
+			finishTask(task);
+		}
+	}
+}
+
 void Scheduler::prepareLaterUpdate(BaseData* data)
 {
 	auto connected = computeConnected(data);

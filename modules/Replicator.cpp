@@ -36,9 +36,10 @@ public:
 		int nb = nbIterations.getValue();
 		for(int i=0; i<nb; ++i)
 		{
-			parentDocument->setDataDirty(&index);
+			parentDocument->setDataDirty(&index); // Preset the outputs as dirty
 			index.setValue(i);
-			parentDocument->setDataReady(&index);
+			parentDocument->setDataReady(&index); // Launch the computation
+			parentDocument->waitForOtherTasksToFinish(); // Wait for the end of the computation
 
 			iter.toBack();
 			while(iter.hasPrevious())
