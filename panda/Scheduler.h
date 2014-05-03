@@ -2,6 +2,7 @@
 #define SCHEDULER_H
 
 #include <atomic>
+#include <functional>
 
 #include <QMap>
 #include <QVector>
@@ -53,6 +54,9 @@ protected:
 	QVector<DataNode*> computeConnected(DataNode* node) const;
 	QVector<int> getTasks(QVector<DataNode*> nodes) const;
 	void prepareLaterUpdate(BaseData* data);
+
+	typedef std::function<void(PandaObject* object)> ObjectFunctor;
+	void forEachObjectOutput(PandaObject* object, ObjectFunctor func);
 
 	struct SchedulerTask
 	{

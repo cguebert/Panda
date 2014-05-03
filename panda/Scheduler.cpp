@@ -215,6 +215,47 @@ QList<PandaObject*> Scheduler::expandObjectsList(QList<PandaObject*> objects)
 	return objects;
 }
 
+void Scheduler::forEachObjectOutput(PandaObject* startObject, Scheduler::ObjectFunctor func)
+{
+	for(auto output : startObject->getOutputs())
+	{
+		PandaObject* object = dynamic_cast<PandaObject*>(output);
+		BaseData* data = dynamic_cast<BaseData*>(output);
+		if(object) // Some objects can be directly connected to others objects (Docks and Dockable for example)
+		{
+			func(object);
+		}
+		else if(data)
+		{
+			for(auto node : data->getOutputs())
+			{
+				PandaObject* object2 = dynamic_cast<PandaObject*>(node);
+				BaseData* data2 = dynamic_cast<BaseData*>(node);
+				if(object2)
+				{ // Output data directly connected to another object
+					func(object2);
+				}
+				else if(data2)
+				{
+					if(data2->getOwner() && !dynamic_cast<Group*>(data2->getOwner()))
+					{ // Most objects' data are connected to another object's data
+						func(data2->getOwner());
+					}
+					else
+					{ // Groups can have inside object's data connected to the group's data, connected to outside object's data.
+						for(auto node2 : data2->getOutputs())
+						{
+							BaseData* data3 = dynamic_cast<BaseData*>(node2);
+							if(data3 && data3->getOwner())
+								func(data3->getOwner());
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void Scheduler::buildUpdateGraph()
 {
 	// Initialize the tasks list
@@ -234,63 +275,10 @@ void Scheduler::buildUpdateGraph()
 	// Compute outputs of each object
 	for(auto& task : m_updateTasks)
 	{
-		for(auto output : task.object->getOutputs())
-		{
-			PandaObject* object = dynamic_cast<PandaObject*>(output);
-			BaseData* data = dynamic_cast<BaseData*>(output);
-			if(object) // Some objects can be directly connected to others objects (Docks and Dockable for example)
-			{
-				if(m_objectsIndexMap.contains(object))
-				{
-					int id = m_objectsIndexMap[object];
-					task.outputs.push_back(id);
-				}
-			}
-			else if(data)
-			{
-				for(auto node : data->getOutputs())
-				{
-					PandaObject* object2 = dynamic_cast<PandaObject*>(node);
-					BaseData* data2 = dynamic_cast<BaseData*>(node);
-					if(object2)
-					{
-						if(m_objectsIndexMap.contains(object2))
-						{
-							int id = m_objectsIndexMap[object2];
-							task.outputs.push_back(id);
-						}
-					}
-					else if(data2)
-					{
-						if(data2->getOwner() && !dynamic_cast<Group*>(data2->getOwner()))
-						{
-							PandaObject* owner = data2->getOwner();
-							if(m_objectsIndexMap.contains(owner))
-							{
-								int id = m_objectsIndexMap[owner];
-								task.outputs.push_back(id);
-							}
-						}
-						else
-						{ // Groups can have inside object's data connected to the group's data, connected to outside object's data.
-							for(auto node2 : data2->getOutputs())
-							{
-								BaseData* data3 = dynamic_cast<BaseData*>(node2);
-								if(data3 && data3->getOwner())
-								{
-									PandaObject* owner = data3->getOwner();
-									if(m_objectsIndexMap.contains(owner))
-									{
-										int id = m_objectsIndexMap[owner];
-										task.outputs.push_back(id);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		forEachObjectOutput(task.object, [this, &task](PandaObject* object){
+			if(m_objectsIndexMap.contains(object))
+				task.outputs.push_back(m_objectsIndexMap[object]);
+		});
 	}
 
 	// Compute dirty flag and number of dirty inputs for objects at the start of the timestep
@@ -338,51 +326,10 @@ void Scheduler::computeStartValues()
 
 		m_updateTasks[m_objectsIndexMap[object]].dirtyAtStart = true;
 
-		for(auto output : object->getOutputs())
-		{
-			PandaObject* outputObject = dynamic_cast<PandaObject*>(output);
-			BaseData* outputData = dynamic_cast<BaseData*>(output);
-			if(outputObject) // Some objects can be directly connected to others objects (Docks and Dockable for example)
-			{
-				if(m_objectsIndexMap.contains(outputObject))
-					++m_updateTasks[m_objectsIndexMap[outputObject]].nbDirtyAtStart;
-			}
-			else if(outputData)
-			{
-				for(auto node : outputData->getOutputs())
-				{
-					PandaObject* object2 = dynamic_cast<PandaObject*>(node);
-					BaseData* data2 = dynamic_cast<BaseData*>(node);
-					if(object2)
-					{
-						if(m_objectsIndexMap.contains(object2))
-							++m_updateTasks[m_objectsIndexMap[object2]].nbDirtyAtStart;
-					}
-					else if(data2)
-					{
-						if(data2->getOwner() && !dynamic_cast<Group*>(data2->getOwner()))
-						{
-							PandaObject* owner = data2->getOwner();
-							if(m_objectsIndexMap.contains(owner))
-								++m_updateTasks[m_objectsIndexMap[owner]].nbDirtyAtStart;
-						}
-						else
-						{
-							for(auto node2 : data2->getOutputs())
-							{
-								BaseData* data3 = dynamic_cast<BaseData*>(node2);
-								if(data3 && data3->getOwner())
-								{
-									PandaObject* owner = data3->getOwner();
-									if(m_objectsIndexMap.contains(owner))
-										++m_updateTasks[m_objectsIndexMap[owner]].nbDirtyAtStart;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		forEachObjectOutput(object, [this](PandaObject* object){
+			if(m_objectsIndexMap.contains(object))
+				++m_updateTasks[m_objectsIndexMap[object]].nbDirtyAtStart;
+		});
 	}
 
 	for(auto& task : m_updateTasks)
