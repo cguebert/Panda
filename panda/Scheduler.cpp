@@ -396,11 +396,11 @@ void Scheduler::update()
 		m_updateThreads[0]->run();
 }
 
-void Scheduler::waitForOtherTasks()
+void Scheduler::waitForOtherTasks(bool mainThread)
 {
 	while(m_nbReadyTasks > 1)
 	{
-		while(SchedulerTask* task = getTask(true))
+		while(SchedulerTask* task = getTask(mainThread))
 		{
 			task->dirty = false;
 			task->object->updateIfDirty();

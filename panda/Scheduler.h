@@ -31,7 +31,7 @@ public:
 
 	void setDirty();
 	void update();
-	void waitForOtherTasks(); // Work until there is only 1 task running (useful for the Replicator)
+	void waitForOtherTasks(bool mainThread); // Work until there is only 1 task running (useful for the Replicator)
 
 	void setDataDirty(BaseData* data); // Set the outputs to dirty before setting the value (so it doesn't propagate)
 	void setDataReady(BaseData* data); // Launch the tasks connected to this node

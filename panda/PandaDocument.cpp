@@ -721,10 +721,10 @@ void PandaDocument::setDataReady(BaseData* data)
 		m_scheduler->setDataReady(data);
 }
 
-void PandaDocument::waitForOtherTasksToFinish()
+void PandaDocument::waitForOtherTasksToFinish(bool mainThread)
 {
 	if(animMultithread && m_scheduler)
-		m_scheduler->waitForOtherTasks();
+		m_scheduler->waitForOtherTasks(mainThread);
 }
 
 PandaObject* PandaDocument::findObject(quint32 objectIndex)
