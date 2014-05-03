@@ -46,13 +46,13 @@ public:
 
 	PandaObject* createObject(QString registryName);
 	int getNbObjects() const;
-	const ObjectsList getObjects() const;
+	const ObjectsList& getObjects() const;
 
 	PandaObject* getCurrentSelectedObject();
 	void setCurrentSelectedObject(PandaObject* object);
 	bool isSelected(PandaObject* object) const;
 	int getNbSelected() const;
-	const ObjectsList getSelection() const;
+	const ObjectsList& getSelection() const;
 
 	types::Color getBackgroundColor();
 	void setBackgroundColor(types::Color color);
@@ -160,7 +160,7 @@ public slots:
 inline int PandaDocument::getNbObjects() const
 { return pandaObjects.size(); }
 
-inline const PandaDocument::ObjectsList PandaDocument::getObjects() const
+inline const PandaDocument::ObjectsList& PandaDocument::getObjects() const
 { return pandaObjects; }
 
 inline bool PandaDocument::isSelected(PandaObject* object) const
@@ -169,7 +169,7 @@ inline bool PandaDocument::isSelected(PandaObject* object) const
 inline int PandaDocument::getNbSelected() const
 { return selectedObjects.size(); }
 
-inline const PandaDocument::ObjectsList PandaDocument::getSelection() const
+inline const PandaDocument::ObjectsList& PandaDocument::getSelection() const
 { return selectedObjects; }
 
 inline types::Color PandaDocument::getBackgroundColor()

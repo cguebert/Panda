@@ -34,10 +34,13 @@ public:
 
 	QString getGroupName();
 
+	typedef QList<PandaObject*> ObjectsList;
+	const ObjectsList& getObjects() const;
+
 protected:
 	Data<QString> groupName;
 
-	QList<PandaObject*> objects;
+	ObjectsList objects;
 	QMap<PandaObject*, QPointF> positions;
 	QList< QSharedPointer<BaseData> > groupDatas;
 

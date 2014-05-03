@@ -1,6 +1,7 @@
 #include <panda/Scheduler.h>
 #include <panda/PandaDocument.h>
 #include <panda/Renderer.h>
+#include <panda/Group.h>
 
 #include <QList>
 #include <QQueue>
@@ -197,10 +198,27 @@ void Scheduler::buildDirtyList()
 	m_setDirtyList = computeConnected(nodes);
 }
 
+QList<PandaObject*> Scheduler::expandObjectsList(QList<PandaObject*> objects)
+{
+	int i=0;
+	while(i < objects.size())
+	{
+		Group* group = dynamic_cast<Group*>(objects[i]);
+		if(group)
+		{
+			objects.removeAt(i);
+			objects += group->getObjects();
+		}
+		else
+			++i;
+	}
+	return objects;
+}
+
 void Scheduler::buildUpdateGraph()
 {
 	// Initialize the tasks list
-	auto objects = m_document->getObjects();
+	auto objects = expandObjectsList(m_document->getObjects());
 	int nb = objects.size();
 	m_updateTasks.clear();
 	m_updateTasks.resize(nb);
@@ -270,7 +288,7 @@ void Scheduler::buildUpdateGraph()
 				prepareLaterUpdate(data);
 		}
 	}
-/*
+
 	// Debug
 	for(int i=0; i<nb; ++i)
 	{
@@ -281,7 +299,7 @@ void Scheduler::buildUpdateGraph()
 		for(auto output : task.outputs)
 			std::cout << output << " ";
 		std::cout << std::endl;
-	} */
+	}
 }
 
 void Scheduler::computeStartValues()

@@ -48,6 +48,7 @@ protected:
 	void readyTask(const SchedulerTask* task); // Add the task to the ready queue
 	void testForEnd();
 
+	QList<PandaObject*> expandObjectsList(QList<PandaObject*> objects);
 	QVector<DataNode*> computeConnected(QVector<DataNode*> nodes) const; // Get the outputs of the nodes, sorted by distance
 	QVector<DataNode*> computeConnected(DataNode* node) const;
 	QVector<int> getTasks(QVector<DataNode*> nodes) const;

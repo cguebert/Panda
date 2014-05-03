@@ -531,6 +531,11 @@ QString Group::getGroupName()
 	return groupName.getValue();
 }
 
+const Group::ObjectsList& Group::getObjects() const
+{
+	return objects;
+}
+
 int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many object into a single one").setHidden(true);
 
 //*************************************************************************//
