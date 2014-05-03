@@ -260,13 +260,32 @@ void Scheduler::buildUpdateGraph()
 							task.outputs.push_back(id);
 						}
 					}
-					else if(data2 && data2->getOwner())
+					else if(data2)
 					{
-						PandaObject* owner = data2->getOwner();
-						if(m_objectsIndexMap.contains(owner))
+						if(data2->getOwner() && !dynamic_cast<Group*>(data2->getOwner()))
 						{
-							int id = m_objectsIndexMap[owner];
-							task.outputs.push_back(id);
+							PandaObject* owner = data2->getOwner();
+							if(m_objectsIndexMap.contains(owner))
+							{
+								int id = m_objectsIndexMap[owner];
+								task.outputs.push_back(id);
+							}
+						}
+						else
+						{ // Groups can have inside object's data connected to the group's data, connected to outside object's data.
+							for(auto node2 : data2->getOutputs())
+							{
+								BaseData* data3 = dynamic_cast<BaseData*>(node2);
+								if(data3 && data3->getOwner())
+								{
+									PandaObject* owner = data3->getOwner();
+									if(m_objectsIndexMap.contains(owner))
+									{
+										int id = m_objectsIndexMap[owner];
+										task.outputs.push_back(id);
+									}
+								}
+							}
 						}
 					}
 				}
@@ -288,7 +307,7 @@ void Scheduler::buildUpdateGraph()
 				prepareLaterUpdate(data);
 		}
 	}
-
+/*
 	// Debug
 	for(int i=0; i<nb; ++i)
 	{
@@ -299,7 +318,7 @@ void Scheduler::buildUpdateGraph()
 		for(auto output : task.outputs)
 			std::cout << output << " ";
 		std::cout << std::endl;
-	}
+	}*/
 }
 
 void Scheduler::computeStartValues()
@@ -339,11 +358,27 @@ void Scheduler::computeStartValues()
 						if(m_objectsIndexMap.contains(object2))
 							++m_updateTasks[m_objectsIndexMap[object2]].nbDirtyAtStart;
 					}
-					else if(data2 && data2->getOwner())
+					else if(data2)
 					{
-						PandaObject* owner = data2->getOwner();
-						if(m_objectsIndexMap.contains(owner))
-							++m_updateTasks[m_objectsIndexMap[owner]].nbDirtyAtStart;
+						if(data2->getOwner() && !dynamic_cast<Group*>(data2->getOwner()))
+						{
+							PandaObject* owner = data2->getOwner();
+							if(m_objectsIndexMap.contains(owner))
+								++m_updateTasks[m_objectsIndexMap[owner]].nbDirtyAtStart;
+						}
+						else
+						{
+							for(auto node2 : data2->getOutputs())
+							{
+								BaseData* data3 = dynamic_cast<BaseData*>(node2);
+								if(data3 && data3->getOwner())
+								{
+									PandaObject* owner = data3->getOwner();
+									if(m_objectsIndexMap.contains(owner))
+										++m_updateTasks[m_objectsIndexMap[owner]].nbDirtyAtStart;
+								}
+							}
+						}
 					}
 				}
 			}
