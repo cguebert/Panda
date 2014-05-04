@@ -43,7 +43,7 @@ public:
 
 	virtual QSize getObjectSize();
 	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr);
-	bool getDataRect(panda::BaseData* data, QRectF& rect);
+	bool getDataRect(const panda::BaseData *data, QRectF& rect);
 
 	QRectF getObjectArea() const;
 	QPointF getPosition() const;

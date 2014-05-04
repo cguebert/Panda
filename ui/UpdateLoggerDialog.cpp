@@ -253,6 +253,19 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 				m_eventRects.push_back(EventRect(event, rect));
 				break;
 			}
+			case panda::helper::event_custom:
+			{
+				QColor c = QColor(196, 196, 196);
+				if(event.m_objectIndex > 0)
+					c = getColorForStatus(event.m_objectIndex, 0.5);
+				painter.setBrush(QBrush(c));
+				painter.setPen(c);
+
+				QRectF rect(x1, y, x2 - x1, update_height);
+				painter.drawRect(rect);
+				m_eventRects.push_back(EventRect(event, rect));
+				break;
+			}
 		}
 	}
 
@@ -441,24 +454,15 @@ void UpdateLoggerView::keyPressEvent(QKeyEvent* event)
 
 QString UpdateLoggerView::eventDescription(const EventData& event)
 {
-	QString display;
 	switch (event.m_type)
 	{
-		case panda::helper::event_update:		{ display = QString("Update of %1").arg(event.m_objectName);	break;	}
-		case panda::helper::event_getValue:		{ display = QString("GetValue of %1").arg(event.m_dataName);	break;	}
-		case panda::helper::event_render:		{ display = QString("Render of %1").arg(event.m_objectName);	break;	}
-		case panda::helper::event_copyValue:	{ display = QString("Copy to data: %1").arg(event.m_dataName);	break;	}
-		case panda::helper::event_setDirty:
-		{
-			if(!event.m_dataName.isEmpty())
-				display = QString("SetDirty of %1 / %2").arg(event.m_objectName).arg(event.m_dataName);
-			else
-				display = QString("SetDirty of %1").arg(event.m_objectName);
-			break;
-		}
+	case panda::helper::event_update:		return QString("Update of %1").arg(event.m_text);
+	case panda::helper::event_getValue:		return QString("GetValue of %1").arg(event.m_text);
+	case panda::helper::event_render:		return QString("Render of %1").arg(event.m_text);
+	case panda::helper::event_copyValue:	return QString("Copy to data: %1").arg(event.m_text);
+	case panda::helper::event_setDirty:		return QString("SetDirty of %1").arg(event.m_text);
+	default:								return event.m_text;
 	}
-
-	return display;
 }
 
 qreal UpdateLoggerView::posOfTime(unsigned long long time)

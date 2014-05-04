@@ -753,6 +753,11 @@ void PandaDocument::onDirtyObject(panda::PandaObject* object)
 
 void PandaDocument::update()
 {
+#ifdef PANDA_LOG_EVENTS
+	{
+	helper::ScopedEvent log1("prepare update");
+#endif
+
 	if(!renderFrameBuffer || renderFrameBuffer->size() != getRenderSize())
 	{
 		renderFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
@@ -761,6 +766,10 @@ void PandaDocument::update()
 
 	helper::GradientCache::getInstance()->resetUsedFlag();
 	helper::ShaderCache::getInstance()->resetUsedFlag();
+
+#ifdef PANDA_LOG_EVENTS
+	}
+#endif
 
 	if(animMultithread && m_scheduler)
 		m_scheduler->update();
@@ -774,6 +783,10 @@ void PandaDocument::update()
 	}
 
 	render();
+
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log2("post render");
+#endif
 
 	helper::GradientCache::getInstance()->clearUnused();
 	helper::ShaderCache::getInstance()->clearUnused();
@@ -794,6 +807,11 @@ QSharedPointer<QOpenGLFramebufferObject> PandaDocument::getFBO()
 
 void PandaDocument::render()
 {
+#ifdef PANDA_LOG_EVENTS
+	{
+		helper::ScopedEvent log1("prepareRender");
+#endif
+
 	renderFrameBuffer->bind();
 	glViewport(0, 0, renderFrameBuffer->width(), renderFrameBuffer->height());
 
@@ -807,6 +825,10 @@ void PandaDocument::render()
 	glClearColor(col.r, col.g, col.b, col.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+#ifdef PANDA_LOG_EVENTS
+	}
+#endif
+
 	defaultLayer->mergeLayer();
 
 	for(auto obj : pandaObjects)
@@ -815,6 +837,10 @@ void PandaDocument::render()
 		if(layer)
 			layer->mergeLayer();
 	}
+
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log2("release FBO");
+#endif
 
 	renderFrameBuffer->release();
 }

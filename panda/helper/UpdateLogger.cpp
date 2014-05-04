@@ -12,11 +12,12 @@ namespace helper
 {
 
 ScopedEvent::ScopedEvent(EventType type, const PandaObject *object)
+	: m_changeLevel(true)
 {
 	m_event.m_type = type;
 	m_event.m_node = object;
 	m_event.m_objectIndex = object->getIndex();
-	m_event.m_objectName = object->getName();
+	m_event.m_text = object->getName();
 	m_event.m_threadId = UpdateLogger::getThreadId();
 	m_event.m_level = ++UpdateLogger::getInstance()->logLevel(m_event.m_threadId);
 
@@ -25,18 +26,21 @@ ScopedEvent::ScopedEvent(EventType type, const PandaObject *object)
 }
 
 ScopedEvent::ScopedEvent(EventType type, const BaseData* data)
+	: m_changeLevel(false)
 {
 	m_event.m_type = type;
 	m_event.m_node = data;
-	m_event.m_dataName = data->getName();
-	PandaObject* object = data->getOwner();
-	if(object)
+	PandaObject* owner = data->getOwner();
+	if(owner)
 	{
-		m_event.m_objectIndex = object->getIndex();
-		m_event.m_objectName = object->getName();
+		m_event.m_objectIndex = owner->getIndex();
+		m_event.m_text = owner->getName() + "/" + data->getName();
 	}
 	else
+	{
 		m_event.m_objectIndex = -1;
+		m_event.m_text = data->getName();
+	}
 	m_event.m_threadId = UpdateLogger::getThreadId();
 	m_event.m_level = UpdateLogger::getInstance()->logLevel(m_event.m_threadId);
 
@@ -44,14 +48,33 @@ ScopedEvent::ScopedEvent(EventType type, const BaseData* data)
 	m_event.m_dirtyStart = data->isDirty();
 }
 
-ScopedEvent::ScopedEvent(EventType type, int index, QString name)
+ScopedEvent::ScopedEvent(QString text, DataNode* node)
+	: m_changeLevel(true)
 {
-	m_event.m_type = type;
-	m_event.m_node = nullptr;
-	m_event.m_objectIndex = index;
-	m_event.m_objectName = name;
+	m_event.m_type = event_custom;
+	m_event.m_node = node;
+	m_event.m_text = text;
 	m_event.m_threadId = UpdateLogger::getThreadId();
 	m_event.m_level = ++UpdateLogger::getInstance()->logLevel(m_event.m_threadId);
+
+	if(node)
+	{
+		PandaObject* object = dynamic_cast<PandaObject*>(node);
+		if(object)
+			m_event.m_objectIndex = object->getIndex();
+		else
+		{
+			BaseData* data = dynamic_cast<BaseData*>(node);
+			if(data)
+			{
+				PandaObject* owner = data->getOwner();
+				if(owner)
+					m_event.m_objectIndex = owner->getIndex();
+			}
+		}
+	}
+	else
+		m_event.m_objectIndex = -1;
 
 	m_event.m_startTime = UpdateLogger::getTime();
 	m_event.m_dirtyStart = true;
@@ -66,7 +89,7 @@ ScopedEvent::~ScopedEvent()
 	else
 		m_event.m_dirtyEnd = false;
 
-	if(m_event.m_dataName.isEmpty())
+	if(m_changeLevel)
 		--logger->logLevel(m_event.m_threadId);
 
 	logger->addEvent(m_event);

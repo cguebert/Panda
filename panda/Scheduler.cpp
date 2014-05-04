@@ -363,7 +363,7 @@ void Scheduler::prepareThreads()
 void Scheduler::setDirty()
 {
 #ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log(helper::event_update, -1, "Scheduler/SetDirty");
+	helper::ScopedEvent log("Scheduler/setDirty");
 #endif
 	for(DataNode* node : m_setDirtyList)
 		node->doSetDirty(); // Warning: this bypasses PandaObject::setDirtyValue
@@ -378,7 +378,7 @@ void Scheduler::setDirty()
 void Scheduler::update()
 {
 #ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log(helper::event_update, -1, "Scheduler");
+	helper::ScopedEvent log("Scheduler/update");
 #endif
 
 	m_nbReadyTasks = 0;
@@ -443,7 +443,7 @@ void Scheduler::prepareLaterUpdate(BaseData* data)
 void Scheduler::setDataDirty(BaseData* dirtyData)
 {
 #ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log(helper::event_update, -1, "Scheduler/setDataDirty");
+	helper::ScopedEvent log("Scheduler/setDataDirty");
 #endif
 
 	if(!m_laterUpdatesMap.contains(dirtyData))
@@ -475,7 +475,7 @@ void Scheduler::setDataDirty(BaseData* dirtyData)
 void Scheduler::setDataReady(BaseData* data)
 {
 #ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log(helper::event_update, -1, "Scheduler/setDataReady");
+	helper::ScopedEvent log("Scheduler/setDataReady");
 #endif
 
 	if(!m_laterUpdatesMap.contains(data))

@@ -90,7 +90,7 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* cent
 	return nullptr;
 }
 
-bool ObjectDrawStruct::getDataRect(panda::BaseData* data, QRectF& rect)
+bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect)
 {
 	for(QList<RectDataPair>::iterator iter=datas.begin(); iter!=datas.end(); ++iter)
 	{

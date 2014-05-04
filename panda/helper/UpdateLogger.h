@@ -19,11 +19,12 @@ namespace helper
 
 enum EventType
 {
-	event_update,
-	event_getValue,
-	event_render,
-	event_copyValue,
-	event_setDirty
+	event_update,	// update of a DataNode
+	event_getValue, // getValue of a Data
+	event_render,	// render of a Renderer
+	event_copyValue,// When it is necessary to copy a value during getValue
+	event_setDirty, // setDirty of a DataNode
+	event_custom	// For any other event we want to time, that does not have to be connected to a DataNode
 };
 
 // This is what will actually be stored
@@ -32,7 +33,7 @@ struct EventData
 public:
 	EventType m_type;
 	unsigned long long m_startTime, m_endTime;
-	QString m_dataName, m_objectName;
+	QString m_text;
 	int m_objectIndex, m_level, m_threadId;
 	bool m_dirtyStart, m_dirtyEnd;
 	const DataNode* m_node;
@@ -44,11 +45,12 @@ class ScopedEvent
 public:
 	ScopedEvent(EventType type, const PandaObject* object);
 	ScopedEvent(EventType type, const BaseData* data);
-	ScopedEvent(EventType type, int index, QString name);
+	ScopedEvent(QString text, DataNode* node = nullptr);
 	~ScopedEvent();
 
 private:
 	EventData m_event;
+	bool m_changeLevel; // Do we have to change the level back in the destructor
 };
 
 // Container for all the events

@@ -259,10 +259,8 @@ void GraphView::paintLogDebug(QPainter* painter)
 				painter->setBrush(QColor(128, 128, 255, 128));
 				QRectF area;
 
-				panda::BaseData* data = nullptr;
 				bool drawData = false;
-				if(!event->m_dataName.isEmpty())
-					data = object->getData(event->m_dataName);
+				const panda::BaseData* data = dynamic_cast<const panda::BaseData*>(event->m_node);
 				if(data)
 					drawData = ods->getDataRect(data, area);
 				if(!drawData)

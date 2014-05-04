@@ -16,6 +16,11 @@ namespace panda
 
 void BaseLayer::updateLayer(PandaDocument* doc)
 {
+#ifdef PANDA_LOG_EVENTS
+	{
+		helper::ScopedEvent log1("prepareLayer");
+#endif
+
 	QSize renderSize = doc->getRenderSize();
 	if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)
 	{
@@ -48,7 +53,15 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+#ifdef PANDA_LOG_EVENTS
+	}
+#endif
+
 	iterateRenderers();
+
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log2("blitFramebuffer");
+#endif
 
 	glDisable(GL_BLEND);
 
@@ -78,6 +91,10 @@ void BaseLayer::mergeLayer()
 	PReal opacity = getOpacity();
 	if(!opacity)
 		return;
+
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log("mergeLayer");
+#endif
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, displayFrameBuffer->texture());
