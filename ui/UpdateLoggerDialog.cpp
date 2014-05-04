@@ -71,9 +71,9 @@ const panda::helper::EventData* UpdateLoggerDialog::getSelectedEvent() const
 	return m_view->getSelectedEvent();
 }
 
-bool UpdateLoggerDialog::isNodeDirty(const panda::DataNode* node) const
+const panda::helper::UpdateLogger::NodeStates UpdateLoggerDialog::getNodeStates() const
 {
-	return m_view->isNodeDirty(node);
+	return m_view->getNodeStates();
 }
 
 //***************************************************************//
@@ -173,9 +173,9 @@ const panda::helper::EventData* UpdateLoggerView::getSelectedEvent() const
 	return &m_events[m_sortedEvents[m_selectedIndex]];
 }
 
-bool UpdateLoggerView::isNodeDirty(const panda::DataNode* node) const
+const panda::helper::UpdateLogger::NodeStates UpdateLoggerView::getNodeStates() const
 {
-	return m_currentStates[node];
+	return m_currentStates;
 }
 
 void UpdateLoggerView::resetZoom()
@@ -506,31 +506,20 @@ bool UpdateLoggerView::getEventAtPos(QPointF pos, QRectF& rect, const EventData*
     return false;
 }
 
-class EventsComparator
-{
-public:
-	EventsComparator(panda::helper::UpdateLogger::UpdateEvents& events)
-		: m_events(events)
-	{}
-
-	bool operator()(const int& lhs, const int& rhs)
-	{
-		return m_events[lhs].m_startTime < m_events[rhs].m_startTime;
-	}
-
-protected:
-	panda::helper::UpdateLogger::UpdateEvents& m_events;
-};
-
 void UpdateLoggerView::sortEvents()
 {
+	std::sort(m_events.begin(), m_events.end(), [](const EventData& lhs, const EventData& rhs){
+		return lhs.m_endTime < rhs.m_endTime;
+	});
+
 	int nb = m_events.size();
 	m_sortedEvents.resize(nb);
 	for(int i=0; i<nb; ++i)
 		m_sortedEvents[i] = i;
 
-	EventsComparator comparator(m_events);
-	qSort(m_sortedEvents.begin(), m_sortedEvents.end(), comparator);
+	std::sort(m_sortedEvents.begin(), m_sortedEvents.end(), [this](const int& lhs, const int& rhs){
+		return m_events[lhs].m_startTime < m_events[rhs].m_startTime;
+	});
 }
 
 void UpdateLoggerView::prevEvent()

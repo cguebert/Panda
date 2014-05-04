@@ -363,6 +363,7 @@ void Scheduler::prepareThreads()
 void Scheduler::setDirty()
 {
 #ifdef PANDA_LOG_EVENTS
+	{
 	helper::ScopedEvent log("Scheduler/setDirty");
 #endif
 	for(DataNode* node : m_setDirtyList)
@@ -373,6 +374,11 @@ void Scheduler::setDirty()
 		task.nbDirtyInputs = task.nbDirtyAtStart;
 		task.dirty = task.dirtyAtStart;
 	}
+
+#ifdef PANDA_LOG_EVENTS
+	}
+	helper::UpdateLogger::getInstance()->updateDirtyStates();
+#endif
 }
 
 void Scheduler::update()

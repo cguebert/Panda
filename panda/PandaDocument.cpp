@@ -753,11 +753,6 @@ void PandaDocument::onDirtyObject(panda::PandaObject* object)
 
 void PandaDocument::update()
 {
-#ifdef PANDA_LOG_EVENTS
-	{
-	helper::ScopedEvent log1("prepare update");
-#endif
-
 	if(!renderFrameBuffer || renderFrameBuffer->size() != getRenderSize())
 	{
 		renderFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
@@ -766,10 +761,6 @@ void PandaDocument::update()
 
 	helper::GradientCache::getInstance()->resetUsedFlag();
 	helper::ShaderCache::getInstance()->resetUsedFlag();
-
-#ifdef PANDA_LOG_EVENTS
-	}
-#endif
 
 	if(animMultithread && m_scheduler)
 		m_scheduler->update();
@@ -783,10 +774,6 @@ void PandaDocument::update()
 	}
 
 	render();
-
-#ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log2("post render");
-#endif
 
 	helper::GradientCache::getInstance()->clearUnused();
 	helper::ShaderCache::getInstance()->clearUnused();

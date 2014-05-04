@@ -224,10 +224,11 @@ void GraphView::paintLogDebug(QPainter* painter)
 	UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
 	if(logDlg && logDlg->isVisible())
 	{
+		auto states = logDlg->getNodeStates();
 		for(panda::PandaObject* object : pandaDocument->getObjects())
 		{
 			auto ods = objectDrawStructs[object];
-			if(logDlg->isNodeDirty(object))
+			if(states[object])
 				painter->setBrush(QColor(255,0,0,32));
 			else
 				painter->setBrush(QColor(0,255,0,32));
@@ -239,7 +240,7 @@ void GraphView::paintLogDebug(QPainter* painter)
 			{
 				if(ods->getDataRect(data, area))
 				{
-					if(logDlg->isNodeDirty(data))
+					if(states[data])
 						painter->setBrush(QColor(255,0,0,64));
 					else
 						painter->setBrush(QColor(0,255,0,64));

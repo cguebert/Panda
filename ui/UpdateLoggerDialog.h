@@ -19,7 +19,7 @@ public:
 	static void setInstance(UpdateLoggerDialog* dlg);
 
 	const panda::helper::EventData* getSelectedEvent() const;
-	bool isNodeDirty(const panda::DataNode* node) const;
+	const panda::helper::UpdateLogger::NodeStates getNodeStates() const;
 
 protected:
 	UpdateLoggerView* m_view;
@@ -45,7 +45,7 @@ public:
     QSize sizeHint() const;
 
 	const panda::helper::EventData *getSelectedEvent() const;
-	bool isNodeDirty(const panda::DataNode* node) const;
+	const panda::helper::UpdateLogger::NodeStates getNodeStates() const;
 
 protected:
     enum

@@ -87,7 +87,7 @@ ScopedEvent::~ScopedEvent()
 	if(m_event.m_node)
 		m_event.m_dirtyEnd = m_event.m_node->isDirty();
 	else
-		m_event.m_dirtyEnd = false;
+		m_event.m_dirtyEnd = m_event.m_dirtyStart;
 
 	if(m_changeLevel)
 		--logger->logLevel(m_event.m_threadId);
@@ -100,6 +100,7 @@ ScopedEvent::~ScopedEvent()
 UpdateLogger::UpdateLogger()
 	: m_nbThreads(1)
 	, m_logging(false)
+	, m_document(nullptr)
 {
 	m_logLevelMap.push_back(-1);
 	m_events.resize(m_nbThreads);
@@ -112,8 +113,9 @@ UpdateLogger* UpdateLogger::getInstance()
 	return &instance;
 }
 
-void UpdateLogger::startLog(PandaDocument *doc)
+void UpdateLogger::startLog(PandaDocument* doc)
 {
+	m_document = doc;
 	if(m_logging)
 		stopLog();
 	m_events.clear();
@@ -137,6 +139,17 @@ void UpdateLogger::stopLog()
 	m_logging = false;
 	m_prevEvents.swap(m_events);
 	m_prevNodeStates.swap(m_nodeStates);
+}
+
+void UpdateLogger::updateDirtyStates()
+{
+	for(PandaObject* object : m_document->getObjects())
+	{
+		m_nodeStates[object] = object->isDirty();
+
+		for(BaseData* data : object->getDatas())
+			m_nodeStates[data] = data->isDirty();
+	}
 }
 
 const UpdateLogger::UpdateEvents UpdateLogger::getEvents(int id) const

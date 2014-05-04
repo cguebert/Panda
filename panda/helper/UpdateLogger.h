@@ -65,6 +65,7 @@ public:
 
 	void startLog(PandaDocument* doc);
 	void stopLog();
+	void updateDirtyStates(); // Necessary when a single event can modify the status of many nodes (like the scheduler)
 
 	void setNbThreads(int nbThreads);
 	int getNbThreads() const;
@@ -89,6 +90,7 @@ protected:
 	bool m_logging;
 	NodeStates m_nodeStates, m_prevNodeStates;
 	QVector<int> m_logLevelMap;
+	PandaDocument* m_document;
 };
 
 inline int& UpdateLogger::logLevel(int threadId)
