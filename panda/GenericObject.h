@@ -82,7 +82,6 @@ public:
 
 class GenericObject : public PandaObject
 {
-	friend class GenericObjectDrawStruct;
 public:
 	PANDA_CLASS(GenericObject, PandaObject)
 
@@ -90,8 +89,8 @@ public:
 	{
 		GenericDataDefinition()
 			: type(0), input(false), output(false) {}
-		GenericDataDefinition(int t, bool i, bool o, QString n, QString h)
-			: type(t), input(i), output(o), name(n), help(h) {}
+		GenericDataDefinition(int type, bool input, bool output, QString name, QString help)
+			: type(type), input(input), output(output), name(name), help(help) {}
 
 		int type;	// Leave the value type part at 0 to use the value type of the connected Data
 		bool input, output;
@@ -119,7 +118,14 @@ protected:
 	virtual BaseData* createDatas(int type);
 	virtual void updateDataNames();
 
+	GenericData* const getGenericData(); // Access to m_genericData
+	int nbOfCreatedDatas() const; // Size of m_createdDatasStructs
+	bool isCreatedData(BaseData* data) const; // Return true if data has been created by the GenericObject
+
 private:
+	friend class SingleTypeGenericObject;
+	friend class GenericObjectDrawStruct;
+
 	virtual void registerFunctions() {}
 
 	typedef QSharedPointer<BaseData> BaseDataPtr;
@@ -137,6 +143,28 @@ private:
 	typedef QSharedPointer<CreatedDatasStruct> CreatedDatasStructPtr;
 	QList<CreatedDatasStructPtr> m_createdDatasStructs;
 	QMap<BaseData*, CreatedDatasStructPtr> m_createdDatasMap;
+};
+
+//***************************************************************//
+
+// Works as a GenericObject, but as soon as one input Data is connected,
+// it only accepts this type for all future connections.
+class SingleTypeGenericObject : public GenericObject
+{
+public:
+	PANDA_CLASS(SingleTypeGenericObject, GenericObject)
+
+	explicit SingleTypeGenericObject(PandaDocument *parent = 0);
+
+	virtual void update();
+	virtual BaseData* createDatas(int type);
+	virtual void dataSetParent(BaseData* data, BaseData* parent);
+
+protected:
+	bool m_singleOutput; // Set this to true to only create outputs for the first connected Data
+
+private:
+	int m_connectedType;
 };
 
 //***************************************************************//

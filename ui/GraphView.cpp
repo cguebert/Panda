@@ -865,6 +865,9 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 		objectDrawStructs[object]->update();
 		linkTags.clear();
 		recomputeTags = true;
+		highlightConnectedDatas = false;
+		hoverData = nullptr;
+		hoverTimer->stop();
 		update();
 	}
 }

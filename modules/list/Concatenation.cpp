@@ -4,28 +4,27 @@
 
 namespace panda {
 
-class ListConcatenation : public GenericObject
+class ListConcatenation : public SingleTypeGenericObject
 {
 	GENERIC_OBJECT(ListConcatenation, allDataTypes)
 public:
 	PANDA_CLASS(ListConcatenation, GenericObject)
 
 	ListConcatenation(PandaDocument *doc)
-		: GenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here the first list"))
+		: SingleTypeGenericObject(doc)
+		, generic(initData(&generic, "input", "Connect here a list to concatenate to the result"))
+		, firstUpdate(false)
 	{
+		m_singleOutput = true;
+
 		addInput(&generic);
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);
 		defList.append(GenericDataDefinition(listType,
 											 true, false,
-											 "head",
-											 "List of items that will be at the head of the result"));
-		defList.append(GenericDataDefinition(listType,
-											 true, false,
-											 "tail",
-											 "List of items that will be at the tail of the result"));
+											 "list",
+											 "List of items that will be added to the result"));
 		defList.append(GenericDataDefinition(listType,
 											 false, true,
 											 "result",
@@ -33,23 +32,34 @@ public:
 		setupGenericObject(&generic, defList);
 	}
 
+	void update()
+	{
+		firstUpdate = true;
+		SingleTypeGenericObject::update();
+	}
+
+
 	template <class T>
 	void updateT(DataList& list)
 	{
 		typedef Data< QVector<T> > ListData;
-		ListData* dataHead = dynamic_cast<ListData*>(list[0]);
-		ListData* dataTail = dynamic_cast<ListData*>(list[1]);
-		ListData* dataOutput = dynamic_cast<ListData*>(list[2]);
+		ListData* dataInput = dynamic_cast<ListData*>(list[0]);
+		ListData* dataOutput = dynamic_cast<ListData*>(list[1]);
 
-		Q_ASSERT(dataHead && dataTail && dataOutput);
+		Q_ASSERT(dataInput && dataOutput);
 
 		auto outVal = dataOutput->getAccessor();
-		outVal.clear();
-		outVal << dataHead->getValue() << dataTail->getValue();
+		if(firstUpdate)
+		{
+			outVal.clear();
+			firstUpdate = false;
+		}
+		outVal.wref() += dataInput->getValue();
 	}
 
 protected:
 	GenericVectorData generic;
+	bool firstUpdate;
 };
 
 int ListConcatenationClass = RegisterObject<ListConcatenation>("List/Concatenation").setDescription("Concatenate two lists");

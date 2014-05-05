@@ -126,6 +126,9 @@ void GenericObject::updateDataNames()
 		QString nameType = DataFactory::typeToName(created->type);
 		for(int i=0; i<nbDefs; ++i)
 		{
+			if(!created->datas[i])
+				continue;
+
 			QString dataName = m_dataDefinitions[i].name;
 			if(dataName.contains("%1"))
 				dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
@@ -136,6 +139,21 @@ void GenericObject::updateDataNames()
 
 		++index;
 	}
+}
+
+GenericData* const GenericObject::getGenericData()
+{
+	return m_genericData;
+}
+
+int GenericObject::nbOfCreatedDatas() const
+{
+	return m_createdDatasStructs.size();
+}
+
+bool GenericObject::isCreatedData(BaseData* data) const
+{
+	return m_createdDatasMap.contains(data);
 }
 
 void GenericObject::update()
@@ -231,6 +249,186 @@ void GenericObject::load(QDomElement& elem)
 
 //***************************************************************//
 
+SingleTypeGenericObject::SingleTypeGenericObject(PandaDocument *parent)
+	: GenericObject(parent)
+	, m_singleOutput(false)
+	, m_connectedType(-1)
+{
+}
+
+void SingleTypeGenericObject::update()
+{
+	int nbDefs = m_dataDefinitions.size();
+
+	for(int i=0, nb=m_createdDatasStructs.size(); i<nb; ++i)
+	{
+		CreatedDatasStructPtr created = m_createdDatasStructs[i];
+
+		DataList list;
+		for(int j=0; j<nbDefs; ++j)
+		{
+			BaseDataPtr dataPtr = created->datas[j];
+			if(m_dataDefinitions[j].input)
+				dataPtr->updateIfDirty();
+
+			if(m_singleOutput && i && m_dataDefinitions[j].output && !m_dataDefinitions[j].input)
+				list.append(m_createdDatasStructs[0]->datas[j].data());
+			else
+				list.append(dataPtr.data());
+		}
+
+		invokeFunction(created->type, list);
+	}
+
+	cleanDirty();
+}
+
+BaseData* SingleTypeGenericObject::createDatas(int type)
+{
+	if(m_connectedType == -1)
+	{
+		m_connectedType = type;
+		m_genericData->allowedTypes.clear();
+		m_genericData->allowedTypes.push_back(m_connectedType);
+	}
+
+	int valueType = types::DataTypeId::getValueType(type);
+
+	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
+	createdDatasStruct->type = type;
+	m_createdDatasStructs.append(createdDatasStruct);
+	int index = m_createdDatasStructs.size();
+
+	BaseData* firstInputData = nullptr;
+
+	doEmitModified = false;
+	doEmitDirty = false;
+
+	int nbDefs = m_dataDefinitions.size();
+	for(int i=0; i<nbDefs; ++i)
+	{
+		if(m_singleOutput && index > 1 && m_dataDefinitions[i].output && !m_dataDefinitions[i].input)
+		{
+			createdDatasStruct->datas.append(BaseDataPtr(nullptr));
+		}
+		else
+		{
+			QString nameType = DataFactory::typeToName(type);
+			QString dataName = m_dataDefinitions[i].name;
+			if(dataName.contains("%1"))
+				dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
+
+			dataName += QString(" #%2").arg(index);	// Add the count
+
+			int dataType = m_dataDefinitions[i].type;
+			if(!dataType) // If the type in the definition is 0, use the full type of the connected Data
+				dataType = type;
+			else if(!DataTypeId::getValueType(dataType))	// Replace with the value type of the connected Data
+				dataType = types::DataTypeId::replaceValueType(dataType, valueType);
+
+			BaseData* data = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
+
+			if(m_dataDefinitions[i].input)
+			{
+				addInput(data);
+				if(!firstInputData)
+					firstInputData = data;
+			}
+
+			if(m_dataDefinitions[i].output)
+				addOutput(data);
+
+			createdDatasStruct->datas.append(BaseDataPtr(data));
+			m_createdDatasMap.insert(data, createdDatasStruct);
+		}
+	}
+
+	removeData(m_genericData);	// generic must always be last
+	addData(m_genericData);
+
+	doEmitModified = true;
+	doEmitDirty = true;
+	emitModified();
+
+	return firstInputData;
+}
+
+void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
+{
+	// New connection
+	if(data == m_genericData)
+	{
+		int type = m_genericData->getCompatibleType(parent);
+		BaseData *inputData = createDatas(type);
+
+		if(inputData)
+			inputData->setParent(parent);
+
+		emit modified(this);
+	}
+	// Changing connection
+	else if(parent || !m_createdDatasMap.contains(data))
+	{
+		data->setParent(parent);
+		emitModified();
+	}
+	else // (nullptr), we remove the data
+	{
+		data->setParent(nullptr);
+
+		CreatedDatasStructPtr createdDatasStruct = m_createdDatasMap[data];
+		int nbConnectedInputs = 0;
+		for(BaseDataPtr d : createdDatasStruct->datas)
+		{
+			if(d && d->getParent())
+				++nbConnectedInputs;
+		}
+
+		if(!nbConnectedInputs)	// We remove this group of datas
+		{
+			// Last generic data
+			bool lastGeneric = (m_createdDatasStructs.size() == 1);
+			if(lastGeneric)
+			{
+				m_connectedType = -1;
+				m_genericData->allowedTypes = getRegisteredTypes();
+			}
+
+			int nbDefs = m_dataDefinitions.size();
+			for(int i=0; i<nbDefs; ++i)
+			{
+				BaseDataPtr dataPtr = createdDatasStruct->datas[i];
+				if(m_singleOutput && m_dataDefinitions[i].output && !m_dataDefinitions[i].input)
+				{
+					if(lastGeneric)
+					{
+						removeData(dataPtr.data());
+						m_createdDatasMap.remove(dataPtr.data());
+					}
+					else if(dataPtr) // Copy this data to the next created data
+						m_createdDatasStructs[1]->datas[i] = dataPtr;
+				}
+				else
+				{
+					removeData(dataPtr.data());
+					m_createdDatasMap.remove(dataPtr.data());
+				}
+			}
+
+			m_createdDatasStructs.removeAll(createdDatasStruct);
+			createdDatasStruct->datas.clear();
+			updateDataNames();
+
+			if(m_singleOutput)
+				setDirtyValue();
+		}
+
+		emit modified(this);
+	}
+}
+
+//***************************************************************//
+
 bool GenericData::validParent(const BaseData* parent) const
 {
 	if(allowedTypes.size() && !allowedTypes.contains(parent->getDataTrait()->valueTypeId()))
@@ -297,7 +495,7 @@ QString GenericSingleValueData::getDescription() const
 
 bool GenericVectorData::validParent(const BaseData* parent) const
 {
-	// TEST :  now accepting single values also, as the conversion is automatic
+	// Now accepting single values also, as the conversion is automatic
 	return (parent->getDataTrait()->isVector()
 			|| parent->getDataTrait()->isSingleValue())
 			&& GenericData::validParent(parent);

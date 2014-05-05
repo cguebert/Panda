@@ -79,6 +79,9 @@ void GenericObjectDrawStruct::update()
 		int inputIndex = 0, outputIndex = 0;
 		for(int j=0; j<nbDef; ++j)
 		{
+			if(!createdDatas[j])
+				continue;
+
 			if(genericObject->m_dataDefinitions[j].input)
 			{
 				QRectF dataArea(xi, y + inputIndex * dh, dataRectSize, dataRectSize);
