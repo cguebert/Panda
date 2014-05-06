@@ -112,6 +112,7 @@ SOURCES       = main.cpp \
 	modules/list/FillList.cpp \
 	modules/list/FilterItems.cpp \
 	modules/list/FindItem.cpp \
+	modules/list/InterleaveSequence.cpp \
 	modules/list/ListBuffer.cpp \
 	modules/list/ListItem.cpp \
 	modules/list/ListReverse.cpp \

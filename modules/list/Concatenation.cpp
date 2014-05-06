@@ -8,7 +8,7 @@ class ListConcatenation : public SingleTypeGenericObject
 {
 	GENERIC_OBJECT(ListConcatenation, allDataTypes)
 public:
-	PANDA_CLASS(ListConcatenation, GenericObject)
+	PANDA_CLASS(ListConcatenation, SingleTypeGenericObject)
 
 	ListConcatenation(PandaDocument *doc)
 		: SingleTypeGenericObject(doc)
@@ -62,6 +62,7 @@ protected:
 	bool firstUpdate;
 };
 
-int ListConcatenationClass = RegisterObject<ListConcatenation>("List/Concatenation").setDescription("Concatenate two lists");
+int ListConcatenationClass = RegisterObject<ListConcatenation>("List/Concatenation")
+		.setDescription("Concatenate multiple lists");
 
 } // namespace Panda
