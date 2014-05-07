@@ -32,6 +32,7 @@ MainWindow::MainWindow()
 	createStatusBar();
 
 	connect(pandaDocument, SIGNAL(modified()), this, SLOT(documentModified()));
+	connect(pandaDocument, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(selectedObject(panda::PandaObject*)));
 	connect(graphView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
@@ -86,7 +87,7 @@ void MainWindow::open()
 	if (okToContinue()) {
 		QString fileName = QFileDialog::getOpenFileName(this,
 								   tr("Open Document"), ".",
-								   tr("Panda files (*.pnd)"));
+								   tr("Panda files (*.pnd);;XML Files (*.xml)"));
 		if (!fileName.isEmpty())
 		{
 			playAction->setChecked(false);
@@ -102,7 +103,7 @@ void MainWindow::import()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
 							   tr("Open Document"), ".",
-							   tr("Panda files (*.pnd)"));
+							   tr("Panda files (*.pnd);;XML Files (*.xml)"));
 	if (!fileName.isEmpty())
 	{
 		loadFile(fileName, true);
@@ -123,7 +124,7 @@ bool MainWindow::saveAs()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
 							   tr("Save Document"), ".",
-							   tr("Panda files (*.pnd)"));
+							   tr("Panda files (*.pnd);;XML Files (*.xml)"));
 	if (fileName.isEmpty())
 		return false;
 
@@ -133,8 +134,8 @@ bool MainWindow::saveAs()
 void MainWindow::about()
 {
 	QMessageBox::about(this, tr("About Panda"),
-			tr("<h2>Panda 0.1</h2>"
-			   "<p>Copyright &copy; 2012 Christophe Guébert"
+			tr("<h2>Panda 0.2</h2>"
+			   "<p>Copyright &copy; 2014 Christophe Guébert"
 			   "<p>Panda is a framework for parametric drawing and animation."));
 }
 
@@ -256,24 +257,28 @@ void MainWindow::createActions()
 	groupAction = new QAction(tr("&Group selected"), this);
 	groupAction->setShortcut(tr("Ctrl+G"));
 	groupAction->setStatusTip(tr("Group selected objects"));
+	groupAction->setEnabled(false);
 
 	connect(groupAction, SIGNAL(triggered()), this, SLOT(group()));
 
 	ungroupAction = new QAction(tr("&Ungroup selected"), this);
 	ungroupAction->setShortcut(tr("Ctrl+Shift+G"));
 	ungroupAction->setStatusTip(tr("Ungroup selected objects"));
+	ungroupAction->setEnabled(false);
 
 	connect(ungroupAction, SIGNAL(triggered()), this, SLOT(ungroup()));
 
 	editGroupAction = new QAction(tr("&Edit group"), this);
 	editGroupAction->setShortcut(tr("Ctrl+E"));
 	editGroupAction->setStatusTip(tr("Edit the selected group name and parameters"));
+	editGroupAction->setEnabled(false);
 
 	connect(editGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
 
 	saveGroupAction = new QAction(tr("&Save group"), this);
 	saveGroupAction->setShortcut(tr("Ctrl+Shift+E"));
 	saveGroupAction->setStatusTip(tr("Save the selected group for later use"));
+	saveGroupAction->setEnabled(false);
 
 	connect(saveGroupAction, SIGNAL(triggered()), this, SLOT(saveGroup()));
 
@@ -828,4 +833,16 @@ void MainWindow::play(bool playing)
 	registryMenu->setEnabled(!playing);
 
 	importAction->setEnabled(!playing);
+}
+
+void MainWindow::selectedObject(panda::PandaObject* object)
+{
+	int nbSelected = pandaDocument->getNbSelected();
+	bool isGroup = (nbSelected == 1) && dynamic_cast<panda::Group*>(object);
+
+	ungroupAction->setEnabled(isGroup);
+	editGroupAction->setEnabled(isGroup);
+	saveGroupAction->setEnabled(isGroup);
+
+	groupAction->setEnabled(nbSelected > 1);
 }

@@ -15,6 +15,7 @@ class UpdateLoggerDialog;
 namespace panda
 {
 class PandaDocument;
+class PandaObject;
 }
 
 class MainWindow : public QMainWindow
@@ -52,6 +53,7 @@ private slots:
 	void showLoggerDialog();
 	void showObjectsAndTypes();
 	void play(bool);
+	void selectedObject(panda::PandaObject*);
 
 private:
 	void createActions();
