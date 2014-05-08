@@ -185,11 +185,6 @@ void ObjectDrawStruct::drawLinks(QPainter* painter)
 	}
 }
 
-bool ObjectDrawStruct::contains(const QPointF& point)
-{
-	return objectArea.contains(point);
-}
-
 void ObjectDrawStruct::save(QDomDocument&, QDomElement& elem)
 {
 	elem.setAttribute("x", position.x());
@@ -207,26 +202,6 @@ void ObjectDrawStruct::load(QDomElement& elem)
 	newPos.setY(elem.attribute("y").toFloat());
 #endif
 	move(newPos - position);
-}
-
-QRectF ObjectDrawStruct::getObjectArea() const
-{
-	return objectArea;
-}
-
-QPointF ObjectDrawStruct::getPosition() const
-{
-	return position;
-}
-
-ObjectDrawStruct::RectDataIterator ObjectDrawStruct::getDatasIterator() const
-{
-	return RectDataIterator(datas);
-}
-
-int ObjectDrawStruct::dataStartY()
-{
-	return dataRectMargin;
 }
 
 //******************************************************************************************

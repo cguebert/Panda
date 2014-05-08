@@ -4,8 +4,9 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
 
 #include <QWidget>
-#include <QMap>
 #include <QDomDocument>
+#include <QMap>
+#include <set>
 
 namespace panda
 {
@@ -73,6 +74,9 @@ protected:
 
 	void drawConnectedDatas(QStylePainter* painter, panda::BaseData* sourceData);
 
+	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
+	void computeSnapDelta(QPointF position);
+
 signals:
 	void modified();
 	void showStatusBarMessage(QString);
@@ -110,7 +114,12 @@ private:
 	bool recomputeTags; /// Should we recompute the linkTags next PaintEvent?
 	QTimer* hoverTimer; /// Counting how long the mouse is staying over a Data
 	bool highlightConnectedDatas;
+	bool useMagneticSnap; /// Do we help align objects when moving them with the mouse?
+	std::set<qreal> snapTargetsX, snapTargetsY;
+	QPointF snapDelta;
 };
+
+//*************************************************************************//
 
 class LinkTag
 {

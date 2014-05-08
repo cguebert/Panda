@@ -32,6 +32,8 @@ public:
 	virtual void mouseMoveEvent(QMouseEvent* event);
 	virtual void mouseReleaseEvent(QMouseEvent* event);
 
+	virtual bool acceptsMagneticSnap() { return false; }
+
 	virtual QSize getObjectSize();
 
 protected:

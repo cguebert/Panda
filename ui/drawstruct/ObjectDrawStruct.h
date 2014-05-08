@@ -41,12 +41,15 @@ public:
 	virtual void mouseMoveEvent(QMouseEvent*) {}
 	virtual void mouseReleaseEvent(QMouseEvent*) {}
 
+	virtual bool acceptsMagneticSnap(); // If this object is used for the magnetic snap when moving objects
+
 	virtual QSize getObjectSize();
 	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr);
 	bool getDataRect(const panda::BaseData *data, QRectF& rect);
 
 	QRectF getObjectArea() const;
 	QPointF getPosition() const;
+	panda::PandaObject* const getObject() const;
 
 	typedef QPair<QRectF, panda::BaseData*> RectDataPair;
 	typedef QListIterator<RectDataPair> RectDataIterator;
@@ -67,6 +70,29 @@ protected:
 	QRectF objectArea;
 	QList<RectDataPair> datas;
 };
+
+inline bool ObjectDrawStruct::acceptsMagneticSnap()
+{ return true; }
+
+inline bool ObjectDrawStruct::contains(const QPointF& point)
+{ return objectArea.contains(point); }
+
+inline QRectF ObjectDrawStruct::getObjectArea() const
+{ return objectArea; }
+
+inline QPointF ObjectDrawStruct::getPosition() const
+{ return position; }
+
+inline panda::PandaObject* const ObjectDrawStruct::getObject() const
+{ return object; }
+
+inline ObjectDrawStruct::RectDataIterator ObjectDrawStruct::getDatasIterator() const
+{ return RectDataIterator(datas); }
+
+inline int ObjectDrawStruct::dataStartY()
+{ return dataRectMargin; }
+
+//*************************************************************************//
 
 class BaseObjectDrawCreator
 {

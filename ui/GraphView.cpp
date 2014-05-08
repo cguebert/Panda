@@ -1,5 +1,6 @@
 #include <QtWidgets>
 #include <cmath>
+#include <functional>
 
 #include <ui/GraphView.h>
 #include <ui/QuickCreateDialog.h>
@@ -26,6 +27,7 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget *parent)
 	, recomputeTags(false)
 	, hoverTimer(new QTimer(this))
 	, highlightConnectedDatas(false)
+	, useMagneticSnap(true)
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -377,6 +379,18 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		if(QVector2D(delta *  zoomFactor).length() > 5)
 		{
 			movingAction = MOVING_OBJECT;
+			if(useMagneticSnap)
+			{
+				auto selected = pandaDocument->getCurrentSelectedObject();
+				auto ods = objectDrawStructs[selected];
+				if(ods->acceptsMagneticSnap())
+				{
+					prepareSnapTargets(ods.data());
+					auto possiblePosition = ods->getPosition() + delta;
+					computeSnapDelta(possiblePosition);
+					delta = delta + snapDelta;
+				}
+			}
 			QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
 			if(!delta.isNull())
 			{
@@ -398,6 +412,14 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	{
 		QPointF mousePos = event->localPos() / zoomFactor;
 		QPointF delta = mousePos - previousMousePos;
+		if(useMagneticSnap)
+		{
+			QPointF oldSnapDelta = snapDelta;
+			auto selected = pandaDocument->getCurrentSelectedObject();
+			auto possiblePosition = objectDrawStructs[selected]->getPosition() + delta - snapDelta;
+			computeSnapDelta(possiblePosition);
+			delta = delta - oldSnapDelta + snapDelta;
+		}
 		if(!delta.isNull())
 		{
 			for(auto object : pandaDocument->getSelection())
@@ -1052,6 +1074,106 @@ void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sour
 			path.cubicTo(link.first+QPointF(w,0), link.second-QPointF(w,0), link.second);
 			painter->drawPath(path);
 		}
+	}
+}
+
+void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
+{
+	snapTargetsX.clear();
+	snapTargetsY.clear();
+
+	auto viewRect = QRectF(contentsRect());
+
+	// Use x position of every visible object
+	for(auto ods : objectDrawStructs)
+	{
+		if(ods == selectedDrawStruct || !ods->acceptsMagneticSnap())
+			continue;
+
+		if(viewRect.intersects(ods->getObjectArea()))
+		{
+			auto pos = ods->getPosition();
+			snapTargetsX.insert(pos.x());
+		}
+	}
+
+	qreal y = selectedDrawStruct->getPosition().y();
+	// For y, try to make the data links horizontal
+	// First for inputs
+	for(auto input : selectedDrawStruct->getObject()->getInputDatas())
+	{
+		QRectF dataRect;
+		if(selectedDrawStruct->getDataRect(input, dataRect))
+		{
+			auto dataHeight = dataRect.center().y() - y;
+			for(auto input2 : input->getInputs())
+			{
+				auto data2 = dynamic_cast<panda::BaseData*>(input2);
+				if(data2 && data2->getOwner())
+				{
+					auto owner = data2->getOwner();
+					if(objectDrawStructs.contains(owner))
+					{
+						auto ods = objectDrawStructs[owner];
+						if(ods->getDataRect(data2, dataRect))
+							snapTargetsY.insert(dataRect.center().y() - dataHeight);
+					}
+				}
+			}
+		}
+	}
+
+	// Then for outputs
+	for(auto output : selectedDrawStruct->getObject()->getOutputDatas())
+	{
+		QRectF dataRect;
+		if(selectedDrawStruct->getDataRect(output, dataRect))
+		{
+			auto dataHeight = dataRect.center().y() - y;
+			for(auto output2 : output->getOutputs())
+			{
+				auto data2 = dynamic_cast<panda::BaseData*>(output2);
+				if(data2 && data2->getOwner())
+				{
+					auto owner = data2->getOwner();
+					if(objectDrawStructs.contains(owner))
+					{
+						auto ods = objectDrawStructs[owner];
+						if(ods->getDataRect(data2, dataRect))
+							snapTargetsY.insert(dataRect.center().y() - dataHeight);
+					}
+				}
+			}
+		}
+	}
+}
+
+void GraphView::computeSnapDelta(QPointF position)
+{
+	snapDelta = QPointF();
+	const qreal snapMaxDist = 5;
+
+	// Give me c++14 lambdas !
+	auto comparator = [](qreal pos) -> std::function<bool(const qreal& lhs, const qreal& rhs)>	{
+		return [pos](const qreal& lhs, const qreal& rhs) {
+			return qAbs(pos - lhs) < qAbs(pos - rhs);
+		};
+	};
+
+	auto minIter = std::min_element(snapTargetsX.begin(), snapTargetsX.end(), comparator(position.x()));
+	if(minIter != snapTargetsX.end())
+	{
+		qreal x = *minIter;
+		if(qAbs(x - position.x()) < snapMaxDist)
+			snapDelta.setX(x - position.x());
+	}
+
+	minIter = std::min_element(snapTargetsY.begin(), snapTargetsY.end(), comparator(position.y()));
+	if(minIter != snapTargetsY.end())
+	{
+		qreal y = *minIter;
+		if(qAbs(y - position.y()) < snapMaxDist)
+			snapDelta.setY(y - position.y());
 	}
 }
 
