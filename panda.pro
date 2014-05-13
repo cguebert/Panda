@@ -49,6 +49,7 @@ HEADERS       = \
 	ui/EditGroupDialog.h \
 	ui/GraphView.h \
 	ui/LayersTab.h \
+	ui/LinkTag.h \
 	ui/ListObjectsAndTypes.h \
 	ui/MainWindow.h \
 	ui/OpenGLRenderView.h \
@@ -204,6 +205,7 @@ SOURCES       = main.cpp \
 	ui/EditGroupDialog.cpp \
 	ui/GraphView.cpp \
 	ui/LayersTab.cpp \
+	ui/LinkTag.cpp \
 	ui/ListObjectsAndTypes.cpp \
 	ui/MainWindow.cpp \
 	ui/OpenGLRenderView.cpp \
