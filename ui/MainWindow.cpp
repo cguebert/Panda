@@ -1,13 +1,14 @@
 #include <QtWidgets>
 
-#include <ui/MainWindow.h>
-#include <ui/GraphView.h>
-#include <ui/OpenGLRenderView.h>
 #include <ui/DatasTable.h>
 #include <ui/EditGroupDialog.h>
+#include <ui/GraphView.h>
+#include <ui/GroupsManager.h>
+#include <ui/OpenGLRenderView.h>
 #include <ui/LayersTab.h>
-#include <ui/UpdateLoggerDialog.h>
 #include <ui/ListObjectsAndTypes.h>
+#include <ui/MainWindow.h>
+#include <ui/UpdateLoggerDialog.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -499,9 +500,9 @@ void MainWindow::createGroupRegistryMenu()
 {
 	if(groupsRegistryMenu)
 		groupsRegistryMenu->clear();
-	pandaDocument->createGroupsList();
+	GroupsManager::getInstance()->createGroupsList();
 
-	panda::PandaDocument::GroupsIterator iter = pandaDocument->getGroupsIterator();
+	GroupsManager::GroupsIterator iter = GroupsManager::getInstance()->getGroupsIterator();
 	if(iter.hasNext())
 	{
 		if(!groupsRegistryMenu)
@@ -740,7 +741,7 @@ void MainWindow::saveGroup()
 	panda::Group* group = dynamic_cast<panda::Group*>(object);
 	if(group)
 	{
-		if(pandaDocument->saveGroup(group))
+		if(GroupsManager::getInstance()->saveGroup(group))
 		{
 			statusBar()->showMessage(tr("Group saved"), 2000);
 			createGroupRegistryMenu();
@@ -757,7 +758,7 @@ void MainWindow::createGroupObject()
 	if(action)
 	{
 		QString path = action->data().toString();
-		pandaDocument->createGroupObject(path);
+		GroupsManager::getInstance()->createGroupObject(pandaDocument, path);
 	}
 }
 

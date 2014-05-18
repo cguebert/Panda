@@ -19,7 +19,6 @@ namespace panda {
 
 class BaseLayer;
 class Layer;
-class Group;
 class Scheduler;
 
 class PandaDocument : public PandaObject
@@ -29,7 +28,6 @@ public:
 	PANDA_CLASS(PandaDocument, PandaObject)
 
 	typedef QList<PandaObject*> ObjectsList;
-	typedef QMapIterator<QString, QString> GroupsIterator;
 
 	explicit PandaDocument(QObject *parent = 0);
 	~PandaDocument();
@@ -86,12 +84,6 @@ public:
 	void doAddObject(PandaObject* object);
 	void doRemoveObject(PandaObject* object, bool del=true);
 
-	void createGroupsList();
-	GroupsIterator getGroupsIterator();
-	QString getGroupDescription(const QString& groupName);
-	bool saveGroup(Group* group);
-	PandaObject* createGroupObject(QString groupPath);
-
 	// When an object is set to laterUpdate, use these functions to help the Scheduler
 	void setDataDirty(BaseData* data); // Set the outputs to dirty before setting the value (so it doesn't propagate)
 	void setDataReady(BaseData* data); // Launch the tasks connected to this node
@@ -121,17 +113,11 @@ protected:
 	bool animPlaying, animMultithread;
 	QTimer* animTimer;
 
-	QMap<QString, QString> groupsMap;
-
 	QSharedPointer<Scheduler> m_scheduler;
 
 	QUndoStack m_undoStack;
 
-	bool getGroupDescription(const QString &fileName, QString& description);
 	void render();
-
-private:
-	QString groupsDirPath;
 
 signals:
 	void modified();
@@ -203,12 +189,6 @@ inline void PandaDocument::setMousePosition(const types::Point& pos)
 
 inline int PandaDocument::getMouseClick()
 { return mouseClick.getValue(); }
-
-inline PandaDocument::GroupsIterator PandaDocument::getGroupsIterator()
-{ return GroupsIterator(groupsMap); }
-
-inline QString PandaDocument::getGroupDescription(const QString& groupName)
-{ return groupsMap.value(groupName); }
 
 inline quint32 PandaDocument::getNextIndex()
 { return currentIndex++; }

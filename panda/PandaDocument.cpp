@@ -8,7 +8,6 @@
 #include <panda/DataFactory.h>
 #include <panda/Layer.h>
 #include <panda/Renderer.h>
-#include <panda/Group.h>
 #include <panda/Scheduler.h>
 #include <panda/helper/GradientCache.h>
 #include <panda/helper/ShaderCache.h>
@@ -70,8 +69,6 @@ PandaDocument::PandaDocument(QObject *parent)
 
 	animTimer = new QTimer(this);
 	connect(animTimer, SIGNAL(timeout()), this, SLOT(step()));
-
-	groupsDirPath = QCoreApplication::applicationDirPath() + "/groups/";
 
 	m_undoStack.setUndoLimit(10);
 }
@@ -569,148 +566,6 @@ void PandaDocument::doAddObject(PandaObject* object)
 	connect(object, SIGNAL(modified(panda::PandaObject*)), this, SIGNAL(modifiedObject(panda::PandaObject*)));
 	connect(object, SIGNAL(dirty(panda::PandaObject*)), this, SLOT(onDirtyObject(panda::PandaObject*)));
 	emit addedObject(object);
-}
-
-void PandaDocument::createGroupsList()
-{
-	groupsMap.clear();
-	QStringList nameFilter;
-	nameFilter << "*.grp";
-
-	QStack<QString> dirList;
-	dirList.push(groupsDirPath);
-	QDir groupsDir(groupsDirPath);
-
-	while(!dirList.isEmpty())
-	{
-		QDir dir = QDir(dirList.pop());
-		QFileInfoList entries = dir.entryInfoList(nameFilter, QDir::Files);
-		for(int i=0, nb=entries.size(); i<nb; i++)
-		{
-			QString desc;
-			if(getGroupDescription(entries[i].absoluteFilePath(), desc))
-			{
-				QString path = groupsDir.relativeFilePath(entries[i].absoluteFilePath());
-				int n = path.lastIndexOf(".grp", -1, Qt::CaseInsensitive);
-				if(n != -1)
-					path = path.left(n);
-				groupsMap[path] = desc;
-			}
-		}
-
-		entries = dir.entryInfoList(QStringList(),
-			QDir::AllDirs | QDir::NoSymLinks | QDir::NoDotAndDotDot);
-		for(int i=0, nb=entries.size(); i<nb; i++)
-			dirList.push(entries[i].absoluteFilePath());
-	}
-}
-
-bool PandaDocument::getGroupDescription(const QString &fileName, QString& description)
-{
-	QFile file(fileName);
-	if(!file.open(QIODevice::ReadOnly))
-		return false;
-
-	QDomDocument doc;
-	if(!doc.setContent(&file))
-		return false;
-
-	QDomElement root = doc.documentElement();
-	if(!root.hasAttribute("description"))
-		return false;
-	description = root.attribute("description");
-
-	return true;
-}
-
-bool PandaDocument::saveGroup(Group *group)
-{
-	bool ok;
-	QString text = QInputDialog::getText(nullptr, tr("Save group"),
-										 tr("Group name:"), QLineEdit::Normal,
-										 group->getGroupName(), &ok);
-	if (!ok || text.isEmpty())
-		return false;
-
-	QString fileName = groupsDirPath + text + ".grp";
-	QFileInfo fileInfo(fileName);
-	QDir dir;
-	dir.mkpath(fileInfo.dir().path());
-	QFile file(fileName);
-
-	// If already exists
-	if(file.exists())
-	{
-		if(QMessageBox::question(nullptr, tr("Panda"),
-							  tr("This group already exists, overwrite?"),
-							  QMessageBox::Yes|QMessageBox::No,
-							  QMessageBox::Yes)
-				!= QMessageBox::Yes)
-			return false;
-	}
-
-	if (!file.open(QIODevice::WriteOnly))
-	{
-		QMessageBox::warning(nullptr, tr("Panda"),
-							 tr("Cannot write file %1:\n%2.")
-							 .arg(file.fileName())
-							 .arg(file.errorString()));
-		return false;
-	}
-
-	QDomDocument doc;
-	QDomElement root = doc.createElement("Group");
-	doc.appendChild(root);
-
-	QString desc = QInputDialog::getText(nullptr, tr("Save group"),
-										 tr("Group description:"), QLineEdit::Normal,
-										 "", &ok);
-
-	root.setAttribute("description", desc);
-	root.setAttribute("type", panda::ObjectFactory::getRegistryName(group));
-
-	group->save(doc, root);
-
-	file.write(doc.toByteArray(4));
-	return true;
-}
-
-PandaObject* PandaDocument::createGroupObject(QString groupPath)
-{
-	QFile file(groupsDirPath + "/" + groupPath + ".grp");
-	if(!file.open(QIODevice::ReadOnly))
-	{
-		QMessageBox::warning(nullptr, tr("Panda"), tr("Could not open the file."));
-		return nullptr;
-	}
-
-	QDomDocument doc;
-	int errLine, errCol;
-	if (!doc.setContent(&file, nullptr, &errLine, &errCol))
-	{
-		QMessageBox::warning(nullptr, tr("Panda"),
-							 tr("Cannot parse xml: error in ligne %2, column %3")
-							 .arg(errLine)
-							 .arg(errCol));
-		return false;
-	}
-
-	QDomElement root = doc.documentElement();
-	QString description = root.attribute("description");
-	QString registryName = root.attribute("type");
-
-	panda::PandaObject* object = createObject(registryName);
-	if(object)
-		object->load(root);
-	else
-	{
-		QMessageBox::warning(nullptr, tr("Panda"),
-			tr("Could not create the object %1.\nA plugin must be missing.")
-			.arg(registryName));
-		return nullptr;
-	}
-
-	return object;
 }
 
 void PandaDocument::setDataDirty(BaseData* data)

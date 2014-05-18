@@ -48,6 +48,7 @@ HEADERS       = \
 	ui/DatasTable.h \
 	ui/EditGroupDialog.h \
 	ui/GraphView.h \
+	ui/GroupsManager.h \
 	ui/LayersTab.h \
 	ui/LinkTag.h \
 	ui/ListObjectsAndTypes.h \
@@ -205,6 +206,7 @@ SOURCES       = main.cpp \
 	ui/DatasTable.cpp \
 	ui/EditGroupDialog.cpp \
 	ui/GraphView.cpp \
+	ui/GroupsManager.cpp \
 	ui/LayersTab.cpp \
 	ui/LinkTag.cpp \
 	ui/ListObjectsAndTypes.cpp \

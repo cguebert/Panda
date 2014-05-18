@@ -1,5 +1,6 @@
 #include <QtWidgets>
 
+#include <ui/GroupsManager.h>
 #include <ui/QuickCreateDialog.h>
 
 #include <panda/PandaDocument.h>
@@ -54,7 +55,7 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 	}
 
 	// Adding groups
-	panda::PandaDocument::GroupsIterator iter2 = doc->getGroupsIterator();
+	GroupsManager::GroupsIterator iter2 = GroupsManager::getInstance()->getGroupsIterator();
 	while(iter2.hasNext())
 	{
 		iter2.next();
@@ -96,7 +97,7 @@ void QuickCreateDialog::updateDescLabel()
 		if(selectedItemText.startsWith("Groups/"))
 		{
 			QString groupName = selectedItemText.mid(7);
-			QString description = document->getGroupDescription(groupName);
+			QString description = GroupsManager::getInstance()->getGroupDescription(groupName);
 			descLabel->setText(description);
 		}
 		else
@@ -157,7 +158,7 @@ void QuickCreateDialog::createObject()
 		if(selectedItemText.startsWith("Groups/"))
 		{
 			QString groupName = selectedItemText.mid(7);
-			document->createGroupObject(groupName);
+			GroupsManager::getInstance()->createGroupObject(document, groupName);
 		}
 		else
 		{
