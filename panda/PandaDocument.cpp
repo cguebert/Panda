@@ -72,6 +72,8 @@ PandaDocument::PandaDocument(QObject *parent)
 	connect(animTimer, SIGNAL(timeout()), this, SLOT(step()));
 
 	groupsDirPath = QCoreApplication::applicationDirPath() + "/groups/";
+
+	m_undoStack.setUndoLimit(10);
 }
 
 PandaDocument::~PandaDocument()
@@ -358,6 +360,8 @@ void PandaDocument::resetDocument()
 	animTimer->stop();
 	if(m_scheduler)
 		m_scheduler->stop();
+
+	m_undoStack.clear();
 
 	emit modified();
 	emit timeChanged();

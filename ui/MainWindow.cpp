@@ -44,7 +44,7 @@ MainWindow::MainWindow()
 
 	datasTable = new DatasTable(pandaDocument, this);
 
-	datasDock = new QDockWidget("Properties", this);
+	datasDock = new QDockWidget(tr("Properties"), this);
 	datasDock->setObjectName("PropertiesDock");
 	datasDock->setWidget(datasTable);
 	datasDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -52,7 +52,7 @@ MainWindow::MainWindow()
 
 	layersTab = new LayersTab(pandaDocument, this);
 
-	layersDock = new QDockWidget("Layers", this);
+	layersDock = new QDockWidget(tr("Layers"), this);
 	layersDock->setObjectName("LayersDock");
 	layersDock->setWidget(layersTab);
 	layersDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -373,6 +373,12 @@ void MainWindow::createActions()
 	showObjectsAndTypesAction = new QAction(tr("List types and objects"), this);
 	showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
 	connect(showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
+
+	undoAction = pandaDocument->getUndoStack()->createUndoAction(this);
+	undoAction->setShortcut(QKeySequence::Undo);
+
+	redoAction = pandaDocument->getUndoStack()->createRedoAction(this);
+	redoAction->setShortcut(QKeySequence::Redo);
 }
 
 void MainWindow::createMenus()
@@ -390,6 +396,9 @@ void MainWindow::createMenus()
 	fileMenu->addAction(exitAction);
 
 	editMenu = menuBar()->addMenu(tr("&Edit"));
+	editMenu->addAction(undoAction);
+	editMenu->addAction(redoAction);
+	editMenu->addSeparator();
 	editMenu->addAction(cutAction);
 	editMenu->addAction(copyAction);
 	editMenu->addAction(pasteAction);

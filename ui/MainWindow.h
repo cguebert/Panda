@@ -134,6 +134,8 @@ private:
 	QAction* copyDataAction;
 	QAction* showLoggerDialogAction;
 	QAction* showObjectsAndTypesAction;
+	QAction* undoAction;
+	QAction* redoAction;
 	QLabel* timeLabel;
 };
 

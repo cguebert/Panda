@@ -52,6 +52,8 @@ public:
 		MENU_LINK = 0x4
 	};
 
+	void moveObjects(QList<panda::PandaObject*> objects, QPointF delta);
+
 protected:
 	void paintEvent(QPaintEvent *event);
 	void resizeEvent(QResizeEvent *event);
@@ -101,22 +103,31 @@ public slots:
 
 private:
 	panda::PandaDocument* pandaDocument;
+
 	int zoomLevel;
 	qreal zoomFactor;
 	QPointF viewDelta;
 	QPointF previousMousePos, currentMousePos;
+
 	enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK, MOVING_ZOOM, MOVING_CUSTOM };
 	MovingAction movingAction;
+
 	panda::BaseData *clickedData, *hoverData, *contextMenuData;
+
 	QMap<panda::PandaObject*, QSharedPointer<ObjectDrawStruct> > objectDrawStructs;
 	ObjectDrawStruct* capturedDrawStruct; /// Clicked ObjectDrawStruct that want to intercept mouse events
+
 	QMap<panda::BaseData*, QSharedPointer<LinkTag> > linkTags;
 	bool recomputeTags; /// Should we recompute the linkTags next PaintEvent?
+
 	QTimer* hoverTimer; /// Counting how long the mouse is staying over a Data
 	bool highlightConnectedDatas;
+
 	bool useMagneticSnap; /// Do we help align objects when moving them with the mouse?
 	std::set<qreal> snapTargetsX, snapTargetsY;
 	QPointF snapDelta;
+
+	QList<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied
 };
 
 #endif

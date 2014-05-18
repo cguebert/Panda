@@ -11,6 +11,7 @@
 #include <QSize>
 #include <QMap>
 #include <QDomDocument>
+#include <QUndoStack>
 
 class QOpenGLFramebufferObject;
 
@@ -96,6 +97,8 @@ public:
 	void setDataReady(BaseData* data); // Launch the tasks connected to this node
 	void waitForOtherTasksToFinish(bool mainThread = true); // Wait until the tasks we launched finish
 
+	QUndoStack* getUndoStack();
+
 protected:
 	ObjectsList pandaObjects, selectedObjects;
 	QMap<quint32, PandaObject*> pandaObjectsMap;
@@ -121,6 +124,8 @@ protected:
 	QMap<QString, QString> groupsMap;
 
 	QSharedPointer<Scheduler> m_scheduler;
+
+	QUndoStack m_undoStack;
 
 	bool getGroupDescription(const QString &fileName, QString& description);
 	void render();
@@ -210,6 +215,9 @@ inline quint32 PandaDocument::getNextIndex()
 
 inline Layer* PandaDocument::getDefaultLayer()
 { return defaultLayer; }
+
+inline QUndoStack* PandaDocument::getUndoStack()
+{ return &m_undoStack; }
 
 } // namespace panda
 

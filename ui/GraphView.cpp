@@ -7,6 +7,7 @@
 #include <ui/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/command/MoveObjectCommand.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <ui/UpdateLoggerDialog.h>
@@ -393,20 +394,21 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				}
 			}
 			QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
-			if(!delta.isNull())
+
+			// Remove docked objects from the selection
+			m_customSelection.clear();
+			for(auto object : pandaDocument->getSelection())
 			{
-				for(auto object : pandaDocument->getSelection())
-				{
-					panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
-					if(dockable && pandaDocument->isSelected(dockable->getParentDock()))
-						continue; // don't move a dockable object if their parent dock is selected, it will move them
-					objectDrawStructs[object]->move(delta);
-				}
-				emit modified();
-				updateLinkTags();
+				panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
+				if(dockable && pandaDocument->isSelected(dockable->getParentDock()))
+					continue; // don't move a dockable object if their parent dock is selected, it will move them
+				m_customSelection.push_back(object);
 			}
+
+			if(!m_customSelection.empty() && !delta.isNull())
+				pandaDocument->getUndoStack()->push(new MoveObjectCommand(this, m_customSelection, delta));
+
 			previousMousePos = mousePos;
-			update();
 		}
 	}
 	else if(movingAction == MOVING_OBJECT)
@@ -421,20 +423,11 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			computeSnapDelta(possiblePosition);
 			delta = delta - oldSnapDelta + snapDelta;
 		}
-		if(!delta.isNull())
-		{
-			for(auto object : pandaDocument->getSelection())
-			{
-				panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
-				if(dockable && pandaDocument->isSelected(dockable->getParentDock()))
-					continue; // don't move a dockable object if their parent dock is selected, it will move them
-				objectDrawStructs[object]->move(delta);
-			}
-			emit modified();
-			updateLinkTags();
-		}
+
+		if(!m_customSelection.empty() && !delta.isNull())
+			pandaDocument->getUndoStack()->push(new MoveObjectCommand(this, m_customSelection, delta));
+
 		previousMousePos = mousePos;
-		update();
 	}
 	else if(movingAction == MOVING_VIEW)
 	{
@@ -1176,4 +1169,13 @@ void GraphView::computeSnapDelta(QPointF position)
 		if(qAbs(y - position.y()) < snapMaxDist)
 			snapDelta.setY(y - position.y());
 	}
+}
+
+void GraphView::moveObjects(QList<panda::PandaObject*> objects, QPointF delta)
+{
+	for(auto object : objects)
+		objectDrawStructs[object]->move(delta);
+	emit modified();
+	updateLinkTags();
+	update();
 }
