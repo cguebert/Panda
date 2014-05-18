@@ -125,9 +125,9 @@ void UpdateLogger::startLog(PandaDocument* doc)
 	m_logLevelMap.fill(-1, m_nbThreads);
 
 	m_nodeStates.clear();
-	for(PandaObject* object : doc->getObjects())
+	for(auto object : doc->getObjects())
 	{
-		m_nodeStates[object] = object->isDirty();
+		m_nodeStates[object.data()] = object->isDirty();
 
 		for(BaseData* data : object->getDatas())
 			m_nodeStates[data] = data->isDirty();
@@ -143,9 +143,9 @@ void UpdateLogger::stopLog()
 
 void UpdateLogger::updateDirtyStates()
 {
-	for(PandaObject* object : m_document->getObjects())
+	for(auto object : m_document->getObjects())
 	{
-		m_nodeStates[object] = object->isDirty();
+		m_nodeStates[object.data()] = object->isDirty();
 
 		for(BaseData* data : object->getDatas())
 			m_nodeStates[data] = data->isDirty();

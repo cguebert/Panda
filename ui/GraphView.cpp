@@ -85,8 +85,8 @@ panda::PandaObject* GraphView::getObjectAtPos(const QPointF& pt)
 	for(int i=objects.size()-1; i>=0; --i)
 	{
 		auto object = objects[i];
-		if(objectDrawStructs[object]->contains(pt))
-			return object;
+		if(objectDrawStructs[object.data()]->contains(pt))
+			return object.data();
 	}
 	return nullptr;
 }
@@ -171,11 +171,11 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 
 	// Give a possibility to draw behind normal objects
 	for(auto object : pandaDocument->getObjects())
-		objectDrawStructs[object]->drawBackground(&painter);
+		objectDrawStructs[object.data()]->drawBackground(&painter);
 
 	// Draw the objects
 	for(auto object : pandaDocument->getObjects())
-		objectDrawStructs[object]->draw(&painter);
+		objectDrawStructs[object.data()]->draw(&painter);
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for(auto object : pandaDocument->getSelection())
@@ -184,11 +184,11 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	// Draw links
 	painter.setBrush(Qt::NoBrush);
 	for(auto object : pandaDocument->getObjects())
-		objectDrawStructs[object]->drawLinks(&painter);
+		objectDrawStructs[object.data()]->drawLinks(&painter);
 
 	// Give a possibility to draw in front of normal objects
 	for(auto object : pandaDocument->getObjects())
-		objectDrawStructs[object]->drawForeground(&painter);
+		objectDrawStructs[object.data()]->drawForeground(&painter);
 
 	// Draw links tags
 	for(auto& tag : linkTags.values())
@@ -229,10 +229,10 @@ void GraphView::paintLogDebug(QPainter* painter)
 	if(logDlg && logDlg->isVisible())
 	{
 		auto states = logDlg->getNodeStates();
-		for(panda::PandaObject* object : pandaDocument->getObjects())
+		for(auto object : pandaDocument->getObjects())
 		{
-			auto ods = objectDrawStructs[object];
-			if(states[object])
+			auto ods = objectDrawStructs[object.data()];
+			if(states[object.data()])
 				painter->setBrush(QColor(255,0,0,32));
 			else
 				painter->setBrush(QColor(0,255,0,32));
@@ -562,7 +562,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				int newIndex = -1;
 				for(auto object : pandaDocument->getObjects())
 				{
-					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object);
+					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.data());
 					if(dock)
 					{
 						if(dockableArea.intersects(objectDrawStructs[dock]->getObjectArea()) && dock->accepts(dockable))
@@ -605,9 +605,9 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		QRectF selectionRect = QRectF(previousMousePos/zoomFactor, currentMousePos/zoomFactor).normalized();
 		for(auto object : pandaDocument->getObjects())
 		{
-			QRectF objectArea = objectDrawStructs[object]->getObjectArea();
+			QRectF objectArea = objectDrawStructs[object.data()]->getObjectArea();
 			if(selectionRect.contains(objectArea) || selectionRect.intersects(objectArea))
-				pandaDocument->selectionAdd(object);
+				pandaDocument->selectionAdd(object.data());
 		}
 
 		update();
@@ -781,7 +781,7 @@ void GraphView::centerView()
 		QRectF totalView;
 		for(auto object : pandaDocument->getObjects())
 		{
-			QRectF objectArea = objectDrawStructs[object]->getObjectArea();
+			QRectF objectArea = objectDrawStructs[object.data()]->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
 
@@ -797,7 +797,7 @@ void GraphView::showAll()
 		QRectF totalView;
 		for(auto object : pandaDocument->getObjects())
 		{
-			QRectF objectArea = objectDrawStructs[object]->getObjectArea();
+			QRectF objectArea = objectDrawStructs[object.data()]->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
 

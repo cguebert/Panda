@@ -92,6 +92,7 @@ LayersTab::LayersTab(panda::PandaDocument* doc, QWidget *parent)
 
 	connect(doc, SIGNAL(addedObject(panda::PandaObject*)), this, SLOT(addedObject(panda::PandaObject*)));
 	connect(doc, SIGNAL(removedObject(panda::PandaObject*)), this, SLOT(removedObject(panda::PandaObject*)));
+	connect(doc, SIGNAL(dirtyObject(panda::PandaObject*)), this, SLOT(dirtyObject(panda::PandaObject*)));
 
 	connect(nameEdit, SIGNAL(editingFinished()), this, SLOT(nameChanged()));
 	connect(tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));
@@ -130,7 +131,6 @@ void LayersTab::addedObject(panda::PandaObject* object)
 	panda::BaseLayer* layer = dynamic_cast<panda::BaseLayer*>(object);
 	if(layer)
 	{
-		connect(object, SIGNAL(dirty(panda::PandaObject*)), this, SLOT(dirtyObject(panda::PandaObject*)));
 		if(layers.empty())
 		{
 			selectedLayer = layer;
@@ -167,9 +167,9 @@ void LayersTab::removedObject(panda::PandaObject* object)
 	}
 }
 
-void LayersTab::dirtyObject(panda::PandaObject*)
+void LayersTab::dirtyObject(panda::PandaObject* object)
 {
-	if(selectedLayer)
+	if(selectedLayer && selectedLayer == dynamic_cast<panda::BaseLayer*>(object))
 	{
 		nameEdit->setText(selectedLayer->getLayerName());
 		compositionBox->setCurrentIndex(selectedLayer->getCompositionMode());

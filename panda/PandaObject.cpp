@@ -10,49 +10,14 @@
 
 namespace panda {
 
-PandaObject::PandaObject(QObject *parent)
-	: QObject(parent)
+PandaObject::PandaObject(PandaDocument* document)
+	: parentDocument(document)
 	, doEmitModified(true)
 	, doEmitDirty(true)
 	, isInStep(false)
 	, isUpdating(false)
 	, laterUpdate(false)
 {
-	parentDocument = dynamic_cast<PandaDocument*>(parent);
-}
-
-PandaObject::~PandaObject()
-{
-}
-
-QString PandaObject::getTypeName()
-{
-	return getClass()->getTypeName();
-}
-
-QString PandaObject::getClassName()
-{
-	return getClass()->getClassName();
-}
-
-QString PandaObject::getNamespaceName()
-{
-	return getClass()->getNamespaceName();
-}
-
-QString PandaObject::getTemplateName()
-{
-	return getClass()->getTemplateName();
-}
-
-QString PandaObject::getName() const
-{
-	return name;
-}
-
-quint32 PandaObject::getIndex() const
-{
-	return index;
 }
 
 void PandaObject::addData(BaseData* data)
@@ -120,18 +85,8 @@ void PandaObject::setDirtyValue()
 		DataNode::setDirtyValue();
 	}
 
-	if(doEmitDirty && !isInStep)
-		emit dirty(this);
-}
-
-void PandaObject::beginStep()
-{
-	isInStep = true;
-}
-
-void PandaObject::endStep()
-{
-	isInStep = false;
+	if(doEmitDirty && !isInStep && parentDocument)
+		parentDocument->onDirtyObject(this);
 }
 
 BaseData* PandaObject::getData(const QString& name) const
@@ -139,11 +94,6 @@ BaseData* PandaObject::getData(const QString& name) const
 	if(datasMap.contains(name))
 		return datasMap[name];
 	else return nullptr;
-}
-
-QList<BaseData*> PandaObject::getDatas() const
-{
-	return datas;
 }
 
 QList<BaseData*> PandaObject::getInputDatas() const
@@ -170,13 +120,7 @@ QList<BaseData*> PandaObject::getOutputDatas() const
 	return temp;
 }
 
-void PandaObject::setInternalData(const QString& newName, const quint32& newIndex)
-{
-	name = newName;
-	index = newIndex;
-}
-
-void PandaObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
+void PandaObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*> *selected)
 {
 	for(BaseData* data : datas)
 	{
@@ -217,13 +161,8 @@ void PandaObject::changeDataName(BaseData* data, const QString& newName)
 
 void PandaObject::emitModified()
 {
-	if(doEmitModified)
-		emit modified(this);
-}
-
-bool PandaObject::doesLaterUpdate()
-{
-	return laterUpdate;
+	if(doEmitModified && parentDocument)
+		parentDocument->onModifiedObject(this);
 }
 
 } // namespace Panda

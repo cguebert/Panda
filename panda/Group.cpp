@@ -27,7 +27,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	if(doc->getNbSelected() < 2)
 		return false;
 
-	PandaDocument::ObjectsList selection = doc->getSelection();
+	auto selection = doc->getSelection();
 	bool hasRenderer = false;
 	// Verify that all selected renderers are in the same layer
 	Layer* layer = nullptr;
@@ -61,7 +61,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	Group* group = nullptr;
 	if(hasRenderer)
 	{
-		GroupWithLayer* groupWithLayer = dynamic_cast<GroupWithLayer*>(doc->createObject(ObjectFactory::getRegistryName<GroupWithLayer>()));
+		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(doc->createObject(ObjectFactory::getRegistryName<GroupWithLayer>()));
 		if(groupWithLayer)
 			groupWithLayer->setLayer(layer);
 		group = groupWithLayer;
@@ -91,8 +91,10 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	// Adding the objects
 	for(auto object : selection)
 	{
-		group->addObject(object);
-		object->setParent(group);
+		auto objectPtr = doc->getSharedPointer(object);
+		if(!objectPtr)
+			continue;
+		group->addObject(objectPtr);
 
 		// Storing the position of this object in respect to the group object
 		QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
@@ -204,38 +206,34 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		QPointF groupPos = view->getObjectDrawStruct(group)->getPosition();
 
 		// Putting the objects back into the document
-		QList<DockObject*> docks;
+		ObjectsList docks;
 		for(auto object : group->objects)
 		{
-			DockObject* dock = dynamic_cast<DockObject*>(object);
+			DockObject* dock = dynamic_cast<DockObject*>(object.data());
 			if(dock)
-				docks.append(dock);
+				docks.append(object);
 			else
 			{
-				group->removeObject(object);
+				group->removeObject(object.data());
 				doc->doAddObject(object);
-				doc->selectionAdd(object);
-				object->setParent(doc);
+				doc->selectionAdd(object.data());
 
 				// Placing the object in the view
-				ObjectDrawStruct* ods = view->getObjectDrawStruct(object);
-				ods->move(groupPos + group->positions[object] - ods->getPosition());
+				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
+				ods->move(groupPos + group->positions[object.data()] - ods->getPosition());
 			}
 		}
 
 		// We extract docks last (their docked objects must be out first)
-		QListIterator<DockObject*> dockIter = QListIterator<DockObject*>(docks);
-		while(dockIter.hasNext())
+		for(auto object : docks)
 		{
-			PandaObject* object = dockIter.next();
-			group->removeObject(object);
+			group->removeObject(object.data());
 			doc->doAddObject(object);
-			doc->selectionAdd(object);
-			object->setParent(doc);
+			doc->selectionAdd(object.data());
 
 			// Placing the object in the view
-			ObjectDrawStruct* ods = view->getObjectDrawStruct(object);
-			ods->move(groupPos + group->positions[object] - ods->getPosition());
+			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
+			ods->move(groupPos + group->positions[object.data()] - ods->getPosition());
 		}
 
 		// Reconnecting datas
@@ -281,20 +279,22 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 	typedef QPair<quint32, quint32> IntPair;
 	QList<IntPair> dockedObjects;
 
-	QList<PandaObject*> allObjects(objects);
+	PandaDocument::ObjectsSelection allObjects;
+	for(auto object : objects)
+		allObjects.push_back(object.data());
 	allObjects.push_back(this);
 
 	// Saving objects in this group
-	for(PandaObject* object : objects)
+	for(auto object : objects)
 	{
 		QDomElement node = doc.createElement("Object");
-		node.setAttribute("type", ObjectFactory::getRegistryName(object));
+		node.setAttribute("type", ObjectFactory::getRegistryName(object.data()));
 		node.setAttribute("index", object->getIndex());
 		elem.appendChild(node);
 
 		object->save(doc, node, &allObjects);
 
-		QPointF pos = positions[object];
+		QPointF pos = positions[object.data()];
 		node.setAttribute("x", pos.x());
 		node.setAttribute("y", pos.y());
 
@@ -307,7 +307,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 		}
 
 		// Preparing dockables list for docks
-		DockObject* dock = dynamic_cast<DockObject*>(object);
+		DockObject* dock = dynamic_cast<DockObject*>(object.data());
 		if(dock)
 		{
 			DockObject::DockablesIterator dockableIter = dock->getDockablesIterator();
@@ -380,19 +380,17 @@ void Group::load(QDomElement& elem)
 
 	QMap<quint32, PandaObject*> importObjectsMap;
 	ObjectFactory* factory = ObjectFactory::getInstance();
-	PandaDocument* doc = dynamic_cast<PandaDocument*>(parent());
 
 	QDomElement objectNode = elem.firstChildElement("Object");
 	while(!objectNode.isNull())
 	{
 		QString registryName = objectNode.attribute("type");
 		quint32 index = objectNode.attribute("index").toUInt();
-		PandaObject* object = factory->create(registryName, doc);
+		auto object = factory->create(registryName, parentDocument);
 		if(object)
 		{
-			importObjectsMap[index] = object;
+			importObjectsMap[index] = object.data();
 			objects.append(object);
-			object->setParent(this);
 
 			object->load(objectNode);
 
@@ -404,7 +402,7 @@ void Group::load(QDomElement& elem)
 			pos.setX(objectNode.attribute("x").toFloat());
 			pos.setY(objectNode.attribute("y").toFloat());
 #endif
-			positions[object] = pos;
+			positions[object.data()] = pos;
 		}
 		else
 		{
@@ -476,12 +474,12 @@ void Group::load(QDomElement& elem)
 		dockNode = dockNode.nextSiblingElement("Dock");
 	}
 
-	emit modified(this);
+	parentDocument->onModifiedObject(this);
 }
 
-void Group::addObject(PandaObject* obj)
+void Group::addObject(ObjectPtr obj)
 {
-	objects.append(obj);
+	objects.push_back(obj);
 }
 
 QString Group::findAvailableDataName(QString baseName, BaseData *data)
@@ -522,8 +520,8 @@ BaseData* Group::duplicateData(BaseData* data)
 
 void Group::reset()
 {
-	for(PandaObject* obj : objects)
-		obj->reset();
+	for(auto object : objects)
+		object->reset();
 }
 
 QString Group::getGroupName()
@@ -568,10 +566,9 @@ QList<Renderer*> GroupWithLayer::getRenderers()
 	else
 	{
 		QList<Renderer*> renderers;
-		QListIterator<PandaObject*> iter = QListIterator<PandaObject*>(objects);
-		while(iter.hasNext())
+		for(auto object : objects)
 		{
-			Renderer* renderer = dynamic_cast<Renderer*>(iter.next());
+			Renderer* renderer = dynamic_cast<Renderer*>(object.data());
 			if(renderer)
 				renderers.append(renderer);
 		}
@@ -655,12 +652,12 @@ QMatrix4x4& GroupWithLayer::getMVPMatrix()
 		return mvpMatrix;
 }
 
-void GroupWithLayer::addObject(PandaObject* obj)
+void GroupWithLayer::addObject(ObjectPtr obj)
 {
 	Group::addObject(obj);
 
 	Layer* defaultLayer = parentDocument->getDefaultLayer();
-	Renderer* renderer = dynamic_cast<Renderer*>(obj);
+	Renderer* renderer = dynamic_cast<Renderer*>(obj.data());
 	if(renderer)
 	{
 		if(renderer->getParentDock() == defaultLayer)

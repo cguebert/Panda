@@ -21,13 +21,15 @@ class BaseLayer;
 class Layer;
 class Scheduler;
 
-class PandaDocument : public PandaObject
+class PandaDocument : public QObject, public PandaObject
 {
 	Q_OBJECT
 public:
 	PANDA_CLASS(PandaDocument, PandaObject)
 
-	typedef QList<PandaObject*> ObjectsList;
+	typedef QSharedPointer<PandaObject> ObjectPtr;
+	typedef QVector<ObjectPtr> ObjectsList;
+	typedef QList<PandaObject*> ObjectsSelection;
 
 	explicit PandaDocument(QObject *parent = 0);
 	~PandaDocument();
@@ -38,7 +40,7 @@ public:
 	QString writeTextDocument();
 	bool readTextDocument(QString &text);
 
-	bool saveDoc(QDomDocument& doc, QDomElement& root, const QList<PandaObject*>& selected);
+	bool saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsSelection& selected);
 	bool loadDoc(QDomElement& root);
 
 	void resetDocument();
@@ -46,12 +48,13 @@ public:
 	PandaObject* createObject(QString registryName);
 	int getNbObjects() const;
 	const ObjectsList& getObjects() const;
+	ObjectPtr getSharedPointer(PandaObject* object);
 
 	PandaObject* getCurrentSelectedObject();
 	void setCurrentSelectedObject(PandaObject* object);
 	bool isSelected(PandaObject* object) const;
 	int getNbSelected() const;
-	const ObjectsList& getSelection() const;
+	const ObjectsSelection& getSelection() const;
 
 	types::Color getBackgroundColor();
 	void setBackgroundColor(types::Color color);
@@ -81,7 +84,7 @@ public:
 	void moveLayerUp(PandaObject *layer);
 	void moveLayerDown(PandaObject* layer);
 
-	void doAddObject(PandaObject* object);
+	void doAddObject(ObjectPtr object);
 	void doRemoveObject(PandaObject* object, bool del=true);
 
 	// When an object is set to laterUpdate, use these functions to help the Scheduler
@@ -92,7 +95,8 @@ public:
 	QUndoStack* getUndoStack();
 
 protected:
-	ObjectsList pandaObjects, selectedObjects;
+	ObjectsList pandaObjects;
+	ObjectsSelection selectedObjects;
 	QMap<quint32, PandaObject*> pandaObjectsMap;
 	quint32 currentIndex;
 	Layer* defaultLayer;
@@ -122,6 +126,7 @@ protected:
 signals:
 	void modified();
 	void modifiedObject(panda::PandaObject*);
+	void dirtyObject(panda::PandaObject*);
 	void addedObject(panda::PandaObject*);
 	void removedObject(panda::PandaObject*);
 	void savingObject(QDomDocument&, QDomElement&, panda::PandaObject*);
@@ -142,6 +147,7 @@ public slots:
 	void selectNone();
 	void selectConnected();
 	void onDirtyObject(panda::PandaObject* object);
+	void onModifiedObject(panda::PandaObject* object);
 	void play(bool playing);
 	void step();
 	void rewind();
@@ -155,12 +161,12 @@ inline const PandaDocument::ObjectsList& PandaDocument::getObjects() const
 { return pandaObjects; }
 
 inline bool PandaDocument::isSelected(PandaObject* object) const
-{ return selectedObjects.contains(object); }
+{ return std::find(selectedObjects.begin(), selectedObjects.end(), object) != selectedObjects.end(); }
 
 inline int PandaDocument::getNbSelected() const
 { return selectedObjects.size(); }
 
-inline const PandaDocument::ObjectsList& PandaDocument::getSelection() const
+inline const PandaDocument::ObjectsSelection& PandaDocument::getSelection() const
 { return selectedObjects; }
 
 inline types::Color PandaDocument::getBackgroundColor()

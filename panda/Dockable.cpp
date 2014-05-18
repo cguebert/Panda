@@ -6,24 +6,22 @@
 namespace panda
 {
 
-DockObject::DockObject(QObject *parent)
-	: PandaObject(parent)
+DockObject::DockObject(PandaDocument* document)
+	: PandaObject(document)
 {
 }
 
 DockObject::~DockObject()
 {
 	DockObject* defaultDock = nullptr;
-	PandaDocument* doc = dynamic_cast<PandaDocument*>(parent());
 
-	DockablesIterator iter(dockedObjects);
+	DockablesIterator iter(m_dockedObjects);
 	while(iter.hasNext())
 	{
 		DockableObject* dockable = iter.next();
 		removeInput((DataNode*)dockable);
 
-		if(doc)
-			defaultDock = dockable->getDefaultDock();
+		defaultDock = dockable->getDefaultDock();
 
 		if(defaultDock == this)
 			defaultDock = nullptr;
@@ -45,10 +43,10 @@ void DockObject::addDockable(DockableObject* dockable, int index)
 	dockable->setParentDock(this);
 	addInput((DataNode*)dockable);
 	if(index < 0)
-		dockedObjects.append(dockable);
+		m_dockedObjects.append(dockable);
 	else
-		dockedObjects.insert(index, dockable);
-	emit modified(this);
+		m_dockedObjects.insert(index, dockable);
+	parentDocument->onModifiedObject(this);
 }
 
 void DockObject::removeDockable(DockableObject* dockable)
@@ -58,30 +56,30 @@ void DockObject::removeDockable(DockableObject* dockable)
 
 DockObject::DockablesIterator DockObject::getDockablesIterator() const
 {
-	return DockablesIterator(dockedObjects);
+	return DockablesIterator(m_dockedObjects);
 }
 
 int DockObject::getIndexOfDockable(DockableObject* dockable) const
 {
-	return dockedObjects.indexOf(dockable);
+	return m_dockedObjects.indexOf(dockable);
 }
 
 void DockObject::doRemoveInput(DataNode* node)
 {
 	DataNode::doRemoveInput(node);
 
-	if(dockedObjects.contains((DockableObject*)node))
+	if(m_dockedObjects.contains((DockableObject*)node))
 	{
-		dockedObjects.removeAll((DockableObject*)node);
+		m_dockedObjects.removeAll((DockableObject*)node);
 		setDirtyValue();
-		emit modified(this);
+		parentDocument->onModifiedObject(this);
 	}
 }
 
 //******************************************************************************************
 
-DockableObject::DockableObject(QObject *parent)
-	: PandaObject(parent)
+DockableObject::DockableObject(PandaDocument* document)
+	: PandaObject(document)
 {
 }
 
@@ -94,12 +92,12 @@ void DockableObject::postCreate()
 
 void DockableObject::setParentDock(DockObject* dock)
 {
-	parentDock = dock;
+	m_parentDock = dock;
 }
 
 DockObject* DockableObject::getParentDock()
 {
-	return parentDock.data();
+	return m_parentDock;
 }
 
 DockObject* DockableObject::getDefaultDock()

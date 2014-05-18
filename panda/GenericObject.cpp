@@ -187,7 +187,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(inputData)
 			inputData->setParent(parent);
 
-		emit modified(this);
+		parentDocument->onModifiedObject(this);
 	}
 	else if(parent || !m_createdDatasMap.contains(data))
 	{
@@ -219,7 +219,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 			updateDataNames();
 		}
 
-		emit modified(this);
+		parentDocument->onModifiedObject(this);
 	}
 }
 
@@ -364,7 +364,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(inputData)
 			inputData->setParent(parent);
 
-		emit modified(this);
+		parentDocument->onModifiedObject(this);
 	}
 	// Changing connection
 	else if(parent || !m_createdDatasMap.contains(data))
@@ -423,7 +423,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 				setDirtyValue();
 		}
 
-		emit modified(this);
+		parentDocument->onModifiedObject(this);
 	}
 }
 

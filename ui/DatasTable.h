@@ -12,6 +12,7 @@ class QLabel;
 
 namespace panda
 {
+	class PandaDocument;
 	class PandaObject;
 	class BaseData;
 }
@@ -20,17 +21,18 @@ class DatasTable : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit DatasTable(panda::PandaObject* document, QWidget *parent = 0);
+	explicit DatasTable(panda::PandaDocument* m_document, QWidget *parent = 0);
 
 	typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
 
 protected:
-	QStackedLayout* stackedLayout;
-	QLabel* nameLabel;
-	panda::PandaObject *document, *currentObject, *nextObject;
-	bool waitingPopulate;
+	QStackedLayout* m_stackedLayout;
+	QLabel* m_nameLabel;
+	panda::PandaDocument* m_document;
+	panda::PandaObject *m_currentObject, *m_nextObject;
+	bool m_waitingPopulate;
 
-	QList<DataWidgetPtr> dataWidgets;
+	QList<DataWidgetPtr> m_dataWidgets;
 
 signals:
 

@@ -16,7 +16,7 @@ class DockObject : public PandaObject
 public:
 	PANDA_CLASS(DockObject, PandaObject)
 
-	DockObject(QObject *parent);
+	explicit DockObject(PandaDocument* document);
 	virtual ~DockObject();
 
 	virtual bool accepts(DockableObject* dockable) const;
@@ -31,7 +31,7 @@ public:
 protected:
 	virtual void doRemoveInput(DataNode* node);
 
-	QList<DockableObject*> dockedObjects;
+	QList<DockableObject*> m_dockedObjects;
 };
 
 class DockableObject : public PandaObject
@@ -39,14 +39,15 @@ class DockableObject : public PandaObject
 public:
 	PANDA_CLASS(DockableObject, PandaObject)
 
-	DockableObject(QObject *parent);
+	explicit DockableObject(PandaDocument* document);
+
 	virtual void postCreate();
 	virtual void setParentDock(DockObject* dock);
 	virtual DockObject* getParentDock();
 	virtual DockObject* getDefaultDock();
 
 protected:
-	QPointer<DockObject> parentDock;
+	DockObject* m_parentDock;
 };
 
 } // namespace panda

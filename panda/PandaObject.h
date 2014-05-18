@@ -6,7 +6,6 @@
 #include <panda/BaseClass.h>
 
 #include <QMap>
-#include <QObject>
 #include <QSharedPointer>
 #include <QDomDocument>
 
@@ -15,14 +14,11 @@ namespace panda
 
 class PandaDocument;
 
-class PandaObject : public QObject, public DataNode
+class PandaObject : public DataNode
 {
-	Q_OBJECT
-
 public:
 	PANDA_CLASS(PandaObject, DataNode)
-	explicit PandaObject(QObject *parent = 0);
-	~PandaObject();
+	explicit PandaObject(PandaDocument* document);
 
 	static QString getTypeName();
 	static QString getClassName();
@@ -75,7 +71,7 @@ public:
 	virtual void beginStep();
 	virtual void endStep();
 
-	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject *> *selected = nullptr);
+	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*> *selected = nullptr);
 	virtual void load(QDomElement &elem);
 
 	virtual void dataSetParent(BaseData* data, BaseData* parent);
@@ -98,14 +94,40 @@ protected:
 	void setInternalData(const QString& newName, const quint32 &newIndex);
 	friend class ObjectFactory;
 	friend class PandaDocument;
-
-signals:
-	void dirty(panda::PandaObject*);
-	void modified(panda::PandaObject*);
-
-public slots:
-
 };
+
+inline QString PandaObject::getTypeName()
+{ return getClass()->getTypeName(); }
+
+inline QString PandaObject::getClassName()
+{ return getClass()->getClassName(); }
+
+inline QString PandaObject::getNamespaceName()
+{ return getClass()->getNamespaceName(); }
+
+inline QString PandaObject::getTemplateName()
+{ return getClass()->getTemplateName(); }
+
+inline QString PandaObject::getName() const
+{ return name; }
+
+inline quint32 PandaObject::getIndex() const
+{ return index; }
+
+inline void PandaObject::beginStep()
+{ isInStep = true; }
+
+inline void PandaObject::endStep()
+{ isInStep = false; }
+
+inline QList<BaseData*> PandaObject::getDatas() const
+{ return datas; }
+
+inline void PandaObject::setInternalData(const QString& newName, const quint32& newIndex)
+{ name = newName; index = newIndex; }
+
+inline bool PandaObject::doesLaterUpdate()
+{ return laterUpdate; }
 
 } // namespace Panda
 

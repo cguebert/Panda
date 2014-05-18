@@ -198,7 +198,7 @@ void Scheduler::buildDirtyList()
 	m_setDirtyList = computeConnected(nodes);
 }
 
-QList<PandaObject*> Scheduler::expandObjectsList(QList<PandaObject*> objects)
+QVector<PandaObject*> Scheduler::expandObjectsList(QVector<PandaObject*> objects)
 {
 	int i=0;
 	while(i < objects.size())
@@ -207,7 +207,8 @@ QList<PandaObject*> Scheduler::expandObjectsList(QList<PandaObject*> objects)
 		if(group)
 		{
 			objects.removeAt(i);
-			objects += group->getObjects();
+			for(auto object : group->getObjects())
+				objects.push_back(object.data());
 		}
 		else
 			++i;
@@ -259,7 +260,10 @@ void Scheduler::forEachObjectOutput(PandaObject* startObject, Scheduler::ObjectF
 void Scheduler::buildUpdateGraph()
 {
 	// Initialize the tasks list
-	auto objects = expandObjectsList(m_document->getObjects());
+	QVector<PandaObject*> objects;
+	for(auto object : m_document->getObjects())
+		objects.push_back(object.data());
+	objects = expandObjectsList(objects);
 	int nb = objects.size();
 	m_updateTasks.clear();
 	m_updateTasks.resize(nb);

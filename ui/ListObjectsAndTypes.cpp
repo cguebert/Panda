@@ -169,7 +169,7 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 
 		if(o.creator)
 		{
-			PandaObject* object = o.creator->create(document);
+			auto object = o.creator->create(document);
 
 			auto datas = object->getDatas();
 			if(!datas.empty())
@@ -182,7 +182,6 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 			}
 
 			object->preDestruction();
-			delete object;
 		}
 	}
 

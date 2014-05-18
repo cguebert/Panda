@@ -22,8 +22,21 @@ using types::Color;
 using types::ImageWrapper;
 using types::Point;
 
-PandaDocument::PandaDocument(QObject *parent)
-	: PandaObject(parent)
+template<class C>
+bool containsObject(C& container, PandaObject* object)
+{ return std::find(std::begin(container), std::end(container), object) != std::end(container); }
+
+template<class C>
+void removeObject(C& container, PandaObject* object)
+{
+	auto iter = std::find(std::begin(container), std::end(container), object);
+	if(iter != container.end())
+		container.erase(iter);
+}
+
+PandaDocument::PandaDocument(QObject* parent)
+	: PandaObject(nullptr)
+	, QObject(parent)
 	, currentIndex(1)
 	, renderSize(initData(&renderSize, Point(800,600), "render size", "Size of the image to be rendered"))
 	, backgroundColor(initData(&backgroundColor, Color::white(), "background color", "Background color of the image to be rendered"))
@@ -75,11 +88,8 @@ PandaDocument::PandaDocument(QObject *parent)
 
 PandaDocument::~PandaDocument()
 {
-	for(PandaObject* object : pandaObjects)
-	{
+	for(auto object : pandaObjects)
 		object->preDestruction();
-		object->disconnect();
-	}
 
 	if(m_scheduler)
 		m_scheduler->stop();
@@ -101,7 +111,10 @@ bool PandaDocument::writeFile(const QString& fileName)
 	QDomElement root = doc.createElement("Panda");
 	doc.appendChild(root);
 	save(doc, root);	// The document's Datas
-	saveDoc(doc, root, pandaObjects);	// The document and all of its objects
+	ObjectsSelection allObjects;
+	for(auto object : pandaObjects)
+		allObjects.push_back(object.data());
+	saveDoc(doc, root, allObjects);	// The document and all of its objects
 
 	file.write(doc.toByteArray(4));
 
@@ -137,7 +150,7 @@ bool PandaDocument::readFile(const QString& fileName, bool isImport)
 		load(root);		// Only the document's Datas
 	loadDoc(root);	// All the document's objects
 
-	for(PandaObject* object : pandaObjects)
+	for(auto object : pandaObjects)
 		object->reset();
 
 	emit selectionChanged();
@@ -169,7 +182,7 @@ bool PandaDocument::readTextDocument(QString& text)
 	QDomElement root = doc.documentElement();
 	bool bVal = loadDoc(root);
 
-	for(PandaObject* object : selectedObjects)
+	for(auto object : selectedObjects)
 		object->reset();
 
 	if(bSelected || !selectedObjects.empty())
@@ -181,7 +194,7 @@ bool PandaDocument::readTextDocument(QString& text)
 	return bVal;
 }
 
-bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const QList<PandaObject*>& selected)
+bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsSelection& selected)
 {
 	typedef QPair<BaseData*, BaseData*> DataPair;
 	QList<DataPair> links;
@@ -190,7 +203,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const QList<Pa
 	QList<IntPair> dockedObjects;
 
 	// Saving objects
-	for(PandaObject* object : selected)
+	for(auto object : selected)
 	{
 		QDomElement elem = doc.createElement("Object");
 		elem.setAttribute("type", ObjectFactory::getRegistryName(object));
@@ -203,7 +216,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const QList<Pa
 		for(BaseData* data : object->getInputDatas())
 		{
 			BaseData* parent = data->getParent();
-			if(parent && selected.contains(parent->getOwner()))
+			if(parent && containsObject(selected, parent->getOwner()))
 				links.append(qMakePair(data, parent));
 		}
 
@@ -254,7 +267,7 @@ bool PandaDocument::loadDoc(QDomElement& root)
 		if(registryName.isEmpty())
 			return false;
 		quint32 index = elem.attribute("index").toUInt();
-		PandaObject* object = createObject(registryName);
+		auto object = createObject(registryName);
 		if(object)
 		{
 			importIndicesMap[index] = object->getIndex();
@@ -330,15 +343,11 @@ void PandaDocument::resetDocument()
 	emit selectedObject(nullptr);
 	emit selectionChanged();
 
-	for(PandaObject* object : pandaObjects)
+	for(auto object : pandaObjects)
 	{
-		emit removedObject(object);
+		emit removedObject(object.data());
 		object->preDestruction();
-		object->disconnect(this);
 	}
-
-	for(PandaObject* object : pandaObjects)
-		delete object;
 
 	pandaObjectsMap.clear();
 	pandaObjects.clear();
@@ -366,11 +375,20 @@ void PandaDocument::resetDocument()
 
 PandaObject* PandaDocument::createObject(QString registryName)
 {
-	PandaObject* object = ObjectFactory::getInstance()->create(registryName, this);
+	ObjectPtr object = ObjectFactory::getInstance()->create(registryName, this);
 	if(object)
 		doAddObject(object);
 
-	return object;
+	return object.data();
+}
+
+PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object)
+{
+	auto iter = std::find(pandaObjects.begin(), pandaObjects.end(), object);
+	if(iter != pandaObjects.end())
+		return *iter;
+
+	return ObjectPtr();
 }
 
 PandaObject* PandaDocument::getCurrentSelectedObject()
@@ -432,10 +450,10 @@ void PandaDocument::del()
 {
 	if(!selectedObjects.empty())
 	{
-		ObjectsList selectedCopy = selectedObjects;
+		auto selectedCopy = selectedObjects;
 		selectedObjects.clear();
 
-		for(PandaObject* object : selectedCopy)
+		for(auto object : selectedCopy)
 			doRemoveObject(object);
 
 		emit selectedObject(nullptr);
@@ -446,7 +464,7 @@ void PandaDocument::del()
 
 void PandaDocument::selectionAdd(PandaObject* object)
 {
-	if(!selectedObjects.contains(object))
+	if(!containsObject(selectedObjects, object))
 	{
 		selectedObjects.append(object);
 		emit selectedObject(object);
@@ -456,7 +474,7 @@ void PandaDocument::selectionAdd(PandaObject* object)
 
 void PandaDocument::selectionRemove(PandaObject* object)
 {
-	if(selectedObjects.contains(object))
+	if(containsObject(selectedObjects, object))
 	{
 		selectedObjects.removeAll(object);
 		emit selectedObject(selectedObjects.back());
@@ -466,7 +484,9 @@ void PandaDocument::selectionRemove(PandaObject* object)
 
 void PandaDocument::selectAll()
 {
-	selectedObjects = pandaObjects;
+	selectedObjects.clear();
+	for(auto object : pandaObjects)
+		selectedObjects.push_back(object.data());
 	emit selectedObject(selectedObjects.back());
 	emit selectionChanged();
 }
@@ -538,7 +558,7 @@ void PandaDocument::selectConnected()
 			}
 		}
 
-		PandaObject* currentSelected = selectedObjects.back();
+		auto currentSelected = selectedObjects.back();
 		selectedObjects = closedList.toList();
 		setCurrentSelectedObject(currentSelected);
 		emit selectionChanged();
@@ -549,23 +569,19 @@ void PandaDocument::doRemoveObject(PandaObject* object, bool del)
 {
 	emit removedObject(object);
 	pandaObjectsMap.remove(object->getIndex());
-	pandaObjects.removeAll(object);
 	selectedObjects.removeAll(object);
-	object->disconnect(this);
+
 	if(del)
-	{
 		object->preDestruction();
-		delete object;
-	}
+
+	removeObject(pandaObjects, object);
 }
 
-void PandaDocument::doAddObject(PandaObject* object)
+void PandaDocument::doAddObject(ObjectPtr object)
 {
-	pandaObjectsMap.insert(object->getIndex(), object);
+	pandaObjectsMap.insert(object->getIndex(), object.data());
 	pandaObjects.append(object);
-	connect(object, SIGNAL(modified(panda::PandaObject*)), this, SIGNAL(modifiedObject(panda::PandaObject*)));
-	connect(object, SIGNAL(dirty(panda::PandaObject*)), this, SLOT(onDirtyObject(panda::PandaObject*)));
-	emit addedObject(object);
+	emit addedObject(object.data());
 }
 
 void PandaDocument::setDataDirty(BaseData* data)
@@ -603,11 +619,17 @@ BaseData* PandaDocument::findData(quint32 objectIndex, const QString& dataName)
 	return nullptr;
 }
 
-void PandaDocument::onDirtyObject(panda::PandaObject* object)
+void PandaDocument::onDirtyObject(PandaObject* object)
 {
+	emit dirtyObject(object);
 	if(object == getCurrentSelectedObject())
 		emit selectedObjectIsDirty(object);
 	emit modified();
+}
+
+void PandaDocument::onModifiedObject(PandaObject* object)
+{
+	emit modifiedObject(object);
 }
 
 void PandaDocument::update()
@@ -628,7 +650,7 @@ void PandaDocument::update()
 
 	for(auto obj : pandaObjects)
 	{
-		if(dynamic_cast<BaseLayer*>(obj))
+		if(dynamic_cast<BaseLayer*>(obj.data()))
 			obj->updateIfDirty();
 	}
 
@@ -679,7 +701,7 @@ void PandaDocument::render()
 
 	for(auto obj : pandaObjects)
 	{
-		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj);
+		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj.data());
 		if(layer)
 			layer->mergeLayer();
 	}
@@ -695,17 +717,19 @@ void PandaDocument::moveLayerUp(PandaObject* layer)
 {
 	if(!layer)
 		return;
-	int index = pandaObjects.indexOf(layer);
-	if(index == -1)
+	auto iter = std::find(pandaObjects.begin(), pandaObjects.end(), layer);
+	if(iter == pandaObjects.end())
 		return;
+	auto object = *iter; // Get the QSharedPointer
+	int index = iter - pandaObjects.begin();
 	int nb = pandaObjects.size();
 	for(++index;index<nb;++index)
 	{
-		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects.at(index));
+		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects[index].data());
 		if(otherLayer)
 		{
-			pandaObjects.removeAll(layer);
-			pandaObjects.insert(index, layer);
+			removeObject(pandaObjects, layer);
+			pandaObjects.insert(index, object);
 			setDirtyValue();
 			emit modified();
 			return;
@@ -717,16 +741,18 @@ void PandaDocument::moveLayerDown(PandaObject *layer)
 {
 	if(!layer)
 		return;
-	int index = pandaObjects.indexOf(layer);
-	if(index == -1)
+	auto iter = std::find(pandaObjects.begin(), pandaObjects.end(), layer);
+	if(iter == pandaObjects.end())
 		return;
+	auto object = *iter; // Get the QSharedPointer
+	int index = iter - pandaObjects.begin();
 	for(--index;index>=0;--index)
 	{
-		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects.at(index));
+		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects[index].data());
 		if(otherLayer)
 		{
-			pandaObjects.removeAll(layer);
-			pandaObjects.insert(index, layer);
+			removeObject(pandaObjects, layer);
+			pandaObjects.insert(index, object);
 			setDirtyValue();
 			emit modified();
 			return;
@@ -832,7 +858,7 @@ void PandaDocument::rewind()
 	animTime.setValue(0.0);
 	mousePosition.setValue(mousePositionBuffer);
 	mouseClick.setValue(0);
-	for(PandaObject* object : pandaObjects)
+	for(auto object : pandaObjects)
 		object->reset();
 	setDirtyValue();
 	emit timeChanged();
@@ -848,7 +874,7 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 		return;
 
 	QString registryName = QString("panda::GeneratorUser<") + entry->className + ">";
-	PandaObject* object = createObject(registryName);
+	auto object = createObject(registryName);
 
 	BaseData* inputData = object->getData("input");
 	if(inputData)

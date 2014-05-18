@@ -17,7 +17,7 @@ class BaseObjectCreator
 {
 public:
 	virtual ~BaseObjectCreator() {}
-	virtual PandaObject* create(PandaDocument* parent) = 0;
+	virtual QSharedPointer<PandaObject> create(PandaDocument* parent) = 0;
 };
 
 class ObjectFactory
@@ -49,7 +49,7 @@ public:
 	}
 	static QString getRegistryName(PandaObject* object);
 
-	PandaObject* create(QString className, PandaDocument* parent) const;
+	QSharedPointer<PandaObject> create(QString className, PandaDocument* parent) const;
 
 	typedef QMapIterator< QString, ClassEntry > RegistryMapIterator;
 	RegistryMapIterator getRegistryIterator() const;
@@ -65,9 +65,9 @@ template<class T>
 class ObjectCreator : public BaseObjectCreator
 {
 public:
-	virtual PandaObject* create(PandaDocument* parent)
+	virtual QSharedPointer<PandaObject> create(PandaDocument* parent)
 	{
-		return new T(parent);
+		return QSharedPointer<PandaObject>(new T(parent));
 	}
 };
 

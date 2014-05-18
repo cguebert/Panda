@@ -13,7 +13,7 @@ namespace panda
 
 class PandaDocument;
 
-class Group : public PandaObject
+class Group : public QObject, public PandaObject
 {
 	Q_OBJECT
 	friend class GroupObjectDrawStruct;
@@ -34,7 +34,8 @@ public:
 
 	QString getGroupName();
 
-	typedef QList<PandaObject*> ObjectsList;
+	typedef QSharedPointer<PandaObject> ObjectPtr;
+	typedef QVector<ObjectPtr> ObjectsList;
 	const ObjectsList& getObjects() const;
 
 protected:
@@ -44,7 +45,7 @@ protected:
 	QMap<PandaObject*, QPointF> positions;
 	QList< QSharedPointer<BaseData> > groupDatas;
 
-	virtual void addObject(PandaObject* obj);
+	virtual void addObject(ObjectPtr obj);
 	virtual void removeObject(PandaObject*) {}
 
 	BaseData* duplicateData(BaseData* data);
@@ -76,7 +77,7 @@ public:
 	virtual QMatrix4x4& getMVPMatrix();
 
 protected:
-	virtual void addObject(PandaObject* obj);
+	virtual void addObject(ObjectPtr obj);
 	virtual void removeObject(PandaObject* obj);
 
 	Data<types::ImageWrapper> image;

@@ -13,14 +13,14 @@ ObjectFactory* ObjectFactory::getInstance()
 	return &instance;
 }
 
-PandaObject* ObjectFactory::create(QString className, PandaDocument* parent) const
+QSharedPointer<PandaObject> ObjectFactory::create(QString className, PandaDocument* parent) const
 {
 	if(registry.contains(className))
 	{
 		ClassEntry entry = registry.value(className);
 		if(entry.creator)
 		{
-			PandaObject* object = entry.creator->create(parent);
+			QSharedPointer<PandaObject> object = entry.creator->create(parent);
 			if(object)
 			{
 				object->setInternalData(entry.objectName, parent->getNextIndex());
@@ -31,7 +31,7 @@ PandaObject* ObjectFactory::create(QString className, PandaDocument* parent) con
 	}
 
 	std::cerr << "Factory has no entry for " << className.toStdString() << std::endl;
-	return nullptr;
+	return QSharedPointer<PandaObject>();
 }
 
 QString ObjectFactory::getRegistryName(PandaObject* object)

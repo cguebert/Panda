@@ -4,6 +4,7 @@
 #include <panda/ObjectFactory.h>
 
 #include <QOpenGLFramebufferObject>
+#include <QCoreApplication>
 
 #include <ui/GraphView.h>
 
@@ -238,11 +239,12 @@ void Layer::postCreate()
 	int i = 1;
 	for(auto obj : parentDocument->getObjects())
 	{
-		if(dynamic_cast<Layer*>(obj) && obj!=this)
+		if(dynamic_cast<Layer*>(obj.data()) && obj!=this)
 			++i;
 	}
 
-	layerName.setValue(tr("Layer #%1").arg(i));
+	QString text = QCoreApplication::translate("Layer", "Layer #%1");
+	layerName.setValue(text.arg(i));
 }
 
 int LayerClass = RegisterObject<Layer>("Layer").setDescription("Organize renderers and change opacity and the composition mode");

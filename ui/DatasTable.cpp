@@ -3,21 +3,21 @@
 #include <ui/DatasTable.h>
 #include <ui/widget/DataWidgetFactory.h>
 
-#include <panda/PandaObject.h>
+#include <panda/PandaDocument.h>
 
-DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
+DatasTable::DatasTable(panda::PandaDocument* doc, QWidget *parent)
 	: QWidget(parent)
-	, document(doc)
-	, currentObject(nullptr)
-	, nextObject(nullptr)
-	, waitingPopulate(false)
+	, m_document(doc)
+	, m_currentObject(nullptr)
+	, m_nextObject(nullptr)
+	, m_waitingPopulate(false)
 {
-	nameLabel = new QLabel("Document");
-	stackedLayout =  new QStackedLayout();
+	m_nameLabel = new QLabel("Document");
+	m_stackedLayout =  new QStackedLayout();
 
 	QVBoxLayout* mainLayout = new QVBoxLayout();
-	mainLayout->addWidget(nameLabel);
-	mainLayout->addLayout(stackedLayout);
+	mainLayout->addWidget(m_nameLabel);
+	mainLayout->addLayout(m_stackedLayout);
 	setLayout(mainLayout);
 
 	queuePopulate(nullptr);
@@ -29,19 +29,19 @@ DatasTable::DatasTable(panda::PandaObject* doc, QWidget *parent)
 
 void DatasTable::populateTable()
 {
-	waitingPopulate = false;
-	if (!nextObject)
-		nextObject = document;
+	m_waitingPopulate = false;
+	if (!m_nextObject)
+		m_nextObject = m_document;
 
-	if(currentObject == nextObject)
+	if(m_currentObject == m_nextObject)
 	{	// Only update widgets
 		// TODO : verify if there are no new datas
-		for(DataWidgetPtr dataWidget : dataWidgets)
+		for(DataWidgetPtr dataWidget : m_dataWidgets)
 			dataWidget->updateWidgetValue();
 		return;
 	}
 
-	currentObject = nextObject;
+	m_currentObject = m_nextObject;
 
 	QScrollArea* scrollArea = new QScrollArea(this);
 	scrollArea->setFrameShape(QFrame::NoFrame);
@@ -53,16 +53,16 @@ void DatasTable::populateTable()
 
 	scrollArea->setWidget(layoutWidget);
 
-	if (stackedLayout->currentWidget())
-		delete stackedLayout->currentWidget();
-	dataWidgets.clear();
+	if (m_stackedLayout->currentWidget())
+		delete m_stackedLayout->currentWidget();
+	m_dataWidgets.clear();
 
-	nameLabel->setText(currentObject->getName());
-	stackedLayout->addWidget(scrollArea);
-	stackedLayout->setCurrentWidget(scrollArea);
+	m_nameLabel->setText(m_currentObject->getName());
+	m_stackedLayout->addWidget(scrollArea);
+	m_stackedLayout->setCurrentWidget(scrollArea);
 
 	// inputs (or editable)
-	for (panda::BaseData* data : currentObject->getDatas())
+	for (panda::BaseData* data : m_currentObject->getDatas())
 	{
 		if (!data->isDisplayed() || data->isReadOnly())
 			continue;
@@ -71,7 +71,7 @@ void DatasTable::populateTable()
 
 		if (dataWidget)
 		{
-			dataWidgets.append(dataWidget);
+			m_dataWidgets.append(dataWidget);
 			bool readOnly = (data->getParent() != nullptr);
 			QWidget* widget = dataWidget->createWidgets(readOnly);
 			formLayout->addRow(data->getName(), widget);
@@ -79,7 +79,7 @@ void DatasTable::populateTable()
 	}
 
 	// outputs (or read only)
-	for (panda::BaseData* data : currentObject->getDatas())
+	for (panda::BaseData* data : m_currentObject->getDatas())
 	{
 		if (!data->isDisplayed() || !data->isReadOnly())
 			continue;
@@ -88,7 +88,7 @@ void DatasTable::populateTable()
 
 		if (dataWidget)
 		{
-			dataWidgets.append(dataWidget);
+			m_dataWidgets.append(dataWidget);
 
 			QWidget* widget = dataWidget->createWidgets(true);
 			formLayout->addRow(data->getName(), widget);
@@ -98,27 +98,27 @@ void DatasTable::populateTable()
 
 void DatasTable::queuePopulate(panda::PandaObject* object)
 {
-	if(!waitingPopulate)
+	if(!m_waitingPopulate)
 	{
-		waitingPopulate = true;
+		m_waitingPopulate = true;
 		// The update will happen as soon as all the events in the event queue have been processed
 		QTimer::singleShot(0, this, SLOT(populateTable()));
 	}
 
-	nextObject = object;
+	m_nextObject = object;
 
 	// Bugfix : this is the case where we deselect the object, make sure to refresh later
 	//  the bug was that 2 objects (in different documents) were given the same pointer
-	if(currentObject && !object)
-		currentObject = nullptr;
+	if(m_currentObject && !object)
+		m_currentObject = nullptr;
 }
 
 void DatasTable::onModifiedObject(panda::PandaObject* object)
 {
-	if(currentObject == object)
+	if(m_currentObject == object)
 	{
 		// Force the reconstruction of the table
-		currentObject = nullptr;
+		m_currentObject = nullptr;
 		queuePopulate(object);
 	}
 }
