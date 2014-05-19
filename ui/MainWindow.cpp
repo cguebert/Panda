@@ -9,7 +9,6 @@
 #include <ui/ListObjectsAndTypes.h>
 #include <ui/MainWindow.h>
 #include <ui/UpdateLoggerDialog.h>
-#include <ui/command/CreateObjectCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -614,6 +613,7 @@ bool MainWindow::loadFile(const QString &fileName, bool import)
 
 	if(!import)
 	{
+		pandaDocument->getUndoStack()->clear();
 		pandaDocument->selectNone();
 		setCurrentFile(fileName);
 		statusBar()->showMessage(tr("File loaded"), 2000);
@@ -685,11 +685,7 @@ void MainWindow::createObject()
 {
 	QAction *action = qobject_cast<QAction *>(sender());
 	if(action)
-	{
-		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString(), pandaDocument);
-		if(object)
-			pandaDocument->getUndoStack()->push(new CreateObjectCommand(pandaDocument, object));
-	}
+		pandaDocument->createObject(action->data().toString());
 }
 
 void MainWindow::switchToGraphView()

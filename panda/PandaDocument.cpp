@@ -16,6 +16,8 @@
 #include <panda/helper/UpdateLogger.h>
 #endif
 
+#include <ui/command/CreateObjectCommand.h>
+
 namespace panda {
 
 using types::Color;
@@ -375,9 +377,9 @@ void PandaDocument::resetDocument()
 
 PandaObject* PandaDocument::createObject(QString registryName)
 {
-	ObjectPtr object = ObjectFactory::getInstance()->create(registryName, this);
+	auto object = ObjectFactory::getInstance()->create(registryName, this);
 	if(object)
-		doAddObject(object);
+		m_undoStack.push(new CreateObjectCommand(this, object));
 
 	return object.data();
 }
