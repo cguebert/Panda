@@ -56,6 +56,7 @@ HEADERS       = \
 	ui/OpenGLRenderView.h \
 	ui/QuickCreateDialog.h \
 	ui/UpdateLoggerDialog.h \
+	ui/command/CreateObjectCommand.h \
 	ui/command/MoveObjectCommand.h \
 	ui/drawstruct/AnnotationDrawStruct.h \
 	ui/drawstruct/DockableDrawStruct.h \
@@ -214,6 +215,7 @@ SOURCES       = main.cpp \
 	ui/OpenGLRenderView.cpp \
 	ui/QuickCreateDialog.cpp \
 	ui/UpdateLoggerDialog.cpp \
+	ui/command/CreateObjectCommand.cpp \
 	ui/command/MoveObjectCommand.cpp \
 	ui/drawstruct/AnnotationDrawStruct.cpp \
 	ui/drawstruct/DockableDrawStruct.cpp \

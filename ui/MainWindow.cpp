@@ -9,6 +9,7 @@
 #include <ui/ListObjectsAndTypes.h>
 #include <ui/MainWindow.h>
 #include <ui/UpdateLoggerDialog.h>
+#include <ui/command/CreateObjectCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -684,7 +685,11 @@ void MainWindow::createObject()
 {
 	QAction *action = qobject_cast<QAction *>(sender());
 	if(action)
-		pandaDocument->createObject(action->data().toString());
+	{
+		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString(), pandaDocument);
+		if(object)
+			pandaDocument->getUndoStack()->push(new CreateObjectCommand(pandaDocument, object));
+	}
 }
 
 void MainWindow::switchToGraphView()
