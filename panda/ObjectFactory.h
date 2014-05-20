@@ -61,13 +61,15 @@ protected:
 	RegistryMap registry;
 };
 
+void objectDeletor(PandaObject* object);
+
 template<class T>
 class ObjectCreator : public BaseObjectCreator
 {
 public:
 	virtual QSharedPointer<PandaObject> create(PandaDocument* parent)
 	{
-		return QSharedPointer<PandaObject>(new T(parent));
+		return QSharedPointer<PandaObject>(new T(parent), objectDeletor);
 	}
 };
 

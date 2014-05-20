@@ -50,4 +50,10 @@ void ObjectFactory::registerObject(QString className, ClassEntry entry)
 	registry.insert(className, entry);
 }
 
+void objectDeletor(PandaObject* object)
+{
+	object->preDestruction();
+	delete object;
+}
+
 } // namespace panda
