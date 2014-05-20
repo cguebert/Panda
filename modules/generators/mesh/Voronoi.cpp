@@ -7,6 +7,8 @@
 #include <vector>
 using std::vector;
 
+#pragma warning ( disable: 4267 )
+
 #include <boost/polygon/polygon.hpp>
 #include <boost/polygon/voronoi.hpp>
 using namespace boost::polygon;
