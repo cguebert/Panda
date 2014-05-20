@@ -57,6 +57,7 @@ HEADERS       = \
 	ui/QuickCreateDialog.h \
 	ui/UpdateLoggerDialog.h \
 	ui/command/CreateObjectCommand.h \
+	ui/command/DeleteObjectCommand.h \
 	ui/command/MoveObjectCommand.h \
 	ui/drawstruct/AnnotationDrawStruct.h \
 	ui/drawstruct/DockableDrawStruct.h \
@@ -216,6 +217,7 @@ SOURCES       = main.cpp \
 	ui/QuickCreateDialog.cpp \
 	ui/UpdateLoggerDialog.cpp \
 	ui/command/CreateObjectCommand.cpp \
+	ui/command/DeleteObjectCommand.cpp \
 	ui/command/MoveObjectCommand.cpp \
 	ui/drawstruct/AnnotationDrawStruct.cpp \
 	ui/drawstruct/DockableDrawStruct.cpp \

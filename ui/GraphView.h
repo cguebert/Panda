@@ -1,8 +1,6 @@
 #ifndef GRAPHVIEW_H
 #define GRAPHVIEW_H
 
-#include <ui/drawstruct/ObjectDrawStruct.h>
-
 #include <QWidget>
 #include <QDomDocument>
 #include <QMap>
@@ -19,6 +17,7 @@ class Renderer;
 
 class LinkTag;
 class QStylePainter;
+class ObjectDrawStruct;
 
 class GraphView : public QWidget
 {
@@ -39,7 +38,10 @@ public:
 
 	void resetView();
 
-	ObjectDrawStruct* getObjectDrawStruct(panda::PandaObject* obj);
+	ObjectDrawStruct* getObjectDrawStruct(panda::PandaObject* object);
+	QSharedPointer<ObjectDrawStruct> getSharedObjectDrawStruct(panda::PandaObject* object);
+	void setObjectDrawStruct(panda::PandaObject* object, QSharedPointer<ObjectDrawStruct> drawStruct);
+
 	QRectF getDataRect(panda::BaseData* data);
 
 	int getAvailableLinkTagIndex();

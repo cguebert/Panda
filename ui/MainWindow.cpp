@@ -10,6 +10,8 @@
 #include <ui/MainWindow.h>
 #include <ui/UpdateLoggerDialog.h>
 
+#include <ui/command/DeleteObjectCommand.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Group.h>
@@ -215,7 +217,7 @@ void MainWindow::createActions()
 	cutAction->setShortcut(QKeySequence::Cut);
 	cutAction->setStatusTip(tr("Cut the current selection's contents "
 							   "to the clipboard"));
-	connect(cutAction, SIGNAL(triggered()), pandaDocument, SLOT(cut()));
+	connect(cutAction, SIGNAL(triggered()), this, SLOT(cut()));
 
 	copyAction = new QAction(tr("&Copy"), this);
 	copyAction->setIcon(QIcon(":/images/copy.png"));
@@ -235,7 +237,7 @@ void MainWindow::createActions()
 	deleteAction->setShortcut(QKeySequence::Delete);
 	deleteAction->setStatusTip(tr("Delete the current selection's "
 								  "contents"));
-	connect(deleteAction, SIGNAL(triggered()), pandaDocument, SLOT(del()));
+	connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
 
 	selectAllAction = new QAction(tr("Select &all"), this);
 	selectAllAction->setShortcut(tr("Ctrl+A"));
@@ -703,11 +705,24 @@ void MainWindow::showStatusBarMessage(QString text)
 	statusBar()->showMessage(text, 2000);
 }
 
+void MainWindow::cut()
+{
+	pandaDocument->copy();
+	del();
+}
+
 void MainWindow::paste()
 {
 	pandaDocument->paste();
 	graphView->moveSelectedToCenter();
 	graphView->updateLinkTags();
+}
+
+void MainWindow::del()
+{
+	auto selection = pandaDocument->getSelection();
+	if(!selection.isEmpty())
+		pandaDocument->getUndoStack()->push(new DeleteObjectCommand(pandaDocument, graphView, selection));
 }
 
 void MainWindow::group()

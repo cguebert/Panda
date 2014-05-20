@@ -423,12 +423,6 @@ void PandaDocument::setMouseClick(int state)
 		mouseClickBuffer = state;
 }
 
-void PandaDocument::cut()
-{
-	copy();
-	del();
-}
-
 void PandaDocument::copy()
 {
 	if(selectedObjects.isEmpty())
@@ -445,22 +439,6 @@ void PandaDocument::paste()
 	{
 		QString clipText = mimeData->text();
 		readTextDocument(clipText);
-	}
-}
-
-void PandaDocument::del()
-{
-	if(!selectedObjects.empty())
-	{
-		auto selectedCopy = selectedObjects;
-		selectedObjects.clear();
-
-		for(auto object : selectedCopy)
-			doRemoveObject(object);
-
-		emit selectedObject(nullptr);
-		emit selectionChanged();
-		emit modified();
 	}
 }
 
@@ -577,6 +555,7 @@ void PandaDocument::doRemoveObject(PandaObject* object, bool del)
 		object->preDestruction();
 
 	removeObject(pandaObjects, object);
+	emit modified();
 }
 
 void PandaDocument::doAddObject(ObjectPtr object)

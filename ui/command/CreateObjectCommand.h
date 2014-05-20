@@ -11,8 +11,6 @@ class PandaDocument;
 class PandaObject;
 }
 
-class GraphView;
-
 class CreateObjectCommand : public QUndoCommand
 {
 public:

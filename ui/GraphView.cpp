@@ -127,9 +127,19 @@ void GraphView::resetView()
 	highlightConnectedDatas = false;
 }
 
-ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* obj)
+ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
 {
-	return objectDrawStructs[obj].data();
+	return objectDrawStructs[object].data();
+}
+
+QSharedPointer<ObjectDrawStruct> GraphView::getSharedObjectDrawStruct(panda::PandaObject* object)
+{
+	return objectDrawStructs[object];
+}
+
+void GraphView::setObjectDrawStruct(panda::PandaObject* object, QSharedPointer<ObjectDrawStruct> drawStruct)
+{
+	objectDrawStructs[object] = drawStruct;
 }
 
 QRectF GraphView::getDataRect(panda::BaseData* data)
@@ -857,8 +867,13 @@ void GraphView::moveSelectedToCenter()
 
 void GraphView::addedObject(panda::PandaObject* object)
 {
-	ObjectDrawStruct* ods = ObjectDrawStructFactory::getInstance()->createDrawStruct(this, object);
-	objectDrawStructs.insert(object, QSharedPointer<ObjectDrawStruct>(ods));
+	// Creating a DrawStruct depending on the class of the object been added
+	// When undoing a delete command, the DrawStruct has already been reinserted
+	if(!objectDrawStructs.contains(object))
+	{
+		ObjectDrawStruct* ods = ObjectDrawStructFactory::getInstance()->createDrawStruct(this, object);
+		objectDrawStructs.insert(object, QSharedPointer<ObjectDrawStruct>(ods));
+	}
 
 	update();
 }

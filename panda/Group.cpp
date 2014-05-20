@@ -1,6 +1,8 @@
 #include "Group.h"
 
 #include <ui/GraphView.h>
+#include <ui/drawstruct/ObjectDrawStruct.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Layer.h>

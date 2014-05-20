@@ -46,6 +46,7 @@ public:
 	void resetDocument();
 
 	PandaObject* createObject(QString registryName);
+
 	int getNbObjects() const;
 	const ObjectsList& getObjects() const;
 	ObjectPtr getSharedPointer(PandaObject* object);
@@ -137,10 +138,8 @@ signals:
 	void timeChanged();
 
 public slots:
-	void cut();
 	void copy();
 	void paste();
-	void del();
 	void selectionAdd(panda::PandaObject* object);
 	void selectionRemove(panda::PandaObject* object);
 	void selectAll();

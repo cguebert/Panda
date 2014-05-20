@@ -42,7 +42,9 @@ private slots:
 	void switchToGraphView();
 	void switchToOpenGLView();
 	void showStatusBarMessage(QString);
+	void cut();
 	void paste();
+	void del();
 	void group();
 	void ungroup();
 	void editGroup();
