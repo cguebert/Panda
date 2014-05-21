@@ -86,7 +86,7 @@ public:
 	void moveLayerDown(PandaObject* layer);
 
 	void doAddObject(ObjectPtr object);
-	void doRemoveObject(PandaObject* object, bool del=true);
+	void doRemoveObject(PandaObject* object);
 
 	// When an object is set to laterUpdate, use these functions to help the Scheduler
 	void setDataDirty(BaseData* data); // Set the outputs to dirty before setting the value (so it doesn't propagate)

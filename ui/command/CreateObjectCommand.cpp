@@ -23,7 +23,7 @@ void CreateObjectCommand::redo()
 void CreateObjectCommand::undo()
 {
 	for(auto object : m_objects)
-		m_document->doRemoveObject(object.data(), false);
+		m_document->doRemoveObject(object.data());
 }
 
 bool CreateObjectCommand::mergeWith(const QUndoCommand *other)

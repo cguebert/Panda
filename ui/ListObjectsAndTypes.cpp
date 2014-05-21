@@ -180,8 +180,6 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 					<< d->getDescription() << ". "
 					<< d->getHelp() << "</p>\n";
 			}
-
-			object->preDestruction();
 		}
 	}
 

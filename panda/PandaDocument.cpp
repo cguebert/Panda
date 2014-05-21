@@ -90,9 +90,6 @@ PandaDocument::PandaDocument(QObject* parent)
 
 PandaDocument::~PandaDocument()
 {
-	for(auto object : pandaObjects)
-		object->preDestruction();
-
 	if(m_scheduler)
 		m_scheduler->stop();
 }
@@ -346,10 +343,7 @@ void PandaDocument::resetDocument()
 	emit selectionChanged();
 
 	for(auto object : pandaObjects)
-	{
 		emit removedObject(object.data());
-		object->preDestruction();
-	}
 
 	pandaObjectsMap.clear();
 	pandaObjects.clear();
@@ -545,14 +539,11 @@ void PandaDocument::selectConnected()
 	}
 }
 
-void PandaDocument::doRemoveObject(PandaObject* object, bool del)
+void PandaDocument::doRemoveObject(PandaObject* object)
 {
 	emit removedObject(object);
 	pandaObjectsMap.remove(object->getIndex());
 	selectedObjects.removeAll(object);
-
-	if(del)
-		object->preDestruction();
 
 	removeObject(pandaObjects, object);
 	emit modified();

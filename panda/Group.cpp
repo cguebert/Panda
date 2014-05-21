@@ -190,7 +190,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 
 	// Removing the objects from the document
 	for(auto object : selection)
-		doc->doRemoveObject(object, false); // Do not delete it
+		doc->doRemoveObject(object);
 
 	view->modifiedObject(group);
 	view->updateLinkTags();
