@@ -25,7 +25,7 @@ void CreateObjectCommand::undo()
 	for(auto object : m_objects)
 		m_document->doRemoveObject(object.data());
 }
-
+/*
 bool CreateObjectCommand::mergeWith(const QUndoCommand *other)
 {
 	const CreateObjectCommand* command = dynamic_cast<const CreateObjectCommand*>(other);
@@ -39,3 +39,4 @@ bool CreateObjectCommand::mergeWith(const QUndoCommand *other)
 
 	return false;
 }
+*/

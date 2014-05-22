@@ -59,7 +59,7 @@ void DeleteObjectCommand::undo()
 		m_document->doAddObject(object.first);
 	}
 }
-
+/*
 bool DeleteObjectCommand::mergeWith(const QUndoCommand *other)
 {
 	const DeleteObjectCommand* command = dynamic_cast<const DeleteObjectCommand*>(other);
@@ -73,3 +73,4 @@ bool DeleteObjectCommand::mergeWith(const QUndoCommand *other)
 
 	return false;
 }
+*/

@@ -21,7 +21,7 @@ public:
 	virtual void redo();
 	virtual void undo();
 
-	virtual bool mergeWith(const QUndoCommand *other);
+//	virtual bool mergeWith(const QUndoCommand *other);
 
 protected:
 	panda::PandaDocument* m_document;
