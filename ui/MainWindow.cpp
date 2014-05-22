@@ -720,7 +720,10 @@ void MainWindow::del()
 {
 	auto selection = pandaDocument->getSelection();
 	if(!selection.isEmpty())
+	{
+		auto macro = pandaDocument->beginCommandMacro(tr("delete objects"));
 		pandaDocument->addCommand(new DeleteObjectCommand(pandaDocument, graphView, selection));
+	}
 }
 
 void MainWindow::group()

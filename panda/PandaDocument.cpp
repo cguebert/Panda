@@ -89,7 +89,7 @@ PandaDocument::PandaDocument(QObject* parent)
 	connect(animTimer, SIGNAL(timeout()), this, SLOT(step()));
 
 	m_undoStack = new QUndoStack(this);
-	m_undoStack->setUndoLimit(10);
+	m_undoStack->setUndoLimit(25);
 }
 
 PandaDocument::~PandaDocument()
