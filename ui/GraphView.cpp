@@ -416,7 +416,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			}
 
 			if(!m_customSelection.empty() && !delta.isNull())
-				pandaDocument->getUndoStack()->push(new MoveObjectCommand(this, m_customSelection, delta));
+				pandaDocument->addCommand(new MoveObjectCommand(this, m_customSelection, delta));
 
 			previousMousePos = mousePos;
 		}
@@ -435,7 +435,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		}
 
 		if(!m_customSelection.empty() && !delta.isNull())
-			pandaDocument->getUndoStack()->push(new MoveObjectCommand(this, m_customSelection, delta));
+			pandaDocument->addCommand(new MoveObjectCommand(this, m_customSelection, delta));
 
 		previousMousePos = mousePos;
 	}

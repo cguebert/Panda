@@ -10,16 +10,18 @@
 #include <QObject>
 #include <QSize>
 #include <QMap>
-#include <QDomDocument>
-#include <QUndoStack>
 
 class QOpenGLFramebufferObject;
+class QAction;
+class QUndoCommand;
+class QUndoStack;
 
 namespace panda {
 
 class BaseLayer;
 class Layer;
 class Scheduler;
+class ScopedMacro;
 
 class PandaDocument : public QObject, public PandaObject
 {
@@ -93,7 +95,12 @@ public:
 	void setDataReady(BaseData* data); // Launch the tasks connected to this node
 	void waitForOtherTasksToFinish(bool mainThread = true); // Wait until the tasks we launched finish
 
-	QUndoStack* getUndoStack();
+	// For undo-redo actions
+	void createUndoRedoActions(QObject* parent, QAction*& undoAction, QAction*& redoAction);
+	void addCommand(QUndoCommand* command);
+	ScopedMacro beginCommandMacro(QString text);
+	void clearCommands();
+	bool isInCommandMacro();
 
 protected:
 	ObjectsList pandaObjects;
@@ -120,9 +127,13 @@ protected:
 
 	QSharedPointer<Scheduler> m_scheduler;
 
-	QUndoStack m_undoStack;
+	QUndoStack* m_undoStack;
 
 	void render();
+
+	int m_inCommandMacro;
+	friend class ScopedMacro;
+	void endCommandMacro();
 
 signals:
 	void modified();
@@ -151,6 +162,16 @@ public slots:
 	void step();
 	void rewind();
 	void copyDataToUserValue(const panda::BaseData* data);
+};
+
+class ScopedMacro
+{
+public:
+	ScopedMacro(PandaDocument* doc) : m_document(doc) {}
+	~ScopedMacro() { m_document->endCommandMacro(); }
+
+protected:
+	PandaDocument* m_document;
 };
 
 inline int PandaDocument::getNbObjects() const
@@ -201,8 +222,8 @@ inline quint32 PandaDocument::getNextIndex()
 inline Layer* PandaDocument::getDefaultLayer()
 { return defaultLayer; }
 
-inline QUndoStack* PandaDocument::getUndoStack()
-{ return &m_undoStack; }
+inline bool PandaDocument::isInCommandMacro()
+{ return m_inCommandMacro > 0; }
 
 } // namespace panda
 

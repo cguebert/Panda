@@ -377,10 +377,8 @@ void MainWindow::createActions()
 	showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
 	connect(showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
 
-	undoAction = pandaDocument->getUndoStack()->createUndoAction(this);
+	pandaDocument->createUndoRedoActions(this, undoAction, redoAction);
 	undoAction->setShortcut(QKeySequence::Undo);
-
-	redoAction = pandaDocument->getUndoStack()->createRedoAction(this);
 	redoAction->setShortcut(QKeySequence::Redo);
 }
 
@@ -615,7 +613,7 @@ bool MainWindow::loadFile(const QString &fileName, bool import)
 
 	if(!import)
 	{
-		pandaDocument->getUndoStack()->clear();
+		pandaDocument->clearCommands();
 		pandaDocument->selectNone();
 		setCurrentFile(fileName);
 		statusBar()->showMessage(tr("File loaded"), 2000);
@@ -722,7 +720,7 @@ void MainWindow::del()
 {
 	auto selection = pandaDocument->getSelection();
 	if(!selection.isEmpty())
-		pandaDocument->getUndoStack()->push(new DeleteObjectCommand(pandaDocument, graphView, selection));
+		pandaDocument->addCommand(new DeleteObjectCommand(pandaDocument, graphView, selection));
 }
 
 void MainWindow::group()

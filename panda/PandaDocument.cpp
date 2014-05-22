@@ -1,7 +1,3 @@
-#include <QtWidgets>
-#include <QOpenGLFramebufferObject>
-#include <QElapsedTimer>
-
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
@@ -17,6 +13,12 @@
 #endif
 
 #include <ui/command/CreateObjectCommand.h>
+
+#include <QtWidgets>
+#include <QOpenGLFramebufferObject>
+#include <QElapsedTimer>
+#include <QUndoStack>
+#include <QDomDocument>
 
 namespace panda {
 
@@ -52,6 +54,7 @@ PandaDocument::PandaDocument(QObject* parent)
 	, mouseClickBuffer(0)
 	, animPlaying(false)
 	, animMultithread(false)
+	, m_inCommandMacro(0)
 {
 	addInput(&renderSize);
 	addInput(&backgroundColor);
@@ -85,7 +88,8 @@ PandaDocument::PandaDocument(QObject* parent)
 	animTimer = new QTimer(this);
 	connect(animTimer, SIGNAL(timeout()), this, SLOT(step()));
 
-	m_undoStack.setUndoLimit(10);
+	m_undoStack = new QUndoStack(this);
+	m_undoStack->setUndoLimit(10);
 }
 
 PandaDocument::~PandaDocument()
@@ -363,7 +367,7 @@ void PandaDocument::resetDocument()
 	if(m_scheduler)
 		m_scheduler->stop();
 
-	m_undoStack.clear();
+	m_undoStack->clear();
 
 	emit modified();
 	emit timeChanged();
@@ -373,7 +377,7 @@ PandaObject* PandaDocument::createObject(QString registryName)
 {
 	auto object = ObjectFactory::getInstance()->create(registryName, this);
 	if(object)
-		m_undoStack.push(new CreateObjectCommand(this, object));
+		addCommand(new CreateObjectCommand(this, object));
 
 	return object.data();
 }
@@ -855,6 +859,35 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 		inputData->setWidget(data->getWidget());
 		inputData->setWidgetData(data->getWidgetData());
 	}
+}
+
+void PandaDocument::addCommand(QUndoCommand* command)
+{
+	m_undoStack->push(command);
+}
+
+ScopedMacro PandaDocument::beginCommandMacro(QString text)
+{
+	m_undoStack->beginMacro(text);
+	++m_inCommandMacro;
+	return ScopedMacro(this);
+}
+
+void PandaDocument::endCommandMacro()
+{
+	--m_inCommandMacro;
+	m_undoStack->endMacro();
+}
+
+void PandaDocument::createUndoRedoActions(QObject* parent, QAction*& undoAction, QAction*& redoAction)
+{
+	undoAction = m_undoStack->createUndoAction(parent);
+	redoAction = m_undoStack->createRedoAction(parent);
+}
+
+void PandaDocument::clearCommands()
+{
+	m_undoStack->clear();
 }
 
 } // namespace panda

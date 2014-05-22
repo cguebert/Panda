@@ -7,7 +7,6 @@
 
 #include <QMap>
 #include <QSharedPointer>
-#include <QDomDocument>
 
 namespace panda
 {

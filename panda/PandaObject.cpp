@@ -8,6 +8,8 @@
 #include <panda/helper/UpdateLogger.h>
 #endif
 
+#include <QDomDocument>
+
 namespace panda {
 
 PandaObject::PandaObject(PandaDocument* document)

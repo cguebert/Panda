@@ -24,19 +24,6 @@ Group::~Group()
 {
 }
 
-class ScopedMacro
-{
-public:
-	ScopedMacro(PandaDocument* doc) : m_document(doc) {}
-	~ScopedMacro()
-	{
-		m_document->getUndoStack()->endMacro();
-	}
-
-protected:
-	PandaDocument* m_document;
-};
-
 bool Group::createGroup(PandaDocument* doc, GraphView* view)
 {
 	if(doc->getNbSelected() < 2)
@@ -70,8 +57,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 		}
 	}
 
-	doc->getUndoStack()->beginMacro(tr("Create Group"));
-	ScopedMacro scopedMacro(doc);
+	auto macro = doc->beginCommandMacro(tr("Create Group"));
 
 	if(layer == doc->getDefaultLayer())	// Won't be added in the group!
 		layer = nullptr;
