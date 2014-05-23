@@ -26,14 +26,14 @@ using types::Color;
 using types::ImageWrapper;
 using types::Point;
 
-template<class C>
-bool containsObject(C& container, PandaObject* object)
-{ return std::find(std::begin(container), std::end(container), object) != std::end(container); }
+template<class C, class V>
+bool contains(C& container, V value)
+{ return std::find(std::begin(container), std::end(container), value) != std::end(container); }
 
-template<class C>
-void removeObject(C& container, PandaObject* object)
+template<class C, class V>
+void remove(C& container, V value)
 {
-	auto iter = std::find(std::begin(container), std::end(container), object);
+	auto iter = std::find(std::begin(container), std::end(container), value);
 	if(iter != container.end())
 		container.erase(iter);
 }
@@ -219,7 +219,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 		for(BaseData* data : object->getInputDatas())
 		{
 			BaseData* parent = data->getParent();
-			if(parent && containsObject(selected, parent->getOwner()))
+			if(parent && contains(selected, parent->getOwner()))
 				links.append(qMakePair(data, parent));
 		}
 
@@ -442,7 +442,7 @@ void PandaDocument::paste()
 
 void PandaDocument::selectionAdd(PandaObject* object)
 {
-	if(!containsObject(selectedObjects, object))
+	if(!contains(selectedObjects, object))
 	{
 		selectedObjects.append(object);
 		emit selectedObject(object);
@@ -452,7 +452,7 @@ void PandaDocument::selectionAdd(PandaObject* object)
 
 void PandaDocument::selectionRemove(PandaObject* object)
 {
-	if(containsObject(selectedObjects, object))
+	if(contains(selectedObjects, object))
 	{
 		selectedObjects.removeAll(object);
 		emit selectedObject(selectedObjects.back());
@@ -543,21 +543,21 @@ void PandaDocument::selectConnected()
 	}
 }
 
-void PandaDocument::doRemoveObject(PandaObject* object)
+void PandaDocument::addObject(ObjectPtr object)
+{
+	pandaObjectsMap.insert(object->getIndex(), object.data());
+	pandaObjects.append(object);
+	emit addedObject(object.data());
+}
+
+void PandaDocument::removeObject(PandaObject* object)
 {
 	emit removedObject(object);
 	pandaObjectsMap.remove(object->getIndex());
 	selectedObjects.removeAll(object);
 
-	removeObject(pandaObjects, object);
+	remove(pandaObjects, object);
 	emit modified();
-}
-
-void PandaDocument::doAddObject(ObjectPtr object)
-{
-	pandaObjectsMap.insert(object->getIndex(), object.data());
-	pandaObjects.append(object);
-	emit addedObject(object.data());
 }
 
 void PandaDocument::setDataDirty(BaseData* data)
@@ -704,7 +704,7 @@ void PandaDocument::moveLayerUp(PandaObject* layer)
 		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects[index].data());
 		if(otherLayer)
 		{
-			removeObject(pandaObjects, layer);
+			remove(pandaObjects, layer);
 			pandaObjects.insert(index, object);
 			setDirtyValue();
 			emit modified();
@@ -727,7 +727,7 @@ void PandaDocument::moveLayerDown(PandaObject *layer)
 		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects[index].data());
 		if(otherLayer)
 		{
-			removeObject(pandaObjects, layer);
+			remove(pandaObjects, layer);
 			pandaObjects.insert(index, object);
 			setDirtyValue();
 			emit modified();

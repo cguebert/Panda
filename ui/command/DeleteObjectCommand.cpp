@@ -49,7 +49,7 @@ void DeleteObjectCommand::redo()
 	m_document->selectNone();
 
 	for(auto object : m_objects)
-		m_document->doRemoveObject(object.first.data());
+		m_document->removeObject(object.first.data());
 }
 
 void DeleteObjectCommand::undo()
@@ -57,7 +57,7 @@ void DeleteObjectCommand::undo()
 	for(auto object : m_objects)
 	{
 		m_view->setObjectDrawStruct(object.first.data(), object.second);
-		m_document->doAddObject(object.first);
+		m_document->addObject(object.first);
 	}
 }
 /*

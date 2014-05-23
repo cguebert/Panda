@@ -17,13 +17,13 @@ CreateObjectCommand::CreateObjectCommand(panda::PandaDocument* document,
 void CreateObjectCommand::redo()
 {
 	for(auto object : m_objects)
-		m_document->doAddObject(object);
+		m_document->addObject(object);
 }
 
 void CreateObjectCommand::undo()
 {
 	for(auto object : m_objects)
-		m_document->doRemoveObject(object.data());
+		m_document->removeObject(object.data());
 }
 /*
 bool CreateObjectCommand::mergeWith(const QUndoCommand *other)

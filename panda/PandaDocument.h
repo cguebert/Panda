@@ -49,6 +49,9 @@ public:
 
 	PandaObject* createObject(QString registryName);
 
+	void addObject(ObjectPtr object);
+	void removeObject(PandaObject* object);
+
 	int getNbObjects() const;
 	const ObjectsList& getObjects() const;
 	ObjectPtr getSharedPointer(PandaObject* object);
@@ -86,9 +89,6 @@ public:
 	Layer* getDefaultLayer();
 	void moveLayerUp(PandaObject *layer);
 	void moveLayerDown(PandaObject* layer);
-
-	void doAddObject(ObjectPtr object);
-	void doRemoveObject(PandaObject* object);
 
 	// When an object is set to laterUpdate, use these functions to help the Scheduler
 	void setDataDirty(BaseData* data); // Set the outputs to dirty before setting the value (so it doesn't propagate)

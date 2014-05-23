@@ -176,7 +176,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 
 	// Removing the objects from the document
 	for(auto object : selection)
-		doc->doRemoveObject(object);
+		doc->removeObject(object);
 
 	view->modifiedObject(group);
 	view->updateLinkTags();
@@ -219,7 +219,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 			else
 			{
 				group->removeObject(object.data());
-				doc->doAddObject(object);
+				doc->addObject(object);
 				doc->selectionAdd(object.data());
 
 				// Placing the object in the view
@@ -232,7 +232,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		for(auto object : docks)
 		{
 			group->removeObject(object.data());
-			doc->doAddObject(object);
+			doc->addObject(object);
 			doc->selectionAdd(object.data());
 
 			// Placing the object in the view
@@ -252,7 +252,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 			}
 		}
 
-		doc->doRemoveObject(group);
+		doc->removeObject(group);
 	}
 
 	view->updateLinkTags();
