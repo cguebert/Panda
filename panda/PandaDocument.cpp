@@ -12,7 +12,7 @@
 #include <panda/helper/UpdateLogger.h>
 #endif
 
-#include <ui/command/CreateObjectCommand.h>
+#include <ui/command/AddObjectCommand.h>
 
 #include <QtWidgets>
 #include <QOpenGLFramebufferObject>

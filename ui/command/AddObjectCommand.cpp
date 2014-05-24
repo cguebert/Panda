@@ -3,7 +3,7 @@
 
 #include <panda/PandaDocument.h>
 #include <ui/command/CommandId.h>
-#include <ui/command/CreateObjectCommand.h>
+#include <ui/command/AddObjectCommand.h>
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 										 QSharedPointer<panda::PandaObject> object,
