@@ -42,6 +42,9 @@ int LinkDatasCommand::id() const
 
 void LinkDatasCommand::redo()
 {
+	// Use childs if present
+	QUndoCommand::redo();
+
 	for(auto link : m_links)
 	{
 		panda::BaseData* target = link.m_targetObject->getData(link.m_targetDataName);
@@ -54,9 +57,14 @@ void LinkDatasCommand::redo()
 
 void LinkDatasCommand::undo()
 {
+	// Use childs if present
+	QUndoCommand::undo();
+
 	for(auto link : m_links)
 	{
 		panda::BaseData* target = link.m_targetObject->getData(link.m_targetDataName);
+		if(!target)
+			continue;
 		panda::BaseData* parent = nullptr;
 		if(link.m_initialParentObject)
 			parent = link.m_initialParentObject->getData(link.m_initialParentDataName);

@@ -101,6 +101,7 @@ public:
 	ScopedMacro beginCommandMacro(QString text);
 	void clearCommands();
 	bool isInCommandMacro();
+	QUndoCommand* getCurrentCommand(); /// The command we are currently adding (if we want to connect another to this one)
 
 protected:
 	ObjectsList pandaObjects;
@@ -128,6 +129,7 @@ protected:
 	QSharedPointer<Scheduler> m_scheduler;
 
 	QUndoStack* m_undoStack;
+	QUndoCommand* m_currentCommand;
 
 	void render();
 
@@ -224,6 +226,9 @@ inline Layer* PandaDocument::getDefaultLayer()
 
 inline bool PandaDocument::isInCommandMacro()
 { return m_inCommandMacro > 0; }
+
+inline QUndoCommand* PandaDocument::getCurrentCommand()
+{ return m_currentCommand; }
 
 } // namespace panda
 

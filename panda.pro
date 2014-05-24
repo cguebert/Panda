@@ -61,6 +61,7 @@ HEADERS       = \
 	ui/command/DeleteObjectCommand.h \
 	ui/command/LinkDatasCommand.h \
 	ui/command/MoveObjectCommand.h \
+	ui/command/RemoveGenericDataCommand.h \
 	ui/drawstruct/AnnotationDrawStruct.h \
 	ui/drawstruct/DockableDrawStruct.h \
 	ui/drawstruct/GenericObjectDrawStruct.h \
@@ -223,6 +224,7 @@ SOURCES       = main.cpp \
 	ui/command/DeleteObjectCommand.cpp \
 	ui/command/LinkDatasCommand.cpp \
 	ui/command/MoveObjectCommand.cpp \
+	ui/command/RemoveGenericDataCommand.cpp \
 	ui/drawstruct/AnnotationDrawStruct.cpp \
 	ui/drawstruct/DockableDrawStruct.cpp \
 	ui/drawstruct/GenericObjectDrawStruct.cpp \

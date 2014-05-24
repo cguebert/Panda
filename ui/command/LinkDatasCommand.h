@@ -23,8 +23,6 @@ public:
 //	virtual bool mergeWith(const QUndoCommand *other);
 
 protected:
-	panda::PandaDocument* m_document;
-
 	struct LinkStruct
 	{
 		panda::PandaObject	*m_targetObject,

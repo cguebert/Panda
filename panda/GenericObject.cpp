@@ -4,6 +4,8 @@
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
 
+#include <ui/command/RemoveGenericDataCommand.h>
+
 #include <QApplication>
 
 #include <iostream>
@@ -61,14 +63,14 @@ void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefin
 	m_dataDefinitions = defList;
 }
 
-BaseData* GenericObject::createDatas(int type)
+BaseData* GenericObject::createDatas(int type, int index)
 {
 	int valueType = types::DataTypeId::getValueType(type);
 
 	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
 	createdDatasStruct->type = type;
 	m_createdDatasStructs.append(createdDatasStruct);
-	int index = m_createdDatasStructs.size();
+	int nbCreated = m_createdDatasStructs.size();
 
 	BaseData* firstInputData = nullptr;
 
@@ -83,7 +85,7 @@ BaseData* GenericObject::createDatas(int type)
 		if(dataName.contains("%1"))
 			dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
 
-		dataName += QString(" #%2").arg(index);	// Add the count
+		dataName += QString(" #%2").arg(nbCreated);	// Add the count
 
 		int dataType = m_dataDefinitions[i].type;
 		if(!dataType) // If the type in the definition is 0, use the full type of the connected Data
@@ -208,6 +210,14 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
+			// Create an action so that we can undo the removal of this group of datas
+			auto currentCommand = parentDocument->getCurrentCommand();
+			if(currentCommand)
+			{
+				int index = m_createdDatasStructs.indexOf(createdDatasStruct);
+				new RemoveGenericDataCommand(this, createdDatasStruct->type, index, currentCommand);
+			}
+
 			for(BaseDataPtr d : createdDatasStruct->datas)
 			{
 				removeData(d.data());
@@ -283,7 +293,7 @@ void SingleTypeGenericObject::update()
 	cleanDirty();
 }
 
-BaseData* SingleTypeGenericObject::createDatas(int type)
+BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 {
 	if(m_connectedType == -1)
 	{
@@ -297,7 +307,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type)
 	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
 	createdDatasStruct->type = type;
 	m_createdDatasStructs.append(createdDatasStruct);
-	int index = m_createdDatasStructs.size();
+	int nbCreated = m_createdDatasStructs.size();
 
 	BaseData* firstInputData = nullptr;
 
@@ -307,7 +317,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type)
 	int nbDefs = m_dataDefinitions.size();
 	for(int i=0; i<nbDefs; ++i)
 	{
-		if(m_singleOutput && index > 1 && m_dataDefinitions[i].output && !m_dataDefinitions[i].input)
+		if(m_singleOutput && nbCreated > 1 && m_dataDefinitions[i].output && !m_dataDefinitions[i].input)
 		{
 			createdDatasStruct->datas.append(BaseDataPtr(nullptr));
 		}
@@ -318,7 +328,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type)
 			if(dataName.contains("%1"))
 				dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
 
-			dataName += QString(" #%2").arg(index);	// Add the count
+			dataName += QString(" #%2").arg(nbCreated);	// Add the count
 
 			int dataType = m_dataDefinitions[i].type;
 			if(!dataType) // If the type in the definition is 0, use the full type of the connected Data

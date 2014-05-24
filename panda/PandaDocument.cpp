@@ -54,6 +54,7 @@ PandaDocument::PandaDocument(QObject* parent)
 	, mouseClickBuffer(0)
 	, animPlaying(false)
 	, animMultithread(false)
+	, m_currentCommand(nullptr)
 	, m_inCommandMacro(0)
 {
 	addInput(&renderSize);
@@ -863,7 +864,10 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 
 void PandaDocument::addCommand(QUndoCommand* command)
 {
+	auto oldCommand = m_currentCommand;
+	m_currentCommand = command;
 	m_undoStack->push(command);
+	m_currentCommand = oldCommand;
 }
 
 ScopedMacro PandaDocument::beginCommandMacro(QString text)

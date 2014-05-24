@@ -114,8 +114,9 @@ public:
 	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected = nullptr);
 	virtual void load(QDomElement& elem);
 
+	virtual BaseData* createDatas(int type, int index = -1);
+
 protected:
-	virtual BaseData* createDatas(int type);
 	virtual void updateDataNames();
 
 	GenericData* const getGenericData(); // Access to m_genericData
@@ -157,7 +158,7 @@ public:
 	explicit SingleTypeGenericObject(PandaDocument *parent = 0);
 
 	virtual void update();
-	virtual BaseData* createDatas(int type);
+	virtual BaseData* createDatas(int type, int index = -1);
 	virtual void dataSetParent(BaseData* data, BaseData* parent);
 
 protected:
