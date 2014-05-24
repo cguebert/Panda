@@ -860,6 +860,9 @@ void MainWindow::play(bool playing)
 	registryMenu->setEnabled(!playing);
 
 	importAction->setEnabled(!playing);
+
+	undoAction->setEnabled(!playing);
+	redoAction->setEnabled(!playing);
 }
 
 void MainWindow::selectedObject(panda::PandaObject* object)
