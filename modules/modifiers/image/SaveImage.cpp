@@ -37,7 +37,7 @@ public:
 	void setDirtyValue()
 	{
 		PandaObject::setDirtyValue();
-		if(!isInStep)
+		if(!m_isInStep)
 			saveImages();
 	}
 

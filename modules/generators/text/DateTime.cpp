@@ -28,7 +28,7 @@ public:
 
 	void setDirtyValue()
 	{
-		if(!dirtyValue)
+		if(!m_dirtyValue)
 		{
 			QDateTime date = QDateTime::currentDateTime();
 			date.addMSecs(delta.getValue());

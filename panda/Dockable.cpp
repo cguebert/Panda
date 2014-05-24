@@ -46,7 +46,7 @@ void DockObject::addDockable(DockableObject* dockable, int index)
 		m_dockedObjects.append(dockable);
 	else
 		m_dockedObjects.insert(index, dockable);
-	parentDocument->onModifiedObject(this);
+	m_parentDocument->onModifiedObject(this);
 }
 
 void DockObject::removeDockable(DockableObject* dockable)
@@ -72,7 +72,7 @@ void DockObject::doRemoveInput(DataNode* node)
 	{
 		m_dockedObjects.removeAll((DockableObject*)node);
 		setDirtyValue();
-		parentDocument->onModifiedObject(this);
+		m_parentDocument->onModifiedObject(this);
 	}
 }
 

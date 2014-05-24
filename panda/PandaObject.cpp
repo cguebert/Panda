@@ -13,18 +13,18 @@
 namespace panda {
 
 PandaObject::PandaObject(PandaDocument* document)
-	: parentDocument(document)
-	, doEmitModified(true)
-	, doEmitDirty(true)
-	, isInStep(false)
-	, isUpdating(false)
-	, laterUpdate(false)
+	: m_parentDocument(document)
+	, m_doEmitModified(true)
+	, m_doEmitDirty(true)
+	, m_isInStep(false)
+	, m_isUpdating(false)
+	, m_laterUpdate(false)
 {
 }
 
 void PandaObject::addData(BaseData* data)
 {
-	if(datasMap.contains(data->getName()))
+	if(getData(data->getName()))
 	{
 		std::cerr << "Fatal error : another data already have the name " << data->getName().toStdString() << std::endl;
 		return;
@@ -32,14 +32,12 @@ void PandaObject::addData(BaseData* data)
 	if(!datas.contains(data))
 	{
 		datas.append(data);
-		datasMap[data->getName()] = data;
 		emitModified();
 	}
 }
 
 void PandaObject::removeData(BaseData* data)
 {
-	datasMap.remove(data->getName());
 	if(datas.removeAll(data))
 		emitModified();
 }
@@ -52,7 +50,7 @@ void PandaObject::addOutput(BaseData* data)
 
 void PandaObject::preDestruction()
 {	// Some failsafe so the objects being destroyed don't try to update themselves during the operation
-	isUpdating = true;
+	m_isUpdating = true;
 }
 
 void PandaObject::update()
@@ -64,22 +62,22 @@ void PandaObject::updateIfDirty() const
 {
 	if(isDirty())
 	{
-		if(!isUpdating)
+		if(!m_isUpdating)
 		{
 #ifdef PANDA_LOG_EVENTS
 			helper::ScopedEvent log(helper::event_update, this);
 #endif
-			isUpdating = true;
+			m_isUpdating = true;
 			const_cast<PandaObject*>(this)->update();
 			const_cast<PandaObject*>(this)->cleanDirty();	// Verify if we can remove this call
-			isUpdating = false;
+			m_isUpdating = false;
 		}
 	}
 }
 
 void PandaObject::setDirtyValue()
 {
-	if(!dirtyValue)
+	if(!isDirty())
 	{
 #ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_setDirty, this);
@@ -87,15 +85,19 @@ void PandaObject::setDirtyValue()
 		DataNode::setDirtyValue();
 	}
 
-	if(doEmitDirty && !isInStep && parentDocument)
-		parentDocument->onDirtyObject(this);
+	if(m_doEmitDirty && !m_isInStep && m_parentDocument)
+		m_parentDocument->onDirtyObject(this);
 }
 
 BaseData* PandaObject::getData(const QString& name) const
 {
-	if(datasMap.contains(name))
-		return datasMap[name];
-	else return nullptr;
+	auto iter = std::find_if(datas.begin(), datas.end(), [name](BaseData* d){
+		return d->getName() == name;
+	});
+	if(iter != datas.end())
+		return *iter;
+	else
+		return nullptr;
 }
 
 QList<BaseData*> PandaObject::getInputDatas() const
@@ -155,16 +157,10 @@ void PandaObject::dataSetParent(BaseData* data, BaseData* parent)
 	emitModified();
 }
 
-void PandaObject::changeDataName(BaseData* data, const QString& newName)
-{
-	datasMap.remove(data->getName());
-	datasMap.insert(newName, data);
-}
-
 void PandaObject::emitModified()
 {
-	if(doEmitModified && parentDocument)
-		parentDocument->onModifiedObject(this);
+	if(m_doEmitModified && m_parentDocument)
+		m_parentDocument->onModifiedObject(this);
 }
 
 } // namespace Panda

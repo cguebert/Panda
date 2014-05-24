@@ -25,7 +25,7 @@ public:
 	{
 		const Gradient& grad = gradient.getValue();
 
-		QSize size = parentDocument->getRenderSize();
+		QSize size = m_parentDocument->getRenderSize();
 		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, size.width());
 		if(texture == -1)
 			return;
@@ -80,7 +80,7 @@ public:
 	{
 		const Gradient& grad = gradient.getValue();
 
-		QSize size = parentDocument->getRenderSize();
+		QSize size = m_parentDocument->getRenderSize();
 		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, size.height());
 		if(texture == -1)
 			return;

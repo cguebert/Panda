@@ -41,7 +41,7 @@ public:
 
 		setupGenericObject(&generic, defList);
 
-		laterUpdate = true;
+		m_laterUpdate = true;
 	}
 
 	template <class T>
@@ -54,9 +54,9 @@ public:
 		Q_ASSERT(dataInput && dataInit && dataOutput);
 
 		const QVector<T>& value = resetValues ? dataInit->getValue() : dataInput->getValue();
-		parentDocument->setDataDirty(dataOutput);
+		m_parentDocument->setDataDirty(dataOutput);
 		dataOutput->getAccessor() = value;
-		parentDocument->setDataReady(dataOutput);
+		m_parentDocument->setDataReady(dataOutput);
 	}
 
 	void update()

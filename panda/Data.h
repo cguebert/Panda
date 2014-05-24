@@ -48,7 +48,7 @@ public:
 	virtual const types::AbstractDataTrait* getDataTrait() const;
 	virtual const void* getVoidValue() const;
 	data_accessor getAccessor();
-	inline void setValue(const_reference v);
+	inline void setValue(const_reference value);
 	inline const_reference getValue() const;
 	virtual void copyValueFrom(const BaseData* from);
 
@@ -62,10 +62,10 @@ protected:
 	virtual void endVoidEdit();
 
 private:
-	value_type value;
-	Data<value_type>* parentData;
-	static types::AbstractDataTrait* dataTrait;
-	static AbstractDataCopier* dataCopier;
+	value_type m_value;
+	Data<value_type>* m_parentData;
+	static types::AbstractDataTrait* m_dataTrait;
+	static AbstractDataCopier* m_dataCopier;
 
 	Data();
 	Data(const Data&);
@@ -83,13 +83,13 @@ public:
 	typedef T container_type;
 
 protected:
-	data_type& data;
+	data_type& m_data;
 
 public:
-	DataAccessor(data_type& d) : Inherit(*d.beginEdit()) , data(d) {}
-	~DataAccessor() { data.endEdit(); }
+	DataAccessor(data_type& data) : Inherit(*data.beginEdit()) , m_data(data) {}
+	~DataAccessor() { m_data.endEdit(); }
 
-	template<class U> void operator=(const U& v) { Inherit::operator=(v); }
+	template<class U> void operator=(const U& value) { Inherit::operator=(value); }
 };
 
 } // namespace panda

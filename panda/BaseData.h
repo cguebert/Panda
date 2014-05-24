@@ -21,8 +21,8 @@ public:
 	operator void*();
 
 protected:
-	BaseData* data;
-	void* value;
+	BaseData* m_data;
+	void* m_value;
 };
 
 //***************************************************************//
@@ -47,40 +47,40 @@ public:
 	BaseData(const QString& name, const QString& help, PandaObject* owner);
 	virtual ~BaseData() {}
 
-	const QString getName() const { return name; }
-	void setName(const QString& n);
-	const QString getHelp() const { return help; }
-	void setHelp(const QString& h) { help = h; }
-	const QString getGroup() const { return group; }
-	void setGroup(const QString& g) { group = g; }
-	const QString getWidget() const { return widget; }
-	void setWidget(const QString& w) { widget = w; }
-	const QString getWidgetData() const { return widgetData; }
-	void setWidgetData(const QString& d) { widgetData = d; }
+	const QString getName() const { return m_name; }
+	void setName(const QString& name) { m_name = name; }
+	const QString getHelp() const { return m_help; }
+	void setHelp(const QString& help) { m_help = help; }
+	const QString getGroup() const { return m_group; }
+	void setGroup(const QString& group) { m_group = group; }
+	const QString getWidget() const { return m_widget; }
+	void setWidget(const QString& widget) { m_widget = widget; }
+	const QString getWidgetData() const { return m_widgetData; }
+	void setWidgetData(const QString& widgetData) { m_widgetData = widgetData; }
 
-	bool isSet() const { return isValueSet; }
-	void unset() { isValueSet = false; }
-	void forceSet() { isValueSet = true; }
+	bool isSet() const { return m_isValueSet; }
+	void unset() { m_isValueSet = false; }
+	void forceSet() { m_isValueSet = true; }
 
-	int getCounter() { return counter; }
+	int getCounter() { return m_counter; }
 
-	bool isReadOnly() const { return readOnly; }
-	void setReadOnly(bool b) { readOnly = b; }
-	bool isDisplayed() const { return displayed; }
-	void setDisplayed(bool b) { displayed = b; }
-	bool isPersistent() const { return persistent; }
-	void setPersistent(bool b) { persistent = b; }
-	bool isInput() const { return input; }
-	void setInput(bool b) { input = b; }
-	bool isOutput() const { return output; }
-	void setOutput(bool b) { output = b; }
+	bool isReadOnly() const { return m_readOnly; }
+	void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
+	bool isDisplayed() const { return m_displayed; }
+	void setDisplayed(bool displayed) { m_displayed = displayed; }
+	bool isPersistent() const { return m_persistent; }
+	void setPersistent(bool persistent) { m_persistent = persistent; }
+	bool isInput() const { return m_input; }
+	void setInput(bool input) { m_input = input; }
+	bool isOutput() const { return m_output; }
+	void setOutput(bool output) { m_output = output; }
 
-	PandaObject* getOwner() const { return owner; }
-	void setOwner(PandaObject* o) { owner = o; }
+	PandaObject* getOwner() const { return m_owner; }
+	void setOwner(PandaObject* owner) { m_owner = owner; }
 
 	virtual bool validParent(const BaseData *parent) const;
 	virtual void setParent(BaseData* parent);
-	BaseData* getParent() const { return parentBaseData; }
+	BaseData* getParent() const { return m_parentBaseData; }
 
 	virtual const types::AbstractDataTrait* getDataTrait() const = 0;
 	virtual const void* getVoidValue() const = 0;
@@ -105,13 +105,13 @@ protected:
 
 	void initFlags();
 
-	bool readOnly, displayed, persistent, input, output;
-	bool isValueSet;
-	bool setParentProtection;
-	int counter;
-	QString name, help, group, widget, widgetData;
-	PandaObject* owner;
-	BaseData* parentBaseData;
+	bool m_readOnly, m_displayed, m_persistent, m_input, m_output;
+	bool m_isValueSet;
+	bool m_setParentProtection;
+	int m_counter;
+	QString m_name, m_help, m_group, m_widget, m_widgetData;
+	PandaObject* m_owner;
+	BaseData* m_parentBaseData;
 
 private:
 	BaseData() {}

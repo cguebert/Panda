@@ -39,24 +39,24 @@ public:
 	virtual void doRemoveOutput(DataNode* node);
 
 protected:
-	bool dirtyValue;
-	NodesList inputs, outputs;
+	bool m_dirtyValue;
+	NodesList m_inputs, m_outputs;
 };
 
 //***************************************************************//
 
 inline const DataNode::NodesList& DataNode::getInputs()
-{ return inputs; }
+{ return m_inputs; }
 
 inline const DataNode::NodesList& DataNode::getOutputs()
-{ return outputs; }
+{ return m_outputs; }
 
 inline bool DataNode::isDirty() const
-{ return dirtyValue; }
+{ return m_dirtyValue; }
 
 inline void DataNode::setDirtyValue()
 {
-	if(!dirtyValue)
+	if(!m_dirtyValue)
 	{
 		doSetDirty();
 		setDirtyOutputs();
@@ -64,16 +64,16 @@ inline void DataNode::setDirtyValue()
 }
 
 inline void DataNode::doSetDirty()
-{ dirtyValue = true; }
+{ m_dirtyValue = true; }
 
 inline void DataNode::setDirtyOutputs()
 {
-	for(DataNode* node : outputs)
+	for(DataNode* node : m_outputs)
 		node->setDirtyValue();
 }
 
 inline void DataNode::cleanDirty()
-{ dirtyValue = false; }
+{ m_dirtyValue = false; }
 
 inline void DataNode::updateIfDirty() const
 {
@@ -82,16 +82,16 @@ inline void DataNode::updateIfDirty() const
 }
 
 inline void DataNode::doAddInput(DataNode* node)
-{ inputs.append(node); }
+{ m_inputs.append(node); }
 
 inline void DataNode::doRemoveInput(DataNode* node)
-{ inputs.removeAll(node); }
+{ m_inputs.removeAll(node); }
 
 inline void DataNode::doAddOutput(DataNode* node)
-{ outputs.append(node); }
+{ m_outputs.append(node); }
 
 inline void DataNode::doRemoveOutput(DataNode* node)
-{ outputs.removeAll(node); }
+{ m_outputs.removeAll(node); }
 
 } // namespace panda
 

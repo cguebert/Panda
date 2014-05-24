@@ -740,7 +740,7 @@ void PandaDocument::moveLayerDown(PandaObject *layer)
 void PandaDocument::setDirtyValue()
 {
 	PandaObject::setDirtyValue();
-	if(!isInStep && !getCurrentSelectedObject())
+	if(!m_isInStep && !getCurrentSelectedObject())
 		emit selectedObjectIsDirty(this);
 }
 
@@ -785,7 +785,7 @@ void PandaDocument::step()
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
 
-	isInStep = true;
+	m_isInStep = true;
 	for(auto object : pandaObjects)
 		object->beginStep();
 
@@ -804,7 +804,7 @@ void PandaDocument::step()
 	setDirtyValue();
 	updateIfDirty();
 
-	isInStep = false;
+	m_isInStep = false;
 	for(auto object : pandaObjects)
 		object->endStep();
 

@@ -85,13 +85,13 @@ public:
 		typedef Data<value_type> data_type;
 		typedef types::DataTrait<value_type> data_trait;
 
-		data_type::dataTrait = types::VirtualDataTrait<value_type>::get();
-		data_type::dataCopier = VirtualDataCopier<value_type>::get();
+		data_type::m_dataTrait = types::VirtualDataTrait<value_type>::get();
+		data_type::m_dataCopier = VirtualDataCopier<value_type>::get();
 
-		types::DataTypeId::registerType<T>(data_type::dataTrait->fullTypeId());
-		types::DataTraitsList::registerTrait(data_type::dataTrait);
+		types::DataTypeId::registerType<T>(data_type::m_dataTrait->fullTypeId());
+		types::DataTraitsList::registerTrait(data_type::m_dataTrait);
 
-		DataFactory::getInstance()->registerData(data_type::dataTrait,
+		DataFactory::getInstance()->registerData(data_type::m_dataTrait,
 												 data_type::getClass(),
 												 QSharedPointer< DataCreator<data_type> >::create());
 		return 1;

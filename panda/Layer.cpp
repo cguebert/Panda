@@ -167,7 +167,7 @@ void Layer::update()
 		renderer->updateIfDirty();
 	}
 
-	updateLayer(parentDocument);
+	updateLayer(m_parentDocument);
 	cleanDirty();
 }
 
@@ -237,7 +237,7 @@ QMatrix4x4& Layer::getMVPMatrix()
 void Layer::postCreate()
 {
 	int i = 1;
-	for(auto obj : parentDocument->getObjects())
+	for(auto obj : m_parentDocument->getObjects())
 	{
 		if(dynamic_cast<Layer*>(obj.data()) && obj!=this)
 			++i;

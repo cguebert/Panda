@@ -47,7 +47,7 @@ public:
 		rnd.seed(seed.getValue());
 		auto valPoints = points.getAccessor();
 		valPoints.clear();
-		QSize size = parentDocument->getRenderSize();
+		QSize size = m_parentDocument->getRenderSize();
 		Rect area = Rect(0, 0, size.width()-1, size.height()-1);
 		grid.initGrid(area, minimumDistance.getValue() / sqrt(2.0));
 

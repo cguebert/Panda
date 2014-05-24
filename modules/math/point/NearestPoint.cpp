@@ -43,7 +43,7 @@ public:
 		if(nb && searchPts.size())
 		{
 			PReal maxD = maxDist.getValue();
-			QSize size = parentDocument->getRenderSize();
+			QSize size = m_parentDocument->getRenderSize();
 			Rect area = Rect(0, 0, size.width()-1, size.height()-1);
 			grid.initGrid(area, qMax<PReal>(maxD, 10.0));
 			grid.addPoints(searchPts);

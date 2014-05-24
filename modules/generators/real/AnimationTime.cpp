@@ -24,8 +24,8 @@ public:
 
 	void update()
 	{
-		animTime.setValue(parentDocument->getAnimationTime());
-		timeStep.setValue(parentDocument->getTimeStep());
+		animTime.setValue(m_parentDocument->getAnimationTime());
+		timeStep.setValue(m_parentDocument->getTimeStep());
 		cleanDirty();
 	}
 

@@ -4,15 +4,15 @@ namespace panda
 {
 
 DataNode::DataNode()
-	: dirtyValue(false)
+	: m_dirtyValue(false)
 {
 }
 
 DataNode::~DataNode()
 {
-	for(DataNode* node : inputs)
+	for(DataNode* node : m_inputs)
 		node->doRemoveOutput(this);
-	for(DataNode* node : outputs)
+	for(DataNode* node : m_outputs)
 		node->doRemoveInput(this);
 }
 

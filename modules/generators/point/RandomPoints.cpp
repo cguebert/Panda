@@ -38,7 +38,7 @@ public:
 		auto valPoints = points.getAccessor();
 		int valNbPoints = nbPoints.getValue();
 		valPoints.clear();
-		QSize size = parentDocument->getRenderSize();
+		QSize size = m_parentDocument->getRenderSize();
 
 		for(int i=0; i<valNbPoints; ++i)
 			valPoints.push_back(Point(rnd.random()*size.width(), rnd.random()*size.height()));

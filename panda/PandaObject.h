@@ -75,22 +75,22 @@ public:
 
 	virtual void dataSetParent(BaseData* data, BaseData* parent);
 
-	void changeDataName(BaseData* data, const QString& newName);
 	void emitModified();
 
 	bool doesLaterUpdate();
 
-protected:
-	QString name;
-	QList<BaseData*> datas;
-	QMap<QString, BaseData*> datasMap;
-	quint32 index;
-	bool doEmitModified, doEmitDirty, isInStep;
-	bool laterUpdate; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
-	mutable bool isUpdating;
-	PandaDocument* parentDocument;
+	PandaDocument* getParentDocument();
 
-	void setInternalData(const QString& newName, const quint32 &newIndex);
+protected:
+	QString m_name;
+	QList<BaseData*> datas;
+	quint32 m_index;
+	bool m_doEmitModified, m_doEmitDirty, m_isInStep;
+	bool m_laterUpdate; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
+	mutable bool m_isUpdating;
+	PandaDocument* m_parentDocument;
+
+	void setInternalData(const QString& name, quint32 index);
 	friend class ObjectFactory;
 	friend class PandaDocument;
 };
@@ -108,25 +108,28 @@ inline QString PandaObject::getTemplateName()
 { return getClass()->getTemplateName(); }
 
 inline QString PandaObject::getName() const
-{ return name; }
+{ return m_name; }
 
 inline quint32 PandaObject::getIndex() const
-{ return index; }
+{ return m_index; }
 
 inline void PandaObject::beginStep()
-{ isInStep = true; }
+{ m_isInStep = true; }
 
 inline void PandaObject::endStep()
-{ isInStep = false; }
+{ m_isInStep = false; }
 
 inline QList<BaseData*> PandaObject::getDatas() const
 { return datas; }
 
-inline void PandaObject::setInternalData(const QString& newName, const quint32& newIndex)
-{ name = newName; index = newIndex; }
+inline void PandaObject::setInternalData(const QString& name, quint32 index)
+{ m_name = name; m_index = index; }
 
 inline bool PandaObject::doesLaterUpdate()
-{ return laterUpdate; }
+{ return m_laterUpdate; }
+
+inline PandaDocument* PandaObject::getParentDocument()
+{ return m_parentDocument; }
 
 } // namespace Panda
 

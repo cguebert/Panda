@@ -31,8 +31,8 @@ public:
 	void update()
 	{
 		cleanDirty();
-		PReal time = parentDocument->getAnimationTime();
-		Point oldPos = position.getValue(), newPos = parentDocument->getMousePosition();
+		PReal time = m_parentDocument->getAnimationTime();
+		Point oldPos = position.getValue(), newPos = m_parentDocument->getMousePosition();
 
 		position.setValue(newPos);
 
@@ -41,7 +41,7 @@ public:
 		else
 			movement.setValue(Point(0,0));
 
-		clickState.setValue(parentDocument->getMouseClick());
+		clickState.setValue(m_parentDocument->getMouseClick());
 	}
 
 protected:

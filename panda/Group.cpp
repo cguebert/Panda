@@ -390,7 +390,7 @@ void Group::load(QDomElement& elem)
 	{
 		QString registryName = objectNode.attribute("type");
 		quint32 index = objectNode.attribute("index").toUInt();
-		auto object = factory->create(registryName, parentDocument);
+		auto object = factory->create(registryName, m_parentDocument);
 		if(object)
 		{
 			importObjectsMap[index] = object.data();
@@ -478,7 +478,7 @@ void Group::load(QDomElement& elem)
 		dockNode = dockNode.nextSiblingElement("Dock");
 	}
 
-	parentDocument->onModifiedObject(this);
+	m_parentDocument->onModifiedObject(this);
 }
 
 void Group::addObject(ObjectPtr obj)
@@ -559,7 +559,7 @@ void GroupWithLayer::setLayer(Layer* newLayer)
 
 void GroupWithLayer::update()
 {
-	updateLayer(parentDocument);
+	updateLayer(m_parentDocument);
 	cleanDirty();
 }
 
@@ -660,7 +660,7 @@ void GroupWithLayer::addObject(ObjectPtr obj)
 {
 	Group::addObject(obj);
 
-	Layer* defaultLayer = parentDocument->getDefaultLayer();
+	Layer* defaultLayer = m_parentDocument->getDefaultLayer();
 	Renderer* renderer = dynamic_cast<Renderer*>(obj.data());
 	if(renderer)
 	{
@@ -677,7 +677,7 @@ void GroupWithLayer::removeObject(PandaObject* obj)
 
 	Renderer* renderer = dynamic_cast<Renderer*>(obj);
 	if(renderer && !renderer->getParentDock())
-		parentDocument->getDefaultLayer()->addDockable(renderer);
+		m_parentDocument->getDefaultLayer()->addDockable(renderer);
 }
 
 int GroupWithLayerClass = RegisterObject<GroupWithLayer>("GroupWithLayer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);

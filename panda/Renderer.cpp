@@ -14,7 +14,7 @@ Renderer::Renderer(PandaDocument* doc)
 
 DockObject* Renderer::getDefaultDock()
 {
-	return parentDocument->getDefaultLayer();
+	return m_parentDocument->getDefaultLayer();
 }
 
 QMatrix4x4& Renderer::getMVPMatrix()

@@ -12,19 +12,19 @@ namespace panda
 {
 
 BaseData::BaseData(const BaseInitData& init)
-	: readOnly(false)
-	, displayed(true)
-	, persistent(true)
-	, input(false)
-	, output(false)
-	, isValueSet(false)
-	, setParentProtection(false)
-	, counter(0)
-	, name(init.name)
-	, help(init.help)
-	, widget("default")
-	, owner(init.owner)
-	, parentBaseData(nullptr)
+	: m_readOnly(false)
+	, m_displayed(true)
+	, m_persistent(true)
+	, m_input(false)
+	, m_output(false)
+	, m_isValueSet(false)
+	, m_setParentProtection(false)
+	, m_counter(0)
+	, m_name(init.name)
+	, m_help(init.help)
+	, m_widget("default")
+	, m_owner(init.owner)
+	, m_parentBaseData(nullptr)
 {
 	if(init.data != this)
 	{
@@ -32,34 +32,27 @@ BaseData::BaseData(const BaseInitData& init)
 		QCoreApplication::exit(-1);
 	}
 
-	if(owner)
-		owner->addData(this);
+	if(m_owner)
+		m_owner->addData(this);
 }
 
 BaseData::BaseData(const QString& name, const QString& help, PandaObject* owner)
-	: readOnly(false)
-	, displayed(true)
-	, persistent(true)
-	, input(false)
-	, output(false)
-	, isValueSet(false)
-	, setParentProtection(false)
-	, counter(0)
-	, name(name)
-	, help(help)
-	, widget("default")
-	, owner(owner)
-	, parentBaseData(nullptr)
+	: m_readOnly(false)
+	, m_displayed(true)
+	, m_persistent(true)
+	, m_input(false)
+	, m_output(false)
+	, m_isValueSet(false)
+	, m_setParentProtection(false)
+	, m_counter(0)
+	, m_name(name)
+	, m_help(help)
+	, m_widget("default")
+	, m_owner(owner)
+	, m_parentBaseData(nullptr)
 {
-	if(owner)
-		owner->addData(this);
-}
-
-void BaseData::setName(const QString& newName)
-{
-	if(owner)
-		owner->changeDataName(this, newName);
-	name = newName;
+	if(m_owner)
+		m_owner->addData(this);
 }
 
 bool BaseData::validParent(const BaseData* parent) const
@@ -82,11 +75,11 @@ bool BaseData::validParent(const BaseData* parent) const
 
 void BaseData::setParent(BaseData* parent)
 {
-	if(parentBaseData == parent)
+	if(m_parentBaseData == parent)
 		return;
-	if(setParentProtection)
+	if(m_setParentProtection)
 		return;
-	setParentProtection = true;
+	m_setParentProtection = true;
 
 	if(parent)
 	{
@@ -94,7 +87,7 @@ void BaseData::setParent(BaseData* parent)
 		* This is for the special case of the Group objects
 		* where an output Data is connected to another Data
 		*/
-		for(DataNode* node : inputs)
+		for(DataNode* node : m_inputs)
 		{
 			if(!dynamic_cast<PandaObject*>(node))
 				removeInput(node);
@@ -103,21 +96,21 @@ void BaseData::setParent(BaseData* parent)
 		if(parent && !validParent(parent))
 			return;
 
-		parentBaseData = parent;
+		m_parentBaseData = parent;
 		addInput(parent);
 		BaseData::setDirtyValue();
 //		update();
-		++counter;
-		isValueSet = true;
+		++m_counter;
+		m_isValueSet = true;
 	}
 	else
 	{
-		parentBaseData = nullptr;
-		while(!inputs.empty())
-			removeInput(inputs.front());
+		m_parentBaseData = nullptr;
+		while(!m_inputs.empty())
+			removeInput(m_inputs.front());
 	}
 
-	setParentProtection = false;
+	m_setParentProtection = false;
 }
 
 QString BaseData::getDescription() const
@@ -146,26 +139,26 @@ void BaseData::load(QDomElement& elem)
 void BaseData::doAddInput(DataNode* node)
 {
 	if(dynamic_cast<PandaObject*>(node))
-		output = true;
+		m_output = true;
 	DataNode::doAddInput(node);
 }
 
 void BaseData::doRemoveInput(DataNode* node)
 {
 	DataNode::doRemoveInput(node);
-	if(parentBaseData == node)
+	if(m_parentBaseData == node)
 	{
-		if(owner && !setParentProtection)
-			owner->dataSetParent(this, nullptr);
+		if(m_owner && !m_setParentProtection)
+			m_owner->dataSetParent(this, nullptr);
 	}
 	else if(dynamic_cast<PandaObject*>(node))
-		output = false;
+		m_output = false;
 }
 
 void BaseData::doAddOutput(DataNode* node)
 {
 	if(dynamic_cast<PandaObject*>(node))
-		input = true;
+		m_input = true;
 	DataNode::doAddOutput(node);
 }
 
@@ -173,29 +166,29 @@ void BaseData::doRemoveOutput(DataNode* node)
 {
 	DataNode::doRemoveOutput(node);
 	if(dynamic_cast<PandaObject*>(node))
-		input = false;
+		m_input = false;
 }
 
 void BaseData::initFlags()
 {
-	displayed = getDataTrait()->isDisplayed();
-	persistent = getDataTrait()->isPersistent();
+	m_displayed = getDataTrait()->isDisplayed();
+	m_persistent = getDataTrait()->isPersistent();
 }
 
 //***************************************************************//
 
-VoidDataAccessor::VoidDataAccessor(BaseData* d)
-	: data(d)
-	, value(d->beginVoidEdit())
+VoidDataAccessor::VoidDataAccessor(BaseData* data)
+	: m_data(data)
+	, m_value(data->beginVoidEdit())
 {}
 
 VoidDataAccessor::~VoidDataAccessor()
-{ data->endVoidEdit(); }
+{ m_data->endVoidEdit(); }
 
 void* VoidDataAccessor::get()
-{ return value; }
+{ return m_value; }
 
 VoidDataAccessor::operator void *()
-{ return value; }
+{ return m_value; }
 
 } // namespace panda

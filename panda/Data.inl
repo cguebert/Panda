@@ -14,8 +14,8 @@ namespace panda
 template<class T>
 Data<T>::Data(const BaseData::BaseInitData& init)
 	: BaseData(init)
-	, value(value_type())
-	, parentData(nullptr)
+	, m_value(value_type())
+	, m_parentData(nullptr)
 {
 	initFlags();
 }
@@ -23,17 +23,17 @@ Data<T>::Data(const BaseData::BaseInitData& init)
 template<class T>
 Data<T>::Data(const InitData& init)
 	: BaseData(init)
-	, parentData(nullptr)
+	, m_parentData(nullptr)
 {
-	value = init.value;
+	m_value = init.value;
 	initFlags();
 }
 
 template<class T>
 Data<T>::Data(const QString& name, const QString& help, PandaObject* owner)
 	: BaseData(name, help, owner)
-	, value(T())
-	, parentData(nullptr)
+	, m_value(T())
+	, m_parentData(nullptr)
 {
 	initFlags();
 }
@@ -42,25 +42,25 @@ template<class T>
 Data<T>::~Data()
 {
 	// Give connected Datas a chance to copy the value before it is freed
-	for(DataNode* node : outputs)
+	for(DataNode* node : m_outputs)
 		node->doRemoveInput(this);
-	outputs.clear();
+	m_outputs.clear();
 }
 
 template<class T>
 void Data<T>::update()
 {
 	cleanDirty();
-	for(DataNode* node : inputs)
+	for(DataNode* node : m_inputs)
 		node->updateIfDirty();
-	if(parentData)
+	if(m_parentData)
 	{	// TODO : we shouldn't have to do anything here, there is a bug somewhere...
 		beginEdit();
 		endEdit();	// As if we touched the data
 	}
-	else if(parentBaseData)
+	else if(m_parentBaseData)
 	{
-		copyValueFrom(parentBaseData);
+		copyValueFrom(m_parentBaseData);
 		cleanDirty(); // Bugfix: copying a value will most often make this Data dirty
 	}
 }
@@ -68,7 +68,7 @@ void Data<T>::update()
 template<class T>
 void Data<T>::setDirtyValue()
 {
-	if(!dirtyValue)
+	if(!isDirty())
 	{
 #ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_setDirty, this);
@@ -80,10 +80,10 @@ void Data<T>::setDirtyValue()
 template<class T>
 void Data<T>::setParent(BaseData* parent)
 {
-	Data<T>* tmp = dynamic_cast< Data<T>* >(parent);
-	if(parentData && !tmp && !setParentProtection)	// If deconnecting, we copy the data first
-		value = parentData->getValue();
-	parentData = tmp;
+	Data<T>* TParent = dynamic_cast< Data<T>* >(parent);
+	if(m_parentData && !TParent && !m_setParentProtection)	// If deconnecting, we copy the data first
+		m_value = m_parentData->getValue();
+	m_parentData = TParent;
 
 	BaseData::setParent(parent);
 }
@@ -91,7 +91,7 @@ void Data<T>::setParent(BaseData* parent)
 template<class T>
 const types::AbstractDataTrait* Data<T>::getDataTrait() const
 {
-	return dataTrait;
+	return m_dataTrait;
 }
 
 template<class T>
@@ -107,9 +107,9 @@ DataAccessor<typename Data<T>::data_type> Data<T>::getAccessor()
 }
 
 template<class T>
-void Data<T>::setValue(const_reference v)
+void Data<T>::setValue(const_reference value)
 {
-	*beginEdit() = v;
+	*beginEdit() = value;
 	endEdit();
 }
 
@@ -120,9 +120,9 @@ typename Data<T>::const_reference Data<T>::getValue() const
 	helper::ScopedEvent log(helper::event_getValue, this);
 #endif
 	updateIfDirty();
-	if(parentData)
-		return parentData->getValue();
-	return value;
+	if(m_parentData)
+		return m_parentData->getValue();
+	return m_value;
 }
 
 template<class T>
@@ -130,8 +130,8 @@ void Data<T>::copyValueFrom(const BaseData* from)
 {
 #ifdef PANDA_LOG_EVENTS
 	helper::ScopedEvent log(helper::event_copyValue, this);
-	if(dataCopier->copyData(this, from))
-		isValueSet = true;
+	if(m_dataCopier->copyData(this, from))
+		m_isValueSet = true;
 #endif
 }
 
@@ -139,14 +139,14 @@ template<class T>
 typename Data<T>::pointer Data<T>::beginEdit()
 {
 	updateIfDirty();
-	++counter;
-	return &value;
+	++m_counter;
+	return &m_value;
 }
 
 template<class T>
 void Data<T>::endEdit()
 {
-	isValueSet = true;
+	m_isValueSet = true;
 	BaseData::setDirtyOutputs();
 }
 
@@ -163,8 +163,8 @@ void Data<T>::endVoidEdit()
 }
 
 // Definition of the static members
-template<class T> types::AbstractDataTrait* Data<T>::dataTrait;
-template<class T> AbstractDataCopier* Data<T>::dataCopier;
+template<class T> types::AbstractDataTrait* Data<T>::m_dataTrait;
+template<class T> AbstractDataCopier* Data<T>::m_dataCopier;
 
 } // namespace panda
 

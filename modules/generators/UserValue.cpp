@@ -142,7 +142,7 @@ public:
 			xmlDoc.appendChild(xmlRoot);
 		}
 
-		if(singleValue.getValue() || !isInStep)
+		if(singleValue.getValue() || !m_isInStep)
 			removeChilds(xmlRoot);
 
 		QDomElement xmlData = xmlDoc.createElement("SavedData");

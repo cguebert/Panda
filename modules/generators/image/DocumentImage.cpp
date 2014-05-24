@@ -31,14 +31,14 @@ public:
 		PandaObject::beginStep();
 		if(previous.getValue())
 		{
-			image.getAccessor()->setFbo(parentDocument->getFBO());
+			image.getAccessor()->setFbo(m_parentDocument->getFBO());
 			cleanDirty();
 		}
 	}
 
 	void update()
 	{
-		image.getAccessor()->setFbo(parentDocument->getFBO());
+		image.getAccessor()->setFbo(m_parentDocument->getFBO());
 		cleanDirty();
 	}
 

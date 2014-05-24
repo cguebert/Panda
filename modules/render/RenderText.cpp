@@ -69,7 +69,7 @@ public:
 			int alignVIndex = qBound(0, alignV.getValue(), 3);
 			int alignment = alignHVals[alignHIndex] | alignVVals[alignVIndex];
 
-			QSize renderSize = parentDocument->getRenderSize();
+			QSize renderSize = m_parentDocument->getRenderSize();
 			if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)
 			{
 				QOpenGLFramebufferObjectFormat fmt;

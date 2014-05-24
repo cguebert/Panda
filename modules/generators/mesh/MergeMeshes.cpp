@@ -38,7 +38,7 @@ public:
 	void update()
 	{
 		helper::PointsGrid grid;
-		QSize size = parentDocument->getRenderSize();
+		QSize size = m_parentDocument->getRenderSize();
 		Rect area(0, 0, size.width(), size.height());
 		grid.initGrid(area, 10);
 

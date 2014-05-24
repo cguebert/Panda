@@ -77,8 +77,8 @@ BaseData* GenericObject::createDatas(int type, int index)
 
 	BaseData* firstInputData = nullptr;
 
-	doEmitModified = false;
-	doEmitDirty = false;
+	m_doEmitModified = false;
+	m_doEmitDirty = false;
 
 	int nbDefs = m_dataDefinitions.size();
 	for(int i=0; i<nbDefs; ++i)
@@ -123,8 +123,8 @@ BaseData* GenericObject::createDatas(int type, int index)
 		addData(m_genericData);
 	}
 
-	doEmitModified = true;
-	doEmitDirty = true;
+	m_doEmitModified = true;
+	m_doEmitDirty = true;
 	emitModified();
 
 	return firstInputData;
@@ -215,7 +215,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(inputData)
 			inputData->setParent(parent);
 
-		parentDocument->onModifiedObject(this);
+		m_parentDocument->onModifiedObject(this);
 	}
 	else if(parent || !m_createdDatasMap.contains(data))
 	{
@@ -237,7 +237,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
 			// Create an action so that we can undo the removal of this group of datas
-			auto currentCommand = parentDocument->getCurrentCommand();
+			auto currentCommand = m_parentDocument->getCurrentCommand();
 			if(currentCommand)
 			{
 				int index = m_createdDatasStructs.indexOf(createdDatasStruct);
@@ -255,7 +255,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 			updateDataNames();
 		}
 
-		parentDocument->onModifiedObject(this);
+		m_parentDocument->onModifiedObject(this);
 	}
 }
 
@@ -340,8 +340,8 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 
 	BaseData* firstInputData = nullptr;
 
-	doEmitModified = false;
-	doEmitDirty = false;
+	m_doEmitModified = false;
+	m_doEmitDirty = false;
 
 	int nbDefs = m_dataDefinitions.size();
 	for(int i=0; i<nbDefs; ++i)
@@ -393,8 +393,8 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 		addData(m_genericData);
 	}
 
-	doEmitModified = true;
-	doEmitDirty = true;
+	m_doEmitModified = true;
+	m_doEmitDirty = true;
 	emitModified();
 
 	return firstInputData;
@@ -411,7 +411,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(inputData)
 			inputData->setParent(parent);
 
-		parentDocument->onModifiedObject(this);
+		m_parentDocument->onModifiedObject(this);
 	}
 	// Changing connection
 	else if(parent || !m_createdDatasMap.contains(data))
@@ -434,7 +434,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
 			// Create an action so that we can undo the removal of this group of datas
-			auto currentCommand = parentDocument->getCurrentCommand();
+			auto currentCommand = m_parentDocument->getCurrentCommand();
 			if(currentCommand)
 			{
 				int index = m_createdDatasStructs.indexOf(createdDatasStruct);
@@ -478,7 +478,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 				setDirtyValue();
 		}
 
-		parentDocument->onModifiedObject(this);
+		m_parentDocument->onModifiedObject(this);
 	}
 }
 

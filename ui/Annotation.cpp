@@ -24,7 +24,7 @@ Annotation::Annotation(PandaDocument *doc)
 
 void Annotation::setDirtyValue()
 {
-	if(!dirtyValue)
+	if(!isDirty())
 	{
 		PandaObject::setDirtyValue();
 
