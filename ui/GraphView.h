@@ -104,30 +104,30 @@ public slots:
 	void hoverDataInfo();
 
 private:
-	panda::PandaDocument* pandaDocument;
+	panda::PandaDocument* m_pandaDocument;
 
-	int zoomLevel;
-	qreal zoomFactor;
-	QPointF viewDelta;
-	QPointF previousMousePos, currentMousePos;
+	int m_zoomLevel;
+	qreal m_zoomFactor;
+	QPointF m_viewDelta;
+	QPointF m_previousMousePos, m_currentMousePos;
 
 	enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK, MOVING_ZOOM, MOVING_CUSTOM };
-	MovingAction movingAction;
+	MovingAction m_movingAction;
 
-	panda::BaseData *clickedData, *hoverData, *contextMenuData;
+	panda::BaseData *m_clickedData, *m_hoverData, *m_contextMenuData;
 
-	QMap<panda::PandaObject*, QSharedPointer<ObjectDrawStruct> > objectDrawStructs;
-	ObjectDrawStruct* capturedDrawStruct; /// Clicked ObjectDrawStruct that want to intercept mouse events
+	QMap<panda::PandaObject*, QSharedPointer<ObjectDrawStruct> > m_objectDrawStructs;
+	ObjectDrawStruct* m_capturedDrawStruct; /// Clicked ObjectDrawStruct that want to intercept mouse events
 
-	QMap<panda::BaseData*, QSharedPointer<LinkTag> > linkTags;
-	bool recomputeTags; /// Should we recompute the linkTags next PaintEvent?
+	QMap<panda::BaseData*, QSharedPointer<LinkTag> > m_linkTags;
+	bool m_recomputeTags; /// Should we recompute the linkTags next PaintEvent?
 
-	QTimer* hoverTimer; /// Counting how long the mouse is staying over a Data
-	bool highlightConnectedDatas;
+	QTimer* m_hoverTimer; /// Counting how long the mouse is staying over a Data
+	bool m_highlightConnectedDatas;
 
-	bool useMagneticSnap; /// Do we help align objects when moving them with the mouse?
-	std::set<qreal> snapTargetsX, snapTargetsY;
-	QPointF snapDelta;
+	bool m_useMagneticSnap; /// Do we help align objects when moving them with the mouse?
+	std::set<qreal> m_snapTargetsX, m_snapTargetsY;
+	QPointF m_snapDelta;
 
 	QList<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied
 };

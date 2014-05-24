@@ -17,49 +17,49 @@
 #include <panda/Group.h>
 
 MainWindow::MainWindow()
-	: groupsRegistryMenu(nullptr)
-	, loggerDialog(nullptr)
+	: m_groupsRegistryMenu(nullptr)
+	, m_loggerDialog(nullptr)
 {
-	pandaDocument = new panda::PandaDocument(this);
+	m_pandaDocument = new panda::PandaDocument(this);
 
-	graphView = new GraphView(pandaDocument);
-	openGLRenderView = new OpenGLRenderView(pandaDocument);
-	tabWidget = new QTabWidget;
-	tabWidget->addTab(graphView, tr("Graph"));
-	tabWidget->addTab(openGLRenderView, tr("Render"));
-	setCentralWidget(tabWidget);
+	m_graphView = new GraphView(m_pandaDocument);
+	m_openGLRenderView = new OpenGLRenderView(m_pandaDocument);
+	m_tabWidget = new QTabWidget;
+	m_tabWidget->addTab(m_graphView, tr("Graph"));
+	m_tabWidget->addTab(m_openGLRenderView, tr("Render"));
+	setCentralWidget(m_tabWidget);
 
 	createActions();
 	createMenus();
 	createToolBars();
 	createStatusBar();
 
-	connect(pandaDocument, SIGNAL(modified()), this, SLOT(documentModified()));
-	connect(pandaDocument, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(selectedObject(panda::PandaObject*)));
-	connect(graphView, SIGNAL(modified()), this, SLOT(documentModified()));
-	connect(graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
-	connect(graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
+	connect(m_pandaDocument, SIGNAL(modified()), this, SLOT(documentModified()));
+	connect(m_pandaDocument, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(selectedObject(panda::PandaObject*)));
+	connect(m_graphView, SIGNAL(modified()), this, SLOT(documentModified()));
+	connect(m_graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
+	connect(m_graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
 
 	createGroupRegistryMenu();
 
 	setWindowIcon(QIcon(":/images/icon.png"));
 	setCurrentFile("");
 
-	datasTable = new DatasTable(pandaDocument, this);
+	m_datasTable = new DatasTable(m_pandaDocument, this);
 
-	datasDock = new QDockWidget(tr("Properties"), this);
-	datasDock->setObjectName("PropertiesDock");
-	datasDock->setWidget(datasTable);
-	datasDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-	addDockWidget(Qt::LeftDockWidgetArea, datasDock);
+	m_datasDock = new QDockWidget(tr("Properties"), this);
+	m_datasDock->setObjectName("PropertiesDock");
+	m_datasDock->setWidget(m_datasTable);
+	m_datasDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	addDockWidget(Qt::LeftDockWidgetArea, m_datasDock);
 
-	layersTab = new LayersTab(pandaDocument, this);
+	m_layersTab = new LayersTab(m_pandaDocument, this);
 
-	layersDock = new QDockWidget(tr("Layers"), this);
-	layersDock->setObjectName("LayersDock");
-	layersDock->setWidget(layersTab);
-	layersDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-	addDockWidget(Qt::LeftDockWidgetArea, layersDock);
+	m_layersDock = new QDockWidget(tr("Layers"), this);
+	m_layersDock->setObjectName("LayersDock");
+	m_layersDock->setWidget(m_layersTab);
+	m_layersDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	addDockWidget(Qt::LeftDockWidgetArea, m_layersDock);
 
 	readSettings();
 }
@@ -77,10 +77,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::newFile()
 {
 	if (okToContinue()) {
-		playAction->setChecked(false);
+		m_playAction->setChecked(false);
 		play(false);
-		graphView->resetView();
-		pandaDocument->resetDocument();
+		m_graphView->resetView();
+		m_pandaDocument->resetDocument();
 		setCurrentFile("");
 	}
 }
@@ -93,11 +93,11 @@ void MainWindow::open()
 								   tr("Panda files (*.pnd);;XML Files (*.xml)"));
 		if (!fileName.isEmpty())
 		{
-			playAction->setChecked(false);
-			pandaDocument->resetDocument();
-			graphView->resetView();
+			m_playAction->setChecked(false);
+			m_pandaDocument->resetDocument();
+			m_graphView->resetView();
 			loadFile(fileName);
-			graphView->updateLinkTags(true);
+			m_graphView->updateLinkTags(true);
 		}
 	}
 }
@@ -110,16 +110,16 @@ void MainWindow::import()
 	if (!fileName.isEmpty())
 	{
 		loadFile(fileName, true);
-		graphView->updateLinkTags();
+		m_graphView->updateLinkTags();
 	}
 }
 
 bool MainWindow::save()
 {
-	if (curFile.isEmpty()) {
+	if (m_curFile.isEmpty()) {
 		return saveAs();
 	} else {
-		return saveFile(curFile);
+		return saveFile(m_curFile);
 	}
 }
 
@@ -148,299 +148,299 @@ void MainWindow::openRecentFile()
 		QAction *action = qobject_cast<QAction *>(sender());
 		if(action)
 		{
-			playAction->setChecked(false);
-			pandaDocument->resetDocument();
+			m_playAction->setChecked(false);
+			m_pandaDocument->resetDocument();
 			loadFile(action->data().toString());
-			graphView->updateLinkTags(true);
+			m_graphView->updateLinkTags(true);
 		}
 	}
 }
 
 void MainWindow::updateStatusBar()
 {
-	PReal time = pandaDocument->getAnimationTime();
-	timeLabel->setText(tr("time : %1").arg(time));
+	PReal time = m_pandaDocument->getAnimationTime();
+	m_timeLabel->setText(tr("time : %1").arg(time));
 }
 
 void MainWindow::documentModified()
 {
-	if(tabWidget->currentWidget() == openGLRenderView)
-		openGLRenderView->update();
+	if(m_tabWidget->currentWidget() == m_openGLRenderView)
+		m_openGLRenderView->update();
 
 	setWindowModified(true);
 }
 
 void MainWindow::createActions()
 {
-	newAction = new QAction(tr("&New"), this);
-	newAction->setIcon(QIcon(":/images/new.png"));
-	newAction->setShortcut(QKeySequence::New);
-	newAction->setStatusTip(tr("Create a new panda document"));
-	connect(newAction, SIGNAL(triggered()), this, SLOT(newFile()));
+	m_newAction = new QAction(tr("&New"), this);
+	m_newAction->setIcon(QIcon(":/images/new.png"));
+	m_newAction->setShortcut(QKeySequence::New);
+	m_newAction->setStatusTip(tr("Create a new panda document"));
+	connect(m_newAction, SIGNAL(triggered()), this, SLOT(newFile()));
 
-	openAction = new QAction(tr("&Open..."), this);
-	openAction->setIcon(QIcon(":/images/open.png"));
-	openAction->setShortcut(QKeySequence::Open);
-	openAction->setStatusTip(tr("Open an existing panda document"));
-	connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
+	m_openAction = new QAction(tr("&Open..."), this);
+	m_openAction->setIcon(QIcon(":/images/open.png"));
+	m_openAction->setShortcut(QKeySequence::Open);
+	m_openAction->setStatusTip(tr("Open an existing panda document"));
+	connect(m_openAction, SIGNAL(triggered()), this, SLOT(open()));
 
-	importAction = new QAction(tr("&Import..."), this);
-	importAction->setIcon(QIcon(":/images/open.png"));
-	importAction->setStatusTip(tr("Import an existing panda document into the current one"));
-	connect(importAction, SIGNAL(triggered()), this, SLOT(import()));
+	m_importAction = new QAction(tr("&Import..."), this);
+	m_importAction->setIcon(QIcon(":/images/open.png"));
+	m_importAction->setStatusTip(tr("Import an existing panda document into the current one"));
+	connect(m_importAction, SIGNAL(triggered()), this, SLOT(import()));
 
-	saveAction = new QAction(tr("&Save"), this);
-	saveAction->setIcon(QIcon(":/images/save.png"));
-	saveAction->setShortcut(QKeySequence::Save);
-	saveAction->setStatusTip(tr("Save the document to disk"));
-	connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
+	m_saveAction = new QAction(tr("&Save"), this);
+	m_saveAction->setIcon(QIcon(":/images/save.png"));
+	m_saveAction->setShortcut(QKeySequence::Save);
+	m_saveAction->setStatusTip(tr("Save the document to disk"));
+	connect(m_saveAction, SIGNAL(triggered()), this, SLOT(save()));
 
-	saveAsAction = new QAction(tr("Save &As..."), this);
-	saveAsAction->setStatusTip(tr("Save the document under a new "
+	m_saveAsAction = new QAction(tr("Save &As..."), this);
+	m_saveAsAction->setStatusTip(tr("Save the document under a new "
 								  "name"));
-	connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
+	connect(m_saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
 
 	for (int i = 0; i < MaxRecentFiles; ++i) {
-		recentFileActions[i] = new QAction(this);
-		recentFileActions[i]->setVisible(false);
-		connect(recentFileActions[i], SIGNAL(triggered()),
+		m_recentFileActions[i] = new QAction(this);
+		m_recentFileActions[i]->setVisible(false);
+		connect(m_recentFileActions[i], SIGNAL(triggered()),
 				this, SLOT(openRecentFile()));
 	}
 
-	exitAction = new QAction(tr("E&xit"), this);
-	exitAction->setShortcut(tr("Ctrl+Q"));
-	exitAction->setStatusTip(tr("Exit Panda"));
-	connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+	m_exitAction = new QAction(tr("E&xit"), this);
+	m_exitAction->setShortcut(tr("Ctrl+Q"));
+	m_exitAction->setStatusTip(tr("Exit Panda"));
+	connect(m_exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
-	cutAction = new QAction(tr("Cu&t"), this);
-	cutAction->setIcon(QIcon(":/images/cut.png"));
-	cutAction->setShortcut(QKeySequence::Cut);
-	cutAction->setStatusTip(tr("Cut the current selection's contents "
+	m_cutAction = new QAction(tr("Cu&t"), this);
+	m_cutAction->setIcon(QIcon(":/images/cut.png"));
+	m_cutAction->setShortcut(QKeySequence::Cut);
+	m_cutAction->setStatusTip(tr("Cut the current selection's contents "
 							   "to the clipboard"));
-	connect(cutAction, SIGNAL(triggered()), this, SLOT(cut()));
+	connect(m_cutAction, SIGNAL(triggered()), this, SLOT(cut()));
 
-	copyAction = new QAction(tr("&Copy"), this);
-	copyAction->setIcon(QIcon(":/images/copy.png"));
-	copyAction->setShortcut(QKeySequence::Copy);
-	copyAction->setStatusTip(tr("Copy the current selection's contents "
+	m_copyAction = new QAction(tr("&Copy"), this);
+	m_copyAction->setIcon(QIcon(":/images/copy.png"));
+	m_copyAction->setShortcut(QKeySequence::Copy);
+	m_copyAction->setStatusTip(tr("Copy the current selection's contents "
 								"to the clipboard"));
-	connect(copyAction, SIGNAL(triggered()), pandaDocument, SLOT(copy()));
+	connect(m_copyAction, SIGNAL(triggered()), m_pandaDocument, SLOT(copy()));
 
-	pasteAction = new QAction(tr("&Paste"), this);
-	pasteAction->setIcon(QIcon(":/images/paste.png"));
-	pasteAction->setShortcut(QKeySequence::Paste);
-	pasteAction->setStatusTip(tr("Paste the clipboard's contents into "
+	m_pasteAction = new QAction(tr("&Paste"), this);
+	m_pasteAction->setIcon(QIcon(":/images/paste.png"));
+	m_pasteAction->setShortcut(QKeySequence::Paste);
+	m_pasteAction->setStatusTip(tr("Paste the clipboard's contents into "
 								 "the current selection"));
-	connect(pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
+	connect(m_pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
 
-	deleteAction = new QAction(tr("&Delete"), this);
-	deleteAction->setShortcut(QKeySequence::Delete);
-	deleteAction->setStatusTip(tr("Delete the current selection's "
+	m_deleteAction = new QAction(tr("&Delete"), this);
+	m_deleteAction->setShortcut(QKeySequence::Delete);
+	m_deleteAction->setStatusTip(tr("Delete the current selection's "
 								  "contents"));
-	connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
+	connect(m_deleteAction, SIGNAL(triggered()), this, SLOT(del()));
 
-	selectAllAction = new QAction(tr("Select &all"), this);
-	selectAllAction->setShortcut(tr("Ctrl+A"));
-	selectAllAction->setStatusTip(tr("Select all objects"));
+	m_selectAllAction = new QAction(tr("Select &all"), this);
+	m_selectAllAction->setShortcut(tr("Ctrl+A"));
+	m_selectAllAction->setStatusTip(tr("Select all objects"));
 
-	connect(selectAllAction, SIGNAL(triggered()), pandaDocument, SLOT(selectAll()));
+	connect(m_selectAllAction, SIGNAL(triggered()), m_pandaDocument, SLOT(selectAll()));
 
-	selectNoneAction = new QAction(tr("Select &none"), this);
-	selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
-	selectNoneAction->setStatusTip(tr("Deselect all objets"));
+	m_selectNoneAction = new QAction(tr("Select &none"), this);
+	m_selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
+	m_selectNoneAction->setStatusTip(tr("Deselect all objets"));
 
-	connect(selectNoneAction, SIGNAL(triggered()), pandaDocument, SLOT(selectNone()));
+	connect(m_selectNoneAction, SIGNAL(triggered()), m_pandaDocument, SLOT(selectNone()));
 
-	selectConnectedAction = new QAction(tr("Select &connected"), this);
-	selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
-	selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
+	m_selectConnectedAction = new QAction(tr("Select &connected"), this);
+	m_selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
+	m_selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
 
-	connect(selectConnectedAction, SIGNAL(triggered()), pandaDocument, SLOT(selectConnected()));
+	connect(m_selectConnectedAction, SIGNAL(triggered()), m_pandaDocument, SLOT(selectConnected()));
 
-	groupAction = new QAction(tr("&Group selected"), this);
-	groupAction->setShortcut(tr("Ctrl+G"));
-	groupAction->setStatusTip(tr("Group selected objects"));
-	groupAction->setEnabled(false);
+	m_groupAction = new QAction(tr("&Group selected"), this);
+	m_groupAction->setShortcut(tr("Ctrl+G"));
+	m_groupAction->setStatusTip(tr("Group selected objects"));
+	m_groupAction->setEnabled(false);
 
-	connect(groupAction, SIGNAL(triggered()), this, SLOT(group()));
+	connect(m_groupAction, SIGNAL(triggered()), this, SLOT(group()));
 
-	ungroupAction = new QAction(tr("&Ungroup selected"), this);
-	ungroupAction->setShortcut(tr("Ctrl+Shift+G"));
-	ungroupAction->setStatusTip(tr("Ungroup selected objects"));
-	ungroupAction->setEnabled(false);
+	m_ungroupAction = new QAction(tr("&Ungroup selected"), this);
+	m_ungroupAction->setShortcut(tr("Ctrl+Shift+G"));
+	m_ungroupAction->setStatusTip(tr("Ungroup selected objects"));
+	m_ungroupAction->setEnabled(false);
 
-	connect(ungroupAction, SIGNAL(triggered()), this, SLOT(ungroup()));
+	connect(m_ungroupAction, SIGNAL(triggered()), this, SLOT(ungroup()));
 
-	editGroupAction = new QAction(tr("&Edit group"), this);
-	editGroupAction->setShortcut(tr("Ctrl+E"));
-	editGroupAction->setStatusTip(tr("Edit the selected group name and parameters"));
-	editGroupAction->setEnabled(false);
+	m_editGroupAction = new QAction(tr("&Edit group"), this);
+	m_editGroupAction->setShortcut(tr("Ctrl+E"));
+	m_editGroupAction->setStatusTip(tr("Edit the selected group name and parameters"));
+	m_editGroupAction->setEnabled(false);
 
-	connect(editGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
+	connect(m_editGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
 
-	saveGroupAction = new QAction(tr("&Save group"), this);
-	saveGroupAction->setShortcut(tr("Ctrl+Shift+E"));
-	saveGroupAction->setStatusTip(tr("Save the selected group for later use"));
-	saveGroupAction->setEnabled(false);
+	m_saveGroupAction = new QAction(tr("&Save group"), this);
+	m_saveGroupAction->setShortcut(tr("Ctrl+Shift+E"));
+	m_saveGroupAction->setStatusTip(tr("Save the selected group for later use"));
+	m_saveGroupAction->setEnabled(false);
 
-	connect(saveGroupAction, SIGNAL(triggered()), this, SLOT(saveGroup()));
+	connect(m_saveGroupAction, SIGNAL(triggered()), this, SLOT(saveGroup()));
 
-	zoomResetAction = new QAction(tr("Reset &zoom"), this);
-	zoomResetAction->setShortcut(tr("Ctrl+0"));
-	zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
+	m_zoomResetAction = new QAction(tr("Reset &zoom"), this);
+	m_zoomResetAction->setShortcut(tr("Ctrl+0"));
+	m_zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
 
-	connect(zoomResetAction, SIGNAL(triggered()), graphView, SLOT(zoomReset()));
+	connect(m_zoomResetAction, SIGNAL(triggered()), m_graphView, SLOT(zoomReset()));
 
-	zoomInAction = new QAction(tr("Zoom &in"), this);
-	zoomInAction->setShortcut(tr("Ctrl++"));
-	zoomInAction->setStatusTip(tr("Zoom in"));
+	m_zoomInAction = new QAction(tr("Zoom &in"), this);
+	m_zoomInAction->setShortcut(tr("Ctrl++"));
+	m_zoomInAction->setStatusTip(tr("Zoom in"));
 
-	connect(zoomInAction, SIGNAL(triggered()), graphView, SLOT(zoomIn()));
+	connect(m_zoomInAction, SIGNAL(triggered()), m_graphView, SLOT(zoomIn()));
 
-	zoomOutAction = new QAction(tr("Zoom &out"), this);
-	zoomOutAction->setShortcut(tr("Ctrl+-"));
-	zoomOutAction->setStatusTip(tr("Zoom out"));
+	m_zoomOutAction = new QAction(tr("Zoom &out"), this);
+	m_zoomOutAction->setShortcut(tr("Ctrl+-"));
+	m_zoomOutAction->setStatusTip(tr("Zoom out"));
 
-	connect(zoomOutAction, SIGNAL(triggered()), graphView, SLOT(zoomOut()));
+	connect(m_zoomOutAction, SIGNAL(triggered()), m_graphView, SLOT(zoomOut()));
 
-	centerViewAction = new QAction(tr("&Center view"), this);
-	centerViewAction->setShortcut(tr("Ctrl+5"));
-	centerViewAction->setStatusTip(tr("Center the view"));
+	m_centerViewAction = new QAction(tr("&Center view"), this);
+	m_centerViewAction->setShortcut(tr("Ctrl+5"));
+	m_centerViewAction->setStatusTip(tr("Center the view"));
 
-	connect(centerViewAction, SIGNAL(triggered()), graphView, SLOT(centerView()));
+	connect(m_centerViewAction, SIGNAL(triggered()), m_graphView, SLOT(centerView()));
 
-	showAllAction = new QAction(tr("Show &all"), this);
-	showAllAction->setShortcut(tr("Ctrl+f"));
-	showAllAction->setStatusTip(tr("Center and zoom the view so that all objects are visible"));
+	m_showAllAction = new QAction(tr("Show &all"), this);
+	m_showAllAction->setShortcut(tr("Ctrl+f"));
+	m_showAllAction->setStatusTip(tr("Center and zoom the view so that all objects are visible"));
 
-	connect(showAllAction, SIGNAL(triggered()), graphView, SLOT(showAll()));
+	connect(m_showAllAction, SIGNAL(triggered()), m_graphView, SLOT(showAll()));
 
-	showAllSelectedAction = new QAction(tr("Show all &selected"), this);
-	showAllSelectedAction->setShortcut(tr("Ctrl+d"));
-	showAllSelectedAction->setStatusTip(tr("Center and zoom the view so that all selected objects are visible"));
+	m_showAllSelectedAction = new QAction(tr("Show all &selected"), this);
+	m_showAllSelectedAction->setShortcut(tr("Ctrl+d"));
+	m_showAllSelectedAction->setStatusTip(tr("Center and zoom the view so that all selected objects are visible"));
 
-	connect(showAllSelectedAction, SIGNAL(triggered()), graphView, SLOT(showAllSelected()));
+	connect(m_showAllSelectedAction, SIGNAL(triggered()), m_graphView, SLOT(showAllSelected()));
 
-	showGraphView = new QAction(tr("Show &graph view"), this);
-	showGraphView->setShortcut(tr("Ctrl+1"));
-	showGraphView->setStatusTip(tr("Switch to the graph view"));
+	m_showGraphView = new QAction(tr("Show &graph view"), this);
+	m_showGraphView->setShortcut(tr("Ctrl+1"));
+	m_showGraphView->setStatusTip(tr("Switch to the graph view"));
 
-	connect(showGraphView, SIGNAL(triggered()), this, SLOT(switchToGraphView()));
+	connect(m_showGraphView, SIGNAL(triggered()), this, SLOT(switchToGraphView()));
 
-	showOpenGLView = new QAction(tr("Show &render view"), this);
-	showOpenGLView->setShortcut(tr("Ctrl+2"));
-	showOpenGLView->setStatusTip(tr("Switch to the render view"));
+	m_showOpenGLView = new QAction(tr("Show &render view"), this);
+	m_showOpenGLView->setShortcut(tr("Ctrl+2"));
+	m_showOpenGLView->setStatusTip(tr("Switch to the render view"));
 
-	connect(showOpenGLView, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
+	connect(m_showOpenGLView, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
 
-	aboutAction = new QAction(tr("&About"), this);
-	aboutAction->setStatusTip(tr("Show the application's About box"));
-	connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+	m_aboutAction = new QAction(tr("&About"), this);
+	m_aboutAction->setStatusTip(tr("Show the application's About box"));
+	connect(m_aboutAction, SIGNAL(triggered()), this, SLOT(about()));
 
-	aboutQtAction = new QAction(tr("About &Qt"), this);
-	aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
-	connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+	m_aboutQtAction = new QAction(tr("About &Qt"), this);
+	m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
+	connect(m_aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-	playAction = new QAction(tr("Play"), this);
-	playAction->setIcon(QIcon(":/images/play.png"));
-	playAction->setShortcut(tr("F5"));
-	playAction->setStatusTip(tr("Start the animation"));
-	playAction->setCheckable(true);
-	connect(playAction, SIGNAL(triggered(bool)), pandaDocument, SLOT(play(bool)));
-	connect(playAction, SIGNAL(triggered(bool)), this, SLOT(play(bool)));
+	m_playAction = new QAction(tr("Play"), this);
+	m_playAction->setIcon(QIcon(":/images/play.png"));
+	m_playAction->setShortcut(tr("F5"));
+	m_playAction->setStatusTip(tr("Start the animation"));
+	m_playAction->setCheckable(true);
+	connect(m_playAction, SIGNAL(triggered(bool)), m_pandaDocument, SLOT(play(bool)));
+	connect(m_playAction, SIGNAL(triggered(bool)), this, SLOT(play(bool)));
 
-	stepAction = new QAction(tr("Step"), this);
-	stepAction->setIcon(QIcon(":/images/step.png"));
-	stepAction->setShortcut(tr("F6"));
-	stepAction->setStatusTip(tr("Do one step of the animation"));
-	connect(stepAction, SIGNAL(triggered()), pandaDocument, SLOT(step()));
+	m_stepAction = new QAction(tr("Step"), this);
+	m_stepAction->setIcon(QIcon(":/images/step.png"));
+	m_stepAction->setShortcut(tr("F6"));
+	m_stepAction->setStatusTip(tr("Do one step of the animation"));
+	connect(m_stepAction, SIGNAL(triggered()), m_pandaDocument, SLOT(step()));
 
-	rewindAction = new QAction(tr("Rewind"), this);
-	rewindAction->setIcon(QIcon(":/images/stop.png"));
-	rewindAction->setShortcut(tr("F7"));
-	rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
-	connect(rewindAction, SIGNAL(triggered()), pandaDocument, SLOT(rewind()));
+	m_rewindAction = new QAction(tr("Rewind"), this);
+	m_rewindAction->setIcon(QIcon(":/images/stop.png"));
+	m_rewindAction->setShortcut(tr("F7"));
+	m_rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
+	connect(m_rewindAction, SIGNAL(triggered()), m_pandaDocument, SLOT(rewind()));
 
-	removeLinkAction = new QAction(tr("Remove link"), this);
-	removeLinkAction->setStatusTip(tr("Remove the link to this data"));
-	connect(removeLinkAction, SIGNAL(triggered()), graphView, SLOT(removeLink()));
+	m_removeLinkAction = new QAction(tr("Remove link"), this);
+	m_removeLinkAction->setStatusTip(tr("Remove the link to this data"));
+	connect(m_removeLinkAction, SIGNAL(triggered()), m_graphView, SLOT(removeLink()));
 
-	copyDataAction = new QAction(tr("Copy data"), this);
-	copyDataAction->setStatusTip(tr("Create a user value generator based on this data"));
-	connect(copyDataAction, SIGNAL(triggered()), this, SLOT(copyDataToUserValue()));
+	m_copyDataAction = new QAction(tr("Copy data"), this);
+	m_copyDataAction->setStatusTip(tr("Create a user value generator based on this data"));
+	connect(m_copyDataAction, SIGNAL(triggered()), this, SLOT(copyDataToUserValue()));
 
-	showLoggerDialogAction = new QAction(tr("Show log"), this);
-	showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
-	connect(showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
+	m_showLoggerDialogAction = new QAction(tr("Show log"), this);
+	m_showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
+	connect(m_showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
 
-	showObjectsAndTypesAction = new QAction(tr("List types and objects"), this);
-	showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
-	connect(showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
+	m_showObjectsAndTypesAction = new QAction(tr("List types and objects"), this);
+	m_showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
+	connect(m_showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
 
-	pandaDocument->createUndoRedoActions(this, undoAction, redoAction);
-	undoAction->setShortcut(QKeySequence::Undo);
-	redoAction->setShortcut(QKeySequence::Redo);
+	m_pandaDocument->createUndoRedoActions(this, m_undoAction, m_redoAction);
+	m_undoAction->setShortcut(QKeySequence::Undo);
+	m_redoAction->setShortcut(QKeySequence::Redo);
 }
 
 void MainWindow::createMenus()
 {
-	fileMenu = menuBar()->addMenu(tr("&File"));
-	fileMenu->addAction(newAction);
-	fileMenu->addAction(openAction);
-	fileMenu->addAction(importAction);
-	fileMenu->addAction(saveAction);
-	fileMenu->addAction(saveAsAction);
-	separatorAction = fileMenu->addSeparator();
+	m_fileMenu = menuBar()->addMenu(tr("&File"));
+	m_fileMenu->addAction(m_newAction);
+	m_fileMenu->addAction(m_openAction);
+	m_fileMenu->addAction(m_importAction);
+	m_fileMenu->addAction(m_saveAction);
+	m_fileMenu->addAction(m_saveAsAction);
+	m_separatorAction = m_fileMenu->addSeparator();
 	for (int i = 0; i < MaxRecentFiles; ++i)
-		fileMenu->addAction(recentFileActions[i]);
-	fileMenu->addSeparator();
-	fileMenu->addAction(exitAction);
+		m_fileMenu->addAction(m_recentFileActions[i]);
+	m_fileMenu->addSeparator();
+	m_fileMenu->addAction(m_exitAction);
 
-	editMenu = menuBar()->addMenu(tr("&Edit"));
-	editMenu->addAction(undoAction);
-	editMenu->addAction(redoAction);
-	editMenu->addSeparator();
-	editMenu->addAction(cutAction);
-	editMenu->addAction(copyAction);
-	editMenu->addAction(pasteAction);
-	editMenu->addAction(deleteAction);
+	m_editMenu = menuBar()->addMenu(tr("&Edit"));
+	m_editMenu->addAction(m_undoAction);
+	m_editMenu->addAction(m_redoAction);
+	m_editMenu->addSeparator();
+	m_editMenu->addAction(m_cutAction);
+	m_editMenu->addAction(m_copyAction);
+	m_editMenu->addAction(m_pasteAction);
+	m_editMenu->addAction(m_deleteAction);
 
-	selectMenu = editMenu->addMenu(tr("&Select"));
-	selectMenu->addAction(selectAllAction);
-	selectMenu->addAction(selectNoneAction);
-	selectMenu->addAction(selectConnectedAction);
+	m_selectMenu = m_editMenu->addMenu(tr("&Select"));
+	m_selectMenu->addAction(m_selectAllAction);
+	m_selectMenu->addAction(m_selectNoneAction);
+	m_selectMenu->addAction(m_selectConnectedAction);
 
-	groupMenu = editMenu->addMenu(tr("&Group"));
-	groupMenu->addAction(groupAction);
-	groupMenu->addAction(ungroupAction);
-	groupMenu->addAction(editGroupAction);
-	groupMenu->addAction(saveGroupAction);
+	m_groupMenu = m_editMenu->addMenu(tr("&Group"));
+	m_groupMenu->addAction(m_groupAction);
+	m_groupMenu->addAction(m_ungroupAction);
+	m_groupMenu->addAction(m_editGroupAction);
+	m_groupMenu->addAction(m_saveGroupAction);
 
 	createRegistryMenu();
 
-	viewMenu = menuBar()->addMenu(tr("&View"));
-	viewMenu->addAction(zoomInAction);
-	viewMenu->addAction(zoomOutAction);
-	viewMenu->addAction(zoomResetAction);
-	viewMenu->addSeparator();
-	viewMenu->addAction(centerViewAction);
-	viewMenu->addAction(showAllAction);
-	viewMenu->addAction(showAllSelectedAction);
-	viewMenu->addSeparator();
-	viewMenu->addAction(showGraphView);
-	viewMenu->addAction(showOpenGLView);
+	m_viewMenu = menuBar()->addMenu(tr("&View"));
+	m_viewMenu->addAction(m_zoomInAction);
+	m_viewMenu->addAction(m_zoomOutAction);
+	m_viewMenu->addAction(m_zoomResetAction);
+	m_viewMenu->addSeparator();
+	m_viewMenu->addAction(m_centerViewAction);
+	m_viewMenu->addAction(m_showAllAction);
+	m_viewMenu->addAction(m_showAllSelectedAction);
+	m_viewMenu->addSeparator();
+	m_viewMenu->addAction(m_showGraphView);
+	m_viewMenu->addAction(m_showOpenGLView);
 #ifdef PANDA_LOG_EVENTS
-	viewMenu->addSeparator();
-	viewMenu->addAction(showLoggerDialogAction);
+	m_viewMenu->addSeparator();
+	m_viewMenu->addAction(m_showLoggerDialogAction);
 #endif
 
 	menuBar()->addSeparator();
 
-	helpMenu = menuBar()->addMenu(tr("&Help"));
-	helpMenu->addAction(showObjectsAndTypesAction);
-	helpMenu->addSeparator();
-	helpMenu->addAction(aboutAction);
-	helpMenu->addAction(aboutQtAction);
+	m_helpMenu = menuBar()->addMenu(tr("&Help"));
+	m_helpMenu->addAction(m_showObjectsAndTypesAction);
+	m_helpMenu->addSeparator();
+	m_helpMenu->addAction(m_aboutAction);
+	m_helpMenu->addAction(m_aboutQtAction);
 }
 
 struct menuItemInfo
@@ -466,7 +466,7 @@ void MainWindow::createRegistryMenu()
 	panda::ObjectFactory::RegistryMapIterator iter = panda::ObjectFactory::getInstance()->getRegistryIterator();
 	if(iter.hasNext())
 	{
-		registryMenu = menuBar()->addMenu(tr("&Add"));
+		m_registryMenu = menuBar()->addMenu(tr("&Add"));
 
 		menuItemInfo menuTree;
 
@@ -492,23 +492,23 @@ void MainWindow::createRegistryMenu()
 			connect(tempAction, SIGNAL(triggered()), this, SLOT(createObject()));
 		}
 
-		menuTree.registerActions(registryMenu);
+		menuTree.registerActions(m_registryMenu);
 	}
 }
 
 void MainWindow::createGroupRegistryMenu()
 {
-	if(groupsRegistryMenu)
-		groupsRegistryMenu->clear();
+	if(m_groupsRegistryMenu)
+		m_groupsRegistryMenu->clear();
 	GroupsManager::getInstance()->createGroupsList();
 
 	GroupsManager::GroupsIterator iter = GroupsManager::getInstance()->getGroupsIterator();
 	if(iter.hasNext())
 	{
-		if(!groupsRegistryMenu)
+		if(!m_groupsRegistryMenu)
 		{
-			registryMenu->addSeparator();
-			groupsRegistryMenu = registryMenu->addMenu(tr("&Groups"));
+			m_registryMenu->addSeparator();
+			m_groupsRegistryMenu = m_registryMenu->addMenu(tr("&Groups"));
 		}
 
 		menuItemInfo menuTree;
@@ -529,40 +529,40 @@ void MainWindow::createGroupRegistryMenu()
 			connect(tempAction, SIGNAL(triggered()), this, SLOT(createGroupObject()));
 		}
 
-		menuTree.registerActions(groupsRegistryMenu);
+		menuTree.registerActions(m_groupsRegistryMenu);
 	}
 }
 
 void MainWindow::createToolBars()
 {
-	fileToolBar = addToolBar(tr("&File"));
-	fileToolBar->setObjectName("FileToolBar");
-	fileToolBar->addAction(newAction);
-	fileToolBar->addAction(openAction);
-	fileToolBar->addAction(saveAction);
+	m_fileToolBar = addToolBar(tr("&File"));
+	m_fileToolBar->setObjectName("FileToolBar");
+	m_fileToolBar->addAction(m_newAction);
+	m_fileToolBar->addAction(m_openAction);
+	m_fileToolBar->addAction(m_saveAction);
 
-	editToolBar = addToolBar(tr("&Edit"));
-	editToolBar->setObjectName("EditToolBar");
-	editToolBar->addAction(cutAction);
-	editToolBar->addAction(copyAction);
-	editToolBar->addAction(pasteAction);
+	m_editToolBar = addToolBar(tr("&Edit"));
+	m_editToolBar->setObjectName("EditToolBar");
+	m_editToolBar->addAction(m_cutAction);
+	m_editToolBar->addAction(m_copyAction);
+	m_editToolBar->addAction(m_pasteAction);
 
-	animToolBar = addToolBar(tr("&Animation"));
-	animToolBar->setObjectName("AnimToolBar");
-	animToolBar->addAction(playAction);
-	animToolBar->addAction(stepAction);
-	animToolBar->addAction(rewindAction);
+	m_animToolBar = addToolBar(tr("&Animation"));
+	m_animToolBar->setObjectName("AnimToolBar");
+	m_animToolBar->addAction(m_playAction);
+	m_animToolBar->addAction(m_stepAction);
+	m_animToolBar->addAction(m_rewindAction);
 }
 
 void MainWindow::createStatusBar()
 {
-	timeLabel = new QLabel(tr("time : %1").arg(999.99));
-	timeLabel->setAlignment(Qt::AlignLeft);
-	timeLabel->setMinimumSize(timeLabel->sizeHint());
+	m_timeLabel = new QLabel(tr("time : %1").arg(999.99));
+	m_timeLabel->setAlignment(Qt::AlignLeft);
+	m_timeLabel->setMinimumSize(m_timeLabel->sizeHint());
 
-	statusBar()->addWidget(timeLabel);
+	statusBar()->addWidget(m_timeLabel);
 
-	connect(pandaDocument, SIGNAL(timeChanged()), this, SLOT(updateStatusBar()));
+	connect(m_pandaDocument, SIGNAL(timeChanged()), this, SLOT(updateStatusBar()));
 
 	updateStatusBar();
 }
@@ -574,7 +574,7 @@ void MainWindow::readSettings()
 	restoreGeometry(settings.value("geometry").toByteArray());
 	restoreState(settings.value("state").toByteArray());
 
-	recentFiles = settings.value("recentFiles").toStringList();
+	m_recentFiles = settings.value("recentFiles").toStringList();
 	updateRecentFileActions();
 }
 
@@ -584,7 +584,7 @@ void MainWindow::writeSettings()
 
 	settings.setValue("geometry", saveGeometry());
 	settings.setValue("state", saveState());
-	settings.setValue("recentFiles", recentFiles);
+	settings.setValue("recentFiles", m_recentFiles);
 }
 
 bool MainWindow::okToContinue()
@@ -606,27 +606,27 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile(const QString &fileName, bool import)
 {
-	if (!pandaDocument->readFile(fileName, import)) {
+	if (!m_pandaDocument->readFile(fileName, import)) {
 		statusBar()->showMessage(tr("Loading failed"), 2000);
 		return false;
 	}
 
 	if(!import)
 	{
-		pandaDocument->clearCommands();
-		pandaDocument->selectNone();
+		m_pandaDocument->clearCommands();
+		m_pandaDocument->selectNone();
 		setCurrentFile(fileName);
 		statusBar()->showMessage(tr("File loaded"), 2000);
 	}
 	else
 		statusBar()->showMessage(tr("File imported"), 2000);
-	graphView->showAll();
+	m_graphView->showAll();
 	return true;
 }
 
 bool MainWindow::saveFile(const QString &fileName)
 {
-	if (!pandaDocument->writeFile(fileName)) {
+	if (!m_pandaDocument->writeFile(fileName)) {
 		statusBar()->showMessage(tr("Saving failed"), 2000);
 		return false;
 	}
@@ -638,14 +638,14 @@ bool MainWindow::saveFile(const QString &fileName)
 
 void MainWindow::setCurrentFile(const QString &fileName)
 {
-	curFile = fileName;
+	m_curFile = fileName;
 	setWindowModified(false);
 
 	QString shownName = tr("Untitled");
-	if (!curFile.isEmpty()) {
-		shownName = strippedName(curFile);
-		recentFiles.removeAll(curFile);
-		recentFiles.prepend(curFile);
+	if (!m_curFile.isEmpty()) {
+		shownName = strippedName(m_curFile);
+		m_recentFiles.removeAll(m_curFile);
+		m_recentFiles.prepend(m_curFile);
 		updateRecentFileActions();
 	}
 
@@ -655,25 +655,25 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
 void MainWindow::updateRecentFileActions()
 {
-	QMutableStringListIterator i(recentFiles);
+	QMutableStringListIterator i(m_recentFiles);
 	while (i.hasNext()) {
 		if (!QFile::exists(i.next()))
 			i.remove();
 	}
 
 	for (int j = 0; j < MaxRecentFiles; ++j) {
-		if (j < recentFiles.count()) {
+		if (j < m_recentFiles.count()) {
 			QString text = tr("&%1 %2")
 						   .arg(j + 1)
-						   .arg(strippedName(recentFiles[j]));
-			recentFileActions[j]->setText(text);
-			recentFileActions[j]->setData(recentFiles[j]);
-			recentFileActions[j]->setVisible(true);
+						   .arg(strippedName(m_recentFiles[j]));
+			m_recentFileActions[j]->setText(text);
+			m_recentFileActions[j]->setData(m_recentFiles[j]);
+			m_recentFileActions[j]->setVisible(true);
 		} else {
-			recentFileActions[j]->setVisible(false);
+			m_recentFileActions[j]->setVisible(false);
 		}
 	}
-	separatorAction->setVisible(!recentFiles.isEmpty());
+	m_separatorAction->setVisible(!m_recentFiles.isEmpty());
 }
 
 QString MainWindow::strippedName(const QString &fullFileName)
@@ -685,17 +685,17 @@ void MainWindow::createObject()
 {
 	QAction *action = qobject_cast<QAction *>(sender());
 	if(action)
-		pandaDocument->createObject(action->data().toString());
+		m_pandaDocument->createObject(action->data().toString());
 }
 
 void MainWindow::switchToGraphView()
 {
-	tabWidget->setCurrentWidget(graphView);
+	m_tabWidget->setCurrentWidget(m_graphView);
 }
 
 void MainWindow::switchToOpenGLView()
 {
-	tabWidget->setCurrentWidget(openGLRenderView);
+	m_tabWidget->setCurrentWidget(m_openGLRenderView);
 }
 
 void MainWindow::showStatusBarMessage(QString text)
@@ -705,44 +705,44 @@ void MainWindow::showStatusBarMessage(QString text)
 
 void MainWindow::cut()
 {
-	pandaDocument->copy();
+	m_pandaDocument->copy();
 	del();
 }
 
 void MainWindow::paste()
 {
-	pandaDocument->paste();
-	graphView->moveSelectedToCenter();
-	graphView->updateLinkTags();
+	m_pandaDocument->paste();
+	m_graphView->moveSelectedToCenter();
+	m_graphView->updateLinkTags();
 }
 
 void MainWindow::del()
 {
-	auto selection = pandaDocument->getSelection();
+	auto selection = m_pandaDocument->getSelection();
 	if(!selection.isEmpty())
 	{
-		auto macro = pandaDocument->beginCommandMacro(tr("delete objects"));
-		pandaDocument->addCommand(new DeleteObjectCommand(pandaDocument, graphView, selection));
+		auto macro = m_pandaDocument->beginCommandMacro(tr("delete objects"));
+		m_pandaDocument->addCommand(new DeleteObjectCommand(m_pandaDocument, m_graphView, selection));
 	}
 }
 
 void MainWindow::group()
 {
-	bool res = panda::Group::createGroup(pandaDocument, graphView);
+	bool res = panda::Group::createGroup(m_pandaDocument, m_graphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not create a group from the selection"), 2000);
 }
 
 void MainWindow::ungroup()
 {
-	bool res = panda::Group::ungroupSelection(pandaDocument, graphView);
+	bool res = panda::Group::ungroupSelection(m_pandaDocument, m_graphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not ungroup the selection"), 2000);
 }
 
 void MainWindow::editGroup()
 {
-	panda::Group* group = dynamic_cast<panda::Group*>(pandaDocument->getCurrentSelectedObject());
+	panda::Group* group = dynamic_cast<panda::Group*>(m_pandaDocument->getCurrentSelectedObject());
 	if(group)
 	{
 		EditGroupDialog dlg(group, this);
@@ -754,7 +754,7 @@ void MainWindow::editGroup()
 
 void MainWindow::saveGroup()
 {
-	panda::PandaObject* object = pandaDocument->getCurrentSelectedObject();
+	panda::PandaObject* object = m_pandaDocument->getCurrentSelectedObject();
 	panda::Group* group = dynamic_cast<panda::Group*>(object);
 	if(group)
 	{
@@ -775,7 +775,7 @@ void MainWindow::createGroupObject()
 	if(action)
 	{
 		QString path = action->data().toString();
-		GroupsManager::getInstance()->createGroupObject(pandaDocument, path);
+		GroupsManager::getInstance()->createGroupObject(m_pandaDocument, path);
 	}
 }
 
@@ -783,34 +783,34 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 {
 	QMenu menu(this);
 
-	panda::PandaObject* obj = pandaDocument->getCurrentSelectedObject();
+	panda::PandaObject* obj = m_pandaDocument->getCurrentSelectedObject();
 	if(obj)
 	{
-		menu.addAction(cutAction);
-		menu.addAction(copyAction);
+		menu.addAction(m_cutAction);
+		menu.addAction(m_copyAction);
 	}
-	menu.addAction(pasteAction);
+	menu.addAction(m_pasteAction);
 
 	if(flags & GraphView::MENU_LINK)
 	{
-		menu.addAction(removeLinkAction);
+		menu.addAction(m_removeLinkAction);
 	}
 
-	const panda::BaseData* clickedData = graphView->getContextMenuData();
+	const panda::BaseData* clickedData = m_graphView->getContextMenuData();
 	if(clickedData && clickedData->isDisplayed())
-		menu.addAction(copyDataAction);
+		menu.addAction(m_copyDataAction);
 
-	int nbSelected = pandaDocument->getSelection().size();
+	int nbSelected = m_pandaDocument->getSelection().size();
 	if(dynamic_cast<panda::Group*>(obj) && nbSelected == 1)
 	{
-		menu.addAction(ungroupAction);
-		menu.addAction(editGroupAction);
-		menu.addAction(saveGroupAction);
+		menu.addAction(m_ungroupAction);
+		menu.addAction(m_editGroupAction);
+		menu.addAction(m_saveGroupAction);
 	}
 
 	if(nbSelected > 1)
 	{
-		menu.addAction(groupAction);
+		menu.addAction(m_groupAction);
 	}
 
 	if(!menu.actions().isEmpty())
@@ -819,60 +819,60 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 
 void MainWindow::copyDataToUserValue()
 {
-	const panda::BaseData* clickedData = graphView->getContextMenuData();
+	const panda::BaseData* clickedData = m_graphView->getContextMenuData();
 	if(clickedData)
-		pandaDocument->copyDataToUserValue(clickedData);
+		m_pandaDocument->copyDataToUserValue(clickedData);
 }
 
 void MainWindow::showLoggerDialog()
 {
-	if(!loggerDialog)
+	if(!m_loggerDialog)
 	{
-		loggerDialog = new UpdateLoggerDialog(this);
-		UpdateLoggerDialog::setInstance(loggerDialog);
+		m_loggerDialog = new UpdateLoggerDialog(this);
+		UpdateLoggerDialog::setInstance(m_loggerDialog);
 
-		connect(loggerDialog, SIGNAL(changedSelectedEvent()), graphView, SLOT(update()));
+		connect(m_loggerDialog, SIGNAL(changedSelectedEvent()), m_graphView, SLOT(update()));
 	}
 
-	if(loggerDialog->isVisible())
-		loggerDialog->hide();
+	if(m_loggerDialog->isVisible())
+		m_loggerDialog->hide();
 	else
 	{
-		loggerDialog->updateEvents();
-		loggerDialog->show();
+		m_loggerDialog->updateEvents();
+		m_loggerDialog->show();
 	}
 }
 
 void MainWindow::showObjectsAndTypes()
 {
-	QString fileName = "file:///" + createObjectsAndTypesPage(pandaDocument);
+	QString fileName = "file:///" + createObjectsAndTypesPage(m_pandaDocument);
 	QDesktopServices::openUrl(QUrl(fileName));
 }
 
 void MainWindow::play(bool playing)
 {
-	cutAction->setEnabled(!playing);
-	pasteAction->setEnabled(!playing);
-	deleteAction->setEnabled(!playing);
-	removeLinkAction->setEnabled(!playing);
-	copyDataAction->setEnabled(!playing);
+	m_cutAction->setEnabled(!playing);
+	m_pasteAction->setEnabled(!playing);
+	m_deleteAction->setEnabled(!playing);
+	m_removeLinkAction->setEnabled(!playing);
+	m_copyDataAction->setEnabled(!playing);
 
-	registryMenu->setEnabled(!playing);
+	m_registryMenu->setEnabled(!playing);
 
-	importAction->setEnabled(!playing);
+	m_importAction->setEnabled(!playing);
 
-	undoAction->setEnabled(!playing);
-	redoAction->setEnabled(!playing);
+	m_undoAction->setEnabled(!playing);
+	m_redoAction->setEnabled(!playing);
 }
 
 void MainWindow::selectedObject(panda::PandaObject* object)
 {
-	int nbSelected = pandaDocument->getNbSelected();
+	int nbSelected = m_pandaDocument->getNbSelected();
 	bool isGroup = (nbSelected == 1) && dynamic_cast<panda::Group*>(object);
 
-	ungroupAction->setEnabled(isGroup);
-	editGroupAction->setEnabled(isGroup);
-	saveGroupAction->setEnabled(isGroup);
+	m_ungroupAction->setEnabled(isGroup);
+	m_editGroupAction->setEnabled(isGroup);
+	m_saveGroupAction->setEnabled(isGroup);
 
-	groupAction->setEnabled(nbSelected > 1);
+	m_groupAction->setEnabled(nbSelected > 1);
 }
