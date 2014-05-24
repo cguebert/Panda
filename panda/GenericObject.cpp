@@ -69,7 +69,10 @@ BaseData* GenericObject::createDatas(int type, int index)
 
 	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
 	createdDatasStruct->type = type;
-	m_createdDatasStructs.append(createdDatasStruct);
+	if(index >= 0 && index < m_createdDatasStructs.size())
+		m_createdDatasStructs.insert(index, createdDatasStruct);
+	else
+		m_createdDatasStructs.append(createdDatasStruct);
 	int nbCreated = m_createdDatasStructs.size();
 
 	BaseData* firstInputData = nullptr;
@@ -109,14 +112,37 @@ BaseData* GenericObject::createDatas(int type, int index)
 		m_createdDatasMap.insert(data, createdDatasStruct);
 	}
 
-	removeData(m_genericData);	// generic must always be last
-	addData(m_genericData);
+	if(index != -1)
+	{
+		reorderDatas();
+		updateDataNames();
+	}
+	else
+	{
+		removeData(m_genericData);	// generic must always be last
+		addData(m_genericData);
+	}
 
 	doEmitModified = true;
 	doEmitDirty = true;
 	emitModified();
 
 	return firstInputData;
+}
+
+void GenericObject::reorderDatas()
+{
+	for(auto created : m_createdDatasStructs)
+	{
+		for(auto data : created->datas)
+		{
+			removeData(data.data());
+			addData(data.data());
+		}
+	}
+
+	removeData(m_genericData);	// generic must always be last
+	addData(m_genericData);
 }
 
 void GenericObject::updateDataNames()
@@ -306,7 +332,10 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 
 	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
 	createdDatasStruct->type = type;
-	m_createdDatasStructs.append(createdDatasStruct);
+	if(index >= 0 && index < m_createdDatasStructs.size())
+		m_createdDatasStructs.insert(index, createdDatasStruct);
+	else
+		m_createdDatasStructs.append(createdDatasStruct);
 	int nbCreated = m_createdDatasStructs.size();
 
 	BaseData* firstInputData = nullptr;
@@ -353,8 +382,16 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 		}
 	}
 
-	removeData(m_genericData);	// generic must always be last
-	addData(m_genericData);
+	if(index != -1)
+	{
+		reorderDatas();
+		updateDataNames();
+	}
+	else
+	{
+		removeData(m_genericData);	// generic must always be last
+		addData(m_genericData);
+	}
 
 	doEmitModified = true;
 	doEmitDirty = true;
@@ -396,6 +433,14 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
+			// Create an action so that we can undo the removal of this group of datas
+			auto currentCommand = parentDocument->getCurrentCommand();
+			if(currentCommand)
+			{
+				int index = m_createdDatasStructs.indexOf(createdDatasStruct);
+				new RemoveGenericDataCommand(this, createdDatasStruct->type, index, currentCommand);
+			}
+
 			// Last generic data
 			bool lastGeneric = (m_createdDatasStructs.size() == 1);
 			if(lastGeneric)

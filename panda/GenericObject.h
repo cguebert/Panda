@@ -117,6 +117,7 @@ public:
 	virtual BaseData* createDatas(int type, int index = -1);
 
 protected:
+	virtual void reorderDatas();
 	virtual void updateDataNames();
 
 	GenericData* const getGenericData(); // Access to m_genericData

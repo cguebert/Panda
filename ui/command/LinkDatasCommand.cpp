@@ -42,17 +42,19 @@ int LinkDatasCommand::id() const
 
 void LinkDatasCommand::redo()
 {
-	// Use childs if present
-	QUndoCommand::redo();
-
 	for(auto link : m_links)
 	{
 		panda::BaseData* target = link.m_targetObject->getData(link.m_targetDataName);
+		if(!target)
+			continue;
 		panda::BaseData* parent = nullptr;
 		if(link.m_newParentObject)
 			parent = link.m_newParentObject->getData(link.m_newParentDataName);
 		target->getOwner()->dataSetParent(target, parent);
 	}
+
+	// Use childs if present
+	QUndoCommand::redo();
 }
 
 void LinkDatasCommand::undo()
