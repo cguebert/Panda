@@ -104,38 +104,39 @@ public:
 	QUndoCommand* getCurrentCommand(); /// The command we are currently adding (if we want to connect another to this one)
 
 protected:
-	ObjectsList pandaObjects;
-	ObjectsSelection selectedObjects;
-	QMap<quint32, PandaObject*> pandaObjectsMap;
-	quint32 currentIndex;
-	Layer* defaultLayer;
-	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer;
+	friend class ScopedMacro;
 
-	Data<types::Point> renderSize;
-	Data<types::Color> backgroundColor;
-	Data<PReal> animTime, timestep;
-	Data<int> useTimer;
-	Data<types::Point> mousePosition;
-	Data<int> mouseClick;
-	Data<types::ImageWrapper> renderedImage;
-	Data<int> useMultithread;
+	void render();
+	void endCommandMacro();
 
-	types::Point mousePositionBuffer;
-	int mouseClickBuffer;
+	ObjectsList m_pandaObjects;
+	ObjectsSelection m_selectedObjects;
+	QMap<quint32, PandaObject*> m_pandaObjectsMap;
+	quint32 m_currentIndex;
+	Layer* m_defaultLayer;
+	QSharedPointer<QOpenGLFramebufferObject> m_renderFrameBuffer;
 
-	bool animPlaying, animMultithread;
-	QTimer* animTimer;
+	Data<types::Point> m_renderSize;
+	Data<types::Color> m_backgroundColor;
+	Data<PReal> m_animTime, m_timestep;
+	Data<int> m_useTimer;
+	Data<types::Point> m_mousePosition;
+	Data<int> m_mouseClick;
+	Data<types::ImageWrapper> m_renderedImage;
+	Data<int> m_useMultithread;
+
+	types::Point m_mousePositionBuffer;
+	int m_mouseClickBuffer;
+
+	bool m_animPlaying, m_animMultithread;
+	QTimer* m_animTimer;
 
 	QSharedPointer<Scheduler> m_scheduler;
 
 	QUndoStack* m_undoStack;
 	QUndoCommand* m_currentCommand;
 
-	void render();
-
 	int m_inCommandMacro;
-	friend class ScopedMacro;
-	void endCommandMacro();
 
 signals:
 	void modified();
@@ -177,52 +178,52 @@ protected:
 };
 
 inline int PandaDocument::getNbObjects() const
-{ return pandaObjects.size(); }
+{ return m_pandaObjects.size(); }
 
 inline const PandaDocument::ObjectsList& PandaDocument::getObjects() const
-{ return pandaObjects; }
+{ return m_pandaObjects; }
 
 inline bool PandaDocument::isSelected(PandaObject* object) const
-{ return std::find(selectedObjects.begin(), selectedObjects.end(), object) != selectedObjects.end(); }
+{ return std::find(m_selectedObjects.begin(), m_selectedObjects.end(), object) != m_selectedObjects.end(); }
 
 inline int PandaDocument::getNbSelected() const
-{ return selectedObjects.size(); }
+{ return m_selectedObjects.size(); }
 
 inline const PandaDocument::ObjectsSelection& PandaDocument::getSelection() const
-{ return selectedObjects; }
+{ return m_selectedObjects; }
 
 inline types::Color PandaDocument::getBackgroundColor()
-{ return backgroundColor.getValue(); }
+{ return m_backgroundColor.getValue(); }
 
 inline void PandaDocument::setBackgroundColor(types::Color color)
-{ backgroundColor.setValue(color); }
+{ m_backgroundColor.setValue(color); }
 
 inline PReal PandaDocument::getAnimationTime()
-{ return animTime.getValue(); }
+{ return m_animTime.getValue(); }
 
 inline PReal PandaDocument::getTimeStep()
-{ return timestep.getValue(); }
+{ return m_timestep.getValue(); }
 
 inline bool PandaDocument::animationIsPlaying() const
-{ return animPlaying; }
+{ return m_animPlaying; }
 
 inline bool PandaDocument::animationIsMultithread() const
-{ return animMultithread; }
+{ return m_animMultithread; }
 
 inline types::Point PandaDocument::getMousePosition()
-{ return mousePosition.getValue(); }
+{ return m_mousePosition.getValue(); }
 
 inline void PandaDocument::setMousePosition(const types::Point& pos)
-{ mousePositionBuffer = pos; }
+{ m_mousePositionBuffer = pos; }
 
 inline int PandaDocument::getMouseClick()
-{ return mouseClick.getValue(); }
+{ return m_mouseClick.getValue(); }
 
 inline quint32 PandaDocument::getNextIndex()
-{ return currentIndex++; }
+{ return m_currentIndex++; }
 
 inline Layer* PandaDocument::getDefaultLayer()
-{ return defaultLayer; }
+{ return m_defaultLayer; }
 
 inline bool PandaDocument::isInCommandMacro()
 { return m_inCommandMacro > 0; }

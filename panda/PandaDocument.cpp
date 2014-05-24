@@ -41,53 +41,53 @@ void remove(C& container, V value)
 PandaDocument::PandaDocument(QObject* parent)
 	: PandaObject(nullptr)
 	, QObject(parent)
-	, currentIndex(1)
-	, renderSize(initData(&renderSize, Point(800,600), "render size", "Size of the image to be rendered"))
-	, backgroundColor(initData(&backgroundColor, Color::white(), "background color", "Background color of the image to be rendered"))
-	, animTime(initData(&animTime, (PReal)0.0, "time", "Time of the animation"))
-	, timestep(initData(&timestep, (PReal)0.01, "timestep", "Time step of the animation"))
-	, useTimer(initData(&useTimer, 1, "use timer", "If true, wait before the next timestep. If false, compute the next one as soon as the previous finished."))
-	, mousePosition(initData(&mousePosition, "mouse position", "Current position of the mouse in the render view"))
-	, mouseClick(initData(&mouseClick, 0, "mouse click", "1 if the left mouse button is pressed"))
-	, renderedImage(initData(&renderedImage, "rendered image", "Current image displayed"))
-	, useMultithread(initData(&useMultithread, 0, "use multithread", "Optimize computation for multiple CPU cores"))
-	, mouseClickBuffer(0)
-	, animPlaying(false)
-	, animMultithread(false)
+	, m_currentIndex(1)
+	, m_renderSize(initData(&m_renderSize, Point(800,600), "render size", "Size of the image to be rendered"))
+	, m_backgroundColor(initData(&m_backgroundColor, Color::white(), "background color", "Background color of the image to be rendered"))
+	, m_animTime(initData(&m_animTime, (PReal)0.0, "time", "Time of the animation"))
+	, m_timestep(initData(&m_timestep, (PReal)0.01, "timestep", "Time step of the animation"))
+	, m_useTimer(initData(&m_useTimer, 1, "use timer", "If true, wait before the next timestep. If false, compute the next one as soon as the previous finished."))
+	, m_mousePosition(initData(&m_mousePosition, "mouse position", "Current position of the mouse in the render view"))
+	, m_mouseClick(initData(&m_mouseClick, 0, "mouse click", "1 if the left mouse button is pressed"))
+	, m_renderedImage(initData(&m_renderedImage, "rendered image", "Current image displayed"))
+	, m_useMultithread(initData(&m_useMultithread, 0, "use multithread", "Optimize computation for multiple CPU cores"))
+	, m_mouseClickBuffer(0)
+	, m_animPlaying(false)
+	, m_animMultithread(false)
 	, m_currentCommand(nullptr)
 	, m_inCommandMacro(0)
 {
-	addInput(&renderSize);
-	addInput(&backgroundColor);
-	addInput(&timestep);
-	addInput(&useTimer);
+	addInput(&m_renderSize);
+	addInput(&m_backgroundColor);
+	addInput(&m_timestep);
+	addInput(&m_useTimer);
 
-	useTimer.setWidget("checkbox");
+	m_useTimer.setWidget("checkbox");
 
 	// Not connecting to the document, otherwise it would update the layers each time we get the time.
-	animTime.setOutput(true);
-	animTime.setReadOnly(true);
+	m_animTime.setOutput(true);
+	m_animTime.setReadOnly(true);
 
-	mousePosition.setOutput(true);
-	mousePosition.setReadOnly(true);
+	m_mousePosition.setOutput(true);
+	m_mousePosition.setReadOnly(true);
 
-	mouseClick.setOutput(true);
-	mouseClick.setReadOnly(true);
-	mouseClick.setWidget("checkbox");
+	m_mouseClick.setOutput(true);
+	m_mouseClick.setReadOnly(true);
+	m_mouseClick.setWidget("checkbox");
 
-	useMultithread.setWidget("checkbox");
+	m_useMultithread.setWidget("checkbox");
 
 	connect(this, SIGNAL(modifiedObject(panda::PandaObject*)), this, SIGNAL(modified()));
 	connect(this, SIGNAL(addedObject(panda::PandaObject*)), this, SIGNAL(modified()));
 
-	defaultLayer = new Layer(this);
-	defaultLayer->setInternalData("Default Layer", 0);
-	defaultLayer->setLayerName("Default Layer");
+	m_defaultLayer = new Layer(this);
+	m_defaultLayer->setInternalData("Default Layer", 0);
+	m_defaultLayer->setLayerName("Default Layer");
 
 	setInternalData("Document", 0);
 
-	animTimer = new QTimer(this);
-	connect(animTimer, SIGNAL(timeout()), this, SLOT(step()));
+	m_animTimer = new QTimer(this);
+	connect(m_animTimer, SIGNAL(timeout()), this, SLOT(step()));
 
 	m_undoStack = new QUndoStack(this);
 	m_undoStack->setUndoLimit(25);
@@ -116,7 +116,7 @@ bool PandaDocument::writeFile(const QString& fileName)
 	doc.appendChild(root);
 	save(doc, root);	// The document's Datas
 	ObjectsSelection allObjects;
-	for(auto object : pandaObjects)
+	for(auto object : m_pandaObjects)
 		allObjects.push_back(object.data());
 	saveDoc(doc, root, allObjects);	// The document and all of its objects
 
@@ -154,7 +154,7 @@ bool PandaDocument::readFile(const QString& fileName, bool isImport)
 		load(root);		// Only the document's Datas
 	loadDoc(root);	// All the document's objects
 
-	for(auto object : pandaObjects)
+	for(auto object : m_pandaObjects)
 		object->reset();
 
 	emit selectionChanged();
@@ -169,7 +169,7 @@ QString PandaDocument::writeTextDocument()
 	QDomElement root = doc.createElement("Panda");
 	doc.appendChild(root);
 
-	saveDoc(doc, root, selectedObjects);
+	saveDoc(doc, root, m_selectedObjects);
 
 	return doc.toString(4);
 }
@@ -180,16 +180,16 @@ bool PandaDocument::readTextDocument(QString& text)
 	if(!doc.setContent(text))
 		return false;
 
-	bool bSelected = !selectedObjects.isEmpty();
-	selectedObjects.clear();
+	bool bSelected = !m_selectedObjects.isEmpty();
+	m_selectedObjects.clear();
 
 	QDomElement root = doc.documentElement();
 	bool bVal = loadDoc(root);
 
-	for(auto object : selectedObjects)
+	for(auto object : m_selectedObjects)
 		object->reset();
 
-	if(bSelected || !selectedObjects.empty())
+	if(bSelected || !m_selectedObjects.empty())
 	{
 		emit selectionChanged();
 		emit selectedObject(getCurrentSelectedObject());
@@ -275,7 +275,7 @@ bool PandaDocument::loadDoc(QDomElement& root)
 		if(object)
 		{
 			importIndicesMap[index] = object->getIndex();
-			selectedObjects.append(object);
+			m_selectedObjects.append(object);
 
 			object->load(elem);
 
@@ -343,28 +343,28 @@ bool PandaDocument::loadDoc(QDomElement& root)
 
 void PandaDocument::resetDocument()
 {
-	selectedObjects.clear();
+	m_selectedObjects.clear();
 	emit selectedObject(nullptr);
 	emit selectionChanged();
 
-	for(auto object : pandaObjects)
+	for(auto object : m_pandaObjects)
 		emit removedObject(object.data());
 
-	pandaObjectsMap.clear();
-	pandaObjects.clear();
-	currentIndex = 1;
-	animTime.setValue(0.0);
-	timestep.setValue((PReal)0.01);
-	useTimer.setValue(1);
-	renderSize.setValue(Point(800,600));
-	backgroundColor.setValue(Color::white());
-	renderedImage.getAccessor()->clear();
-	useMultithread.setValue(0);
-	renderFrameBuffer.clear();
+	m_pandaObjectsMap.clear();
+	m_pandaObjects.clear();
+	m_currentIndex = 1;
+	m_animTime.setValue(0.0);
+	m_timestep.setValue((PReal)0.01);
+	m_useTimer.setValue(1);
+	m_renderSize.setValue(Point(800,600));
+	m_backgroundColor.setValue(Color::white());
+	m_renderedImage.getAccessor()->clear();
+	m_useMultithread.setValue(0);
+	m_renderFrameBuffer.clear();
 
-	animPlaying = false;
-	animMultithread = false;
-	animTimer->stop();
+	m_animPlaying = false;
+	m_animMultithread = false;
+	m_animTimer->stop();
 	if(m_scheduler)
 		m_scheduler->stop();
 
@@ -385,8 +385,8 @@ PandaObject* PandaDocument::createObject(QString registryName)
 
 PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object)
 {
-	auto iter = std::find(pandaObjects.begin(), pandaObjects.end(), object);
-	if(iter != pandaObjects.end())
+	auto iter = std::find(m_pandaObjects.begin(), m_pandaObjects.end(), object);
+	if(iter != m_pandaObjects.end())
 		return *iter;
 
 	return ObjectPtr();
@@ -394,37 +394,37 @@ PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object)
 
 PandaObject* PandaDocument::getCurrentSelectedObject()
 {
-	if(selectedObjects.empty())
+	if(m_selectedObjects.empty())
 		return nullptr;
 	else
-		return selectedObjects.back();
+		return m_selectedObjects.back();
 }
 
 void PandaDocument::setCurrentSelectedObject(PandaObject* object)
 {
-	selectedObjects.removeAll(object);
-	selectedObjects.append(object);
+	m_selectedObjects.removeAll(object);
+	m_selectedObjects.append(object);
 	emit selectedObject(object);
 	emit selectionChanged();
 }
 
 QSize PandaDocument::getRenderSize()
 {
-	Point pt = renderSize.getValue();
+	Point pt = m_renderSize.getValue();
 	return QSize(qMax<PReal>(1, floor(pt.x)), qMax<PReal>(1, floor(pt.y)));
 }
 
 void PandaDocument::setMouseClick(int state)
 {
-	if(mouseClickBuffer && !state) // Pressed & released in 1 timestep, we will send 2 events
-		mouseClickBuffer = -1;
+	if(m_mouseClickBuffer && !state) // Pressed & released in 1 timestep, we will send 2 events
+		m_mouseClickBuffer = -1;
 	else
-		mouseClickBuffer = state;
+		m_mouseClickBuffer = state;
 }
 
 void PandaDocument::copy()
 {
-	if(selectedObjects.isEmpty())
+	if(m_selectedObjects.isEmpty())
 		return;
 	QClipboard* clipboard = QApplication::clipboard();
 	clipboard->setText(writeTextDocument());
@@ -443,9 +443,9 @@ void PandaDocument::paste()
 
 void PandaDocument::selectionAdd(PandaObject* object)
 {
-	if(!contains(selectedObjects, object))
+	if(!contains(m_selectedObjects, object))
 	{
-		selectedObjects.append(object);
+		m_selectedObjects.append(object);
 		emit selectedObject(object);
 		emit selectionChanged();
 	}
@@ -453,28 +453,28 @@ void PandaDocument::selectionAdd(PandaObject* object)
 
 void PandaDocument::selectionRemove(PandaObject* object)
 {
-	if(contains(selectedObjects, object))
+	if(contains(m_selectedObjects, object))
 	{
-		selectedObjects.removeAll(object);
-		emit selectedObject(selectedObjects.back());
+		m_selectedObjects.removeAll(object);
+		emit selectedObject(m_selectedObjects.back());
 		emit selectionChanged();
 	}
 }
 
 void PandaDocument::selectAll()
 {
-	selectedObjects.clear();
-	for(auto object : pandaObjects)
-		selectedObjects.push_back(object.data());
-	emit selectedObject(selectedObjects.back());
+	m_selectedObjects.clear();
+	for(auto object : m_pandaObjects)
+		m_selectedObjects.push_back(object.data());
+	emit selectedObject(m_selectedObjects.back());
 	emit selectionChanged();
 }
 
 void PandaDocument::selectNone()
 {
-	if(!selectedObjects.empty())
+	if(!m_selectedObjects.empty())
 	{
-		selectedObjects.clear();
+		m_selectedObjects.clear();
 		emit selectedObject(nullptr);
 		emit selectionChanged();
 	}
@@ -482,10 +482,10 @@ void PandaDocument::selectNone()
 
 void PandaDocument::selectConnected()
 {
-	if(!selectedObjects.empty())
+	if(!m_selectedObjects.empty())
 	{
 		QSet<PandaObject*> closedList, openList;
-		openList = QSet<PandaObject*>::fromList(selectedObjects);
+		openList = QSet<PandaObject*>::fromList(m_selectedObjects);
 		while(!openList.empty())
 		{
 			PandaObject* object = *openList.begin();
@@ -520,7 +520,7 @@ void PandaDocument::selectConnected()
 			if(dockable)
 			{
 				PandaObject* dock = dockable->getParentDock();
-				if(dock != defaultLayer && !closedList.contains(dock))
+				if(dock != m_defaultLayer && !closedList.contains(dock))
 					openList.insert(dock);
 			}
 
@@ -537,8 +537,8 @@ void PandaDocument::selectConnected()
 			}
 		}
 
-		auto currentSelected = selectedObjects.back();
-		selectedObjects = closedList.toList();
+		auto currentSelected = m_selectedObjects.back();
+		m_selectedObjects = closedList.toList();
 		setCurrentSelectedObject(currentSelected);
 		emit selectionChanged();
 	}
@@ -546,43 +546,43 @@ void PandaDocument::selectConnected()
 
 void PandaDocument::addObject(ObjectPtr object)
 {
-	pandaObjectsMap.insert(object->getIndex(), object.data());
-	pandaObjects.append(object);
+	m_pandaObjectsMap.insert(object->getIndex(), object.data());
+	m_pandaObjects.append(object);
 	emit addedObject(object.data());
 }
 
 void PandaDocument::removeObject(PandaObject* object)
 {
 	emit removedObject(object);
-	pandaObjectsMap.remove(object->getIndex());
-	selectedObjects.removeAll(object);
+	m_pandaObjectsMap.remove(object->getIndex());
+	m_selectedObjects.removeAll(object);
 
-	remove(pandaObjects, object);
+	remove(m_pandaObjects, object);
 	emit modified();
 }
 
 void PandaDocument::setDataDirty(BaseData* data)
 {
-	if(animMultithread && m_scheduler)
+	if(m_animMultithread && m_scheduler)
 		m_scheduler->setDataDirty(data);
 }
 
 void PandaDocument::setDataReady(BaseData* data)
 {
-	if(animMultithread && m_scheduler)
+	if(m_animMultithread && m_scheduler)
 		m_scheduler->setDataReady(data);
 }
 
 void PandaDocument::waitForOtherTasksToFinish(bool mainThread)
 {
-	if(animMultithread && m_scheduler)
+	if(m_animMultithread && m_scheduler)
 		m_scheduler->waitForOtherTasks(mainThread);
 }
 
 PandaObject* PandaDocument::findObject(quint32 objectIndex)
 {
-	if(pandaObjectsMap.contains(objectIndex))
-		return pandaObjectsMap[objectIndex];
+	if(m_pandaObjectsMap.contains(objectIndex))
+		return m_pandaObjectsMap[objectIndex];
 
 	return nullptr;
 }
@@ -611,21 +611,21 @@ void PandaDocument::onModifiedObject(PandaObject* object)
 
 void PandaDocument::update()
 {
-	if(!renderFrameBuffer || renderFrameBuffer->size() != getRenderSize())
+	if(!m_renderFrameBuffer || m_renderFrameBuffer->size() != getRenderSize())
 	{
-		renderFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
-		renderedImage.getAccessor()->setFbo(renderFrameBuffer);
+		m_renderFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
+		m_renderedImage.getAccessor()->setFbo(m_renderFrameBuffer);
 	}
 
 	helper::GradientCache::getInstance()->resetUsedFlag();
 	helper::ShaderCache::getInstance()->resetUsedFlag();
 
-	if(animMultithread && m_scheduler)
+	if(m_animMultithread && m_scheduler)
 		m_scheduler->update();
 
-	defaultLayer->updateIfDirty();
+	m_defaultLayer->updateIfDirty();
 
-	for(auto obj : pandaObjects)
+	for(auto obj : m_pandaObjects)
 	{
 		if(dynamic_cast<BaseLayer*>(obj.data()))
 			obj->updateIfDirty();
@@ -641,13 +641,13 @@ void PandaDocument::update()
 const ImageWrapper& PandaDocument::getRenderedImage()
 {
 	updateIfDirty();
-	return renderedImage.getValue();
+	return m_renderedImage.getValue();
 }
 
 QSharedPointer<QOpenGLFramebufferObject> PandaDocument::getFBO()
 {
 	updateIfDirty();
-	return renderFrameBuffer;
+	return m_renderFrameBuffer;
 }
 
 void PandaDocument::render()
@@ -657,16 +657,16 @@ void PandaDocument::render()
 		helper::ScopedEvent log1("prepareRender");
 #endif
 
-	renderFrameBuffer->bind();
-	glViewport(0, 0, renderFrameBuffer->width(), renderFrameBuffer->height());
+	m_renderFrameBuffer->bind();
+	glViewport(0, 0, m_renderFrameBuffer->width(), m_renderFrameBuffer->height());
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, renderFrameBuffer->width(), renderFrameBuffer->height(), 0, -10, 10);
+	glOrtho(0, m_renderFrameBuffer->width(), m_renderFrameBuffer->height(), 0, -10, 10);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	Color col = backgroundColor.getValue();
+	Color col = m_backgroundColor.getValue();
 	glClearColor(col.r, col.g, col.b, col.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -674,9 +674,9 @@ void PandaDocument::render()
 	}
 #endif
 
-	defaultLayer->mergeLayer();
+	m_defaultLayer->mergeLayer();
 
-	for(auto obj : pandaObjects)
+	for(auto obj : m_pandaObjects)
 	{
 		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj.data());
 		if(layer)
@@ -687,26 +687,26 @@ void PandaDocument::render()
 	helper::ScopedEvent log2("release FBO");
 #endif
 
-	renderFrameBuffer->release();
+	m_renderFrameBuffer->release();
 }
 
 void PandaDocument::moveLayerUp(PandaObject* layer)
 {
 	if(!layer)
 		return;
-	auto iter = std::find(pandaObjects.begin(), pandaObjects.end(), layer);
-	if(iter == pandaObjects.end())
+	auto iter = std::find(m_pandaObjects.begin(), m_pandaObjects.end(), layer);
+	if(iter == m_pandaObjects.end())
 		return;
 	auto object = *iter; // Get the QSharedPointer
-	int index = iter - pandaObjects.begin();
-	int nb = pandaObjects.size();
+	int index = iter - m_pandaObjects.begin();
+	int nb = m_pandaObjects.size();
 	for(++index;index<nb;++index)
 	{
-		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects[index].data());
+		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(m_pandaObjects[index].data());
 		if(otherLayer)
 		{
-			remove(pandaObjects, layer);
-			pandaObjects.insert(index, object);
+			remove(m_pandaObjects, layer);
+			m_pandaObjects.insert(index, object);
 			setDirtyValue();
 			emit modified();
 			return;
@@ -718,18 +718,18 @@ void PandaDocument::moveLayerDown(PandaObject *layer)
 {
 	if(!layer)
 		return;
-	auto iter = std::find(pandaObjects.begin(), pandaObjects.end(), layer);
-	if(iter == pandaObjects.end())
+	auto iter = std::find(m_pandaObjects.begin(), m_pandaObjects.end(), layer);
+	if(iter == m_pandaObjects.end())
 		return;
 	auto object = *iter; // Get the QSharedPointer
-	int index = iter - pandaObjects.begin();
+	int index = iter - m_pandaObjects.begin();
 	for(--index;index>=0;--index)
 	{
-		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(pandaObjects[index].data());
+		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(m_pandaObjects[index].data());
 		if(otherLayer)
 		{
-			remove(pandaObjects, layer);
-			pandaObjects.insert(index, object);
+			remove(m_pandaObjects, layer);
+			m_pandaObjects.insert(index, object);
 			setDirtyValue();
 			emit modified();
 			return;
@@ -746,11 +746,11 @@ void PandaDocument::setDirtyValue()
 
 void PandaDocument::play(bool playing)
 {
-	animPlaying = playing;
-	if(animPlaying)
+	m_animPlaying = playing;
+	if(m_animPlaying)
 	{
-		animMultithread = useMultithread.getValue();
-		if(animMultithread)
+		m_animMultithread = m_useMultithread.getValue();
+		if(m_animMultithread)
 		{
 			if(!m_scheduler)
 				m_scheduler.reset(new Scheduler(this));
@@ -763,17 +763,17 @@ void PandaDocument::play(bool playing)
 			helper::UpdateLogger::getInstance()->setupThread(0);
 		}
 #endif
-		if(useTimer.getValue())
-			animTimer->start(qMax((PReal)0.0, timestep.getValue() * 1000));
+		if(m_useTimer.getValue())
+			m_animTimer->start(qMax((PReal)0.0, m_timestep.getValue() * 1000));
 		else
-			animTimer->start(0);
+			m_animTimer->start(0);
 	}
 	else
 	{
-		animTimer->stop();
-		if(animMultithread && m_scheduler)
+		m_animTimer->stop();
+		if(m_animMultithread && m_scheduler)
 			m_scheduler->stop();
-		animMultithread = false;
+		m_animMultithread = false;
 	}
 }
 
@@ -786,26 +786,26 @@ void PandaDocument::step()
 #endif
 
 	m_isInStep = true;
-	for(auto object : pandaObjects)
+	for(auto object : m_pandaObjects)
 		object->beginStep();
 
-	if(animPlaying && animMultithread && m_scheduler)
+	if(m_animPlaying && m_animMultithread && m_scheduler)
 		m_scheduler->setDirty();
 
-	animTime.setValue(animTime.getValue() + timestep.getValue());
-	mousePosition.setValue(mousePositionBuffer);
-	if(mouseClickBuffer < 0)
+	m_animTime.setValue(m_animTime.getValue() + m_timestep.getValue());
+	m_mousePosition.setValue(m_mousePositionBuffer);
+	if(m_mouseClickBuffer < 0)
 	{
-		mouseClick.setValue(1);
-		mouseClickBuffer = 0;
+		m_mouseClick.setValue(1);
+		m_mouseClickBuffer = 0;
 	}
 	else
-		mouseClick.setValue(mouseClickBuffer);
+		m_mouseClick.setValue(m_mouseClickBuffer);
 	setDirtyValue();
 	updateIfDirty();
 
 	m_isInStep = false;
-	for(auto object : pandaObjects)
+	for(auto object : m_pandaObjects)
 		object->endStep();
 
 #ifdef PANDA_LOG_EVENTS
@@ -822,8 +822,8 @@ void PandaDocument::step()
 		emit selectedObjectIsDirty(this);
 	emit modified();
 
-	if(animPlaying && useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
-		animTimer->start(qMax((PReal)0.0, timestep.getValue() * 1000 - lastFrameDuration - 1));
+	if(m_animPlaying && m_useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
+		m_animTimer->start(qMax((PReal)0.0, m_timestep.getValue() * 1000 - lastFrameDuration - 1));
 }
 
 void PandaDocument::rewind()
@@ -831,11 +831,11 @@ void PandaDocument::rewind()
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
-	renderFrameBuffer.reset();
-	animTime.setValue(0.0);
-	mousePosition.setValue(mousePositionBuffer);
-	mouseClick.setValue(0);
-	for(auto object : pandaObjects)
+	m_renderFrameBuffer.reset();
+	m_animTime.setValue(0.0);
+	m_mousePosition.setValue(m_mousePositionBuffer);
+	m_mouseClick.setValue(0);
+	for(auto object : m_pandaObjects)
 		object->reset();
 	setDirtyValue();
 	emit timeChanged();
