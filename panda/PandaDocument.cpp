@@ -377,7 +377,7 @@ PandaObject* PandaDocument::createObject(QString registryName)
 {
 	auto object = ObjectFactory::getInstance()->create(registryName, this);
 	if(object)
-		addCommand(new CreateObjectCommand(this, object));
+		addCommand(new AddObjectCommand(this, object));
 
 	return object.data();
 }

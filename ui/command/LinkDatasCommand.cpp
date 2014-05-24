@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 
 #include <panda/PandaObject.h>
+#include <ui/command/CommandId.h>
 #include <ui/command/LinkDatasCommand.h>
 
 LinkDatasCommand::LinkDatasCommand(panda::BaseData* targetData,
@@ -32,6 +33,11 @@ LinkDatasCommand::LinkDatasCommand(panda::BaseData* targetData,
 	m_links.push_back(link);
 
 	setText(QCoreApplication::translate("LinkDatasCommand", "change data link"));
+}
+
+int LinkDatasCommand::id() const
+{
+	return getCommandId<LinkDatasCommand>();
 }
 
 void LinkDatasCommand::redo()

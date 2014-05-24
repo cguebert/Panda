@@ -17,7 +17,7 @@ class MoveObjectCommand : public QUndoCommand
 public:
 	MoveObjectCommand(GraphView* view, QList<panda::PandaObject*> objects, QPointF delta, QUndoCommand* parent = nullptr);
 
-	virtual int id() const { return 1; }
+	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();

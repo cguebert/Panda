@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 
 #include <ui/GraphView.h>
+#include <ui/command/CommandId.h>
 #include <ui/command/MoveObjectCommand.h>
 
 MoveObjectCommand::MoveObjectCommand(GraphView* view, QList<panda::PandaObject*> objects,
@@ -12,6 +13,11 @@ MoveObjectCommand::MoveObjectCommand(GraphView* view, QList<panda::PandaObject*>
 	, m_delta(delta)
 {
 	setText(QCoreApplication::translate("MoveObjectCommand", "move objects"));
+}
+
+int MoveObjectCommand::id() const
+{
+	return getCommandId<MoveObjectCommand>();
 }
 
 void MoveObjectCommand::redo()

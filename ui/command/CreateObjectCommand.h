@@ -1,5 +1,5 @@
-#ifndef CREATEOBJECTCOMMAND_H
-#define CREATEOBJECTCOMMAND_H
+#ifndef ADDOBJECTCOMMAND_H
+#define ADDOBJECTCOMMAND_H
 
 #include <QUndoCommand>
 #include <QSharedPointer>
@@ -11,17 +11,17 @@ class PandaDocument;
 class PandaObject;
 }
 
-class CreateObjectCommand : public QUndoCommand
+class AddObjectCommand : public QUndoCommand
 {
 public:
-	CreateObjectCommand(panda::PandaDocument* document, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
+	AddObjectCommand(panda::PandaDocument* document, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
 
-	virtual int id() const { return 2; }
+	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();
 
-//	virtual bool mergeWith(const QUndoCommand *other);
+	virtual bool mergeWith(const QUndoCommand *other);
 
 protected:
 	panda::PandaDocument* m_document;

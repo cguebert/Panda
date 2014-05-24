@@ -15,7 +15,7 @@ class LinkDatasCommand : public QUndoCommand
 public:
 	LinkDatasCommand(panda::BaseData* targetData, panda::BaseData* parentData, QUndoCommand* parent = nullptr);
 
-	virtual int id() const { return 3; }
+	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();

@@ -2,9 +2,10 @@
 #include <QCoreApplication>
 
 #include <panda/PandaDocument.h>
+#include <ui/command/CommandId.h>
 #include <ui/command/CreateObjectCommand.h>
 
-CreateObjectCommand::CreateObjectCommand(panda::PandaDocument* document,
+AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 										 QSharedPointer<panda::PandaObject> object,
 										 QUndoCommand* parent)
 	: QUndoCommand(parent)
@@ -14,21 +15,30 @@ CreateObjectCommand::CreateObjectCommand(panda::PandaDocument* document,
 	setText(QCoreApplication::translate("CreateObjectCommand", "create objects"));
 }
 
-void CreateObjectCommand::redo()
+int AddObjectCommand::id() const
+{
+	return getCommandId<AddObjectCommand>();
+}
+
+void AddObjectCommand::redo()
 {
 	for(auto object : m_objects)
 		m_document->addObject(object);
 }
 
-void CreateObjectCommand::undo()
+void AddObjectCommand::undo()
 {
 	for(auto object : m_objects)
 		m_document->removeObject(object.data());
 }
-/*
-bool CreateObjectCommand::mergeWith(const QUndoCommand *other)
+
+bool AddObjectCommand::mergeWith(const QUndoCommand *other)
 {
-	const CreateObjectCommand* command = dynamic_cast<const CreateObjectCommand*>(other);
+	// Only merge if creating a macro of multiple commands (not in case of multiple users actions)
+	if(!m_document->isInCommandMacro())
+		return false;
+
+	const AddObjectCommand* command = dynamic_cast<const AddObjectCommand*>(other);
 	if(!command)
 		return false;
 	if(m_document == command->m_document)
@@ -39,4 +49,4 @@ bool CreateObjectCommand::mergeWith(const QUndoCommand *other)
 
 	return false;
 }
-*/
+

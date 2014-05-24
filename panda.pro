@@ -56,6 +56,7 @@ HEADERS       = \
 	ui/OpenGLRenderView.h \
 	ui/QuickCreateDialog.h \
 	ui/UpdateLoggerDialog.h \
+	ui/command/CommandId.h \
 	ui/command/CreateObjectCommand.h \
 	ui/command/DeleteObjectCommand.h \
 	ui/command/LinkDatasCommand.h \
@@ -217,6 +218,7 @@ SOURCES       = main.cpp \
 	ui/OpenGLRenderView.cpp \
 	ui/QuickCreateDialog.cpp \
 	ui/UpdateLoggerDialog.cpp \
+	ui/command/CommandId.cpp \
 	ui/command/CreateObjectCommand.cpp \
 	ui/command/DeleteObjectCommand.cpp \
 	ui/command/LinkDatasCommand.cpp \

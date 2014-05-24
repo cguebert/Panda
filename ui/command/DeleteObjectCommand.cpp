@@ -3,6 +3,7 @@
 
 #include <panda/PandaDocument.h>
 #include <ui/GraphView.h>
+#include <ui/command/CommandId.h>
 #include <ui/command/DeleteObjectCommand.h>
 #include <ui/command/LinkDatasCommand.h>
 
@@ -44,6 +45,11 @@ DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
 	setText(QCoreApplication::translate("DeleteObjectCommand", "delete objects"));
 }
 
+int DeleteObjectCommand::id() const
+{
+	return getCommandId<DeleteObjectCommand>();
+}
+
 void DeleteObjectCommand::redo()
 {
 	m_document->selectNone();
@@ -60,9 +66,13 @@ void DeleteObjectCommand::undo()
 		m_document->addObject(object.first);
 	}
 }
-/*
+
 bool DeleteObjectCommand::mergeWith(const QUndoCommand *other)
 {
+	// Only merge if creating a macro of multiple commands (not in case of multiple users actions)
+	if(!m_document->isInCommandMacro())
+		return false;
+
 	const DeleteObjectCommand* command = dynamic_cast<const DeleteObjectCommand*>(other);
 	if(!command)
 		return false;
@@ -74,4 +84,4 @@ bool DeleteObjectCommand::mergeWith(const QUndoCommand *other)
 
 	return false;
 }
-*/
+
