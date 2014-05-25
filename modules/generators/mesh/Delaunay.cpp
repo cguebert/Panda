@@ -14,8 +14,6 @@ using std::vector;
 #include <boost/polygon/voronoi.hpp>
 using namespace boost::polygon;
 
-#include <QMap>
-
 namespace panda {
 
 using types::Mesh;

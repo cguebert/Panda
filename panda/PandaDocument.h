@@ -9,7 +9,6 @@
 
 #include <QObject>
 #include <QSize>
-#include <QMap>
 
 class QOpenGLFramebufferObject;
 class QAction;
