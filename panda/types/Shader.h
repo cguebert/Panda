@@ -76,6 +76,9 @@ public:
 		QOpenGLShader::ShaderType type;
 		QByteArray sourceCode;
 		unsigned int hash;
+
+		bool operator==(const ShaderSource& s) const
+		{ return hash == s.hash; }
 	};
 
 	const QList<ShaderSource> getSources() const;
@@ -91,6 +94,9 @@ public:
 
 	void loadValue(QString type, QDomElement &elem);
 	void copyValue(QString type, QString name, const void* value);
+
+	bool operator==(const Shader& s) const;
+	bool operator!=(const Shader& s) const;
 
 protected:
 	typedef QMap<QOpenGLShader::ShaderType, ShaderSource> SourcesMap;

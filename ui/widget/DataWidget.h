@@ -123,12 +123,16 @@ public:
 			return *m_value;
 	}
 
-	void setValue(const_reference v)
+	void setValue(const_reference value)
 	{
 		if(m_data)
-			m_data->setValue(v);
+		{
+			auto oldValue = m_data->getValue();
+			if(oldValue != value)
+				m_data->setValue(value);
+		}
 		else
-			*m_value = v;
+			*m_value = value;
 	}
 
 	int getCounter()

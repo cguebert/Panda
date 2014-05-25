@@ -123,6 +123,9 @@ public:
 	void clearBorderElementLists();
 	void clear();
 
+	bool operator==(const Mesh& mesh) const;
+	bool operator!=(const Mesh& mesh) const;
+
 protected:
 	SeqPoints m_points;
 	SeqEdges m_edges;
@@ -269,6 +272,12 @@ inline void Mesh::clearTrianglesAroundPoint()
 
 inline void Mesh::clearTrianglesAroundEdge()
 { m_trianglesAroundEdge.clear(); }
+
+inline bool Mesh::operator==(const Mesh& mesh) const
+{ return m_points == mesh.m_points && m_edges == mesh.m_edges && m_triangles == mesh.m_triangles; }
+
+inline bool Mesh::operator!=(const Mesh& mesh) const
+{ return !(*this == mesh); }
 
 } // namespace types
 

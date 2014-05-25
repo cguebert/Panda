@@ -116,6 +116,16 @@ void Shader::copyValue(QString type, QString name, const void* value)
 		(this->*m_copyValueFunctions[type])(name, value);
 }
 
+bool Shader::operator==(const Shader& shader) const
+{
+	return m_sourcesMap == shader.m_sourcesMap && m_shaderValues == shader.m_shaderValues;
+}
+
+bool Shader::operator!=(const Shader& shader) const
+{
+	return !(*this == shader);
+}
+
 //***************************************************************//
 
 template<> void ShaderValue<int>::apply(QOpenGLShaderProgram& program) const

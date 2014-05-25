@@ -55,7 +55,7 @@ public:
 	{
 		checkBox = new QCheckBox(parent);
 		checkBox->setEnabled(!readOnly);
-		QObject::connect(checkBox, SIGNAL(stateChanged(int)), parent, SLOT(setWidgetDirty()));
+		QObject::connect(checkBox, SIGNAL(clicked(bool)), parent, SLOT(setWidgetDirty()));
 		return checkBox;
 	}
 	void readFromData(const value_type& v)
