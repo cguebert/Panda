@@ -98,7 +98,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	QPointF groupPos = ods->getPosition();
 
 	// If multiple outside datas are connected to the same data, merge them
-	QMap<BaseData*, BaseData*> connectedInputDatas, connectedOutputDatas;
+	QMap<BaseData*, BaseData*> connectedInputDatas;
 
 	// Adding the objects
 	for(auto object : selection)
@@ -150,7 +150,9 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 		// Adding ouput datas
 		for(BaseData* data : object->getOutputDatas())
 		{
-			for(DataNode* otherNode : data->getOutputs())
+			auto outputs = data->getOutputs();
+			BaseData* createdData = nullptr;
+			for(DataNode* otherNode : outputs)
 			{
 				BaseData* otherData = dynamic_cast<BaseData*>(otherNode);
 				if(otherData)
@@ -158,20 +160,15 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 					PandaObject* connected = otherData->getOwner();
 					if(connected && !doc->isSelected(connected) && connected!=doc)
 					{
-						BaseData* createdData = nullptr;
-						if(!connectedOutputDatas.contains(data))
+						if(!createdData)
 						{
 							createdData = group->duplicateData(data);
 							createdData->copyValueFrom(data);
 							group->dataSetParent(createdData, data);
 							group->addOutput(createdData);
-							connectedOutputDatas.insert(data, createdData);
 						}
-						else
-							createdData = connectedOutputDatas.value(data);
 
-						if(createdData)
-							otherData->getOwner()->dataSetParent(otherData, createdData);
+						otherData->getOwner()->dataSetParent(otherData, createdData);
 					}
 				}
 			}
@@ -252,7 +249,8 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		for(QSharedPointer<BaseData> data : group->groupDatas)
 		{
 			BaseData* parent = data->getParent();
-			for(DataNode* node : data->getOutputs())
+			auto outputs = data->getOutputs();
+			for(DataNode* node : outputs)
 			{
 				BaseData* outData = dynamic_cast<BaseData*>(node);
 				if(outData)
