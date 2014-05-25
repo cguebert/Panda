@@ -81,6 +81,8 @@ protected:
 	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
 	void computeSnapDelta(QPointF position);
 
+	void changeLink(panda::BaseData* target, panda::BaseData* parent);
+
 signals:
 	void modified();
 	void showStatusBarMessage(QString);

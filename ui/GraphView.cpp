@@ -7,6 +7,7 @@
 #include <ui/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/command/LinkDatasCommand.h>
 #include <ui/command/MoveObjectCommand.h>
 
 #ifdef PANDA_LOG_EVENTS
@@ -312,7 +313,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 					if(data->isInput() && data->getParent() && event->modifiers() == Qt::ControlModifier)
 					{
 						removeLinkTag(data->getParent(), data);
-						object->dataSetParent(data, nullptr);
+						changeLink(data, nullptr);
 					}
 					else	// Creating a new Link
 					{
@@ -631,9 +632,9 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 			if(secondData && isCompatible(m_clickedData, secondData))
 			{
 				if(m_clickedData->isInput() && secondData->isOutput())
-					obj->dataSetParent(m_clickedData, secondData);
+					changeLink(m_clickedData, secondData);
 				else if(secondData->isInput() && m_clickedData->isOutput())
-					obj->dataSetParent(secondData, m_clickedData);
+					changeLink(secondData, m_clickedData);
 				updateLinkTags();
 			}
 		}
@@ -996,7 +997,7 @@ void GraphView::removeLink()
 	if(m_contextMenuData && m_contextMenuData->isInput() && m_contextMenuData->getParent())
 	{
 		removeLinkTag(m_contextMenuData->getParent(), m_contextMenuData);
-		m_contextMenuData->getOwner()->dataSetParent(m_contextMenuData, nullptr);
+		changeLink(m_contextMenuData, nullptr);
 		m_contextMenuData = nullptr;
 		update();
 	}
@@ -1193,4 +1194,10 @@ void GraphView::moveObjects(QList<panda::PandaObject*> objects, QPointF delta)
 	emit modified();
 	updateLinkTags();
 	update();
+}
+
+void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)
+{
+	auto macro = m_pandaDocument->beginCommandMacro(tr("change link"));
+	m_pandaDocument->addCommand(new LinkDatasCommand(target, parent));
 }
