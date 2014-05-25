@@ -145,6 +145,8 @@ private:
 	typedef QSharedPointer<CreatedDatasStruct> CreatedDatasStructPtr;
 	QList<CreatedDatasStructPtr> m_createdDatasStructs;
 	QMap<BaseData*, CreatedDatasStructPtr> m_createdDatasMap;
+
+	void createUndoCommands(const CreatedDatasStructPtr& createdData);
 };
 
 //***************************************************************//

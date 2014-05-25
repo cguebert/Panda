@@ -4,6 +4,7 @@
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
 
+#include <ui/command/LinkDatasCommand.h>
 #include <ui/command/RemoveGenericDataCommand.h>
 
 #include <QApplication>
@@ -236,13 +237,8 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
-			// Create an action so that we can undo the removal of this group of datas
-			auto currentCommand = m_parentDocument->getCurrentCommand();
-			if(currentCommand)
-			{
-				int index = m_createdDatasStructs.indexOf(createdDatasStruct);
-				new RemoveGenericDataCommand(this, createdDatasStruct->type, index, currentCommand);
-			}
+			// Create commmands so that we can undo the removal
+			createUndoCommands(createdDatasStruct);
 
 			for(BaseDataPtr d : createdDatasStruct->datas)
 			{
@@ -281,6 +277,31 @@ void GenericObject::load(QDomElement& elem)
 	}
 
 	PandaObject::load(elem);
+}
+
+void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
+{
+	// Create commands if links are disconnected from the outputs of this group
+	for(BaseDataPtr data : createdData->datas)
+	{
+		if(data->isOutput())
+		{
+			for(auto output : data->getOutputs())
+			{
+				BaseData* target = dynamic_cast<BaseData*>(output);
+				if(target)
+					m_parentDocument->addCommand(new LinkDatasCommand(target, nullptr));
+			}
+		}
+	}
+
+	// Create a command so that we can undo the removal of this group of datas
+	auto currentCommand = m_parentDocument->getCurrentCommand();
+	if(currentCommand)
+	{
+		int index = m_createdDatasStructs.indexOf(createdData);
+		new RemoveGenericDataCommand(this, createdData->type, index, currentCommand);
+	}
 }
 
 //***************************************************************//
@@ -433,13 +454,8 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
-			// Create an action so that we can undo the removal of this group of datas
-			auto currentCommand = m_parentDocument->getCurrentCommand();
-			if(currentCommand)
-			{
-				int index = m_createdDatasStructs.indexOf(createdDatasStruct);
-				new RemoveGenericDataCommand(this, createdDatasStruct->type, index, currentCommand);
-			}
+			// Create commmands so that we can undo the removal
+			createUndoCommands(createdDatasStruct);
 
 			// Last generic data
 			bool lastGeneric = (m_createdDatasStructs.size() == 1);
