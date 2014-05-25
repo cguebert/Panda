@@ -150,6 +150,7 @@ bool PandaDocument::readFile(const QString& fileName, bool isImport)
 		return false;
 	}
 
+	m_selectedObjects.clear();
 	QDomElement root = doc.documentElement();
 	if(!isImport)	// Bugfix: don't read the doc's datas if we are merging 2 documents
 		load(root);		// Only the document's Datas

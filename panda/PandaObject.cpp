@@ -152,8 +152,6 @@ void PandaObject::load(QDomElement& elem)
 
 void PandaObject::dataSetParent(BaseData* data, BaseData* parent)
 {
-	if(data == parent)
-		return;
 	data->setParent(parent);
 	emitModified();
 }

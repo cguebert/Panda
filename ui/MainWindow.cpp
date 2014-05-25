@@ -110,8 +110,14 @@ void MainWindow::import()
 							   tr("Panda files (*.pnd);;XML Files (*.xml)"));
 	if (!fileName.isEmpty())
 	{
-		loadFile(fileName, true);
-		m_graphView->updateLinkTags();
+		if(loadFile(fileName, true))
+		{
+			m_graphView->updateLinkTags();
+
+			auto selection = m_document->getSelection();
+			if(!selection.isEmpty())
+				m_document->addCommand(new AddObjectCommand(m_document, m_graphView, selection));
+		}
 	}
 }
 
@@ -718,6 +724,10 @@ void MainWindow::paste()
 	m_document->paste();
 	m_graphView->moveSelectedToCenter();
 	m_graphView->updateLinkTags();
+
+	auto selection = m_document->getSelection();
+	if(!selection.isEmpty())
+		m_document->addCommand(new AddObjectCommand(m_document, m_graphView, selection));
 }
 
 void MainWindow::del()
