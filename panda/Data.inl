@@ -80,10 +80,6 @@ void Data<T>::setDirtyValue()
 template<class T>
 void Data<T>::setParent(BaseData* parent)
 {
-	if(parent == this)
-	{
-		return;
-	}
 	Data<T>* TParent = dynamic_cast< Data<T>* >(parent);
 	if(m_parentData && !TParent && !m_setParentProtection)	// If deconnecting, we copy the data first
 		m_value = m_parentData->getValue();
