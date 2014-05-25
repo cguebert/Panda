@@ -98,6 +98,10 @@ PandaDocument::~PandaDocument()
 {
 	if(m_scheduler)
 		m_scheduler->stop();
+
+	// Bugfix: this seems to be necessary
+	m_objects.clear();
+	m_undoStack->clear();
 }
 
 bool PandaDocument::writeFile(const QString& fileName)
