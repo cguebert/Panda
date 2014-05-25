@@ -97,7 +97,8 @@ BaseData* GenericObject::createDatas(int type, int index)
 		else if(!DataTypeId::getValueType(dataType))	// Replace with the value type of the connected Data
 			dataType = types::DataTypeId::replaceValueType(dataType, valueType);
 
-		BaseData* data = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
+		auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
+		auto data = dataPtr.data();
 
 		if(m_dataDefinitions[i].input)
 		{
@@ -109,7 +110,7 @@ BaseData* GenericObject::createDatas(int type, int index)
 		if(m_dataDefinitions[i].output)
 			addOutput(data);
 
-		createdDatasStruct->datas.append(BaseDataPtr(data));
+		createdDatasStruct->datas.append(dataPtr);
 		m_createdDatasMap.insert(data, createdDatasStruct);
 	}
 
@@ -386,7 +387,8 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 			else if(!DataTypeId::getValueType(dataType))	// Replace with the value type of the connected Data
 				dataType = types::DataTypeId::replaceValueType(dataType, valueType);
 
-			BaseData* data = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
+			auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
+			auto data = dataPtr.data();
 
 			if(m_dataDefinitions[i].input)
 			{
@@ -398,7 +400,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 			if(m_dataDefinitions[i].output)
 				addOutput(data);
 
-			createdDatasStruct->datas.append(BaseDataPtr(data));
+			createdDatasStruct->datas.append(dataPtr);
 			m_createdDatasMap.insert(data, createdDatasStruct);
 		}
 	}

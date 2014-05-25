@@ -20,7 +20,7 @@ class BaseDataCreator
 {
 public:
 	virtual ~BaseDataCreator() {}
-	virtual BaseData* create(const QString& name, const QString& help, PandaObject* owner) = 0;
+	virtual QSharedPointer<BaseData> create(const QString& name, const QString& help, PandaObject* owner) = 0;
 };
 
 class DataFactory
@@ -42,8 +42,8 @@ public:
 	const DataEntry* getEntry(QString className) const;
 	const DataEntry* getEntry(int type) const;
 
-	BaseData* create(QString className, const QString& name, const QString& help, PandaObject* owner) const;
-	BaseData* create(int type, const QString& name, const QString& help, PandaObject* owner) const;
+	QSharedPointer<BaseData> create(QString className, const QString& name, const QString& help, PandaObject* owner) const;
+	QSharedPointer<BaseData> create(int type, const QString& name, const QString& help, PandaObject* owner) const;
 
 	static QString typeToName(int type);
 	static int nameToType(QString name);
@@ -68,9 +68,9 @@ template<class T>
 class DataCreator : public BaseDataCreator
 {
 public:
-	virtual BaseData* create(const QString& name, const QString& help, PandaObject* owner)
+	virtual QSharedPointer<BaseData> create(const QString& name, const QString& help, PandaObject* owner)
 	{
-		return new T(name, help, owner);
+		return QSharedPointer<BaseData>(new T(name, help, owner));
 	}
 };
 

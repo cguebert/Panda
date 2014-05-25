@@ -85,8 +85,7 @@ void PandaObject::setDirtyValue()
 		DataNode::setDirtyValue();
 	}
 
-	if(m_doEmitDirty && !m_isInStep && m_parentDocument)
-		m_parentDocument->onDirtyObject(this);
+	emitDirty();
 }
 
 BaseData* PandaObject::getData(const QString& name) const
@@ -153,6 +152,8 @@ void PandaObject::load(QDomElement& elem)
 
 void PandaObject::dataSetParent(BaseData* data, BaseData* parent)
 {
+	if(data == parent)
+		return;
 	data->setParent(parent);
 	emitModified();
 }
@@ -161,6 +162,12 @@ void PandaObject::emitModified()
 {
 	if(m_doEmitModified && m_parentDocument)
 		m_parentDocument->onModifiedObject(this);
+}
+
+void PandaObject::emitDirty()
+{
+	if(m_doEmitDirty && !m_isInStep && m_parentDocument)
+		m_parentDocument->onDirtyObject(this);
 }
 
 } // namespace Panda

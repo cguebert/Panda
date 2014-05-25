@@ -21,22 +21,22 @@ const DataFactory::DataEntry* DataFactory::getEntry(int type) const
 	return typeRegistry.value(type);
 }
 
-BaseData* DataFactory::create(QString className, const QString& name, const QString& help, PandaObject* owner) const
+QSharedPointer<BaseData> DataFactory::create(QString className, const QString& name, const QString& help, PandaObject* owner) const
 {
 	if(registry.contains(className))
 		return registry.value(className)->creator->create(name, help, owner);
 
 	std::cerr << "Data factory has no entry for " << className.toStdString() << std::endl;
-	return nullptr;
+	return QSharedPointer<BaseData>();
 }
 
-BaseData* DataFactory::create(int type, const QString& name, const QString& help, PandaObject* owner) const
+QSharedPointer<BaseData> DataFactory::create(int type, const QString& name, const QString& help, PandaObject* owner) const
 {
 	if(typeRegistry.contains(type))
 		return typeRegistry.value(type)->creator->create(name, help, owner);
 
 	std::cerr << "Data factory has no entry for type " << type << std::endl;
-	return nullptr;
+	return QSharedPointer<BaseData>();
 }
 
 void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator)

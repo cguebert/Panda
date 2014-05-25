@@ -23,11 +23,13 @@ public:
 	virtual void redo()
 	{
 		m_data->setValue(m_newValue);
+		m_data->getOwner()->emitDirty();
 	}
 
 	virtual void undo()
 	{
 		m_data->setValue(m_oldValue);
+		m_data->getOwner()->emitDirty();
 	}
 
 protected:

@@ -377,8 +377,9 @@ void Group::load(QDomElement& elem)
 		name = groupDataNode.attribute("name");
 		help = groupDataNode.attribute("help");
 
-		BaseData* data = DataFactory::getInstance()->create(type, name, help, this);
-		groupDatas.append( QSharedPointer<BaseData>(data) );
+		auto dataPtr = DataFactory::getInstance()->create(type, name, help, this);
+		auto data = dataPtr.data();
+		groupDatas.append(dataPtr);
 		if(input)
 			addInput(data);
 		if(output)

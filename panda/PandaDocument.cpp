@@ -59,6 +59,7 @@ PandaDocument::PandaDocument(QObject* parent)
 	addInput(&m_backgroundColor);
 	addInput(&m_timestep);
 	addInput(&m_useTimer);
+	addInput(&m_useMultithread);
 
 	m_useTimer.setWidget("checkbox");
 
@@ -89,6 +90,8 @@ PandaDocument::PandaDocument(QObject* parent)
 
 	m_undoStack = new QUndoStack(this);
 	m_undoStack->setUndoLimit(25);
+
+	m_parentDocument = this;
 }
 
 PandaDocument::~PandaDocument()

@@ -75,6 +75,7 @@ public:
 	virtual void dataSetParent(BaseData* data, BaseData* parent);
 
 	void emitModified();
+	void emitDirty();
 
 	bool doesLaterUpdate();
 
