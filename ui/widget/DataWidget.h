@@ -2,8 +2,10 @@
 #define DATAWIDGET_H
 
 #include <panda/Data.h>
-#include <panda/PandaObject.h>
+#include <panda/PandaDocument.h>
 #include <panda/helper/Factory.h>
+
+#include <ui/command/SetDataValueCommand.h>
 
 #include <QWidget>
 #include <QString>
@@ -129,7 +131,12 @@ public:
 		{
 			auto oldValue = m_data->getValue();
 			if(oldValue != value)
-				m_data->setValue(value);
+			{
+				if(m_data->getOwner())
+					m_data->getOwner()->getParentDocument()->addCommand(new SetDataValueCommand<T>(m_data, oldValue, value));
+				else
+					m_data->setValue(value);
+			}
 		}
 		else
 			*m_value = value;

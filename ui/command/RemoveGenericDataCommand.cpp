@@ -1,8 +1,6 @@
-#include <QUndoCommand>
 #include <QCoreApplication>
 
 #include <panda/GenericObject.h>
-#include <ui/command/CommandId.h>
 #include <ui/command/RemoveGenericDataCommand.h>
 
 RemoveGenericDataCommand::RemoveGenericDataCommand(panda::GenericObject* object,
@@ -16,11 +14,6 @@ RemoveGenericDataCommand::RemoveGenericDataCommand(panda::GenericObject* object,
 {
 
 	setText(QCoreApplication::translate("RemoveGenericDataCommand", "remove generic data"));
-}
-
-int RemoveGenericDataCommand::id() const
-{
-	return getCommandId<RemoveGenericDataCommand>();
 }
 
 void RemoveGenericDataCommand::redo()

@@ -16,8 +16,6 @@ class RemoveGenericDataCommand : public QUndoCommand
 public:
 	RemoveGenericDataCommand(panda::GenericObject* object, int type, int index, QUndoCommand* parent = nullptr);
 
-	virtual int id() const;
-
 	virtual void redo();
 	virtual void undo();
 

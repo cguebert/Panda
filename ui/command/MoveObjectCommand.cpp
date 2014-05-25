@@ -1,4 +1,3 @@
-#include <QUndoCommand>
 #include <QCoreApplication>
 
 #include <ui/GraphView.h>

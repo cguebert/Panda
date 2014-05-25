@@ -62,6 +62,7 @@ HEADERS       = \
 	ui/command/LinkDatasCommand.h \
 	ui/command/MoveObjectCommand.h \
 	ui/command/RemoveGenericDataCommand.h \
+	ui/command/SetDataValueCommand.h \
 	ui/drawstruct/AnnotationDrawStruct.h \
 	ui/drawstruct/DockableDrawStruct.h \
 	ui/drawstruct/GenericObjectDrawStruct.h \
