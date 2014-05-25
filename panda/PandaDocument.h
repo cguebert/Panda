@@ -109,9 +109,8 @@ protected:
 	void render();
 	void endCommandMacro();
 
-	ObjectsList m_pandaObjects;
+	ObjectsList m_objects;
 	ObjectsSelection m_selectedObjects;
-	QMap<quint32, PandaObject*> m_pandaObjectsMap;
 	quint32 m_currentIndex;
 	Layer* m_defaultLayer;
 	QSharedPointer<QOpenGLFramebufferObject> m_renderFrameBuffer;
@@ -178,10 +177,10 @@ protected:
 };
 
 inline int PandaDocument::getNbObjects() const
-{ return m_pandaObjects.size(); }
+{ return m_objects.size(); }
 
 inline const PandaDocument::ObjectsList& PandaDocument::getObjects() const
-{ return m_pandaObjects; }
+{ return m_objects; }
 
 inline bool PandaDocument::isSelected(PandaObject* object) const
 { return std::find(m_selectedObjects.begin(), m_selectedObjects.end(), object) != m_selectedObjects.end(); }

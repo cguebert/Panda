@@ -116,7 +116,7 @@ bool PandaDocument::writeFile(const QString& fileName)
 	doc.appendChild(root);
 	save(doc, root);	// The document's Datas
 	ObjectsSelection allObjects;
-	for(auto object : m_pandaObjects)
+	for(auto object : m_objects)
 		allObjects.push_back(object.data());
 	saveDoc(doc, root, allObjects);	// The document and all of its objects
 
@@ -154,7 +154,7 @@ bool PandaDocument::readFile(const QString& fileName, bool isImport)
 		load(root);		// Only the document's Datas
 	loadDoc(root);	// All the document's objects
 
-	for(auto object : m_pandaObjects)
+	for(auto object : m_objects)
 		object->reset();
 
 	emit selectionChanged();
@@ -347,11 +347,10 @@ void PandaDocument::resetDocument()
 	emit selectedObject(nullptr);
 	emit selectionChanged();
 
-	for(auto object : m_pandaObjects)
+	for(auto object : m_objects)
 		emit removedObject(object.data());
 
-	m_pandaObjectsMap.clear();
-	m_pandaObjects.clear();
+	m_objects.clear();
 	m_currentIndex = 1;
 	m_animTime.setValue(0.0);
 	m_timestep.setValue((PReal)0.01);
@@ -385,8 +384,8 @@ PandaObject* PandaDocument::createObject(QString registryName)
 
 PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object)
 {
-	auto iter = std::find(m_pandaObjects.begin(), m_pandaObjects.end(), object);
-	if(iter != m_pandaObjects.end())
+	auto iter = std::find(m_objects.begin(), m_objects.end(), object);
+	if(iter != m_objects.end())
 		return *iter;
 
 	return ObjectPtr();
@@ -464,7 +463,7 @@ void PandaDocument::selectionRemove(PandaObject* object)
 void PandaDocument::selectAll()
 {
 	m_selectedObjects.clear();
-	for(auto object : m_pandaObjects)
+	for(auto object : m_objects)
 		m_selectedObjects.push_back(object.data());
 	emit selectedObject(m_selectedObjects.back());
 	emit selectionChanged();
@@ -546,18 +545,16 @@ void PandaDocument::selectConnected()
 
 void PandaDocument::addObject(ObjectPtr object)
 {
-	m_pandaObjectsMap.insert(object->getIndex(), object.data());
-	m_pandaObjects.append(object);
+	m_objects.append(object);
 	emit addedObject(object.data());
 }
 
 void PandaDocument::removeObject(PandaObject* object)
 {
 	emit removedObject(object);
-	m_pandaObjectsMap.remove(object->getIndex());
 	m_selectedObjects.removeAll(object);
 
-	remove(m_pandaObjects, object);
+	remove(m_objects, object);
 	emit modified();
 }
 
@@ -581,8 +578,12 @@ void PandaDocument::waitForOtherTasksToFinish(bool mainThread)
 
 PandaObject* PandaDocument::findObject(quint32 objectIndex)
 {
-	if(m_pandaObjectsMap.contains(objectIndex))
-		return m_pandaObjectsMap[objectIndex];
+	auto iter = std::find_if(m_objects.cbegin(), m_objects.cend(), [objectIndex](const ObjectPtr& object){
+		return object->getIndex() == objectIndex;
+	});
+
+	if(iter != m_objects.end())
+		return iter->data();
 
 	return nullptr;
 }
@@ -625,7 +626,7 @@ void PandaDocument::update()
 
 	m_defaultLayer->updateIfDirty();
 
-	for(auto obj : m_pandaObjects)
+	for(auto obj : m_objects)
 	{
 		if(dynamic_cast<BaseLayer*>(obj.data()))
 			obj->updateIfDirty();
@@ -676,7 +677,7 @@ void PandaDocument::render()
 
 	m_defaultLayer->mergeLayer();
 
-	for(auto obj : m_pandaObjects)
+	for(auto obj : m_objects)
 	{
 		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj.data());
 		if(layer)
@@ -694,19 +695,19 @@ void PandaDocument::moveLayerUp(PandaObject* layer)
 {
 	if(!layer)
 		return;
-	auto iter = std::find(m_pandaObjects.begin(), m_pandaObjects.end(), layer);
-	if(iter == m_pandaObjects.end())
+	auto iter = std::find(m_objects.begin(), m_objects.end(), layer);
+	if(iter == m_objects.end())
 		return;
 	auto object = *iter; // Get the QSharedPointer
-	int index = iter - m_pandaObjects.begin();
-	int nb = m_pandaObjects.size();
+	int index = iter - m_objects.begin();
+	int nb = m_objects.size();
 	for(++index;index<nb;++index)
 	{
-		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(m_pandaObjects[index].data());
+		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(m_objects[index].data());
 		if(otherLayer)
 		{
-			remove(m_pandaObjects, layer);
-			m_pandaObjects.insert(index, object);
+			remove(m_objects, layer);
+			m_objects.insert(index, object);
 			setDirtyValue();
 			emit modified();
 			return;
@@ -718,18 +719,18 @@ void PandaDocument::moveLayerDown(PandaObject *layer)
 {
 	if(!layer)
 		return;
-	auto iter = std::find(m_pandaObjects.begin(), m_pandaObjects.end(), layer);
-	if(iter == m_pandaObjects.end())
+	auto iter = std::find(m_objects.begin(), m_objects.end(), layer);
+	if(iter == m_objects.end())
 		return;
 	auto object = *iter; // Get the QSharedPointer
-	int index = iter - m_pandaObjects.begin();
+	int index = iter - m_objects.begin();
 	for(--index;index>=0;--index)
 	{
-		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(m_pandaObjects[index].data());
+		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(m_objects[index].data());
 		if(otherLayer)
 		{
-			remove(m_pandaObjects, layer);
-			m_pandaObjects.insert(index, object);
+			remove(m_objects, layer);
+			m_objects.insert(index, object);
 			setDirtyValue();
 			emit modified();
 			return;
@@ -786,7 +787,7 @@ void PandaDocument::step()
 #endif
 
 	m_isInStep = true;
-	for(auto object : m_pandaObjects)
+	for(auto object : m_objects)
 		object->beginStep();
 
 	if(m_animPlaying && m_animMultithread && m_scheduler)
@@ -805,7 +806,7 @@ void PandaDocument::step()
 	updateIfDirty();
 
 	m_isInStep = false;
-	for(auto object : m_pandaObjects)
+	for(auto object : m_objects)
 		object->endStep();
 
 #ifdef PANDA_LOG_EVENTS
@@ -835,7 +836,7 @@ void PandaDocument::rewind()
 	m_animTime.setValue(0.0);
 	m_mousePosition.setValue(m_mousePositionBuffer);
 	m_mouseClick.setValue(0);
-	for(auto object : m_pandaObjects)
+	for(auto object : m_objects)
 		object->reset();
 	setDirtyValue();
 	emit timeChanged();
