@@ -25,9 +25,9 @@ public:
 	static const int dockHoleMargin = 2;
 	static const int dockRendererMargin = 10;
 protected:
-	panda::DockObject* dockObject;
-	QPainterPath shapePath;
-	QList<int> dockablesY;	// Used only in "getDockableIndex"
+	panda::DockObject* m_dockObject;
+	QPainterPath m_shapePath;
+	QList<int> m_dockablesY;	// Used only in "getDockableIndex"
 };
 
 class DockableObjectDrawStruct : public ObjectDrawStruct
@@ -42,7 +42,7 @@ public:
 
 	static const int dockableCircleWidth = 20;
 protected:
-	QPainterPath shapePath;
+	QPainterPath m_shapePath;
 };
 
 #endif

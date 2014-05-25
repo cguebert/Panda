@@ -20,8 +20,8 @@ public:
 	static const int createdDataRectMargin = 3;
 
 protected:
-	panda::GenericObject* genericObject;
-	int nbDefInputs, nbDefOutputs;
+	panda::GenericObject* m_genericObject;
+	int m_nbDefInputs, m_nbDefOutputs;
 };
 
 #endif

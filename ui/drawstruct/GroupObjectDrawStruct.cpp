@@ -8,23 +8,23 @@
 
 GroupObjectDrawStruct::GroupObjectDrawStruct(GraphView* view, panda::Group* object)
 	: ObjectDrawStruct(view, object)
-	, group(object)
+	, m_group(object)
 {
 	update();
 }
 
 void GroupObjectDrawStruct::drawShape(QPainter* painter)
 {
-	painter->drawPath(shapePath);
+	painter->drawPath(m_shapePath);
 }
 
 void GroupObjectDrawStruct::drawText(QPainter* painter)
 {
-	if(group && !group->groupName.getValue().isEmpty())
+	if(m_group && !m_group->groupName.getValue().isEmpty())
 	{
 		int margin = dataRectSize+dataRectMargin+3;
 		QRectF textArea = m_objectArea.adjusted(margin, 0, -margin, 0);
-		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, group->groupName.getValue());
+		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, m_group->groupName.getValue());
 	}
 	else
 		ObjectDrawStruct::drawText(painter);
@@ -33,12 +33,12 @@ void GroupObjectDrawStruct::drawText(QPainter* painter)
 void GroupObjectDrawStruct::moveVisual(const QPointF& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	shapePath.translate(delta);
+	m_shapePath.translate(delta);
 }
 
 bool GroupObjectDrawStruct::contains(const QPointF& point)
 {
-	return shapePath.contains(point);
+	return m_shapePath.contains(point);
 }
 
 void GroupObjectDrawStruct::update()
@@ -56,7 +56,7 @@ void GroupObjectDrawStruct::update()
 	path.lineTo(m_objectArea.left(), m_objectArea.bottom()-h);
 	path.lineTo(m_objectArea.left(), m_objectArea.top()+h);
 	path.lineTo(m_objectArea.left()+w, m_objectArea.top());
-	path.swap(shapePath);
+	path.swap(m_shapePath);
 }
 
 int GroupObjectDrawStruct::dataStartY()

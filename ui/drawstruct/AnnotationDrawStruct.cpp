@@ -11,11 +11,11 @@ using panda::Annotation;
 
 AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* object)
 	: ObjectDrawStruct(view, object)
-	, annotation(dynamic_cast<Annotation*>(object))
+	, m_annotation(dynamic_cast<Annotation*>(object))
 	, m_deltaToEnd(200, 100)
 	, m_textCounter(-1)
 	, m_fontCounter(-1)
-	, movingAction(MOVING_NONE)
+	, m_movingAction(MOVING_NONE)
 {
 	update();
 }
@@ -26,13 +26,13 @@ void AnnotationDrawStruct::drawBackground(QPainter* painter)
 	painter->setBrush(Qt::NoBrush);
 
 	// Compute the bounding box of the text, if it changed
-	const QString& text = annotation->m_text.getValue();
-	int textCounter = annotation->m_text.getCounter();
-	int fontCounter = annotation->m_font.getCounter();
+	const QString& text = m_annotation->m_text.getValue();
+	int textCounter = m_annotation->m_text.getCounter();
+	int fontCounter = m_annotation->m_font.getCounter();
 	if(m_textSize.isEmpty() || m_textCounter != textCounter || m_fontCounter != fontCounter)
 	{
 		QFont theFont;
-		theFont.fromString(annotation->m_font.getValue());
+		theFont.fromString(m_annotation->m_font.getValue());
 		painter->setFont(theFont);
 
 		QRectF tempArea = QRectF(m_startPos, QSizeF(1000, 1000));
@@ -55,7 +55,7 @@ void AnnotationDrawStruct::drawForeground(QPainter* painter)
 	painter->save();
 	painter->setBrush(Qt::NoBrush);
 	QFont theFont;
-	theFont.fromString(annotation->m_font.getValue());
+	theFont.fromString(m_annotation->m_font.getValue());
 	painter->setFont(theFont);
 
 	// Draw the box behind the text
@@ -66,13 +66,13 @@ void AnnotationDrawStruct::drawForeground(QPainter* painter)
 	painter->restore();
 
 	// Draw the text
-	painter->drawText(m_textArea.adjusted(5, 5, -5, -5), Qt::AlignLeft | Qt::AlignTop, annotation->m_text.getValue());
+	painter->drawText(m_textArea.adjusted(5, 5, -5, -5), Qt::AlignLeft | Qt::AlignTop, m_annotation->m_text.getValue());
 
 	// Draw the handle
 	const panda::PandaDocument* doc = m_parentView->getDocument();
-	if(annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
+	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
 			&& doc->getSelection().size() == 1
-			&& doc->isSelected(annotation))	// The annotation is the only selected object
+			&& doc->isSelected(m_annotation))	// The annotation is the only selected object
 	{
 		painter->setBrush(m_parentView->palette().midlight());
 		painter->drawEllipse(m_endPos, 5, 5);
@@ -94,9 +94,9 @@ void AnnotationDrawStruct::moveVisual(const QPointF& delta)
 bool AnnotationDrawStruct::contains(const QPointF& point)
 {
 	const panda::PandaDocument* doc = m_parentView->getDocument();
-	if(annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
+	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
 			&& doc->getSelection().size() == 1
-			&& doc->isSelected(annotation))	// The annotation is the only selected object
+			&& doc->isSelected(m_annotation))	// The annotation is the only selected object
 	{
 		if((point - m_endPos).manhattanLength() < 10)
 			return true;
@@ -119,7 +119,7 @@ void AnnotationDrawStruct::update()
 	m_textArea.adjust(3, -13, 13, -3);
 
 	shapePath = QPainterPath();
-	switch(annotation->m_type.getValue())
+	switch(m_annotation->m_type.getValue())
 	{
 		case Annotation::ANNOTATION_TEXT:
 			break;
@@ -162,7 +162,7 @@ void AnnotationDrawStruct::update()
 		}
 	}
 
-	annotation->cleanDirty();
+	m_annotation->cleanDirty();
 }
 
 void AnnotationDrawStruct::save(QDomDocument& doc, QDomElement& elem)
@@ -192,15 +192,15 @@ bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 
 	if(m_textArea.contains(zoomedMouse))
 	{
-		movingAction = MOVING_TEXT;
-		previousMousePos = zoomedMouse;
+		m_movingAction = MOVING_TEXT;
+		m_previousMousePos = zoomedMouse;
 		return true;
 	}
 
 	if((zoomedMouse - m_endPos).manhattanLength() < 10)
 	{
-		movingAction = MOVING_POINT;
-		previousMousePos = zoomedMouse;
+		m_movingAction = MOVING_POINT;
+		m_previousMousePos = zoomedMouse;
 		return true;
 	}
 
@@ -210,18 +210,18 @@ bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 {
 	QPointF zoomedMouse = event->localPos() / m_parentView->getZoom();
-	QPointF delta = zoomedMouse - previousMousePos;
-	previousMousePos = zoomedMouse;
+	QPointF delta = zoomedMouse - m_previousMousePos;
+	m_previousMousePos = zoomedMouse;
 	if(delta.isNull())
 		return;
 
-	if(movingAction == MOVING_TEXT)
+	if(m_movingAction == MOVING_TEXT)
 	{
 		move(delta);
 		emit m_parentView->modified();
 		m_parentView->update();
 	}
-	else if(movingAction == MOVING_POINT)
+	else if(m_movingAction == MOVING_POINT)
 	{
 		m_deltaToEnd += delta;
 		m_endPos += delta;
@@ -233,7 +233,7 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 
 void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent*)
 {
-	movingAction = MOVING_NONE;
+	m_movingAction = MOVING_NONE;
 }
 
 QSize AnnotationDrawStruct::getObjectSize()

@@ -23,8 +23,8 @@ public:
 	virtual int dataStartY();
 
 protected:
-	QPainterPath shapePath;
-	panda::Group* group;
+	QPainterPath m_shapePath;
+	panda::Group* m_group;
 };
 
 #endif

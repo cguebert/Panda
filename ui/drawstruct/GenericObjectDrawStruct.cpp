@@ -9,18 +9,18 @@ using panda::GenericObject;
 
 GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::GenericObject* object)
 	: ObjectDrawStruct(view, (panda::PandaObject*)object)
-	, genericObject(object)
-	, nbDefInputs(0)
-	, nbDefOutputs(0)
+	, m_genericObject(object)
+	, m_nbDefInputs(0)
+	, m_nbDefOutputs(0)
 {
 	update();
 
 	for(GenericObject::GenericDataDefinition def : object->m_dataDefinitions)
 	{
 		if(def.input)
-			++nbDefInputs;
+			++m_nbDefInputs;
 		if(def.output)
-			++nbDefOutputs;
+			++m_nbDefOutputs;
 	}
 }
 
@@ -45,7 +45,7 @@ void GenericObjectDrawStruct::update()
 	for(int i=0; i<nbInputs; ++i)
 	{
 		panda::BaseData* data = inputDatas[i];
-		if(!genericObject->m_createdDatasMap.contains(data) && data != genericObject->m_genericData)
+		if(!m_genericObject->m_createdDatasMap.contains(data) && data != m_genericObject->m_genericData)
 		{
 			QRectF dataArea(xi, startY + index * dh,
 							dataRectSize, dataRectSize);
@@ -59,7 +59,7 @@ void GenericObjectDrawStruct::update()
 	for(int i=0; i<nbOutputs; ++i)
 	{
 		panda::BaseData* data = outputDatas[i];
-		if(!genericObject->m_createdDatasMap.contains(data))
+		if(!m_genericObject->m_createdDatasMap.contains(data))
 		{
 			QRectF dataArea(xo, startY + index * dh,
 							dataRectSize, dataRectSize);
@@ -71,24 +71,24 @@ void GenericObjectDrawStruct::update()
 
 	// Now the created datas
 	y += createdDataRectMargin;
-	int nbCreated = genericObject->m_createdDatasStructs.size();
-	int nbDef = genericObject->m_dataDefinitions.size();
+	int nbCreated = m_genericObject->m_createdDatasStructs.size();
+	int nbDef = m_genericObject->m_dataDefinitions.size();
 	for(int i=0; i<nbCreated; ++i)
 	{
-		GenericObject::DataPtrList createdDatas = genericObject->m_createdDatasStructs[i]->datas;
+		GenericObject::DataPtrList createdDatas = m_genericObject->m_createdDatasStructs[i]->datas;
 		int inputIndex = 0, outputIndex = 0;
 		for(int j=0; j<nbDef; ++j)
 		{
 			if(!createdDatas[j])
 				continue;
 
-			if(genericObject->m_dataDefinitions[j].input)
+			if(m_genericObject->m_dataDefinitions[j].input)
 			{
 				QRectF dataArea(xi, y + inputIndex * dh, dataRectSize, dataRectSize);
 				m_datas.append(qMakePair(dataArea, createdDatas[j].data()));
 				++inputIndex;
 			}
-			if(genericObject->m_dataDefinitions[j].output)
+			if(m_genericObject->m_dataDefinitions[j].output)
 			{
 				QRectF dataArea(xo, y + outputIndex * dh, dataRectSize, dataRectSize);
 				m_datas.append(qMakePair(dataArea, createdDatas[j].data()));
@@ -101,7 +101,7 @@ void GenericObjectDrawStruct::update()
 
 	// And the generic data
 	QRectF dataArea(xi, y, dataRectSize, dataRectSize);
-	m_datas.append(qMakePair(dataArea, (panda::BaseData*)genericObject->m_genericData));
+	m_datas.append(qMakePair(dataArea, (panda::BaseData*)m_genericObject->m_genericData));
 }
 
 void GenericObjectDrawStruct::drawDatas(QPainter* painter)
@@ -132,9 +132,9 @@ QSize GenericObjectDrawStruct::getObjectSize()
 	nbInputs = m_object->getInputDatas().size();
 	nbOutputs = m_object->getOutputDatas().size();
 
-	int nbCreated = genericObject->m_createdDatasStructs.size();
-	int nbCreatedInputs = nbCreated * nbDefInputs;
-	int nbCreatedOutputs = nbCreated * nbDefOutputs;
+	int nbCreated = m_genericObject->m_createdDatasStructs.size();
+	int nbCreatedInputs = nbCreated * m_nbDefInputs;
+	int nbCreatedOutputs = nbCreated * m_nbDefOutputs;
 
 	nbInputs -= nbCreatedInputs + 1; // (Removing the generic data too)
 	nbOutputs -= nbCreatedOutputs;
@@ -145,7 +145,7 @@ QSize GenericObjectDrawStruct::getObjectSize()
 		normalDatasH += createdDataRectMargin;
 	normalDatasH += dataRectMargin + dataRectSize;	// Adding the generic data now
 
-	int maxCreatedDatas = qMax(nbDefInputs, nbDefOutputs);
+	int maxCreatedDatas = qMax(m_nbDefInputs, m_nbDefOutputs);
 	int createdDatasH = (maxCreatedDatas-1)*dataRectMargin + maxCreatedDatas*dataRectSize;
 	int totalCreatedDatasH = nbCreated*(createdDataRectMargin + dataRectMargin + createdDatasH);
 

@@ -7,14 +7,14 @@
 
 DockObjectDrawStruct::DockObjectDrawStruct(GraphView* view, panda::DockObject* object)
 	: ObjectDrawStruct(view, (panda::PandaObject*)object)
-	, dockObject(object)
+	, m_dockObject(object)
 {
 	update();
 }
 
 void DockObjectDrawStruct::drawShape(QPainter* painter)
 {
-	painter->drawPath(shapePath);
+	painter->drawPath(m_shapePath);
 }
 
 void DockObjectDrawStruct::drawText(QPainter* painter)
@@ -32,7 +32,7 @@ QSize DockObjectDrawStruct::getObjectSize()
 	temp.rwidth() += 20;
 	temp.rheight() += dockEmptyRendererHeight + dockRendererMargin * 2;
 
-	panda::DockObject::DockablesIterator iter = dockObject->getDockablesIterator();
+	panda::DockObject::DockablesIterator iter = m_dockObject->getDockablesIterator();
 	while(iter.hasNext())
 	{
 		panda::DockableObject* dockable = iter.next();
@@ -45,7 +45,7 @@ QSize DockObjectDrawStruct::getObjectSize()
 void DockObjectDrawStruct::move(const QPointF& delta)
 {
 	ObjectDrawStruct::move(delta);
-	panda::DockObject::DockablesIterator iter = dockObject->getDockablesIterator();
+	panda::DockObject::DockablesIterator iter = m_dockObject->getDockablesIterator();
 	while(iter.hasNext())
 		m_parentView->getObjectDrawStruct(iter.next())->move(delta);
 }
@@ -53,19 +53,19 @@ void DockObjectDrawStruct::move(const QPointF& delta)
 void DockObjectDrawStruct::moveVisual(const QPointF& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	shapePath.translate(delta);
+	m_shapePath.translate(delta);
 }
 
 bool DockObjectDrawStruct::contains(const QPointF& point)
 {
-	return shapePath.contains(point);
+	return m_shapePath.contains(point);
 }
 
 void DockObjectDrawStruct::update()
 {
 	ObjectDrawStruct::update();
 
-	dockablesY.clear();
+	m_dockablesY.clear();
 
 	QPainterPath path;
 	path.moveTo(m_objectArea.left(), m_objectArea.bottom());
@@ -76,7 +76,7 @@ void DockObjectDrawStruct::update()
 	int tx, ty;
 	ty = m_objectArea.top() + ObjectDrawStruct::getObjectSize().height() + dockRendererMargin;
 
-	panda::DockObject::DockablesIterator iter = dockObject->getDockablesIterator();
+	panda::DockObject::DockablesIterator iter = m_dockObject->getDockablesIterator();
 	while(iter.hasNext())
 	{
 		panda::DockableObject* dockable = iter.next();
@@ -85,7 +85,7 @@ void DockObjectDrawStruct::update()
 		QPointF objectNewPos(m_position.x() + dockHoleWidth - objectSize.width(), m_position.y() + ty - m_objectArea.top());
 		objectStruct->move(objectNewPos - objectStruct->getPosition());
 
-		dockablesY.append(objectStruct->getObjectArea().center().y());
+		m_dockablesY.append(objectStruct->getObjectArea().center().y());
 
 		tx = m_objectArea.left() + dockHoleWidth - DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;
 		int w = DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;
@@ -116,15 +116,15 @@ void DockObjectDrawStruct::update()
 				 tx, ty+dockEmptyRendererHeight);
 	path.lineTo(m_objectArea.left(), ty+dockEmptyRendererHeight);
 	path.lineTo(m_objectArea.left(), m_objectArea.bottom());
-	path.swap(shapePath);
+	path.swap(m_shapePath);
 }
 
 int DockObjectDrawStruct::getDockableIndex(const QRectF& rect)
 {
 	int y = rect.center().y();
-	for(int i=0; i<dockablesY.size(); ++i)
+	for(int i=0; i<m_dockablesY.size(); ++i)
 	{
-		if(y < dockablesY[i])
+		if(y < m_dockablesY[i])
 			return i;
 	}
 	return -1;
@@ -142,18 +142,18 @@ DockableObjectDrawStruct::DockableObjectDrawStruct(GraphView* view, panda::Docka
 
 void DockableObjectDrawStruct::drawShape(QPainter* painter)
 {
-	painter->drawPath(shapePath);
+	painter->drawPath(m_shapePath);
 }
 
 void DockableObjectDrawStruct::moveVisual(const QPointF& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	shapePath.translate(delta);
+	m_shapePath.translate(delta);
 }
 
 bool DockableObjectDrawStruct::contains(const QPointF& point)
 {
-	return shapePath.contains(point);
+	return m_shapePath.contains(point);
 }
 
 void DockableObjectDrawStruct::update()
@@ -178,7 +178,7 @@ void DockableObjectDrawStruct::update()
 				 m_objectArea.left(), m_objectArea.bottom()-2.5,
 				 m_objectArea.left(), m_objectArea.bottom()-5);
 	path.lineTo(m_objectArea.left(), m_objectArea.center().y());
-	path.swap(shapePath);
+	path.swap(m_shapePath);
 }
 
 int DockableObjectDrawClass = RegisterDrawObject<panda::DockableObject, DockableObjectDrawStruct>();
