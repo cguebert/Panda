@@ -13,7 +13,7 @@ class GraphView;
 class GroupObjectDrawStruct : public ObjectDrawStruct
 {
 public:
-	GroupObjectDrawStruct(GraphView* view, panda::Group* object);
+	GroupObjectDrawStruct(GraphView* view, panda::Group* m_object);
 
 	virtual void drawShape(QPainter* painter);
 	virtual void drawText(QPainter* painter);

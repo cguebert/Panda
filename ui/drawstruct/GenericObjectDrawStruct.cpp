@@ -26,17 +26,17 @@ GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::Generic
 
 void GenericObjectDrawStruct::update()
 {
-	objectArea = QRectF(position + parentView->getViewDelta(), getObjectSize());
+	m_objectArea = QRectF(m_position + m_parentView->getViewDelta(), getObjectSize());
 
-	datas.clear();
+	m_datas.clear();
 	QList<panda::BaseData*> inputDatas, outputDatas;
-	inputDatas = object->getInputDatas();
-	outputDatas = object->getOutputDatas();
+	inputDatas = m_object->getInputDatas();
+	outputDatas = m_object->getOutputDatas();
 	int nbInputs = inputDatas.size(), nbOutputs = outputDatas.size();
 
-	int xi = objectArea.x() + dataRectMargin;
-	int xo = objectArea.right() - dataRectMargin - dataRectSize;
-	int startY = objectArea.y() + dataStartY();
+	int xi = m_objectArea.x() + dataRectMargin;
+	int xo = m_objectArea.right() - dataRectMargin - dataRectSize;
+	int startY = m_objectArea.y() + dataStartY();
 	int dh = dataRectSize + dataRectMargin;
 	int y;
 
@@ -49,7 +49,7 @@ void GenericObjectDrawStruct::update()
 		{
 			QRectF dataArea(xi, startY + index * dh,
 							dataRectSize, dataRectSize);
-			datas.append(qMakePair(dataArea, data));
+			m_datas.append(qMakePair(dataArea, data));
 			++index;
 		}
 	}
@@ -63,7 +63,7 @@ void GenericObjectDrawStruct::update()
 		{
 			QRectF dataArea(xo, startY + index * dh,
 							dataRectSize, dataRectSize);
-			datas.append(qMakePair(dataArea, data));
+			m_datas.append(qMakePair(dataArea, data));
 			++index;
 		}
 	}
@@ -85,13 +85,13 @@ void GenericObjectDrawStruct::update()
 			if(genericObject->m_dataDefinitions[j].input)
 			{
 				QRectF dataArea(xi, y + inputIndex * dh, dataRectSize, dataRectSize);
-				datas.append(qMakePair(dataArea, createdDatas[j].data()));
+				m_datas.append(qMakePair(dataArea, createdDatas[j].data()));
 				++inputIndex;
 			}
 			if(genericObject->m_dataDefinitions[j].output)
 			{
 				QRectF dataArea(xo, y + outputIndex * dh, dataRectSize, dataRectSize);
-				datas.append(qMakePair(dataArea, createdDatas[j].data()));
+				m_datas.append(qMakePair(dataArea, createdDatas[j].data()));
 				++outputIndex;
 			}
 		}
@@ -101,21 +101,21 @@ void GenericObjectDrawStruct::update()
 
 	// And the generic data
 	QRectF dataArea(xi, y, dataRectSize, dataRectSize);
-	datas.append(qMakePair(dataArea, (panda::BaseData*)genericObject->m_genericData));
+	m_datas.append(qMakePair(dataArea, (panda::BaseData*)genericObject->m_genericData));
 }
 
 void GenericObjectDrawStruct::drawDatas(QPainter* painter)
 {
-	painter->setPen(QPen(parentView->palette().text().color()));
-	const panda::BaseData* clickedData = parentView->getClickedData();
-	for(RectDataPair dataPair : datas)
+	painter->setPen(QPen(m_parentView->palette().text().color()));
+	const panda::BaseData* clickedData = m_parentView->getClickedData();
+	for(RectDataPair dataPair : m_datas)
 	{
 		if(clickedData
 			&& clickedData != dataPair.second
 			&& !GraphView::isCompatible(clickedData, dataPair.second))
-			painter->setBrush(parentView->palette().dark());
+			painter->setBrush(m_parentView->palette().dark());
 		else
-			painter->setBrush(parentView->palette().button());
+			painter->setBrush(m_parentView->palette().button());
 
 		if(dynamic_cast<panda::GenericData*>(dataPair.second))
 			painter->drawRoundedRect(dataPair.first, 3, 3);
@@ -129,8 +129,8 @@ QSize GenericObjectDrawStruct::getObjectSize()
 	QSize objectSize(objectDefaultWidth, objectDefaultHeight);
 
 	int nbInputs, nbOutputs;
-	nbInputs = object->getInputDatas().size();
-	nbOutputs = object->getOutputDatas().size();
+	nbInputs = m_object->getInputDatas().size();
+	nbOutputs = m_object->getOutputDatas().size();
 
 	int nbCreated = genericObject->m_createdDatasStructs.size();
 	int nbCreatedInputs = nbCreated * nbDefInputs;

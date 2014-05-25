@@ -64,30 +64,30 @@ public:
 	virtual int dataStartY();
 
 protected:
-	GraphView* parentView;
-	panda::PandaObject* object;
-	QPointF position;
-	QRectF objectArea;
-	QList<RectDataPair> datas;
+	GraphView* m_parentView;
+	panda::PandaObject* m_object;
+	QPointF m_position;
+	QRectF m_objectArea;
+	QList<RectDataPair> m_datas;
 };
 
 inline bool ObjectDrawStruct::acceptsMagneticSnap()
 { return true; }
 
 inline bool ObjectDrawStruct::contains(const QPointF& point)
-{ return objectArea.contains(point); }
+{ return m_objectArea.contains(point); }
 
 inline QRectF ObjectDrawStruct::getObjectArea() const
-{ return objectArea; }
+{ return m_objectArea; }
 
 inline QPointF ObjectDrawStruct::getPosition() const
-{ return position; }
+{ return m_position; }
 
 inline panda::PandaObject* const ObjectDrawStruct::getObject() const
-{ return object; }
+{ return m_object; }
 
 inline ObjectDrawStruct::RectDataIterator ObjectDrawStruct::getDatasIterator() const
-{ return RectDataIterator(datas); }
+{ return RectDataIterator(m_datas); }
 
 inline int ObjectDrawStruct::dataStartY()
 { return dataRectMargin; }

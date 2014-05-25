@@ -8,7 +8,7 @@
 class DockObjectDrawStruct : public ObjectDrawStruct
 {
 public:
-	DockObjectDrawStruct(GraphView* view, panda::DockObject* object);
+	DockObjectDrawStruct(GraphView* view, panda::DockObject* m_object);
 
 	virtual void drawShape(QPainter* painter);
 	virtual void drawText(QPainter* painter);
@@ -33,7 +33,7 @@ protected:
 class DockableObjectDrawStruct : public ObjectDrawStruct
 {
 public:
-	DockableObjectDrawStruct(GraphView* view, panda::DockableObject* object);
+	DockableObjectDrawStruct(GraphView* view, panda::DockableObject* m_object);
 
 	virtual void drawShape(QPainter* painter);
 	virtual void moveVisual(const QPointF& delta);

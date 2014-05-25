@@ -16,7 +16,7 @@ class Annotation;
 class AnnotationDrawStruct : public ObjectDrawStruct
 {
 public:
-	AnnotationDrawStruct(GraphView* view, panda::PandaObject* object);
+	AnnotationDrawStruct(GraphView* view, panda::PandaObject* m_object);
 
 	virtual void drawBackground(QPainter* painter);
 	virtual void draw(QPainter*) {}	// Don't draw the normal object

@@ -11,7 +11,7 @@ class GenericObject;
 class GenericObjectDrawStruct : public ObjectDrawStruct
 {
 public:
-	GenericObjectDrawStruct(GraphView* view, panda::GenericObject* object);
+	GenericObjectDrawStruct(GraphView* view, panda::GenericObject* m_object);
 
 	virtual void update();
 	virtual void drawDatas(QPainter* painter);

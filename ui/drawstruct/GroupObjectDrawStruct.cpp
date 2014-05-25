@@ -23,7 +23,7 @@ void GroupObjectDrawStruct::drawText(QPainter* painter)
 	if(group && !group->groupName.getValue().isEmpty())
 	{
 		int margin = dataRectSize+dataRectMargin+3;
-		QRectF textArea = objectArea.adjusted(margin, 0, -margin, 0);
+		QRectF textArea = m_objectArea.adjusted(margin, 0, -margin, 0);
 		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, group->groupName.getValue());
 	}
 	else
@@ -47,15 +47,15 @@ void GroupObjectDrawStruct::update()
 	ObjectDrawStruct::update();
 
 	QPainterPath path;
-	path.moveTo(objectArea.left()+w, objectArea.top());
-	path.lineTo(objectArea.right()-w, objectArea.top());
-	path.lineTo(objectArea.right(), objectArea.top()+h);
-	path.lineTo(objectArea.right(), objectArea.bottom()-h);
-	path.lineTo(objectArea.right()-w, objectArea.bottom());
-	path.lineTo(objectArea.left()+w, objectArea.bottom());
-	path.lineTo(objectArea.left(), objectArea.bottom()-h);
-	path.lineTo(objectArea.left(), objectArea.top()+h);
-	path.lineTo(objectArea.left()+w, objectArea.top());
+	path.moveTo(m_objectArea.left()+w, m_objectArea.top());
+	path.lineTo(m_objectArea.right()-w, m_objectArea.top());
+	path.lineTo(m_objectArea.right(), m_objectArea.top()+h);
+	path.lineTo(m_objectArea.right(), m_objectArea.bottom()-h);
+	path.lineTo(m_objectArea.right()-w, m_objectArea.bottom());
+	path.lineTo(m_objectArea.left()+w, m_objectArea.bottom());
+	path.lineTo(m_objectArea.left(), m_objectArea.bottom()-h);
+	path.lineTo(m_objectArea.left(), m_objectArea.top()+h);
+	path.lineTo(m_objectArea.left()+w, m_objectArea.top());
 	path.swap(shapePath);
 }
 

@@ -7,39 +7,39 @@
 #include <panda/PandaDocument.h>
 
 ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
-	: parentView(view), object(obj)
+	: m_parentView(view), m_object(obj)
 {
 	QSize objSize = getObjectSize();
 	QPointF center = view->contentsRect().center();
-	position = QPointF(center.x() - objSize.width()/2, center.y() - objSize.height()/2) - view->getViewDelta();
+	m_position = QPointF(center.x() - objSize.width()/2, center.y() - objSize.height()/2) - view->getViewDelta();
 
 	update();
 }
 
 void ObjectDrawStruct::update()
 {
-	objectArea = QRectF(position + parentView->getViewDelta(), getObjectSize());
+	m_objectArea = QRectF(m_position + m_parentView->getViewDelta(), getObjectSize());
 
-	datas.clear();
+	m_datas.clear();
 	QList<panda::BaseData*> inputDatas, outputDatas;
-	inputDatas = object->getInputDatas();
-	outputDatas = object->getOutputDatas();
+	inputDatas = m_object->getInputDatas();
+	outputDatas = m_object->getOutputDatas();
 	int nbInputs = inputDatas.size(), nbOutputs = outputDatas.size();
 
 	for(int i=0; i<nbInputs; ++i)
 	{
-		QRectF dataArea(objectArea.x() + dataRectMargin,
-						objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
+		QRectF dataArea(m_objectArea.x() + dataRectMargin,
+						m_objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
 						dataRectSize, dataRectSize);
-		datas.append(qMakePair(dataArea, inputDatas[i]));
+		m_datas.append(qMakePair(dataArea, inputDatas[i]));
 	}
 
 	for(int i=0; i<nbOutputs; ++i)
 	{
-		QRectF dataArea(objectArea.right() - dataRectMargin - dataRectSize,
-						objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
+		QRectF dataArea(m_objectArea.right() - dataRectMargin - dataRectSize,
+						m_objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
 						dataRectSize, dataRectSize);
-		datas.append(qMakePair(dataArea, outputDatas[i]));
+		m_datas.append(qMakePair(dataArea, outputDatas[i]));
 	}
 }
 
@@ -47,7 +47,7 @@ void ObjectDrawStruct::move(const QPointF& delta)
 {
 	if(!delta.isNull())
 	{
-		position += delta;
+		m_position += delta;
 		moveVisual(delta);
 	}
 }
@@ -56,8 +56,8 @@ void ObjectDrawStruct::moveVisual(const QPointF& delta)
 {
 	if(!delta.isNull())
 	{
-		objectArea.translate(delta);
-		for(QList<RectDataPair>::iterator iter=datas.begin(); iter!=datas.end(); ++iter)
+		m_objectArea.translate(delta);
+		for(QList<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
 			iter->first.translate(delta);
 	}
 }
@@ -67,8 +67,8 @@ QSize ObjectDrawStruct::getObjectSize()
 	QSize objectSize(objectDefaultWidth, objectDefaultHeight);
 
 	int nbInputs, nbOutputs;
-	nbInputs = object->getInputDatas().size();
-	nbOutputs = object->getOutputDatas().size();
+	nbInputs = m_object->getInputDatas().size();
+	nbOutputs = m_object->getOutputDatas().size();
 	int maxData = qMax(nbInputs, nbOutputs);
 	objectSize.rheight() = qMax(objectSize.rheight(), 2*dataStartY() + (maxData-1)*dataRectMargin + maxData*dataRectSize);
 
@@ -77,7 +77,7 @@ QSize ObjectDrawStruct::getObjectSize()
 
 panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* center)
 {
-	for(QList<RectDataPair>::iterator iter=datas.begin(); iter!=datas.end(); ++iter)
+	for(QList<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
 	{
 		if(iter->first.contains(pt))
 		{
@@ -92,7 +92,7 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* cent
 
 bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect)
 {
-	for(QList<RectDataPair>::iterator iter=datas.begin(); iter!=datas.end(); ++iter)
+	for(QList<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
 	{
 		if(iter->second == data)
 		{
@@ -107,14 +107,14 @@ bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect)
 void ObjectDrawStruct::draw(QPainter* painter)
 {
 	// Choose the pen and the brush
-	QPen pen(parentView->palette().text().color());
-	if(parentView->getDocument()->isSelected(object))
+	QPen pen(m_parentView->palette().text().color());
+	if(m_parentView->getDocument()->isSelected(m_object))
 	{
 		pen.setWidthF(3);
-		painter->setBrush(parentView->palette().midlight());
+		painter->setBrush(m_parentView->palette().midlight());
 	}
 	else
-		painter->setBrush(parentView->palette().light());
+		painter->setBrush(m_parentView->palette().light());
 	painter->setPen(pen);
 
 	// Draw the shape around the object
@@ -129,21 +129,21 @@ void ObjectDrawStruct::draw(QPainter* painter)
 
 void ObjectDrawStruct::drawShape(QPainter* painter)
 {
-	painter->drawRoundedRect(objectArea, 5, 5);
+	painter->drawRoundedRect(m_objectArea, 5, 5);
 }
 
 void ObjectDrawStruct::drawDatas(QPainter* painter)
 {
-	painter->setPen(QPen(parentView->palette().text().color()));
-	const panda::BaseData* clickedData = parentView->getClickedData();
-	for(RectDataPair dataPair : datas)
+	painter->setPen(QPen(m_parentView->palette().text().color()));
+	const panda::BaseData* clickedData = m_parentView->getClickedData();
+	for(RectDataPair dataPair : m_datas)
 	{
 		if(clickedData
 			&& clickedData != dataPair.second
 			&& !GraphView::isCompatible(clickedData, dataPair.second))
-			painter->setBrush(parentView->palette().dark());
+			painter->setBrush(m_parentView->palette().dark());
 		else
-			painter->setBrush(parentView->palette().button());
+			painter->setBrush(m_parentView->palette().button());
 
 		painter->drawRect(dataPair.first);
 	}
@@ -152,8 +152,8 @@ void ObjectDrawStruct::drawDatas(QPainter* painter)
 void ObjectDrawStruct::drawText(QPainter* painter)
 {
 	int margin = dataRectSize+dataRectMargin+3;
-	QRectF textArea = objectArea.adjusted(margin, 0, -margin, 0);
-	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, object->getName());
+	QRectF textArea = m_objectArea.adjusted(margin, 0, -margin, 0);
+	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, m_object->getName());
 }
 
 void ObjectDrawStruct::drawLinks(QPainter* painter)
@@ -167,9 +167,9 @@ void ObjectDrawStruct::drawLinks(QPainter* painter)
 		if(parent && !data->isOutput())
 		{
 			QRectF dataRect;
-			if(parentView->getObjectDrawStruct(parent->getOwner())->getDataRect(parent, dataRect))
+			if(m_parentView->getObjectDrawStruct(parent->getOwner())->getDataRect(parent, dataRect))
 			{
-				QPen pen(parentView->palette().text().color());
+				QPen pen(m_parentView->palette().text().color());
 				painter->setPen(pen);
 				QPointF d1 = dataRect.center(), d2 = rectData.first.center();
 				if(d2.x()-d1.x() > 0) // We don't draw a link if it goes from right to left (see the LinkTag class)
@@ -187,8 +187,8 @@ void ObjectDrawStruct::drawLinks(QPainter* painter)
 
 void ObjectDrawStruct::save(QDomDocument&, QDomElement& elem)
 {
-	elem.setAttribute("x", position.x());
-	elem.setAttribute("y", position.y());
+	elem.setAttribute("x", m_position.x());
+	elem.setAttribute("y", m_position.y());
 }
 
 void ObjectDrawStruct::load(QDomElement& elem)
@@ -201,7 +201,7 @@ void ObjectDrawStruct::load(QDomElement& elem)
 	newPos.setX(elem.attribute("x").toFloat());
 	newPos.setY(elem.attribute("y").toFloat());
 #endif
-	move(newPos - position);
+	move(newPos - m_position);
 }
 
 //******************************************************************************************
