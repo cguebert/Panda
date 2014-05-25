@@ -12,6 +12,8 @@ namespace panda
 	class Group;
 }
 
+class GraphView;
+
 class GroupsManager : public QObject
 {
 	Q_OBJECT
@@ -24,7 +26,7 @@ public:
 	GroupsIterator getGroupsIterator();
 	QString getGroupDescription(const QString& groupName);
 	bool saveGroup(panda::Group* group);
-	panda::PandaObject* createGroupObject(panda::PandaDocument* document, QString groupPath);
+	panda::PandaObject* createGroupObject(panda::PandaDocument* document, GraphView* view, QString groupPath);
 
 protected:
 	GroupsManager();

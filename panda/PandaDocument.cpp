@@ -12,8 +12,6 @@
 #include <panda/helper/UpdateLogger.h>
 #endif
 
-#include <ui/command/AddObjectCommand.h>
-
 #include <QtWidgets>
 #include <QOpenGLFramebufferObject>
 #include <QElapsedTimer>
@@ -262,6 +260,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 bool PandaDocument::loadDoc(QDomElement& root)
 {
 	QMap<quint32, quint32> importIndicesMap;
+	auto factory = ObjectFactory::getInstance();
 
 	// Loading objects
 	QDomElement elem = root.firstChildElement("Object");
@@ -271,15 +270,16 @@ bool PandaDocument::loadDoc(QDomElement& root)
 		if(registryName.isEmpty())
 			return false;
 		quint32 index = elem.attribute("index").toUInt();
-		auto object = createObject(registryName);
+		auto object = factory->create(registryName, this);
 		if(object)
 		{
+			addObject(object);
 			importIndicesMap[index] = object->getIndex();
-			m_selectedObjects.append(object);
+			m_selectedObjects.append(object.data());
 
 			object->load(elem);
 
-			emit loadingObject(elem, object);
+			emit loadingObject(elem, object.data());
 		}
 		else
 		{
@@ -373,15 +373,6 @@ void PandaDocument::resetDocument()
 	emit timeChanged();
 }
 
-PandaObject* PandaDocument::createObject(QString registryName)
-{
-	auto object = ObjectFactory::getInstance()->create(registryName, this);
-	if(object)
-		addCommand(new AddObjectCommand(this, object));
-
-	return object.data();
-}
-
 PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object)
 {
 	auto iter = std::find(m_objects.begin(), m_objects.end(), object);
@@ -455,7 +446,10 @@ void PandaDocument::selectionRemove(PandaObject* object)
 	if(contains(m_selectedObjects, object))
 	{
 		m_selectedObjects.removeAll(object);
-		emit selectedObject(m_selectedObjects.back());
+		if(m_selectedObjects.empty())
+			emit selectedObject(nullptr);
+		else
+			emit selectedObject(m_selectedObjects.back());
 		emit selectionChanged();
 	}
 }
@@ -552,9 +546,9 @@ void PandaDocument::addObject(ObjectPtr object)
 void PandaDocument::removeObject(PandaObject* object)
 {
 	emit removedObject(object);
-	m_selectedObjects.removeAll(object);
-
 	remove(m_objects, object);
+
+	selectionRemove(object);
 	emit modified();
 }
 
@@ -852,8 +846,11 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 		return;
 
 	QString registryName = QString("panda::GeneratorUser<") + entry->className + ">";
-	auto object = createObject(registryName);
+	auto object = ObjectFactory::getInstance()->create(registryName, this);
+	if(!object)
+		return;
 
+	addObject(object);
 	BaseData* inputData = object->getData("input");
 	if(inputData)
 	{

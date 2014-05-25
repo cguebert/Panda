@@ -10,6 +10,7 @@
 #include <ui/MainWindow.h>
 #include <ui/UpdateLoggerDialog.h>
 
+#include <ui/command/AddObjectCommand.h>
 #include <ui/command/DeleteObjectCommand.h>
 
 #include <panda/PandaDocument.h>
@@ -20,10 +21,10 @@ MainWindow::MainWindow()
 	: m_groupsRegistryMenu(nullptr)
 	, m_loggerDialog(nullptr)
 {
-	m_pandaDocument = new panda::PandaDocument(this);
+	m_document = new panda::PandaDocument(this);
 
-	m_graphView = new GraphView(m_pandaDocument);
-	m_openGLRenderView = new OpenGLRenderView(m_pandaDocument);
+	m_graphView = new GraphView(m_document);
+	m_openGLRenderView = new OpenGLRenderView(m_document);
 	m_tabWidget = new QTabWidget;
 	m_tabWidget->addTab(m_graphView, tr("Graph"));
 	m_tabWidget->addTab(m_openGLRenderView, tr("Render"));
@@ -34,8 +35,8 @@ MainWindow::MainWindow()
 	createToolBars();
 	createStatusBar();
 
-	connect(m_pandaDocument, SIGNAL(modified()), this, SLOT(documentModified()));
-	connect(m_pandaDocument, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(selectedObject(panda::PandaObject*)));
+	connect(m_document, SIGNAL(modified()), this, SLOT(documentModified()));
+	connect(m_document, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(selectedObject(panda::PandaObject*)));
 	connect(m_graphView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(m_graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(m_graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
@@ -45,7 +46,7 @@ MainWindow::MainWindow()
 	setWindowIcon(QIcon(":/images/icon.png"));
 	setCurrentFile("");
 
-	m_datasTable = new DatasTable(m_pandaDocument, this);
+	m_datasTable = new DatasTable(m_document, this);
 
 	m_datasDock = new QDockWidget(tr("Properties"), this);
 	m_datasDock->setObjectName("PropertiesDock");
@@ -53,7 +54,7 @@ MainWindow::MainWindow()
 	m_datasDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	addDockWidget(Qt::LeftDockWidgetArea, m_datasDock);
 
-	m_layersTab = new LayersTab(m_pandaDocument, this);
+	m_layersTab = new LayersTab(m_document, this);
 
 	m_layersDock = new QDockWidget(tr("Layers"), this);
 	m_layersDock->setObjectName("LayersDock");
@@ -80,7 +81,7 @@ void MainWindow::newFile()
 		m_playAction->setChecked(false);
 		play(false);
 		m_graphView->resetView();
-		m_pandaDocument->resetDocument();
+		m_document->resetDocument();
 		setCurrentFile("");
 	}
 }
@@ -94,7 +95,7 @@ void MainWindow::open()
 		if (!fileName.isEmpty())
 		{
 			m_playAction->setChecked(false);
-			m_pandaDocument->resetDocument();
+			m_document->resetDocument();
 			m_graphView->resetView();
 			loadFile(fileName);
 			m_graphView->updateLinkTags(true);
@@ -149,7 +150,7 @@ void MainWindow::openRecentFile()
 		if(action)
 		{
 			m_playAction->setChecked(false);
-			m_pandaDocument->resetDocument();
+			m_document->resetDocument();
 			loadFile(action->data().toString());
 			m_graphView->updateLinkTags(true);
 		}
@@ -158,7 +159,7 @@ void MainWindow::openRecentFile()
 
 void MainWindow::updateStatusBar()
 {
-	PReal time = m_pandaDocument->getAnimationTime();
+	PReal time = m_document->getAnimationTime();
 	m_timeLabel->setText(tr("time : %1").arg(time));
 }
 
@@ -224,7 +225,7 @@ void MainWindow::createActions()
 	m_copyAction->setShortcut(QKeySequence::Copy);
 	m_copyAction->setStatusTip(tr("Copy the current selection's contents "
 								"to the clipboard"));
-	connect(m_copyAction, SIGNAL(triggered()), m_pandaDocument, SLOT(copy()));
+	connect(m_copyAction, SIGNAL(triggered()), m_document, SLOT(copy()));
 
 	m_pasteAction = new QAction(tr("&Paste"), this);
 	m_pasteAction->setIcon(QIcon(":/images/paste.png"));
@@ -243,19 +244,19 @@ void MainWindow::createActions()
 	m_selectAllAction->setShortcut(tr("Ctrl+A"));
 	m_selectAllAction->setStatusTip(tr("Select all objects"));
 
-	connect(m_selectAllAction, SIGNAL(triggered()), m_pandaDocument, SLOT(selectAll()));
+	connect(m_selectAllAction, SIGNAL(triggered()), m_document, SLOT(selectAll()));
 
 	m_selectNoneAction = new QAction(tr("Select &none"), this);
 	m_selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
 	m_selectNoneAction->setStatusTip(tr("Deselect all objets"));
 
-	connect(m_selectNoneAction, SIGNAL(triggered()), m_pandaDocument, SLOT(selectNone()));
+	connect(m_selectNoneAction, SIGNAL(triggered()), m_document, SLOT(selectNone()));
 
 	m_selectConnectedAction = new QAction(tr("Select &connected"), this);
 	m_selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
 	m_selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
 
-	connect(m_selectConnectedAction, SIGNAL(triggered()), m_pandaDocument, SLOT(selectConnected()));
+	connect(m_selectConnectedAction, SIGNAL(triggered()), m_document, SLOT(selectConnected()));
 
 	m_groupAction = new QAction(tr("&Group selected"), this);
 	m_groupAction->setShortcut(tr("Ctrl+G"));
@@ -346,20 +347,20 @@ void MainWindow::createActions()
 	m_playAction->setShortcut(tr("F5"));
 	m_playAction->setStatusTip(tr("Start the animation"));
 	m_playAction->setCheckable(true);
-	connect(m_playAction, SIGNAL(triggered(bool)), m_pandaDocument, SLOT(play(bool)));
+	connect(m_playAction, SIGNAL(triggered(bool)), m_document, SLOT(play(bool)));
 	connect(m_playAction, SIGNAL(triggered(bool)), this, SLOT(play(bool)));
 
 	m_stepAction = new QAction(tr("Step"), this);
 	m_stepAction->setIcon(QIcon(":/images/step.png"));
 	m_stepAction->setShortcut(tr("F6"));
 	m_stepAction->setStatusTip(tr("Do one step of the animation"));
-	connect(m_stepAction, SIGNAL(triggered()), m_pandaDocument, SLOT(step()));
+	connect(m_stepAction, SIGNAL(triggered()), m_document, SLOT(step()));
 
 	m_rewindAction = new QAction(tr("Rewind"), this);
 	m_rewindAction->setIcon(QIcon(":/images/stop.png"));
 	m_rewindAction->setShortcut(tr("F7"));
 	m_rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
-	connect(m_rewindAction, SIGNAL(triggered()), m_pandaDocument, SLOT(rewind()));
+	connect(m_rewindAction, SIGNAL(triggered()), m_document, SLOT(rewind()));
 
 	m_removeLinkAction = new QAction(tr("Remove link"), this);
 	m_removeLinkAction->setStatusTip(tr("Remove the link to this data"));
@@ -377,7 +378,7 @@ void MainWindow::createActions()
 	m_showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
 	connect(m_showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
 
-	m_pandaDocument->createUndoRedoActions(this, m_undoAction, m_redoAction);
+	m_document->createUndoRedoActions(this, m_undoAction, m_redoAction);
 	m_undoAction->setShortcut(QKeySequence::Undo);
 	m_redoAction->setShortcut(QKeySequence::Redo);
 }
@@ -562,7 +563,7 @@ void MainWindow::createStatusBar()
 
 	statusBar()->addWidget(m_timeLabel);
 
-	connect(m_pandaDocument, SIGNAL(timeChanged()), this, SLOT(updateStatusBar()));
+	connect(m_document, SIGNAL(timeChanged()), this, SLOT(updateStatusBar()));
 
 	updateStatusBar();
 }
@@ -606,15 +607,15 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile(const QString &fileName, bool import)
 {
-	if (!m_pandaDocument->readFile(fileName, import)) {
+	if (!m_document->readFile(fileName, import)) {
 		statusBar()->showMessage(tr("Loading failed"), 2000);
 		return false;
 	}
 
 	if(!import)
 	{
-		m_pandaDocument->clearCommands();
-		m_pandaDocument->selectNone();
+		m_document->clearCommands();
+		m_document->selectNone();
 		setCurrentFile(fileName);
 		statusBar()->showMessage(tr("File loaded"), 2000);
 	}
@@ -626,7 +627,7 @@ bool MainWindow::loadFile(const QString &fileName, bool import)
 
 bool MainWindow::saveFile(const QString &fileName)
 {
-	if (!m_pandaDocument->writeFile(fileName)) {
+	if (!m_document->writeFile(fileName)) {
 		statusBar()->showMessage(tr("Saving failed"), 2000);
 		return false;
 	}
@@ -685,7 +686,10 @@ void MainWindow::createObject()
 {
 	QAction *action = qobject_cast<QAction *>(sender());
 	if(action)
-		m_pandaDocument->createObject(action->data().toString());
+	{
+		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString(), m_document);
+		m_document->addCommand(new AddObjectCommand(m_document, m_graphView, object));
+	}
 }
 
 void MainWindow::switchToGraphView()
@@ -705,44 +709,44 @@ void MainWindow::showStatusBarMessage(QString text)
 
 void MainWindow::cut()
 {
-	m_pandaDocument->copy();
+	m_document->copy();
 	del();
 }
 
 void MainWindow::paste()
 {
-	m_pandaDocument->paste();
+	m_document->paste();
 	m_graphView->moveSelectedToCenter();
 	m_graphView->updateLinkTags();
 }
 
 void MainWindow::del()
 {
-	auto selection = m_pandaDocument->getSelection();
+	auto selection = m_document->getSelection();
 	if(!selection.isEmpty())
 	{
-		auto macro = m_pandaDocument->beginCommandMacro(tr("delete objects"));
-		m_pandaDocument->addCommand(new DeleteObjectCommand(m_pandaDocument, m_graphView, selection));
+		auto macro = m_document->beginCommandMacro(tr("delete objects"));
+		m_document->addCommand(new DeleteObjectCommand(m_document, m_graphView, selection));
 	}
 }
 
 void MainWindow::group()
 {
-	bool res = panda::Group::createGroup(m_pandaDocument, m_graphView);
+	bool res = panda::Group::createGroup(m_document, m_graphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not create a group from the selection"), 2000);
 }
 
 void MainWindow::ungroup()
 {
-	bool res = panda::Group::ungroupSelection(m_pandaDocument, m_graphView);
+	bool res = panda::Group::ungroupSelection(m_document, m_graphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not ungroup the selection"), 2000);
 }
 
 void MainWindow::editGroup()
 {
-	panda::Group* group = dynamic_cast<panda::Group*>(m_pandaDocument->getCurrentSelectedObject());
+	panda::Group* group = dynamic_cast<panda::Group*>(m_document->getCurrentSelectedObject());
 	if(group)
 	{
 		EditGroupDialog dlg(group, this);
@@ -754,7 +758,7 @@ void MainWindow::editGroup()
 
 void MainWindow::saveGroup()
 {
-	panda::PandaObject* object = m_pandaDocument->getCurrentSelectedObject();
+	panda::PandaObject* object = m_document->getCurrentSelectedObject();
 	panda::Group* group = dynamic_cast<panda::Group*>(object);
 	if(group)
 	{
@@ -775,7 +779,7 @@ void MainWindow::createGroupObject()
 	if(action)
 	{
 		QString path = action->data().toString();
-		GroupsManager::getInstance()->createGroupObject(m_pandaDocument, path);
+		GroupsManager::getInstance()->createGroupObject(m_document, m_graphView, path);
 	}
 }
 
@@ -783,7 +787,7 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 {
 	QMenu menu(this);
 
-	panda::PandaObject* obj = m_pandaDocument->getCurrentSelectedObject();
+	panda::PandaObject* obj = m_document->getCurrentSelectedObject();
 	if(obj)
 	{
 		menu.addAction(m_cutAction);
@@ -800,7 +804,7 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 	if(clickedData && clickedData->isDisplayed())
 		menu.addAction(m_copyDataAction);
 
-	int nbSelected = m_pandaDocument->getSelection().size();
+	int nbSelected = m_document->getSelection().size();
 	if(dynamic_cast<panda::Group*>(obj) && nbSelected == 1)
 	{
 		menu.addAction(m_ungroupAction);
@@ -821,7 +825,7 @@ void MainWindow::copyDataToUserValue()
 {
 	const panda::BaseData* clickedData = m_graphView->getContextMenuData();
 	if(clickedData)
-		m_pandaDocument->copyDataToUserValue(clickedData);
+		m_document->copyDataToUserValue(clickedData);
 }
 
 void MainWindow::showLoggerDialog()
@@ -845,7 +849,7 @@ void MainWindow::showLoggerDialog()
 
 void MainWindow::showObjectsAndTypes()
 {
-	QString fileName = "file:///" + createObjectsAndTypesPage(m_pandaDocument);
+	QString fileName = "file:///" + createObjectsAndTypesPage(m_document);
 	QDesktopServices::openUrl(QUrl(fileName));
 }
 
@@ -867,7 +871,7 @@ void MainWindow::play(bool playing)
 
 void MainWindow::selectedObject(panda::PandaObject* object)
 {
-	int nbSelected = m_pandaDocument->getNbSelected();
+	int nbSelected = m_document->getNbSelected();
 	bool isGroup = (nbSelected == 1) && dynamic_cast<panda::Group*>(object);
 
 	m_ungroupAction->setEnabled(isGroup);

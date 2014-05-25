@@ -2,6 +2,7 @@
 
 #include <ui/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
+#include <ui/command/AddObjectCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -62,16 +63,23 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	if(layer == doc->getDefaultLayer())	// Won't be added in the group!
 		layer = nullptr;
 
+	auto factory = ObjectFactory::getInstance();
 	Group* group = nullptr;
 	if(hasRenderer)
 	{
-		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(doc->createObject(ObjectFactory::getRegistryName<GroupWithLayer>()));
+		auto object = factory->create(ObjectFactory::getRegistryName<GroupWithLayer>(), doc);
+		doc->addCommand(new AddObjectCommand(doc, view, object));
+		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(object.data());
 		if(groupWithLayer)
 			groupWithLayer->setLayer(layer);
 		group = groupWithLayer;
 	}
 	else
-		group = dynamic_cast<Group*>(doc->createObject(ObjectFactory::getRegistryName<Group>()));
+	{
+		auto object = factory->create(ObjectFactory::getRegistryName<Group>(), doc);
+		doc->addCommand(new AddObjectCommand(doc, view, object));
+		group = dynamic_cast<Group*>(object.data());
+	}
 	if(!group)
 		return false;
 

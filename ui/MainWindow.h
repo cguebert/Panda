@@ -76,7 +76,7 @@ private:
 	QTabWidget* m_tabWidget;
 	GraphView* m_graphView;
 	OpenGLRenderView* m_openGLRenderView;
-	panda::PandaDocument* m_pandaDocument;
+	panda::PandaDocument* m_document;
 	DatasTable* m_datasTable;
 	QDockWidget* m_datasDock;
 	LayersTab* m_layersTab;

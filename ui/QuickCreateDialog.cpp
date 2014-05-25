@@ -1,28 +1,31 @@
 #include <QtWidgets>
 
+#include <ui/GraphView.h>
 #include <ui/GroupsManager.h>
 #include <ui/QuickCreateDialog.h>
+#include <ui/command/AddObjectCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 
 using panda::ObjectFactory;
 
-QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
-	: QDialog(parent, Qt::Popup)
-	, document(doc)
+QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, GraphView* view)
+	: QDialog(view, Qt::Popup)
+	, m_document(doc)
+	, m_view(view)
 {
 	QVBoxLayout* vLayout = new QVBoxLayout;
 
-	lineEdit = new QLineEdit;
-	vLayout->addWidget(lineEdit);
+	m_lineEdit = new QLineEdit;
+	vLayout->addWidget(m_lineEdit);
 
-	listWidget = new QListWidget;
-	listWidget->setMinimumSize(350, 200);
-	vLayout->addWidget(listWidget);
+	m_listWidget = new QListWidget;
+	m_listWidget->setMinimumSize(350, 200);
+	vLayout->addWidget(m_listWidget);
 
-	descLabel = new QLabel;
-	vLayout->addWidget(descLabel);
+	m_descLabel = new QLabel;
+	vLayout->addWidget(m_descLabel);
 
 	QPushButton* okButton = new QPushButton(tr("Ok"), this);
 	okButton->setDefault(true);
@@ -38,12 +41,12 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 	setLayout(vLayout);
 
 	connect(this, SIGNAL(accepted()), this, SLOT(createObject()));
-	connect(lineEdit, SIGNAL(textEdited(QString)), this, SLOT(searchTextChanged()));
-	connect(listWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
+	connect(m_lineEdit, SIGNAL(textEdited(QString)), this, SLOT(searchTextChanged()));
+	connect(m_listWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
 			this, SLOT(updateDescLabel()));
-	connect(listWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
+	connect(m_listWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
 
-	lineEdit->setFocus(Qt::PopupFocusReason);
+	m_lineEdit->setFocus(Qt::PopupFocusReason);
 
 	ObjectFactory* factory = ObjectFactory::getInstance();
 	ObjectFactory::RegistryMapIterator iter = factory->getRegistryIterator();
@@ -51,7 +54,7 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 	{
 		iter.next();
 		if(!iter.value().hidden)
-			menuStringsList << iter.value().menuDisplay;
+			m_menuStringsList << iter.value().menuDisplay;
 	}
 
 	// Adding groups
@@ -59,11 +62,11 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, QWidget *parent)
 	while(iter2.hasNext())
 	{
 		iter2.next();
-		menuStringsList << "Groups/" + iter2.key();
+		m_menuStringsList << "Groups/" + iter2.key();
 	}
 
-	menuStringsList.sort();
-	listWidget->addItems(menuStringsList);
+	m_menuStringsList.sort();
+	m_listWidget->addItems(m_menuStringsList);
 
 	updateDescLabel();
 }
@@ -87,9 +90,9 @@ bool getFactoryEntry(QString menu, ObjectFactory::ClassEntry& entry)
 
 void QuickCreateDialog::updateDescLabel()
 {
-	QListWidgetItem* current = listWidget->currentItem();
+	QListWidgetItem* current = m_listWidget->currentItem();
 	if(!current)
-		current = listWidget->item(0);
+		current = m_listWidget->item(0);
 
 	if(current)
 	{
@@ -98,27 +101,27 @@ void QuickCreateDialog::updateDescLabel()
 		{
 			QString groupName = selectedItemText.mid(7);
 			QString description = GroupsManager::getInstance()->getGroupDescription(groupName);
-			descLabel->setText(description);
+			m_descLabel->setText(description);
 		}
 		else
 		{
 			ObjectFactory::ClassEntry entry;
 			if(getFactoryEntry(selectedItemText, entry))
-				descLabel->setText(entry.description);
+				m_descLabel->setText(entry.description);
 			else
-				descLabel->setText("");
+				m_descLabel->setText("");
 		}
 	}
 	else
-		descLabel->setText("");
+		m_descLabel->setText("");
 }
 
 void QuickCreateDialog::searchTextChanged()
 {
-	QString text = lineEdit->text();
+	QString text = m_lineEdit->text();
 	QStringList searchList = text.split(QRegExp("\\s+"));
 
-	QStringList newMenuList = menuStringsList;
+	QStringList newMenuList = m_menuStringsList;
 	QStringListIterator iter(searchList);
 	while(iter.hasNext())
 	{
@@ -126,19 +129,19 @@ void QuickCreateDialog::searchTextChanged()
 		newMenuList = newMenuList.filter(searchItem, Qt::CaseInsensitive);
 	}
 
-	QList<QListWidgetItem*> selectedItems = listWidget->selectedItems();
+	QList<QListWidgetItem*> selectedItems = m_listWidget->selectedItems();
 	QString selectedItemText;
 	if(!selectedItems.empty())
 		selectedItemText = selectedItems.front()->text();
 
-	listWidget->clear();
-	listWidget->addItems(newMenuList);
+	m_listWidget->clear();
+	m_listWidget->addItems(newMenuList);
 
 	if(selectedItemText.size())
 	{
-		selectedItems = listWidget->findItems(selectedItemText, Qt::MatchExactly);
+		selectedItems = m_listWidget->findItems(selectedItemText, Qt::MatchExactly);
 		if(!selectedItems.empty())
-			listWidget->setCurrentItem(selectedItems.front());
+			m_listWidget->setCurrentItem(selectedItems.front());
 	}
 
 	updateDescLabel();
@@ -146,25 +149,28 @@ void QuickCreateDialog::searchTextChanged()
 
 void QuickCreateDialog::createObject()
 {
-	QList<QListWidgetItem*> selectedItems = listWidget->selectedItems();
+	QList<QListWidgetItem*> selectedItems = m_listWidget->selectedItems();
 	QString selectedItemText;
 	if(!selectedItems.empty())
 		selectedItemText = selectedItems.front()->text();
-	else if(listWidget->count() >= 1)
-		selectedItemText = listWidget->item(0)->text();
+	else if(m_listWidget->count() >= 1)
+		selectedItemText = m_listWidget->item(0)->text();
 
 	if(!selectedItemText.isEmpty())
 	{
 		if(selectedItemText.startsWith("Groups/"))
 		{
 			QString groupName = selectedItemText.mid(7);
-			GroupsManager::getInstance()->createGroupObject(document, groupName);
+			GroupsManager::getInstance()->createGroupObject(m_document, m_view, groupName);
 		}
 		else
 		{
 			ObjectFactory::ClassEntry entry;
 			if(getFactoryEntry(selectedItemText, entry))
-				document->createObject(entry.className);
+			{
+				auto object = ObjectFactory::getInstance()->create(entry.className, m_document);
+				m_document->addCommand(new AddObjectCommand(m_document, m_view, object));
+			}
 		}
 	}
 

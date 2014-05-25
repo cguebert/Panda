@@ -46,8 +46,6 @@ public:
 
 	void resetDocument();
 
-	PandaObject* createObject(QString registryName);
-
 	void addObject(ObjectPtr object);
 	void removeObject(PandaObject* object);
 

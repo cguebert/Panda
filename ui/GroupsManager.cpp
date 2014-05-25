@@ -1,6 +1,8 @@
 #include <QtWidgets>
 
 #include <ui/GroupsManager.h>
+#include <ui/command/AddObjectCommand.h>
+
 #include <panda/Group.h>
 #include <panda/ObjectFactory.h>
 #include <panda/PandaDocument.h>
@@ -120,7 +122,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 	return true;
 }
 
-panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* document, QString groupPath)
+panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* document, GraphView* view, QString groupPath)
 {
 	QFile file(m_groupsDirPath + "/" + groupPath + ".grp");
 	if(!file.open(QIODevice::ReadOnly))
@@ -141,12 +143,14 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 	}
 
 	QDomElement root = doc.documentElement();
-	QString description = root.attribute("description");
 	QString registryName = root.attribute("type");
 
-	panda::PandaObject* object = document->createObject(registryName);
+	auto object = panda::ObjectFactory::getInstance()->create(registryName, document);
 	if(object)
+	{
 		object->load(root);
+		document->addCommand(new AddObjectCommand(document, view, object));
+	}
 	else
 	{
 		QMessageBox::warning(nullptr, tr("Panda"),
@@ -155,7 +159,7 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 		return nullptr;
 	}
 
-	return object;
+	return object.data();
 }
 
 GroupsManager::GroupsIterator GroupsManager::getGroupsIterator()

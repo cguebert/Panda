@@ -130,12 +130,12 @@ void GraphView::resetView()
 
 ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
 {
-	return m_objectDrawStructs[object].data();
+	return m_objectDrawStructs.value(object).data();
 }
 
 QSharedPointer<ObjectDrawStruct> GraphView::getSharedObjectDrawStruct(panda::PandaObject* object)
 {
-	return m_objectDrawStructs[object];
+	return m_objectDrawStructs.value(object);
 }
 
 void GraphView::setObjectDrawStruct(panda::PandaObject* object, QSharedPointer<ObjectDrawStruct> drawStruct)
