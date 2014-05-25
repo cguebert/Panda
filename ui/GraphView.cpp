@@ -65,7 +65,7 @@ QPointF GraphView::getViewDelta() const
 	return m_viewDelta;
 }
 
-const panda::PandaDocument* GraphView::getDocument() const
+panda::PandaDocument* GraphView::getDocument() const
 {
 	return m_pandaDocument;
 }

@@ -1,6 +1,7 @@
 #include <ui/GraphView.h>
 #include <ui/Annotation.h>
 #include <ui/drawstruct/AnnotationDrawStruct.h>
+#include <ui/command/ModifyAnnotationCommand.h>
 
 #include <panda/PandaDocument.h>
 
@@ -89,6 +90,22 @@ void AnnotationDrawStruct::moveVisual(const QPointF& delta)
 	shapePath.translate(delta);
 	m_startPos += delta;
 	m_endPos += delta;
+}
+
+void AnnotationDrawStruct::moveText(const QPointF& delta)
+{
+	move(delta);
+	emit m_parentView->modified();
+	m_parentView->update();
+}
+
+void AnnotationDrawStruct::moveEnd(const QPointF& delta)
+{
+	m_deltaToEnd += delta;
+	m_endPos += delta;
+	update();
+	emit m_parentView->modified();
+	m_parentView->update();
 }
 
 bool AnnotationDrawStruct::contains(const QPointF& point)
@@ -216,19 +233,9 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 		return;
 
 	if(m_movingAction == MOVING_TEXT)
-	{
-		move(delta);
-		emit m_parentView->modified();
-		m_parentView->update();
-	}
+		m_parentView->getDocument()->addCommand(new MoveAnnotationTextCommand(this, delta));
 	else if(m_movingAction == MOVING_POINT)
-	{
-		m_deltaToEnd += delta;
-		m_endPos += delta;
-		update();
-		emit m_parentView->modified();
-		m_parentView->update();
-	}
+		m_parentView->getDocument()->addCommand(new MoveAnnotationEndCommand(this, delta));
 }
 
 void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent*)

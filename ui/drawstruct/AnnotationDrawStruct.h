@@ -36,6 +36,9 @@ public:
 
 	virtual QSize getObjectSize();
 
+	void moveText(const QPointF& delta);
+	void moveEnd(const QPointF& delta);
+
 protected:
 	panda::Annotation* m_annotation;
 	QPointF m_deltaToEnd, m_endPos, m_startPos;

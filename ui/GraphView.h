@@ -30,7 +30,7 @@ public:
 	QSize sizeHint() const;
 
 	QPointF getViewDelta() const;
-	const panda::PandaDocument* getDocument() const;
+	panda::PandaDocument* getDocument() const;
 	const panda::BaseData* getClickedData() const;
 	const panda::BaseData* getContextMenuData() const;
 

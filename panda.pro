@@ -60,6 +60,7 @@ HEADERS       = \
 	ui/command/CommandId.h \
 	ui/command/DeleteObjectCommand.h \
 	ui/command/LinkDatasCommand.h \
+	ui/command/ModifyAnnotationCommand.h \
 	ui/command/MoveObjectCommand.h \
 	ui/command/RemoveGenericDataCommand.h \
 	ui/command/SetDataValueCommand.h \
@@ -224,6 +225,7 @@ SOURCES       = main.cpp \
 	ui/command/CommandId.cpp \
 	ui/command/DeleteObjectCommand.cpp \
 	ui/command/LinkDatasCommand.cpp \
+	ui/command/ModifyAnnotationCommand.cpp \
 	ui/command/MoveObjectCommand.cpp \
 	ui/command/RemoveGenericDataCommand.cpp \
 	ui/drawstruct/AnnotationDrawStruct.cpp \
