@@ -1,7 +1,7 @@
 #include <panda/Dockable.h>
 #include <panda/PandaDocument.h>
 
-#include <ui/GraphView.h>
+#include <ui/command/DetachDockableCommand.h>
 
 namespace panda
 {
@@ -103,6 +103,12 @@ DockObject* DockableObject::getParentDock()
 DockObject* DockableObject::getDefaultDock()
 {
 	return nullptr;
+}
+
+void DockableObject::removedFromDocument()
+{
+	if(m_parentDocument->isInCommandMacro())
+		m_parentDocument->addCommand(new DetachDockableCommand(m_parentDock, this, m_parentDock->getIndexOfDockable(this)));
 }
 
 } // namespace panda

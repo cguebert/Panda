@@ -59,6 +59,7 @@ HEADERS       = \
 	ui/command/AddObjectCommand.h \
 	ui/command/CommandId.h \
 	ui/command/DeleteObjectCommand.h \
+	ui/command/DetachDockableCommand.h \
 	ui/command/LinkDatasCommand.h \
 	ui/command/ModifyAnnotationCommand.h \
 	ui/command/MoveObjectCommand.h \
@@ -224,6 +225,7 @@ SOURCES       = main.cpp \
 	ui/command/AddObjectCommand.cpp \
 	ui/command/CommandId.cpp \
 	ui/command/DeleteObjectCommand.cpp \
+	ui/command/DetachDockableCommand.cpp \
 	ui/command/LinkDatasCommand.cpp \
 	ui/command/ModifyAnnotationCommand.cpp \
 	ui/command/MoveObjectCommand.cpp \

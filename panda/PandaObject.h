@@ -81,6 +81,9 @@ public:
 
 	PandaDocument* getParentDocument();
 
+	virtual void addedToDocument() {}		/// The object is being added
+	virtual void removedFromDocument() {}	/// Ths object is being removed (but not deleted as it can be undone later)
+
 protected:
 	QString m_name;
 	QList<BaseData*> datas;

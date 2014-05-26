@@ -548,11 +548,13 @@ void PandaDocument::selectConnected()
 void PandaDocument::addObject(ObjectPtr object)
 {
 	m_objects.append(object);
+	object->addedToDocument();
 	emit addedObject(object.data());
 }
 
 void PandaDocument::removeObject(PandaObject* object)
 {
+	object->removedFromDocument();
 	emit removedObject(object);
 	remove(m_objects, object);
 

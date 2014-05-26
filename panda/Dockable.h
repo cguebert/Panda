@@ -46,6 +46,8 @@ public:
 	virtual DockObject* getParentDock();
 	virtual DockObject* getDefaultDock();
 
+	virtual void removedFromDocument();
+
 protected:
 	DockObject* m_parentDock;
 };

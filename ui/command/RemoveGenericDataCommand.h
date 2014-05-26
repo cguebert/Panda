@@ -2,9 +2,6 @@
 #define REMOVEGENERICDATACOMMAND_H
 
 #include <QUndoCommand>
-#include <QSharedPointer>
-#include <QVector>
-#include <QPair>
 
 namespace panda
 {
