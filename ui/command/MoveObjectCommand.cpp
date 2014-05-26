@@ -4,8 +4,22 @@
 #include <ui/command/CommandId.h>
 #include <ui/command/MoveObjectCommand.h>
 
-MoveObjectCommand::MoveObjectCommand(GraphView* view, QList<panda::PandaObject*> objects,
-									 QPointF delta, QUndoCommand* parent)
+MoveObjectCommand::MoveObjectCommand(GraphView* view,
+									 panda::PandaObject* object,
+									 QPointF delta,
+									 QUndoCommand* parent)
+	: QUndoCommand(parent)
+	, m_view(view)
+	, m_delta(delta)
+{
+	m_objects.push_back(object);
+	setText(QCoreApplication::translate("MoveObjectCommand", "move objects"));
+}
+
+MoveObjectCommand::MoveObjectCommand(GraphView* view,
+									 QList<panda::PandaObject*> objects,
+									 QPointF delta,
+									 QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_view(view)
 	, m_objects(objects)

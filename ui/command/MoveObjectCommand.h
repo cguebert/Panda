@@ -15,6 +15,7 @@ class GraphView;
 class MoveObjectCommand : public QUndoCommand
 {
 public:
+	MoveObjectCommand(GraphView* view, panda::PandaObject* object, QPointF delta, QUndoCommand* parent = nullptr);
 	MoveObjectCommand(GraphView* view, QList<panda::PandaObject*> objects, QPointF delta, QUndoCommand* parent = nullptr);
 
 	virtual int id() const;

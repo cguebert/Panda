@@ -7,6 +7,8 @@
 #include <ui/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
+
+#include <ui/command/DetachDockableCommand.h>
 #include <ui/command/LinkDatasCommand.h>
 #include <ui/command/MoveObjectCommand.h>
 
@@ -566,7 +568,10 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 			if(dockable)
 			{
-				m_objectDrawStructs[dockable]->move(positions[object] - m_objectDrawStructs[dockable]->getPosition());
+				auto macro = m_pandaDocument->beginCommandMacro(tr("move dockable object"));
+				QPointF delta = positions[object] - m_objectDrawStructs[dockable]->getPosition();
+				m_pandaDocument->addCommand(new MoveObjectCommand(this, dockable, delta));
+
 				QRectF dockableArea = m_objectDrawStructs[dockable]->getObjectArea();
 				panda::DockObject* defaultDock = dockable->getDefaultDock();
 				panda::DockObject* newDock = defaultDock;
@@ -589,10 +594,9 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				if(newDock != prevDock)
 				{
 					if(prevDock)
-						prevDock->removeDockable(dockable);
+						m_pandaDocument->addCommand(new DetachDockableCommand(prevDock, dockable));
 					if(newDock)
-						newDock->addDockable(dockable, newIndex);
-					dockable->setParentDock(newDock);
+						m_pandaDocument->addCommand(new AttachDockableCommand(newDock, dockable, newIndex));
 				}
 				else if(prevDock != defaultDock)
 				{
@@ -601,8 +605,9 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 					{
 						if(newIndex > prevIndex)
 							--newIndex;
-						prevDock->removeDockable(dockable);
-						prevDock->addDockable(dockable, newIndex);
+
+						m_pandaDocument->addCommand(new DetachDockableCommand(prevDock, dockable));
+						m_pandaDocument->addCommand(new AttachDockableCommand(prevDock, dockable, newIndex));
 					}
 					modifiedObject(prevDock);	// Always update
 				}

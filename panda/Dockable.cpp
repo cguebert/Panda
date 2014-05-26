@@ -108,7 +108,7 @@ DockObject* DockableObject::getDefaultDock()
 void DockableObject::removedFromDocument()
 {
 	if(m_parentDocument->isInCommandMacro())
-		m_parentDocument->addCommand(new DetachDockableCommand(m_parentDock, this, m_parentDock->getIndexOfDockable(this)));
+		m_parentDocument->addCommand(new DetachDockableCommand(m_parentDock, this));
 }
 
 } // namespace panda
