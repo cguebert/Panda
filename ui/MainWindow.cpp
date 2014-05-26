@@ -875,8 +875,18 @@ void MainWindow::play(bool playing)
 
 	m_importAction->setEnabled(!playing);
 
-	m_undoAction->setEnabled(!playing);
-	m_redoAction->setEnabled(!playing);
+	if(playing)
+	{
+		m_undoEnabled = m_undoAction->isEnabled();
+		m_redoEnabled = m_redoAction->isEnabled();
+		m_undoAction->setEnabled(false);
+		m_redoAction->setEnabled(false);
+	}
+	else
+	{
+		m_undoAction->setEnabled(m_undoEnabled);
+		m_redoAction->setEnabled(m_redoEnabled);
+	}
 }
 
 void MainWindow::selectedObject(panda::PandaObject* object)

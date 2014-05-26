@@ -139,6 +139,8 @@ private:
 	QAction* m_undoAction;
 	QAction* m_redoAction;
 	QLabel* m_timeLabel;
+
+	bool m_undoEnabled, m_redoEnabled;
 };
 
 #endif
