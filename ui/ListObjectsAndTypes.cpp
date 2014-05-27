@@ -153,12 +153,8 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 	out << "  <h1>Objects</h1>\n";
 
 	QVector<ObjectFactory::ClassEntry> objectsEntries;
-	auto objectsIter = ObjectFactory::getInstance()->getRegistryIterator();
-	while(objectsIter.hasNext())
-	{
-		objectsIter.next();
-		objectsEntries.push_back(objectsIter.value());
-	}
+	for(const auto& object : ObjectFactory::getInstance()->getRegistryMap())
+		objectsEntries.push_back(object.second);
 	qSort(objectsEntries.begin(), objectsEntries.end(), objectsMenuLessThan);
 
 	for(const auto& o : objectsEntries)

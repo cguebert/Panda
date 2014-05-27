@@ -162,12 +162,12 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 	return object.data();
 }
 
-GroupsManager::GroupsIterator GroupsManager::getGroupsIterator()
+const GroupsManager::GroupsMap& GroupsManager::getGroups()
 {
-	return GroupsIterator(m_groupsMap);
+	return m_groupsMap;
 }
 
 QString GroupsManager::getGroupDescription(const QString& groupName)
 {
-	return m_groupsMap.value(groupName);
+	return m_groupsMap.at(groupName);
 }

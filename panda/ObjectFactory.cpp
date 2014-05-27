@@ -15,9 +15,10 @@ ObjectFactory* ObjectFactory::getInstance()
 
 QSharedPointer<PandaObject> ObjectFactory::create(QString className, PandaDocument* parent) const
 {
-	if(registry.contains(className))
+	auto iter = m_registry.find(className);
+	if(iter != m_registry.end())
 	{
-		ClassEntry entry = registry.value(className);
+		ClassEntry entry = iter->second;
 		if(entry.creator)
 		{
 			QSharedPointer<PandaObject> object = entry.creator->create(parent);
@@ -39,15 +40,15 @@ QString ObjectFactory::getRegistryName(PandaObject* object)
 	return object->getBaseClass()->getTypeName();
 }
 
-ObjectFactory::RegistryMapIterator ObjectFactory::getRegistryIterator() const
+const ObjectFactory::RegistryMap& ObjectFactory::getRegistryMap() const
 {
-	return RegistryMapIterator(registry);
+	return m_registry;
 }
 
 void ObjectFactory::registerObject(QString className, ClassEntry entry)
 {
 	entry.className = className;
-	registry.insert(className, entry);
+	m_registry.emplace(className, entry);
 }
 
 void objectDeletor(PandaObject* object)

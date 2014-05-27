@@ -48,11 +48,10 @@ public:
 
 	void iterateRenderers()
 	{
-		DockablesIterator iter = getDockablesIterator();
-		iter.toBack();
-		while(iter.hasPrevious())
+		auto dockables = getDockables();
+		for(int i=dockables.size()-1; i>=0; --i)
 		{
-			Renderer* renderer = dynamic_cast<Renderer*>(iter.previous());
+			Renderer* renderer = dynamic_cast<Renderer*>(dockables[i]);
 			if(!renderer)
 				continue;
 

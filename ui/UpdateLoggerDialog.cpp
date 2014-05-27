@@ -197,11 +197,9 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 
     m_eventRects.clear();
 
-	QVectorIterator<EventData> iter(m_events);
-	iter.toBack();
-	while(iter.hasPrevious())
+	for(int i=m_events.size()-1; i>=0; --i)
 	{
-		const EventData& event = iter.previous();
+		const auto& event = m_events[i];
 		qreal x1 = posOfTime(event.m_startTime);
 		qreal x2 = posOfTime(event.m_endTime);
 		qreal y = view_margin + (event.m_level + m_startingLevel[event.m_threadId]) * (update_height + event_margin);
@@ -491,11 +489,9 @@ QColor UpdateLoggerView::getColorForStatus(unsigned int index, qreal s, qreal v)
 
 bool UpdateLoggerView::getEventAtPos(QPointF pos, QRectF& rect, const EventData*& pEvent)
 {
-	QVectorIterator<EventRect> iter(m_eventRects);
-	iter.toBack();
-	while(iter.hasPrevious())
-    {
-		const EventRect& er = iter.previous();
+	for(int i=m_eventRects.size()-1; i>=0; --i)
+	{
+		const auto& er = m_eventRects[i];
         if(er.rect.contains(pos))
         {
 			pEvent = er.event;

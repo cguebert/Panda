@@ -15,10 +15,8 @@ DockObject::~DockObject()
 {
 	DockObject* defaultDock = nullptr;
 
-	DockablesIterator iter(m_dockedObjects);
-	while(iter.hasNext())
+	for(auto dockable : getDockables())
 	{
-		DockableObject* dockable = iter.next();
 		removeInput((DataNode*)dockable);
 
 		defaultDock = dockable->getDefaultDock();
@@ -43,7 +41,7 @@ void DockObject::addDockable(DockableObject* dockable, int index)
 	dockable->setParentDock(this);
 	addInput((DataNode*)dockable);
 	if(index < 0)
-		m_dockedObjects.append(dockable);
+		m_dockedObjects.push_back(dockable);
 	else
 		m_dockedObjects.insert(index, dockable);
 	m_parentDocument->onModifiedObject(this);
@@ -54,9 +52,9 @@ void DockObject::removeDockable(DockableObject* dockable)
 	removeInput((DataNode*)dockable);
 }
 
-DockObject::DockablesIterator DockObject::getDockablesIterator() const
+const DockObject::DockablesList& DockObject::getDockables() const
 {
-	return DockablesIterator(m_dockedObjects);
+	return m_dockedObjects;
 }
 
 int DockObject::getIndexOfDockable(DockableObject* dockable) const

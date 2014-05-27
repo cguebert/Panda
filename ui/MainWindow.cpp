@@ -470,17 +470,16 @@ struct menuItemInfo
 
 void MainWindow::createRegistryMenu()
 {
-	panda::ObjectFactory::RegistryMapIterator iter = panda::ObjectFactory::getInstance()->getRegistryIterator();
-	if(iter.hasNext())
+	const auto& registryMap = panda::ObjectFactory::getInstance()->getRegistryMap();
+	if(!registryMap.empty())
 	{
 		m_registryMenu = menuBar()->addMenu(tr("&Add"));
 
 		menuItemInfo menuTree;
 
-		while(iter.hasNext())
+		for(const auto& iter : registryMap)
 		{
-			iter.next();
-			const panda::ObjectFactory::ClassEntry entry = iter.value();
+			const panda::ObjectFactory::ClassEntry& entry = iter.second;
 			if(entry.hidden)
 				continue;
 
@@ -509,8 +508,8 @@ void MainWindow::createGroupRegistryMenu()
 		m_groupsRegistryMenu->clear();
 	GroupsManager::getInstance()->createGroupsList();
 
-	GroupsManager::GroupsIterator iter = GroupsManager::getInstance()->getGroupsIterator();
-	if(iter.hasNext())
+	const auto& groups = GroupsManager::getInstance()->getGroups();
+	if(!groups.empty())
 	{
 		if(!m_groupsRegistryMenu)
 		{
@@ -519,18 +518,17 @@ void MainWindow::createGroupRegistryMenu()
 		}
 
 		menuItemInfo menuTree;
-		while(iter.hasNext())
+		for(const auto& group : groups)
 		{
-			iter.next();
-			QString display = iter.key();
+			const QString& display = group.first;
 			QStringList hierarchy = display.split("/");
 			menuItemInfo* currentMenu = &menuTree;
 			for(int i=0; i<hierarchy.count()-1; ++i)
 				currentMenu = &currentMenu->childs[hierarchy[i]];
 
 			QAction* tempAction = new QAction(hierarchy.last(), this);
-			tempAction->setStatusTip(iter.value());
-			tempAction->setData(iter.key());
+			tempAction->setStatusTip(group.second);
+			tempAction->setData(group.first);
 			currentMenu->actions[hierarchy.last()] = tempAction;
 
 			connect(tempAction, SIGNAL(triggered()), this, SLOT(createGroupObject()));

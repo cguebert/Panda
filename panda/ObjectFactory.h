@@ -5,7 +5,7 @@
 
 #include <QStringList>
 #include <QSharedPointer>
-#include <QMap>
+#include <map>
 
 namespace panda
 {
@@ -51,14 +51,13 @@ public:
 
 	QSharedPointer<PandaObject> create(QString className, PandaDocument* parent) const;
 
-	typedef QMapIterator< QString, ClassEntry > RegistryMapIterator;
-	RegistryMapIterator getRegistryIterator() const;
+	typedef std::map< QString, ClassEntry > RegistryMap;
+	const RegistryMap& getRegistryMap() const;
 protected:
 	template<class T> friend class RegisterObject;
 	void registerObject(QString className, ClassEntry entry);
 
-	typedef QMap< QString, ClassEntry > RegistryMap;
-	RegistryMap registry;
+	RegistryMap m_registry;
 };
 
 void objectDeletor(PandaObject* object);

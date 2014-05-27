@@ -48,10 +48,9 @@ void ParticleEngine::reset()
 void ParticleEngine::updateEffectors()
 {
 	effectors.clear();
-	DockablesIterator iter = getDockablesIterator();
-	while(iter.hasNext())
+	for(auto dockable : getDockables())
 	{
-		ParticleEffector* effector = dynamic_cast<ParticleEffector*>(iter.next());
+		ParticleEffector* effector = dynamic_cast<ParticleEffector*>(dockable);
 		if(effector)
 			effectors.append(effector);
 	}

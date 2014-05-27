@@ -32,7 +32,6 @@ public:
 
 	void iterateRenderers()
 	{
-		DockablesIterator iter = getDockablesIterator();
 		int nb = nbIterations.getValue();
 		for(int i=0; i<nb; ++i)
 		{
@@ -41,10 +40,10 @@ public:
 			m_parentDocument->setDataReady(&index); // Launch the computation
 			m_parentDocument->waitForOtherTasksToFinish(); // Wait for the end of the computation
 
-			iter.toBack();
-			while(iter.hasPrevious())
+			auto dockables = getDockables();
+			for(int i=dockables.size()-1; i>=0; --i)
 			{
-				Renderer* renderer = dynamic_cast<Renderer*>(iter.previous());
+				Renderer* renderer = dynamic_cast<Renderer*>(dockables[i]);
 				if(renderer)
 				{
 #ifdef PANDA_LOG_EVENTS

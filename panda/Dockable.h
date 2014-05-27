@@ -23,15 +23,15 @@ public:
 	virtual void addDockable(DockableObject* dockable, int index = -1);
 	virtual void removeDockable(DockableObject* dockable);
 
-	typedef QListIterator<DockableObject*> DockablesIterator;
-	virtual DockablesIterator getDockablesIterator() const;
+	typedef QList<DockableObject*> DockablesList;
+	virtual const DockablesList& getDockables() const;
 
 	virtual int getIndexOfDockable(DockableObject* dockable) const;
 
 protected:
 	virtual void doRemoveInput(DataNode* node);
 
-	QList<DockableObject*> m_dockedObjects;
+	DockablesList m_dockedObjects;
 };
 
 class DockableObject : public PandaObject

@@ -32,12 +32,8 @@ QSize DockObjectDrawStruct::getObjectSize()
 	temp.rwidth() += 20;
 	temp.rheight() += dockEmptyRendererHeight + dockRendererMargin * 2;
 
-	panda::DockObject::DockablesIterator iter = m_dockObject->getDockablesIterator();
-	while(iter.hasNext())
-	{
-		panda::DockableObject* dockable = iter.next();
+	for(auto dockable : m_dockObject->getDockables())
 		temp.rheight() += m_parentView->getObjectDrawStruct(dockable)->getObjectSize().height() + dockRendererMargin;
-	}
 
 	return temp;
 }
@@ -45,9 +41,8 @@ QSize DockObjectDrawStruct::getObjectSize()
 void DockObjectDrawStruct::move(const QPointF& delta)
 {
 	ObjectDrawStruct::move(delta);
-	panda::DockObject::DockablesIterator iter = m_dockObject->getDockablesIterator();
-	while(iter.hasNext())
-		m_parentView->getObjectDrawStruct(iter.next())->move(delta);
+	for(auto dockable : m_dockObject->getDockables())
+		m_parentView->getObjectDrawStruct(dockable)->move(delta);
 }
 
 void DockObjectDrawStruct::moveVisual(const QPointF& delta)
@@ -76,10 +71,8 @@ void DockObjectDrawStruct::update()
 	int tx, ty;
 	ty = m_objectArea.top() + ObjectDrawStruct::getObjectSize().height() + dockRendererMargin;
 
-	panda::DockObject::DockablesIterator iter = m_dockObject->getDockablesIterator();
-	while(iter.hasNext())
+	for(auto dockable : m_dockObject->getDockables())
 	{
-		panda::DockableObject* dockable = iter.next();
 		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
 		QSize objectSize = objectStruct->getObjectSize();
 		QPointF objectNewPos(m_position.x() + dockHoleWidth - objectSize.width(), m_position.y() + ty - m_objectArea.top());

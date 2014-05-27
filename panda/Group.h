@@ -62,7 +62,7 @@ public:
 
 	virtual void update();
 
-	virtual QList<Renderer*> getRenderers();
+	virtual RenderersList getRenderers();
 
 	virtual QString getLayerName() const;
 	virtual void setLayerName(QString name);

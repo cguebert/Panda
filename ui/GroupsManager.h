@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QMap>
+#include <map>
 
 namespace panda
 {
@@ -18,12 +18,12 @@ class GroupsManager : public QObject
 {
 	Q_OBJECT
 public:
-	typedef QMapIterator<QString, QString> GroupsIterator;
+	typedef std::map<QString, QString> GroupsMap;
 
 	static GroupsManager* getInstance();
 
 	void createGroupsList();
-	GroupsIterator getGroupsIterator();
+	const GroupsMap& getGroups();
 	QString getGroupDescription(const QString& groupName);
 	bool saveGroup(panda::Group* group);
 	panda::PandaObject* createGroupObject(panda::PandaDocument* document, GraphView* view, QString groupPath);
@@ -32,7 +32,7 @@ protected:
 	GroupsManager();
 	bool getGroupDescription(const QString &fileName, QString& description);
 
-	QMap<QString, QString> m_groupsMap;
+	GroupsMap m_groupsMap;
 	QString m_groupsDirPath;
 };
 

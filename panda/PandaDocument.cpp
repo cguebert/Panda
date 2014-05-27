@@ -234,9 +234,8 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 		DockObject* dock = dynamic_cast<DockObject*>(object);
 		if(dock)
 		{
-			DockObject::DockablesIterator dockableIter = dock->getDockablesIterator();
-			while(dockableIter.hasNext())
-				dockedObjects.append(qMakePair(dock->getIndex(), dockableIter.next()->getIndex()));
+			for(auto dockable : dock->getDockables())
+				dockedObjects.append(qMakePair(dock->getIndex(), dockable->getIndex()));
 		}
 
 		emit savingObject(doc, elem, object);
@@ -528,12 +527,10 @@ void PandaDocument::selectConnected()
 			DockObject* dock = dynamic_cast<DockObject*>(object);
 			if(dock)
 			{
-				auto iter = dock->getDockablesIterator();
-				while(iter.hasNext())
+				for(auto dockable : dock->getDockables())
 				{
-					PandaObject* docked = iter.next();
-					if(!closedList.contains(docked))
-						openList.insert(docked);
+					if(!closedList.contains(dockable))
+						openList.insert(dockable);
 				}
 			}
 		}

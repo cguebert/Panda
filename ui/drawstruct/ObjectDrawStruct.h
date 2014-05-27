@@ -51,10 +51,6 @@ public:
 	QPointF getPosition() const;
 	panda::PandaObject* const getObject() const;
 
-	typedef QPair<QRectF, panda::BaseData*> RectDataPair;
-	typedef QListIterator<RectDataPair> RectDataIterator;
-	RectDataIterator getDatasIterator() const;
-
 	static const int objectDefaultWidth = 100;
 	static const int objectDefaultHeight = 50;
 
@@ -68,6 +64,8 @@ protected:
 	panda::PandaObject* m_object;
 	QPointF m_position;
 	QRectF m_objectArea;
+
+	typedef QPair<QRectF, panda::BaseData*> RectDataPair;
 	QList<RectDataPair> m_datas;
 };
 
@@ -85,9 +83,6 @@ inline QPointF ObjectDrawStruct::getPosition() const
 
 inline panda::PandaObject* const ObjectDrawStruct::getObject() const
 { return m_object; }
-
-inline ObjectDrawStruct::RectDataIterator ObjectDrawStruct::getDatasIterator() const
-{ return RectDataIterator(m_datas); }
 
 inline int ObjectDrawStruct::dataStartY()
 { return dataRectMargin; }

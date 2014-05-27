@@ -73,12 +73,10 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 
 void BaseLayer::iterateRenderers()
 {
-	QList<Renderer*> renderers = getRenderers();
-	QListIterator<Renderer*> iter = QListIterator<Renderer*>(renderers);
-	iter.toBack();
-	while(iter.hasPrevious())
+	const auto& renderers = getRenderers();
+	for(auto iter = renderers.rbegin(); iter != renderers.rend(); ++iter)
 	{
-		Renderer* renderer = iter.previous();
+		auto renderer = *iter;
 #ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_render, renderer);
 #endif
@@ -159,8 +157,7 @@ void Layer::update()
 {
 	// Bugfix : we update the input Datas of the renderers before setting the opengl context
 	//  as getting the image from an ImageWrapper can screw it up
-	auto renderers = getRenderers();
-	for(const auto& renderer : renderers)
+	for(const auto& renderer : getRenderers())
 	{
 		for(const auto* input : renderer->getInputDatas())
 			input->updateIfDirty();
@@ -176,15 +173,14 @@ bool Layer::accepts(DockableObject* dockable) const
 	return dynamic_cast<Renderer*>(dockable) != nullptr;
 }
 
-QList<Renderer*> Layer::getRenderers()
+BaseLayer::RenderersList Layer::getRenderers()
 {
-	QList<Renderer*> renderers;
-	DockablesIterator iter = getDockablesIterator();
-	while(iter.hasNext())
+	RenderersList renderers;
+	for(auto dockable : getDockables())
 	{
-		Renderer* renderer = dynamic_cast<Renderer*>(iter.next());
+		Renderer* renderer = dynamic_cast<Renderer*>(dockable);
 		if(renderer)
-			renderers.append(renderer);
+			renderers.push_back(renderer);
 	}
 
 	return renderers;

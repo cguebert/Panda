@@ -158,10 +158,8 @@ void ObjectDrawStruct::drawText(QPainter* painter)
 
 void ObjectDrawStruct::drawLinks(QPainter* painter)
 {
-	ObjectDrawStruct::RectDataIterator iterData = getDatasIterator();
-	while(iterData.hasNext())
+	for(const auto& rectData : m_datas)
 	{
-		ObjectDrawStruct::RectDataPair rectData = iterData.next();
 		panda::BaseData* data = rectData.second;
 		panda::BaseData* parent = data->getParent();
 		if(parent && !data->isOutput())

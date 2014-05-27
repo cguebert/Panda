@@ -48,22 +48,15 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, GraphView* view)
 
 	m_lineEdit->setFocus(Qt::PopupFocusReason);
 
-	ObjectFactory* factory = ObjectFactory::getInstance();
-	ObjectFactory::RegistryMapIterator iter = factory->getRegistryIterator();
-	while(iter.hasNext())
+	for(const auto& entry : ObjectFactory::getInstance()->getRegistryMap())
 	{
-		iter.next();
-		if(!iter.value().hidden)
-			m_menuStringsList << iter.value().menuDisplay;
+		if(!entry.second.hidden)
+			m_menuStringsList << entry.second.menuDisplay;
 	}
 
 	// Adding groups
-	GroupsManager::GroupsIterator iter2 = GroupsManager::getInstance()->getGroupsIterator();
-	while(iter2.hasNext())
-	{
-		iter2.next();
-		m_menuStringsList << "Groups/" + iter2.key();
-	}
+	for(const auto& group : GroupsManager::getInstance()->getGroups())
+		m_menuStringsList << "Groups/" + group.first;
 
 	m_menuStringsList.sort();
 	m_listWidget->addItems(m_menuStringsList);
@@ -73,14 +66,11 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, GraphView* view)
 
 bool getFactoryEntry(QString menu, ObjectFactory::ClassEntry& entry)
 {
-	ObjectFactory* factory = ObjectFactory::getInstance();
-	ObjectFactory::RegistryMapIterator iter = factory->getRegistryIterator();
-	while(iter.hasNext())
+	for(const auto& iter : ObjectFactory::getInstance()->getRegistryMap())
 	{
-		iter.next();
-		if(menu == iter.value().menuDisplay)
+		if(menu == iter.second.menuDisplay)
 		{
-			entry = iter.value();
+			entry = iter.second;
 			return true;
 		}
 	}
@@ -122,12 +112,8 @@ void QuickCreateDialog::searchTextChanged()
 	QStringList searchList = text.split(QRegExp("\\s+"));
 
 	QStringList newMenuList = m_menuStringsList;
-	QStringListIterator iter(searchList);
-	while(iter.hasNext())
-	{
-		QString searchItem = iter.next();
+	for(const auto& searchItem : searchList)
 		newMenuList = newMenuList.filter(searchItem, Qt::CaseInsensitive);
-	}
 
 	QList<QListWidgetItem*> selectedItems = m_listWidget->selectedItems();
 	QString selectedItemText;

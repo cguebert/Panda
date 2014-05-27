@@ -3,7 +3,7 @@
 
 #include <panda/Dockable.h>
 #include <panda/types/ImageWrapper.h>
-#include <QList>
+#include <vector>
 #include <QMatrix4x4>
 
 class QOpenGLFramebufferObject;
@@ -25,7 +25,8 @@ public:
 	virtual void updateLayer(PandaDocument* doc);
 	virtual void mergeLayer();
 
-	virtual QList<Renderer*> getRenderers() = 0;
+	typedef std::vector<Renderer*> RenderersList;
+	virtual RenderersList getRenderers() = 0;
 
 	virtual QString getLayerName() const = 0;
 	virtual void setLayerName(QString name) = 0;
@@ -53,7 +54,7 @@ public:
 	virtual void update();
 	virtual bool accepts(DockableObject* dockable) const;
 
-	virtual QList<Renderer*> getRenderers();
+	virtual RenderersList getRenderers();
 
 	virtual QString getLayerName() const;
 	virtual void setLayerName(QString name);

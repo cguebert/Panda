@@ -208,10 +208,8 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 	doc->selectNone();
 
 	// For each group in the selection
-	QListIterator<Group*> iter(groups);
-	while(iter.hasNext())
+	for(auto group : groups)
 	{
-		Group* group = iter.next();
 		QPointF groupPos = view->getObjectDrawStruct(group)->getPosition();
 
 		// Putting the objects back into the document
@@ -320,9 +318,8 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 		DockObject* dock = dynamic_cast<DockObject*>(object.data());
 		if(dock)
 		{
-			DockObject::DockablesIterator dockableIter = dock->getDockablesIterator();
-			while(dockableIter.hasNext())
-				dockedObjects.append(qMakePair(dock->getIndex(), dockableIter.next()->getIndex()));
+			for(auto dockable : dock->getDockables())
+				dockedObjects.append(qMakePair(dock->getIndex(), dockable->getIndex()));
 		}
 	}
 
@@ -570,18 +567,18 @@ void GroupWithLayer::update()
 	cleanDirty();
 }
 
-QList<Renderer*> GroupWithLayer::getRenderers()
+BaseLayer::RenderersList GroupWithLayer::getRenderers()
 {
 	if(layer)
 		return layer->getRenderers();
 	else
 	{
-		QList<Renderer*> renderers;
+		RenderersList renderers;
 		for(auto object : objects)
 		{
 			Renderer* renderer = dynamic_cast<Renderer*>(object.data());
 			if(renderer)
-				renderers.append(renderer);
+				renderers.push_back(renderer);
 		}
 		return renderers;
 	}
