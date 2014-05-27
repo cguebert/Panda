@@ -878,11 +878,11 @@ void PandaDocument::addCommand(QUndoCommand* command)
 	m_currentCommand = oldCommand;
 }
 
-ScopedMacro PandaDocument::beginCommandMacro(QString text)
+QSharedPointer<ScopedMacro> PandaDocument::beginCommandMacro(QString text)
 {
 	m_undoStack->beginMacro(text);
 	++m_inCommandMacro;
-	return ScopedMacro(this);
+	return QSharedPointer<ScopedMacro>(new ScopedMacro(this));
 }
 
 void PandaDocument::endCommandMacro()

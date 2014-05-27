@@ -95,7 +95,7 @@ public:
 	// For undo-redo actions
 	void createUndoRedoActions(QObject* parent, QAction*& undoAction, QAction*& redoAction);
 	void addCommand(QUndoCommand* command);
-	ScopedMacro beginCommandMacro(QString text);
+	QSharedPointer<ScopedMacro> beginCommandMacro(QString text);
 	void clearCommands();
 	bool isInCommandMacro();
 	QUndoCommand* getCurrentCommand(); /// The command we are currently adding (if we want to connect another to this one)

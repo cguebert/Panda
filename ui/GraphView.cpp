@@ -418,7 +418,9 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				m_customSelection.push_back(object);
 			}
 
-			if(!m_customSelection.empty() && !delta.isNull())
+			m_moveObjectsMacro = m_pandaDocument->beginCommandMacro(tr("move objects"));
+
+			if(!delta.isNull())
 				m_pandaDocument->addCommand(new MoveObjectCommand(this, m_customSelection, delta));
 
 			m_previousMousePos = mousePos;
@@ -568,7 +570,6 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 			if(dockable)
 			{
-				auto macro = m_pandaDocument->beginCommandMacro(tr("move dockable object"));
 				QPointF delta = positions[object] - m_objectDrawStructs[dockable]->getPosition();
 				m_pandaDocument->addCommand(new MoveObjectCommand(this, dockable, delta));
 
@@ -613,6 +614,8 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				}
 			}
 		}
+
+		m_moveObjectsMacro.reset();
 	}
 	else if(m_movingAction == MOVING_SELECTION)
 	{

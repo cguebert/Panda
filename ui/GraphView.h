@@ -13,6 +13,7 @@ class PandaObject;
 class BaseData;
 class Layer;
 class Renderer;
+class ScopedMacro;
 }
 
 class LinkTag;
@@ -132,6 +133,8 @@ private:
 	QPointF m_snapDelta;
 
 	QList<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied
+
+	QSharedPointer<panda::ScopedMacro> m_moveObjectsMacro;
 };
 
 #endif
