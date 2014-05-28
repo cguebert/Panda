@@ -17,7 +17,7 @@ namespace panda
 
 Group::Group(PandaDocument *parent)
 	: PandaObject(parent)
-	, groupName(initData(&groupName, QString("Group"), "name", "Name to be displayed for this group"))
+	, m_groupName(initData(&m_groupName, QString("Group"), "name", "Name to be displayed for this group"))
 {
 }
 
@@ -110,7 +110,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 
 		// Storing the position of this object in respect to the group object
 		QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
-		group->positions[object] = delta;
+		group->m_positions[object] = delta;
 
 		// Adding input datas
 		for(BaseData* data : object->getInputDatas())
@@ -214,7 +214,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 
 		// Putting the objects back into the document
 		ObjectsList docks;
-		for(auto object : group->objects)
+		for(auto object : group->m_objects)
 		{
 			DockObject* dock = dynamic_cast<DockObject*>(object.data());
 			if(dock)
@@ -227,7 +227,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 
 				// Placing the object in the view
 				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
-				ods->move(groupPos + group->positions[object.data()] - ods->getPosition());
+				ods->move(groupPos + group->m_positions[object.data()] - ods->getPosition());
 			}
 		}
 
@@ -240,11 +240,11 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 
 			// Placing the object in the view
 			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
-			ods->move(groupPos + group->positions[object.data()] - ods->getPosition());
+			ods->move(groupPos + group->m_positions[object.data()] - ods->getPosition());
 		}
 
 		// Reconnecting datas
-		for(QSharedPointer<BaseData> data : group->groupDatas)
+		for(QSharedPointer<BaseData> data : group->m_groupDatas)
 		{
 			BaseData* parent = data->getParent();
 			auto outputs = data->getOutputs();
@@ -267,7 +267,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
 {
 	// Saving group datas
-	for(QSharedPointer<BaseData> data : groupDatas)
+	for(QSharedPointer<BaseData> data : m_groupDatas)
 	{
 		QDomElement node = doc.createElement("GroupData");
 		elem.appendChild(node);
@@ -288,12 +288,12 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 	QList<IntPair> dockedObjects;
 
 	PandaDocument::ObjectsSelection allObjects;
-	for(auto object : objects)
+	for(auto object : m_objects)
 		allObjects.push_back(object.data());
 	allObjects.push_back(this);
 
 	// Saving objects in this group
-	for(auto object : objects)
+	for(auto object : m_objects)
 	{
 		QDomElement node = doc.createElement("Object");
 		node.setAttribute("type", ObjectFactory::getRegistryName(object.data()));
@@ -302,7 +302,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 
 		object->save(doc, node, &allObjects);
 
-		QPointF pos = positions[object.data()];
+		QPointF pos = m_positions[object.data()];
 		node.setAttribute("x", pos.x());
 		node.setAttribute("y", pos.y());
 
@@ -374,7 +374,7 @@ void Group::load(QDomElement& elem)
 
 		auto dataPtr = DataFactory::getInstance()->create(type, name, help, this);
 		auto data = dataPtr.data();
-		groupDatas.append(dataPtr);
+		m_groupDatas.append(dataPtr);
 		if(input)
 			addInput(data);
 		if(output)
@@ -398,7 +398,7 @@ void Group::load(QDomElement& elem)
 		if(object)
 		{
 			importObjectsMap[index] = object.data();
-			objects.append(object);
+			m_objects.append(object);
 
 			object->load(objectNode);
 
@@ -410,7 +410,7 @@ void Group::load(QDomElement& elem)
 			pos.setX(objectNode.attribute("x").toFloat());
 			pos.setY(objectNode.attribute("y").toFloat());
 #endif
-			positions[object.data()] = pos;
+			m_positions[object.data()] = pos;
 		}
 		else
 		{
@@ -487,7 +487,7 @@ void Group::load(QDomElement& elem)
 
 void Group::addObject(ObjectPtr obj)
 {
-	objects.push_back(obj);
+	m_objects.push_back(obj);
 }
 
 QString Group::findAvailableDataName(QString baseName, BaseData *data)
@@ -521,25 +521,25 @@ BaseData* Group::duplicateData(BaseData* data)
 	newData->setDisplayed(data->isDisplayed());
 	newData->setPersistent(data->isPersistent());
 	newData->setWidget(data->getWidget());
-	groupDatas.append(newData);
+	m_groupDatas.append(newData);
 
 	return newData.data();
 }
 
 void Group::reset()
 {
-	for(auto object : objects)
+	for(auto object : m_objects)
 		object->reset();
 }
 
 QString Group::getGroupName()
 {
-	return groupName.getValue();
+	return m_groupName.getValue();
 }
 
 const Group::ObjectsList& Group::getObjects() const
 {
-	return objects;
+	return m_objects;
 }
 
 int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many object into a single one").setHidden(true);
@@ -548,17 +548,17 @@ int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many obje
 
 GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 	: Group(parent)
-	, layer(nullptr)
-	, image(initData(&image, "image", "Image created by the renderers connected to this layer"))
-	, compositionMode(0)
-	, opacity(1.0)
+	, m_layer(nullptr)
+	, m_image(initData(&m_image, "image", "Image created by the renderers connected to this layer"))
+	, m_compositionMode(0)
+	, m_opacity(1.0)
 {
 	addOutput((DataNode*)parent);
 }
 
 void GroupWithLayer::setLayer(Layer* newLayer)
 {
-	layer = newLayer;
+	m_layer = newLayer;
 }
 
 void GroupWithLayer::update()
@@ -569,12 +569,12 @@ void GroupWithLayer::update()
 
 BaseLayer::RenderersList GroupWithLayer::getRenderers()
 {
-	if(layer)
-		return layer->getRenderers();
+	if(m_layer)
+		return m_layer->getRenderers();
 	else
 	{
 		RenderersList renderers;
-		for(auto object : objects)
+		for(auto object : m_objects)
 		{
 			Renderer* renderer = dynamic_cast<Renderer*>(object.data());
 			if(renderer)
@@ -586,37 +586,37 @@ BaseLayer::RenderersList GroupWithLayer::getRenderers()
 
 QString GroupWithLayer::getLayerName() const
 {
-	if(layer)
-		return layer->getLayerName();
+	if(m_layer)
+		return m_layer->getLayerName();
 	else
-		return groupName.getValue();
+		return m_groupName.getValue();
 }
 
 void GroupWithLayer::setLayerName(QString name)
 {
-	if(layer)
-		layer->setLayerName(name);
+	if(m_layer)
+		m_layer->setLayerName(name);
 	else
-		groupName.setValue(name);
+		m_groupName.setValue(name);
 }
 
 int GroupWithLayer::getCompositionMode() const
 {
-	if(layer)
-		return layer->getCompositionMode();
+	if(m_layer)
+		return m_layer->getCompositionMode();
 	else
-		return compositionMode;
+		return m_compositionMode;
 }
 
 void GroupWithLayer::setCompositionMode(int mode)
 {
-	if(layer)
-		layer->setCompositionMode(mode);
+	if(m_layer)
+		m_layer->setCompositionMode(mode);
 	else
 	{
-		if(mode != compositionMode)
+		if(mode != m_compositionMode)
 		{
-			compositionMode = mode;
+			m_compositionMode = mode;
 			setDirtyValue(this);
 		}
 	}
@@ -624,21 +624,21 @@ void GroupWithLayer::setCompositionMode(int mode)
 
 PReal GroupWithLayer::getOpacity() const
 {
-	if(layer)
-		return layer->getOpacity();
+	if(m_layer)
+		return m_layer->getOpacity();
 	else
-		return opacity;
+		return m_opacity;
 }
 
 void GroupWithLayer::setOpacity(PReal opa)
 {
-	if(layer)
-		layer->setOpacity(opa);
+	if(m_layer)
+		m_layer->setOpacity(opa);
 	else
 	{
-		if(opa != opacity)
+		if(opa != m_opacity)
 		{
-			opacity = opa;
+			m_opacity = opa;
 			setDirtyValue(this);
 		}
 	}
@@ -646,18 +646,18 @@ void GroupWithLayer::setOpacity(PReal opa)
 
 Data<types::ImageWrapper>* GroupWithLayer::getImage()
 {
-	if(layer)
-		return layer->getImage();
+	if(m_layer)
+		return m_layer->getImage();
 	else
-		return &image;
+		return &m_image;
 }
 
 QMatrix4x4& GroupWithLayer::getMVPMatrix()
 {
-	if(layer)
-		return layer->getMVPMatrix();
+	if(m_layer)
+		return m_layer->getMVPMatrix();
 	else
-		return mvpMatrix;
+		return m_mvpMatrix;
 }
 
 void GroupWithLayer::addObject(ObjectPtr obj)

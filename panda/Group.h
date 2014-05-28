@@ -39,11 +39,11 @@ public:
 	const ObjectsList& getObjects() const;
 
 protected:
-	Data<QString> groupName;
+	Data<QString> m_groupName;
 
-	ObjectsList objects;
-	QMap<PandaObject*, QPointF> positions;
-	QList< QSharedPointer<BaseData> > groupDatas;
+	ObjectsList m_objects;
+	QMap<PandaObject*, QPointF> m_positions;
+	QList< QSharedPointer<BaseData> > m_groupDatas;
 
 	virtual void addObject(ObjectPtr obj);
 	virtual void removeObject(PandaObject*) {}
@@ -58,7 +58,7 @@ public:
 	PANDA_CLASS(GroupWithLayer, Group)
 
 	explicit GroupWithLayer(PandaDocument* parent);
-	void setLayer(Layer* layer);
+	void setLayer(Layer* m_layer);
 
 	virtual void update();
 
@@ -80,12 +80,12 @@ protected:
 	virtual void addObject(ObjectPtr obj);
 	virtual void removeObject(PandaObject* obj);
 
-	Data<types::ImageWrapper> image;
-	QMatrix4x4 mvpMatrix;
-	int compositionMode;
-	PReal opacity;
+	Data<types::ImageWrapper> m_image;
+	QMatrix4x4 m_mvpMatrix;
+	int m_compositionMode;
+	PReal m_opacity;
 
-	Layer* layer;
+	Layer* m_layer;
 };
 
 } // namespace panda

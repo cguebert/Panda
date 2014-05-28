@@ -15,7 +15,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 	QVBoxLayout* vLayout = new QVBoxLayout;
 
 	QLabel* groupNameLabel = new QLabel(tr("group name:"), this);
-	editGroupName = new QLineEdit(group->groupName.getValue(), this);
+	editGroupName = new QLineEdit(group->m_groupName.getValue(), this);
 	QHBoxLayout* groupNameLayout = new QHBoxLayout;
 	groupNameLayout->addWidget(groupNameLabel);
 	groupNameLayout->addWidget(editGroupName);
@@ -23,7 +23,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 
 	tableWidget = new QTableWidget(this);
 	tableWidget->setColumnCount(4);
-	tableWidget->setRowCount(group->groupDatas.size());
+	tableWidget->setRowCount(group->m_groupDatas.size());
 	tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
 	tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -93,7 +93,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 void EditGroupDialog::populateTable()
 {
 	int rowIndex = 0;
-	for(QSharedPointer<panda::BaseData> data : group->groupDatas)
+	for(QSharedPointer<panda::BaseData> data : group->m_groupDatas)
 	{
 		populateRow(rowIndex, data.data());
 		++rowIndex;
@@ -173,11 +173,11 @@ void EditGroupDialog::dataHelpEdited(QString text)
 void EditGroupDialog::updateGroup()
 {
 	if(editGroupName->text().size())
-		group->groupName.setValue(editGroupName->text());
+		group->m_groupName.setValue(editGroupName->text());
 
 	// As I used raw pointers before, I have to do additional work here to get the shared pointers in the right order
 	QMap< panda::BaseData*, QSharedPointer<panda::BaseData> > datasPtrMap;
-	for(QSharedPointer<panda::BaseData> dataPtr : group->groupDatas)
+	for(QSharedPointer<panda::BaseData> dataPtr : group->m_groupDatas)
 		datasPtrMap.insert(dataPtr.data(), dataPtr);
 
 	QList< QSharedPointer<panda::BaseData> > datasList;
@@ -195,7 +195,7 @@ void EditGroupDialog::updateGroup()
 		}
 	}
 
-	group->groupDatas = datasList;
+	group->m_groupDatas = datasList;
 
 	group->emitModified();
 }
