@@ -313,6 +313,7 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 void GenericObject::preDestruction()
 {
 	m_destructing = true;
+	PandaObject::preDestruction();
 }
 
 //***************************************************************//

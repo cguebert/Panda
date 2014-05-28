@@ -102,7 +102,10 @@ PandaDocument::~PandaDocument()
 
 	m_resetting = true;
 
-	// Bugfix: this seems to be necessary
+	// Just to be sure everything goes smoothly
+	for(auto object : m_objects)
+		object->preDestruction();
+
 	m_objects.clear();
 	m_undoStack->clear();
 }
@@ -360,7 +363,10 @@ void PandaDocument::resetDocument()
 	emit selectionChanged();
 
 	for(auto object : m_objects)
+	{
 		emit removedObject(object.data());
+		object->preDestruction();
+	}
 
 	m_objects.clear();
 	m_currentIndex = 1;
