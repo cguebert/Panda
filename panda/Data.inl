@@ -66,14 +66,14 @@ void Data<T>::update()
 }
 
 template<class T>
-void Data<T>::setDirtyValue()
+void Data<T>::setDirtyValue(const DataNode* caller)
 {
 	if(!isDirty())
 	{
 #ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_setDirty, this);
 #endif
-		DataNode::setDirtyValue();
+		DataNode::setDirtyValue(caller);
 	}
 }
 

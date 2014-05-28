@@ -14,7 +14,6 @@ public:
 	ListBuffer(PandaDocument *doc)
 		: GenericObject(doc)
 		, resetValues(false)
-		, settingDirty(false)
 		, prevControl(-1.0)
 		, control(initData(&control, (PReal)0.0, "control", "The buffer will be updated each time this value changes"))
 		, resetData(initData(&resetData, 0, "reset", "Set this at 1 to reset the values"))
@@ -76,29 +75,19 @@ public:
 		PandaObject::reset();
 
 		resetValues = true;
-		settingDirty = true;
-		PandaObject::setDirtyValue();
-		update();
-		settingDirty = false;
 	}
 
-	void setDirtyValue()
+	void setDirtyValue(const DataNode* caller)
 	{
-		if(!settingDirty)
+		if(!isDirty())
 		{
-			PReal newControl = control.getValue();
-			if(prevControl != newControl || resetValues || (resetData.getValue() != 0))
-			{
-				settingDirty = true;
-				PandaObject::setDirtyValue();
-				update();
-				settingDirty = false;
-			}
+			if(caller == &control || caller == &resetData)
+				PandaObject::setDirtyValue(caller);
 		}
 	}
 
 protected:
-	bool resetValues, settingDirty;
+	bool resetValues;
 	PReal prevControl;
 	Data<PReal> control;
 	Data<int> resetData;

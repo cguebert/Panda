@@ -69,7 +69,7 @@ void DockObject::doRemoveInput(DataNode* node)
 	if(m_dockedObjects.contains((DockableObject*)node))
 	{
 		m_dockedObjects.removeAll((DockableObject*)node);
-		setDirtyValue();
+		setDirtyValue(this);
 		m_parentDocument->onModifiedObject(this);
 	}
 }

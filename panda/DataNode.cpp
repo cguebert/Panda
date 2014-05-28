@@ -20,7 +20,7 @@ void DataNode::addInput(DataNode* node)
 {
 	doAddInput(node);
 	node->doAddOutput(this);
-	setDirtyValue();
+	setDirtyValue(node);
 }
 
 void DataNode::removeInput(DataNode* node)
@@ -33,7 +33,7 @@ void DataNode::addOutput(DataNode* node)
 {
 	doAddOutput(node);
 	node->doAddInput(this);
-	node->setDirtyValue();
+	node->setDirtyValue(this);
 }
 
 void DataNode::removeOutput(DataNode* node)

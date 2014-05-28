@@ -617,7 +617,7 @@ void GroupWithLayer::setCompositionMode(int mode)
 		if(mode != compositionMode)
 		{
 			compositionMode = mode;
-			setDirtyValue();
+			setDirtyValue(this);
 		}
 	}
 }
@@ -639,7 +639,7 @@ void GroupWithLayer::setOpacity(PReal opa)
 		if(opa != opacity)
 		{
 			opacity = opa;
-			setDirtyValue();
+			setDirtyValue(this);
 		}
 	}
 }

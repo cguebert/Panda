@@ -35,7 +35,7 @@ public:
 	void reset()
 	{
 		prevSeed = -1;
-		setDirtyValue();
+		setDirtyValue(this);
 	}
 
 	void update()

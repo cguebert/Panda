@@ -78,7 +78,7 @@ public:
 	BaseData* findData(quint32 objectIndex, const QString& dataName);
 
 	virtual void update();
-	virtual void setDirtyValue();
+	virtual void setDirtyValue(const DataNode* caller);
 
 	const types::ImageWrapper& getRenderedImage();
 	QSharedPointer<QOpenGLFramebufferObject> getFBO();
@@ -133,6 +133,7 @@ protected:
 	QUndoCommand* m_currentCommand;
 
 	int m_inCommandMacro;
+	bool m_resetting;
 
 signals:
 	void modified();

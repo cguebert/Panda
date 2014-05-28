@@ -34,9 +34,9 @@ public:
 			saveImages();
 	}
 
-	void setDirtyValue()
+	void setDirtyValue(const DataNode* caller)
 	{
-		PandaObject::setDirtyValue();
+		PandaObject::setDirtyValue(caller);
 		if(!m_isInStep)
 			saveImages();
 	}

@@ -75,14 +75,14 @@ void PandaObject::updateIfDirty() const
 	}
 }
 
-void PandaObject::setDirtyValue()
+void PandaObject::setDirtyValue(const DataNode* caller)
 {
 	if(!isDirty())
 	{
 #ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_setDirty, this);
 #endif
-		DataNode::setDirtyValue();
+		DataNode::setDirtyValue(caller);
 	}
 
 	emitDirty();

@@ -27,7 +27,7 @@ public:
 	virtual void update() = 0;
 
 	virtual bool isDirty() const;
-	virtual void setDirtyValue();
+	virtual void setDirtyValue(const DataNode* caller);
 	virtual void doSetDirty();
 	virtual void setDirtyOutputs();
 	virtual void cleanDirty();
@@ -54,7 +54,7 @@ inline const DataNode::NodesList& DataNode::getOutputs()
 inline bool DataNode::isDirty() const
 { return m_dirtyValue; }
 
-inline void DataNode::setDirtyValue()
+inline void DataNode::setDirtyValue(const DataNode* /*caller*/)
 {
 	if(!m_dirtyValue)
 	{
@@ -69,7 +69,7 @@ inline void DataNode::doSetDirty()
 inline void DataNode::setDirtyOutputs()
 {
 	for(DataNode* node : m_outputs)
-		node->setDirtyValue();
+		node->setDirtyValue(this);
 }
 
 inline void DataNode::cleanDirty()

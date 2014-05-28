@@ -65,7 +65,7 @@ public:
 	virtual void reset() {}
 	virtual void update();
 	virtual void updateIfDirty() const;
-	virtual void setDirtyValue();
+	virtual void setDirtyValue(const DataNode* caller);
 	virtual void beginStep();
 	virtual void endStep();
 

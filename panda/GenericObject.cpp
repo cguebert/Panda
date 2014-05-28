@@ -20,6 +20,7 @@ using types::TypeConverter;
 
 GenericObject::GenericObject(PandaDocument *parent)
 	: PandaObject(parent)
+	, m_destructing(false)
 {
 
 }
@@ -282,6 +283,10 @@ void GenericObject::load(QDomElement& elem)
 
 void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 {
+	// Bugfix: don't do anything if we are currently deleting the object
+	if(m_destructing)
+		return;
+
 	// Create commands if links are disconnected from the outputs of this group
 	for(BaseDataPtr data : createdData->datas)
 	{
@@ -303,6 +308,11 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 		int index = m_createdDatasStructs.indexOf(createdData);
 		new RemoveGenericDataCommand(this, createdData->type, index, currentCommand);
 	}
+}
+
+void GenericObject::preDestruction()
+{
+	m_destructing = true;
 }
 
 //***************************************************************//
@@ -493,7 +503,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 			updateDataNames();
 
 			if(m_singleOutput)
-				setDirtyValue();
+				setDirtyValue(this);
 		}
 
 		m_parentDocument->onModifiedObject(this);

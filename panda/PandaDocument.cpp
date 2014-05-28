@@ -54,6 +54,7 @@ PandaDocument::PandaDocument(QObject* parent)
 	, m_animMultithread(false)
 	, m_currentCommand(nullptr)
 	, m_inCommandMacro(0)
+	, m_resetting(false)
 {
 	addInput(&m_renderSize);
 	addInput(&m_backgroundColor);
@@ -98,6 +99,8 @@ PandaDocument::~PandaDocument()
 {
 	if(m_scheduler)
 		m_scheduler->stop();
+
+	m_resetting = true;
 
 	// Bugfix: this seems to be necessary
 	m_objects.clear();
@@ -350,6 +353,8 @@ bool PandaDocument::loadDoc(QDomElement& root)
 
 void PandaDocument::resetDocument()
 {
+	m_resetting = true;
+
 	m_selectedObjects.clear();
 	emit selectedObject(nullptr);
 	emit selectionChanged();
@@ -378,6 +383,8 @@ void PandaDocument::resetDocument()
 
 	emit modified();
 	emit timeChanged();
+
+	m_resetting = false;
 }
 
 PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object)
@@ -709,7 +716,7 @@ void PandaDocument::moveLayerUp(PandaObject* layer)
 		{
 			remove(m_objects, layer);
 			m_objects.insert(index, object);
-			setDirtyValue();
+			setDirtyValue(this);
 			emit modified();
 			return;
 		}
@@ -732,16 +739,16 @@ void PandaDocument::moveLayerDown(PandaObject *layer)
 		{
 			remove(m_objects, layer);
 			m_objects.insert(index, object);
-			setDirtyValue();
+			setDirtyValue(this);
 			emit modified();
 			return;
 		}
 	}
 }
 
-void PandaDocument::setDirtyValue()
+void PandaDocument::setDirtyValue(const DataNode* caller)
 {
-	PandaObject::setDirtyValue();
+	PandaObject::setDirtyValue(caller);
 	if(!m_isInStep && !getCurrentSelectedObject())
 		emit selectedObjectIsDirty(this);
 }
@@ -803,7 +810,7 @@ void PandaDocument::step()
 	}
 	else
 		m_mouseClick.setValue(m_mouseClickBuffer);
-	setDirtyValue();
+	setDirtyValue(this);
 	updateIfDirty();
 
 	m_isInStep = false;
@@ -839,7 +846,7 @@ void PandaDocument::rewind()
 	m_mouseClick.setValue(0);
 	for(auto object : m_objects)
 		object->reset();
-	setDirtyValue();
+	setDirtyValue(this);
 	emit timeChanged();
 }
 
@@ -869,6 +876,12 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 
 void PandaDocument::addCommand(QUndoCommand* command)
 {
+	if(m_resetting)
+	{
+		delete command;
+		return;
+	}
+
 	auto oldCommand = m_currentCommand;
 	m_currentCommand = command;
 	m_undoStack->push(command);

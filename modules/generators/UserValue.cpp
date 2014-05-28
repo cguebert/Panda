@@ -150,16 +150,6 @@ public:
 		xmlRoot.appendChild(xmlData);
 	}
 
-/*	void setDirtyValue()
-	{
-		PandaObject::setDirtyValue();
-		if(!isInStep && !singleValue.getValue())
-		{
-			addValue();
-			saveToFile();
-		}
-	}
-*/
 	void endStep()
 	{
 		addValue();

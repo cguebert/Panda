@@ -116,6 +116,8 @@ public:
 
 	virtual BaseData* createDatas(int type, int index = -1);
 
+	virtual void preDestruction();
+
 protected:
 	virtual void reorderDatas();
 	virtual void updateDataNames();
@@ -147,6 +149,8 @@ private:
 	QMap<BaseData*, CreatedDatasStructPtr> m_createdDatasMap;
 
 	void createUndoCommands(const CreatedDatasStructPtr& createdData);
+
+	bool m_destructing;
 };
 
 //***************************************************************//

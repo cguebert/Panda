@@ -22,16 +22,16 @@ Annotation::Annotation(PandaDocument *doc)
 	m_font.setWidget("font");
 }
 
-void Annotation::setDirtyValue()
+void Annotation::setDirtyValue(const DataNode* caller)
 {
 	if(!isDirty())
 	{
-		PandaObject::setDirtyValue();
+		PandaObject::setDirtyValue(caller);
 
 		emitModified();
 	}
 	else
-		PandaObject::setDirtyValue();
+		PandaObject::setDirtyValue(caller);
 }
 
 int AnnotationClass = RegisterObject<Annotation>("Annotation").setDescription("Create an annotation in the graph view");

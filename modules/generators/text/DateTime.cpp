@@ -26,7 +26,7 @@ public:
 			addInput(docTime);
 	}
 
-	void setDirtyValue()
+	void setDirtyValue(const DataNode* caller)
 	{
 		if(!m_dirtyValue)
 		{
@@ -34,7 +34,7 @@ public:
 			date.addMSecs(delta.getValue());
 
 			if(date != previousDate)
-				PandaObject::setDirtyValue();
+				PandaObject::setDirtyValue(caller);
 		}
 	}
 

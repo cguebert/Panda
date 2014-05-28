@@ -42,7 +42,7 @@ public:
 	virtual ~Data();
 
 	virtual void update();
-	virtual void setDirtyValue();
+	virtual void setDirtyValue(const DataNode* caller);
 
 	virtual void setParent(BaseData* parent);
 	virtual const types::AbstractDataTrait* getDataTrait() const;

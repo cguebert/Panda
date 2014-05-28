@@ -13,7 +13,7 @@ public:
 
 	Annotation(PandaDocument *doc);
 
-	virtual void setDirtyValue();
+	virtual void setDirtyValue(const DataNode* caller);
 
 	Data<int> m_type;
 	Data<QString> m_text, m_font;
