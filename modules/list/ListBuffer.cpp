@@ -13,7 +13,7 @@ public:
 
 	ListBuffer(PandaDocument *doc)
 		: GenericObject(doc)
-		, resetValues(false)
+		, resetValues(true)
 		, prevControl(-1.0)
 		, control(initData(&control, (PReal)0.0, "control", "The buffer will be updated each time this value changes"))
 		, resetData(initData(&resetData, 0, "reset", "Set this at 1 to reset the values"))

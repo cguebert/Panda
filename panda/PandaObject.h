@@ -91,6 +91,7 @@ protected:
 	bool m_doEmitModified, m_doEmitDirty, m_isInStep;
 	bool m_laterUpdate; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
 	mutable bool m_isUpdating;
+	bool m_destructing;
 	PandaDocument* m_parentDocument;
 
 	void setInternalData(const QString& name, quint32 index);

@@ -105,7 +105,7 @@ DockObject* DockableObject::getDefaultDock()
 
 void DockableObject::removedFromDocument()
 {
-	if(m_parentDocument->isInCommandMacro())
+	if(m_parentDock && m_parentDocument->isInCommandMacro())
 		m_parentDocument->addCommand(new DetachDockableCommand(m_parentDock, this));
 }
 

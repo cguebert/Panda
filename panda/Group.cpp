@@ -398,7 +398,7 @@ void Group::load(QDomElement& elem)
 		if(object)
 		{
 			importObjectsMap[index] = object.data();
-			m_objects.append(object);
+			addObject(object);
 
 			object->load(objectNode);
 
@@ -663,6 +663,13 @@ QMatrix4x4& GroupWithLayer::getMVPMatrix()
 void GroupWithLayer::addObject(ObjectPtr obj)
 {
 	Group::addObject(obj);
+
+	Layer* layer = dynamic_cast<Layer*>(obj.data());
+	if(layer)
+	{
+		setLayer(layer);
+		return;
+	}
 
 	Layer* defaultLayer = m_parentDocument->getDefaultLayer();
 	Renderer* renderer = dynamic_cast<Renderer*>(obj.data());

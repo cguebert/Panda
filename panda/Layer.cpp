@@ -22,6 +22,15 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 		helper::ScopedEvent log1("prepareLayer");
 #endif
 
+	// Bugfix : we update the input Datas of the renderers before setting the opengl context
+	//  as getting the image from an ImageWrapper can screw it up
+	for(const auto& renderer : getRenderers())
+	{
+		for(const auto* input : renderer->getInputDatas())
+			input->updateIfDirty();
+		renderer->updateIfDirty();
+	}
+
 	QSize renderSize = doc->getRenderSize();
 	if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)
 	{
@@ -155,15 +164,6 @@ Layer::Layer(PandaDocument *parent)
 
 void Layer::update()
 {
-	// Bugfix : we update the input Datas of the renderers before setting the opengl context
-	//  as getting the image from an ImageWrapper can screw it up
-	for(const auto& renderer : getRenderers())
-	{
-		for(const auto* input : renderer->getInputDatas())
-			input->updateIfDirty();
-		renderer->updateIfDirty();
-	}
-
 	updateLayer(m_parentDocument);
 	cleanDirty();
 }

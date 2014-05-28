@@ -19,6 +19,7 @@ PandaObject::PandaObject(PandaDocument* document)
 	, m_isInStep(false)
 	, m_isUpdating(false)
 	, m_laterUpdate(false)
+	, m_destructing(false)
 {
 }
 
@@ -51,6 +52,7 @@ void PandaObject::addOutput(BaseData* data)
 void PandaObject::preDestruction()
 {	// Some failsafe so the objects being destroyed don't try to update themselves during the operation
 	m_isUpdating = true;
+	m_destructing = true;
 }
 
 void PandaObject::update()
@@ -158,13 +160,13 @@ void PandaObject::dataSetParent(BaseData* data, BaseData* parent)
 
 void PandaObject::emitModified()
 {
-	if(m_doEmitModified && m_parentDocument)
+	if(m_doEmitModified && m_parentDocument && !m_destructing)
 		m_parentDocument->onModifiedObject(this);
 }
 
 void PandaObject::emitDirty()
 {
-	if(m_doEmitDirty && !m_isInStep && m_parentDocument)
+	if(m_doEmitDirty && !m_isInStep && m_parentDocument && !m_destructing)
 		m_parentDocument->onDirtyObject(this);
 }
 

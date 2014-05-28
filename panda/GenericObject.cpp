@@ -20,7 +20,6 @@ using types::TypeConverter;
 
 GenericObject::GenericObject(PandaDocument *parent)
 	: PandaObject(parent)
-	, m_destructing(false)
 {
 
 }
@@ -308,12 +307,6 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 		int index = m_createdDatasStructs.indexOf(createdData);
 		new RemoveGenericDataCommand(this, createdData->type, index, currentCommand);
 	}
-}
-
-void GenericObject::preDestruction()
-{
-	m_destructing = true;
-	PandaObject::preDestruction();
 }
 
 //***************************************************************//
