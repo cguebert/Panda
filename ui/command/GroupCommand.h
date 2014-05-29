@@ -11,10 +11,10 @@ class PandaObject;
 class PandaDocument;
 }
 
-class CreateGroupCommand : public QUndoCommand
+class SelectGroupCommand : public QUndoCommand
 {
 public:
-	CreateGroupCommand(panda::PandaDocument* document, panda::Group* group, QUndoCommand* parent = nullptr);
+	SelectGroupCommand(panda::PandaDocument* document, panda::Group* group, QUndoCommand* parent = nullptr);
 
 	virtual void redo();
 	virtual void undo();
@@ -26,10 +26,10 @@ protected:
 
 //***************************************************************//
 
-class ExpandGroupCommand : public QUndoCommand
+class SelectObjectsInGroupCommand : public QUndoCommand
 {
 public:
-	ExpandGroupCommand(panda::PandaDocument* document, panda::Group* group, QUndoCommand* parent = nullptr);
+	SelectObjectsInGroupCommand(panda::PandaDocument* document, panda::Group* group, QUndoCommand* parent = nullptr);
 
 	virtual void redo();
 	virtual void undo();
@@ -41,10 +41,10 @@ protected:
 
 //***************************************************************//
 
-class GroupAddObjectCommand : public QUndoCommand
+class AddObjectToGroupCommand : public QUndoCommand
 {
 public:
-	GroupAddObjectCommand(panda::Group* group, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
+	AddObjectToGroupCommand(panda::Group* group, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
 
 	virtual void redo();
 	virtual void undo();
@@ -56,10 +56,10 @@ protected:
 
 //***************************************************************//
 
-class GroupRemoveObjectCommand : public QUndoCommand
+class RemoveObjectFromGroupCommand : public QUndoCommand
 {
 public:
-	GroupRemoveObjectCommand(panda::Group* group, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
+	RemoveObjectFromGroupCommand(panda::Group* group, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
 
 	virtual void redo();
 	virtual void undo();

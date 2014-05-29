@@ -6,7 +6,6 @@
 
 class GroupObjectDrawStruct;
 class EditGroupDialog;
-class CreateGroupCommand;
 class GraphView;
 
 namespace panda
@@ -19,7 +18,6 @@ class Group : public QObject, public PandaObject
 	Q_OBJECT
 	friend class GroupObjectDrawStruct;
 	friend class EditGroupDialog;
-	friend class CreateGroupCommand;
 public:
 	PANDA_CLASS(Group, PandaObject)
 

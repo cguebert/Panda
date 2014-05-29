@@ -11,7 +11,7 @@
 #include <ui/UpdateLoggerDialog.h>
 
 #include <ui/command/AddObjectCommand.h>
-#include <ui/command/DeleteObjectCommand.h>
+#include <ui/command/RemoveObjectCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -734,7 +734,7 @@ void MainWindow::del()
 	if(!selection.isEmpty())
 	{
 		auto macro = m_document->beginCommandMacro(tr("delete objects"));
-		m_document->addCommand(new DeleteObjectCommand(m_document, m_graphView, selection));
+		m_document->addCommand(new RemoveObjectCommand(m_document, m_graphView, selection));
 	}
 }
 

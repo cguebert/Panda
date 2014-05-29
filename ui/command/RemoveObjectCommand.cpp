@@ -3,10 +3,10 @@
 #include <panda/PandaDocument.h>
 #include <ui/GraphView.h>
 #include <ui/command/CommandId.h>
-#include <ui/command/DeleteObjectCommand.h>
+#include <ui/command/RemoveObjectCommand.h>
 #include <ui/command/LinkDatasCommand.h>
 
-DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
+RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 GraphView* view,
 										 const QList<panda::PandaObject*>& objects,
 										 bool unlinkDatas,
@@ -16,10 +16,10 @@ DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
 	, m_view(view)
 {
 	prepareCommand(objects, unlinkDatas);
-	setText(QCoreApplication::translate("DeleteObjectCommand", "delete objects"));
+	setText(QCoreApplication::translate("RemoveObjectCommand", "delete objects"));
 }
 
-DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
+RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 GraphView* view,
 										 panda::PandaObject* object,
 										 bool unlinkDatas,
@@ -31,10 +31,10 @@ DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
 	QList<panda::PandaObject*> objects;
 	objects.push_back(object);
 	prepareCommand(objects, unlinkDatas);
-	setText(QCoreApplication::translate("DeleteObjectCommand", "delete objects"));
+	setText(QCoreApplication::translate("RemoveObjectCommand", "delete objects"));
 }
 
-void DeleteObjectCommand::prepareCommand(const QList<panda::PandaObject*>& objects, bool unlinkDatas)
+void RemoveObjectCommand::prepareCommand(const QList<panda::PandaObject*>& objects, bool unlinkDatas)
 {
 	for(auto object : objects)
 	{
@@ -68,18 +68,18 @@ void DeleteObjectCommand::prepareCommand(const QList<panda::PandaObject*>& objec
 	}
 }
 
-int DeleteObjectCommand::id() const
+int RemoveObjectCommand::id() const
 {
-	return getCommandId<DeleteObjectCommand>();
+	return getCommandId<RemoveObjectCommand>();
 }
 
-void DeleteObjectCommand::redo()
+void RemoveObjectCommand::redo()
 {
 	for(auto object : m_objects)
 		m_document->removeObject(object.first.data());
 }
 
-void DeleteObjectCommand::undo()
+void RemoveObjectCommand::undo()
 {
 	for(auto object : m_objects)
 	{
@@ -88,13 +88,13 @@ void DeleteObjectCommand::undo()
 	}
 }
 
-bool DeleteObjectCommand::mergeWith(const QUndoCommand *other)
+bool RemoveObjectCommand::mergeWith(const QUndoCommand *other)
 {
 	// Only merge if creating a macro of multiple commands (not in case of multiple users actions)
 	if(!m_document->isInCommandMacro())
 		return false;
 
-	const DeleteObjectCommand* command = dynamic_cast<const DeleteObjectCommand*>(other);
+	const RemoveObjectCommand* command = dynamic_cast<const RemoveObjectCommand*>(other);
 	if(!command)
 		return false;
 	if(m_document == command->m_document)

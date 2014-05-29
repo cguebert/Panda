@@ -3,19 +3,19 @@
 #include <panda/PandaDocument.h>
 #include <panda/Group.h>
 
-#include <ui/command/CreateGroupCommand.h>
+#include <ui/command/GroupCommand.h>
 
-CreateGroupCommand::CreateGroupCommand(panda::PandaDocument* document,
+SelectGroupCommand::SelectGroupCommand(panda::PandaDocument* document,
 									   panda::Group* group,
 									   QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_document(document)
 	, m_group(group)
 {
-	setText(QCoreApplication::translate("CreateGroupCommand", "detach dockable object"));
+	setText(QCoreApplication::translate("SelectGroupCommand", "select group"));
 }
 
-void CreateGroupCommand::redo()
+void SelectGroupCommand::redo()
 {
 	// If at least one of the object inside the group was selected, select the group
 	for(auto object : m_group->getObjects())
@@ -28,7 +28,7 @@ void CreateGroupCommand::redo()
 	}
 }
 
-void CreateGroupCommand::undo()
+void SelectGroupCommand::undo()
 {
 	// If the group was selected, select all objects inside it
 	if(m_document->isSelected(m_group))
@@ -40,17 +40,17 @@ void CreateGroupCommand::undo()
 
 //***************************************************************//
 
-ExpandGroupCommand::ExpandGroupCommand(panda::PandaDocument* document,
+SelectObjectsInGroupCommand::SelectObjectsInGroupCommand(panda::PandaDocument* document,
 									   panda::Group* group,
 									   QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_document(document)
 	, m_group(group)
 {
-	setText(QCoreApplication::translate("ExpandGroupCommand", "expand group"));
+	setText(QCoreApplication::translate("SelectObjectsInGroupCommand", "select objects in group"));
 }
 
-void ExpandGroupCommand::redo()
+void SelectObjectsInGroupCommand::redo()
 {
 	// If the group was selected, select all objects inside it
 	if(m_document->isSelected(m_group))
@@ -60,7 +60,7 @@ void ExpandGroupCommand::redo()
 	}
 }
 
-void ExpandGroupCommand::undo()
+void SelectObjectsInGroupCommand::undo()
 {
 	// If at least one of the object inside the group was selected, select the group
 	for(auto object : m_group->getObjects())
@@ -75,44 +75,44 @@ void ExpandGroupCommand::undo()
 
 //***************************************************************//
 
-GroupAddObjectCommand::GroupAddObjectCommand(panda::Group* group,
+AddObjectToGroupCommand::AddObjectToGroupCommand(panda::Group* group,
 											 QSharedPointer<panda::PandaObject> object,
 											 QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_group(group)
 	, m_object(object)
 {
-	setText(QCoreApplication::translate("GroupAddObjectCommand", "add object to group"));
+	setText(QCoreApplication::translate("AddObjectToGroupCommand", "add object to group"));
 }
 
-void GroupAddObjectCommand::redo()
+void AddObjectToGroupCommand::redo()
 {
 	m_group->addObject(m_object);
 }
 
-void GroupAddObjectCommand::undo()
+void AddObjectToGroupCommand::undo()
 {
 	m_group->removeObject(m_object.data());
 }
 
 //***************************************************************//
 
-GroupRemoveObjectCommand::GroupRemoveObjectCommand(panda::Group* group,
+RemoveObjectFromGroupCommand::RemoveObjectFromGroupCommand(panda::Group* group,
 											 QSharedPointer<panda::PandaObject> object,
 											 QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_group(group)
 	, m_object(object)
 {
-	setText(QCoreApplication::translate("GroupRemoveObjectCommand", "remove object from group"));
+	setText(QCoreApplication::translate("RemoveObjectFromGroupCommand", "remove object from group"));
 }
 
-void GroupRemoveObjectCommand::redo()
+void RemoveObjectFromGroupCommand::redo()
 {
 	m_group->removeObject(m_object.data());
 }
 
-void GroupRemoveObjectCommand::undo()
+void RemoveObjectFromGroupCommand::undo()
 {
 	m_group->addObject(m_object);
 }

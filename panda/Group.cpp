@@ -4,8 +4,8 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
 
 #include <ui/command/AddObjectCommand.h>
-#include <ui/command/CreateGroupCommand.h>
-#include <ui/command/DeleteObjectCommand.h>
+#include <ui/command/GroupCommand.h>
+#include <ui/command/RemoveObjectCommand.h>
 #include <ui/command/LinkDatasCommand.h>
 #include <ui/command/MoveObjectCommand.h>
 
@@ -111,7 +111,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 		auto objectPtr = doc->getSharedPointer(object);
 		if(!objectPtr)
 			continue;
-		doc->addCommand(new GroupAddObjectCommand(group, objectPtr));
+		doc->addCommand(new AddObjectToGroupCommand(group, objectPtr));
 
 		// Storing the position of this object in respect to the group object
 		QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
@@ -182,10 +182,10 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	}
 
 	// Select the group
-	doc->addCommand(new CreateGroupCommand(doc, group));
+	doc->addCommand(new SelectGroupCommand(doc, group));
 
 	// Removing the objects from the document, but don't unlink datas
-	doc->addCommand(new DeleteObjectCommand(doc, view, selection, false));
+	doc->addCommand(new RemoveObjectCommand(doc, view, selection, false));
 
 	return true;
 }
@@ -222,7 +222,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 				docks.append(object);
 			else
 			{
-				doc->addCommand(new GroupRemoveObjectCommand(group, object));
+				doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
 				doc->addCommand(new AddObjectCommand(doc, view, object));
 
 				// Placing the object in the view
@@ -236,7 +236,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		// We extract docks last (their docked objects must be out first)
 		for(auto object : docks)
 		{
-			doc->addCommand(new GroupRemoveObjectCommand(group, object));
+			doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
 			doc->addCommand(new AddObjectCommand(doc, view, object));
 
 			// Placing the object in the view
@@ -259,8 +259,8 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 			}
 		}
 
-		doc->addCommand(new ExpandGroupCommand(doc, group)); // Select all the object that were in the group
-		doc->addCommand(new DeleteObjectCommand(doc, view, group));
+		doc->addCommand(new SelectObjectsInGroupCommand(doc, group)); // Select all the object that were in the group
+		doc->addCommand(new RemoveObjectCommand(doc, view, group));
 	}
 
 	return true;

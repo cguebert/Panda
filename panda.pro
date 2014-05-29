@@ -58,13 +58,13 @@ HEADERS       = \
 	ui/UpdateLoggerDialog.h \
 	ui/command/AddObjectCommand.h \
 	ui/command/CommandId.h \
-	ui/command/CreateGroupCommand.h \
-	ui/command/DeleteObjectCommand.h \
 	ui/command/DetachDockableCommand.h \
+	ui/command/GroupCommand.h \
 	ui/command/LinkDatasCommand.h \
 	ui/command/ModifyAnnotationCommand.h \
 	ui/command/MoveObjectCommand.h \
 	ui/command/RemoveGenericDataCommand.h \
+	ui/command/RemoveObjectCommand.h \
 	ui/command/SetDataValueCommand.h \
 	ui/drawstruct/AnnotationDrawStruct.h \
 	ui/drawstruct/DockableDrawStruct.h \
@@ -225,13 +225,13 @@ SOURCES       = main.cpp \
 	ui/UpdateLoggerDialog.cpp \
 	ui/command/AddObjectCommand.cpp \
 	ui/command/CommandId.cpp \
-	ui/command/CreateGroupCommand.cpp \
-	ui/command/DeleteObjectCommand.cpp \
 	ui/command/DetachDockableCommand.cpp \
+	ui/command/GroupCommand.cpp \
 	ui/command/LinkDatasCommand.cpp \
 	ui/command/ModifyAnnotationCommand.cpp \
 	ui/command/MoveObjectCommand.cpp \
 	ui/command/RemoveGenericDataCommand.cpp \
+	ui/command/RemoveObjectCommand.cpp \
 	ui/drawstruct/AnnotationDrawStruct.cpp \
 	ui/drawstruct/DockableDrawStruct.cpp \
 	ui/drawstruct/GenericObjectDrawStruct.cpp \
