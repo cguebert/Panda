@@ -17,11 +17,6 @@ namespace panda
 
 void BaseLayer::updateLayer(PandaDocument* doc)
 {
-#ifdef PANDA_LOG_EVENTS
-	{
-		helper::ScopedEvent log1("prepareLayer");
-#endif
-
 	// Bugfix : we update the input Datas of the renderers before setting the opengl context
 	//  as getting the image from an ImageWrapper can screw it up
 	for(const auto& renderer : getRenderers())
@@ -30,6 +25,11 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 			input->updateIfDirty();
 		renderer->updateIfDirty();
 	}
+
+#ifdef PANDA_LOG_EVENTS
+	{
+		helper::ScopedEvent log1("prepareLayer");
+#endif
 
 	QSize renderSize = doc->getRenderSize();
 	if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)

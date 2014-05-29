@@ -50,19 +50,16 @@ Data<T>::~Data()
 template<class T>
 void Data<T>::update()
 {
-	cleanDirty();
 	for(DataNode* node : m_inputs)
 		node->updateIfDirty();
-	if(m_parentData)
-	{	// TODO : we shouldn't have to do anything here, there is a bug somewhere...
-		beginEdit();
-		endEdit();	// As if we touched the data
-	}
-	else if(m_parentBaseData)
+
+	if(!m_parentData && m_parentBaseData)
 	{
+		cleanDirty();
 		copyValueFrom(m_parentBaseData);
-		cleanDirty(); // Bugfix: copying a value will most often make this Data dirty
 	}
+
+	cleanDirty();
 }
 
 template<class T>
