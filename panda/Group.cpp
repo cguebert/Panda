@@ -111,7 +111,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 		auto objectPtr = doc->getSharedPointer(object);
 		if(!objectPtr)
 			continue;
-		group->addObject(objectPtr);
+		doc->addCommand(new GroupAddObjectCommand(group, objectPtr));
 
 		// Storing the position of this object in respect to the group object
 		QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
@@ -132,7 +132,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 						createdData = group->duplicateData(data);
 						createdData->copyValueFrom(otherData);
 						group->addInput(createdData);
-						group->dataSetParent(createdData, otherData);
+						doc->addCommand(new LinkDatasCommand(createdData, otherData));
 						connectedInputDatas.insert(otherData, createdData);
 					}
 					else
@@ -147,7 +147,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 					}
 
 					if(createdData)
-						data->getOwner()->dataSetParent(data, createdData);
+						doc->addCommand(new LinkDatasCommand(data, createdData));
 				}
 			}
 		}
@@ -169,11 +169,12 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 						{
 							createdData = group->duplicateData(data);
 							createdData->copyValueFrom(data);
+							createdData->setOutput(true);
 							group->dataSetParent(createdData, data);
 							group->addOutput(createdData);
 						}
 
-						otherData->getOwner()->dataSetParent(otherData, createdData);
+						doc->addCommand(new LinkDatasCommand(otherData, createdData));
 					}
 				}
 			}
@@ -181,15 +182,10 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 	}
 
 	// Select the group
-	doc->selectNone();
-	doc->setCurrentSelectedObject(group);
+	doc->addCommand(new CreateGroupCommand(doc, group));
 
-	// Removing the objects from the document
-	for(auto object : selection)
-		doc->removeObject(object);
-
-	view->modifiedObject(group);
-	view->setRecomputeTags();
+	// Removing the objects from the document, but don't unlink datas
+	doc->addCommand(new DeleteObjectCommand(doc, view, selection, false));
 
 	return true;
 }
@@ -209,8 +205,6 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 
 	if(groups.isEmpty())
 		return false;
-
-	doc->selectNone();
 
 	auto macro = doc->beginCommandMacro(tr("ungroup selection"));
 
@@ -265,8 +259,8 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 			}
 		}
 
-		doc->addCommand(new DeleteObjectCommand(doc, view, group));
 		doc->addCommand(new ExpandGroupCommand(doc, group)); // Select all the object that were in the group
+		doc->addCommand(new DeleteObjectCommand(doc, view, group));
 	}
 
 	return true;

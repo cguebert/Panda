@@ -9,18 +9,20 @@
 DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
 										 GraphView* view,
 										 const QList<panda::PandaObject*>& objects,
+										 bool unlinkDatas,
 										 QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_document(document)
 	, m_view(view)
 {
-	prepareCommand(objects);
+	prepareCommand(objects, unlinkDatas);
 	setText(QCoreApplication::translate("DeleteObjectCommand", "delete objects"));
 }
 
 DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
 										 GraphView* view,
 										 panda::PandaObject* object,
+										 bool unlinkDatas,
 										 QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_document(document)
@@ -28,11 +30,11 @@ DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
 {
 	QList<panda::PandaObject*> objects;
 	objects.push_back(object);
-	prepareCommand(objects);
+	prepareCommand(objects, unlinkDatas);
 	setText(QCoreApplication::translate("DeleteObjectCommand", "delete objects"));
 }
 
-void DeleteObjectCommand::prepareCommand(const QList<panda::PandaObject*>& objects)
+void DeleteObjectCommand::prepareCommand(const QList<panda::PandaObject*>& objects, bool unlinkDatas)
 {
 	for(auto object : objects)
 	{
@@ -41,24 +43,27 @@ void DeleteObjectCommand::prepareCommand(const QList<panda::PandaObject*>& objec
 		if(objectPtr && ods)
 			m_objects.push_back(qMakePair(objectPtr, ods));
 
-		// Create (and apply) unlink commands
-		// We start from output datas
-		for(auto data : objectPtr->getOutputDatas())
+		if(unlinkDatas)
 		{
-			for(auto output : data->getOutputs())
+			// Create (and apply) unlink commands
+			// We start from output datas
+			for(auto data : objectPtr->getOutputDatas())
 			{
-				auto data2 = dynamic_cast<panda::BaseData*>(output);
-				if(data2 && data2->getOwner())
-					m_document->addCommand(new LinkDatasCommand(data2, nullptr));
+				for(auto output : data->getOutputs())
+				{
+					auto data2 = dynamic_cast<panda::BaseData*>(output);
+					if(data2 && data2->getOwner())
+						m_document->addCommand(new LinkDatasCommand(data2, nullptr));
+				}
 			}
-		}
 
-		// And then the inputs (getInputDatas gives a copy,
-		//  so no problem when some objects remove datas during this operation)
-		for(auto data : objectPtr->getInputDatas())
-		{
-			if(data->getParent())
-				m_document->addCommand(new LinkDatasCommand(data, nullptr));
+			// And then the inputs (getInputDatas gives a copy,
+			//  so no problem when some objects remove datas during this operation)
+			for(auto data : objectPtr->getInputDatas())
+			{
+				if(data->getParent())
+					m_document->addCommand(new LinkDatasCommand(data, nullptr));
+			}
 		}
 	}
 }
@@ -70,8 +75,6 @@ int DeleteObjectCommand::id() const
 
 void DeleteObjectCommand::redo()
 {
-	m_document->selectNone();
-
 	for(auto object : m_objects)
 		m_document->removeObject(object.first.data());
 }

@@ -39,7 +39,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 	: QUndoCommand(parent)
 	, m_document(document)
 	, m_view(view)
-	, m_ignoreRedo(true)
+	, m_ignoreRedo(true) // This version is used when importing a document: when the command is created, objects are already added
 {
 	for(auto object : objects)
 	{

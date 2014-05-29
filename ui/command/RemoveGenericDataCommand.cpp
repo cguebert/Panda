@@ -12,7 +12,6 @@ RemoveGenericDataCommand::RemoveGenericDataCommand(panda::GenericObject* object,
 	, m_type(type)
 	, m_index(index)
 {
-
 	setText(QCoreApplication::translate("RemoveGenericDataCommand", "remove generic data"));
 }
 

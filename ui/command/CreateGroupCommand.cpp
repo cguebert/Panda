@@ -5,18 +5,37 @@
 
 #include <ui/command/CreateGroupCommand.h>
 
-CreateGroupCommand::CreateGroupCommand(QUndoCommand* parent)
+CreateGroupCommand::CreateGroupCommand(panda::PandaDocument* document,
+									   panda::Group* group,
+									   QUndoCommand* parent)
 	: QUndoCommand(parent)
+	, m_document(document)
+	, m_group(group)
 {
 	setText(QCoreApplication::translate("CreateGroupCommand", "detach dockable object"));
 }
 
 void CreateGroupCommand::redo()
 {
+	// If at least one of the object inside the group was selected, select the group
+	for(auto object : m_group->getObjects())
+	{
+		if(m_document->isSelected(object.data()))
+		{
+			m_document->selectionAdd(m_group);
+			return;
+		}
+	}
 }
 
 void CreateGroupCommand::undo()
 {
+	// If the group was selected, select all objects inside it
+	if(m_document->isSelected(m_group))
+	{
+		for(auto object : m_group->getObjects())
+			m_document->selectionAdd(object.data());
+	}
 }
 
 //***************************************************************//
@@ -33,12 +52,25 @@ ExpandGroupCommand::ExpandGroupCommand(panda::PandaDocument* document,
 
 void ExpandGroupCommand::redo()
 {
-	for(auto object : m_group->getObjects())
-		m_document->selectionAdd(object.data());
+	// If the group was selected, select all objects inside it
+	if(m_document->isSelected(m_group))
+	{
+		for(auto object : m_group->getObjects())
+			m_document->selectionAdd(object.data());
+	}
 }
 
 void ExpandGroupCommand::undo()
 {
+	// If at least one of the object inside the group was selected, select the group
+	for(auto object : m_group->getObjects())
+	{
+		if(m_document->isSelected(object.data()))
+		{
+			m_document->selectionAdd(m_group);
+			return;
+		}
+	}
 }
 
 //***************************************************************//

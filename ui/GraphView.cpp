@@ -1198,7 +1198,11 @@ void GraphView::computeSnapDelta(QPointF position)
 void GraphView::moveObjects(QList<panda::PandaObject*> objects, QPointF delta)
 {
 	for(auto object : objects)
-		m_objectDrawStructs[object]->move(delta);
+	{
+		auto ods = getObjectDrawStruct(object);
+		if(ods)
+			ods->move(delta);
+	}
 	emit modified();
 	updateLinkTags();
 	update();

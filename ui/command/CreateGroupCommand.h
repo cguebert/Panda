@@ -14,12 +14,14 @@ class PandaDocument;
 class CreateGroupCommand : public QUndoCommand
 {
 public:
-	CreateGroupCommand(QUndoCommand* parent = nullptr);
+	CreateGroupCommand(panda::PandaDocument* document, panda::Group* group, QUndoCommand* parent = nullptr);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
+	panda::PandaDocument* m_document;
+	panda::Group* m_group;
 };
 
 //***************************************************************//
