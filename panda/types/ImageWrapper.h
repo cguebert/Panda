@@ -36,6 +36,9 @@ public:
 
 	QOpenGLFramebufferObject* getFbo() const; // will return null if image source
 
+	bool operator==(const ImageWrapper& img) const;
+	bool operator!=(const ImageWrapper& img) const;
+
 private:
 	QImage m_image;
 	QSharedPointer<QOpenGLTexture> m_texture;

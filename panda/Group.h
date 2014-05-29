@@ -4,7 +4,6 @@
 #include <panda/PandaObject.h>
 #include <panda/Layer.h>
 
-class GroupObjectDrawStruct;
 class EditGroupDialog;
 class GraphView;
 
@@ -16,7 +15,6 @@ class PandaDocument;
 class Group : public QObject, public PandaObject
 {
 	Q_OBJECT
-	friend class GroupObjectDrawStruct;
 	friend class EditGroupDialog;
 public:
 	PANDA_CLASS(Group, PandaObject)
@@ -76,10 +74,10 @@ public:
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();
 
-protected:
 	virtual void addObject(ObjectPtr obj);
 	virtual void removeObject(PandaObject* obj);
 
+protected:
 	Data<types::ImageWrapper> m_image;
 	QMatrix4x4 m_mvpMatrix;
 	int m_compositionMode;

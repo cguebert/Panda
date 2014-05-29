@@ -69,8 +69,9 @@ HEADERS       = \
 	ui/drawstruct/AnnotationDrawStruct.h \
 	ui/drawstruct/DockableDrawStruct.h \
 	ui/drawstruct/GenericObjectDrawStruct.h \
-	ui/drawstruct/GroupObjectDrawStruct.h \
+	ui/drawstruct/GroupDrawStruct.h \
 	ui/drawstruct/ObjectDrawStruct.h \
+	ui/drawstruct/UserValueDrawStruct.h \
 	ui/widget/AnimationDataWidgetDialog.h \
 	ui/widget/DataWidget.h \
 	ui/widget/DataWidgetFactory.h \
@@ -235,8 +236,10 @@ SOURCES       = main.cpp \
 	ui/drawstruct/AnnotationDrawStruct.cpp \
 	ui/drawstruct/DockableDrawStruct.cpp \
 	ui/drawstruct/GenericObjectDrawStruct.cpp \
-	ui/drawstruct/GroupObjectDrawStruct.cpp \
+	ui/drawstruct/GroupDrawStruct.cpp \
 	ui/drawstruct/ObjectDrawStruct.cpp \
+	ui/drawstruct/UserValueDrawStruct.cpp \
+	ui/widget/AnimationDataWidgetDialog.cpp \
 	ui/widget/ColorDataWidget.cpp \
 	ui/widget/EditGradientDialog.cpp \
 	ui/widget/EditMeshDialog.cpp \
@@ -246,8 +249,7 @@ SOURCES       = main.cpp \
 	ui/widget/PointDataWidget.cpp \
 	ui/widget/RectDataWidget.cpp \
 	ui/widget/StringDataWidget.cpp \
-	ui/widget/TableDataWidgetDialog.cpp \
-	ui/widget/AnimationDataWidgetDialog.cpp
+	ui/widget/TableDataWidgetDialog.cpp
 RESOURCES     = panda.qrc
 win32:RC_FILE = panda.rc
 INCLUDEPATH = .

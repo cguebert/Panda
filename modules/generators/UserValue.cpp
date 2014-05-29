@@ -40,13 +40,13 @@ public:
 };
 
 template <class T>
-class GeneratorUser : public PandaObject
+class GeneratorUser : public BaseGeneratorUser
 {
 public:
-	PANDA_CLASS(PANDA_TEMPLATE(GeneratorUser, T), PandaObject)
+	PANDA_CLASS(PANDA_TEMPLATE(GeneratorUser, T), BaseGeneratorUser)
 
 	GeneratorUser(PandaDocument *doc)
-		: PandaObject(doc)
+		: BaseGeneratorUser(doc)
 		, userValue("input", "The value you want to store", this)
 		, output(initData(&output, "value", "The value stored"))
 	{

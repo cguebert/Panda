@@ -10,10 +10,10 @@ class Group;
 
 class GraphView;
 
-class GroupObjectDrawStruct : public ObjectDrawStruct
+class GroupDrawStruct : public ObjectDrawStruct
 {
 public:
-	GroupObjectDrawStruct(GraphView* view, panda::Group* m_object);
+	GroupDrawStruct(GraphView* view, panda::Group* object);
 
 	virtual void drawShape(QPainter* painter);
 	virtual void drawText(QPainter* painter);

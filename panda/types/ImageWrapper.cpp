@@ -116,6 +116,16 @@ QOpenGLFramebufferObject* ImageWrapper::getFbo() const
 	return m_fbo.data();
 }
 
+bool ImageWrapper::operator==(const ImageWrapper& img) const
+{
+	return m_image == img.m_image;
+}
+
+bool ImageWrapper::operator!=(const ImageWrapper& img) const
+{
+	return !(*this == img);
+}
+
 //***************************************************************//
 
 template<> QString DataTrait<ImageWrapper>::valueTypeName() { return "image"; }
