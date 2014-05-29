@@ -45,12 +45,12 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
 											 true, false,
 											 "input",
 											 "List used to create the animation"));
 		// Create an animation of the same type as the data connected
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
 											 false, true,
 											 "output",
 											 "Animation created from the given list"));
@@ -105,17 +105,17 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
 											 true, false,
 											 "input",
 											 "Animation from which to get the values"));
 		// Create an animation of the same type as the data connected
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<PReal>()),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<PReal>()),
 											 false, true,
 											 "keys",
 											 "List of keys of the given animation"));
 		// Create an animation of the same type as the data connected
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
 											 false, true,
 											 "values",
 											 "List of values of the given animation"));

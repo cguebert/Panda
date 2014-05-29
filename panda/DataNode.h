@@ -82,13 +82,13 @@ inline void DataNode::updateIfDirty() const
 }
 
 inline void DataNode::doAddInput(DataNode* node)
-{ m_inputs.append(node); }
+{ m_inputs.push_back(node); }
 
 inline void DataNode::doRemoveInput(DataNode* node)
 { m_inputs.removeAll(node); }
 
 inline void DataNode::doAddOutput(DataNode* node)
-{ m_outputs.append(node); }
+{ m_outputs.push_back(node); }
 
 inline void DataNode::doRemoveOutput(DataNode* node)
 { m_outputs.removeAll(node); }

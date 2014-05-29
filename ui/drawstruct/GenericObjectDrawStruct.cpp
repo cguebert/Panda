@@ -49,7 +49,7 @@ void GenericObjectDrawStruct::update()
 		{
 			QRectF dataArea(xi, startY + index * dh,
 							dataRectSize, dataRectSize);
-			m_datas.append(qMakePair(dataArea, data));
+			m_datas.push_back(qMakePair(dataArea, data));
 			++index;
 		}
 	}
@@ -63,7 +63,7 @@ void GenericObjectDrawStruct::update()
 		{
 			QRectF dataArea(xo, startY + index * dh,
 							dataRectSize, dataRectSize);
-			m_datas.append(qMakePair(dataArea, data));
+			m_datas.push_back(qMakePair(dataArea, data));
 			++index;
 		}
 	}
@@ -85,13 +85,13 @@ void GenericObjectDrawStruct::update()
 			if(m_genericObject->m_dataDefinitions[j].input)
 			{
 				QRectF dataArea(xi, y + inputIndex * dh, dataRectSize, dataRectSize);
-				m_datas.append(qMakePair(dataArea, createdDatas[j].data()));
+				m_datas.push_back(qMakePair(dataArea, createdDatas[j].data()));
 				++inputIndex;
 			}
 			if(m_genericObject->m_dataDefinitions[j].output)
 			{
 				QRectF dataArea(xo, y + outputIndex * dh, dataRectSize, dataRectSize);
-				m_datas.append(qMakePair(dataArea, createdDatas[j].data()));
+				m_datas.push_back(qMakePair(dataArea, createdDatas[j].data()));
 				++outputIndex;
 			}
 		}
@@ -101,7 +101,7 @@ void GenericObjectDrawStruct::update()
 
 	// And the generic data
 	QRectF dataArea(xi, y, dataRectSize, dataRectSize);
-	m_datas.append(qMakePair(dataArea, (panda::BaseData*)m_genericObject->m_genericData));
+	m_datas.push_back(qMakePair(dataArea, (panda::BaseData*)m_genericObject->m_genericData));
 }
 
 void GenericObjectDrawStruct::drawDatas(QPainter* painter)

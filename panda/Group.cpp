@@ -200,7 +200,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 	{
 		Group* group = dynamic_cast<Group*>(object);
 		if(group)
-			groups.append(group);
+			groups.push_back(group);
 	}
 
 	if(groups.isEmpty())
@@ -219,7 +219,7 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		{
 			panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.data());
 			if(dock)
-				docks.append(object);
+				docks.push_back(object);
 			else
 			{
 				doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
@@ -313,7 +313,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 		{
 			BaseData* parent = data->getParent();
 			if(parent)
-				links.append(qMakePair(data, parent));
+				links.push_back(qMakePair(data, parent));
 		}
 
 		// Preparing dockables list for docks
@@ -321,7 +321,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 		if(dock)
 		{
 			for(auto dockable : dock->getDockables())
-				dockedObjects.append(qMakePair(dock->getIndex(), dockable->getIndex()));
+				dockedObjects.push_back(qMakePair(dock->getIndex(), dockable->getIndex()));
 		}
 	}
 
@@ -330,7 +330,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 	{
 		BaseData* parent = data->getParent();
 		if(parent)
-			links.append(qMakePair(data, parent));
+			links.push_back(qMakePair(data, parent));
 	}
 
 	// Saving links
@@ -376,7 +376,7 @@ void Group::load(QDomElement& elem)
 
 		auto dataPtr = DataFactory::getInstance()->create(type, name, help, this);
 		auto data = dataPtr.data();
-		m_groupDatas.append(dataPtr);
+		m_groupDatas.push_back(dataPtr);
 		if(input)
 			addInput(data);
 		if(output)
@@ -523,7 +523,7 @@ BaseData* Group::duplicateData(BaseData* data)
 	newData->setDisplayed(data->isDisplayed());
 	newData->setPersistent(data->isPersistent());
 	newData->setWidget(data->getWidget());
-	m_groupDatas.append(newData);
+	m_groupDatas.push_back(newData);
 
 	return newData.data();
 }

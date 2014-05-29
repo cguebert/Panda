@@ -25,7 +25,7 @@ public:
 
 		int typeOfValue = types::DataTypeId::getFullTypeOfVector(0);	// Create a copy of the data connected
 		GenericDataDefinitionList defList;
-		defList.append(GenericDataDefinition(typeOfValue,
+		defList.push_back(GenericDataDefinition(typeOfValue,
 											 true, false,
 											 "input",
 											 "Value to use in the format operation"));

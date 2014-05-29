@@ -26,11 +26,11 @@ public:
 		addOutput(&gradients);
 
 		GenericDataDefinitionList defList;
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<Color>()),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<Color>()),
 											 true, false,
 											 "color",
 											 "Color to add to the gradient"));
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<PReal>()),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<PReal>()),
 											 true, false,
 											 "position",
 											 "Position where to insert the color"));

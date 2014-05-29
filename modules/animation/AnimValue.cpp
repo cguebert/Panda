@@ -26,12 +26,12 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create an animation of the same type as the data connected
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
 											 true, false,
 											 "input",
 											 "Animation from which to extract the values"));
 		// Create a list of the same type as the data connected
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
 											 false, true,
 											 "output",
 											 "Values extracted from the animation"));

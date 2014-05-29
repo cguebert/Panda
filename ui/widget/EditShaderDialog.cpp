@@ -85,7 +85,7 @@ void EditShaderDialog::updateValuesTab(const Shader::ValuesVector& values)
 
 		if (dataWidget)
 		{
-			m_dataWidgets.append(dataWidget);
+			m_dataWidgets.push_back(dataWidget);
 			QWidget* widget = dataWidget->createWidgets(m_readOnly);
 			valuesLayout->addRow(value->getName(), widget);
 		}

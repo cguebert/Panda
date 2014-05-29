@@ -233,7 +233,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 		{
 			BaseData* parent = data->getParent();
 			if(parent && contains(selected, parent->getOwner()))
-				links.append(qMakePair(data, parent));
+				links.push_back(qMakePair(data, parent));
 		}
 
 		// Preparing dockables list for docks
@@ -241,7 +241,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 		if(dock)
 		{
 			for(auto dockable : dock->getDockables())
-				dockedObjects.append(qMakePair(dock->getIndex(), dockable->getIndex()));
+				dockedObjects.push_back(qMakePair(dock->getIndex(), dockable->getIndex()));
 		}
 
 		emit savingObject(doc, elem, object);
@@ -288,7 +288,7 @@ bool PandaDocument::loadDoc(QDomElement& root)
 		{
 			addObject(object);
 			importIndicesMap[index] = object->getIndex();
-			m_selectedObjects.append(object.data());
+			m_selectedObjects.push_back(object.data());
 
 			object->load(elem);
 
@@ -413,7 +413,7 @@ PandaObject* PandaDocument::getCurrentSelectedObject()
 void PandaDocument::setCurrentSelectedObject(PandaObject* object)
 {
 	m_selectedObjects.removeAll(object);
-	m_selectedObjects.append(object);
+	m_selectedObjects.push_back(object);
 	emit selectedObject(object);
 	emit selectionChanged();
 }
@@ -455,7 +455,7 @@ void PandaDocument::selectionAdd(PandaObject* object)
 {
 	if(!contains(m_selectedObjects, object))
 	{
-		m_selectedObjects.append(object);
+		m_selectedObjects.push_back(object);
 		emit selectedObject(object);
 		emit selectionChanged();
 	}
@@ -557,7 +557,7 @@ void PandaDocument::selectConnected()
 
 void PandaDocument::addObject(ObjectPtr object)
 {
-	m_objects.append(object);
+	m_objects.push_back(object);
 	object->addedToDocument();
 	emit addedObject(object.data());
 }

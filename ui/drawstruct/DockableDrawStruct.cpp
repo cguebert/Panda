@@ -82,7 +82,7 @@ void DockObjectDrawStruct::update()
 		if(doc->isInCommandMacro())
 			doc->addCommand(new MoveObjectCommand(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
 
-		m_dockablesY.append(objectStruct->getObjectArea().center().y());
+		m_dockablesY.push_back(objectStruct->getObjectArea().center().y());
 
 		tx = m_objectArea.left() + dockHoleWidth - DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;
 		int w = DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;

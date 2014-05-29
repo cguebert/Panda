@@ -39,7 +39,7 @@ void PointsGrid::clear()
 
 void PointsGrid::addPoint(const Point& point)
 {
-	cells[cellIndex(point)].append(point);
+	cells[cellIndex(point)].push_back(point);
 }
 
 void PointsGrid::addPoints(const QVector<Point>& points)

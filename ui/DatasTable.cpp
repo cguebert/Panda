@@ -71,7 +71,7 @@ void DatasTable::populateTable()
 
 		if (dataWidget)
 		{
-			m_dataWidgets.append(dataWidget);
+			m_dataWidgets.push_back(dataWidget);
 			bool readOnly = (data->getParent() != nullptr);
 			QWidget* widget = dataWidget->createWidgets(readOnly);
 			formLayout->addRow(data->getName(), widget);
@@ -88,7 +88,7 @@ void DatasTable::populateTable()
 
 		if (dataWidget)
 		{
-			m_dataWidgets.append(dataWidget);
+			m_dataWidgets.push_back(dataWidget);
 
 			QWidget* widget = dataWidget->createWidgets(true);
 			formLayout->addRow(data->getName(), widget);

@@ -73,7 +73,7 @@ BaseData* GenericObject::createDatas(int type, int index)
 	if(index >= 0 && index < m_createdDatasStructs.size())
 		m_createdDatasStructs.insert(index, createdDatasStruct);
 	else
-		m_createdDatasStructs.append(createdDatasStruct);
+		m_createdDatasStructs.push_back(createdDatasStruct);
 	int nbCreated = m_createdDatasStructs.size();
 
 	BaseData* firstInputData = nullptr;
@@ -110,7 +110,7 @@ BaseData* GenericObject::createDatas(int type, int index)
 		if(m_dataDefinitions[i].output)
 			addOutput(data);
 
-		createdDatasStruct->datas.append(dataPtr);
+		createdDatasStruct->datas.push_back(dataPtr);
 		m_createdDatasMap.insert(data, createdDatasStruct);
 	}
 
@@ -200,7 +200,7 @@ void GenericObject::update()
 
 		DataList list;
 		for(BaseDataPtr ptr : created->datas)
-			list.append(ptr.data());
+			list.push_back(ptr.data());
 		invokeFunction(created->type, list);
 	}
 
@@ -334,9 +334,9 @@ void SingleTypeGenericObject::update()
 				dataPtr->updateIfDirty();
 
 			if(m_singleOutput && i && m_dataDefinitions[j].output && !m_dataDefinitions[j].input)
-				list.append(m_createdDatasStructs[0]->datas[j].data());
+				list.push_back(m_createdDatasStructs[0]->datas[j].data());
 			else
-				list.append(dataPtr.data());
+				list.push_back(dataPtr.data());
 		}
 
 		invokeFunction(created->type, list);
@@ -361,7 +361,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 	if(index >= 0 && index < m_createdDatasStructs.size())
 		m_createdDatasStructs.insert(index, createdDatasStruct);
 	else
-		m_createdDatasStructs.append(createdDatasStruct);
+		m_createdDatasStructs.push_back(createdDatasStruct);
 	int nbCreated = m_createdDatasStructs.size();
 
 	BaseData* firstInputData = nullptr;
@@ -374,7 +374,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 	{
 		if(m_singleOutput && nbCreated > 1 && m_dataDefinitions[i].output && !m_dataDefinitions[i].input)
 		{
-			createdDatasStruct->datas.append(BaseDataPtr(nullptr));
+			createdDatasStruct->datas.push_back(BaseDataPtr(nullptr));
 		}
 		else
 		{
@@ -404,7 +404,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 			if(m_dataDefinitions[i].output)
 				addOutput(data);
 
-			createdDatasStruct->datas.append(dataPtr);
+			createdDatasStruct->datas.push_back(dataPtr);
 			m_createdDatasMap.insert(data, createdDatasStruct);
 		}
 	}

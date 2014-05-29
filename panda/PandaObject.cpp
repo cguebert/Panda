@@ -32,7 +32,7 @@ void PandaObject::addData(BaseData* data)
 	}
 	if(!datas.contains(data))
 	{
-		datas.append(data);
+		datas.push_back(data);
 		emitModified();
 	}
 }
@@ -107,7 +107,7 @@ QList<BaseData*> PandaObject::getInputDatas() const
 	for(BaseData* data : datas)
 	{
 		if(data->isInput())
-			temp.append(data);
+			temp.push_back(data);
 	}
 
 	return temp;
@@ -119,7 +119,7 @@ QList<BaseData*> PandaObject::getOutputDatas() const
 	for(BaseData* data : datas)
 	{
 		if(data->isOutput())
-			temp.append(data);
+			temp.push_back(data);
 	}
 
 	return temp;

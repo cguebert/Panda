@@ -22,11 +22,11 @@ public:
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
-		defList.append(GenericDataDefinition(typeOfList,
+		defList.push_back(GenericDataDefinition(typeOfList,
 											 true, false,
 											 "input",
 											 "List from which to extract values"));
-		defList.append(GenericDataDefinition(typeOfList,
+		defList.push_back(GenericDataDefinition(typeOfList,
 											 false, true,
 											 "output",
 											 "Value extracted from the list"));

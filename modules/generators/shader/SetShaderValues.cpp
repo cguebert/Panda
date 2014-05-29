@@ -33,12 +33,12 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.append(GenericDataDefinition(0,	// We keep the exact type of the connected Data
+		defList.push_back(GenericDataDefinition(0,	// We keep the exact type of the connected Data
 											 true, false,
 											 "value",
 											 "Value to set in the shader"));
 		// Create a single int value
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<QString>()),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<QString>()),
 											 true, false,
 											 "name",
 											 "Name of the uniform in the shader"));

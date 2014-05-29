@@ -189,9 +189,9 @@ void EditGroupDialog::updateGroup()
 		{
 			data->setName(tableWidget->item(i,0)->text());
 			data->setHelp(tableWidget->item(i,3)->text());
-			datasList.append(datasPtrMap.value(data));
+			datasList.push_back(datasPtrMap.value(data));
 			group->datas.removeAll(data);
-			group->datas.append(data);
+			group->datas.push_back(data);
 		}
 	}
 

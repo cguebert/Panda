@@ -103,8 +103,8 @@ Gradient::GradientStops Gradient::getStops() const
 	if(stops.empty())
 	{	// Same rule as Qt's: when empty, do instead a gradient from black to white
 		GradientStops temp;
-		temp.append(qMakePair(0, Color::black()));
-		temp.append(qMakePair(1, Color::white()));
+		temp.push_back(qMakePair(0, Color::black()));
+		temp.push_back(qMakePair(1, Color::white()));
 		return temp;
 	}
 

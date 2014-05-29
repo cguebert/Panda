@@ -142,7 +142,7 @@ void LayersTab::addedObject(panda::PandaObject* object)
 			moveUpButton->setEnabled(false);
 			moveDownButton->setEnabled(false);
 		}
-		layers.append(layer);
+		layers.push_back(layer);
 		updateTable();
 	}
 }

@@ -52,7 +52,7 @@ void ParticleEngine::updateEffectors()
 	{
 		ParticleEffector* effector = dynamic_cast<ParticleEffector*>(dockable);
 		if(effector)
-			effectors.append(effector);
+			effectors.push_back(effector);
 	}
 }
 

@@ -20,12 +20,12 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
 											 true, false,
 											 "input",
 											 "List to analyse"));
 		// Create a single int value
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
 											 false, true,
 											 "size",
 											 "Number of values in this list"));

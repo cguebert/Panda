@@ -56,15 +56,15 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = DataTypeId::getFullTypeOfVector(0);
-		defList.append(GenericDataDefinition(listType,
+		defList.push_back(GenericDataDefinition(listType,
 											 true, false,
 											 "input",
 											 "List to sort"));
-		defList.append(GenericDataDefinition(listType,
+		defList.push_back(GenericDataDefinition(listType,
 											 false, true,
 											 "output",
 											 "Sorted list"));
-		defList.append(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
 											 false, true,
 											 "indices",
 											 "Indices corresponding to the sorted list"));

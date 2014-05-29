@@ -31,7 +31,7 @@ void ObjectDrawStruct::update()
 		QRectF dataArea(m_objectArea.x() + dataRectMargin,
 						m_objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
 						dataRectSize, dataRectSize);
-		m_datas.append(qMakePair(dataArea, inputDatas[i]));
+		m_datas.push_back(qMakePair(dataArea, inputDatas[i]));
 	}
 
 	for(int i=0; i<nbOutputs; ++i)
@@ -39,7 +39,7 @@ void ObjectDrawStruct::update()
 		QRectF dataArea(m_objectArea.right() - dataRectMargin - dataRectSize,
 						m_objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
 						dataRectSize, dataRectSize);
-		m_datas.append(qMakePair(dataArea, outputDatas[i]));
+		m_datas.push_back(qMakePair(dataArea, outputDatas[i]));
 	}
 }
 
@@ -237,5 +237,5 @@ void ObjectDrawStructFactory::addCreator(BaseObjectDrawCreator* creator)
 		}
 	}
 
-	creators.append(ptr);
+	creators.push_back(ptr);
 }
