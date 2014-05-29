@@ -19,13 +19,18 @@ public:
 	BaseGeneratorUser(PandaDocument *doc)
 		: PandaObject(doc)
 		, m_caption(initData(&m_caption, "caption", "The caption to use in the graph view"))
-	{
-	}
+	{ }
 
 	const QString& getCaption()
 	{
 		return m_caption.getValue();
 	}
+
+	virtual bool hasConnectedInput() = 0;
+	virtual bool hasConnectedOutput() = 0;
+
+	virtual BaseData* getInputUserData() = 0;
+	virtual BaseData* getOutputUserData() = 0;
 
 protected:
 	Data<QString> m_caption;

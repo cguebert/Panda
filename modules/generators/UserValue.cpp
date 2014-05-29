@@ -58,6 +58,26 @@ public:
 		dataSetParent(&output, &userValue);
 	}
 
+	bool hasConnectedInput()
+	{
+		return userValue.getParent();
+	}
+
+	bool hasConnectedOutput()
+	{
+		return !output.getOutputs().empty();
+	}
+
+	BaseData* getInputUserData()
+	{
+		return &userValue;
+	}
+
+	BaseData* getOutputUserData()
+	{
+		return &output;
+	}
+
 protected:
 	CustomData<T> userValue;
 	Data<T> output;

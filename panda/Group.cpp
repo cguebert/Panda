@@ -15,6 +15,8 @@
 #include <panda/Renderer.h>
 #include <panda/DataFactory.h>
 
+#include <modules/generators/UserValue.h>
+
 #include <QMessageBox>
 
 namespace panda
@@ -123,8 +125,8 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 			BaseData* otherData = data->getParent();
 			if(otherData)
 			{
-				PandaObject* connected = otherData->getOwner();
-				if(connected && !doc->isSelected(connected) && connected!=doc)
+				PandaObject* owner = otherData->getOwner();
+				if(owner && !doc->isSelected(owner) && owner!=doc)
 				{
 					BaseData* createdData = nullptr;
 					if(!connectedInputDatas.contains(otherData))
@@ -177,6 +179,47 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 						doc->addCommand(new LinkDatasCommand(otherData, createdData));
 					}
 				}
+			}
+		}
+
+		BaseGeneratorUser* userValue = dynamic_cast<BaseGeneratorUser*>(object);
+		if(userValue && !userValue->getCaption().isEmpty())
+		{
+			QString caption = userValue->getCaption();
+			auto inputData = userValue->getInputUserData();
+			auto outputData = userValue->getOutputUserData();
+			if(userValue->hasConnectedInput())
+			{
+				inputData->getParent()->setName(caption);
+			}
+			else // We create a data in the group for this input
+			{
+				BaseData* createdData = group->duplicateData(inputData);
+				createdData->copyValueFrom(inputData);
+				createdData->setName(caption);
+				group->addInput(createdData);
+				doc->addCommand(new LinkDatasCommand(inputData, createdData));
+			}
+
+			if(userValue->hasConnectedOutput())
+			{
+				for(auto data : group->m_groupDatas)
+				{
+					if(data->getParent() == outputData)
+					{
+						data->setName(caption);
+						data->setDisplayed(true);
+					}
+				}
+			}
+			else // We create a data in the group for this output
+			{
+				BaseData* createdData = group->duplicateData(outputData);
+				createdData->copyValueFrom(outputData);
+				createdData->setName(caption);
+				createdData->setOutput(true);
+				group->dataSetParent(createdData, outputData);
+				group->addOutput(createdData);
 			}
 		}
 	}
