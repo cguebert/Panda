@@ -18,7 +18,8 @@ class ObjectDrawStruct;
 class DeleteObjectCommand : public QUndoCommand
 {
 public:
-	DeleteObjectCommand(panda::PandaDocument* document, GraphView* view, QList<panda::PandaObject*> objects, QUndoCommand* parent = nullptr);
+	DeleteObjectCommand(panda::PandaDocument* document, GraphView* view, const QList<panda::PandaObject*>& objects, QUndoCommand* parent = nullptr);
+	DeleteObjectCommand(panda::PandaDocument* document, GraphView* view, panda::PandaObject* object, QUndoCommand* parent = nullptr);
 
 	virtual int id() const;
 
@@ -31,6 +32,8 @@ protected:
 	panda::PandaDocument* m_document;
 	GraphView* m_view;
 	QVector< QPair< QSharedPointer<panda::PandaObject>, QSharedPointer<ObjectDrawStruct> > > m_objects;
+
+	void prepareCommand(const QList<panda::PandaObject*>& objects);
 };
 
 #endif

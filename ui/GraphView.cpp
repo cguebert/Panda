@@ -1209,3 +1209,8 @@ void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)
 	auto macro = m_pandaDocument->beginCommandMacro(tr("change link"));
 	m_pandaDocument->addCommand(new LinkDatasCommand(target, parent));
 }
+
+void GraphView::setRecomputeTags()
+{
+	m_recomputeTags = true;
+}

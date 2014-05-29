@@ -8,16 +8,36 @@
 
 DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
 										 GraphView* view,
-										 QList<panda::PandaObject*> objects,
+										 const QList<panda::PandaObject*>& objects,
 										 QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_document(document)
 	, m_view(view)
 {
+	prepareCommand(objects);
+	setText(QCoreApplication::translate("DeleteObjectCommand", "delete objects"));
+}
+
+DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
+										 GraphView* view,
+										 panda::PandaObject* object,
+										 QUndoCommand* parent)
+	: QUndoCommand(parent)
+	, m_document(document)
+	, m_view(view)
+{
+	QList<panda::PandaObject*> objects;
+	objects.push_back(object);
+	prepareCommand(objects);
+	setText(QCoreApplication::translate("DeleteObjectCommand", "delete objects"));
+}
+
+void DeleteObjectCommand::prepareCommand(const QList<panda::PandaObject*>& objects)
+{
 	for(auto object : objects)
 	{
-		auto objectPtr = document->getSharedPointer(object);
-		auto ods = view->getSharedObjectDrawStruct(object);
+		auto objectPtr = m_document->getSharedPointer(object);
+		auto ods = m_view->getSharedObjectDrawStruct(object);
 		if(objectPtr && ods)
 			m_objects.push_back(qMakePair(objectPtr, ods));
 
@@ -41,7 +61,6 @@ DeleteObjectCommand::DeleteObjectCommand(panda::PandaDocument* document,
 				m_document->addCommand(new LinkDatasCommand(data, nullptr));
 		}
 	}
-	setText(QCoreApplication::translate("DeleteObjectCommand", "delete objects"));
 }
 
 int DeleteObjectCommand::id() const

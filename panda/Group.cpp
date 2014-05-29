@@ -2,7 +2,12 @@
 
 #include <ui/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
+
 #include <ui/command/AddObjectCommand.h>
+#include <ui/command/CreateGroupCommand.h>
+#include <ui/command/DeleteObjectCommand.h>
+#include <ui/command/LinkDatasCommand.h>
+#include <ui/command/MoveObjectCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
@@ -184,7 +189,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 		doc->removeObject(object);
 
 	view->modifiedObject(group);
-	view->updateLinkTags();
+	view->setRecomputeTags();
 
 	return true;
 }
@@ -207,59 +212,62 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 
 	doc->selectNone();
 
+	auto macro = doc->beginCommandMacro(tr("ungroup selection"));
+
 	// For each group in the selection
 	for(auto group : groups)
 	{
 		QPointF groupPos = view->getObjectDrawStruct(group)->getPosition();
 
 		// Putting the objects back into the document
-		ObjectsList docks;
-		for(auto object : group->m_objects)
+		panda::Group::ObjectsList docks;
+		for(auto object : group->getObjects())
 		{
-			DockObject* dock = dynamic_cast<DockObject*>(object.data());
+			panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.data());
 			if(dock)
 				docks.append(object);
 			else
 			{
-				group->removeObject(object.data());
-				doc->addObject(object);
-				doc->selectionAdd(object.data());
+				doc->addCommand(new GroupRemoveObjectCommand(group, object));
+				doc->addCommand(new AddObjectCommand(doc, view, object));
 
 				// Placing the object in the view
 				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
-				ods->move(groupPos + group->m_positions[object.data()] - ods->getPosition());
+				QPointF delta = groupPos + group->m_positions[object.data()] - ods->getPosition();
+				if(!delta.isNull())
+					doc->addCommand(new MoveObjectCommand(view, object.data(), delta));
 			}
 		}
 
 		// We extract docks last (their docked objects must be out first)
 		for(auto object : docks)
 		{
-			group->removeObject(object.data());
-			doc->addObject(object);
-			doc->selectionAdd(object.data());
+			doc->addCommand(new GroupRemoveObjectCommand(group, object));
+			doc->addCommand(new AddObjectCommand(doc, view, object));
 
 			// Placing the object in the view
 			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
-			ods->move(groupPos + group->m_positions[object.data()] - ods->getPosition());
+			QPointF delta = groupPos + group->m_positions[object.data()] - ods->getPosition();
+			if(!delta.isNull())
+				doc->addCommand(new MoveObjectCommand(view, object.data(), delta));
 		}
 
 		// Reconnecting datas
-		for(QSharedPointer<BaseData> data : group->m_groupDatas)
+		for(auto data : group->m_groupDatas)
 		{
-			BaseData* parent = data->getParent();
+			auto parent = data->getParent();
 			auto outputs = data->getOutputs();
-			for(DataNode* node : outputs)
+			for(auto node : outputs)
 			{
-				BaseData* outData = dynamic_cast<BaseData*>(node);
+				auto outData = dynamic_cast<panda::BaseData*>(node);
 				if(outData)
-					outData->getOwner()->dataSetParent(outData, parent);
+					doc->addCommand(new LinkDatasCommand(outData, parent));
 			}
 		}
 
-		doc->removeObject(group);
+		doc->addCommand(new DeleteObjectCommand(doc, view, group));
+		doc->addCommand(new ExpandGroupCommand(doc, group)); // Select all the object that were in the group
 	}
-
-	view->updateLinkTags();
 
 	return true;
 }

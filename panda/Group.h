@@ -6,6 +6,7 @@
 
 class GroupObjectDrawStruct;
 class EditGroupDialog;
+class CreateGroupCommand;
 class GraphView;
 
 namespace panda
@@ -18,6 +19,7 @@ class Group : public QObject, public PandaObject
 	Q_OBJECT
 	friend class GroupObjectDrawStruct;
 	friend class EditGroupDialog;
+	friend class CreateGroupCommand;
 public:
 	PANDA_CLASS(Group, PandaObject)
 
@@ -38,15 +40,15 @@ public:
 	typedef QVector<ObjectPtr> ObjectsList;
 	const ObjectsList& getObjects() const;
 
+	virtual void addObject(ObjectPtr obj);
+	virtual void removeObject(PandaObject*) {}
+
 protected:
 	Data<QString> m_groupName;
 
 	ObjectsList m_objects;
 	QMap<PandaObject*, QPointF> m_positions;
 	QList< QSharedPointer<BaseData> > m_groupDatas;
-
-	virtual void addObject(ObjectPtr obj);
-	virtual void removeObject(PandaObject*) {}
 
 	BaseData* duplicateData(BaseData* data);
 	QString findAvailableDataName(QString baseName, BaseData* data=nullptr);

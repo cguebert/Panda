@@ -57,6 +57,8 @@ public:
 
 	void moveObjects(QList<panda::PandaObject*> objects, QPointF delta);
 
+	void setRecomputeTags(); /// Same as calling updateLinkTags, but it does it next redraw
+
 protected:
 	void paintEvent(QPaintEvent *event);
 	void resizeEvent(QResizeEvent *event);

@@ -58,6 +58,7 @@ HEADERS       = \
 	ui/UpdateLoggerDialog.h \
 	ui/command/AddObjectCommand.h \
 	ui/command/CommandId.h \
+	ui/command/CreateGroupCommand.h \
 	ui/command/DeleteObjectCommand.h \
 	ui/command/DetachDockableCommand.h \
 	ui/command/LinkDatasCommand.h \
@@ -224,6 +225,7 @@ SOURCES       = main.cpp \
 	ui/UpdateLoggerDialog.cpp \
 	ui/command/AddObjectCommand.cpp \
 	ui/command/CommandId.cpp \
+	ui/command/CreateGroupCommand.cpp \
 	ui/command/DeleteObjectCommand.cpp \
 	ui/command/DetachDockableCommand.cpp \
 	ui/command/LinkDatasCommand.cpp \
