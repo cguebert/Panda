@@ -2,6 +2,7 @@
 
 #include <ui/GraphView.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/command/MoveObjectCommand.h>
 
 #include <QPainter>
 
@@ -76,7 +77,10 @@ void DockObjectDrawStruct::update()
 		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
 		QSize objectSize = objectStruct->getObjectSize();
 		QPointF objectNewPos(m_position.x() + dockHoleWidth - objectSize.width(), m_position.y() + ty - m_objectArea.top());
-		objectStruct->move(objectNewPos - objectStruct->getPosition());
+
+		auto doc = m_parentView->getDocument();
+		if(doc->isInCommandMacro())
+			doc->addCommand(new MoveObjectCommand(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
 
 		m_dockablesY.append(objectStruct->getObjectArea().center().y());
 
