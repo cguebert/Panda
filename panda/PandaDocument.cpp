@@ -377,7 +377,7 @@ void PandaDocument::resetDocument()
 	m_backgroundColor.setValue(Color::white());
 	m_renderedImage.getAccessor()->clear();
 	m_useMultithread.setValue(0);
-	m_renderFrameBuffer.clear();
+	m_renderFBO.clear();
 
 	m_animPlaying = false;
 	m_animMultithread = false;
@@ -632,10 +632,10 @@ void PandaDocument::onModifiedObject(PandaObject* object)
 
 void PandaDocument::update()
 {
-	if(!m_renderFrameBuffer || m_renderFrameBuffer->size() != getRenderSize())
+	if(!m_renderFBO || m_renderFBO->size() != getRenderSize())
 	{
-		m_renderFrameBuffer.reset(new QOpenGLFramebufferObject(getRenderSize()));
-		m_renderedImage.getAccessor()->setFbo(m_renderFrameBuffer);
+		m_renderFBO.reset(new QOpenGLFramebufferObject(getRenderSize()));
+		m_renderedImage.getAccessor()->setFbo(m_renderFBO);
 	}
 
 	helper::GradientCache::getInstance()->resetUsedFlag();
@@ -668,7 +668,7 @@ const ImageWrapper& PandaDocument::getRenderedImage()
 QSharedPointer<QOpenGLFramebufferObject> PandaDocument::getFBO()
 {
 	updateIfDirty();
-	return m_renderFrameBuffer;
+	return m_renderFBO;
 }
 
 void PandaDocument::render()
@@ -678,12 +678,12 @@ void PandaDocument::render()
 		helper::ScopedEvent log1("prepareRender");
 #endif
 
-	m_renderFrameBuffer->bind();
-	glViewport(0, 0, m_renderFrameBuffer->width(), m_renderFrameBuffer->height());
+	m_renderFBO->bind();
+	glViewport(0, 0, m_renderFBO->width(), m_renderFBO->height());
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, m_renderFrameBuffer->width(), m_renderFrameBuffer->height(), 0, -10, 10);
+	glOrtho(0, m_renderFBO->width(), m_renderFBO->height(), 0, -10, 10);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -695,20 +695,69 @@ void PandaDocument::render()
 	}
 #endif
 
-	m_defaultLayer->mergeLayer();
+	GLfloat w = m_renderFBO->width(), h = m_renderFBO->height();
+	GLfloat verts[8], texCoords[8];
+
+	verts[2*2+0] = w; verts[2*2+1] = 0;
+	verts[3*2+0] = 0; verts[3*2+1] = 0;
+	verts[1*2+0] = 0; verts[1*2+1] = h;
+	verts[0*2+0] = w; verts[0*2+1] = h;
+
+	texCoords[0*2+0] = 1; texCoords[0*2+1] = 0;
+	texCoords[1*2+0] = 0; texCoords[1*2+1] = 0;
+	texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
+	texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
+
+
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
+
+#ifdef PANDA_LOG_EVENTS
+	{
+	helper::ScopedEvent log("merge default Layer");
+#endif
+
+	glBindTexture(GL_TEXTURE_2D, m_defaultLayer->getTextureId());
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0);
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+
+#ifdef PANDA_LOG_EVENTS
+	}
+#endif
 
 	for(auto obj : m_objects)
 	{
 		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj.data());
 		if(layer)
-			layer->mergeLayer();
-	}
+		{
+			auto opacity = layer->getOpacity();
+			if(!opacity)
+				continue;
 
 #ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log2("release FBO");
+			helper::ScopedEvent log2("merge Layer");
 #endif
 
-	m_renderFrameBuffer->release();
+			glBindTexture(GL_TEXTURE_2D, layer->getTextureId());
+			glColor4f(1.0f, 1.0f, 1.0f, opacity);
+			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+		}
+	}
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log3("release FBO");
+#endif
+
+	m_renderFBO->release();
 }
 
 void PandaDocument::moveLayerUp(PandaObject* layer)
@@ -852,7 +901,7 @@ void PandaDocument::rewind()
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
-	m_renderFrameBuffer.reset();
+	m_renderFBO.reset();
 	m_animTime.setValue(0.0);
 	m_mousePosition.setValue(m_mousePositionBuffer);
 	m_mouseClick.setValue(0);

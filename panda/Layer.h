@@ -23,7 +23,6 @@ class BaseLayer : public BaseDrawTarget
 {
 public:
 	virtual void updateLayer(PandaDocument* doc);
-	virtual void mergeLayer();
 
 	typedef std::vector<Renderer*> RenderersList;
 	virtual RenderersList getRenderers() = 0;
@@ -36,6 +35,8 @@ public:
 
 	virtual PReal getOpacity() const = 0;
 	virtual void setOpacity(PReal opa) = 0;
+
+	virtual unsigned int getTextureId() const;
 
 	virtual Data<types::ImageWrapper>* getImage() = 0;
 

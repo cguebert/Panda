@@ -94,43 +94,9 @@ void BaseLayer::iterateRenderers()
 	}
 }
 
-void BaseLayer::mergeLayer()
+unsigned int BaseLayer::getTextureId() const
 {
-	PReal opacity = getOpacity();
-	if(!opacity)
-		return;
-
-#ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log("mergeLayer");
-#endif
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, displayFrameBuffer->texture());
-	glColor4f(1.0f, 1.0f, 1.0f, opacity);
-
-	GLfloat w = displayFrameBuffer->width(), h = displayFrameBuffer->height();
-	GLfloat verts[8], texCoords[8];
-
-	verts[2*2+0] = w; verts[2*2+1] = 0;
-	verts[3*2+0] = 0; verts[3*2+1] = 0;
-	verts[1*2+0] = 0; verts[1*2+1] = h;
-	verts[0*2+0] = w; verts[0*2+1] = h;
-
-	texCoords[0*2+0] = 1; texCoords[0*2+1] = 0;
-	texCoords[1*2+0] = 0; texCoords[1*2+1] = 0;
-	texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
-	texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
+	return displayFrameBuffer->texture();
 }
 
 //*************************************************************************//

@@ -110,7 +110,7 @@ protected:
 	ObjectsSelection m_selectedObjects;
 	quint32 m_currentIndex;
 	Layer* m_defaultLayer;
-	QSharedPointer<QOpenGLFramebufferObject> m_renderFrameBuffer;
+	QSharedPointer<QOpenGLFramebufferObject> m_renderFBO, m_secondRenderFBO;
 
 	Data<types::Point> m_renderSize;
 	Data<types::Color> m_backgroundColor;

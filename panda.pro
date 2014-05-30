@@ -260,7 +260,7 @@ DEFINES +=	PANDA_LOG_EVENTS \
 			_SCL_SECURE_NO_WARNINGS
 #DEFINES += PANDA_DOUBLE
 
-BOOST="C:\Users\Christophe\Documents\Programmation\boost_1_55_0"
+BOOST="../boost_1_55_0"
 
 INCLUDEPATH += $${BOOST}/
 LIBPATH += $${BOOST}/stage/lib
