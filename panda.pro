@@ -70,6 +70,7 @@ HEADERS       = \
 	ui/drawstruct/DockableDrawStruct.h \
 	ui/drawstruct/GenericObjectDrawStruct.h \
 	ui/drawstruct/GroupDrawStruct.h \
+	ui/drawstruct/LayerDrawStruct.h \
 	ui/drawstruct/ObjectDrawStruct.h \
 	ui/drawstruct/UserValueDrawStruct.h \
 	ui/widget/AnimationDataWidgetDialog.h \
@@ -237,6 +238,7 @@ SOURCES       = main.cpp \
 	ui/drawstruct/DockableDrawStruct.cpp \
 	ui/drawstruct/GenericObjectDrawStruct.cpp \
 	ui/drawstruct/GroupDrawStruct.cpp \
+	ui/drawstruct/LayerDrawStruct.cpp \
 	ui/drawstruct/ObjectDrawStruct.cpp \
 	ui/drawstruct/UserValueDrawStruct.cpp \
 	ui/widget/AnimationDataWidgetDialog.cpp \

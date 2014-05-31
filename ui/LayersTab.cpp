@@ -260,7 +260,7 @@ void LayersTab::moveLayerDown()
 void LayersTab::nameChanged()
 {
 	QString name = nameEdit->text();
-	if(selectedLayer && !name.isEmpty())
+	if(selectedLayer)
 	{
 		auto data = &selectedLayer->getLayerNameData();
 		auto oldValue = data->getValue();
