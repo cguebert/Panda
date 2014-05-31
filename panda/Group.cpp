@@ -621,6 +621,21 @@ const Group::ObjectsList& Group::getObjects() const
 	return m_objects;
 }
 
+void Group::beginStep()
+{
+	PandaObject::beginStep();
+	for(auto object : m_objects)
+		object->beginStep();
+}
+
+void Group::endStep()
+{
+	PandaObject::endStep();
+	for(auto object : m_objects)
+		object->endStep();
+}
+
+
 int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many object into a single one").setHidden(true);
 
 //*************************************************************************//

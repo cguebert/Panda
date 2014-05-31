@@ -39,6 +39,9 @@ public:
 	virtual void addObject(ObjectPtr obj);
 	virtual void removeObject(PandaObject*) {}
 
+	virtual void beginStep();
+	virtual void endStep();
+
 protected:
 	Data<QString> m_groupName;
 
