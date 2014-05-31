@@ -744,6 +744,7 @@ void PandaDocument::render()
 #endif
 
 	m_mergeLayersShader->setUniformValue("opacity", 1.0f);
+	m_mergeLayersShader->setUniformValue("mode", 0);
 	glFunctions.glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
 	glFunctions.glActiveTexture(GL_TEXTURE0);
@@ -771,6 +772,7 @@ void PandaDocument::render()
 #endif
 
 			m_mergeLayersShader->setUniformValue("opacity", opacity);
+			m_mergeLayersShader->setUniformValue("mode", layer->getCompositionMode());
 
 			inverse = !inverse;
 			if(inverse)

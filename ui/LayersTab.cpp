@@ -26,6 +26,7 @@ LayersTab::LayersTab(panda::PandaDocument* doc, QWidget *parent)
 						<< "Destination"
 						<< "SourceIn"
 						<< "DestinationIn"
+						<< "SourceOut"
 						<< "DestinationOut"
 						<< "SourceAtop"
 						<< "DestinationAtop"
@@ -41,16 +42,7 @@ LayersTab::LayersTab(panda::PandaDocument* doc, QWidget *parent)
 						<< "HardLight"
 						<< "SoftLight"
 						<< "Difference"
-						<< "Exclusion"
-						<< "SourceOrDestination"
-						<< "SourceAndDestination"
-						<< "SourceXorDestination"
-						<< "NotSourceAndNotDestination"
-						<< "NotSourceOrNotDestination"
-						<< "NotSourceXorDestination"
-						<< "NoSource"
-						<< "NoSourceAndDestination"
-						<< "SourceAndNotDestination";
+						<< "Exclusion";
 	compositionBox->addItems(compositionModes);
 	QHBoxLayout* compositionLayout = new QHBoxLayout;
 	compositionLayout->addWidget(compositionLabel);

@@ -112,14 +112,12 @@ Layer::Layer(PandaDocument *parent)
 	addInput(&opacity);
 	addInput(&compositionMode);
 
+	// 24 possible modes
 	compositionMode.setWidget("enum");
-	compositionMode.setWidgetData("SourceOver;DestinationOver;Clear;Source;Destination"
-								  ";SourceIn;DestinationIn;DestinationOut;SourceAtop;DestinationAtop"
-								  ";Xor;Plus;Multiply;Screen;Overlay;Darken;Lighten"
-								  ";ColorDodge;ColorBurn;HardLight;SoftLight;Difference;Exclusion"
-								  ";SourceOrDestination;SourceAndDestination;SourceXorDestination"
-								  ";NotSourceAndNotDestination;NotSourceOrNotDestination;NotSourceXorDestination"
-								  ";NoSource;NoSourceAndDestination;SourceAndNotDestination");
+	compositionMode.setWidgetData("SourceOver;DestinationOver;Clear;Source;Destination;"
+								  "SourceIn;DestinationIn;SourceOut;DestinationOut;SourceAtop;DestinationAtop;"
+								  "Xor;Plus;Multiply;Screen;Overlay;Darken;Lighten;"
+								  "ColorDodge;ColorBurn;HardLight;SoftLight;Difference;Exclusion");
 
 	opacity.setWidget("slider");
 	opacity.setWidgetData("0 1 0.01");
