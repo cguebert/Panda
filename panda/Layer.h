@@ -28,13 +28,13 @@ public:
 	virtual RenderersList getRenderers() = 0;
 
 	virtual QString getLayerName() const = 0;
-	virtual void setLayerName(QString name) = 0;
+	virtual Data<QString>& getLayerNameData() = 0;
 
 	virtual int getCompositionMode() const = 0;
-	virtual void setCompositionMode(int mode) = 0;
+	virtual Data<int>& getCompositionModeData() = 0;
 
 	virtual PReal getOpacity() const = 0;
-	virtual void setOpacity(PReal opa) = 0;
+	virtual Data<PReal>& getOpacityData() = 0;
 
 	virtual unsigned int getTextureId() const;
 
@@ -42,7 +42,7 @@ public:
 
 protected:
 	virtual void iterateRenderers();
-	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
+	QSharedPointer<QOpenGLFramebufferObject> m_renderFrameBuffer, m_displayFrameBuffer;
 };
 
 class Layer : public DockObject, public BaseLayer
@@ -58,13 +58,13 @@ public:
 	virtual RenderersList getRenderers();
 
 	virtual QString getLayerName() const;
-	virtual void setLayerName(QString name);
+	virtual Data<QString>& getLayerNameData();
 
 	virtual int getCompositionMode() const;
-	virtual void setCompositionMode(int mode);
+	virtual Data<int>& getCompositionModeData();
 
 	virtual PReal getOpacity() const;
-	virtual void setOpacity(PReal opa);
+	virtual Data<PReal>& getOpacityData();
 
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();
@@ -72,11 +72,11 @@ public:
 	virtual void postCreate();
 
 protected:
-	Data<QString> layerName;
-	Data<types::ImageWrapper> image;
-	Data<int> compositionMode;
-	Data<PReal> opacity;
-	QMatrix4x4 mvpMatrix;
+	Data<QString> m_layerName;
+	Data<types::ImageWrapper> m_image;
+	Data<int> m_compositionMode;
+	Data<PReal> m_opacity;
+	QMatrix4x4 m_mvpMatrix;
 };
 
 } // namespace panda

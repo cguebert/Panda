@@ -83,7 +83,7 @@ PandaDocument::PandaDocument(QObject* parent)
 
 	m_defaultLayer = new Layer(this);
 	m_defaultLayer->setInternalData("Default Layer", 0);
-	m_defaultLayer->setLayerName("Default Layer");
+	m_defaultLayer->getLayerNameData().setValue("Default Layer");
 
 	setInternalData("Document", 0);
 

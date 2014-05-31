@@ -1,6 +1,7 @@
 #include <QtWidgets>
 
 #include <ui/LayersTab.h>
+#include <ui/command/SetDataValueCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/Layer.h>
@@ -201,13 +202,23 @@ void LayersTab::itemClicked(QTableWidgetItem* item)
 void LayersTab::compositionModeChanged(int mode)
 {
 	if(selectedLayer)
-		selectedLayer->setCompositionMode(mode);
+	{
+		auto data = &selectedLayer->getCompositionModeData();
+		auto oldValue = data->getValue();
+		auto owner = dynamic_cast<panda::PandaObject*>(selectedLayer);
+		document->addCommand(new SetDataValueCommand<int>(data, oldValue, mode, owner));
+	}
 }
 
 void LayersTab::opacityChanged(int opacity)
 {
 	if(selectedLayer)
-		selectedLayer->setOpacity(opacity / 100.0);
+	{
+		auto data = &selectedLayer->getOpacityData();
+		auto oldValue = data->getValue();
+		auto owner = dynamic_cast<panda::PandaObject*>(selectedLayer);
+		document->addCommand(new SetDataValueCommand<PReal>(data, oldValue, opacity / 100.0, owner));
+	}
 }
 
 void LayersTab::moveLayerUp()
@@ -251,7 +262,13 @@ void LayersTab::nameChanged()
 	QString name = nameEdit->text();
 	if(selectedLayer && !name.isEmpty())
 	{
-		selectedLayer->setLayerName(name);
-		updateTable();
+		auto data = &selectedLayer->getLayerNameData();
+		auto oldValue = data->getValue();
+		if(oldValue != name)
+		{
+			auto owner = dynamic_cast<panda::PandaObject*>(selectedLayer);
+			document->addCommand(new SetDataValueCommand<QString>(data, oldValue, name, owner));
+			updateTable();
+		}
 	}
 }

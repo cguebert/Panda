@@ -32,18 +32,18 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 #endif
 
 	QSize renderSize = doc->getRenderSize();
-	if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)
+	if(!m_renderFrameBuffer || m_renderFrameBuffer->size() != renderSize)
 	{
 		QOpenGLFramebufferObjectFormat fmt;
 		fmt.setSamples(16);
-		renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
-		displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
+		m_renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
+		m_displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
 
 		// Setting the image Data to the display Fbo
-		getImage()->getAccessor()->setFbo(displayFrameBuffer);
+		getImage()->getAccessor()->setFbo(m_displayFrameBuffer);
 	}
 
-	renderFrameBuffer->bind();
+	m_renderFrameBuffer->bind();
 
 	glViewport(0, 0, renderSize.width(), renderSize.height());
 
@@ -75,9 +75,9 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	helper::ScopedEvent log2("blitFramebuffer");
 #endif
 
-	renderFrameBuffer->release();
+	m_renderFrameBuffer->release();
 
-	QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
+	QOpenGLFramebufferObject::blitFramebuffer(m_displayFrameBuffer.data(), m_renderFrameBuffer.data());
 }
 
 void BaseLayer::iterateRenderers()
@@ -96,34 +96,34 @@ void BaseLayer::iterateRenderers()
 
 unsigned int BaseLayer::getTextureId() const
 {
-	return displayFrameBuffer->texture();
+	return m_displayFrameBuffer->texture();
 }
 
 //*************************************************************************//
 
 Layer::Layer(PandaDocument *parent)
 	: DockObject(parent)
-	, layerName(initData(&layerName, "name", "Name of this layer"))
-	, image(initData(&image, "image", "Image created by the renderers connected to this layer"))
-	, compositionMode(initData(&compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
-	, opacity(initData(&opacity, (PReal)1.0, "opacity", "Set the opacity of the layer"))
+	, m_layerName(initData(&m_layerName, "name", "Name of this layer"))
+	, m_image(initData(&m_image, "image", "Image created by the renderers connected to this layer"))
+	, m_compositionMode(initData(&m_compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
+	, m_opacity(initData(&m_opacity, (PReal)1.0, "opacity", "Set the opacity of the layer"))
 {
-	addInput(&layerName);
-	addInput(&opacity);
-	addInput(&compositionMode);
+	addInput(&m_layerName);
+	addInput(&m_opacity);
+	addInput(&m_compositionMode);
 
 	// 24 possible modes
-	compositionMode.setWidget("enum");
-	compositionMode.setWidgetData("SourceOver;DestinationOver;Clear;Source;Destination;"
+	m_compositionMode.setWidget("enum");
+	m_compositionMode.setWidgetData("SourceOver;DestinationOver;Clear;Source;Destination;"
 								  "SourceIn;DestinationIn;SourceOut;DestinationOut;SourceAtop;DestinationAtop;"
 								  "Xor;Plus;Multiply;Screen;Overlay;Darken;Lighten;"
 								  "ColorDodge;ColorBurn;HardLight;SoftLight;Difference;Exclusion");
 
-	opacity.setWidget("slider");
-	opacity.setWidgetData("0 1 0.01");
+	m_opacity.setWidget("slider");
+	m_opacity.setWidgetData("0 1 0.01");
 
 	addOutput((DataNode*)parent);
-	addOutput(&image);
+	addOutput(&m_image);
 }
 
 void Layer::update()
@@ -152,46 +152,42 @@ BaseLayer::RenderersList Layer::getRenderers()
 
 QString Layer::getLayerName() const
 {
-	return layerName.getValue();
+	return m_layerName.getValue();
 }
 
-void Layer::setLayerName(QString name)
+Data<QString>& Layer::getLayerNameData()
 {
-	if(layerName.getValue() != name)
-		layerName.setValue(name);
+	return m_layerName;
 }
 
 int Layer::getCompositionMode() const
 {
-	return compositionMode.getValue();
+	return m_compositionMode.getValue();
 }
 
-void Layer::setCompositionMode(int mode)
+Data<int>& Layer::getCompositionModeData()
 {
-	if(compositionMode.getValue() != mode)
-		compositionMode.setValue(mode);
+	return m_compositionMode;
 }
 
 PReal Layer::getOpacity() const
 {
-	return opacity.getValue();
+	return m_opacity.getValue();
 }
 
-void Layer::setOpacity(PReal opa)
+Data<PReal>& Layer::getOpacityData()
 {
-	PReal tmp = qBound<PReal>(0.0, opa, 1.0);
-	if(opacity.getValue() != opa)
-		opacity.setValue(tmp);
+	return m_opacity;
 }
 
 Data<types::ImageWrapper>* Layer::getImage()
 {
-	return &image;
+	return &m_image;
 }
 
 QMatrix4x4& Layer::getMVPMatrix()
 {
-	return mvpMatrix;
+	return m_mvpMatrix;
 }
 
 void Layer::postCreate()
@@ -204,7 +200,7 @@ void Layer::postCreate()
 	}
 
 	QString text = QCoreApplication::translate("Layer", "Layer #%1");
-	layerName.setValue(text.arg(i));
+	m_layerName.setValue(text.arg(i));
 }
 
 int LayerClass = RegisterObject<Layer>("Layer").setDescription("Organize renderers and change opacity and the composition mode");

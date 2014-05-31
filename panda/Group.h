@@ -63,13 +63,13 @@ public:
 	virtual RenderersList getRenderers();
 
 	virtual QString getLayerName() const;
-	virtual void setLayerName(QString name);
+	virtual Data<QString>& getLayerNameData();
 
 	virtual int getCompositionMode() const;
-	virtual void setCompositionMode(int mode);
+	virtual Data<int>& getCompositionModeData();
 
 	virtual PReal getOpacity() const;
-	virtual void setOpacity(PReal opa);
+	virtual Data<PReal>& getOpacityData();
 
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();
@@ -79,9 +79,10 @@ public:
 
 protected:
 	Data<types::ImageWrapper> m_image;
+	Data<int> m_compositionMode;
+	Data<PReal> m_opacity;
+
 	QMatrix4x4 m_mvpMatrix;
-	int m_compositionMode;
-	PReal m_opacity;
 
 	Layer* m_layer;
 };

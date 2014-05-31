@@ -628,10 +628,18 @@ GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 	: Group(parent)
 	, m_layer(nullptr)
 	, m_image(initData(&m_image, "image", "Image created by the renderers connected to this layer"))
-	, m_compositionMode(0)
-	, m_opacity(1.0)
+	, m_compositionMode(initData(&m_compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
+	, m_opacity(initData(&m_opacity, (PReal)1.0, "opacity", "Set the opacity of the layer"))
 {
+	addInput(&m_compositionMode);
+	addInput(&m_opacity);
+
 	addOutput((DataNode*)parent);
+
+	m_compositionMode.setInput(false);
+	m_compositionMode.setDisplayed(false);
+	m_opacity.setInput(false);
+	m_opacity.setDisplayed(false);
 }
 
 void GroupWithLayer::setLayer(Layer* newLayer)
@@ -670,12 +678,12 @@ QString GroupWithLayer::getLayerName() const
 		return m_groupName.getValue();
 }
 
-void GroupWithLayer::setLayerName(QString name)
+Data<QString>& GroupWithLayer::getLayerNameData()
 {
 	if(m_layer)
-		m_layer->setLayerName(name);
+		return m_layer->getLayerNameData();
 	else
-		m_groupName.setValue(name);
+		return m_groupName;
 }
 
 int GroupWithLayer::getCompositionMode() const
@@ -683,21 +691,15 @@ int GroupWithLayer::getCompositionMode() const
 	if(m_layer)
 		return m_layer->getCompositionMode();
 	else
-		return m_compositionMode;
+		return m_compositionMode.getValue();
 }
 
-void GroupWithLayer::setCompositionMode(int mode)
+Data<int>& GroupWithLayer::getCompositionModeData()
 {
 	if(m_layer)
-		m_layer->setCompositionMode(mode);
+		return m_layer->getCompositionModeData();
 	else
-	{
-		if(mode != m_compositionMode)
-		{
-			m_compositionMode = mode;
-			setDirtyValue(this);
-		}
-	}
+		return m_compositionMode;
 }
 
 PReal GroupWithLayer::getOpacity() const
@@ -705,21 +707,15 @@ PReal GroupWithLayer::getOpacity() const
 	if(m_layer)
 		return m_layer->getOpacity();
 	else
-		return m_opacity;
+		return m_opacity.getValue();
 }
 
-void GroupWithLayer::setOpacity(PReal opa)
+Data<PReal>& GroupWithLayer::getOpacityData()
 {
 	if(m_layer)
-		m_layer->setOpacity(opa);
+		return m_layer->getOpacityData();
 	else
-	{
-		if(opa != m_opacity)
-		{
-			m_opacity = opa;
-			setDirtyValue(this);
-		}
-	}
+		return m_opacity;
 }
 
 Data<types::ImageWrapper>* GroupWithLayer::getImage()
