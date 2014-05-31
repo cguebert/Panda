@@ -72,7 +72,7 @@ protected:
 
 int GeneratorColors_ComposeRGBClass = RegisterObject<GeneratorColors_ComposeRGB>("Generator/Color/From RGB").setDescription("Create a color from red, green and blue components");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorColors_DecomposeRGB : public PandaObject
 {
@@ -122,7 +122,7 @@ protected:
 
 int GeneratorColors_DecomposeRGBClass = RegisterObject<GeneratorColors_DecomposeRGB>("Generator/Color/To RGB").setDescription("Extract red, green and blue components from a color");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorColors_ComposeHSV : public PandaObject
 {
@@ -189,7 +189,7 @@ protected:
 
 int GeneratorColors_ComposeHSVClass = RegisterObject<GeneratorColors_ComposeHSV>("Generator/Color/From HSV").setDescription("Create a color from hue, saturation and value components");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorColors_DecomposeHSV : public PandaObject
 {

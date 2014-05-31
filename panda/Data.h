@@ -47,9 +47,9 @@ public:
 	virtual void setParent(BaseData* parent);
 	virtual const types::AbstractDataTrait* getDataTrait() const;
 	virtual const void* getVoidValue() const;
-	data_accessor getAccessor();
-	inline void setValue(const_reference value);
-	inline const_reference getValue() const;
+	data_accessor getAccessor(); /// Return a wrapper around the pointer to the value (call endEdit in the destructor)
+	inline void setValue(const_reference value); /// Store value in this Data
+	inline const_reference getValue() const; /// Retrieve the stored value
 	virtual void copyValueFrom(const BaseData* from);
 
 	virtual int getCounter() const;
@@ -74,7 +74,7 @@ private:
 	Data& operator=(const Data&);
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 template<class T>
 class DataAccessor<Data<T>> : public DataAccessor<T>
@@ -93,6 +93,42 @@ public:
 
 	template<class U> void operator=(const U& value) { Inherit::operator=(value); }
 };
+
+//****************************************************************************//
+
+template<class T>
+inline void* Data<T>::beginVoidEdit()
+{ return beginEdit(); }
+
+template<class T>
+inline void Data<T>::endVoidEdit()
+{ endEdit(); }
+
+template<class T>
+inline const void* Data<T>::getVoidValue() const
+{ return &getValue(); }
+
+template<class T>
+inline void Data<T>::setValue(const_reference value)
+{
+	*beginEdit() = value;
+	endEdit();
+}
+
+template<class T>
+inline typename Data<T>::pointer Data<T>::beginEdit()
+{
+	updateIfDirty();
+	++m_counter;
+	return &m_value;
+}
+
+template<class T>
+inline void Data<T>::endEdit()
+{
+	m_isValueSet = true;
+	BaseData::setDirtyOutputs();
+}
 
 } // namespace panda
 

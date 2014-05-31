@@ -33,7 +33,7 @@ public:
 	}
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 template <bool openMode>
 class FileDataWidgetContainer : public BaseOpenDialogObject
@@ -100,7 +100,7 @@ public:
 	}
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 class FontDataWidgetContainer : public BaseOpenDialogObject, public ObjectWithPreview
 {
@@ -171,7 +171,7 @@ public:
 	}
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 class MultilineDataWidgetDialog : public QDialog
 {
@@ -276,7 +276,7 @@ public:
 	}
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 RegisterWidget<SimpleDataWidget<QString> > DWClass_string("default");
 RegisterWidget<SimpleDataWidget<QString, FileDataWidgetContainer<true> > > DWClass_file_open("open file");

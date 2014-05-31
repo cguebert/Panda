@@ -37,7 +37,7 @@ protected:
 
 int RenderModifier_TranslationClass = RegisterObject<RenderModifier_Translation>("Render/Modifier/Translation").setDescription("Add a translation transformation");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class RenderModifier_Rotation : public Renderer
 {
@@ -65,7 +65,7 @@ protected:
 
 int RenderModifier_RotationClass = RegisterObject<RenderModifier_Rotation>("Render/Modifier/Rotation").setDescription("Add a rotation transformation");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class RenderModifier_Scale : public Renderer
 {

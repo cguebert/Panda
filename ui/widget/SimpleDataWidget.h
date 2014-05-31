@@ -26,7 +26,7 @@ public:
 	void writeToData(value_type& d);
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 /// This class manages the GUI of a BaseData, using the corresponding instance of DataWidgetContainer
 template<class T, class Container = DataWidgetContainer<T> >

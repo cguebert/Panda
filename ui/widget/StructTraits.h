@@ -22,7 +22,7 @@ template<>
 static QString FlatDataTrait<QString>::toString(const value_type& d)
 { return d; }
 
-//***************************************************************//
+//****************************************************************************//
 
 template<class T>
 class VectorDataTrait
@@ -50,7 +50,7 @@ public:
 	static void resize(vector_type& /*v*/, int /*s*/) {}
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 template<class T>
 class VectorDataTrait< QVector<T> >

@@ -176,6 +176,8 @@ protected:
 	PandaDocument* m_document;
 };
 
+//****************************************************************************//
+
 inline int PandaDocument::getNbObjects() const
 { return m_objects.size(); }
 

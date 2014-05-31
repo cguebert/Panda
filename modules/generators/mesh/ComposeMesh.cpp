@@ -66,7 +66,7 @@ protected:
 
 int GeneratorMesh_OnePolygonClass = RegisterObject<GeneratorMesh_OnePolygon>("Generator/Mesh/Create one polygon").setName("Points to polygon").setDescription("Create a mesh (of one polygon) using a list of points");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorMesh_Wireframe : public PandaObject
 {
@@ -111,7 +111,7 @@ protected:
 
 int GeneratorMesh_WireframeClass = RegisterObject<GeneratorMesh_Wireframe>("Generator/Mesh/Wireframe").setDescription("Extract the edges from a mesh");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorMesh_Vertices : public PandaObject
 {
@@ -145,7 +145,7 @@ protected:
 
 int GeneratorMesh_VerticesClass = RegisterObject<GeneratorMesh_Vertices>("Generator/Mesh/Vertices").setDescription("Extract the vertices of a mesh");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorMesh_ExtractTriangles : public PandaObject
 {
@@ -195,7 +195,7 @@ protected:
 int GeneratorMesh_ExtractTrianglesClass = RegisterObject<GeneratorMesh_ExtractTriangles>("Generator/Mesh/Extract triangles")
 		.setDescription("Extract some triangles from a mesh");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorMesh_BorderElements : public PandaObject
 {
@@ -248,7 +248,7 @@ protected:
 int GeneratorMesh_BorderElementsClass = RegisterObject<GeneratorMesh_BorderElements>("Generator/Mesh/Border elements")
 		.setDescription("Get the indices of the elements on the border");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorMesh_ExtractEdges : public PandaObject
 {

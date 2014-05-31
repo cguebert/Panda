@@ -113,7 +113,7 @@ void EditShaderDialog::writeToData(Shader& shader)
 		shader.setSource(it.key(), it.value().sourceEdit->toPlainText());
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 RegisterWidget<OpenDialogDataWidget<Shader, EditShaderDialog> > DWClass_shader("default");
 RegisterWidget<OpenDialogDataWidget<QVector<Shader>, ListDataWidgetDialog<QVector<Shader> > > > DWClass_shaders_list("generic");

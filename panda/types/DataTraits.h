@@ -40,7 +40,7 @@ public:
 	virtual void readValue(QDomElement& elem, void* value) const = 0;
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 /*
  * Class used to describe a type
@@ -74,7 +74,7 @@ public:
 	static void readValue(QDomElement&, value_type&); // Override for each type
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 template<class T>
 class VirtualDataTrait : public AbstractDataTrait
@@ -118,7 +118,7 @@ public:
 	{ return value_trait::readValue(elem, *static_cast<value_type*>(value)); }
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 template<class T>
 class DataTrait< QVector<T> >
@@ -183,7 +183,7 @@ public:
 	}
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 class DataTraitsList
 {

@@ -105,7 +105,7 @@ Color Color::fromHex(uint32_t hexValue)
 	return Color(red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f);
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template<> QString DataTrait<Color>::valueTypeName() { return "color"; }
 
@@ -129,7 +129,7 @@ void DataTrait<Color>::readValue(QDomElement& elem, Color& v)
 	v = c.bounded();
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template class Data<Color>;
 template class Data< QVector<Color> >;

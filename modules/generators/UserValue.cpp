@@ -110,7 +110,7 @@ int GeneratorUser_AnimationDoubleClass = RegisterObject< GeneratorUser< types::A
 int GeneratorUser_AnimationGradientClass = RegisterObject< GeneratorUser< types::Animation<types::Gradient> > >("Generator/Gradient/Gradients animation user value").setName("Gradients animation").setDescription("Lets you store a value for use in other objects");
 int GeneratorUser_AnimationPointClass = RegisterObject< GeneratorUser< types::Animation<types::Point> > >("Generator/Point/Points animation user value").setName("Points animation").setDescription("Lets you store a value for use in other objects");
 
-//*************************************************************************//
+//****************************************************************************//
 
 template <class T>
 class StoreValue : public PandaObject, public TimedMethodObject
@@ -232,7 +232,7 @@ int StoreValue_AnimationDoubleClass = RegisterObject< StoreValue< types::Animati
 int StoreValue_AnimationGradientClass = RegisterObject< StoreValue< types::Animation<types::Gradient> > >("File/Gradient/Save gradients animation").setDescription("Save a value in a file for later use");
 int StoreValue_AnimationPointClass = RegisterObject< StoreValue< types::Animation<types::Point> > >("File/Point/Save points animation").setDescription("Save a value in a file for later use");
 
-//*************************************************************************//
+//****************************************************************************//
 
 template <class T>
 class LoadValue : public PandaObject

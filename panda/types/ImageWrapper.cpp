@@ -126,7 +126,7 @@ bool ImageWrapper::operator!=(const ImageWrapper& img) const
 	return !(*this == img);
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template<> QString DataTrait<ImageWrapper>::valueTypeName() { return "image"; }
 

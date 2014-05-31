@@ -34,7 +34,7 @@ protected:
 int ParticleForceField_ConstantForceClass = RegisterObject<ParticleForceField_ConstantForce>("Particles/Forces/Constant force")
 		.setDescription("Apply a constant force to the particles");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ParticleForceField_ForceInBox : public ParticleEffector
 {
@@ -81,7 +81,7 @@ protected:
 int ParticleForceField_ForceInBoxClass = RegisterObject<ParticleForceField_ForceInBox>("Particles/Forces/Force in box")
 		.setDescription("Apply a constant force to particles that are inside an area.");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ParticleForceField_ForceInCircle : public ParticleEffector
 {
@@ -135,7 +135,7 @@ protected:
 int ParticleForceField_ForceInCircleClass = RegisterObject<ParticleForceField_ForceInCircle>("Particles/Forces/Force in circle")
 		.setDescription("Apply a constant force to particles that are inside a circle.");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ParticleForceField_Attraction : public ParticleEffector
 {

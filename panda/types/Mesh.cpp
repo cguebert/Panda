@@ -530,7 +530,7 @@ void Mesh::clear()
 	clearBorderElementLists();
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template<> QString DataTrait<Mesh>::valueTypeName() { return "mesh"; }
 template<> QString DataTrait<Mesh>::valueTypeNamePlural() { return "meshes"; }

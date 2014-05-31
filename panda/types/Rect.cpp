@@ -52,7 +52,7 @@ bool Rect::contains(const Rect& r) const
 	return true;
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template<> QString DataTrait<Rect>::valueTypeName() { return "rectangle"; }
 

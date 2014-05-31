@@ -24,7 +24,7 @@ void DetachDockableCommand::undo()
 	m_dock->addDockable(m_dockable, m_index);
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 AttachDockableCommand::AttachDockableCommand(panda::DockObject* dock,
 											 panda::DockableObject* dockable,

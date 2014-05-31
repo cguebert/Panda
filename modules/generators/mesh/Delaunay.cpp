@@ -103,7 +103,7 @@ protected:
 int GeneratorMesh_DelaunayClass = RegisterObject<GeneratorMesh_Delaunay>("Generator/Mesh/Delaunay")
 		.setDescription("Create a mesh from a Delaunay triangulation");
 
-//*************************************************************************//
+//****************************************************************************//
 
 
 } // namespace Panda

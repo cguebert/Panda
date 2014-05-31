@@ -25,7 +25,7 @@ protected:
 	void* m_value;
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 class BaseData : public DataNode
 {
@@ -47,51 +47,49 @@ public:
 	BaseData(const QString& name, const QString& help, PandaObject* owner);
 	virtual ~BaseData() {}
 
-	const QString getName() const { return m_name; }
-	void setName(const QString& name) { m_name = name; }
-	const QString getHelp() const { return m_help; }
-	void setHelp(const QString& help) { m_help = help; }
-	const QString getGroup() const { return m_group; }
-	void setGroup(const QString& group) { m_group = group; }
-	const QString getWidget() const { return m_widget; }
-	void setWidget(const QString& widget) { m_widget = widget; }
-	const QString getWidgetData() const { return m_widgetData; }
-	void setWidgetData(const QString& widgetData) { m_widgetData = widgetData; }
+	const QString getName() const;	/// Name used in the UI and for saving / loading
+	void setName(const QString& name);
+	const QString getHelp() const;	/// Message describing the Data
+	void setHelp(const QString& help);
+	const QString getWidget() const; /// Custom widget to use for this Data
+	void setWidget(const QString& widget);
+	const QString getWidgetData() const; /// Some custom widgets need parameters, it is saved in string format
+	void setWidgetData(const QString& widgetData);
 
-	bool isSet() const { return m_isValueSet; }
-	void unset() { m_isValueSet = false; }
-	void forceSet() { m_isValueSet = true; }
+	bool isSet() const; /// Has the value changed from the default
+	void unset();		/// As if the current value is the default
+	void forceSet();	/// Consider the current value as changed
 
-	virtual int getCounter() const { return m_counter; }
+	virtual int getCounter() const; /// The counter usually increments at each value change (after disconnecting from a parent, can decrement quite a bit)
 
-	bool isReadOnly() const { return m_readOnly; }
-	void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
-	bool isDisplayed() const { return m_displayed; }
-	void setDisplayed(bool displayed) { m_displayed = displayed; }
-	bool isPersistent() const { return m_persistent; }
-	void setPersistent(bool persistent) { m_persistent = persistent; }
-	bool isInput() const { return m_input; }
-	void setInput(bool input) { m_input = input; }
-	bool isOutput() const { return m_output; }
-	void setOutput(bool output) { m_output = output; }
+	bool isReadOnly() const;	/// Only used in the UI, automatically set if the Data is an input
+	void setReadOnly(bool readOnly);
+	bool isDisplayed() const;	/// Is it shown in the UI
+	void setDisplayed(bool displayed);
+	bool isPersistent() const;	/// Is it saved (some types don't want it)
+	void setPersistent(bool persistent);
+	bool isInput() const;		/// Is it used as of one the inputs of a PandaObject
+	void setInput(bool input);
+	bool isOutput() const;		/// Is it used as of one the outputs of a PandaObject
+	void setOutput(bool output);
 
-	PandaObject* getOwner() const { return m_owner; }
-	void setOwner(PandaObject* owner) { m_owner = owner; }
+	PandaObject* getOwner() const; /// The PandaObject that owns this Data
+	void setOwner(PandaObject* owner);
 
-	virtual bool validParent(const BaseData *parent) const;
-	virtual void setParent(BaseData* parent);
-	BaseData* getParent() const { return m_parentBaseData; }
+	virtual bool validParent(const BaseData *parent) const; /// Can parent be connected to this Data
+	virtual void setParent(BaseData* parent); /// Set the other Data as the parent to this one (its value will be copied each time it changes)
+	BaseData* getParent() const; /// Returns the current parent, or nullptr
 
-	virtual const types::AbstractDataTrait* getDataTrait() const = 0;
-	virtual const void* getVoidValue() const = 0;
-	VoidDataAccessor getVoidAccessor() { return VoidDataAccessor(this); }
+	virtual const types::AbstractDataTrait* getDataTrait() const = 0; /// Return a class describing the type stored in this Data
+	virtual const void* getVoidValue() const = 0; /// Return a void* pointing to the value (use the DataTrait to exploit it)
+	VoidDataAccessor getVoidAccessor(); /// Return a wrapper around the void*, that will call endEdit when destroyed
 
-	virtual QString getDescription() const;
+	virtual QString getDescription() const; /// Get a readable name of the type stored in this Data
 
-	virtual void copyValueFrom(const BaseData* parent) = 0;
+	virtual void copyValueFrom(const BaseData* parent) = 0; /// Copy the value from parent to this Data
 
-	virtual void save(QDomDocument& doc, QDomElement& elem);
-	virtual void load(QDomElement& elem);
+	virtual void save(QDomDocument& doc, QDomElement& elem); /// Save the value of the Data in a Xml node
+	virtual void load(QDomElement& elem); /// Load the value from Xml
 
 protected:
 	virtual void doAddInput(DataNode* node);
@@ -109,13 +107,105 @@ protected:
 	bool m_isValueSet;
 	bool m_setParentProtection;
 	int m_counter;
-	QString m_name, m_help, m_group, m_widget, m_widgetData;
+	QString m_name, m_help, m_widget, m_widgetData;
 	PandaObject* m_owner;
 	BaseData* m_parentBaseData;
 
 private:
 	BaseData() {}
 };
+
+//****************************************************************************//
+
+inline VoidDataAccessor::VoidDataAccessor(BaseData* data)
+	: m_data(data), m_value(data->beginVoidEdit()) {}
+
+inline VoidDataAccessor::~VoidDataAccessor()
+{ m_data->endVoidEdit(); }
+
+inline void* VoidDataAccessor::get()
+{ return m_value; }
+
+inline VoidDataAccessor::operator void *()
+{ return m_value; }
+
+inline const QString BaseData::getName() const
+{ return m_name; }
+
+inline void BaseData::setName(const QString& name)
+{ m_name = name; }
+
+inline const QString BaseData::getHelp() const
+{ return m_help; }
+
+inline void BaseData::setHelp(const QString& help)
+{ m_help = help; }
+
+inline const QString BaseData::getWidget() const
+{ return m_widget; }
+
+inline void BaseData::setWidget(const QString& widget)
+{ m_widget = widget; }
+
+inline const QString BaseData::getWidgetData() const
+{ return m_widgetData; }
+
+inline void BaseData::setWidgetData(const QString& widgetData)
+{ m_widgetData = widgetData; }
+
+inline bool BaseData::isSet() const
+{ return m_isValueSet; }
+
+inline void BaseData::unset()
+{ m_isValueSet = false; }
+
+inline void BaseData::forceSet()
+{ m_isValueSet = true; }
+
+inline int BaseData::getCounter() const
+{ return m_counter; }
+
+inline bool BaseData::isReadOnly() const
+{ return m_readOnly; }
+
+inline void BaseData::setReadOnly(bool readOnly)
+{ m_readOnly = readOnly; }
+
+inline bool BaseData::isDisplayed() const
+{ return m_displayed; }
+
+inline void BaseData::setDisplayed(bool displayed)
+{ m_displayed = displayed; }
+
+inline bool BaseData::isPersistent() const
+{ return m_persistent; }
+
+inline void BaseData::setPersistent(bool persistent)
+{ m_persistent = persistent; }
+
+inline bool BaseData::isInput() const
+{ return m_input; }
+
+inline void BaseData::setInput(bool input)
+{ m_input = input; }
+
+inline bool BaseData::isOutput() const
+{ return m_output; }
+
+inline void BaseData::setOutput(bool output)
+{ m_output = output; }
+
+inline PandaObject* BaseData::getOwner() const
+{ return m_owner; }
+
+inline void BaseData::setOwner(PandaObject* owner)
+{ m_owner = owner; }
+
+inline BaseData* BaseData::getParent() const
+{ return m_parentBaseData; }
+
+inline VoidDataAccessor BaseData::getVoidAccessor()
+{ return VoidDataAccessor(this); }
 
 } // namespace panda
 

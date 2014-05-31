@@ -43,7 +43,7 @@ bool MoveAnnotationTextCommand::mergeWith(const QUndoCommand *other)
 	return false;
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 MoveAnnotationEndCommand::MoveAnnotationEndCommand(AnnotationDrawStruct* drawStruct,
 												   QPointF delta,

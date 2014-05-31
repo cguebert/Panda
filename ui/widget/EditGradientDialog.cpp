@@ -55,7 +55,7 @@ void ColorPreviewWidget::paintEvent(QPaintEvent *)
 	}
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 
 EditGradientView::EditGradientView(EditGradientDialog *dlg, Gradient::GradientStops &stops)
@@ -178,7 +178,7 @@ void EditGradientView::setSelected(int sel)
 	selected = sel;
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 EditGradientDialog::EditGradientDialog(Gradient grad, QWidget *parent)
 	: QDialog(parent)
@@ -374,7 +374,7 @@ bool EditGradientDialog::eventFilter(QObject *obj, QEvent *event)
 	return QObject::eventFilter(obj, event);
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template<>
 class DataWidgetContainer< Gradient > : public BaseOpenDialogObject, public ObjectWithPreview
@@ -465,7 +465,7 @@ public:
 	}
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 RegisterWidget<SimpleDataWidget<Gradient> > DWClass_gradient("default");
 RegisterWidget<OpenDialogDataWidget<QVector<Gradient>, ListDataWidgetDialog<QVector<Gradient> > > > DWClass_gradients_list("generic");

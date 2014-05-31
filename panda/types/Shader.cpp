@@ -126,7 +126,7 @@ bool Shader::operator!=(const Shader& shader) const
 	return !(*this == shader);
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template<> void ShaderValue<int>::apply(QOpenGLShaderProgram& program) const
 { program.setUniformValue(program.uniformLocation(m_name), m_value); }
@@ -168,7 +168,7 @@ template<> void ShaderValue< QVector<Point> >::apply(QOpenGLShaderProgram& progr
 		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 2);
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template<> QString DataTrait<Shader>::valueTypeName() { return "shader"; }
 
@@ -221,7 +221,7 @@ void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
 	}
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template class Data<Shader>;
 template class Data< QVector<Shader> >;

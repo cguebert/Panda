@@ -202,7 +202,7 @@ void ObjectDrawStruct::load(QDomElement& elem)
 	move(newPos - m_position);
 }
 
-//******************************************************************************************
+//****************************************************************************//
 
 ObjectDrawStructFactory* ObjectDrawStructFactory::getInstance()
 {

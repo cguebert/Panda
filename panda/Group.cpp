@@ -564,11 +564,6 @@ void Group::load(QDomElement& elem)
 	m_parentDocument->onModifiedObject(this);
 }
 
-void Group::addObject(ObjectPtr obj)
-{
-	m_objects.push_back(obj);
-}
-
 QString Group::findAvailableDataName(QString baseName, BaseData *data)
 {
 	QString name = baseName;
@@ -611,16 +606,6 @@ void Group::reset()
 		object->reset();
 }
 
-QString Group::getGroupName()
-{
-	return m_groupName.getValue();
-}
-
-const Group::ObjectsList& Group::getObjects() const
-{
-	return m_objects;
-}
-
 void Group::beginStep()
 {
 	PandaObject::beginStep();
@@ -638,7 +623,7 @@ void Group::endStep()
 
 int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many object into a single one").setHidden(true);
 
-//*************************************************************************//
+//****************************************************************************//
 
 GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 	: Group(parent)
@@ -684,70 +669,6 @@ BaseLayer::RenderersList GroupWithLayer::getRenderers()
 		}
 		return renderers;
 	}
-}
-
-QString GroupWithLayer::getLayerName() const
-{
-	if(m_layer)
-		return m_layer->getLayerName();
-	else
-		return m_groupName.getValue();
-}
-
-Data<QString>& GroupWithLayer::getLayerNameData()
-{
-	if(m_layer)
-		return m_layer->getLayerNameData();
-	else
-		return m_groupName;
-}
-
-int GroupWithLayer::getCompositionMode() const
-{
-	if(m_layer)
-		return m_layer->getCompositionMode();
-	else
-		return m_compositionMode.getValue();
-}
-
-Data<int>& GroupWithLayer::getCompositionModeData()
-{
-	if(m_layer)
-		return m_layer->getCompositionModeData();
-	else
-		return m_compositionMode;
-}
-
-PReal GroupWithLayer::getOpacity() const
-{
-	if(m_layer)
-		return m_layer->getOpacity();
-	else
-		return m_opacity.getValue();
-}
-
-Data<PReal>& GroupWithLayer::getOpacityData()
-{
-	if(m_layer)
-		return m_layer->getOpacityData();
-	else
-		return m_opacity;
-}
-
-Data<types::ImageWrapper>* GroupWithLayer::getImage()
-{
-	if(m_layer)
-		return m_layer->getImage();
-	else
-		return &m_image;
-}
-
-QMatrix4x4& GroupWithLayer::getMVPMatrix()
-{
-	if(m_layer)
-		return m_layer->getMVPMatrix();
-	else
-		return m_mvpMatrix;
 }
 
 void GroupWithLayer::addObject(ObjectPtr obj)

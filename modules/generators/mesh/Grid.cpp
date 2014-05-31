@@ -74,7 +74,7 @@ protected:
 int GeneratorMesh_GridClass = RegisterObject<GeneratorMesh_Grid>("Generator/Mesh/Grid")
 		.setDescription("Create a mesh from a regular grid");
 
-//*************************************************************************//
+//****************************************************************************//
 
 
 } // namespace Panda

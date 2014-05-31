@@ -57,7 +57,7 @@ protected:
 
 int GeneratorRectangles_ComposeClass = RegisterObject<GeneratorRectangles_Compose>("Generator/Rectangle/Rectangle from 4 reals").setName("Reals to rectangle").setDescription("Create a rectangle from 4 reals");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorRectangles_ComposeCenter : public PandaObject
 {
@@ -103,7 +103,7 @@ protected:
 
 int GeneratorRectangles_ComposeCenterClass = RegisterObject<GeneratorRectangles_ComposeCenter>("Generator/Rectangle/Rectangle from center and size").setName("Center to rectangle").setDescription("Create a rectangle from center and size");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorRectangles_ComposeCorners : public PandaObject
 {
@@ -149,7 +149,7 @@ protected:
 
 int GeneratorRectangles_ComposeCornersClass = RegisterObject<GeneratorRectangles_ComposeCorners>("Generator/Rectangle/Rectangle from corners").setName("Corners to rectangle").setDescription("Create a rectangle from 2 corners");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorRectangles_Decompose : public PandaObject
 {
@@ -206,7 +206,7 @@ protected:
 
 int GeneratorRectangles_DecomposeClass = RegisterObject<GeneratorRectangles_Decompose>("Generator/Rectangle/Rectangle to 4 reals").setName("Rectangle to reals").setDescription("Extract the boundary of a rectangles");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorRectangles_DecomposeCenter : public PandaObject
 {
@@ -253,7 +253,7 @@ protected:
 
 int GeneratorRectangles_DecomposeCenterClass = RegisterObject<GeneratorRectangles_DecomposeCenter>("Generator/Rectangle/Rectangle to center and size").setName("Rectangle to center").setDescription("Extract the center and size of a rectangle");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorRectangles_DecomposeCorners : public PandaObject
 {

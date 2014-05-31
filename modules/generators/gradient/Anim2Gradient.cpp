@@ -46,7 +46,7 @@ protected:
 
 int Anim2GradientClass = RegisterObject<Anim2Gradient>("Generator/Gradient/Animation to gradient").setDescription("Convert an animation of colors to a gradient");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class Gradient2Anim : public PandaObject
 {

@@ -61,7 +61,7 @@ protected:
 
 int ModifierImage_GetPixelClass = RegisterObject<ModifierImage_GetPixel>("Modifier/Image/Get pixel").setDescription("Get colors in specific places in an image");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ModifierImage_SetPixel : public PandaObject
 {
@@ -116,7 +116,7 @@ protected:
 
 int ModifierImage_SetPixelClass = RegisterObject<ModifierImage_SetPixel>("Modifier/Image/Set pixel").setDescription("Set colors in specific places in an image");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ModifierImage_ColorInRect : public PandaObject
 {

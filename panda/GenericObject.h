@@ -78,7 +78,7 @@ public:
 	virtual int getCompatibleType(const BaseData* parent) const;
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 class GenericObject : public PandaObject
 {
@@ -149,7 +149,7 @@ private:
 	void createUndoCommands(const CreatedDatasStructPtr& createdData);
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 // Works as a GenericObject, but as soon as one input Data is connected,
 // it only accepts this type for all future connections.
@@ -171,7 +171,7 @@ private:
 	int m_connectedType;
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString, types::ImageWrapper, types::Gradient, types::Mesh, types::Path> allDataTypes;
 typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString> allSearchableTypes;

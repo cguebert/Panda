@@ -40,11 +40,6 @@ QString ObjectFactory::getRegistryName(PandaObject* object)
 	return object->getBaseClass()->getTypeName();
 }
 
-const ObjectFactory::RegistryMap& ObjectFactory::getRegistryMap() const
-{
-	return m_registry;
-}
-
 void ObjectFactory::registerObject(QString className, ClassEntry entry)
 {
 	entry.className = className;

@@ -53,6 +53,8 @@ protected:
 	QString findAvailableDataName(QString baseName, BaseData* data=nullptr);
 };
 
+//****************************************************************************//
+
 class GroupWithLayer : public Group, public BaseLayer
 {
 public:
@@ -89,6 +91,41 @@ protected:
 
 	Layer* m_layer;
 };
+
+//****************************************************************************//
+
+inline QString Group::getGroupName()
+{ return m_groupName.getValue(); }
+
+inline const Group::ObjectsList& Group::getObjects() const
+{ return m_objects; }
+
+inline void Group::addObject(ObjectPtr obj)
+{ m_objects.push_back(obj); }
+
+inline QString GroupWithLayer::getLayerName() const
+{ if(m_layer) return m_layer->getLayerName(); else return m_groupName.getValue(); }
+
+inline Data<QString>& GroupWithLayer::getLayerNameData()
+{ if(m_layer) return m_layer->getLayerNameData(); else return m_groupName; }
+
+inline int GroupWithLayer::getCompositionMode() const
+{ if(m_layer) return m_layer->getCompositionMode(); else return m_compositionMode.getValue(); }
+
+inline Data<int>& GroupWithLayer::getCompositionModeData()
+{ if(m_layer) return m_layer->getCompositionModeData(); else return m_compositionMode; }
+
+inline PReal GroupWithLayer::getOpacity() const
+{ if(m_layer) return m_layer->getOpacity(); else return m_opacity.getValue(); }
+
+inline Data<PReal>& GroupWithLayer::getOpacityData()
+{ if(m_layer) return m_layer->getOpacityData(); else return m_opacity; }
+
+inline Data<types::ImageWrapper>* GroupWithLayer::getImage()
+{ if(m_layer) return m_layer->getImage(); else return &m_image; }
+
+inline QMatrix4x4& GroupWithLayer::getMVPMatrix()
+{ if(m_layer) return m_layer->getMVPMatrix(); else return m_mvpMatrix; }
 
 } // namespace panda
 

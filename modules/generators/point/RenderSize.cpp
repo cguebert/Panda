@@ -36,7 +36,7 @@ protected:
 
 int GeneratorPoint_RenderSizeClass = RegisterObject<GeneratorPoint_RenderSize>("Generator/Point/Size of render view").setDescription("Gives the dimensions of the render");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorRect_RenderArea : public PandaObject
 {

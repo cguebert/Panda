@@ -77,7 +77,7 @@ protected:
 
 int RenderRectClass = RegisterObject<RenderRect>("Render/Rectangle").setDescription("Draw a rectangle");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class RenderFilledRect : public Renderer
 {

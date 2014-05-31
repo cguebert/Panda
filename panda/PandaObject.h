@@ -99,6 +99,8 @@ protected:
 	friend class PandaDocument;
 };
 
+//****************************************************************************//
+
 inline QString PandaObject::getTypeName()
 { return getClass()->getTypeName(); }
 

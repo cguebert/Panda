@@ -19,7 +19,7 @@ Path& Path::operator=(const QVector<Point> &v)
 	return *this;
 }
 
-//*************************************************************************//
+//****************************************************************************//
 
 template<> QString DataTrait<Path>::valueTypeName() { return "path"; }
 template<> int DataTrait<Path>::size(const Path& v) { return v.size(); }

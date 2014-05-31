@@ -175,20 +175,4 @@ void BaseData::initFlags()
 	m_persistent = getDataTrait()->isPersistent();
 }
 
-//***************************************************************//
-
-VoidDataAccessor::VoidDataAccessor(BaseData* data)
-	: m_data(data)
-	, m_value(data->beginVoidEdit())
-{}
-
-VoidDataAccessor::~VoidDataAccessor()
-{ m_data->endVoidEdit(); }
-
-void* VoidDataAccessor::get()
-{ return m_value; }
-
-VoidDataAccessor::operator void *()
-{ return m_value; }
-
 } // namespace panda

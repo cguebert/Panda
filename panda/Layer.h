@@ -45,6 +45,8 @@ protected:
 	QSharedPointer<QOpenGLFramebufferObject> m_renderFrameBuffer, m_displayFrameBuffer;
 };
 
+//****************************************************************************//
+
 class Layer : public DockObject, public BaseLayer
 {
 public:
@@ -78,6 +80,32 @@ protected:
 	Data<PReal> m_opacity;
 	QMatrix4x4 m_mvpMatrix;
 };
+
+//****************************************************************************//
+
+inline QString Layer::getLayerName() const
+{ return m_layerName.getValue(); }
+
+inline Data<QString>& Layer::getLayerNameData()
+{ return m_layerName; }
+
+inline int Layer::getCompositionMode() const
+{ return m_compositionMode.getValue(); }
+
+inline Data<int>& Layer::getCompositionModeData()
+{ return m_compositionMode; }
+
+inline PReal Layer::getOpacity() const
+{ return m_opacity.getValue(); }
+
+inline Data<PReal>& Layer::getOpacityData()
+{ return m_opacity; }
+
+inline Data<types::ImageWrapper>* Layer::getImage()
+{ return &m_image; }
+
+inline QMatrix4x4& Layer::getMVPMatrix()
+{ return m_mvpMatrix; }
 
 } // namespace panda
 

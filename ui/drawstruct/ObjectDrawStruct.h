@@ -87,7 +87,7 @@ inline panda::PandaObject* const ObjectDrawStruct::getObject() const
 inline int ObjectDrawStruct::dataStartY()
 { return dataRectMargin; }
 
-//*************************************************************************//
+//****************************************************************************//
 
 class BaseObjectDrawCreator
 {

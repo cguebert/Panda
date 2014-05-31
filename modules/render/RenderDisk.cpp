@@ -130,7 +130,7 @@ protected:
 
 int RenderDiskClass = RegisterObject<RenderDisk>("Render/Disk").setDescription("Draw a plain disk");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class RenderDisk_Gradient : public Renderer
 {

@@ -40,7 +40,7 @@ protected:
 	Data< QVector<PReal> > input, result;
 };
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_2Values : public PandaObject
 {
@@ -87,7 +87,7 @@ protected:
 	Data< QVector<PReal> > inputA, inputB, result;
 };
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Add : public DoubleMath_2Values
 {
@@ -103,7 +103,7 @@ public:
 
 int DoubleMath_AddClass = RegisterObject<DoubleMath_Add>("Math/Real/Addition").setDescription("Addition of 2 reals");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Sub : public DoubleMath_2Values
 {
@@ -119,7 +119,7 @@ public:
 
 int DoubleMath_SubClass = RegisterObject<DoubleMath_Sub>("Math/Real/Substraction").setDescription("Substraction of 2 reals");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Mult : public DoubleMath_2Values
 {
@@ -135,7 +135,7 @@ public:
 
 int DoubleMath_MultClass = RegisterObject<DoubleMath_Mult>("Math/Real/Multiplication").setDescription("Multiplication of 2 reals");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Div : public DoubleMath_2Values
 {
@@ -151,7 +151,7 @@ public:
 
 int DoubleMath_DivClass = RegisterObject<DoubleMath_Div>("Math/Real/Division").setDescription("Division of 2 reals");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Mod : public DoubleMath_2Values
 {
@@ -167,7 +167,7 @@ public:
 
 int DoubleMath_ModClass = RegisterObject<DoubleMath_Mod>("Math/Real/Modulo").setDescription("Remainder of the division");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Abs : public DoubleMath_1Value
 {
@@ -183,7 +183,7 @@ public:
 
 int DoubleMath_AbsClass = RegisterObject<DoubleMath_Abs>("Math/Real/Absolute").setDescription("Absolute value of the input");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Floor : public DoubleMath_1Value
 {
@@ -199,7 +199,7 @@ public:
 
 int DoubleMath_FloorClass = RegisterObject<DoubleMath_Floor>("Math/Real/Floor").setDescription("Floor value of the input");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Ceil : public DoubleMath_1Value
 {
@@ -215,7 +215,7 @@ public:
 
 int DoubleMath_CeilClass = RegisterObject<DoubleMath_Ceil>("Math/Real/Ceiling").setDescription("Ceiling value of the input");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Round : public DoubleMath_1Value
 {
@@ -231,7 +231,7 @@ public:
 
 int DoubleMath_RoundClass = RegisterObject<DoubleMath_Round>("Math/Real/Rounding").setDescription("Rounded value of the input");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Power : public DoubleMath_2Values
 {
@@ -247,7 +247,7 @@ public:
 
 int DoubleMath_PowerClass = RegisterObject<DoubleMath_Power>("Math/Real/Power").setDescription("First value raised by the exponent of the second");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Sqrt : public DoubleMath_1Value
 {
@@ -263,7 +263,7 @@ public:
 
 int DoubleMath_SqrtClass = RegisterObject<DoubleMath_Sqrt>("Math/Real/Square root").setDescription("Square root of the value");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Log : public DoubleMath_1Value
 {
@@ -281,7 +281,7 @@ public:
 
 int DoubleMath_LogClass = RegisterObject<DoubleMath_Log>("Math/Real/Natural logarithm").setDescription("Natural logarithm of the value");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_LogBase : public DoubleMath_1Value
 {
@@ -304,7 +304,7 @@ protected:
 
 int DoubleMath_LogBaseClass = RegisterObject<DoubleMath_LogBase>("Math/Real/Logarithm").setDescription("Logarithm to a chosen base of the value");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Exp : public DoubleMath_1Value
 {
@@ -322,7 +322,7 @@ public:
 
 int DoubleMath_ExpClass = RegisterObject<DoubleMath_Exp>("Math/Real/Exponential").setDescription("Returns the exponential function of e to the power the value");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Min : public DoubleMath_2Values
 {
@@ -338,7 +338,7 @@ public:
 
 int DoubleMath_MinClass = RegisterObject<DoubleMath_Min>("Math/Real/Functions/Minimum").setDescription("Returns the lowest value of the 2 inputs");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Max : public DoubleMath_2Values
 {
@@ -354,7 +354,7 @@ public:
 
 int DoubleMath_MaxClass = RegisterObject<DoubleMath_Max>("Math/Real/Functions/Maximum").setDescription("Returns the highest value of the 2 inputs");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Step : public DoubleMath_2Values
 {
@@ -370,7 +370,7 @@ public:
 
 int DoubleMath_StepClass = RegisterObject<DoubleMath_Step>("Math/Real/Functions/Step").setDescription("Returns 0 if input1 < input2, 1 otherwise");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Cos : public DoubleMath_1Value
 {
@@ -386,7 +386,7 @@ public:
 
 int DoubleMath_CosClass = RegisterObject<DoubleMath_Cos>("Math/Real/Trigonometry/Cosine").setDescription("Cosine of the value (in degrees)");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Sin : public DoubleMath_1Value
 {
@@ -402,7 +402,7 @@ public:
 
 int DoubleMath_SinClass = RegisterObject<DoubleMath_Sin>("Math/Real/Trigonometry/Sine").setDescription("Sine of the value (in degrees)");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Tan : public DoubleMath_1Value
 {
@@ -418,7 +418,7 @@ public:
 
 int DoubleMath_TanClass = RegisterObject<DoubleMath_Tan>("Math/Real/Trigonometry/Tangent").setDescription("Tangent of the value (in degrees)");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Arccos : public DoubleMath_1Value
 {
@@ -434,7 +434,7 @@ public:
 
 int DoubleMath_ArccosClass = RegisterObject<DoubleMath_Arccos>("Math/Real/Trigonometry/Arccosine").setDescription("Arc-cosine of the value (result in degrees)");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Arcsin : public DoubleMath_1Value
 {
@@ -450,7 +450,7 @@ public:
 
 int DoubleMath_ArcsinClass = RegisterObject<DoubleMath_Arcsin>("Math/Real/Trigonometry/Arcsine").setDescription("Arc-sine of the value (result in degrees)");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Arctan : public DoubleMath_1Value
 {

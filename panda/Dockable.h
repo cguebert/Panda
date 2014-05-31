@@ -34,6 +34,8 @@ protected:
 	DockablesList m_dockedObjects;
 };
 
+//****************************************************************************//
+
 class DockableObject : public PandaObject
 {
 public:
@@ -51,6 +53,29 @@ public:
 protected:
 	DockObject* m_parentDock;
 };
+
+//****************************************************************************//
+
+inline void DockObject::removeDockable(DockableObject* dockable)
+{ removeInput((DataNode*)dockable); }
+
+inline const DockObject::DockablesList& DockObject::getDockables() const
+{ return m_dockedObjects; }
+
+inline int DockObject::getIndexOfDockable(DockableObject* dockable) const
+{ return m_dockedObjects.indexOf(dockable); }
+
+inline bool DockObject::accepts(DockableObject* /*dockable*/) const
+{ return true; }
+
+inline void DockableObject::setParentDock(DockObject* dock)
+{ m_parentDock = dock; }
+
+inline DockObject* DockableObject::getParentDock()
+{ return m_parentDock; }
+
+inline DockObject* DockableObject::getDefaultDock()
+{ return nullptr; }
 
 } // namespace panda
 

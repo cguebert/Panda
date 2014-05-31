@@ -44,15 +44,14 @@ public:
 
 	template <class T>
 	static QString getRegistryName()
-	{
-		return T::getClass()->getTypeName();
-	}
+	{ return T::getClass()->getTypeName(); }
 	static QString getRegistryName(PandaObject* object);
 
 	QSharedPointer<PandaObject> create(QString className, PandaDocument* parent) const;
 
 	typedef std::map< QString, ClassEntry > RegistryMap;
-	const RegistryMap& getRegistryMap() const;
+	const RegistryMap& getRegistryMap() const
+	{ return m_registry; }
 protected:
 	template<class T> friend class RegisterObject;
 	void registerObject(QString className, ClassEntry entry);

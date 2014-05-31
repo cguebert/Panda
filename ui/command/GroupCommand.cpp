@@ -38,7 +38,7 @@ void SelectGroupCommand::undo()
 	}
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 SelectObjectsInGroupCommand::SelectObjectsInGroupCommand(panda::PandaDocument* document,
 									   panda::Group* group,
@@ -73,7 +73,7 @@ void SelectObjectsInGroupCommand::undo()
 	}
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 AddObjectToGroupCommand::AddObjectToGroupCommand(panda::Group* group,
 											 QSharedPointer<panda::PandaObject> object,
@@ -95,7 +95,7 @@ void AddObjectToGroupCommand::undo()
 	m_group->removeObject(m_object.data());
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 RemoveObjectFromGroupCommand::RemoveObjectFromGroupCommand(panda::Group* group,
 											 QSharedPointer<panda::PandaObject> object,

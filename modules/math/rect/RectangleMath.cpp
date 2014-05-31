@@ -57,7 +57,7 @@ protected:
 int RectangleMath_TranslationClass = RegisterObject<RectangleMath_Translation>("Math/Rectangle/Translation")
 		.setName("Translate rectangle").setDescription("Translate a rectangle");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class RectangleMath_Adjust : public PandaObject
 {
@@ -104,7 +104,7 @@ protected:
 int RectangleMath_AdjustClass = RegisterObject<RectangleMath_Adjust>("Math/Rectangle/Adjust")
 		.setName("Adjust rectangle").setDescription("Move each side of a rectangle");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class RectangleMath_Intersection : public PandaObject
 {
@@ -162,7 +162,7 @@ protected:
 int RectangleMath_IntersectionClass = RegisterObject<RectangleMath_Intersection>("Math/Rectangle/Intersection")
 		.setName("Intersection of rectangles").setDescription("Compute the intersection of 2 rectangles");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class RectangleMath_Union : public PandaObject
 {

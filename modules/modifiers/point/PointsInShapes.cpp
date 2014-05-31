@@ -59,7 +59,7 @@ protected:
 
 int ModifierPoints_PointsInRectClass = RegisterObject<ModifierPoints_PointsInRect>("Modifier/Point/Points in rectangle").setDescription("Select points that are inside a rectangle");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ModifierPoints_PointsInDisk : public PandaObject
 {

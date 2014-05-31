@@ -99,7 +99,7 @@ unsigned int BaseLayer::getTextureId() const
 	return m_displayFrameBuffer->texture();
 }
 
-//*************************************************************************//
+//****************************************************************************//
 
 Layer::Layer(PandaDocument *parent)
 	: DockObject(parent)
@@ -148,46 +148,6 @@ BaseLayer::RenderersList Layer::getRenderers()
 	}
 
 	return renderers;
-}
-
-QString Layer::getLayerName() const
-{
-	return m_layerName.getValue();
-}
-
-Data<QString>& Layer::getLayerNameData()
-{
-	return m_layerName;
-}
-
-int Layer::getCompositionMode() const
-{
-	return m_compositionMode.getValue();
-}
-
-Data<int>& Layer::getCompositionModeData()
-{
-	return m_compositionMode;
-}
-
-PReal Layer::getOpacity() const
-{
-	return m_opacity.getValue();
-}
-
-Data<PReal>& Layer::getOpacityData()
-{
-	return m_opacity;
-}
-
-Data<types::ImageWrapper>* Layer::getImage()
-{
-	return &m_image;
-}
-
-QMatrix4x4& Layer::getMVPMatrix()
-{
-	return m_mvpMatrix;
 }
 
 void Layer::postCreate()

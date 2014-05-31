@@ -106,7 +106,7 @@ public:
 	}
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 RegisterWidget<SimpleDataWidget<Color> > DWClass_color("default");
 RegisterWidget<OpenDialogDataWidget<QVector<Color>, ListDataWidgetDialog<QVector<Color> > > > DWClass_colors_list_generic("generic");

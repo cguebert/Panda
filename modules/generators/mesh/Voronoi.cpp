@@ -83,7 +83,7 @@ protected:
 int GeneratorMesh_VoronoiClass = RegisterObject<GeneratorMesh_Voronoi>("Generator/Mesh/Voronoi")
 		.setDescription("Create a mesh from a Voronoi tessellation");
 
-//*************************************************************************//
+//****************************************************************************//
 
 
 } // namespace Panda

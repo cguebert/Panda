@@ -176,7 +176,7 @@ Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, PReal amt
 	return grad;
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 template<> QString DataTrait<Gradient>::valueTypeName() { return "gradient"; }
 
@@ -226,7 +226,7 @@ template class Data< QVector<Gradient> >;
 int gradientDataClass = RegisterData< Gradient >();
 int gradientVectorDataClass = RegisterData< QVector<Gradient> >();
 
-//*************************************************************************//
+//****************************************************************************//
 
 template<>
 Gradient interpolate(const Gradient& g1, const Gradient& g2, PReal amt)

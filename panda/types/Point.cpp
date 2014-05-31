@@ -43,7 +43,7 @@ Point fromPolar(Point pol)
 	return Point(cos(pol.y) * pol.x, sin(pol.y) * pol.x);
 }
 
-//*************************************************************************//
+//****************************************************************************//
 
 template<> QString DataTrait<Point>::valueTypeName() { return "point"; }
 

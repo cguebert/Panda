@@ -24,13 +24,13 @@ public:
 	const NodesList& getInputs();
 	const NodesList& getOutputs();
 
-	virtual void update() = 0;
+	virtual void update() = 0; /// Do the action required to reset the dirty flag
 
 	virtual bool isDirty() const;
-	virtual void setDirtyValue(const DataNode* caller);
-	virtual void doSetDirty();
-	virtual void setDirtyOutputs();
-	virtual void cleanDirty();
+	virtual void setDirtyValue(const DataNode* caller); /// Change the flag and propagate to all outputs
+	virtual void doSetDirty(); /// Only change the flag, don't propagate
+	virtual void setDirtyOutputs(); /// Propagate the change to all outputs
+	virtual void cleanDirty(); /// Reset the dirty flag
 	virtual void updateIfDirty() const;
 
 	virtual void doAddInput(DataNode* node);
@@ -43,7 +43,7 @@ protected:
 	NodesList m_inputs, m_outputs;
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 inline const DataNode::NodesList& DataNode::getInputs()
 { return m_inputs; }

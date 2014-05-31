@@ -24,7 +24,7 @@ protected:
 	panda::Group* m_group;
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 class SelectObjectsInGroupCommand : public QUndoCommand
 {
@@ -39,7 +39,7 @@ protected:
 	panda::Group* m_group;
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 class AddObjectToGroupCommand : public QUndoCommand
 {
@@ -54,7 +54,7 @@ protected:
 	QSharedPointer<panda::PandaObject> m_object;
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 class RemoveObjectFromGroupCommand : public QUndoCommand
 {

@@ -79,7 +79,7 @@ protected:
 
 int DoubleListMath_SumMeanStdDevClass = RegisterObject<DoubleListMath_SumMeanStdDev>("Math/List of reals/Sum, mean and deviation").setName("Sum & mean").setDescription("Compute the sum, mean and standard deviation of a list of reals");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleListMath_Median : public PandaObject
 {

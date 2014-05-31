@@ -38,7 +38,7 @@ public:
 	template<class U> void operator=(const U& v) { vref = v; }
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 template<class T>
 class DataAccessorVector

@@ -82,7 +82,7 @@ protected:
 
 int RenderLineClass = RegisterObject<RenderLine>("Render/Line").setDescription("Draw a line between 2 points");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class RenderPath : public Renderer
 {

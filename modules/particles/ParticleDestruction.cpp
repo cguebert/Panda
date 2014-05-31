@@ -74,7 +74,7 @@ protected:
 int ParticleDestruction_AgeClass = RegisterObject<ParticleDestruction_Age>("Particles/Destruction/Remove old particles")
 		.setDescription("Remove particles older than a given age");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ParticleDestruction_Index : public ParticleEffector
 {
@@ -104,7 +104,7 @@ protected:
 int ParticleDestruction_IndexClass = RegisterObject<ParticleDestruction_Index>("Particles/Destruction/Remove particles by index")
 		.setDescription("Remove specific particles based on their index");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ParticleDestruction_InRectangle : public ParticleEffector
 {

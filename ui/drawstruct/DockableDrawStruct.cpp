@@ -129,7 +129,7 @@ int DockObjectDrawStruct::getDockableIndex(const QRectF& rect)
 
 int dockObjectDrawClass = RegisterDrawObject<panda::DockObject, DockObjectDrawStruct>();
 
-//******************************************************************************************
+//****************************************************************************//
 
 DockableObjectDrawStruct::DockableObjectDrawStruct(GraphView* view, panda::DockableObject* dockable)
 	: ObjectDrawStruct(view, (panda::PandaObject*)dockable)

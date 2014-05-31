@@ -89,7 +89,7 @@ protected:
 
 int List2AnimClass = RegisterObject<List2Anim>("Animation/Lists to Animation").setDescription("Create animations from lists of keys and values");
 
-//***************************************************************//
+//****************************************************************************//
 
 class Anim2List : public GenericObject
 {

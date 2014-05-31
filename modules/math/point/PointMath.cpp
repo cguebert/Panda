@@ -56,7 +56,7 @@ protected:
 
 int PointMath_AdditionClass = RegisterObject<PointMath_Addition>("Math/Point/Addition").setName("Add points").setDescription("Compute the addition of 2 points");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_Substraction : public PandaObject
 {
@@ -104,7 +104,7 @@ protected:
 
 int PointMath_SubstractionClass = RegisterObject<PointMath_Substraction>("Math/Point/Substraction").setName("Substract points").setDescription("Compute the substraction of 2 points");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_Scale : public PandaObject
 {
@@ -155,7 +155,7 @@ protected:
 
 int PointMath_ScaleClass = RegisterObject<PointMath_Scale>("Math/Point/Multiply").setName("Scale point").setDescription("Multiply a point by a real");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_Division : public PandaObject
 {
@@ -206,7 +206,7 @@ protected:
 
 int PointMath_DivisionClass = RegisterObject<PointMath_Division>("Math/Point/Division").setName("Divide point").setDescription("Divide a point by a real");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_Distance : public PandaObject
 {
@@ -255,7 +255,7 @@ protected:
 
 int PointMath_DistanceClass = RegisterObject<PointMath_Distance>("Math/Point/Distance").setDescription("Compute the distance between 2 points");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_Rotation : public PandaObject
 {
@@ -325,7 +325,7 @@ protected:
 
 int PointMath_RotationClass = RegisterObject<PointMath_Rotation>("Math/Point/Rotation").setDescription("Rotation of a point around a center");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_AngleOfVector : public PandaObject
 {
@@ -374,7 +374,7 @@ protected:
 
 int PointMath_AngleOfVectorClass = RegisterObject<PointMath_AngleOfVector>("Math/Point/Angle of vector").setDescription("Computes the angle of a vector");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_AngleToVector : public PandaObject
 {
@@ -420,7 +420,7 @@ protected:
 
 int PointMath_AngleToVectorClass = RegisterObject<PointMath_AngleToVector>("Math/Point/Angle to vector").setDescription("Creates a vector corresponding to a rotation");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_Norm : public PandaObject
 {
@@ -462,7 +462,7 @@ protected:
 
 int PointMath_NormClass = RegisterObject<PointMath_Norm>("Math/Point/Norm").setDescription("Compute the norm of a point");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_Norm2 : public PandaObject
 {
@@ -504,7 +504,7 @@ protected:
 
 int PointMath_Norm2Class = RegisterObject<PointMath_Norm2>("Math/Point/Norm2").setDescription("Compute the square of the norm of a point");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PointMath_Normalize : public PandaObject
 {

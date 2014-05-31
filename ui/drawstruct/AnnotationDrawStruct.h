@@ -11,7 +11,7 @@ class PandaObject;
 class Annotation;
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 class AnnotationDrawStruct : public ObjectDrawStruct
 {

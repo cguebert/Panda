@@ -55,7 +55,7 @@ protected:
 
 int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Find neighbors").setDescription("Find neighboring triangles to the input list");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ModifierMesh_GetConnected : public PandaObject
 {
@@ -104,7 +104,7 @@ protected:
 
 int ModifierMesh_GetConnectedClass = RegisterObject<ModifierMesh_GetConnected>("Modifier/Mesh/Get connected").setDescription("Get connected triangles to the input list");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class ModifierMesh_SeparateDisconnected : public PandaObject
 {

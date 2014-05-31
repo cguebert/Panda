@@ -55,7 +55,7 @@ template panda::Data< QVector<Mesh::Edge> >;
 
 typedef OpenDialogDataWidget<QVector<Mesh::Edge>, TableDataWidgetDialog<QVector<Mesh::Edge> > > EdgeDataWidget;
 
-//***************************************************************//
+//****************************************************************************//
 
 template<>
 class FlatDataTrait<Mesh::Triangle>
@@ -102,7 +102,7 @@ template panda::Data< QVector<Mesh::Triangle> >;
 
 typedef OpenDialogDataWidget<QVector<Mesh::Triangle>, TableDataWidgetDialog<QVector<Mesh::Triangle> > > TriangleDataWidget;
 
-//***************************************************************//
+//****************************************************************************//
 
 EditMeshDialog::EditMeshDialog(BaseDataWidget* parent, bool readOnly, QString name)
 	: QDialog(parent)
@@ -164,7 +164,7 @@ void EditMeshDialog::writeToData(Mesh& mesh)
 	mesh = m_mesh;
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 RegisterWidget<OpenDialogDataWidget<Mesh, EditMeshDialog> > DWClass_mesh("default");
 RegisterWidget<OpenDialogDataWidget<QVector<Mesh>, ListDataWidgetDialog<QVector<Mesh> > > > DWClass_meshes_list("generic");

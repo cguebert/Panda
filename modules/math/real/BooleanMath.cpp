@@ -46,7 +46,7 @@ protected:
 
 int BooleanMath_GreaterClass = RegisterObject<BooleanMath_Greater>("Math/Boolean/Greater").setDescription("Compare 2 reals; output is 1 if A > B, 0 otherwise");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class BooleanMath_Equal : public PandaObject
 {
@@ -89,7 +89,7 @@ protected:
 
 int BooleanMath_EqualClass = RegisterObject<BooleanMath_Equal>("Math/Boolean/Equal").setDescription("Compare 2 reals; output is 1 if A is equal to B, 0 otherwise");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class BooleanMath_Or : public PandaObject
 {
@@ -132,7 +132,7 @@ protected:
 
 int BooleanMath_OrClass = RegisterObject<BooleanMath_Or>("Math/Boolean/Or").setDescription("Compute the boolean operation OR on the 2 inputs");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class BooleanMath_And : public PandaObject
 {
@@ -175,7 +175,7 @@ protected:
 
 int BooleanMath_AndClass = RegisterObject<BooleanMath_And>("Math/Boolean/And").setDescription("Compute the boolean operation AND on the 2 inputs");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class BooleanMath_Xor : public PandaObject
 {
@@ -218,7 +218,7 @@ protected:
 
 int BooleanMath_XorClass = RegisterObject<BooleanMath_Xor>("Math/Boolean/Xor").setDescription("Compute the boolean operation XOR on the 2 inputs");
 
-//*************************************************************************//
+//****************************************************************************//
 
 
 class BooleanMath_Not : public PandaObject
@@ -255,7 +255,7 @@ protected:
 
 int BooleanMath_NotClass = RegisterObject<BooleanMath_Not>("Math/Boolean/Not").setDescription("Compute the negation of the input");
 
-//*************************************************************************//
+//****************************************************************************//
 
 
 } // namespace Panda

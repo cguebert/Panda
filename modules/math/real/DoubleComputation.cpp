@@ -81,7 +81,7 @@ protected:
 
 int DoubleMath_SmoothStepClass = RegisterObject<DoubleMath_SmoothStep>("Math/Real/Functions/Smooth Step").setDescription("Compute the smooth step of the input between min and max");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_RiseCount : public PandaObject
 {
@@ -139,7 +139,7 @@ protected:
 
 int DoubleMath_RiseCountClass = RegisterObject<DoubleMath_RiseCount>("Math/Real/Functions/Rise count").setDescription("Count the number of rise transitions of a value");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_FallCount : public PandaObject
 {
@@ -197,7 +197,7 @@ protected:
 
 int DoubleMath_FallCountClass = RegisterObject<DoubleMath_FallCount>("Math/Real/Functions/Fall count").setDescription("Count the number of fall transitions of a value");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Constrain : public PandaObject
 {
@@ -260,7 +260,7 @@ protected:
 
 int DoubleMath_ConstrainClass = RegisterObject<DoubleMath_Constrain>("Math/Real/Functions/Constrain").setDescription("Constrain a value between a min and a max");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Pulse : public PandaObject
 {
@@ -323,7 +323,7 @@ protected:
 
 int DoubleMath_PulseClass = RegisterObject<DoubleMath_Pulse>("Math/Real/Functions/Pulse").setDescription("Set the output to 1 if the value is between min and max, 0 otherwise");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class DoubleMath_Remap : public PandaObject
 {

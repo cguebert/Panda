@@ -76,7 +76,7 @@ const panda::helper::UpdateLogger::NodeStates UpdateLoggerDialog::getNodeStates(
 	return m_view->getNodeStates();
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 UpdateLoggerView::UpdateLoggerView(QWidget *parent)
     : QWidget(parent)

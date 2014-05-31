@@ -46,6 +46,6 @@ protected:
 int MeshMath_NumberOfPrimitivesClass = RegisterObject<MeshMath_NumberOfPrimitives>("Math/Mesh/Number of primitives")
 		.setDescription("Compute the number of points, edges and triangles in the mesh");
 
-//*************************************************************************//
+//****************************************************************************//
 
 } // namespace Panda

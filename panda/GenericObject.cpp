@@ -309,7 +309,7 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 	}
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 SingleTypeGenericObject::SingleTypeGenericObject(PandaDocument *parent)
 	: GenericObject(parent)
@@ -504,7 +504,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	}
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 bool GenericData::validParent(const BaseData* parent) const
 {
@@ -556,7 +556,7 @@ int GenericData::getCompatibleType(const BaseData* parent) const
 	return parent->getDataTrait()->valueTypeId();
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 bool GenericSingleValueData::validParent(const BaseData* parent) const
 {
@@ -568,7 +568,7 @@ QString GenericSingleValueData::getDescription() const
 	return QString("Accepting single values" + getTypesName());
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 bool GenericVectorData::validParent(const BaseData* parent) const
 {
@@ -583,7 +583,7 @@ QString GenericVectorData::getDescription() const
 	return QString("Accepting lists" + getTypesName());
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 bool GenericAnimationData::validParent(const BaseData* parent) const
 {
@@ -595,7 +595,7 @@ QString GenericAnimationData::getDescription() const
 	return QString("Accepting animations" + getTypesName());
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 bool GenericSpecificData::validParent(const BaseData* parent) const
 {

@@ -31,11 +31,6 @@ DockObject::~DockObject()
 	}
 }
 
-bool DockObject::accepts(DockableObject* /*dockable*/) const
-{
-	return true;
-}
-
 void DockObject::addDockable(DockableObject* dockable, int index)
 {
 	dockable->setParentDock(this);
@@ -45,21 +40,6 @@ void DockObject::addDockable(DockableObject* dockable, int index)
 	else
 		m_dockedObjects.insert(index, dockable);
 	m_parentDocument->onModifiedObject(this);
-}
-
-void DockObject::removeDockable(DockableObject* dockable)
-{
-	removeInput((DataNode*)dockable);
-}
-
-const DockObject::DockablesList& DockObject::getDockables() const
-{
-	return m_dockedObjects;
-}
-
-int DockObject::getIndexOfDockable(DockableObject* dockable) const
-{
-	return m_dockedObjects.indexOf(dockable);
 }
 
 void DockObject::doRemoveInput(DataNode* node)
@@ -74,7 +54,7 @@ void DockObject::doRemoveInput(DataNode* node)
 	}
 }
 
-//******************************************************************************************
+//****************************************************************************//
 
 DockableObject::DockableObject(PandaDocument* document)
 	: PandaObject(document)
@@ -86,21 +66,6 @@ void DockableObject::postCreate()
 	DockObject* dock = getDefaultDock();
 	if(dock)
 		dock->addDockable(this);
-}
-
-void DockableObject::setParentDock(DockObject* dock)
-{
-	m_parentDock = dock;
-}
-
-DockObject* DockableObject::getParentDock()
-{
-	return m_parentDock;
-}
-
-DockObject* DockableObject::getDefaultDock()
-{
-	return nullptr;
 }
 
 void DockableObject::removedFromDocument()

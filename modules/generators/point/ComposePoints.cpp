@@ -47,7 +47,7 @@ protected:
 
 int GeneratorPoints_ComposeClass = RegisterObject<GeneratorPoints_Compose>("Generator/Point/Create point").setName("Reals to point").setDescription("Create a point from 2 reals");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class GeneratorPoints_Decompose : public PandaObject
 {

@@ -49,7 +49,7 @@ public:
 	}
 };
 
-//***************************************************************//
+//****************************************************************************//
 
 template <>
 class DataWidgetContainer< Point >
@@ -116,7 +116,7 @@ RegisterWidget<OpenDialogDataWidget<QVector<Point>, TableDataWidgetDialog<QVecto
 RegisterWidget<OpenDialogDataWidget<QVector<Point>, ListDataWidgetDialog<QVector<Point> > > > DWClass_points_list_generic("generic");
 RegisterWidget<OpenDialogDataWidget<Animation<Point>, AnimationDataWidgetDialog<Animation<Point> > > > DWClass_points_animation("default");
 
-//*************************************************************************//
+//****************************************************************************//
 
 template<>
 class VectorDataTrait<Path>

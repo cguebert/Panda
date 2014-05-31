@@ -18,7 +18,7 @@ template<> QString DataTrait<int>::valueTypeName() { return "integer"; }
 template<> QString DataTrait<PReal>::valueTypeName() { return "real"; }
 template<> QString DataTrait<QString>::valueTypeName() { return "text"; }
 
-//***************************************************************//
+//****************************************************************************//
 // Overrides for writeValue xml
 
 template<>
@@ -36,7 +36,7 @@ void DataTrait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const 
 	elem.appendChild(node);
 }
 
-//***************************************************************//
+//****************************************************************************//
 // Overrides for readValue xml
 
 template<>
@@ -55,7 +55,7 @@ template<>
 void DataTrait<QString>::readValue(QDomElement& elem, QString& v)
 { v = elem.text(); }
 
-//***************************************************************//
+//****************************************************************************//
 
 template class Data<int>;
 template class Data<PReal>;

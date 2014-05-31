@@ -92,22 +92,9 @@ const types::AbstractDataTrait* Data<T>::getDataTrait() const
 }
 
 template<class T>
-const void* Data<T>::getVoidValue() const
-{
-	return &getValue();
-}
-
-template<class T>
 DataAccessor<typename Data<T>::data_type> Data<T>::getAccessor()
 {
 	return DataAccessor<data_type>(*this);
-}
-
-template<class T>
-void Data<T>::setValue(const_reference value)
-{
-	*beginEdit() = value;
-	endEdit();
 }
 
 template<class T>
@@ -130,33 +117,6 @@ void Data<T>::copyValueFrom(const BaseData* from)
 	if(m_dataCopier->copyData(this, from))
 		m_isValueSet = true;
 #endif
-}
-
-template<class T>
-typename Data<T>::pointer Data<T>::beginEdit()
-{
-	updateIfDirty();
-	++m_counter;
-	return &m_value;
-}
-
-template<class T>
-void Data<T>::endEdit()
-{
-	m_isValueSet = true;
-	BaseData::setDirtyOutputs();
-}
-
-template<class T>
-void* Data<T>::beginVoidEdit()
-{
-	return beginEdit();
-}
-
-template<class T>
-void Data<T>::endVoidEdit()
-{
-	endEdit();
 }
 
 template<class T>

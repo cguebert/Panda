@@ -70,7 +70,7 @@ protected:
 
 int PathMath_LengthClass = RegisterObject<PathMath_Length>("Math/Path/Curve length").setDescription("Compute the length of a series of segments");
 
-//*************************************************************************//
+//****************************************************************************//
 
 class PathMath_GetPoint : public PandaObject
 {

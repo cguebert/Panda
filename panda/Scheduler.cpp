@@ -544,7 +544,7 @@ void Scheduler::testForEnd()
 	}
 }
 
-//***************************************************************//
+//****************************************************************************//
 
 SchedulerThread::SchedulerThread(Scheduler* scheduler, int threadId)
 	: m_scheduler(scheduler)
