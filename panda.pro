@@ -251,7 +251,7 @@ SOURCES       = main.cpp \
 	ui/widget/StringDataWidget.cpp \
 	ui/widget/TableDataWidgetDialog.cpp
 RESOURCES     = panda.qrc
-win32:RC_FILE = panda.rc
+#win32:RC_FILE = panda.rc
 INCLUDEPATH = .
 QT += widgets xml opengl
 CONFIG += c++11

@@ -127,6 +127,7 @@ void LayersTab::addedObject(panda::PandaObject* object)
 		{
 			selectedLayer = layer;
 			nameEdit->setEnabled(true);
+			nameEdit->setText(selectedLayer->getLayerName());
 			compositionBox->setEnabled(true);
 			compositionBox->setCurrentIndex(selectedLayer->getCompositionMode());
 			opacitySlider->setEnabled(true);
@@ -147,8 +148,11 @@ void LayersTab::removedObject(panda::PandaObject* object)
 		if(selectedLayer == layer)
 		{
 			selectedLayer = nullptr;
+			nameEdit->setText("");
 			nameEdit->setEnabled(false);
+			compositionBox->setCurrentIndex(0);
 			compositionBox->setEnabled(false);
+			opacitySlider->setValue(100);
 			opacitySlider->setEnabled(false);
 			moveUpButton->setEnabled(false);
 			moveDownButton->setEnabled(false);

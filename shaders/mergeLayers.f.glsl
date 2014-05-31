@@ -107,82 +107,100 @@ void main(void)
 
 	else if(mode == 15) // Overlay
 	{
-	/*	if(2 * Dca <= Da)
-			Rca = 2 * Sca * Dca + Sca * (1 - Da) + Dca * (1 - Sa);
-		else
-			Rca = Sca * (1 + Da) + Dca * (1 + Sa) - 2 * Dca * Sca - Da * Sa;
-		Ra = Sa + Da - Sa * Da;*/
+		for(int i=0; i<3; ++i)
+		{
+			if(2 * Dca[i] <= Da)
+				Rca[i] = 2 * Sca[i] * Dca[i] + Sca[i] * (1 - Da) + Dca[i] * (1 - Sa);
+			else
+				Rca[i] = Sca[i] * (1 + Da) + Dca[i] * (1 + Sa) - 2 * Dca[i] * Sca[i] - Da * Sa;
+		}
+
+		Ra = Sa + Da - Sa * Da;
 	}
 
 	else if(mode == 16) // Darken
 	{
-	/*	if(Sca * Da < Dca * Sa)
+		for(int i=0; i<3; ++i)
 		{
-			Rca = Sca + Dca * (1 - Sa);
-			Ra = Sa + Da * (1 - Sa);
+			if(Sca[i] * Da < Dca[i] * Sa)
+				Rca[i] = Sca[i] + Dca[i] * (1 - Sa);
+			else
+				Rca[i] = Dca[i] + Sca[i] * (1 - Da);
 		}
-		else
-		{
-			Rca = Dca + Sca * (1 - Da);
-			Ra = Sa + Da * (1 - Sa);
-		}*/
+
+		Ra = Sa + Da * (1 - Sa);
 	}
 
 	else if(mode == 17) // Lighten
 	{
-	/*	if(Sca * Da > Dca * Sa)
+		for(int i=0; i<3; ++i)
 		{
-			Rca = Sca + Dca * (1 - Sa);
-			Ra = Sa + Da * (1 - Sa);
+			if(Sca[i] * Da > Dca[i] * Sa)
+				Rca[i] = Sca[i]+ Dca[i] * (1 - Sa);
+			else
+				Rca[i] = Dca[i] + Sca[i] * (1 - Da);
 		}
-		else
-		{
-			Rca = Dca + Sca * (1 - Da);
-			Ra = Sa + Da * (1 - Sa);
-		}*/
+
+		Ra = Sa + Da * (1 - Sa);
 	}
 
 	else if(mode == 18) // ColorDodge
 	{
-	/*	if(Sca == Sa && Dca == 0)
-			Rca = Sca * (1 - Da);
-		else if(Sca == Sa)
-			Rca = Sa * Da + Sca * (1 - Da) + Dca * (1 - Sa);
-		else if(Sca)
-			Rca = Sa * Da * min(1, Dca / Da * Sa / (Sa - Sca)) + Sca * (1 - Da) + Dca * (1 - Sa);
+		for(int i=0; i<3; ++i)
+		{
+			if(Sca[i] == Sa && Dca[i] == 0)
+				Rca[i] = Sca[i] * (1 - Da);
+			else if(Sca[i] == Sa)
+				Rca[i] = Sa * Da + Sca[i] * (1 - Da) + Dca[i] * (1 - Sa);
+			else
+				Rca[i] = Sa * Da * min(1, Dca[i] / Da * Sa / (Sa - Sca[i])) + Sca[i] * (1 - Da) + Dca[i] * (1 - Sa);
+		}
 
-		Ra = Sa + Da * (1 - Sa);*/
+		Ra = Sa + Da * (1 - Sa);
 	}
 
 	else if(mode == 19) // ColorBurn
 	{
-	/*	if(Sca == 0 && Dca == Da)
-			Rca = Sa * Da + Dca * (1 - Sa);
-		else if(Sca == 0)
-			Rca = Dca * (1 - Sa);
-		else if(Sca)
-			Rca = Sa * Da * (1 - min(1, (1 - Dca / Da) * Sa / Sca)) + Sca * (1 - Da) + Dca * (1 - Sa);*/
+		for(int i=0; i<3; ++i)
+		{
+			if(Sca[i] == 0 && Dca[i] == Da)
+				Rca[i] = Sa * Da + Dca[i] * (1 - Sa);
+			else if(Sca[i] == 0)
+				Rca[i] = Dca[i] * (1 - Sa);
+			else
+				Rca[i] = Sa * Da * (1 - min(1, (1 - Dca[i] / Da) * Sa / Sca[i])) + Sca[i] * (1 - Da) + Dca[i] * (1 - Sa);
+		}
+
+		Ra = Sa + Da * (1 - Sa);
 	}
 
 	else if(mode == 20) // HardLight
 	{
-	/*	if(2 * Sca <= Sa)
-			Rca = 2 * Sca * Dca + Sca * (1 - Da) + Dca * (1 - Sa);
-		else
-			Rca = Sca * (1 + Da) + Dca * (1 + Sa) - Sa * Da - 2 * Sca * Dca;
-		Ra = Sa * Da * (1 - Sa);*/
+		for(int i=0; i<3; ++i)
+		{
+			if(2 * Sca[i] <= Sa)
+				Rca[i] = 2 * Sca[i] * Dca[i] + Sca[i] * (1 - Da) + Dca[i] * (1 - Sa);
+			else
+				Rca[i] = Sca[i] * (1 + Da) + Dca[i] * (1 + Sa) - Sa * Da - 2 * Sca[i] * Dca[i];
+		}
+
+		Ra = Sa + Da * (1 - Sa);
 	}
 
 	else if(mode == 21) // SoftLight
 	{
-	/*	vec3 m = Dca / Da;
-		if(2 * Sca <= Sa)
-			Rca = Dca * (Sa + (2 * Sca - Sa) * (1 - m))  + Sca * (1 - Da) + Dca * (1 - Sa);
-		else if(2 * Sca > Sa && 4 * Dca <= Da)
-			Rca = Da * (2 * Sca - Sa) * (16 * m*m*m - 12 * m*m - 3 * m) + Sca * (1 - Da) + Dca;
-		else
-			Rca = Da * (2 * Sca - Sa) * (sqrt(m) - m) + Sca - Sca * Da + Dca;
-		Ra = Sa + Da * (1 - Sa);*/
+		for(int i=0; i<3; ++i)
+		{
+			float m = Dca[i] / Da;
+			if(2 * Sca[i] <= Sa)
+				Rca[i] = Dca[i] * (Sa + (2 * Sca[i] - Sa) * (1 - m))  + Sca[i] * (1 - Da) + Dca[i] * (1 - Sa);
+			else if(2 * Sca[i] > Sa && 4 * Dca[i] <= Da)
+				Rca[i] = Da * (2 * Sca[i] - Sa) * (16 * m*m*m - 12 * m*m - 3 * m) + Sca[i] * (1 - Da) + Dca[i];
+			else
+				Rca[i] = Da * (2 * Sca[i] - Sa) * (sqrt(m) - m) + Sca[i] * (1 - Da) + Dca[i];
+		}
+
+		Ra = Sa + Da * (1 - Sa);
 	}
 
 	else if(mode == 22) // Difference
