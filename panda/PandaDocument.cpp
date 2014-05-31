@@ -388,6 +388,9 @@ void PandaDocument::resetDocument()
 
 	m_undoStack->clear();
 
+	helper::GradientCache::getInstance()->clear();
+	helper::ShaderCache::getInstance()->clear();
+
 	emit modified();
 	emit timeChanged();
 
@@ -642,21 +645,20 @@ void PandaDocument::update()
 
 	if(!m_mergeLayersShader)
 	{
-		auto dirPath = QCoreApplication::applicationDirPath();
 		m_mergeLayersShader.reset(new QOpenGLShaderProgram());
-		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Vertex, dirPath + "/shaders/mergeLayers.v.glsl");
-		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Fragment, dirPath + "/shaders/mergeLayers.f.glsl");
+		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/mergeLayers.v.glsl");
+		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/mergeLayers.f.glsl");
 		m_mergeLayersShader->link();
 		m_mergeLayersShader->bind();
 
-		m_mergeLayersShader->setUniformValue("tex1", 0);
-		m_mergeLayersShader->setUniformValue("tex2", 1);
+		m_mergeLayersShader->setUniformValue("texS", 0);
+		m_mergeLayersShader->setUniformValue("texD", 1);
 
 		m_mergeLayersShader->release();
 	}
 
 	helper::GradientCache::getInstance()->resetUsedFlag();
-	helper::ShaderCache::getInstance()->resetUsedFlag();
+//	helper::ShaderCache::getInstance()->resetUsedFlag();
 
 	if(m_animMultithread && m_scheduler)
 		m_scheduler->update();
@@ -672,7 +674,7 @@ void PandaDocument::update()
 	render();
 
 	helper::GradientCache::getInstance()->clearUnused();
-	helper::ShaderCache::getInstance()->clearUnused();
+//	helper::ShaderCache::getInstance()->clearUnused();
 	cleanDirty();
 }
 
