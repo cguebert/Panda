@@ -56,8 +56,14 @@ void OpenGLRenderView::paintGL()
 
 	QSize renderSize = fbo->size();
 	glColor4f(1, 1, 1, 1);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	drawTexture(QPointF(viewRect.center().x() - renderSize.width() / 2,
 						viewRect.center().y() - renderSize.height() / 2), fbo->texture());
+
+	glDisable(GL_BLEND);
 }
 
 void OpenGLRenderView::resizeGL(int /*width*/, int /*height*/)
