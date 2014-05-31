@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 
 #include <panda/Data.h>
+#include <ui/command/CommandId.h>
 
 template <class T>
 class SetDataValueCommand : public QUndoCommand
@@ -20,6 +21,11 @@ public:
 		setText(QCoreApplication::translate("SetDataValueCommand", "modify data value"));
 	}
 
+	virtual int id() const
+	{
+		return getCommandId<SetDataValueCommand<T>>();
+	}
+
 	virtual void redo()
 	{
 		m_data->setValue(m_newValue);
@@ -30,6 +36,20 @@ public:
 	{
 		m_data->setValue(m_oldValue);
 		m_data->getOwner()->emitDirty();
+	}
+
+	virtual bool mergeWith(const QUndoCommand *other)
+	{
+		const SetDataValueCommand<T>* command = dynamic_cast<const SetDataValueCommand<T>*>(other);
+		if(!command)
+			return false;
+		if(m_data == command->m_data)
+		{
+			m_newValue = command->m_newValue;
+			return true;
+		}
+
+		return false;
 	}
 
 protected:
