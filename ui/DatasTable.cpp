@@ -74,7 +74,10 @@ void DatasTable::populateTable()
 			m_dataWidgets.push_back(dataWidget);
 			bool readOnly = (data->getParent() != nullptr);
 			QWidget* widget = dataWidget->createWidgets(readOnly);
-			formLayout->addRow(data->getName(), widget);
+			QLabel* label = new QLabel(data->getName(), scrollArea);
+			label->setBuddy(widget);
+			label->setToolTip(data->getHelp());
+			formLayout->addRow(label, widget);
 		}
 	}
 
@@ -91,7 +94,10 @@ void DatasTable::populateTable()
 			m_dataWidgets.push_back(dataWidget);
 
 			QWidget* widget = dataWidget->createWidgets(true);
-			formLayout->addRow(data->getName(), widget);
+			QLabel* label = new QLabel(data->getName(), scrollArea);
+			label->setBuddy(widget);
+			label->setToolTip(data->getHelp());
+			formLayout->addRow(label, widget);
 		}
 	}
 }
