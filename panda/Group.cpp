@@ -211,7 +211,8 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 			if(userValue->hasConnectedInput())
 			{
 				auto data = inputData->getParent();
-				data->setName(group->findAvailableDataName(caption, data));
+				if(data->getOwner() ==  group)
+					data->setName(group->findAvailableDataName(caption, data));
 			}
 			else // We create a data in the group for this input
 			{
