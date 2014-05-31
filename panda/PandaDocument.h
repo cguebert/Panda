@@ -14,6 +14,7 @@ class QOpenGLFramebufferObject;
 class QAction;
 class QUndoCommand;
 class QUndoStack;
+class QOpenGLShaderProgram;
 
 namespace panda {
 
@@ -111,6 +112,7 @@ protected:
 	quint32 m_currentIndex;
 	Layer* m_defaultLayer;
 	QSharedPointer<QOpenGLFramebufferObject> m_renderFBO, m_secondRenderFBO;
+	QSharedPointer<QOpenGLShaderProgram> m_mergeLayersShader;
 
 	Data<types::Point> m_renderSize;
 	Data<types::Color> m_backgroundColor;

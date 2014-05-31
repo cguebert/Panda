@@ -17,6 +17,7 @@
 #include <QElapsedTimer>
 #include <QUndoStack>
 #include <QDomDocument>
+#include <QOpenGLFunctions>
 
 namespace panda {
 
@@ -635,7 +636,23 @@ void PandaDocument::update()
 	if(!m_renderFBO || m_renderFBO->size() != getRenderSize())
 	{
 		m_renderFBO.reset(new QOpenGLFramebufferObject(getRenderSize()));
+		m_secondRenderFBO.reset(new QOpenGLFramebufferObject(getRenderSize()));
 		m_renderedImage.getAccessor()->setFbo(m_renderFBO);
+	}
+
+	if(!m_mergeLayersShader)
+	{
+		auto dirPath = QCoreApplication::applicationDirPath();
+		m_mergeLayersShader.reset(new QOpenGLShaderProgram());
+		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Vertex, dirPath + "/shaders/mergeLayers.v.glsl");
+		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Fragment, dirPath + "/shaders/mergeLayers.f.glsl");
+		m_mergeLayersShader->link();
+		m_mergeLayersShader->bind();
+
+		m_mergeLayersShader->setUniformValue("tex1", 0);
+		m_mergeLayersShader->setUniformValue("tex2", 1);
+
+		m_mergeLayersShader->release();
 	}
 
 	helper::GradientCache::getInstance()->resetUsedFlag();
@@ -673,29 +690,34 @@ QSharedPointer<QOpenGLFramebufferObject> PandaDocument::getFBO()
 
 void PandaDocument::render()
 {
+	GLfloat w = m_renderFBO->width(), h = m_renderFBO->height();
 #ifdef PANDA_LOG_EVENTS
 	{
 		helper::ScopedEvent log1("prepareRender");
 #endif
 
-	m_renderFBO->bind();
-	glViewport(0, 0, m_renderFBO->width(), m_renderFBO->height());
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, m_renderFBO->width(), m_renderFBO->height(), 0, -10, 10);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
+	m_secondRenderFBO->bind();
+	glViewport(0, 0, w, h);
 	Color col = m_backgroundColor.getValue();
 	glClearColor(col.r, col.g, col.b, col.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_secondRenderFBO->release();
+
+	m_renderFBO->bind();
+	glViewport(0, 0, w, h);
 
 #ifdef PANDA_LOG_EVENTS
 	}
 #endif
 
-	GLfloat w = m_renderFBO->width(), h = m_renderFBO->height();
+	m_mergeLayersShader->bind();
+
+	QMatrix4x4 mvp;
+	mvp.ortho(0, w, h, 0, -10, 10);
+	m_mergeLayersShader->setUniformValue("MVP", mvp);
+
+	QOpenGLFunctions glFunctions(QOpenGLContext::currentContext());
+
 	GLfloat verts[8], texCoords[8];
 
 	verts[2*2+0] = w; verts[2*2+1] = 0;
@@ -708,11 +730,7 @@ void PandaDocument::render()
 	texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
 	texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
 
-
-
 	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, verts );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -723,20 +741,26 @@ void PandaDocument::render()
 	helper::ScopedEvent log("merge default Layer");
 #endif
 
+	m_mergeLayersShader->setUniformValue("opacity", 1.0f);
+	glFunctions.glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
+	glFunctions.glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_defaultLayer->getTextureId());
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0);
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+
+	m_renderFBO->release();
 
 #ifdef PANDA_LOG_EVENTS
 	}
 #endif
 
+	bool inverse = false;
 	for(auto obj : m_objects)
 	{
 		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj.data());
 		if(layer)
 		{
-			auto opacity = layer->getOpacity();
+			float opacity = (float)layer->getOpacity();
 			if(!opacity)
 				continue;
 
@@ -744,20 +768,47 @@ void PandaDocument::render()
 			helper::ScopedEvent log2("merge Layer");
 #endif
 
+			m_mergeLayersShader->setUniformValue("opacity", opacity);
+
+			inverse = !inverse;
+			if(inverse)
+			{
+				m_secondRenderFBO->bind();
+				glFunctions.glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, m_renderFBO->texture());
+			}
+			else
+			{
+				m_renderFBO->bind();
+				glFunctions.glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
+			}
+
+			glFunctions.glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, layer->getTextureId());
-			glColor4f(1.0f, 1.0f, 1.0f, opacity);
 			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+
+			if(inverse)
+				m_secondRenderFBO->release();
+			else
+				m_renderFBO->release();
 		}
 	}
 
 	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
 
+	m_mergeLayersShader->release();
+
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+
+	if(inverse)
+	{
 #ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log3("release FBO");
+		helper::ScopedEvent log3("blit FBO");
 #endif
-
-	m_renderFBO->release();
+		QOpenGLFramebufferObject::blitFramebuffer(m_renderFBO.data(), m_secondRenderFBO.data());
+	}
 }
 
 void PandaDocument::moveLayerUp(PandaObject* layer)
