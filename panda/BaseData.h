@@ -62,7 +62,7 @@ public:
 	void unset() { m_isValueSet = false; }
 	void forceSet() { m_isValueSet = true; }
 
-	int getCounter() { return m_counter; }
+	virtual int getCounter() const { return m_counter; }
 
 	bool isReadOnly() const { return m_readOnly; }
 	void setReadOnly(bool readOnly) { m_readOnly = readOnly; }

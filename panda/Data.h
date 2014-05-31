@@ -52,6 +52,8 @@ public:
 	inline const_reference getValue() const;
 	virtual void copyValueFrom(const BaseData* from);
 
+	virtual int getCounter() const;
+
 protected:
 	friend class DataAccessor<data_type>;
 	friend class RegisterData<value_type>;

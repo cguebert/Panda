@@ -159,6 +159,14 @@ void Data<T>::endVoidEdit()
 	endEdit();
 }
 
+template<class T>
+int Data<T>::getCounter() const
+{
+	if(m_parentData)
+		return m_parentData->getCounter();
+	return BaseData::getCounter();
+}
+
 // Definition of the static members
 template<class T> types::AbstractDataTrait* Data<T>::m_dataTrait;
 template<class T> AbstractDataCopier* Data<T>::m_dataCopier;
