@@ -1,5 +1,3 @@
-#include "Group.h"
-
 #include <ui/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 
@@ -9,6 +7,7 @@
 #include <ui/command/LinkDatasCommand.h>
 #include <ui/command/MoveObjectCommand.h>
 
+#include <panda/Group.h>
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Layer.h>
@@ -619,6 +618,13 @@ void Group::endStep()
 		object->endStep();
 }
 
+const QList<const BaseData*> Group::getGroupDatas() const
+{
+	QList<const BaseData*> temp;
+	for(auto data : m_groupDatas)
+		temp.push_back(data.data());
+	return temp;
+}
 
 int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many object into a single one").setHidden(true);
 

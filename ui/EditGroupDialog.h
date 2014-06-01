@@ -20,17 +20,14 @@ class EditGroupDialog : public QDialog
 public:
 	explicit EditGroupDialog(panda::Group* group, QWidget *parent = 0);
 
-	void populateTable();
 	void populateRow(int rowIndex, panda::BaseData* data);
 
 protected:
-	panda::Group* group;
-	QTableWidget* tableWidget;
-	QLineEdit* editGroupName;
-	QLineEdit* editDataName;
-	QLineEdit* editDataHelp;
-	panda::BaseData* selectedData;
-	int selectedRow;
+	panda::Group* m_group;
+	QTableWidget* m_tableWidget;
+	QLineEdit *m_editGroupName, *m_editDataName, *m_editDataHelp;
+	panda::BaseData* m_selectedData;
+	int m_selectedRow;
 
 public slots:
 	void itemClicked(QTableWidgetItem*);

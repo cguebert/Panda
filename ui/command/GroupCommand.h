@@ -3,12 +3,15 @@
 
 #include <QUndoCommand>
 #include <QSharedPointer>
+#include <QVector>
+#include <QString>
 
 namespace panda
 {
 class Group;
 class PandaObject;
 class PandaDocument;
+class BaseData;
 }
 
 class SelectGroupCommand : public QUndoCommand
@@ -67,6 +70,28 @@ public:
 protected:
 	panda::Group* m_group;
 	QSharedPointer<panda::PandaObject> m_object;
+};
+
+//****************************************************************************//
+
+class EditGroupCommand : public QUndoCommand
+{
+public:
+	struct DataInfo
+	{
+		panda::BaseData* data;
+		QString name, help;
+	};
+
+	EditGroupCommand(panda::Group* group, QString newName, QVector<DataInfo> newDatas, QUndoCommand* parent = nullptr);
+
+	virtual void redo();
+	virtual void undo();
+
+protected:
+	panda::Group* m_group;
+	QString m_prevName, m_newName;
+	QVector<DataInfo> m_prevDatas, m_newDatas;
 };
 
 #endif

@@ -4,7 +4,7 @@
 #include <panda/PandaObject.h>
 #include <panda/Layer.h>
 
-class EditGroupDialog;
+class EditGroupCommand;
 class GraphView;
 
 namespace panda
@@ -15,7 +15,7 @@ class PandaDocument;
 class Group : public QObject, public PandaObject
 {
 	Q_OBJECT
-	friend class EditGroupDialog;
+	friend class EditGroupCommand;
 public:
 	PANDA_CLASS(Group, PandaObject)
 
@@ -41,6 +41,8 @@ public:
 
 	virtual void beginStep();
 	virtual void endStep();
+
+	const QList<const BaseData*> getGroupDatas() const;
 
 protected:
 	Data<QString> m_groupName;

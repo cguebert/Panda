@@ -1,47 +1,56 @@
 #include <QtWidgets>
 
 #include <ui/EditGroupDialog.h>
+#include <ui/command/GroupCommand.h>
 
 #include <panda/Group.h>
+#include <panda/PandaDocument.h>
 
 using panda::ObjectFactory;
 
 EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 	: QDialog(parent)
-	, group(group)
-	, selectedData(nullptr)
-	, selectedRow(-1)
+	, m_group(group)
+	, m_selectedData(nullptr)
+	, m_selectedRow(-1)
 {
 	QVBoxLayout* vLayout = new QVBoxLayout;
 
 	QLabel* groupNameLabel = new QLabel(tr("group name:"), this);
-	editGroupName = new QLineEdit(group->m_groupName.getValue(), this);
+	m_editGroupName = new QLineEdit(group->getGroupName(), this);
 	QHBoxLayout* groupNameLayout = new QHBoxLayout;
 	groupNameLayout->addWidget(groupNameLabel);
-	groupNameLayout->addWidget(editGroupName);
+	groupNameLayout->addWidget(m_editGroupName);
 	vLayout->addLayout(groupNameLayout);
 
-	tableWidget = new QTableWidget(this);
-	tableWidget->setColumnCount(4);
-	tableWidget->setRowCount(group->m_groupDatas.size());
-	tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-	tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-	tableWidget->verticalHeader()->setEnabled(false);
-	tableWidget->verticalHeader()->hide();
+	auto groupDatas = group->getGroupDatas();
+
+	m_tableWidget = new QTableWidget(this);
+	m_tableWidget->setColumnCount(4);
+	m_tableWidget->setRowCount(groupDatas.size());
+	m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	m_tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+	m_tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+	m_tableWidget->verticalHeader()->setEnabled(false);
+	m_tableWidget->verticalHeader()->hide();
 
 	QStringList headerLabels;
 	headerLabels << "name" << "input" << "output" << "description";
-	tableWidget->setHorizontalHeaderLabels(headerLabels);
-	tableWidget->setMinimumWidth(tableWidget->horizontalHeader()->length() + 10);
-	tableWidget->horizontalHeader()->resizeSection(1, 50);
-	tableWidget->horizontalHeader()->resizeSection(2, 50);
-	tableWidget->horizontalHeader()->setStretchLastSection(true);
-	tableWidget->horizontalHeader()->setSectionsClickable(false);
+	m_tableWidget->setHorizontalHeaderLabels(headerLabels);
+	m_tableWidget->setMinimumWidth(m_tableWidget->horizontalHeader()->length() + 10);
+	m_tableWidget->horizontalHeader()->resizeSection(1, 50);
+	m_tableWidget->horizontalHeader()->resizeSection(2, 50);
+	m_tableWidget->horizontalHeader()->setStretchLastSection(true);
+	m_tableWidget->horizontalHeader()->setSectionsClickable(false);
 
-	connect(tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));
+	connect(m_tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));
 
-	populateTable();
+	int rowIndex = 0;
+	for(auto data : groupDatas)
+	{
+		populateRow(rowIndex, const_cast<panda::BaseData*>(data));
+		++rowIndex;
+	}
 
 	QPushButton* moveUpButton = new QPushButton(tr("Move up"), this);
 	connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
@@ -54,22 +63,22 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 	moveButtonsLayout->addWidget(moveDownButton);
 
 	QHBoxLayout* tableLayout = new QHBoxLayout;
-	tableLayout->addWidget(tableWidget);
+	tableLayout->addWidget(m_tableWidget);
 	tableLayout->addLayout(moveButtonsLayout);
 	vLayout->addLayout(tableLayout);
 
 	QGridLayout* gridLayout = new QGridLayout;
 	QLabel* dataNameLabel = new QLabel(tr("data name:"), this);
-	editDataName = new QLineEdit(this);
-	connect(editDataName, SIGNAL(textEdited(QString)), this, SLOT(dataNameEdited(QString)));
+	m_editDataName = new QLineEdit(this);
+	connect(m_editDataName, SIGNAL(textEdited(QString)), this, SLOT(dataNameEdited(QString)));
 	gridLayout->addWidget(dataNameLabel, 0, 0);
-	gridLayout->addWidget(editDataName, 0, 1);
+	gridLayout->addWidget(m_editDataName, 0, 1);
 
 	QLabel* dataHelpLabel = new QLabel(tr("data description:"), this);
-	editDataHelp = new QLineEdit(this);
-	connect(editDataHelp, SIGNAL(textEdited(QString)), this, SLOT(dataHelpEdited(QString)));
+	m_editDataHelp = new QLineEdit(this);
+	connect(m_editDataHelp, SIGNAL(textEdited(QString)), this, SLOT(dataHelpEdited(QString)));
 	gridLayout->addWidget(dataHelpLabel, 1, 0);
-	gridLayout->addWidget(editDataHelp, 1, 1);
+	gridLayout->addWidget(m_editDataHelp, 1, 1);
 	vLayout->addLayout(gridLayout);
 
 	QPushButton* okButton = new QPushButton(tr("Ok"), this);
@@ -90,16 +99,6 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
 	setWindowTitle(tr("Edit group"));
 }
 
-void EditGroupDialog::populateTable()
-{
-	int rowIndex = 0;
-	for(QSharedPointer<panda::BaseData> data : group->m_groupDatas)
-	{
-		populateRow(rowIndex, data.data());
-		++rowIndex;
-	}
-}
-
 void EditGroupDialog::populateRow(int rowIndex, panda::BaseData* data)
 {
 	QTableWidgetItem *item0 = new QTableWidgetItem(data->getName());
@@ -114,88 +113,100 @@ void EditGroupDialog::populateRow(int rowIndex, panda::BaseData* data)
 	QTableWidgetItem *item3 = new QTableWidgetItem(data->getHelp());
 	item3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 	item3->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
-	tableWidget->setItem(rowIndex, 0, item0);
-	tableWidget->setItem(rowIndex, 1, item1);
-	tableWidget->setItem(rowIndex, 2, item2);
-	tableWidget->setItem(rowIndex, 3, item3);
+	m_tableWidget->setItem(rowIndex, 0, item0);
+	m_tableWidget->setItem(rowIndex, 1, item1);
+	m_tableWidget->setItem(rowIndex, 2, item2);
+	m_tableWidget->setItem(rowIndex, 3, item3);
 }
 
 void EditGroupDialog::itemClicked(QTableWidgetItem* item)
 {
-	selectedRow = item->row();
+	m_selectedRow = item->row();
 	panda::BaseData* newData = (panda::BaseData*)item->data(Qt::UserRole).value<void*>();
-	if(newData && newData != selectedData)
+	if(newData && newData != m_selectedData)
 	{
-		selectedData = newData;
-		editDataName->setText(selectedData->getName());
-		editDataHelp->setText(selectedData->getHelp());
+		m_selectedData = newData;
+		m_editDataName->setText(m_selectedData->getName());
+		m_editDataHelp->setText(m_selectedData->getHelp());
 	}
 }
 
 void EditGroupDialog::moveUp()
 {
-	if(!selectedData || selectedRow <= 0)
+	if(!m_selectedData || m_selectedRow <= 0)
 		return;
 
-	tableWidget->removeRow(selectedRow);
-	--selectedRow;
-	tableWidget->insertRow(selectedRow);
-	populateRow(selectedRow, selectedData);
-	tableWidget->selectRow(selectedRow);
+	m_tableWidget->removeRow(m_selectedRow);
+	--m_selectedRow;
+	m_tableWidget->insertRow(m_selectedRow);
+	populateRow(m_selectedRow, m_selectedData);
+	m_tableWidget->selectRow(m_selectedRow);
 }
 
 void EditGroupDialog::moveDown()
 {
-	if(!selectedData || selectedRow >= tableWidget->rowCount()-1)
+	if(!m_selectedData || m_selectedRow >= m_tableWidget->rowCount()-1)
 		return;
 
-	tableWidget->removeRow(selectedRow);
-	++selectedRow;
-	tableWidget->insertRow(selectedRow);
-	populateRow(selectedRow, selectedData);
-	tableWidget->selectRow(selectedRow);
+	m_tableWidget->removeRow(m_selectedRow);
+	++m_selectedRow;
+	m_tableWidget->insertRow(m_selectedRow);
+	populateRow(m_selectedRow, m_selectedData);
+	m_tableWidget->selectRow(m_selectedRow);
 }
 
 void EditGroupDialog::dataNameEdited(QString text)
 {
-	if(selectedRow < 0)
+	if(m_selectedRow < 0)
 		return;
-	tableWidget->item(selectedRow, 0)->setText(text);
+	m_tableWidget->item(m_selectedRow, 0)->setText(text);
 }
 
 void EditGroupDialog::dataHelpEdited(QString text)
 {
-	if(selectedRow < 0)
+	if(m_selectedRow < 0)
 		return;
-	tableWidget->item(selectedRow, 3)->setText(text);
+	m_tableWidget->item(m_selectedRow, 3)->setText(text);
 }
 
 void EditGroupDialog::updateGroup()
 {
-	if(editGroupName->text().size())
-		group->m_groupName.setValue(editGroupName->text());
+	QString groupName = m_group->getGroupName();
+	if(m_editGroupName->text().size())
+		groupName = m_editGroupName->text();
 
-	// As I used raw pointers before, I have to do additional work here to get the shared pointers in the right order
-	QMap< panda::BaseData*, QSharedPointer<panda::BaseData> > datasPtrMap;
-	for(QSharedPointer<panda::BaseData> dataPtr : group->m_groupDatas)
-		datasPtrMap.insert(dataPtr.data(), dataPtr);
-
-	QList< QSharedPointer<panda::BaseData> > datasList;
-	int nbRows = tableWidget->rowCount();
-	for(int i=0; i<nbRows; ++i)
+	EditGroupCommand::DataInfo tempInfo;
+	QVector<EditGroupCommand::DataInfo> datasList;
+	for(int i=0, nb=m_tableWidget->rowCount(); i<nb; ++i)
 	{
-		panda::BaseData* data = (panda::BaseData*)tableWidget->item(i,0)->data(Qt::UserRole).value<void*>();
+		panda::BaseData* data = (panda::BaseData*)m_tableWidget->item(i,0)->data(Qt::UserRole).value<void*>();
 		if(data)
 		{
-			data->setName(tableWidget->item(i,0)->text());
-			data->setHelp(tableWidget->item(i,3)->text());
-			datasList.push_back(datasPtrMap.value(data));
-			group->datas.removeAll(data);
-			group->datas.push_back(data);
+			tempInfo.data = data;
+			tempInfo.name = m_tableWidget->item(i,0)->text();
+			tempInfo.help = m_tableWidget->item(i,3)->text();
+			datasList.push_back(tempInfo);
 		}
 	}
 
-	group->m_groupDatas = datasList;
+	// Check if we are actually changing something
+	bool modified = false;
+	if(groupName != m_group->getGroupName())
+		modified = true;
 
-	group->emitModified();
+	auto groupDatas = m_group->getGroupDatas();
+	for(int i=0, nb=m_tableWidget->rowCount(); i<nb; ++i)
+	{
+		panda::BaseData* data = (panda::BaseData*)m_tableWidget->item(i,0)->data(Qt::UserRole).value<void*>();
+		if(data != groupDatas[i]) { modified = true; break; }
+
+		QString name = m_tableWidget->item(i,0)->text();
+		if(name != groupDatas[i]->getName()) { modified = true; break; }
+
+		QString help = m_tableWidget->item(i,3)->text();
+		if(help != groupDatas[i]->getHelp()) { modified = true; break; }
+	}
+
+	if(modified)
+		m_group->getParentDocument()->addCommand(new EditGroupCommand(m_group, groupName, datasList));
 }

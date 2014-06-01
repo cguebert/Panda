@@ -116,3 +116,70 @@ void RemoveObjectFromGroupCommand::undo()
 {
 	m_group->addObject(m_object);
 }
+
+//****************************************************************************//
+
+EditGroupCommand::EditGroupCommand(panda::Group* group,
+								   QString newName,
+								   QVector<DataInfo> newDatas,
+								   QUndoCommand* parent)
+	: QUndoCommand(parent)
+	, m_group(group)
+	, m_newName(newName)
+	, m_newDatas(newDatas)
+{
+	m_prevName = group->getGroupName();
+	for(auto data : m_group->m_groupDatas)
+	{
+		DataInfo info;
+		info.data = data.data();
+		info.name = data->getName();
+		info.help = data->getHelp();
+		m_prevDatas.push_back(info);
+	}
+	setText(QCoreApplication::translate("EditGroupCommand", "edit group"));
+}
+
+void EditGroupCommand::redo()
+{
+	m_group->m_groupName.setValue(m_newName);
+
+	QMap< panda::BaseData*, QSharedPointer<panda::BaseData> > datasPtrMap;
+	for(QSharedPointer<panda::BaseData> dataPtr : m_group->m_groupDatas)
+		datasPtrMap.insert(dataPtr.data(), dataPtr);
+
+	QList< QSharedPointer<panda::BaseData> > datasList;
+	for(auto info : m_newDatas)
+	{
+		info.data->setName(info.name);
+		info.data->setHelp(info.help);
+		m_group->datas.removeAll(info.data);
+		m_group->datas.push_back(info.data);
+		datasList.push_back(datasPtrMap.value(info.data));
+	}
+
+	m_group->m_groupDatas = datasList;
+	m_group->emitModified();
+}
+
+void EditGroupCommand::undo()
+{
+	m_group->m_groupName.setValue(m_prevName);
+
+	QMap< panda::BaseData*, QSharedPointer<panda::BaseData> > datasPtrMap;
+	for(QSharedPointer<panda::BaseData> dataPtr : m_group->m_groupDatas)
+		datasPtrMap.insert(dataPtr.data(), dataPtr);
+
+	QList< QSharedPointer<panda::BaseData> > datasList;
+	for(auto info : m_prevDatas)
+	{
+		info.data->setName(info.name);
+		info.data->setHelp(info.help);
+		m_group->datas.removeAll(info.data);
+		m_group->datas.push_back(info.data);
+		datasList.push_back(datasPtrMap.value(info.data));
+	}
+
+	m_group->m_groupDatas = datasList;
+	m_group->emitModified();
+}
