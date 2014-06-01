@@ -208,7 +208,8 @@ void LayersTab::compositionModeChanged(int mode)
 		auto data = &m_selectedLayer->getCompositionModeData();
 		auto oldValue = data->getValue();
 		auto owner = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		m_document->addCommand(new SetDataValueCommand<int>(data, oldValue, mode, owner));
+		if (oldValue != mode)
+			m_document->addCommand(new SetDataValueCommand<int>(data, oldValue, mode, owner));
 	}
 }
 
@@ -219,7 +220,9 @@ void LayersTab::opacityChanged(int opacity)
 		auto data = &m_selectedLayer->getOpacityData();
 		auto oldValue = data->getValue();
 		auto owner = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		m_document->addCommand(new SetDataValueCommand<PReal>(data, oldValue, opacity / 100.0, owner));
+		PReal newValue = opacity / 100.0;
+		if (oldValue != newValue)
+			m_document->addCommand(new SetDataValueCommand<PReal>(data, oldValue, newValue, owner));
 	}
 }
 
