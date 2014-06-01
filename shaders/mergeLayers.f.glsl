@@ -214,6 +214,10 @@ void main(void)
 		Rca = (Sca * Da + Dca * Sa - 2 * Sca * Dca) + Sca * (1 - Da) + Dca * (1 - Sa);
 		Ra = Sa + Da - Sa * Da;
 	}
+
+	for(int i=0; i<3; ++i)
+		Rca[i] = clamp(Rca[i], 0, 1);
+	Ra = clamp(Ra, 0, 1);
 	
 	if(Ra > 0)
 		gl_FragColor = vec4(Rca / Ra, Ra);
