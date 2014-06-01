@@ -82,6 +82,8 @@ public:
 	virtual void addObject(ObjectPtr obj);
 	virtual void removeObject(PandaObject* obj);
 
+	virtual void removedFromDocument();
+
 protected:
 	Data<types::ImageWrapper> m_image;
 	Data<int> m_compositionMode;

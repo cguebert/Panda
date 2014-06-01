@@ -91,8 +91,6 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 		auto object = factory->create(ObjectFactory::getRegistryName<GroupWithLayer>(), doc);
 		doc->addCommand(new AddObjectCommand(doc, view, object));
 		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(object.data());
-		if(groupWithLayer)
-			groupWithLayer->setLayer(layer);
 		group = groupWithLayer;
 	}
 	else
@@ -202,6 +200,7 @@ bool Group::createGroup(PandaDocument* doc, GraphView* view)
 			}
 		}
 
+		// Looking for UserValue objects that can be used as inputs or outputs to the group
 		BaseGeneratorUser* userValue = dynamic_cast<BaseGeneratorUser*>(object);
 		if(userValue && !userValue->getCaption().isEmpty())
 		{
@@ -299,8 +298,8 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 				docks.push_back(object);
 			else
 			{
-				doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
 				doc->addCommand(new AddObjectCommand(doc, view, object));
+				doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
 
 				// Placing the object in the view
 				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
@@ -313,8 +312,8 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		// We extract docks last (their docked objects must be out first)
 		for(auto object : docks)
 		{
-			doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
 			doc->addCommand(new AddObjectCommand(doc, view, object));
+			doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
 
 			// Placing the object in the view
 			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
@@ -646,6 +645,14 @@ GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 void GroupWithLayer::setLayer(Layer* newLayer)
 {
 	m_layer = newLayer;
+
+	// Reinsert the group where the layer was
+	if(m_layer)
+	{
+		int layerPos = m_parentDocument->getObjectPosition(m_layer);
+		if(layerPos != -1)
+			m_parentDocument->reinsertObject(this, layerPos);
+	}
 }
 
 void GroupWithLayer::update()
@@ -700,6 +707,18 @@ void GroupWithLayer::removeObject(PandaObject* obj)
 	Renderer* renderer = dynamic_cast<Renderer*>(obj);
 	if(renderer && !renderer->getParentDock())
 		m_parentDocument->getDefaultLayer()->addDockable(renderer);
+}
+
+void GroupWithLayer::removedFromDocument()
+{
+	PandaObject::removedFromDocument();
+
+	// Reinsert the layer where the group was
+	if(m_layer)
+	{
+		int layerPos = m_parentDocument->getObjectPosition(this);
+		m_parentDocument->reinsertObject(m_layer, layerPos);
+	}
 }
 
 int GroupWithLayerClass = RegisterObject<GroupWithLayer>("GroupWithLayer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);

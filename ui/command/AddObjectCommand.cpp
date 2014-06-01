@@ -78,7 +78,8 @@ void AddObjectCommand::undo()
 		for(auto object : m_objects)
 		{
 			auto ods = m_view->getSharedObjectDrawStruct(object.data());
-			m_drawStructs.push_back(ods);
+			if(ods)
+				m_drawStructs.push_back(ods);
 		}
 	}
 

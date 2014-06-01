@@ -233,8 +233,6 @@ void LayersTab::moveLayerUp()
 
 		auto object = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
 		m_document->addCommand(new MoveLayerCommand(m_document, object, index));
-//		m_document->moveLayerUp(object);
-//		updateTable();
 	}
 }
 
@@ -248,8 +246,6 @@ void LayersTab::moveLayerDown()
 
 		auto object = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
 		m_document->addCommand(new MoveLayerCommand(m_document, object, index));
-//		m_document->moveLayerDown(object);
-//		updateTable();
 	}
 }
 
