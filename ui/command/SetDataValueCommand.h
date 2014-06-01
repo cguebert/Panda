@@ -36,7 +36,10 @@ public:
 		m_data->setValue(m_newValue);
 		m_data->getOwner()->emitDirty();
 		if(m_owner)
+		{
+			m_owner->setDirtyValue(m_data);
 			m_owner->emitDirty();
+		}
 	}
 
 	virtual void undo()
@@ -44,7 +47,10 @@ public:
 		m_data->setValue(m_oldValue);
 		m_data->getOwner()->emitDirty();
 		if(m_owner)
+		{
+			m_owner->setDirtyValue(m_data);
 			m_owner->emitDirty();
+		}
 	}
 
 	virtual bool mergeWith(const QUndoCommand *other)
