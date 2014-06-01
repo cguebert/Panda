@@ -678,11 +678,11 @@ BaseLayer::RenderersList GroupWithLayer::getRenderers()
 	}
 }
 
-void GroupWithLayer::addObject(ObjectPtr obj)
+void GroupWithLayer::addObject(ObjectPtr object)
 {
-	Group::addObject(obj);
+	Group::addObject(object);
 
-	Layer* layer = dynamic_cast<Layer*>(obj.data());
+	Layer* layer = dynamic_cast<Layer*>(object.data());
 	if(layer)
 	{
 		setLayer(layer);
@@ -690,7 +690,7 @@ void GroupWithLayer::addObject(ObjectPtr obj)
 	}
 
 	Layer* defaultLayer = m_parentDocument->getDefaultLayer();
-	Renderer* renderer = dynamic_cast<Renderer*>(obj.data());
+	Renderer* renderer = dynamic_cast<Renderer*>(object.data());
 	if(renderer)
 	{
 		if(renderer->getParentDock() == defaultLayer)
@@ -700,11 +700,11 @@ void GroupWithLayer::addObject(ObjectPtr obj)
 	}
 }
 
-void GroupWithLayer::removeObject(PandaObject* obj)
+void GroupWithLayer::removeObject(PandaObject* object)
 {
-	Group::removeObject(obj);
+	Group::removeObject(object);
 
-	Renderer* renderer = dynamic_cast<Renderer*>(obj);
+	Renderer* renderer = dynamic_cast<Renderer*>(object);
 	if(renderer && !renderer->getParentDock())
 		m_parentDocument->getDefaultLayer()->addDockable(renderer);
 }

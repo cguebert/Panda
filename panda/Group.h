@@ -36,8 +36,8 @@ public:
 	typedef QVector<ObjectPtr> ObjectsList;
 	const ObjectsList& getObjects() const;
 
-	virtual void addObject(ObjectPtr obj);
-	virtual void removeObject(PandaObject*) {}
+	virtual void addObject(ObjectPtr object);
+	virtual void removeObject(PandaObject*) {} // Bugfix: we never remove objects from groups, there are freed if the group is destroyed
 
 	virtual void beginStep();
 	virtual void endStep();
@@ -79,8 +79,8 @@ public:
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();
 
-	virtual void addObject(ObjectPtr obj);
-	virtual void removeObject(PandaObject* obj);
+	virtual void addObject(ObjectPtr object);
+	virtual void removeObject(PandaObject* object);
 
 	virtual void removedFromDocument();
 
@@ -102,8 +102,8 @@ inline QString Group::getGroupName()
 inline const Group::ObjectsList& Group::getObjects() const
 { return m_objects; }
 
-inline void Group::addObject(ObjectPtr obj)
-{ m_objects.push_back(obj); }
+inline void Group::addObject(ObjectPtr object)
+{ if(!m_objects.contains(object)) m_objects.push_back(object); }
 
 inline QString GroupWithLayer::getLayerName() const
 { if(m_layer) return m_layer->getLayerName(); else return m_groupName.getValue(); }
