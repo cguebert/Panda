@@ -54,6 +54,9 @@ public:
 	const ObjectsList& getObjects() const;
 	ObjectPtr getSharedPointer(PandaObject* object);
 
+	int getObjectPosition(PandaObject* object); /// Get the object's position in the objects list
+	void reinsertObject(PandaObject* object, int pos); /// Reorder the object so it is inserted at the index pos in the objects list
+
 	PandaObject* getCurrentSelectedObject();
 	void setCurrentSelectedObject(PandaObject* object);
 	bool isSelected(PandaObject* object) const;
@@ -85,8 +88,6 @@ public:
 	QSharedPointer<QOpenGLFramebufferObject> getFBO();
 
 	Layer* getDefaultLayer();
-	void moveLayerUp(PandaObject *layer);
-	void moveLayerDown(PandaObject* layer);
 
 	// When an object is set to laterUpdate, use these functions to help the Scheduler
 	void setDataDirty(BaseData* data); // Set the outputs to dirty before setting the value (so it doesn't propagate)
@@ -149,6 +150,7 @@ signals:
 	void selectedObjectIsDirty(panda::PandaObject*);
 	void selectionChanged();
 	void timeChanged();
+	void reorderedObjects();
 
 public slots:
 	void copy();

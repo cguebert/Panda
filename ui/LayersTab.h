@@ -25,14 +25,15 @@ public:
 	explicit LayersTab(panda::PandaDocument* document, QWidget *parent = 0);
 
 protected:
-	QLineEdit* nameEdit;
-	QComboBox* compositionBox;
-	QSlider* opacitySlider;
-	QTableWidget* tableWidget;
-	QPushButton *moveUpButton, *moveDownButton;
-	panda::PandaDocument* document;
-	QList<panda::BaseLayer*> layers;
-	panda::BaseLayer* selectedLayer;
+	QLineEdit* m_nameEdit;
+	QComboBox* m_compositionBox;
+	QSlider* m_opacitySlider;
+	QTableWidget* m_tableWidget;
+	QPushButton *m_moveUpButton, *m_moveDownButton;
+
+	panda::PandaDocument* m_document;
+	QList<panda::BaseLayer*> m_layers;
+	panda::BaseLayer* m_selectedLayer;
 
 signals:
 
@@ -47,6 +48,7 @@ public slots:
 	void opacityChanged(int);
 	void moveLayerUp();
 	void moveLayerDown();
+	void reorderObjects();
 };
 
 #endif // LAYERSTAB_H

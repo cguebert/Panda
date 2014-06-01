@@ -62,6 +62,7 @@ HEADERS       = \
 	ui/command/GroupCommand.h \
 	ui/command/LinkDatasCommand.h \
 	ui/command/ModifyAnnotationCommand.h \
+	ui/command/MoveLayerCommand.h \
 	ui/command/MoveObjectCommand.h \
 	ui/command/RemoveGenericDataCommand.h \
 	ui/command/RemoveObjectCommand.h \
@@ -231,6 +232,7 @@ SOURCES       = main.cpp \
 	ui/command/GroupCommand.cpp \
 	ui/command/LinkDatasCommand.cpp \
 	ui/command/ModifyAnnotationCommand.cpp \
+	ui/command/MoveLayerCommand.cpp \
 	ui/command/MoveObjectCommand.cpp \
 	ui/command/RemoveGenericDataCommand.cpp \
 	ui/command/RemoveObjectCommand.cpp \

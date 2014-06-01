@@ -80,6 +80,7 @@ PandaDocument::PandaDocument(QObject* parent)
 
 	connect(this, SIGNAL(modifiedObject(panda::PandaObject*)), this, SIGNAL(modified()));
 	connect(this, SIGNAL(addedObject(panda::PandaObject*)), this, SIGNAL(modified()));
+	connect(this, SIGNAL(reorderedObjects()), this, SIGNAL(modified()));
 
 	m_defaultLayer = new Layer(this);
 	m_defaultLayer->setInternalData("Default Layer", 0);
@@ -404,6 +405,34 @@ PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object)
 		return *iter;
 
 	return ObjectPtr();
+}
+
+int PandaDocument::getObjectPosition(PandaObject* object)
+{
+	auto iter = std::find(m_objects.begin(), m_objects.end(), object);
+	if(iter != m_objects.end())
+		return iter - m_objects.begin();
+
+	return -1;
+}
+
+void PandaDocument::reinsertObject(PandaObject* object, int pos)
+{
+	auto iter = std::find(m_objects.begin(), m_objects.end(), object);
+	if(iter == m_objects.end())
+		return;
+
+	int oldPos = iter - m_objects.begin();
+	ObjectPtr objectPtr = *iter;
+
+	m_objects.erase(iter);
+	if(pos > oldPos)
+		--pos;
+
+	m_objects.insert(pos, objectPtr);
+
+	setDirtyValue(this);
+	emit reorderedObjects();
 }
 
 PandaObject* PandaDocument::getCurrentSelectedObject()
@@ -812,53 +841,6 @@ void PandaDocument::render()
 		helper::ScopedEvent log3("blit FBO");
 #endif
 		QOpenGLFramebufferObject::blitFramebuffer(m_renderFBO.data(), m_secondRenderFBO.data());
-	}
-}
-
-void PandaDocument::moveLayerUp(PandaObject* layer)
-{
-	if(!layer)
-		return;
-	auto iter = std::find(m_objects.begin(), m_objects.end(), layer);
-	if(iter == m_objects.end())
-		return;
-	auto object = *iter; // Get the QSharedPointer
-	int index = iter - m_objects.begin();
-	int nb = m_objects.size();
-	for(++index;index<nb;++index)
-	{
-		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(m_objects[index].data());
-		if(otherLayer)
-		{
-			remove(m_objects, layer);
-			m_objects.insert(index, object);
-			setDirtyValue(this);
-			emit modified();
-			return;
-		}
-	}
-}
-
-void PandaDocument::moveLayerDown(PandaObject *layer)
-{
-	if(!layer)
-		return;
-	auto iter = std::find(m_objects.begin(), m_objects.end(), layer);
-	if(iter == m_objects.end())
-		return;
-	auto object = *iter; // Get the QSharedPointer
-	int index = iter - m_objects.begin();
-	for(--index;index>=0;--index)
-	{
-		BaseLayer* otherLayer = dynamic_cast<BaseLayer*>(m_objects[index].data());
-		if(otherLayer)
-		{
-			remove(m_objects, layer);
-			m_objects.insert(index, object);
-			setDirtyValue(this);
-			emit modified();
-			return;
-		}
 	}
 }
 
