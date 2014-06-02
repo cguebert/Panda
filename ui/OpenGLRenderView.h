@@ -21,6 +21,8 @@ public:
 	QSize minimumSizeHint() const;
 	QSize sizeHint() const;
 
+	void setAdjustRenderSize(bool adjust);
+
 protected:
 	void initializeGL();
 	void paintGL();
@@ -30,12 +32,15 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 
+	void resizeEvent(QResizeEvent* event);
+
 signals:
 
 public slots:
 
 private:
-	panda::PandaDocument* pandaDocument;
+	panda::PandaDocument* m_document;
+	bool m_adjustRenderSize;
 };
 
 #endif // OPENGLRENDERVIEW_H

@@ -52,29 +52,32 @@ public:
 
 	int getNbObjects() const;
 	const ObjectsList& getObjects() const;
-	ObjectPtr getSharedPointer(PandaObject* object);
+	ObjectPtr getSharedPointer(PandaObject* object) const;
 
-	int getObjectPosition(PandaObject* object); /// Get the object's position in the objects list
+	int getObjectPosition(PandaObject* object) const; /// Get the object's position in the objects list
 	void reinsertObject(PandaObject* object, int pos); /// Reorder the object so it is inserted at the index pos in the objects list
 
-	PandaObject* getCurrentSelectedObject();
+	PandaObject* getCurrentSelectedObject() const;
 	void setCurrentSelectedObject(PandaObject* object);
 	bool isSelected(PandaObject* object) const;
 	int getNbSelected() const;
 	const ObjectsSelection& getSelection() const;
 
-	types::Color getBackgroundColor();
+	types::Color getBackgroundColor() const;
 	void setBackgroundColor(types::Color color);
-	QSize getRenderSize();
 
-	PReal getAnimationTime();
-	PReal getTimeStep();
+	QSize getRenderSize() const;
+	void setRenderSize(QSize size);
+
+	PReal getAnimationTime() const;
+	PReal getTimeStep() const;
 	bool animationIsPlaying() const;
 	bool animationIsMultithread() const;
 
-	types::Point getMousePosition();
+	types::Point getMousePosition() const;
 	void setMousePosition(const types::Point& pos);
-	int getMouseClick();
+
+	int getMouseClick() const;
 	void setMouseClick(int state);
 
 	quint32 getNextIndex();
@@ -87,20 +90,20 @@ public:
 	const types::ImageWrapper& getRenderedImage();
 	QSharedPointer<QOpenGLFramebufferObject> getFBO();
 
-	Layer* getDefaultLayer();
+	Layer* getDefaultLayer() const;
 
 	// When an object is set to laterUpdate, use these functions to help the Scheduler
-	void setDataDirty(BaseData* data); // Set the outputs to dirty before setting the value (so it doesn't propagate)
-	void setDataReady(BaseData* data); // Launch the tasks connected to this node
-	void waitForOtherTasksToFinish(bool mainThread = true); // Wait until the tasks we launched finish
+	void setDataDirty(BaseData* data) const; // Set the outputs to dirty before setting the value (so it doesn't propagate)
+	void setDataReady(BaseData* data) const; // Launch the tasks connected to this node
+	void waitForOtherTasksToFinish(bool mainThread = true) const; // Wait until the tasks we launched finish
 
-	// For undo-redo actions
+	// For undo-redo actionsB
 	void createUndoRedoActions(QObject* parent, QAction*& undoAction, QAction*& redoAction);
 	void addCommand(QUndoCommand* command);
 	QSharedPointer<ScopedMacro> beginCommandMacro(QString text);
 	void clearCommands();
-	bool isInCommandMacro();
-	QUndoCommand* getCurrentCommand(); /// The command we are currently adding (if we want to connect another to this one)
+	bool isInCommandMacro() const;
+	QUndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
 
 protected:
 	friend class ScopedMacro;
@@ -195,16 +198,19 @@ inline int PandaDocument::getNbSelected() const
 inline const PandaDocument::ObjectsSelection& PandaDocument::getSelection() const
 { return m_selectedObjects; }
 
-inline types::Color PandaDocument::getBackgroundColor()
+inline types::Color PandaDocument::getBackgroundColor() const
 { return m_backgroundColor.getValue(); }
 
 inline void PandaDocument::setBackgroundColor(types::Color color)
 { m_backgroundColor.setValue(color); }
 
-inline PReal PandaDocument::getAnimationTime()
+inline void PandaDocument::setRenderSize(QSize size)
+{ m_renderSize.setValue(panda::types::Point(qMax(1, size.width()), qMax(1, size.height()))); }
+
+inline PReal PandaDocument::getAnimationTime() const
 { return m_animTime.getValue(); }
 
-inline PReal PandaDocument::getTimeStep()
+inline PReal PandaDocument::getTimeStep() const
 { return m_timestep.getValue(); }
 
 inline bool PandaDocument::animationIsPlaying() const
@@ -213,25 +219,25 @@ inline bool PandaDocument::animationIsPlaying() const
 inline bool PandaDocument::animationIsMultithread() const
 { return m_animMultithread; }
 
-inline types::Point PandaDocument::getMousePosition()
+inline types::Point PandaDocument::getMousePosition() const
 { return m_mousePosition.getValue(); }
 
 inline void PandaDocument::setMousePosition(const types::Point& pos)
 { m_mousePositionBuffer = pos; }
 
-inline int PandaDocument::getMouseClick()
+inline int PandaDocument::getMouseClick() const
 { return m_mouseClick.getValue(); }
 
 inline quint32 PandaDocument::getNextIndex()
 { return m_currentIndex++; }
 
-inline Layer* PandaDocument::getDefaultLayer()
+inline Layer* PandaDocument::getDefaultLayer() const
 { return m_defaultLayer; }
 
-inline bool PandaDocument::isInCommandMacro()
+inline bool PandaDocument::isInCommandMacro() const
 { return m_inCommandMacro > 0; }
 
-inline QUndoCommand* PandaDocument::getCurrentCommand()
+inline QUndoCommand* PandaDocument::getCurrentCommand() const
 { return m_currentCommand; }
 
 } // namespace panda

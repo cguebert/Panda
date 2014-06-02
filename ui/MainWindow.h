@@ -57,6 +57,7 @@ private slots:
 	void showObjectsAndTypes();
 	void play(bool);
 	void selectedObject(panda::PandaObject*);
+	void adjustRenderSizeToView();
 
 private:
 	void createActions();
@@ -86,6 +87,7 @@ private:
 	QString m_curFile;
 	UpdateLoggerDialog* m_loggerDialog;
 	bool m_fullScreen;
+	bool m_adjustRenderSizeToView;
 
 	enum { MaxRecentFiles = 5 };
 	QAction* m_recentFileActions[MaxRecentFiles];
@@ -141,6 +143,7 @@ private:
 	QAction* m_showObjectsAndTypesAction;
 	QAction* m_undoAction;
 	QAction* m_redoAction;
+	QAction* m_adjustRenderSizeToViewAction;
 	QLabel* m_timeLabel;
 
 	bool m_undoEnabled, m_redoEnabled;

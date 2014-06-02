@@ -398,7 +398,7 @@ void PandaDocument::resetDocument()
 	m_resetting = false;
 }
 
-PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object)
+PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object) const
 {
 	auto iter = std::find(m_objects.begin(), m_objects.end(), object);
 	if(iter != m_objects.end())
@@ -407,7 +407,7 @@ PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object)
 	return ObjectPtr();
 }
 
-int PandaDocument::getObjectPosition(PandaObject* object)
+int PandaDocument::getObjectPosition(PandaObject* object) const
 {
 	auto iter = std::find(m_objects.begin(), m_objects.end(), object);
 	if(iter != m_objects.end())
@@ -435,7 +435,7 @@ void PandaDocument::reinsertObject(PandaObject* object, int pos)
 	emit reorderedObjects();
 }
 
-PandaObject* PandaDocument::getCurrentSelectedObject()
+PandaObject* PandaDocument::getCurrentSelectedObject() const
 {
 	if(m_selectedObjects.empty())
 		return nullptr;
@@ -451,7 +451,7 @@ void PandaDocument::setCurrentSelectedObject(PandaObject* object)
 	emit selectionChanged();
 }
 
-QSize PandaDocument::getRenderSize()
+QSize PandaDocument::getRenderSize() const
 {
 	Point pt = m_renderSize.getValue();
 	return QSize(qMax<PReal>(1, floor(pt.x)), qMax<PReal>(1, floor(pt.y)));
@@ -605,19 +605,19 @@ void PandaDocument::removeObject(PandaObject* object)
 	emit modified();
 }
 
-void PandaDocument::setDataDirty(BaseData* data)
+void PandaDocument::setDataDirty(BaseData* data) const
 {
 	if(m_animMultithread && m_scheduler)
 		m_scheduler->setDataDirty(data);
 }
 
-void PandaDocument::setDataReady(BaseData* data)
+void PandaDocument::setDataReady(BaseData* data) const
 {
 	if(m_animMultithread && m_scheduler)
 		m_scheduler->setDataReady(data);
 }
 
-void PandaDocument::waitForOtherTasksToFinish(bool mainThread)
+void PandaDocument::waitForOtherTasksToFinish(bool mainThread) const
 {
 	if(m_animMultithread && m_scheduler)
 		m_scheduler->waitForOtherTasks(mainThread);

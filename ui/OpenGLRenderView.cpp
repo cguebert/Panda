@@ -8,7 +8,8 @@
 
 OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 	: QGLWidget(parent)
-	, pandaDocument(doc)
+	, m_document(doc)
+	, m_adjustRenderSize(false)
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -30,6 +31,16 @@ QSize OpenGLRenderView::sizeHint() const
 	return QSize(600, 400);
 }
 
+void OpenGLRenderView::setAdjustRenderSize(bool adjust)
+{
+	m_adjustRenderSize = adjust;
+	if(m_adjustRenderSize)
+	{
+		QRect viewRect = contentsRect();
+		m_document->setRenderSize(viewRect.size());
+	}
+}
+
 void OpenGLRenderView::initializeGL()
 {
 	glEnable(GL_DEPTH_TEST);
@@ -38,7 +49,7 @@ void OpenGLRenderView::initializeGL()
 
 void OpenGLRenderView::paintGL()
 {
-	QOpenGLFramebufferObject* fbo = pandaDocument->getFBO().data();
+	QOpenGLFramebufferObject* fbo = m_document->getFBO().data();
 
 	QColor col = palette().window().color();
 	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
@@ -73,21 +84,31 @@ void OpenGLRenderView::resizeGL(int /*width*/, int /*height*/)
 void OpenGLRenderView::mousePressEvent(QMouseEvent *event)
 {
 	if(event->button() == Qt::LeftButton)
-		pandaDocument->setMouseClick(1);
+		m_document->setMouseClick(1);
 }
 
 void OpenGLRenderView::mouseMoveEvent(QMouseEvent *event)
 {
 	QRect viewRect = contentsRect();
-	QSize renderSize = pandaDocument->getRenderSize();
+	QSize renderSize = m_document->getRenderSize();
 	QPointF pos = event->localPos() - QPointF(viewRect.center().x() - renderSize.width() / 2,
 							viewRect.center().y() - renderSize.height() / 2);
 
-	pandaDocument->setMousePosition(panda::types::Point(pos.x(), pos.y()));
+	m_document->setMousePosition(panda::types::Point(pos.x(), pos.y()));
 }
 
-void OpenGLRenderView:: mouseReleaseEvent(QMouseEvent *event)
+void OpenGLRenderView::mouseReleaseEvent(QMouseEvent *event)
 {
 	if(event->button() == Qt::LeftButton)
-		pandaDocument->setMouseClick(0);
+		m_document->setMouseClick(0);
+}
+
+void OpenGLRenderView::resizeEvent(QResizeEvent* event)
+{
+	QGLWidget::resizeEvent(event);
+	if(m_adjustRenderSize)
+	{
+		QRect viewRect = contentsRect();
+		m_document->setRenderSize(viewRect.size());
+	}
 }
