@@ -168,7 +168,7 @@ void ObjectDrawStruct::drawLinks(QPainter* painter)
 			if(m_parentView->getObjectDrawStruct(parent->getOwner())->getDataRect(parent, dataRect))
 			{
 				QPen pen(m_parentView->palette().text().color());
-				pen.setWidth(0);
+				pen.setWidth(1);
 				painter->setPen(pen);
 				QPointF d1 = dataRect.center(), d2 = rectData.first.center();
 				if(d2.x()-d1.x() > 0) // We don't draw a link if it goes from right to left (see the LinkTag class)

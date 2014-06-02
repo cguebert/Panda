@@ -41,6 +41,7 @@ private slots:
 	void createObject();
 	void switchToGraphView();
 	void switchToOpenGLView();
+	void switchFullScreen();
 	void showStatusBarMessage(QString);
 	void cut();
 	void paste();
@@ -84,6 +85,7 @@ private:
 	QStringList m_recentFiles;
 	QString m_curFile;
 	UpdateLoggerDialog* m_loggerDialog;
+	bool m_fullScreen;
 
 	enum { MaxRecentFiles = 5 };
 	QAction* m_recentFileActions[MaxRecentFiles];
@@ -121,8 +123,9 @@ private:
 	QAction* m_centerViewAction;
 	QAction* m_showAllAction;
 	QAction* m_showAllSelectedAction;
-	QAction* m_showGraphView;
-	QAction* m_showOpenGLView;
+	QAction* m_showGraphViewAction;
+	QAction* m_showOpenGLViewAction;
+	QAction* m_fullScreenAction;
 	QAction* m_aboutAction;
 	QAction* m_aboutQtAction;
 	QAction* m_playAction;

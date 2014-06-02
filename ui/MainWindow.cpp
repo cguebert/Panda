@@ -20,6 +20,7 @@
 MainWindow::MainWindow()
 	: m_groupsRegistryMenu(nullptr)
 	, m_loggerDialog(nullptr)
+	, m_fullScreen(false)
 {
 	m_document = new panda::PandaDocument(this);
 
@@ -225,6 +226,7 @@ void MainWindow::createActions()
 	m_cutAction->setStatusTip(tr("Cut the current selection's contents "
 							   "to the clipboard"));
 	connect(m_cutAction, SIGNAL(triggered()), this, SLOT(cut()));
+	addAction(m_cutAction);
 
 	m_copyAction = new QAction(tr("&Copy"), this);
 	m_copyAction->setIcon(QIcon(":/images/copy.png"));
@@ -232,6 +234,7 @@ void MainWindow::createActions()
 	m_copyAction->setStatusTip(tr("Copy the current selection's contents "
 								"to the clipboard"));
 	connect(m_copyAction, SIGNAL(triggered()), m_document, SLOT(copy()));
+	addAction(m_copyAction);
 
 	m_pasteAction = new QAction(tr("&Paste"), this);
 	m_pasteAction->setIcon(QIcon(":/images/paste.png"));
@@ -239,30 +242,35 @@ void MainWindow::createActions()
 	m_pasteAction->setStatusTip(tr("Paste the clipboard's contents into "
 								 "the current selection"));
 	connect(m_pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
+	addAction(m_pasteAction);
 
 	m_deleteAction = new QAction(tr("&Delete"), this);
 	m_deleteAction->setShortcut(QKeySequence::Delete);
 	m_deleteAction->setStatusTip(tr("Delete the current selection's "
 								  "contents"));
 	connect(m_deleteAction, SIGNAL(triggered()), this, SLOT(del()));
+	addAction(m_deleteAction);
 
 	m_selectAllAction = new QAction(tr("Select &all"), this);
 	m_selectAllAction->setShortcut(tr("Ctrl+A"));
 	m_selectAllAction->setStatusTip(tr("Select all objects"));
 
 	connect(m_selectAllAction, SIGNAL(triggered()), m_document, SLOT(selectAll()));
+	addAction(m_selectAllAction);
 
 	m_selectNoneAction = new QAction(tr("Select &none"), this);
 	m_selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
 	m_selectNoneAction->setStatusTip(tr("Deselect all objets"));
 
 	connect(m_selectNoneAction, SIGNAL(triggered()), m_document, SLOT(selectNone()));
+	addAction(m_selectNoneAction);
 
 	m_selectConnectedAction = new QAction(tr("Select &connected"), this);
 	m_selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
 	m_selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
 
 	connect(m_selectConnectedAction, SIGNAL(triggered()), m_document, SLOT(selectConnected()));
+	addAction(m_selectConnectedAction);
 
 	m_groupAction = new QAction(tr("&Group selected"), this);
 	m_groupAction->setShortcut(tr("Ctrl+G"));
@@ -270,6 +278,7 @@ void MainWindow::createActions()
 	m_groupAction->setEnabled(false);
 
 	connect(m_groupAction, SIGNAL(triggered()), this, SLOT(group()));
+	addAction(m_groupAction);
 
 	m_ungroupAction = new QAction(tr("&Ungroup selected"), this);
 	m_ungroupAction->setShortcut(tr("Ctrl+Shift+G"));
@@ -277,6 +286,7 @@ void MainWindow::createActions()
 	m_ungroupAction->setEnabled(false);
 
 	connect(m_ungroupAction, SIGNAL(triggered()), this, SLOT(ungroup()));
+	addAction(m_ungroupAction);
 
 	m_editGroupAction = new QAction(tr("&Edit group"), this);
 	m_editGroupAction->setShortcut(tr("Ctrl+E"));
@@ -284,6 +294,7 @@ void MainWindow::createActions()
 	m_editGroupAction->setEnabled(false);
 
 	connect(m_editGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
+	addAction(m_editGroupAction);
 
 	m_saveGroupAction = new QAction(tr("&Save group"), this);
 	m_saveGroupAction->setShortcut(tr("Ctrl+Shift+E"));
@@ -291,54 +302,72 @@ void MainWindow::createActions()
 	m_saveGroupAction->setEnabled(false);
 
 	connect(m_saveGroupAction, SIGNAL(triggered()), this, SLOT(saveGroup()));
+	addAction(m_saveGroupAction);
 
 	m_zoomResetAction = new QAction(tr("Reset &zoom"), this);
 	m_zoomResetAction->setShortcut(tr("Ctrl+0"));
 	m_zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
 
 	connect(m_zoomResetAction, SIGNAL(triggered()), m_graphView, SLOT(zoomReset()));
+	addAction(m_zoomResetAction);
 
 	m_zoomInAction = new QAction(tr("Zoom &in"), this);
 	m_zoomInAction->setShortcut(tr("Ctrl++"));
 	m_zoomInAction->setStatusTip(tr("Zoom in"));
 
 	connect(m_zoomInAction, SIGNAL(triggered()), m_graphView, SLOT(zoomIn()));
+	addAction(m_zoomInAction);
 
 	m_zoomOutAction = new QAction(tr("Zoom &out"), this);
 	m_zoomOutAction->setShortcut(tr("Ctrl+-"));
 	m_zoomOutAction->setStatusTip(tr("Zoom out"));
 
 	connect(m_zoomOutAction, SIGNAL(triggered()), m_graphView, SLOT(zoomOut()));
+	addAction(m_zoomOutAction);
 
 	m_centerViewAction = new QAction(tr("&Center view"), this);
 	m_centerViewAction->setShortcut(tr("Ctrl+5"));
 	m_centerViewAction->setStatusTip(tr("Center the view"));
 
 	connect(m_centerViewAction, SIGNAL(triggered()), m_graphView, SLOT(centerView()));
+	addAction(m_centerViewAction);
 
 	m_showAllAction = new QAction(tr("Show &all"), this);
 	m_showAllAction->setShortcut(tr("Ctrl+f"));
 	m_showAllAction->setStatusTip(tr("Center and zoom the view so that all objects are visible"));
 
 	connect(m_showAllAction, SIGNAL(triggered()), m_graphView, SLOT(showAll()));
+	addAction(m_showAllAction);
 
 	m_showAllSelectedAction = new QAction(tr("Show all &selected"), this);
 	m_showAllSelectedAction->setShortcut(tr("Ctrl+d"));
 	m_showAllSelectedAction->setStatusTip(tr("Center and zoom the view so that all selected objects are visible"));
 
 	connect(m_showAllSelectedAction, SIGNAL(triggered()), m_graphView, SLOT(showAllSelected()));
+	addAction(m_showAllSelectedAction);
 
-	m_showGraphView = new QAction(tr("Show &graph view"), this);
-	m_showGraphView->setShortcut(tr("Ctrl+1"));
-	m_showGraphView->setStatusTip(tr("Switch to the graph view"));
+	m_showGraphViewAction = new QAction(tr("Show &graph view"), this);
+	m_showGraphViewAction->setShortcut(tr("Ctrl+1"));
+	m_showGraphViewAction->setStatusTip(tr("Switch to the graph view"));
 
-	connect(m_showGraphView, SIGNAL(triggered()), this, SLOT(switchToGraphView()));
+	connect(m_showGraphViewAction, SIGNAL(triggered()), this, SLOT(switchToGraphView()));
+	addAction(m_showGraphViewAction);
 
-	m_showOpenGLView = new QAction(tr("Show &render view"), this);
-	m_showOpenGLView->setShortcut(tr("Ctrl+2"));
-	m_showOpenGLView->setStatusTip(tr("Switch to the render view"));
+	m_showOpenGLViewAction = new QAction(tr("Show &render view"), this);
+	m_showOpenGLViewAction->setShortcut(tr("Ctrl+2"));
+	m_showOpenGLViewAction->setStatusTip(tr("Switch to the render view"));
 
-	connect(m_showOpenGLView, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
+	connect(m_showOpenGLViewAction, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
+	addAction(m_showOpenGLViewAction);
+
+	m_fullScreenAction = new QAction(tr("&Full screen"), this);
+	m_fullScreenAction->setShortcut(tr("F11"));
+	m_fullScreenAction->setStatusTip(tr("Put the application in full screen mode"));
+	m_fullScreenAction->setCheckable(true);
+	m_fullScreenAction->setChecked(false);
+
+	addAction(m_fullScreenAction);
+	connect(m_fullScreenAction, SIGNAL(triggered()), this, SLOT(switchFullScreen()));
 
 	m_aboutAction = new QAction(tr("&About"), this);
 	m_aboutAction->setStatusTip(tr("Show the application's About box"));
@@ -355,26 +384,31 @@ void MainWindow::createActions()
 	m_playAction->setCheckable(true);
 	connect(m_playAction, SIGNAL(triggered(bool)), m_document, SLOT(play(bool)));
 	connect(m_playAction, SIGNAL(triggered(bool)), this, SLOT(play(bool)));
+	addAction(m_playAction);
 
 	m_stepAction = new QAction(tr("Step"), this);
 	m_stepAction->setIcon(QIcon(":/images/step.png"));
 	m_stepAction->setShortcut(tr("F6"));
 	m_stepAction->setStatusTip(tr("Do one step of the animation"));
 	connect(m_stepAction, SIGNAL(triggered()), m_document, SLOT(step()));
+	addAction(m_stepAction);
 
 	m_rewindAction = new QAction(tr("Rewind"), this);
 	m_rewindAction->setIcon(QIcon(":/images/stop.png"));
 	m_rewindAction->setShortcut(tr("F7"));
 	m_rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
 	connect(m_rewindAction, SIGNAL(triggered()), m_document, SLOT(rewind()));
+	addAction(m_rewindAction);
 
 	m_removeLinkAction = new QAction(tr("Remove link"), this);
 	m_removeLinkAction->setStatusTip(tr("Remove the link to this data"));
 	connect(m_removeLinkAction, SIGNAL(triggered()), m_graphView, SLOT(removeLink()));
+	addAction(m_removeLinkAction);
 
 	m_copyDataAction = new QAction(tr("Copy data"), this);
 	m_copyDataAction->setStatusTip(tr("Create a user value generator based on this data"));
 	connect(m_copyDataAction, SIGNAL(triggered()), this, SLOT(copyDataToUserValue()));
+	addAction(m_copyDataAction);
 
 	m_showLoggerDialogAction = new QAction(tr("Show log"), this);
 	m_showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
@@ -387,6 +421,8 @@ void MainWindow::createActions()
 	m_document->createUndoRedoActions(this, m_undoAction, m_redoAction);
 	m_undoAction->setShortcut(QKeySequence::Undo);
 	m_redoAction->setShortcut(QKeySequence::Redo);
+	addAction(m_undoAction);
+	addAction(m_redoAction);
 }
 
 void MainWindow::createMenus()
@@ -411,6 +447,7 @@ void MainWindow::createMenus()
 	m_editMenu->addAction(m_copyAction);
 	m_editMenu->addAction(m_pasteAction);
 	m_editMenu->addAction(m_deleteAction);
+	m_editMenu->addSeparator();
 
 	m_selectMenu = m_editMenu->addMenu(tr("&Select"));
 	m_selectMenu->addAction(m_selectAllAction);
@@ -434,8 +471,9 @@ void MainWindow::createMenus()
 	m_viewMenu->addAction(m_showAllAction);
 	m_viewMenu->addAction(m_showAllSelectedAction);
 	m_viewMenu->addSeparator();
-	m_viewMenu->addAction(m_showGraphView);
-	m_viewMenu->addAction(m_showOpenGLView);
+	m_viewMenu->addAction(m_showGraphViewAction);
+	m_viewMenu->addAction(m_showOpenGLViewAction);
+	m_viewMenu->addAction(m_fullScreenAction);
 #ifdef PANDA_LOG_EVENTS
 	m_viewMenu->addSeparator();
 	m_viewMenu->addAction(m_showLoggerDialogAction);
@@ -584,12 +622,16 @@ void MainWindow::readSettings()
 }
 
 void MainWindow::writeSettings()
-{
+{	
 	QSettings settings("Christophe Guebert", "Panda");
 
-	settings.setValue("geometry", saveGeometry());
-	settings.setValue("state", saveState());
 	settings.setValue("recentFiles", m_recentFiles);
+
+	if(!m_fullScreen)
+	{
+		settings.setValue("geometry", saveGeometry());
+		settings.setValue("state", saveState());
+	}
 }
 
 bool MainWindow::okToContinue()
@@ -704,6 +746,30 @@ void MainWindow::switchToGraphView()
 void MainWindow::switchToOpenGLView()
 {
 	m_tabWidget->setCurrentWidget(m_openGLRenderView);
+}
+
+void MainWindow::switchFullScreen()
+{
+	m_fullScreen = !m_fullScreen;
+	m_fullScreenAction->setChecked(m_fullScreen);
+
+	if(m_fullScreen)
+		showFullScreen();
+	else
+		showNormal();
+
+	bool show = !m_fullScreen;
+
+	menuBar()->setVisible(show);
+	statusBar()->setVisible(show);
+
+	m_datasDock->setVisible(show);
+	m_layersDock->setVisible(show);
+
+	m_fileToolBar->setVisible(show);
+	m_editToolBar->setVisible(show);
+	m_animToolBar->setVisible(show);
+	m_tabWidget->tabBar()->setVisible(show);
 }
 
 void MainWindow::showStatusBarMessage(QString text)
