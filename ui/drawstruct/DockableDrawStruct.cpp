@@ -33,7 +33,7 @@ QSize DockObjectDrawStruct::getObjectSize()
 	temp.rwidth() += 20;
 	temp.rheight() += dockEmptyRendererHeight + dockRendererMargin * 2;
 
-	for(auto dockable : m_dockObject->getDockables())
+	for(auto dockable : m_dockObject->getDockedObjects())
 		temp.rheight() += m_parentView->getObjectDrawStruct(dockable)->getObjectSize().height() + dockRendererMargin;
 
 	return temp;
@@ -42,7 +42,7 @@ QSize DockObjectDrawStruct::getObjectSize()
 void DockObjectDrawStruct::move(const QPointF& delta)
 {
 	ObjectDrawStruct::move(delta);
-	for(auto dockable : m_dockObject->getDockables())
+	for(auto dockable : m_dockObject->getDockedObjects())
 		m_parentView->getObjectDrawStruct(dockable)->move(delta);
 }
 
@@ -72,7 +72,7 @@ void DockObjectDrawStruct::update()
 	int tx, ty;
 	ty = m_objectArea.top() + ObjectDrawStruct::getObjectSize().height() + dockRendererMargin;
 
-	for(auto dockable : m_dockObject->getDockables())
+	for(auto dockable : m_dockObject->getDockedObjects())
 	{
 		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
 		QSize objectSize = objectStruct->getObjectSize();

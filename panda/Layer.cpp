@@ -6,7 +6,7 @@
 #include <QOpenGLFramebufferObject>
 #include <QCoreApplication>
 
-#include <ui/GraphView.h>
+#include <ui/command/MoveLayerCommand.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>
@@ -140,7 +140,7 @@ bool Layer::accepts(DockableObject* dockable) const
 BaseLayer::RenderersList Layer::getRenderers()
 {
 	RenderersList renderers;
-	for(auto dockable : getDockables())
+	for(auto dockable : getDockedObjects())
 	{
 		Renderer* renderer = dynamic_cast<Renderer*>(dockable);
 		if(renderer)
@@ -161,6 +161,14 @@ void Layer::postCreate()
 
 	QString text = QCoreApplication::translate("Layer", "Layer #%1");
 	m_layerName.setValue(text.arg(i));
+}
+
+void Layer::removedFromDocument()
+{
+	DockObject::removedFromDocument();
+
+	if(m_parentDocument->isInCommandMacro())
+		m_parentDocument->addCommand(new MoveLayerCommand(m_parentDocument, this, 0));
 }
 
 int LayerClass = RegisterObject<Layer>("Layer").setDescription("Organize renderers and change opacity and the composition mode");

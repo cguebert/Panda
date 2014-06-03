@@ -242,7 +242,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 		DockObject* dock = dynamic_cast<DockObject*>(object);
 		if(dock)
 		{
-			for(auto dockable : dock->getDockables())
+			for(auto dockable : dock->getDockedObjects())
 				dockedObjects.push_back(qMakePair(dock->getIndex(), dockable->getIndex()));
 		}
 
@@ -573,7 +573,7 @@ void PandaDocument::selectConnected()
 			DockObject* dock = dynamic_cast<DockObject*>(object);
 			if(dock)
 			{
-				for(auto dockable : dock->getDockables())
+				for(auto dockable : dock->getDockedObjects())
 				{
 					if(!closedList.contains(dockable))
 						openList.insert(dockable);

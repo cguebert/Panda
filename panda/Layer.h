@@ -72,6 +72,7 @@ public:
 	virtual QMatrix4x4& getMVPMatrix();
 
 	virtual void postCreate();
+	virtual void removedFromDocument();
 
 protected:
 	Data<QString> m_layerName;

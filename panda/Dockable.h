@@ -3,7 +3,7 @@
 
 #include <panda/PandaObject.h>
 
-#include <QList>
+#include <vector>
 #include <QPointer>
 
 namespace panda
@@ -23,10 +23,12 @@ public:
 	virtual void addDockable(DockableObject* dockable, int index = -1);
 	virtual void removeDockable(DockableObject* dockable);
 
-	typedef QList<DockableObject*> DockablesList;
-	virtual const DockablesList& getDockables() const;
+	typedef std::vector<DockableObject*> DockablesList;
+	virtual const DockablesList& getDockedObjects() const;
 
 	virtual int getIndexOfDockable(DockableObject* dockable) const;
+
+	virtual void removedFromDocument();
 
 protected:
 	virtual void doRemoveInput(DataNode* node);
@@ -59,11 +61,8 @@ protected:
 inline void DockObject::removeDockable(DockableObject* dockable)
 { removeInput((DataNode*)dockable); }
 
-inline const DockObject::DockablesList& DockObject::getDockables() const
+inline const DockObject::DockablesList& DockObject::getDockedObjects() const
 { return m_dockedObjects; }
-
-inline int DockObject::getIndexOfDockable(DockableObject* dockable) const
-{ return m_dockedObjects.indexOf(dockable); }
 
 inline bool DockObject::accepts(DockableObject* /*dockable*/) const
 { return true; }

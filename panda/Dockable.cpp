@@ -15,19 +15,20 @@ DockObject::~DockObject()
 {
 	DockObject* defaultDock = nullptr;
 
-	for(auto dockable : getDockables())
+	auto dockedObjects = getDockedObjects();
+	for(auto docked : dockedObjects)
 	{
-		removeInput((DataNode*)dockable);
+		removeInput((DataNode*)docked);
 
-		defaultDock = dockable->getDefaultDock();
+		defaultDock = docked->getDefaultDock();
 
 		if(defaultDock == this)
 			defaultDock = nullptr;
 
-		dockable->setParentDock(defaultDock);
+		docked->setParentDock(defaultDock);
 
 		if(defaultDock)
-			defaultDock->addDockable(dockable);
+			defaultDock->addDockable(docked);
 	}
 }
 
@@ -38,7 +39,7 @@ void DockObject::addDockable(DockableObject* dockable, int index)
 	if(index < 0)
 		m_dockedObjects.push_back(dockable);
 	else
-		m_dockedObjects.insert(index, dockable);
+		m_dockedObjects.insert(m_dockedObjects.begin() + index, dockable);
 	m_parentDocument->onModifiedObject(this);
 }
 
@@ -46,11 +47,33 @@ void DockObject::doRemoveInput(DataNode* node)
 {
 	DataNode::doRemoveInput(node);
 
-	if(m_dockedObjects.contains((DockableObject*)node))
+	auto iter = std::find(m_dockedObjects.begin(), m_dockedObjects.end(), (DockableObject*)node);
+	if(iter != m_dockedObjects.end())
 	{
-		m_dockedObjects.removeAll((DockableObject*)node);
+		m_dockedObjects.erase(iter);
 		setDirtyValue(this);
 		m_parentDocument->onModifiedObject(this);
+	}
+}
+
+int DockObject::getIndexOfDockable(DockableObject* dockable) const
+{
+	auto iter = std::find(m_dockedObjects.begin(), m_dockedObjects.end(), dockable);
+	if(iter != m_dockedObjects.end())
+		return iter - m_dockedObjects.begin();
+	return -1;
+}
+
+void DockObject::removedFromDocument()
+{
+	if(m_parentDocument->isInCommandMacro())
+	{
+		auto docked = m_dockedObjects;
+		for(auto it = docked.rbegin(); it != docked.rend(); ++it)
+		{
+			m_parentDocument->addCommand(new DetachDockableCommand(this, *it));
+			m_parentDocument->addCommand(new AttachDockableCommand((*it)->getDefaultDock(), *it, 0));
+		}
 	}
 }
 

@@ -48,10 +48,10 @@ public:
 
 	void iterateRenderers()
 	{
-		auto dockables = getDockables();
-		for(int i=dockables.size()-1; i>=0; --i)
+		auto& dockables = getDockedObjects();
+		for(auto it=dockables.rbegin(); it!=dockables.rend(); ++it)
 		{
-			Renderer* renderer = dynamic_cast<Renderer*>(dockables[i]);
+			Renderer* renderer = dynamic_cast<Renderer*>(*it);
 			if(!renderer)
 				continue;
 

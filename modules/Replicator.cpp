@@ -40,10 +40,10 @@ public:
 			m_parentDocument->setDataReady(&index); // Launch the computation
 			m_parentDocument->waitForOtherTasksToFinish(); // Wait for the end of the computation
 
-			auto dockables = getDockables();
-			for(int i=dockables.size()-1; i>=0; --i)
+			auto& dockables = getDockedObjects();
+			for(auto it=dockables.rbegin(); it!=dockables.rend(); ++it)
 			{
-				Renderer* renderer = dynamic_cast<Renderer*>(dockables[i]);
+				Renderer* renderer = dynamic_cast<Renderer*>(*it);
 				if(renderer)
 				{
 #ifdef PANDA_LOG_EVENTS

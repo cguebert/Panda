@@ -395,7 +395,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 		DockObject* dock = dynamic_cast<DockObject*>(object.data());
 		if(dock)
 		{
-			for(auto dockable : dock->getDockables())
+			for(auto dockable : dock->getDockedObjects())
 				dockedObjects.push_back(qMakePair(dock->getIndex(), dockable->getIndex()));
 		}
 	}
