@@ -774,11 +774,12 @@ void PandaDocument::render()
 
 	m_mergeLayersShader->setUniformValue("opacity", 1.0f);
 	m_mergeLayersShader->setUniformValue("mode", 0);
-	glFunctions.glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
 	glFunctions.glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_defaultLayer->getTextureId());
+	glFunctions.glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	glFunctions.glActiveTexture(GL_TEXTURE0);
 
 	m_renderFBO->release();
 
@@ -803,6 +804,9 @@ void PandaDocument::render()
 			m_mergeLayersShader->setUniformValue("opacity", opacity);
 			m_mergeLayersShader->setUniformValue("mode", layer->getCompositionMode());
 
+			glFunctions.glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, layer->getTextureId());
+
 			inverse = !inverse;
 			if(inverse)
 			{
@@ -817,9 +821,8 @@ void PandaDocument::render()
 				glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
 			}
 
-			glFunctions.glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, layer->getTextureId());
 			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+			glFunctions.glActiveTexture(GL_TEXTURE0);
 
 			if(inverse)
 				m_secondRenderFBO->release();
