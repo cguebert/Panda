@@ -18,24 +18,24 @@ public:
 	typedef const value_type* const_pointer;
 
 protected:
-	container_type& vref;
+	container_type& m_vref;
 
 public:
-	explicit DataAccessor(container_type& container) : vref(container) {}
+	explicit DataAccessor(container_type& container) : m_vref(container) {}
 	~DataAccessor() {}
 
-	const_reference ref() const { return vref; }
-	reference wref() { return vref; }
+	const_reference ref() const { return m_vref; }
+	reference wref() { return m_vref; }
 
-	operator  const_reference () const { return  vref; }
-	const_pointer   operator->() const { return &vref; }
-	const_reference operator* () const { return  vref; }
+	operator  const_reference () const { return  m_vref; }
+	const_pointer   operator->() const { return &m_vref; }
+	const_reference operator* () const { return  m_vref; }
 
-	operator  reference () { return  vref; }
-	pointer   operator->() { return &vref; }
-	reference operator* () { return  vref; }
+	operator  reference () { return  m_vref; }
+	pointer   operator->() { return &m_vref; }
+	reference operator* () { return  m_vref; }
 
-	template<class U> void operator=(const U& v) { vref = v; }
+	template<class U> void operator=(const U& v) { m_vref = v; }
 };
 
 //****************************************************************************//
@@ -53,34 +53,34 @@ public:
 	typedef typename container_type::const_iterator const_iterator;
 
 protected:
-	container_type& vref;
+	container_type& m_vref;
 
 public:
-	DataAccessorVector(container_type& container) : vref(container) {}
+	DataAccessorVector(container_type& container) : m_vref(container) {}
 	~DataAccessorVector() {}
 
-	const container_type& ref() const { return vref; }
-	container_type& wref() { return vref; }
+	const container_type& ref() const { return m_vref; }
+	container_type& wref() { return m_vref; }
 
-	bool empty() const { return vref.empty(); }
-	size_type size() const { return vref.size(); }
+	bool empty() const { return m_vref.empty(); }
+	size_type size() const { return m_vref.size(); }
 
-	const_reference operator[](size_type i) const { return vref[i]; }
-	reference operator[](size_type i) { return vref[i]; }
+	const_reference operator[](size_type i) const { return m_vref[i]; }
+	reference operator[](size_type i) { return m_vref[i]; }
 
-	const_iterator begin() const { return vref.begin(); }
-	iterator begin() { return vref.begin(); }
-	const_iterator end() const { return vref.end(); }
-	iterator end() { return vref.end(); }
+	const_iterator begin() const { return m_vref.begin(); }
+	iterator begin() { return m_vref.begin(); }
+	const_iterator end() const { return m_vref.end(); }
+	iterator end() { return m_vref.end(); }
 
-	void clear() { vref.clear(); }
-	void resize(size_type s) { vref.resize(s); }
-	void reserve(size_type s) { vref.reserve(s); }
-	void push_back(const_reference v) { vref.push_back(v); }
+	void clear() { m_vref.clear(); }
+	void resize(size_type s) { m_vref.resize(s); }
+	void reserve(size_type s) { m_vref.reserve(s); }
+	void push_back(const_reference v) { m_vref.push_back(v); }
 
-	template<class U> void operator=(const U& v) { vref = v; }
-	container_type& operator<<(const container_type& v) { return vref << v; }
-	container_type& operator<<(const value_type& v) { return vref << v; }
+	template<class U> void operator=(const U& v) { m_vref = v; }
+	container_type& operator<<(const container_type& v) { return m_vref << v; }
+	container_type& operator<<(const value_type& v) { return m_vref << v; }
 };
 
 template<class T>

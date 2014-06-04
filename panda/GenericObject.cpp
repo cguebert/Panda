@@ -60,7 +60,7 @@ void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefin
 	m_genericData = data;
 	m_genericData->setDisplayed(false);
 	m_genericData->setPersistent(false);
-	m_genericData->allowedTypes = getRegisteredTypes();
+	m_genericData->m_allowedTypes = getRegisteredTypes();
 	m_dataDefinitions = defList;
 }
 
@@ -350,8 +350,8 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 	if(m_connectedType == -1)
 	{
 		m_connectedType = type;
-		m_genericData->allowedTypes.clear();
-		m_genericData->allowedTypes.push_back(m_connectedType);
+		m_genericData->m_allowedTypes.clear();
+		m_genericData->m_allowedTypes.push_back(m_connectedType);
 	}
 
 	int valueType = types::DataTypeId::getValueType(type);
@@ -468,7 +468,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 			if(lastGeneric)
 			{
 				m_connectedType = -1;
-				m_genericData->allowedTypes = getRegisteredTypes();
+				m_genericData->m_allowedTypes = getRegisteredTypes();
 			}
 
 			int nbDefs = m_dataDefinitions.size();
@@ -508,7 +508,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 bool GenericData::validParent(const BaseData* parent) const
 {
-	if(allowedTypes.size() && !allowedTypes.contains(parent->getDataTrait()->valueTypeId()))
+	if(m_allowedTypes.size() && !m_allowedTypes.contains(parent->getDataTrait()->valueTypeId()))
 		return false;
 	return true;
 }
@@ -520,11 +520,11 @@ QString GenericData::getDescription() const
 
 QString GenericData::getTypesName(bool useFullDescription) const
 {
-	if(allowedTypes.isEmpty())
+	if(m_allowedTypes.isEmpty())
 		return "";
 
 	QVector<QString> sortedTypeNames;
-	for(auto type : allowedTypes)
+	for(auto type : m_allowedTypes)
 	{
 		auto trait = DataTraitsList::getTrait(type);
 		if(trait)
@@ -600,7 +600,7 @@ QString GenericAnimationData::getDescription() const
 bool GenericSpecificData::validParent(const BaseData* parent) const
 {
 	int fromType = parent->getDataTrait()->fullTypeId();
-	if(allowedTypes.contains(fromType)) // Directly contains this type
+	if(m_allowedTypes.contains(fromType)) // Directly contains this type
 		return true;
 
 	return false;

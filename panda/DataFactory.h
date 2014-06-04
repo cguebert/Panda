@@ -49,13 +49,13 @@ public:
 	static int nameToType(QString name);
 
 	typedef QList< QSharedPointer<DataEntry> > EntriesList;
-	const EntriesList getEntries() const { return entries; }
+	const EntriesList getEntries() const { return m_entries; }
 
 protected:
-	EntriesList entries;
-	QMap< QString, DataEntry* > registry;
-	QMap< QString, DataEntry* > nameRegistry;
-	QMap< int, DataEntry* > typeRegistry;
+	EntriesList m_entries;
+	QMap< QString, DataEntry* > m_registry;
+	QMap< QString, DataEntry* > m_nameRegistry;
+	QMap< int, DataEntry* > m_typeRegistry;
 
 	template<class T> friend class RegisterData;
 	void registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator);

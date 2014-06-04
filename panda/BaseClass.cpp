@@ -17,32 +17,32 @@ BaseClass::~BaseClass()
 
 QString BaseClass::getTypeName() const
 {
-	return typeName;
+	return m_typeName;
 }
 
 QString BaseClass::getNamespaceName() const
 {
-	return namespaceName;
+	return m_namespaceName;
 }
 
 QString BaseClass::getClassName() const
 {
-	return className;
+	return m_className;
 }
 
 QString BaseClass::getTemplateName() const
 {
-	return templateName;
+	return m_templateName;
 }
 
 bool BaseClass::hasParent(const BaseClass* c) const
 {
 	if(*this == *c)
 		return true;
-	unsigned int nb = parents.size();
+	unsigned int nb = m_parents.size();
 	for(unsigned int i=0; i<nb; ++i)
 	{
-		if(parents[i]->hasParent(c))
+		if(m_parents[i]->hasParent(c))
 			return true;
 	}
 

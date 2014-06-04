@@ -34,7 +34,7 @@ public:
 	virtual QString getTypesName(bool useFullDescription = false) const;
 	virtual int getCompatibleType(const BaseData* parent) const;
 
-	QList<int> allowedTypes;
+	QList<int> m_allowedTypes;
 };
 
 class GenericSingleValueData : public GenericData

@@ -35,8 +35,8 @@ public:
 	static QString decodeTemplateName(const std::type_info& type);
 
 protected:
-	QList<const BaseClass*> parents;
-	QString typeName, namespaceName, className, templateName;
+	QList<const BaseClass*> m_parents;
+	QString m_typeName, m_namespaceName, m_className, m_templateName;
 };
 
 #define PANDA_TEMPLATE(Class,P1) Class<P1>
@@ -146,15 +146,15 @@ class TClass : public BaseClass
 protected:
 	TClass()
 	{
-		typeName = decodeTypeName(typeid(T));
-		namespaceName = decodeNamespaceName(typeid(T));
-		className = decodeClassName(typeid(T));
-		templateName = decodeTemplateName(typeid(T));
+		m_typeName = decodeTypeName(typeid(T));
+		m_namespaceName = decodeNamespaceName(typeid(T));
+		m_className = decodeClassName(typeid(T));
+		m_templateName = decodeTemplateName(typeid(T));
 
 		unsigned int nb = TClassParents<Parents>::nb();
-		parents.reserve(nb);
+		m_parents.reserve(nb);
 		for(unsigned int i=0; i<nb; ++i)
-			parents.push_back(TClassParents<Parents>::getClass(i));
+			m_parents.push_back(TClassParents<Parents>::getClass(i));
 	}
 
 	virtual ~TClass() {}
