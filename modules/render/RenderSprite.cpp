@@ -52,6 +52,7 @@ public:
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
 		shaderAcc->setSource(QOpenGLShader::Vertex,
+							 "#version 440\n"
 							 "in vec2 position;\n"
 							 "in float size;\n"
 							 "in vec4 color;\n"
@@ -66,6 +67,7 @@ public:
 							);
 
 		shaderAcc->setSource(QOpenGLShader::Fragment,
+							 "#version 440\n"
 							 "uniform sampler2D tex0;\n"
 							 "in vec4 f_color;\n"
 							 "out vec4 fragColor;\n"
@@ -140,9 +142,6 @@ public:
 
 			functions.glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, texId);
-			glEnable(GL_TEXTURE_2D);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 			shaderProgram.bind();
 
@@ -164,11 +163,8 @@ public:
 
 			glDrawArrays(GL_POINTS, 0, nbPosition);
 
+			shaderProgram.disableAttributeArray(attribute_color);
 			shaderProgram.release();
-
-			functions.glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glDisable(GL_TEXTURE_2D);
 
 			shaderProgram.disableAttributeArray(attribute_pos);
 			shaderProgram.disableAttributeArray(attribute_size);
