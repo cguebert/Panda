@@ -100,22 +100,22 @@ public:
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
 		shaderAcc->setSource(QOpenGLShader::Vertex,
-							 "#version 400\n"
-							 "out vec4 f_color;\n"
+							 "#version 440\n"
+							 "in vec2 vertex;\n"
 							 "uniform mat4 MVP;\n"
 							 "void main(void)\n"
 							 "{\n"
-							 "	f_color = gl_Color;\n"
-							 "	gl_Position = MVP * vec4(gl_Vertex.xy, 0, 1);\n"
+							 "	gl_Position = MVP * vec4(vertex, 0, 1);\n"
 							 "}"
 							);
 
 		shaderAcc->setSource(QOpenGLShader::Fragment,
-							 "#version 400\n"
-							 "in vec4 f_color;\n"
+							 "#version 440\n"
+							 "uniform vec4 color;\n"
+							 "out vec4 fragColor;\n"
 							 "void main(void)\n"
 							 "{\n"
-							 "   gl_FragColor = f_color;\n"
+							 "   fragColor = color;\n"
 							 "}"
 							);
 	}
@@ -141,11 +141,13 @@ public:
 			shaderProgram.bind();
 			shaderProgram.setUniformValue("MVP", getMVPMatrix());
 
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glVertexPointer(2, GL_PREAL, 0, verts);
+			shaderProgram.enableAttributeArray("vertex");
+			shaderProgram.setAttributeArray("vertex", verts, 2);
+
 			for(int i=0; i<nbRect; ++i)
 			{
-				glColor4fv(listColor[i % nbColor].data());
+				auto color = listColor[i % nbColor];
+				shaderProgram.setUniformValue("color", color.r, color.g, color.b, color.a);
 
 				Rect rect = listRect[i % nbRect];
 				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
@@ -155,8 +157,8 @@ public:
 
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			}
-			glDisableClientState(GL_VERTEX_ARRAY);
 
+			shaderProgram.disableAttributeArray("vertex");
 			shaderProgram.release();
 		}
 	}
