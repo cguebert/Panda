@@ -24,14 +24,21 @@ public:
 		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
 		, lineWidth(initData(&lineWidth, "lineWidth", "Width of the line"))
 		, color(initData(&color, "color", "Color of the rectangle"))
+		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
 		addInput(&rect);
 		addInput(&lineWidth);
 		addInput(&color);
+		addInput(&shader);
 
 		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
 		color.getAccessor().push_back(Color::black());
 		lineWidth.getAccessor().push_back(0.0);
+
+		shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = shader.getAccessor();
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -46,15 +53,26 @@ public:
 
 		if(nbRect && nbColor || nbWidth)
 		{
+			if(!shader.getValue().apply(shaderProgram))
+				return;
+
 			if(nbColor < nbRect) nbColor = 1;
 			if(nbWidth < nbRect) nbWidth = 1;
 			PReal verts[8];
 
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glVertexPointer(2, GL_PREAL, 0, verts);
+			shaderProgram.bind();
+			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+
+			shaderProgram.enableAttributeArray("vertex");
+			shaderProgram.setAttributeArray("vertex", verts, 2);
+
+			int colorLocation = shaderProgram.uniformLocation("color");
+
 			for(int i=0; i<nbRect; ++i)
 			{
-				glColor4fv(listColor[i % nbColor].data());
+				auto color = listColor[i % nbColor];
+				shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
+
 				glLineWidth(listWidth[i % nbWidth]);
 
 				Rect rect = listRect[i % nbRect];
@@ -65,7 +83,9 @@ public:
 
 				glDrawArrays(GL_LINE_LOOP, 0, 4);
 			}
-			glDisableClientState(GL_VERTEX_ARRAY);
+
+			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.release();
 		}
 	}
 
@@ -73,6 +93,9 @@ protected:
 	Data< QVector<Rect> > rect;
 	Data< QVector<PReal> > lineWidth;
 	Data< QVector<Color> > color;
+	Data< Shader > shader;
+
+	QOpenGLShaderProgram shaderProgram;
 };
 
 int RenderRectClass = RegisterObject<RenderRect>("Render/Rectangle").setDescription("Draw a rectangle");
@@ -99,8 +122,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_uniformColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_uniformColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -113,9 +136,7 @@ public:
 
 		if(nbRect && nbColor)
 		{
-			shader.getValue().apply(shaderProgram);
-
-			if(!shaderProgram.isLinked())
+			if(!shader.getValue().apply(shaderProgram))
 				return;
 
 			if(nbColor < nbRect) nbColor = 1;

@@ -72,9 +72,7 @@ public:
 
 		if(nbPosition && nbSize && nbColor && texId)
 		{
-			shader.getValue().apply(shaderProgram);
-
-			if(!shaderProgram.isLinked())
+			if(!shader.getValue().apply(shaderProgram))
 				return;
 
 			attribute_pos = shaderProgram.attributeLocation("position");

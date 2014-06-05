@@ -13,11 +13,13 @@
         <file>images/stop.png</file>
         <file>shaders/mergeLayers.f.glsl</file>
         <file>shaders/mergeLayers.v.glsl</file>
-        <file>shaders/PT_uniformColor_noTex.f.glsl</file>
-        <file>shaders/PT_uniformColor_noTex.v.glsl</file>
         <file>shaders/PT_noColor_Tex.f.glsl</file>
         <file>shaders/PT_noColor_Tex.v.glsl</file>
         <file>shaders/sprite.f.glsl</file>
         <file>shaders/sprite.v.glsl</file>
+        <file>shaders/PT_attColor_noTex.f.glsl</file>
+        <file>shaders/PT_attColor_noTex.v.glsl</file>
+        <file>shaders/PT_uniColor_noTex.f.glsl</file>
+        <file>shaders/PT_uniColor_noTex.v.glsl</file>
     </qresource>
 </RCC>

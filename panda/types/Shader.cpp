@@ -70,7 +70,7 @@ void Shader::removeSource(QOpenGLShader::ShaderType type)
 	m_sourcesMap.remove(type);
 }
 
-void Shader::apply(QOpenGLShaderProgram& program) const
+bool Shader::apply(QOpenGLShaderProgram& program) const
 {
 	QList<QOpenGLShader*> currentShaders = program.shaders();
 	QList<QOpenGLShader*> newShaders;
@@ -110,6 +110,10 @@ void Shader::apply(QOpenGLShaderProgram& program) const
 		for(auto value : m_shaderValues)
 			value->apply(program);
 	}
+	else
+		return false;
+
+	return true;
 }
 
 const QList<Shader::ShaderSource> Shader::getSources() const

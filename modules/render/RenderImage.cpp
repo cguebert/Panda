@@ -76,8 +76,7 @@ public:
 			if(nbImage < nbCenter) nbImage = 1;
 			if(nbRotation && nbRotation < nbCenter) nbRotation = 1;
 
-			shader.getValue().apply(shaderProgram);
-			if(!shaderProgram.isLinked())
+			if(!shader.getValue().apply(shaderProgram))
 				return;
 
 			shaderProgram.bind();

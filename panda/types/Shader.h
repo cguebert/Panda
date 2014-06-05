@@ -70,7 +70,7 @@ public:
 	void setSourceFromFile(QOpenGLShader::ShaderType type, const QString& fileName);
 	void removeSource(QOpenGLShader::ShaderType type);
 
-	void apply(QOpenGLShaderProgram& program) const;
+	bool apply(QOpenGLShaderProgram& program) const;
 
 	struct ShaderSource
 	{
