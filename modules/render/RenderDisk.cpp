@@ -6,8 +6,9 @@
 #include <panda/types/Point.h>
 #include <panda/types/Gradient.h>
 #include <panda/helper/GradientCache.h>
+#include <panda/types/Shader.h>
 
-#include <QOpenGLFunctions_1_4>
+#include <QOpenGLShaderProgram>
 #include <cmath>
 
 namespace panda {
@@ -15,6 +16,7 @@ namespace panda {
 using types::Color;
 using types::Point;
 using types::Gradient;
+using types::Shader;
 using helper::GradientCache;
 
 class RenderDisk : public Renderer
@@ -27,14 +29,21 @@ public:
 		, center(initData(&center, "center", "Center position of the disk"))
 		, radius(initData(&radius, "radius", "Radius of the disk"))
 		, color(initData(&color, "color", "Color of the plain disk"))
+		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
 		addInput(&center);
 		addInput(&radius);
 		addInput(&color);
+		addInput(&shader);
 
 		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
 		color.getAccessor().push_back(Color::black());
+
+		shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = shader.getAccessor();
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void update()
@@ -96,36 +105,42 @@ public:
 		if(vertexBuffer.empty())
 			return;
 
-		glEnableClientState(GL_VERTEX_ARRAY);
+		if(!shader.getValue().apply(shaderProgram))
+			return;
 
-/*		glColor4fv(colorBuffer.front().data());
-		glVertexPointer(2, GL_PREAL, 0, vertexBuffer.front().data());
+		shaderProgram.bind();
+		shaderProgram.setUniformValue("MVP", getMVPMatrix());
 
-		QOpenGLFunctions_1_4* glFuncs = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_1_4>();
-		glFuncs->initializeOpenGLFunctions();
-		glFuncs->glMultiDrawArrays(GL_TRIANGLE_FAN, firstBuffer.data(), countBuffer.data(), countBuffer.size());
-*/
+		shaderProgram.enableAttributeArray("vertex");
+		shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
+
+		int colorLocation = shaderProgram.uniformLocation("color");
+
 		int nb = countBuffer.size();
 		for(int i=0; i<nb; ++i)
 		{
-			glColor4fv(colorBuffer[i].data());
+			auto color = colorBuffer[i];
+			shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
 
-			glVertexPointer(2, GL_PREAL, 0, vertexBuffer[firstBuffer[i]].data());
-			glDrawArrays(GL_TRIANGLE_FAN, 0, countBuffer[i]);
+			glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
 		}
 
-		glDisableClientState(GL_VERTEX_ARRAY);
+		shaderProgram.disableAttributeArray("vertex");
+		shaderProgram.release();
 	}
 
 protected:
 	Data< QVector<Point> > center;
 	Data< QVector<PReal> > radius;
 	Data< QVector<Color> > color;
+	Data< Shader > shader;
 
 	QVector<Point> vertexBuffer;
 	QVector<GLint> firstBuffer;
 	QVector<GLsizei> countBuffer;
 	QVector<Color> colorBuffer;
+
+	QOpenGLShaderProgram shaderProgram;
 };
 
 int RenderDiskClass = RegisterObject<RenderDisk>("Render/Disk").setDescription("Draw a plain disk");
@@ -142,10 +157,12 @@ public:
 		, center(initData(&center, "center", "Center position of the disk"))
 		, radius(initData(&radius, "radius", "Radius of the disk"))
 		, gradient(initData(&gradient, "gradient", "Gradient used to fill the disk"))
+		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
 		addInput(&center);
 		addInput(&radius);
 		addInput(&gradient);
+		addInput(&shader);
 
 		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
@@ -154,6 +171,11 @@ public:
 		grad.add(0, Color::black());
 		grad.add(1, Color::white());
 		gradient.getAccessor().push_back(grad);
+
+		shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = shader.getAccessor();
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
 	}
 
 	void update()
@@ -199,13 +221,16 @@ public:
 				PReal angle = PI2 / nbSeg;
 				PReal ca = cos(angle), sa = sin(angle);
 				Point dir = Point(valRadius, 0);
+				PReal step = 1.0 / nbSeg;
+				PReal texY = 0;
 
 				for(int i=0; i<=nbSeg; ++i)
 				{
 					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
 					vertexBuffer[nbVertices + 1 + i] = valCenter + pt;
-					texCoordsBuffer[nbVertices + 1 + i] = Point(1, 1);
+					texCoordsBuffer[nbVertices + 1 + i] = Point(1, texY);
 					dir = pt;
+					texY += step;
 				}
 			}
 		}
@@ -227,11 +252,17 @@ public:
 			if(nbRadius < nbDisks) nbRadius = 1;
 			if(nbGradient < nbDisks) nbGradient = 1;
 
-			glColor3f(1, 1, 1);
+			if(!shader.getValue().apply(shaderProgram))
+				return;
 
-			glEnable(GL_TEXTURE_2D);
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			shaderProgram.bind();
+			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+
+			shaderProgram.enableAttributeArray("vertex");
+			shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
+
+			shaderProgram.enableAttributeArray("texCoord");
+			shaderProgram.setAttributeArray("texCoord", texCoordsBuffer.front().data(), 2);
 
 			for(int i=0; i<nbDisks; ++i)
 			{
@@ -244,13 +275,12 @@ public:
 				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-				glVertexPointer(2, GL_PREAL, 0, vertexBuffer[firstBuffer[i]].data());
-				glTexCoordPointer(2, GL_PREAL, 0, texCoordsBuffer[firstBuffer[i]].data());
-				glDrawArrays(GL_TRIANGLE_FAN, 0, countBuffer[i]);
+				glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
 			}
-			glDisableClientState(GL_VERTEX_ARRAY);
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-			glDisable(GL_TEXTURE_2D);
+
+			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("texCoord");
+			shaderProgram.release();
 		}
 	}
 
@@ -258,10 +288,13 @@ protected:
 	Data< QVector<Point> > center;
 	Data< QVector<PReal> > radius;
 	Data< QVector<Gradient> > gradient;
+	Data< Shader > shader;
 
 	QVector<Point> vertexBuffer, texCoordsBuffer;
 	QVector<GLint> firstBuffer;
 	QVector<GLsizei> countBuffer;
+
+	QOpenGLShaderProgram shaderProgram;
 };
 
 int RenderDisk_GradientClass = RegisterObject<RenderDisk_Gradient>("Render/Gradient disk").setDescription("Draw a disk filled with a radial gradient");
