@@ -40,22 +40,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSource(QOpenGLShader::Vertex,
-							 "uniform mat4 MVP;\n"
-							 "void main(void)\n"
-							 "{\n"
-							 "  gl_TexCoord[0] = gl_MultiTexCoord0;\n"
-							 "  gl_Position = MVP * vec4(gl_Vertex.xy, 0, 1);\n"
-							 "}"
-							);
-
-		shaderAcc->setSource(QOpenGLShader::Fragment,
-							 "uniform sampler2D tex0;\n"
-							 "void main(void)\n"
-							 "{\n"
-							 "  gl_FragColor = texture(tex0, gl_TexCoord[0].st);\n"
-							 "}"
-							);
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
 	}
 
 	void drawTexture(GLuint texId, Rect area)
@@ -63,29 +49,14 @@ public:
 		if(!texId)
 			return;
 
-		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texId);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		GLfloat verts[8];
-		glVertexPointer(2, GL_FLOAT, 0, verts);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		GLfloat texCoords[8];
-		glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
 
-		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
-		verts[1*2+0] = area.left(); verts[1*2+1] = area.top();
-		verts[3*2+0] = area.left(); verts[3*2+1] = area.bottom();
-		verts[2*2+0] = area.right(); verts[2*2+1] = area.bottom();
-
-		texCoords[0*2+0] = 1; texCoords[0*2+1] = 1;
-		texCoords[1*2+0] = 0; texCoords[1*2+1] = 1;
-		texCoords[3*2+0] = 0; texCoords[3*2+1] = 0;
-		texCoords[2*2+0] = 1; texCoords[2*2+1] = 0;
+		m_verts[0*2+0] = area.right(); m_verts[0*2+1] = area.top();
+		m_verts[1*2+0] = area.left();  m_verts[1*2+1] = area.top();
+		m_verts[3*2+0] = area.left();  m_verts[3*2+1] = area.bottom();
+		m_verts[2*2+0] = area.right(); m_verts[2*2+1] = area.bottom();
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisable(GL_TEXTURE_2D);
 	}
 
 	void render()
@@ -113,7 +84,16 @@ public:
 			const QMatrix4x4& MVP = getMVPMatrix();
 			shaderProgram.setUniformValue("MVP", getMVPMatrix());
 
-			glColor4f(1, 1, 1, 1);
+			shaderProgram.enableAttributeArray("vertex");
+			shaderProgram.setAttributeArray("vertex", m_verts, 2);
+
+			shaderProgram.enableAttributeArray("texCoord");
+			shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
+
+			m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
+			m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
+			m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
+			m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 
 			if(nbRotation)
 			{
@@ -178,6 +158,8 @@ public:
 				}
 			}
 
+			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("texCoord");
 			shaderProgram.release();
 		}
 	}
@@ -188,6 +170,8 @@ protected:
 	Data< QVector<PReal> > rotation;
 	Data< int > drawCentered;
 	Data< Shader > shader;
+
+	GLfloat m_verts[8], m_texCoords[8];
 
 	QOpenGLShaderProgram shaderProgram;
 };

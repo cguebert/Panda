@@ -99,25 +99,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSource(QOpenGLShader::Vertex,
-							 "#version 440\n"
-							 "in vec2 vertex;\n"
-							 "uniform mat4 MVP;\n"
-							 "void main(void)\n"
-							 "{\n"
-							 "	gl_Position = MVP * vec4(vertex, 0, 1);\n"
-							 "}"
-							);
-
-		shaderAcc->setSource(QOpenGLShader::Fragment,
-							 "#version 440\n"
-							 "uniform vec4 color;\n"
-							 "out vec4 fragColor;\n"
-							 "void main(void)\n"
-							 "{\n"
-							 "   fragColor = color;\n"
-							 "}"
-							);
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_uniformColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_uniformColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -144,10 +127,24 @@ public:
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", verts, 2);
 
+			int colorLocation = shaderProgram.uniformLocation("color");
+
+			int texCoordLocation = shaderProgram.attributeLocation("texCoord");
+			if(texCoordLocation != -1)
+			{
+				GLfloat texCoords[8];
+				texCoords[0*2+0] = 1; texCoords[0*2+1] = 1;
+				texCoords[1*2+0] = 0; texCoords[1*2+1] = 1;
+				texCoords[3*2+0] = 0; texCoords[3*2+1] = 0;
+				texCoords[2*2+0] = 1; texCoords[2*2+1] = 0;
+				shaderProgram.enableAttributeArray(texCoordLocation);
+				shaderProgram.setAttributeArray(texCoordLocation, texCoords, 2);
+			}
+
 			for(int i=0; i<nbRect; ++i)
 			{
 				auto color = listColor[i % nbColor];
-				shaderProgram.setUniformValue("color", color.r, color.g, color.b, color.a);
+				shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
 
 				Rect rect = listRect[i % nbRect];
 				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
@@ -159,6 +156,8 @@ public:
 			}
 
 			shaderProgram.disableAttributeArray("vertex");
+			if(texCoordLocation != -1)
+				shaderProgram.disableAttributeArray(texCoordLocation);
 			shaderProgram.release();
 		}
 	}

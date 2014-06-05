@@ -31,7 +31,6 @@ public:
 		, color(initData(&color, "color", "Color of the sprite"))
 		, texture(initData(&texture, "texture", "Texture of the sprite"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
-		, functions(QOpenGLContext::currentContext())
 	{
 		addInput(&position);
 		addInput(&size);
@@ -51,31 +50,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSource(QOpenGLShader::Vertex,
-							 "#version 440\n"
-							 "in vec2 position;\n"
-							 "in float size;\n"
-							 "in vec4 color;\n"
-							 "out vec4 f_color;\n"
-							 "uniform mat4 MVP;\n"
-							 "void main(void)\n"
-							 "{\n"
-							 "	f_color = color;\n"
-							 "	gl_Position = MVP * vec4(position.xy, 0, 1);\n"
-							 "	gl_PointSize = max(1.0, size);\n"
-							 "}"
-							);
-
-		shaderAcc->setSource(QOpenGLShader::Fragment,
-							 "#version 440\n"
-							 "uniform sampler2D tex0;\n"
-							 "in vec4 f_color;\n"
-							 "out vec4 fragColor;\n"
-							 "void main(void)\n"
-							 "{\n"
-							 "   fragColor = texture(tex0, vec2(gl_PointCoord.x, 1-gl_PointCoord.y)) * f_color;\n"
-							 "}"
-							);
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/sprite.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/sprite.f.glsl");
 	}
 
 	inline QVector4D colorToVector4(const Color& c)
@@ -140,7 +116,6 @@ public:
 			glEnable(GL_POINT_SPRITE);
 			glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
-			functions.glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, texId);
 
 			shaderProgram.bind();
@@ -163,12 +138,11 @@ public:
 
 			glDrawArrays(GL_POINTS, 0, nbPosition);
 
-			shaderProgram.disableAttributeArray(attribute_color);
-			shaderProgram.release();
-
 			shaderProgram.disableAttributeArray(attribute_pos);
 			shaderProgram.disableAttributeArray(attribute_size);
 			shaderProgram.disableAttributeArray(attribute_color);
+			shaderProgram.release();
+
 			glDisable(GL_POINT_SPRITE);
 			glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 		}
@@ -183,7 +157,6 @@ protected:
 
 	QOpenGLBuffer posBuffer, sizeBuffer;
 	QOpenGLShaderProgram shaderProgram;
-	QOpenGLFunctions functions;
 	int attribute_pos, attribute_color, attribute_size;
 	int uniform_texture, uniform_MVP;
 };

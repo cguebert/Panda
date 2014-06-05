@@ -7,6 +7,7 @@
 #include <boost/mpl/for_each.hpp>
 
 #include <QOpenGLShaderProgram>
+#include <QFile>
 
 #include <iostream>
 
@@ -38,11 +39,28 @@ void Shader::clear()
 	m_shaderValues.clear();
 }
 
-void Shader::setSource(QOpenGLShader::ShaderType type, QString sourceCode)
+void Shader::setSource(QOpenGLShader::ShaderType type, const QString& sourceCode)
 {
 	ShaderSource shaderSource;
 	shaderSource.type = type;
 	shaderSource.sourceCode = sourceCode.toLatin1();
+	shaderSource.hash = qHash(shaderSource.sourceCode);
+	m_sourcesMap[type] = shaderSource;
+}
+
+void Shader::setSourceFromFile(QOpenGLShader::ShaderType type, const QString& fileName)
+{
+	QFile file(fileName);
+	if (!file.open(QFile::ReadOnly)) {
+		qWarning() << "Shader: Unable to open file" << fileName;
+		return;
+	}
+
+	QByteArray contents = file.readAll();
+
+	ShaderSource shaderSource;
+	shaderSource.type = type;
+	shaderSource.sourceCode = contents;
 	shaderSource.hash = qHash(shaderSource.sourceCode);
 	m_sourcesMap[type] = shaderSource;
 }

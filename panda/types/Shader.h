@@ -66,7 +66,8 @@ public:
 	Shader& operator=(const Shader& shader);
 
 	void clear(); /// Remove all sources & all data
-	void setSource(QOpenGLShader::ShaderType type, QString sourceCode);
+	void setSource(QOpenGLShader::ShaderType type, const QString& sourceCode);
+	void setSourceFromFile(QOpenGLShader::ShaderType type, const QString& fileName);
 	void removeSource(QOpenGLShader::ShaderType type);
 
 	void apply(QOpenGLShaderProgram& program) const;
