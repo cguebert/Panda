@@ -1,9 +1,14 @@
-#version 400
+#version 440
+
+in vec2 vertex;
+in vec2 texCoord;
+
+out vec2 f_texCoord;
 
 uniform mat4 MVP;
 
 void main(void) 
 {
-	gl_TexCoord[0] = gl_MultiTexCoord0;
-	gl_Position = MVP * vec4(gl_Vertex.xy, 0, 1);
+	f_texCoord = texCoord;
+	gl_Position = MVP * vec4(vertex, 0, 1);
 }

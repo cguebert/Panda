@@ -1,4 +1,6 @@
-#version 400
+#version 440
+
+in vec2 f_texCoord;
 
 uniform sampler2D texS; // Source
 uniform sampler2D texD; // Destination
@@ -6,12 +8,14 @@ uniform sampler2D texD; // Destination
 uniform float opacity;
 uniform int mode;
 
+out vec4 color; // layout(location = 0)
+
 void main(void) 
 {
-	vec4 Sp = texture(texS, gl_TexCoord[0].st);
+	vec4 Sp = texture(texS, f_texCoord);
 	float Sa = Sp.a * opacity;	// Source alpha
 	vec3 Sca = Sp.rgb * Sa;		// Premultiplied source color
-	vec4 Dp = texture(texD, gl_TexCoord[0].st);
+	vec4 Dp = texture(texD, f_texCoord);
 	float Da = Dp.a;			// Destination alpha
 	vec3 Dca = Dp.rgb * Da;		// Premultiplied destination color
 	
@@ -220,7 +224,7 @@ void main(void)
 	Ra = clamp(Ra, 0, 1);
 	
 	if(Ra > 0)
-		gl_FragColor = vec4(Rca / Ra, Ra);
+		color = vec4(Rca / Ra, Ra);
 	else
-		gl_FragColor = vec4(0, 0, 0, 0);
+		color = vec4(0, 0, 0, 0);
 }

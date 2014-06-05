@@ -722,20 +722,22 @@ QSharedPointer<QOpenGLFramebufferObject> PandaDocument::getFBO()
 void PandaDocument::render()
 {
 	GLfloat w = m_renderFBO->width(), h = m_renderFBO->height();
+	QOpenGLFunctions glFunctions(QOpenGLContext::currentContext());
+
 #ifdef PANDA_LOG_EVENTS
 	{
 		helper::ScopedEvent log1("prepareRender");
 #endif
 
-	m_secondRenderFBO->bind();
 	glViewport(0, 0, w, h);
 	Color col = m_backgroundColor.getValue();
 	glClearColor(col.r, col.g, col.b, col.a);
+
+	m_secondRenderFBO->bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_secondRenderFBO->release();
 
 	m_renderFBO->bind();
-	glViewport(0, 0, w, h);
 
 #ifdef PANDA_LOG_EVENTS
 	}
@@ -746,8 +748,6 @@ void PandaDocument::render()
 	QMatrix4x4 mvp;
 	mvp.ortho(0, w, h, 0, -10, 10);
 	m_mergeLayersShader->setUniformValue("MVP", mvp);
-
-	QOpenGLFunctions glFunctions(QOpenGLContext::currentContext());
 
 	GLfloat verts[8], texCoords[8];
 
@@ -761,25 +761,27 @@ void PandaDocument::render()
 	texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
 	texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
 
-	glEnable(GL_TEXTURE_2D);
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
-
 #ifdef PANDA_LOG_EVENTS
 	{
 	helper::ScopedEvent log("merge default Layer");
 #endif
 
+	m_mergeLayersShader->enableAttributeArray("vertex");
+	m_mergeLayersShader->setAttributeArray("vertex", verts, 2);
+
+	m_mergeLayersShader->enableAttributeArray("texCoord");
+	m_mergeLayersShader->setAttributeArray("texCoord", texCoords, 2);
+
 	m_mergeLayersShader->setUniformValue("opacity", 1.0f);
 	m_mergeLayersShader->setUniformValue("mode", 0);
+
 	glFunctions.glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_defaultLayer->getTextureId());
 	glFunctions.glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	glFunctions.glActiveTexture(GL_TEXTURE0);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	m_renderFBO->release();
 
@@ -821,7 +823,7 @@ void PandaDocument::render()
 				glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
 			}
 
-			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			glFunctions.glActiveTexture(GL_TEXTURE0);
 
 			if(inverse)
@@ -831,12 +833,9 @@ void PandaDocument::render()
 		}
 	}
 
-	glDisable(GL_TEXTURE_2D);
-
+	m_mergeLayersShader->disableAttributeArray("vertex");
+	m_mergeLayersShader->disableAttributeArray("texCoord");
 	m_mergeLayersShader->release();
-
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 
 	if(inverse)
 	{
