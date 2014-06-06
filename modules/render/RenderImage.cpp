@@ -42,6 +42,11 @@ public:
 		auto shaderAcc = shader.getAccessor();
 		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
+
+		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
+		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
+		m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
+		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 	}
 
 	void drawTexture(GLuint texId, Rect area)
@@ -88,11 +93,6 @@ public:
 
 			shaderProgram.enableAttributeArray("texCoord");
 			shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
-
-			m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
-			m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
-			m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
-			m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 
 			if(nbRotation)
 			{

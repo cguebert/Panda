@@ -124,6 +124,11 @@ public:
 		auto shaderAcc = shader.getAccessor();
 		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_uniColor_noTex.v.glsl");
 		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_uniColor_noTex.f.glsl");
+
+		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
+		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
+		m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
+		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 	}
 
 	void render()
@@ -153,13 +158,8 @@ public:
 			int texCoordLocation = shaderProgram.attributeLocation("texCoord");
 			if(texCoordLocation != -1)
 			{
-				GLfloat texCoords[8];
-				texCoords[0*2+0] = 1; texCoords[0*2+1] = 1;
-				texCoords[1*2+0] = 0; texCoords[1*2+1] = 1;
-				texCoords[3*2+0] = 0; texCoords[3*2+1] = 0;
-				texCoords[2*2+0] = 1; texCoords[2*2+1] = 0;
 				shaderProgram.enableAttributeArray(texCoordLocation);
-				shaderProgram.setAttributeArray(texCoordLocation, texCoords, 2);
+				shaderProgram.setAttributeArray(texCoordLocation, m_texCoords, 2);
 			}
 
 			for(int i=0; i<nbRect; ++i)
@@ -187,6 +187,8 @@ protected:
 	Data< QVector<Rect> > rect;
 	Data< QVector<Color> > color;
 	Data< Shader > shader;
+
+	GLfloat m_texCoords[8];
 
 	QOpenGLShaderProgram shaderProgram;
 };
