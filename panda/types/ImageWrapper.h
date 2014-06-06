@@ -26,10 +26,12 @@ public:
 	int height() const;
 
 	void setImage(const QImage& img);
+	void setTexture(QSharedPointer<QOpenGLTexture> texture);
 	void setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo);
 	void clear();	// Remove all sources
 
 	bool hasImageSource() const;
+	bool hasTextureSource() const;
 	bool hasFboSource() const;
 
 	ImageWrapper& operator=(const ImageWrapper& rhs);
@@ -44,7 +46,7 @@ private:
 	QSharedPointer<QOpenGLTexture> m_texture;
 	QSharedPointer<QOpenGLFramebufferObject> m_fbo;
 
-	bool m_imageSource, m_fboSource;
+	bool m_imageSource, m_textureSource, m_fboSource;
 };
 
 } // namespace types

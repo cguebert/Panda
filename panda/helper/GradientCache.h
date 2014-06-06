@@ -17,11 +17,12 @@ class GradientCache
 public:
 	static GradientCache* getInstance();
 
-	void clear();			// Remove all textures
-	void resetUsedFlag();	// Prepare the flags at the start of a render
-	void clearUnused();		// Remove textures not used during the last render
+	void clear();			/// Remove all textures
+	void resetUsedFlag();	/// Prepare the flags at the start of a render
+	void clearUnused();		/// Remove textures not used during the last render
 
-	unsigned int getTexture(const panda::types::Gradient& gradient, int size);
+	unsigned int getTexture(const panda::types::Gradient& gradient, int size); /// Get the texture from the cache
+	static QVector<unsigned int> createBuffer(const panda::types::Gradient& gradient, int size);
 
 private:
 	struct CacheItem

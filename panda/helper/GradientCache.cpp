@@ -133,6 +133,17 @@ unsigned int GradientCache::addGradient(quint64 hash, const types::Gradient &gra
 	size = qBound(64, nextPowerOf2(size), 1024);
 	CacheItem item(gradient, size);
 
+	auto buffer = createBuffer(gradient, size);
+	glGenTextures(1, &item.m_textureId);
+	glBindTexture(GL_TEXTURE_2D, item.m_textureId);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.constData());
+
+	m_cache.insert(hash, item);
+	return item.m_textureId;
+}
+
+QVector<unsigned int> GradientCache::createBuffer(const panda::types::Gradient& gradient, int size)
+{
 	types::Gradient::GradientStops stops = gradient.getStops();
 	int nbStops = stops.size();
 	QVector<uint> buffer(size), colors(nbStops);
@@ -171,11 +182,7 @@ unsigned int GradientCache::addGradient(quint64 hash, const types::Gradient &gra
 	while(pos < size)
 		buffer[pos++] = prevColor;
 
-	glGenTextures(1, &item.m_textureId);
-	glBindTexture(GL_TEXTURE_2D, item.m_textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.constData());
-	m_cache.insert(hash, item);
-	return item.m_textureId;
+	return buffer;
 }
 
 } // namespace helper

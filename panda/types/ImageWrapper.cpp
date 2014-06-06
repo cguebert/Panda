@@ -14,11 +14,14 @@ namespace types
 
 ImageWrapper::ImageWrapper()
 	: m_imageSource(false)
+	, m_textureSource(false)
 	, m_fboSource(false)
 {}
 
 GLuint ImageWrapper::getTextureId() const
 {
+	if(m_textureSource && m_texture)
+		return m_texture->textureId();
 	if(m_fboSource && m_fbo)
 		return m_fbo->texture();
 	else if(m_imageSource)
@@ -42,6 +45,8 @@ const QImage& ImageWrapper::getImage() const
 
 QSize ImageWrapper::size() const
 {
+	if(m_textureSource && m_texture)
+		return QSize(m_texture->width(), m_texture->height());
 	if(m_fboSource && m_fbo)
 		return m_fbo->size();
 	if(m_imageSource && !m_image.isNull())
@@ -51,6 +56,8 @@ QSize ImageWrapper::size() const
 
 int ImageWrapper::width() const
 {
+	if(m_textureSource && m_texture)
+		return m_texture->width();
 	if(m_imageSource)
 		return m_image.width();
 	if(m_fboSource && m_fbo)
@@ -60,6 +67,8 @@ int ImageWrapper::width() const
 
 int ImageWrapper::height() const
 {
+	if(m_textureSource && m_texture)
+		return m_texture->height();
 	if(m_imageSource)
 		return m_image.height();
 	if(m_fboSource && m_fbo)
@@ -70,30 +79,55 @@ int ImageWrapper::height() const
 void ImageWrapper::setImage(const QImage& img)
 {
 	m_image = img;
-	m_imageSource = true;
-	m_fboSource = false;
 	m_texture.reset();
+	m_fbo.reset();
+
+	m_imageSource = true;
+	m_textureSource = false;
+	m_fboSource = false;
+}
+
+void ImageWrapper::setTexture(QSharedPointer<QOpenGLTexture> texture)
+{
+	m_image = QImage();
+	m_texture = texture;
+	m_fbo.reset();
+
+	m_imageSource = false;
+	m_textureSource = true;
+	m_fboSource = false;
 }
 
 void ImageWrapper::setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo)
 {
-	m_fbo = fbo;
 	m_image = QImage();
-	m_fboSource = true;
+	m_texture.reset();
+	m_fbo = fbo;
+
 	m_imageSource = false;
+	m_textureSource = false;
+	m_fboSource = true;
 }
 
 void ImageWrapper::clear()
 {
 	m_image = QImage();
+	m_texture.reset();
 	m_fbo.reset();
-	m_fboSource = false;
+
 	m_imageSource = false;
+	m_textureSource = false;
+	m_fboSource = false;
 }
 
 bool ImageWrapper::hasImageSource() const
 {
 	return m_imageSource;
+}
+
+bool ImageWrapper::hasTextureSource() const
+{
+	return m_textureSource;
 }
 
 bool ImageWrapper::hasFboSource() const
@@ -103,11 +137,26 @@ bool ImageWrapper::hasFboSource() const
 
 ImageWrapper& ImageWrapper::operator=(const ImageWrapper& rhs)
 {
-	m_image = rhs.getImage();
-	m_imageSource = true;
-	m_fbo.clear();
+	if(rhs.m_textureSource)
+	{
+		m_image = QImage();
+		m_texture = rhs.m_texture;
+
+		m_imageSource = false;
+		m_textureSource = true;
+	}
+	else
+	{
+		m_image = rhs.getImage();
+		m_texture.reset();
+
+		m_imageSource = true;
+		m_textureSource = false;
+	}
+
+	m_fbo.reset();
 	m_fboSource = false;
-	m_texture.clear();
+
 	return *this;
 }
 
@@ -118,6 +167,12 @@ QOpenGLFramebufferObject* ImageWrapper::getFbo() const
 
 bool ImageWrapper::operator==(const ImageWrapper& img) const
 {
+	if(m_textureSource != img.m_textureSource)
+		return false;
+
+	if(m_textureSource && img.m_textureSource && m_texture != img.m_texture)
+		return false;
+
 	return m_image == img.m_image;
 }
 
