@@ -17,7 +17,7 @@ ImageWrapper::ImageWrapper()
 	, m_fboSource(false)
 {}
 
-GLuint ImageWrapper::getTexture() const
+GLuint ImageWrapper::getTextureId() const
 {
 	if(m_fboSource && m_fbo)
 		return m_fbo->texture();

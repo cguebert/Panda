@@ -4,6 +4,7 @@
 #include <panda/helper/system/Config.h>
 #include <panda/types/Color.h>
 #include <panda/types/Point.h>
+#include <panda/types/ImageWrapper.h>
 #include <panda/types/DataTraits.h>
 
 #include <QFlags>
@@ -23,10 +24,12 @@ namespace panda
 namespace types
 {
 
+class Shader;
+
 class BaseShaderValue
 {
 public:
-	virtual void apply(QOpenGLShaderProgram& program) const = 0; // Add the value to the shader program
+	virtual void apply(QOpenGLShaderProgram& program, const Shader& shader) const = 0; // Add the value to the shader program
 	virtual void cleanup() const = 0;	// Disable the array from the shader after rendering
 	virtual QString getName() const = 0;
 	virtual AbstractDataTrait* dataTrait() const = 0;
@@ -39,7 +42,7 @@ class ShaderValue : public BaseShaderValue
 {
 public:
 	ShaderValue(QString name, const T& val) : m_name(name), m_value(val) { }
-	virtual void apply(QOpenGLShaderProgram& program) const;
+	virtual void apply(QOpenGLShaderProgram& program, const Shader& shader) const;
 	virtual void cleanup() const {}
 	virtual QString getName() const
 	{ return m_name; }
@@ -55,8 +58,8 @@ protected:
 	T m_value;
 };
 
-typedef boost::mpl::vector<int, PReal, types::Color, types::Point,
-	QVector<int>, QVector<PReal>, QVector<types::Color>, QVector<types::Point> > shaderValuesTypes;
+typedef boost::mpl::vector<int, PReal, Color, Point,
+	QVector<int>, QVector<PReal>, QVector<Color>, QVector<Point> > shaderValuesTypes;
 
 class Shader
 {
@@ -88,6 +91,12 @@ public:
 	void setUniform(QString name, const T& value)
 	{
 		m_shaderValues.push_back(QSharedPointer<BaseShaderValue>(new ShaderValue<T>(name, value)));
+	}
+
+	template<>
+	void setUniform(QString name, const ImageWrapper& img)
+	{
+		m_customTextures.push_back(qMakePair(name, img.getTextureId()));
 	}
 
 	typedef QVector< QSharedPointer< BaseShaderValue > > ValuesVector;
@@ -140,6 +149,8 @@ protected:
 	{
 		setUniform(name, *static_cast<const T*>(value));
 	}
+
+	QVector<QPair<QString, GLuint>> m_customTextures;
 };
 
 

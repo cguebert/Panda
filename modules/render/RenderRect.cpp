@@ -147,7 +147,6 @@ public:
 			if(nbColor < nbRect) nbColor = 1;
 			PReal verts[8];
 
-			shaderProgram.bind();
 			shaderProgram.setUniformValue("MVP", getMVPMatrix());
 
 			shaderProgram.enableAttributeArray("vertex");

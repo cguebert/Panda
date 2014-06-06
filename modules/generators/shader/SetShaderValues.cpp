@@ -4,16 +4,21 @@
 
 #include <panda/types/Shader.h>
 
+#include <boost/mpl/push_back.hpp>
+
 namespace panda {
 
 using types::Color;
 using types::Point;
 using types::Shader;
+using types::ImageWrapper;
 using types::DataTypeId;
+
+typedef boost::mpl::push_back<types::shaderValuesTypes, types::ImageWrapper>::type uniformTypes;
 
 class ModifierShader_SetUniform : public GenericObject
 {
-	GENERIC_OBJECT(ModifierShader_SetUniform, types::shaderValuesTypes)
+	GENERIC_OBJECT(ModifierShader_SetUniform, uniformTypes)
 public:
 	PANDA_CLASS(ModifierShader_SetUniform, GenericObject)
 

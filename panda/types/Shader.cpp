@@ -7,6 +7,7 @@
 #include <boost/mpl/for_each.hpp>
 
 #include <QOpenGLShaderProgram>
+#include <QOpenGLFunctions>
 #include <QFile>
 
 #include <iostream>
@@ -30,6 +31,8 @@ Shader& Shader::operator=(const Shader& shader)
 	for(auto value : values)
 		copyValue(value->dataTrait()->typeName(), value->getName(), value->getValue());
 
+	// We don't copy the textures, it is by design (only SetShaderValues can set textures)
+
 	return *this;
 }
 
@@ -37,6 +40,7 @@ void Shader::clear()
 {
 	m_sourcesMap.clear();
 	m_shaderValues.clear();
+	m_customTextures.clear();
 }
 
 void Shader::setSource(QOpenGLShader::ShaderType type, const QString& sourceCode)
@@ -108,7 +112,25 @@ bool Shader::apply(QOpenGLShaderProgram& program) const
 	{
 		program.bind();
 		for(auto value : m_shaderValues)
-			value->apply(program);
+			value->apply(program, *this);
+
+		// Register custom textures
+		QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
+		for(unsigned int i=0, nb=m_customTextures.size(); i<nb; ++i)
+		{
+			GLuint id = m_customTextures[i].second;
+			if(!id)
+				continue;
+
+			int loc = program.uniformLocation(m_customTextures[i].first);
+			if(loc == -1)
+				continue;
+
+			glFuncs.glActiveTexture(GL_TEXTURE8 + i);
+			glBindTexture(GL_TEXTURE_2D, m_customTextures[i].second);
+			program.setUniformValue(loc, 8 + i);
+			glFuncs.glActiveTexture(0);
+		}
 	}
 	else
 		return false;
@@ -140,7 +162,9 @@ void Shader::copyValue(QString type, QString name, const void* value)
 
 bool Shader::operator==(const Shader& shader) const
 {
-	return m_sourcesMap == shader.m_sourcesMap && m_shaderValues == shader.m_shaderValues;
+	return m_sourcesMap == shader.m_sourcesMap
+		&& m_shaderValues == shader.m_shaderValues
+		&& m_customTextures == shader.m_customTextures;
 }
 
 bool Shader::operator!=(const Shader& shader) const
@@ -150,22 +174,22 @@ bool Shader::operator!=(const Shader& shader) const
 
 //****************************************************************************//
 
-template<> void ShaderValue<int>::apply(QOpenGLShaderProgram& program) const
+template<> void ShaderValue<int>::apply(QOpenGLShaderProgram& program, const Shader&) const
 { program.setUniformValue(program.uniformLocation(m_name), m_value); }
 
-template<> void ShaderValue<PReal>::apply(QOpenGLShaderProgram& program) const
+template<> void ShaderValue<PReal>::apply(QOpenGLShaderProgram& program, const Shader&) const
 { program.setUniformValue(program.uniformLocation(m_name), (float)m_value); }
 
-template<> void ShaderValue<Color>::apply(QOpenGLShaderProgram& program) const
+template<> void ShaderValue<Color>::apply(QOpenGLShaderProgram& program, const Shader&) const
 { program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), 1, 4); }
 
-template<> void ShaderValue<Point>::apply(QOpenGLShaderProgram& program) const
+template<> void ShaderValue<Point>::apply(QOpenGLShaderProgram& program, const Shader&) const
 { program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), 1, 2); }
 
-template<> void ShaderValue< QVector<int> >::apply(QOpenGLShaderProgram& program) const
+template<> void ShaderValue< QVector<int> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 { program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), m_value.size()); }
 
-template<> void ShaderValue< QVector<PReal> >::apply(QOpenGLShaderProgram& program) const
+template<> void ShaderValue< QVector<PReal> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 {
 	int nb = m_value.size();
 #ifdef PANDA_DOUBLE
@@ -178,13 +202,13 @@ template<> void ShaderValue< QVector<PReal> >::apply(QOpenGLShaderProgram& progr
 #endif
 }
 
-template<> void ShaderValue< QVector<Color> >::apply(QOpenGLShaderProgram& program) const
+template<> void ShaderValue< QVector<Color> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 {
 	if(!m_value.empty())
 		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 4);
 }
 
-template<> void ShaderValue< QVector<Point> >::apply(QOpenGLShaderProgram& program) const
+template<> void ShaderValue< QVector<Point> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 {
 	if(!m_value.empty())
 		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 2);

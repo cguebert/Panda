@@ -109,7 +109,7 @@ public:
 						shaderProgram.setUniformValue("MVP", tmpMVP);
 						Rect area = Rect(-s.width(), -s.height(),
 											 s.width(), s.height());
-						drawTexture(img.getTexture(), area);
+						drawTexture(img.getTextureId(), area);
 					}
 				}
 				else
@@ -124,7 +124,7 @@ public:
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
 						shaderProgram.setUniformValue("MVP", tmpMVP);
 						Rect area = Rect(0, 0, s.width(), s.height());
-						drawTexture(img.getTexture(), area);
+						drawTexture(img.getTextureId(), area);
 					}
 				}
 			}
@@ -141,7 +141,7 @@ public:
 										 listCenter[i].y - s.height(),
 										 listCenter[i].x + s.width(),
 										 listCenter[i].y + s.height());
-						drawTexture(img.getTexture(), area);
+						drawTexture(img.getTextureId(), area);
 					}
 				}
 				else
@@ -152,7 +152,7 @@ public:
 						QSize s = img.size();
 						if(!s.isValid()) continue;
 						Rect area(listCenter[i], s.width(), s.height());
-						drawTexture(img.getTexture(), area);
+						drawTexture(img.getTextureId(), area);
 					}
 				}
 			}

@@ -64,7 +64,7 @@ public:
 		const QVector<Point>& listPosition = position.getValue();
 		QVector<PReal> listSize = size.getValue();
 		const QVector<Color>& listColor = color.getValue();
-		GLuint texId = texture.getValue().getTexture();
+		GLuint texId = texture.getValue().getTextureId();
 
 		int nbPosition = listPosition.size();
 		int nbSize = listSize.size();

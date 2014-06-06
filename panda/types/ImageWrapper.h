@@ -18,8 +18,8 @@ class ImageWrapper
 public:
 	ImageWrapper();
 
-	unsigned int getTexture() const;
-	const QImage &getImage() const;
+	unsigned int getTextureId() const;
+	const QImage& getImage() const;
 
 	QSize size() const;
 	int width() const;
