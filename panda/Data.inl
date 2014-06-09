@@ -77,10 +77,20 @@ void Data<T>::setDirtyValue(const DataNode* caller)
 template<class T>
 void Data<T>::setParent(BaseData* parent)
 {
-	Data<T>* TParent = dynamic_cast< Data<T>* >(parent);
-	if(m_parentData && !TParent && !m_setParentProtection)	// If deconnecting, we copy the data first
-		m_value = m_parentData->getValue();
-	m_parentData = TParent;
+	// Treating disconnection of a data
+	if(!parent && !m_setParentProtection)
+	{
+		if(!isPersistent()) // If the data is not persistent, we reset the value
+		{
+			m_value = T();
+			BaseData::setDirtyValue(this);
+		}
+		else if(m_parentData)	// Else we copy the data if we never copied it
+			m_value = m_parentData->getValue();
+	}
+
+	// getValue is optimized when the parent is of the same type as this data
+	m_parentData = dynamic_cast< Data<T>* >(parent);
 
 	BaseData::setParent(parent);
 }
