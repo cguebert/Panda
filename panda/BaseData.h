@@ -163,7 +163,7 @@ inline void BaseData::forceSet()
 { m_isValueSet = true; }
 
 inline int BaseData::getCounter() const
-{ return m_counter; }
+{ if(m_parentBaseData) return m_parentBaseData->getCounter(); return m_counter; }
 
 inline bool BaseData::isReadOnly() const
 { return m_readOnly; }
