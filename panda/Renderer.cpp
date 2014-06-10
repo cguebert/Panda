@@ -23,4 +23,10 @@ QMatrix4x4& Renderer::getMVPMatrix()
 	return drawTarget->getMVPMatrix();
 }
 
+QSize Renderer::getLayerSize()
+{
+	BaseDrawTarget* drawTarget = dynamic_cast<BaseDrawTarget*>(getParentDock());
+	return drawTarget->getLayerSize();
+}
+
 } // namespace panda

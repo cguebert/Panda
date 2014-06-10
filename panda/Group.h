@@ -80,6 +80,7 @@ public:
 
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();
+	virtual QSize getLayerSize();
 
 	virtual void addObject(ObjectPtr object);
 	virtual void removeObject(PandaObject* object);

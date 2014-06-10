@@ -23,6 +23,7 @@ public:
 
 protected:
 	QMatrix4x4& getMVPMatrix();
+	QSize getLayerSize();
 };
 
 } // namespace panda

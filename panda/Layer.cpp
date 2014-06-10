@@ -171,6 +171,11 @@ void Layer::removedFromDocument()
 		m_parentDocument->addCommand(new MoveLayerCommand(m_parentDocument, this, 0));
 }
 
+QSize Layer::getLayerSize()
+{
+	return m_parentDocument->getRenderSize();
+}
+
 int LayerClass = RegisterObject<Layer>("Layer").setDescription("Organize renderers and change opacity and the composition mode");
 
 } // namespace panda

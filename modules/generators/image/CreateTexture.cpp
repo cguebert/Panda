@@ -46,6 +46,11 @@ public:
 		return mvpMatrix;
 	}
 
+	QSize getLayerSize()
+	{
+		return QSize(std::max(1, width.getValue()), std::max(1, height.getValue()));
+	}
+
 	void iterateRenderers()
 	{
 		auto& dockables = getDockedObjects();
@@ -65,7 +70,7 @@ public:
 
 	void update()
 	{
-		QSize renderSize = QSize(std::max(1, width.getValue()), std::max(1, height.getValue()));
+		QSize renderSize = getLayerSize();
 
 		if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)
 		{

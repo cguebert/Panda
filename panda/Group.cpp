@@ -727,6 +727,14 @@ void GroupWithLayer::removedFromDocument()
 	}
 }
 
+QSize GroupWithLayer::getLayerSize()
+{
+	if(m_layer)
+		return m_layer->getLayerSize();
+	else
+		return m_parentDocument->getRenderSize();
+}
+
 int GroupWithLayerClass = RegisterObject<GroupWithLayer>("GroupWithLayer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);
 
 } // namespace panda
