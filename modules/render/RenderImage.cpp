@@ -86,7 +86,7 @@ public:
 
 			shaderProgram.bind();
 			const QMatrix4x4& MVP = getMVPMatrix();
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValue("MVP", MVP);
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", m_verts, 2);
