@@ -22,7 +22,7 @@ public:
 	void clearUnused();		/// Remove textures not used during the last render
 
 	unsigned int getTexture(const panda::types::Gradient& gradient, int size); /// Get the texture from the cache
-	static QVector<unsigned int> createBuffer(const panda::types::Gradient& gradient, int size);
+	static QVector<types::Color> createBuffer(const panda::types::Gradient& gradient, int size);
 
 private:
 	struct CacheItem

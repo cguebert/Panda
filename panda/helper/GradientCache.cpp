@@ -90,44 +90,6 @@ quint64 GradientCache::computeHash(const panda::types::Gradient& gradient)
 	return hash;
 }
 
-#if QT_POINTER_SIZE == 8 // 64-bit versions
-
-static inline uint interpolateColor(uint x, uint a, uint y, uint b) {
-	quint64 t = (((quint64(x)) | ((quint64(x)) << 24)) & 0x00ff00ff00ff00ff) * a;
-	t += (((quint64(y)) | ((quint64(y)) << 24)) & 0x00ff00ff00ff00ff) * b;
-	t >>= 8;
-	t &= 0x00ff00ff00ff00ff;
-	return (uint(t)) | (uint(t >> 24));
-}
-
-#else // 32-bit versions
-
-static inline uint interpolateColor(uint x, uint a, uint y, uint b) {
-	uint t = (x & 0xff00ff) * a + (y & 0xff00ff) * b;
-	t >>= 8;
-	t &= 0xff00ff;
-
-	x = ((x >> 8) & 0xff00ff) * a + ((y >> 8) & 0xff00ff) * b;
-	x &= 0xff00ff00;
-	return (x | t);
-}
-
-#endif
-
-static inline uint qtToGlColor(uint c)
-{
-	uint o;
-#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
-	o = (c & 0xff00ff00)  // alpha & green already in the right place
-		| ((c >> 16) & 0x000000ff) // red
-		| ((c << 16) & 0x00ff0000); // blue
-#else //Q_BIG_ENDIAN
-	o = (c << 8)
-		| ((c >> 24) & 0x000000ff);
-#endif // Q_BYTE_ORDER
-	return o;
-}
-
 unsigned int GradientCache::addGradient(quint64 hash, const types::Gradient &gradient, int size)
 {
 	size = qBound(64, nextPowerOf2(size), 1024);
@@ -136,24 +98,24 @@ unsigned int GradientCache::addGradient(quint64 hash, const types::Gradient &gra
 	auto buffer = createBuffer(gradient, size);
 	glGenTextures(1, &item.m_textureId);
 	glBindTexture(GL_TEXTURE_2D, item.m_textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.constData());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, 1, 0, GL_RGBA, GL_FLOAT, buffer.constData());
 
 	m_cache.insert(hash, item);
 	return item.m_textureId;
 }
 
-QVector<unsigned int> GradientCache::createBuffer(const panda::types::Gradient& gradient, int size)
+QVector<types::Color> GradientCache::createBuffer(const panda::types::Gradient& gradient, int size)
 {
 	types::Gradient::GradientStops stops = gradient.getStops();
 	int nbStops = stops.size();
-	QVector<uint> buffer(size), colors(nbStops);
+	QVector<types::Color> buffer(size), colors(nbStops);
 
 	for(int i=0; i<nbStops; ++i)
-		colors[i] = stops[i].second.toHex();
+		colors[i] = stops[i].second;
 
 	int pos = 0;
-	uint prevColor = colors[0];
-	buffer[pos++] = qtToGlColor(prevColor);
+	types::Color prevColor = colors[0];
+	buffer[pos++] = prevColor;
 	PReal incr = 1.0 / PReal(size);
 	PReal fpos = 1.5 * incr;
 
@@ -167,18 +129,15 @@ QVector<unsigned int> GradientCache::createBuffer(const panda::types::Gradient& 
 	{
 		PReal prevPos = stops[i].first, nextPos = stops[i+1].first;
 		PReal delta = 1/(nextPos - prevPos);
-		uint nextColor = colors[i+1];
+		types::Color nextColor = colors[i+1];
 		while(fpos < nextPos && pos < size)
 		{
-			int dist = static_cast<int>(256 * ((fpos - prevPos) * delta));
-			int idist = 256 - dist;
-			buffer[pos++] = qtToGlColor(interpolateColor(prevColor, idist, nextColor, dist));
+			buffer[pos++] = types::Gradient::interpolate(prevColor, nextColor, (fpos - prevPos) * delta);
 			fpos += incr;
 		}
 		prevColor = nextColor;
 	}
 
-	prevColor = qtToGlColor(prevColor);
 	while(pos < size)
 		buffer[pos++] = prevColor;
 

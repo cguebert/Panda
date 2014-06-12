@@ -36,28 +36,7 @@ public:
 		if(size > 0)
 		{
 			auto buffer = helper::GradientCache::createBuffer(m_gradient.getValue(), size);
-			bool create = false;
-			if(!m_texture)
-			{
-				m_texture = QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(QOpenGLTexture::Target2D));
-				create = true;
-			}
-			else if(size != m_texture->width())
-			{
-				m_texture->destroy();
-				create = true;
-			}
-
-			if(create)
-			{
-				m_texture->setSize(size, 1);
-				m_texture->setFormat(QOpenGLTexture::RGBA8_UNorm);
-				m_texture->setMipLevels(m_texture->maximumMipLevels());
-				m_texture->allocateStorage();
-			}
-
-			m_texture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, buffer.constData());
-			m_output.getAccessor()->setTexture(m_texture);
+			m_output.getAccessor()->createTexture(buffer, size, 1);
 		}
 		else
 			m_output.getAccessor()->clear();
