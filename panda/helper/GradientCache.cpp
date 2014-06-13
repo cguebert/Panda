@@ -45,7 +45,7 @@ void GradientCache::clearUnused()
 unsigned int GradientCache::getTexture(const types::Gradient &gradient, int size)
 {
 	if(gradient.getStops().empty())
-		return -1;
+		return 0;
 	quint64 hash = computeHash(gradient);
 	GradientTableHash::iterator it = m_cache.find(hash), itEnd = m_cache.end();
 

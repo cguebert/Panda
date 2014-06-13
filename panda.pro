@@ -170,8 +170,8 @@ SOURCES       = main.cpp \
 	modules/particles/ParticleForceField.cpp \
 	modules/render/RenderCircle.cpp \
 	modules/render/RenderDisk.cpp \
-	modules/render/RenderGradient.cpp \
 	modules/render/RenderImage.cpp \
+	modules/render/RenderFill.cpp \
 	modules/render/RenderLine.cpp \
 	modules/render/RenderMesh.cpp \
 	modules/render/RenderRect.cpp \
