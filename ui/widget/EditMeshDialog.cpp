@@ -128,7 +128,7 @@ EditMeshDialog::EditMeshDialog(BaseDataWidget* parent, bool readOnly, QString na
 	m_pointsWidget = DataWidgetPtr(DataWidgetFactory::getInstance()
 											 ->create(this, const_cast<void*>(pts),
 													  DataTypeId::getIdOf< QVector<Point> >(),
-													  "", "points", "")
+													  "default", "points", "")
 											 );
 
 	if (m_pointsWidget)

@@ -157,21 +157,23 @@ public:
 	{
 		updateTable(v);
 
-		// Resize the view in single value mode
+		// Resize the view
+		int w = tableWidget->verticalHeader()->width() + 20;
+		for(int i=0, nb=tableWidget->columnCount(); i<nb; ++i)
+			w += tableWidget->columnWidth(i);
+
 		if(row_trait::is_single)
 		{
 			tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 			tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-
-			int w = tableWidget->verticalHeader()->width() + 20;
-			for(int i=0, nb=tableWidget->columnCount(); i<nb; ++i)
-				w += tableWidget->columnWidth(i);
 			int h = tableWidget->horizontalHeader()->height() + 4 + tableWidget->rowHeight(0);
-
 			tableWidget->setMinimumSize(w, h);
 			tableWidget->setMaximumSize(w, h);
-
 			layout()->setSizeConstraint(QLayout::SetFixedSize);
+		}
+		else
+		{
+			tableWidget->setMinimumWidth(w);
 		}
 
 		if(resizeSpinBox)
