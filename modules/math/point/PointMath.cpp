@@ -545,6 +545,101 @@ protected:
 
 int PointMath_NormalizeClass = RegisterObject<PointMath_Normalize>("Math/Point/Normalize").setDescription("Normalize a point");
 
+//****************************************************************************//
+
+class PointMath_LinearProduct : public PandaObject
+{
+public:
+	PANDA_CLASS(PointMath_LinearProduct, PandaObject)
+
+	PointMath_LinearProduct(PandaDocument *doc)
+		: PandaObject(doc)
+		, inputA(initData(&inputA, "point 1", "First point"))
+		, inputB(initData(&inputB, "point 2", "Second point"))
+		, result(initData(&result, "result", "Result of the linear product"))
+	{
+		addInput(&inputA);
+		addInput(&inputB);
+
+		addOutput(&result);
+	}
+
+	void update()
+	{
+		auto res = result.getAccessor();
+		res.clear();
+
+		const QVector<Point>& valA = inputA.getValue();
+		const QVector<Point>& valB = inputB.getValue();
+		int nbA = valA.size(), nbB = valB.size();
+
+		if(nbA && nbB)
+		{
+			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
+			else if(nbB < nbA && nbB > 1)	nbA = nbB;
+			int nb = qMax(nbA, nbB);
+			res.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				res[i] = valA[i%nbA].linearProduct(valB[i%nbB]);
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Point> > inputA, inputB, result;
+};
+
+int PointMath_LinearProductClass = RegisterObject<PointMath_LinearProduct>("Math/Point/Linear product").setDescription("Compute the linear product of 2 points");
+
+//****************************************************************************//
+
+class PointMath_LinearDivision : public PandaObject
+{
+public:
+	PANDA_CLASS(PointMath_LinearDivision, PandaObject)
+
+	PointMath_LinearDivision(PandaDocument *doc)
+		: PandaObject(doc)
+		, inputA(initData(&inputA, "point 1", "First point"))
+		, inputB(initData(&inputB, "point 2", "Second point"))
+		, result(initData(&result, "result", "Result of the linear division"))
+	{
+		addInput(&inputA);
+		addInput(&inputB);
+
+		addOutput(&result);
+	}
+
+	void update()
+	{
+		auto res = result.getAccessor();
+		res.clear();
+
+		const QVector<Point>& valA = inputA.getValue();
+		const QVector<Point>& valB = inputB.getValue();
+		int nbA = valA.size(), nbB = valB.size();
+
+		if(nbA && nbB)
+		{
+			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
+			else if(nbB < nbA && nbB > 1)	nbA = nbB;
+			int nb = qMax(nbA, nbB);
+			res.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				res[i] = valA[i%nbA].linearDivision(valB[i%nbB]);
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Point> > inputA, inputB, result;
+};
+
+int PointMath_LinearDivisionClass = RegisterObject<PointMath_LinearDivision>("Math/Point/Linear division").setDescription("Compute the linear division of 2 points");
 
 } // namespace Panda
 
