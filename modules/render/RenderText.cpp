@@ -131,19 +131,12 @@ public:
 			QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
 			functions.glBindFramebuffer(GL_FRAMEBUFFER, previousFBO);
 
-/*
-			glViewport(0, 0, renderSize.width(), renderSize.height());
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			glOrtho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-*/
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, displayFrameBuffer->texture());
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			glEnableClientState(GL_VERTEX_ARRAY);
 			GLfloat verts[8];
 			glVertexPointer(2, GL_FLOAT, 0, verts);

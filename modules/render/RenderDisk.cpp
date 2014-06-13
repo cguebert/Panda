@@ -3,6 +3,7 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
 #include <panda/types/Color.h>
+#include <panda/types/ImageWrapper.h>
 #include <panda/types/Point.h>
 #include <panda/types/Gradient.h>
 #include <panda/helper/GradientCache.h>
@@ -14,6 +15,7 @@
 namespace panda {
 
 using types::Color;
+using types::ImageWrapper;
 using types::Point;
 using types::Gradient;
 using types::Shader;
@@ -143,7 +145,7 @@ protected:
 	QOpenGLShaderProgram shaderProgram;
 };
 
-int RenderDiskClass = RegisterObject<RenderDisk>("Render/Disk").setDescription("Draw a plain disk");
+int RenderDiskClass = RegisterObject<RenderDisk>("Render/Filled/Disk").setDescription("Draw a plain disk");
 
 //****************************************************************************//
 
@@ -272,8 +274,8 @@ public:
 				glBindTexture(GL_TEXTURE_2D, texture);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 				glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
 			}
@@ -297,6 +299,153 @@ protected:
 	QOpenGLShaderProgram shaderProgram;
 };
 
-int RenderDisk_GradientClass = RegisterObject<RenderDisk_Gradient>("Render/Gradient disk").setDescription("Draw a disk filled with a radial gradient");
+int RenderDisk_GradientClass = RegisterObject<RenderDisk_Gradient>("Render/Gradient/Disk")
+		.setName("Gradient disk").setDescription("Draw a disk filled with a radial gradient");
+
+//****************************************************************************//
+
+class RenderDisk_Textured : public Renderer
+{
+public:
+	PANDA_CLASS(RenderDisk_Textured, Renderer)
+
+	RenderDisk_Textured(PandaDocument *parent)
+		: Renderer(parent)
+		, center(initData(&center, "center", "Center position of the disk"))
+		, radius(initData(&radius, "radius", "Radius of the disk"))
+		, texture(initData(&texture, "texture", "Texture applied to the disk"))
+		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+	{
+		addInput(&center);
+		addInput(&radius);
+		addInput(&texture);
+		addInput(&shader);
+
+		center.getAccessor().push_back(Point(100, 100));
+		radius.getAccessor().push_back(5.0);
+
+		shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = shader.getAccessor();
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
+		shader.unset();
+	}
+
+	void update()
+	{
+		const QVector<Point>& listCenter = center.getValue();
+		const QVector<PReal>& listRadius = radius.getValue();
+
+		int nbCenter = listCenter.size();
+		int nbRadius = listRadius.size();
+
+		vertexBuffer.clear();
+		texCoordsBuffer.clear();
+		firstBuffer.clear();
+		countBuffer.clear();
+
+		if(nbCenter && nbRadius)
+		{
+			if(nbRadius < nbCenter) nbRadius = 1;
+
+			PReal PI2 = static_cast<PReal>(M_PI) * 2;
+			for(int i=0; i<nbCenter; ++i)
+			{
+				PReal valRadius = listRadius[i % nbRadius];
+				int nbSeg = static_cast<int>(floor(valRadius * PI2));
+				if(nbSeg < 3)
+				{
+					firstBuffer.push_back(0);
+					countBuffer.push_back(0);
+					continue;
+				}
+
+				int nbVertices = vertexBuffer.size();
+				firstBuffer.push_back(nbVertices);
+				countBuffer.push_back(nbSeg + 2);
+
+				vertexBuffer.resize(nbVertices + nbSeg + 2);
+				texCoordsBuffer.resize(nbVertices + nbSeg + 2);
+
+				const Point& valCenter = listCenter[i];
+				vertexBuffer[nbVertices] = valCenter;
+				texCoordsBuffer[nbVertices] = Point(0.5, 0.5);
+
+				PReal angle = PI2 / nbSeg;
+				PReal ca = cos(angle), sa = sin(angle);
+				Point dir = Point(1, 0);
+				Point texCenter = Point(0.5, 0.5);
+				Point texScale = Point(0.5, -0.5);
+
+				for(int i=0; i<=nbSeg; ++i)
+				{
+					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
+					vertexBuffer[nbVertices + 1 + i] = valCenter + pt * valRadius;
+					texCoordsBuffer[nbVertices + 1 + i] = texCenter + pt.linearProduct(texScale);
+					dir = pt;
+				}
+			}
+		}
+
+		cleanDirty();
+	}
+
+	void render()
+	{
+		const QVector<PReal>& listRadius = radius.getValue();
+		const int texId = texture.getValue().getTextureId();
+
+		int nbRadius = listRadius.size();
+		int nbDisks = countBuffer.size();
+
+		if(nbDisks && texId)
+		{
+			if(nbRadius < nbDisks) nbRadius = 1;
+
+			if(!shader.getValue().apply(shaderProgram))
+				return;
+
+			shaderProgram.bind();
+			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+
+			shaderProgram.enableAttributeArray("vertex");
+			shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
+
+			shaderProgram.enableAttributeArray("texCoord");
+			shaderProgram.setAttributeArray("texCoord", texCoordsBuffer.front().data(), 2);
+
+			glBindTexture(GL_TEXTURE_2D, texId);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			shaderProgram.setUniformValue("tex0", 0);
+
+			for(int i=0; i<nbDisks; ++i)
+			{
+				glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
+			}
+
+			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("texCoord");
+			shaderProgram.release();
+		}
+	}
+
+protected:
+	Data< QVector<Point> > center;
+	Data< QVector<PReal> > radius;
+	Data< ImageWrapper > texture;
+	Data< Shader > shader;
+
+	QVector<Point> vertexBuffer, texCoordsBuffer;
+	QVector<GLint> firstBuffer;
+	QVector<GLsizei> countBuffer;
+
+	QOpenGLShaderProgram shaderProgram;
+};
+
+int RenderDisk_TexturedClass = RegisterObject<RenderDisk_Textured>("Render/Textured/Disk")
+		.setName("Textured disk").setDescription("Draw a textured disk");
 
 } // namespace panda

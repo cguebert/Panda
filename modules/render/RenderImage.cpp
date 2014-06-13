@@ -55,6 +55,10 @@ public:
 			return;
 
 		glBindTexture(GL_TEXTURE_2D, texId);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		m_verts[0*2+0] = area.right(); m_verts[0*2+1] = area.top();
 		m_verts[1*2+0] = area.left();  m_verts[1*2+1] = area.top();
@@ -175,6 +179,6 @@ protected:
 	QOpenGLShaderProgram shaderProgram;
 };
 
-int RenderImageClass = RegisterObject<RenderImage>("Render/Image").setDescription("Renders an image");
+int RenderImageClass = RegisterObject<RenderImage>("Render/Textured/Image").setDescription("Renders an image");
 
 } // namespace panda

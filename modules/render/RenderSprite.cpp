@@ -115,6 +115,10 @@ public:
 			glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 			glBindTexture(GL_TEXTURE_2D, texId);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 			shaderProgram.bind();
 
@@ -159,6 +163,6 @@ protected:
 	int uniform_texture, uniform_MVP;
 };
 
-int RenderSpriteClass = RegisterObject<RenderSprite>("Render/Sprite").setDescription("Draw a sprite");
+int RenderSpriteClass = RegisterObject<RenderSprite>("Render/Textured/Sprite").setDescription("Draw a sprite");
 
 } // namespace panda

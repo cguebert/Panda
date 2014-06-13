@@ -38,6 +38,6 @@ protected:
 	Data<ImageWrapper> image;
 };
 
-int GeneratorImage_LoadClass = RegisterObject<GeneratorImage_Load>("Generator/Image/Load image").setDescription("Load an image from the disk");
+int GeneratorImage_LoadClass = RegisterObject<GeneratorImage_Load>("File/Image/Load image").setDescription("Load an image from the disk");
 
 } // namespace Panda

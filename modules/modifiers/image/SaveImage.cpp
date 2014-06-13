@@ -63,6 +63,6 @@ protected:
 	bool inStep;
 };
 
-int ModifierImage_SaveClass = RegisterObject<ModifierImage_Save>("Modifier/Image/Save image").setDescription("Save an image to the disk");
+int ModifierImage_SaveClass = RegisterObject<ModifierImage_Save>("File/Image/Save image").setDescription("Save an image to the disk");
 
 } // namespace Panda

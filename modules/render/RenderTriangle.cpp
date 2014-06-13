@@ -69,6 +69,6 @@ protected:
 	Data< QVector<Color> > color;
 };
 
-int RenderTriangleClass = RegisterObject<RenderTriangle>("Render/Triangle").setDescription("Draw a triangle");
+int RenderTriangleClass = RegisterObject<RenderTriangle>("Render/Filled/Triangle").setDescription("Draw a triangle");
 
 } // namespace panda

@@ -24,7 +24,7 @@ GLuint ImageWrapper::getTextureId() const
 		return m_texture->textureId();
 	if(m_fboSource && m_fbo)
 		return m_fbo->texture();
-	else if(m_imageSource)
+	if(m_imageSource)
 	{
 		if(!m_texture)
 			const_cast<ImageWrapper*>(this)->m_texture

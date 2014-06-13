@@ -118,7 +118,7 @@ protected:
 	QOpenGLShaderProgram shaderProgram;
 };
 
-int RenderLineClass = RegisterObject<RenderLine>("Render/Line").setDescription("Draw a line between 2 points");
+int RenderLineClass = RegisterObject<RenderLine>("Render/Line/Line").setDescription("Draw a line between 2 points");
 
 //****************************************************************************//
 
@@ -203,6 +203,6 @@ protected:
 	QOpenGLShaderProgram shaderProgram;
 };
 
-int RenderPathClass = RegisterObject<RenderPath>("Render/Path").setDescription("Draw a path");
+int RenderPathClass = RegisterObject<RenderPath>("Render/Line/Path").setDescription("Draw a path");
 
 } // namespace panda

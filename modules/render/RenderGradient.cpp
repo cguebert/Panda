@@ -61,6 +61,8 @@ public:
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		m_shaderProgram.bind();
 		m_shaderProgram.setUniformValue("MVP", getMVPMatrix());
@@ -93,7 +95,10 @@ protected:
 	QOpenGLShaderProgram m_shaderProgram;
 };
 
-int RenderGradient_HorizontalClass = RegisterObject<RenderGradient_Horizontal>("Render/Horizontal Gradient").setDescription("Draw a horizontal gradient taking the full screen");
+int RenderGradient_HorizontalClass = RegisterObject<RenderGradient_Horizontal>("Render/Gradient/Horizontal")
+		.setName("Horizontal gradient").setDescription("Draw a horizontal gradient taking the full screen");
+
+//****************************************************************************//
 
 class RenderGradient_Vertical : public Renderer
 {
@@ -141,6 +146,8 @@ public:
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		m_shaderProgram.bind();
 		m_shaderProgram.setUniformValue("MVP", getMVPMatrix());
@@ -173,7 +180,8 @@ protected:
 	QOpenGLShaderProgram m_shaderProgram;
 };
 
-int RenderGradient_VerticalClass = RegisterObject<RenderGradient_Vertical>("Render/Vertical Gradient").setDescription("Draw a vertical gradient taking the full screen");
+int RenderGradient_VerticalClass = RegisterObject<RenderGradient_Vertical>("Render/Gradient/Vertical")
+		.setName("Vertical gradient").setDescription("Draw a vertical gradient taking the full screen");
 
 
 } // namespace panda
