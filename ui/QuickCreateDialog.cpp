@@ -111,9 +111,48 @@ void QuickCreateDialog::searchTextChanged()
 	QString text = m_lineEdit->text();
 	QStringList searchList = text.split(QRegExp("\\s+"));
 
+// Filter the menu items: keep the ones that contain all search items
 	QStringList newMenuList = m_menuStringsList;
 	for(const auto& searchItem : searchList)
 		newMenuList = newMenuList.filter(searchItem, Qt::CaseInsensitive);
+
+// Reorder them: we want first the items when the searchText is at the start of a word
+	typedef QPair<QString, int> StringScore;
+	QVector<StringScore> tmpList;
+	for(const auto& menuItem : newMenuList)
+		tmpList.push_back(qMakePair(menuItem, 0));
+
+	// Increment the score for each searchItem that is at the start of a word
+	for(const auto& searchItem : searchList)
+	{
+		for(auto& tmpItem : tmpList)
+		{
+			const QString& menuItem = tmpItem.first;
+			int from = 0;
+			while(true)
+			{ // Test all appearances of the searchItem in menuItem
+				int pos = menuItem.indexOf(searchItem, from, Qt::CaseInsensitive);
+				if(pos == -1)
+					break;
+				if(!pos || menuItem[pos-1] == ' ' || menuItem[pos-1] == '/')
+				{
+					++tmpItem.second;
+					break;
+				}
+				from = pos+1;
+			}
+		}
+	}
+
+	// Sort from best score to worst
+	std::sort(tmpList.begin(), tmpList.end(), [](const StringScore& lhs, const StringScore& rhs){
+		return lhs.second > rhs.second;
+	});
+
+	// Copy to the list that will be sent to the widget
+	newMenuList.clear();
+	for(const auto& tmpItem : tmpList)
+		newMenuList.push_back(tmpItem.first);
 
 	QList<QListWidgetItem*> selectedItems = m_listWidget->selectedItems();
 	QString selectedItemText;
@@ -123,6 +162,7 @@ void QuickCreateDialog::searchTextChanged()
 	m_listWidget->clear();
 	m_listWidget->addItems(newMenuList);
 
+	// Keep the selected item
 	if(selectedItemText.size())
 	{
 		selectedItems = m_listWidget->findItems(selectedItemText, Qt::MatchExactly);
