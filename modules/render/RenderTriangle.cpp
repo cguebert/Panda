@@ -3,13 +3,17 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/Color.h>
 #include <panda/types/Mesh.h>
+#include <panda/types/Shader.h>
 #include <panda/Renderer.h>
+
+#include <QOpenGLShaderProgram>
 
 namespace panda {
 
 using types::Color;
 using types::Point;
 using types::Mesh;
+using types::Shader;
 
 class RenderTriangle : public Renderer
 {
@@ -20,53 +24,62 @@ public:
 		: Renderer(parent)
 		, mesh(initData(&mesh, "mesh", "Triangle to render"))
 		, color(initData(&color, "color", "Color of the triangle"))
+		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
 		addInput(&mesh);
 		addInput(&color);
+		addInput(&shader);
 
 		color.getAccessor().push_back(Color::black());
+
+		shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = shader.getAccessor();
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void render()
 	{
 		const Mesh& inMesh = mesh.getValue();
-		const QVector<Color>& listColor = color.getValue();
+		QVector<Color> listColor = color.getValue();
 
 		int nbTri = inMesh.getNumberOfTriangles();
 		int nbColor = listColor.size();
-
-		const QVector<Point>& pts = inMesh.getPoints();
 
 		if(nbTri && nbColor)
 		{
 			if(nbColor < nbTri) nbColor = 1;
 
-			QVector<PReal> vertices(6);
-			glEnableClientState(GL_VERTEX_ARRAY);
+			if(!shader.getValue().apply(shaderProgram))
+				return;
+
+			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+
+			shaderProgram.enableAttributeArray("vertex");
+			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);
+
+			int colorLocation = shaderProgram.uniformLocation("color");
+
+			const auto& triangles = inMesh.getTriangles();
 
 			for(int i=0; i<nbTri; ++i)
 			{
-				const Mesh::Triangle& triangle = inMesh.getTriangle(i);
+				auto color = listColor[i % nbColor];
+				shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
 
-				glColor4fv(listColor[i % nbColor].data());
-
-				for(int j=0; j<3; ++j)
-				{
-					const Point& pt = pts[triangle[j]];
-					vertices[j*2  ] = pt.x;
-					vertices[j*2+1] = pt.y;
-				}
-
-				glVertexPointer(2, GL_PREAL, 0, vertices.data());
-				glDrawArrays(GL_TRIANGLES, 0, 3);
+				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, triangles[i].data());
 			}
-			glDisableClientState(GL_VERTEX_ARRAY);
+
+			shaderProgram.disableAttributeArray("vertex");
 		}
 	}
 
 protected:
-	Data<Mesh> mesh;
+	Data< Mesh > mesh;
 	Data< QVector<Color> > color;
+	Data< Shader > shader;
+
+	QOpenGLShaderProgram shaderProgram;
 };
 
 int RenderTriangleClass = RegisterObject<RenderTriangle>("Render/Filled/Triangle").setDescription("Draw a triangle");

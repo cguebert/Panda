@@ -6,8 +6,8 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Point.h>
 #include <panda/types/Gradient.h>
-#include <panda/helper/GradientCache.h>
 #include <panda/types/Shader.h>
+#include <panda/helper/GradientCache.h>
 
 #include <QOpenGLShaderProgram>
 #include <cmath>
