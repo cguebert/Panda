@@ -30,16 +30,16 @@ void PandaObject::addData(BaseData* data)
 		std::cerr << "Fatal error : another data already have the name " << data->getName().toStdString() << std::endl;
 		return;
 	}
-	if(!datas.contains(data))
+	if(!m_datas.contains(data))
 	{
-		datas.push_back(data);
+		m_datas.push_back(data);
 		emitModified();
 	}
 }
 
 void PandaObject::removeData(BaseData* data)
 {
-	if(datas.removeAll(data))
+	if(m_datas.removeAll(data))
 		emitModified();
 }
 
@@ -47,6 +47,12 @@ void PandaObject::addOutput(BaseData* data)
 {
 	data->setReadOnly(true);
 	DataNode::addOutput(data);
+}
+
+void PandaObject::postCreate()
+{
+	for(auto data : m_datas)
+		data->unset();
 }
 
 void PandaObject::preDestruction()
@@ -92,10 +98,10 @@ void PandaObject::setDirtyValue(const DataNode* caller)
 
 BaseData* PandaObject::getData(const QString& name) const
 {
-	auto iter = std::find_if(datas.begin(), datas.end(), [name](BaseData* d){
+	auto iter = std::find_if(m_datas.begin(), m_datas.end(), [name](BaseData* d){
 		return d->getName() == name;
 	});
-	if(iter != datas.end())
+	if(iter != m_datas.end())
 		return *iter;
 	else
 		return nullptr;
@@ -104,7 +110,7 @@ BaseData* PandaObject::getData(const QString& name) const
 QList<BaseData*> PandaObject::getInputDatas() const
 {
 	QList<BaseData*> temp;
-	for(BaseData* data : datas)
+	for(BaseData* data : m_datas)
 	{
 		if(data->isInput())
 			temp.push_back(data);
@@ -116,7 +122,7 @@ QList<BaseData*> PandaObject::getInputDatas() const
 QList<BaseData*> PandaObject::getOutputDatas() const
 {
 	QList<BaseData*> temp;
-	for(BaseData* data : datas)
+	for(BaseData* data : m_datas)
 	{
 		if(data->isOutput())
 			temp.push_back(data);
@@ -127,7 +133,7 @@ QList<BaseData*> PandaObject::getOutputDatas() const
 
 void PandaObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*> *selected)
 {
-	for(BaseData* data : datas)
+	for(BaseData* data : m_datas)
 	{
 		if(data->isSet() && data->isPersistent() && !data->isReadOnly()
 				&& !(selected && data->getParent() && selected->contains(data->getParent()->getOwner())))

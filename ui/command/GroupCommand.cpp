@@ -153,8 +153,8 @@ void EditGroupCommand::redo()
 	{
 		info.data->setName(info.name);
 		info.data->setHelp(info.help);
-		m_group->datas.removeAll(info.data);
-		m_group->datas.push_back(info.data);
+		m_group->m_datas.removeAll(info.data);
+		m_group->m_datas.push_back(info.data);
 		datasList.push_back(datasPtrMap.value(info.data));
 	}
 
@@ -175,8 +175,8 @@ void EditGroupCommand::undo()
 	{
 		info.data->setName(info.name);
 		info.data->setHelp(info.help);
-		m_group->datas.removeAll(info.data);
-		m_group->datas.push_back(info.data);
+		m_group->m_datas.removeAll(info.data);
+		m_group->m_datas.push_back(info.data);
 		datasList.push_back(datasPtrMap.value(info.data));
 	}
 

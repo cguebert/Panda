@@ -152,6 +152,7 @@ BaseLayer::RenderersList Layer::getRenderers()
 
 void Layer::postCreate()
 {
+	PandaObject::postCreate();
 	int i = 1;
 	for(auto obj : m_parentDocument->getObjects())
 	{

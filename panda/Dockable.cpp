@@ -86,6 +86,7 @@ DockableObject::DockableObject(PandaDocument* document)
 
 void DockableObject::postCreate()
 {
+	PandaObject::postCreate();
 	DockObject* dock = getDefaultDock();
 	if(dock)
 		dock->addDockable(this);

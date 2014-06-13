@@ -60,7 +60,7 @@ public:
 		return init;
 	}
 
-	virtual void postCreate() {}
+	virtual void postCreate();
 	virtual void preDestruction();
 	virtual void reset() {}
 	virtual void update();
@@ -86,7 +86,7 @@ public:
 
 protected:
 	QString m_name;
-	QList<BaseData*> datas;
+	QList<BaseData*> m_datas;
 	quint32 m_index;
 	bool m_doEmitModified, m_doEmitDirty, m_isInStep;
 	bool m_laterUpdate; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
@@ -126,7 +126,7 @@ inline void PandaObject::endStep()
 { m_isInStep = false; }
 
 inline QList<BaseData*> PandaObject::getDatas() const
-{ return datas; }
+{ return m_datas; }
 
 inline void PandaObject::setInternalData(const QString& name, quint32 index)
 { m_name = name; m_index = index; }

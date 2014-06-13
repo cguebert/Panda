@@ -38,7 +38,6 @@ public:
 		auto shaderAcc = shader.getAccessor();
 		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_attColor_noTex.v.glsl");
 		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_attColor_noTex.f.glsl");
-		shader.unset();
 	}
 
 	void render()
@@ -106,7 +105,6 @@ public:
 		auto shaderAcc = shader.getAccessor();
 		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
-		shader.unset();
 	}
 
 	void render()
