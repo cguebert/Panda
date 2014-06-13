@@ -147,10 +147,10 @@ public:
 			return;
 		}
 
-		int nb = rectList.size();
-		col.resize(nb);
+		int nbRects = rectList.size();
+		col.resize(nbRects);
 
-		for(int i=0; i<nb; ++i)
+		for(int i=0; i<nbRects; ++i)
 		{
 			Rect rect = rectList[i];
 			int x1 = qMax<int>(0, std::floor(rect.left()));
@@ -174,8 +174,9 @@ public:
 				}
 			}
 
+			float n = nb * 255;
 			if(nb)
-				col[i] = Color(r/nb, g/nb, b/nb, a/nb);
+				col[i] = Color(r/n, g/n, b/n, a/n);
 			else
 				col[i] = Color::null();
 		}
