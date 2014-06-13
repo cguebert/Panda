@@ -80,18 +80,24 @@ public:
 	{
 		const QVector<Point> &c = center.getValue();
 		const QVector<Point> &s = size.getValue();
-		int nbC = c.size();
-		int nbS = s.size();
-		if(nbS < nbC) nbS = 1;
-		if(nbC < nbS) nbC = 1;
 
 		auto rect = rectangle.getAccessor();
 		rect.clear();
-		int nb = qMax(nbC, nbS);
-		rect.resize(nb);
 
-		for(int i=0; i<nb; ++i)
-			rect[i] = Rect(c[i%nbC]-s[i%nbS]/2, s[i%nbS].x, s[i%nbS].y);
+		int nbC = c.size();
+		int nbS = s.size();
+
+		if(nbC && nbS)
+		{
+			if(nbS < nbC) nbS = 1;
+			if(nbC < nbS) nbC = 1;
+
+			int nb = qMax(nbC, nbS);
+			rect.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				rect[i] = Rect(c[i%nbC]-s[i%nbS]/2, s[i%nbS].x, s[i%nbS].y);
+		}
 
 		cleanDirty();
 	}
@@ -126,18 +132,24 @@ public:
 	{
 		const QVector<Point> &tl = topleft.getValue();
 		const QVector<Point> &br = bottomright.getValue();
-		int nbTL = tl.size();
-		int nbBR = br.size();
-		if(nbTL < nbBR) nbTL = 1;
-		if(nbBR < nbTL) nbBR = 1;
 
 		auto rect = rectangle.getAccessor();
 		rect.clear();
-		int nb = qMax(nbTL, nbBR);
-		rect.resize(nb);
 
-		for(int i=0; i<nb; ++i)
-			rect[i] = Rect(tl[i%nbTL], br[i%nbBR]);
+		int nbTL = tl.size();
+		int nbBR = br.size();
+
+		if(nbTL && nbBR)
+		{
+			if(nbTL < nbBR) nbTL = 1;
+			if(nbBR < nbTL) nbBR = 1;
+
+			int nb = qMax(nbTL, nbBR);
+			rect.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				rect[i] = Rect(tl[i%nbTL], br[i%nbBR]);
+		}
 
 		cleanDirty();
 	}
