@@ -92,6 +92,10 @@ public:
 	~DataAccessor() { m_data.endEdit(); }
 
 	template<class U> void operator=(const U& value) { Inherit::operator=(value); }
+
+	/// DataAccessor is noncopyable
+	DataAccessor(const DataAccessor&) = delete;
+	DataAccessor& operator=(const DataAccessor&) = delete;
 };
 
 //****************************************************************************//
