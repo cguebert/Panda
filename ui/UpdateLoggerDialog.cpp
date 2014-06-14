@@ -191,6 +191,8 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
     if(!m_valid)
         return;
 
+	int width = contentsRect().width();
+
     QStylePainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setRenderHint(QPainter::TextAntialiasing, true);
@@ -202,6 +204,10 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 		const auto& event = m_events[i];
 		qreal x1 = posOfTime(event.m_startTime);
 		qreal x2 = posOfTime(event.m_endTime);
+
+		if(x2 < 0 || x1 > width)
+			continue;
+
 		qreal y = view_margin + (event.m_level + m_startingLevel[event.m_threadId]) * (update_height + event_margin);
 
 		switch (event.m_type)
