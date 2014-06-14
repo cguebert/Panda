@@ -5,7 +5,7 @@
 
 UpdateLoggerDialog* UpdateLoggerDialog::m_instance = nullptr;
 
-UpdateLoggerDialog::UpdateLoggerDialog(QWidget *parent) :
+UpdateLoggerDialog::UpdateLoggerDialog(QWidget* parent) :
     QDialog(parent)
 {
 	m_view = new UpdateLoggerView(this);
@@ -78,7 +78,7 @@ const panda::helper::UpdateLogger::NodeStates UpdateLoggerDialog::getNodeStates(
 
 //****************************************************************************//
 
-UpdateLoggerView::UpdateLoggerView(QWidget *parent)
+UpdateLoggerView::UpdateLoggerView(QWidget* parent)
     : QWidget(parent)
     , m_valid(false)
     , m_zoomLevel(0)

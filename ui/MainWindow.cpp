@@ -67,7 +67,7 @@ MainWindow::MainWindow()
 	readSettings();
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+void MainWindow::closeEvent(QCloseEvent* event)
 {
 	if (okToContinue()) {
 		writeSettings();

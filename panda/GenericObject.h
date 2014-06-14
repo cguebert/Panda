@@ -99,7 +99,7 @@ public:
 	typedef QList<GenericDataDefinition> GenericDataDefinitionList;
 	typedef QList<BaseData*> DataList;
 
-	explicit GenericObject(PandaDocument *parent = 0);
+	explicit GenericObject(PandaDocument* parent = nullptr);
 	virtual ~GenericObject();
 
 	void setupGenericObject(GenericData* data, const GenericDataDefinitionList& defList);
@@ -158,7 +158,7 @@ class SingleTypeGenericObject : public GenericObject
 public:
 	PANDA_CLASS(SingleTypeGenericObject, GenericObject)
 
-	explicit SingleTypeGenericObject(PandaDocument *parent = 0);
+	explicit SingleTypeGenericObject(PandaDocument* parent = nullptr);
 
 	virtual void update();
 	virtual BaseData* createDatas(int type, int index = -1);

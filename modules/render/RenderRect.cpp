@@ -21,7 +21,7 @@ class RenderRect : public Renderer
 public:
 	PANDA_CLASS(RenderRect, Renderer)
 
-	RenderRect(PandaDocument *parent)
+	RenderRect(PandaDocument* parent)
 		: Renderer(parent)
 		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
 		, lineWidth(initData(&lineWidth, "lineWidth", "Width of the line"))
@@ -110,7 +110,7 @@ class RenderFilledRect : public Renderer
 public:
 	PANDA_CLASS(RenderFilledRect, Renderer)
 
-	RenderFilledRect(PandaDocument *parent)
+	RenderFilledRect(PandaDocument* parent)
 		: Renderer(parent)
 		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
 		, color(initData(&color, "color", "Color of the rectangle"))
@@ -205,7 +205,7 @@ class RenderTexturedRect : public Renderer
 public:
 	PANDA_CLASS(RenderTexturedRect, Renderer)
 
-	RenderTexturedRect(PandaDocument *parent)
+	RenderTexturedRect(PandaDocument* parent)
 		: Renderer(parent)
 		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
 		, texture(initData(&texture, "texture", "Texture to apply to the rectangle"))

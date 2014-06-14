@@ -22,7 +22,7 @@ class RenderGradient_Horizontal : public Renderer
 public:
 	PANDA_CLASS(RenderGradient_Horizontal, Renderer)
 
-	RenderGradient_Horizontal(PandaDocument *parent)
+	RenderGradient_Horizontal(PandaDocument* parent)
 		: Renderer(parent)
 		, m_gradient(initData(&m_gradient, "gradient", "Gradient to paint on the screen"))
 		, m_area(initData(&m_area, "area", "Area to paint the gradient in. If null, the render area is used instead"))
@@ -108,7 +108,7 @@ class RenderGradient_Vertical : public Renderer
 public:
 	PANDA_CLASS(RenderGradient_Vertical, Renderer)
 
-	RenderGradient_Vertical(PandaDocument *parent)
+	RenderGradient_Vertical(PandaDocument* parent)
 		: Renderer(parent)
 		, gradient(initData(&gradient, "gradient", "Gradient to paint on the screen"))
 		, m_area(initData(&m_area, "area", "Area to paint the gradient in. If null, the render area is used instead"))
@@ -194,7 +194,7 @@ class RenderFill_Motif : public Renderer
 public:
 	PANDA_CLASS(RenderFill_Motif, Renderer)
 
-	RenderFill_Motif(PandaDocument *parent)
+	RenderFill_Motif(PandaDocument* parent)
 		: Renderer(parent)
 		, texture(initData(&texture, "texture", "Motif to paint on the screen"))
 		, m_area(initData(&m_area, "area", "Area to paint the gradient in. If null, the render area is used instead"))

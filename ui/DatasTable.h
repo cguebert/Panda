@@ -21,7 +21,7 @@ class DatasTable : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit DatasTable(panda::PandaDocument* m_document, QWidget *parent = 0);
+	explicit DatasTable(panda::PandaDocument* m_document, QWidget* parent = nullptr);
 
 	typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
 

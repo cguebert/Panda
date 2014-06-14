@@ -5,7 +5,7 @@
 
 #include <panda/PandaDocument.h>
 
-DatasTable::DatasTable(panda::PandaDocument* doc, QWidget *parent)
+DatasTable::DatasTable(panda::PandaDocument* doc, QWidget* parent)
 	: QWidget(parent)
 	, m_document(doc)
 	, m_currentObject(nullptr)

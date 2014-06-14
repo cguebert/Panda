@@ -18,7 +18,7 @@ using types::DataTypeId;
 using types::DataTraitsList;
 using types::TypeConverter;
 
-GenericObject::GenericObject(PandaDocument *parent)
+GenericObject::GenericObject(PandaDocument* parent)
 	: PandaObject(parent)
 {
 
@@ -311,7 +311,7 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 
 //****************************************************************************//
 
-SingleTypeGenericObject::SingleTypeGenericObject(PandaDocument *parent)
+SingleTypeGenericObject::SingleTypeGenericObject(PandaDocument* parent)
 	: GenericObject(parent)
 	, m_singleOutput(false)
 	, m_connectedType(-1)

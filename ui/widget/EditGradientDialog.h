@@ -31,9 +31,9 @@ public:
 	EditGradientView(EditGradientDialog* dlg, panda::types::Gradient::GradientStops& stops);
 
 	void paintEvent(QPaintEvent *);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent* event);
+	void mouseMoveEvent(QMouseEvent* event);
+	void mouseReleaseEvent(QMouseEvent* event);
 
 	void setSelected(int);
 
@@ -51,7 +51,7 @@ class EditGradientDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit EditGradientDialog(panda::types::Gradient grad, QWidget *parent = 0);
+	explicit EditGradientDialog(panda::types::Gradient grad, QWidget* parent = nullptr);
 	panda::types::Gradient getGradient();
 
 public slots:
@@ -64,7 +64,7 @@ public slots:
 	void positionHasChanged();
 
 protected:
-	bool EditGradientDialog::eventFilter(QObject *obj, QEvent *event);
+	bool EditGradientDialog::eventFilter(QObject *obj, QEvent* event);
 
 	EditGradientView* view;
 	ColorPreviewWidget* colorPreview;

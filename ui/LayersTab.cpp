@@ -7,7 +7,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/Layer.h>
 
-LayersTab::LayersTab(panda::PandaDocument* document, QWidget *parent)
+LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
 	: QWidget(parent)
 	, m_document(document)
 	, m_selectedLayer(nullptr)

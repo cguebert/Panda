@@ -15,7 +15,7 @@ class OpenGLRenderView : public QGLWidget
 {
 	Q_OBJECT
 public:
-	explicit OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent = 0);
+	explicit OpenGLRenderView(panda::PandaDocument* doc, QWidget* parent = nullptr);
 	~OpenGLRenderView();
 
 	QSize minimumSizeHint() const;
@@ -28,9 +28,9 @@ protected:
 	void paintGL();
 	void resizeGL(int width, int height);
 
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent* event);
+	void mouseMoveEvent(QMouseEvent* event);
+	void mouseReleaseEvent(QMouseEvent* event);
 
 	void resizeEvent(QResizeEvent* event);
 

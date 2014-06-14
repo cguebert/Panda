@@ -20,7 +20,7 @@ class RenderTriangle : public Renderer
 public:
 	PANDA_CLASS(RenderTriangle, Renderer)
 
-	RenderTriangle(PandaDocument *parent)
+	RenderTriangle(PandaDocument* parent)
 		: Renderer(parent)
 		, mesh(initData(&mesh, "mesh", "Triangle to render"))
 		, color(initData(&color, "color", "Color of the triangle"))

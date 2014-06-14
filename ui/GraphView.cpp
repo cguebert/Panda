@@ -19,7 +19,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 
-GraphView::GraphView(panda::PandaDocument* doc, QWidget *parent)
+GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	: QWidget(parent)
 	, m_pandaDocument(doc)
 	, m_zoomLevel(0)
@@ -729,7 +729,7 @@ void GraphView::keyPressEvent(QKeyEvent * event)
 	}
 }
 
-void GraphView::contextMenuEvent(QContextMenuEvent *event)
+void GraphView::contextMenuEvent(QContextMenuEvent* event)
 {
 	m_contextMenuData = nullptr;
 	int flags = 0;

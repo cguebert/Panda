@@ -76,7 +76,7 @@ public:
 	PandaObject* getOwner() const; /// The PandaObject that owns this Data
 	void setOwner(PandaObject* owner);
 
-	virtual bool validParent(const BaseData *parent) const; /// Can parent be connected to this Data
+	virtual bool validParent(const BaseData* parent) const; /// Can parent be connected to this Data
 	virtual void setParent(BaseData* parent); /// Set the other Data as the parent to this one (its value will be copied each time it changes)
 	BaseData* getParent() const; /// Returns the current parent, or nullptr
 

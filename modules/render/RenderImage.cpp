@@ -20,7 +20,7 @@ class RenderImage : public Renderer
 public:
 	PANDA_CLASS(RenderImage, Renderer)
 
-	RenderImage(PandaDocument *parent)
+	RenderImage(PandaDocument* parent)
 		: Renderer(parent)
 		, image(initData(&image, "image", "Image to render on screen" ))
 		, center(initData(&center, "center", "Center position of the image"))

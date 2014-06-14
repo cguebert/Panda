@@ -19,7 +19,7 @@ class Group : public QObject, public PandaObject
 public:
 	PANDA_CLASS(Group, PandaObject)
 
-	explicit Group(PandaDocument *parent = 0);
+	explicit Group(PandaDocument* parent = nullptr);
 	virtual ~Group();
 
 	static bool createGroup(PandaDocument* doc, GraphView* view);

@@ -101,7 +101,7 @@ unsigned int BaseLayer::getTextureId() const
 
 //****************************************************************************//
 
-Layer::Layer(PandaDocument *parent)
+Layer::Layer(PandaDocument* parent)
 	: DockObject(parent)
 	, m_layerName(initData(&m_layerName, "name", "Name of this layer"))
 	, m_image(initData(&m_image, "image", "Image created by the renderers connected to this layer"))

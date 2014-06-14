@@ -26,7 +26,7 @@ class RenderDisk : public Renderer
 public:
 	PANDA_CLASS(RenderDisk, Renderer)
 
-	RenderDisk(PandaDocument *parent)
+	RenderDisk(PandaDocument* parent)
 		: Renderer(parent)
 		, center(initData(&center, "center", "Center position of the disk"))
 		, radius(initData(&radius, "radius", "Radius of the disk"))
@@ -154,7 +154,7 @@ class RenderDisk_Gradient : public Renderer
 public:
 	PANDA_CLASS(RenderDisk_Gradient, Renderer)
 
-	RenderDisk_Gradient(PandaDocument *parent)
+	RenderDisk_Gradient(PandaDocument* parent)
 		: Renderer(parent)
 		, center(initData(&center, "center", "Center position of the disk"))
 		, radius(initData(&radius, "radius", "Radius of the disk"))
@@ -309,7 +309,7 @@ class RenderDisk_Textured : public Renderer
 public:
 	PANDA_CLASS(RenderDisk_Textured, Renderer)
 
-	RenderDisk_Textured(PandaDocument *parent)
+	RenderDisk_Textured(PandaDocument* parent)
 		: Renderer(parent)
 		, center(initData(&center, "center", "Center position of the disk"))
 		, radius(initData(&radius, "radius", "Radius of the disk"))

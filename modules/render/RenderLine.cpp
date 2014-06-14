@@ -20,7 +20,7 @@ class RenderLine : public Renderer
 public:
 	PANDA_CLASS(RenderLine, Renderer)
 
-	RenderLine(PandaDocument *parent)
+	RenderLine(PandaDocument* parent)
 		: Renderer(parent)
 		, inputA(initData(&inputA, "point 1", "Start of the line"))
 		, inputB(initData(&inputB, "point 2", "End of the line"))
@@ -127,7 +127,7 @@ class RenderPath : public Renderer
 public:
 	PANDA_CLASS(RenderPath, Renderer)
 
-	RenderPath(PandaDocument *parent)
+	RenderPath(PandaDocument* parent)
 		: Renderer(parent)
 		, input(initData(&input, "path", "Path to be drawn"))
 		, lineWidth(initData(&lineWidth, "width", "Width of the line" ))

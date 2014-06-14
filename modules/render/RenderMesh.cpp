@@ -22,7 +22,7 @@ class RenderMesh : public Renderer
 public:
 	PANDA_CLASS(RenderMesh, Renderer)
 
-	RenderMesh(PandaDocument *parent)
+	RenderMesh(PandaDocument* parent)
 		: Renderer(parent)
 		, mesh(initData(&mesh, "mesh", "Mesh to render"))
 		, color(initData(&color, "color", "Color of the points"))
@@ -89,7 +89,7 @@ class RenderMesh_Textured : public Renderer
 public:
 	PANDA_CLASS(RenderMesh_Textured, Renderer)
 
-	RenderMesh_Textured(PandaDocument *parent)
+	RenderMesh_Textured(PandaDocument* parent)
 		: Renderer(parent)
 		, mesh(initData(&mesh, "mesh", "Mesh to render"))
 		, uvCoords(initData(&uvCoords, "UV Coords", "Texture coordinates"))

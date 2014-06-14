@@ -10,7 +10,7 @@ class RenderModifier_BlendMode : public Renderer
 public:
 	PANDA_CLASS(RenderModifier_BlendMode, Renderer)
 
-	RenderModifier_BlendMode(PandaDocument *parent)
+	RenderModifier_BlendMode(PandaDocument* parent)
 		: Renderer(parent)
 		, source(initData(&source, 4, "source", "Source blending mode"))
 		, destination(initData(&destination, 6, "destination", "Destination blending mode"))

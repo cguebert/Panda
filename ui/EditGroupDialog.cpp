@@ -8,7 +8,7 @@
 
 using panda::ObjectFactory;
 
-EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget *parent)
+EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget* parent)
 	: QDialog(parent)
 	, m_group(group)
 	, m_selectedData(nullptr)

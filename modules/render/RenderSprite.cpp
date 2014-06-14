@@ -24,7 +24,7 @@ class RenderSprite : public Renderer
 public:
 	PANDA_CLASS(RenderSprite, Renderer)
 
-	RenderSprite(PandaDocument *parent)
+	RenderSprite(PandaDocument* parent)
 		: Renderer(parent)
 		, position(initData(&position, "position", "Position of the sprite"))
 		, size(initData(&size, "size", "Size of the sprite" ))

@@ -12,7 +12,7 @@ class UpdateLoggerDialog : public QDialog
 {
     Q_OBJECT
 public:
-	explicit UpdateLoggerDialog(QWidget *parent = 0);
+	explicit UpdateLoggerDialog(QWidget* parent = nullptr);
 	void updateEvents();
 
 	static UpdateLoggerDialog* getInstance();
@@ -39,7 +39,7 @@ class UpdateLoggerView : public QWidget
 {
     Q_OBJECT
 public:
-	explicit UpdateLoggerView(QWidget *parent = 0);
+	explicit UpdateLoggerView(QWidget* parent = nullptr);
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
@@ -56,13 +56,13 @@ protected:
 		event_margin = 4
     };
 
-    void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void wheelEvent(QWheelEvent *event);
-    void keyPressEvent(QKeyEvent *event);
+	void paintEvent(QPaintEvent* event);
+	void resizeEvent(QResizeEvent* event);
+	void mousePressEvent(QMouseEvent* event);
+	void mouseMoveEvent(QMouseEvent* event);
+	void mouseReleaseEvent(QMouseEvent* event);
+	void wheelEvent(QWheelEvent* event);
+	void keyPressEvent(QKeyEvent* event);
 
 	typedef panda::helper::EventData EventData;
 	QString eventDescription(const EventData &event);

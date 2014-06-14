@@ -21,7 +21,7 @@
 namespace panda
 {
 
-Group::Group(PandaDocument *parent)
+Group::Group(PandaDocument* parent)
 	: PandaObject(parent)
 	, m_groupName(initData(&m_groupName, QString("Group"), "name", "Name to be displayed for this group"))
 {

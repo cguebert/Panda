@@ -53,7 +53,7 @@ class Layer : public DockObject, public BaseLayer
 public:
 	PANDA_CLASS(Layer, DockObject)
 
-	explicit Layer(PandaDocument *parent = 0);
+	explicit Layer(PandaDocument* parent = nullptr);
 
 	virtual void update();
 	virtual bool accepts(DockableObject* dockable) const;

@@ -15,7 +15,7 @@ class RenderModifier_Translation : public Renderer
 public:
 	PANDA_CLASS(RenderModifier_Translation, Renderer)
 
-	RenderModifier_Translation(PandaDocument *parent)
+	RenderModifier_Translation(PandaDocument* parent)
 		: Renderer(parent)
 		, translation(initData(&translation, "translation", "Translation to apply for the next objects"))
 	{
@@ -44,7 +44,7 @@ class RenderModifier_Rotation : public Renderer
 public:
 	PANDA_CLASS(RenderModifier_Rotation, Renderer)
 
-	RenderModifier_Rotation(PandaDocument *parent)
+	RenderModifier_Rotation(PandaDocument* parent)
 		: Renderer(parent)
 		, rotation(initData(&rotation, "rotation", "Rotation to apply for the next objects"))
 	{
@@ -72,7 +72,7 @@ class RenderModifier_Scale : public Renderer
 public:
 	PANDA_CLASS(RenderModifier_Scale, Renderer)
 
-	RenderModifier_Scale(PandaDocument *parent)
+	RenderModifier_Scale(PandaDocument* parent)
 		: Renderer(parent)
 		, scale(initData(&scale, Point(1.0, 1.0), "scaling", "Scaling to apply for the next objects"))
 	{

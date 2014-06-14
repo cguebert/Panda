@@ -20,7 +20,7 @@ class RenderCircle : public Renderer
 public:
 	PANDA_CLASS(RenderCircle, Renderer)
 
-	RenderCircle(PandaDocument *parent)
+	RenderCircle(PandaDocument* parent)
 		: Renderer(parent)
 		, center(initData(&center, "center", "Center position of the circle"))
 		, radius(initData(&radius, "radius", "Radius of the circle" ))

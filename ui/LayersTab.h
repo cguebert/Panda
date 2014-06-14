@@ -22,7 +22,7 @@ class LayersTab : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit LayersTab(panda::PandaDocument* document, QWidget *parent = 0);
+	explicit LayersTab(panda::PandaDocument* document, QWidget* parent = nullptr);
 
 protected:
 	QLineEdit* m_nameEdit;

@@ -25,7 +25,7 @@ class GraphView : public QWidget
 	Q_OBJECT
 
 public:
-	explicit GraphView(panda::PandaDocument* doc, QWidget *parent = 0);
+	explicit GraphView(panda::PandaDocument* doc, QWidget* parent = nullptr);
 
 	QSize minimumSizeHint() const;
 	QSize sizeHint() const;
@@ -60,14 +60,14 @@ public:
 	void setRecomputeTags(); /// Same as calling updateLinkTags, but it does it next redraw
 
 protected:
-	void paintEvent(QPaintEvent *event);
-	void resizeEvent(QResizeEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void wheelEvent(QWheelEvent *event);
-	void keyPressEvent(QKeyEvent *event);
-	void contextMenuEvent(QContextMenuEvent *event);
+	void paintEvent(QPaintEvent* event);
+	void resizeEvent(QResizeEvent* event);
+	void mousePressEvent(QMouseEvent* event);
+	void mouseMoveEvent(QMouseEvent* event);
+	void mouseReleaseEvent(QMouseEvent* event);
+	void wheelEvent(QWheelEvent* event);
+	void keyPressEvent(QKeyEvent* event);
+	void contextMenuEvent(QContextMenuEvent* event);
 
 #ifdef PANDA_LOG_EVENTS
 	void paintLogDebug(QPainter* painter);

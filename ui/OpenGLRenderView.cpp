@@ -82,13 +82,13 @@ void OpenGLRenderView::resizeGL(int /*width*/, int /*height*/)
 {
 }
 
-void OpenGLRenderView::mousePressEvent(QMouseEvent *event)
+void OpenGLRenderView::mousePressEvent(QMouseEvent* event)
 {
 	if(event->button() == Qt::LeftButton)
 		m_document->setMouseClick(1);
 }
 
-void OpenGLRenderView::mouseMoveEvent(QMouseEvent *event)
+void OpenGLRenderView::mouseMoveEvent(QMouseEvent* event)
 {
 	QRect viewRect = contentsRect();
 	QSize renderSize = m_document->getRenderSize();
@@ -98,7 +98,7 @@ void OpenGLRenderView::mouseMoveEvent(QMouseEvent *event)
 	m_document->setMousePosition(panda::types::Point(pos.x(), pos.y()));
 }
 
-void OpenGLRenderView::mouseReleaseEvent(QMouseEvent *event)
+void OpenGLRenderView::mouseReleaseEvent(QMouseEvent* event)
 {
 	if(event->button() == Qt::LeftButton)
 		m_document->setMouseClick(0);

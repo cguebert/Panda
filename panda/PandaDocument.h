@@ -33,7 +33,7 @@ public:
 	typedef QVector<ObjectPtr> ObjectsList;
 	typedef QList<PandaObject*> ObjectsSelection;
 
-	explicit PandaDocument(QObject *parent = 0);
+	explicit PandaDocument(QObject* parent = nullptr);
 	~PandaDocument();
 
 	bool writeFile(const QString& fileName);

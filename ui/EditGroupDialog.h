@@ -18,7 +18,7 @@ class EditGroupDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit EditGroupDialog(panda::Group* group, QWidget *parent = 0);
+	explicit EditGroupDialog(panda::Group* group, QWidget* parent = nullptr);
 
 	void populateRow(int rowIndex, panda::BaseData* data);
 

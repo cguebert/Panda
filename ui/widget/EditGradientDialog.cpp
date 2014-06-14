@@ -126,7 +126,7 @@ void EditGradientView::paintEvent(QPaintEvent *)
 	}
 }
 
-void EditGradientView::mousePressEvent(QMouseEvent *event)
+void EditGradientView::mousePressEvent(QMouseEvent* event)
 {
 	int prevSelected = selected;
 	selected = -1;
@@ -151,7 +151,7 @@ void EditGradientView::mousePressEvent(QMouseEvent *event)
 	}
 }
 
-void EditGradientView::mouseMoveEvent(QMouseEvent *event)
+void EditGradientView::mouseMoveEvent(QMouseEvent* event)
 {
 	if(moving)
 	{
@@ -180,7 +180,7 @@ void EditGradientView::setSelected(int sel)
 
 //****************************************************************************//
 
-EditGradientDialog::EditGradientDialog(Gradient grad, QWidget *parent)
+EditGradientDialog::EditGradientDialog(Gradient grad, QWidget* parent)
 	: QDialog(parent)
 	, stops(grad.getStopsForEdit())
 	, extend(grad.getExtend())
@@ -354,7 +354,7 @@ void EditGradientDialog::positionHasChanged()
 
 // Just so that we can use "Enter" to finish the editing of the position,
 //  without closing the dialog.
-bool EditGradientDialog::eventFilter(QObject *obj, QEvent *event)
+bool EditGradientDialog::eventFilter(QObject *obj, QEvent* event)
 {
 	if (event->type() == QEvent::KeyPress)
 	{

@@ -21,7 +21,7 @@ class RenderText : public Renderer
 public:
 	PANDA_CLASS(RenderText, Renderer)
 
-	RenderText(PandaDocument *parent)
+	RenderText(PandaDocument* parent)
 		: Renderer(parent)
 		, text(initData(&text, "text", "Text to be drawn"))
 		, font(initData(&font, "font", "Font to use for the text rendering"))
