@@ -4,8 +4,6 @@
 #include <ui/OpenGLRenderView.h>
 #include <panda/PandaDocument.h>
 
-#include <iostream>
-
 OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 	: QGLWidget(parent)
 	, m_document(doc)
@@ -71,8 +69,11 @@ void OpenGLRenderView::paintGL()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	drawTexture(QPointF(viewRect.center().x() - renderSize.width() / 2,
-						viewRect.center().y() - renderSize.height() / 2), fbo->texture());
+	if(viewRect.size() == renderSize)
+		drawTexture(QPointF(0,0), fbo->texture());
+	else
+		drawTexture(QPointF(viewRect.center().x() - renderSize.width() / 2,
+							viewRect.center().y() - renderSize.height() / 2), fbo->texture());
 
 	glDisable(GL_BLEND);
 }
