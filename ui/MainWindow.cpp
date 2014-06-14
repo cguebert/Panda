@@ -26,10 +26,10 @@ MainWindow::MainWindow()
 	m_document = new panda::PandaDocument(this);
 
 	m_graphView = new GraphView(m_document);
-	m_openGLRenderView = new OpenGLRenderView(m_document);
+	OpenGLRenderView::createOpenGLRenderView(m_document, m_openGLRenderView, m_openGLRenderWidget);
 	m_tabWidget = new QTabWidget;
 	m_tabWidget->addTab(m_graphView, tr("Graph"));
-	m_tabWidget->addTab(m_openGLRenderView, tr("Render"));
+	m_tabWidget->addTab(m_openGLRenderWidget, tr("Render"));
 	setCentralWidget(m_tabWidget);
 
 	createActions();
@@ -173,7 +173,7 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::documentModified()
 {
-	if(m_tabWidget->currentWidget() == m_openGLRenderView)
+	if(m_tabWidget->currentWidget() == m_openGLRenderWidget)
 		m_openGLRenderView->update();
 
 	setWindowModified(true);
@@ -735,7 +735,8 @@ void MainWindow::switchToGraphView()
 
 void MainWindow::switchToOpenGLView()
 {
-	m_tabWidget->setCurrentWidget(m_openGLRenderView);
+	m_tabWidget->setCurrentWidget(m_openGLRenderWidget);
+	m_openGLRenderView->update();
 }
 
 void MainWindow::switchFullScreen()
