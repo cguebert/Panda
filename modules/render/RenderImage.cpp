@@ -98,6 +98,8 @@ public:
 			shaderProgram.enableAttributeArray("texCoord");
 			shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
 
+			shaderProgram.setUniformValue("tex0", 0);
+
 			if(nbRotation)
 			{
 				if(centered)
