@@ -168,7 +168,8 @@ void MainWindow::openRecentFile()
 void MainWindow::updateStatusBar()
 {
 	PReal time = m_document->getAnimationTime();
-	m_timeLabel->setText(tr("time : %1").arg(time));
+	PReal FPS = m_document->getFPS();
+	m_timeLabel->setText(tr("time: %1\tFPS: %2").arg(time).arg(QString::number(FPS, 'f', 1)));
 }
 
 void MainWindow::documentModified()
@@ -589,7 +590,7 @@ void MainWindow::createToolBars()
 
 void MainWindow::createStatusBar()
 {
-	m_timeLabel = new QLabel(tr("time : %1").arg(999.99));
+	m_timeLabel = new QLabel(tr("time: %1\t FPS: %2").arg(999.99).arg(999.9));
 	m_timeLabel->setAlignment(Qt::AlignLeft);
 	m_timeLabel->setMinimumSize(m_timeLabel->sizeHint());
 

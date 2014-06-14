@@ -56,6 +56,8 @@ PandaDocument::PandaDocument(QObject* parent)
 	, m_currentCommand(nullptr)
 	, m_inCommandMacro(0)
 	, m_resetting(false)
+	, m_iNbFrames(0)
+	, m_currentFPS(0)
 {
 	addInput(&m_renderSize);
 	addInput(&m_backgroundColor);
@@ -876,6 +878,9 @@ void PandaDocument::play(bool playing)
 			m_animTimer->start(qMax((PReal)0.0, m_timestep.getValue() * 1000));
 		else
 			m_animTimer->start(0);
+
+		m_iNbFrames = 0;
+		m_fpsTime.start();
 	}
 	else
 	{
@@ -933,6 +938,15 @@ void PandaDocument::step()
 
 	if(m_animPlaying && m_useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
 		m_animTimer->start(qMax((PReal)0.0, m_timestep.getValue() * 1000 - lastFrameDuration - 1));
+
+	++m_iNbFrames;
+	int elapsed = m_fpsTime.elapsed();
+	if(m_animPlaying && elapsed > 1000)
+	{
+		m_currentFPS = m_iNbFrames * 1000.0 / elapsed;
+		m_fpsTime.start();
+		m_iNbFrames = 0;
+	}
 }
 
 void PandaDocument::rewind()

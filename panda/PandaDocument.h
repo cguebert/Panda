@@ -9,6 +9,7 @@
 
 #include <QObject>
 #include <QSize>
+#include <QTime>
 
 class QOpenGLFramebufferObject;
 class QAction;
@@ -71,6 +72,7 @@ public:
 
 	PReal getAnimationTime() const;
 	PReal getTimeStep() const;
+	PReal getFPS() const;
 	bool animationIsPlaying() const;
 	bool animationIsMultithread() const;
 
@@ -140,6 +142,10 @@ protected:
 
 	int m_inCommandMacro;
 	bool m_resetting;
+
+	int m_iNbFrames;
+	QTime m_fpsTime;
+	PReal m_currentFPS;
 
 signals:
 	void modified();
@@ -212,6 +218,9 @@ inline PReal PandaDocument::getAnimationTime() const
 
 inline PReal PandaDocument::getTimeStep() const
 { return m_timestep.getValue(); }
+
+inline PReal PandaDocument::getFPS() const
+{ return m_currentFPS; }
 
 inline bool PandaDocument::animationIsPlaying() const
 { return m_animPlaying; }
