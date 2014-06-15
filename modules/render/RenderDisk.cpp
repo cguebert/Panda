@@ -268,7 +268,7 @@ public:
 			if(nbGradient == 1)
 			{
 				PReal maxRadius = *std::max_element(listRadius.begin(), listRadius.end());
-				GLuint texture = GradientCache::getInstance()->getTexture(listGradient[0], static_cast<int>(ceil(maxRadius)));
+				GLuint texture = GradientCache::getInstance()->getTexture(listGradient.front(), static_cast<int>(ceil(maxRadius)));
 
 				glBindTexture(GL_TEXTURE_2D, texture);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
