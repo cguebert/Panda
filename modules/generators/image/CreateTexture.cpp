@@ -51,25 +51,30 @@ public:
 		return QSize(std::max(1, width.getValue()), std::max(1, height.getValue()));
 	}
 
-	void iterateRenderers()
+	typedef std::vector<Renderer*> RenderersList;
+	RenderersList getRenderers()
 	{
-		auto& dockables = getDockedObjects();
-		for(auto it=dockables.rbegin(); it!=dockables.rend(); ++it)
+		RenderersList renderers;
+		for(auto dockable : getDockedObjects())
 		{
-			Renderer* renderer = dynamic_cast<Renderer*>(*it);
-			if(!renderer)
-				continue;
-
-	#ifdef PANDA_LOG_EVENTS
-			helper::ScopedEvent log(helper::event_render, renderer);
-	#endif
-			renderer->render();
-			renderer->cleanDirty();
+			Renderer* renderer = dynamic_cast<Renderer*>(dockable);
+			if(renderer)
+				renderers.push_back(renderer);
 		}
+
+		return renderers;
 	}
 
 	void update()
 	{
+		const auto& renderers = getRenderers();
+		for(const auto& renderer : renderers)
+		{
+			for(const auto* input : renderer->getInputDatas())
+				input->updateIfDirty();
+			renderer->updateIfDirty();
+		}
+
 		QSize renderSize = getLayerSize();
 
 		if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)
@@ -103,7 +108,15 @@ public:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		iterateRenderers();
+		for(auto iter = renderers.rbegin(); iter != renderers.rend(); ++iter)
+		{
+			auto renderer = *iter;
+#ifdef PANDA_LOG_EVENTS
+			helper::ScopedEvent log(helper::event_render, renderer);
+#endif
+			renderer->render();
+			renderer->cleanDirty();
+		}
 
 		glDisable(GL_BLEND);
 
