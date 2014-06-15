@@ -10,6 +10,7 @@
 
 namespace panda {
 
+using types::Color;
 using types::Gradient;
 using types::ImageWrapper;
 
@@ -52,6 +53,61 @@ protected:
 	QSharedPointer<QOpenGLTexture> m_texture;
 };
 
-int GradientTextureClass = RegisterObject<GradientTexture>("Generator/Gradient/Gradient texture").setDescription("Create a texture from a gradient");
+int GradientTextureClass = RegisterObject<GradientTexture>("Generator/Gradient/Gradient texture").setDescription("Create a 1d texture from a gradient");
+
+//****************************************************************************//
+
+class GradientTexture2D : public PandaObject
+{
+public:
+	PANDA_CLASS(GradientTexture2D, PandaObject)
+
+	GradientTexture2D(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_horizontalGradient(initData(&m_horizontalGradient, "horizontal", "Gradient used in the horizontal direction"))
+		, m_verticalGradient(initData(&m_verticalGradient, "vertical", "Gradient used in the vertical direction"))
+		, m_width(initData(&m_width, 256, "width", "Width of the texture created"))
+		, m_height(initData(&m_height, 256, "height", "Height of the texture created"))
+		, m_output(initData(&m_output, "texture", "Texture created"))
+	{
+		addInput(&m_horizontalGradient);
+		addInput(&m_verticalGradient);
+		addInput(&m_width);
+		addInput(&m_height);
+
+		addOutput(&m_output);
+	}
+
+	void update()
+	{
+		int width = m_width.getValue(), height = m_height.getValue();
+		if(width * height > 0)
+		{
+			auto bufHor = helper::GradientCache::createBuffer(m_horizontalGradient.getValue(), width);
+			auto bufVer = helper::GradientCache::createBuffer(m_verticalGradient.getValue(), height);
+
+			QVector<Color> buffer(width * height);
+			for(int y=0; y<height; ++y)
+				for(int x=0; x<width; ++x)
+					buffer[y*width+x] = bufHor[x] * bufVer[y];
+
+			m_output.getAccessor()->createTexture(buffer, width, height);
+		}
+		else
+			m_output.getAccessor()->clear();
+
+		cleanDirty();
+	}
+
+protected:
+	Data<Gradient> m_horizontalGradient, m_verticalGradient;
+	Data<int> m_width, m_height;
+	Data<ImageWrapper> m_output;
+
+	QSharedPointer<QOpenGLTexture> m_texture;
+};
+
+int GradientTexture2DClass = RegisterObject<GradientTexture2D>("Generator/Gradient/2 gradients texture").setDescription("Create a 2d texture from the multiplication of 2 gradients");
+
 
 } // namespace Panda
