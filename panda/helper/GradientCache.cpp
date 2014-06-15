@@ -42,7 +42,7 @@ void GradientCache::clearUnused()
 	}
 }
 
-unsigned int GradientCache::getTexture(const types::Gradient &gradient, int size)
+unsigned int GradientCache::getTexture(const types::Gradient& gradient, int size)
 {
 	if(gradient.getStops().empty())
 		return 0;
@@ -85,7 +85,7 @@ quint64 GradientCache::computeHash(const panda::types::Gradient& gradient)
 	quint64 hash = 0;
 	auto stops = gradient.getStops();
 	for(int i=0, nb=stops.size(); i<nb && i<3; ++i)
-		hash += stops[i].second.toHex();
+		hash += stops[i].second.toHex() * stops[i].first;
 
 	return hash;
 }

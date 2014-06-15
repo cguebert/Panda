@@ -168,11 +168,7 @@ public:
 
 		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
-
-		Gradient grad;
-		grad.add(0, Color::black());
-		grad.add(1, Color::white());
-		gradient.getAccessor().push_back(grad);
+		gradient.getAccessor().push_back(Gradient::defaultGradient());
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
@@ -266,18 +262,39 @@ public:
 			shaderProgram.enableAttributeArray("texCoord");
 			shaderProgram.setAttributeArray("texCoord", texCoordsBuffer.front().data(), 2);
 
-			for(int i=0; i<nbDisks; ++i)
+			shaderProgram.setUniformValue("tex0", 0);
+
+			// Optimization when we use only one gradient
+			if(nbGradient == 1)
 			{
-				GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(ceil(listRadius[i % nbRadius])));
-				if(texture == -1)
-					continue;
+				PReal maxRadius = *std::max_element(listRadius.begin(), listRadius.end());
+				GLuint texture = GradientCache::getInstance()->getTexture(listGradient[0], static_cast<int>(ceil(maxRadius)));
+
 				glBindTexture(GL_TEXTURE_2D, texture);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-				glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
+				for(int i=0; i<nbDisks; ++i)
+					glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
+			}
+			else
+			{
+
+				for(int i=0; i<nbDisks; ++i)
+				{
+					GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(ceil(listRadius[i % nbRadius])));
+					if(!texture)
+						continue;
+					glBindTexture(GL_TEXTURE_2D, texture);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+					glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
+			}
 			}
 
 			shaderProgram.disableAttributeArray("vertex");
@@ -416,14 +433,12 @@ public:
 			glBindTexture(GL_TEXTURE_2D, texId);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			shaderProgram.setUniformValue("tex0", 0);
 
 			for(int i=0; i<nbDisks; ++i)
-			{
 				glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
-			}
 
 			shaderProgram.disableAttributeArray("vertex");
 			shaderProgram.disableAttributeArray("texCoord");

@@ -36,17 +36,15 @@ public:
 	GradientStops getStopsForEdit() const; // this one doesn't lie
 
 	friend inline bool operator==(const Gradient& g1, const Gradient& g2)
-	{
-		return g1.extend == g2.extend && g1.stops == g2.stops;
-	}
+	{ return g1.extend == g2.extend && g1.stops == g2.stops; }
 	friend inline bool operator!=(const Gradient& g1, const Gradient& g2)
-	{
-		return !(g1 == g2);
-	}
+	{ return !(g1 == g2); }
 
 	static Gradient interpolate(const Gradient& g1, const Gradient& g2, PReal amt);
 	static types::Color interpolate(const GradientStop& s1, const GradientStop& s2, PReal pos);
 	static types::Color interpolate(const types::Color& v1, const types::Color& v2, PReal amt);
+
+	static Gradient defaultGradient();
 
 protected:
 	PReal extendPos(PReal position) const;

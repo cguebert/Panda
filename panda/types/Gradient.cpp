@@ -176,6 +176,14 @@ Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, PReal amt
 	return grad;
 }
 
+Gradient Gradient::defaultGradient()
+{
+	Gradient grad;
+	grad.add(0, Color::black());
+	grad.add(1, Color::white());
+	return grad;
+}
+
 //****************************************************************************//
 
 template<> QString DataTrait<Gradient>::valueTypeName() { return "gradient"; }
