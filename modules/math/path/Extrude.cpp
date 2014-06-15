@@ -65,6 +65,8 @@ public:
 		normals.resize(nbPts-1);
 		abscissa.resize(nbPts);
 		abscissa[0] = 0;
+		if(cap) // add the width of the start cap to the first abscissa
+			abscissa[0] = widthAnim.get(0) / 2;
 		for(int i=0; i<nbPts-1; ++i)
 		{
 			const Point &pt1=pts[i], &pt2=pts[i+1];
@@ -72,6 +74,8 @@ public:
 			abscissa[i+1] = abscissa[i] + (pt2-pt1).norm();
 		}
 		PReal length = abscissa.back();
+		if(cap) // add the width of the end cap to the total length
+			length += widthAnim.get(1) / 2;
 		if(length < 1e-3)
 			return;
 		for(auto& a : abscissa)
@@ -84,8 +88,8 @@ public:
 		prevPtsId[1] = mesh->addPoint(pts[0]);
 		prevPtsId[2] = mesh->addPoint(pts[0] - dir);
 		UV.push_back(Point(abscissa[0], 1));
+		UV.push_back(Point(abscissa[0], 0.5));
 		UV.push_back(Point(abscissa[0], 0));
-		UV.push_back(Point(abscissa[0], 1));
 		switch(cap)
 		{
 		default:
@@ -97,15 +101,16 @@ public:
 			PReal angle = M_PI / nb; // We do a half turn
 			PReal ca = cos(angle), sa = sin(angle);
 			Point center = pts[0];
+			Point uvPt(0, 1), uvCenter(abscissa[0], 0.5), uvMult(-abscissa[0], 0.5);
 			Mesh::PointID ptId = prevPtsId[0];
 			for(int i=0; i<nb-1; ++i)
 			{
-				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-				Mesh::PointID newPtId = mesh->addPoint(center + pt);
-				UV.push_back(Point(abscissa[0], 1));
+				dir = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
+				uvPt = Point(uvPt.x*ca+uvPt.y*sa, uvPt.y*ca-uvPt.x*sa);
+				Mesh::PointID newPtId = mesh->addPoint(center + dir);
+				UV.push_back(uvCenter + uvPt.linearProduct(uvMult));
 				mesh->addTriangle(ptId, newPtId, prevPtsId[1]);
 
-				dir = pt;
 				ptId = newPtId;
 			}
 			mesh->addTriangle(ptId, prevPtsId[2], prevPtsId[1]);
@@ -118,9 +123,9 @@ public:
 			addPtsId[0] = mesh->addPoint(pts[0] + dir + dir2);
 			addPtsId[1] = mesh->addPoint(pts[0]	      + dir2);
 			addPtsId[2] = mesh->addPoint(pts[0] - dir + dir2);
-			UV.push_back(Point(abscissa[0], 1));
-			UV.push_back(Point(abscissa[0], 1));
-			UV.push_back(Point(abscissa[0], 1));
+			UV.push_back(Point(0, 1));
+			UV.push_back(Point(0, 0.5));
+			UV.push_back(Point(0, 0));
 
 			mesh->addTriangle(prevPtsId[0], addPtsId[0], prevPtsId[1]);
 			mesh->addTriangle(prevPtsId[1], addPtsId[0], addPtsId[1]);
@@ -153,7 +158,7 @@ public:
 
 			// Main extrusion (without the exterior of the curvature)
 			nextPtsId[1] = mesh->addPoint(pts[i]);
-			UV.push_back(Point(abscissa[i], 0));
+			UV.push_back(Point(abscissa[i], 0.5));
 			mesh->addTriangle(nextPtsId[1], prevPtsId[0], prevPtsId[1]);
 			mesh->addTriangle(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
 
@@ -162,16 +167,16 @@ public:
 				if(hasInteriorPt)
 				{
 					nextPtsId[2] = mesh->addPoint(pts[i] - dir);
-					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 0));
 					mesh->addTriangle(nextPtsId[1], prevPtsId[2], nextPtsId[2]);
 				}
 				else
 				{
 					Mesh::PointID addPtId = mesh->addPoint(pts[i] - normals[i-1] * w);
-					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 0));
 					mesh->addTriangle(nextPtsId[1], prevPtsId[2], addPtId);
 					nextPtsId[2] = mesh->addPoint(pts[i] - normals[i] * w);
-					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 0));
 				}
 
 			}
@@ -213,7 +218,7 @@ public:
 				else // side < 0
 				{
 					nextPtsId[2] = mesh->addPoint(pts[i] - dir);
-					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 0));
 					mesh->addTriangle(nextPtsId[2], nextPtsId[1], prevPtsId[2]);
 				}
 
@@ -254,8 +259,8 @@ public:
 					PReal angle = acos(normals[i-1].dot(normals[i]));
 					nextPtsId[2] = mesh->addPoint(pts[i] - normals[i] * w);
 					Mesh::PointID addPtId = mesh->addPoint(pts[i] - normals[i-1] * w);
-					UV.push_back(Point(abscissa[i], 1));
-					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 0));
+					UV.push_back(Point(abscissa[i], 0));
 
 					mesh->addTriangle(addPtId, nextPtsId[1], prevPtsId[2]);
 
@@ -269,7 +274,7 @@ public:
 					{
 						Point nr = Point(r.x*ca+r.y*sa, r.y*ca-r.x*sa);
 						Mesh::PointID newPtId = mesh->addPoint(center - nr);
-						UV.push_back(Point(abscissa[i], 1));
+						UV.push_back(Point(abscissa[i], 0));
 						mesh->addTriangle(ptId, newPtId, nextPtsId[1]);
 
 						r = nr;
@@ -295,8 +300,8 @@ public:
 				{
 					nextPtsId[2] = mesh->addPoint(pts[i] - normals[i] * w);
 					Mesh::PointID addPtId = mesh->addPoint(pts[i] - normals[i-1] * w);
-					UV.push_back(Point(abscissa[i], 1));
-					UV.push_back(Point(abscissa[i], 1));
+					UV.push_back(Point(abscissa[i], 0));
+					UV.push_back(Point(abscissa[i], 0));
 
 					mesh->addTriangle(nextPtsId[2], nextPtsId[1], addPtId);
 					mesh->addTriangle(addPtId, nextPtsId[1], prevPtsId[2]);
@@ -317,8 +322,8 @@ public:
 		nextPtsId[1] = mesh->addPoint(pts[nbPts-1]);
 		nextPtsId[2] = mesh->addPoint(pts[nbPts-1] - dir);
 		UV.push_back(Point(abscissa[nbPts-1], 1));
+		UV.push_back(Point(abscissa[nbPts-1], 0.5));
 		UV.push_back(Point(abscissa[nbPts-1], 0));
-		UV.push_back(Point(abscissa[nbPts-1], 1));
 		mesh->addTriangle(nextPtsId[0], prevPtsId[0], nextPtsId[1]);
 		mesh->addTriangle(prevPtsId[0], prevPtsId[1], nextPtsId[1]);
 		mesh->addTriangle(nextPtsId[1], prevPtsId[1], prevPtsId[2]);
@@ -338,14 +343,15 @@ public:
 			Point center = pts[nbPts-1];
 			dir = -dir;
 			Mesh::PointID ptId = nextPtsId[2];
+			Point uvPt(0, 1), uvCenter(abscissa[nbPts-1], 0.5), uvMult(abscissa[0], -0.5);
 			for(int i=0; i<nb-1; ++i)
 			{
-				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-				Mesh::PointID newPtId = mesh->addPoint(center + pt);
-				UV.push_back(Point(abscissa[nbPts-1], 1));
+				dir = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
+				uvPt = Point(uvPt.x*ca+uvPt.y*sa, uvPt.y*ca-uvPt.x*sa);
+				Mesh::PointID newPtId = mesh->addPoint(center + dir);
+				UV.push_back(uvCenter + uvPt.linearProduct(uvMult));
 				mesh->addTriangle(ptId, newPtId, nextPtsId[1]);
 
-				dir = pt;
 				ptId = newPtId;
 			}
 			mesh->addTriangle(ptId, nextPtsId[0], nextPtsId[1]);
@@ -358,9 +364,9 @@ public:
 			addPtsId[0] = mesh->addPoint(pts[nbPts-1] + dir - dir2);
 			addPtsId[1] = mesh->addPoint(pts[nbPts-1]	    - dir2);
 			addPtsId[2] = mesh->addPoint(pts[nbPts-1] - dir - dir2);
-			UV.push_back(Point(abscissa[nbPts-1], 1));
-			UV.push_back(Point(abscissa[nbPts-1], 1));
-			UV.push_back(Point(abscissa[nbPts-1], 1));
+			UV.push_back(Point(1, 1));
+			UV.push_back(Point(1, 0.5));
+			UV.push_back(Point(1, 0));
 
 			mesh->addTriangle(addPtsId[0], nextPtsId[0], addPtsId[1]);
 			mesh->addTriangle(nextPtsId[0], nextPtsId[1], addPtsId[1]);
