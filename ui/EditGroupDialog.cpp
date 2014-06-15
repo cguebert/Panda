@@ -126,8 +126,9 @@ void EditGroupDialog::itemClicked(QTableWidgetItem* item)
 	if(newData && newData != m_selectedData)
 	{
 		m_selectedData = newData;
-		m_editDataName->setText(m_selectedData->getName());
-		m_editDataHelp->setText(m_selectedData->getHelp());
+
+		m_editDataName->setText(m_tableWidget->item(m_selectedRow, 0)->text());
+		m_editDataHelp->setText(m_tableWidget->item(m_selectedRow, 3)->text());
 	}
 }
 
