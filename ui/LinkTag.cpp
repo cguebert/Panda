@@ -52,7 +52,7 @@ void LinkTag::update()
 
 bool LinkTag::isEmpty()
 {
-	return outputDatas.isEmpty();
+	return outputDatas.empty();
 }
 
 bool LinkTag::isHovering(const QPointF& point)

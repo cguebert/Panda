@@ -32,7 +32,7 @@ BaseDataWidget* DataWidgetFactory::create(QWidget* parent, void* pValue, int ful
 const BaseDataWidgetCreator* DataWidgetFactory::getCreator(int fullType, QString widgetName) const
 {
 	const QMap<QString, DataWidgetEntryPtr>& map = registry.value(fullType);
-	if(map.isEmpty())
+	if(map.empty())
 		return nullptr;
 
 	// Special case : for lists and animations, we use the same DataWidget which will create other ones later

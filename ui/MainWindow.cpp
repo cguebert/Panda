@@ -117,7 +117,7 @@ void MainWindow::import()
 			m_graphView->updateLinkTags();
 
 			auto selection = m_document->getSelection();
-			if(!selection.isEmpty())
+			if(!selection.empty())
 				m_document->addCommand(new AddObjectCommand(m_document, m_graphView, selection));
 		}
 	}
@@ -788,14 +788,14 @@ void MainWindow::paste()
 	m_graphView->updateLinkTags();
 
 	auto selection = m_document->getSelection();
-	if(!selection.isEmpty())
+	if(!selection.empty())
 		m_document->addCommand(new AddObjectCommand(m_document, m_graphView, selection));
 }
 
 void MainWindow::del()
 {
 	auto selection = m_document->getSelection();
-	if(!selection.isEmpty())
+	if(!selection.empty())
 	{
 		auto macro = m_document->beginCommandMacro(tr("delete objects"));
 		m_document->addCommand(new RemoveObjectCommand(m_document, m_graphView, selection));
@@ -889,7 +889,7 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 		menu.addAction(m_groupAction);
 	}
 
-	if(!menu.actions().isEmpty())
+	if(!menu.actions().empty())
 		menu.exec(pos);
 }
 

@@ -520,7 +520,7 @@ QString GenericData::getDescription() const
 
 QString GenericData::getTypesName(bool useFullDescription) const
 {
-	if(m_allowedTypes.isEmpty())
+	if(m_allowedTypes.empty())
 		return "";
 
 	QVector<QString> sortedTypeNames;

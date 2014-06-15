@@ -43,6 +43,8 @@ QString ObjectFactory::getRegistryName(PandaObject* object)
 void ObjectFactory::registerObject(QString className, ClassEntry entry)
 {
 	entry.className = className;
+	if(m_registry.find(className) != m_registry.end())
+		std::cerr << "Factory already has an entry for " << className.toStdString() << std::endl;
 	m_registry.emplace(className, entry);
 }
 

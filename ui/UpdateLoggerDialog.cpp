@@ -107,7 +107,7 @@ void UpdateLoggerView::updateEvents()
 	for(int i=0; i<m_nbThreads; ++i)
 		events += logger->getEvents(i);
 
-	if(events.isEmpty())
+	if(events.empty())
 		return;
 
 	m_events = events;
@@ -167,7 +167,7 @@ QSize UpdateLoggerView::sizeHint() const
 
 const panda::helper::EventData* UpdateLoggerView::getSelectedEvent() const
 {
-	if(m_selectedIndex < 0 || m_events.isEmpty() || m_sortedEvents.isEmpty())
+	if(m_selectedIndex < 0 || m_events.empty() || m_sortedEvents.empty())
 		return nullptr;
 
 	return &m_events[m_sortedEvents[m_selectedIndex]];
@@ -399,7 +399,7 @@ void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
 	}
 	else if(m_mouseAction == Action_MovingStart)
 	{
-		if(!m_events.isEmpty())
+		if(!m_events.empty())
 		{
 			unsigned long long time = timeOfPos(event->x());
 			int nb = m_sortedEvents.size();
@@ -526,7 +526,7 @@ void UpdateLoggerView::sortEvents()
 
 void UpdateLoggerView::prevEvent()
 {
-	if(m_events.isEmpty())
+	if(m_events.empty())
 		return;
 
 	int prevSelection = m_selectedIndex;
@@ -560,7 +560,7 @@ void UpdateLoggerView::prevEvent()
 
 void UpdateLoggerView::nextEvent()
 {
-	if(m_events.isEmpty())
+	if(m_events.empty())
 		return;
 
 	int prevSelection = m_selectedIndex;

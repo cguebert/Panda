@@ -469,7 +469,7 @@ void PandaDocument::setMouseClick(int state)
 
 void PandaDocument::copy()
 {
-	if(m_selectedObjects.isEmpty())
+	if(m_selectedObjects.empty())
 		return;
 	QClipboard* clipboard = QApplication::clipboard();
 	clipboard->setText(writeTextDocument());
