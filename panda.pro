@@ -156,6 +156,7 @@ SOURCES       = main.cpp \
 	modules/modifiers/image/ColorInImage.cpp \
 	modules/modifiers/image/ExtractImage.cpp \
 	modules/modifiers/image/SaveImage.cpp \
+	modules/modifiers/image/ShaderEffects.cpp \
 	modules/modifiers/point/ConnectSegments.cpp \
 	modules/modifiers/point/PointsInShapes.cpp \
 	modules/modifiers/point/PointsUnion.cpp \

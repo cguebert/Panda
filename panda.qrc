@@ -21,5 +21,8 @@
         <file>shaders/PT_attColor_noTex.v.glsl</file>
         <file>shaders/PT_uniColor_noTex.f.glsl</file>
         <file>shaders/PT_uniColor_noTex.v.glsl</file>
+        <file>shaders/effects/GBlur.f.glsl</file>
+        <file>shaders/effects/GBlurH.v.glsl</file>
+        <file>shaders/effects/GBlurV.v.glsl</file>
     </qresource>
 </RCC>
