@@ -153,7 +153,7 @@ public:
 				 , norm2Seg1 = (pts[i]-pts[i-1]).norm2()
 				 , norm2Seg2 = (pts[i+1]-pts[i]).norm2();
 			bool hasInteriorPt = true;
-			if(norm2Dir > norm2Seg1 || norm2Dir > norm2Seg2)
+			if(norm2Dir > norm2Seg1 && norm2Dir > norm2Seg2)
 				hasInteriorPt = false;	// I don't know what to do in this degenerated case!
 
 			// Main extrusion (without the exterior of the curvature)

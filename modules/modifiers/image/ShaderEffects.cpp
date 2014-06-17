@@ -5,7 +5,6 @@
 
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
-#include <cmath>
 
 namespace panda {
 
