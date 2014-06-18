@@ -35,13 +35,12 @@ public:
 	void clear();	/// Remove all sources
 	bool isNull();	/// Does it have one valid source
 
-	bool hasImageSource() const;
-	bool hasTextureSource() const;
-	bool hasFboSource() const;
+	bool hasImage() const; /// Return true if the source is an image
+	bool hasTexture() const; /// Return true if the source is either a fbo or a texture
 
 	ImageWrapper& operator=(const ImageWrapper& rhs);
 
-	QOpenGLFramebufferObject* getFbo() const; // will return null if image source
+	QOpenGLFramebufferObject* getFbo() const; /// Will return null if image source
 
 	bool operator==(const ImageWrapper& img) const;
 	bool operator!=(const ImageWrapper& img) const;
@@ -64,14 +63,11 @@ inline QSize ImageWrapper::size() const
 inline bool ImageWrapper::isNull()
 { return !(m_imageSource || m_textureSource || m_fboSource); }
 
-inline bool ImageWrapper::hasImageSource() const
+inline bool ImageWrapper::hasImage() const
 { return m_imageSource; }
 
-inline bool ImageWrapper::hasTextureSource() const
-{ return m_textureSource; }
-
-inline bool ImageWrapper::hasFboSource() const
-{ return m_fboSource; }
+inline bool ImageWrapper::hasTexture() const
+{ return m_textureSource || m_fboSource; }
 
 inline QOpenGLFramebufferObject* ImageWrapper::getFbo() const
 { return m_fbo.data(); }

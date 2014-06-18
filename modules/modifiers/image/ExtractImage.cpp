@@ -39,7 +39,7 @@ public:
 		int nb = rectList.size();
 		resList.resize(nb);
 
-		if(imgWrapper.hasImageSource())
+		if(imgWrapper.hasImage())
 		{
 			const QImage& img = imgWrapper.getImage();
 			for(int i=0; i<nb; ++i)
@@ -52,7 +52,7 @@ public:
 				resList[i].setImage(tmpImg);
 			}
 		}
-		else if(imgWrapper.hasFboSource())
+		else if(imgWrapper.hasTexture())
 		{
 			QOpenGLFramebufferObject* fbo = imgWrapper.getFbo();
 			if(fbo)
