@@ -72,7 +72,9 @@ void DockObject::removedFromDocument()
 		for(auto it = docked.rbegin(); it != docked.rend(); ++it)
 		{
 			m_parentDocument->addCommand(new DetachDockableCommand(this, *it));
-			m_parentDocument->addCommand(new AttachDockableCommand((*it)->getDefaultDock(), *it, 0));
+			auto defaultDock = (*it)->getDefaultDock();
+			if(defaultDock)
+				m_parentDocument->addCommand(new AttachDockableCommand(defaultDock, *it, 0));
 		}
 	}
 }

@@ -45,5 +45,5 @@ void AttachDockableCommand::redo()
 
 void AttachDockableCommand::undo()
 {
-	m_dock->removeInput(m_dockable);
+	m_dock->removeDockable(m_dockable);
 }
