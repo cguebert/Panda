@@ -63,6 +63,8 @@ public:
 
 	/// Objects docked to the default docks are sorted by their height in the graph view
 	void sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock);
+	void sortDockablesInDock(panda::DockObject* dock);
+	void sortAllDockables();
 
 protected:
 	void paintEvent(QPaintEvent* event);
@@ -113,6 +115,7 @@ public slots:
 	void removeLink();
 	void hoverDataInfo();
 	void loadingFinished();
+	void changedDock(panda::DockableObject* dockable);
 
 private:
 	panda::PandaDocument* m_pandaDocument;

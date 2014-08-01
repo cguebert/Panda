@@ -23,6 +23,7 @@ class BaseLayer;
 class Layer;
 class Scheduler;
 class ScopedMacro;
+class DockableObject;
 
 class PandaDocument : public QObject, public PandaObject
 {
@@ -107,6 +108,10 @@ public:
 	bool isInCommandMacro() const;
 	QUndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
 
+	void onDirtyObject(PandaObject* object);
+	void onModifiedObject(PandaObject* object);
+	void onChangedDock(DockableObject* dockable); // When the dockable has changed dock
+
 protected:
 	friend class ScopedMacro;
 
@@ -161,6 +166,7 @@ signals:
 	void timeChanged();
 	void reorderedObjects();
 	void loadingFinished();
+	void changedDock(panda::DockableObject*);
 
 public slots:
 	void copy();
@@ -170,8 +176,6 @@ public slots:
 	void selectAll();
 	void selectNone();
 	void selectConnected();
-	void onDirtyObject(panda::PandaObject* object);
-	void onModifiedObject(panda::PandaObject* object);
 	void play(bool playing);
 	void step();
 	void rewind();

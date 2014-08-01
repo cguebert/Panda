@@ -667,6 +667,14 @@ void PandaDocument::onModifiedObject(PandaObject* object)
 	emit modifiedObject(object);
 }
 
+void PandaDocument::onChangedDock(DockableObject* dockable)
+{
+	if(m_resetting)
+		return;
+
+	emit changedDock(dockable);
+}
+
 void PandaDocument::update()
 {
 	if(!m_renderFBO || m_renderFBO->size() != getRenderSize())

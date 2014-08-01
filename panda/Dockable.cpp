@@ -74,7 +74,10 @@ void DockObject::reorderDockable(DockableObject* dockable, int index)
 			return;
 
 		m_dockedObjects.erase(iter);
-		m_dockedObjects.insert(m_dockedObjects.begin() + index, dockable);
+		if(index < 0)
+			m_dockedObjects.push_back(dockable);
+		else
+			m_dockedObjects.insert(m_dockedObjects.begin() + index, dockable);
 
 		setDirtyValue(this);
 		m_parentDocument->onModifiedObject(this);
@@ -88,10 +91,12 @@ void DockObject::removedFromDocument()
 		auto docked = m_dockedObjects;
 		for(auto it = docked.rbegin(); it != docked.rend(); ++it)
 		{
-			m_parentDocument->addCommand(new DetachDockableCommand(this, *it));
-			auto defaultDock = (*it)->getDefaultDock();
+			auto dockable = *it;
+			m_parentDocument->addCommand(new DetachDockableCommand(this, dockable));
+			auto defaultDock = dockable->getDefaultDock();
 			if(defaultDock)
-				m_parentDocument->addCommand(new AttachDockableCommand(defaultDock, *it, 0));
+				m_parentDocument->addCommand(new AttachDockableCommand(defaultDock, dockable, 0));
+			m_parentDocument->onChangedDock(dockable);
 		}
 	}
 }
