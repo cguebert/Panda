@@ -355,6 +355,8 @@ bool PandaDocument::loadDoc(QDomElement& root)
 		elem = elem.nextSiblingElement("Dock");
 	}
 
+	emit loadingFinished(); // For example if the view wants to do some computation
+
 	return true;
 }
 

@@ -27,6 +27,7 @@ public:
 	virtual const DockablesList& getDockedObjects() const;
 
 	virtual int getIndexOfDockable(DockableObject* dockable) const;
+	virtual void reorderDockable(DockableObject* dockable, int index);
 
 	virtual void removedFromDocument();
 

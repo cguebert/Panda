@@ -160,6 +160,7 @@ signals:
 	void selectionChanged();
 	void timeChanged();
 	void reorderedObjects();
+	void loadingFinished();
 
 public slots:
 	void copy();

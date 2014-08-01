@@ -45,6 +45,7 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	connect(m_pandaDocument, SIGNAL(modifiedObject(panda::PandaObject*)), this, SLOT(modifiedObject(panda::PandaObject*)));
 	connect(m_pandaDocument, SIGNAL(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)), this, SLOT(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)));
 	connect(m_pandaDocument, SIGNAL(loadingObject(QDomElement&,panda::PandaObject*)), this, SLOT(loadingObject(QDomElement&,panda::PandaObject*)));
+	connect(m_pandaDocument, SIGNAL(loadingFinished()), this, SLOT(loadingFinished()));
 	connect(m_hoverTimer, SIGNAL(timeout()), this, SLOT(hoverDataInfo()));
 
 	m_hoverTimer->setSingleShot(true);
@@ -592,14 +593,14 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				}
 
 				panda::DockObject* prevDock = dockable->getParentDock();
-				if(newDock != prevDock)
+				if(newDock != prevDock) // Changing dock
 				{
 					if(prevDock)
 						m_pandaDocument->addCommand(new DetachDockableCommand(prevDock, dockable));
 					if(newDock)
 						m_pandaDocument->addCommand(new AttachDockableCommand(newDock, dockable, newIndex));
 				}
-				else if(prevDock != defaultDock)
+				else if(prevDock != defaultDock) // (maybe) Changing place in the dock
 				{
 					int prevIndex = prevDock->getIndexOfDockable(dockable);
 					if(prevIndex != newIndex)
@@ -612,6 +613,8 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 					}
 					modifiedObject(prevDock);	// Always update
 				}
+				else if(defaultDock) // (maybe) Changing place in the default dock
+					sortDockable(dockable, defaultDock);
 			}
 		}
 
@@ -1217,4 +1220,42 @@ void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)
 void GraphView::setRecomputeTags()
 {
 	m_recomputeTags = true;
+}
+
+void GraphView::sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock)
+{
+	int prevIndex = defaultDock->getIndexOfDockable(dockable);
+	auto dockables = defaultDock->getDockedObjects();
+
+	std::sort(dockables.begin(), dockables.end(), [this](panda::DockableObject* lhs, panda::DockableObject* rhs){
+		auto lpos = m_objectDrawStructs[lhs]->getPosition();
+		auto rpos = m_objectDrawStructs[rhs]->getPosition();
+		if(lpos.y() == rpos.y())
+			return lpos.x() > rpos.x();
+		return lpos.y() < rpos.y();
+	});
+
+	auto iter = std::find(dockables.begin(), dockables.end(), dockable);
+	if(iter != dockables.end())
+	{
+		int newIndex = iter - dockables.begin();
+		if(newIndex == prevIndex)
+			return;
+
+		m_pandaDocument->addCommand(new ReorderDockableCommand(defaultDock, dockable, newIndex));
+	}
+}
+
+void GraphView::loadingFinished()
+{
+	for(const auto object : m_pandaDocument->getObjects())
+	{
+		const auto dockable = dynamic_cast<panda::DockableObject*>(object.data());
+		if(!dockable)
+			continue;
+		auto defaultDock = dockable->getDefaultDock();
+		auto parentDock = dockable->getParentDock();
+		if(defaultDock && parentDock == defaultDock)
+			sortDockable(dockable, defaultDock);
+	}
 }

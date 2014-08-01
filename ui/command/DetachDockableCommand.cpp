@@ -47,3 +47,28 @@ void AttachDockableCommand::undo()
 {
 	m_dock->removeDockable(m_dockable);
 }
+
+//****************************************************************************//
+
+ReorderDockableCommand::ReorderDockableCommand(panda::DockObject* dock,
+											 panda::DockableObject* dockable,
+											 int index,
+											 QUndoCommand* parent)
+	: QUndoCommand(parent)
+	, m_dock(dock)
+	, m_dockable(dockable)
+	, m_newIndex(index)
+{
+	m_oldIndex = dock->getIndexOfDockable(dockable);
+	setText(QCoreApplication::translate("ReorderDockableCommand", "reorder dockable object"));
+}
+
+void ReorderDockableCommand::redo()
+{
+	m_dock->reorderDockable(m_dockable, m_newIndex);
+}
+
+void ReorderDockableCommand::undo()
+{
+	m_dock->reorderDockable(m_dockable, m_oldIndex);
+}

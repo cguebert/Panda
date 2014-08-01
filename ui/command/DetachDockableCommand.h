@@ -39,4 +39,20 @@ protected:
 	int m_index;
 };
 
+//****************************************************************************//
+
+class ReorderDockableCommand : public QUndoCommand
+{
+public:
+	ReorderDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, int index, QUndoCommand* parent = nullptr);
+
+	virtual void redo();
+	virtual void undo();
+
+protected:
+	panda::DockObject* m_dock;
+	panda::DockableObject* m_dockable;
+	int m_oldIndex, m_newIndex;
+};
+
 #endif

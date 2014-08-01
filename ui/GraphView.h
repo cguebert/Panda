@@ -14,6 +14,8 @@ class BaseData;
 class Layer;
 class Renderer;
 class ScopedMacro;
+class DockableObject;
+class DockObject;
 }
 
 class LinkTag;
@@ -58,6 +60,9 @@ public:
 	void moveObjects(QList<panda::PandaObject*> objects, QPointF delta);
 
 	void setRecomputeTags(); /// Same as calling updateLinkTags, but it does it next redraw
+
+	/// Objects docked to the default docks are sorted by their height in the graph view
+	void sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock);
 
 protected:
 	void paintEvent(QPaintEvent* event);
@@ -107,6 +112,7 @@ public slots:
 	void updateLinkTags(bool reset=false);
 	void removeLink();
 	void hoverDataInfo();
+	void loadingFinished();
 
 private:
 	panda::PandaDocument* m_pandaDocument;

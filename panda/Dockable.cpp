@@ -47,7 +47,7 @@ void DockObject::doRemoveInput(DataNode* node)
 {
 	DataNode::doRemoveInput(node);
 
-	auto iter = std::find(m_dockedObjects.begin(), m_dockedObjects.end(), (DockableObject*)node);
+	const auto iter = std::find(m_dockedObjects.begin(), m_dockedObjects.end(), (DockableObject*)node);
 	if(iter != m_dockedObjects.end())
 	{
 		m_dockedObjects.erase(iter);
@@ -58,10 +58,27 @@ void DockObject::doRemoveInput(DataNode* node)
 
 int DockObject::getIndexOfDockable(DockableObject* dockable) const
 {
-	auto iter = std::find(m_dockedObjects.begin(), m_dockedObjects.end(), dockable);
+	const auto iter = std::find(m_dockedObjects.begin(), m_dockedObjects.end(), dockable);
 	if(iter != m_dockedObjects.end())
 		return iter - m_dockedObjects.begin();
 	return -1;
+}
+
+void DockObject::reorderDockable(DockableObject* dockable, int index)
+{
+	const auto iter = std::find(m_dockedObjects.begin(), m_dockedObjects.end(), (DockableObject*)dockable);
+	if(iter != m_dockedObjects.end())
+	{
+		const int oldIndex = iter - m_dockedObjects.begin();
+		if(oldIndex == index)
+			return;
+
+		m_dockedObjects.erase(iter);
+		m_dockedObjects.insert(m_dockedObjects.begin() + index, dockable);
+
+		setDirtyValue(this);
+		m_parentDocument->onModifiedObject(this);
+	}
 }
 
 void DockObject::removedFromDocument()
