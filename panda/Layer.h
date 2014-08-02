@@ -17,7 +17,7 @@ class BaseDrawTarget
 {
 public:
 	virtual QMatrix4x4& getMVPMatrix() = 0;
-	virtual QSize getLayerSize() = 0;
+	virtual QSize getLayerSize() const = 0;
 };
 
 class BaseLayer : public BaseDrawTarget
@@ -71,7 +71,7 @@ public:
 
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();
-	virtual QSize getLayerSize();
+	virtual QSize getLayerSize() const;
 
 	virtual void postCreate();
 	virtual void removedFromDocument();

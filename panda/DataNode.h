@@ -21,8 +21,8 @@ public:
 	virtual void addOutput(DataNode* node);
 	virtual void removeOutput(DataNode* node);
 
-	const NodesList& getInputs();
-	const NodesList& getOutputs();
+	const NodesList& getInputs() const;
+	const NodesList& getOutputs() const;
 
 	virtual void update() = 0; /// Do the action required to reset the dirty flag
 
@@ -45,10 +45,10 @@ protected:
 
 //****************************************************************************//
 
-inline const DataNode::NodesList& DataNode::getInputs()
+inline const DataNode::NodesList& DataNode::getInputs() const
 { return m_inputs; }
 
-inline const DataNode::NodesList& DataNode::getOutputs()
+inline const DataNode::NodesList& DataNode::getOutputs() const
 { return m_outputs; }
 
 inline bool DataNode::isDirty() const

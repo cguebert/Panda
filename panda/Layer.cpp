@@ -172,7 +172,7 @@ void Layer::removedFromDocument()
 		m_parentDocument->addCommand(new MoveLayerCommand(m_parentDocument, this, 0));
 }
 
-QSize Layer::getLayerSize()
+QSize Layer::getLayerSize() const
 {
 	return m_parentDocument->getRenderSize();
 }

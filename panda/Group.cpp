@@ -338,6 +338,8 @@ bool Group::ungroupSelection(PandaDocument* doc, GraphView* view)
 		doc->addCommand(new RemoveObjectCommand(doc, view, group));
 	}
 
+	view->sortAllDockables();
+
 	return true;
 }
 
@@ -672,16 +674,7 @@ BaseLayer::RenderersList GroupWithLayer::getRenderers()
 	if(m_layer)
 		return m_layer->getRenderers();
 	else
-	{
-		RenderersList renderers;
-		for(auto object : m_objects)
-		{
-			Renderer* renderer = dynamic_cast<Renderer*>(object.data());
-			if(renderer)
-				renderers.push_back(renderer);
-		}
-		return renderers;
-	}
+		return m_renderers;
 }
 
 void GroupWithLayer::addObject(ObjectPtr object)
@@ -703,6 +696,14 @@ void GroupWithLayer::addObject(ObjectPtr object)
 			defaultLayer->removeDockable(renderer);
 		renderer->setParentDock(nullptr);
 		addInput((DataNode*)renderer);
+
+		// Sort the renderers by their position in the view
+		auto rpos = m_positions[renderer].y();
+		auto iter = std::find_if(m_renderers.begin(), m_renderers.end(), [&](Renderer* val){
+			auto lpos = m_positions[val].y();
+			return lpos > rpos;
+		});
+		m_renderers.insert(iter, renderer);
 	}
 }
 
@@ -727,7 +728,7 @@ void GroupWithLayer::removedFromDocument()
 	}
 }
 
-QSize GroupWithLayer::getLayerSize()
+QSize GroupWithLayer::getLayerSize() const
 {
 	if(m_layer)
 		return m_layer->getLayerSize();

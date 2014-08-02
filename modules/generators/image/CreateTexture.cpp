@@ -46,7 +46,7 @@ public:
 		return mvpMatrix;
 	}
 
-	QSize getLayerSize()
+	QSize getLayerSize() const
 	{
 		return QSize(std::max(1, width.getValue()), std::max(1, height.getValue()));
 	}

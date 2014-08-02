@@ -48,8 +48,8 @@ public:
 
 	virtual void postCreate();
 	virtual void setParentDock(DockObject* dock);
-	virtual DockObject* getParentDock();
-	virtual DockObject* getDefaultDock();
+	virtual DockObject* getParentDock() const;
+	virtual DockObject* getDefaultDock() const;
 
 	virtual void removedFromDocument();
 
@@ -71,10 +71,10 @@ inline bool DockObject::accepts(DockableObject* /*dockable*/) const
 inline void DockableObject::setParentDock(DockObject* dock)
 { m_parentDock = dock; }
 
-inline DockObject* DockableObject::getParentDock()
+inline DockObject* DockableObject::getParentDock() const
 { return m_parentDock; }
 
-inline DockObject* DockableObject::getDefaultDock()
+inline DockObject* DockableObject::getDefaultDock() const
 { return nullptr; }
 
 } // namespace panda
