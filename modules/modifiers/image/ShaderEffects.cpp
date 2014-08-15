@@ -183,13 +183,13 @@ public:
 	{
 		PReal radius = m_radius.getValue() / 7;
 		m_radiusScaleW = radius / size.width();
-		m_radiusScaleW = radius / size.height();
+		m_radiusScaleH = radius / size.height();
 	}
 
 	void preparePass(int passId, QOpenGLShaderProgram& program)
 	{
 		if(!passId)
-			program.setUniformValue("radiusScale", m_radiusScaleW);
+			program.setUniformValue("radiusScale", m_radiusScaleH);
 		else
 			program.setUniformValue("radiusScale", m_radiusScaleW);
 	}
@@ -201,6 +201,61 @@ protected:
 
 int ModifierImage_GaussianBlurClass = RegisterObject<ModifierImage_GaussianBlur>("Modifier/Image/Effects/Gaussian blur")
 		.setDescription("Apply a gaussian blur to an image");
+
+//****************************************************************************//
+
+class ModifierImage_GaussianPyramid : public PandaObject
+{
+public:
+	PANDA_CLASS(ModifierImage_GaussianPyramid, PandaObject)
+
+	ModifierImage_GaussianPyramid(PandaDocument* doc)
+		: PandaObject(doc)
+		, m_input(initData(&m_input, "input", "The original image"))
+		, m_output(initData(&m_output, "output", "List of scaled down images"))
+		, m_levels(initData(&m_levels, 4, "levels", "Number of levels to use"))
+	{
+		addInput(&m_input);
+		addInput(&m_levels);
+
+		addOutput(&m_output);
+	}
+
+	void update()
+	{
+		cleanDirty();
+
+		const auto& inputVal = m_input.getValue();
+		GLuint inputTexId = inputVal.getTextureId();
+		int nbLevels = m_levels.getValue();
+		if(inputTexId && nbLevels)
+		{
+			QSize inputSize = inputVal.size();
+			auto outputAcc = m_output.getAccessor();
+			if(outputAcc.size() != nbLevels || outputAcc[0].size() != inputSize)
+			{
+				outputAcc.resize(nbLevels);
+				QSize size = inputSize;
+				for(int i=0; i<nbLevels; ++i)
+				{
+					auto newFbo = QSharedPointer<QOpenGLFramebufferObject>(new QOpenGLFramebufferObject(size));
+					outputAcc[i].setFbo(newFbo);
+					size /= 2;
+				}
+			}
+		}
+		else
+			m_output.getAccessor().clear();
+	}
+
+protected:
+	Data< ImageWrapper > m_input;
+	Data< QVector< ImageWrapper > > m_output;
+	Data< int > m_levels;
+};
+
+int ModifierImage_GaussianPyramidClass = RegisterObject<ModifierImage_GaussianPyramid>("Modifier/Image/Effects/Gaussian pyramid")
+		.setDescription("Create a stack of successively smaller images, each scaled down from the previous one");
 
 //****************************************************************************//
 /*
