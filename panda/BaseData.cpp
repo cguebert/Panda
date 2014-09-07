@@ -3,9 +3,7 @@
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
 
-#include <QApplication>
 #include <iostream>
-
 #include <typeindex>
 
 namespace panda
@@ -29,7 +27,7 @@ BaseData::BaseData(const BaseInitData& init)
 	if(init.data != this)
 	{
 		std::cerr << "Fatal error : wrong pointer in initData" << std::endl;
-		QCoreApplication::exit(-1);
+		exit(1);
 	}
 
 	if(m_owner)
