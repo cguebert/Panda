@@ -3,7 +3,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/Group.h>
 
-#include <ui/command/GroupCommand.h>
+#include <panda/command/GroupCommand.h>
 
 SelectGroupCommand::SelectGroupCommand(panda::PandaDocument* document,
 									   panda::Group* group,

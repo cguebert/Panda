@@ -2,7 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
-#include <panda/helper/Gl.h>
+#include <panda/helper/gl.h>
 
 #include <cmath>
 

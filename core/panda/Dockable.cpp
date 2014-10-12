@@ -1,7 +1,7 @@
 #include <panda/Dockable.h>
 #include <panda/PandaDocument.h>
 
-#include <ui/command/DetachDockableCommand.h>
+#include <panda/command/DockableCommand.h>
 
 namespace panda
 {

@@ -1,4 +1,5 @@
 TEMPLATE      = app
+TARGET		  = Panda
 HEADERS       = \
 	core/panda/BaseClass.h \
 	core/panda/BaseData.h \
@@ -16,6 +17,12 @@ HEADERS       = \
 	core/panda/PandaObject.h \
 	core/panda/Renderer.h \
 	core/panda/Scheduler.h \
+	core/panda/command/CommandId.h \
+	core/panda/command/DockableCommand.h \
+	core/panda/command/GroupCommand.h \
+	core/panda/command/LinkDatasCommand.h \
+	core/panda/command/MoveLayerCommand.h \
+	core/panda/command/RemoveGenericDataCommand.h \
 	core/panda/helper/Algorithm.h \
 	core/panda/helper/Factory.h \
 	core/panda/helper/Gl.h \
@@ -57,14 +64,8 @@ HEADERS       = \
 	ui/QuickCreateDialog.h \
 	ui/UpdateLoggerDialog.h \
 	ui/command/AddObjectCommand.h \
-	ui/command/CommandId.h \
-	ui/command/DetachDockableCommand.h \
-	ui/command/GroupCommand.h \
-	ui/command/LinkDatasCommand.h \
 	ui/command/ModifyAnnotationCommand.h \
-	ui/command/MoveLayerCommand.h \
 	ui/command/MoveObjectCommand.h \
-	ui/command/RemoveGenericDataCommand.h \
 	ui/command/RemoveObjectCommand.h \
 	ui/command/SetDataValueCommand.h \
 	ui/drawstruct/AnnotationDrawStruct.h \
@@ -100,6 +101,12 @@ SOURCES       = main.cpp \
 	core/panda/PandaObject.cpp \
 	core/panda/Renderer.cpp \
 	core/panda/Scheduler.cpp \
+	core/panda/command/CommandId.cpp \
+	core/panda/command/DockableCommand.cpp \
+	core/panda/command/GroupCommand.cpp \
+	core/panda/command/LinkDatasCommand.cpp \
+	core/panda/command/MoveLayerCommand.cpp \
+	core/panda/command/RemoveGenericDataCommand.cpp \
 	core/panda/helper/Factory.cpp \
 	core/panda/helper/GradientCache.cpp \
 	core/panda/helper/Perlin.cpp \
@@ -230,14 +237,8 @@ SOURCES       = main.cpp \
 	ui/QuickCreateDialog.cpp \
 	ui/UpdateLoggerDialog.cpp \
 	ui/command/AddObjectCommand.cpp \
-	ui/command/CommandId.cpp \
-	ui/command/DetachDockableCommand.cpp \
-	ui/command/GroupCommand.cpp \
-	ui/command/LinkDatasCommand.cpp \
 	ui/command/ModifyAnnotationCommand.cpp \
-	ui/command/MoveLayerCommand.cpp \
 	ui/command/MoveObjectCommand.cpp \
-	ui/command/RemoveGenericDataCommand.cpp \
 	ui/command/RemoveObjectCommand.cpp \
 	ui/drawstruct/AnnotationDrawStruct.cpp \
 	ui/drawstruct/DockableDrawStruct.cpp \

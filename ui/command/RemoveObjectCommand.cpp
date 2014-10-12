@@ -1,10 +1,10 @@
 #include <QCoreApplication>
 
 #include <panda/PandaDocument.h>
+#include <panda/command/CommandId.h>
+#include <panda/command/LinkDatasCommand.h>
 #include <ui/GraphView.h>
-#include <ui/command/CommandId.h>
 #include <ui/command/RemoveObjectCommand.h>
-#include <ui/command/LinkDatasCommand.h>
 
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 GraphView* view,

@@ -4,8 +4,8 @@
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
 
-#include <ui/command/LinkDatasCommand.h>
-#include <ui/command/RemoveGenericDataCommand.h>
+#include <panda/command/LinkDatasCommand.h>
+#include <panda/command/RemoveGenericDataCommand.h>
 
 #include <QApplication>
 

@@ -8,8 +8,8 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
 
-#include <ui/command/DetachDockableCommand.h>
-#include <ui/command/LinkDatasCommand.h>
+#include <panda/command/DockableCommand.h>
+#include <panda/command/LinkDatasCommand.h>
 #include <ui/command/MoveObjectCommand.h>
 
 #ifdef PANDA_LOG_EVENTS

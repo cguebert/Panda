@@ -2,9 +2,7 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
 
 #include <ui/command/AddObjectCommand.h>
-#include <ui/command/GroupCommand.h>
 #include <ui/command/RemoveObjectCommand.h>
-#include <ui/command/LinkDatasCommand.h>
 #include <ui/command/MoveObjectCommand.h>
 
 #include <panda/Group.h>
@@ -13,6 +11,8 @@
 #include <panda/Layer.h>
 #include <panda/Renderer.h>
 #include <panda/DataFactory.h>
+#include <panda/command/GroupCommand.h>
+#include <panda/command/LinkDatasCommand.h>
 
 #include <modules/generators/UserValue.h>
 

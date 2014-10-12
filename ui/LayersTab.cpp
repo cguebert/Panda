@@ -2,7 +2,7 @@
 
 #include <ui/LayersTab.h>
 #include <ui/command/SetDataValueCommand.h>
-#include <ui/command/MoveLayerCommand.h>
+#include <panda/command/MoveLayerCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/Layer.h>

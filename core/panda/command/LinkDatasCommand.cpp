@@ -1,8 +1,8 @@
 #include <QCoreApplication>
 
 #include <panda/PandaObject.h>
-#include <ui/command/CommandId.h>
-#include <ui/command/LinkDatasCommand.h>
+#include <panda/command/CommandId.h>
+#include <panda/command/LinkDatasCommand.h>
 
 LinkDatasCommand::LinkDatasCommand(panda::BaseData* targetData,
 								   panda::BaseData* parentData,

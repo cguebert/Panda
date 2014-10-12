@@ -1,4 +1,4 @@
-#include <ui/command/CommandId.h>
+#include <panda/command/CommandId.h>
 
 #include <QMap>
 #include <typeindex>

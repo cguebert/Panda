@@ -1,9 +1,9 @@
 #include <QCoreApplication>
 
 #include <panda/PandaDocument.h>
+#include <panda/command/CommandId.h>
 #include <ui/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
-#include <ui/command/CommandId.h>
 #include <ui/command/AddObjectCommand.h>
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,

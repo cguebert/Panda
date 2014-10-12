@@ -1,7 +1,7 @@
 #include <QCoreApplication>
 
 #include <ui/GraphView.h>
-#include <ui/command/CommandId.h>
+#include <panda/command/CommandId.h>
 #include <ui/command/MoveObjectCommand.h>
 
 MoveObjectCommand::MoveObjectCommand(GraphView* view,

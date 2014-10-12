@@ -7,7 +7,7 @@
 
 #include <QList>
 #include <algorithm>
-#include <panda/helper/Algorithm.h>
+#include <panda/helper/algorithm.h>
 
 #include <cmath>
 

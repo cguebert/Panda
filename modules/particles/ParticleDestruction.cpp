@@ -3,7 +3,7 @@
 #include <modules/particles/ParticleEffector.h>
 
 #include <panda/types/Rect.h>
-#include <panda/helper/Algorithm.h>
+#include <panda/helper/algorithm.h>
 #include <random>
 
 namespace panda {

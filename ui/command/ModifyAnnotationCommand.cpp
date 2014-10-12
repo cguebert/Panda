@@ -1,7 +1,7 @@
 #include <QCoreApplication>
 
+#include <panda/command/CommandId.h>
 #include <ui/drawstruct/AnnotationDrawStruct.h>
-#include <ui/command/CommandId.h>
 #include <ui/command/ModifyAnnotationCommand.h>
 
 MoveAnnotationTextCommand::MoveAnnotationTextCommand(AnnotationDrawStruct* drawStruct,

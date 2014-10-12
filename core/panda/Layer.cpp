@@ -6,7 +6,7 @@
 #include <QOpenGLFramebufferObject>
 #include <QCoreApplication>
 
-#include <ui/command/MoveLayerCommand.h>
+#include <panda/command/MoveLayerCommand.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>

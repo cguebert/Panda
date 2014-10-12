@@ -2,7 +2,7 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/Layer.h>
-#include <ui/command/MoveLayerCommand.h>
+#include <panda/command/MoveLayerCommand.h>
 
 MoveLayerCommand::MoveLayerCommand(panda::PandaDocument* document,
 								   panda::PandaObject* layer,

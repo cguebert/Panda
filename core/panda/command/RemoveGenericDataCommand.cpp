@@ -1,7 +1,7 @@
 #include <QCoreApplication>
 
 #include <panda/GenericObject.h>
-#include <ui/command/RemoveGenericDataCommand.h>
+#include <panda/command/RemoveGenericDataCommand.h>
 
 RemoveGenericDataCommand::RemoveGenericDataCommand(panda::GenericObject* object,
 												   int type,

@@ -2,7 +2,7 @@
 #define RENDERER_H
 
 #include <panda/Dockable.h>
-#include <panda/helper/Gl.h>
+#include <panda/helper/gl.h>
 #include <QMatrix4x4>
 
 namespace panda

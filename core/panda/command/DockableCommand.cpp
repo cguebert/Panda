@@ -1,7 +1,7 @@
 #include <QCoreApplication>
 
 #include <panda/Dockable.h>
-#include <ui/command/DetachDockableCommand.h>
+#include <panda/command/DockableCommand.h>
 
 DetachDockableCommand::DetachDockableCommand(panda::DockObject* dock,
 											 panda::DockableObject* dockable,

@@ -5,7 +5,7 @@
 #include <QCoreApplication>
 
 #include <panda/Data.h>
-#include <ui/command/CommandId.h>
+#include <panda/command/CommandId.h>
 
 template <class T>
 class SetDataValueCommand : public QUndoCommand
