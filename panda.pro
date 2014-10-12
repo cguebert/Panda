@@ -52,6 +52,7 @@ HEADERS       = \
 	modules/particles/ParticleEngine.h \
 	modules/particles/ParticleEffector.h \
 	ui/Annotation.h \
+	ui/CreateGroup.h \
 	ui/DatasTable.h \
 	ui/EditGroupDialog.h \
 	ui/GraphView.h \
@@ -225,6 +226,7 @@ SOURCES       = main.cpp \
 	modules/render/modifiers/RenderModifierBlend.cpp \
 	modules/render/modifiers/RenderModifierTransformations.cpp \
 	ui/Annotation.cpp \
+	ui/CreateGroup.cpp \
 	ui/DatasTable.cpp \
 	ui/EditGroupDialog.cpp \
 	ui/GraphView.cpp \

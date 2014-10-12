@@ -1,5 +1,6 @@
 #include <QtWidgets>
 
+#include <ui/CreateGroup.h>
 #include <ui/DatasTable.h>
 #include <ui/EditGroupDialog.h>
 #include <ui/GraphView.h>
@@ -804,14 +805,14 @@ void MainWindow::del()
 
 void MainWindow::group()
 {
-	bool res = panda::Group::createGroup(m_document, m_graphView);
+	bool res = panda::createGroup(m_document, m_graphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not create a group from the selection"), 2000);
 }
 
 void MainWindow::ungroup()
 {
-	bool res = panda::Group::ungroupSelection(m_document, m_graphView);
+	bool res = panda::ungroupSelection(m_document, m_graphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not ungroup the selection"), 2000);
 }

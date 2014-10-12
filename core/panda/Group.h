@@ -5,8 +5,6 @@
 #include <panda/Layer.h>
 
 class EditGroupCommand;
-class GraphView;
-
 namespace panda
 {
 
@@ -21,9 +19,6 @@ public:
 
 	explicit Group(PandaDocument* parent = nullptr);
 	virtual ~Group();
-
-	static bool createGroup(PandaDocument* doc, GraphView* view);
-	static bool ungroupSelection(PandaDocument* doc, GraphView* view);
 
 	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected = nullptr);
 	virtual void load(QDomElement& elem);
@@ -42,18 +37,34 @@ public:
 	virtual void beginStep();
 	virtual void endStep();
 
-	const QList<const BaseData*> getGroupDatas() const;
+	typedef QSharedPointer<BaseData> DataPtr;
+	typedef QList<DataPtr> GroupDataList;
+
+	void addGroupData(DataPtr data);
+	const GroupDataList& getGroupDatas(); // Can modify the datas, not the list
+
+	void setPosition(PandaObject* object, QPointF pos);
+	QPointF getPosition(PandaObject* object) const;
 
 protected:
 	Data<QString> m_groupName;
 
 	ObjectsList m_objects;
 	QMap<PandaObject*, QPointF> m_positions;
-	QList< QSharedPointer<BaseData> > m_groupDatas;
-
-	BaseData* duplicateData(BaseData* data);
-	QString findAvailableDataName(QString baseName, BaseData* data=nullptr);
+	GroupDataList m_groupDatas;
 };
+
+inline void Group::addGroupData(DataPtr data)
+{ m_groupDatas.push_back(data); }
+
+inline const Group::GroupDataList& Group::getGroupDatas()
+{ return m_groupDatas; }
+
+inline void Group::setPosition(PandaObject* object, QPointF pos)
+{ m_positions[object] = pos; }
+
+inline QPointF Group::getPosition(PandaObject* object) const
+{ return m_positions.value(object); }
 
 //****************************************************************************//
 

@@ -48,7 +48,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget* parent)
 	int rowIndex = 0;
 	for(auto data : groupDatas)
 	{
-		populateRow(rowIndex, const_cast<panda::BaseData*>(data));
+		populateRow(rowIndex, const_cast<panda::BaseData*>(data.data()));
 		++rowIndex;
 	}
 
