@@ -1,49 +1,49 @@
 TEMPLATE      = app
 HEADERS       = \
+	core/panda/BaseClass.h \
+	core/panda/BaseData.h \
+	core/panda/Data.h \
+	core/panda/DataAccessor.h \
+	core/panda/DataCopier.h \
+	core/panda/DataFactory.h \
+	core/panda/DataNode.h \
+	core/panda/Dockable.h \
+	core/panda/GenericObject.h \
+	core/panda/Group.h \
+	core/panda/Layer.h \
+	core/panda/ObjectFactory.h \
+	core/panda/PandaDocument.h \
+	core/panda/PandaObject.h \
+	core/panda/Renderer.h \
+	core/panda/Scheduler.h \
+	core/panda/helper/Algorithm.h \
+	core/panda/helper/Factory.h \
+	core/panda/helper/Gl.h \
+	core/panda/helper/GradientCache.h \
+	core/panda/helper/Perlin.h \
+	core/panda/helper/PointsGrid.h \
+	core/panda/helper/Polygon.h \
+	core/panda/helper/Random.h \
+	core/panda/helper/ShaderCache.h \
+	core/panda/helper/UpdateLogger.h \
+	core/panda/helper/system/Config.h \
+	core/panda/types/Animation.h \
+	core/panda/types/AnimationTraits.h \
+	core/panda/types/Color.h \
+	core/panda/types/DataTraits.h \
+	core/panda/types/DataTypeId.h \
+	core/panda/types/Gradient.h \
+	core/panda/types/ImageWrapper.h \
+	core/panda/types/Mesh.h \
+	core/panda/types/Path.h \
+	core/panda/types/Point.h \
+	core/panda/types/Rect.h \
+	core/panda/types/Shader.h \
+	core/panda/types/TypeConverter.h \
 	modules/generators/UserValue.h \
 	modules/particles/Particle.h \
 	modules/particles/ParticleEngine.h \
 	modules/particles/ParticleEffector.h \
-	panda/BaseClass.h \
-	panda/BaseData.h \
-	panda/Data.h \
-	panda/DataAccessor.h \
-	panda/DataCopier.h \
-	panda/DataFactory.h \
-	panda/DataNode.h \
-	panda/Dockable.h \
-	panda/GenericObject.h \
-	panda/Group.h \
-	panda/Layer.h \
-	panda/ObjectFactory.h \
-	panda/PandaDocument.h \
-	panda/PandaObject.h \
-	panda/Renderer.h \
-	panda/Scheduler.h \
-	panda/helper/Algorithm.h \
-	panda/helper/Factory.h \
-	panda/helper/Gl.h \
-	panda/helper/GradientCache.h \
-	panda/helper/Perlin.h \
-	panda/helper/PointsGrid.h \
-	panda/helper/Polygon.h \
-	panda/helper/Random.h \
-	panda/helper/ShaderCache.h \
-	panda/helper/UpdateLogger.h \
-	panda/helper/system/Config.h \
-	panda/types/Animation.h \
-	panda/types/AnimationTraits.h \
-	panda/types/Color.h \
-	panda/types/DataTraits.h \
-	panda/types/DataTypeId.h \
-	panda/types/Gradient.h \
-	panda/types/ImageWrapper.h \
-	panda/types/Mesh.h \
-	panda/types/Path.h \
-	panda/types/Point.h \
-	panda/types/Rect.h \
-	panda/types/Shader.h \
-	panda/types/TypeConverter.h \
 	ui/Annotation.h \
 	ui/DatasTable.h \
 	ui/EditGroupDialog.h \
@@ -86,6 +86,41 @@ HEADERS       = \
 	ui/widget/StructTraits.h \
 	ui/widget/TableDataWidgetDialog.h
 SOURCES       = main.cpp \
+	core/panda/BaseClass.cpp \
+	core/panda/BaseData.cpp \
+	core/panda/Data.inl \
+	core/panda/DataFactory.cpp \
+	core/panda/DataNode.cpp \
+	core/panda/Dockable.cpp \
+	core/panda/GenericObject.cpp \
+	core/panda/Group.cpp \
+	core/panda/Layer.cpp \
+	core/panda/ObjectFactory.cpp \
+	core/panda/PandaDocument.cpp \
+	core/panda/PandaObject.cpp \
+	core/panda/Renderer.cpp \
+	core/panda/Scheduler.cpp \
+	core/panda/helper/Factory.cpp \
+	core/panda/helper/GradientCache.cpp \
+	core/panda/helper/Perlin.cpp \
+	core/panda/helper/PointsGrid.cpp \
+	core/panda/helper/Polygon.cpp \
+	core/panda/helper/Random.cpp \
+	core/panda/helper/ShaderCache.cpp \
+	core/panda/helper/UpdateLogger.cpp \
+	core/panda/types/Animation.inl \
+	core/panda/types/Color.cpp \
+	core/panda/types/DataTraits.cpp \
+	core/panda/types/DataTypeId.cpp \
+	core/panda/types/Gradient.cpp \
+	core/panda/types/ImageWrapper.cpp \
+	core/panda/types/Mesh.cpp \
+	core/panda/types/Path.cpp \
+	core/panda/types/Point.cpp \
+	core/panda/types/Rect.cpp \
+	core/panda/types/Shader.cpp \
+	core/panda/types/StandardTypes.cpp \
+	core/panda/types/TypeConverter.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
 	modules/animation/AnimValue.cpp \
@@ -182,41 +217,6 @@ SOURCES       = main.cpp \
 	modules/render/RenderTriangle.cpp \
 	modules/render/modifiers/RenderModifierBlend.cpp \
 	modules/render/modifiers/RenderModifierTransformations.cpp \
-	panda/BaseClass.cpp \
-	panda/BaseData.cpp \
-	panda/Data.inl \
-	panda/DataFactory.cpp \
-	panda/DataNode.cpp \
-	panda/Dockable.cpp \
-	panda/GenericObject.cpp \
-	panda/Group.cpp \
-	panda/Layer.cpp \
-	panda/ObjectFactory.cpp \
-	panda/PandaDocument.cpp \
-	panda/PandaObject.cpp \
-	panda/Renderer.cpp \
-	panda/Scheduler.cpp \
-	panda/helper/Factory.cpp \
-	panda/helper/GradientCache.cpp \
-	panda/helper/Perlin.cpp \
-	panda/helper/PointsGrid.cpp \
-	panda/helper/Polygon.cpp \
-	panda/helper/Random.cpp \
-	panda/helper/ShaderCache.cpp \
-	panda/helper/UpdateLogger.cpp \
-	panda/types/Animation.inl \
-	panda/types/Color.cpp \
-	panda/types/DataTraits.cpp \
-	panda/types/DataTypeId.cpp \
-	panda/types/Gradient.cpp \
-	panda/types/ImageWrapper.cpp \
-	panda/types/Mesh.cpp \
-	panda/types/Path.cpp \
-	panda/types/Point.cpp \
-	panda/types/Rect.cpp \
-	panda/types/Shader.cpp \
-	panda/types/StandardTypes.cpp \
-	panda/types/TypeConverter.cpp \
 	ui/Annotation.cpp \
 	ui/DatasTable.cpp \
 	ui/EditGroupDialog.cpp \
@@ -270,4 +270,5 @@ DEFINES +=	PANDA_LOG_EVENTS \
 BOOST="../boost_1_56_0"
 
 INCLUDEPATH += $${BOOST}/
+INCLUDEPATH += "core"
 LIBPATH += $${BOOST}/stage/lib
