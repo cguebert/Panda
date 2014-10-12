@@ -167,14 +167,14 @@ public:
 	{
 		if(!passId)
 		{
-			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/effects/GBlurH.v.glsl");
-			program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/effects/GBlur.f.glsl");
+			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/share/shaders/effects/GBlurH.v.glsl");
+			program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/share/shaders/effects/GBlur.f.glsl");
 			program.link();
 		}
 		else
 		{
-			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/effects/GBlurV.v.glsl");
-			program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/effects/GBlur.f.glsl");
+			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/share/shaders/effects/GBlurV.v.glsl");
+			program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/share/shaders/effects/GBlur.f.glsl");
 			program.link();
 		}
 	}

@@ -45,7 +45,7 @@ MainWindow::MainWindow()
 
 	createGroupRegistryMenu();
 
-	setWindowIcon(QIcon(":/images/icon.png"));
+	setWindowIcon(QIcon(":/share/icons/icon.png"));
 	setCurrentFile("");
 
 	m_datasTable = new DatasTable(m_document, this);
@@ -183,24 +183,24 @@ void MainWindow::documentModified()
 void MainWindow::createActions()
 {
 	m_newAction = new QAction(tr("&New"), this);
-	m_newAction->setIcon(QIcon(":/images/new.png"));
+	m_newAction->setIcon(QIcon(":/share/icons/new.png"));
 	m_newAction->setShortcut(QKeySequence::New);
 	m_newAction->setStatusTip(tr("Create a new panda document"));
 	connect(m_newAction, SIGNAL(triggered()), this, SLOT(newFile()));
 
 	m_openAction = new QAction(tr("&Open..."), this);
-	m_openAction->setIcon(QIcon(":/images/open.png"));
+	m_openAction->setIcon(QIcon(":/share/icons/open.png"));
 	m_openAction->setShortcut(QKeySequence::Open);
 	m_openAction->setStatusTip(tr("Open an existing panda document"));
 	connect(m_openAction, SIGNAL(triggered()), this, SLOT(open()));
 
 	m_importAction = new QAction(tr("&Import..."), this);
-	m_importAction->setIcon(QIcon(":/images/open.png"));
+	m_importAction->setIcon(QIcon(":/share/icons/open.png"));
 	m_importAction->setStatusTip(tr("Import an existing panda document into the current one"));
 	connect(m_importAction, SIGNAL(triggered()), this, SLOT(import()));
 
 	m_saveAction = new QAction(tr("&Save"), this);
-	m_saveAction->setIcon(QIcon(":/images/save.png"));
+	m_saveAction->setIcon(QIcon(":/share/icons/save.png"));
 	m_saveAction->setShortcut(QKeySequence::Save);
 	m_saveAction->setStatusTip(tr("Save the document to disk"));
 	connect(m_saveAction, SIGNAL(triggered()), this, SLOT(save()));
@@ -223,21 +223,21 @@ void MainWindow::createActions()
 	connect(m_exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
 	m_cutAction = new QAction(tr("Cu&t"), this);
-	m_cutAction->setIcon(QIcon(":/images/cut.png"));
+	m_cutAction->setIcon(QIcon(":/share/icons/cut.png"));
 	m_cutAction->setShortcut(QKeySequence::Cut);
 	m_cutAction->setStatusTip(tr("Cut the current selection's contents to the clipboard"));
 	connect(m_cutAction, SIGNAL(triggered()), this, SLOT(cut()));
 	addAction(m_cutAction);
 
 	m_copyAction = new QAction(tr("&Copy"), this);
-	m_copyAction->setIcon(QIcon(":/images/copy.png"));
+	m_copyAction->setIcon(QIcon(":/share/icons/copy.png"));
 	m_copyAction->setShortcut(QKeySequence::Copy);
 	m_copyAction->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
 	connect(m_copyAction, SIGNAL(triggered()), m_document, SLOT(copy()));
 	addAction(m_copyAction);
 
 	m_pasteAction = new QAction(tr("&Paste"), this);
-	m_pasteAction->setIcon(QIcon(":/images/paste.png"));
+	m_pasteAction->setIcon(QIcon(":/share/icons/paste.png"));
 	m_pasteAction->setShortcut(QKeySequence::Paste);
 	m_pasteAction->setStatusTip(tr("Paste the clipboard's contents into the current selection"));
 	connect(m_pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
@@ -368,7 +368,7 @@ void MainWindow::createActions()
 	connect(m_aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
 	m_playAction = new QAction(tr("Play"), this);
-	m_playAction->setIcon(QIcon(":/images/play.png"));
+	m_playAction->setIcon(QIcon(":/share/icons/play.png"));
 	m_playAction->setShortcut(tr("F5"));
 	m_playAction->setStatusTip(tr("Start the animation"));
 	m_playAction->setCheckable(true);
@@ -377,14 +377,14 @@ void MainWindow::createActions()
 	addAction(m_playAction);
 
 	m_stepAction = new QAction(tr("Step"), this);
-	m_stepAction->setIcon(QIcon(":/images/step.png"));
+	m_stepAction->setIcon(QIcon(":/share/icons/step.png"));
 	m_stepAction->setShortcut(tr("F6"));
 	m_stepAction->setStatusTip(tr("Do one step of the animation"));
 	connect(m_stepAction, SIGNAL(triggered()), m_document, SLOT(step()));
 	addAction(m_stepAction);
 
 	m_rewindAction = new QAction(tr("Rewind"), this);
-	m_rewindAction->setIcon(QIcon(":/images/stop.png"));
+	m_rewindAction->setIcon(QIcon(":/share/icons/stop.png"));
 	m_rewindAction->setShortcut(tr("F7"));
 	m_rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
 	connect(m_rewindAction, SIGNAL(triggered()), m_document, SLOT(rewind()));

@@ -687,8 +687,8 @@ void PandaDocument::update()
 	if(!m_mergeLayersShader)
 	{
 		m_mergeLayersShader.reset(new QOpenGLShaderProgram());
-		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/mergeLayers.v.glsl");
-		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/mergeLayers.f.glsl");
+		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/share/shaders/mergeLayers.v.glsl");
+		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/share/shaders/mergeLayers.f.glsl");
 		m_mergeLayersShader->link();
 		m_mergeLayersShader->bind();
 

@@ -36,8 +36,8 @@ public:
 									  "Xor;Plus;Multiply;Screen;Overlay;Darken;Lighten;"
 									  "ColorDodge;ColorBurn;HardLight;SoftLight;Difference;Exclusion");
 
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/mergeLayers.v.glsl");
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/mergeLayers.f.glsl");
+		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/share/shaders/mergeLayers.v.glsl");
+		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/share/shaders/mergeLayers.f.glsl");
 		m_shaderProgram.link();
 
 		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
