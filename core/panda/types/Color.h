@@ -1,7 +1,12 @@
 #ifndef TYPES_COLOR_H
 #define TYPES_COLOR_H
 
-#include <panda/helper/system/Config.h>
+#include <panda/core.h>
+
+#ifndef PANDA_BUILD_CORE
+#include <panda/types/Animation.h>
+#include <panda/Data.h>
+#endif
 
 #include <cstdint>
 #include <cassert>
@@ -12,7 +17,7 @@ namespace panda
 namespace types
 {
 
-class Color
+class PANDA_CORE_API Color
 {
 public:
 	float r, g, b, a; // Format of OpenGL
@@ -178,6 +183,13 @@ inline Color Color::black()
 
 inline Color Color::white()
 { return Color(1, 1, 1, 1); }
+
+#ifndef PANDA_BUILD_CORE
+extern template class PANDA_CORE_API Data<Color>;
+extern template class PANDA_CORE_API Data< QVector<Color> >;
+extern template class PANDA_CORE_API Animation<Color>;
+extern template class PANDA_CORE_API Data< Animation<Color> >;
+#endif
 
 } // namespace types
 

@@ -5,7 +5,7 @@
 #include <panda/types/AnimationTraits.h>
 
 #include <panda/DataFactory.h>
-#include <panda/Data.inl>
+#include <panda/Data.h>
 
 namespace panda
 {
@@ -21,9 +21,9 @@ Path& Path::operator=(const QVector<Point> &v)
 
 //****************************************************************************//
 
-template<> QString DataTrait<Path>::valueTypeName() { return "path"; }
-template<> int DataTrait<Path>::size(const Path& v) { return v.size(); }
-template<> void DataTrait<Path>::clear(Path& v, int size, bool init)
+template<> PANDA_CORE_API QString DataTrait<Path>::valueTypeName() { return "path"; }
+template<> PANDA_CORE_API int DataTrait<Path>::size(const Path& v) { return v.size(); }
+template<> PANDA_CORE_API void DataTrait<Path>::clear(Path& v, int size, bool init)
 {
 	if(init)
 		v.clear();
@@ -31,7 +31,7 @@ template<> void DataTrait<Path>::clear(Path& v, int size, bool init)
 }
 
 template<>
-void DataTrait<Path>::writeValue(QDomDocument& doc, QDomElement& elem, const Path& path)
+PANDA_CORE_API void DataTrait<Path>::writeValue(QDomDocument& doc, QDomElement& elem, const Path& path)
 {
 	auto pointTrait = DataTraitsList::getTraitOf<Point>();
 	for(const auto& pt : path)
@@ -43,7 +43,7 @@ void DataTrait<Path>::writeValue(QDomDocument& doc, QDomElement& elem, const Pat
 }
 
 template<>
-void DataTrait<Path>::readValue(QDomElement& elem, Path& path)
+PANDA_CORE_API void DataTrait<Path>::readValue(QDomElement& elem, Path& path)
 {
 	path.clear();
 	auto pointTrait = DataTraitsList::getTraitOf<Point>();
@@ -58,8 +58,8 @@ void DataTrait<Path>::readValue(QDomElement& elem, Path& path)
 	}
 }
 
-template class Data< Path >;
-template class Data< QVector<Path> >;
+template class PANDA_CORE_API Data< Path >;
+template class PANDA_CORE_API Data< QVector<Path> >;
 
 int pathDataClass = RegisterData< Path >();
 int pathVectorDataClass = RegisterData< QVector<Path> >();

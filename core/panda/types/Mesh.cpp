@@ -1,7 +1,7 @@
 #include <panda/types/Mesh.h>
 
 #include <panda/DataFactory.h>
-#include <panda/Data.inl>
+#include <panda/Data.h>
 
 #include <QMap>
 #include <set>
@@ -532,11 +532,11 @@ void Mesh::clear()
 
 //****************************************************************************//
 
-template<> QString DataTrait<Mesh>::valueTypeName() { return "mesh"; }
-template<> QString DataTrait<Mesh>::valueTypeNamePlural() { return "meshes"; }
+template<> PANDA_CORE_API QString DataTrait<Mesh>::valueTypeName() { return "mesh"; }
+template<> PANDA_CORE_API QString DataTrait<Mesh>::valueTypeNamePlural() { return "meshes"; }
 
 template<>
-void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& elem, const Mesh& v)
+PANDA_CORE_API void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& elem, const Mesh& v)
 {
 	for(const auto& p : v.getPoints())
 	{
@@ -565,7 +565,7 @@ void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& elem, const Mes
 }
 
 template<>
-void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
+PANDA_CORE_API void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
 {
 	Mesh tmpMesh;
 

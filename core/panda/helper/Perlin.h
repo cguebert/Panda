@@ -26,7 +26,7 @@
 #ifndef HELPER_PERLIN_H
 #define HELPER_PERLIN_H
 
-#include <panda/helper/system/Config.h>
+#include <panda/core.h>
 #include <panda/types/Point.h>
 
 #include <QVector3D>
@@ -38,7 +38,7 @@ namespace panda
 namespace helper
 {
 
-class Perlin
+class PANDA_CORE_API Perlin
 {
  public:
 	Perlin(uint8_t octaves = 4);

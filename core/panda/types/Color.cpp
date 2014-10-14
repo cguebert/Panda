@@ -4,7 +4,6 @@
 #include <panda/types/AnimationTraits.h>
 
 #include <panda/DataFactory.h>
-#include <panda/Data.inl>
 
 #include <cmath>
 
@@ -107,10 +106,10 @@ Color Color::fromHex(uint32_t hexValue)
 
 //****************************************************************************//
 
-template<> QString DataTrait<Color>::valueTypeName() { return "color"; }
+template<> PANDA_CORE_API QString DataTrait<Color>::valueTypeName() { return "color"; }
 
 template<>
-void DataTrait<Color>::writeValue(QDomDocument&, QDomElement& elem, const Color& v)
+PANDA_CORE_API void DataTrait<Color>::writeValue(QDomDocument&, QDomElement& elem, const Color& v)
 {
 	elem.setAttribute("r", v.r);
 	elem.setAttribute("g", v.g);
@@ -119,7 +118,7 @@ void DataTrait<Color>::writeValue(QDomDocument&, QDomElement& elem, const Color&
 }
 
 template<>
-void DataTrait<Color>::readValue(QDomElement& elem, Color& v)
+PANDA_CORE_API void DataTrait<Color>::readValue(QDomElement& elem, Color& v)
 {
 	Color c;
 	c.r = elem.attribute("r").toFloat();
@@ -131,11 +130,11 @@ void DataTrait<Color>::readValue(QDomElement& elem, Color& v)
 
 //****************************************************************************//
 
-template class Data<Color>;
-template class Data< QVector<Color> >;
+template class PANDA_CORE_API Data<Color>;
+template class PANDA_CORE_API Data< QVector<Color> >;
 
-template class Animation<Color>;
-template class Data< Animation<Color> >;
+template class PANDA_CORE_API Animation<Color>;
+template class PANDA_CORE_API Data< Animation<Color> >;
 
 int colorDataClass = RegisterData< Color >();
 int colorVectorDataClass = RegisterData< QVector<Color> >();

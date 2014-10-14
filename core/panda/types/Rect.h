@@ -1,7 +1,9 @@
 #ifndef TYPES_RECT_H
 #define TYPES_RECT_H
 
+#include <panda/core.h>
 #include <panda/types/Point.h>
+
 #include <utility>
 
 namespace panda
@@ -10,7 +12,7 @@ namespace panda
 namespace types
 {
 
-class Rect
+class PANDA_CORE_API Rect
 {
 public:
 	PReal x1, y1, x2, y2;

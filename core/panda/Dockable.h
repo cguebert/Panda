@@ -11,7 +11,7 @@ namespace panda
 
 class DockableObject;
 
-class DockObject : public PandaObject
+class PANDA_CORE_API DockObject : public PandaObject
 {
 public:
 	PANDA_CLASS(DockObject, PandaObject)
@@ -39,7 +39,7 @@ protected:
 
 //****************************************************************************//
 
-class DockableObject : public PandaObject
+class PANDA_CORE_API DockableObject : public PandaObject
 {
 public:
 	PANDA_CLASS(DockableObject, PandaObject)

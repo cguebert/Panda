@@ -1,7 +1,6 @@
-#include <panda/helper/system/Config.h>
 #include <panda/DataFactory.h>
-#include <panda/Data.inl>
 
+#include <panda/types/StandardTypes.h>
 #include <panda/types/Animation.inl>
 #include <panda/types/AnimationTraits.h>
 
@@ -14,23 +13,23 @@ namespace panda
 namespace types
 {
 
-template<> QString DataTrait<int>::valueTypeName() { return "integer"; }
-template<> QString DataTrait<PReal>::valueTypeName() { return "real"; }
-template<> QString DataTrait<QString>::valueTypeName() { return "text"; }
+template<> PANDA_CORE_API QString DataTrait<int>::valueTypeName() { return "integer"; }
+template<> PANDA_CORE_API QString DataTrait<PReal>::valueTypeName() { return "real"; }
+template<> PANDA_CORE_API QString DataTrait<QString>::valueTypeName() { return "text"; }
 
 //****************************************************************************//
 // Overrides for writeValue xml
 
 template<>
-void DataTrait<int>::writeValue(QDomDocument&, QDomElement& elem, const int& v)
+PANDA_CORE_API void DataTrait<int>::writeValue(QDomDocument&, QDomElement& elem, const int& v)
 { elem.setAttribute("int", v); }
 
 template<>
-void DataTrait<PReal>::writeValue(QDomDocument&, QDomElement& elem, const PReal& v)
+PANDA_CORE_API void DataTrait<PReal>::writeValue(QDomDocument&, QDomElement& elem, const PReal& v)
 { elem.setAttribute("real", v); }
 
 template<>
-void DataTrait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const QString& v)
+PANDA_CORE_API void DataTrait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const QString& v)
 {
 	QDomText node = doc.createTextNode(v);
 	elem.appendChild(node);
@@ -40,11 +39,11 @@ void DataTrait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const 
 // Overrides for readValue xml
 
 template<>
-void DataTrait<int>::readValue(QDomElement& elem, int& v)
+PANDA_CORE_API void DataTrait<int>::readValue(QDomElement& elem, int& v)
 { v = elem.attribute("int").toInt(); }
 
 template<>
-void DataTrait<PReal>::readValue(QDomElement& elem, PReal& v)
+PANDA_CORE_API void DataTrait<PReal>::readValue(QDomElement& elem, PReal& v)
 #ifdef PANDA_DOUBLE
 { v = elem.attribute("real").toDouble(); }
 #else
@@ -52,7 +51,7 @@ void DataTrait<PReal>::readValue(QDomElement& elem, PReal& v)
 #endif
 
 template<>
-void DataTrait<QString>::readValue(QDomElement& elem, QString& v)
+PANDA_CORE_API void DataTrait<QString>::readValue(QDomElement& elem, QString& v)
 { v = elem.text(); }
 
 //****************************************************************************//

@@ -1,10 +1,10 @@
 #ifndef HELPER_FACTORY_H
 #define HELPER_FACTORY_H
 
+#include <panda/BaseClass.h>
+
 #include <QString>
 #include <QMultiMap>
-
-#include <panda/BaseClass.h>
 
 namespace panda
 {

@@ -1,9 +1,9 @@
 #ifndef TYPES_ANIMATION_H
 #define TYPES_ANIMATION_H
 
-#include <panda/helper/system/Config.h>
+#include <panda/core.h>
 #include <QVector>
-#include <QColor>
+#include <QPair>
 
 namespace panda
 {
@@ -19,7 +19,7 @@ template<class T> T interpolate(const T& v1, const T& v2, PReal amt)
 }
 
 template <class T>
-class Animation
+class PANDA_CORE_API Animation
 {
 public:
 	typedef T value_type;

@@ -1,7 +1,7 @@
 #include <panda/types/ImageWrapper.h>
 
 #include <panda/DataFactory.h>
-#include <panda/Data.inl>
+#include <panda/Data.h>
 
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLTexture>
@@ -174,13 +174,13 @@ bool ImageWrapper::operator!=(const ImageWrapper& img) const
 
 //****************************************************************************//
 
-template<> QString DataTrait<ImageWrapper>::valueTypeName() { return "image"; }
+template<> PANDA_CORE_API QString DataTrait<ImageWrapper>::valueTypeName() { return "image"; }
 
-template<> void DataTrait<ImageWrapper>::writeValue(QDomDocument&, QDomElement&, const ImageWrapper&) {}
-template<> void DataTrait<ImageWrapper>::readValue(QDomElement&, ImageWrapper&) {}
+template<> PANDA_CORE_API void DataTrait<ImageWrapper>::writeValue(QDomDocument&, QDomElement&, const ImageWrapper&) {}
+template<> PANDA_CORE_API void DataTrait<ImageWrapper>::readValue(QDomElement&, ImageWrapper&) {}
 
-template<> bool DataTrait<ImageWrapper>::isDisplayed() { return false; }
-template<> bool DataTrait<ImageWrapper>::isPersistent() { return false; }
+template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isDisplayed() { return false; }
+template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isPersistent() { return false; }
 
 template class Data< ImageWrapper >;
 template class Data< QVector<ImageWrapper> >;

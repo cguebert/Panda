@@ -2,7 +2,7 @@
 #include <panda/helper/ShaderCache.h>
 
 #include <panda/DataFactory.h>
-#include <panda/Data.inl>
+#include <panda/Data.h>
 
 #include <boost/mpl/for_each.hpp>
 
@@ -214,12 +214,21 @@ template<> void ShaderValue< QVector<Point> >::apply(QOpenGLShaderProgram& progr
 		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 2);
 }
 
+template class PANDA_CORE_API ShaderValue<int>;
+template class PANDA_CORE_API ShaderValue<PReal>;
+template class PANDA_CORE_API ShaderValue<Color>;
+template class PANDA_CORE_API ShaderValue<Point>;
+template class PANDA_CORE_API ShaderValue<QVector<int>>;
+template class PANDA_CORE_API ShaderValue<QVector<PReal>>;
+template class PANDA_CORE_API ShaderValue<QVector<Color>>;
+template class PANDA_CORE_API ShaderValue<QVector<Point>>;
+
 //****************************************************************************//
 
-template<> QString DataTrait<Shader>::valueTypeName() { return "shader"; }
+template<> PANDA_CORE_API QString DataTrait<Shader>::valueTypeName() { return "shader"; }
 
 template<>
-void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement& elem, const Shader& v)
+PANDA_CORE_API void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement& elem, const Shader& v)
 {
 	auto sources = v.getSources();
 
@@ -246,7 +255,7 @@ void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement& elem, const S
 }
 
 template<>
-void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
+PANDA_CORE_API void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
 {
 	v.clear();
 

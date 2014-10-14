@@ -1,6 +1,8 @@
 #ifndef BASECLASS_H
 #define BASECLASS_H
 
+#include <panda/core.h>
+
 #include <QString>
 #include <QList>
 #include <typeinfo>
@@ -10,7 +12,7 @@ namespace panda
 
 class DataNode;
 
-class BaseClass
+class PANDA_CORE_API BaseClass
 {
 protected:
 	BaseClass();

@@ -17,7 +17,7 @@ static TypesIdMap& getTypesIdMap()
 	return typesIdMap;
 }
 
-int DataTypeId::getId(const std::type_info &type)
+int DataTypeId::getId(const std::type_info& type)
 {
 	TypesIdMap& typesIdMap = getTypesIdMap();
 	std::type_index index(type);

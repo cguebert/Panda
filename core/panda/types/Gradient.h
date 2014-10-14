@@ -1,7 +1,7 @@
 #ifndef TYPES_GRADIENT_H
 #define TYPES_GRADIENT_H
 
-#include <panda/helper/system/Config.h>
+#include <panda/core.h>
 #include <panda/types/Color.h>
 
 #include <QPair>
@@ -13,7 +13,7 @@ namespace panda
 namespace types
 {
 
-class Gradient
+class PANDA_CORE_API Gradient
 {
 public:
 	typedef QPair<PReal, types::Color> GradientStop;

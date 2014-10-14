@@ -1,52 +1,7 @@
 TEMPLATE      = app
-TARGET		  = Panda
+Release:TARGET = Panda
+Debug:TARGET = Panda_d
 HEADERS       = \
-	core/panda/BaseClass.h \
-	core/panda/BaseData.h \
-	core/panda/Data.h \
-	core/panda/DataAccessor.h \
-	core/panda/DataCopier.h \
-	core/panda/DataFactory.h \
-	core/panda/DataNode.h \
-	core/panda/Dockable.h \
-	core/panda/GenericObject.h \
-	core/panda/Group.h \
-	core/panda/Layer.h \
-	core/panda/ObjectFactory.h \
-	core/panda/PandaDocument.h \
-	core/panda/PandaObject.h \
-	core/panda/Renderer.h \
-	core/panda/Scheduler.h \
-	core/panda/command/CommandId.h \
-	core/panda/command/DockableCommand.h \
-	core/panda/command/GroupCommand.h \
-	core/panda/command/LinkDatasCommand.h \
-	core/panda/command/MoveLayerCommand.h \
-	core/panda/command/RemoveGenericDataCommand.h \
-	core/panda/helper/Algorithm.h \
-	core/panda/helper/Factory.h \
-	core/panda/helper/Gl.h \
-	core/panda/helper/GradientCache.h \
-	core/panda/helper/Perlin.h \
-	core/panda/helper/PointsGrid.h \
-	core/panda/helper/Polygon.h \
-	core/panda/helper/Random.h \
-	core/panda/helper/ShaderCache.h \
-	core/panda/helper/UpdateLogger.h \
-	core/panda/helper/system/Config.h \
-	core/panda/types/Animation.h \
-	core/panda/types/AnimationTraits.h \
-	core/panda/types/Color.h \
-	core/panda/types/DataTraits.h \
-	core/panda/types/DataTypeId.h \
-	core/panda/types/Gradient.h \
-	core/panda/types/ImageWrapper.h \
-	core/panda/types/Mesh.h \
-	core/panda/types/Path.h \
-	core/panda/types/Point.h \
-	core/panda/types/Rect.h \
-	core/panda/types/Shader.h \
-	core/panda/types/TypeConverter.h \
 	modules/generators/UserValue.h \
 	modules/particles/Particle.h \
 	modules/particles/ParticleEngine.h \
@@ -88,47 +43,6 @@ HEADERS       = \
 	ui/widget/StructTraits.h \
 	ui/widget/TableDataWidgetDialog.h
 SOURCES       = main.cpp \
-	core/panda/BaseClass.cpp \
-	core/panda/BaseData.cpp \
-	core/panda/Data.inl \
-	core/panda/DataFactory.cpp \
-	core/panda/DataNode.cpp \
-	core/panda/Dockable.cpp \
-	core/panda/GenericObject.cpp \
-	core/panda/Group.cpp \
-	core/panda/Layer.cpp \
-	core/panda/ObjectFactory.cpp \
-	core/panda/PandaDocument.cpp \
-	core/panda/PandaObject.cpp \
-	core/panda/Renderer.cpp \
-	core/panda/Scheduler.cpp \
-	core/panda/command/CommandId.cpp \
-	core/panda/command/DockableCommand.cpp \
-	core/panda/command/GroupCommand.cpp \
-	core/panda/command/LinkDatasCommand.cpp \
-	core/panda/command/MoveLayerCommand.cpp \
-	core/panda/command/RemoveGenericDataCommand.cpp \
-	core/panda/helper/Factory.cpp \
-	core/panda/helper/GradientCache.cpp \
-	core/panda/helper/Perlin.cpp \
-	core/panda/helper/PointsGrid.cpp \
-	core/panda/helper/Polygon.cpp \
-	core/panda/helper/Random.cpp \
-	core/panda/helper/ShaderCache.cpp \
-	core/panda/helper/UpdateLogger.cpp \
-	core/panda/types/Animation.inl \
-	core/panda/types/Color.cpp \
-	core/panda/types/DataTraits.cpp \
-	core/panda/types/DataTypeId.cpp \
-	core/panda/types/Gradient.cpp \
-	core/panda/types/ImageWrapper.cpp \
-	core/panda/types/Mesh.cpp \
-	core/panda/types/Path.cpp \
-	core/panda/types/Point.cpp \
-	core/panda/types/Rect.cpp \
-	core/panda/types/Shader.cpp \
-	core/panda/types/StandardTypes.cpp \
-	core/panda/types/TypeConverter.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
 	modules/animation/AnimValue.cpp \
@@ -261,13 +175,18 @@ SOURCES       = main.cpp \
 	ui/widget/StringDataWidget.cpp \
 	ui/widget/TableDataWidgetDialog.cpp
 RESOURCES     = panda.qrc
-#win32:RC_FILE = panda.rc
+win32:RC_FILE = panda.rc
 INCLUDEPATH = .
 QT += widgets xml opengl
 CONFIG += c++11
 DEFINES +=	PANDA_LOG_EVENTS \
 			_CRT_SECURE_NO_WARNINGS \
 			_SCL_SECURE_NO_WARNINGS
+
+DESTDIR = bin
+Release:LIBS += bin/PandaCore.lib
+Debug:LIBS += bin/PandaCore_d.lib
+
 #DEFINES += PANDA_DOUBLE
 
 BOOST="../boost_1_56_0"

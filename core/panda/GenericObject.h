@@ -3,7 +3,6 @@
 
 #include <panda/PandaObject.h>
 #include <panda/types/DataTypeId.h>
-
 #include <panda/types/Color.h>
 #include <panda/types/Gradient.h>
 #include <panda/types/ImageWrapper.h>
@@ -37,7 +36,7 @@ public:
 	QList<int> m_allowedTypes;
 };
 
-class GenericSingleValueData : public GenericData
+class PANDA_CORE_API GenericSingleValueData : public GenericData
 {
 public:
 	explicit GenericSingleValueData(const BaseData::BaseInitData& init)
@@ -47,7 +46,7 @@ public:
 	virtual QString getDescription() const;
 };
 
-class GenericVectorData : public GenericData
+class PANDA_CORE_API GenericVectorData : public GenericData
 {
 public:
 	explicit GenericVectorData(const BaseData::BaseInitData& init)
@@ -57,7 +56,7 @@ public:
 	virtual QString getDescription() const;
 };
 
-class GenericAnimationData : public GenericData
+class PANDA_CORE_API GenericAnimationData : public GenericData
 {
 public:
 	explicit GenericAnimationData(const BaseData::BaseInitData& init)
@@ -67,7 +66,7 @@ public:
 	virtual QString getDescription() const;
 };
 
-class GenericSpecificData : public GenericData	// Accepts only the specific types given allowedTypes
+class PANDA_CORE_API GenericSpecificData : public GenericData	// Accepts only the specific types given allowedTypes
 {
 public:
 	explicit GenericSpecificData(const BaseData::BaseInitData& init)
@@ -80,7 +79,7 @@ public:
 
 //****************************************************************************//
 
-class GenericObject : public PandaObject
+class PANDA_CORE_API GenericObject : public PandaObject
 {
 public:
 	PANDA_CLASS(GenericObject, PandaObject)
@@ -153,7 +152,7 @@ private:
 
 // Works as a GenericObject, but as soon as one input Data is connected,
 // it only accepts this type for all future connections.
-class SingleTypeGenericObject : public GenericObject
+class PANDA_CORE_API SingleTypeGenericObject : public GenericObject
 {
 public:
 	PANDA_CLASS(SingleTypeGenericObject, GenericObject)

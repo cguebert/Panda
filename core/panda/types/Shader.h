@@ -1,7 +1,7 @@
 #ifndef TYPES_SHADER_H
 #define TYPES_SHADER_H
 
-#include <panda/helper/system/Config.h>
+#include <panda/core.h>
 #include <panda/types/Color.h>
 #include <panda/types/Point.h>
 #include <panda/types/ImageWrapper.h>
@@ -58,10 +58,23 @@ protected:
 	T m_value;
 };
 
+#ifndef PANDA_BUILD_CORE
+extern template class PANDA_CORE_API ShaderValue<int>;
+extern template class PANDA_CORE_API ShaderValue<PReal>;
+extern template class PANDA_CORE_API ShaderValue<Color>;
+extern template class PANDA_CORE_API ShaderValue<Point>;
+extern template class PANDA_CORE_API ShaderValue<QVector<int>>;
+extern template class PANDA_CORE_API ShaderValue<QVector<PReal>>;
+extern template class PANDA_CORE_API ShaderValue<QVector<Color>>;
+extern template class PANDA_CORE_API ShaderValue<QVector<Point>>;
+#endif
+
+//****************************************************************************//
+
 typedef boost::mpl::vector<int, PReal, Color, Point,
 	QVector<int>, QVector<PReal>, QVector<Color>, QVector<Point> > shaderValuesTypes;
 
-class Shader
+class PANDA_CORE_API Shader
 {
 public:
 	Shader();
@@ -152,7 +165,6 @@ protected:
 
 	QVector<QPair<QString, GLuint>> m_customTextures;
 };
-
 
 } // namespace types
 

@@ -1,6 +1,8 @@
 #ifndef LINKDATASCOMMAND_H
 #define LINKDATASCOMMAND_H
 
+#include <panda/core.h>
+
 #include <QUndoCommand>
 #include <QVector>
 
@@ -10,7 +12,7 @@ class PandaObject;
 class BaseData;
 }
 
-class LinkDatasCommand : public QUndoCommand
+class PANDA_CORE_API LinkDatasCommand : public QUndoCommand
 {
 public:
 	LinkDatasCommand(panda::BaseData* targetData, panda::BaseData* parentData, QUndoCommand* parent = nullptr);

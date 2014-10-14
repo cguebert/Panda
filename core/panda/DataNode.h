@@ -1,13 +1,14 @@
 #ifndef DATANODE_H
 #define DATANODE_H
 
-#include <QList>
 #include <panda/BaseClass.h>
+
+#include <QList>
 
 namespace panda
 {
 
-class DataNode
+class PANDA_CORE_API DataNode
 {
 public:
 	PANDA_ABSTRACT_CLASS(DataNode, void)

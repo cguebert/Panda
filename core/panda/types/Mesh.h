@@ -1,9 +1,10 @@
 #ifndef TYPES_MESH_H
 #define TYPES_MESH_H
 
-#include <QVector>
+#include <panda/core.h>
 #include <panda/types/Point.h>
 
+#include <QVector>
 #include <array>
 
 namespace panda
@@ -12,7 +13,7 @@ namespace panda
 namespace types
 {
 
-class Mesh
+class PANDA_CORE_API Mesh
 {
 public:
 	typedef unsigned int index_type;

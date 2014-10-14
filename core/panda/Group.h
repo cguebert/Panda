@@ -10,7 +10,7 @@ namespace panda
 
 class PandaDocument;
 
-class Group : public QObject, public PandaObject
+class PANDA_CORE_API Group : public QObject, public PandaObject
 {
 	Q_OBJECT
 	friend class EditGroupCommand;
@@ -68,7 +68,7 @@ inline QPointF Group::getPosition(PandaObject* object) const
 
 //****************************************************************************//
 
-class GroupWithLayer : public Group, public BaseLayer
+class PANDA_CORE_API GroupWithLayer : public Group, public BaseLayer
 {
 public:
 	PANDA_CLASS(GroupWithLayer, Group)

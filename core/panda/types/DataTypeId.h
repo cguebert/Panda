@@ -1,6 +1,7 @@
 #ifndef TYPES_DATATYPEID_H
 #define TYPES_DATATYPEID_H
 
+#include <panda/core.h>
 #include <typeinfo>
 
 template<class T> class RegisterWidget;
@@ -13,7 +14,7 @@ template<class T> class RegisterData;
 namespace types
 {
 
-class DataTypeId
+class PANDA_CORE_API DataTypeId
 {
 public:
 	static int getId(const std::type_info& type);

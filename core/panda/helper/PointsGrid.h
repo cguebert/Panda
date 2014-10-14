@@ -1,9 +1,11 @@
 #ifndef HELPER_POINTSGRID_H
 #define HELPER_POINTSGRID_H
 
+#include <panda/core.h>
+#include <panda/types/Rect.h>
+
 #include <QList>
 #include <QVector>
-#include <panda/types/Rect.h>
 
 namespace panda
 {
@@ -11,7 +13,7 @@ namespace panda
 namespace helper
 {
 
-class PointsGrid
+class PANDA_CORE_API PointsGrid
 {
 public:
 	PointsGrid();

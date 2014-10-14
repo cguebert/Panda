@@ -1,6 +1,8 @@
 #ifndef CREATEGROUPCOMMAND_H
 #define CREATEGROUPCOMMAND_H
 
+#include <panda/core.h>
+
 #include <QUndoCommand>
 #include <QSharedPointer>
 #include <QVector>
@@ -14,7 +16,7 @@ class PandaDocument;
 class BaseData;
 }
 
-class SelectGroupCommand : public QUndoCommand
+class PANDA_CORE_API SelectGroupCommand : public QUndoCommand
 {
 public:
 	SelectGroupCommand(panda::PandaDocument* document, panda::Group* group, QUndoCommand* parent = nullptr);
@@ -29,7 +31,7 @@ protected:
 
 //****************************************************************************//
 
-class SelectObjectsInGroupCommand : public QUndoCommand
+class PANDA_CORE_API SelectObjectsInGroupCommand : public QUndoCommand
 {
 public:
 	SelectObjectsInGroupCommand(panda::PandaDocument* document, panda::Group* group, QUndoCommand* parent = nullptr);
@@ -44,7 +46,7 @@ protected:
 
 //****************************************************************************//
 
-class AddObjectToGroupCommand : public QUndoCommand
+class PANDA_CORE_API AddObjectToGroupCommand : public QUndoCommand
 {
 public:
 	AddObjectToGroupCommand(panda::Group* group, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
@@ -59,7 +61,7 @@ protected:
 
 //****************************************************************************//
 
-class RemoveObjectFromGroupCommand : public QUndoCommand
+class PANDA_CORE_API RemoveObjectFromGroupCommand : public QUndoCommand
 {
 public:
 	RemoveObjectFromGroupCommand(panda::Group* group, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
@@ -74,7 +76,7 @@ protected:
 
 //****************************************************************************//
 
-class EditGroupCommand : public QUndoCommand
+class PANDA_CORE_API EditGroupCommand : public QUndoCommand
 {
 public:
 	struct DataInfo

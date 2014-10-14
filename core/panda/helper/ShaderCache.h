@@ -1,6 +1,8 @@
 #ifndef HELPER_SHADERCACHE_H
 #define HELPER_SHADERCACHE_H
 
+#include <panda/core.h>
+
 #include <QMultiHash>
 #include <QOpenGLShader>
 #include <QSharedPointer>
@@ -11,7 +13,7 @@ namespace panda
 namespace helper
 {
 
-class ShaderCache : public QObject
+class PANDA_CORE_API ShaderCache : public QObject
 {
 public:
 	static ShaderCache* getInstance();

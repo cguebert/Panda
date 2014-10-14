@@ -11,7 +11,7 @@ namespace panda
 class Layer;
 class BaseDrawTarget;
 
-class Renderer : public DockableObject
+class PANDA_CORE_API Renderer : public DockableObject
 {
 public:
 	PANDA_CLASS(Renderer, DockableObject)

@@ -1,6 +1,8 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include <panda/core.h>
+
 #include <atomic>
 #include <functional>
 
@@ -22,7 +24,7 @@ class DataNode;
 class BaseData;
 class SchedulerThread;
 
-class Scheduler
+class PANDA_CORE_API Scheduler
 {
 public:
 	Scheduler(PandaDocument* document);

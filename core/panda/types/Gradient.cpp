@@ -3,7 +3,7 @@
 #include <panda/types/AnimationTraits.h>
 
 #include <panda/DataFactory.h>
-#include <panda/Data.inl>
+#include <panda/Data.h>
 
 #include <QSet>
 #include <qmath.h>
@@ -186,10 +186,10 @@ Gradient Gradient::defaultGradient()
 
 //****************************************************************************//
 
-template<> QString DataTrait<Gradient>::valueTypeName() { return "gradient"; }
+template<> PANDA_CORE_API QString DataTrait<Gradient>::valueTypeName() { return "gradient"; }
 
 template<>
-void DataTrait<Gradient>::writeValue(QDomDocument& doc, QDomElement& elem, const Gradient& grad)
+PANDA_CORE_API void DataTrait<Gradient>::writeValue(QDomDocument& doc, QDomElement& elem, const Gradient& grad)
 {
 	auto colorTrait = DataTraitsList::getTraitOf<Color>();
 
@@ -205,7 +205,7 @@ void DataTrait<Gradient>::writeValue(QDomDocument& doc, QDomElement& elem, const
 }
 
 template<>
-void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& grad)
+PANDA_CORE_API void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& grad)
 {
 	auto colorTrait = DataTraitsList::getTraitOf<Color>();
 

@@ -1,7 +1,12 @@
 #include <panda/BaseData.h>
 #include <panda/PandaObject.h>
+#include <panda/DataCopier.h>
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
+
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#endif
 
 #include <iostream>
 #include <typeindex>
@@ -115,6 +120,15 @@ QString BaseData::getDescription() const
 	return getDataTrait()->typeDescription();
 }
 
+void BaseData::copyValueFrom(const BaseData* from)
+{
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log(helper::event_copyValue, this);
+#endif
+	if(m_dataCopier->copyData(this, from))
+		m_isValueSet = true;
+}
+
 void BaseData::save(QDomDocument& doc, QDomElement& elem)
 {
 	getDataTrait()->writeValue(doc, elem, getVoidValue());
@@ -166,10 +180,24 @@ void BaseData::doRemoveOutput(DataNode* node)
 		m_input = false;
 }
 
-void BaseData::initFlags()
+void BaseData::initInternals(const std::type_info& type)
 {
+	m_dataTrait = types::DataTraitsList::getTrait(type);
+	m_dataCopier = DataCopiersList::getCopier(type);
+
 	m_displayed = getDataTrait()->isDisplayed();
 	m_persistent = getDataTrait()->isPersistent();
+}
+
+void BaseData::setDirtyValue(const DataNode* caller)
+{
+	if(!isDirty())
+	{
+#ifdef PANDA_LOG_EVENTS
+		helper::ScopedEvent log(helper::event_setDirty, this);
+#endif
+		DataNode::setDirtyValue(caller);
+	}
 }
 
 } // namespace panda

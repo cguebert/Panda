@@ -13,14 +13,14 @@ namespace panda
 class PandaObject;
 class PandaDocument;
 
-class BaseObjectCreator
+class PANDA_CORE_API BaseObjectCreator
 {
 public:
 	virtual ~BaseObjectCreator() {}
 	virtual QSharedPointer<PandaObject> create(PandaDocument* parent) = 0;
 };
 
-class ObjectFactory
+class PANDA_CORE_API ObjectFactory
 {
 private:
 	ObjectFactory() {}
@@ -59,7 +59,7 @@ protected:
 	RegistryMap m_registry;
 };
 
-void objectDeletor(PandaObject* object);
+PANDA_CORE_API void objectDeletor(PandaObject* object);
 
 template<class T>
 class ObjectCreator : public BaseObjectCreator

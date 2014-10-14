@@ -1,7 +1,12 @@
 #ifndef TYPES_POINT_H
 #define TYPES_POINT_H
 
-#include <panda/helper/system/Config.h>
+#include <panda/core.h>
+
+#ifndef PANDA_BUILD_CORE
+#include <panda/types/Animation.h>
+#include <panda/Data.h>
+#endif
 
 #include <cassert>
 #include <cmath>
@@ -15,7 +20,7 @@ namespace types
 
 enum NoInit { NOINIT };
 
-class Point
+class PANDA_CORE_API Point
 {
 public:
 	PReal x, y;
@@ -238,6 +243,14 @@ Point toPolar(Point car);
 
 // Converts a coordinate from polar coordinates of the form (radius, theta) to rectangular coordinates
 Point fromPolar(Point pol);
+
+#ifndef PANDA_BUILD_CORE
+extern template class PANDA_CORE_API QVector<Point>;
+extern template class PANDA_CORE_API Data< Point >;
+extern template class PANDA_CORE_API Data< QVector<Point> >;
+extern template class PANDA_CORE_API Animation<Point>;
+extern template class PANDA_CORE_API Data< Animation<Point> >;
+#endif
 
 } // namespace types
 

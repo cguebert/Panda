@@ -4,18 +4,14 @@
 #include <panda/BaseData.h>
 #include <panda/DataAccessor.h>
 
+#ifdef PANDA_LOG_EVENTS
+#include <panda/helper/UpdateLogger.h>
+#endif
+
 namespace panda
 {
 
 template<class T> class DataAccessor;
-template<class T> class Data;
-template<class T> class RegisterData;
-
-class AbstractDataCopier
-{
-public:
-	virtual bool copyData(BaseData* dest, const BaseData* from) const = 0;
-};
 
 template <class T = void*>
 class Data : public BaseData
@@ -42,21 +38,17 @@ public:
 	virtual ~Data();
 
 	virtual void update();
-	virtual void setDirtyValue(const DataNode* caller);
 
 	virtual void setParent(BaseData* parent);
-	virtual const types::AbstractDataTrait* getDataTrait() const;
 	virtual const void* getVoidValue() const;
 	data_accessor getAccessor(); /// Return a wrapper around the pointer to the value (call endEdit in the destructor)
 	inline void setValue(const_reference value); /// Store value in this Data
 	inline const_reference getValue() const; /// Retrieve the stored value
-	virtual void copyValueFrom(const BaseData* from);
 
 	virtual int getCounter() const;
 
 protected:
 	friend class DataAccessor<data_type>;
-	friend class RegisterData<value_type>;
 
 	inline pointer beginEdit();
 	inline void endEdit();
@@ -66,8 +58,6 @@ protected:
 private:
 	value_type m_value;
 	Data<value_type>* m_parentData;
-	static types::AbstractDataTrait* m_dataTrait;
-	static AbstractDataCopier* m_dataCopier;
 
 	Data();
 	Data(const Data&);
@@ -99,6 +89,104 @@ public:
 };
 
 //****************************************************************************//
+
+template<class T>
+Data<T>::Data(const BaseData::BaseInitData& init)
+	: BaseData(init)
+	, m_value(value_type())
+	, m_parentData(nullptr)
+{
+	initInternals(typeid(T));
+}
+
+template<class T>
+Data<T>::Data(const InitData& init)
+	: BaseData(init)
+	, m_parentData(nullptr)
+{
+	m_value = init.value;
+	initInternals(typeid(T));
+}
+
+template<class T>
+Data<T>::Data(const QString& name, const QString& help, PandaObject* owner)
+	: BaseData(name, help, owner)
+	, m_value(T())
+	, m_parentData(nullptr)
+{
+	initInternals(typeid(T));
+}
+
+template<class T>
+Data<T>::~Data()
+{
+	// Give connected Datas a chance to copy the value before it is freed
+	for(DataNode* node : m_outputs)
+		node->doRemoveInput(this);
+	m_outputs.clear();
+}
+
+template<class T>
+void Data<T>::update()
+{
+	for(DataNode* node : m_inputs)
+		node->updateIfDirty();
+
+	if(!m_parentData && m_parentBaseData)
+	{
+		cleanDirty();
+		copyValueFrom(m_parentBaseData);
+	}
+
+	cleanDirty();
+}
+
+template<class T>
+void Data<T>::setParent(BaseData* parent)
+{
+	// Treating disconnection of a data
+	if(!parent && !m_setParentProtection)
+	{
+		if(!isPersistent()) // If the data is not persistent, we reset the value
+		{
+			m_value = T();
+			BaseData::setDirtyValue(this);
+		}
+		else if(m_parentData)	// Else we copy the data if we never copied it
+			m_value = m_parentData->getValue();
+	}
+
+	// getValue is optimized when the parent is of the same type as this data
+	m_parentData = dynamic_cast< Data<T>* >(parent);
+
+	BaseData::setParent(parent);
+}
+
+template<class T>
+DataAccessor<typename Data<T>::data_type> Data<T>::getAccessor()
+{
+	return DataAccessor<data_type>(*this);
+}
+
+template<class T>
+typename Data<T>::const_reference Data<T>::getValue() const
+{
+#ifdef PANDA_LOG_EVENTS
+	helper::ScopedEvent log(helper::event_getValue, this);
+#endif
+	updateIfDirty();
+	if(m_parentData)
+		return m_parentData->getValue();
+	return m_value;
+}
+
+template<class T>
+int Data<T>::getCounter() const
+{
+	if(m_parentData)
+		return m_parentData->getCounter();
+	return BaseData::getCounter();
+}
 
 template<class T>
 inline void* Data<T>::beginVoidEdit()

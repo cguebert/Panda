@@ -2,6 +2,8 @@
 #define BASEDATA_H
 
 #include <panda/DataNode.h>
+#include <typeinfo>
+
 #include <QString>
 #include <QDomDocument>
 
@@ -10,9 +12,10 @@ namespace panda
 
 class PandaObject;
 class BaseData;
+class AbstractDataCopier;
 namespace types { class AbstractDataTrait; }
 
-class VoidDataAccessor
+class PANDA_CORE_API VoidDataAccessor
 {
 public:
 	VoidDataAccessor(BaseData* d);
@@ -27,17 +30,14 @@ protected:
 
 //****************************************************************************//
 
-class BaseData : public DataNode
+class PANDA_CORE_API BaseData : public DataNode
 {
 public:
 	PANDA_CLASS(BaseData, DataNode)
 	class BaseInitData
 	{
 	public:
-		BaseInitData()
-			: data(nullptr)
-			, owner(nullptr)
-		{}
+		BaseInitData() : data(nullptr), owner(nullptr) {}
 		BaseData* data;
 		PandaObject* owner;
 		QString name, help;
@@ -53,7 +53,7 @@ public:
 	void setHelp(const QString& help);
 	const QString getWidget() const; /// Custom widget to use for this Data
 	void setWidget(const QString& widget);
-	const QString getWidgetData() const; /// Some custom widgets need parameters, it is saved in string format
+	const QString getWidgetData() const; /// Some custom widgets need parameters, they are saved in string format
 	void setWidgetData(const QString& widgetData);
 
 	bool isSet() const; /// Has the value changed from the default
@@ -80,16 +80,18 @@ public:
 	virtual void setParent(BaseData* parent); /// Set the other Data as the parent to this one (its value will be copied each time it changes)
 	BaseData* getParent() const; /// Returns the current parent, or nullptr
 
-	virtual const types::AbstractDataTrait* getDataTrait() const = 0; /// Return a class describing the type stored in this Data
+	virtual const types::AbstractDataTrait* getDataTrait() const; /// Return a class describing the type stored in this Data
 	virtual const void* getVoidValue() const = 0; /// Return a void* pointing to the value (use the DataTrait to exploit it)
 	VoidDataAccessor getVoidAccessor(); /// Return a wrapper around the void*, that will call endEdit when destroyed
 
 	virtual QString getDescription() const; /// Get a readable name of the type stored in this Data
 
-	virtual void copyValueFrom(const BaseData* parent) = 0; /// Copy the value from parent to this Data
+	virtual void copyValueFrom(const BaseData* parent); /// Copy the value from parent to this Data
 
 	virtual void save(QDomDocument& doc, QDomElement& elem); /// Save the value of the Data in a Xml node
 	virtual void load(QDomElement& elem); /// Load the value from Xml
+
+	virtual void setDirtyValue(const DataNode* caller); // We override this function in order to log the event
 
 protected:
 	virtual void doAddInput(DataNode* node);
@@ -101,7 +103,7 @@ protected:
 	virtual void* beginVoidEdit() = 0;
 	virtual void endVoidEdit() = 0;
 
-	void initFlags();
+	void initInternals(const std::type_info& type);
 
 	bool m_readOnly, m_displayed, m_persistent, m_input, m_output;
 	bool m_isValueSet;
@@ -110,6 +112,8 @@ protected:
 	QString m_name, m_help, m_widget, m_widgetData;
 	PandaObject* m_owner;
 	BaseData* m_parentBaseData;
+	types::AbstractDataTrait* m_dataTrait;
+	AbstractDataCopier* m_dataCopier;
 
 private:
 	BaseData() {}
@@ -203,6 +207,9 @@ inline void BaseData::setOwner(PandaObject* owner)
 
 inline BaseData* BaseData::getParent() const
 { return m_parentBaseData; }
+
+inline const types::AbstractDataTrait* BaseData::getDataTrait() const
+{ return m_dataTrait; }
 
 inline VoidDataAccessor BaseData::getVoidAccessor()
 { return VoidDataAccessor(this); }

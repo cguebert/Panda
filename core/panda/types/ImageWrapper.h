@@ -1,11 +1,12 @@
 #ifndef TYPES_IMAGEWRAPPER_H
 #define TYPES_IMAGEWRAPPER_H
 
+#include <panda/core.h>
+#include <panda/types/Color.h>
+
 #include <QImage>
 #include <QSharedPointer>
 #include <QVector>
-
-#include <panda/types/Color.h>
 
 class QOpenGLTexture;
 class QOpenGLFramebufferObject;
@@ -16,7 +17,7 @@ namespace panda
 namespace types
 {
 
-class ImageWrapper
+class PANDA_CORE_API ImageWrapper
 {
 public:
 	ImageWrapper();

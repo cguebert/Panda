@@ -20,7 +20,7 @@ public:
 	virtual QSize getLayerSize() const = 0;
 };
 
-class BaseLayer : public BaseDrawTarget
+class PANDA_CORE_API BaseLayer : public BaseDrawTarget
 {
 public:
 	virtual void updateLayer(PandaDocument* doc);
@@ -48,7 +48,7 @@ protected:
 
 //****************************************************************************//
 
-class Layer : public DockObject, public BaseLayer
+class PANDA_CORE_API Layer : public DockObject, public BaseLayer
 {
 public:
 	PANDA_CLASS(Layer, DockObject)

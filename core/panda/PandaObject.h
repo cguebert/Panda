@@ -1,7 +1,7 @@
 #ifndef PANDAOBJECT_H
 #define PANDAOBJECT_H
 
-#include <panda/helper/system/Config.h>
+#include <panda/helper/system/config.h>
 #include <panda/Data.h>
 #include <panda/BaseClass.h>
 
@@ -12,7 +12,7 @@ namespace panda
 
 class PandaDocument;
 
-class PandaObject : public DataNode
+class PANDA_CORE_API PandaObject : public DataNode
 {
 public:
 	PANDA_CLASS(PandaObject, DataNode)

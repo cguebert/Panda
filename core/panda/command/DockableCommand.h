@@ -1,6 +1,7 @@
 #ifndef DETACHDOCKABLECOMMAND_H
 #define DETACHDOCKABLECOMMAND_H
 
+#include <panda/core.h>
 #include <QUndoCommand>
 
 namespace panda
@@ -9,7 +10,7 @@ class DockObject;
 class DockableObject;
 }
 
-class DetachDockableCommand : public QUndoCommand
+class PANDA_CORE_API DetachDockableCommand : public QUndoCommand
 {
 public:
 	DetachDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, QUndoCommand* parent = nullptr);
@@ -25,7 +26,7 @@ protected:
 
 //****************************************************************************//
 
-class AttachDockableCommand : public QUndoCommand
+class PANDA_CORE_API AttachDockableCommand : public QUndoCommand
 {
 public:
 	AttachDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, int index, QUndoCommand* parent = nullptr);
@@ -41,7 +42,7 @@ protected:
 
 //****************************************************************************//
 
-class ReorderDockableCommand : public QUndoCommand
+class PANDA_CORE_API ReorderDockableCommand : public QUndoCommand
 {
 public:
 	ReorderDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, int index, QUndoCommand* parent = nullptr);

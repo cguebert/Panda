@@ -16,14 +16,14 @@ namespace panda
 class BaseData;
 class PandaObject;
 
-class BaseDataCreator
+class PANDA_CORE_API BaseDataCreator
 {
 public:
 	virtual ~BaseDataCreator() {}
 	virtual QSharedPointer<BaseData> create(const QString& name, const QString& help, PandaObject* owner) = 0;
 };
 
-class DataFactory
+class PANDA_CORE_API DataFactory
 {
 public:
 	class DataEntry
@@ -56,6 +56,7 @@ protected:
 	QMap< QString, DataEntry* > m_registry;
 	QMap< QString, DataEntry* > m_nameRegistry;
 	QMap< int, DataEntry* > m_typeRegistry;
+	QMap< int, AbstractDataCopier* > m_copiersMap;
 
 	template<class T> friend class RegisterData;
 	void registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator);
@@ -85,13 +86,15 @@ public:
 		typedef Data<value_type> data_type;
 		typedef types::DataTrait<value_type> data_trait;
 
-		data_type::m_dataTrait = types::VirtualDataTrait<value_type>::get();
-		data_type::m_dataCopier = VirtualDataCopier<value_type>::get();
+		types::AbstractDataTrait* dataTrait = types::VirtualDataTrait<value_type>::get();
+		AbstractDataCopier* dataCopier = VirtualDataCopier<value_type>::get();
 
-		types::DataTypeId::registerType<T>(data_type::m_dataTrait->fullTypeId());
-		types::DataTraitsList::registerTrait(data_type::m_dataTrait);
+		int fullTypeId = dataTrait->fullTypeId();
+		types::DataTypeId::registerType<T>(fullTypeId);
+		types::DataTraitsList::registerTrait(dataTrait);
+		DataCopiersList::registerCopier(fullTypeId, dataCopier);
 
-		DataFactory::getInstance()->registerData(data_type::m_dataTrait,
+		DataFactory::getInstance()->registerData(dataTrait,
 												 data_type::getClass(),
 												 QSharedPointer< DataCreator<data_type> >::create());
 		return 1;

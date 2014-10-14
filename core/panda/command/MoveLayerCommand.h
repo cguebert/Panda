@@ -1,6 +1,7 @@
 #ifndef MOVELAYERCOMMAND_H
 #define MOVELAYERCOMMAND_H
 
+#include <panda/core.h>
 #include <QUndoCommand>
 
 namespace panda
@@ -9,7 +10,7 @@ class PandaDocument;
 class PandaObject;
 }
 
-class MoveLayerCommand : public QUndoCommand
+class PANDA_CORE_API MoveLayerCommand : public QUndoCommand
 {
 public:
 	MoveLayerCommand(panda::PandaDocument* document, panda::PandaObject* layer, int pos, QUndoCommand* parent = nullptr);

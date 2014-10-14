@@ -1,6 +1,7 @@
 #ifndef REMOVEGENERICDATACOMMAND_H
 #define REMOVEGENERICDATACOMMAND_H
 
+#include <panda/core.h>
 #include <QUndoCommand>
 
 namespace panda
@@ -8,7 +9,7 @@ namespace panda
 class GenericObject;
 }
 
-class RemoveGenericDataCommand : public QUndoCommand
+class PANDA_CORE_API RemoveGenericDataCommand : public QUndoCommand
 {
 public:
 	RemoveGenericDataCommand(panda::GenericObject* object, int type, int index, QUndoCommand* parent = nullptr);

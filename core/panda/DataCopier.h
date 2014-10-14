@@ -9,6 +9,12 @@
 namespace panda
 {
 
+class PANDA_CORE_API AbstractDataCopier
+{
+public:
+	virtual bool copyData(BaseData* dest, const BaseData* from) const = 0;
+};
+
 template<class T>
 class DataCopier
 {
@@ -215,6 +221,24 @@ public:
 
 		return false;
 	}
+};
+
+//****************************************************************************//
+
+class PANDA_CORE_API DataCopiersList
+{
+public:
+	static AbstractDataCopier* getCopier(int fullTypeId);
+	static AbstractDataCopier* getCopier(const std::type_info& type);
+	template <class T>
+	static AbstractDataCopier* getCopierOf() { return getCopier(typeid(T)); }
+
+private:
+	DataCopiersList();
+
+	template<class T> friend class RegisterData;
+
+	static void registerCopier(int fullTypeId, AbstractDataCopier* copier);
 };
 
 } // namespace panda

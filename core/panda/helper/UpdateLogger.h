@@ -1,6 +1,8 @@
 #ifndef UPDATELOGGER_H
 #define UPDATELOGGER_H
 
+#include <panda/core.h>
+
 #include <QString>
 #include <QVector>
 #include <QMap>
@@ -40,7 +42,7 @@ public:
 };
 
 // To log an event, you only have to use this class
-class ScopedEvent
+class PANDA_CORE_API ScopedEvent
 {
 public:
 	ScopedEvent(EventType type, const PandaObject* object);
@@ -54,7 +56,7 @@ private:
 };
 
 // Container for all the events
-class UpdateLogger
+class PANDA_CORE_API UpdateLogger
 {
 public:
 	typedef QVector<EventData> UpdateEvents;

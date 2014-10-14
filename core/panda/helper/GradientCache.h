@@ -1,9 +1,10 @@
 #ifndef HELPER_GRADIENTCACHE_H
 #define HELPER_GRADIENTCACHE_H
 
-#include <QMultiHash>
-
+#include <panda/core.h>
 #include <panda/types/Gradient.h>
+
+#include <QMultiHash>
 
 namespace panda
 {
@@ -12,7 +13,7 @@ namespace helper
 {
 
 // Basically a copy of Qt's QGL2GradientCache
-class GradientCache
+class PANDA_CORE_API GradientCache
 {
 public:
 	static GradientCache* getInstance();

@@ -1,7 +1,7 @@
 #ifndef HELPER_RANDOM_H
 #define HELPER_RANDOM_H
 
-#include <panda/helper/system/Config.h>
+#include <panda/core.h>
 #include <random>
 
 namespace panda
@@ -10,7 +10,7 @@ namespace panda
 namespace helper
 {
 
-class RandomGenerator
+class PANDA_CORE_API RandomGenerator
 {
 public:
 	void seed(unsigned int seed);

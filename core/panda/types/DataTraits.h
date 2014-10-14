@@ -1,6 +1,7 @@
 #ifndef TYPES_DATATRAITS_H
 #define TYPES_DATATRAITS_H
 
+#include <panda/core.h>
 #include <panda/types/DataTypeId.h>
 
 #include <QVector>
@@ -12,7 +13,7 @@ namespace panda
 namespace types
 {
 
-class AbstractDataTrait
+class PANDA_CORE_API AbstractDataTrait
 {
 public:
 	virtual const AbstractDataTrait* baseTypeTrait() const = 0;
@@ -185,7 +186,7 @@ public:
 
 //****************************************************************************//
 
-class DataTraitsList
+class PANDA_CORE_API DataTraitsList
 {
 public:
 	static AbstractDataTrait* getTrait(int fullTypeId);

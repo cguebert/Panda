@@ -4,7 +4,6 @@
 #include <panda/types/AnimationTraits.h>
 
 #include <panda/DataFactory.h>
-#include <panda/Data.inl>
 
 namespace panda
 {
@@ -45,14 +44,14 @@ Point fromPolar(Point pol)
 
 //****************************************************************************//
 
-template<> QString DataTrait<Point>::valueTypeName() { return "point"; }
+template<> PANDA_CORE_API QString DataTrait<Point>::valueTypeName() { return "point"; }
 
 template<>
-void DataTrait<Point>::writeValue(QDomDocument&, QDomElement& elem, const Point& v)
+PANDA_CORE_API void DataTrait<Point>::writeValue(QDomDocument&, QDomElement& elem, const Point& v)
 { elem.setAttribute("x", v.x); elem.setAttribute("y", v.y); }
 
 template<>
-void DataTrait<Point>::readValue(QDomElement& elem, Point& v)
+PANDA_CORE_API void DataTrait<Point>::readValue(QDomElement& elem, Point& v)
 #ifdef PANDA_DOUBLE
 {	v.x = elem.attribute("x").toDouble();
 	v.y = elem.attribute("y").toDouble(); }
@@ -61,12 +60,13 @@ void DataTrait<Point>::readValue(QDomElement& elem, Point& v)
 	v.y = elem.attribute("y").toFloat(); }
 #endif
 
+template class PANDA_CORE_API QVector<Point>;
 
-template class Data< Point >;
-template class Data< QVector<Point> >;
+template class PANDA_CORE_API Data< Point >;
+template class PANDA_CORE_API Data< QVector<Point> >;
 
-template class Animation<Point>;
-template class Data< Animation<Point> >;
+template class PANDA_CORE_API Animation<Point>;
+template class PANDA_CORE_API Data< Animation<Point> >;
 
 int pointDataClass = RegisterData< Point >();
 int pointVectorDataClass = RegisterData< QVector<Point> >();

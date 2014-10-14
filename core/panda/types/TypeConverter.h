@@ -1,6 +1,7 @@
 #ifndef TYPES_TYPECONVERTER_H
 #define TYPES_TYPECONVERTER_H
 
+#include <panda/core.h>
 #include <panda/types/DataTypeId.h>
 #include <panda/types/DataTraits.h>
 
@@ -18,7 +19,7 @@ public:
 	virtual void convert(const void* valueFrom, void* valueTo) const = 0;
 };
 
-class TypeConverter
+class PANDA_CORE_API TypeConverter
 {
 public:
 	static bool canConvert(int fromType, int toType);

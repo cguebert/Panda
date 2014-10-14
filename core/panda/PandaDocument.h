@@ -1,6 +1,7 @@
 #ifndef PANDADOCUMENT_H
 #define PANDADOCUMENT_H
 
+#include <panda/core.h>
 #include <panda/PandaObject.h>
 
 #include <panda/types/Color.h>
@@ -25,7 +26,7 @@ class Scheduler;
 class ScopedMacro;
 class DockableObject;
 
-class PandaDocument : public QObject, public PandaObject
+class PANDA_CORE_API PandaDocument : public QObject, public PandaObject
 {
 	Q_OBJECT
 public:
