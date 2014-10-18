@@ -22,7 +22,7 @@ public:
 
 	int randomInt(int min, int max);
 
-protected:
+private:
 	std::mt19937 gen;
 };
 

@@ -42,7 +42,7 @@ HEADERS       = \
 	ui/widget/SimpleDataWidget.h \
 	ui/widget/StructTraits.h \
 	ui/widget/TableDataWidgetDialog.h
-SOURCES       = main.cpp \
+SOURCES       = ui/main.cpp \
 	modules/Replicator.cpp \
 	modules/animation/AnimLength.cpp \
 	modules/animation/AnimValue.cpp \
