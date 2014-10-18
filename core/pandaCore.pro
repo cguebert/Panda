@@ -15,6 +15,8 @@ BOOST="../../boost_1_56_0"
 INCLUDEPATH += $${BOOST}/
 LIBPATH += $${BOOST}/stage/lib
 
+PRECOMPILED_HEADER = panda/pch.h
+
 HEADERS += \
 	panda/BaseClass.h \
 	panda/BaseData.h \

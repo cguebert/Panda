@@ -187,6 +187,8 @@ DESTDIR = bin
 Release:LIBS += bin/PandaCore.lib
 Debug:LIBS += bin/PandaCore_d.lib
 
+PRECOMPILED_HEADER = core/panda/pch.h
+
 #DEFINES += PANDA_DOUBLE
 
 BOOST="../boost_1_56_0"
