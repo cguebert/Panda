@@ -6,6 +6,7 @@
 #include <ui/GraphView.h>
 #include <ui/GroupsManager.h>
 #include <ui/OpenGLRenderView.h>
+#include <ui/PluginsManager.h>
 #include <ui/LayersTab.h>
 #include <ui/ListObjectsAndTypes.h>
 #include <ui/MainWindow.h>
@@ -32,6 +33,8 @@ MainWindow::MainWindow()
 	m_tabWidget->addTab(m_graphView, tr("Graph"));
 	m_tabWidget->addTab(m_openGLRenderView, tr("Render"));
 	setCentralWidget(m_tabWidget);
+
+	PluginsManager::getInstance()->loadPlugins();
 
 	createActions();
 	createMenus();
