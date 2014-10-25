@@ -50,8 +50,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/share/shaders/sprite.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/share/shaders/sprite.f.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/sprite.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/sprite.f.glsl");
 	}
 
 	inline QVector4D colorToVector4(const Color& c)

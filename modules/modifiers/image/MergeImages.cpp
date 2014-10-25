@@ -2,6 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/helper/system/FileRepository.h>
 
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
@@ -36,8 +37,10 @@ public:
 									  "Xor;Plus;Multiply;Screen;Overlay;Darken;Lighten;"
 									  "ColorDodge;ColorBurn;HardLight;SoftLight;Difference;Exclusion");
 
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/share/shaders/mergeLayers.v.glsl");
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/share/shaders/mergeLayers.f.glsl");
+		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,
+			helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
+		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,
+			helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
 		m_shaderProgram.link();
 
 		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;

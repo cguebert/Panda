@@ -7,6 +7,7 @@
 #include <panda/Scheduler.h>
 #include <panda/helper/GradientCache.h>
 #include <panda/helper/ShaderCache.h>
+#include <panda/helper/system/FileRepository.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>
@@ -687,8 +688,10 @@ void PandaDocument::update()
 	if(!m_mergeLayersShader)
 	{
 		m_mergeLayersShader.reset(new QOpenGLShaderProgram());
-		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/share/shaders/mergeLayers.v.glsl");
-		m_mergeLayersShader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/share/shaders/mergeLayers.f.glsl");
+		m_mergeLayersShader->addShaderFromSourceCode(QOpenGLShader::Vertex,
+			helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
+		m_mergeLayersShader->addShaderFromSourceCode(QOpenGLShader::Fragment,
+			helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
 		m_mergeLayersShader->link();
 		m_mergeLayersShader->bind();
 

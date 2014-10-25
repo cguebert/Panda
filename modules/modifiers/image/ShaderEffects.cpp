@@ -2,6 +2,7 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/helper/system/FileRepository.h>
 
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
@@ -167,14 +168,18 @@ public:
 	{
 		if(!passId)
 		{
-			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/share/shaders/effects/GBlurH.v.glsl");
-			program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/share/shaders/effects/GBlur.f.glsl");
+			program.addShaderFromSourceCode(QOpenGLShader::Vertex,
+				helper::system::DataRepository.loadFile("shaders/effects/GBlurH.v.glsl"));
+			program.addShaderFromSourceCode(QOpenGLShader::Fragment,
+				helper::system::DataRepository.loadFile("shaders/effects/GBlur.f.glsl"));
 			program.link();
 		}
 		else
 		{
-			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/share/shaders/effects/GBlurV.v.glsl");
-			program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/share/shaders/effects/GBlur.f.glsl");
+			program.addShaderFromSourceCode(QOpenGLShader::Vertex,
+				helper::system::DataRepository.loadFile("shaders/effects/GBlurV.v.glsl"));
+			program.addShaderFromSourceCode(QOpenGLShader::Fragment,
+				helper::system::DataRepository.loadFile("shaders/effects/GBlur.f.glsl"));
 			program.link();
 		}
 	}

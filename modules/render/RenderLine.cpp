@@ -42,8 +42,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/share/shaders/PT_attColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/share/shaders/PT_attColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_attColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_attColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -148,8 +148,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/share/shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/share/shaders/PT_uniColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -233,8 +233,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, ":/share/shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, ":/share/shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 	}
 
 	void update()

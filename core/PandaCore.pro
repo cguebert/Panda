@@ -52,6 +52,7 @@ HEADERS += \
 	panda/helper/ShaderCache.h \
 	panda/helper/UpdateLogger.h \
 	panda/helper/system/config.h \
+	panda/helper/system/FileRepository.h \
 	panda/types/Animation.h \
 	panda/types/AnimationTraits.h \
 	panda/types/Color.h \
@@ -96,6 +97,7 @@ SOURCES += \
 	panda/helper/Random.cpp \
 	panda/helper/ShaderCache.cpp \
 	panda/helper/UpdateLogger.cpp \
+	panda/helper/system/FileRepository.cpp \
 	panda/types/Animation.inl \
 	panda/types/Color.cpp \
 	panda/types/DataTraits.cpp \
@@ -111,6 +113,6 @@ SOURCES += \
 	panda/types/TypeConverter.cpp
 
 unix {
-    target.path = /usr/lib
-    INSTALLS += target
+	target.path = /usr/lib
+	INSTALLS += target
 }

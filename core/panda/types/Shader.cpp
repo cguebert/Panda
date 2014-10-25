@@ -1,5 +1,6 @@
 #include <panda/types/Shader.h>
 #include <panda/helper/ShaderCache.h>
+#include <panda/helper/system/FileRepository.h>
 
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
@@ -54,13 +55,11 @@ void Shader::setSource(QOpenGLShader::ShaderType type, const QString& sourceCode
 
 void Shader::setSourceFromFile(QOpenGLShader::ShaderType type, const QString& fileName)
 {
-	QFile file(fileName);
-	if (!file.open(QFile::ReadOnly)) {
+	QByteArray contents = helper::system::DataRepository.loadFile(fileName);
+	if (contents.isEmpty()) {
 		qWarning() << "Shader: Unable to open file" << fileName;
 		return;
 	}
-
-	QByteArray contents = file.readAll();
 
 	ShaderSource shaderSource;
 	shaderSource.type = type;

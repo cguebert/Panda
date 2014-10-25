@@ -18,6 +18,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Group.h>
+#include <panda/helper/system/FileRepository.h>
 
 MainWindow::MainWindow()
 	: m_groupsRegistryMenu(nullptr)
@@ -33,6 +34,11 @@ MainWindow::MainWindow()
 	m_tabWidget->addTab(m_graphView, tr("Graph"));
 	m_tabWidget->addTab(m_openGLRenderView, tr("Render"));
 	setCentralWidget(m_tabWidget);
+
+	// Set the application directories
+	QStringList standardPaths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+	for(const QString& path : standardPaths)
+		panda::helper::system::DataRepository.addPath(path);
 
 	PluginsManager::getInstance()->loadPlugins();
 
@@ -617,7 +623,7 @@ void MainWindow::readSettings()
 }
 
 void MainWindow::writeSettings()
-{	
+{
 	QSettings settings("Christophe Guebert", "Panda");
 
 	settings.setValue("recentFiles", m_recentFiles);
