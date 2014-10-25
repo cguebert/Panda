@@ -1,5 +1,3 @@
-#version 440
-
 in vec2 f_texCoord;
 
 uniform sampler2D texS; // Source
@@ -10,7 +8,7 @@ uniform int mode;
 
 out vec4 color; // layout(location = 0)
 
-void main(void) 
+void main(void)
 {
 	vec4 Sp = texture(texS, f_texCoord);
 	float Sa = Sp.a * opacity;	// Source alpha
@@ -18,7 +16,7 @@ void main(void)
 	vec4 Dp = texture(texD, f_texCoord);
 	float Da = Dp.a;			// Destination alpha
 	vec3 Dca = Dp.rgb * Da;		// Premultiplied destination color
-	
+
 	float Ra = 0;				// Result alpha
 	vec3 Rca = vec3(0);			// Premultiplied result color
 	if(mode == 0) // SourceOver
@@ -222,7 +220,7 @@ void main(void)
 	for(int i=0; i<3; ++i)
 		Rca[i] = clamp(Rca[i], 0, 1);
 	Ra = clamp(Ra, 0, 1);
-	
+
 	if(Ra > 0)
 		color = vec4(Rca / Ra, Ra);
 	else

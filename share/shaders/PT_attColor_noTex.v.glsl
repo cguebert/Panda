@@ -1,5 +1,3 @@
-#version 440
-
 in vec2 vertex;
 in vec4 color;
 

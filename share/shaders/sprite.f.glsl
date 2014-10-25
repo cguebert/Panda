@@ -1,5 +1,3 @@
-#version 440
-
 in vec4 f_color;
 
 uniform sampler2D tex0;

@@ -1,5 +1,3 @@
-#version 440
-
 in vec2 vertex;
 
 uniform mat4 MVP;

@@ -1,5 +1,3 @@
-#version 440
-
 in vec2 f_texCoord;
 
 uniform sampler2D tex0;

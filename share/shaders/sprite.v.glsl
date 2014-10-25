@@ -1,5 +1,3 @@
-#version 440
-
 in vec2 position;
 in float size;
 in vec4 color;
