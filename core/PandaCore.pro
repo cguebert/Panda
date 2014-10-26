@@ -71,6 +71,7 @@ HEADERS += \
 SOURCES += \
 	panda/BaseClass.cpp \
 	panda/BaseData.cpp \
+	panda/core.cpp \
 	panda/DataCopier.cpp \
 	panda/DataFactory.cpp \
 	panda/DataNode.cpp \

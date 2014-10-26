@@ -1,13 +1,13 @@
 TEMPLATE = lib
 CONFIG += dll c++11
-Release:TARGET = PandaModules
-Debug:TARGET = PandaModules_d
+TARGET = PandaModules
 HEADERS       = \
 	generators/UserValue.h \
 	particles/Particle.h \
 	particles/ParticleEngine.h \
 	particles/ParticleEffector.h
 SOURCES       = \
+	mainModule.cpp \
 	Replicator.cpp \
 	animation/AnimLength.cpp \
 	animation/AnimValue.cpp \
@@ -111,7 +111,8 @@ DEFINES +=	PANDA_LOG_EVENTS \
 			_CRT_SECURE_NO_WARNINGS \
 			_SCL_SECURE_NO_WARNINGS
 
-DESTDIR = ../bin/modules
+Release:DESTDIR = ../bin/modules
+Debug:DESTDIR = ../bin/modules_d
 Release:LIBS += ../bin/PandaCore.lib
 Debug:LIBS += ../bin/PandaCore_d.lib
 
