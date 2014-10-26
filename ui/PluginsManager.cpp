@@ -1,12 +1,7 @@
-#include <QCoreApplication>
-#include <QLibrary>
-
 #include <ui/PluginsManager.h>
+#include <panda/helper/system/FileRepository.h>
 
-PluginsManager::PluginsManager()
-{
-	m_pluginsDirPath = QCoreApplication::applicationDirPath() + "/modules/";
-}
+#include <iostream>
 
 PluginsManager* PluginsManager::getInstance()
 {
@@ -16,7 +11,19 @@ PluginsManager* PluginsManager::getInstance()
 
 void PluginsManager::loadPlugins()
 {
-	QLibrary library("modules/PandaModules");
-	library.load();
+	QStringList modules = panda::helper::system::DataRepository.enumerateFilesInDir("modules");
+	for(const QString& moduleName : modules)
+	{
+		if(QLibrary::isLibrary(moduleName))
+		{
+			QString absolutePath = panda::helper::system::DataRepository.findFile("modules/" + moduleName);
+			LibraryPtr library = LibraryPtr(new QLibrary(absolutePath));
+
+			if(library->load())
+				m_plugins.push_back(library);
+			else
+				std::cerr << "Could not load library " << moduleName.toStdString() << std::endl;
+		}
+	}
 }
 

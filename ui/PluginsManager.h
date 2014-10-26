@@ -1,22 +1,20 @@
 #ifndef PLUGINSMANAGER_H
 #define PLUGINSMANAGER_H
 
-#include <QObject>
-#include <QString>
+#include <QLibrary>
+#include <QSharedPointer>
+#include <QVector>
 
-class PluginsManager : public QObject
+class PluginsManager
 {
-	Q_OBJECT
 public:
-
 	static PluginsManager* getInstance();
 
 	void loadPlugins();
 
 protected:
-	PluginsManager();
-
-	QString m_pluginsDirPath;
+	typedef QSharedPointer<QLibrary> LibraryPtr;
+	QVector<LibraryPtr> m_plugins;
 };
 
 #endif // PLUGINSMANAGER_H
