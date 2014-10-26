@@ -1,3 +1,5 @@
+#version 400
+
 in vec2 vertex;
 in vec2 texCoord;
 

@@ -643,18 +643,18 @@ bool MainWindow::okToContinue()
 						   "Do you want to save your changes?"),
 						QMessageBox::Yes | QMessageBox::No
 						| QMessageBox::Cancel);
-		if (r == QMessageBox::Yes) {
+		if (r == QMessageBox::Yes)
 			return save();
-		} else if (r == QMessageBox::Cancel) {
+		else if (r == QMessageBox::Cancel)
 			return false;
-		}
 	}
 	return true;
 }
 
 bool MainWindow::loadFile(const QString &fileName, bool import)
 {
-	if (!m_document->readFile(fileName, import)) {
+	if (!m_document->readFile(fileName, import))
+	{
 		statusBar()->showMessage(tr("Loading failed"), 2000);
 		return false;
 	}
@@ -674,7 +674,8 @@ bool MainWindow::loadFile(const QString &fileName, bool import)
 
 bool MainWindow::saveFile(const QString &fileName)
 {
-	if (!m_document->writeFile(fileName)) {
+	if (!m_document->writeFile(fileName))
+	{
 		statusBar()->showMessage(tr("Saving failed"), 2000);
 		return false;
 	}

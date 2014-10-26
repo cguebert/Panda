@@ -12,7 +12,6 @@ static bool objectFactoryCreated = true;
 ObjectFactory::~ObjectFactory()
 {
 	objectFactoryCreated = false;
-	std::cout << "ObjectFactory destruction" << std::endl;
 }
 
 ObjectFactory* ObjectFactory::getInstance()
@@ -61,15 +60,22 @@ void ObjectFactory::registerModule(ModuleEntry entry)
 	if(std::find(m_modules.begin(), m_modules.end(), entry.name) != m_modules.end())
 		std::cerr << "Factory already has the module " << entry.name.toStdString() << std::endl;
 	m_tempModules.push_back(entry);
-	std::cout << "registerModule " << entry.name.toStdString() << std::endl;
 }
 
 void ObjectFactory::unregisterModule(QString moduleName)
 {
-	if(std::find(m_modules.begin(), m_modules.end(), moduleName) != m_modules.end())
+	if(std::find(m_modules.begin(), m_modules.end(), moduleName) == m_modules.end())
 	{
 		std::cerr << "Factory has no module " << moduleName.toStdString() << std::endl;
 		return;
+	}
+
+	for(RegistryMap::iterator it = m_registry.begin(), itEnd = m_registry.end(); it != itEnd; )
+	{
+		if(it->second.moduleName == moduleName)
+			m_registry.erase(it++);
+		else
+			++it;
 	}
 }
 
@@ -81,6 +87,9 @@ void ObjectFactory::moduleLoaded()
 		std::cerr << "More than one module registered" << std::endl;
 	else
 	{
+		QString moduleName = m_tempModules.front().name;
+		for(auto& it : m_tempRegistry)
+			it.second.moduleName = moduleName;
 		m_registry.insert(m_tempRegistry.begin(), m_tempRegistry.end());
 		m_modules.push_back(m_tempModules.front());
 		std::sort(m_modules.begin(), m_modules.end());
