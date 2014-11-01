@@ -135,6 +135,8 @@ private:
 
 //****************************************************************************//
 
+/// Use the REGISTER_MODULE macro to be sure to use the real name of the target file
+
 class PANDA_CORE_API RegisterModule
 {
 public:
@@ -152,6 +154,10 @@ protected:
 private:
 	RegisterModule();
 };
+
+#define EXPAND_MACRO(x) STRINGIFY_MACRO(x)
+#define STRINGIFY_MACRO(x) #x
+#define REGISTER_MODULE panda::RegisterModule(EXPAND_MACRO(TARGET_FILE))
 
 // This class is used by RegisterModule to automatically unregister a module when unloading a library
 class PANDA_CORE_API ModuleHandle

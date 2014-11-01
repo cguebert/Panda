@@ -1,6 +1,6 @@
 #include <panda/ObjectFactory.h>
 
-panda::ModuleHandle mainModule = panda::RegisterModule("PandaModules")
+panda::ModuleHandle mainModule = REGISTER_MODULE
 		.setDescription("Main modules for components not yet sorted by their type")
 		.setLicense("GPL")
 		.setVersion("1.0");

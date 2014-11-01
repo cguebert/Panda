@@ -158,7 +158,7 @@ void ParticleEngine::update()
 
 int ParticleEngineClass = RegisterObject<ParticleEngine>("Particles/Particle engine").setDescription("Animate a set of points based on physical properties and optional modifier objects");
 
-ModuleHandle particlesModule = RegisterModule("Particles")
+ModuleHandle particlesModule = REGISTER_MODULE
 		.setDescription("Particle engine and effectors")
 		.setLicense("GPL")
 		.setVersion("1.0");

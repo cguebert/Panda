@@ -121,7 +121,7 @@ void ShaderEffects::update()
 	}
 }
 
-panda::ModuleHandle shadersEffectsModule = panda::RegisterModule("ShaderEffects")
+panda::ModuleHandle shadersEffectsModule = REGISTER_MODULE
 		.setDescription("Object to manipulate images using shaders.")
 		.setLicense("GPL")
 		.setVersion("1.0");

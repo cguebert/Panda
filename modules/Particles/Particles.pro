@@ -28,6 +28,7 @@ Debug:LIBS += $${EXE_PATH}/PandaCore_d.lib
 PRECOMPILED_HEADER = $${ROOT_DIR}/core/panda/pch.h
 
 #DEFINES += PANDA_DOUBLE
+DEFINES += TARGET_FILE=\"$${TARGET}\"
 
 BOOST = $${ROOT_DIR}/../boost_1_56_0
 
