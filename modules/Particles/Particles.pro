@@ -1,6 +1,5 @@
 TEMPLATE = lib
 CONFIG += dll c++11
-TARGET = Particles
 HEADERS       = \
 	Particle.h \
 	ParticleEngine.h \

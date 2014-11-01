@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>shaders/GBlur.f.glsl</file>
+        <file>shaders/GBlurH.v.glsl</file>
+        <file>shaders/GBlurV.v.glsl</file>
+    </qresource>
+</RCC>

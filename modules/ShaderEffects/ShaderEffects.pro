@@ -1,25 +1,13 @@
 TEMPLATE = lib
 CONFIG += dll c++11
-HEADERS       =
+HEADERS       = \
+	ShaderEffects.h
 SOURCES       = \
-	Concatenation.cpp \
-	Condition.cpp \
-	DeleteItems.cpp \
-	ExtractHead.cpp \
-	ExtractTail.cpp \
-	FillList.cpp \
-	FilterItems.cpp \
-	FindItem.cpp \
-	InterleaveSequence.cpp \
-	ListBuffer.cpp \
-	ListItem.cpp \
-	listModule.cpp \
-	ListReverse.cpp \
-	ListSize.cpp \
-	ReplaceItem.cpp \
-	RemoveDuplicates.cpp \
-	SortList.cpp
-	
+	Enblend.cpp \
+	GaussianBlur.cpp \
+	GaussianPyramid.cpp \
+	ShaderEffects.cpp
+
 INCLUDEPATH = .
 QT += widgets xml opengl
 CONFIG += c++11
@@ -45,3 +33,5 @@ INCLUDEPATH += $${BOOST}/
 INCLUDEPATH += $${ROOT_DIR}
 INCLUDEPATH += $${ROOT_DIR}/core
 LIBPATH += $${BOOST}/stage/lib
+
+RESOURCES     = ShaderEffects.qrc
