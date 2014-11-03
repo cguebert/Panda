@@ -37,4 +37,8 @@ protected:
 	GLfloat m_texCoords[8];
 };
 
+// Returns true if it created a new fbo
+bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size);
+void renderImage(QSharedPointer<QOpenGLFramebufferObject>& fbo, QOpenGLShaderProgram& program, GLuint texId);
+
 } // namespace Panda

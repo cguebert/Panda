@@ -49,6 +49,14 @@ public:
 		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 	}
 
+	void update()
+	{
+		// Make sure we compute each image before the rendering
+		const QVector<ImageWrapper>& listImage = image.getValue();
+		for(const ImageWrapper& image : listImage)
+			image.getTextureId();
+	}
+
 	void drawTexture(GLuint texId, Rect area)
 	{
 		if(!texId)

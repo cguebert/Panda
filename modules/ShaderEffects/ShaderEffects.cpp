@@ -126,5 +126,64 @@ panda::ModuleHandle shadersEffectsModule = REGISTER_MODULE
 		.setLicense("GPL")
 		.setVersion("1.0");
 
+//****************************************************************************//
+
+bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size)
+{
+	if(!fbo || fbo->size() != size)
+	{
+		fbo.reset(new QOpenGLFramebufferObject(size));
+		return true;
+	}
+
+	return false;
+}
+
+void renderImage(QSharedPointer<QOpenGLFramebufferObject>& fbo, QOpenGLShaderProgram& program, GLuint texId)
+{
+	fbo->bind();
+
+	QSize size = fbo->size();
+	glViewport(0, 0, size.width(), size.height());
+
+	QMatrix4x4 mvp;
+	mvp.ortho(0, size.width(), size.height(), 0, -10, 10);
+
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	GLfloat verts[8];
+	verts[0*2+0] = size.width(); verts[0*2+1] = 0;
+	verts[1*2+0] = 0;  verts[1*2+1] = 0;
+	verts[3*2+0] = 0;  verts[3*2+1] = size.height();
+	verts[2*2+0] = size.width(); verts[2*2+1] = size.height();
+
+	const GLfloat texCoords[8] = {1, 1, 0, 1, 1, 0, 0, 0};
+
+	program.bind();
+	program.setUniformValue("MVP", mvp);
+
+	program.enableAttributeArray("vertex");
+	program.setAttributeArray("vertex", verts, 2);
+
+	program.enableAttributeArray("texCoord");
+	program.setAttributeArray("texCoord", texCoords, 2);
+
+	program.setUniformValue("tex0", 0);
+
+	glBindTexture(GL_TEXTURE_2D, texId);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	program.disableAttributeArray("vertex");
+	program.disableAttributeArray("texCoord");
+	program.release();
+
+	fbo->release();
+}
 
 } // namespace Panda

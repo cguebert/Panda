@@ -6,6 +6,7 @@ SOURCES       = \
 	Enblend.cpp \
 	GaussianBlur.cpp \
 	GaussianPyramid.cpp \
+	SimpleResize.cpp \
 	ShaderEffects.cpp
 
 INCLUDEPATH = .
