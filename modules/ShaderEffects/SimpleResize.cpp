@@ -13,12 +13,12 @@ namespace panda {
 
 using types::ImageWrapper;
 
-class ModifierImage_Downsample : public PandaObject
+class ModifierImage_Downscale : public PandaObject
 {
 public:
-	PANDA_CLASS(ModifierImage_Downsample, PandaObject)
+	PANDA_CLASS(ModifierImage_Downscale, PandaObject)
 
-	ModifierImage_Downsample(PandaDocument* doc)
+	ModifierImage_Downscale(PandaDocument* doc)
 		: PandaObject(doc)
 		, m_input(initData(&m_input, "input", "The original image"))
 		, m_output(initData(&m_output, "output", "Image created by the operation"))
@@ -29,11 +29,13 @@ public:
 
 		addOutput(&m_output);
 
-		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,
-			helper::system::DataRepository.loadFile("shaders/PT_noColor_Tex.v.glsl"));
-		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,
-			helper::system::DataRepository.loadFile("shaders/PT_noColor_Tex.f.glsl"));
-		m_shaderProgram.link();
+		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/Downsample.v.glsl");
+		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample2.f.glsl");
+		m_shaderProgram2x.link();
+
+		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/Downsample.v.glsl");
+		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample4.f.glsl");
+		m_shaderProgram4x.link();
 	}
 
 	void update()
@@ -45,33 +47,59 @@ public:
 			return;
 		}
 
-		QSize inputSize = m_input.getValue().size();
-		QSize outputSize = inputSize / 2;
-		if(resizeFBO(m_outputFBO, outputSize))
-			m_output.getAccessor()->setFbo(m_outputFBO);
+		int nbOfDownscales = m_nbOfDownscales.getValue();
 
-		renderImage(m_outputFBO, m_shaderProgram, texId);
+		if(nbOfDownscales <= 0)
+		{ // Copy input to output
+			m_output.getAccessor().wref() = m_input.getValue();
+			return;
+		}
+
+		unsigned int nb4 = nbOfDownscales / 2, nb2 = nbOfDownscales % 2;
+		unsigned int nbOp = nb4 + nb2;
+		if(nbOp != m_FBOs.size())
+			m_FBOs.resize(nbOp);
+
+		QSize renderSize = m_input.getValue().size();
+		for(unsigned int i=0; i<nb4; ++i)
+		{
+			renderSize /= 4;
+			auto& fbo = m_FBOs[i];
+			resizeFBO(fbo, renderSize);
+			renderImage(fbo, m_shaderProgram4x, texId);
+			texId = fbo->texture();
+		}
+
+		if(nb2)
+		{
+			renderSize /= 2;
+			auto& fbo = m_FBOs.back();
+			resizeFBO(fbo, renderSize);
+			renderImage(fbo, m_shaderProgram2x, texId);
+		}
+
+		m_output.getAccessor()->setFbo(m_FBOs.back());
 	}
 
 protected:
 	Data< ImageWrapper > m_input, m_output;
 	Data< int > m_nbOfDownscales;
 
-	QOpenGLShaderProgram m_shaderProgram;
-	QSharedPointer<QOpenGLFramebufferObject> m_outputFBO;
+	QOpenGLShaderProgram m_shaderProgram2x, m_shaderProgram4x;
+	QVector<QSharedPointer<QOpenGLFramebufferObject>> m_FBOs;
 };
 
-int ModifierImage_DownsampleClass = RegisterObject<ModifierImage_Downsample>("Modifier/Image/Downsample")
+int ModifierImage_DownscaleClass = RegisterObject<ModifierImage_Downscale>("Modifier/Image/Downscale")
 		.setDescription("Divide by 2 the size of the image");
 
 //****************************************************************************//
 
-class ModifierImage_Upsample : public PandaObject
+class ModifierImage_Upscale : public PandaObject
 {
 public:
-	PANDA_CLASS(ModifierImage_Upsample, PandaObject)
+	PANDA_CLASS(ModifierImage_Upscale, PandaObject)
 
-	ModifierImage_Upsample(PandaDocument* doc)
+	ModifierImage_Upscale(PandaDocument* doc)
 		: PandaObject(doc)
 		, m_input(initData(&m_input, "input", "The original image"))
 		, m_output(initData(&m_output, "output", "Image created by the operation"))
@@ -97,9 +125,10 @@ public:
 			return;
 		}
 
-		QSize inputSize = m_input.getValue().size();
-		QSize outputSize = inputSize * 2;
-		if(resizeFBO(m_outputFBO, outputSize))
+		QSize renderSize = m_input.getValue().size();
+		for(int i=0, nb = m_nbOfUpscales.getValue(); i < nb; ++i)
+			renderSize *= 2;
+		if(resizeFBO(m_outputFBO, renderSize))
 			m_output.getAccessor()->setFbo(m_outputFBO);
 
 		renderImage(m_outputFBO, m_shaderProgram, texId);
@@ -113,7 +142,7 @@ protected:
 	QSharedPointer<QOpenGLFramebufferObject> m_outputFBO;
 };
 
-int ModifierImage_UpsampleClass = RegisterObject<ModifierImage_Upsample>("Modifier/Image/Upsample")
+int ModifierImage_UpscaleClass = RegisterObject<ModifierImage_Upscale>("Modifier/Image/Upscale")
 		.setDescription("Multiply by 2 the size of the image");
 
 } // namespace Panda
