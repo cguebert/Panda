@@ -10,7 +10,7 @@ SOURCES       = \
 	ShaderEffects.cpp
 
 INCLUDEPATH = .
-QT += widgets xml opengl
+QT +=  xml opengl
 CONFIG += c++11
 DEFINES +=	PANDA_LOG_EVENTS \
 			_CRT_SECURE_NO_WARNINGS \

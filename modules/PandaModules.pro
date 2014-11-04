@@ -3,4 +3,5 @@ CONFIG += ordered
 SUBDIRS = MainModules \
 List \
 Particles \
-ShaderEffects
+ShaderEffects \
+UserValue

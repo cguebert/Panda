@@ -2,7 +2,7 @@
 #include <ui/GraphView.h>
 
 #include <panda/PandaDocument.h>
-#include <modules/generators/UserValue.h>
+#include <panda/Group.h>
 
 #include <QPainter>
 

@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <modules/generators/UserValue.h>
+#include <panda/Group.h>
 
 #include <panda/types/Animation.h>
 #include <panda/types/Color.h>
@@ -10,6 +10,8 @@
 #include <panda/types/Path.h>
 #include <panda/types/Rect.h>
 #include <panda/types/Shader.h>
+
+#include "UserValue.h"
 
 #include <QString>
 #include <QVector>
@@ -317,3 +319,7 @@ int LoadValue_AnimationPointClass = RegisterObject< LoadValue< types::Animation<
 
 } // namespace Panda
 
+panda::ModuleHandle userValueModule = REGISTER_MODULE
+		.setDescription("Object to store values for the UI or to & from files.")
+		.setLicense("GPL")
+		.setVersion("1.0");

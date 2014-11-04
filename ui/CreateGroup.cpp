@@ -15,8 +15,6 @@
 #include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
 
-#include <modules/generators/UserValue.h>
-
 #include <QCoreApplication>
 #include <QMessageBox>
 

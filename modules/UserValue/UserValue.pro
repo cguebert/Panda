@@ -1,18 +1,13 @@
 TEMPLATE = lib
 CONFIG += dll c++11
 HEADERS       = \
-	Particle.h \
-	ParticleEngine.h \
-	ParticleEffector.h
+	UserValue.h
 SOURCES       = \
-	ParticleCollision.cpp \
-	ParticleCreation.cpp \
-	ParticleDestruction.cpp \
-	ParticleEngine.cpp \
-	ParticleForceField.cpp
+	UserValue.cpp
+	
 INCLUDEPATH = .
-QT += xml opengl
 CONFIG += c++11
+QT += xml
 DEFINES +=	PANDA_LOG_EVENTS \
 			_CRT_SECURE_NO_WARNINGS \
 			_SCL_SECURE_NO_WARNINGS

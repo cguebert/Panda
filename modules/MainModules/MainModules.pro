@@ -1,7 +1,6 @@
 TEMPLATE = lib
 CONFIG += dll c++11
-HEADERS       = \
-	../generators/UserValue.h
+HEADERS       =
 SOURCES       = \
 	../mainModule.cpp \
 	../Replicator.cpp \
@@ -9,7 +8,6 @@ SOURCES       = \
 	../animation/AnimValue.cpp \
 	../animation/Interpolation.cpp \
 	../animation/List2Anim.cpp \
-	../generators/UserValue.cpp \
 	../generators/color/ComposeColors.cpp \
 	../generators/color/RandomColors.cpp \
 	../generators/gradient/Anim2Gradient.cpp \
@@ -79,7 +77,7 @@ SOURCES       = \
 	../render/modifiers/RenderModifierBlend.cpp \
 	../render/modifiers/RenderModifierTransformations.cpp
 INCLUDEPATH = .
-QT += widgets xml opengl
+QT += xml opengl
 CONFIG += c++11
 DEFINES +=	PANDA_LOG_EVENTS \
 			_CRT_SECURE_NO_WARNINGS \
