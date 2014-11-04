@@ -1,5 +1,3 @@
-#include <panda/PandaObject.h>
-#include <panda/ObjectFactory.h>
 #include <QObject>
 
 namespace panda {
