@@ -13,18 +13,16 @@ namespace types
 {
 
 ImageWrapper::ImageWrapper()
-	: m_imageSource(false)
-	, m_textureSource(false)
-	, m_fboSource(false)
+	: m_source(NONE)
 {}
 
 GLuint ImageWrapper::getTextureId() const
 {
-	if(m_textureSource && m_texture)
+	if(m_source == TEXTURE && m_texture)
 		return m_texture->textureId();
-	if(m_fboSource && m_fbo)
+	if(m_source == FBO && m_fbo)
 		return m_fbo->texture();
-	if(m_imageSource)
+	if(m_source == IMAGE)
 	{
 		if(!m_texture)
 			const_cast<ImageWrapper*>(this)->m_texture
@@ -37,9 +35,9 @@ GLuint ImageWrapper::getTextureId() const
 
 const QImage& ImageWrapper::getImage() const
 {
-	if(m_fboSource && m_fbo && m_image.isNull())
+	if(m_source == FBO && m_fbo && m_image.isNull())
 		const_cast<ImageWrapper*>(this)->m_image = m_fbo->toImage();
-	else if(m_textureSource && !m_buffer.isEmpty() && m_image.isNull())
+	else if(m_source == TEXTURE && !m_buffer.isEmpty() && m_image.isNull())
 		const_cast<ImageWrapper*>(this)->createImageFromBuffer();
 
 	return m_image;
@@ -47,14 +45,14 @@ const QImage& ImageWrapper::getImage() const
 
 int ImageWrapper::width() const
 {
-	if(m_fboSource && m_fbo)
+	if(m_source == FBO && m_fbo)
 		return m_fbo->width();
 	return m_width;
 }
 
 int ImageWrapper::height() const
 {
-	if(m_fboSource && m_fbo)
+	if(m_source == FBO && m_fbo)
 		return m_fbo->height();
 	return m_height;
 }
@@ -65,9 +63,7 @@ void ImageWrapper::setImage(const QImage& img)
 	m_texture.reset();
 	m_fbo.reset();
 
-	m_imageSource = true;
-	m_textureSource = false;
-	m_fboSource = false;
+	m_source = IMAGE;
 
 	m_width = m_image.width();
 	m_height = m_image.height();
@@ -80,9 +76,7 @@ void ImageWrapper::setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo)
 	m_texture.reset();
 	m_fbo = fbo;
 
-	m_imageSource = false;
-	m_textureSource = false;
-	m_fboSource = true;
+	m_source = FBO;
 
 	m_buffer.clear();
 }
@@ -104,9 +98,7 @@ void ImageWrapper::createTexture(QVector<types::Color> buffer, int width, int he
 
 	m_texture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, buffer.constData());
 
-	m_imageSource = false;
-	m_textureSource = true;
-	m_fboSource = false;
+	m_source = TEXTURE;
 }
 
 void ImageWrapper::createImageFromBuffer()
@@ -130,9 +122,7 @@ void ImageWrapper::clear()
 	m_texture.reset();
 	m_fbo.reset();
 
-	m_imageSource = false;
-	m_textureSource = false;
-	m_fboSource = false;
+	m_source = NONE;
 
 	m_buffer.clear();
 	m_width = -1;
@@ -141,27 +131,43 @@ void ImageWrapper::clear()
 
 ImageWrapper& ImageWrapper::operator=(const ImageWrapper& rhs)
 {
-	m_image = rhs.getImage();
-	m_texture.reset();
-	m_fbo.reset();
+	if(rhs.getFbo())
+	{ // Copy the FBO
+		QOpenGLFramebufferObject* rhsFBO = rhs.getFbo();
+		m_image = QImage();
+		m_texture.reset();
+		m_fbo.reset(new QOpenGLFramebufferObject(rhsFBO->size()));
+		QOpenGLFramebufferObject::blitFramebuffer(m_fbo.data(), rhsFBO);
 
-	m_imageSource = true;
-	m_textureSource = false;
-	m_fboSource = false;
+		m_source = FBO;
 
-	m_buffer.clear();
-	m_width = m_image.width();
-	m_height = m_image.height();
+		m_buffer.clear();
+	}
+	else
+	{ // Create an image
+		m_image = rhs.getImage();
+		m_texture.reset();
+		m_fbo.reset();
+
+		m_source = IMAGE;
+
+		m_buffer.clear();
+		m_width = m_image.width();
+		m_height = m_image.height();
+	}
 
 	return *this;
 }
 
 bool ImageWrapper::operator==(const ImageWrapper& img) const
 {
-	if(m_textureSource != img.m_textureSource)
+	if(m_source != img.m_source)
 		return false;
 
-	if(m_textureSource && img.m_textureSource && m_texture != img.m_texture)
+	if(m_source == TEXTURE && m_texture != img.m_texture)
+		return false;
+
+	if(m_source == FBO && m_fbo != img.m_fbo)
 		return false;
 
 	return m_image == img.m_image;

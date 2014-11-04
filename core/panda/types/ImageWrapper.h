@@ -53,7 +53,8 @@ private:
 	QSharedPointer<QOpenGLTexture> m_texture;
 	QSharedPointer<QOpenGLFramebufferObject> m_fbo;
 
-	bool m_imageSource, m_textureSource, m_fboSource;
+	enum SourceType : unsigned char { NONE=0, IMAGE, TEXTURE, FBO };
+	SourceType m_source;
 	int m_width, m_height;
 	QVector<types::Color> m_buffer;
 };
@@ -62,13 +63,13 @@ inline QSize ImageWrapper::size() const
 { return QSize(width(), height()); }
 
 inline bool ImageWrapper::isNull()
-{ return !(m_imageSource || m_textureSource || m_fboSource); }
+{ return m_source == NONE; }
 
 inline bool ImageWrapper::hasImage() const
-{ return m_imageSource; }
+{ return m_source == IMAGE; }
 
 inline bool ImageWrapper::hasTexture() const
-{ return m_textureSource || m_fboSource; }
+{ return m_source == TEXTURE || m_source == FBO; }
 
 inline QOpenGLFramebufferObject* ImageWrapper::getFbo() const
 { return m_fbo.data(); }
