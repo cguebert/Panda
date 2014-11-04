@@ -8,3 +8,5 @@ SOURCES       = \
 	GaussianPyramid.cpp \
 	SimpleResize.cpp \
 	ShaderEffects.cpp
+
+RESOURCES     = ShaderEffects.qrc
