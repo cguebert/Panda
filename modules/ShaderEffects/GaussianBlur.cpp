@@ -21,13 +21,13 @@ public:
 	{
 		if(!passId)
 		{
-			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/GBlurH.v.glsl");
+			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/GBlur.v.glsl");
 			program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/GBlur.f.glsl");
 			program.link();
 		}
 		else
 		{
-			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/GBlurV.v.glsl");
+			program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/GBlur.v.glsl");
 			program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/GBlur.f.glsl");
 			program.link();
 		}
@@ -35,22 +35,24 @@ public:
 
 	void prepareUpdate(QSize size)
 	{
-		PReal radius = m_radius.getValue() / 7;
-		m_radiusScaleW = radius / size.width();
-		m_radiusScaleH = radius / size.height();
+		m_size = size;
 	}
 
 	void preparePass(int passId, QOpenGLShaderProgram& program)
 	{
 		if(!passId)
-			program.setUniformValue("radiusScale", m_radiusScaleH);
+		{ // H
+			program.setUniformValue("pixelOffset", QPointF(1.0/m_size.width(), 0));
+		}
 		else
-			program.setUniformValue("radiusScale", m_radiusScaleW);
+		{ // V
+			program.setUniformValue("pixelOffset", QPointF(0, 1.0/m_size.height()));
+		}
 	}
 
 protected:
 	Data< PReal > m_radius;
-	PReal m_radiusScaleW, m_radiusScaleH;
+	QSize m_size;
 };
 
 int ModifierImage_GaussianBlurClass = RegisterObject<ModifierImage_GaussianBlur>("Modifier/Image/Gaussian blur")
