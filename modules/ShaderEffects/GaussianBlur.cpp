@@ -16,7 +16,7 @@ public:
 		: ShaderEffects(doc, 2)
 		, m_radius(initData(&m_radius, (PReal)10, "radius", "Radius of the blur"))
 		, m_currentRadius(-1)
-		, m_kernelSize(0)
+		, m_halfKernelSize(0)
 	{
 		addInput(&m_radius);
 
@@ -34,27 +34,22 @@ public:
 		m_shaderProgram.reset();
 	}
 
-	// TODO: only create half of it
-	std::vector<float> computeKernel()
+	std::vector<float> computeHalfKernel()
 	{
-		int halfKernelSize = ceil(m_currentRadius / 2);
-		m_kernelSize = halfKernelSize * 2 + 1;
+		m_halfKernelSize = ceil(m_currentRadius / 2) + 1;
 
-		std::vector<float> kernel;
-		kernel.resize( m_kernelSize );
-
+		std::vector<float> kernel(m_halfKernelSize);
 		const float cPI = 3.14159265358979323846f;
-		float mean		= halfKernelSize;
 		float sigma		= 0.8 + 0.3 * (m_currentRadius / 2 - 1);
 		double sum		= 0.0;
-		for (int x = 0; x < m_kernelSize; ++x)
+		for (int x = 0; x < m_halfKernelSize; ++x)
 		{
-			kernel[x] = (float)sqrt( exp( -0.5 * (pow((x-mean)/sigma, 2.0) + pow((mean)/sigma,2.0)) )
-				/ (2 * cPI * sigma * sigma) );
-			sum += kernel[x];
+			float val = (float)sqrt( exp( -0.5 * pow(x/sigma, 2.0) ) / (2 * cPI * sigma * sigma) );
+			kernel[x] = val;
+			sum += x ? val * 2 : val;
 		}
 		float sumf = (float)sum;
-		for (int x = 0; x < m_kernelSize; ++x)
+		for (int x = 0; x < m_halfKernelSize; ++x)
 			kernel[x] /= sumf;
 
 		return kernel;
@@ -69,27 +64,20 @@ public:
 		if(file.open(QIODevice::ReadOnly | QIODevice::Text))
 		{
 			QString source = QTextStream(&file).readAll();
-			std::vector<float> kernel = computeKernel();
+			std::vector<float> halfKernel = computeHalfKernel();
+			halfKernel[0] /= 2;
 
-			std::vector<float> oneSideInputs;
-			for (int i = (m_kernelSize / 2); i >= 0; --i)
-			{
-				if(i == (m_kernelSize / 2))
-					oneSideInputs.push_back(kernel[i] * 0.5f);
-				else
-					oneSideInputs.push_back(kernel[i]);
-			}
-			if(oneSideInputs.size() % 2)
-				oneSideInputs.push_back(0);
+			if(halfKernel.size() % 2)
+				halfKernel.push_back(0);
 
-			int numSamples = (int)oneSideInputs.size() / 2;
+			int numSamples = (int)halfKernel.size() / 2;
 			std::vector<float> weights(numSamples);
 			for (int i = 0; i < numSamples; ++i)
-				weights[i] = oneSideInputs[i*2+0] + oneSideInputs[i*2+1];
+				weights[i] = halfKernel[i*2+0] + halfKernel[i*2+1];
 
 			std::vector<float> offsets(numSamples);
 			for (int i = 0; i < numSamples; ++i)
-				offsets[i] = i*2.0f + oneSideInputs[i*2+1] / weights[i];
+				offsets[i] = i*2.0f + halfKernel[i*2+1] / weights[i];
 
 			source.replace("~~1~~", QString::number(numSamples));
 
@@ -144,7 +132,7 @@ public:
 protected:
 	Data< PReal > m_radius;
 	PReal m_currentRadius;
-	int m_kernelSize;
+	int m_halfKernelSize;
 	QSize m_size;
 	QSharedPointer<QOpenGLShader> m_vertexShader, m_fragmentShader;
 	QSharedPointer<QOpenGLShaderProgram> m_shaderProgram;
