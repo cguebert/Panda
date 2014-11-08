@@ -20,18 +20,6 @@ ShaderEffects::ShaderEffects(PandaDocument* doc, int nbPasses)
 	m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 }
 
-void ShaderEffects::postCreate()
-{
-	PandaObject::postCreate();
-
-	for(int i=0; i<m_nbPasses; ++i)
-	{
-		auto program = QSharedPointer<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
-		initShaderProgram(i, *program.data());
-		m_shaderPrograms.push_back(program);
-	}
-}
-
 void ShaderEffects::update()
 {
 	const auto& inputVal = m_input.getValue();
@@ -87,11 +75,10 @@ void ShaderEffects::update()
 				else			{ texId = outputFbo->texture();			destFbo = intermediaryFbo; }
 			}
 
-			auto& program = *m_shaderPrograms[i].data();
-			program.bind();
+			auto& program = preparePass(i);
+			if(!program.isLinked())
+				return;
 			destFbo->bind();
-
-			preparePass(i, program);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

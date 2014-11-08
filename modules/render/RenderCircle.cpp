@@ -83,7 +83,7 @@ public:
 				firstBuffer.push_back(nbVertices);
 				countBuffer.push_back(nbSeg);
 
-				vertexBuffer.resize(nbVertices + nbSeg);
+				vertexBuffer.resize(nbVertices + nbSeg + 1);
 
 				const Point& valCenter = listCenter[i];
 				PReal angle = PI2 / nbSeg;
