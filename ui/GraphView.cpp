@@ -20,7 +20,7 @@
 #include <panda/PandaObject.h>
 
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
-	: QWidget(parent)
+	: ScrollableView(parent)
 	, m_pandaDocument(doc)
 	, m_zoomLevel(0)
 	, m_zoomFactor(1.0)
@@ -33,6 +33,7 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	, m_hoverTimer(new QTimer(this))
 	, m_highlightConnectedDatas(false)
 	, m_useMagneticSnap(true)
+	, m_updatingScrollContainer(false)
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -130,6 +131,8 @@ void GraphView::resetView()
 	m_contextMenuData = nullptr;
 	m_recomputeTags = false;
 	m_highlightConnectedDatas = false;
+
+	emitViewModified();
 }
 
 ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
@@ -622,6 +625,19 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		}
 
 		m_moveObjectsMacro.reset();
+
+		updateViewRect();
+		emitViewModified();
+	}
+	else if(m_movingAction == MOVING_VIEW)
+	{
+		updateViewRect();
+		emitViewModified();
+	}
+	else if(m_movingAction == MOVING_ZOOM)
+	{
+		updateViewRect();
+		emitViewModified();
 	}
 	else if(m_movingAction == MOVING_SELECTION)
 	{
@@ -686,6 +702,8 @@ void GraphView::wheelEvent(QWheelEvent * event)
 		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
 		moveView(mousePos / m_zoomFactor - oldPos);
 		update();
+		updateViewRect();
+		emitViewModified();
 	}
 }
 
@@ -770,6 +788,8 @@ void GraphView::zoomIn()
 		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
 		moveView(center / m_zoomFactor - oldPos);
 		update();
+		updateViewRect();
+		emitViewModified();
 	}
 }
 
@@ -783,6 +803,8 @@ void GraphView::zoomOut()
 		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
 		moveView(center / m_zoomFactor - oldPos);
 		update();
+		updateViewRect();
+		emitViewModified();
 	}
 }
 
@@ -796,6 +818,8 @@ void GraphView::zoomReset()
 		m_zoomFactor = 1.0;
 		moveView(center / m_zoomFactor - oldPos);
 		update();
+		updateViewRect();
+		emitViewModified();
 	}
 }
 
@@ -812,6 +836,8 @@ void GraphView::centerView()
 
 		moveView(contentsRect().center() / m_zoomFactor - totalView.center());
 		update();
+		updateViewRect();
+		emitViewModified();
 	}
 }
 
@@ -832,6 +858,8 @@ void GraphView::showAll()
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
 		moveView(contentsRect().center() / m_zoomFactor - totalView.center());
 		update();
+		updateViewRect();
+		emitViewModified();
 	}
 }
 
@@ -852,6 +880,8 @@ void GraphView::showAllSelected()
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
 		moveView(contentsRect().center() / m_zoomFactor - totalView.center());
 		update();
+		updateViewRect();
+		emitViewModified();
 	}
 }
 
@@ -877,6 +907,8 @@ void GraphView::moveSelectedToCenter()
 		}
 
 		update();
+		updateViewRect();
+		emitViewModified();
 	}
 }
 
@@ -891,6 +923,8 @@ void GraphView::addedObject(panda::PandaObject* object)
 	}
 
 	update();
+	updateViewRect();
+	emitViewModified();
 }
 
 void GraphView::removeObject(panda::PandaObject* object)
@@ -902,6 +936,8 @@ void GraphView::removeObject(panda::PandaObject* object)
 	m_recomputeTags = true;
 	m_highlightConnectedDatas = false;
 	update();
+	updateViewRect();
+	emitViewModified();
 }
 
 void GraphView::modifiedObject(panda::PandaObject* object)
@@ -1285,4 +1321,42 @@ void GraphView::changedDock(panda::DockableObject* dockable)
 	auto parentDock = dockable->getParentDock();
 	if(defaultDock && parentDock == defaultDock)
 		sortDockable(dockable, defaultDock);
+}
+
+QSize GraphView::viewSize()
+{
+	return m_viewRect.size().toSize();
+}
+
+QPoint GraphView::viewPosition()
+{
+	return m_viewRect.topLeft().toPoint();
+}
+
+void GraphView::scrollView(QPoint position)
+{
+	if(m_updatingScrollContainer)
+		return;
+	QPointF delta = (position - m_viewRect.topLeft()) / m_zoomFactor;
+	m_viewRect.moveTo(position);
+	moveView(delta);
+	update();
+}
+
+void GraphView::updateViewRect()
+{
+	m_viewRect = QRectF();
+	for(const auto& ods : m_objectDrawStructs)
+	{
+		QRectF area = ods->getObjectArea();
+		QRectF zoomedArea = QRectF(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
+		m_viewRect |= zoomedArea; // Union
+	}
+}
+
+void GraphView::emitViewModified()
+{
+	m_updatingScrollContainer = true;
+	emit viewModified();
+	m_updatingScrollContainer = false;
 }

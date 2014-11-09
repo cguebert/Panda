@@ -6,6 +6,8 @@
 #include <QMap>
 #include <set>
 
+#include <ui/ScrollContainer.h>
+
 namespace panda
 {
 class PandaDocument;
@@ -22,7 +24,7 @@ class LinkTag;
 class QStylePainter;
 class ObjectDrawStruct;
 
-class GraphView : public QWidget
+class GraphView : public ScrollableView
 {
 	Q_OBJECT
 
@@ -66,6 +68,11 @@ public:
 	void sortDockablesInDock(panda::DockObject* dock);
 	void sortAllDockables();
 
+	// From ScrollableView
+	virtual QSize viewSize();
+	virtual QPoint viewPosition();
+	virtual void scrollView(QPoint position);
+
 protected:
 	void paintEvent(QPaintEvent* event);
 	void resizeEvent(QResizeEvent* event);
@@ -92,6 +99,9 @@ protected:
 	void computeSnapDelta(QPointF position);
 
 	void changeLink(panda::BaseData* target, panda::BaseData* parent);
+
+	void updateViewRect();
+	void emitViewModified();
 
 signals:
 	void modified();
@@ -146,6 +156,9 @@ private:
 	QList<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied
 
 	QSharedPointer<panda::ScopedMacro> m_moveObjectsMacro;
+
+	QRectF m_viewRect; // Information about the scroll area
+	bool m_updatingScrollContainer;
 };
 
 #endif

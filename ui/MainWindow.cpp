@@ -10,6 +10,7 @@
 #include <ui/LayersTab.h>
 #include <ui/ListObjectsAndTypes.h>
 #include <ui/MainWindow.h>
+#include <ui/ScrollContainer.h>
 #include <ui/UpdateLoggerDialog.h>
 
 #include <ui/command/AddObjectCommand.h>
@@ -29,9 +30,13 @@ MainWindow::MainWindow()
 	m_document = new panda::PandaDocument(this);
 
 	m_graphView = new GraphView(m_document);
+	ScrollContainer* graphViewContainer = new ScrollContainer(this);
+	graphViewContainer->setFrameStyle(0); // No frame
+	graphViewContainer->setView(m_graphView);
+
 	m_openGLRenderView = new OpenGLRenderView(m_document);
 	m_tabWidget = new QTabWidget;
-	m_tabWidget->addTab(m_graphView, tr("Graph"));
+	m_tabWidget->addTab(graphViewContainer, tr("Graph"));
 	m_tabWidget->addTab(m_openGLRenderView, tr("Render"));
 	setCentralWidget(m_tabWidget);
 

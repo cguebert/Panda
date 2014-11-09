@@ -15,6 +15,7 @@ HEADERS       = \
 	ui/OpenGLRenderView.h \
 	ui/PluginsManager.h \
 	ui/QuickCreateDialog.h \
+	ui/ScrollContainer.h \
 	ui/UpdateLoggerDialog.h \
 	ui/command/AddObjectCommand.h \
 	ui/command/ModifyAnnotationCommand.h \
@@ -53,6 +54,7 @@ SOURCES       = ui/main.cpp \
 	ui/OpenGLRenderView.cpp \
 	ui/PluginsManager.cpp \
 	ui/QuickCreateDialog.cpp \
+	ui/ScrollContainer.cpp \
 	ui/UpdateLoggerDialog.cpp \
 	ui/command/AddObjectCommand.cpp \
 	ui/command/ModifyAnnotationCommand.cpp \
