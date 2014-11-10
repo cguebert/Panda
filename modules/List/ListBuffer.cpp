@@ -75,13 +75,14 @@ public:
 		PandaObject::reset();
 
 		resetValues = true;
+		setDirtyValue(this);
 	}
 
 	void setDirtyValue(const DataNode* caller)
 	{
 		if(!isDirty())
 		{
-			if(caller == &control || caller == &resetData)
+			if(caller == &control || caller == &resetData || caller == this)
 				PandaObject::setDirtyValue(caller);
 		}
 	}
