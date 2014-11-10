@@ -46,7 +46,7 @@ void AnnotationDrawStruct::drawBackground(QPainter* painter)
 
 	// Draw the shape of the annotation
 	painter->setBrush(m_parentView->palette().light());
-	painter->drawPath(shapePath);
+	painter->drawPath(m_shapePath);
 
 	painter->restore();
 }
@@ -87,7 +87,7 @@ void AnnotationDrawStruct::moveVisual(const QPointF& delta)
 	ObjectDrawStruct::moveVisual(delta);
 
 	m_textArea.translate(delta);
-	shapePath.translate(delta);
+	m_shapePath.translate(delta);
 	m_startPos += delta;
 	m_endPos += delta;
 }
@@ -135,7 +135,7 @@ void AnnotationDrawStruct::update()
 	m_textArea.translate(0, -m_textSize.height());
 	m_textArea.adjust(3, -13, 13, -3);
 
-	shapePath = QPainterPath();
+	m_shapePath = QPainterPath();
 	switch(m_annotation->m_type.getValue())
 	{
 		case Annotation::ANNOTATION_TEXT:
@@ -155,31 +155,34 @@ void AnnotationDrawStruct::update()
 			dir *= w;
 			dir2 *= w;
 
-			shapePath.moveTo(m_endPos);
-			shapePath.lineTo(m_endPos + 5*dir2 - 15*dir);
-			shapePath.lineTo(m_endPos + dir2 - 10*dir);
-			shapePath.lineTo(start + dir2);
-			shapePath.lineTo(start - dir2);
-			shapePath.lineTo(m_endPos - dir2 - 10*dir);
-			shapePath.lineTo(m_endPos - 5*dir2 - 15*dir);
-			shapePath.lineTo(m_endPos);
+			m_shapePath.moveTo(m_endPos);
+			m_shapePath.lineTo(m_endPos + 5*dir2 - 15*dir);
+			m_shapePath.lineTo(m_endPos + dir2 - 10*dir);
+			m_shapePath.lineTo(start + dir2);
+			m_shapePath.lineTo(start - dir2);
+			m_shapePath.lineTo(m_endPos - dir2 - 10*dir);
+			m_shapePath.lineTo(m_endPos - 5*dir2 - 15*dir);
+			m_shapePath.lineTo(m_endPos);
 			break;
 		}
 		case Annotation::ANNOTATION_RECTANGLE:
 		{
 			QRectF rect = QRectF(m_startPos, m_endPos);
-			shapePath.addRect(rect);
+			m_shapePath.addRect(rect);
 			break;
 		}
 		case Annotation::ANNOTATION_ELLIPSE:
 		{
 			QRectF rect = QRectF(m_startPos, m_endPos);
-			shapePath.addEllipse(rect);
+			m_shapePath.addEllipse(rect);
 			break;
 		}
 	}
 
 	m_annotation->cleanDirty();
+	m_objectArea = m_textArea;
+	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT)
+		 m_objectArea |= QRectF(m_startPos, m_endPos).normalized();
 }
 
 void AnnotationDrawStruct::save(QDomDocument& doc, QDomElement& elem)

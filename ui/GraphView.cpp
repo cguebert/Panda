@@ -675,6 +675,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		{
 			m_capturedDrawStruct->mouseReleaseEvent(event);
 			m_capturedDrawStruct = nullptr;
+			updateViewRect();
 		}
 	}
 
@@ -1349,6 +1350,8 @@ void GraphView::updateViewRect()
 		QRectF zoomedArea = QRectF(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
 		m_viewRect |= zoomedArea; // Union
 	}
+
+	m_viewRect.adjust(-5, -5, 5, 5);
 
 	emit viewModified();
 }
