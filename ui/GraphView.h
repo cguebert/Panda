@@ -24,7 +24,7 @@ class LinkTag;
 class QStylePainter;
 class ObjectDrawStruct;
 
-class GraphView : public ScrollableView
+class GraphView : public QWidget, public ScrollableView
 {
 	Q_OBJECT
 
@@ -107,6 +107,7 @@ signals:
 	void modified();
 	void showStatusBarMessage(QString);
 	void showContextMenu(QPoint pos, int reason);
+	void viewModified();
 
 public slots:
 	void zoomIn();
@@ -124,6 +125,7 @@ public slots:
 	void updateLinkTags(bool reset=false);
 	void removeLink();
 	void hoverDataInfo();
+	void startLoading();
 	void loadingFinished();
 	void changedDock(panda::DockableObject* dockable);
 
@@ -157,8 +159,9 @@ private:
 
 	QSharedPointer<panda::ScopedMacro> m_moveObjectsMacro;
 
-	QRectF m_viewRect; // Information about the scroll area
-	bool m_updatingScrollContainer;
+	QRectF m_viewRect; /// Area taken by the objects on the screen
+
+	bool m_isLoading; /// We don't update the view while loading (unnecessary events)
 };
 
 #endif

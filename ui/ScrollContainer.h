@@ -7,20 +7,15 @@
 
 // For views that we want to scroll, but always occupy the entire scollable area
 //  (in QScrollArea, the widget inside is bigger than the container)
-class ScrollableView : public QWidget
+class ScrollableView
 {
-	Q_OBJECT
 public:
-	explicit ScrollableView(QWidget* parent = nullptr) : QWidget(parent) {}
-	~ScrollableView() {}
+	virtual ~ScrollableView() {}
 
 	virtual QSize viewSize() = 0;
 	virtual QPoint viewPosition() = 0;
 
 	virtual void scrollView(QPoint position) = 0;
-
-signals:
-	void viewModified();
 };
 
 class ScrollContainer : public QAbstractScrollArea
@@ -54,10 +49,12 @@ protected:
 	void resizeEvent(QResizeEvent*);
 	void scrollContentsBy(int dx, int dy);
 
-	QPointer<ScrollableView> m_view;
+	ScrollableView* m_view;
+	QPointer<QWidget> m_viewWidget;
 	Qt::Alignment m_alignment;
 	mutable QSize m_viewSize;
-	mutable QPoint m_deltaPos;
+	QPoint m_deltaPos;
+	bool m_updatingScrollValues;
 };
 
 #endif // SCROLLCONTAINER_H

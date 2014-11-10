@@ -277,6 +277,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 
 bool PandaDocument::loadDoc(QDomElement& root)
 {
+	emit startLoading();
 	QMap<quint32, quint32> importIndicesMap;
 	auto factory = ObjectFactory::getInstance();
 

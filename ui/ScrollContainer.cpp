@@ -5,9 +5,13 @@
 #include <QScrollBar>
 #include <QStyle>
 
+#include <iostream>
+
 ScrollContainer::ScrollContainer(QWidget* parent)
 	: QAbstractScrollArea(parent)
+	, m_view(nullptr)
 	, m_alignment(0)
+	, m_updatingScrollValues(false)
 {
 	viewport()->setBackgroundRole(QPalette::NoRole);
 	horizontalScrollBar()->setSingleStep(20);
@@ -25,23 +29,24 @@ void ScrollContainer::setView(ScrollableView* view)
 
 	if(m_view)
 		delete m_view;
-	m_view = nullptr;
+
+	m_view = view;
+	m_viewWidget = dynamic_cast<QWidget*>(view);
 
 	horizontalScrollBar()->setValue(0);
 	verticalScrollBar()->setValue(0);
-	if (view->parentWidget() != viewport())
-		view->setParent(viewport());
-	if (!view->testAttribute(Qt::WA_Resized))
-		view->resize(view->sizeHint());
+	if (m_viewWidget->parentWidget() != viewport())
+		m_viewWidget->setParent(viewport());
+	if (!m_viewWidget->testAttribute(Qt::WA_Resized))
+		m_viewWidget->resize(m_viewWidget->sizeHint());
 
-	m_view = view;
-	m_view->setAutoFillBackground(true);
-	m_view->installEventFilter(this);
+	m_viewWidget->setAutoFillBackground(true);
+	m_viewWidget->installEventFilter(this);
 	m_viewSize = QSize();
 	updateScrollBars();
-	m_view->show();
+	m_viewWidget->show();
 
-	connect(m_view, SIGNAL(viewModified()), this, SLOT(viewModified()));
+	connect(m_viewWidget, SIGNAL(viewModified()), this, SLOT(viewModified()));
 }
 
 ScrollableView* ScrollContainer::view() const
@@ -53,8 +58,9 @@ ScrollableView* ScrollContainer::takeView()
 {
 	ScrollableView* view = m_view;
 	m_view = nullptr;
-	if (view)
-		view->setParent(nullptr);
+	if (m_viewWidget)
+		m_viewWidget->setParent(nullptr);
+	m_viewWidget = nullptr;
 	return view;
 }
 
@@ -78,7 +84,7 @@ QSize ScrollContainer::sizeHint() const
 	if (m_view)
 	{
 		if (!m_viewSize.isValid())
-			m_viewSize = m_view->sizeHint();
+			m_viewSize = m_viewWidget->sizeHint();
 		sz += m_viewSize;
 	}
 	else
@@ -93,8 +99,8 @@ QSize ScrollContainer::sizeHint() const
 
 QSize ScrollContainer::viewportSizeHint() const
 {
-	if (m_view)
-		return m_view->sizeHint();
+	if (m_viewWidget)
+		return m_viewWidget->sizeHint();
 
 	const int h = fontMetrics().height();
 	return QSize(6 * h, 4 * h);
@@ -102,18 +108,22 @@ QSize ScrollContainer::viewportSizeHint() const
 
 void ScrollContainer::updateViewPosition()
 {
-	Qt::LayoutDirection dir = layoutDirection();
 	QRect viewportRect = viewport()->rect();
 	QSize viewSize = m_view->viewSize();
-	QRect scrolled = QStyle::visualRect(dir, viewportRect, QRect(QPoint(-horizontalScrollBar()->value(), -verticalScrollBar()->value()), viewSize));
-	QRect aligned = QStyle::alignedRect(dir, m_alignment, viewSize, viewportRect);
-	if(!m_alignment)
-		m_view->scrollView(scrolled.topLeft() + m_deltaPos);
-	else
-		m_view->scrollView(QPoint(viewSize.width() < viewportRect.width() ? aligned.x() : scrolled.x(),
-								viewSize.height() < viewportRect.height() ? aligned.y() : scrolled.y()));
+	QPoint scrolled = QPoint(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
+	QRect aligned = QStyle::alignedRect(Qt::LeftToRight, m_alignment, viewSize, viewportRect);
 
-	updateScrollBars();
+	QPoint targetPos;
+	if(!m_alignment)
+		targetPos = scrolled + m_deltaPos;
+	else
+		targetPos = QPoint(viewSize.width() < viewportRect.width() ? aligned.x() : scrolled.x(),
+						   viewSize.height() < viewportRect.height() ? aligned.y() : scrolled.y());
+	if(targetPos != m_view->viewPosition())
+	{
+		m_view->scrollView(targetPos);
+		updateScrollBars();
+	}
 }
 
 void ScrollContainer::updateScrollBars()
@@ -121,25 +131,29 @@ void ScrollContainer::updateScrollBars()
 	if (!m_view)
 		return;
 
+	m_updatingScrollValues = true;
+
 	QSize viewportSize = viewport()->size();
 	QSize viewSize = m_view->viewSize();
 	QPoint pos = m_view->viewPosition();
 
 	int dw = std::max(0, viewportSize.width() - viewSize.width() - pos.x()); // space from the right of the view to the right of the viewport
 	int w = std::max(0, viewSize.width() - viewportSize.width() + dw + std::max(0, pos.x()));
-	int x = std::max(0, dw - pos.x());
+	int x = std::max(0, -pos.x());
 	horizontalScrollBar()->setRange(0, w);
 	horizontalScrollBar()->setPageStep(viewportSize.width());
 	horizontalScrollBar()->setValue(x);
 
 	int dh = std::max(0, viewportSize.height() - viewSize.height() - pos.y());
 	int h = std::max(0, viewSize.height() - viewportSize.height() + dh + std::max(0, pos.y()));
-	int y = std::max(0, dh - pos.y());
+	int y = std::max(0, -pos.y());
 	verticalScrollBar()->setRange(0, h);
 	verticalScrollBar()->setPageStep(viewportSize.height());
 	verticalScrollBar()->setValue(y);
 
-	m_deltaPos = -QPoint(std::min(dw - pos.x(), 0), std::min(dh - pos.y(), 0));
+	m_deltaPos = QPoint(std::max(0, pos.x()), std::max(0, pos.y()));
+
+	m_updatingScrollValues = false;
 }
 
 void ScrollContainer::resizeView()
@@ -166,7 +180,7 @@ void ScrollContainer::resizeView()
 		viewportSize.setHeight(maxSize.height());
 	if(size.height() < maxSize.height() && verticalScrollBarPolicy() != Qt::ScrollBarAlwaysOn)
 		viewportSize.setWidth(maxSize.width());
-	m_view->resize(viewportSize);
+	m_viewWidget->resize(viewportSize);
 
 	updateScrollBars();
 }
@@ -184,8 +198,9 @@ void ScrollContainer::resizeEvent(QResizeEvent *)
 }
 void ScrollContainer::scrollContentsBy(int, int)
 {
-	if (!m_view)
+	if (!m_view || m_updatingScrollValues)
 		return;
+
 	updateViewPosition();
 }
 

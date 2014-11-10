@@ -20,7 +20,7 @@
 #include <panda/PandaObject.h>
 
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
-	: ScrollableView(parent)
+	: QWidget(parent)
 	, m_pandaDocument(doc)
 	, m_zoomLevel(0)
 	, m_zoomFactor(1.0)
@@ -33,7 +33,7 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	, m_hoverTimer(new QTimer(this))
 	, m_highlightConnectedDatas(false)
 	, m_useMagneticSnap(true)
-	, m_updatingScrollContainer(false)
+	, m_isLoading(false)
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -46,6 +46,7 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	connect(m_pandaDocument, SIGNAL(modifiedObject(panda::PandaObject*)), this, SLOT(modifiedObject(panda::PandaObject*)));
 	connect(m_pandaDocument, SIGNAL(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)), this, SLOT(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)));
 	connect(m_pandaDocument, SIGNAL(loadingObject(QDomElement&,panda::PandaObject*)), this, SLOT(loadingObject(QDomElement&,panda::PandaObject*)));
+	connect(m_pandaDocument, SIGNAL(startLoading()), this, SLOT(startLoading()));
 	connect(m_pandaDocument, SIGNAL(loadingFinished()), this, SLOT(loadingFinished()));
 	connect(m_pandaDocument, SIGNAL(changedDock(panda::DockableObject*)), this, SLOT(changedDock(panda::DockableObject*)));
 	connect(m_hoverTimer, SIGNAL(timeout()), this, SLOT(hoverDataInfo()));
@@ -132,7 +133,7 @@ void GraphView::resetView()
 	m_recomputeTags = false;
 	m_highlightConnectedDatas = false;
 
-	emitViewModified();
+	emit viewModified();
 }
 
 ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
@@ -627,17 +628,14 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		m_moveObjectsMacro.reset();
 
 		updateViewRect();
-		emitViewModified();
 	}
 	else if(m_movingAction == MOVING_VIEW)
 	{
 		updateViewRect();
-		emitViewModified();
 	}
 	else if(m_movingAction == MOVING_ZOOM)
 	{
 		updateViewRect();
-		emitViewModified();
 	}
 	else if(m_movingAction == MOVING_SELECTION)
 	{
@@ -703,7 +701,6 @@ void GraphView::wheelEvent(QWheelEvent * event)
 		moveView(mousePos / m_zoomFactor - oldPos);
 		update();
 		updateViewRect();
-		emitViewModified();
 	}
 }
 
@@ -789,7 +786,6 @@ void GraphView::zoomIn()
 		moveView(center / m_zoomFactor - oldPos);
 		update();
 		updateViewRect();
-		emitViewModified();
 	}
 }
 
@@ -804,7 +800,6 @@ void GraphView::zoomOut()
 		moveView(center / m_zoomFactor - oldPos);
 		update();
 		updateViewRect();
-		emitViewModified();
 	}
 }
 
@@ -819,7 +814,6 @@ void GraphView::zoomReset()
 		moveView(center / m_zoomFactor - oldPos);
 		update();
 		updateViewRect();
-		emitViewModified();
 	}
 }
 
@@ -837,7 +831,6 @@ void GraphView::centerView()
 		moveView(contentsRect().center() / m_zoomFactor - totalView.center());
 		update();
 		updateViewRect();
-		emitViewModified();
 	}
 }
 
@@ -859,7 +852,6 @@ void GraphView::showAll()
 		moveView(contentsRect().center() / m_zoomFactor - totalView.center());
 		update();
 		updateViewRect();
-		emitViewModified();
 	}
 }
 
@@ -881,7 +873,6 @@ void GraphView::showAllSelected()
 		moveView(contentsRect().center() / m_zoomFactor - totalView.center());
 		update();
 		updateViewRect();
-		emitViewModified();
 	}
 }
 
@@ -908,7 +899,6 @@ void GraphView::moveSelectedToCenter()
 
 		update();
 		updateViewRect();
-		emitViewModified();
 	}
 }
 
@@ -924,7 +914,6 @@ void GraphView::addedObject(panda::PandaObject* object)
 
 	update();
 	updateViewRect();
-	emitViewModified();
 }
 
 void GraphView::removeObject(panda::PandaObject* object)
@@ -937,7 +926,6 @@ void GraphView::removeObject(panda::PandaObject* object)
 	m_highlightConnectedDatas = false;
 	update();
 	updateViewRect();
-	emitViewModified();
 }
 
 void GraphView::modifiedObject(panda::PandaObject* object)
@@ -951,6 +939,7 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 		m_hoverData = nullptr;
 		m_hoverTimer->stop();
 		update();
+		updateViewRect(); // The size of the object can have changed
 	}
 }
 
@@ -1310,9 +1299,16 @@ void GraphView::sortAllDockables()
 	}
 }
 
+void GraphView::startLoading()
+{
+	m_isLoading = true;
+}
+
 void GraphView::loadingFinished()
 {
 	sortAllDockables();
+	m_isLoading = false;
+	updateViewRect();
 }
 
 void GraphView::changedDock(panda::DockableObject* dockable)
@@ -1335,8 +1331,6 @@ QPoint GraphView::viewPosition()
 
 void GraphView::scrollView(QPoint position)
 {
-	if(m_updatingScrollContainer)
-		return;
 	QPointF delta = (position - m_viewRect.topLeft()) / m_zoomFactor;
 	m_viewRect.moveTo(position);
 	moveView(delta);
@@ -1345,6 +1339,9 @@ void GraphView::scrollView(QPoint position)
 
 void GraphView::updateViewRect()
 {
+	if(m_isLoading)
+		return;
+
 	m_viewRect = QRectF();
 	for(const auto& ods : m_objectDrawStructs)
 	{
@@ -1352,11 +1349,6 @@ void GraphView::updateViewRect()
 		QRectF zoomedArea = QRectF(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
 		m_viewRect |= zoomedArea; // Union
 	}
-}
 
-void GraphView::emitViewModified()
-{
-	m_updatingScrollContainer = true;
 	emit viewModified();
-	m_updatingScrollContainer = false;
 }

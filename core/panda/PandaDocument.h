@@ -166,6 +166,7 @@ signals:
 	void selectionChanged();
 	void timeChanged();
 	void reorderedObjects();
+	void startLoading();
 	void loadingFinished();
 	void changedDock(panda::DockableObject*);
 
