@@ -41,7 +41,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > inputA, inputB, result;
+	Data< QVector<PReal> > inputA, inputB;
+	Data< QVector<int> > result;
 };
 
 int BooleanMath_GreaterClass = RegisterObject<BooleanMath_Greater>("Math/Boolean/Greater").setDescription("Compare 2 reals; output is 1 if A > B, 0 otherwise");
@@ -84,7 +85,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > inputA, inputB, result;
+	Data< QVector<PReal> > inputA, inputB;
+	Data< QVector<int> > result;
 };
 
 int BooleanMath_EqualClass = RegisterObject<BooleanMath_Equal>("Math/Boolean/Equal").setDescription("Compare 2 reals; output is 1 if A is equal to B, 0 otherwise");
