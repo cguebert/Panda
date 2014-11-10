@@ -14,28 +14,34 @@ public:
 
 	GeneratorImage_Load(PandaDocument *doc)
 		: PandaObject(doc)
-		, fileName(initData(&fileName, "fileName", "Path of the image to load"))
-		, image(initData(&image, "image", "The image loaded from disk"))
+		, m_fileName(initData(&m_fileName, "fileName", "Path of the image to load"))
+		, m_image(initData(&m_image, "image", "The image loaded from disk"))
 	{
-		addInput(&fileName);
-		fileName.setWidget("open file");
+		addInput(&m_fileName);
+		m_fileName.setWidget("open file");
 
-		addOutput(&image);
+		addOutput(&m_image);
 	}
 
 	void update()
 	{
-		QImage tmp(fileName.getValue());
-		if(!tmp.isNull())
-			image.getAccessor()->setImage(tmp.convertToFormat(QImage::Format_ARGB32));
+		QString fileName = m_fileName.getValue();
+		if(!fileName.isEmpty())
+		{
+			QImage image(fileName);
+			if(!image.isNull())
+				m_image.getAccessor()->setImage(image.convertToFormat(QImage::Format_ARGB32));
+			else
+				m_image.getAccessor()->clear();
+		}
 		else
-			image.getAccessor()->clear();
+			m_image.getAccessor()->clear();
 		cleanDirty();
 	}
 
 protected:
-	Data<QString> fileName;
-	Data<ImageWrapper> image;
+	Data<QString> m_fileName;
+	Data<ImageWrapper> m_image;
 };
 
 int GeneratorImage_LoadClass = RegisterObject<GeneratorImage_Load>("File/Image/Load image").setDescription("Load an image from the disk");
