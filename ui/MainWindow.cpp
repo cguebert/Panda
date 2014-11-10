@@ -30,14 +30,19 @@ MainWindow::MainWindow()
 	m_document = new panda::PandaDocument(this);
 
 	m_graphView = new GraphView(m_document);
-	ScrollContainer* graphViewContainer = new ScrollContainer(this);
-	graphViewContainer->setFrameStyle(0); // No frame
-	graphViewContainer->setView(m_graphView);
+	m_graphViewContainer = new ScrollContainer();
+	m_graphViewContainer->setFrameStyle(0); // No frame
+	m_graphViewContainer->setView(m_graphView);
 
 	m_openGLRenderView = new OpenGLRenderView(m_document);
+	m_openGLViewContainer = new QScrollArea();
+	m_openGLViewContainer->setFrameStyle(0);
+	m_openGLViewContainer->setAlignment(Qt::AlignCenter);
+	m_openGLViewContainer->setWidget(m_openGLRenderView);
+
 	m_tabWidget = new QTabWidget;
-	m_tabWidget->addTab(graphViewContainer, tr("Graph"));
-	m_tabWidget->addTab(m_openGLRenderView, tr("Render"));
+	m_tabWidget->addTab(m_graphViewContainer, tr("Graph"));
+	m_tabWidget->addTab(m_openGLViewContainer, tr("Render"));
 	setCentralWidget(m_tabWidget);
 
 	// Set the application directories
@@ -84,17 +89,19 @@ MainWindow::MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-	if (okToContinue()) {
+	if (okToContinue())
+	{
 		writeSettings();
 		event->accept();
-	} else {
-		event->ignore();
 	}
+	else
+		event->ignore();
 }
 
 void MainWindow::newFile()
 {
-	if (okToContinue()) {
+	if (okToContinue())
+	{
 		m_playAction->setChecked(false);
 		play(false);
 		m_graphView->resetView();
@@ -140,11 +147,10 @@ void MainWindow::import()
 
 bool MainWindow::save()
 {
-	if (m_curFile.isEmpty()) {
+	if (m_curFile.isEmpty())
 		return saveAs();
-	} else {
+	else
 		return saveFile(m_curFile);
-	}
 }
 
 bool MainWindow::saveAs()
@@ -161,14 +167,15 @@ bool MainWindow::saveAs()
 void MainWindow::about()
 {
 	QMessageBox::about(this, tr("About Panda"),
-			tr("<h2>Panda 0.2</h2>"
+			tr("<h2>Panda 0.3</h2>"
 			   "<p>Copyright &copy; 2014 Christophe Guébert"
-			   "<p>Panda is a framework for parametric drawing and animation."));
+			   "<p>Panda is a framework for procedural drawing and animation."));
 }
 
 void MainWindow::openRecentFile()
 {
-	if (okToContinue()) {
+	if (okToContinue())
+	{
 		QAction *action = qobject_cast<QAction *>(sender());
 		if(action)
 		{
@@ -189,7 +196,7 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::documentModified()
 {
-	if(m_tabWidget->currentWidget() == m_openGLRenderView)
+	if(m_tabWidget->currentWidget() == m_openGLViewContainer)
 		m_openGLRenderView->update();
 
 	setWindowModified(true);
@@ -642,7 +649,8 @@ void MainWindow::writeSettings()
 
 bool MainWindow::okToContinue()
 {
-	if (isWindowModified()) {
+	if (isWindowModified())
+	{
 		int r = QMessageBox::warning(this, tr("Panda"),
 						tr("The document has been modified.\n"
 						   "Do you want to save your changes?"),
@@ -696,7 +704,8 @@ void MainWindow::setCurrentFile(const QString &fileName)
 	setWindowModified(false);
 
 	QString shownName = tr("Untitled");
-	if (!m_curFile.isEmpty()) {
+	if (!m_curFile.isEmpty())
+	{
 		shownName = strippedName(m_curFile);
 		m_recentFiles.removeAll(m_curFile);
 		m_recentFiles.prepend(m_curFile);
@@ -715,17 +724,19 @@ void MainWindow::updateRecentFileActions()
 			i.remove();
 	}
 
-	for (int j = 0; j < MaxRecentFiles; ++j) {
-		if (j < m_recentFiles.count()) {
+	for (int j = 0; j < MaxRecentFiles; ++j)
+	{
+		if (j < m_recentFiles.count())
+		{
 			QString text = tr("&%1 %2")
 						   .arg(j + 1)
 						   .arg(strippedName(m_recentFiles[j]));
 			m_recentFileActions[j]->setText(text);
 			m_recentFileActions[j]->setData(m_recentFiles[j]);
 			m_recentFileActions[j]->setVisible(true);
-		} else {
-			m_recentFileActions[j]->setVisible(false);
 		}
+		else
+			m_recentFileActions[j]->setVisible(false);
 	}
 	m_separatorAction->setVisible(!m_recentFiles.isEmpty());
 }
@@ -747,12 +758,12 @@ void MainWindow::createObject()
 
 void MainWindow::switchToGraphView()
 {
-	m_tabWidget->setCurrentWidget(m_graphView);
+	m_tabWidget->setCurrentWidget(m_graphViewContainer);
 }
 
 void MainWindow::switchToOpenGLView()
 {
-	m_tabWidget->setCurrentWidget(m_openGLRenderView);
+	m_tabWidget->setCurrentWidget(m_openGLViewContainer);
 }
 
 void MainWindow::switchFullScreen()
@@ -784,6 +795,7 @@ void MainWindow::adjustRenderSizeToView()
 {
 	m_adjustRenderSizeToView = !m_adjustRenderSizeToView;
 	m_openGLRenderView->setAdjustRenderSize(m_adjustRenderSizeToView);
+	m_openGLViewContainer->setWidgetResizable(m_adjustRenderSizeToView);
 }
 
 void MainWindow::showStatusBarMessage(QString text)

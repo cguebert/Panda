@@ -4,12 +4,15 @@
 #include <QMainWindow>
 
 class QAction;
-class QLabel;
-class GraphView;
-class OpenGLRenderView;
 class QDockWidget;
+class QLabel;
+class QScrollArea;
+
 class DatasTable;
+class GraphView;
 class LayersTab;
+class OpenGLRenderView;
+class ScrollContainer;
 class UpdateLoggerDialog;
 
 namespace panda
@@ -77,7 +80,9 @@ private:
 
 	QTabWidget* m_tabWidget;
 	GraphView* m_graphView;
+	ScrollContainer* m_graphViewContainer;
 	OpenGLRenderView* m_openGLRenderView;
+	QScrollArea* m_openGLViewContainer;
 	panda::PandaDocument* m_document;
 	DatasTable* m_datasTable;
 	QDockWidget* m_datasDock;

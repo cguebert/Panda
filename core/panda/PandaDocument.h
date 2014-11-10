@@ -165,6 +165,7 @@ signals:
 	void selectedObjectIsDirty(panda::PandaObject*);
 	void selectionChanged();
 	void timeChanged();
+	void renderSizeChanged();
 	void reorderedObjects();
 	void startLoading();
 	void loadingFinished();

@@ -13,6 +13,10 @@ OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	setMouseTracking(true);
+
+	resize(doc->getRenderSize());
+
+	connect(doc, SIGNAL(renderSizeChanged()), this, SLOT(renderSizeChanged()));
 }
 
 OpenGLRenderView::~OpenGLRenderView()
@@ -37,6 +41,12 @@ void OpenGLRenderView::setAdjustRenderSize(bool adjust)
 		QRect viewRect = contentsRect();
 		m_document->setRenderSize(viewRect.size());
 	}
+}
+
+void OpenGLRenderView::renderSizeChanged()
+{
+	if(!m_adjustRenderSize)
+		resize(m_document->getRenderSize());
 }
 
 void OpenGLRenderView::initializeGL()
@@ -69,11 +79,8 @@ void OpenGLRenderView::paintGL()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	if(viewRect.size() == renderSize)
-		drawTexture(QPointF(0,0), fbo->texture());
-	else
-		drawTexture(QPointF(viewRect.center().x() - renderSize.width() / 2,
-							viewRect.center().y() - renderSize.height() / 2), fbo->texture());
+	drawTexture(QPointF(viewRect.center().x() - renderSize.width() / 2,
+						viewRect.center().y() - renderSize.height() / 2), fbo->texture());
 
 	glDisable(GL_BLEND);
 }

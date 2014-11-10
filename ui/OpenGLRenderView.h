@@ -23,6 +23,9 @@ public:
 
 	void setAdjustRenderSize(bool adjust);
 
+public slots:
+	void renderSizeChanged();
+
 protected:
 	void initializeGL();
 	void paintGL();
@@ -34,11 +37,6 @@ protected:
 
 	void resizeEvent(QResizeEvent* event);
 
-signals:
-
-public slots:
-
-private:
 	panda::PandaDocument* m_document;
 	bool m_adjustRenderSize;
 };

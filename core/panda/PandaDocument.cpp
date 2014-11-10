@@ -867,6 +867,9 @@ void PandaDocument::setDirtyValue(const DataNode* caller)
 	PandaObject::setDirtyValue(caller);
 	if(!m_isInStep && !getCurrentSelectedObject())
 		emit selectedObjectIsDirty(this);
+
+	if(caller == &m_renderSize)
+		emit renderSizeChanged();
 }
 
 void PandaDocument::play(bool playing)
