@@ -56,7 +56,8 @@ public:
 	enum ContextMenuReason {
 		MENU_OBJECT = 0x1,
 		MENU_DATA = 0x2,
-		MENU_LINK = 0x4
+		MENU_LINK = 0x4,
+		MENU_IMAGE = 0x8
 	};
 
 	void moveObjects(QList<panda::PandaObject*> objects, QPointF delta);

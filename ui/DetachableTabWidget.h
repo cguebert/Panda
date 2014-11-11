@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QTabBar>
 #include <QTabWidget>
+#include <QMap>
 
 class QVBoxLayout;
 
@@ -37,13 +38,27 @@ class DetachableTabWidget : public QTabWidget
 public:
 	explicit DetachableTabWidget(QWidget* parent = nullptr);
 
+	int addTab(QWidget* widget, const QString& label, bool closable = false); // Replacing QTabWidget::addTab functions
+
+	struct TabInfo
+	{
+		TabInfo() : widget(nullptr), closable(false) {}
+		TabInfo(QWidget* w, const QString& t, bool c)
+			: widget(w), title(t), closable(c) {}
+		QWidget* widget;
+		QString title;
+		bool closable;
+	};
+
 public slots:
 	void moveTab(int from, int to);
 	void detachTab(int id);
-	void attachTab(QWidget* widget, QString title);
+	void attachTab(DetachableTabWidget::TabInfo tabInfo);
+	void closeTab(int id);
 
 protected:
 	DetachableTabBar* m_tabBar;
+	QMap<QWidget*, TabInfo> m_tabsInfo;
 };
 
 //****************************************************************************//
@@ -55,16 +70,16 @@ class DetachedWindow : public QDialog
 public:
 	DetachedWindow(QWidget* parent = nullptr);
 
-	void attachTab(QWidget* widget);
+	void attachTab(DetachableTabWidget::TabInfo tabInfo);
 
 signals:
-	void detachTab(QWidget* widget, QString title);
+	void detachTab(DetachableTabWidget::TabInfo tabInfo);
 
 protected:
 	void closeEvent(QCloseEvent* event);
 
 	QVBoxLayout* m_mainLayout;
-	QWidget* m_tabContent;
+	DetachableTabWidget::TabInfo m_tabContent;
 };
 
 #endif // DETACHABLETABWIDGET_H

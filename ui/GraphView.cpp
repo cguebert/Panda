@@ -8,6 +8,7 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
 
+#include <panda/types/DataTraits.h>
 #include <panda/command/DockableCommand.h>
 #include <panda/command/LinkDatasCommand.h>
 #include <ui/command/MoveObjectCommand.h>
@@ -54,6 +55,27 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	m_hoverTimer->setSingleShot(true);
 
 	setMouseTracking(true);
+}
+
+void GraphView::resetView()
+{
+	m_viewDelta = QPointF();
+	m_zoomLevel = 0;
+	m_zoomFactor = 1.0;
+	m_objectDrawStructs.clear();
+	m_linkTags.clear();
+	m_movingAction = MOVING_NONE;
+	m_clickedData = nullptr;
+	m_hoverData = nullptr;
+	m_contextMenuData = nullptr;
+	m_capturedDrawStruct = nullptr;
+	m_recomputeTags = false;
+	m_hoverTimer->stop();
+	m_highlightConnectedDatas = false;
+	m_useMagneticSnap = true;
+	m_isLoading = true;
+
+	emit viewModified();
 }
 
 QSize GraphView::minimumSizeHint() const
@@ -117,23 +139,6 @@ bool GraphView::isCompatible(const panda::BaseData* data1, const panda::BaseData
 	}
 
 	return false;
-}
-
-void GraphView::resetView()
-{
-	m_viewDelta = QPointF();
-	m_zoomLevel = 0;
-	m_zoomFactor = 1.0;
-	m_objectDrawStructs.clear();
-	m_linkTags.clear();
-	m_movingAction = MOVING_NONE;
-	m_clickedData = nullptr;
-	m_hoverData = nullptr;
-	m_contextMenuData = nullptr;
-	m_recomputeTags = false;
-	m_highlightConnectedDatas = false;
-
-	emit viewModified();
 }
 
 ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
@@ -760,13 +765,18 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 	if(object)
 	{
 		flags |= MENU_OBJECT;
-		panda::BaseData* data = m_objectDrawStructs[object]->getDataAtPos(zoomedMouse);
-		if(data)
+		m_contextMenuData = m_objectDrawStructs[object]->getDataAtPos(zoomedMouse);
+		if(m_contextMenuData)
 		{
-			flags |= MENU_DATA;
-			m_contextMenuData = data;
+			if(m_contextMenuData->isDisplayed())
+				flags |= MENU_DATA;
+
 			if(m_contextMenuData->isInput() && m_contextMenuData->getParent())
 				flags |= MENU_LINK;
+
+			const auto trait = m_contextMenuData->getDataTrait();
+			if(trait->isSingleValue() && trait->valueTypeName() == "image")
+				flags |= MENU_IMAGE;
 		}
 	}
 

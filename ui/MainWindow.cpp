@@ -432,6 +432,11 @@ void MainWindow::createActions()
 	m_showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
 	connect(m_showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
 
+	m_showImageViewport = new QAction(tr("Open image viewport"), this);
+	m_showImageViewport->setStatusTip(tr("Open a new viewport to an image"));
+	connect(m_showImageViewport, SIGNAL(triggered()), this, SLOT(showImageViewport()));
+	addAction(m_showImageViewport);
+
 	m_document->createUndoRedoActions(this, m_undoAction, m_redoAction);
 	m_undoAction->setShortcut(QKeySequence::Undo);
 	m_redoAction->setShortcut(QKeySequence::Redo);
@@ -898,13 +903,13 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 	menu.addAction(m_pasteAction);
 
 	if(flags & GraphView::MENU_LINK)
-	{
 		menu.addAction(m_removeLinkAction);
-	}
 
-	const panda::BaseData* clickedData = m_graphView->getContextMenuData();
-	if(clickedData && clickedData->isDisplayed())
+	if(flags & GraphView::MENU_DATA)
 		menu.addAction(m_copyDataAction);
+
+	if(flags & GraphView::MENU_IMAGE)
+		menu.addAction(m_showImageViewport);
 
 	int nbSelected = m_document->getSelection().size();
 	if(dynamic_cast<panda::Group*>(obj) && nbSelected == 1)
@@ -991,4 +996,20 @@ void MainWindow::selectedObject(panda::PandaObject* object)
 	m_saveGroupAction->setEnabled(isGroup);
 
 	m_groupAction->setEnabled(nbSelected > 1);
+}
+
+void MainWindow::showImageViewport()
+{
+	const panda::BaseData* clickedData = m_graphView->getContextMenuData();
+	if(clickedData)
+	{
+		QWidget* imageViewport = new QWidget(this);
+		QScrollArea* container = new QScrollArea();
+		container->setFrameStyle(0);
+		container->setAlignment(Qt::AlignCenter);
+		container->setWidget(imageViewport);
+
+		QString label = clickedData->getOwner()->getName() + "." + clickedData->getName();
+		m_tabWidget->addTab(container, label, true);
+	}
 }

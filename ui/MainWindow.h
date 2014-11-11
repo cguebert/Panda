@@ -9,6 +9,7 @@ class QLabel;
 class QScrollArea;
 
 class DatasTable;
+class DetachableTabWidget;
 class GraphView;
 class LayersTab;
 class OpenGLRenderView;
@@ -61,6 +62,7 @@ private slots:
 	void play(bool);
 	void selectedObject(panda::PandaObject*);
 	void adjustRenderSizeToView();
+	void showImageViewport();
 
 private:
 	void createActions();
@@ -78,7 +80,7 @@ private:
 	void updateRecentFileActions();
 	QString strippedName(const QString &fullFileName);
 
-	QTabWidget* m_tabWidget;
+	DetachableTabWidget* m_tabWidget;
 	GraphView* m_graphView;
 	ScrollContainer* m_graphViewContainer;
 	OpenGLRenderView* m_openGLRenderView;
@@ -149,6 +151,7 @@ private:
 	QAction* m_undoAction;
 	QAction* m_redoAction;
 	QAction* m_adjustRenderSizeToViewAction;
+	QAction* m_showImageViewport;
 	QLabel* m_timeLabel;
 
 	bool m_undoEnabled, m_redoEnabled;

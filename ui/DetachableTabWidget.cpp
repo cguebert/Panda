@@ -9,6 +9,7 @@ DetachableTabBar::DetachableTabBar(QWidget* parent)
 {
 	setAcceptDrops(true);
 	setMovable(true);
+	setTabsClosable(true);
 }
 
 void DetachableTabBar::mousePressEvent(QMouseEvent* event)
@@ -110,6 +111,22 @@ DetachableTabWidget::DetachableTabWidget(QWidget* parent)
 
 	connect(m_tabBar, SIGNAL(moveTab(int,int)), this, SLOT(moveTab(int,int)));
 	connect(m_tabBar, SIGNAL(detachTab(int)), this, SLOT(detachTab(int)));
+	connect(m_tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+}
+
+int DetachableTabWidget::addTab(QWidget* widget, const QString& label, bool closable)
+{
+	int id = QTabWidget::addTab(widget, label);
+
+	if(!closable)
+	{	// Remove close button
+		m_tabBar->setTabButton(id, QTabBar::RightSide, nullptr);
+		m_tabBar->setTabButton(id, QTabBar::LeftSide, nullptr);
+	}
+
+	m_tabsInfo[widget] = TabInfo(widget, label, closable);
+
+	return id;
 }
 
 void DetachableTabWidget::moveTab(int from, int to)
@@ -126,44 +143,52 @@ void DetachableTabWidget::moveTab(int from, int to)
 void DetachableTabWidget::detachTab(int id)
 {
 	DetachedWindow* detachedWindow = new DetachedWindow(parentWidget());
-	detachedWindow->setWindowTitle(tabText(id));
-	connect(detachedWindow, SIGNAL(detachTab(QWidget*,QString)), this, SLOT(attachTab(QWidget*,QString)));
+	connect(detachedWindow, SIGNAL(detachTab(DetachableTabWidget::TabInfo)), this, SLOT(attachTab(DetachableTabWidget::TabInfo)));
 
-	QWidget* tabContent = widget(id);
-	detachedWindow->attachTab(tabContent); // The setParent inside will remove the tab
-	tabContent->show(); // Have to call it manually
-	detachedWindow->resize(tabContent->sizeHint().expandedTo(QSize(640, 480)));
+	QWidget* w = widget(id);
+	detachedWindow->attachTab(m_tabsInfo[w]); // The setParent inside will remove the tab
+	w->show(); // Have to call it manually
+	detachedWindow->resize(w->sizeHint().expandedTo(QSize(640, 480)));
 	detachedWindow->show();
 
 	update();
 }
 
-void DetachableTabWidget::attachTab(QWidget* widget, QString title)
+void DetachableTabWidget::attachTab(TabInfo tabInfo)
 {
-	widget->setParent(this);
-	addTab(widget, title);
+	tabInfo.widget->setParent(this);
+	addTab(tabInfo.widget, tabInfo.title, tabInfo.closable);
+}
+
+void DetachableTabWidget::closeTab(int id)
+{
+	QWidget* w = widget(id);
+	removeTab(id);
+	w->deleteLater();
+	m_tabsInfo.remove(w);
 }
 
 //****************************************************************************//
 
 DetachedWindow::DetachedWindow(QWidget* parent)
 	: QDialog(parent)
-	, m_tabContent(nullptr)
 {
 	m_mainLayout = new QVBoxLayout(this);
+	m_mainLayout->setMargin(0);
 	setLayout(m_mainLayout);
 	setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void DetachedWindow::attachTab(QWidget* widget)
+void DetachedWindow::attachTab(DetachableTabWidget::TabInfo tabInfo)
 {
-	widget->setParent(this);
-	m_mainLayout->addWidget(widget);
-	m_tabContent = widget;
+	setWindowTitle(tabInfo.title);
+	tabInfo.widget->setParent(this);
+	m_mainLayout->addWidget(tabInfo.widget);
+	m_tabContent = tabInfo;
 }
 
 void DetachedWindow::closeEvent(QCloseEvent* /*event*/)
 {
 	// For all tabs in tabbar, emit attachTab
-	emit detachTab(m_tabContent, windowTitle());
+	emit detachTab(m_tabContent);
 }
