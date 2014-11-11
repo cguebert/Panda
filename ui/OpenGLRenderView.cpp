@@ -30,7 +30,7 @@ QSize OpenGLRenderView::minimumSizeHint() const
 
 QSize OpenGLRenderView::sizeHint() const
 {
-	return QSize(600, 400);
+	return m_document->getRenderSize();
 }
 
 void OpenGLRenderView::setAdjustRenderSize(bool adjust)

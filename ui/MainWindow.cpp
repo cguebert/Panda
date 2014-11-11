@@ -2,6 +2,7 @@
 
 #include <ui/CreateGroup.h>
 #include <ui/DatasTable.h>
+#include <ui/DetachableTabWidget.h>
 #include <ui/EditGroupDialog.h>
 #include <ui/GraphView.h>
 #include <ui/GroupsManager.h>
@@ -40,7 +41,7 @@ MainWindow::MainWindow()
 	m_openGLViewContainer->setAlignment(Qt::AlignCenter);
 	m_openGLViewContainer->setWidget(m_openGLRenderView);
 
-	m_tabWidget = new QTabWidget;
+	m_tabWidget = new DetachableTabWidget;
 	m_tabWidget->addTab(m_graphViewContainer, tr("Graph"));
 	m_tabWidget->addTab(m_openGLViewContainer, tr("Render"));
 	setCentralWidget(m_tabWidget);
@@ -196,7 +197,8 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::documentModified()
 {
-	if(m_tabWidget->currentWidget() == m_openGLViewContainer)
+	if(m_openGLRenderView->isVisible())
+//	if(m_tabWidget->currentWidget() == m_openGLViewContainer)
 		m_openGLRenderView->update();
 
 	setWindowModified(true);

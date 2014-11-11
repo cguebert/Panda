@@ -5,8 +5,6 @@
 #include <QScrollBar>
 #include <QStyle>
 
-#include <iostream>
-
 ScrollContainer::ScrollContainer(QWidget* parent)
 	: QAbstractScrollArea(parent)
 	, m_view(nullptr)

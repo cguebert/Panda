@@ -5,6 +5,7 @@ HEADERS       = \
 	ui/Annotation.h \
 	ui/CreateGroup.h \
 	ui/DatasTable.h \
+	ui/DetachableTabWidget.h \
 	ui/EditGroupDialog.h \
 	ui/GraphView.h \
 	ui/GroupsManager.h \
@@ -44,6 +45,7 @@ SOURCES       = ui/main.cpp \
 	ui/Annotation.cpp \
 	ui/CreateGroup.cpp \
 	ui/DatasTable.cpp \
+	ui/DetachableTabWidget.cpp \
 	ui/EditGroupDialog.cpp \
 	ui/GraphView.cpp \
 	ui/GroupsManager.cpp \
