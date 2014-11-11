@@ -73,7 +73,8 @@ void GraphView::resetView()
 	m_hoverTimer->stop();
 	m_highlightConnectedDatas = false;
 	m_useMagneticSnap = true;
-	m_isLoading = true;
+	m_isLoading = false;
+	m_viewRect = QRect();
 
 	emit viewModified();
 }
@@ -1361,7 +1362,8 @@ void GraphView::updateViewRect()
 		m_viewRect |= zoomedArea; // Union
 	}
 
-	m_viewRect.adjust(-5, -5, 5, 5);
+	if(!m_objectDrawStructs.empty())
+		m_viewRect.adjust(-5, -5, 5, 5);
 
 	emit viewModified();
 }

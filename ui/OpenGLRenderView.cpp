@@ -19,10 +19,6 @@ OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 	connect(doc, SIGNAL(renderSizeChanged()), this, SLOT(renderSizeChanged()));
 }
 
-OpenGLRenderView::~OpenGLRenderView()
-{
-}
-
 QSize OpenGLRenderView::minimumSizeHint() const
 {
 	return QSize(300, 200);
@@ -83,10 +79,6 @@ void OpenGLRenderView::paintGL()
 						viewRect.center().y() - renderSize.height() / 2), fbo->texture());
 
 	glDisable(GL_BLEND);
-}
-
-void OpenGLRenderView::resizeGL(int /*width*/, int /*height*/)
-{
 }
 
 void OpenGLRenderView::mousePressEvent(QMouseEvent* event)

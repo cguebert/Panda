@@ -33,8 +33,8 @@ public:
 	void setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo);
 	void createTexture(QVector<types::Color> buffer, int width, int height);
 
-	void clear();	/// Remove all sources
-	bool isNull();	/// Does it have one valid source
+	void clear(); /// Remove all sources
+	bool isNull() const; /// Does it have one valid source
 
 	bool hasImage() const; /// Return true if the source is an image
 	bool hasTexture() const; /// Return true if the source is either a fbo or a texture
@@ -62,7 +62,7 @@ private:
 inline QSize ImageWrapper::size() const
 { return QSize(width(), height()); }
 
-inline bool ImageWrapper::isNull()
+inline bool ImageWrapper::isNull() const
 { return m_source == NONE; }
 
 inline bool ImageWrapper::hasImage() const
