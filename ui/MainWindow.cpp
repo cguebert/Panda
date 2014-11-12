@@ -30,6 +30,8 @@ MainWindow::MainWindow()
 	, m_loggerDialog(nullptr)
 	, m_fullScreen(false)
 	, m_adjustRenderSizeToView(false)
+	, m_undoEnabled(false)
+	, m_redoEnabled(false)
 {
 	m_document = new panda::PandaDocument(this);
 
@@ -66,6 +68,7 @@ MainWindow::MainWindow()
 	connect(m_graphView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(m_graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(m_graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
+	connect(m_tabWidget, SIGNAL(openDetachedWindow(DetachedWindow*)), this, SLOT(openDetachedWindow(DetachedWindow*)));
 
 	createGroupRegistryMenu();
 
@@ -1006,12 +1009,48 @@ void MainWindow::showImageViewport()
 	if(clickedData)
 	{
 		ImageViewport* imageViewport = new ImageViewport(clickedData, m_openGLRenderView, this);
+		connect(imageViewport, SIGNAL(closeViewport(ImageViewport*)), this, SLOT(closeViewport(ImageViewport*)));
 		QScrollArea* container = new QScrollArea();
 		container->setFrameStyle(0);
 		container->setAlignment(Qt::AlignCenter);
 		container->setWidget(imageViewport);
+		m_imageViewports[imageViewport] = container;
 
 		QString label = clickedData->getOwner()->getName() + "." + clickedData->getName();
 		m_tabWidget->addTab(container, label, true);
+	}
+}
+
+void MainWindow::openDetachedWindow(DetachedWindow* window)
+{
+	m_detachedWindows.push_back(window);
+	connect(window, SIGNAL(closeDetachedWindow(DetachedWindow*)), this, SLOT(closeDetachedWindow(DetachedWindow*)));
+}
+
+void MainWindow::closeDetachedWindow(DetachedWindow* window)
+{
+	m_detachedWindows.removeAll(window);
+}
+
+void MainWindow::closeViewport(ImageViewport* viewport)
+{
+	QWidget* container = m_imageViewports[viewport];
+	m_imageViewports.remove(viewport);
+	for(DetachedWindow* window : m_detachedWindows)
+	{
+		if(window->getTabInfo().widget == container)
+		{
+			window->closeTab();
+			return;
+		}
+	}
+
+	for(int i = 0, nb = m_tabWidget->count(); i < nb; ++i)
+	{
+		if(m_tabWidget->widget(i) == container)
+		{
+			m_tabWidget->closeTab(i);
+			return;
+		}
 	}
 }

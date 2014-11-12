@@ -151,6 +151,8 @@ void DetachableTabWidget::detachTab(int id)
 	detachedWindow->resize(w->sizeHint().expandedTo(QSize(640, 480)));
 	detachedWindow->show();
 
+	emit openDetachedWindow(detachedWindow);
+
 	update();
 }
 
@@ -187,8 +189,21 @@ void DetachedWindow::attachTab(DetachableTabWidget::TabInfo tabInfo)
 	m_tabContent = tabInfo;
 }
 
+void DetachedWindow::closeTab()
+{
+	m_tabContent.widget = nullptr; // Still a child of this window, and will be deleted by it
+	close();
+}
+
+DetachableTabWidget::TabInfo DetachedWindow::getTabInfo() const
+{
+	return m_tabContent;
+}
+
 void DetachedWindow::closeEvent(QCloseEvent* /*event*/)
 {
 	// For all tabs in tabbar, emit attachTab
-	emit detachTab(m_tabContent);
+	if(m_tabContent.widget)
+		emit detachTab(m_tabContent);
+	emit closeDetachedWindow(this);
 }

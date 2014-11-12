@@ -10,7 +10,9 @@ class QScrollArea;
 
 class DatasTable;
 class DetachableTabWidget;
+class DetachedWindow;
 class GraphView;
+class ImageViewport;
 class LayersTab;
 class OpenGLRenderView;
 class ScrollContainer;
@@ -63,6 +65,9 @@ private slots:
 	void selectedObject(panda::PandaObject*);
 	void adjustRenderSizeToView();
 	void showImageViewport();
+	void openDetachedWindow(DetachedWindow* window);
+	void closeDetachedWindow(DetachedWindow* window);
+	void closeViewport(ImageViewport* viewport);
 
 private:
 	void createActions();
@@ -95,6 +100,9 @@ private:
 	UpdateLoggerDialog* m_loggerDialog;
 	bool m_fullScreen;
 	bool m_adjustRenderSizeToView;
+	bool m_undoEnabled, m_redoEnabled;
+	QList<DetachedWindow*> m_detachedWindows;
+	QMap<ImageViewport*, QWidget*> m_imageViewports;
 
 	enum { MaxRecentFiles = 5 };
 	QAction* m_recentFileActions[MaxRecentFiles];
@@ -153,8 +161,6 @@ private:
 	QAction* m_adjustRenderSizeToViewAction;
 	QAction* m_showImageViewport;
 	QLabel* m_timeLabel;
-
-	bool m_undoEnabled, m_redoEnabled;
 };
 
 #endif

@@ -1,6 +1,8 @@
 #include <QtWidgets>
 #include <ui/ImageViewport.h>
 
+#include <panda/PandaDocument.h>
+#include <panda/PandaObject.h>
 #include <panda/types/ImageWrapper.h>
 
 #include <iostream>
@@ -17,11 +19,6 @@ ImageViewport::ImageViewport(const panda::BaseData* data, QGLWidget* shareWidget
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	addInput(const_cast<panda::BaseData*>(data));
-}
-
-ImageViewport::~ImageViewport()
-{
-//	std::cout << "~ImageViewport()" << std::endl;
 }
 
 QSize ImageViewport::minimumSizeHint() const
@@ -41,7 +38,9 @@ QSize ImageViewport::sizeHint() const
 
 void ImageViewport::setDirtyValue(const panda::DataNode* caller)
 {
-	if(caller == m_data && !m_data->isDirty()) // Just got modified
+	if(caller == m_data // Coming from the watched data
+			&& (!m_data->isDirty() // Just got modified
+			 || !m_data->getOwner()->getParentDocument()->animationIsPlaying())) // Or animation not playing
 		QWidget::update();
 }
 
@@ -49,10 +48,7 @@ void ImageViewport::doRemoveInput(DataNode* node)
 {
 	DataNode::doRemoveInput(node);
 	if(node == m_data)
-	{
-		// TODO : close this viewport
-//		std::cout << "close viewport" << std::endl;
-	}
+		emit closeViewport(this);
 }
 
 void ImageViewport::initializeGL()

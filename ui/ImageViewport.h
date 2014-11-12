@@ -16,7 +16,6 @@ class ImageViewport : public QGLWidget, public panda::DataNode
 	Q_OBJECT
 public:
 	explicit ImageViewport(const panda::BaseData* data, QGLWidget* shareWidget, QWidget* parent = nullptr);
-	~ImageViewport();
 
 	QSize minimumSizeHint() const;
 	QSize sizeHint() const;
@@ -24,6 +23,9 @@ public:
 	virtual void update() {}
 	virtual void setDirtyValue(const panda::DataNode* caller);
 	virtual void doRemoveInput(panda::DataNode* node);
+
+signals:
+	void closeViewport(ImageViewport* viewport);
 
 protected:
 	void initializeGL();

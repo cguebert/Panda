@@ -7,6 +7,7 @@
 #include <QMap>
 
 class QVBoxLayout;
+class DetachedWindow;
 
 class DetachableTabBar : public QTabBar
 {
@@ -50,6 +51,9 @@ public:
 		bool closable;
 	};
 
+signals:
+	void openDetachedWindow(DetachedWindow* window);
+
 public slots:
 	void moveTab(int from, int to);
 	void detachTab(int id);
@@ -71,9 +75,12 @@ public:
 	DetachedWindow(QWidget* parent = nullptr);
 
 	void attachTab(DetachableTabWidget::TabInfo tabInfo);
+	void closeTab();
+	DetachableTabWidget::TabInfo getTabInfo() const;
 
 signals:
 	void detachTab(DetachableTabWidget::TabInfo tabInfo);
+	void closeDetachedWindow(DetachedWindow* window);
 
 protected:
 	void closeEvent(QCloseEvent* event);
