@@ -219,6 +219,7 @@ template<class T>
 inline void Data<T>::endEdit()
 {
 	m_isValueSet = true;
+	cleanDirty();
 	BaseData::setDirtyOutputs();
 }
 
