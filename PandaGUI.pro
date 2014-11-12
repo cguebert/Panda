@@ -9,6 +9,7 @@ HEADERS       = \
 	ui/EditGroupDialog.h \
 	ui/GraphView.h \
 	ui/GroupsManager.h \
+	ui/ImageViewport.h \
 	ui/LayersTab.h \
 	ui/LinkTag.h \
 	ui/ListObjectsAndTypes.h \
@@ -49,6 +50,7 @@ SOURCES       = ui/main.cpp \
 	ui/EditGroupDialog.cpp \
 	ui/GraphView.cpp \
 	ui/GroupsManager.cpp \
+	ui/ImageViewport.cpp \
 	ui/LayersTab.cpp \
 	ui/LinkTag.cpp \
 	ui/ListObjectsAndTypes.cpp \

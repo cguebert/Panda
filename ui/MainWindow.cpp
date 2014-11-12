@@ -6,6 +6,7 @@
 #include <ui/EditGroupDialog.h>
 #include <ui/GraphView.h>
 #include <ui/GroupsManager.h>
+#include <ui/ImageViewport.h>
 #include <ui/OpenGLRenderView.h>
 #include <ui/PluginsManager.h>
 #include <ui/LayersTab.h>
@@ -21,6 +22,8 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Group.h>
 #include <panda/helper/system/FileRepository.h>
+
+#include <iostream>
 
 MainWindow::MainWindow()
 	: m_groupsRegistryMenu(nullptr)
@@ -198,7 +201,6 @@ void MainWindow::updateStatusBar()
 void MainWindow::documentModified()
 {
 	if(m_openGLRenderView->isVisible())
-//	if(m_tabWidget->currentWidget() == m_openGLViewContainer)
 		m_openGLRenderView->update();
 
 	setWindowModified(true);
@@ -1003,7 +1005,7 @@ void MainWindow::showImageViewport()
 	const panda::BaseData* clickedData = m_graphView->getContextMenuData();
 	if(clickedData)
 	{
-		QWidget* imageViewport = new QWidget(this);
+		ImageViewport* imageViewport = new ImageViewport(clickedData, m_openGLRenderView, this);
 		QScrollArea* container = new QScrollArea();
 		container->setFrameStyle(0);
 		container->setAlignment(Qt::AlignCenter);
