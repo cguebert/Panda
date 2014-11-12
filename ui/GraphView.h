@@ -133,7 +133,7 @@ public slots:
 private:
 	panda::PandaDocument* m_pandaDocument;
 
-	int m_zoomLevel;
+	int m_zoomLevel, m_wheelTicks;
 	qreal m_zoomFactor;
 	QPointF m_viewDelta;
 	QPointF m_previousMousePos, m_currentMousePos;

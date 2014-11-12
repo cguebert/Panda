@@ -24,6 +24,7 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	: QWidget(parent)
 	, m_pandaDocument(doc)
 	, m_zoomLevel(0)
+	, m_wheelTicks(0)
 	, m_zoomFactor(1.0)
 	, m_movingAction(MOVING_NONE)
 	, m_clickedData(nullptr)
@@ -697,8 +698,10 @@ void GraphView::wheelEvent(QWheelEvent * event)
 		return;
 	}
 
-	int ticks = event->delta() / 40;
-	int newZoom = qBound(0, m_zoomLevel-ticks, 90);
+	m_wheelTicks += event->angleDelta().y();
+	int ticks = m_wheelTicks / 40; // Steps of 5 degrees
+	m_wheelTicks -= ticks * 40;
+	int newZoom = qBound(0, m_zoomLevel - ticks, 90);
 	if(m_zoomLevel != newZoom)
 	{
 		QPointF mousePos = event->pos();

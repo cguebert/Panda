@@ -14,6 +14,9 @@ typedef Data<ImageWrapper> ImageData;
 ImageViewport::ImageViewport(const panda::BaseData* data, QGLWidget* shareWidget, QWidget* parent)
 	: QGLWidget(parent, shareWidget)
 	, m_data(data)
+	, m_zoomLevel(0)
+	, m_wheelTicks(0)
+	, m_zoomFactor(1.0)
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -68,25 +71,46 @@ void ImageViewport::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if(img.isNull())
+	{
+		resize(QSize(320, 240));
 		return;
+	}
 
+	QSize imgSize = img.size();
+	QSize renderSize = imgSize * m_zoomFactor;
 	QRect viewRect = contentsRect();
-	glViewport(0, 0, viewRect.width(), viewRect.height());
+
+	if(renderSize != viewRect.size())
+		resize(renderSize);
+
+	glViewport(0, 0, renderSize.width(), renderSize.height());
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, viewRect.width(), viewRect.height(), 0, -10, 10);
+	glOrtho(0, imgSize.width(), imgSize.height(), 0, -10, 10);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	QSize renderSize = img.size();
 	glColor4f(1, 1, 1, 1);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	drawTexture(QPointF(viewRect.center().x() - renderSize.width() / 2,
-						viewRect.center().y() - renderSize.height() / 2), img.getTextureId());
+	drawTexture(QPointF(), img.getTextureId());
 
 	glDisable(GL_BLEND);
+}
+
+void ImageViewport::wheelEvent(QWheelEvent* event)
+{
+	m_wheelTicks += event->angleDelta().y();
+	int ticks = m_wheelTicks / 40; // Steps of 5 degrees
+	m_wheelTicks -= ticks * 40;
+	int newZoom = qBound(0, m_zoomLevel - ticks, 90);
+	if(m_zoomLevel != newZoom)
+	{
+		m_zoomLevel = newZoom;
+		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
+		QWidget::update();
+	}
 }

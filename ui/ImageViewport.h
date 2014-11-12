@@ -28,10 +28,14 @@ signals:
 	void closeViewport(ImageViewport* viewport);
 
 protected:
-	void initializeGL();
-	void paintGL();
+	virtual void initializeGL();
+	virtual void paintGL();
+
+	virtual void wheelEvent(QWheelEvent* event);
 
 	const panda::BaseData* m_data;
+	int m_zoomLevel, m_wheelTicks;
+	float m_zoomFactor;
 };
 
 #endif // IMAGEVIEWPORT_H
