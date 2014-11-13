@@ -37,10 +37,6 @@ SOURCES       = \
 	../generators/mesh/MergeMeshes.cpp \
 	../generators/mesh/Voronoi.cpp \
 	../math/image/ImageSize.cpp \
-	../math/path/BezierSpline.cpp \
-	../math/path/CubicBSpline.cpp \
-	../math/path/Extrude.cpp \
-	../math/path/PathMath.cpp \
 	../math/point/NearestPoint.cpp \
 	../math/point/PointListMath.cpp \
 	../math/point/PointMath.cpp \
