@@ -4,5 +4,6 @@ SUBDIRS = MainModules \
 		List \
 		Particles \
 		Paths \
+		Polygons \
 		ShaderEffects \
 		UserValue

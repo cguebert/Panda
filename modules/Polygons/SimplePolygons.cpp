@@ -14,12 +14,12 @@ using types::Point;
 using types::Path;
 using types::Rect;
 
-class PathCreation_Rectangle : public PandaObject
+class PolygonCreation_Rectangle : public PandaObject
 {
 public:
-	PANDA_CLASS(PathCreation_Rectangle, PandaObject)
+	PANDA_CLASS(PolygonCreation_Rectangle, PandaObject)
 
-	PathCreation_Rectangle(PandaDocument *doc)
+	PolygonCreation_Rectangle(PandaDocument *doc)
 		: PandaObject(doc)
 		, m_rectangles(initData(&m_rectangles, "rectangle", "Input rectangle"))
 		, m_paths(initData(&m_paths, "path", "Output path"))
@@ -55,16 +55,16 @@ protected:
 	Data< QVector<Path> > m_paths;
 };
 
-int PathCreation_RectangleClass = RegisterObject<PathCreation_Rectangle>("Generator/Polygon/Rectangle path").setDescription("Create a rectangular path");
+int PolygonCreation_RectangleClass = RegisterObject<PolygonCreation_Rectangle>("Generator/Polygon/Rectangle path").setDescription("Create a rectangular path");
 
 //****************************************************************************//
 
-class PathCreation_Circle : public PandaObject
+class PolygonCreation_Circle : public PandaObject
 {
 public:
-	PANDA_CLASS(PathCreation_Circle, PandaObject)
+	PANDA_CLASS(PolygonCreation_Circle, PandaObject)
 
-	PathCreation_Circle(PandaDocument *doc)
+	PolygonCreation_Circle(PandaDocument *doc)
 		: PandaObject(doc)
 		, m_centers(initData(&m_centers, "center", "Center of the circle"))
 		, m_radiuses(initData(&m_radiuses, "radius", "Radius of the circle"))
@@ -133,7 +133,7 @@ protected:
 	Data< QVector<Path> > m_paths;
 };
 
-int PathCreation_CircleClass = RegisterObject<PathCreation_Circle>("Generator/Polygon/Circle path").setDescription("Create a circular path");
+int PolygonCreation_CircleClass = RegisterObject<PolygonCreation_Circle>("Generator/Polygon/Circle path").setDescription("Create a circular path");
 
 //****************************************************************************//
 
