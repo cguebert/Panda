@@ -55,7 +55,7 @@ protected:
 	Data< QVector<Path> > m_paths;
 };
 
-int PathCreation_RectangleClass = RegisterObject<PathCreation_Rectangle>("Generator/Path/Rectangle path").setDescription("Create a rectangular path");
+int PathCreation_RectangleClass = RegisterObject<PathCreation_Rectangle>("Generator/Polygon/Rectangle path").setDescription("Create a rectangular path");
 
 //****************************************************************************//
 
@@ -133,7 +133,7 @@ protected:
 	Data< QVector<Path> > m_paths;
 };
 
-int PathCreation_CircleClass = RegisterObject<PathCreation_Circle>("Generator/Path/Circle path").setDescription("Create a circular path");
+int PathCreation_CircleClass = RegisterObject<PathCreation_Circle>("Generator/Polygon/Circle path").setDescription("Create a circular path");
 
 //****************************************************************************//
 

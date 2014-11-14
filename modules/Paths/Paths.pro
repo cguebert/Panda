@@ -6,5 +6,6 @@ SOURCES       = \
 	CubicBSpline.cpp \
 	Extrude.cpp \
 	PathMath.cpp \
+	PolygonOperations.cpp \
 	pathsModule.cpp \
 	SimplePaths.cpp
