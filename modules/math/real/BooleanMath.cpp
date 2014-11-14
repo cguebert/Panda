@@ -26,8 +26,15 @@ public:
 		const QVector<PReal> &valInA = inputA.getValue();
 		const QVector<PReal> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
+		valOut.clear();
 
 		int nbA = valInA.size(), nbB = valInB.size();
+		if(!nbA || !nbB)
+		{
+			cleanDirty();
+			return;
+		}
+
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
 
@@ -70,8 +77,15 @@ public:
 		const QVector<PReal> &valInA = inputA.getValue();
 		const QVector<PReal> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
+		valOut.clear();
 
 		int nbA = valInA.size(), nbB = valInB.size();
+		if(!nbA || !nbB)
+		{
+			cleanDirty();
+			return;
+		}
+
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
 
@@ -114,8 +128,15 @@ public:
 		const QVector<int> &valInA = inputA.getValue();
 		const QVector<int> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
+		valOut.clear();
 
 		int nbA = valInA.size(), nbB = valInB.size();
+		if(!nbA || !nbB)
+		{
+			cleanDirty();
+			return;
+		}
+
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
 
@@ -157,8 +178,15 @@ public:
 		const QVector<int> &valInA = inputA.getValue();
 		const QVector<int> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
+		valOut.clear();
 
 		int nbA = valInA.size(), nbB = valInB.size();
+		if(!nbA || !nbB)
+		{
+			cleanDirty();
+			return;
+		}
+
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
 
@@ -200,8 +228,15 @@ public:
 		const QVector<int> &valInA = inputA.getValue();
 		const QVector<int> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
+		valOut.clear();
 
 		int nbA = valInA.size(), nbB = valInB.size();
+		if(!nbA || !nbB)
+		{
+			cleanDirty();
+			return;
+		}
+
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
 
