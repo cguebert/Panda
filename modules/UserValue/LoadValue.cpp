@@ -1,7 +1,4 @@
-#include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/Group.h>
 
 #include <panda/types/Animation.h>
 #include <panda/types/Color.h>
@@ -11,68 +8,11 @@
 #include <panda/types/Rect.h>
 #include <panda/types/Shader.h>
 
-#include <QString>
+#include "LoadValue.h"
+
 #include <QVector>
 
-#include <QTimer>
-#include <QFile>
-#include <QDomDocument>
-
 namespace panda {
-
-template <class T>
-class LoadValue : public PandaObject
-{
-public:
-	PANDA_CLASS(PANDA_TEMPLATE(LoadValue, T), PandaObject)
-
-	LoadValue(PandaDocument *doc)
-		: PandaObject(doc)
-		, output(initData(&output, "output", "The loaded value"))
-		, fileName(initData(&fileName, "file name", "File where to read the value"))
-	{
-		addInput(&fileName);
-		fileName.setWidget("open file");
-
-		addOutput(&output);
-	}
-
-	void reset()
-	{
-		QString tmpFileName = fileName.getValue();
-		if(tmpFileName.isEmpty())
-			return;
-		QFile file(tmpFileName);
-		if (!file.open(QIODevice::ReadOnly))
-			return;
-
-		QDomDocument doc;
-		int errLine, errCol;
-		if (!doc.setContent(&file, nullptr, &errLine, &errCol))
-			return;
-
-		xmlRoot = doc.documentElement();
-		xmlData = xmlRoot.firstChildElement("SavedData");
-	}
-
-	void beginStep()
-	{
-		PandaObject::beginStep();
-
-		if(!xmlData.isNull())
-		{
-			output.load(xmlData);
-
-			xmlData = xmlData.nextSiblingElement("SavedData");
-		}
-	}
-
-protected:
-	Data<T> output;
-	Data<QString> fileName;
-	QDomElement xmlRoot;
-	QDomElement xmlData;
-};
 
 int LoadValue_ColorClass = RegisterObject< LoadValue<types::Color> >("File/Color/Load color").setDescription("Load a value from a file");
 int LoadValue_DoubleClass = RegisterObject< LoadValue<PReal> >("File/Real/Load real").setDescription("Load a value from a file");

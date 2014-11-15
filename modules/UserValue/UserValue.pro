@@ -1,7 +1,9 @@
 include(../module.pri)
 
 HEADERS       = \
-	StoreValue.h
+	LoadValue.h \
+	StoreValue.h \
+	UserValue.h
 SOURCES       = \
 	LoadValue.cpp \
 	StoreValue.cpp \
