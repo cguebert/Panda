@@ -26,14 +26,12 @@ public:
 
 	GeneratorImage_CreateTexture(PandaDocument *doc)
 		: DockObject(doc)
-		, width(initData(&width, 64, "width", "Width of the texture"))
-		, height(initData(&height, 64, "height", "Height of the texture"))
-		, image(initData(&image, "texture", "The image rendered"))
+		, m_size(initData(&m_size, Point(64, 64), "size", "Dimensions of the texture"))
+		, m_image(initData(&m_image, "texture", "The image rendered"))
 	{
-		addInput(&width);
-		addInput(&height);
+		addInput(&m_size);
 
-		addOutput(&image);
+		addOutput(&m_image);
 	}
 
 	bool accepts(DockableObject* dockable) const
@@ -43,12 +41,13 @@ public:
 
 	QMatrix4x4& getMVPMatrix()
 	{
-		return mvpMatrix;
+		return m_mvpMatrix;
 	}
 
 	QSize getLayerSize() const
 	{
-		return QSize(std::max(1, width.getValue()), std::max(1, height.getValue()));
+		Point size = m_size.getValue();
+		return QSize(std::max(1, (int)size.x), std::max(1, (int)size.y));
 	}
 
 	typedef std::vector<Renderer*> RenderersList;
@@ -77,18 +76,18 @@ public:
 
 		QSize renderSize = getLayerSize();
 
-		if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)
+		if(!m_renderFrameBuffer || m_renderFrameBuffer->size() != renderSize)
 		{
 			QOpenGLFramebufferObjectFormat fmt;
 			fmt.setSamples(16);
-			renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
-			displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
+			m_renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
+			m_displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
 
 			// Setting the image Data to the display Fbo
-			image.getAccessor()->setFbo(displayFrameBuffer);
+			m_image.getAccessor()->setFbo(m_displayFrameBuffer);
 		}
 
-		renderFrameBuffer->bind();
+		m_renderFrameBuffer->bind();
 
 		glViewport(0, 0, renderSize.width(), renderSize.height());
 
@@ -120,18 +119,18 @@ public:
 
 		glDisable(GL_BLEND);
 
-		renderFrameBuffer->release();
+		m_renderFrameBuffer->release();
 
-		QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
+		QOpenGLFramebufferObject::blitFramebuffer(m_displayFrameBuffer.data(), m_renderFrameBuffer.data());
 
 		cleanDirty();
 	}
 
 protected:
-	Data<int> width, height;
-	Data<ImageWrapper> image;
-	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
-	QMatrix4x4 mvpMatrix;
+	Data<Point> m_size;
+	Data<ImageWrapper> m_image;
+	QSharedPointer<QOpenGLFramebufferObject> m_renderFrameBuffer, m_displayFrameBuffer;
+	QMatrix4x4 m_mvpMatrix;
 };
 
 int GeneratorImage_CreateTextureClass = RegisterObject<GeneratorImage_CreateTexture>("Generator/Image/Create texture").setDescription("Create a texture and render on it");
