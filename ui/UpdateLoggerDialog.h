@@ -44,7 +44,7 @@ public:
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
 
-	const panda::helper::EventData *getSelectedEvent() const;
+	const panda::helper::EventData* getSelectedEvent() const;
 	const panda::helper::UpdateLogger::NodeStates getNodeStates() const;
 
 protected:
@@ -75,6 +75,8 @@ protected:
 
 	void sortEvents();
 	void updateStates(int prevSelection, unsigned long long time);
+
+	qreal getComputeDuration(const EventData& event);
 
     enum MouseAction
     {

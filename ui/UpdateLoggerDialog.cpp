@@ -371,8 +371,9 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
         {
 			qreal start = (pEvent->m_startTime - m_minTime) * m_tps;
 			qreal end = (pEvent->m_endTime - m_minTime) * m_tps;
-			QString times = QString("\n%1ms - %2ms\n(%3)")
+			QString times = QString("\n%1ms - %2ms\n(%3 / %4)")
 					.arg(start).arg(end)
+					.arg(getReadableTime(getComputeDuration(*pEvent)))
 					.arg(getReadableTime(end-start));
 			QString display = eventDescription(*pEvent);
 
@@ -519,7 +520,7 @@ void UpdateLoggerView::sortEvents()
 	for(int i=0; i<nb; ++i)
 		m_sortedEvents[i] = i;
 
-	std::sort(m_sortedEvents.begin(), m_sortedEvents.end(), [this](const int& lhs, const int& rhs){
+	std::sort(m_sortedEvents.begin(), m_sortedEvents.end(), [this](const unsigned int& lhs, const unsigned int& rhs){
 		return m_events[lhs].m_startTime < m_events[rhs].m_startTime;
 	});
 }
@@ -609,4 +610,20 @@ void UpdateLoggerView::updateStates(int prevSelection, unsigned long long time)
 		for(int i=prevSelection; m_events[m_sortedEvents[i]].m_startTime > time; --i)
 			m_currentStates[m_events[m_sortedEvents[i]].m_node] = m_events[m_sortedEvents[i]].m_dirtyStart;
 	}
+}
+
+qreal UpdateLoggerView::getComputeDuration(const EventData& event)
+{
+	for(unsigned int index = (&event - &m_events[0]) - 1; index > 0; --index)
+	{
+		const EventData& other = m_events[index];
+		if(other.m_threadId == event.m_threadId)
+		{
+			if(other.m_endTime > event.m_endTime)
+				break;
+			return (event.m_endTime - other.m_endTime) * m_tps;
+		}
+	}
+
+	return (event.m_endTime - event.m_startTime) * m_tps;
 }
