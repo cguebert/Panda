@@ -51,7 +51,6 @@ SOURCES       = \
 	../modifiers/color/ColorInGradient.cpp \
 	../modifiers/image/ColorInImage.cpp \
 	../modifiers/image/ExtractImage.cpp \
-	../modifiers/image/MergeImages.cpp \
 	../modifiers/image/SaveImage.cpp \
 	../modifiers/point/ConnectSegments.cpp \
 	../modifiers/point/PointsInShapes.cpp \

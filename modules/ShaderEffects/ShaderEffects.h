@@ -1,12 +1,11 @@
 #include <panda/PandaObject.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/types/Point.h>
 
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
 
 namespace panda {
-
-using types::ImageWrapper;
 
 class ShaderEffects : public PandaObject
 {
@@ -25,7 +24,7 @@ public:
 
 protected:
 	const int m_nbPasses;
-	Data< ImageWrapper > m_input, m_output;
+	Data< types::ImageWrapper > m_input, m_output;
 
 	QSharedPointer<QOpenGLFramebufferObject> m_intermediaryFbo;
 	QVector< QSharedPointer<QOpenGLShaderProgram> > m_shaderPrograms;
@@ -34,6 +33,7 @@ protected:
 
 // Returns true if it created a new fbo
 bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size);
-void renderImage(QSharedPointer<QOpenGLFramebufferObject>& fbo, QOpenGLShaderProgram& program, GLuint texId);
+void renderImage(QOpenGLFramebufferObject &fbo, QOpenGLShaderProgram& program);
+void renderImage(QOpenGLFramebufferObject &fbo, QOpenGLShaderProgram& program, GLuint texId);
 
 } // namespace Panda

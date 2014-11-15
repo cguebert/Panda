@@ -1,7 +1,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/PandaObject.h>
 #include <panda/types/ImageWrapper.h>
-#include <panda/helper/system/FileRepository.h>
 
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
@@ -29,11 +28,11 @@ public:
 
 		addOutput(&m_output);
 
-		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/Downsample.v.glsl");
+		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample2.f.glsl");
 		m_shaderProgram2x.link();
 
-		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/Downsample.v.glsl");
+		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample4.f.glsl");
 		m_shaderProgram4x.link();
 	}
@@ -66,7 +65,7 @@ public:
 			renderSize /= 4;
 			auto& fbo = m_FBOs[i];
 			resizeFBO(fbo, renderSize);
-			renderImage(fbo, m_shaderProgram4x, texId);
+			renderImage(*fbo.data(), m_shaderProgram4x, texId);
 			texId = fbo->texture();
 		}
 
@@ -75,7 +74,7 @@ public:
 			renderSize /= 2;
 			auto& fbo = m_FBOs.back();
 			resizeFBO(fbo, renderSize);
-			renderImage(fbo, m_shaderProgram2x, texId);
+			renderImage(*fbo.data(), m_shaderProgram2x, texId);
 		}
 
 		m_output.getAccessor()->setFbo(m_FBOs.back());
@@ -109,10 +108,8 @@ public:
 		addInput(&m_nbOfUpscales);
 
 		addOutput(&m_output);
-		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,
-			helper::system::DataRepository.loadFile("shaders/PT_noColor_Tex.v.glsl"));
-		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,
-			helper::system::DataRepository.loadFile("shaders/PT_noColor_Tex.f.glsl"));
+		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
 		m_shaderProgram.link();
 	}
 
@@ -131,7 +128,7 @@ public:
 		if(resizeFBO(m_outputFBO, renderSize))
 			m_output.getAccessor()->setFbo(m_outputFBO);
 
-		renderImage(m_outputFBO, m_shaderProgram, texId);
+		renderImage(*m_outputFBO.data(), m_shaderProgram, texId);
 	}
 
 protected:

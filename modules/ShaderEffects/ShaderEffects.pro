@@ -6,7 +6,9 @@ SOURCES       = \
 	Enblend.cpp \
 	GaussianBlur.cpp \
 	GaussianPyramid.cpp \
+	MergeImages.cpp \
 	SimpleResize.cpp \
-	ShaderEffects.cpp
+	ShaderEffects.cpp \
+	TextureProduct.cpp
 
 RESOURCES     = ShaderEffects.qrc

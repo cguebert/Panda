@@ -4,6 +4,7 @@
 namespace panda {
 
 using types::ImageWrapper;
+using types::Point;
 
 ShaderEffects::ShaderEffects(PandaDocument* doc, int nbPasses)
 	: PandaObject(doc)
@@ -126,11 +127,11 @@ bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size)
 	return false;
 }
 
-void renderImage(QSharedPointer<QOpenGLFramebufferObject>& fbo, QOpenGLShaderProgram& program, GLuint texId)
+void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program)
 {
-	fbo->bind();
+	fbo.bind();
 
-	QSize size = fbo->size();
+	QSize size = fbo.size();
 	glViewport(0, 0, size.width(), size.height());
 
 	QMatrix4x4 mvp;
@@ -156,6 +157,18 @@ void renderImage(QSharedPointer<QOpenGLFramebufferObject>& fbo, QOpenGLShaderPro
 	program.enableAttributeArray("texCoord");
 	program.setAttributeArray("texCoord", texCoords, 2);
 
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	program.disableAttributeArray("vertex");
+	program.disableAttributeArray("texCoord");
+	program.release();
+
+	fbo.release();
+}
+
+void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program, GLuint texId)
+{
+	program.bind();
 	program.setUniformValue("tex0", 0);
 
 	glBindTexture(GL_TEXTURE_2D, texId);
@@ -164,13 +177,7 @@ void renderImage(QSharedPointer<QOpenGLFramebufferObject>& fbo, QOpenGLShaderPro
 	glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	program.disableAttributeArray("vertex");
-	program.disableAttributeArray("texCoord");
-	program.release();
-
-	fbo->release();
+	renderImage(fbo, program);
 }
 
 } // namespace Panda

@@ -1,9 +1,10 @@
 <RCC>
     <qresource prefix="/">
-        <file>shaders/Downsample.v.glsl</file>
         <file>shaders/Downsample2.f.glsl</file>
         <file>shaders/Downsample4.f.glsl</file>
-        <file>shaders/GBlur.v.glsl</file>
-        <file>shaders/GBlur.f.glsl</file>
+		<file>shaders/GBlur.f.glsl</file>
+		<file>shaders/PT_noColor_Tex.f.glsl</file>
+		<file>shaders/PT_noColor_Tex.v.glsl</file>
+		<file>shaders/TextureOuterProduct.f.glsl</file>
     </qresource>
 </RCC>

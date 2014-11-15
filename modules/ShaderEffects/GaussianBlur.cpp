@@ -21,7 +21,7 @@ public:
 		addInput(&m_radius);
 
 		m_vertexShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Vertex);
-		m_vertexShader->compileSourceFile(":/shaders/GBlur.v.glsl");
+		m_vertexShader->compileSourceFile(":/shaders/PT_noColor_Tex.v.glsl");
 
 		m_fragmentShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Fragment);
 

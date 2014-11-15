@@ -55,7 +55,7 @@ protected:
 	QSharedPointer<QOpenGLTexture> m_texture;
 };
 
-int GradientTextureClass = RegisterObject<GradientTexture>("Generator/Gradient/Gradient texture").setDescription("Create a 1d texture from a gradient");
+int GradientTextureClass = RegisterObject<GradientTexture>("Generator/Image/Gradient texture").setDescription("Create a 1d texture from a gradient");
 
 //****************************************************************************//
 
@@ -108,7 +108,7 @@ protected:
 	QSharedPointer<QOpenGLTexture> m_texture;
 };
 
-int GradientTexture2DClass = RegisterObject<GradientTexture2D>("Generator/Gradient/2 gradients texture").setDescription("Create a 2d texture from the multiplication of 2 gradients");
+int GradientTexture2DClass = RegisterObject<GradientTexture2D>("Generator/Image/2 gradients texture").setDescription("Create a 2d texture from the multiplication of 2 gradients");
 
 
 } // namespace Panda
