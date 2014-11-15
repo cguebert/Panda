@@ -32,6 +32,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 #endif
 
 	QSize renderSize = doc->getRenderSize();
+	auto output = getImage()->getAccessor(); // At the end of the function, the accessor destructor calls cleanDirty & setDirtyOutputs
 	if(!m_renderFrameBuffer || m_renderFrameBuffer->size() != renderSize)
 	{
 		QOpenGLFramebufferObjectFormat fmt;
@@ -40,7 +41,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 		m_displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
 
 		// Setting the image Data to the display Fbo
-		getImage()->getAccessor()->setFbo(m_displayFrameBuffer);
+		output->setFbo(m_displayFrameBuffer);
 	}
 
 	m_renderFrameBuffer->bind();

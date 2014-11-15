@@ -39,11 +39,10 @@ QSize ImageViewport::sizeHint() const
 	return QSize(600, 400);
 }
 
-void ImageViewport::setDirtyValue(const panda::DataNode* caller)
+void ImageViewport::setDirtyValue(const panda::DataNode* /*caller*/)
 {
-	if(caller == m_data // Coming from the watched data
-			&& (!m_data->isDirty() // Just got modified
-			 || !m_data->getOwner()->getParentDocument()->animationIsPlaying())) // Or animation not playing
+	if(!m_data->isDirty() // Just got modified
+	|| !m_data->getOwner()->getParentDocument()->animationIsPlaying()) // Or animation not playing
 		QWidget::update();
 }
 

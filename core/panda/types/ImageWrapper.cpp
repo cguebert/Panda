@@ -90,11 +90,14 @@ void ImageWrapper::createTexture(QVector<types::Color> buffer, int width, int he
 	m_image = QImage();
 	m_fbo.reset();
 
-	m_texture = QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(QOpenGLTexture::Target2D));
-	m_texture->setSize(width, height);
-	m_texture->setFormat(QOpenGLTexture::RGBA32F);
-	m_texture->setMipLevels(m_texture->maximumMipLevels());
-	m_texture->allocateStorage();
+	if(!m_texture || m_texture->width() != width || m_texture->height() != height)
+	{
+		m_texture = QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(QOpenGLTexture::Target2D));
+		m_texture->setSize(width, height);
+		m_texture->setFormat(QOpenGLTexture::RGBA32F);
+		m_texture->setMipLevels(m_texture->maximumMipLevels());
+		m_texture->allocateStorage();
+	}
 
 	m_texture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, buffer.constData());
 
