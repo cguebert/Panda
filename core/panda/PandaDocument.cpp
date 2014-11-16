@@ -463,12 +463,17 @@ QSize PandaDocument::getRenderSize() const
 	return QSize(qMax<PReal>(1, floor(pt.x)), qMax<PReal>(1, floor(pt.y)));
 }
 
-void PandaDocument::setMouseClick(int state)
+void PandaDocument::setMouseClick(bool clicked, const types::Point& pos)
 {
-	if(m_mouseClickBuffer && !state) // Pressed & released in 1 timestep, we will send 2 events
+	if(m_mouseClickBuffer && !clicked) // Pressed & released in 1 timestep, we will send 2 events
 		m_mouseClickBuffer = -1;
 	else
-		m_mouseClickBuffer = state;
+		m_mouseClickBuffer = clicked;
+
+	if(clicked)
+		emit mousePressed(pos);
+	else
+		emit mouseReleased(pos);
 }
 
 void PandaDocument::copy()

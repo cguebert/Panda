@@ -22,15 +22,15 @@ public:
 		addOutput(&clickState);
 
 		clickState.setWidget("checkbox");
+	}
 
-		// Connect only 1 input, otherwise update is called twice and movement can't be computed correctly
-		BaseData* data = doc->getData("mouse position");
-		if(data) addInput(data);
+	void beginStep()
+	{
+		setDirtyValue(this);
 	}
 
 	void update()
 	{
-		cleanDirty();
 		PReal time = m_parentDocument->getAnimationTime();
 		Point oldPos = position.getValue(), newPos = m_parentDocument->getMousePosition();
 

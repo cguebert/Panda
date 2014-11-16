@@ -82,7 +82,7 @@ public:
 	void setMousePosition(const types::Point& pos);
 
 	int getMouseClick() const;
-	void setMouseClick(int state);
+	void setMouseClick(bool clicked, const types::Point& pos);
 
 	quint32 getNextIndex();
 	PandaObject* findObject(quint32 objectIndex);
@@ -170,6 +170,8 @@ signals:
 	void startLoading();
 	void loadingFinished();
 	void changedDock(panda::DockableObject*);
+	void mousePressed(panda::types::Point);
+	void mouseReleased(panda::types::Point);
 
 public slots:
 	void copy();

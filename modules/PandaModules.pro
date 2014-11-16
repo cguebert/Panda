@@ -6,4 +6,5 @@ SUBDIRS = MainModules \
 		Paths \
 		Polygons \
 		ShaderEffects \
+		UserInteraction \
 		UserValue

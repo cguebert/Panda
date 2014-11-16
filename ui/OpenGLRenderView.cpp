@@ -75,8 +75,7 @@ void OpenGLRenderView::paintGL()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	drawTexture(QPointF(viewRect.center().x() - renderSize.width() / 2,
-						viewRect.center().y() - renderSize.height() / 2), fbo->texture());
+	drawTexture(QPointF(), fbo->texture());
 
 	glDisable(GL_BLEND);
 }
@@ -84,23 +83,18 @@ void OpenGLRenderView::paintGL()
 void OpenGLRenderView::mousePressEvent(QMouseEvent* event)
 {
 	if(event->button() == Qt::LeftButton)
-		m_document->setMouseClick(1);
+		m_document->setMouseClick(true, panda::types::Point(event->localPos().x(), event->localPos().y()));
 }
 
 void OpenGLRenderView::mouseMoveEvent(QMouseEvent* event)
 {
-	QRect viewRect = contentsRect();
-	QSize renderSize = m_document->getRenderSize();
-	QPointF pos = event->localPos() - QPointF(viewRect.center().x() - renderSize.width() / 2,
-							viewRect.center().y() - renderSize.height() / 2);
-
-	m_document->setMousePosition(panda::types::Point(pos.x(), pos.y()));
+	m_document->setMousePosition(panda::types::Point(event->localPos().x(), event->localPos().y()));
 }
 
 void OpenGLRenderView::mouseReleaseEvent(QMouseEvent* event)
 {
 	if(event->button() == Qt::LeftButton)
-		m_document->setMouseClick(0);
+		m_document->setMouseClick(false, panda::types::Point(event->localPos().x(), event->localPos().y()));
 }
 
 void OpenGLRenderView::resizeEvent(QResizeEvent* event)
