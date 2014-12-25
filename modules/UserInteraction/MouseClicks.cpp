@@ -1,4 +1,3 @@
-#include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 
@@ -68,7 +67,7 @@ protected:
 	QVector<Point> m_clicsBuffer;
 };
 
-int UserInteraction_MouseClicksClass = RegisterObject<UserInteraction_MouseClicks>("Generator/Point/Mouse clicks").setDescription("Detect mouse clicks");
+int UserInteraction_MouseClicksClass = RegisterObject<UserInteraction_MouseClicks>("Interaction/Mouse clicks").setDescription("Detect mouse clicks");
 
 //****************************************************************************//
 
@@ -152,9 +151,7 @@ protected:
 	QElapsedTimer m_clicTimer;
 };
 
-int UserInteraction_MouseDoubleClicksClass = RegisterObject<UserInteraction_MouseDoubleClicks>("Generator/Point/Double clicks").setDescription("Detect mouse double clicks");
-
-//****************************************************************************//
+int UserInteraction_MouseDoubleClicksClass = RegisterObject<UserInteraction_MouseDoubleClicks>("Interaction/Double clicks").setDescription("Detect mouse double clicks");
 
 } // namespace Panda
 

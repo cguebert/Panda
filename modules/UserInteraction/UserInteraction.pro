@@ -6,4 +6,5 @@ HEADERS       = \
 	MouseEventsReceiver.h
 SOURCES       = \
 	MouseClicks.cpp \
-	MouseEventsReceiver.cpp
+	MouseEventsReceiver.cpp \
+	Selection.cpp

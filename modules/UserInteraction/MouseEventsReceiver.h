@@ -1,8 +1,9 @@
-#include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
+#include <QObject>
+#include <panda/types/Point.h>
 
 namespace panda {
 
+class PandaDocument;
 using types::Point;
 
 class MouseEventsReceiver : public QObject

@@ -1,3 +1,4 @@
+#include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 
 #include "MouseEventsReceiver.h"
