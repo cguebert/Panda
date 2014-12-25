@@ -7,4 +7,5 @@ HEADERS       = \
 SOURCES       = \
 	MouseClicks.cpp \
 	MouseEventsReceiver.cpp \
+	MoveShape.cpp \
 	Selection.cpp

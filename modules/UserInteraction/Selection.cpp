@@ -69,7 +69,10 @@ public:
 				{
 					PReal radius = (nbR < nbC) ? radiuses[0] : radiuses[i];
 					if( (pt - centers[i]).norm2() < radius * radius)
+					{
 						selection[i] = !selection[i];
+						break;
+					}
 				}
 			}
 		}
@@ -146,7 +149,10 @@ public:
 				for(int i=0; i<nbR; ++i)
 				{
 					if(rectangles[i].contains(pt))
+					{
 						selection[i] = !selection[i];
+						break;
+					}
 				}
 			}
 		}
