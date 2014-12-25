@@ -125,6 +125,46 @@ protected:
 
 int DoubleListMath_MedianClass = RegisterObject<DoubleListMath_Median>("Math/List of reals/Median").setDescription("Search the median value of a list of reals");
 
+//****************************************************************************//
+
+class DoubleListMath_Accumulate : public PandaObject
+{
+public:
+	PANDA_CLASS(DoubleListMath_Accumulate, PandaObject)
+
+	DoubleListMath_Accumulate(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData(&m_input, "input", "List of reals to sum"))
+		, m_output(initData(&m_output, "output", "Accumulated sums"))
+	{
+		addInput(&m_input);
+
+		addOutput(&m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+		int nb = input.size();
+		output.resize(nb);
+
+		if(nb)
+		{
+			output[0] = input[0];
+			for(int i=1; i<nb; ++i)
+				output[i] = output[i-1] + input[i];
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<PReal> > m_input, m_output;
+};
+
+int DoubleListMath_AccumulateClass = RegisterObject<DoubleListMath_Accumulate>("Math/List of reals/Accumulate").setDescription("Compute the accumulated sums of a list of values");
+
 } // namespace Panda
 
 
