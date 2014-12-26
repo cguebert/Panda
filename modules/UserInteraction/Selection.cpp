@@ -20,7 +20,7 @@ public:
 		, m_centers(initData(&m_centers, "center", "Center of the disks"))
 		, m_radiuses(initData(&m_radiuses, "radius", "Radius of each disk"))
 		, m_selection(initData(&m_selection, "selected", "Selection status of each disk"))
-		, m_centersPrevSize(-1)
+		, m_counter(-1)
 	{
 		addInput(&m_centers);
 		addInput(&m_radiuses);
@@ -30,7 +30,8 @@ public:
 	void reset()
 	{
 		m_selection.getAccessor().clear();
-		m_centersPrevSize = -1;
+		m_counter = -1;
+		setDirtyValue(this);
 	}
 
 	void beginStep()
@@ -54,14 +55,13 @@ public:
 		const auto& radiuses = m_radiuses.getValue();
 		auto selection = m_selection.getAccessor();
 		int nbC = centers.size(), nbR = radiuses.size();
-		if(m_centersPrevSize != nbC)
+		if(m_counter != m_centers.getCounter())
 		{
 			selection.resize(nbC);
 			selection.wref().fill(0);
-			m_centersPrevSize = nbC;
+			m_counter = m_centers.getCounter();
 		}
-
-		if(nbC && nbR)
+		else if(nbC && nbR)
 		{
 			for(auto& pt : m_clicsBuffer)
 			{
@@ -86,7 +86,7 @@ protected:
 	Data<QVector<int>> m_selection;
 
 	QVector<Point> m_clicsBuffer;
-	int m_centersPrevSize;
+	int m_counter;
 };
 
 int UserInteraction_SelectionDiskClass = RegisterObject<UserInteraction_SelectionDisk>("Interaction/Disk selection").setDescription("Select disks with the mouse");
@@ -103,7 +103,7 @@ public:
 		, MouseEventsReceiver(doc)
 		, m_rectangles(initData(&m_rectangles, "rectangle", "List of rectangles"))
 		, m_selection(initData(&m_selection, "selected", "Selection status of each rectangle"))
-		, m_rectanglesPrevSize(-1)
+		, m_counter(-1)
 	{
 		addInput(&m_rectangles);
 		addOutput(&m_selection);
@@ -112,7 +112,8 @@ public:
 	void reset()
 	{
 		m_selection.getAccessor().clear();
-		m_rectanglesPrevSize = -1;
+		m_counter = -1;
+		setDirtyValue(this);
 	}
 
 	void beginStep()
@@ -135,14 +136,13 @@ public:
 		const auto& rectangles = m_rectangles.getValue();
 		auto selection = m_selection.getAccessor();
 		int nbR = rectangles.size();
-		if(m_rectanglesPrevSize != nbR)
+		if(m_counter != m_rectangles.getCounter())
 		{
 			selection.resize(nbR);
 			selection.wref().fill(0);
-			m_rectanglesPrevSize = nbR;
+			m_counter = m_rectangles.getCounter();
 		}
-
-		if(nbR)
+		else if(nbR)
 		{
 			for(auto& pt : m_clicsBuffer)
 			{
@@ -165,7 +165,7 @@ protected:
 	Data<QVector<int>> m_selection;
 
 	QVector<Point> m_clicsBuffer;
-	int m_rectanglesPrevSize;
+	int m_counter;
 };
 
 int UserInteraction_SelectionRectangleClass = RegisterObject<UserInteraction_SelectionRectangle>("Interaction/Rectangle selection").setDescription("Select rectangles with the mouse");
