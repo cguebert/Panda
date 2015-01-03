@@ -442,6 +442,11 @@ void MainWindow::createActions()
 	connect(m_showImageViewport, SIGNAL(triggered()), this, SLOT(showImageViewport()));
 	addAction(m_showImageViewport);
 
+	m_chooseWidget = new QAction(tr("Choose widget"), this);
+	m_chooseWidget->setStatusTip(tr("Choose the widget to use for this data"));
+	connect(m_chooseWidget, SIGNAL(triggered()), m_graphView, SLOT(showChooseWidgetDialog()));
+	addAction(m_chooseWidget);
+
 	m_document->createUndoRedoActions(this, m_undoAction, m_redoAction);
 	m_undoAction->setShortcut(QKeySequence::Undo);
 	m_redoAction->setShortcut(QKeySequence::Redo);
@@ -911,7 +916,18 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 		menu.addAction(m_removeLinkAction);
 
 	if(flags & GraphView::MENU_DATA)
+	{
 		menu.addAction(m_copyDataAction);
+		const panda::PandaObject* owner = nullptr;
+		auto data = m_graphView->getContextMenuData();
+		if(data)
+			owner = data->getOwner();
+		if(owner && owner->getClassName() == "GeneratorUser" && owner->getNamespaceName() == "panda")
+			menu.addAction(m_chooseWidget);
+	}
+
+	if(obj && obj->getClassName() == "GeneratorUser" && obj->getNamespaceName() == "panda")
+		menu.addAction(m_chooseWidget);
 
 	if(flags & GraphView::MENU_IMAGE)
 		menu.addAction(m_showImageViewport);

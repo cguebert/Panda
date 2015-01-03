@@ -129,6 +129,7 @@ public slots:
 	void startLoading();
 	void loadingFinished();
 	void changedDock(panda::DockableObject* dockable);
+	void showChooseWidgetDialog();
 
 private:
 	panda::PandaDocument* m_pandaDocument;

@@ -2,6 +2,7 @@
 #include <cmath>
 #include <functional>
 
+#include <ui/ChooseWidgetDialog.h>
 #include <ui/GraphView.h>
 #include <ui/LinkTag.h>
 #include <ui/QuickCreateDialog.h>
@@ -1369,4 +1370,20 @@ void GraphView::updateViewRect()
 		m_viewRect.adjust(-5, -5, 5, 5);
 
 	emit viewModified();
+}
+
+void GraphView::showChooseWidgetDialog()
+{
+	if(m_contextMenuData)
+		ChooseWidgetDialog(m_contextMenuData, this).exec();
+	else
+	{
+		auto obj = m_pandaDocument->getCurrentSelectedObject();
+		if(obj && obj->getClassName() == "GeneratorUser" && obj->getNamespaceName() == "panda")
+		{
+			auto data = obj->getData("input");
+			if(data)
+				ChooseWidgetDialog(data, this).exec();
+		}
+	}
 }

@@ -160,6 +160,7 @@ private:
 	QAction* m_redoAction;
 	QAction* m_adjustRenderSizeToViewAction;
 	QAction* m_showImageViewport;
+	QAction* m_chooseWidget;
 	QLabel* m_timeLabel;
 };
 
