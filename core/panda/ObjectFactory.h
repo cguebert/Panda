@@ -53,7 +53,7 @@ public:
 
 	template <class T>
 	static QString getRegistryName()
-	{ return T::getClass()->getTypeName(); }
+	{ return T::GetClass()->getTypeName(); }
 	static QString getRegistryName(PandaObject* object);
 
 	QSharedPointer<PandaObject> create(QString className, PandaDocument* parent) const;
@@ -103,7 +103,7 @@ public:
 	explicit RegisterObject(QString menuDisplay)
 	{
 		entry.creator = QSharedPointer<ObjectCreator<T>>::create();
-		entry.theClass = T::getClass();
+		entry.theClass = T::GetClass();
 		entry.menuDisplay = menuDisplay;
 		if(!menuDisplay.isEmpty())
 			entry.objectName = menuDisplay.split("/").last();

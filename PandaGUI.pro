@@ -3,6 +3,7 @@ Release:TARGET = Panda
 Debug:TARGET = Panda_d
 HEADERS       = \
 	ui/Annotation.h \
+	ui/ChooseWidgetDialog.h \
 	ui/CreateGroup.h \
 	ui/DatasTable.h \
 	ui/DetachableTabWidget.h \
@@ -44,6 +45,7 @@ HEADERS       = \
 	ui/widget/TableDataWidgetDialog.h
 SOURCES       = ui/main.cpp \
 	ui/Annotation.cpp \
+	ui/ChooseWidgetDialog.cpp \
 	ui/CreateGroup.cpp \
 	ui/DatasTable.cpp \
 	ui/DetachableTabWidget.cpp \

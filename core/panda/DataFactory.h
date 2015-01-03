@@ -95,7 +95,7 @@ public:
 		DataCopiersList::registerCopier(fullTypeId, dataCopier);
 
 		DataFactory::getInstance()->registerData(dataTrait,
-												 data_type::getClass(),
+												 data_type::GetClass(),
 												 QSharedPointer< DataCreator<data_type> >::create());
 		return 1;
 	}

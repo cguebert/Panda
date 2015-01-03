@@ -102,7 +102,7 @@ class ObjectDrawCreator : public BaseObjectDrawCreator
 {
 public:
 	ObjectDrawCreator()
-		: theClass(O::getClass())
+		: theClass(O::GetClass())
 	{ }
 
 	virtual const panda::BaseClass* getClass() const

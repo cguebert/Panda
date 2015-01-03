@@ -18,10 +18,10 @@ public:
 	PANDA_CLASS(PandaObject, DataNode)
 	explicit PandaObject(PandaDocument* document);
 
-	static QString getTypeName();
-	static QString getClassName();
-	static QString getNamespaceName();
-	static QString getTemplateName();
+	QString getTypeName() const;
+	QString getClassName() const;
+	QString getNamespaceName() const;
+	QString getTemplateName() const;
 
 	QString getName() const;
 	quint32 getIndex() const;
@@ -101,16 +101,16 @@ protected:
 
 //****************************************************************************//
 
-inline QString PandaObject::getTypeName()
+inline QString PandaObject::getTypeName() const
 { return getClass()->getTypeName(); }
 
-inline QString PandaObject::getClassName()
+inline QString PandaObject::getClassName() const
 { return getClass()->getClassName(); }
 
-inline QString PandaObject::getNamespaceName()
+inline QString PandaObject::getNamespaceName() const
 { return getClass()->getNamespaceName(); }
 
-inline QString PandaObject::getTemplateName()
+inline QString PandaObject::getTemplateName() const
 { return getClass()->getTemplateName(); }
 
 inline QString PandaObject::getName() const

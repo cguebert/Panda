@@ -44,7 +44,7 @@ QSharedPointer<PandaObject> ObjectFactory::create(QString className, PandaDocume
 
 QString ObjectFactory::getRegistryName(PandaObject* object)
 {
-	return object->getBaseClass()->getTypeName();
+	return object->getClass()->getTypeName();
 }
 
 void ObjectFactory::registerObject(QString className, ClassEntry entry)

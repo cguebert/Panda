@@ -101,9 +101,9 @@ protected:
 
 // Do not use this macro directly, use PANDA_ABSTRACT_CLASS instead
 #define PANDA_ABSTRACT_CLASS_DECL											\
-	static const MyClass* getClass() { return MyClass::getInstance(); }		\
-	virtual const ::panda::BaseClass* getBaseClass() const					\
-	{ return getClass(); }													\
+	static const MyClass* GetClass() { return MyClass::getInstance(); }		\
+	virtual const ::panda::BaseClass* getClass() const					\
+	{ return GetClass(); }													\
 	static const char* HeaderFileLocation() { return __FILE__; }
 
 // Do not use this macro directly, use PANDA_CLASS instead
@@ -114,10 +114,10 @@ template <class Parents>
 class TClassParents
 {
 public:
-	static unsigned int nb() { return 1; }
-	static const BaseClass* getClass(int i)
+	static unsigned int Nb() { return 1; }
+	static const BaseClass* GetClass(int i)
 	{
-		if (i==0)	return Parents::getClass();
+		if (i==0)	return Parents::GetClass();
 		else		return nullptr;
 	}
 };
@@ -126,19 +126,19 @@ template<>
 class TClassParents<void>
 {
 public:
-	static unsigned int nb() { return 0; }
-	static const BaseClass* getClass(int) { return nullptr; }
+	static unsigned int Nb() { return 0; }
+	static const BaseClass* GetClass(int) { return nullptr; }
 };
 
 template<class P1, class P2>
 class TClassParents< std::pair<P1,P2> >
 {
 public:
-	static unsigned int nb() { return TClassParents<P1>::nb() + TClassParents<P2>::nb(); }
-	static const BaseClass* getClass(int i)
+	static unsigned int Nb() { return TClassParents<P1>::Nb() + TClassParents<P2>::Nb(); }
+	static const BaseClass* GetClass(int i)
 	{
-		if (i<TClassParents<P1>::nb())	return TClassParents<P1>::getClass(i);
-		else							return TClassParents<P2>::getClass(i-TClassParents<P1>::nb());
+		if (i<TClassParents<P1>::Nb())	return TClassParents<P1>::GetClass(i);
+		else							return TClassParents<P2>::GetClass(i-TClassParents<P1>::Nb());
 	}
 };
 
@@ -153,10 +153,10 @@ protected:
 		m_className = decodeClassName(typeid(T));
 		m_templateName = decodeTemplateName(typeid(T));
 
-		unsigned int nb = TClassParents<Parents>::nb();
+		unsigned int nb = TClassParents<Parents>::Nb();
 		m_parents.reserve(nb);
 		for(unsigned int i=0; i<nb; ++i)
-			m_parents.push_back(TClassParents<Parents>::getClass(i));
+			m_parents.push_back(TClassParents<Parents>::GetClass(i));
 	}
 
 	virtual ~TClass() {}
