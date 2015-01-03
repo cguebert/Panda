@@ -67,6 +67,8 @@ public:
 		container.writeToData(value);
 		setValue(value);
 	}
+
+	static QString GetParametersFormat() { return ParametersFormatHelper<Container>(); }
 };
 
 #endif // SIMPLEDATAWIDGET_H

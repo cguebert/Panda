@@ -188,6 +188,8 @@ public:
 		int nb = resizeSpinBox->value();
 		resize(nb);
 	}
+
+	static QString GetParametersFormat() { return ParametersFormatHelper<ChildDataWidget>(); }
 };
 
 #endif // LISTDATAWIDGETDIALOG_H

@@ -92,7 +92,8 @@ QString BaseClass::decodeTypeName(const std::type_info& type)
 QString BaseClass::decodeClassName(const std::type_info& type)
 {
 	QString realName = decodeTypeName(type);
-	int start = realName.lastIndexOf("::");
+	int templateStart = realName.indexOf("<");
+	int start = realName.lastIndexOf("::", templateStart);
 	if(start < 0)
 		start = 0;
 	else
@@ -107,7 +108,8 @@ QString BaseClass::decodeClassName(const std::type_info& type)
 QString BaseClass::decodeNamespaceName(const std::type_info& type)
 {
 	QString realName = decodeTypeName(type);
-	int end = realName.lastIndexOf("::");
+	int templateStart = realName.indexOf("<");
+	int end = realName.lastIndexOf("::", templateStart);
 	if(end < 0)
 		return "";
 	else

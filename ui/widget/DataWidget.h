@@ -10,6 +10,26 @@
 #include <QWidget>
 #include <QString>
 
+#include <type_traits>
+
+// Hack that should work with the main compilers (it works on VC12)
+// Test if a class has the member function GetParametersFormat, and call it
+namespace
+{
+template<class> struct sfinae_true : std::true_type{};
+template<class T> static auto testGPF(int) -> sfinae_true<decltype(T::GetParametersFormat)>;
+template<class> static auto testGPF(long) -> std::false_type;
+template<class T> struct hasGPF : decltype(testGPF<T>(0)){}; // the '0' is to use the first version (int) if possible
+}
+
+template<typename T>
+typename std::enable_if_t<::hasGPF<T>::value, QString> ParametersFormatHelper()
+{ return T::GetParametersFormat(); }
+
+template<typename T>
+typename std::enable_if_t<!::hasGPF<T>::value, QString> ParametersFormatHelper()
+{ return ""; }
+
 /**
 *\brief Abstract Interface of a QWidget which allows to edit a data.
 */

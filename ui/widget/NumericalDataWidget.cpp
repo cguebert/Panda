@@ -142,6 +142,10 @@ public:
 		v = t * step + vMin;
 		label->setText(QString::number(v));
 	}
+	static QString GetParametersFormat()
+	{
+		return "min max step";
+	}
 };
 
 //****************************************************************************//
@@ -230,6 +234,10 @@ public:
 	void writeToData(value_type& v)
 	{
 		v = comboBox->currentIndex();
+	}
+	static QString GetParametersFormat()
+	{
+		return "val1;val2;val3;...";
 	}
 };
 

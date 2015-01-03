@@ -5,6 +5,9 @@
 
 #include <panda/PandaDocument.h>
 
+#include <type_traits>
+#include <iostream>
+
 ChooseWidgetDialog::ChooseWidgetDialog(panda::BaseData* data, QWidget* parent)
 	: QDialog(parent)
 	, m_data(data)
@@ -15,7 +18,16 @@ ChooseWidgetDialog::ChooseWidgetDialog(panda::BaseData* data, QWidget* parent)
 	QFormLayout* formLayout = new QFormLayout;
 
 	m_types = new QComboBox;
-	auto types = DataWidgetFactory::getInstance()->getWidgetNames(data->getDataTrait()->fullTypeId());
+	int fullTypeId = data->getDataTrait()->fullTypeId();
+	int valueTypeId = panda::types::DataTypeId::getValueType(fullTypeId);
+	QList<QString> types = DataWidgetFactory::getInstance()->getWidgetNames(fullTypeId);
+	if(valueTypeId != fullTypeId)
+	{
+		types += DataWidgetFactory::getInstance()->getWidgetNames(valueTypeId);
+		if(types.count("default") > 1)
+			types.removeOne("default");
+	}
+
 	m_types->addItems(types);
 	m_types->setCurrentText(data->getWidget());
 	formLayout->addRow(tr("widget:"), m_types);
@@ -47,6 +59,8 @@ ChooseWidgetDialog::ChooseWidgetDialog(panda::BaseData* data, QWidget* parent)
 
 	connect(this, SIGNAL(accepted()), this, SLOT(changeData()));
 	connect(m_types, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(changedType(const QString&)));
+
+	changedType(data->getWidget());
 }
 
 QSize ChooseWidgetDialog::sizeHint() const
@@ -56,7 +70,17 @@ QSize ChooseWidgetDialog::sizeHint() const
 
 void ChooseWidgetDialog::changedType(const QString& type)
 {
-	m_format->setText("<i>" + tr("unused") + "</i>");
+	auto entry = DataWidgetFactory::getInstance()->getEntry(m_data->getDataTrait()->fullTypeId(), type);
+	if(entry)
+		m_format->setText(entry->creator->getParametersFormat());
+
+	if(m_format->text().isEmpty())
+	{
+		m_format->setText("<i>" + tr("unused") + "</i>");
+		m_parameters->setEnabled(false);
+	}
+	else
+		m_parameters->setEnabled(true);
 }
 
 void ChooseWidgetDialog::changeData()

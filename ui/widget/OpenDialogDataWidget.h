@@ -149,6 +149,8 @@ public:
 			}
 		}
 	}
+
+	static QString GetParametersFormat() { return ParametersFormatHelper<Dialog>(); }
 };
 
 #endif // OPENDIALOGDATAWIDGET_H

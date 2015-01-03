@@ -22,6 +22,7 @@ public:
 	virtual BaseDataWidget* create(QWidget* parent, panda::BaseData* data) const = 0;
 	virtual BaseDataWidget* create(QWidget* parent, void* pValue,
 								   QString widgetName, QString name, QString parameters) const = 0;
+	virtual QString getParametersFormat() = 0;
 };
 
 class DataWidgetFactory
@@ -79,6 +80,11 @@ public:
 		if(!tValue)
 			return nullptr;
 		return new T(parent, tValue, widgetName, name, parameters);
+	}
+
+	virtual QString getParametersFormat()
+	{
+		return ParametersFormatHelper<T>();
 	}
 };
 
