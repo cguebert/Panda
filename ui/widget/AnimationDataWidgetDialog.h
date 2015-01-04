@@ -213,7 +213,7 @@ public:
 				delete field;
 			}
 		}
-		else
+		else if(dataWidgetCreator)
 		{	// Adding
 			QString widget = parentDW->getWidgetName(),
 					parentName = parentDW->getDisplayName(),
@@ -222,8 +222,7 @@ public:
 			{
 				QString displayName = parentName + " / " + QString::number(i);
 				value_type* pValue = values_list_trait::get(valuesCopy, i);
-				BaseDataWidget* baseDataWidget = DataWidgetFactory::getInstance()
-						->create(this, pValue, valueTypeFullId, widget, displayName, parameters);
+				BaseDataWidget* baseDataWidget = dataWidgetCreator->create(this, pValue, widget, displayName, parameters);
 				ChildDataWidget* dataWidget = dynamic_cast<ChildDataWidget*>(baseDataWidget);
 				if(dataWidget)
 				{

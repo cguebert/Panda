@@ -168,8 +168,7 @@ public:
 			{
 				QString displayName = parentName + " / " + QString::number(i);
 				row_type* pValue = row_trait::get(valueCopy, i);
-				BaseDataWidget* baseDataWidget = DataWidgetFactory::getInstance()
-						->create(this, pValue, rowTypeFullId, widget, displayName, parameters);
+				BaseDataWidget* baseDataWidget = dataWidgetCreator->create(this, pValue, widget, displayName, parameters);
 				ChildDataWidget* dataWidget = dynamic_cast<ChildDataWidget*>(baseDataWidget);
 				if(dataWidget)
 				{
