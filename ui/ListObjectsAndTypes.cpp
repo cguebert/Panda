@@ -160,6 +160,7 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 	for(const auto& o : objectsEntries)
 	{
 		out << "   <h2>" << o.menuDisplay << "</h2>\n";
+		out << "	<p>In module: " << toHtml(o.moduleName) << "</p>\n";
 		out << "    <p>Type: " << toHtml(o.className) << "</p>\n";
 		out << "    <p>" << o.description << "</p>\n";
 
