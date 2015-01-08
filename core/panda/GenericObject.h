@@ -116,6 +116,7 @@ public:
 	virtual BaseData* createDatas(int type, int index = -1);
 
 protected:
+	void doUpdate(bool updateAllInputs = true);
 	virtual void reorderDatas();
 	virtual void updateDataNames();
 

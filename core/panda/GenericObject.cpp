@@ -26,6 +26,8 @@ GenericObject::GenericObject(PandaDocument* parent)
 
 GenericObject::~GenericObject()
 {
+	m_createdDatasMap.clear();
+	m_createdDatasStructs.clear();
 }
 
 void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefinitionList &defList)
@@ -188,14 +190,22 @@ bool GenericObject::isCreatedData(BaseData* data) const
 
 void GenericObject::update()
 {
+	doUpdate();
+}
+
+void GenericObject::doUpdate(bool updateAllInputs)
+{
 	int nbDefs = m_dataDefinitions.size();
 
 	for(CreatedDatasStructPtr created : m_createdDatasStructs)
 	{
-		for(int i=0; i<nbDefs; ++i)
+		if(updateAllInputs)
 		{
-			if(m_dataDefinitions[i].input)
-				created->datas[i]->updateIfDirty();
+			for(int i=0; i<nbDefs; ++i)
+			{
+				if(m_dataDefinitions[i].input)
+					created->datas[i]->updateIfDirty();
+			}
 		}
 
 		DataList list;
@@ -212,7 +222,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	if(data == m_genericData)
 	{
 		int type = m_genericData->getCompatibleType(parent);
-		BaseData *inputData = createDatas(type);
+		BaseData* inputData = createDatas(type);
 
 		if(inputData)
 			inputData->setParent(parent);
@@ -221,8 +231,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	}
 	else if(parent || !m_createdDatasMap.contains(data))
 	{
-		data->setParent(parent);
-		emitModified();
+		PandaObject::dataSetParent(data, parent);
 	}
 	else // (nullptr), we remove the data
 	{
