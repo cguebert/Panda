@@ -13,6 +13,7 @@ SOURCES       = \
 	InterleaveSequence.cpp \
 	ListBuffer.cpp \
 	ListItem.cpp \
+	ListLoop.cpp \
 	listModule.cpp \
 	ListReverse.cpp \
 	ListSize.cpp \

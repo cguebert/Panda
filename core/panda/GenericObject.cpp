@@ -209,6 +209,7 @@ void GenericObject::doUpdate(bool updateAllInputs)
 		}
 
 		DataList list;
+		list.reserve(created->datas.size());
 		for(BaseDataPtr ptr : created->datas)
 			list.push_back(ptr.data());
 		invokeFunction(created->type, list);
