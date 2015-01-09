@@ -93,6 +93,9 @@ public:
 
 	void setDirtyValue(const DataNode* caller)
 	{
+		if(caller == &m_condition)
+			return;
+
 		if(m_isUpdating)
 			DataNode::setDirtyValue(caller);
 		else if(caller == &m_control || caller == this)
