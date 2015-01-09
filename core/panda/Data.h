@@ -21,7 +21,6 @@ public:
 	typedef T value_type;
 	typedef value_type& reference;
 	typedef const value_type& const_reference;
-	typedef value_type* pointer;
 	typedef Data<value_type> data_type;
 	typedef DataAccessor<data_type> data_accessor;
 
@@ -50,7 +49,7 @@ public:
 protected:
 	friend class DataAccessor<data_type>;
 
-	inline pointer beginEdit();
+	inline reference beginEdit();
 	inline void endEdit();
 	virtual void* beginVoidEdit();
 	virtual void endVoidEdit();
@@ -78,7 +77,7 @@ protected:
 	data_type& m_data;
 
 public:
-	DataAccessor(data_type& data) : Inherit(*data.beginEdit()) , m_data(data) {}
+	DataAccessor(data_type& data) : Inherit(data.beginEdit()) , m_data(data) {}
 	~DataAccessor() { m_data.endEdit(); }
 
 	template<class U> void operator=(const U& value) { Inherit::operator=(value); }
@@ -190,7 +189,7 @@ int Data<T>::getCounter() const
 
 template<class T>
 inline void* Data<T>::beginVoidEdit()
-{ return beginEdit(); }
+{ return &beginEdit(); }
 
 template<class T>
 inline void Data<T>::endVoidEdit()
@@ -203,16 +202,16 @@ inline const void* Data<T>::getVoidValue() const
 template<class T>
 inline void Data<T>::setValue(const_reference value)
 {
-	*beginEdit() = value;
+	beginEdit() = value;
 	endEdit();
 }
 
 template<class T>
-inline typename Data<T>::pointer Data<T>::beginEdit()
+inline typename Data<T>::reference Data<T>::beginEdit()
 {
 	updateIfDirty();
 	++m_counter;
-	return &m_value;
+	return m_value;
 }
 
 template<class T>
