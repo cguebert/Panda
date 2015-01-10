@@ -691,7 +691,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	m_movingAction = MOVING_NONE;
 }
 
-void GraphView::wheelEvent(QWheelEvent * event)
+void GraphView::wheelEvent(QWheelEvent* event)
 {
 	if(m_movingAction != MOVING_NONE)
 	{
@@ -715,7 +715,7 @@ void GraphView::wheelEvent(QWheelEvent * event)
 	}
 }
 
-void GraphView::keyPressEvent(QKeyEvent * event)
+void GraphView::keyPressEvent(QKeyEvent* event)
 {
 	switch(event->key())
 	{
@@ -732,6 +732,7 @@ void GraphView::keyPressEvent(QKeyEvent * event)
 		if(event->modifiers() & Qt::ControlModifier)
 		{
 			moveView(QPointF(100, 0));
+			updateViewRect();
 			update();
 		}
 		break;
@@ -739,6 +740,7 @@ void GraphView::keyPressEvent(QKeyEvent * event)
 		if(event->modifiers() & Qt::ControlModifier)
 		{
 			moveView(QPointF(-100, 0));
+			updateViewRect();
 			update();
 		}
 		break;
@@ -746,6 +748,7 @@ void GraphView::keyPressEvent(QKeyEvent * event)
 		if(event->modifiers() & Qt::ControlModifier)
 		{
 			moveView(QPointF(0, 100));
+			updateViewRect();
 			update();
 		}
 		break;
@@ -753,8 +756,17 @@ void GraphView::keyPressEvent(QKeyEvent * event)
 		if(event->modifiers() & Qt::ControlModifier)
 		{
 			moveView(QPointF(0, -100));
+			updateViewRect();
 			update();
 		}
+		break;
+	case Qt::Key_Plus:
+		if(event->modifiers() & Qt::ControlModifier)
+			zoomIn();
+		break;
+	case Qt::Key_Minus:
+		if(event->modifiers() & Qt::ControlModifier)
+			zoomOut();
 		break;
 	default:
 		QWidget::keyPressEvent(event);
