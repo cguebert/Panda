@@ -27,11 +27,12 @@ public:
 
 	virtual void update() = 0; /// Do the action required to reset the dirty flag
 
-	virtual bool isDirty() const;
+	bool isDirty() const;
+	void doSetDirty(); /// Only change the flag, don't propagate
+	void cleanDirty(); /// Reset the dirty flag
+
 	virtual void setDirtyValue(const DataNode* caller); /// Change the flag and propagate to all outputs
-	virtual void doSetDirty(); /// Only change the flag, don't propagate
 	virtual void setDirtyOutputs(); /// Propagate the change to all outputs
-	virtual void cleanDirty(); /// Reset the dirty flag
 	virtual void updateIfDirty() const;
 
 	virtual void doAddInput(DataNode* node);

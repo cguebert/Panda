@@ -84,6 +84,8 @@ public:
 	virtual void addedToDocument() {}		/// The object is being added
 	virtual void removedFromDocument() {}	/// Ths object is being removed (but not deleted as it can be undone later)
 
+	bool isUpdating(); /// True during the execution of update()
+
 protected:
 	QString m_name;
 	QList<BaseData*> m_datas;
@@ -136,6 +138,9 @@ inline bool PandaObject::doesLaterUpdate()
 
 inline PandaDocument* PandaObject::getParentDocument()
 { return m_parentDocument; }
+
+inline bool PandaObject::isUpdating()
+{ return m_isUpdating; }
 
 } // namespace Panda
 

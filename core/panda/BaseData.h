@@ -76,22 +76,22 @@ public:
 	PandaObject* getOwner() const; /// The PandaObject that owns this Data
 	void setOwner(PandaObject* owner);
 
-	virtual bool validParent(const BaseData* parent) const; /// Can parent be connected to this Data
+	bool validParent(const BaseData* parent) const; /// Can parent be connected to this Data
 	virtual void setParent(BaseData* parent); /// Set the other Data as the parent to this one (its value will be copied each time it changes)
 	BaseData* getParent() const; /// Returns the current parent, or nullptr
 
-	virtual const types::AbstractDataTrait* getDataTrait() const; /// Return a class describing the type stored in this Data
+	const types::AbstractDataTrait* getDataTrait() const; /// Return a class describing the type stored in this Data
 	virtual const void* getVoidValue() const = 0; /// Return a void* pointing to the value (use the DataTrait to exploit it)
 	VoidDataAccessor getVoidAccessor(); /// Return a wrapper around the void*, that will call endEdit when destroyed
 
-	virtual QString getDescription() const; /// Get a readable name of the type stored in this Data
+	QString getDescription() const; /// Get a readable name of the type stored in this Data
 
-	virtual void copyValueFrom(const BaseData* parent); /// Copy the value from parent to this Data
+	void copyValueFrom(const BaseData* parent); /// Copy the value from parent to this Data
 
-	virtual void save(QDomDocument& doc, QDomElement& elem); /// Save the value of the Data in a Xml node
-	virtual void load(QDomElement& elem); /// Load the value from Xml
+	void save(QDomDocument& doc, QDomElement& elem) const; /// Save the value of the Data in a Xml node
+	void load(QDomElement& elem); /// Load the value from Xml
 
-	virtual void setDirtyValue(const DataNode* caller); // We override this function in order to log the event
+	void setDirtyValue(const DataNode* caller);
 
 protected:
 	virtual void doAddInput(DataNode* node);

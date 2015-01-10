@@ -36,15 +36,15 @@ public:
 	Data(const QString& name, const QString& help, PandaObject* owner);
 	virtual ~Data();
 
-	virtual void update();
+	virtual void update() override;
 
-	virtual void setParent(BaseData* parent);
-	virtual const void* getVoidValue() const;
+	virtual void setParent(BaseData* parent) override;
+	virtual const void* getVoidValue() const override;
 	data_accessor getAccessor(); /// Return a wrapper around the pointer to the value (call endEdit in the destructor)
 	inline void setValue(const_reference value); /// Store value in this Data
 	inline const_reference getValue() const; /// Retrieve the stored value
 
-	virtual int getCounter() const;
+	virtual int getCounter() const override;
 
 protected:
 	friend class DataAccessor<data_type>;

@@ -129,7 +129,7 @@ void BaseData::copyValueFrom(const BaseData* from)
 		m_isValueSet = true;
 }
 
-void BaseData::save(QDomDocument& doc, QDomElement& elem)
+void BaseData::save(QDomDocument& doc, QDomElement& elem) const
 {
 	getDataTrait()->writeValue(doc, elem, getVoidValue());
 }
