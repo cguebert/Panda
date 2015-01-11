@@ -13,12 +13,17 @@
 #include <panda/helper/UpdateLogger.h>
 #endif
 
-#include <QtWidgets>
-#include <QOpenGLFramebufferObject>
-#include <QElapsedTimer>
-#include <QUndoStack>
+#include <QApplication>
+#include <QClipboard>
 #include <QDomDocument>
+#include <QElapsedTimer>
+#include <QFile>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QOpenGLFramebufferObject>
 #include <QOpenGLFunctions>
+#include <QTimer>
+#include <QUndoStack>
 
 namespace panda {
 
