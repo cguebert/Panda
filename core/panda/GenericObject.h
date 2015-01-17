@@ -29,6 +29,7 @@ public:
 	explicit BaseGenericData(const BaseData::BaseInitData& init)
 		: Data<int>(init) {}
 
+	virtual bool validParent(const BaseData* parent) const override;
 	virtual QString getTypesName(bool useFullDescription = false) const;
 	virtual int getCompatibleType(const BaseData* parent) const;
 
@@ -41,7 +42,6 @@ public:
 	explicit GenericData(const BaseData::BaseInitData& init)
 		: BaseGenericData(init) {}
 
-	virtual bool validParent(const BaseData* parent) const override;
 	virtual QString getDescription() const override;
 };
 

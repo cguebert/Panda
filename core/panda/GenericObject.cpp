@@ -516,6 +516,13 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 //****************************************************************************//
 
+bool BaseGenericData::validParent(const BaseData* parent) const
+{
+	if(m_allowedTypes.size() && !m_allowedTypes.contains(parent->getDataTrait()->valueTypeId()))
+		return false;
+	return true;
+}
+
 QString BaseGenericData::getTypesName(bool useFullDescription) const
 {
 	if(m_allowedTypes.empty())
@@ -555,13 +562,6 @@ int BaseGenericData::getCompatibleType(const BaseData* parent) const
 }
 
 //****************************************************************************//
-
-bool GenericData::validParent(const BaseData* parent) const
-{
-	if(m_allowedTypes.size() && !m_allowedTypes.contains(parent->getDataTrait()->valueTypeId()))
-		return false;
-	return true;
-}
 
 QString GenericData::getDescription() const
 {

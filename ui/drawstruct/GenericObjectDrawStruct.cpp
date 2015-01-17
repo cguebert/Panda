@@ -117,7 +117,7 @@ void GenericObjectDrawStruct::drawDatas(QPainter* painter)
 		else
 			painter->setBrush(m_parentView->palette().button());
 
-		if(dynamic_cast<panda::GenericData*>(dataPair.second))
+		if(dynamic_cast<panda::BaseGenericData*>(dataPair.second))
 			painter->drawRoundedRect(dataPair.first, 3, 3);
 		else
 			painter->drawRect(dataPair.first);
