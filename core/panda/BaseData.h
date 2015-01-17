@@ -76,7 +76,7 @@ public:
 	PandaObject* getOwner() const; /// The PandaObject that owns this Data
 	void setOwner(PandaObject* owner);
 
-	bool validParent(const BaseData* parent) const; /// Can parent be connected to this Data
+	virtual bool validParent(const BaseData* parent) const; /// Can parent be connected to this Data
 	virtual void setParent(BaseData* parent); /// Set the other Data as the parent to this one (its value will be copied each time it changes)
 	BaseData* getParent() const; /// Returns the current parent, or nullptr
 
@@ -84,7 +84,7 @@ public:
 	virtual const void* getVoidValue() const = 0; /// Return a void* pointing to the value (use the DataTrait to exploit it)
 	VoidDataAccessor getVoidAccessor(); /// Return a wrapper around the void*, that will call endEdit when destroyed
 
-	QString getDescription() const; /// Get a readable name of the type stored in this Data
+	virtual QString getDescription() const; /// Get a readable name of the type stored in this Data
 
 	void copyValueFrom(const BaseData* parent); /// Copy the value from parent to this Data
 
