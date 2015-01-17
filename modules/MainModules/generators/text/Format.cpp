@@ -18,10 +18,10 @@ public:
 		, text(initData(&text, "text", "Text obtained by the format operation"))
 		, generic(initData(&generic, "input", "Connect here the values to use in the format operation"))
 	{
-		addInput(&format);
-		addInput(&generic);
+		addInput(format);
+		addInput(generic);
 
-		addOutput(&text);
+		addOutput(text);
 
 		int typeOfValue = types::DataTypeId::getFullTypeOfVector(0);	// Create a copy of the data connected
 		GenericDataDefinitionList defList;

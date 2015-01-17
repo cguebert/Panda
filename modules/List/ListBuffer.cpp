@@ -19,9 +19,9 @@ public:
 		, resetData(initData(&resetData, 0, "reset", "Set this at 1 to reset the values"))
 		, generic(initData(&generic, "input", "Connect here the lists to put in the buffer"))
 	{
-		addInput(&control);
-		addInput(&resetData);
-		addInput(&generic);
+		addInput(control);
+		addInput(resetData);
+		addInput(generic);
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;

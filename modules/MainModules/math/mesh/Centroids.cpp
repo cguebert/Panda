@@ -19,9 +19,9 @@ public:
 		, mesh(initData(&mesh, "mesh", "Mesh to analyse"))
 		, centroids(initData(&centroids, "centroids", "Centroids of the triangles"))
 	{
-		addInput(&mesh);
+		addInput(mesh);
 
-		addOutput(&centroids);
+		addOutput(centroids);
 	}
 
 	void update()

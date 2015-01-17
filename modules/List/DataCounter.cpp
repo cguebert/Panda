@@ -15,7 +15,7 @@ public:
 		: GenericObject(doc)
 		, m_generic(initData(&m_generic, "input", "Connect here the lists to put in the buffer"))
 	{
-		addInput(&m_generic);
+		addInput(m_generic);
 
 		int intTypeId = types::DataTypeId::getFullTypeOfSingleValue(types::DataTypeId::getIdOf<int>());
 		GenericDataDefinitionList defList;

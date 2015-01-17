@@ -43,9 +43,9 @@ void PandaObject::removeData(BaseData* data)
 		emitModified();
 }
 
-void PandaObject::addOutput(BaseData* data)
+void PandaObject::addOutput(BaseData& data)
 {
-	data->setReadOnly(true);
+	data.setReadOnly(true);
 	DataNode::addOutput(data);
 }
 

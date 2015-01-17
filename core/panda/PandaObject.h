@@ -29,7 +29,7 @@ public:
 	void addData(BaseData* data);
 	void removeData(BaseData* data);
 
-	void addOutput(BaseData* data);
+	void addOutput(BaseData& data);
 	using DataNode::addOutput;
 
 	BaseData* getData(const QString& name) const;

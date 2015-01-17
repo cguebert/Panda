@@ -35,8 +35,8 @@ public:
 		, userValue("input", "The value you want to store", this)
 		, output(initData(&output, "value", "The value stored"))
 	{
-		addInput(&userValue);
-		addOutput(&output);
+		addInput(userValue);
+		addOutput(output);
 
 		output.setDisplayed(false);
 

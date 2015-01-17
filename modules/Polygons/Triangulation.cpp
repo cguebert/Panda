@@ -42,9 +42,9 @@ public:
 		, m_input(initData(&m_input, "input", "Input polygon"))
 		, m_output(initData(&m_output, "output", "Output mesh"))
 	{
-		addInput(&m_input);
+		addInput(m_input);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 	}
 
 	void update()

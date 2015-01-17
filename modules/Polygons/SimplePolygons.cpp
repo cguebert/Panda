@@ -24,8 +24,8 @@ public:
 		, m_rectangles(initData(&m_rectangles, "rectangle", "Input rectangle"))
 		, m_paths(initData(&m_paths, "path", "Output path"))
 	{
-		addInput(&m_rectangles);
-		addOutput(&m_paths);
+		addInput(m_rectangles);
+		addOutput(m_paths);
 	}
 
 	void update()
@@ -71,10 +71,10 @@ public:
 		, m_precision(initData(&m_precision, (PReal)1.0, "precision", "Maximum length of a segment"))
 		, m_paths(initData(&m_paths, "path", "Output path"))
 	{
-		addInput(&m_centers);
-		addInput(&m_radiuses);
-		addInput(&m_precision);
-		addOutput(&m_paths);
+		addInput(m_centers);
+		addInput(m_radiuses);
+		addInput(m_precision);
+		addOutput(m_paths);
 	}
 
 	void update()

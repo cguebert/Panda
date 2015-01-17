@@ -21,11 +21,11 @@ public:
 		, m_output(initData(&m_output, "output", "Texture created by the operation"))
 		, m_size(initData(&m_size, Point(64, 64), "size", "Size of the generated texture"))
 	{
-		addInput(&m_inputH);
-		addInput(&m_inputV);
-		addInput(&m_size);
+		addInput(m_inputH);
+		addInput(m_inputV);
+		addInput(m_size);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 
 		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/TextureOuterProduct.f.glsl");

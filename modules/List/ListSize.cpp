@@ -16,7 +16,7 @@ public:
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the lists to analyse"))
 	{
-		addInput(&generic);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected

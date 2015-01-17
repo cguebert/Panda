@@ -23,13 +23,13 @@ public:
 		, iterations(initData(&iterations, 1, "iterations", "Number of times to do the relaxation"))
 		, fixBorder(initData(&fixBorder, 0, "fix border", "If true, the points on the border will not move"))
 	{
-		addInput(&input);
-		addInput(&factor);
-		addInput(&iterations);
-		addInput(&fixBorder);
+		addInput(input);
+		addInput(factor);
+		addInput(iterations);
+		addInput(fixBorder);
 		fixBorder.setWidget("checkbox");
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()

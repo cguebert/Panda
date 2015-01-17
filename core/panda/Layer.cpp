@@ -109,9 +109,9 @@ Layer::Layer(PandaDocument* parent)
 	, m_compositionMode(initData(&m_compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
 	, m_opacity(initData(&m_opacity, (PReal)1.0, "opacity", "Set the opacity of the layer"))
 {
-	addInput(&m_layerName);
-	addInput(&m_opacity);
-	addInput(&m_compositionMode);
+	addInput(m_layerName);
+	addInput(m_opacity);
+	addInput(m_compositionMode);
 
 	// 24 possible modes
 	m_compositionMode.setWidget("enum");
@@ -123,8 +123,8 @@ Layer::Layer(PandaDocument* parent)
 	m_opacity.setWidget("slider");
 	m_opacity.setWidgetData("0 1 0.01");
 
-	addOutput((DataNode*)parent);
-	addOutput(&m_image);
+	addOutput(*parent);
+	addOutput(m_image);
 }
 
 void Layer::update()

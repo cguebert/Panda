@@ -26,10 +26,10 @@ public:
 		, position(initData(&position, "position", "Position in the image where to get the color"))
 		, color(initData(&color, "color", "Color extracted from the image"))
 	{
-		addInput(&image);
-		addInput(&position);
+		addInput(image);
+		addInput(position);
 
-		addOutput(&color);
+		addOutput(color);
 	}
 
 	void update()
@@ -75,11 +75,11 @@ public:
 		, color(initData(&color, "color", "Color to insert in the image"))
 		, result(initData(&result, "result", "The modified image"))
 	{
-		addInput(&image);
-		addInput(&position);
-		addInput(&color);
+		addInput(image);
+		addInput(position);
+		addInput(color);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -129,10 +129,10 @@ public:
 		, rectangle(initData(&rectangle, "rectangle", "Region to analyse"))
 		, color(initData(&color, "color", "Mean color in this region of the image"))
 	{
-		addInput(&image);
-		addInput(&rectangle);
+		addInput(image);
+		addInput(rectangle);
 
-		addOutput(&color);
+		addOutput(color);
 	}
 
 	void update()

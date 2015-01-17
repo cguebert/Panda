@@ -14,7 +14,7 @@ public:
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the list whose items to reverse"))
 	{
-		addInput(&generic);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);

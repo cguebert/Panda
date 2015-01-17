@@ -29,9 +29,9 @@ public:
 		, m_size(initData(&m_size, Point(64, 64), "size", "Dimensions of the texture"))
 		, m_image(initData(&m_image, "texture", "The image rendered"))
 	{
-		addInput(&m_size);
+		addInput(m_size);
 
-		addOutput(&m_image);
+		addOutput(m_image);
 	}
 
 	bool accepts(DockableObject* dockable) const

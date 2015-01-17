@@ -19,10 +19,10 @@ public:
 		, output(initData(&output, "output", "List of points on the spline"))
 		, steps(initData(&steps, 4, "steps", "Number of points on each segment"))
 	{
-		addInput(&input);
-		addInput(&steps);
+		addInput(input);
+		addInput(steps);
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()

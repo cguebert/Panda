@@ -20,14 +20,14 @@ public:
 		, output(initData(&output, "output", "Resulting color"))
 		, blendMode(initData(&blendMode, "mode", "Method used to blend the colors"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addInput(&blendMode);
+		addInput(inputA);
+		addInput(inputB);
+		addInput(blendMode);
 
 		blendMode.setWidget("enum");
 		blendMode.setWidgetData("Multiply;Addition;Substraction");
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()

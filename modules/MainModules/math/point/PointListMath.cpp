@@ -24,12 +24,12 @@ public:
 		, mean(initData(&mean, "mean distance", "Mean distance to the center"))
 		, stdDev(initData(&stdDev, "std dev", "Standard deviation of the distance to the center"))
 	{
-		addInput(&input);
+		addInput(input);
 
-		addOutput(&nbElements);
-		addOutput(&center);
-		addOutput(&mean);
-		addOutput(&stdDev);
+		addOutput(nbElements);
+		addOutput(center);
+		addOutput(mean);
+		addOutput(stdDev);
 	}
 
 	void update()

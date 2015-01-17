@@ -20,9 +20,9 @@ public:
 		, anim(initData(&anim, "animation", "The animation from which to create a gradient"))
 		, gradient(initData(&gradient, "gradient", "The gradient converted from the animation"))
 	{
-		addInput(&anim);
+		addInput(anim);
 
-		addOutput(&gradient);
+		addOutput(gradient);
 	}
 
 	void update()
@@ -58,9 +58,9 @@ public:
 		, gradient(initData(&gradient, "gradient", "The gradient from which to create an animation"))
 		, anim(initData(&anim, "animation", "The animation converted from the gradient"))
 	{
-		addInput(&gradient);
+		addInput(gradient);
 
-		addOutput(&anim);
+		addOutput(anim);
 	}
 
 	void update()

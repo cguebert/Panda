@@ -21,7 +21,7 @@ ImageViewport::ImageViewport(const panda::BaseData* data, QGLWidget* shareWidget
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-	addInput(const_cast<panda::BaseData*>(data));
+	addInput(*const_cast<panda::BaseData*>(data));
 }
 
 QSize ImageViewport::minimumSizeHint() const
@@ -46,10 +46,10 @@ void ImageViewport::setDirtyValue(const panda::DataNode* /*caller*/)
 		QWidget::update();
 }
 
-void ImageViewport::doRemoveInput(DataNode* node)
+void ImageViewport::doRemoveInput(DataNode& node)
 {
 	DataNode::doRemoveInput(node);
-	if(node == m_data)
+	if(&node == m_data)
 		emit closeViewport(this);
 }
 

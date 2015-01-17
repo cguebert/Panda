@@ -31,12 +31,12 @@ public:
 		, alignV(initData(&alignV, 2, "align V", "Vertical alignment of the text"))
 		, functions(QOpenGLContext::currentContext())
 	{
-		addInput(&text);
-		addInput(&font);
-		addInput(&rect);
-		addInput(&color);
-		addInput(&alignH);
-		addInput(&alignV);
+		addInput(text);
+		addInput(font);
+		addInput(rect);
+		addInput(color);
+		addInput(alignH);
+		addInput(alignV);
 
 		font.setWidget("font");
 		QFont tmp;

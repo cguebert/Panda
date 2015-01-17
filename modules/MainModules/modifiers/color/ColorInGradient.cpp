@@ -19,10 +19,10 @@ public:
 		, position(initData(&position, "position", "Position in the gradient where to get the color"))
 		, color(initData(&color, "color", "Color extracted from the gradient"))
 	{
-		addInput(&gradient);
-		addInput(&position);
+		addInput(gradient);
+		addInput(position);
 
-		addOutput(&color);
+		addOutput(color);
 	}
 
 	void update()

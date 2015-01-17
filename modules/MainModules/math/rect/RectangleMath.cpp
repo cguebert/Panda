@@ -22,10 +22,10 @@ public:
 		, translation(initData(&translation, "translation", "Translation to apply to the rectangle"))
 		, result(initData(&result, "result", "Result of the translation"))
 	{
-		addInput(&input);
-		addInput(&translation);
+		addInput(input);
+		addInput(translation);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -70,10 +70,10 @@ public:
 		, adjust(initData(&adjust, "adjust", "Translation to apply to the sides of the rectangle"))
 		, result(initData(&result, "result", "Result of the adjustment"))
 	{
-		addInput(&input);
-		addInput(&adjust);
+		addInput(input);
+		addInput(adjust);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -117,10 +117,10 @@ public:
 		, inputB(initData(&inputB, "input 2", "Second rectangle"))
 		, result(initData(&result, "result", "Result of the intersection"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
+		addInput(inputA);
+		addInput(inputB);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -175,10 +175,10 @@ public:
 		, inputB(initData(&inputB, "input 2", "Second rectangle"))
 		, result(initData(&result, "result", "Result of the union"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
+		addInput(inputA);
+		addInput(inputB);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()

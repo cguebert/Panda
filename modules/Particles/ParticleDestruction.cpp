@@ -20,8 +20,8 @@ public:
 		, maxAge(initData(&maxAge, (PReal)1.0, "max age", "Remove particles older than this age"))
 		, variation(initData(&variation, (PReal)0.0, "variation", "Particles can randomly live longer by this amount"))
 	{
-		addInput(&maxAge);
-		addInput(&variation);
+		addInput(maxAge);
+		addInput(variation);
 
 		reset();
 	}
@@ -85,7 +85,7 @@ public:
 		: ParticleEffector(doc)
 		, indices(initData(&indices, "indices", "Remove these particles"))
 	{
-		addInput(&indices);
+		addInput(indices);
 	}
 
 	virtual Indices filterParticles(const Particles&)
@@ -116,8 +116,8 @@ public:
 		, rectangle(initData(&rectangle, "rectangle", "Remove particles that are in this rectangle"))
 		, inverse(initData(&inverse, "inverse", "If true, remove particles that are outside the rectangle instead"))
 	{
-		addInput(&rectangle);
-		addInput(&inverse);
+		addInput(rectangle);
+		addInput(inverse);
 
 		inverse.setWidget("checkbox");
 	}

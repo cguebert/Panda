@@ -24,14 +24,14 @@ public:
 		, maxDist(initData(&maxDist, (PReal)100.0, "maxDist", "Maximum distance over which to move the points"))
 		, seed(initData(&seed, 0, "seed", "Seed for the random number generator"))
 	{
-		addInput(&inputPoints);
-		addInput(&minAngle);
-		addInput(&maxAngle);
-		addInput(&minDist);
-		addInput(&maxDist);
-		addInput(&seed);
+		addInput(inputPoints);
+		addInput(minAngle);
+		addInput(maxAngle);
+		addInput(minDist);
+		addInput(maxDist);
+		addInput(seed);
 
-		addOutput(&outputPoints);
+		addOutput(outputPoints);
 
 		seed.setWidget("seed");
 		seed.setValue(rnd.getRandomSeed(10000));

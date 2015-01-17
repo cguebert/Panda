@@ -27,10 +27,10 @@ public:
 		, m_length(initData(&m_length, 256, "length", "Horizontal size of the texture created"))
 		, m_output(initData(&m_output, "texture", "Texture created"))
 	{
-		addInput(&m_gradient);
-		addInput(&m_length);
+		addInput(m_gradient);
+		addInput(m_length);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 	}
 
 	void update()
@@ -71,11 +71,11 @@ public:
 		, m_size(initData(&m_size, Point(256, 256), "size", "Dimensions of the texture created"))
 		, m_output(initData(&m_output, "texture", "Texture created"))
 	{
-		addInput(&m_horizontalGradient);
-		addInput(&m_verticalGradient);
-		addInput(&m_size);
+		addInput(m_horizontalGradient);
+		addInput(m_verticalGradient);
+		addInput(m_size);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 	}
 
 	void update()

@@ -24,12 +24,12 @@ public:
 		, result(initData(&result, "result", "Result of the interpolation"))
 		, mode(initData(&mode, 0, "mode", "Interpolation mode"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addInput(&progress);
-		addInput(&mode);
+		addInput(inputA);
+		addInput(inputB);
+		addInput(progress);
+		addInput(mode);
 
-		addOutput(&result);
+		addOutput(result);
 
 		mode.setWidget("enum");
 		mode.setWidgetData("Linear"

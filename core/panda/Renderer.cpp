@@ -9,7 +9,7 @@ Renderer::Renderer(PandaDocument* doc)
 	: DockableObject(doc)
 {
 	BaseData* data = doc->getData("render size");
-	if(data) addInput(data);
+	if(data) addInput(*data);
 }
 
 DockObject* Renderer::getDefaultDock() const

@@ -28,10 +28,10 @@ public:
 		, output(initData(&output, "output", "Output shader"))
 		, generic(initData(&generic, "value", "Connect here the values to add to the shader"))
 	{
-		addInput(&input);
-		addInput(&generic);
+		addInput(input);
+		addInput(generic);
 
-		addOutput(&output);
+		addOutput(output);
 
 		input.setWidgetData("Vertex;Fragment");
 		output.setWidgetData("Vertex;Fragment");

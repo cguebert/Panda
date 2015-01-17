@@ -16,8 +16,8 @@ public:
 		, condition(initData(&condition, "condition", "Boolean values specifying which items are kept"))
 		, generic(initData(&generic, "input", "Connect here the list"))
 	{
-		addInput(&condition);
-		addInput(&generic);
+		addInput(condition);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);

@@ -23,10 +23,10 @@ public:
 		, m_output(initData(&m_output, "output", "Image created by the operation"))
 		, m_nbOfDownscales(initData(&m_nbOfDownscales, 1, "downscales", "Number of times the image is to be downscaled"))
 	{
-		addInput(&m_input);
-		addInput(&m_nbOfDownscales);
+		addInput(m_input);
+		addInput(m_nbOfDownscales);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 
 		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample2.f.glsl");
@@ -104,10 +104,10 @@ public:
 		, m_output(initData(&m_output, "output", "Image created by the operation"))
 		, m_nbOfUpscales(initData(&m_nbOfUpscales, 1, "upscales", "Number of times the image is to be upscaled"))
 	{
-		addInput(&m_input);
-		addInput(&m_nbOfUpscales);
+		addInput(m_input);
+		addInput(m_nbOfUpscales);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
 		m_shaderProgram.link();

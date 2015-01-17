@@ -16,11 +16,11 @@ public:
 		, step(initData(&step, (PReal)1.0, "step", "Interval between 2 numbers"))
 		, numbers(initData(&numbers, "numbers", "The list of numbers" ))
 	{
-		addInput(&nbNumbers);
-		addInput(&start);
-		addInput(&step);
+		addInput(nbNumbers);
+		addInput(start);
+		addInput(step);
 
-		addOutput(&numbers);
+		addOutput(numbers);
 	}
 
 	void update()

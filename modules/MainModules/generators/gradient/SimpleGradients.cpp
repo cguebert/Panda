@@ -20,14 +20,14 @@ public:
 		, extend(initData(&extend, 0, "extend", "What to do when a position asked is outside the boundaries"))
 		, gradient(initData(&gradient, "gradient", "Gradient created from the 2 input colors"))
 	{
-		addInput(&colorA);
-		addInput(&colorB);
-		addInput(&extend);
+		addInput(colorA);
+		addInput(colorB);
+		addInput(extend);
 
 		extend.setWidget("enum");
 		extend.setWidgetData("Pad;Repeat;Reflect");
 
-		addOutput(&gradient);
+		addOutput(gradient);
 	}
 
 	void update()

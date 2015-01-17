@@ -21,12 +21,12 @@ public:
 		, steps(initData(&steps, 6, "steps", "Number of points on each segment"))
 		, close(initData(&close, 0, "close", "Is the curve closed or not?"))
 	{
-		addInput(&input);
-		addInput(&steps);
-		addInput(&close);
+		addInput(input);
+		addInput(steps);
+		addInput(close);
 		close.setWidget("checkbox");
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()

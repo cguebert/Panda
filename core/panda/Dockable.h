@@ -32,7 +32,7 @@ public:
 	virtual void removedFromDocument();
 
 protected:
-	virtual void doRemoveInput(DataNode* node);
+	virtual void doRemoveInput(DataNode& node) override;
 
 	DockablesList m_dockedObjects;
 };
@@ -60,7 +60,7 @@ protected:
 //****************************************************************************//
 
 inline void DockObject::removeDockable(DockableObject* dockable)
-{ removeInput((DataNode*)dockable); }
+{ removeInput(*(DataNode*)dockable); }
 
 inline const DockObject::DockablesList& DockObject::getDockedObjects() const
 { return m_dockedObjects; }

@@ -134,9 +134,9 @@ void Group::load(QDomElement& elem)
 		auto data = dataPtr.data();
 		m_groupDatas.push_back(dataPtr);
 		if(input)
-			addInput(data);
+			addInput(*data);
 		if(output)
-			addOutput(data);
+			addOutput(*data);
 
 		groupDataNode = groupDataNode.nextSiblingElement("GroupData");
 	}
@@ -274,10 +274,10 @@ GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 	, m_compositionMode(initData(&m_compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
 	, m_opacity(initData(&m_opacity, (PReal)1.0, "opacity", "Set the opacity of the layer"))
 {
-	addInput(&m_compositionMode);
-	addInput(&m_opacity);
+	addInput(m_compositionMode);
+	addInput(m_opacity);
 
-	addOutput((DataNode*)parent);
+	addOutput(*parent);
 
 	m_compositionMode.setInput(false);
 	m_compositionMode.setDisplayed(false);
@@ -330,7 +330,7 @@ void GroupWithLayer::addObject(ObjectPtr object)
 		if(renderer->getParentDock() == defaultLayer)
 			defaultLayer->removeDockable(renderer);
 		renderer->setParentDock(nullptr);
-		addInput((DataNode*)renderer);
+		addInput(*renderer);
 
 		// Sort the renderers by their position in the view
 		auto rpos = m_positions[renderer].y();

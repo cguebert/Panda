@@ -23,10 +23,10 @@ public:
 		, nbPoints(initData(&nbPoints, "# of points", "Number of points in the path"))
 		, length(initData(&length, "length", "Length of the path"))
 	{
-		addInput(&input);
+		addInput(input);
 
-		addOutput(&nbPoints);
-		addOutput(&length);
+		addOutput(nbPoints);
+		addOutput(length);
 	}
 
 	void update()
@@ -84,11 +84,11 @@ public:
 		, abscissa(initData(&abscissa, "abscissa", "Abscissa of the point to find"))
 		, rotation(initData(&rotation, "rotation", "Rotation of the point on the curve"))
 	{
-		addInput(&input);
-		addInput(&abscissa);
+		addInput(input);
+		addInput(abscissa);
 
-		addOutput(&position);
-		addOutput(&rotation);
+		addOutput(position);
+		addOutput(rotation);
 	}
 
 	void update()

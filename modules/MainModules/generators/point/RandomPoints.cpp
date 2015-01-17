@@ -22,18 +22,18 @@ public:
 		, m_points(initData(&m_points, "points", "The list of points" ))
 		, m_area(initData(&m_area, "area", "Where to create the points. If null, the render area is used instead"))
 	{
-		addInput(&m_nbPoints);
-		addInput(&m_seed);
-		addInput(&m_area);
+		addInput(m_nbPoints);
+		addInput(m_seed);
+		addInput(m_area);
 
-		addOutput(&m_points);
+		addOutput(m_points);
 
 		m_seed.setWidget("seed");
 		m_seed.setValue(m_rnd.getRandomSeed(10000));
 
 		// The output is dependent on the document's size
 		BaseData* data = doc->getData("render size");
-		if(data) addInput(data);
+		if(data) addInput(*data);
 	}
 
 	void update()

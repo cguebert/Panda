@@ -24,14 +24,14 @@ public:
 		, found(initData(&found, "found", "For each input point, this is 1 if a point was found, 0 otherwise"))
 		, maxDist(initData(&maxDist, (PReal)100.0, "maxDist", "Distance maximum for the search"))
 	{
-		addInput(&input);
-		addInput(&points);
-		addInput(&unique);
-		addInput(&notSelf);
-		addInput(&maxDist);
+		addInput(input);
+		addInput(points);
+		addInput(unique);
+		addInput(notSelf);
+		addInput(maxDist);
 
-		addOutput(&output);
-		addOutput(&found);
+		addOutput(output);
+		addOutput(found);
 	}
 
 	void update()

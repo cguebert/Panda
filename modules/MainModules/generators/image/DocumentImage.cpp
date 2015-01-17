@@ -17,13 +17,13 @@ public:
 		, previous(initData(&previous, 0, "previous", "If true we get the image at the begining of the timestep, else at the end."))
 		, image(initData(&image, "image", "The image rendered by the document"))
 	{
-		addInput(&previous);
+		addInput(previous);
 		previous.setWidget("checkbox");
 
-		addOutput(&image);
+		addOutput(image);
 
 		BaseData* data = doc->getData("rendered image");
-		if(data) addInput(data);
+		if(data) addInput(*data);
 	}
 
 	void beginStep()

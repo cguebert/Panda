@@ -12,9 +12,9 @@ Annotation::Annotation(PandaDocument *doc)
 	, m_text(initData(&m_text, QString("type text here"), "text", "Text of the annotation"))
 	, m_font(initData(&m_font, "font", "Font of the annotation"))
 {
-	addInput(&m_type);
-	addInput(&m_text);
-	addInput(&m_font);
+	addInput(m_type);
+	addInput(m_text);
+	addInput(m_font);
 
 	m_type.setWidget("enum");
 	m_type.setWidgetData("Text only;Arrow;Rectangle;Ellipse");

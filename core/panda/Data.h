@@ -121,7 +121,7 @@ Data<T>::~Data()
 {
 	// Give connected Datas a chance to copy the value before it is freed
 	for(DataNode* node : m_outputs)
-		node->doRemoveInput(this);
+		node->doRemoveInput(*this);
 	m_outputs.clear();
 }
 

@@ -22,14 +22,14 @@ public:
 		, vMin(initData(&vMin, "min", "Minimum value of the list of reals"))
 		, vMax(initData(&vMax, "max", "Maximum value of the list of reals"))
 	{
-		addInput(&input);
+		addInput(input);
 
-		addOutput(&nbElements);
-		addOutput(&sum);
-		addOutput(&mean);
-		addOutput(&stdDev);
-		addOutput(&vMin);
-		addOutput(&vMax);
+		addOutput(nbElements);
+		addOutput(sum);
+		addOutput(mean);
+		addOutput(stdDev);
+		addOutput(vMin);
+		addOutput(vMax);
 	}
 
 	void update()
@@ -92,10 +92,10 @@ public:
 		, nbElements(initData(&nbElements, "# of elements", "Size of the list"))
 		, median(initData(&median, "median", "Median value of the list of reals"))
 	{
-		addInput(&input);
+		addInput(input);
 
-		addOutput(&nbElements);
-		addOutput(&median);
+		addOutput(nbElements);
+		addOutput(median);
 	}
 
 	void update()
@@ -137,9 +137,9 @@ public:
 		, m_input(initData(&m_input, "input", "List of reals to sum"))
 		, m_output(initData(&m_output, "output", "Accumulated sums"))
 	{
-		addInput(&m_input);
+		addInput(m_input);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 	}
 
 	void update()

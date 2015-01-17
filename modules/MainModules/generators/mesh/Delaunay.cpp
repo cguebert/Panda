@@ -41,9 +41,9 @@ public:
 		, vertices(initData(&vertices, "vertices", "Sites of the Delaunay triangulation"))
 		, mesh(initData(&mesh, "mesh", "Mesh created from the Delaunay triangulation"))
 	{
-		addInput(&vertices);
+		addInput(vertices);
 
-		addOutput(&mesh);
+		addOutput(mesh);
 	}
 
 	void update()

@@ -31,11 +31,11 @@ public:
 		, inputV(initData(&inputV, "input", "Input of the smooth step"))
 		, result(initData(&result, "result", "Result of the smooth step"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addInput(&inputV);
+		addInput(inputA);
+		addInput(inputB);
+		addInput(inputV);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	PReal smoothStep(PReal a, PReal b, PReal x)
@@ -93,8 +93,8 @@ public:
 		, input(initData(&input, "input", "Value to observe"))
 		, count(initData(&count, "count", "Count of rise transitions"))
 	{
-		addInput(&input);
-		addOutput(&count);
+		addInput(input);
+		addOutput(count);
 	}
 
 	void update()
@@ -151,8 +151,8 @@ public:
 		, input(initData(&input, "input", "Value to observe"))
 		, count(initData(&count, "count", "Count of fall transitions"))
 	{
-		addInput(&input);
-		addOutput(&count);
+		addInput(input);
+		addOutput(count);
 	}
 
 	void update()
@@ -211,11 +211,11 @@ public:
 		, inputV(initData(&inputV, "input", "Value to constrain"))
 		, result(initData(&result, "result", "Result of the operation"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addInput(&inputV);
+		addInput(inputA);
+		addInput(inputB);
+		addInput(inputV);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	PReal constrain(PReal a, PReal b, PReal x)
@@ -274,11 +274,11 @@ public:
 		, inputV(initData(&inputV, "input", "Value to constrain"))
 		, result(initData(&result, "result", "Result of the operation"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addInput(&inputV);
+		addInput(inputA);
+		addInput(inputB);
+		addInput(inputV);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	int pulse(PReal a, PReal b, PReal x)
@@ -339,13 +339,13 @@ public:
 		, outputMax(initData(&outputMax, "oMax", "Upper bound of the value's target  range"))
 		, result(initData(&result, "result", "Result of the remap"))
 	{
-		addInput(&inputV);
-		addInput(&inputMin);
-		addInput(&inputMax);
-		addInput(&outputMin);
-		addInput(&outputMax);
+		addInput(inputV);
+		addInput(inputMin);
+		addInput(inputMax);
+		addInput(outputMin);
+		addInput(outputMax);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	PReal remap(PReal v, PReal iMin, PReal iMax, PReal oMin, PReal oMax)

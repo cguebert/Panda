@@ -17,10 +17,10 @@ public:
 		, m_fileName(initData(&m_fileName, "fileName", "Path of the image to load"))
 		, m_image(initData(&m_image, "image", "The image loaded from disk"))
 	{
-		addInput(&m_fileName);
+		addInput(m_fileName);
 		m_fileName.setWidget("open file");
 
-		addOutput(&m_image);
+		addOutput(m_image);
 	}
 
 	void update()

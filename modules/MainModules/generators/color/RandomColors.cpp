@@ -22,15 +22,15 @@ public:
 		, colorMax(initData(&colorMax, Color::white(), "max color", "Color defining the maximum possible value of each component"))
 		, colors(initData(&colors, "colors", "Randomly generated colors"))
 	{
-		addInput(&nbColors);
-		addInput(&seed);
-		addInput(&hsvMode);
-		addInput(&colorMin);
-		addInput(&colorMax);
+		addInput(nbColors);
+		addInput(seed);
+		addInput(hsvMode);
+		addInput(colorMin);
+		addInput(colorMax);
 
 		hsvMode.setWidget("checkbox");
 
-		addOutput(&colors);
+		addOutput(colors);
 
 		seed.setWidget("seed");
 		seed.setValue(rnd.getRandomSeed(10000));

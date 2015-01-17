@@ -39,9 +39,9 @@ public:
 		, sites(initData(&sites, "sites", "Sites of the Voronoi tessellation"))
 		, mesh(initData(&mesh, "mesh", "Mesh created from the Voronoi tessellation"))
 	{
-		addInput(&sites);
+		addInput(sites);
 
-		addOutput(&mesh);
+		addOutput(mesh);
 	}
 
 	void update()

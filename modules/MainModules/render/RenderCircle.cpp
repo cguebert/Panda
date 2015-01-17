@@ -28,11 +28,11 @@ public:
 		, color(initData(&color, "color", "Color of the circle"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&center);
-		addInput(&radius);
-		addInput(&lineWidth);
-		addInput(&color);
-		addInput(&shader);
+		addInput(center);
+		addInput(radius);
+		addInput(lineWidth);
+		addInput(color);
+		addInput(shader);
 
 		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);

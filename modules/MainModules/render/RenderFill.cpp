@@ -28,9 +28,9 @@ public:
 		, m_area(initData(&m_area, "area", "Area to paint the gradient in. If null, the render area is used instead"))
 		, m_shader(initData(&m_shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&m_gradient);
-		addInput(&m_area);
-		addInput(&m_shader);
+		addInput(m_gradient);
+		addInput(m_area);
+		addInput(m_shader);
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();
@@ -114,9 +114,9 @@ public:
 		, m_area(initData(&m_area, "area", "Area to paint the gradient in. If null, the render area is used instead"))
 		, m_shader(initData(&m_shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&gradient);
-		addInput(&m_area);
-		addInput(&m_shader);
+		addInput(gradient);
+		addInput(m_area);
+		addInput(m_shader);
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();
@@ -200,9 +200,9 @@ public:
 		, m_area(initData(&m_area, "area", "Area to paint the gradient in. If null, the render area is used instead"))
 		, m_shader(initData(&m_shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&texture);
-		addInput(&m_area);
-		addInput(&m_shader);
+		addInput(texture);
+		addInput(m_area);
+		addInput(m_shader);
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();

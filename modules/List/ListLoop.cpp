@@ -23,11 +23,11 @@ public:
 		, m_iteration(initData(&m_iteration, 0, "iteration", "Current iteration"))
 		, m_generic(initData(&m_generic, "input", "Connect here the lists to use in the loop"))
 	{
-		addInput(&m_control);
-		addInput(&m_condition);
-		addInput(&m_nbIterations);
-		addInput(&m_generic);
-		addOutput(&m_iteration);
+		addInput(m_control);
+		addInput(m_condition);
+		addInput(m_nbIterations);
+		addInput(m_generic);
+		addOutput(m_iteration);
 
 		m_condition.setWidget("checkbox");
 

@@ -21,12 +21,12 @@ public:
 		, bottom(initData(&bottom, "bottom", "Bottom boundary of the rectangle"))
 		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 4 reals"))
 	{
-		addInput(&left);
-		addInput(&top);
-		addInput(&right);
-		addInput(&bottom);
+		addInput(left);
+		addInput(top);
+		addInput(right);
+		addInput(bottom);
 
-		addOutput(&rectangle);
+		addOutput(rectangle);
 	}
 
 	void update()
@@ -70,10 +70,10 @@ public:
 		, size(initData(&size, "size", "Size of the rectangle"))
 		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
 	{
-		addInput(&center);
-		addInput(&size);
+		addInput(center);
+		addInput(size);
 
-		addOutput(&rectangle);
+		addOutput(rectangle);
 	}
 
 	void update()
@@ -122,10 +122,10 @@ public:
 		, bottomright(initData(&bottomright, "bottom-right", "Bottom right corner of the rectangle"))
 		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
 	{
-		addInput(&topleft);
-		addInput(&bottomright);
+		addInput(topleft);
+		addInput(bottomright);
 
-		addOutput(&rectangle);
+		addOutput(rectangle);
 	}
 
 	void update()
@@ -176,12 +176,12 @@ public:
 		, bottom(initData(&bottom, "bottom", "Bottom boundary of the rectangle"))
 		, rectangle(initData(&rectangle, "rectangle", "Rectangle from whith to extract the 4 reals"))
 	{
-		addInput(&rectangle);
+		addInput(rectangle);
 
-		addOutput(&left);
-		addOutput(&top);
-		addOutput(&right);
-		addOutput(&bottom);
+		addOutput(left);
+		addOutput(top);
+		addOutput(right);
+		addOutput(bottom);
 	}
 
 	void update()
@@ -231,10 +231,10 @@ public:
 		, size(initData(&size, "size", "Size of the rectangle"))
 		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
 	{
-		addInput(&rectangle);
+		addInput(rectangle);
 
-		addOutput(&center);
-		addOutput(&size);
+		addOutput(center);
+		addOutput(size);
 	}
 
 	void update()
@@ -278,10 +278,10 @@ public:
 		, bottomright(initData(&bottomright, "bottom-right", "Bottom right of the rectangle"))
 		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
 	{
-		addInput(&rectangle);
+		addInput(rectangle);
 
-		addOutput(&topleft);
-		addOutput(&bottomright);
+		addOutput(topleft);
+		addOutput(bottomright);
 	}
 
 	void update()

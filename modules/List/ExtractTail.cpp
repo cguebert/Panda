@@ -15,8 +15,8 @@ public:
 		, value(initData(&value, 1, "tail", "All items starting at this index will be extracted. If negative, extract this number of items instead."))
 		, generic(initData(&generic, "input", "Connect here the first list"))
 	{
-		addInput(&value);
-		addInput(&generic);
+		addInput(value);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);

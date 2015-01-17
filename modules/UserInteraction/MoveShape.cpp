@@ -23,9 +23,9 @@ public:
 		, m_radiuses(initData(&m_radiuses, "radius", "Radius of each disk"))
 		, m_counter(-1), m_currentSelection(-1)
 	{
-		addInput(&m_input);
-		addInput(&m_radiuses);
-		addOutput(&m_output);
+		addInput(m_input);
+		addInput(m_radiuses);
+		addOutput(m_output);
 	}
 
 	void reset()
@@ -130,8 +130,8 @@ public:
 		, m_output(initData(&m_output, "output", "Output rectangles"))
 		, m_counter(-1), m_currentSelection(-1)
 	{
-		addInput(&m_input);
-		addOutput(&m_output);
+		addInput(m_input);
+		addOutput(m_output);
 	}
 
 	void reset()

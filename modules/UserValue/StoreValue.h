@@ -25,9 +25,9 @@ public:
 		, singleValue(initData(&singleValue, 1, "single value", "If false save all the values during the animation"))
 		, saveTimer(nullptr)
 	{
-		addInput(&input);
-		addInput(&fileName);
-		addInput(&singleValue);
+		addInput(input);
+		addInput(fileName);
+		addInput(singleValue);
 
 		fileName.setWidget("save file");
 		singleValue.setWidget("checkbox");

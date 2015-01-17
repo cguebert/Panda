@@ -19,10 +19,10 @@ public:
 		, points(initData(&points, "points", "List of points to test"))
 		, indices(initData(&indices, "indices", "Indices of the triangles at the corresponding points"))
 	{
-		addInput(&mesh);
-		addInput(&points);
+		addInput(mesh);
+		addInput(points);
 
-		addOutput(&indices);
+		addOutput(indices);
 	}
 
 	void update()

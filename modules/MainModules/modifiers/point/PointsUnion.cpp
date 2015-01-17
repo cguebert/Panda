@@ -21,11 +21,11 @@ public:
 		, outputPoints(initData(&outputPoints, "output", "List of valid points" ))
 		, outputIndices(initData(&outputIndices, "indices", "Indices of the valid points"))
 	{
-		addInput(&image);
-		addInput(&inputPoints);
+		addInput(image);
+		addInput(inputPoints);
 
-		addOutput(&outputPoints);
-		addOutput(&outputIndices);
+		addOutput(outputPoints);
+		addOutput(outputIndices);
 	}
 
 	void update()

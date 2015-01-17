@@ -21,8 +21,8 @@ public:
 		, m_accumulate(initData(&m_accumulate, "accumulate", "If true, keep previous clics"))
 		, m_clics(initData(&m_clics, "position", "Position of the mouse clic"))
 	{
-		addInput(&m_accumulate);
-		addOutput(&m_clics);
+		addInput(m_accumulate);
+		addOutput(m_clics);
 
 		m_accumulate.setWidget("checkbox");
 	}
@@ -82,8 +82,8 @@ public:
 		, m_accumulate(initData(&m_accumulate, "accumulate", "If true, keep previous double clics"))
 		, m_clics(initData(&m_clics, "position", "Position of the mouse double clic"))
 	{
-		addInput(&m_accumulate);
-		addOutput(&m_clics);
+		addInput(m_accumulate);
+		addOutput(m_clics);
 
 		m_accumulate.setWidget("checkbox");
 

@@ -19,8 +19,8 @@ public:
 		, progress(initData(&progress, "progress", "Position inside the animation"))
 		, generic(initData(&generic, "input", "Connect here the animations to get the values from"))
 	{
-		addInput(&progress);
-		addInput(&generic);
+		addInput(progress);
+		addInput(generic);
 
 		progress.getAccessor().push_back(0.0);
 

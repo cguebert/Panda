@@ -17,7 +17,7 @@ public:
 		: ParticleEffector(doc)
 		, force(initData(&force, "force", "Force to apply to the particles"))
 	{
-		addInput(&force);
+		addInput(force);
 	}
 
 	void accumulateForces(Particles& particles)
@@ -46,8 +46,8 @@ public:
 		, force(initData(&force, "force", "Force to apply to the particles"))
 		, box(initData(&box, "box", "Area in which particles are affected by the force"))
 	{
-		addInput(&force);
-		addInput(&box);
+		addInput(force);
+		addInput(box);
 	}
 
 	void accumulateForces(Particles& particles)
@@ -94,9 +94,9 @@ public:
 		, center(initData(&center, "center", "Center of the circle in which particles are affected by the force"))
 		, radius(initData(&radius, "radius", "Radius of the circle in which particles are affected by the force"))
 	{
-		addInput(&force);
-		addInput(&center);
-		addInput(&radius);
+		addInput(force);
+		addInput(center);
+		addInput(radius);
 	}
 
 	void accumulateForces(Particles& particles)
@@ -149,10 +149,10 @@ public:
 		, radius(initData(&radius, "radius", "Radius of the circle in which particles are attracted"))
 		, linear(initData(&linear, 1, "linear", "How the force change depending on the distance to the center: true = linear law, false = quadratic"))
 	{
-		addInput(&force);
-		addInput(&center);
-		addInput(&radius);
-		addInput(&linear);
+		addInput(force);
+		addInput(center);
+		addInput(radius);
+		addInput(linear);
 
 		linear.setWidget("checkbox");
 	}

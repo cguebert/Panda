@@ -20,10 +20,10 @@ public:
 		, gradients(initData(&gradients, "output", "Generated gradient"))
 		, generic(initData(&generic, "input", "Connect here the colors to add to the gradient"))
 	{
-		addInput(&nbGradients);
-		addInput(&generic);
+		addInput(nbGradients);
+		addInput(generic);
 
-		addOutput(&gradients);
+		addOutput(gradients);
 
 		GenericDataDefinitionList defList;
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<Color>()),

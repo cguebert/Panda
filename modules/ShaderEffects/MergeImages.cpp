@@ -24,11 +24,11 @@ public:
 		, m_output(initData(&m_output, "output", "The combined image"))
 		, m_compositionMode(initData(&m_compositionMode, 0, "composition mode", "Defines how the 2 images are merged"))
 	{
-		addInput(&m_input1);
-		addInput(&m_input2);
-		addInput(&m_compositionMode);
+		addInput(m_input1);
+		addInput(m_input2);
+		addInput(m_compositionMode);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 
 		// 24 possible modes
 		m_compositionMode.setWidget("enum");

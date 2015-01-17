@@ -32,11 +32,11 @@ public:
 		, color(initData(&color, "color", "Color of the line"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addInput(&width);
-		addInput(&color);
-		addInput(&shader);
+		addInput(inputA);
+		addInput(inputB);
+		addInput(width);
+		addInput(color);
+		addInput(shader);
 
 		color.getAccessor().push_back(Color::black());
 
@@ -138,10 +138,10 @@ public:
 		, color(initData(&color, "color", "Color of the line"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&input);
-		addInput(&lineWidth);
-		addInput(&color);
-		addInput(&shader);
+		addInput(input);
+		addInput(lineWidth);
+		addInput(color);
+		addInput(shader);
 
 		color.getAccessor().push_back(Color::black());
 		lineWidth.getAccessor().push_back(0.0);
@@ -223,10 +223,10 @@ public:
 		, gradient(initData(&gradient, "gradient", "Gradient applied to the line"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&input);
-		addInput(&lineWidth);
-		addInput(&gradient);
-		addInput(&shader);
+		addInput(input);
+		addInput(lineWidth);
+		addInput(gradient);
+		addInput(shader);
 
 		gradient.getAccessor().push_back(Gradient::defaultGradient());
 		lineWidth.getAccessor().push_back(0.0);

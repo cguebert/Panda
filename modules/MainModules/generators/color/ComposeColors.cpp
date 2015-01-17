@@ -21,14 +21,14 @@ public:
 		, A(initData(&A, "a", "Alpha component of the color"))
 		, color(initData(&color, "color", "Color created from the 4 components"))
 	{
-		addInput(&R);
-		addInput(&G);
-		addInput(&B);
-		addInput(&A);
+		addInput(R);
+		addInput(G);
+		addInput(B);
+		addInput(A);
 
 		A.getAccessor().push_back(1.0);
 
-		addOutput(&color);
+		addOutput(color);
 	}
 
 	void update()
@@ -87,12 +87,12 @@ public:
 		, A(initData(&A, "a", "Alpha component of the color"))
 		, color(initData(&color, "color", "Color created from the 4 components"))
 	{
-		addInput(&color);
+		addInput(color);
 
-		addOutput(&R);
-		addOutput(&G);
-		addOutput(&B);
-		addOutput(&A);
+		addOutput(R);
+		addOutput(G);
+		addOutput(B);
+		addOutput(A);
 	}
 
 	void update()
@@ -137,14 +137,14 @@ public:
 		, A(initData(&A, "a", "Alpha component of the color"))
 		, color(initData(&color, "color", "Color created from the 4 components"))
 	{
-		addInput(&H);
-		addInput(&S);
-		addInput(&V);
-		addInput(&A);
+		addInput(H);
+		addInput(S);
+		addInput(V);
+		addInput(A);
 
 		A.getAccessor().push_back(1.0);
 
-		addOutput(&color);
+		addOutput(color);
 	}
 
 	void update()
@@ -204,12 +204,12 @@ public:
 		, A(initData(&A, "a", "Alpha component of the color"))
 		, color(initData(&color, "color", "Color created from the 4 components"))
 	{
-		addInput(&color);
+		addInput(color);
 
-		addOutput(&H);
-		addOutput(&S);
-		addOutput(&V);
-		addOutput(&A);
+		addOutput(H);
+		addOutput(S);
+		addOutput(V);
+		addOutput(A);
 	}
 
 	void update()

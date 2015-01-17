@@ -18,7 +18,7 @@ public:
 		, m_currentRadius(-1)
 		, m_halfKernelSize(0)
 	{
-		addInput(&m_radius);
+		addInput(m_radius);
 
 		m_vertexShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Vertex);
 		m_vertexShader->compileSourceFile(":/shaders/PT_noColor_Tex.v.glsl");

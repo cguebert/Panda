@@ -18,16 +18,16 @@ public:
 		, value(initData(&value, 0, "value", "Value generated this time step"))
 		, prevSeed(-1)
 	{
-		addInput(&seed);
+		addInput(seed);
 
-		addOutput(&value);
+		addOutput(value);
 
 		seed.setWidget("seed");
 		seed.setValue(helper::RandomGenerator::getRandomSeed(10000));
 
 		BaseData* docTime = doc->getData("time");
 		if(docTime)
-			addInput(docTime);
+			addInput(*docTime);
 
 		reset();
 	}

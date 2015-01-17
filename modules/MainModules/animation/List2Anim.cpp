@@ -21,10 +21,10 @@ public:
 		, extend(initData(&extend, 0, "extend", "What to do when a position is outside the boundaries"))
 		, generic(initData(&generic, "input", "Connect here the lists of values"))
 	{
-		addInput(&keys);
-		addInput(&interpolation);
-		addInput(&extend);
-		addInput(&generic);
+		addInput(keys);
+		addInput(interpolation);
+		addInput(extend);
+		addInput(generic);
 
 		interpolation.setWidget("enum");
 		interpolation.setWidgetData("Linear"
@@ -101,7 +101,7 @@ public:
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the animations to get the values from"))
 	{
-		addInput(&generic);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected

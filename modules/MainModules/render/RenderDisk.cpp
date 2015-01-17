@@ -33,10 +33,10 @@ public:
 		, color(initData(&color, "color", "Color of the plain disk"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&center);
-		addInput(&radius);
-		addInput(&color);
-		addInput(&shader);
+		addInput(center);
+		addInput(radius);
+		addInput(color);
+		addInput(shader);
 
 		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
@@ -161,10 +161,10 @@ public:
 		, gradient(initData(&gradient, "gradient", "Gradient used to fill the disk"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&center);
-		addInput(&radius);
-		addInput(&gradient);
-		addInput(&shader);
+		addInput(center);
+		addInput(radius);
+		addInput(gradient);
+		addInput(shader);
 
 		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);
@@ -333,10 +333,10 @@ public:
 		, texture(initData(&texture, "texture", "Texture applied to the disk"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&center);
-		addInput(&radius);
-		addInput(&texture);
-		addInput(&shader);
+		addInput(center);
+		addInput(radius);
+		addInput(texture);
+		addInput(shader);
 
 		center.getAccessor().push_back(Point(100, 100));
 		radius.getAccessor().push_back(5.0);

@@ -17,7 +17,7 @@ public:
 	{
 		m_singleOutput = true;
 
-		addInput(&generic);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);

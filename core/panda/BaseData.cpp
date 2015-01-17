@@ -93,14 +93,14 @@ void BaseData::setParent(BaseData* parent)
 		for(DataNode* node : m_inputs)
 		{
 			if(!dynamic_cast<PandaObject*>(node))
-				removeInput(node);
+				removeInput(*node);
 		}
 
 		if(parent && !validParent(parent))
 			return;
 
 		m_parentBaseData = parent;
-		addInput(parent);
+		addInput(*parent);
 		BaseData::setDirtyValue(parent);
 		++m_counter;
 		m_isValueSet = true;
@@ -109,7 +109,7 @@ void BaseData::setParent(BaseData* parent)
 	{
 		m_parentBaseData = nullptr;
 		while(!m_inputs.empty())
-			removeInput(m_inputs.front());
+			removeInput(*m_inputs.front());
 	}
 
 	m_setParentProtection = false;
@@ -147,36 +147,36 @@ void BaseData::load(QDomElement& elem)
 		setWidgetData(d);
 }
 
-void BaseData::doAddInput(DataNode* node)
+void BaseData::doAddInput(DataNode& node)
 {
-	if(dynamic_cast<PandaObject*>(node))
+	if(dynamic_cast<PandaObject*>(&node))
 		m_output = true;
 	DataNode::doAddInput(node);
 }
 
-void BaseData::doRemoveInput(DataNode* node)
+void BaseData::doRemoveInput(DataNode& node)
 {
 	DataNode::doRemoveInput(node);
-	if(m_parentBaseData == node)
+	if(m_parentBaseData == &node)
 	{
 		if(m_owner && !m_setParentProtection)
 			m_owner->dataSetParent(this, nullptr);
 	}
-	else if(dynamic_cast<PandaObject*>(node))
+	else if(dynamic_cast<PandaObject*>(&node))
 		m_output = false;
 }
 
-void BaseData::doAddOutput(DataNode* node)
+void BaseData::doAddOutput(DataNode& node)
 {
-	if(dynamic_cast<PandaObject*>(node))
+	if(dynamic_cast<PandaObject*>(&node))
 		m_input = true;
 	DataNode::doAddOutput(node);
 }
 
-void BaseData::doRemoveOutput(DataNode* node)
+void BaseData::doRemoveOutput(DataNode& node)
 {
 	DataNode::doRemoveOutput(node);
-	if(dynamic_cast<PandaObject*>(node))
+	if(dynamic_cast<PandaObject*>(&node))
 		m_input = false;
 }
 

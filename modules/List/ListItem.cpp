@@ -15,8 +15,8 @@ public:
 		, indexData(initData(&indexData, "index", "0-based index of the items to extract from the lists"))
 		, generic(initData(&generic, "input", "Connect here the lists to get the items from"))
 	{
-		addInput(&indexData);
-		addInput(&generic);
+		addInput(indexData);
+		addInput(generic);
 
 		indexData.getAccessor().push_back(0);
 

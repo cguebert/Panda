@@ -52,7 +52,7 @@ public:
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the lists to get the items from"))
 	{
-		addInput(&generic);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		int listType = DataTypeId::getFullTypeOfVector(0);

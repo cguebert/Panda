@@ -28,9 +28,9 @@ public:
 		, color(initData(&color, "color", "Color of the points"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&mesh);
-		addInput(&color);
-		addInput(&shader);
+		addInput(mesh);
+		addInput(color);
+		addInput(shader);
 
 		color.getAccessor().push_back(Color::black());
 
@@ -96,10 +96,10 @@ public:
 		, texture(initData(&texture, "texture", "Texture applied to the mesh"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&mesh);
-		addInput(&uvCoords);
-		addInput(&texture);
-		addInput(&shader);
+		addInput(mesh);
+		addInput(uvCoords);
+		addInput(texture);
+		addInput(shader);
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();

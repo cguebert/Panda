@@ -22,7 +22,7 @@ public:
 		, index(initData(&index, 0, "index", "0-based index of the current iteration"))
 		, nbIterations(initData(&nbIterations, 1, "# iterations", "Number of times the objects have to be rendered"))
 	{
-		addInput(&nbIterations);
+		addInput(nbIterations);
 
 		index.setOutput(true); // But not really connecting
 		index.setReadOnly(true);

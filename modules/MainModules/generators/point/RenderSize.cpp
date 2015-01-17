@@ -16,11 +16,11 @@ public:
 		: PandaObject(doc)
 		, renderSize(initData(&renderSize, "size", "Dimensions of the render"))
 	{
-		addOutput(&renderSize);
+		addOutput(renderSize);
 
 		// Connect only 1 input, otherwise update is called twice and movement can't be computed correctly
 		BaseData* data = doc->getData("render size");
-		if(data) addInput(data);
+		if(data) addInput(*data);
 	}
 
 	void update()
@@ -47,11 +47,11 @@ public:
 		: PandaObject(doc)
 		, renderArea(initData(&renderArea, "area", "Area used by the render"))
 	{
-		addOutput(&renderArea);
+		addOutput(renderArea);
 
 		// Connect only 1 input, otherwise update is called twice and movement can't be computed correctly
 		BaseData* data = doc->getData("render size");
-		if(data) addInput(data);
+		if(data) addInput(*data);
 	}
 
 	void update()

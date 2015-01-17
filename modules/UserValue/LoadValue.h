@@ -15,10 +15,10 @@ public:
 		, m_output(initData(&m_output, "output", "The loaded value"))
 		, m_fileName(initData(&m_fileName, "file name", "File where to read the value"))
 	{
-		addInput(&m_fileName);
+		addInput(m_fileName);
 		m_fileName.setWidget("open file");
 
-		addOutput(&m_output);
+		addOutput(m_output);
 	}
 
 	void reset()

@@ -24,10 +24,10 @@ public:
 		, rectangle(initData(&rectangle, "rectangle", "Region to extract from the image"))
 		, result(initData(&result, "result", "Image created by the operation"))
 	{
-		addInput(&image);
-		addInput(&rectangle);
+		addInput(image);
+		addInput(rectangle);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()

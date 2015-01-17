@@ -15,8 +15,8 @@ public:
 		, source(initData(&source, 4, "source", "Source blending mode"))
 		, destination(initData(&destination, 6, "destination", "Destination blending mode"))
 	{
-		addInput(&source);
-		addInput(&destination);
+		addInput(source);
+		addInput(destination);
 
 		source.setWidget("enum");
 		source.setWidgetData("Zero;One;Source Color;One Minus Source Color"

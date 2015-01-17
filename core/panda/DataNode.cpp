@@ -11,35 +11,35 @@ DataNode::DataNode()
 DataNode::~DataNode()
 {
 	for(DataNode* node : m_inputs)
-		node->doRemoveOutput(this);
+		node->doRemoveOutput(*this);
 	for(DataNode* node : m_outputs)
-		node->doRemoveInput(this);
+		node->doRemoveInput(*this);
 }
 
-void DataNode::addInput(DataNode* node)
+void DataNode::addInput(DataNode& node)
 {
 	doAddInput(node);
-	node->doAddOutput(this);
-	setDirtyValue(node);
+	node.doAddOutput(*this);
+	setDirtyValue(&node);
 }
 
-void DataNode::removeInput(DataNode* node)
+void DataNode::removeInput(DataNode& node)
 {
 	doRemoveInput(node);
-	node->doRemoveOutput(this);
+	node.doRemoveOutput(*this);
 }
 
-void DataNode::addOutput(DataNode* node)
+void DataNode::addOutput(DataNode& node)
 {
 	doAddOutput(node);
-	node->doAddInput(this);
-	node->setDirtyValue(this);
+	node.doAddInput(*this);
+	node.setDirtyValue(this);
 }
 
-void DataNode::removeOutput(DataNode* node)
+void DataNode::removeOutput(DataNode& node)
 {
 	doRemoveOutput(node);
-	node->doRemoveInput(this);
+	node.doRemoveInput(*this);
 }
 
 } // namespace panda

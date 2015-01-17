@@ -22,7 +22,7 @@ public:
 
 	virtual void update() {}
 	virtual void setDirtyValue(const panda::DataNode* caller);
-	virtual void doRemoveInput(panda::DataNode* node);
+	virtual void doRemoveInput(panda::DataNode& node) override;
 
 signals:
 	void closeViewport(ImageViewport* viewport);

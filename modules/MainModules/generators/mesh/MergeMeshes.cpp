@@ -29,10 +29,10 @@ public:
 		, threshold(initData(&threshold, (PReal)0.1, "threshold", "Distance under which 2 points are considered the same"))
 		, output(initData(&output, "output", "Merged mesh"))
 	{
-		addInput(&inputs);
-		addInput(&threshold);
+		addInput(inputs);
+		addInput(threshold);
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()

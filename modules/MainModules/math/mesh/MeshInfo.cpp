@@ -20,11 +20,11 @@ public:
 		, nbEdges(initData(&nbEdges, "nb edges", "Number of edges in the mesh"))
 		, nbTriangles(initData(&nbTriangles, "nb triangles", "Number of triangles in the mesh"))
 	{
-		addInput(&mesh);
+		addInput(mesh);
 
-		addOutput(&nbPoints);
-		addOutput(&nbEdges);
-		addOutput(&nbTriangles);
+		addOutput(nbPoints);
+		addOutput(nbEdges);
+		addOutput(nbTriangles);
 	}
 
 	void update()

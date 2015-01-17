@@ -32,11 +32,11 @@ public:
 		, texture(initData(&texture, "texture", "Texture of the sprite"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&position);
-		addInput(&size);
-		addInput(&color);
-		addInput(&texture);
-		addInput(&shader);
+		addInput(position);
+		addInput(size);
+		addInput(color);
+		addInput(texture);
+		addInput(shader);
 
 		position.getAccessor().push_back(Point(100, 100));
 		size.getAccessor().push_back(5.0);

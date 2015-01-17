@@ -20,10 +20,10 @@ public:
 		, triangles(initData(&triangles, "input", "Triangles indices to test"))
 		, neighbors(initData(&neighbors, "neighbors", "Indices of the triangles, neighbors of the input"))
 	{
-		addInput(&mesh);
-		addInput(&triangles);
+		addInput(mesh);
+		addInput(triangles);
 
-		addOutput(&neighbors);
+		addOutput(neighbors);
 	}
 
 	void update()
@@ -68,10 +68,10 @@ public:
 		, triangles(initData(&triangles, "input", "Triangles indices to test"))
 		, connected(initData(&connected, "connected", "Indices of the triangles connected to the input"))
 	{
-		addInput(&mesh);
-		addInput(&triangles);
+		addInput(mesh);
+		addInput(triangles);
 
-		addOutput(&connected);
+		addOutput(connected);
 	}
 
 	void update()
@@ -116,9 +116,9 @@ public:
 		, input(initData(&input, "input", "Input mesh"))
 		, outputs(initData(&outputs, "output", "List of separated meshes"))
 	{
-		addInput(&input);
+		addInput(input);
 
-		addOutput(&outputs);
+		addOutput(outputs);
 	}
 
 	void update()

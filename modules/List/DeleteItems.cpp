@@ -16,8 +16,8 @@ public:
 		, indices(initData(&indices, "indices", "Indices of items to be removed from the list"))
 		, generic(initData(&generic, "input", "Connect here the list"))
 	{
-		addInput(&indices);
-		addInput(&generic);
+		addInput(indices);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);

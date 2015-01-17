@@ -64,7 +64,7 @@ public:
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the lists in which to remove duplicates"))
 	{
-		addInput(&generic);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);

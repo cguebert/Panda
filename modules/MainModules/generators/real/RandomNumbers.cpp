@@ -18,12 +18,12 @@ public:
 		, numMax(initData(&numMax, (PReal)1.0, "maximum", "Maximum limit of the numbers"))
 		, numbers(initData(&numbers, "numbers", "The list of numbers" ))
 	{
-		addInput(&nbNumbers);
-		addInput(&seed);
-		addInput(&numMin);
-		addInput(&numMax);
+		addInput(nbNumbers);
+		addInput(seed);
+		addInput(numMin);
+		addInput(numMax);
 
-		addOutput(&numbers);
+		addOutput(numbers);
 
 		seed.setWidget("seed");
 		seed.setValue(rnd.getRandomSeed(10000));

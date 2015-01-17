@@ -26,9 +26,9 @@ public:
 		, color(initData(&color, "color", "Color of the triangle"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&mesh);
-		addInput(&color);
-		addInput(&shader);
+		addInput(mesh);
+		addInput(color);
+		addInput(shader);
 
 		color.getAccessor().push_back(Color::black());
 

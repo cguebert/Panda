@@ -16,8 +16,8 @@ public:
 		, position(initData(&position, "position", "Where to place new particles"))
 		, velocity(initData(&velocity, "velocity", "Initial velocity of the particles"))
 	{
-		addInput(&position);
-		addInput(&velocity);
+		addInput(position);
+		addInput(velocity);
 	}
 
 	virtual Particles createParticles()

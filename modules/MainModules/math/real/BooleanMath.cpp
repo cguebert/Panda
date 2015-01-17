@@ -16,9 +16,9 @@ public:
 		, inputB(initData(&inputB, "inputB", "Second input"))
 		, result(initData(&result, "result", "Result of the comparison"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addOutput(&result);
+		addInput(inputA);
+		addInput(inputB);
+		addOutput(result);
 	}
 
 	void update()
@@ -67,9 +67,9 @@ public:
 		, inputB(initData(&inputB, "inputB", "Second input"))
 		, result(initData(&result, "result", "Result of the comparison"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addOutput(&result);
+		addInput(inputA);
+		addInput(inputB);
+		addOutput(result);
 	}
 
 	void update()
@@ -118,9 +118,9 @@ public:
 		, inputB(initData(&inputB, "inputB", "Second input"))
 		, result(initData(&result, "result", "Result of the OR operation"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addOutput(&result);
+		addInput(inputA);
+		addInput(inputB);
+		addOutput(result);
 	}
 
 	void update()
@@ -168,9 +168,9 @@ public:
 		, inputB(initData(&inputB, "inputB", "Second input"))
 		, result(initData(&result, "result", "Result of the AND operation"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addOutput(&result);
+		addInput(inputA);
+		addInput(inputB);
+		addOutput(result);
 	}
 
 	void update()
@@ -218,9 +218,9 @@ public:
 		, inputB(initData(&inputB, "inputB", "Second input"))
 		, result(initData(&result, "result", "Result of the XOR operation"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
-		addOutput(&result);
+		addInput(inputA);
+		addInput(inputB);
+		addOutput(result);
 	}
 
 	void update()
@@ -268,8 +268,8 @@ public:
 		, input(initData(&input, "input", "Input"))
 		, result(initData(&result, "result", "Negation of the input"))
 	{
-		addInput(&input);
-		addOutput(&result);
+		addInput(input);
+		addOutput(result);
 	}
 
 	void update()

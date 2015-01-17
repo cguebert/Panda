@@ -18,10 +18,10 @@ public:
 		, influenceDist(initData(&influenceDist, (PReal)20, "distance", "Threshold distance from the line below which particles are repulsed"))
 		, bothSides(initData(&bothSides, 1, "both sides", "If true, apply repulsion forces on both sides of the line"))
 	{
-		addInput(&lines);
-		addInput(&repulsionForce);
-		addInput(&influenceDist);
-		addInput(&bothSides);
+		addInput(lines);
+		addInput(repulsionForce);
+		addInput(influenceDist);
+		addInput(bothSides);
 
 		bothSides.setWidget("checkbox");
 	}

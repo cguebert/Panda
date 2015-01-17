@@ -21,10 +21,10 @@ public:
 		, inputB(initData(&inputB, "point 2", "Second point"))
 		, result(initData(&result, "result", "Result of the addition of the 2 points"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
+		addInput(inputA);
+		addInput(inputB);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -69,10 +69,10 @@ public:
 		, inputB(initData(&inputB, "point 2", "Second point"))
 		, result(initData(&result, "result", "Result of the substraction"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
+		addInput(inputA);
+		addInput(inputB);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -117,12 +117,12 @@ public:
 		, result(initData(&result, "result", "Result of the multiplication of the point by the real"))
 		, factor(initData(&factor, "factor", "Real by which to multiply the point"))
 	{
-		addInput(&input);
-		addInput(&factor);
+		addInput(input);
+		addInput(factor);
 
 		factor.getAccessor().push_back(1.0);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -168,12 +168,12 @@ public:
 		, result(initData(&result, "result", "Result of the multiplication of the point by the real"))
 		, factor(initData(&factor, "factor", "Real by which to divide the point"))
 	{
-		addInput(&input);
-		addInput(&factor);
+		addInput(input);
+		addInput(factor);
 
 		factor.getAccessor().push_back(1.0);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -219,10 +219,10 @@ public:
 		, inputB(initData(&inputB, "point 2", "Second point"))
 		, result(initData(&result, "distance", "Distance between the 2 points"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
+		addInput(inputA);
+		addInput(inputB);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -269,11 +269,11 @@ public:
 		, center(initData(&center, "center", "Center of the rotation"))
 		, angle(initData(&angle, "angle", "Angle of the rotation"))
 	{
-		addInput(&input);
-		addInput(&center);
-		addInput(&angle);
+		addInput(input);
+		addInput(center);
+		addInput(angle);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -337,9 +337,9 @@ public:
 		, vector(initData(&vector, "vector", "Vector to analyse"))
 		, angle(initData(&angle, "angle", "Angle of the vector"))
 	{
-		addInput(&vector);
+		addInput(vector);
 
-		addOutput(&angle);
+		addOutput(angle);
 	}
 
 	void update()
@@ -386,9 +386,9 @@ public:
 		, angle(initData(&angle, "angle", "Angle of the vector"))
 		, vector(initData(&vector, "vector", "Vector corresponding to the angle"))
 	{
-		addInput(&angle);
+		addInput(angle);
 
-		addOutput(&vector);
+		addOutput(vector);
 	}
 
 	void update()
@@ -432,9 +432,9 @@ public:
 		, input(initData(&input, "input", "Input point"))
 		, output(initData(&output, "output", "Norm of the input point"))
 	{
-		addInput(&input);
+		addInput(input);
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()
@@ -474,9 +474,9 @@ public:
 		, input(initData(&input, "input", "Input point"))
 		, output(initData(&output, "output", "Square of the norm of the input point"))
 	{
-		addInput(&input);
+		addInput(input);
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()
@@ -516,9 +516,9 @@ public:
 		, input(initData(&input, "input", "Input point"))
 		, output(initData(&output, "output", "Square of the norm of the input point"))
 	{
-		addInput(&input);
+		addInput(input);
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()
@@ -558,10 +558,10 @@ public:
 		, inputB(initData(&inputB, "point 2", "Second point"))
 		, result(initData(&result, "result", "Result of the linear product"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
+		addInput(inputA);
+		addInput(inputB);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -606,10 +606,10 @@ public:
 		, inputB(initData(&inputB, "point 2", "Second point"))
 		, result(initData(&result, "result", "Result of the linear division"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
+		addInput(inputA);
+		addInput(inputB);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()

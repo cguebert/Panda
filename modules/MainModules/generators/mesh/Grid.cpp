@@ -24,11 +24,11 @@ public:
 		, nbY(initData(&nbY, 5, "nbY", "Number of cells vertically"))
 		, mesh(initData(&mesh, "mesh", "Mesh created"))
 	{
-		addInput(&area);
-		addInput(&nbX);
-		addInput(&nbY);
+		addInput(area);
+		addInput(nbX);
+		addInput(nbY);
 
-		addOutput(&mesh);
+		addOutput(mesh);
 	}
 
 	void update()

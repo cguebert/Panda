@@ -16,7 +16,7 @@ public:
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the lists in which to look for the values"))
 	{
-		addInput(&generic);
+		addInput(generic);
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;

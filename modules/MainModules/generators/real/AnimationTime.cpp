@@ -14,12 +14,12 @@ public:
 		, animTime(initData(&animTime, (PReal)0.0, "time", "Current time of the animation"))
 		, timeStep(initData(&timeStep, (PReal)0.0, "timestep", "Duration between 2 consecutive timesteps"))
 	{
-		addOutput(&animTime);
-		addOutput(&timeStep);
+		addOutput(animTime);
+		addOutput(timeStep);
 
 		BaseData* docTime = doc->getData("time");
 		if(docTime)
-			addInput(docTime);
+			addInput(*docTime);
 	}
 
 	void update()

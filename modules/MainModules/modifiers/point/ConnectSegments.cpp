@@ -25,10 +25,10 @@ public:
 		, output(initData(&output, "output", "List of connected points" ))
 		, required(initData(&required, "required", "If possible, the line must go though these points"))
 	{
-		addInput(&input);
-		addInput(&required);
+		addInput(input);
+		addInput(required);
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()

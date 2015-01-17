@@ -18,9 +18,9 @@ public:
 		, image(initData(&image, "image", "Image to analyse"))
 		, size(initData(&size, "size", "size of the image"))
 	{
-		addInput(&image);
+		addInput(image);
 
-		addOutput(&size);
+		addOutput(size);
 	}
 
 	void update()

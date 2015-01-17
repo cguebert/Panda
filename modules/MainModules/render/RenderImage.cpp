@@ -28,11 +28,11 @@ public:
 		, drawCentered(initData(&drawCentered, 0, "drawCentered", "If non zero use the center of the image, else use the top-left corner"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&image);
-		addInput(&center);
-		addInput(&rotation);
-		addInput(&drawCentered);
-		addInput(&shader);
+		addInput(image);
+		addInput(center);
+		addInput(rotation);
+		addInput(drawCentered);
+		addInput(shader);
 
 		drawCentered.setWidget("checkbox");
 

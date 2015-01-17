@@ -18,9 +18,9 @@ public:
 		, m_movement(initData(&m_movement, "movement", "Movement of the mouse from the last timestep"))
 		, m_clickState(initData(&m_clickState, 0, "click", "1 if the mouse button is pressed"))
 	{
-		addOutput(&m_position);
-		addOutput(&m_movement);
-		addOutput(&m_clickState);
+		addOutput(m_position);
+		addOutput(m_movement);
+		addOutput(m_clickState);
 
 		m_clickState.setWidget("checkbox");
 	}

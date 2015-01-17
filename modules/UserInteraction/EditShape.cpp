@@ -25,11 +25,11 @@ public:
 		, m_cornerHandles(initData(&m_cornerHandles, "corner", "Corner handles"))
 		, m_counter(-1), m_currentSelection(-1)
 	{
-		addInput(&m_input);
-		addInput(&m_handleRadius);
-		addOutput(&m_output);
-		addOutput(&m_centerHandles);
-		addOutput(&m_cornerHandles);
+		addInput(m_input);
+		addInput(m_handleRadius);
+		addOutput(m_output);
+		addOutput(m_centerHandles);
+		addOutput(m_cornerHandles);
 	}
 
 	void reset()

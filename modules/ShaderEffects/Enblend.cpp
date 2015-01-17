@@ -22,10 +22,10 @@ public:
 		, m_output(initData(&m_output, "output", "Image created by the operation"))
 		, m_levels(initData(&m_levels, 4, "levels", "Number of levels to use"))
 	{
-		addInput(&m_input);
-		addInput(&m_levels);
+		addInput(m_input);
+		addInput(m_levels);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 	}
 
 	void update()

@@ -23,13 +23,13 @@ public:
 		, m_nbPoints(initData(&m_nbPoints, 10, "# points", "Number of points generated"))
 		, m_area(initData(&m_area, "area", "Where to create the points. If null, the render area is used instead"))
 	{
-		addInput(&m_seed);
-		addInput(&minimumDistance);
-		addInput(&m_samples);
-		addInput(&m_area);
+		addInput(m_seed);
+		addInput(minimumDistance);
+		addInput(m_samples);
+		addInput(m_area);
 
-		addOutput(&m_points);
-		addOutput(&m_nbPoints);
+		addOutput(m_points);
+		addOutput(m_nbPoints);
 
 		m_seed.setWidget("seed");
 		m_seed.setValue(m_rnd.getRandomSeed(10000));

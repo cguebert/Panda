@@ -28,10 +28,10 @@ public:
 		, color(initData(&color, "color", "Color of the rectangle"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&rect);
-		addInput(&lineWidth);
-		addInput(&color);
-		addInput(&shader);
+		addInput(rect);
+		addInput(lineWidth);
+		addInput(color);
+		addInput(shader);
 
 		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
 		color.getAccessor().push_back(Color::black());
@@ -116,9 +116,9 @@ public:
 		, color(initData(&color, "color", "Color of the rectangle"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&rect);
-		addInput(&color);
-		addInput(&shader);
+		addInput(rect);
+		addInput(color);
+		addInput(shader);
 
 		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
 		color.getAccessor().push_back(Color::black());
@@ -211,9 +211,9 @@ public:
 		, texture(initData(&texture, "texture", "Texture to apply to the rectangle"))
 		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
 	{
-		addInput(&rect);
-		addInput(&texture);
-		addInput(&shader);
+		addInput(rect);
+		addInput(texture);
+		addInput(shader);
 
 		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
 

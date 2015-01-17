@@ -22,9 +22,9 @@ public:
 		, m_selection(initData(&m_selection, "selected", "Selection status of each disk"))
 		, m_counter(-1)
 	{
-		addInput(&m_centers);
-		addInput(&m_radiuses);
-		addOutput(&m_selection);
+		addInput(m_centers);
+		addInput(m_radiuses);
+		addOutput(m_selection);
 	}
 
 	void reset()
@@ -105,8 +105,8 @@ public:
 		, m_selection(initData(&m_selection, "selected", "Selection status of each rectangle"))
 		, m_counter(-1)
 	{
-		addInput(&m_rectangles);
-		addOutput(&m_selection);
+		addInput(m_rectangles);
+		addOutput(m_selection);
 	}
 
 	void reset()

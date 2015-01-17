@@ -16,8 +16,8 @@ public:
 		, input(initData(&input, "input", "Operand of the operation"))
 		, result(initData(&result, "result", "Result of the operation"))
 	{
-		addInput(&input);
-		addOutput(&result);
+		addInput(input);
+		addOutput(result);
 	}
 
 	void update()
@@ -53,10 +53,10 @@ public:
 		, inputB(initData(&inputB, "input 2", "Second operand of the operation"))
 		, result(initData(&result, "result", "Result of the operation"))
 	{
-		addInput(&inputA);
-		addInput(&inputB);
+		addInput(inputA);
+		addInput(inputB);
 
-		addOutput(&result);
+		addOutput(result);
 	}
 
 	void update()
@@ -292,7 +292,7 @@ public:
 		: DoubleMath_1Value(doc)
 		, base(initData(&base, (PReal)10.0, "base", "Base of the logarithm"))
 	{
-		addInput(&base);
+		addInput(base);
 	}
 
 	virtual PReal compute(const PReal& val)

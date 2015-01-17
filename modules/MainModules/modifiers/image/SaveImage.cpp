@@ -22,8 +22,8 @@ public:
 		, image(initData(&image, "image", "The image to be saved"))
 		, inStep(false)
 	{
-		addInput(&image);
-		addInput(&fileName);
+		addInput(image);
+		addInput(fileName);
 		fileName.setWidget("save file");
 	}
 

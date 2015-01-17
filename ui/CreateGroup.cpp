@@ -171,7 +171,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 					{
 						createdData = duplicateData(group, data);
 						createdData->copyValueFrom(otherData);
-						group->addInput(createdData);
+						group->addInput(*createdData);
 						doc->addCommand(new LinkDatasCommand(createdData, otherData));
 						connectedInputDatas.insert(otherData, createdData);
 						createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, otherData)));
@@ -212,7 +212,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 							createdData->copyValueFrom(data);
 							createdData->setOutput(true);
 							group->dataSetParent(createdData, data);
-							group->addOutput(createdData);
+							group->addOutput(*createdData);
 							createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, data)));
 						}
 
@@ -240,7 +240,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				BaseData* createdData = duplicateData(group, inputData);
 				createdData->copyValueFrom(inputData);
 				createdData->setName(findAvailableDataName(group, caption, createdData));
-				group->addInput(createdData);
+				group->addInput(*createdData);
 				doc->addCommand(new LinkDatasCommand(inputData, createdData));
 				createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, inputData)));
 			}
@@ -263,7 +263,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				createdData->setName(findAvailableDataName(group, caption, createdData));
 				createdData->setOutput(true);
 				group->dataSetParent(createdData, outputData);
-				group->addOutput(createdData);
+				group->addOutput(*createdData);
 				createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, outputData)));
 			}
 		}

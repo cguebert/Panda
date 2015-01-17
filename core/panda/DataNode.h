@@ -17,10 +17,10 @@ public:
 	DataNode();
 	virtual ~DataNode();
 
-	virtual void addInput(DataNode* node);
-	virtual void removeInput(DataNode* node);
-	virtual void addOutput(DataNode* node);
-	virtual void removeOutput(DataNode* node);
+	virtual void addInput(DataNode& node);
+	virtual void removeInput(DataNode& node);
+	virtual void addOutput(DataNode& node);
+	virtual void removeOutput(DataNode& node);
 
 	const NodesList& getInputs() const;
 	const NodesList& getOutputs() const;
@@ -35,10 +35,10 @@ public:
 	virtual void setDirtyOutputs(); /// Propagate the change to all outputs
 	virtual void updateIfDirty() const;
 
-	virtual void doAddInput(DataNode* node);
-	virtual void doRemoveInput(DataNode* node);
-	virtual void doAddOutput(DataNode* node);
-	virtual void doRemoveOutput(DataNode* node);
+	virtual void doAddInput(DataNode& node);
+	virtual void doRemoveInput(DataNode& node);
+	virtual void doAddOutput(DataNode& node);
+	virtual void doRemoveOutput(DataNode& node);
 
 protected:
 	bool m_dirtyValue;
@@ -83,17 +83,17 @@ inline void DataNode::updateIfDirty() const
 		const_cast<DataNode*>(this)->update();
 }
 
-inline void DataNode::doAddInput(DataNode* node)
-{ m_inputs.push_back(node); }
+inline void DataNode::doAddInput(DataNode& node)
+{ m_inputs.push_back(&node); }
 
-inline void DataNode::doRemoveInput(DataNode* node)
-{ m_inputs.removeAll(node); }
+inline void DataNode::doRemoveInput(DataNode& node)
+{ m_inputs.removeAll(&node); }
 
-inline void DataNode::doAddOutput(DataNode* node)
-{ m_outputs.push_back(node); }
+inline void DataNode::doAddOutput(DataNode& node)
+{ m_outputs.push_back(&node); }
 
-inline void DataNode::doRemoveOutput(DataNode* node)
-{ m_outputs.removeAll(node); }
+inline void DataNode::doRemoveOutput(DataNode& node)
+{ m_outputs.removeAll(&node); }
 
 } // namespace panda
 

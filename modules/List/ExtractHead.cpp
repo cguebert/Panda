@@ -15,8 +15,8 @@ public:
 		, value(initData(&value, 1, "head", "This number of items will be extracted from the start of the list"))
 		, generic(initData(&generic, "input", "Connect here the first list"))
 	{
-		addInput(&value);
-		addInput(&generic);
+		addInput(value);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);

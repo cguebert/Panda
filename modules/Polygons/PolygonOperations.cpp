@@ -27,10 +27,10 @@ public:
 		, m_inputB(initData(&m_inputB, "input 2", "Second polygon"))
 		, m_output(initData(&m_output, "output", "Result of the operation"))
 	{
-		addInput(&m_inputA);
-		addInput(&m_inputB);
+		addInput(m_inputA);
+		addInput(m_inputB);
 
-		addOutput(&m_output);
+		addOutput(m_output);
 	}
 
 	void update()

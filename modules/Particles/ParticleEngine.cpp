@@ -26,13 +26,13 @@ ParticleEngine::ParticleEngine(PandaDocument *doc)
 	, accelerations(initData(&accelerations, "accelerations", "List of the particles' acceleration"))
 	, prevTime(0.0)
 {
-	addOutput(&positions);
-	addOutput(&velocities);
-	addOutput(&accelerations);
+	addOutput(positions);
+	addOutput(velocities);
+	addOutput(accelerations);
 
 	BaseData* docTime = doc->getData("time");
 	if(docTime)
-		addInput(docTime);
+		addInput(*docTime);
 }
 
 void ParticleEngine::reset()

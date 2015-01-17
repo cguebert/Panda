@@ -19,7 +19,7 @@ public:
 		: Renderer(parent)
 		, translation(initData(&translation, "translation", "Translation to apply for the next objects"))
 	{
-		addInput(&translation);
+		addInput(translation);
 	}
 
 	void render()
@@ -48,7 +48,7 @@ public:
 		: Renderer(parent)
 		, rotation(initData(&rotation, "rotation", "Rotation to apply for the next objects"))
 	{
-		addInput(&rotation);
+		addInput(rotation);
 	}
 
 	void render()
@@ -76,7 +76,7 @@ public:
 		: Renderer(parent)
 		, scale(initData(&scale, Point(1.0, 1.0), "scaling", "Scaling to apply for the next objects"))
 	{
-		addInput(&scale);
+		addInput(scale);
 	}
 
 	void render()

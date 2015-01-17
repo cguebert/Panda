@@ -20,11 +20,11 @@ public:
 		, outputPoints(initData(&outputPoints, "output", "List of valid points" ))
 		, outputIndices(initData(&outputIndices, "indices", "Indices of the valid points"))
 	{
-		addInput(&rectangle);
-		addInput(&inputPoints);
+		addInput(rectangle);
+		addInput(inputPoints);
 
-		addOutput(&outputPoints);
-		addOutput(&outputIndices);
+		addOutput(outputPoints);
+		addOutput(outputIndices);
 	}
 
 	void update()
@@ -74,12 +74,12 @@ public:
 		, outputPoints(initData(&outputPoints, "output", "List of valid points" ))
 		, outputIndices(initData(&outputIndices, "indices", "Indices of the valid points"))
 	{
-		addInput(&center);
-		addInput(&radius);
-		addInput(&inputPoints);
+		addInput(center);
+		addInput(radius);
+		addInput(inputPoints);
 
-		addOutput(&outputPoints);
-		addOutput(&outputIndices);
+		addOutput(outputPoints);
+		addOutput(outputIndices);
 	}
 
 	void update()

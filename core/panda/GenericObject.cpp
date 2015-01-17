@@ -104,13 +104,13 @@ BaseData* GenericObject::createDatas(int type, int index)
 
 		if(m_dataDefinitions[i].input)
 		{
-			addInput(data);
+			addInput(*data);
 			if(!firstInputData)
 				firstInputData = data;
 		}
 
 		if(m_dataDefinitions[i].output)
-			addOutput(data);
+			addOutput(*data);
 
 		createdDatasStruct->datas.push_back(dataPtr);
 		m_createdDatasMap.insert(data, createdDatasStruct);
@@ -406,13 +406,13 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 
 			if(m_dataDefinitions[i].input)
 			{
-				addInput(data);
+				addInput(*data);
 				if(!firstInputData)
 					firstInputData = data;
 			}
 
 			if(m_dataDefinitions[i].output)
-				addOutput(data);
+				addOutput(*data);
 
 			createdDatasStruct->datas.push_back(dataPtr);
 			m_createdDatasMap.insert(data, createdDatasStruct);

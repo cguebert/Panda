@@ -91,13 +91,13 @@ public:
 	void save(QDomDocument& doc, QDomElement& elem) const; /// Save the value of the Data in a Xml node
 	void load(QDomElement& elem); /// Load the value from Xml
 
-	void setDirtyValue(const DataNode* caller);
+	void setDirtyValue(const DataNode* caller) override;
 
 protected:
-	virtual void doAddInput(DataNode* node);
-	virtual void doRemoveInput(DataNode* node);
-	virtual void doAddOutput(DataNode* node);
-	virtual void doRemoveOutput(DataNode* node);
+	virtual void doAddInput(DataNode& node) override;
+	virtual void doRemoveInput(DataNode& node) override;
+	virtual void doAddOutput(DataNode& node) override;
+	virtual void doRemoveOutput(DataNode& node) override;
 
 	friend class VoidDataAccessor;
 	virtual void* beginVoidEdit() = 0;

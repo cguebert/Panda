@@ -25,9 +25,9 @@ public:
 		, m_innerPaths(initData(&m_innerPaths, "inner", "Input inner paths"))
 		, m_output(initData(&m_output, "polygon", "Output polygon"))
 	{
-		addInput(&m_contour);
-		addInput(&m_innerPaths);
-		addOutput(&m_output);
+		addInput(m_contour);
+		addInput(m_innerPaths);
+		addOutput(m_output);
 	}
 
 	void update()
@@ -60,9 +60,9 @@ public:
 		, m_contour(initData(&m_contour, "contour", "Output contour"))
 		, m_innerPaths(initData(&m_innerPaths, "inner", "Output inner paths"))
 	{
-		addInput(&m_input);
-		addOutput(&m_contour);
-		addOutput(&m_innerPaths);
+		addInput(m_input);
+		addOutput(m_contour);
+		addOutput(m_innerPaths);
 	}
 
 	void update()

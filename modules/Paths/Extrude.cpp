@@ -28,18 +28,18 @@ public:
 		, output(initData(&output, "output", "Mesh created from the extrusion"))
 		, coordUV(initData(&coordUV, "UV coords", "UV coords of the points in the mesh"))
 	{
-		addInput(&input);
-		addInput(&width);
-		addInput(&capStyle);
-		addInput(&joinStyle);
+		addInput(input);
+		addInput(width);
+		addInput(capStyle);
+		addInput(joinStyle);
 
 		capStyle.setWidget("enum");
 		capStyle.setWidgetData("Butt cap;Round cap;Square cap");
 		joinStyle.setWidget("enum");
 		joinStyle.setWidgetData("Miter join;Round join;Bevel join");
 
-		addOutput(&output);
-		addOutput(&coordUV);
+		addOutput(output);
+		addOutput(coordUV);
 
 		width.getAccessor()->add(0, 10.0);
 	}

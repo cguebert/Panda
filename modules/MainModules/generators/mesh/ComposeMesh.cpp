@@ -20,9 +20,9 @@ public:
 		, points(initData(&points, "points", "List of points forming the polygon"))
 		, mesh(initData(&mesh, "mesh", "Mesh created from the list of points"))
 	{
-		addInput(&points);
+		addInput(points);
 
-		addOutput(&mesh);
+		addOutput(mesh);
 	}
 
 	void update()
@@ -78,9 +78,9 @@ public:
 		, mesh(initData(&mesh, "mesh", "Mesh from which to extract the edges"))
 		, points(initData(&points, "points", "Pairs of points forming the edges"))
 	{
-		addInput(&mesh);
+		addInput(mesh);
 
-		addOutput(&points);
+		addOutput(points);
 	}
 
 	void update()
@@ -123,9 +123,9 @@ public:
 		, mesh(initData(&mesh, "mesh", "Mesh from which to extract the vertices"))
 		, points(initData(&points, "points", "Points used by the mesh"))
 	{
-		addInput(&mesh);
+		addInput(mesh);
 
-		addOutput(&points);
+		addOutput(points);
 	}
 
 	void update()
@@ -158,10 +158,10 @@ public:
 		, output(initData(&output, "output", "Output mesh"))
 		, triangles(initData(&triangles, "triangles", "Indices of the triangles to extract"))
 	{
-		addInput(&input);
-		addInput(&triangles);
+		addInput(input);
+		addInput(triangles);
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()
@@ -209,11 +209,11 @@ public:
 		, edges(initData(&edges, "edges", "Indices of the edges on the border"))
 		, triangles(initData(&triangles, "triangles", "Indices of the triangles on the border"))
 	{
-		addInput(&mesh);
+		addInput(mesh);
 
-		addOutput(&points);
-		addOutput(&edges);
-		addOutput(&triangles);
+		addOutput(points);
+		addOutput(edges);
+		addOutput(triangles);
 	}
 
 	QVector<int> toIntVector(const QVector<unsigned int>& in)
@@ -261,10 +261,10 @@ public:
 		, output(initData(&output, "output", "Points pairs forming the extracted edges"))
 		, edges(initData(&edges, "edges", "Indices of the edges to extract"))
 	{
-		addInput(&input);
-		addInput(&edges);
+		addInput(input);
+		addInput(edges);
 
-		addOutput(&output);
+		addOutput(output);
 	}
 
 	void update()

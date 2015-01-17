@@ -20,11 +20,11 @@ public:
 		, scale(initData(&scale, (PReal)0.001, "scale", "Input points are scaled by this value before computing the noise"))
 		, output(initData(&output, "output", "The values of the noise at the given positions" ))
 	{
-		addInput(&input);
-		addInput(&seed);
-		addInput(&scale);
+		addInput(input);
+		addInput(seed);
+		addInput(scale);
 
-		addOutput(&output);
+		addOutput(output);
 
 		seed.setWidget("seed");
 		seed.setValue(helper::RandomGenerator::getRandomSeed(10000));

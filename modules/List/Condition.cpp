@@ -15,8 +15,8 @@ public:
 		, control(initData(&control, "control", "If this value is non zero copy the first list, otherwise copy the second"))
 		, generic(initData(&generic, "input", "Connect here the first list"))
 	{
-		addInput(&control);
-		addInput(&generic);
+		addInput(control);
+		addInput(generic);
 
 		control.getAccessor().push_back(1);
 

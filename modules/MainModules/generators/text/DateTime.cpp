@@ -16,14 +16,14 @@ public:
 		, text(initData(&text, "text", "Text containing the date & time using the format"))
 		, delta(initData(&delta, "delta", "Delta in milliseconds added to the current time"))
 	{
-		addInput(&format);
-		addInput(&delta);
+		addInput(format);
+		addInput(delta);
 
-		addOutput(&text);
+		addOutput(text);
 
 		BaseData* docTime = doc->getData("time");
 		if(docTime)
-			addInput(docTime);
+			addInput(*docTime);
 	}
 
 	void setDirtyValue(const DataNode* caller)

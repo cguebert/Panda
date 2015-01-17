@@ -18,7 +18,7 @@ DockObject::~DockObject()
 	auto dockedObjects = getDockedObjects();
 	for(auto docked : dockedObjects)
 	{
-		removeInput((DataNode*)docked);
+		removeInput(*docked);
 
 		defaultDock = docked->getDefaultDock();
 
@@ -35,7 +35,7 @@ DockObject::~DockObject()
 void DockObject::addDockable(DockableObject* dockable, int index)
 {
 	dockable->setParentDock(this);
-	addInput((DataNode*)dockable);
+	addInput(*dockable);
 	if(index < 0)
 		m_dockedObjects.push_back(dockable);
 	else
@@ -43,11 +43,11 @@ void DockObject::addDockable(DockableObject* dockable, int index)
 	m_parentDocument->onModifiedObject(this);
 }
 
-void DockObject::doRemoveInput(DataNode* node)
+void DockObject::doRemoveInput(DataNode& node)
 {
 	DataNode::doRemoveInput(node);
 
-	const auto iter = std::find(m_dockedObjects.begin(), m_dockedObjects.end(), (DockableObject*)node);
+	const auto iter = std::find(m_dockedObjects.begin(), m_dockedObjects.end(), &node);
 	if(iter != m_dockedObjects.end())
 	{
 		m_dockedObjects.erase(iter);

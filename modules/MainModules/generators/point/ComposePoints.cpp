@@ -17,10 +17,10 @@ public:
 		, ptY(initData(&ptY, "y", "Vertical position of the point"))
 		, point(initData(&point, "point", "Point created from the 2 coordinates"))
 	{
-		addInput(&ptX);
-		addInput(&ptY);
+		addInput(ptX);
+		addInput(ptY);
 
-		addOutput(&point);
+		addOutput(point);
 	}
 
 	void update()
@@ -60,10 +60,10 @@ public:
 		, ptY(initData(&ptY, "y", "Vertical position of the point"))
 		, point(initData(&point, "point", "Point from which to extract the 2 coordinates"))
 	{
-		addInput(&point);
+		addInput(point);
 
-		addOutput(&ptX);
-		addOutput(&ptY);
+		addOutput(ptX);
+		addOutput(ptY);
 	}
 
 	void update()

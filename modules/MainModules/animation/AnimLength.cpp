@@ -18,7 +18,7 @@ public:
 		: GenericObject(doc)
 		, generic(initData(&generic, "input", "Connect here the animations to analyse"))
 	{
-		addInput(&generic);
+		addInput(generic);
 
 		GenericDataDefinitionList defList;
 		// Create an animation of the same type as the data connected

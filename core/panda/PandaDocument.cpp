@@ -65,11 +65,11 @@ PandaDocument::PandaDocument(QObject* parent)
 	, m_iNbFrames(0)
 	, m_currentFPS(0)
 {
-	addInput(&m_renderSize);
-	addInput(&m_backgroundColor);
-	addInput(&m_timestep);
-	addInput(&m_useTimer);
-	addInput(&m_useMultithread);
+	addInput(m_renderSize);
+	addInput(m_backgroundColor);
+	addInput(m_timestep);
+	addInput(m_useTimer);
+	addInput(m_useMultithread);
 
 	m_useTimer.setWidget("checkbox");
 
