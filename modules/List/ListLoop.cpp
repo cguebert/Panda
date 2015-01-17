@@ -46,7 +46,7 @@ public:
 											 "output",
 											 "Corresponding value at the previous iteration"));
 
-		setupGenericObject(&m_generic, defList);
+		setupGenericObject(m_generic, defList);
 
 		m_laterUpdate = true;
 	}

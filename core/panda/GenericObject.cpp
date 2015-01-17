@@ -30,7 +30,7 @@ GenericObject::~GenericObject()
 	m_createdDatasStructs.clear();
 }
 
-void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefinitionList &defList)
+void GenericObject::setupGenericObject(BaseGenericData& data, const GenericDataDefinitionList &defList)
 {
 	// Verify that there is no duplicate data name
 	// And that there is at least one input data
@@ -59,7 +59,7 @@ void GenericObject::setupGenericObject(GenericData* data, const GenericDataDefin
 
 	registerFunctions();	// Create template functions
 
-	m_genericData = data;
+	m_genericData = &data;
 	m_genericData->setDisplayed(false);
 	m_genericData->setPersistent(false);
 	m_genericData->m_allowedTypes = getRegisteredTypes();
@@ -173,7 +173,7 @@ void GenericObject::updateDataNames()
 	}
 }
 
-GenericData* const GenericObject::getGenericData()
+BaseGenericData* const GenericObject::getGenericData() const
 {
 	return m_genericData;
 }
@@ -516,19 +516,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 //****************************************************************************//
 
-bool GenericData::validParent(const BaseData* parent) const
-{
-	if(m_allowedTypes.size() && !m_allowedTypes.contains(parent->getDataTrait()->valueTypeId()))
-		return false;
-	return true;
-}
-
-QString GenericData::getDescription() const
-{
-	return QString("Accepting single values, lists & animations" + getTypesName());
-}
-
-QString GenericData::getTypesName(bool useFullDescription) const
+QString BaseGenericData::getTypesName(bool useFullDescription) const
 {
 	if(m_allowedTypes.empty())
 		return "";
@@ -561,16 +549,30 @@ QString GenericData::getTypesName(bool useFullDescription) const
 	return types;
 }
 
-int GenericData::getCompatibleType(const BaseData* parent) const
+int BaseGenericData::getCompatibleType(const BaseData* parent) const
 {
 	return parent->getDataTrait()->valueTypeId();
 }
 
 //****************************************************************************//
 
+bool GenericData::validParent(const BaseData* parent) const
+{
+	if(m_allowedTypes.size() && !m_allowedTypes.contains(parent->getDataTrait()->valueTypeId()))
+		return false;
+	return true;
+}
+
+QString GenericData::getDescription() const
+{
+	return QString("Accepting single values, lists & animations" + getTypesName());
+}
+
+//****************************************************************************//
+
 bool GenericSingleValueData::validParent(const BaseData* parent) const
 {
-	return parent->getDataTrait()->isSingleValue() && GenericData::validParent(parent);
+	return parent->getDataTrait()->isSingleValue() && BaseGenericData::validParent(parent);
 }
 
 QString GenericSingleValueData::getDescription() const
@@ -585,7 +587,7 @@ bool GenericVectorData::validParent(const BaseData* parent) const
 	// Now accepting single values also, as the conversion is automatic
 	return (parent->getDataTrait()->isVector()
 			|| parent->getDataTrait()->isSingleValue())
-			&& GenericData::validParent(parent);
+			&& BaseGenericData::validParent(parent);
 }
 
 QString GenericVectorData::getDescription() const
@@ -597,7 +599,7 @@ QString GenericVectorData::getDescription() const
 
 bool GenericAnimationData::validParent(const BaseData* parent) const
 {
-	return parent->getDataTrait()->isAnimation() && GenericData::validParent(parent);
+	return parent->getDataTrait()->isAnimation() && BaseGenericData::validParent(parent);
 }
 
 QString GenericAnimationData::getDescription() const

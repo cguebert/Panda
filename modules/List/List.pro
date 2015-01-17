@@ -4,6 +4,7 @@ HEADERS       =
 SOURCES       = \
 	Concatenation.cpp \
 	Condition.cpp \
+	DataCounter.cpp \
 	DeleteItems.cpp \
 	ExtractHead.cpp \
 	ExtractTail.cpp \

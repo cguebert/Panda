@@ -55,7 +55,7 @@ public:
 											 "output",
 											 "Animation created from the given list"));
 
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>
@@ -120,7 +120,7 @@ public:
 											 "values",
 											 "List of values of the given animation"));
 
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

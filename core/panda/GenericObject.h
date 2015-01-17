@@ -23,55 +23,63 @@ class GenericObjectDrawStruct;
 namespace panda
 {
 
-class GenericData : public Data<int>
+class BaseGenericData : public Data<int>
 {
 public:
-	explicit GenericData(const BaseData::BaseInitData& init)
+	explicit BaseGenericData(const BaseData::BaseInitData& init)
 		: Data<int>(init) {}
 
-	virtual bool validParent(const BaseData* parent) const override;
-	virtual QString getDescription() const override;
 	virtual QString getTypesName(bool useFullDescription = false) const;
 	virtual int getCompatibleType(const BaseData* parent) const;
 
 	QList<int> m_allowedTypes;
 };
 
-class PANDA_CORE_API GenericSingleValueData : public GenericData
+class PANDA_CORE_API GenericData : public BaseGenericData
+{
+public:
+	explicit GenericData(const BaseData::BaseInitData& init)
+		: BaseGenericData(init) {}
+
+	virtual bool validParent(const BaseData* parent) const override;
+	virtual QString getDescription() const override;
+};
+
+class PANDA_CORE_API GenericSingleValueData : public BaseGenericData
 {
 public:
 	explicit GenericSingleValueData(const BaseData::BaseInitData& init)
-		: GenericData(init) {}
+		: BaseGenericData(init) {}
 
 	virtual bool validParent(const BaseData* parent) const override;
 	virtual QString getDescription() const override;
 };
 
-class PANDA_CORE_API GenericVectorData : public GenericData
+class PANDA_CORE_API GenericVectorData : public BaseGenericData
 {
 public:
 	explicit GenericVectorData(const BaseData::BaseInitData& init)
-		: GenericData(init) {}
+		: BaseGenericData(init) {}
 
 	virtual bool validParent(const BaseData* parent) const override;
 	virtual QString getDescription() const override;
 };
 
-class PANDA_CORE_API GenericAnimationData : public GenericData
+class PANDA_CORE_API GenericAnimationData : public BaseGenericData
 {
 public:
 	explicit GenericAnimationData(const BaseData::BaseInitData& init)
-		: GenericData(init) {}
+		: BaseGenericData(init) {}
 
 	virtual bool validParent(const BaseData* parent) const override;
 	virtual QString getDescription() const override;
 };
 
-class PANDA_CORE_API GenericSpecificData : public GenericData	// Accepts only the specific types given allowedTypes
+class PANDA_CORE_API GenericSpecificData : public BaseGenericData	// Accepts only the specific types given allowedTypes
 {
 public:
 	explicit GenericSpecificData(const BaseData::BaseInitData& init)
-		: GenericData(init) {}
+		: BaseGenericData(init) {}
 
 	virtual bool validParent(const BaseData* parent) const override;
 	virtual QString getDescription() const override;
@@ -102,7 +110,7 @@ public:
 	explicit GenericObject(PandaDocument* parent = nullptr);
 	virtual ~GenericObject();
 
-	void setupGenericObject(GenericData* data, const GenericDataDefinitionList& defList);
+	void setupGenericObject(BaseGenericData& data, const GenericDataDefinitionList& defList);
 
 	virtual void update();
 	virtual void dataSetParent(BaseData* data, BaseData* parent);
@@ -121,7 +129,7 @@ protected:
 	virtual void reorderDatas();
 	virtual void updateDataNames();
 
-	GenericData* const getGenericData(); // Access to m_genericData
+	BaseGenericData* const getGenericData() const; // Access to m_genericData
 	int nbOfCreatedDatas() const; // Size of m_createdDatasStructs
 	bool isCreatedData(BaseData* data) const; // Return true if data has been created by the GenericObject
 
@@ -140,7 +148,7 @@ private:
 		DataPtrList datas;
 	};
 
-	GenericData* m_genericData;
+	BaseGenericData* m_genericData;
 	GenericDataDefinitionList m_dataDefinitions;
 
 	typedef QSharedPointer<CreatedDatasStruct> CreatedDatasStructPtr;

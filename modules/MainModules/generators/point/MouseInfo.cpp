@@ -13,15 +13,22 @@ public:
 
 	GeneratorPoint_MouseInfo(PandaDocument *doc)
 		: PandaObject(doc)
-		, position(initData(&position, "position", "Position of the mouse this timestep"))
-		, movement(initData(&movement, "movement", "Movement of the mouse from the last timestep"))
-		, clickState(initData(&clickState, 0, "click", "1 if the mouse button is pressed"))
+		, m_firstTimestep(true)
+		, m_position(initData(&m_position, "position", "Position of the mouse this timestep"))
+		, m_movement(initData(&m_movement, "movement", "Movement of the mouse from the last timestep"))
+		, m_clickState(initData(&m_clickState, 0, "click", "1 if the mouse button is pressed"))
 	{
-		addOutput(&position);
-		addOutput(&movement);
-		addOutput(&clickState);
+		addOutput(&m_position);
+		addOutput(&m_movement);
+		addOutput(&m_clickState);
 
-		clickState.setWidget("checkbox");
+		m_clickState.setWidget("checkbox");
+	}
+
+	void reset()
+	{
+		m_firstTimestep = true;
+		setDirtyValue(this);
 	}
 
 	void beginStep()
@@ -31,22 +38,28 @@ public:
 
 	void update()
 	{
-		PReal time = m_parentDocument->getAnimationTime();
-		Point oldPos = position.getValue(), newPos = m_parentDocument->getMousePosition();
+		Point oldPos = m_position.getValue(), newPos = m_parentDocument->getMousePosition();
 
-		position.setValue(newPos);
+		Point delta;
+		if(oldPos != newPos)
+		{
+			m_position.setValue(newPos);
+			if(!m_firstTimestep)
+				delta = newPos - oldPos;
+		}
 
-		if(time)
-			movement.setValue(newPos - oldPos);
-		else
-			movement.setValue(Point(0,0));
+		if(delta != m_movement.getValue())
+			m_movement.setValue(delta);
 
-		clickState.setValue(m_parentDocument->getMouseClick());
+		m_clickState.setValue(m_parentDocument->getMouseClick());
+
+		m_firstTimestep = false;
 	}
 
 protected:
-	Data<Point> position, movement;
-	Data<int> clickState;
+	bool m_firstTimestep;
+	Data<Point> m_position, m_movement;
+	Data<int> m_clickState;
 };
 
 int GeneratorPoint_MouseInfoClass = RegisterObject<GeneratorPoint_MouseInfo>("Generator/Point/Mouse").setDescription("Gives information about the mouse in the render view");

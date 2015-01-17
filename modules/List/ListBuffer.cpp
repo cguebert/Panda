@@ -38,7 +38,7 @@ public:
 											 "output",
 											 "Value stored in the buffer"));
 
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 
 		m_laterUpdate = true;
 	}

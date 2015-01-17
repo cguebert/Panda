@@ -33,7 +33,7 @@ public:
 											 "output",
 											 "Indices of the values in the input list"));
 
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

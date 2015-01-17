@@ -47,7 +47,7 @@ public:
 											 true, false,
 											 "name",
 											 "Name of the uniform in the shader"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	void update()

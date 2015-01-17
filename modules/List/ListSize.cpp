@@ -29,7 +29,7 @@ public:
 											 false, true,
 											 "size",
 											 "Number of values in this list"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

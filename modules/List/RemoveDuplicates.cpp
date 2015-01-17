@@ -76,7 +76,7 @@ public:
 											 false, true,
 											 "output",
 											 "Output list"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

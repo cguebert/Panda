@@ -68,7 +68,7 @@ public:
 											 false, true,
 											 "indices",
 											 "Indices corresponding to the sorted list"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

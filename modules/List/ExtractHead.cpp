@@ -28,7 +28,7 @@ public:
 											 false, true,
 											 "output",
 											 "Result of the extraction"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

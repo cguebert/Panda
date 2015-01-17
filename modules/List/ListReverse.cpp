@@ -26,7 +26,7 @@ public:
 											 false, true,
 											 "output",
 											 "Reversed list"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

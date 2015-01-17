@@ -34,7 +34,7 @@ public:
 											 false, true,
 											 "result",
 											 "Result of the condition"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

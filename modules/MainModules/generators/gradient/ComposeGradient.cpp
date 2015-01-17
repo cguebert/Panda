@@ -34,7 +34,7 @@ public:
 											 true, false,
 											 "position",
 											 "Position where to insert the color"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	void update()

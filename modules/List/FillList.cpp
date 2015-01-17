@@ -29,7 +29,7 @@ public:
 											 "output",
 											 "List created from the given value"));
 
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

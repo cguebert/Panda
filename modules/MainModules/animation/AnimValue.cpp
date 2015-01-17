@@ -36,7 +36,7 @@ public:
 											 "output",
 											 "Values extracted from the animation"));
 
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

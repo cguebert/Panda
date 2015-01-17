@@ -29,7 +29,7 @@ public:
 											 false, true,
 											 "output",
 											 "Result of the deletion"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

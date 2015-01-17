@@ -37,7 +37,7 @@ public:
 											 "output",
 											 "Modified list"));
 
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

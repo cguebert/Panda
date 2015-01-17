@@ -29,7 +29,7 @@ public:
 											 true, false,
 											 "input",
 											 "Value to use in the format operation"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	void update()

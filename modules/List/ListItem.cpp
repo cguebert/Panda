@@ -31,7 +31,7 @@ public:
 											 "output",
 											 "Value extracted from the list"));
 
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>

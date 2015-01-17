@@ -29,7 +29,7 @@ public:
 											 false, true,
 											 "result",
 											 "Result of the concatenation"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	void update()

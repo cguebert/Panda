@@ -36,7 +36,7 @@ public:
 											 false, true,
 											 "size",
 											 "Number of keys in this animation"));
-		setupGenericObject(&generic, defList);
+		setupGenericObject(generic, defList);
 	}
 
 	template <class T>
