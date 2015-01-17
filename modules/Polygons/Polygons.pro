@@ -11,6 +11,7 @@ HEADERS       = \
 	libs\poly2tri\sweep\sweep.h \
 	libs\poly2tri\sweep\sweep_context.h
 SOURCES       = \
+	ComposePolygon.cpp \
 	PolygonOperations.cpp \
 	polygonsModule.cpp \
 	SimplePolygons.cpp \

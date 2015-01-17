@@ -1,9 +1,6 @@
 #include <panda/types/Point.h>
 #include <panda/types/Path.h>
 
-#include <panda/types/Animation.inl>
-#include <panda/types/AnimationTraits.h>
-
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
 

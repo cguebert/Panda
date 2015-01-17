@@ -45,7 +45,7 @@ protected:
 	Data< QVector<Point> > point;
 };
 
-int GeneratorPoints_ComposeClass = RegisterObject<GeneratorPoints_Compose>("Generator/Point/Create point").setName("Reals to point").setDescription("Create a point from 2 reals");
+int GeneratorPoints_ComposeClass = RegisterObject<GeneratorPoints_Compose>("Generator/Point/Compose point").setName("Reals to point").setDescription("Create a point from 2 reals");
 
 //****************************************************************************//
 

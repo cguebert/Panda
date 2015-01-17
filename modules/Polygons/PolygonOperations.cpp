@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Path.h>
+#include <panda/types/Polygon.h>
 #include <QVector>
 
 #include <cmath>
@@ -14,6 +14,7 @@ namespace panda {
 
 using types::Point;
 using types::Path;
+using types::Polygon;
 
 class PolygonOperation_Difference : public PandaObject
 {
@@ -34,12 +35,12 @@ public:
 
 	void update()
 	{
-		const Path& inputA = m_inputA.getValue();
-		const Path& inputB = m_inputB.getValue();
+		const Polygon& inputA = m_inputA.getValue();
+		const Polygon& inputB = m_inputB.getValue();
 		auto output = m_output.getAccessor();
 		output.clear();
 
-		if(inputA.empty() || inputB.empty())
+		if(inputA.contour.empty() || inputB.contour.empty())
 		{
 			cleanDirty();
 			return;
@@ -50,14 +51,14 @@ public:
 		BGPolygon pA, pB;
 		{
 			std::vector<BGPoint> pts;
-			for(const Point& pt : inputA)
+			for(const Point& pt : inputA.contour)
 				pts.emplace_back(pt.x, pt.y);
 			boost::geometry::append(pA, pts);
 		}
 
 		{
 			std::vector<BGPoint> pts;
-			for(const Point& pt : inputB)
+			for(const Point& pt : inputB.contour)
 				pts.emplace_back(pt.x, pt.y);
 			boost::geometry::append(pB, pts);
 		}
@@ -65,30 +66,33 @@ public:
 		std::vector<BGPolygon> result;
 		boost::geometry::difference(pA, pB, result);
 
-		for(const BGPolygon& poly : result)
+		for(const BGPolygon& rpoly : result)
 		{
+			Polygon poly;
 			Path path;
-			path.reserve((int)poly.outer().size());
-			for(const auto& pt : poly.outer())
+			path.reserve((int)rpoly.outer().size());
+			for(const auto& pt : rpoly.outer())
 				path.push_back(Point(pt.x(), pt.y()));
-			output.push_back(path);
+			poly.contour = path;
 
-			for(const auto& inner : poly.inners())
+			for(const auto& inner : rpoly.inners())
 			{
 				Path path;
 				path.reserve((int)inner.size());
 				for(const auto& pt : inner)
 					path.push_back(Point(pt.x(), pt.y()));
-				output.push_back(path);
+				poly.holes.push_back(path);
 			}
+
+			output.push_back(poly);
 		}
 
 		cleanDirty();
 	}
 
 protected:
-	Data< Path > m_inputA, m_inputB;
-	Data< QVector<Path> > m_output;
+	Data< Polygon > m_inputA, m_inputB;
+	Data< QVector<Polygon> > m_output;
 };
 
 int PolygonOperation_DifferenceClass = RegisterObject<PolygonOperation_Difference>("Math/Polygon/Difference").setDescription("Compute the difference of two polygons");

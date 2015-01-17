@@ -6,9 +6,10 @@
 #include <panda/types/Color.h>
 #include <panda/types/Gradient.h>
 #include <panda/types/ImageWrapper.h>
-#include <panda/types/Path.h>
+#include <panda/types/Polygon.h>
 #include <panda/types/Mesh.h>
 #include <panda/types/Rect.h>
+#include <panda/types/Shader.h>
 
 #include <QList>
 #include <QMap>
@@ -28,8 +29,8 @@ public:
 	explicit GenericData(const BaseData::BaseInitData& init)
 		: Data<int>(init) {}
 
-	virtual bool validParent(const BaseData* parent) const;
-	virtual QString getDescription() const;
+	virtual bool validParent(const BaseData* parent) const override;
+	virtual QString getDescription() const override;
 	virtual QString getTypesName(bool useFullDescription = false) const;
 	virtual int getCompatibleType(const BaseData* parent) const;
 
@@ -42,8 +43,8 @@ public:
 	explicit GenericSingleValueData(const BaseData::BaseInitData& init)
 		: GenericData(init) {}
 
-	virtual bool validParent(const BaseData* parent) const;
-	virtual QString getDescription() const;
+	virtual bool validParent(const BaseData* parent) const override;
+	virtual QString getDescription() const override;
 };
 
 class PANDA_CORE_API GenericVectorData : public GenericData
@@ -52,8 +53,8 @@ public:
 	explicit GenericVectorData(const BaseData::BaseInitData& init)
 		: GenericData(init) {}
 
-	virtual bool validParent(const BaseData* parent) const;
-	virtual QString getDescription() const;
+	virtual bool validParent(const BaseData* parent) const override;
+	virtual QString getDescription() const override;
 };
 
 class PANDA_CORE_API GenericAnimationData : public GenericData
@@ -62,8 +63,8 @@ public:
 	explicit GenericAnimationData(const BaseData::BaseInitData& init)
 		: GenericData(init) {}
 
-	virtual bool validParent(const BaseData* parent) const;
-	virtual QString getDescription() const;
+	virtual bool validParent(const BaseData* parent) const override;
+	virtual QString getDescription() const override;
 };
 
 class PANDA_CORE_API GenericSpecificData : public GenericData	// Accepts only the specific types given allowedTypes
@@ -72,8 +73,8 @@ public:
 	explicit GenericSpecificData(const BaseData::BaseInitData& init)
 		: GenericData(init) {}
 
-	virtual bool validParent(const BaseData* parent) const;
-	virtual QString getDescription() const;
+	virtual bool validParent(const BaseData* parent) const override;
+	virtual QString getDescription() const override;
 	virtual int getCompatibleType(const BaseData* parent) const;
 };
 
@@ -173,7 +174,8 @@ private:
 
 //****************************************************************************//
 
-typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString, types::ImageWrapper, types::Gradient, types::Mesh, types::Path> allDataTypes;
+typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString, types::ImageWrapper,
+	types::Gradient, types::Shader, types::Mesh, types::Path, types::Polygon> allDataTypes;
 typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString> allSearchableTypes;
 typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect> allNumericalTypes;
 typedef boost::mpl::vector<PReal, types::Color, types::Point, types::Gradient> allAnimationTypes;

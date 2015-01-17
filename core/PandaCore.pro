@@ -47,7 +47,6 @@ HEADERS += \
 	panda/helper/GradientCache.h \
 	panda/helper/Perlin.h \
 	panda/helper/PointsGrid.h \
-	panda/helper/Polygon.h \
 	panda/helper/Random.h \
 	panda/helper/ShaderCache.h \
 	panda/helper/UpdateLogger.h \
@@ -63,6 +62,7 @@ HEADERS += \
 	panda/types/Mesh.h \
 	panda/types/Path.h \
 	panda/types/Point.h \
+	panda/types/Polygon.h \
 	panda/types/Rect.h \
 	panda/types/Shader.h \
 	panda/types/StandardTypes.h \
@@ -94,7 +94,6 @@ SOURCES += \
 	panda/helper/GradientCache.cpp \
 	panda/helper/Perlin.cpp \
 	panda/helper/PointsGrid.cpp \
-	panda/helper/Polygon.cpp \
 	panda/helper/Random.cpp \
 	panda/helper/ShaderCache.cpp \
 	panda/helper/UpdateLogger.cpp \
@@ -108,6 +107,7 @@ SOURCES += \
 	panda/types/Mesh.cpp \
 	panda/types/Path.cpp \
 	panda/types/Point.cpp \
+	panda/types/Polygon.cpp \
 	panda/types/Rect.cpp \
 	panda/types/Shader.cpp \
 	panda/types/StandardTypes.cpp \

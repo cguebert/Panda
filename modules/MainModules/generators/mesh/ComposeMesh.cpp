@@ -3,7 +3,7 @@
 #include <panda/ObjectFactory.h>
 
 #include <panda/types/Mesh.h>
-#include <panda/helper/Polygon.h>
+#include <panda/types/Polygon.h>
 
 namespace panda {
 
@@ -47,7 +47,7 @@ public:
 		}
 		else
 		{
-			Point center = helper::centroidOfPolygon(pts);
+			Point center = types::centroidOfPolygon(pts);
 			Mesh::PointID centerId = outMesh->addPoint(center);
 			for(int i=0; i<nbPts; ++i)
 			{
