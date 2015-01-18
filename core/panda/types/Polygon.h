@@ -15,9 +15,18 @@ class PANDA_CORE_API Polygon
 public:
 	void clear();
 
+	bool operator==(const Polygon& p) const;
+	bool operator!=(const Polygon& p) const;
+
 	Path contour;
 	QVector<Path> holes;
 };
+
+inline bool Polygon::operator==(const Polygon& p) const
+{ return contour == p.contour && holes == p.holes; }
+
+inline bool Polygon::operator!=(const Polygon& p) const
+{ return contour != p.contour || holes != p.holes; }
 
 PANDA_CORE_API PReal areaOfPolygon(const QVector<types::Point>& poly);
 PANDA_CORE_API types::Point centroidOfPolygon(const QVector<types::Point>& poly);

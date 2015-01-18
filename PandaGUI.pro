@@ -37,6 +37,7 @@ HEADERS       = \
 	ui/widget/DataWidgetFactory.h \
 	ui/widget/EditGradientDialog.h \
 	ui/widget/EditMeshDialog.h \
+	ui/widget/EditPolygonDialog.h \
 	ui/widget/EditShaderDialog.h \
 	ui/widget/ListDataWidgetDialog.h \
 	ui/widget/OpenDialogDataWidget.h \
@@ -77,6 +78,7 @@ SOURCES       = ui/main.cpp \
 	ui/widget/ColorDataWidget.cpp \
 	ui/widget/EditGradientDialog.cpp \
 	ui/widget/EditMeshDialog.cpp \
+	ui/widget/EditPolygonDialog.cpp \
 	ui/widget/EditShaderDialog.cpp \
 	ui/widget/DataWidgetFactory.cpp \
 	ui/widget/NumericalDataWidget.cpp \
