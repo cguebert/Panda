@@ -614,7 +614,7 @@ void UpdateLoggerView::updateStates(int prevSelection, unsigned long long time)
 
 qreal UpdateLoggerView::getComputeDuration(const EventData& event)
 {
-	for(unsigned int index = (&event - &m_events[0]) - 1; index > 0; --index)
+	for(int index = (&event - &m_events[0]) - 1; index > 0; --index)
 	{
 		const EventData& other = m_events[index];
 		if(other.m_threadId == event.m_threadId)

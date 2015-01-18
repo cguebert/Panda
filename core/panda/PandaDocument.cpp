@@ -91,7 +91,6 @@ PandaDocument::PandaDocument(QObject* parent)
 	connect(this, SIGNAL(reorderedObjects()), this, SIGNAL(modified()));
 
 	m_defaultLayer = new Layer(this);
-	m_defaultLayer->setInternalData("Default Layer", 0);
 	m_defaultLayer->getLayerNameData().setValue("Default Layer");
 
 	setInternalData("Document", 0);
@@ -927,7 +926,12 @@ void PandaDocument::step()
 #endif
 
 	m_isInStep = true;
-	for(auto object : m_objects)
+	// Force the value of isInStep, because some objects will propagate dirtyValue during beginStep
+	for(auto& object : m_objects)
+		object->setInStep(true);
+
+	// Let some objects set dirtyValue for each step
+	for(auto& object : m_objects)
 		object->beginStep();
 
 	if(m_animPlaying && m_animMultithread && m_scheduler)
@@ -946,7 +950,7 @@ void PandaDocument::step()
 	updateIfDirty();
 
 	m_isInStep = false;
-	for(auto object : m_objects)
+	for(auto& object : m_objects)
 		object->endStep();
 
 #ifdef PANDA_LOG_EVENTS

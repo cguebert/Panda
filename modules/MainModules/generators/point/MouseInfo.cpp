@@ -33,6 +33,7 @@ public:
 
 	void beginStep()
 	{
+		PandaObject::beginStep();
 		setDirtyValue(this);
 	}
 

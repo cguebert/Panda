@@ -13,7 +13,8 @@
 namespace panda {
 
 PandaObject::PandaObject(PandaDocument* document)
-	: m_parentDocument(document)
+	: m_index(0)
+	, m_parentDocument(document)
 	, m_doEmitModified(true)
 	, m_doEmitDirty(true)
 	, m_isInStep(false)

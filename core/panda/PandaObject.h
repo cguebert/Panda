@@ -85,20 +85,20 @@ public:
 	virtual void removedFromDocument() {}	/// Ths object is being removed (but not deleted as it can be undone later)
 
 	bool isUpdating(); /// True during the execution of update()
+	void setInStep(bool inStep); /// The document will force the value of the flag even before calling beginStep
 
 protected:
-	QString m_name;
-	QList<BaseData*> m_datas;
+	PandaDocument* m_parentDocument;
 	quint32 m_index;
 	bool m_doEmitModified, m_doEmitDirty, m_isInStep;
 	bool m_laterUpdate; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
 	mutable bool m_isUpdating;
 	bool m_destructing;
-	PandaDocument* m_parentDocument;
+	QString m_name;
+	QList<BaseData*> m_datas;
 
 	void setInternalData(const QString& name, quint32 index);
 	friend class ObjectFactory;
-	friend class PandaDocument;
 };
 
 //****************************************************************************//
@@ -141,6 +141,9 @@ inline PandaDocument* PandaObject::getParentDocument()
 
 inline bool PandaObject::isUpdating()
 { return m_isUpdating; }
+
+inline void PandaObject::setInStep(bool inStep)
+{ m_isInStep = inStep; }
 
 } // namespace Panda
 

@@ -39,11 +39,13 @@ public:
 
 	void beginStep()
 	{
+		PandaObject::beginStep();
 		setDirtyValue(this);
 	}
 
 	void endStep()
 	{
+		PandaObject::endStep();
 		updateIfDirty();
 	}
 
@@ -145,11 +147,13 @@ public:
 
 	void beginStep()
 	{
+		PandaObject::beginStep();
 		setDirtyValue(this);
 	}
 
 	void endStep()
 	{
+		PandaObject::endStep();
 		updateIfDirty();
 	}
 
