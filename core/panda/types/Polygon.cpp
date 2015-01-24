@@ -17,6 +17,56 @@ void Polygon::clear()
 
 //****************************************************************************//
 
+void translate(Polygon& poly, const Point& delta)
+{
+	poly.contour += delta;
+	for(auto& hole : poly.holes)
+		hole += delta;
+}
+
+Polygon translated(const Polygon& poly, const Point& delta)
+{
+	Polygon tmp;
+	tmp.contour = poly.contour + delta;
+	for(const auto& hole : poly.holes)
+		tmp.holes.push_back(hole + delta);
+	return tmp;
+}
+
+void scale(Polygon& poly, PReal scale)
+{
+	poly.contour *= scale;
+	for(auto& hole : poly.holes)
+		hole *= scale;
+}
+
+Polygon scaled(const Polygon& poly, PReal scale)
+{
+	Polygon tmp;
+	tmp.contour = poly.contour * scale;
+	for(const auto& hole : poly.holes)
+		tmp.holes.push_back(hole * scale);
+	return tmp;
+}
+
+void rotate(Polygon& poly, const Point& center, PReal angle)
+{
+	rotate(poly.contour, center, angle);
+	for(auto& hole : poly.holes)
+		rotate(hole, center, angle);
+}
+
+Polygon rotated(const Polygon& poly, const Point& center, PReal angle)
+{
+	Polygon tmp;
+	tmp.contour = rotated(poly.contour, center, angle);
+	for(const auto& hole : poly.holes)
+		tmp.holes.push_back(rotated(hole, center, angle));
+	return tmp;
+}
+
+//****************************************************************************//
+
 template<> PANDA_CORE_API QString DataTrait<Polygon>::valueTypeName() { return "polygon"; }
 
 template<>
