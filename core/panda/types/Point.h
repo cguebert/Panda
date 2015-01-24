@@ -238,11 +238,15 @@ inline Point Point::xAxis()
 inline Point Point::yAxis()
 { return Point(0, 1); }
 
-// Converts a coordinate from rectangular (Cartesian) coordinates to polar coordinates of the form (radius, theta)
-Point toPolar(Point car);
+/// Rotate a point around the center, angle is given in radians
+PANDA_CORE_API void rotate(Point& point, const Point& center, PReal angle);
+PANDA_CORE_API Point rotated(const Point& point, const Point& center, PReal angle);
 
-// Converts a coordinate from polar coordinates of the form (radius, theta) to rectangular coordinates
-Point fromPolar(Point pol);
+/// Converts a coordinate from rectangular (Cartesian) coordinates to polar coordinates of the form (radius, theta)
+PANDA_CORE_API Point toPolar(Point car);
+
+/// Converts a coordinate from polar coordinates of the form (radius, theta) to rectangular coordinates
+PANDA_CORE_API Point fromPolar(Point pol);
 
 #ifndef PANDA_BUILD_CORE
 extern template class PANDA_CORE_API QVector<Point>;

@@ -11,6 +11,20 @@ namespace panda
 namespace types
 {
 
+void rotate(Point& point, const Point& center, PReal angle)
+{
+	PReal ca = cos(angle), sa = sin(angle);
+	Point pt = point - center;
+	point = center + Point(pt.x*ca-pt.y*sa, pt.x*sa+pt.y*ca);
+}
+
+Point rotated(const Point& point, const Point& center, PReal angle)
+{
+	PReal ca = cos(angle), sa = sin(angle);
+	Point pt = point - center;
+	return center + Point(pt.x*ca-pt.y*sa, pt.x*sa+pt.y*ca);
+}
+
 // Converts a coordinate from rectangular (Cartesian) coordinates to polar coordinates of the form (radius, theta)
 Point toPolar(Point car)
 {

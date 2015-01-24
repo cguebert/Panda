@@ -4,7 +4,7 @@
 #include <panda/types/Point.h>
 #include <QVector>
 
-#include <qmath.h>
+#include <math.h>
 
 namespace panda {
 
@@ -305,13 +305,7 @@ public:
 
 			PReal PI180 = static_cast<PReal>(M_PI) / static_cast<PReal>(180.0);
 			for(int i=0; i<nb; ++i)
-			{
-				const Point& cen = centers[i%nbC];
-				const PReal& ang = angles[i%nbA] * PI180;
-				PReal ca = qCos(ang), sa = qSin(ang);
-				Point pt = points[i%nbP] - cen;
-				res[i] = cen + Point(pt.x*ca-pt.y*sa, pt.x*sa+pt.y*ca);
-			}
+				res[i] = rotated(points[i%nbP], centers[i%nbC], angles[i%nbA] * PI180);
 		}
 
 		cleanDirty();
@@ -360,7 +354,7 @@ public:
 				if(pt.norm2() < 1e-10)
 					angleList[i] = 0;
 				else
-					angleList[i] = -qAtan2(pt.y, pt.x) * 180 / M_PI;
+					angleList[i] = -atan2(pt.y, pt.x) * 180 / M_PI;
 			}
 		}
 
@@ -406,7 +400,7 @@ public:
 			for(int i=0; i<nb; ++i)
 			{
 				PReal a = -angleList[i] * M_PI / 180;
-				vecList[i] = Point(qCos(a), qSin(a));
+				vecList[i] = Point(cos(a), sin(a));
 			}
 		}
 

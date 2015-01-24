@@ -3,11 +3,12 @@
 #include <panda/ObjectFactory.h>
 
 #include <panda/types/Mesh.h>
-#include <panda/types/Polygon.h>
+#include <panda/types/Path.h>
 
 namespace panda {
 
 using types::Mesh;
+using types::Path;
 using types::Point;
 
 class GeneratorMesh_OnePolygon : public PandaObject
@@ -27,41 +28,47 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& pts = points.getValue();
-		int nbPts = pts.size();
+		const QVector<Path>& paths = points.getValue();
+		int nbPaths = paths.size();
+
 		auto outMesh = mesh.getAccessor();
+		outMesh.clear();
+		outMesh.resize(nbPaths);
 
-		outMesh->clear();
-
-		if(nbPts < 3)
+		for(int i=0; i<nbPaths; ++i)
 		{
-			cleanDirty();
-			return;
-		}
+			const Path& path = paths[i];
+			int nbPts = path.size();
+			if(nbPts < 3)
+				continue;
 
-		outMesh->addPoints(pts);
+			Mesh mesh;
+			mesh.addPoints(path);
 
-		if(nbPts == 3)
-		{
-			outMesh->addTriangle(0, 1, 2);
-		}
-		else
-		{
-			Point center = types::centroidOfPolygon(pts);
-			Mesh::PointID centerId = outMesh->addPoint(center);
-			for(int i=0; i<nbPts; ++i)
+			if(nbPts == 3)
 			{
-				int j = (i+1) % nbPts;
-				outMesh->addTriangle(i, j, centerId);
+				mesh.addTriangle(0, 1, 2);
 			}
+			else
+			{
+				Point center = types::centroidOfPolygon(path);
+				Mesh::PointID centerId = mesh.addPoint(center);
+				for(int j=0; j<nbPts; ++j)
+				{
+					int k = (j+1) % nbPts;
+					mesh.addTriangle(j, k, centerId);
+				}
+			}
+
+			outMesh[i] = std::move(mesh);
 		}
 
 		cleanDirty();
 	}
 
 protected:
-	Data< QVector<Point> > points;
-	Data<Mesh> mesh;
+	Data< QVector<Path> > points;
+	Data< QVector<Mesh> > mesh;
 };
 
 int GeneratorMesh_OnePolygonClass = RegisterObject<GeneratorMesh_OnePolygon>("Generator/Mesh/Create one polygon").setName("Points to polygon").setDescription("Create a mesh (of one polygon) using a list of points");
