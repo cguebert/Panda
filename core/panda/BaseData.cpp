@@ -14,14 +14,8 @@
 namespace panda
 {
 
-BaseData::BaseData(const BaseInitData& init)
-	: m_readOnly(false)
-	, m_displayed(true)
-	, m_persistent(true)
-	, m_input(false)
-	, m_output(false)
-	, m_isValueSet(false)
-	, m_setParentProtection(false)
+BaseData::BaseData(const BaseInitData& init, const std::type_info& type)
+	: m_dataFlags(FLAG_DEFAULT)
 	, m_counter(0)
 	, m_name(init.name)
 	, m_help(init.help)
@@ -35,18 +29,14 @@ BaseData::BaseData(const BaseInitData& init)
 		exit(1);
 	}
 
+	initInternals(type);
+
 	if(m_owner)
 		m_owner->addData(this);
 }
 
-BaseData::BaseData(const QString& name, const QString& help, PandaObject* owner)
-	: m_readOnly(false)
-	, m_displayed(true)
-	, m_persistent(true)
-	, m_input(false)
-	, m_output(false)
-	, m_isValueSet(false)
-	, m_setParentProtection(false)
+BaseData::BaseData(const QString& name, const QString& help, PandaObject* owner, const std::type_info& type)
+	: m_dataFlags(FLAG_DEFAULT)
 	, m_counter(0)
 	, m_name(name)
 	, m_help(help)
@@ -54,6 +44,8 @@ BaseData::BaseData(const QString& name, const QString& help, PandaObject* owner)
 	, m_owner(owner)
 	, m_parentBaseData(nullptr)
 {
+	initInternals(type);
+
 	if(m_owner)
 		m_owner->addData(this);
 }
@@ -80,9 +72,9 @@ void BaseData::setParent(BaseData* parent)
 {
 	if(m_parentBaseData == parent)
 		return;
-	if(m_setParentProtection)
+	if(getFlag(FLAG_SETPARENTPROTECTION))
 		return;
-	m_setParentProtection = true;
+	setFlag(FLAG_SETPARENTPROTECTION, true);
 
 	if(parent)
 	{
@@ -103,7 +95,7 @@ void BaseData::setParent(BaseData* parent)
 		addInput(*parent);
 		BaseData::setDirtyValue(parent);
 		++m_counter;
-		m_isValueSet = true;
+		forceSet();
 	}
 	else
 	{
@@ -112,7 +104,7 @@ void BaseData::setParent(BaseData* parent)
 			removeInput(*m_inputs.front());
 	}
 
-	m_setParentProtection = false;
+	setFlag(FLAG_SETPARENTPROTECTION, false);
 }
 
 QString BaseData::getDescription() const
@@ -126,7 +118,7 @@ void BaseData::copyValueFrom(const BaseData* from)
 	helper::ScopedEvent log(helper::event_copyValue, this);
 #endif
 	if(m_dataCopier->copyData(this, from))
-		m_isValueSet = true;
+		forceSet();
 }
 
 void BaseData::save(QDomDocument& doc, QDomElement& elem) const
@@ -150,7 +142,7 @@ void BaseData::load(QDomElement& elem)
 void BaseData::doAddInput(DataNode& node)
 {
 	if(dynamic_cast<PandaObject*>(&node))
-		m_output = true;
+		setOutput(true);
 	DataNode::doAddInput(node);
 }
 
@@ -159,17 +151,17 @@ void BaseData::doRemoveInput(DataNode& node)
 	DataNode::doRemoveInput(node);
 	if(m_parentBaseData == &node)
 	{
-		if(m_owner && !m_setParentProtection)
+		if(m_owner && !getFlag(FLAG_SETPARENTPROTECTION))
 			m_owner->dataSetParent(this, nullptr);
 	}
 	else if(dynamic_cast<PandaObject*>(&node))
-		m_output = false;
+		setOutput(false);
 }
 
 void BaseData::doAddOutput(DataNode& node)
 {
 	if(dynamic_cast<PandaObject*>(&node))
-		m_input = true;
+		setInput(true);
 	DataNode::doAddOutput(node);
 }
 
@@ -177,7 +169,7 @@ void BaseData::doRemoveOutput(DataNode& node)
 {
 	DataNode::doRemoveOutput(node);
 	if(dynamic_cast<PandaObject*>(&node))
-		m_input = false;
+		setInput(false);
 }
 
 void BaseData::initInternals(const std::type_info& type)
@@ -185,8 +177,8 @@ void BaseData::initInternals(const std::type_info& type)
 	m_dataTrait = types::DataTraitsList::getTrait(type);
 	m_dataCopier = DataCopiersList::getCopier(type);
 
-	m_displayed = getDataTrait()->isDisplayed();
-	m_persistent = getDataTrait()->isPersistent();
+	setFlag(FLAG_DISPLAYED, getDataTrait()->isDisplayed());
+	setFlag(FLAG_PERSISTENT, getDataTrait()->isPersistent());
 }
 
 void BaseData::setDirtyValue(const DataNode* caller)

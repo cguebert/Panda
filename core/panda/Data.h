@@ -91,29 +91,26 @@ public:
 
 template<class T>
 Data<T>::Data(const BaseData::BaseInitData& init)
-	: BaseData(init)
+	: BaseData(init, typeid(T))
 	, m_value(value_type())
 	, m_parentData(nullptr)
 {
-	initInternals(typeid(T));
 }
 
 template<class T>
 Data<T>::Data(const InitData& init)
-	: BaseData(init)
+	: BaseData(init, typeid(T))
 	, m_parentData(nullptr)
 {
 	m_value = init.value;
-	initInternals(typeid(T));
 }
 
 template<class T>
 Data<T>::Data(const QString& name, const QString& help, PandaObject* owner)
-	: BaseData(name, help, owner)
+	: BaseData(name, help, owner, typeid(T))
 	, m_value(T())
 	, m_parentData(nullptr)
 {
-	initInternals(typeid(T));
 }
 
 template<class T>
@@ -144,7 +141,7 @@ template<class T>
 void Data<T>::setParent(BaseData* parent)
 {
 	// Treating disconnection of a data
-	if(!parent && !m_setParentProtection)
+	if(!parent && !getFlag(FLAG_SETPARENTPROTECTION))
 	{
 		if(!isPersistent()) // If the data is not persistent, we reset the value
 		{
@@ -217,7 +214,7 @@ inline typename Data<T>::reference Data<T>::beginEdit()
 template<class T>
 inline void Data<T>::endEdit()
 {
-	m_isValueSet = true;
+	forceSet();
 	cleanDirty();
 	BaseData::setDirtyOutputs();
 }

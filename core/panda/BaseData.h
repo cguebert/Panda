@@ -34,6 +34,7 @@ class PANDA_CORE_API BaseData : public DataNode
 {
 public:
 	PANDA_CLASS(BaseData, DataNode)
+
 	class BaseInitData
 	{
 	public:
@@ -43,8 +44,8 @@ public:
 		QString name, help;
 	};
 
-	explicit BaseData(const BaseInitData& init);
-	BaseData(const QString& name, const QString& help, PandaObject* owner);
+	explicit BaseData(const BaseInitData& init, const std::type_info& type);
+	BaseData(const QString& name, const QString& help, PandaObject* owner, const std::type_info& type);
 	virtual ~BaseData() {}
 
 	const QString getName() const;	/// Name used in the UI and for saving / loading
@@ -68,9 +69,9 @@ public:
 	void setDisplayed(bool displayed);
 	bool isPersistent() const;	/// Is it saved (some types don't want it)
 	void setPersistent(bool persistent);
-	bool isInput() const;		/// Is it used as of one the inputs of a PandaObject
+	bool isInput() const;		/// Is it used as of one of the inputs of a PandaObject
 	void setInput(bool input);
-	bool isOutput() const;		/// Is it used as of one the outputs of a PandaObject
+	bool isOutput() const;		/// Is it used as of one of the outputs of a PandaObject
 	void setOutput(bool output);
 
 	PandaObject* getOwner() const; /// The PandaObject that owns this Data
@@ -105,15 +106,30 @@ protected:
 
 	void initInternals(const std::type_info& type);
 
-	bool m_readOnly, m_displayed, m_persistent, m_input, m_output;
-	bool m_isValueSet;
-	bool m_setParentProtection;
+	enum DataFlagsEnum
+	{
+		FLAG_NONE = 0,
+		FLAG_READONLY = 1 << 0, /// Can this Data be edited in the GUI
+		FLAG_DISPLAYED = 1 << 1, /// Is it displayed in the GUI
+		FLAG_PERSISTENT = 1 << 2, /// Is it saved
+		FLAG_INPUT = 1 << 3, /// Is it an input of an object
+		FLAG_OUTPUT = 1 << 4, /// Is it an output of an object
+		FLAG_VALUE_SET = 1 << 5, /// Was the value modified from the default
+		FLAG_SETPARENTPROTECTION = 1 << 6 /// (internal) Are we modifying the parentage of this data
+	};
+	typedef unsigned DataFlags;
+	enum { FLAG_DEFAULT = FLAG_DISPLAYED | FLAG_PERSISTENT };
+
+	void setFlag(DataFlagsEnum flag, bool b);
+	bool getFlag(DataFlagsEnum flag) const;
+
+	DataFlags m_dataFlags;
 	int m_counter;
-	QString m_name, m_help, m_widget, m_widgetData;
 	PandaObject* m_owner;
 	BaseData* m_parentBaseData;
 	types::AbstractDataTrait* m_dataTrait;
 	AbstractDataCopier* m_dataCopier;
+	QString m_name, m_help, m_widget, m_widgetData;
 
 private:
 	BaseData() {}
@@ -158,46 +174,46 @@ inline void BaseData::setWidgetData(const QString& widgetData)
 { m_widgetData = widgetData; }
 
 inline bool BaseData::isSet() const
-{ return m_isValueSet; }
+{ return getFlag(FLAG_VALUE_SET); }
 
 inline void BaseData::unset()
-{ m_isValueSet = false; }
+{ setFlag(FLAG_VALUE_SET, false); }
 
 inline void BaseData::forceSet()
-{ m_isValueSet = true; }
+{ setFlag(FLAG_VALUE_SET, true); }
 
 inline int BaseData::getCounter() const
 { if(m_parentBaseData) return m_parentBaseData->getCounter(); return m_counter; }
 
 inline bool BaseData::isReadOnly() const
-{ return m_readOnly; }
+{ return getFlag(FLAG_READONLY); }
 
 inline void BaseData::setReadOnly(bool readOnly)
-{ m_readOnly = readOnly; }
+{ setFlag(FLAG_READONLY, readOnly); }
 
 inline bool BaseData::isDisplayed() const
-{ return m_displayed; }
+{ return getFlag(FLAG_DISPLAYED); }
 
 inline void BaseData::setDisplayed(bool displayed)
-{ m_displayed = displayed; }
+{ setFlag(FLAG_DISPLAYED, displayed); }
 
 inline bool BaseData::isPersistent() const
-{ return m_persistent; }
+{ return getFlag(FLAG_PERSISTENT); }
 
 inline void BaseData::setPersistent(bool persistent)
-{ m_persistent = persistent; }
+{ setFlag(FLAG_PERSISTENT, persistent); }
 
 inline bool BaseData::isInput() const
-{ return m_input; }
+{ return getFlag(FLAG_INPUT); }
 
 inline void BaseData::setInput(bool input)
-{ m_input = input; }
+{ setFlag(FLAG_INPUT, input); }
 
 inline bool BaseData::isOutput() const
-{ return m_output; }
+{ return getFlag(FLAG_OUTPUT); }
 
 inline void BaseData::setOutput(bool output)
-{ m_output = output; }
+{ setFlag(FLAG_OUTPUT, output); }
 
 inline PandaObject* BaseData::getOwner() const
 { return m_owner; }
@@ -213,6 +229,12 @@ inline const types::AbstractDataTrait* BaseData::getDataTrait() const
 
 inline VoidDataAccessor BaseData::getVoidAccessor()
 { return VoidDataAccessor(this); }
+
+inline void BaseData::setFlag(DataFlagsEnum flag, bool b)
+{ if(b) m_dataFlags |= (DataFlags)flag; else m_dataFlags &= ~(DataFlags)flag; }
+
+inline bool BaseData::getFlag(DataFlagsEnum flag) const
+{ return m_dataFlags & (DataFlags)flag; }
 
 } // namespace panda
 
