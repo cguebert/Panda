@@ -9,10 +9,12 @@ template <class T>
 class CustomData : public Data<T>
 {
 public:
+	PANDA_CLASS(PANDA_TEMPLATE(CustomData, T), PANDA_TEMPLATE(Data, T))
+
 	CustomData(const QString& name, const QString& help, PandaObject* owner)
 		: Data<T>(name, help, owner)
 	{ }
-	virtual void save(QDomDocument& doc, QDomElement& elem)
+	virtual void save(QDomDocument& doc, QDomElement& elem) const override
 	{
 		Data<T>::save(doc, elem);
 		QString w = getWidget();

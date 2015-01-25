@@ -88,8 +88,8 @@ public:
 
 	void copyValueFrom(const BaseData* parent); /// Copy the value from parent to this Data
 
-	void save(QDomDocument& doc, QDomElement& elem) const; /// Save the value of the Data in a Xml node
-	void load(QDomElement& elem); /// Load the value from Xml
+	virtual void save(QDomDocument& doc, QDomElement& elem) const; /// Save the value of the Data in a Xml node
+	virtual void load(QDomElement& elem); /// Load the value from Xml
 
 	void setDirtyValue(const DataNode* caller) override;
 

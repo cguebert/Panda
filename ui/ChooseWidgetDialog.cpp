@@ -90,4 +90,5 @@ void ChooseWidgetDialog::changeData()
 		m_data->setWidgetData("");
 	else
 		m_data->setWidgetData(m_parameters->toPlainText());
+	m_data->forceSet();
 }
