@@ -29,7 +29,7 @@ public:
 		const Mesh& inMesh = mesh.getValue();
 		auto pts = centroids.getAccessor();
 		pts.clear();
-		pts.resize(inMesh.getNumberOfTriangles());
+		pts.resize(inMesh.nbTriangles());
 
 		int i=0;
 		for(auto triangle : inMesh.getTriangles())

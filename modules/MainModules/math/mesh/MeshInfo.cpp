@@ -31,9 +31,9 @@ public:
 	{
 		const Mesh& inMesh = mesh.getValue();
 
-		nbPoints.setValue(inMesh.getNumberOfPoints());
-		nbEdges.setValue(inMesh.getNumberOfEdges());
-		nbTriangles.setValue(inMesh.getNumberOfTriangles());
+		nbPoints.setValue(inMesh.nbPoints());
+		nbEdges.setValue(inMesh.nbEdges());
+		nbTriangles.setValue(inMesh.nbTriangles());
 
 		cleanDirty();
 	}

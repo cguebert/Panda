@@ -34,7 +34,7 @@ public:
 		int nbPts = pts.size();
 		output.wref().fill(Mesh::InvalidID, nbPts);
 
-		int nbTri = inMesh.getNumberOfTriangles();
+		int nbTri = inMesh.nbTriangles();
 
 		for(int i=0; i<nbPts; ++i)
 		{

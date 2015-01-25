@@ -51,9 +51,9 @@ public:
 	TriangleID addTriangle(PointID p1, PointID p2, PointID p3);
 	void addTriangles(const SeqTriangles& triangles);
 
-	int getNumberOfPoints() const;
-	int getNumberOfEdges() const;
-	int getNumberOfTriangles() const;
+	int nbPoints() const;
+	int nbEdges() const;
+	int nbTriangles() const;
 
 	const SeqPoints& getPoints() const;
 	const SeqEdges& getEdges() const;
@@ -141,6 +141,16 @@ protected:
 	TrianglesIndicesList m_trianglesOnBorder;
 };
 
+PANDA_CORE_API void translate(Mesh& mesh, const Point& delta);
+PANDA_CORE_API Mesh translated(const Mesh& mesh, const Point& delta);
+
+PANDA_CORE_API void scale(Mesh& mesh, PReal scale);
+PANDA_CORE_API Mesh scaled(const Mesh& mesh, PReal scale);
+
+/// Rotate every point of the paths around the center, angle is given in radians
+PANDA_CORE_API void rotate(Mesh& mesh, const Point& center, PReal angle);
+PANDA_CORE_API Mesh rotated(const Mesh& mesh, const Point& center, PReal angle);
+
 //****************************************************************************//
 
 inline Mesh::Mesh() { }
@@ -175,22 +185,22 @@ inline Mesh::TriangleID Mesh::addTriangle(PointID p1, PointID p2, PointID p3)
 inline void Mesh::addTriangles(const SeqTriangles& triangles)
 { m_triangles += triangles; }
 
-inline int Mesh::getNumberOfPoints() const
+inline int Mesh::nbPoints() const
 { return m_points.size(); }
 
-inline int Mesh::getNumberOfEdges() const
+inline int Mesh::nbEdges() const
 { return m_edges.size(); }
 
-inline int Mesh::getNumberOfTriangles() const
+inline int Mesh::nbTriangles() const
 { return m_triangles.size(); }
 
-inline const Mesh::SeqPoints &Mesh::getPoints() const
+inline const Mesh::SeqPoints& Mesh::getPoints() const
 { return m_points; }
 
-inline const Mesh::SeqEdges &Mesh::getEdges() const
+inline const Mesh::SeqEdges& Mesh::getEdges() const
 { return m_edges; }
 
-inline const Mesh::SeqTriangles &Mesh::getTriangles() const
+inline const Mesh::SeqTriangles& Mesh::getTriangles() const
 { return m_triangles; }
 
 inline Point& Mesh::getPoint(PointID index)

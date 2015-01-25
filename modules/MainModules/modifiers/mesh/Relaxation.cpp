@@ -47,7 +47,7 @@ public:
 		}
 
 		int nbIter = iterations.getValue();
-		int nbPts = outMesh->getNumberOfPoints();
+		int nbPts = outMesh->nbPoints();
 		PReal fact = factor.getValue();
 		for(int i=0; i<nbIter; ++i)
 		{

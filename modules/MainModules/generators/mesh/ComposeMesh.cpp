@@ -100,7 +100,7 @@ public:
 
 		if(!inMesh.hasEdges())
 			inMesh.createEdgeList();
-		int nbEdges = inMesh.getNumberOfEdges();
+		int nbEdges = inMesh.nbEdges();
 		for(int i=0; i<nbEdges; ++i)
 		{
 			const Mesh::Edge& e = inMesh.getEdge(i);
@@ -181,7 +181,7 @@ public:
 		outMesh->clear();
 		outMesh->addPoints(inMesh.getPoints());
 
-		int nbTri = inMesh.getNumberOfTriangles();
+		int nbTri = inMesh.nbTriangles();
 
 		for(int i : triId)
 		{
@@ -285,7 +285,7 @@ public:
 
 		if(!inMesh.hasEdges())
 			inMesh.createEdgeList();
-		int nbEdges = inMesh.getNumberOfEdges();
+		int nbEdges = inMesh.nbEdges();
 
 		for(int i : edgesId)
 		{

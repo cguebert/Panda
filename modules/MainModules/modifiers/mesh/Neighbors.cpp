@@ -129,7 +129,7 @@ public:
 		outMeshes.clear();
 
 		std::set<Mesh::TriangleID> triSet;
-		for(int i=0, nb=inMesh.getNumberOfTriangles(); i<nb; ++i)
+		for(int i=0, nb=inMesh.nbTriangles(); i<nb; ++i)
 			triSet.insert(i);
 
 		while(!triSet.empty())

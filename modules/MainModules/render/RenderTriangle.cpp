@@ -43,7 +43,7 @@ public:
 		const Mesh& inMesh = mesh.getValue();
 		QVector<Color> listColor = color.getValue();
 
-		int nbTri = inMesh.getNumberOfTriangles();
+		int nbTri = inMesh.nbTriangles();
 		int nbColor = listColor.size();
 
 		if(nbTri && nbColor)

@@ -26,7 +26,7 @@ const Mesh::EdgesInTriangle &Mesh::getEdgesInTriangle(TriangleID index)
 	if(hasEdgesInTriangle())
 		createEdgesInTriangleList();
 
-	if((int)index < getNumberOfTriangles() && (int)index >= m_edgesInTriangle.size())
+	if((int)index < nbTriangles() && (int)index >= m_edgesInTriangle.size())
 		createEdgesInTriangleList();
 
 	return m_edgesInTriangle[index];
@@ -37,7 +37,7 @@ const Mesh::EdgesIndicesList& Mesh::getEdgesAroundPoint(PointID index)
 	if(!hasEdgesAroundPoint())
 		createEdgesAroundPointList();
 
-	if((int)index < getNumberOfPoints() && (int)index >= m_edgesAroundPoint.size())
+	if((int)index < nbPoints() && (int)index >= m_edgesAroundPoint.size())
 		createEdgesAroundPointList();
 
 	return m_edgesAroundPoint[index];
@@ -48,7 +48,7 @@ const Mesh::TrianglesIndicesList &Mesh::getTrianglesAroundPoint(PointID index)
 	if(!hasTrianglesAroundPoint())
 		createTrianglesAroundPointList();
 
-	if((int)index < getNumberOfPoints() && (int)index >= m_trianglesAroundPoint.size())
+	if((int)index < nbPoints() && (int)index >= m_trianglesAroundPoint.size())
 		createTrianglesAroundPointList();
 
 	return m_trianglesAroundPoint[index];
@@ -59,7 +59,7 @@ const Mesh::TrianglesIndicesList& Mesh::getTrianglesAroundEdge(EdgeID index)
 	if(!hasTrianglesAroundEdge())
 		createTrianglesAroundEdgeList();
 
-	if((int)index < getNumberOfEdges() && (int)index >= m_trianglesAroundEdge.size())
+	if((int)index < nbEdges() && (int)index >= m_trianglesAroundEdge.size())
 		createTrianglesAroundEdgeList();
 
 	return m_trianglesAroundEdge[index];
@@ -357,9 +357,8 @@ void Mesh::createEdgesAroundPointList()
 	if(hasEdgesAroundPoint())
 		clearEdgesAroundPoint();
 
-	m_edgesAroundPoint.resize(getNumberOfPoints());
-	int nbEdges = getNumberOfEdges();
-	for(int i=0; i<nbEdges; ++i)
+	m_edgesAroundPoint.resize(nbPoints());
+	for(int i=0, nb = nbEdges(); i < nb; ++i)
 	{
 		m_edgesAroundPoint[m_edges[i][0]].push_back(i);
 		m_edgesAroundPoint[m_edges[i][1]].push_back(i);
@@ -374,8 +373,8 @@ void Mesh::createTrianglesAroundPointList()
 	if(hasTrianglesAroundPoint())
 		clearTrianglesAroundPoint();
 
-	m_trianglesAroundPoint.resize(getNumberOfPoints());
-	int nbTri = getNumberOfTriangles();
+	m_trianglesAroundPoint.resize(nbPoints());
+	int nbTri = nbTriangles();
 	for(int i=0; i<nbTri; ++i)
 	{
 		const Triangle& t = m_triangles[i];
@@ -395,10 +394,10 @@ void Mesh::createTrianglesAroundEdgeList()
 	if(!hasEdgesInTriangle())
 		createEdgesInTriangleList();
 
-	const int nbTri = getNumberOfTriangles();
-	const int nbEdges = getNumberOfEdges();
+	const int nbTri = nbTriangles();
+	const int nbE = nbEdges();
 
-	m_trianglesAroundEdge.resize(nbEdges);
+	m_trianglesAroundEdge.resize(nbE);
 	for(int i=0; i<nbTri; ++i)
 	{
 		const EdgesInTriangle& eit = m_edgesInTriangle[i];
@@ -419,7 +418,7 @@ void Mesh::createElementsOnBorder()
 	m_edgesOnBorder.clear();
 	m_trianglesOnBorder.clear();
 
-	for(int i=0, nb=getNumberOfEdges(); i<nb; ++i)
+	for(int i=0, nb=nbEdges(); i<nb; ++i)
 	{
 		if(m_trianglesAroundEdge[i].size() == 1) // On a border
 		{
@@ -456,13 +455,13 @@ void Mesh::createTriangles()
 	if(hasTriangles())
 		clearTriangles();
 
-	const int nbEdges = getNumberOfEdges();
 	QList<int> tmpEdgesId;
-	for(int i=0; i<nbEdges; ++i)
+	const int nbE = nbEdges();
+	for(int i=0; i<nbE; ++i)
 		tmpEdgesId.push_back(i);
 
 	clearTrianglesAroundEdge();
-	m_trianglesAroundEdge.resize(nbEdges);
+	m_trianglesAroundEdge.resize(nbE);
 
 	while(!tmpEdgesId.empty())
 	{
@@ -528,6 +527,60 @@ void Mesh::clear()
 	clearTrianglesAroundPoint();
 	clearTrianglesAroundEdge();
 	clearBorderElementLists();
+}
+
+//****************************************************************************//
+
+void translate(Mesh& mesh, const Point& delta)
+{
+	for(int i=0, nb = mesh.nbPoints(); i < nb; ++i)
+		mesh.getPoint(i) += delta;
+}
+
+Mesh translated(const Mesh& mesh, const Point& delta)
+{
+	Mesh tmp = mesh;
+	for(int i=0, nb = tmp.nbPoints(); i < nb; ++i)
+		tmp.getPoint(i) += delta;
+	return tmp;
+}
+
+void scale(Mesh& mesh, PReal scale)
+{
+	for(int i=0, nb = mesh.nbPoints(); i < nb; ++i)
+		mesh.getPoint(i) *= scale;
+}
+
+Mesh scaled(const Mesh& mesh, PReal scale)
+{
+	Mesh tmp = mesh;
+	for(int i=0, nb = tmp.nbPoints(); i < nb; ++i)
+		tmp.getPoint(i) *= scale;
+	return tmp;
+}
+
+void rotate(Mesh& mesh, const Point& center, PReal angle)
+{
+	PReal ca = cos(angle), sa = sin(angle);
+	for(int i=0, nb = mesh.nbPoints(); i < nb; ++i)
+	{
+		Point& point = mesh.getPoint(i);
+		Point pt = point - center;
+		point = center + Point(pt.x*ca-pt.y*sa, pt.x*sa+pt.y*ca);
+	}
+}
+
+Mesh rotated(const Mesh& mesh, const Point& center, PReal angle)
+{
+	PReal ca = cos(angle), sa = sin(angle);
+	Mesh tmp = mesh;
+	for(int i=0, nb = tmp.nbPoints(); i < nb; ++i)
+	{
+		Point& point = tmp.getPoint(i);
+		Point pt = point - center;
+		point = center + Point(pt.x*ca-pt.y*sa, pt.x*sa+pt.y*ca);
+	}
+	return tmp;
 }
 
 //****************************************************************************//

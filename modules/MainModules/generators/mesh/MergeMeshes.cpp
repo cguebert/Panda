@@ -63,7 +63,7 @@ public:
 			else
 			{
 				QMap<Mesh::PointID, Mesh::PointID> tmpIDMap;
-				for(int i=0, nb=mesh.getNumberOfPoints(); i<nb; ++i)
+				for(int i=0, nb=mesh.nbPoints(); i<nb; ++i)
 				{
 					const Point& pt = mesh.getPoint(i);
 					Point res;

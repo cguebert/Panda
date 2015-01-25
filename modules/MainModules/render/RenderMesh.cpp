@@ -45,8 +45,8 @@ public:
 		const Mesh& inMesh = mesh.getValue();
 		QVector<Color> listColor = color.getValue();
 
-		int nbPts = inMesh.getNumberOfPoints();
-		int nbTri = inMesh.getNumberOfTriangles();
+		int nbPts = inMesh.nbPoints();
+		int nbTri = inMesh.nbTriangles();
 		int nbColor = listColor.size();
 
 		if(nbTri && nbColor)
@@ -113,8 +113,8 @@ public:
 		QVector<Point> listCoords = uvCoords.getValue();
 		const int texId = texture.getValue().getTextureId();
 
-		int nbPts = inMesh.getNumberOfPoints();
-		int nbTri = inMesh.getNumberOfTriangles();
+		int nbPts = inMesh.nbPoints();
+		int nbTri = inMesh.nbTriangles();
 		int nbCoords = listCoords.size();
 
 		if(nbTri && (nbPts == nbCoords) && texId)
