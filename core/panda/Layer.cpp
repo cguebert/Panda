@@ -109,6 +109,8 @@ Layer::Layer(PandaDocument* parent)
 	, m_compositionMode(initData(&m_compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
 	, m_opacity(initData(&m_opacity, (PReal)1.0, "opacity", "Set the opacity of the layer"))
 {
+	m_name = "Default layer"; // Any Layer created by the Factory will have its name changed
+
 	addInput(m_layerName);
 	addInput(m_opacity);
 	addInput(m_compositionMode);
