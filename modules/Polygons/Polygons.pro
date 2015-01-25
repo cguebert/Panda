@@ -13,6 +13,7 @@ HEADERS       = \
 SOURCES       = \
 	ComposePolygon.cpp \
 	PolygonOperations.cpp \
+	PolygonMath.cpp \
 	polygonsModule.cpp \
 	SimplePolygons.cpp \
 	Triangulation.cpp \

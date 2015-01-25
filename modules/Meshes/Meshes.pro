@@ -10,6 +10,7 @@ SOURCES       = \
 	MergeMeshes.cpp \
 	meshesModule.cpp \
 	MeshInfo.cpp \
+	MeshMath.cpp \
 	Neighbors.cpp \
 	Relaxation.cpp \
 	Voronoi.cpp
