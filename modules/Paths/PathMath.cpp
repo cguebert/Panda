@@ -12,6 +12,162 @@ namespace panda {
 using types::Point;
 using types::Path;
 
+class PathMath_Translation : public PandaObject
+{
+public:
+	PANDA_CLASS(PathMath_Translation, PandaObject)
+
+	PathMath_Translation(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData(&m_input, "input", "Path to translate"))
+		, m_delta(initData(&m_delta, "translation", "Value of the translation"))
+		, m_output(initData(&m_output, "output", "Translated path"))
+	{
+		addInput(m_input);
+		addInput(m_delta);
+
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		const auto& delta = m_delta.getValue();
+		auto output = m_output.getAccessor();
+
+		int nbA = input.size(), nbB = delta.size();
+		if(nbA && nbB)
+		{
+			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
+			else if(nbB < nbA && nbB > 1)	nbA = nbB;
+			int nb = qMax(nbA, nbB);
+			output.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				output[i] = input[i%nbA] + delta[i%nbB];
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Path> > m_input, m_output;
+	Data< QVector<Point> > m_delta;
+};
+
+int PathMath_TranslationClass = RegisterObject<PathMath_Translation>("Math/Path/Translation").setName("Translate path").setDescription("Translate a path");
+
+//****************************************************************************//
+
+class PathMath_Scale : public PandaObject
+{
+public:
+	PANDA_CLASS(PathMath_Scale, PandaObject)
+
+	PathMath_Scale(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData(&m_input, "input", "Path to scale"))
+		, m_scale(initData(&m_scale, "scale", "Value of the scale"))
+		, m_output(initData(&m_output, "output", "Scaled path"))
+	{
+		addInput(m_input);
+		addInput(m_scale);
+
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		const auto& scale = m_scale.getValue();
+		auto output = m_output.getAccessor();
+
+		int nbA = input.size(), nbB = scale.size();
+		if(nbA && nbB)
+		{
+			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
+			else if(nbB < nbA && nbB > 1)	nbA = nbB;
+			int nb = qMax(nbA, nbB);
+			output.resize(nb);
+
+			for(int i=0; i<nb; ++i)
+				output[i] = input[i%nbA] * scale[i%nbB];
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Path> > m_input, m_output;
+	Data< QVector<PReal> > m_scale;
+};
+
+int PathMath_ScaleClass = RegisterObject<PathMath_Scale>("Math/Path/Scale").setName("Scale path").setDescription("Scale a path");
+
+//****************************************************************************//
+
+class PathMath_Rotate : public PandaObject
+{
+public:
+	PANDA_CLASS(PathMath_Rotate, PandaObject)
+
+	PathMath_Rotate(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData(&m_input, "input", "Path to rotate"))
+		, m_center(initData(&m_center, "center", "Center of the rotation"))
+		, m_angle(initData(&m_angle, "angle", "Angle of the rotation"))
+		, m_output(initData(&m_output, "output", "Rotated path"))
+	{
+		addInput(m_input);
+		addInput(m_center);
+		addInput(m_angle);
+
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		const auto& center = m_center.getValue();
+		const auto& angle = m_angle.getValue();
+		auto output = m_output.getAccessor();
+
+		int nbP = input.size(), nbC = center.size(), nbA = angle.size();
+		if(nbP && nbC && nbA)
+		{
+			int nb = nbP;
+			if(nbP > 1)
+			{
+				if(nbC != nbP) nbC = 1;
+				if(nbA != nbA) nbA = 1;
+			}
+			else
+			{
+				if(nbC > nbA && nbA > 1)		nbC = nbA;
+				else if(nbA > nbC && nbC > 1)	nbA = nbC;
+				nb = qMax(nbA, nbC);
+			}
+
+			output.resize(nb);
+
+			PReal PI180 = static_cast<PReal>(M_PI) / static_cast<PReal>(180.0);
+			for(int i=0; i<nb; ++i)
+				output[i] = types::rotated(input[i%nbP], center[i%nbC], angle[i%nbA] * PI180);
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Path> > m_input, m_output;
+	Data< QVector<Point> > m_center;
+	Data< QVector<PReal> > m_angle;
+};
+
+int PathMath_RotateClass = RegisterObject<PathMath_Rotate>("Math/Path/Rotate").setName("Rotate path").setDescription("Rotate a path");
+
+//****************************************************************************//
+
 class PathMath_Length : public PandaObject
 {
 public:
