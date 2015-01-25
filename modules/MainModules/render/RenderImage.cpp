@@ -22,11 +22,11 @@ public:
 
 	RenderImage(PandaDocument* parent)
 		: Renderer(parent)
-		, image(initData(&image, "image", "Image to render on screen" ))
-		, center(initData(&center, "center", "Center position of the image"))
-		, rotation(initData(&rotation, "rotation", "Rotation of the image"))
-		, drawCentered(initData(&drawCentered, 0, "drawCentered", "If non zero use the center of the image, else use the top-left corner"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, image(initData("image", "Image to render on screen" ))
+		, center(initData("center", "Center position of the image"))
+		, rotation(initData("rotation", "Rotation of the image"))
+		, drawCentered(initData(0, "drawCentered", "If non zero use the center of the image, else use the top-left corner"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(image);
 		addInput(center);

@@ -18,11 +18,11 @@ public:
 
 	PointListMath_Center(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "points", "List of points to analyse"))
-		, nbElements(initData(&nbElements, "# of elements", "Size of the list"))
-		, center(initData(&center, "center", "Center position of the list of points"))
-		, mean(initData(&mean, "mean distance", "Mean distance to the center"))
-		, stdDev(initData(&stdDev, "std dev", "Standard deviation of the distance to the center"))
+		, input(initData("points", "List of points to analyse"))
+		, nbElements(initData("# of elements", "Size of the list"))
+		, center(initData("center", "Center position of the list of points"))
+		, mean(initData("mean distance", "Mean distance to the center"))
+		, stdDev(initData("std dev", "Standard deviation of the distance to the center"))
 	{
 		addInput(input);
 

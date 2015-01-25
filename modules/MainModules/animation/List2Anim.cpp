@@ -16,10 +16,10 @@ public:
 
 	List2Anim(PandaDocument *doc)
 		: GenericObject(doc)
-		, keys(initData(&keys, "keys", "List of keys for the animations"))
-		, interpolation(initData(&interpolation, 0, "interpolation", "Interpolation method between two values"))
-		, extend(initData(&extend, 0, "extend", "What to do when a position is outside the boundaries"))
-		, generic(initData(&generic, "input", "Connect here the lists of values"))
+		, keys(initData("keys", "List of keys for the animations"))
+		, interpolation(initData(0, "interpolation", "Interpolation method between two values"))
+		, extend(initData(0, "extend", "What to do when a position is outside the boundaries"))
+		, generic(initData("input", "Connect here the lists of values"))
 	{
 		addInput(keys);
 		addInput(interpolation);
@@ -99,7 +99,7 @@ public:
 
 	Anim2List(PandaDocument *doc)
 		: GenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here the animations to get the values from"))
+		, generic(initData("input", "Connect here the animations to get the values from"))
 	{
 		addInput(generic);
 

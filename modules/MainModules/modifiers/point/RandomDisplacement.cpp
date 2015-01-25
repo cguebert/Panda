@@ -16,13 +16,13 @@ public:
 
 	ModifierPoints_RandomDisplacement(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputPoints(initData(&inputPoints, "input", "List of points to move"))
-		, outputPoints(initData(&outputPoints, "output", "List of moved points"))
-		, minAngle(initData(&minAngle, (PReal)0.0, "minAngle", "Minimum angle of the direction in which to move the points"))
-		, maxAngle(initData(&maxAngle, (PReal)360.0, "maxAngle", "Maximum angle of the direction in which to move the points"))
-		, minDist(initData(&minDist, (PReal)0.0, "minDist", "Minimum distance over which to move the points"))
-		, maxDist(initData(&maxDist, (PReal)100.0, "maxDist", "Maximum distance over which to move the points"))
-		, seed(initData(&seed, 0, "seed", "Seed for the random number generator"))
+		, inputPoints(initData("input", "List of points to move"))
+		, outputPoints(initData("output", "List of moved points"))
+		, minAngle(initData((PReal)0.0, "minAngle", "Minimum angle of the direction in which to move the points"))
+		, maxAngle(initData((PReal)360.0, "maxAngle", "Maximum angle of the direction in which to move the points"))
+		, minDist(initData((PReal)0.0, "minDist", "Minimum distance over which to move the points"))
+		, maxDist(initData((PReal)100.0, "maxDist", "Maximum distance over which to move the points"))
+		, seed(initData(0, "seed", "Seed for the random number generator"))
 	{
 		addInput(inputPoints);
 		addInput(minAngle);

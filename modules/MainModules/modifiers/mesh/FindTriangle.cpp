@@ -15,9 +15,9 @@ public:
 
 	ModifierMesh_FindTriangle(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData(&mesh, "mesh", "Mesh in which to search"))
-		, points(initData(&points, "points", "List of points to test"))
-		, indices(initData(&indices, "indices", "Indices of the triangles at the corresponding points"))
+		, mesh(initData("mesh", "Mesh in which to search"))
+		, points(initData("points", "List of points to test"))
+		, indices(initData("indices", "Indices of the triangles at the corresponding points"))
 	{
 		addInput(mesh);
 		addInput(points);

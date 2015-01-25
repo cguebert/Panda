@@ -15,9 +15,9 @@ public:
 
 	ModifierColor_InGradient(PandaDocument *doc)
 		: PandaObject(doc)
-		, gradient(initData(&gradient, "gradient", "The gradient from which to get the color"))
-		, position(initData(&position, "position", "Position in the gradient where to get the color"))
-		, color(initData(&color, "color", "Color extracted from the gradient"))
+		, gradient(initData("gradient", "The gradient from which to get the color"))
+		, position(initData("position", "Position in the gradient where to get the color"))
+		, color(initData("color", "Color extracted from the gradient"))
 	{
 		addInput(gradient);
 		addInput(position);

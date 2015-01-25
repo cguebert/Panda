@@ -18,8 +18,8 @@ public:
 
 	ModifierImage_Save(PandaDocument *doc)
 		: PandaObject(doc)
-		, fileName(initData(&fileName, "fileName", "Path where the image has to be saved"))
-		, image(initData(&image, "image", "The image to be saved"))
+		, fileName(initData("fileName", "Path where the image has to be saved"))
+		, image(initData("image", "The image to be saved"))
 		, inStep(false)
 	{
 		addInput(image);

@@ -17,8 +17,8 @@ public:
 
 	ParticleDestruction_Age(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, maxAge(initData(&maxAge, (PReal)1.0, "max age", "Remove particles older than this age"))
-		, variation(initData(&variation, (PReal)0.0, "variation", "Particles can randomly live longer by this amount"))
+		, maxAge(initData((PReal)1.0, "max age", "Remove particles older than this age"))
+		, variation(initData((PReal)0.0, "variation", "Particles can randomly live longer by this amount"))
 	{
 		addInput(maxAge);
 		addInput(variation);
@@ -83,7 +83,7 @@ public:
 
 	ParticleDestruction_Index(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, indices(initData(&indices, "indices", "Remove these particles"))
+		, indices(initData("indices", "Remove these particles"))
 	{
 		addInput(indices);
 	}
@@ -113,8 +113,8 @@ public:
 
 	ParticleDestruction_InRectangle(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, rectangle(initData(&rectangle, "rectangle", "Remove particles that are in this rectangle"))
-		, inverse(initData(&inverse, "inverse", "If true, remove particles that are outside the rectangle instead"))
+		, rectangle(initData("rectangle", "Remove particles that are in this rectangle"))
+		, inverse(initData("inverse", "If true, remove particles that are outside the rectangle instead"))
 	{
 		addInput(rectangle);
 		addInput(inverse);

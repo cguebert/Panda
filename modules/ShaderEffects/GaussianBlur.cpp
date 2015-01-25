@@ -14,7 +14,7 @@ public:
 
 	ModifierImage_GaussianBlur(PandaDocument* doc)
 		: ShaderEffects(doc, 2)
-		, m_radius(initData(&m_radius, (PReal)10, "radius", "Radius of the blur"))
+		, m_radius(initData((PReal)10, "radius", "Radius of the blur"))
 		, m_currentRadius(-1)
 		, m_halfKernelSize(0)
 	{

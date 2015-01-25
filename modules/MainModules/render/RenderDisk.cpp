@@ -28,10 +28,10 @@ public:
 
 	RenderDisk(PandaDocument* parent)
 		: Renderer(parent)
-		, center(initData(&center, "center", "Center position of the disk"))
-		, radius(initData(&radius, "radius", "Radius of the disk"))
-		, color(initData(&color, "color", "Color of the plain disk"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, center(initData("center", "Center position of the disk"))
+		, radius(initData("radius", "Radius of the disk"))
+		, color(initData("color", "Color of the plain disk"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(center);
 		addInput(radius);
@@ -156,10 +156,10 @@ public:
 
 	RenderDisk_Gradient(PandaDocument* parent)
 		: Renderer(parent)
-		, center(initData(&center, "center", "Center position of the disk"))
-		, radius(initData(&radius, "radius", "Radius of the disk"))
-		, gradient(initData(&gradient, "gradient", "Gradient used to fill the disk"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, center(initData("center", "Center position of the disk"))
+		, radius(initData("radius", "Radius of the disk"))
+		, gradient(initData("gradient", "Gradient used to fill the disk"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(center);
 		addInput(radius);
@@ -328,10 +328,10 @@ public:
 
 	RenderDisk_Textured(PandaDocument* parent)
 		: Renderer(parent)
-		, center(initData(&center, "center", "Center position of the disk"))
-		, radius(initData(&radius, "radius", "Radius of the disk"))
-		, texture(initData(&texture, "texture", "Texture applied to the disk"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, center(initData("center", "Center position of the disk"))
+		, radius(initData("radius", "Radius of the disk"))
+		, texture(initData("texture", "Texture applied to the disk"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(center);
 		addInput(radius);

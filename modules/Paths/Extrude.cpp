@@ -21,12 +21,12 @@ public:
 
 	PointListMath_Extrude(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "List of control points"))		
-		, width(initData(&width, "width", "Width of the line"))
-		, capStyle(initData(&capStyle, "cap", "Style of the caps"))
-		, joinStyle(initData(&joinStyle, "join", "Style of the joins"))
-		, output(initData(&output, "output", "Mesh created from the extrusion"))
-		, coordUV(initData(&coordUV, "UV coords", "UV coords of the points in the mesh"))
+		, input(initData("input", "List of control points"))		
+		, width(initData("width", "Width of the line"))
+		, capStyle(initData("cap", "Style of the caps"))
+		, joinStyle(initData("join", "Style of the joins"))
+		, output(initData("output", "Mesh created from the extrusion"))
+		, coordUV(initData("UV coords", "UV coords of the points in the mesh"))
 	{
 		addInput(input);
 		addInput(width);

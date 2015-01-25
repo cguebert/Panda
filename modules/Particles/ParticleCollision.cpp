@@ -13,10 +13,10 @@ public:
 
 	ParticleCollision_PenalityLines(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, lines(initData(&lines, "lines", "The collision lines"))
-		, repulsionForce(initData(&repulsionForce, "force", "Maximum magnitude of the repulsion force"))
-		, influenceDist(initData(&influenceDist, (PReal)20, "distance", "Threshold distance from the line below which particles are repulsed"))
-		, bothSides(initData(&bothSides, 1, "both sides", "If true, apply repulsion forces on both sides of the line"))
+		, lines(initData("lines", "The collision lines"))
+		, repulsionForce(initData("force", "Maximum magnitude of the repulsion force"))
+		, influenceDist(initData((PReal)20, "distance", "Threshold distance from the line below which particles are repulsed"))
+		, bothSides(initData(1, "both sides", "If true, apply repulsion forces on both sides of the line"))
 	{
 		addInput(lines);
 		addInput(repulsionForce);

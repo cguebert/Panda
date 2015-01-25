@@ -18,9 +18,9 @@ public:
 
 	ModifierImage_Enblend(PandaDocument* doc)
 		: PandaObject(doc)
-		, m_input(initData(&m_input, "input", "The original image"))
-		, m_output(initData(&m_output, "output", "Image created by the operation"))
-		, m_levels(initData(&m_levels, 4, "levels", "Number of levels to use"))
+		, m_input(initData("input", "The original image"))
+		, m_output(initData("output", "Image created by the operation"))
+		, m_levels(initData(4, "levels", "Number of levels to use"))
 	{
 		addInput(m_input);
 		addInput(m_levels);

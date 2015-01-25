@@ -14,7 +14,7 @@ public:
 
 	FindItem(PandaDocument *doc)
 		: GenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here the lists in which to look for the values"))
+		, generic(initData("input", "Connect here the lists in which to look for the values"))
 	{
 		addInput(generic);
 

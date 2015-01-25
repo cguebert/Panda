@@ -14,7 +14,7 @@ public:
 
 	ReplaceItem(PandaDocument *doc)
 		: GenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here the lists to get the items from"))
+		, generic(initData("input", "Connect here the lists to get the items from"))
 	{
 		addInput(generic);
 

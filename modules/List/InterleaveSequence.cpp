@@ -12,7 +12,7 @@ public:
 
 	InterleaveSequence(PandaDocument *doc)
 		: SingleTypeGenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here a list to interleave to the result"))
+		, generic(initData("input", "Connect here a list to interleave to the result"))
 		, index(0)
 		, nbDatas(0)
 	{

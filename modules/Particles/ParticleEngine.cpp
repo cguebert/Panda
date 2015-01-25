@@ -21,9 +21,9 @@ using types::Point;
 
 ParticleEngine::ParticleEngine(PandaDocument *doc)
 	: DockObject(doc)
-	, positions(initData(&positions, "positions", "List of the particles' position"))
-	, velocities(initData(&velocities, "velocities", "List of the particles' velocity"))
-	, accelerations(initData(&accelerations, "accelerations", "List of the particles' acceleration"))
+	, positions(initData("positions", "List of the particles' position"))
+	, velocities(initData("velocities", "List of the particles' velocity"))
+	, accelerations(initData("accelerations", "List of the particles' acceleration"))
 	, prevTime(0.0)
 {
 	addOutput(positions);

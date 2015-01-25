@@ -14,9 +14,9 @@ public:
 	GeneratorPoint_MouseInfo(PandaDocument *doc)
 		: PandaObject(doc)
 		, m_firstTimestep(true)
-		, m_position(initData(&m_position, "position", "Position of the mouse this timestep"))
-		, m_movement(initData(&m_movement, "movement", "Movement of the mouse from the last timestep"))
-		, m_clickState(initData(&m_clickState, 0, "click", "1 if the mouse button is pressed"))
+		, m_position(initData("position", "Position of the mouse this timestep"))
+		, m_movement(initData("movement", "Movement of the mouse from the last timestep"))
+		, m_clickState(initData(0, "click", "1 if the mouse button is pressed"))
 	{
 		addOutput(m_position);
 		addOutput(m_movement);

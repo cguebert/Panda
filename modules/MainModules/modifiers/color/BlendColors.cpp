@@ -15,10 +15,10 @@ public:
 
 	ModifierColor_Blend(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "input 1", "The first color"))
-		, inputB(initData(&inputB, "input 2", "The second color"))
-		, output(initData(&output, "output", "Resulting color"))
-		, blendMode(initData(&blendMode, "mode", "Method used to blend the colors"))
+		, inputA(initData("input 1", "The first color"))
+		, inputB(initData("input 2", "The second color"))
+		, output(initData("output", "Resulting color"))
+		, blendMode(initData("mode", "Method used to blend the colors"))
 	{
 		addInput(inputA);
 		addInput(inputB);

@@ -13,9 +13,9 @@ public:
 
 	GeneratorPoints_Compose(PandaDocument *doc)
 		: PandaObject(doc)
-		, ptX(initData(&ptX, "x", "Horizontal position of the point"))
-		, ptY(initData(&ptY, "y", "Vertical position of the point"))
-		, point(initData(&point, "point", "Point created from the 2 coordinates"))
+		, ptX(initData("x", "Horizontal position of the point"))
+		, ptY(initData("y", "Vertical position of the point"))
+		, point(initData("point", "Point created from the 2 coordinates"))
 	{
 		addInput(ptX);
 		addInput(ptY);
@@ -56,9 +56,9 @@ public:
 
 	GeneratorPoints_Decompose(PandaDocument *doc)
 		: PandaObject(doc)
-		, ptX(initData(&ptX, "x", "Horizontal position of the point"))
-		, ptY(initData(&ptY, "y", "Vertical position of the point"))
-		, point(initData(&point, "point", "Point from which to extract the 2 coordinates"))
+		, ptX(initData("x", "Horizontal position of the point"))
+		, ptY(initData("y", "Vertical position of the point"))
+		, point(initData("point", "Point from which to extract the 2 coordinates"))
 	{
 		addInput(point);
 

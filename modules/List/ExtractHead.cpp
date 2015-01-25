@@ -12,8 +12,8 @@ public:
 
 	ExtractHead(PandaDocument *doc)
 		: GenericObject(doc)
-		, value(initData(&value, 1, "head", "This number of items will be extracted from the start of the list"))
-		, generic(initData(&generic, "input", "Connect here the first list"))
+		, value(initData(1, "head", "This number of items will be extracted from the start of the list"))
+		, generic(initData("input", "Connect here the first list"))
 	{
 		addInput(value);
 		addInput(generic);

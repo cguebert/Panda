@@ -19,9 +19,9 @@ public:
 
 	ModifierImage_Downscale(PandaDocument* doc)
 		: PandaObject(doc)
-		, m_input(initData(&m_input, "input", "The original image"))
-		, m_output(initData(&m_output, "output", "Image created by the operation"))
-		, m_nbOfDownscales(initData(&m_nbOfDownscales, 1, "downscales", "Number of times the image is to be downscaled"))
+		, m_input(initData("input", "The original image"))
+		, m_output(initData("output", "Image created by the operation"))
+		, m_nbOfDownscales(initData(1, "downscales", "Number of times the image is to be downscaled"))
 	{
 		addInput(m_input);
 		addInput(m_nbOfDownscales);
@@ -100,9 +100,9 @@ public:
 
 	ModifierImage_Upscale(PandaDocument* doc)
 		: PandaObject(doc)
-		, m_input(initData(&m_input, "input", "The original image"))
-		, m_output(initData(&m_output, "output", "Image created by the operation"))
-		, m_nbOfUpscales(initData(&m_nbOfUpscales, 1, "upscales", "Number of times the image is to be upscaled"))
+		, m_input(initData("input", "The original image"))
+		, m_output(initData("output", "Image created by the operation"))
+		, m_nbOfUpscales(initData(1, "upscales", "Number of times the image is to be upscaled"))
 	{
 		addInput(m_input);
 		addInput(m_nbOfUpscales);

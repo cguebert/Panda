@@ -18,11 +18,11 @@ public:
 
 	AnimationInterpolation(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "from", "Start value of the interpolation"))
-		, inputB(initData(&inputB, "to", "End value of the interpolation"))
-		, progress(initData(&progress, "progress", "Position inside the interpolation"))
-		, result(initData(&result, "result", "Result of the interpolation"))
-		, mode(initData(&mode, 0, "mode", "Interpolation mode"))
+		, inputA(initData("from", "Start value of the interpolation"))
+		, inputB(initData("to", "End value of the interpolation"))
+		, progress(initData("progress", "Position inside the interpolation"))
+		, result(initData("result", "Result of the interpolation"))
+		, mode(initData(0, "mode", "Interpolation mode"))
 	{
 		addInput(inputA);
 		addInput(inputB);

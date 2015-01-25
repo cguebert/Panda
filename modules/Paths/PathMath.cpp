@@ -19,9 +19,9 @@ public:
 
 	PathMath_Translation(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input(initData(&m_input, "input", "Path to translate"))
-		, m_delta(initData(&m_delta, "translation", "Value of the translation"))
-		, m_output(initData(&m_output, "output", "Translated path"))
+		, m_input(initData("input", "Path to translate"))
+		, m_delta(initData("translation", "Value of the translation"))
+		, m_output(initData("output", "Translated path"))
 	{
 		addInput(m_input);
 		addInput(m_delta);
@@ -66,9 +66,9 @@ public:
 
 	PathMath_Scale(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input(initData(&m_input, "input", "Path to scale"))
-		, m_scale(initData(&m_scale, "scale", "Value of the scale"))
-		, m_output(initData(&m_output, "output", "Scaled path"))
+		, m_input(initData("input", "Path to scale"))
+		, m_scale(initData("scale", "Value of the scale"))
+		, m_output(initData("output", "Scaled path"))
 	{
 		addInput(m_input);
 		addInput(m_scale);
@@ -113,10 +113,10 @@ public:
 
 	PathMath_Rotate(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input(initData(&m_input, "input", "Path to rotate"))
-		, m_center(initData(&m_center, "center", "Center of the rotation"))
-		, m_angle(initData(&m_angle, "angle", "Angle of the rotation"))
-		, m_output(initData(&m_output, "output", "Rotated path"))
+		, m_input(initData("input", "Path to rotate"))
+		, m_center(initData("center", "Center of the rotation"))
+		, m_angle(initData("angle", "Angle of the rotation"))
+		, m_output(initData("output", "Rotated path"))
 	{
 		addInput(m_input);
 		addInput(m_center);
@@ -175,9 +175,9 @@ public:
 
 	PathMath_Length(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "path", "Path to analyse"))
-		, nbPoints(initData(&nbPoints, "# of points", "Number of points in the path"))
-		, length(initData(&length, "length", "Length of the path"))
+		, input(initData("path", "Path to analyse"))
+		, nbPoints(initData("# of points", "Number of points in the path"))
+		, length(initData("length", "Length of the path"))
 	{
 		addInput(input);
 
@@ -235,10 +235,10 @@ public:
 
 	PathMath_GetPoint(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "path", "Input Path"))
-		, position(initData(&position, "position", "Position of the point on the curve"))
-		, abscissa(initData(&abscissa, "abscissa", "Abscissa of the point to find"))
-		, rotation(initData(&rotation, "rotation", "Rotation of the point on the curve"))
+		, input(initData("path", "Input Path"))
+		, position(initData("position", "Position of the point on the curve"))
+		, abscissa(initData("abscissa", "Abscissa of the point to find"))
+		, rotation(initData("rotation", "Rotation of the point on the curve"))
 	{
 		addInput(input);
 		addInput(abscissa);

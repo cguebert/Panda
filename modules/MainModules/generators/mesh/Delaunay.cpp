@@ -38,8 +38,8 @@ public:
 
 	GeneratorMesh_Delaunay(PandaDocument *doc)
 		: PandaObject(doc)
-		, vertices(initData(&vertices, "vertices", "Sites of the Delaunay triangulation"))
-		, mesh(initData(&mesh, "mesh", "Mesh created from the Delaunay triangulation"))
+		, vertices(initData("vertices", "Sites of the Delaunay triangulation"))
+		, mesh(initData("mesh", "Mesh created from the Delaunay triangulation"))
 	{
 		addInput(vertices);
 

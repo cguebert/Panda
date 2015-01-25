@@ -35,7 +35,7 @@ public:
 	GeneratorUser(PandaDocument *doc)
 		: BaseGeneratorUser(doc)
 		, userValue("input", "The value you want to store", this)
-		, output(initData(&output, "value", "The value stored"))
+		, output(initData("value", "The value stored"))
 	{
 		addInput(userValue);
 		addOutput(output);

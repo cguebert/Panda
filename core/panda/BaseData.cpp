@@ -23,12 +23,6 @@ BaseData::BaseData(const BaseInitData& init, const std::type_info& type)
 	, m_owner(init.owner)
 	, m_parentBaseData(nullptr)
 {
-	if(init.data != this)
-	{
-		std::cerr << "Fatal error : wrong pointer in initData" << std::endl;
-		exit(1);
-	}
-
 	initInternals(type);
 
 	if(m_owner)

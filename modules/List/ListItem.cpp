@@ -12,8 +12,8 @@ public:
 
 	ListItem(PandaDocument *doc)
 		: GenericObject(doc)
-		, indexData(initData(&indexData, "index", "0-based index of the items to extract from the lists"))
-		, generic(initData(&generic, "input", "Connect here the lists to get the items from"))
+		, indexData(initData("index", "0-based index of the items to extract from the lists"))
+		, generic(initData("input", "Connect here the lists to get the items from"))
 	{
 		addInput(indexData);
 		addInput(generic);

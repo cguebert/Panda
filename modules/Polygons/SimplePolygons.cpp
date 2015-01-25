@@ -21,8 +21,8 @@ public:
 
 	PolygonCreation_Rectangle(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_rectangles(initData(&m_rectangles, "rectangle", "Input rectangle"))
-		, m_paths(initData(&m_paths, "path", "Output path"))
+		, m_rectangles(initData("rectangle", "Input rectangle"))
+		, m_paths(initData("path", "Output path"))
 	{
 		addInput(m_rectangles);
 		addOutput(m_paths);
@@ -66,10 +66,10 @@ public:
 
 	PolygonCreation_Circle(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_centers(initData(&m_centers, "center", "Center of the circle"))
-		, m_radiuses(initData(&m_radiuses, "radius", "Radius of the circle"))
-		, m_precision(initData(&m_precision, (PReal)1.0, "precision", "Maximum length of a segment"))
-		, m_paths(initData(&m_paths, "path", "Output path"))
+		, m_centers(initData("center", "Center of the circle"))
+		, m_radiuses(initData("radius", "Radius of the circle"))
+		, m_precision(initData((PReal)1.0, "precision", "Maximum length of a segment"))
+		, m_paths(initData("path", "Output path"))
 	{
 		addInput(m_centers);
 		addInput(m_radiuses);

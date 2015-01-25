@@ -26,11 +26,11 @@ public:
 
 	RenderSprite(PandaDocument* parent)
 		: Renderer(parent)
-		, position(initData(&position, "position", "Position of the sprite"))
-		, size(initData(&size, "size", "Size of the sprite" ))
-		, color(initData(&color, "color", "Color of the sprite"))
-		, texture(initData(&texture, "texture", "Texture of the sprite"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, position(initData("position", "Position of the sprite"))
+		, size(initData("size", "Size of the sprite" ))
+		, color(initData("color", "Color of the sprite"))
+		, texture(initData("texture", "Texture of the sprite"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(position);
 		addInput(size);

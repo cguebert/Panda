@@ -26,11 +26,11 @@ public:
 
 	RenderLine(PandaDocument* parent)
 		: Renderer(parent)
-		, inputA(initData(&inputA, "point 1", "Start of the line"))
-		, inputB(initData(&inputB, "point 2", "End of the line"))
-		, width(initData(&width, (PReal)1.0, "width", "Width of the line" ))
-		, color(initData(&color, "color", "Color of the line"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, inputA(initData("point 1", "Start of the line"))
+		, inputB(initData("point 2", "End of the line"))
+		, width(initData((PReal)1.0, "width", "Width of the line" ))
+		, color(initData("color", "Color of the line"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -133,10 +133,10 @@ public:
 
 	RenderPath(PandaDocument* parent)
 		: Renderer(parent)
-		, input(initData(&input, "path", "Path to be drawn"))
-		, lineWidth(initData(&lineWidth, "width", "Width of the line" ))
-		, color(initData(&color, "color", "Color of the line"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, input(initData("path", "Path to be drawn"))
+		, lineWidth(initData("width", "Width of the line" ))
+		, color(initData("color", "Color of the line"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(input);
 		addInput(lineWidth);
@@ -218,10 +218,10 @@ public:
 
 	RenderGradientPath(PandaDocument* parent)
 		: Renderer(parent)
-		, input(initData(&input, "path", "Path to be drawn"))
-		, lineWidth(initData(&lineWidth, "width", "Width of the line" ))
-		, gradient(initData(&gradient, "gradient", "Gradient applied to the line"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, input(initData("path", "Path to be drawn"))
+		, lineWidth(initData("width", "Width of the line" ))
+		, gradient(initData("gradient", "Gradient applied to the line"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(input);
 		addInput(lineWidth);

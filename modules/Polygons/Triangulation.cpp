@@ -39,8 +39,8 @@ public:
 
 	Polygon_Triangulation(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input(initData(&m_input, "input", "Input polygon"))
-		, m_output(initData(&m_output, "output", "Output mesh"))
+		, m_input(initData("input", "Input polygon"))
+		, m_output(initData("output", "Output mesh"))
 	{
 		addInput(m_input);
 

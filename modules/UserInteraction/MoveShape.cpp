@@ -18,9 +18,9 @@ public:
 	UserInteraction_MoveDisk(PandaDocument *doc)
 		: PandaObject(doc)
 		, MouseEventsReceiver(doc)
-		, m_input(initData(&m_input, "input", "Input positions"))
-		, m_output(initData(&m_output, "output", "Output positions"))
-		, m_radiuses(initData(&m_radiuses, "radius", "Radius of each disk"))
+		, m_input(initData("input", "Input positions"))
+		, m_output(initData("output", "Output positions"))
+		, m_radiuses(initData("radius", "Radius of each disk"))
 		, m_counter(-1), m_currentSelection(-1)
 	{
 		addInput(m_input);
@@ -128,8 +128,8 @@ public:
 	UserInteraction_MoveRectangle(PandaDocument *doc)
 		: PandaObject(doc)
 		, MouseEventsReceiver(doc)
-		, m_input(initData(&m_input, "input", "Input rectangles"))
-		, m_output(initData(&m_output, "output", "Output rectangles"))
+		, m_input(initData("input", "Input rectangles"))
+		, m_output(initData("output", "Output rectangles"))
 		, m_counter(-1), m_currentSelection(-1)
 	{
 		addInput(m_input);

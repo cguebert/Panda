@@ -18,9 +18,9 @@ public:
 
 	RectangleMath_Translation(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "rectangle", "Rectangle to be translated"))
-		, translation(initData(&translation, "translation", "Translation to apply to the rectangle"))
-		, result(initData(&result, "result", "Result of the translation"))
+		, input(initData("rectangle", "Rectangle to be translated"))
+		, translation(initData("translation", "Translation to apply to the rectangle"))
+		, result(initData("result", "Result of the translation"))
 	{
 		addInput(input);
 		addInput(translation);
@@ -66,9 +66,9 @@ public:
 
 	RectangleMath_Adjust(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "rectangle", "Rectangle to be translated"))
-		, adjust(initData(&adjust, "adjust", "Translation to apply to the sides of the rectangle"))
-		, result(initData(&result, "result", "Result of the adjustment"))
+		, input(initData("rectangle", "Rectangle to be translated"))
+		, adjust(initData("adjust", "Translation to apply to the sides of the rectangle"))
+		, result(initData("result", "Result of the adjustment"))
 	{
 		addInput(input);
 		addInput(adjust);
@@ -113,9 +113,9 @@ public:
 
 	RectangleMath_Intersection(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "input 1", "First rectangle"))
-		, inputB(initData(&inputB, "input 2", "Second rectangle"))
-		, result(initData(&result, "result", "Result of the intersection"))
+		, inputA(initData("input 1", "First rectangle"))
+		, inputB(initData("input 2", "Second rectangle"))
+		, result(initData("result", "Result of the intersection"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -171,9 +171,9 @@ public:
 
 	RectangleMath_Union(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "input 1", "First rectangle"))
-		, inputB(initData(&inputB, "input 2", "Second rectangle"))
-		, result(initData(&result, "result", "Result of the union"))
+		, inputA(initData("input 1", "First rectangle"))
+		, inputB(initData("input 2", "Second rectangle"))
+		, result(initData("result", "Result of the union"))
 	{
 		addInput(inputA);
 		addInput(inputB);

@@ -36,8 +36,8 @@ public:
 
 	GeneratorMesh_Voronoi(PandaDocument *doc)
 		: PandaObject(doc)
-		, sites(initData(&sites, "sites", "Sites of the Voronoi tessellation"))
-		, mesh(initData(&mesh, "mesh", "Mesh created from the Voronoi tessellation"))
+		, sites(initData("sites", "Sites of the Voronoi tessellation"))
+		, mesh(initData("mesh", "Mesh created from the Voronoi tessellation"))
 	{
 		addInput(sites);
 

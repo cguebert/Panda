@@ -14,7 +14,7 @@ public:
 
 	ListSize(PandaDocument *doc)
 		: GenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here the lists to analyse"))
+		, generic(initData("input", "Connect here the lists to analyse"))
 	{
 		addInput(generic);
 

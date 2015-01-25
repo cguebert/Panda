@@ -12,8 +12,8 @@ public:
 
 	ListCondition(PandaDocument *doc)
 		: GenericObject(doc)
-		, control(initData(&control, "control", "If this value is non zero copy the first list, otherwise copy the second"))
-		, generic(initData(&generic, "input", "Connect here the first list"))
+		, control(initData("control", "If this value is non zero copy the first list, otherwise copy the second"))
+		, generic(initData("input", "Connect here the first list"))
 	{
 		addInput(control);
 		addInput(generic);

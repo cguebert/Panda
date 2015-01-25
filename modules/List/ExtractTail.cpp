@@ -12,8 +12,8 @@ public:
 
 	ExtractTail(PandaDocument *doc)
 		: GenericObject(doc)
-		, value(initData(&value, 1, "tail", "All items starting at this index will be extracted. If negative, extract this number of items instead."))
-		, generic(initData(&generic, "input", "Connect here the first list"))
+		, value(initData(1, "tail", "All items starting at this index will be extracted. If negative, extract this number of items instead."))
+		, generic(initData("input", "Connect here the first list"))
 	{
 		addInput(value);
 		addInput(generic);

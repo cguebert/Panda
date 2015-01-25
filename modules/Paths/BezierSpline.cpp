@@ -15,9 +15,9 @@ public:
 
 	Curve_BezierSpline(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "List of control points"))
-		, output(initData(&output, "output", "List of points on the spline"))
-		, steps(initData(&steps, 4, "steps", "Number of points on each segment"))
+		, input(initData("input", "List of control points"))
+		, output(initData("output", "List of points on the spline"))
+		, steps(initData(4, "steps", "Number of points on each segment"))
 	{
 		addInput(input);
 		addInput(steps);

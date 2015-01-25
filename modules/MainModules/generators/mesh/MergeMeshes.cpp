@@ -25,9 +25,9 @@ public:
 
 	GeneratorMesh_MergeMeshes(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputs(initData(&inputs, "inputs", "Meshes to merge"))
-		, threshold(initData(&threshold, (PReal)0.1, "threshold", "Distance under which 2 points are considered the same"))
-		, output(initData(&output, "output", "Merged mesh"))
+		, inputs(initData("inputs", "Meshes to merge"))
+		, threshold(initData((PReal)0.1, "threshold", "Distance under which 2 points are considered the same"))
+		, output(initData("output", "Merged mesh"))
 	{
 		addInput(inputs);
 		addInput(threshold);

@@ -12,9 +12,9 @@ public:
 
 	GeneratorText_DateTime(PandaDocument *doc)
 		: PandaObject(doc)
-		, format(initData(&format, QString("hh:mm:ss"), "format", "Format used to create the text"))
-		, text(initData(&text, "text", "Text containing the date & time using the format"))
-		, delta(initData(&delta, "delta", "Delta in milliseconds added to the current time"))
+		, format(initData(QString("hh:mm:ss"), "format", "Format used to create the text"))
+		, text(initData("text", "Text containing the date & time using the format"))
+		, delta(initData("delta", "Delta in milliseconds added to the current time"))
 	{
 		addInput(format);
 		addInput(delta);

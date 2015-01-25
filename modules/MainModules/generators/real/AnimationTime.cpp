@@ -11,8 +11,8 @@ public:
 
 	GeneratorNumber_AnimationTime(PandaDocument *doc)
 		: PandaObject(doc)
-		, animTime(initData(&animTime, (PReal)0.0, "time", "Current time of the animation"))
-		, timeStep(initData(&timeStep, (PReal)0.0, "timestep", "Duration between 2 consecutive timesteps"))
+		, animTime(initData((PReal)0.0, "time", "Current time of the animation"))
+		, timeStep(initData((PReal)0.0, "timestep", "Duration between 2 consecutive timesteps"))
 	{
 		addOutput(animTime);
 		addOutput(timeStep);

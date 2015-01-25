@@ -16,10 +16,10 @@ public:
 
 	Curve_CubicBSpline(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "List of control points"))
-		, output(initData(&output, "output", "List of points on the spline"))
-		, steps(initData(&steps, 6, "steps", "Number of points on each segment"))
-		, close(initData(&close, 0, "close", "Is the curve closed or not?"))
+		, input(initData("input", "List of control points"))
+		, output(initData("output", "List of points on the spline"))
+		, steps(initData(6, "steps", "Number of points on each segment"))
+		, close(initData(0, "close", "Is the curve closed or not?"))
 	{
 		addInput(input);
 		addInput(steps);

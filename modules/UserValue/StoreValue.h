@@ -20,9 +20,9 @@ public:
 
 	StoreValue(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "The value you want to store"))
-		, fileName(initData(&fileName, "file name", "File where to store the value"))
-		, singleValue(initData(&singleValue, 1, "single value", "If false save all the values during the animation"))
+		, input(initData("input", "The value you want to store"))
+		, fileName(initData("file name", "File where to store the value"))
+		, singleValue(initData(1, "single value", "If false save all the values during the animation"))
 		, saveTimer(nullptr)
 	{
 		addInput(input);

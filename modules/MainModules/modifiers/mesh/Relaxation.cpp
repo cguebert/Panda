@@ -17,11 +17,11 @@ public:
 
 	ModifierMesh_EdgeRelaxation(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input mesh"))
-		, output(initData(&output, "output", "Output mesh"))
-		, factor(initData(&factor, (PReal)0.1, "factor", "Portion of each edge added to a point"))
-		, iterations(initData(&iterations, 1, "iterations", "Number of times to do the relaxation"))
-		, fixBorder(initData(&fixBorder, 0, "fix border", "If true, the points on the border will not move"))
+		, input(initData("input", "Input mesh"))
+		, output(initData("output", "Output mesh"))
+		, factor(initData((PReal)0.1, "factor", "Portion of each edge added to a point"))
+		, iterations(initData(1, "iterations", "Number of times to do the relaxation"))
+		, fixBorder(initData(0, "fix border", "If true, the points on the border will not move"))
 	{
 		addInput(input);
 		addInput(factor);

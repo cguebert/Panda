@@ -62,7 +62,7 @@ public:
 
 	RemoveDuplicates(PandaDocument *doc)
 		: GenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here the lists in which to remove duplicates"))
+		, generic(initData("input", "Connect here the lists in which to remove duplicates"))
 	{
 		addInput(generic);
 

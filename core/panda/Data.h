@@ -24,15 +24,8 @@ public:
 	typedef Data<value_type> data_type;
 	typedef DataAccessor<data_type> data_accessor;
 
-	class InitData : public BaseData::BaseInitData
-	{
-	public:
-		InitData() : value(value_type()) {}
-		value_type value;
-	};
-
 	explicit Data(const BaseData::BaseInitData& init);
-	explicit Data(const InitData& init);
+	template<class U> explicit Data(const BaseData::InitData<U>& init);
 	Data(const QString& name, const QString& help, PandaObject* owner);
 	virtual ~Data();
 
@@ -98,7 +91,8 @@ Data<T>::Data(const BaseData::BaseInitData& init)
 }
 
 template<class T>
-Data<T>::Data(const InitData& init)
+template<class U>
+Data<T>::Data(const BaseData::InitData<U>& init)
 	: BaseData(init, typeid(T))
 	, m_parentData(nullptr)
 {

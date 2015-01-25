@@ -14,7 +14,7 @@ namespace panda
 
 Group::Group(PandaDocument* parent)
 	: PandaObject(parent)
-	, m_groupName(initData(&m_groupName, QString("Group"), "name", "Name to be displayed for this group"))
+	, m_groupName(initData(QString("Group"), "name", "Name to be displayed for this group"))
 {
 }
 
@@ -270,9 +270,9 @@ int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many obje
 GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 	: Group(parent)
 	, m_layer(nullptr)
-	, m_image(initData(&m_image, "image", "Image created by the renderers connected to this layer"))
-	, m_compositionMode(initData(&m_compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
-	, m_opacity(initData(&m_opacity, (PReal)1.0, "opacity", "Set the opacity of the layer"))
+	, m_image(initData("image", "Image created by the renderers connected to this layer"))
+	, m_compositionMode(initData(0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
+	, m_opacity(initData((PReal)1.0, "opacity", "Set the opacity of the layer"))
 {
 	addInput(m_compositionMode);
 	addInput(m_opacity);

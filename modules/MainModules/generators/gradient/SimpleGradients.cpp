@@ -15,10 +15,10 @@ public:
 
 	GradientsSimple_2Colors(PandaDocument *doc)
 		: PandaObject(doc)
-		, colorA(initData(&colorA, Color::black(), "color 1", "Start color of the gradient"))
-		, colorB(initData(&colorB, Color::white(), "color 2", "End color of the gradient"))
-		, extend(initData(&extend, 0, "extend", "What to do when a position asked is outside the boundaries"))
-		, gradient(initData(&gradient, "gradient", "Gradient created from the 2 input colors"))
+		, colorA(initData(Color::black(), "color 1", "Start color of the gradient"))
+		, colorB(initData(Color::white(), "color 2", "End color of the gradient"))
+		, extend(initData(0, "extend", "What to do when a position asked is outside the boundaries"))
+		, gradient(initData("gradient", "Gradient created from the 2 input colors"))
 	{
 		addInput(colorA);
 		addInput(colorB);

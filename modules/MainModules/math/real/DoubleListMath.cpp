@@ -14,13 +14,13 @@ public:
 
 	DoubleListMath_SumMeanStdDev(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "List of reals to analyse"))
-		, nbElements(initData(&nbElements, "# of elements", "Size of the list"))
-		, sum(initData(&sum, "sum", "Sum of the list of reals"))
-		, mean(initData(&mean, "mean", "Mean value of the list of reals"))
-		, stdDev(initData(&stdDev, "std dev", "Standard deviation of the list of reals"))
-		, vMin(initData(&vMin, "min", "Minimum value of the list of reals"))
-		, vMax(initData(&vMax, "max", "Maximum value of the list of reals"))
+		, input(initData("input", "List of reals to analyse"))
+		, nbElements(initData("# of elements", "Size of the list"))
+		, sum(initData("sum", "Sum of the list of reals"))
+		, mean(initData("mean", "Mean value of the list of reals"))
+		, stdDev(initData("std dev", "Standard deviation of the list of reals"))
+		, vMin(initData("min", "Minimum value of the list of reals"))
+		, vMax(initData("max", "Maximum value of the list of reals"))
 	{
 		addInput(input);
 
@@ -88,9 +88,9 @@ public:
 
 	DoubleListMath_Median(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "List of reals to analyse"))
-		, nbElements(initData(&nbElements, "# of elements", "Size of the list"))
-		, median(initData(&median, "median", "Median value of the list of reals"))
+		, input(initData("input", "List of reals to analyse"))
+		, nbElements(initData("# of elements", "Size of the list"))
+		, median(initData("median", "Median value of the list of reals"))
 	{
 		addInput(input);
 
@@ -134,8 +134,8 @@ public:
 
 	DoubleListMath_Accumulate(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input(initData(&m_input, "input", "List of reals to sum"))
-		, m_output(initData(&m_output, "output", "Accumulated sums"))
+		, m_input(initData("input", "List of reals to sum"))
+		, m_output(initData("output", "Accumulated sums"))
 	{
 		addInput(m_input);
 

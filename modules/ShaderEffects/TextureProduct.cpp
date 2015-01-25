@@ -16,10 +16,10 @@ public:
 
 	TexturesOuterProduct(PandaDocument* doc)
 		: PandaObject(doc)
-		, m_inputH(initData(&m_inputH, "horizontal", "Texture to be used horizontally"))
-		, m_inputV(initData(&m_inputV, "vertical", "Texture to be used vertically"))
-		, m_output(initData(&m_output, "output", "Texture created by the operation"))
-		, m_size(initData(&m_size, Point(64, 64), "size", "Size of the generated texture"))
+		, m_inputH(initData("horizontal", "Texture to be used horizontally"))
+		, m_inputV(initData("vertical", "Texture to be used vertically"))
+		, m_output(initData("output", "Texture created by the operation"))
+		, m_size(initData(Point(64, 64), "size", "Size of the generated texture"))
 	{
 		addInput(m_inputH);
 		addInput(m_inputV);

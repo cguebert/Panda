@@ -15,10 +15,10 @@ public:
 
 	ModifierPoints_PointsInRect(PandaDocument *doc)
 		: PandaObject(doc)
-		, rectangle(initData(&rectangle, "rectangle", "Rectangle used to select valid points"))
-		, inputPoints(initData(&inputPoints, "input", "List of points to test"))
-		, outputPoints(initData(&outputPoints, "output", "List of valid points" ))
-		, outputIndices(initData(&outputIndices, "indices", "Indices of the valid points"))
+		, rectangle(initData("rectangle", "Rectangle used to select valid points"))
+		, inputPoints(initData("input", "List of points to test"))
+		, outputPoints(initData("output", "List of valid points" ))
+		, outputIndices(initData("indices", "Indices of the valid points"))
 	{
 		addInput(rectangle);
 		addInput(inputPoints);
@@ -68,11 +68,11 @@ public:
 
 	ModifierPoints_PointsInDisk(PandaDocument *doc)
 		: PandaObject(doc)
-		, center(initData(&center, "center", "Center of the disk used to select valid points"))
-		, radius(initData(&radius, (PReal)50, "radius", "Radius of the disk used to select valid points"))
-		, inputPoints(initData(&inputPoints, "input", "List of points to test"))
-		, outputPoints(initData(&outputPoints, "output", "List of valid points" ))
-		, outputIndices(initData(&outputIndices, "indices", "Indices of the valid points"))
+		, center(initData("center", "Center of the disk used to select valid points"))
+		, radius(initData((PReal)50, "radius", "Radius of the disk used to select valid points"))
+		, inputPoints(initData("input", "List of points to test"))
+		, outputPoints(initData("output", "List of valid points" ))
+		, outputIndices(initData("indices", "Indices of the valid points"))
 	{
 		addInput(center);
 		addInput(radius);

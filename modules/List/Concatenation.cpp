@@ -12,7 +12,7 @@ public:
 
 	ListConcatenation(PandaDocument *doc)
 		: SingleTypeGenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here a list to concatenate to the result"))
+		, generic(initData("input", "Connect here a list to concatenate to the result"))
 		, firstUpdate(false)
 	{
 		m_singleOutput = true;

@@ -22,9 +22,9 @@ public:
 
 	RenderTriangle(PandaDocument* parent)
 		: Renderer(parent)
-		, mesh(initData(&mesh, "mesh", "Triangle to render"))
-		, color(initData(&color, "color", "Color of the triangle"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, mesh(initData("mesh", "Triangle to render"))
+		, color(initData("color", "Color of the triangle"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(mesh);
 		addInput(color);

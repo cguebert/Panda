@@ -12,8 +12,8 @@ public:
 
 	LoadValue(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_output(initData(&m_output, "output", "The loaded value"))
-		, m_fileName(initData(&m_fileName, "file name", "File where to read the value"))
+		, m_output(initData("output", "The loaded value"))
+		, m_fileName(initData("file name", "File where to read the value"))
 	{
 		addInput(m_fileName);
 		m_fileName.setWidget("open file");

@@ -22,9 +22,9 @@ public:
 
 	ModifierImage_GetPixel(PandaDocument *doc)
 		: PandaObject(doc)
-		, image(initData(&image, "image", "The image from which to get the color"))
-		, position(initData(&position, "position", "Position in the image where to get the color"))
-		, color(initData(&color, "color", "Color extracted from the image"))
+		, image(initData("image", "The image from which to get the color"))
+		, position(initData("position", "Position in the image where to get the color"))
+		, color(initData("color", "Color extracted from the image"))
 	{
 		addInput(image);
 		addInput(position);
@@ -70,10 +70,10 @@ public:
 
 	ModifierImage_SetPixel(PandaDocument *doc)
 		: PandaObject(doc)
-		, image(initData(&image, "image", "The image in which to modify the pixels"))
-		, position(initData(&position, "position", "Position in the image to modify"))
-		, color(initData(&color, "color", "Color to insert in the image"))
-		, result(initData(&result, "result", "The modified image"))
+		, image(initData("image", "The image in which to modify the pixels"))
+		, position(initData("position", "Position in the image to modify"))
+		, color(initData("color", "Color to insert in the image"))
+		, result(initData("result", "The modified image"))
 	{
 		addInput(image);
 		addInput(position);
@@ -125,9 +125,9 @@ public:
 
 	ModifierImage_ColorInRect(PandaDocument *doc)
 		: PandaObject(doc)
-		, image(initData(&image, "image", "The image to analyse"))
-		, rectangle(initData(&rectangle, "rectangle", "Region to analyse"))
-		, color(initData(&color, "color", "Mean color in this region of the image"))
+		, image(initData("image", "The image to analyse"))
+		, rectangle(initData("rectangle", "Region to analyse"))
+		, color(initData("color", "Mean color in this region of the image"))
 	{
 		addInput(image);
 		addInput(rectangle);

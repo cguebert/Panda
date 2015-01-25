@@ -15,11 +15,11 @@ public:
 
 	GeneratorRectangles_Compose(PandaDocument *doc)
 		: PandaObject(doc)
-		, left(initData(&left, "left", "Left boundary of the rectangle"))
-		, top(initData(&top, "top", "Top boundary of the rectangle"))
-		, right(initData(&right, "right", "Right boundary of the rectangle"))
-		, bottom(initData(&bottom, "bottom", "Bottom boundary of the rectangle"))
-		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 4 reals"))
+		, left(initData("left", "Left boundary of the rectangle"))
+		, top(initData("top", "Top boundary of the rectangle"))
+		, right(initData("right", "Right boundary of the rectangle"))
+		, bottom(initData("bottom", "Bottom boundary of the rectangle"))
+		, rectangle(initData("rectangle", "Rectangle created from the 4 reals"))
 	{
 		addInput(left);
 		addInput(top);
@@ -66,9 +66,9 @@ public:
 
 	GeneratorRectangles_ComposeCenter(PandaDocument *doc)
 		: PandaObject(doc)
-		, center(initData(&center, "center", "Center of the rectangle"))
-		, size(initData(&size, "size", "Size of the rectangle"))
-		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
+		, center(initData("center", "Center of the rectangle"))
+		, size(initData("size", "Size of the rectangle"))
+		, rectangle(initData("rectangle", "Rectangle created from the 2 points"))
 	{
 		addInput(center);
 		addInput(size);
@@ -118,9 +118,9 @@ public:
 
 	GeneratorRectangles_ComposeCorners(PandaDocument *doc)
 		: PandaObject(doc)
-		, topleft(initData(&topleft, "top-left", "Top left corner of the rectangle"))
-		, bottomright(initData(&bottomright, "bottom-right", "Bottom right corner of the rectangle"))
-		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
+		, topleft(initData("top-left", "Top left corner of the rectangle"))
+		, bottomright(initData("bottom-right", "Bottom right corner of the rectangle"))
+		, rectangle(initData("rectangle", "Rectangle created from the 2 points"))
 	{
 		addInput(topleft);
 		addInput(bottomright);
@@ -170,11 +170,11 @@ public:
 
 	GeneratorRectangles_Decompose(PandaDocument *doc)
 		: PandaObject(doc)
-		, left(initData(&left, "left", "Left boundary of the rectangle"))
-		, top(initData(&top, "top", "Top boundary of the rectangle"))
-		, right(initData(&right, "right", "Right boundary of the rectangle"))
-		, bottom(initData(&bottom, "bottom", "Bottom boundary of the rectangle"))
-		, rectangle(initData(&rectangle, "rectangle", "Rectangle from whith to extract the 4 reals"))
+		, left(initData("left", "Left boundary of the rectangle"))
+		, top(initData("top", "Top boundary of the rectangle"))
+		, right(initData("right", "Right boundary of the rectangle"))
+		, bottom(initData("bottom", "Bottom boundary of the rectangle"))
+		, rectangle(initData("rectangle", "Rectangle from whith to extract the 4 reals"))
 	{
 		addInput(rectangle);
 
@@ -227,9 +227,9 @@ public:
 
 	GeneratorRectangles_DecomposeCenter(PandaDocument *doc)
 		: PandaObject(doc)
-		, center(initData(&center, "center", "Center of the rectangle"))
-		, size(initData(&size, "size", "Size of the rectangle"))
-		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
+		, center(initData("center", "Center of the rectangle"))
+		, size(initData("size", "Size of the rectangle"))
+		, rectangle(initData("rectangle", "Rectangle created from the 2 points"))
 	{
 		addInput(rectangle);
 
@@ -274,9 +274,9 @@ public:
 
 	GeneratorRectangles_DecomposeCorners(PandaDocument *doc)
 		: PandaObject(doc)
-		, topleft(initData(&topleft, "top-left", "Top left corner of the rectangle"))
-		, bottomright(initData(&bottomright, "bottom-right", "Bottom right of the rectangle"))
-		, rectangle(initData(&rectangle, "rectangle", "Rectangle created from the 2 points"))
+		, topleft(initData("top-left", "Top left corner of the rectangle"))
+		, bottomright(initData("bottom-right", "Bottom right of the rectangle"))
+		, rectangle(initData("rectangle", "Rectangle created from the 2 points"))
 	{
 		addInput(rectangle);
 

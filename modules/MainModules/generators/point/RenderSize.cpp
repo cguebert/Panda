@@ -14,7 +14,7 @@ public:
 
 	GeneratorPoint_RenderSize(PandaDocument *doc)
 		: PandaObject(doc)
-		, renderSize(initData(&renderSize, "size", "Dimensions of the render"))
+		, renderSize(initData("size", "Dimensions of the render"))
 	{
 		addOutput(renderSize);
 
@@ -45,7 +45,7 @@ public:
 
 	GeneratorRect_RenderArea(PandaDocument *doc)
 		: PandaObject(doc)
-		, renderArea(initData(&renderArea, "area", "Area used by the render"))
+		, renderArea(initData("area", "Area used by the render"))
 	{
 		addOutput(renderArea);
 

@@ -16,7 +16,7 @@ public:
 
 	AnimLength(PandaDocument *doc)
 		: GenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here the animations to analyse"))
+		, generic(initData("input", "Connect here the animations to analyse"))
 	{
 		addInput(generic);
 

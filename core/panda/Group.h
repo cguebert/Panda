@@ -118,7 +118,7 @@ public:
 
 	BaseGeneratorUser(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_caption(initData(&m_caption, "caption", "The caption to use in the graph view"))
+		, m_caption(initData("caption", "The caption to use in the graph view"))
 	{ }
 
 	const QString& getCaption()

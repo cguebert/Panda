@@ -17,9 +17,9 @@ public:
 	UserInteraction_SelectionDisk(PandaDocument *doc)
 		: PandaObject(doc)
 		, MouseEventsReceiver(doc)
-		, m_centers(initData(&m_centers, "center", "Center of the disks"))
-		, m_radiuses(initData(&m_radiuses, "radius", "Radius of each disk"))
-		, m_selection(initData(&m_selection, "selected", "Selection status of each disk"))
+		, m_centers(initData("center", "Center of the disks"))
+		, m_radiuses(initData("radius", "Radius of each disk"))
+		, m_selection(initData("selected", "Selection status of each disk"))
 		, m_counter(-1)
 	{
 		addInput(m_centers);
@@ -103,8 +103,8 @@ public:
 	UserInteraction_SelectionRectangle(PandaDocument *doc)
 		: PandaObject(doc)
 		, MouseEventsReceiver(doc)
-		, m_rectangles(initData(&m_rectangles, "rectangle", "List of rectangles"))
-		, m_selection(initData(&m_selection, "selected", "Selection status of each rectangle"))
+		, m_rectangles(initData("rectangle", "List of rectangles"))
+		, m_selection(initData("selected", "Selection status of each rectangle"))
 		, m_counter(-1)
 	{
 		addInput(m_rectangles);

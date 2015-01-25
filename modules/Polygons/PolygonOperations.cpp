@@ -23,9 +23,9 @@ public:
 
 	PolygonOperation_Difference(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_inputA(initData(&m_inputA, "input 1", "First polygon"))
-		, m_inputB(initData(&m_inputB, "input 2", "Second polygon"))
-		, m_output(initData(&m_output, "output", "Result of the operation"))
+		, m_inputA(initData("input 1", "First polygon"))
+		, m_inputB(initData("input 2", "Second polygon"))
+		, m_output(initData("output", "Result of the operation"))
 	{
 		addInput(m_inputA);
 		addInput(m_inputB);

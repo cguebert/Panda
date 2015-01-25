@@ -16,9 +16,9 @@ public:
 
 	ModifierMesh_FindNeighbors(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData(&mesh, "mesh", "Mesh in which to search"))
-		, triangles(initData(&triangles, "input", "Triangles indices to test"))
-		, neighbors(initData(&neighbors, "neighbors", "Indices of the triangles, neighbors of the input"))
+		, mesh(initData("mesh", "Mesh in which to search"))
+		, triangles(initData("input", "Triangles indices to test"))
+		, neighbors(initData("neighbors", "Indices of the triangles, neighbors of the input"))
 	{
 		addInput(mesh);
 		addInput(triangles);
@@ -64,9 +64,9 @@ public:
 
 	ModifierMesh_GetConnected(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData(&mesh, "mesh", "Mesh in which to search"))
-		, triangles(initData(&triangles, "input", "Triangles indices to test"))
-		, connected(initData(&connected, "connected", "Indices of the triangles connected to the input"))
+		, mesh(initData("mesh", "Mesh in which to search"))
+		, triangles(initData("input", "Triangles indices to test"))
+		, connected(initData("connected", "Indices of the triangles connected to the input"))
 	{
 		addInput(mesh);
 		addInput(triangles);
@@ -113,8 +113,8 @@ public:
 
 	ModifierMesh_SeparateDisconnected(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input mesh"))
-		, outputs(initData(&outputs, "output", "List of separated meshes"))
+		, input(initData("input", "Input mesh"))
+		, outputs(initData("output", "List of separated meshes"))
 	{
 		addInput(input);
 

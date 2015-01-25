@@ -17,9 +17,9 @@ public:
 
 	PointMath_Addition(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "point 1", "First point"))
-		, inputB(initData(&inputB, "point 2", "Second point"))
-		, result(initData(&result, "result", "Result of the addition of the 2 points"))
+		, inputA(initData("point 1", "First point"))
+		, inputB(initData("point 2", "Second point"))
+		, result(initData("result", "Result of the addition of the 2 points"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -65,9 +65,9 @@ public:
 
 	PointMath_Substraction(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "point 1", "First point"))
-		, inputB(initData(&inputB, "point 2", "Second point"))
-		, result(initData(&result, "result", "Result of the substraction"))
+		, inputA(initData("point 1", "First point"))
+		, inputB(initData("point 2", "Second point"))
+		, result(initData("result", "Result of the substraction"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -113,9 +113,9 @@ public:
 
 	PointMath_Scale(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "point", "Point value to multiply"))
-		, result(initData(&result, "result", "Result of the multiplication of the point by the real"))
-		, factor(initData(&factor, "factor", "Real by which to multiply the point"))
+		, input(initData("point", "Point value to multiply"))
+		, result(initData("result", "Result of the multiplication of the point by the real"))
+		, factor(initData("factor", "Real by which to multiply the point"))
 	{
 		addInput(input);
 		addInput(factor);
@@ -164,9 +164,9 @@ public:
 
 	PointMath_Division(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "point", "Point value to multiply"))
-		, result(initData(&result, "result", "Result of the multiplication of the point by the real"))
-		, factor(initData(&factor, "factor", "Real by which to divide the point"))
+		, input(initData("point", "Point value to multiply"))
+		, result(initData("result", "Result of the multiplication of the point by the real"))
+		, factor(initData("factor", "Real by which to divide the point"))
 	{
 		addInput(input);
 		addInput(factor);
@@ -215,9 +215,9 @@ public:
 
 	PointMath_Distance(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "point 1", "First point"))
-		, inputB(initData(&inputB, "point 2", "Second point"))
-		, result(initData(&result, "distance", "Distance between the 2 points"))
+		, inputA(initData("point 1", "First point"))
+		, inputB(initData("point 2", "Second point"))
+		, result(initData("distance", "Distance between the 2 points"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -264,10 +264,10 @@ public:
 
 	PointMath_Rotation(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "point", "Point to rotate"))
-		, result(initData(&result, "result", "Result of the rotation"))
-		, center(initData(&center, "center", "Center of the rotation"))
-		, angle(initData(&angle, "angle", "Angle of the rotation"))
+		, input(initData("point", "Point to rotate"))
+		, result(initData("result", "Result of the rotation"))
+		, center(initData("center", "Center of the rotation"))
+		, angle(initData("angle", "Angle of the rotation"))
 	{
 		addInput(input);
 		addInput(center);
@@ -328,8 +328,8 @@ public:
 
 	PointMath_AngleOfVector(PandaDocument *doc)
 		: PandaObject(doc)
-		, vector(initData(&vector, "vector", "Vector to analyse"))
-		, angle(initData(&angle, "angle", "Angle of the vector"))
+		, vector(initData("vector", "Vector to analyse"))
+		, angle(initData("angle", "Angle of the vector"))
 	{
 		addInput(vector);
 
@@ -377,8 +377,8 @@ public:
 
 	PointMath_AngleToVector(PandaDocument *doc)
 		: PandaObject(doc)
-		, angle(initData(&angle, "angle", "Angle of the vector"))
-		, vector(initData(&vector, "vector", "Vector corresponding to the angle"))
+		, angle(initData("angle", "Angle of the vector"))
+		, vector(initData("vector", "Vector corresponding to the angle"))
 	{
 		addInput(angle);
 
@@ -423,8 +423,8 @@ public:
 
 	PointMath_Norm(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input point"))
-		, output(initData(&output, "output", "Norm of the input point"))
+		, input(initData("input", "Input point"))
+		, output(initData("output", "Norm of the input point"))
 	{
 		addInput(input);
 
@@ -465,8 +465,8 @@ public:
 
 	PointMath_Norm2(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input point"))
-		, output(initData(&output, "output", "Square of the norm of the input point"))
+		, input(initData("input", "Input point"))
+		, output(initData("output", "Square of the norm of the input point"))
 	{
 		addInput(input);
 
@@ -507,8 +507,8 @@ public:
 
 	PointMath_Normalize(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input point"))
-		, output(initData(&output, "output", "Square of the norm of the input point"))
+		, input(initData("input", "Input point"))
+		, output(initData("output", "Square of the norm of the input point"))
 	{
 		addInput(input);
 
@@ -548,9 +548,9 @@ public:
 
 	PointMath_LinearProduct(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "point 1", "First point"))
-		, inputB(initData(&inputB, "point 2", "Second point"))
-		, result(initData(&result, "result", "Result of the linear product"))
+		, inputA(initData("point 1", "First point"))
+		, inputB(initData("point 2", "Second point"))
+		, result(initData("result", "Result of the linear product"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -596,9 +596,9 @@ public:
 
 	PointMath_LinearDivision(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "point 1", "First point"))
-		, inputB(initData(&inputB, "point 2", "Second point"))
-		, result(initData(&result, "result", "Result of the linear division"))
+		, inputA(initData("point 1", "First point"))
+		, inputB(initData("point 2", "Second point"))
+		, result(initData("result", "Result of the linear division"))
 	{
 		addInput(inputA);
 		addInput(inputB);

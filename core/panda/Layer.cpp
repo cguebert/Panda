@@ -104,10 +104,10 @@ unsigned int BaseLayer::getTextureId() const
 
 Layer::Layer(PandaDocument* parent)
 	: DockObject(parent)
-	, m_layerName(initData(&m_layerName, "name", "Name of this layer"))
-	, m_image(initData(&m_image, "image", "Image created by the renderers connected to this layer"))
-	, m_compositionMode(initData(&m_compositionMode, 0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
-	, m_opacity(initData(&m_opacity, (PReal)1.0, "opacity", "Set the opacity of the layer"))
+	, m_layerName(initData("name", "Name of this layer"))
+	, m_image(initData("image", "Image created by the renderers connected to this layer"))
+	, m_compositionMode(initData(0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
+	, m_opacity(initData(1.0, "opacity", "Set the opacity of the layer"))
 {
 	m_name = "Default layer"; // Any Layer created by the Factory will have its name changed
 

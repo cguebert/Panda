@@ -14,9 +14,9 @@ public:
 
 	GeneratorText_Format(PandaDocument *doc)
 		: GenericObject(doc)
-		, format(initData(&format, "format", "Format used to create the text"))
-		, text(initData(&text, "text", "Text obtained by the format operation"))
-		, generic(initData(&generic, "input", "Connect here the values to use in the format operation"))
+		, format(initData("format", "Format used to create the text"))
+		, text(initData("text", "Text obtained by the format operation"))
+		, generic(initData("input", "Connect here the values to use in the format operation"))
 	{
 		addInput(format);
 		addInput(generic);

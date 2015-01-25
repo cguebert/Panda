@@ -15,10 +15,10 @@ public:
 
 	GeneratorPoints_Noise2d(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "The list of positions at which to compute the noise" ))
-		, seed(initData(&seed, 0, "seed", "Seed for the random points generator"))
-		, scale(initData(&scale, (PReal)0.001, "scale", "Input points are scaled by this value before computing the noise"))
-		, output(initData(&output, "output", "The values of the noise at the given positions" ))
+		, input(initData("input", "The list of positions at which to compute the noise" ))
+		, seed(initData(0, "seed", "Seed for the random points generator"))
+		, scale(initData((PReal)0.001, "scale", "Input points are scaled by this value before computing the noise"))
+		, output(initData("output", "The values of the noise at the given positions" ))
 	{
 		addInput(input);
 		addInput(seed);

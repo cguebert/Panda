@@ -15,7 +15,7 @@ public:
 
 	ParticleForceField_ConstantForce(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, force(initData(&force, "force", "Force to apply to the particles"))
+		, force(initData("force", "Force to apply to the particles"))
 	{
 		addInput(force);
 	}
@@ -43,8 +43,8 @@ public:
 
 	ParticleForceField_ForceInBox(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, force(initData(&force, "force", "Force to apply to the particles"))
-		, box(initData(&box, "box", "Area in which particles are affected by the force"))
+		, force(initData("force", "Force to apply to the particles"))
+		, box(initData("box", "Area in which particles are affected by the force"))
 	{
 		addInput(force);
 		addInput(box);
@@ -90,9 +90,9 @@ public:
 
 	ParticleForceField_ForceInCircle(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, force(initData(&force, "force", "Force to apply to the particles"))
-		, center(initData(&center, "center", "Center of the circle in which particles are affected by the force"))
-		, radius(initData(&radius, "radius", "Radius of the circle in which particles are affected by the force"))
+		, force(initData("force", "Force to apply to the particles"))
+		, center(initData("center", "Center of the circle in which particles are affected by the force"))
+		, radius(initData("radius", "Radius of the circle in which particles are affected by the force"))
 	{
 		addInput(force);
 		addInput(center);
@@ -144,10 +144,10 @@ public:
 
 	ParticleForceField_Attraction(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, force(initData(&force, "force", "Maximum attraction force"))
-		, center(initData(&center, "center", "Center of the circle in which particles are attracted"))
-		, radius(initData(&radius, "radius", "Radius of the circle in which particles are attracted"))
-		, linear(initData(&linear, 1, "linear", "How the force change depending on the distance to the center: true = linear law, false = quadratic"))
+		, force(initData("force", "Maximum attraction force"))
+		, center(initData("center", "Center of the circle in which particles are attracted"))
+		, radius(initData("radius", "Radius of the circle in which particles are attracted"))
+		, linear(initData(1, "linear", "How the force change depending on the distance to the center: true = linear law, false = quadratic"))
 	{
 		addInput(force);
 		addInput(center);

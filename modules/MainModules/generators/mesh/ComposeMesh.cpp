@@ -18,8 +18,8 @@ public:
 
 	GeneratorMesh_OnePolygon(PandaDocument *doc)
 		: PandaObject(doc)
-		, points(initData(&points, "points", "List of points forming the polygon"))
-		, mesh(initData(&mesh, "mesh", "Mesh created from the list of points"))
+		, points(initData("points", "List of points forming the polygon"))
+		, mesh(initData("mesh", "Mesh created from the list of points"))
 	{
 		addInput(points);
 
@@ -82,8 +82,8 @@ public:
 
 	GeneratorMesh_Wireframe(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData(&mesh, "mesh", "Mesh from which to extract the edges"))
-		, points(initData(&points, "points", "Pairs of points forming the edges"))
+		, mesh(initData("mesh", "Mesh from which to extract the edges"))
+		, points(initData("points", "Pairs of points forming the edges"))
 	{
 		addInput(mesh);
 
@@ -127,8 +127,8 @@ public:
 
 	GeneratorMesh_Vertices(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData(&mesh, "mesh", "Mesh from which to extract the vertices"))
-		, points(initData(&points, "points", "Points used by the mesh"))
+		, mesh(initData("mesh", "Mesh from which to extract the vertices"))
+		, points(initData("points", "Points used by the mesh"))
 	{
 		addInput(mesh);
 
@@ -161,9 +161,9 @@ public:
 
 	GeneratorMesh_ExtractTriangles(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input mesh"))
-		, output(initData(&output, "output", "Output mesh"))
-		, triangles(initData(&triangles, "triangles", "Indices of the triangles to extract"))
+		, input(initData("input", "Input mesh"))
+		, output(initData("output", "Output mesh"))
+		, triangles(initData("triangles", "Indices of the triangles to extract"))
 	{
 		addInput(input);
 		addInput(triangles);
@@ -211,10 +211,10 @@ public:
 
 	GeneratorMesh_BorderElements(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData(&mesh, "mesh", "Input mesh"))
-		, points(initData(&points, "points", "Indices of the points on the border"))
-		, edges(initData(&edges, "edges", "Indices of the edges on the border"))
-		, triangles(initData(&triangles, "triangles", "Indices of the triangles on the border"))
+		, mesh(initData("mesh", "Input mesh"))
+		, points(initData("points", "Indices of the points on the border"))
+		, edges(initData("edges", "Indices of the edges on the border"))
+		, triangles(initData("triangles", "Indices of the triangles on the border"))
 	{
 		addInput(mesh);
 
@@ -264,9 +264,9 @@ public:
 
 	GeneratorMesh_ExtractEdges(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input mesh"))
-		, output(initData(&output, "output", "Points pairs forming the extracted edges"))
-		, edges(initData(&edges, "edges", "Indices of the edges to extract"))
+		, input(initData("input", "Input mesh"))
+		, output(initData("output", "Points pairs forming the extracted edges"))
+		, edges(initData("edges", "Indices of the edges to extract"))
 	{
 		addInput(input);
 		addInput(edges);

@@ -15,9 +15,9 @@ public:
 		: GenericObject(doc)
 		, resetValues(true)
 		, prevControl(-1.0)
-		, control(initData(&control, (PReal)0.0, "control", "The buffer will be updated each time this value changes"))
-		, resetData(initData(&resetData, 0, "reset", "Set this at 1 to reset the values"))
-		, generic(initData(&generic, "input", "Connect here the lists to put in the buffer"))
+		, control(initData((PReal)0.0, "control", "The buffer will be updated each time this value changes"))
+		, resetData(initData(0, "reset", "Set this at 1 to reset the values"))
+		, generic(initData("input", "Connect here the lists to put in the buffer"))
 	{
 		addInput(control);
 		addInput(resetData);

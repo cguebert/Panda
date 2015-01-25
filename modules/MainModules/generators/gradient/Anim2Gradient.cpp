@@ -17,8 +17,8 @@ public:
 
 	Anim2Gradient(PandaDocument *doc)
 		: PandaObject(doc)
-		, anim(initData(&anim, "animation", "The animation from which to create a gradient"))
-		, gradient(initData(&gradient, "gradient", "The gradient converted from the animation"))
+		, anim(initData("animation", "The animation from which to create a gradient"))
+		, gradient(initData("gradient", "The gradient converted from the animation"))
 	{
 		addInput(anim);
 
@@ -55,8 +55,8 @@ public:
 
 	Gradient2Anim(PandaDocument *doc)
 		: PandaObject(doc)
-		, gradient(initData(&gradient, "gradient", "The gradient from which to create an animation"))
-		, anim(initData(&anim, "animation", "The animation converted from the gradient"))
+		, gradient(initData("gradient", "The gradient from which to create an animation"))
+		, anim(initData("animation", "The animation converted from the gradient"))
 	{
 		addInput(gradient);
 

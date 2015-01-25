@@ -16,9 +16,9 @@ public:
 
 	Gradients_Compose(PandaDocument *doc)
 		: GenericObject(doc)
-		, nbGradients(initData(&nbGradients, 1, "# gradients", "Number of gradients to generate"))
-		, gradients(initData(&gradients, "output", "Generated gradient"))
-		, generic(initData(&generic, "input", "Connect here the colors to add to the gradient"))
+		, nbGradients(initData(1, "# gradients", "Number of gradients to generate"))
+		, gradients(initData("output", "Generated gradient"))
+		, generic(initData("input", "Connect here the colors to add to the gradient"))
 	{
 		addInput(nbGradients);
 		addInput(generic);

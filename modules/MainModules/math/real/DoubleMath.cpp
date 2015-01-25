@@ -13,8 +13,8 @@ public:
 
 	DoubleMath_1Value(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Operand of the operation"))
-		, result(initData(&result, "result", "Result of the operation"))
+		, input(initData("input", "Operand of the operation"))
+		, result(initData("result", "Result of the operation"))
 	{
 		addInput(input);
 		addOutput(result);
@@ -49,9 +49,9 @@ public:
 
 	DoubleMath_2Values(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "input 1", "First operand of the operation"))
-		, inputB(initData(&inputB, "input 2", "Second operand of the operation"))
-		, result(initData(&result, "result", "Result of the operation"))
+		, inputA(initData("input 1", "First operand of the operation"))
+		, inputB(initData("input 2", "Second operand of the operation"))
+		, result(initData("result", "Result of the operation"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -290,7 +290,7 @@ public:
 
 	DoubleMath_LogBase(PandaDocument *doc)
 		: DoubleMath_1Value(doc)
-		, base(initData(&base, (PReal)10.0, "base", "Base of the logarithm"))
+		, base(initData((PReal)10.0, "base", "Base of the logarithm"))
 	{
 		addInput(base);
 	}

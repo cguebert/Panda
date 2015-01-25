@@ -18,8 +18,8 @@ public:
 	UserInteraction_MouseClicks(PandaDocument *doc)
 		: PandaObject(doc)
 		, MouseEventsReceiver(doc)
-		, m_accumulate(initData(&m_accumulate, "accumulate", "If true, keep previous clics"))
-		, m_clics(initData(&m_clics, "position", "Position of the mouse clic"))
+		, m_accumulate(initData("accumulate", "If true, keep previous clics"))
+		, m_clics(initData("position", "Position of the mouse clic"))
 	{
 		addInput(m_accumulate);
 		addOutput(m_clics);
@@ -81,8 +81,8 @@ public:
 	UserInteraction_MouseDoubleClicks(PandaDocument *doc)
 		: PandaObject(doc)
 		, MouseEventsReceiver(doc)
-		, m_accumulate(initData(&m_accumulate, "accumulate", "If true, keep previous double clics"))
-		, m_clics(initData(&m_clics, "position", "Position of the mouse double clic"))
+		, m_accumulate(initData("accumulate", "If true, keep previous double clics"))
+		, m_clics(initData("position", "Position of the mouse double clic"))
 	{
 		addInput(m_accumulate);
 		addOutput(m_clics);

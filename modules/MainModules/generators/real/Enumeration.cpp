@@ -11,10 +11,10 @@ public:
 
 	GeneratorReals_Enumeration(PandaDocument *doc)
 		: PandaObject(doc)
-		, nbNumbers(initData(&nbNumbers, 10, "# numbers", "How many numbers to generate"))
-		, start(initData(&start, (PReal)0.0, "start", "Start value of the enumeration"))
-		, step(initData(&step, (PReal)1.0, "step", "Interval between 2 numbers"))
-		, numbers(initData(&numbers, "numbers", "The list of numbers" ))
+		, nbNumbers(initData(10, "# numbers", "How many numbers to generate"))
+		, start(initData((PReal)0.0, "start", "Start value of the enumeration"))
+		, step(initData((PReal)1.0, "step", "Interval between 2 numbers"))
+		, numbers(initData("numbers", "The list of numbers" ))
 	{
 		addInput(nbNumbers);
 		addInput(start);

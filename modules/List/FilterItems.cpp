@@ -13,8 +13,8 @@ public:
 
 	FilterItems(PandaDocument *doc)
 		: GenericObject(doc)
-		, condition(initData(&condition, "condition", "Boolean values specifying which items are kept"))
-		, generic(initData(&generic, "input", "Connect here the list"))
+		, condition(initData("condition", "Boolean values specifying which items are kept"))
+		, generic(initData("input", "Connect here the list"))
 	{
 		addInput(condition);
 		addInput(generic);

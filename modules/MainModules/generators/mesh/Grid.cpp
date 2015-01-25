@@ -19,10 +19,10 @@ public:
 
 	GeneratorMesh_Grid(PandaDocument *doc)
 		: PandaObject(doc)
-		, area(initData(&area, Rect(100, 100, 200, 200), "area", "Position and size of the grid"))
-		, nbX(initData(&nbX, 5, "nbX", "Number of cells horizontally"))
-		, nbY(initData(&nbY, 5, "nbY", "Number of cells vertically"))
-		, mesh(initData(&mesh, "mesh", "Mesh created"))
+		, area(initData(Rect(100, 100, 200, 200), "area", "Position and size of the grid"))
+		, nbX(initData(5, "nbX", "Number of cells horizontally"))
+		, nbY(initData(5, "nbY", "Number of cells vertically"))
+		, mesh(initData("mesh", "Mesh created"))
 	{
 		addInput(area);
 		addInput(nbX);

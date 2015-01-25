@@ -23,10 +23,10 @@ public:
 
 	RenderRect(PandaDocument* parent)
 		: Renderer(parent)
-		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
-		, lineWidth(initData(&lineWidth, "lineWidth", "Width of the line"))
-		, color(initData(&color, "color", "Color of the rectangle"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, rect(initData("rectangle", "Position and size of the rectangle"))
+		, lineWidth(initData("lineWidth", "Width of the line"))
+		, color(initData("color", "Color of the rectangle"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(rect);
 		addInput(lineWidth);
@@ -112,9 +112,9 @@ public:
 
 	RenderFilledRect(PandaDocument* parent)
 		: Renderer(parent)
-		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
-		, color(initData(&color, "color", "Color of the rectangle"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, rect(initData("rectangle", "Position and size of the rectangle"))
+		, color(initData("color", "Color of the rectangle"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(rect);
 		addInput(color);
@@ -207,9 +207,9 @@ public:
 
 	RenderTexturedRect(PandaDocument* parent)
 		: Renderer(parent)
-		, rect(initData(&rect, "rectangle", "Position and size of the rectangle"))
-		, texture(initData(&texture, "texture", "Texture to apply to the rectangle"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, rect(initData("rectangle", "Position and size of the rectangle"))
+		, texture(initData("texture", "Texture to apply to the rectangle"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(rect);
 		addInput(texture);

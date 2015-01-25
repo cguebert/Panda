@@ -21,9 +21,9 @@ public:
 
 	Polygon_Compose(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_contour(initData(&m_contour, "contour", "Input contour"))
-		, m_innerPaths(initData(&m_innerPaths, "inner", "Input inner paths"))
-		, m_output(initData(&m_output, "polygon", "Output polygon"))
+		, m_contour(initData("contour", "Input contour"))
+		, m_innerPaths(initData("inner", "Input inner paths"))
+		, m_output(initData("polygon", "Output polygon"))
 	{
 		addInput(m_contour);
 		addInput(m_innerPaths);
@@ -56,9 +56,9 @@ public:
 
 	Polygon_Decompose(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input(initData(&m_input, "polygon", "Input polygon"))
-		, m_contour(initData(&m_contour, "contour", "Output contour"))
-		, m_innerPaths(initData(&m_innerPaths, "inner", "Output inner paths"))
+		, m_input(initData("polygon", "Input polygon"))
+		, m_contour(initData("contour", "Output contour"))
+		, m_innerPaths(initData("inner", "Output inner paths"))
 	{
 		addInput(m_input);
 		addOutput(m_contour);

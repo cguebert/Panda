@@ -37,28 +37,11 @@ public:
 	QList<BaseData*> getInputDatas() const;
 	QList<BaseData*> getOutputDatas() const;
 
-	template<class TValue>
-	BaseData::BaseInitData initData(Data<TValue>* data, QString name, QString help)
-	{
-		BaseData::BaseInitData init;
-		init.data = data;
-		init.name = name;
-		init.help = help;
-		init.owner = this;
-		return init;
-	}
+	BaseData::BaseInitData initData(QString name, QString help);
 
-	template<class TValue>
-	typename Data<TValue>::InitData initData(Data<TValue>* data, const TValue& value, QString name, QString help)
-	{
-		typename Data<TValue>::InitData init;
-		init.data = data;
-		init.name = name;
-		init.help = help;
-		init.owner = this;
-		init.value = value;
-		return init;
-	}
+	template<class ValueType>
+	typename BaseData::InitData<ValueType> initData(const ValueType& value, QString name, QString help)
+	{ return BaseData::InitData<ValueType>(value, name, help, this); }
 
 	virtual void postCreate();
 	virtual void preDestruction();
@@ -102,6 +85,9 @@ protected:
 };
 
 //****************************************************************************//
+
+inline BaseData::BaseInitData PandaObject::initData(QString name, QString help)
+{ return BaseData::BaseInitData(name, help, this); }
 
 inline QString PandaObject::getTypeName() const
 { return getClass()->getTypeName(); }

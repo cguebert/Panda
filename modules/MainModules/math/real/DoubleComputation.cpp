@@ -26,10 +26,10 @@ public:
 
 	DoubleMath_SmoothStep(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "min", "Start of the smooth step"))
-		, inputB(initData(&inputB, "max", "End of the smooth step"))
-		, inputV(initData(&inputV, "input", "Input of the smooth step"))
-		, result(initData(&result, "result", "Result of the smooth step"))
+		, inputA(initData("min", "Start of the smooth step"))
+		, inputB(initData("max", "End of the smooth step"))
+		, inputV(initData("input", "Input of the smooth step"))
+		, result(initData("result", "Result of the smooth step"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -90,8 +90,8 @@ public:
 
 	DoubleMath_RiseCount(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Value to observe"))
-		, count(initData(&count, "count", "Count of rise transitions"))
+		, input(initData("input", "Value to observe"))
+		, count(initData("count", "Count of rise transitions"))
 	{
 		addInput(input);
 		addOutput(count);
@@ -148,8 +148,8 @@ public:
 
 	DoubleMath_FallCount(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Value to observe"))
-		, count(initData(&count, "count", "Count of fall transitions"))
+		, input(initData("input", "Value to observe"))
+		, count(initData("count", "Count of fall transitions"))
 	{
 		addInput(input);
 		addOutput(count);
@@ -206,10 +206,10 @@ public:
 
 	DoubleMath_Constrain(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "min", "Minimum value"))
-		, inputB(initData(&inputB, "max", "Maximum value"))
-		, inputV(initData(&inputV, "input", "Value to constrain"))
-		, result(initData(&result, "result", "Result of the operation"))
+		, inputA(initData("min", "Minimum value"))
+		, inputB(initData("max", "Maximum value"))
+		, inputV(initData("input", "Value to constrain"))
+		, result(initData("result", "Result of the operation"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -269,10 +269,10 @@ public:
 
 	DoubleMath_Pulse(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "min", "Minimum value"))
-		, inputB(initData(&inputB, "max", "Maximum value"))
-		, inputV(initData(&inputV, "input", "Value to constrain"))
-		, result(initData(&result, "result", "Result of the operation"))
+		, inputA(initData("min", "Minimum value"))
+		, inputB(initData("max", "Maximum value"))
+		, inputV(initData("input", "Value to constrain"))
+		, result(initData("result", "Result of the operation"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -332,12 +332,12 @@ public:
 
 	DoubleMath_Remap(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputV(initData(&inputV, "input", "Values to re-map"))
-		, inputMin(initData(&inputMin, "iMin", "Lower bound of the value's current range"))
-		, inputMax(initData(&inputMax, "iMax", "Upper bound of the value's current range"))
-		, outputMin(initData(&outputMin, "oMin", "Lower bound of the value's target  range"))
-		, outputMax(initData(&outputMax, "oMax", "Upper bound of the value's target  range"))
-		, result(initData(&result, "result", "Result of the remap"))
+		, inputV(initData("input", "Values to re-map"))
+		, inputMin(initData("iMin", "Lower bound of the value's current range"))
+		, inputMax(initData("iMax", "Upper bound of the value's current range"))
+		, outputMin(initData("oMin", "Lower bound of the value's target  range"))
+		, outputMax(initData("oMax", "Upper bound of the value's target  range"))
+		, result(initData("result", "Result of the remap"))
 	{
 		addInput(inputV);
 		addInput(inputMin);

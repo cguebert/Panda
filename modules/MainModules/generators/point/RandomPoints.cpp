@@ -17,10 +17,10 @@ public:
 
 	GeneratorPoints_Random(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_nbPoints(initData(&m_nbPoints, 10, "# points", "Number of points to generate"))
-		, m_seed(initData(&m_seed, 0, "seed", "Seed for the random points generator"))
-		, m_points(initData(&m_points, "points", "The list of points" ))
-		, m_area(initData(&m_area, "area", "Where to create the points. If null, the render area is used instead"))
+		, m_nbPoints(initData(10, "# points", "Number of points to generate"))
+		, m_seed(initData(0, "seed", "Seed for the random points generator"))
+		, m_points(initData("points", "The list of points" ))
+		, m_area(initData("area", "Where to create the points. If null, the render area is used instead"))
 	{
 		addInput(m_nbPoints);
 		addInput(m_seed);

@@ -12,11 +12,11 @@ public:
 
 	GeneratorReals_Random(PandaDocument *doc)
 		: PandaObject(doc)
-		, nbNumbers(initData(&nbNumbers, 10, "# numbers", "How many numbers to generate"))
-		, seed(initData(&seed, 0, "seed", "Seed for the random numbers generator"))
-		, numMin(initData(&numMin, (PReal)0.0, "minimum", "Minimum limit of the numbers"))
-		, numMax(initData(&numMax, (PReal)1.0, "maximum", "Maximum limit of the numbers"))
-		, numbers(initData(&numbers, "numbers", "The list of numbers" ))
+		, nbNumbers(initData(10, "# numbers", "How many numbers to generate"))
+		, seed(initData(0, "seed", "Seed for the random numbers generator"))
+		, numMin(initData((PReal)0.0, "minimum", "Minimum limit of the numbers"))
+		, numMax(initData((PReal)1.0, "maximum", "Maximum limit of the numbers"))
+		, numbers(initData("numbers", "The list of numbers" ))
 	{
 		addInput(nbNumbers);
 		addInput(seed);

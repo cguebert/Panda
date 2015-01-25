@@ -14,8 +14,8 @@ public:
 
 	GeneratorImage_Load(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_fileName(initData(&m_fileName, "fileName", "Path of the image to load"))
-		, m_image(initData(&m_image, "image", "The image loaded from disk"))
+		, m_fileName(initData("fileName", "Path of the image to load"))
+		, m_image(initData("image", "The image loaded from disk"))
 	{
 		addInput(m_fileName);
 		m_fileName.setWidget("open file");

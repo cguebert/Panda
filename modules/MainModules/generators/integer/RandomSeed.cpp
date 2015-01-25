@@ -14,8 +14,8 @@ public:
 	GeneratorInteger_RandomSeed(PandaDocument *doc)
 		: PandaObject(doc)
 		, dist(0, 10000)
-		, seed(initData(&seed, 0, "seed", "Seed for the random numbers generator"))
-		, value(initData(&value, 0, "value", "Value generated this time step"))
+		, seed(initData(0, "seed", "Seed for the random numbers generator"))
+		, value(initData(0, "value", "Value generated this time step"))
 		, prevSeed(-1)
 	{
 		addInput(seed);

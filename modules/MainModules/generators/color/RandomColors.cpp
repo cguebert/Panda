@@ -15,12 +15,12 @@ public:
 
 	GeneratorColors_Random(PandaDocument *doc)
 		: PandaObject(doc)
-		, nbColors(initData(&nbColors, 1, "number", "Number of colors to generate"))
-		, seed(initData(&seed, "seed", "Seed for the random points generator"))
-		, hsvMode(initData(&hsvMode, 0, "HSV", "Use HSV instead of RGB"))
-		, colorMin(initData(&colorMin, Color::black(), "min color", "Color defining the minimum possible value of each component"))
-		, colorMax(initData(&colorMax, Color::white(), "max color", "Color defining the maximum possible value of each component"))
-		, colors(initData(&colors, "colors", "Randomly generated colors"))
+		, nbColors(initData(1, "number", "Number of colors to generate"))
+		, seed(initData("seed", "Seed for the random points generator"))
+		, hsvMode(initData(0, "HSV", "Use HSV instead of RGB"))
+		, colorMin(initData(Color::black(), "min color", "Color defining the minimum possible value of each component"))
+		, colorMax(initData(Color::white(), "max color", "Color defining the maximum possible value of each component"))
+		, colors(initData("colors", "Randomly generated colors"))
 	{
 		addInput(nbColors);
 		addInput(seed);

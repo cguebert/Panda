@@ -12,7 +12,7 @@ public:
 
 	ListReverse(PandaDocument *doc)
 		: GenericObject(doc)
-		, generic(initData(&generic, "input", "Connect here the list whose items to reverse"))
+		, generic(initData("input", "Connect here the list whose items to reverse"))
 	{
 		addInput(generic);
 

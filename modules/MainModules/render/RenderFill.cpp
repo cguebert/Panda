@@ -24,9 +24,9 @@ public:
 
 	RenderGradient_Horizontal(PandaDocument* parent)
 		: Renderer(parent)
-		, m_gradient(initData(&m_gradient, "gradient", "Gradient to paint on the screen"))
-		, m_area(initData(&m_area, "area", "Area to paint the gradient in. If null, the render area is used instead"))
-		, m_shader(initData(&m_shader, "shader", "Shaders used during the rendering"))
+		, m_gradient(initData("gradient", "Gradient to paint on the screen"))
+		, m_area(initData("area", "Area to paint the gradient in. If null, the render area is used instead"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(m_gradient);
 		addInput(m_area);
@@ -110,9 +110,9 @@ public:
 
 	RenderGradient_Vertical(PandaDocument* parent)
 		: Renderer(parent)
-		, gradient(initData(&gradient, "gradient", "Gradient to paint on the screen"))
-		, m_area(initData(&m_area, "area", "Area to paint the gradient in. If null, the render area is used instead"))
-		, m_shader(initData(&m_shader, "shader", "Shaders used during the rendering"))
+		, gradient(initData("gradient", "Gradient to paint on the screen"))
+		, m_area(initData("area", "Area to paint the gradient in. If null, the render area is used instead"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(gradient);
 		addInput(m_area);
@@ -196,9 +196,9 @@ public:
 
 	RenderFill_Motif(PandaDocument* parent)
 		: Renderer(parent)
-		, texture(initData(&texture, "texture", "Motif to paint on the screen"))
-		, m_area(initData(&m_area, "area", "Area to paint the gradient in. If null, the render area is used instead"))
-		, m_shader(initData(&m_shader, "shader", "Shaders used during the rendering"))
+		, texture(initData("texture", "Motif to paint on the screen"))
+		, m_area(initData("area", "Area to paint the gradient in. If null, the render area is used instead"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(texture);
 		addInput(m_area);

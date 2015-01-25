@@ -15,8 +15,8 @@ public:
 
 	ImageMath_GetSize(PandaDocument *doc)
 		: PandaObject(doc)
-		, image(initData(&image, "image", "Image to analyse"))
-		, size(initData(&size, "size", "size of the image"))
+		, image(initData("image", "Image to analyse"))
+		, size(initData("size", "size of the image"))
 	{
 		addInput(image);
 

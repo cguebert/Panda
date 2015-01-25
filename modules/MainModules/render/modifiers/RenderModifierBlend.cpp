@@ -12,8 +12,8 @@ public:
 
 	RenderModifier_BlendMode(PandaDocument* parent)
 		: Renderer(parent)
-		, source(initData(&source, 4, "source", "Source blending mode"))
-		, destination(initData(&destination, 6, "destination", "Destination blending mode"))
+		, source(initData(4, "source", "Source blending mode"))
+		, destination(initData(6, "destination", "Destination blending mode"))
 	{
 		addInput(source);
 		addInput(destination);

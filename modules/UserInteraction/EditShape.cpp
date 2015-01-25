@@ -18,11 +18,11 @@ public:
 	UserInteraction_EditRectangle(PandaDocument *doc)
 		: PandaObject(doc)
 		, MouseEventsReceiver(doc)
-		, m_input(initData(&m_input, "input", "Input rectangles"))
-		, m_output(initData(&m_output, "output", "Output rectangles"))
-		, m_handleRadius(initData(&m_handleRadius, (PReal)5, "handle radius", "Radius of the handles"))
-		, m_centerHandles(initData(&m_centerHandles, "center", "Center handles"))
-		, m_cornerHandles(initData(&m_cornerHandles, "corner", "Corner handles"))
+		, m_input(initData("input", "Input rectangles"))
+		, m_output(initData("output", "Output rectangles"))
+		, m_handleRadius(initData((PReal)5, "handle radius", "Radius of the handles"))
+		, m_centerHandles(initData("center", "Center handles"))
+		, m_cornerHandles(initData("corner", "Corner handles"))
 		, m_counter(-1), m_currentSelection(-1)
 	{
 		addInput(m_input);

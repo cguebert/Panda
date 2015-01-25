@@ -24,9 +24,9 @@ public:
 
 	RenderMesh(PandaDocument* parent)
 		: Renderer(parent)
-		, mesh(initData(&mesh, "mesh", "Mesh to render"))
-		, color(initData(&color, "color", "Color of the points"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, mesh(initData("mesh", "Mesh to render"))
+		, color(initData("color", "Color of the points"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(mesh);
 		addInput(color);
@@ -91,10 +91,10 @@ public:
 
 	RenderMesh_Textured(PandaDocument* parent)
 		: Renderer(parent)
-		, mesh(initData(&mesh, "mesh", "Mesh to render"))
-		, uvCoords(initData(&uvCoords, "UV Coords", "Texture coordinates"))
-		, texture(initData(&texture, "texture", "Texture applied to the mesh"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, mesh(initData("mesh", "Mesh to render"))
+		, uvCoords(initData("UV Coords", "Texture coordinates"))
+		, texture(initData("texture", "Texture applied to the mesh"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(mesh);
 		addInput(uvCoords);

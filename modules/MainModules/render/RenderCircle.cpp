@@ -22,11 +22,11 @@ public:
 
 	RenderCircle(PandaDocument* parent)
 		: Renderer(parent)
-		, center(initData(&center, "center", "Center position of the circle"))
-		, radius(initData(&radius, "radius", "Radius of the circle" ))
-		, lineWidth(initData(&lineWidth, "lineWidth", "Width of the line"))
-		, color(initData(&color, "color", "Color of the circle"))
-		, shader(initData(&shader, "shader", "Shaders used during the rendering"))
+		, center(initData("center", "Center position of the circle"))
+		, radius(initData("radius", "Radius of the circle" ))
+		, lineWidth(initData("lineWidth", "Width of the line"))
+		, color(initData("color", "Color of the circle"))
+		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(center);
 		addInput(radius);

@@ -12,8 +12,8 @@ public:
 
 	FillList(PandaDocument *doc)
 		: GenericObject(doc)
-		, size(initData(&size, 10, "size", "Size of the list to be created"))
-		, generic(initData(&generic, "input", "Connect here the lists to get the items from"))
+		, size(initData(10, "size", "Size of the list to be created"))
+		, generic(initData("input", "Connect here the lists to get the items from"))
 	{
 		addInput(size);
 		addInput(generic);

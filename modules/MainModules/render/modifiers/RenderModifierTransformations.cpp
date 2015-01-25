@@ -17,7 +17,7 @@ public:
 
 	RenderModifier_Translation(PandaDocument* parent)
 		: Renderer(parent)
-		, translation(initData(&translation, "translation", "Translation to apply for the next objects"))
+		, translation(initData("translation", "Translation to apply for the next objects"))
 	{
 		addInput(translation);
 	}
@@ -46,7 +46,7 @@ public:
 
 	RenderModifier_Rotation(PandaDocument* parent)
 		: Renderer(parent)
-		, rotation(initData(&rotation, "rotation", "Rotation to apply for the next objects"))
+		, rotation(initData("rotation", "Rotation to apply for the next objects"))
 	{
 		addInput(rotation);
 	}
@@ -74,7 +74,7 @@ public:
 
 	RenderModifier_Scale(PandaDocument* parent)
 		: Renderer(parent)
-		, scale(initData(&scale, Point(1.0, 1.0), "scaling", "Scaling to apply for the next objects"))
+		, scale(initData(Point(1.0, 1.0), "scaling", "Scaling to apply for the next objects"))
 	{
 		addInput(scale);
 	}

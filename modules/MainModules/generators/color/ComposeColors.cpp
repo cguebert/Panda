@@ -15,11 +15,11 @@ public:
 
 	GeneratorColors_ComposeRGB(PandaDocument *doc)
 		: PandaObject(doc)
-		, R(initData(&R, "r", "Red component of the color"))
-		, G(initData(&G, "g", "Green component of the color"))
-		, B(initData(&B, "b", "Blue component of the color"))
-		, A(initData(&A, "a", "Alpha component of the color"))
-		, color(initData(&color, "color", "Color created from the 4 components"))
+		, R(initData("r", "Red component of the color"))
+		, G(initData("g", "Green component of the color"))
+		, B(initData("b", "Blue component of the color"))
+		, A(initData("a", "Alpha component of the color"))
+		, color(initData("color", "Color created from the 4 components"))
 	{
 		addInput(R);
 		addInput(G);
@@ -81,11 +81,11 @@ public:
 
 	GeneratorColors_DecomposeRGB(PandaDocument *doc)
 		: PandaObject(doc)
-		, R(initData(&R, "r", "Red component of the color"))
-		, G(initData(&G, "g", "Green component of the color"))
-		, B(initData(&B, "b", "Blue component of the color"))
-		, A(initData(&A, "a", "Alpha component of the color"))
-		, color(initData(&color, "color", "Color created from the 4 components"))
+		, R(initData("r", "Red component of the color"))
+		, G(initData("g", "Green component of the color"))
+		, B(initData("b", "Blue component of the color"))
+		, A(initData("a", "Alpha component of the color"))
+		, color(initData("color", "Color created from the 4 components"))
 	{
 		addInput(color);
 
@@ -131,11 +131,11 @@ public:
 
 	GeneratorColors_ComposeHSV(PandaDocument *doc)
 		: PandaObject(doc)
-		, H(initData(&H, "h", "Hue component of the color"))
-		, S(initData(&S, "s", "Saturation component of the color"))
-		, V(initData(&V, "v", "Value component of the color"))
-		, A(initData(&A, "a", "Alpha component of the color"))
-		, color(initData(&color, "color", "Color created from the 4 components"))
+		, H(initData("h", "Hue component of the color"))
+		, S(initData("s", "Saturation component of the color"))
+		, V(initData("v", "Value component of the color"))
+		, A(initData("a", "Alpha component of the color"))
+		, color(initData("color", "Color created from the 4 components"))
 	{
 		addInput(H);
 		addInput(S);
@@ -198,11 +198,11 @@ public:
 
 	GeneratorColors_DecomposeHSV(PandaDocument *doc)
 		: PandaObject(doc)
-		, H(initData(&H, "h", "Hue component of the color"))
-		, S(initData(&S, "s", "Saturation component of the color"))
-		, V(initData(&V, "v", "Value component of the color"))
-		, A(initData(&A, "a", "Alpha component of the color"))
-		, color(initData(&color, "color", "Color created from the 4 components"))
+		, H(initData("h", "Hue component of the color"))
+		, S(initData("s", "Saturation component of the color"))
+		, V(initData("v", "Value component of the color"))
+		, A(initData("a", "Alpha component of the color"))
+		, color(initData("color", "Color created from the 4 components"))
 	{
 		addInput(color);
 

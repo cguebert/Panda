@@ -23,12 +23,12 @@ public:
 
 	RenderText(PandaDocument* parent)
 		: Renderer(parent)
-		, text(initData(&text, "text", "Text to be drawn"))
-		, font(initData(&font, "font", "Font to use for the text rendering"))
-		, rect(initData(&rect, "rectangle", "Rectangle in which to draw the text"))
-		, color(initData(&color, "color", "Color of the text"))
-		, alignH(initData(&alignH, 2, "align H", "Horizontal alignment of the text"))
-		, alignV(initData(&alignV, 2, "align V", "Vertical alignment of the text"))
+		, text(initData("text", "Text to be drawn"))
+		, font(initData("font", "Font to use for the text rendering"))
+		, rect(initData("rectangle", "Rectangle in which to draw the text"))
+		, color(initData("color", "Color of the text"))
+		, alignH(initData(2, "align H", "Horizontal alignment of the text"))
+		, alignV(initData(2, "align V", "Vertical alignment of the text"))
 		, functions(QOpenGLContext::currentContext())
 	{
 		addInput(text);

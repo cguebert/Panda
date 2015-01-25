@@ -16,10 +16,10 @@ public:
 
 	ModifierPoints_Union(PandaDocument *doc)
 		: PandaObject(doc)
-		, image(initData(&image, "image", "Image used to select valid points"))
-		, inputPoints(initData(&inputPoints, "input", "List of points to test"))
-		, outputPoints(initData(&outputPoints, "output", "List of valid points" ))
-		, outputIndices(initData(&outputIndices, "indices", "Indices of the valid points"))
+		, image(initData("image", "Image used to select valid points"))
+		, inputPoints(initData("input", "List of points to test"))
+		, outputPoints(initData("output", "List of valid points" ))
+		, outputIndices(initData("indices", "Indices of the valid points"))
 	{
 		addInput(image);
 		addInput(inputPoints);

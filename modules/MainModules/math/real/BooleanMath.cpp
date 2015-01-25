@@ -12,9 +12,9 @@ public:
 
 	BooleanMath_Greater(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "inputA", "First input"))
-		, inputB(initData(&inputB, "inputB", "Second input"))
-		, result(initData(&result, "result", "Result of the comparison"))
+		, inputA(initData("inputA", "First input"))
+		, inputB(initData("inputB", "Second input"))
+		, result(initData("result", "Result of the comparison"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -63,9 +63,9 @@ public:
 
 	BooleanMath_Equal(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "inputA", "First input"))
-		, inputB(initData(&inputB, "inputB", "Second input"))
-		, result(initData(&result, "result", "Result of the comparison"))
+		, inputA(initData("inputA", "First input"))
+		, inputB(initData("inputB", "Second input"))
+		, result(initData("result", "Result of the comparison"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -114,9 +114,9 @@ public:
 
 	BooleanMath_Or(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "inputA", "First input"))
-		, inputB(initData(&inputB, "inputB", "Second input"))
-		, result(initData(&result, "result", "Result of the OR operation"))
+		, inputA(initData("inputA", "First input"))
+		, inputB(initData("inputB", "Second input"))
+		, result(initData("result", "Result of the OR operation"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -164,9 +164,9 @@ public:
 
 	BooleanMath_And(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "inputA", "First input"))
-		, inputB(initData(&inputB, "inputB", "Second input"))
-		, result(initData(&result, "result", "Result of the AND operation"))
+		, inputA(initData("inputA", "First input"))
+		, inputB(initData("inputB", "Second input"))
+		, result(initData("result", "Result of the AND operation"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -214,9 +214,9 @@ public:
 
 	BooleanMath_Xor(PandaDocument *doc)
 		: PandaObject(doc)
-		, inputA(initData(&inputA, "inputA", "First input"))
-		, inputB(initData(&inputB, "inputB", "Second input"))
-		, result(initData(&result, "result", "Result of the XOR operation"))
+		, inputA(initData("inputA", "First input"))
+		, inputB(initData("inputB", "Second input"))
+		, result(initData("result", "Result of the XOR operation"))
 	{
 		addInput(inputA);
 		addInput(inputB);
@@ -265,8 +265,8 @@ public:
 
 	BooleanMath_Not(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "Input"))
-		, result(initData(&result, "result", "Negation of the input"))
+		, input(initData("input", "Input"))
+		, result(initData("result", "Negation of the input"))
 	{
 		addInput(input);
 		addOutput(result);

@@ -13,8 +13,8 @@ public:
 
 	DeleteItems(PandaDocument *doc)
 		: GenericObject(doc)
-		, indices(initData(&indices, "indices", "Indices of items to be removed from the list"))
-		, generic(initData(&generic, "input", "Connect here the list"))
+		, indices(initData("indices", "Indices of items to be removed from the list"))
+		, generic(initData("input", "Connect here the list"))
 	{
 		addInput(indices);
 		addInput(generic);

@@ -17,11 +17,11 @@ public:
 		: GenericObject(doc)
 		, m_copyInit(true)
 		, prevControl(-1.0)
-		, m_control(initData(&m_control, (PReal)0.0, "control", "This object will be updated each time this value changes"))
-		, m_condition(initData(&m_condition, 1, "condition", "Continue while this condition is true (non zero)"))
-		, m_nbIterations(initData(&m_nbIterations, 5, "nbIterations", "Maximum number of iterations"))
-		, m_iteration(initData(&m_iteration, 0, "iteration", "Current iteration"))
-		, m_generic(initData(&m_generic, "input", "Connect here the lists to use in the loop"))
+		, m_control(initData((PReal)0.0, "control", "This object will be updated each time this value changes"))
+		, m_condition(initData(1, "condition", "Continue while this condition is true (non zero)"))
+		, m_nbIterations(initData(5, "nbIterations", "Maximum number of iterations"))
+		, m_iteration(initData(0, "iteration", "Current iteration"))
+		, m_generic(initData("input", "Connect here the lists to use in the loop"))
 	{
 		addInput(m_control);
 		addInput(m_condition);

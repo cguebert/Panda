@@ -24,9 +24,9 @@ public:
 
 	ModifierShader_SetUniform(PandaDocument *doc)
 		: GenericObject(doc)
-		, input(initData(&input, "input", "Input shader"))
-		, output(initData(&output, "output", "Output shader"))
-		, generic(initData(&generic, "value", "Connect here the values to add to the shader"))
+		, input(initData("input", "Input shader"))
+		, output(initData("output", "Output shader"))
+		, generic(initData("value", "Connect here the values to add to the shader"))
 	{
 		addInput(input);
 		addInput(generic);

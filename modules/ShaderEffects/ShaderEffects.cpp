@@ -9,8 +9,8 @@ using types::Point;
 ShaderEffects::ShaderEffects(PandaDocument* doc, int nbPasses)
 	: PandaObject(doc)
 	, m_nbPasses(nbPasses)
-	, m_input(initData(&m_input, "input", "The original image"))
-	, m_output(initData(&m_output, "output", "Image created by the operation"))
+	, m_input(initData("input", "The original image"))
+	, m_output(initData("output", "Image created by the operation"))
 {
 	addInput(m_input);
 	addOutput(m_output);

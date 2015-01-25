@@ -15,10 +15,10 @@ public:
 
 	MeshMath_NumberOfPrimitives(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData(&mesh, "mesh", "Mesh to analyse"))
-		, nbPoints(initData(&nbPoints, "nb points", "Number of points in the mesh"))
-		, nbEdges(initData(&nbEdges, "nb edges", "Number of edges in the mesh"))
-		, nbTriangles(initData(&nbTriangles, "nb triangles", "Number of triangles in the mesh"))
+		, mesh(initData("mesh", "Mesh to analyse"))
+		, nbPoints(initData("nb points", "Number of points in the mesh"))
+		, nbEdges(initData("nb edges", "Number of edges in the mesh"))
+		, nbTriangles(initData("nb triangles", "Number of triangles in the mesh"))
 	{
 		addInput(mesh);
 

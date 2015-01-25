@@ -14,8 +14,8 @@ public:
 
 	GeneratorImage_DocumentRendered(PandaDocument *doc)
 		: PandaObject(doc)
-		, previous(initData(&previous, 0, "previous", "If true we get the image at the begining of the timestep, else at the end."))
-		, image(initData(&image, "image", "The image rendered by the document"))
+		, previous(initData(0, "previous", "If true we get the image at the begining of the timestep, else at the end."))
+		, image(initData("image", "The image rendered by the document"))
 	{
 		addInput(previous);
 		previous.setWidget("checkbox");

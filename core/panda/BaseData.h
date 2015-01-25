@@ -38,10 +38,21 @@ public:
 	class BaseInitData
 	{
 	public:
-		BaseInitData() : data(nullptr), owner(nullptr) {}
-		BaseData* data;
+		BaseInitData() : owner(nullptr) {}
+		BaseInitData(const QString& name, const QString& help, PandaObject* owner)
+			: name(name), help(help), owner(owner) {}
 		PandaObject* owner;
 		QString name, help;
+	};
+
+	template <class ValueType>
+	class InitData : public BaseData::BaseInitData
+	{
+	public:
+		InitData() : value(ValueType()) {}
+		InitData(const ValueType& value, const QString& name, const QString& help, PandaObject* owner)
+			: BaseInitData(name, help, owner), value(value) {}
+		ValueType value;
 	};
 
 	explicit BaseData(const BaseInitData& init, const std::type_info& type);

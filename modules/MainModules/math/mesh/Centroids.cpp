@@ -16,8 +16,8 @@ public:
 
 	MeshMath_Centroids(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData(&mesh, "mesh", "Mesh to analyse"))
-		, centroids(initData(&centroids, "centroids", "Centroids of the triangles"))
+		, mesh(initData("mesh", "Mesh to analyse"))
+		, centroids(initData("centroids", "Centroids of the triangles"))
 	{
 		addInput(mesh);
 

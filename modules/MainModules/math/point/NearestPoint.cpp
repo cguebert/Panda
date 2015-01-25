@@ -16,13 +16,13 @@ public:
 
 	PointListMath_Nearest(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData(&input, "input", "List of points to analyse"))
-		, points(initData(&points, "points", "Points used for the search"))
-		, output(initData(&output, "output", "Result of the search"))
-		, unique(initData(&unique, 0, "unique", "Set to 1 if multiple points can not find the same result"))
-		, notSelf(initData(&notSelf, 0, "notSelf", "Set to 1 if a point can not return itself as the result"))
-		, found(initData(&found, "found", "For each input point, this is 1 if a point was found, 0 otherwise"))
-		, maxDist(initData(&maxDist, (PReal)100.0, "maxDist", "Distance maximum for the search"))
+		, input(initData("input", "List of points to analyse"))
+		, points(initData("points", "Points used for the search"))
+		, output(initData("output", "Result of the search"))
+		, unique(initData(0, "unique", "Set to 1 if multiple points can not find the same result"))
+		, notSelf(initData(0, "notSelf", "Set to 1 if a point can not return itself as the result"))
+		, found(initData("found", "For each input point, this is 1 if a point was found, 0 otherwise"))
+		, maxDist(initData((PReal)100.0, "maxDist", "Distance maximum for the search"))
 	{
 		addInput(input);
 		addInput(points);

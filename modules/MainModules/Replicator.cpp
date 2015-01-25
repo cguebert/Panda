@@ -19,8 +19,8 @@ public:
 
 	Replicator(PandaDocument *doc)
 		: Layer(doc)
-		, index(initData(&index, 0, "index", "0-based index of the current iteration"))
-		, nbIterations(initData(&nbIterations, 1, "# iterations", "Number of times the objects have to be rendered"))
+		, index(initData(0, "index", "0-based index of the current iteration"))
+		, nbIterations(initData(1, "# iterations", "Number of times the objects have to be rendered"))
 	{
 		addInput(nbIterations);
 

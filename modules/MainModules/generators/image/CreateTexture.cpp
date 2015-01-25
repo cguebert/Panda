@@ -26,8 +26,8 @@ public:
 
 	GeneratorImage_CreateTexture(PandaDocument *doc)
 		: DockObject(doc)
-		, m_size(initData(&m_size, Point(64, 64), "size", "Dimensions of the texture"))
-		, m_image(initData(&m_image, "texture", "The image rendered"))
+		, m_size(initData(Point(64, 64), "size", "Dimensions of the texture"))
+		, m_image(initData("texture", "The image rendered"))
 	{
 		addInput(m_size);
 

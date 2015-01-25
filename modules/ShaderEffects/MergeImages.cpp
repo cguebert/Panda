@@ -19,10 +19,10 @@ public:
 
 	ModifierImage_MergeImages(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input1(initData(&m_input1, "input1", "The first input image (in front)"))
-		, m_input2(initData(&m_input2, "input2", "The second input image (in back)"))
-		, m_output(initData(&m_output, "output", "The combined image"))
-		, m_compositionMode(initData(&m_compositionMode, 0, "composition mode", "Defines how the 2 images are merged"))
+		, m_input1(initData("input1", "The first input image (in front)"))
+		, m_input2(initData("input2", "The second input image (in back)"))
+		, m_output(initData("output", "The combined image"))
+		, m_compositionMode(initData(0, "composition mode", "Defines how the 2 images are merged"))
 	{
 		addInput(m_input1);
 		addInput(m_input2);

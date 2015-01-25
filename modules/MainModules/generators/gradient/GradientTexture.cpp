@@ -23,9 +23,9 @@ public:
 
 	GradientTexture(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_gradient(initData(&m_gradient, "gradient", "Gradient used to create the texture"))
-		, m_length(initData(&m_length, 256, "length", "Horizontal size of the texture created"))
-		, m_output(initData(&m_output, "texture", "Texture created"))
+		, m_gradient(initData("gradient", "Gradient used to create the texture"))
+		, m_length(initData(256, "length", "Horizontal size of the texture created"))
+		, m_output(initData("texture", "Texture created"))
 	{
 		addInput(m_gradient);
 		addInput(m_length);
@@ -66,10 +66,10 @@ public:
 
 	GradientTexture2D(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_horizontalGradient(initData(&m_horizontalGradient, "horizontal", "Gradient used in the horizontal direction"))
-		, m_verticalGradient(initData(&m_verticalGradient, "vertical", "Gradient used in the vertical direction"))
-		, m_size(initData(&m_size, Point(256, 256), "size", "Dimensions of the texture created"))
-		, m_output(initData(&m_output, "texture", "Texture created"))
+		, m_horizontalGradient(initData("horizontal", "Gradient used in the horizontal direction"))
+		, m_verticalGradient(initData("vertical", "Gradient used in the vertical direction"))
+		, m_size(initData(Point(256, 256), "size", "Dimensions of the texture created"))
+		, m_output(initData("texture", "Texture created"))
 	{
 		addInput(m_horizontalGradient);
 		addInput(m_verticalGradient);

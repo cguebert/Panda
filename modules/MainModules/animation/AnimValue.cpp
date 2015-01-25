@@ -16,8 +16,8 @@ public:
 
 	AnimValue(PandaDocument *doc)
 		: GenericObject(doc)
-		, progress(initData(&progress, "progress", "Position inside the animation"))
-		, generic(initData(&generic, "input", "Connect here the animations to get the values from"))
+		, progress(initData("progress", "Position inside the animation"))
+		, generic(initData("input", "Connect here the animations to get the values from"))
 	{
 		addInput(progress);
 		addInput(generic);

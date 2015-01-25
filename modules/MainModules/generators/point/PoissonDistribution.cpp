@@ -16,12 +16,12 @@ public:
 
 	GeneratorPoints_Poisson(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_seed(initData(&m_seed, 0, "seed", "Seed for the random points generator"))
-		, m_samples(initData(&m_samples, 20, "samples", "Number of samples to test (higher means tighter, but longer generation)"))
-		, minimumDistance(initData(&minimumDistance, (PReal)50.0, "min distance", "Minimum distance between 2 points"))
-		, m_points(initData(&m_points, "points", "The list of points"))
-		, m_nbPoints(initData(&m_nbPoints, 10, "# points", "Number of points generated"))
-		, m_area(initData(&m_area, "area", "Where to create the points. If null, the render area is used instead"))
+		, m_seed(initData(0, "seed", "Seed for the random points generator"))
+		, m_samples(initData(20, "samples", "Number of samples to test (higher means tighter, but longer generation)"))
+		, minimumDistance(initData((PReal)50.0, "min distance", "Minimum distance between 2 points"))
+		, m_points(initData("points", "The list of points"))
+		, m_nbPoints(initData(10, "# points", "Number of points generated"))
+		, m_area(initData("area", "Where to create the points. If null, the render area is used instead"))
 	{
 		addInput(m_seed);
 		addInput(minimumDistance);

@@ -13,8 +13,8 @@ public:
 
 	ParticleCreation_FromLists(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, position(initData(&position, "position", "Where to place new particles"))
-		, velocity(initData(&velocity, "velocity", "Initial velocity of the particles"))
+		, position(initData("position", "Where to place new particles"))
+		, velocity(initData("velocity", "Initial velocity of the particles"))
 	{
 		addInput(position);
 		addInput(velocity);
