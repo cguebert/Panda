@@ -31,11 +31,6 @@ SOURCES       = \
 	generators/text/DateTime.cpp \
 	generators/text/Format.cpp \
 	generators/shader/SetShaderValues.cpp \
-	generators/mesh/ComposeMesh.cpp \
-	generators/mesh/Delaunay.cpp \
-	generators/mesh/Grid.cpp \
-	generators/mesh/MergeMeshes.cpp \
-	generators/mesh/Voronoi.cpp \
 	math/image/ImageSize.cpp \
 	math/point/NearestPoint.cpp \
 	math/point/PointListMath.cpp \
@@ -45,8 +40,6 @@ SOURCES       = \
 	math/real/DoubleListMath.cpp \
 	math/real/DoubleMath.cpp \
 	math/rect/RectangleMath.cpp \
-	math/mesh/Centroids.cpp \
-	math/mesh/MeshInfo.cpp \
 	modifiers/color/BlendColors.cpp \
 	modifiers/color/ColorInGradient.cpp \
 	modifiers/image/ColorInImage.cpp \
@@ -56,9 +49,6 @@ SOURCES       = \
 	modifiers/point/PointsInShapes.cpp \
 	modifiers/point/PointsUnion.cpp \
 	modifiers/point/RandomDisplacement.cpp \
-	modifiers/mesh/FindTriangle.cpp \
-	modifiers/mesh/Neighbors.cpp \
-	modifiers/mesh/Relaxation.cpp \
 	render/RenderCircle.cpp \
 	render/RenderDisk.cpp \
 	render/RenderImage.cpp \
