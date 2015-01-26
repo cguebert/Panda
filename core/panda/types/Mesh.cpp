@@ -182,27 +182,16 @@ Mesh::PointID Mesh::getOtherPointInEdge(const Edge &edge, PointID point) const
 }
 
 PReal Mesh::areaOfTriangle(const Triangle& trian) const
-{
-	PReal area = 0;
-	for(int i=0; i<3; ++i)
-	{
-		Point p1 = getPoint(trian[i]), p2 = getPoint(trian[(i+1)%3]);
-		area += p1.cross(p2);
-	}
-
-	return area / 2;
+{ // Half the cross product of the sides
+	Point p1 = getPoint(trian[0]), p2 = getPoint(trian[1]), p3 = getPoint(trian[2]);
+	Point p12 = p2 - p1, p13 = p3 - p1;
+	return p12.cross(p13) / 2;
 }
 
 Point Mesh::centroidOfTriangle(const Triangle& trian) const
 {
-	Point pt;
-	for(int i=0; i<3; ++i)
-	{
-		Point p1 = getPoint(trian[i]), p2 = getPoint(trian[(i+1)%3]);
-		pt += (p1 + p2) * p1.cross(p2);
-	}
-
-	return pt / (6 * areaOfTriangle(trian));
+	Point p1 = getPoint(trian[0]), p2 = getPoint(trian[1]), p3 = getPoint(trian[2]);
+	return (p1 + p2 + p3) / 3;
 }
 
 bool Mesh::triangleContainsPoint(const Triangle &trian, Point pt) const

@@ -34,6 +34,7 @@ public:
 		const auto& input = m_input.getValue();
 		const auto& delta = m_delta.getValue();
 		auto output = m_output.getAccessor();
+		output.clear();
 
 		int nbA = input.size(), nbB = delta.size();
 		if(nbA && nbB)
@@ -81,6 +82,7 @@ public:
 		const auto& input = m_input.getValue();
 		const auto& scale = m_scale.getValue();
 		auto output = m_output.getAccessor();
+		output.clear();
 
 		int nbA = input.size(), nbB = scale.size();
 		if(nbA && nbB)
@@ -131,6 +133,7 @@ public:
 		const auto& center = m_center.getValue();
 		const auto& angle = m_angle.getValue();
 		auto output = m_output.getAccessor();
+		output.clear();
 
 		int nbP = input.size(), nbC = center.size(), nbA = angle.size();
 		if(nbP && nbC && nbA)
@@ -310,6 +313,42 @@ protected:
 };
 
 int PathMath_GetPointClass = RegisterObject<PathMath_GetPoint>("Math/Path/Point on curve").setDescription("Get the position and the rotation of a point on a curve based on his abscissa");
+
+//****************************************************************************//
+
+class PathMath_Centroid : public PandaObject
+{
+public:
+	PANDA_CLASS(PathMath_Centroid, PandaObject)
+
+	PathMath_Centroid(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("path", "Path to analyse"))
+		, m_output(initData("centroid", "Centroid of the path"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+
+		int nb = input.size();
+		output.resize(nb);
+		for(int i=0; i<nb; ++i)
+			output[i] = types::centroidOfPolygon(input[i]);
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Path> > m_input;
+	Data< QVector<Point> > m_output;
+};
+
+int PathMath_CentroidClass = RegisterObject<PathMath_Centroid>("Math/Path/Centroid").setName("Centroid of path").setDescription("Compute the centroid of a closed path");
 
 
 } // namespace Panda
