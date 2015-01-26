@@ -137,7 +137,6 @@ public:
 			Mesh::TriangleID triID = *triSet.begin();
 			Mesh newMesh;
 			newMesh.addPoints(inMesh.getPoints());
-			newMesh.addTriangle(inMesh.getTriangle(triID));
 			auto list = inMesh.getTrianglesConnectedToTriangle(triID);
 
 			for(auto i : list)
