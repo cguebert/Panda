@@ -166,6 +166,102 @@ protected:
 
 int PolygonMath_RotateClass = RegisterObject<PolygonMath_Rotate>("Math/Polygon/Rotate").setName("Rotate polygon").setDescription("Rotate a polygon");
 
+//****************************************************************************//
+
+class PolygonMath_Centroid : public PandaObject
+{
+public:
+	PANDA_CLASS(PolygonMath_Centroid, PandaObject)
+
+	PolygonMath_Centroid(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("polygon", "Polygon to analyse"))
+		, m_output(initData("centroid", "Centroid of the polygon"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+
+		int nb = input.size();
+		output.resize(nb);
+		for(int i=0; i<nb; ++i)
+		{
+			const auto& poly = input[i];
+			Point avg;
+			PReal totArea = 0;
+			PReal area = types::areaOfPolygon(poly.contour);
+			avg = types::centroidOfPolygon(poly.contour) * area;
+			totArea += area;
+			for(const auto& hole : poly.holes)
+			{
+				area = types::areaOfPolygon(hole);
+				avg -= types::centroidOfPolygon(hole) * area;
+				totArea -= area;
+			}
+			output[i] = avg / totArea;
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Polygon> > m_input;
+	Data< QVector<Point> > m_output;
+};
+
+int PolygonMath_CentroidClass = RegisterObject<PolygonMath_Centroid>("Math/Polygon/Centroid")
+								.setName("Centroid of polygon")
+								.setDescription("Compute the centroid of a polygon");
+
+//****************************************************************************//
+
+class PolygonMath_Area : public PandaObject
+{
+public:
+	PANDA_CLASS(PolygonMath_Area, PandaObject)
+
+	PolygonMath_Area(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("polygon", "Polygon to analyse"))
+		, m_output(initData("area", "Area of the polygon"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+
+		int nb = input.size();
+		output.resize(nb);
+		for(int i=0; i<nb; ++i)
+		{
+			const auto& poly = input[i];
+			PReal totArea = fabs(types::areaOfPolygon(poly.contour));
+			for(const auto& hole : poly.holes)
+				totArea -= fabs(types::areaOfPolygon(hole));
+			output[i] = totArea;
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Polygon> > m_input;
+	Data< QVector<PReal> > m_output;
+};
+
+int PolygonMath_AreaClass = RegisterObject<PolygonMath_Area>("Math/Polygon/Area")
+								.setName("Area of polygon")
+								.setDescription("Compute the area of a polygon");
+
 } // namespace Panda
 
 

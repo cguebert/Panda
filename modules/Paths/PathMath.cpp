@@ -348,8 +348,47 @@ protected:
 	Data< QVector<Point> > m_output;
 };
 
-int PathMath_CentroidClass = RegisterObject<PathMath_Centroid>("Math/Path/Centroid").setName("Centroid of path").setDescription("Compute the centroid of a closed path");
+int PathMath_CentroidClass = RegisterObject<PathMath_Centroid>("Math/Path/Centroid")
+							 .setName("Centroid of path")
+							 .setDescription("Compute the centroid of a closed path");
 
+//****************************************************************************//
+
+class PathMath_Area : public PandaObject
+{
+public:
+	PANDA_CLASS(PathMath_Area, PandaObject)
+
+	PathMath_Area(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("path", "Path to analyse"))
+		, m_output(initData("area", "Area of the path"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+
+		int nb = input.size();
+		output.resize(nb);
+		for(int i=0; i<nb; ++i)
+			output[i] = fabs(types::areaOfPolygon(input[i]));
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Path> > m_input;
+	Data< QVector<PReal> > m_output;
+};
+
+int PathMath_AreaClass = RegisterObject<PathMath_Area>("Math/Path/Area")
+						 .setName("Area of path")
+						 .setDescription("Compute the area of a closed path");
 
 } // namespace Panda
 

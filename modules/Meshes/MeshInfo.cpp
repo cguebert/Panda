@@ -48,4 +48,49 @@ int MeshMath_NumberOfPrimitivesClass = RegisterObject<MeshMath_NumberOfPrimitive
 
 //****************************************************************************//
 
+//****************************************************************************//
+
+class MeshMath_Area : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshMath_Area, PandaObject)
+
+	MeshMath_Area(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("mesh", "Mesh to analyse"))
+		, m_output(initData("area", "Area of the mesh"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+
+		int nb = input.size();
+		output.resize(nb);
+		for(int i=0; i<nb; ++i)
+		{
+			const auto& mesh = input[i];
+			PReal area = 0;
+			for(int j=0, nbT=mesh.nbTriangles(); j<nbT; ++j)
+				area += mesh.areaOfTriangle(mesh.getTriangle(j));
+			output[i] = fabs(area);
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Mesh> > m_input;
+	Data< QVector<PReal> > m_output;
+};
+
+int MeshMath_AreaClass = RegisterObject<MeshMath_Area>("Math/Mesh/Area")
+						 .setName("Area of mesh")
+						 .setDescription("Compute the area of a mesh");
+
+
 } // namespace Panda
