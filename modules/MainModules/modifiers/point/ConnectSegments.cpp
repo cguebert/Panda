@@ -21,22 +21,26 @@ public:
 
 	ModifierPoints_ConnectSegments(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData("input", "List of segments (pair of points)"))
-		, output(initData("output", "List of connected points" ))
-		, required(initData("required", "If possible, the line must go though these points"))
+		, m_input(initData("input", "List of segments (pair of points)"))
+		, m_output(initData("output", "List of connected points" ))
 	{
-		addInput(input);
-		addInput(required);
+		addInput(m_input);
+		addOutput(m_output);
+	}
 
-		addOutput(output);
+	std::pair<int, int> make_edge(int a, int b)
+	{
+		if(a < b)
+			return std::make_pair(a, b);
+		else
+			return std::make_pair(b, a);
 	}
 
 	void update()
 	{
-		const auto& inList = input.getValue();
-		const auto& reqList = required.getValue();
+		const auto& inList = m_input.getValue();
 
-		auto outList = output.getAccessor();
+		auto outList = m_output.getAccessor();
 		outList.clear();
 
 		if(inList.empty())
@@ -67,39 +71,54 @@ public:
 			neighbours[i2].push_back(i1);
 		}
 
-		QVector<int> reqIndices;
-		for(auto pt : reqList)
-			reqIndices.push_back(pointsMap.value(reqList[0], 0));
-
 		int start = 0;
-		if(!reqIndices.empty())
-			start = reqIndices.front();
-
-		std::set<int> includedIndices;
-		includedIndices.insert(start);
+		std::set<std::pair<int, int>> usedEdges;
 
 		QList<int> resIndices;
 		resIndices.push_back(start);
 
-		// First direction
+		PReal pi2 = 2 * (PReal)M_PI;
 		int prev = start, current = start;
 		bool found = true;
 		while(found)
 		{
 			found = false;
+			int best = -1;
+			PReal minAngle = 7; // > 2 * pi
+			Point BA = points[start] - points[current];
+			PReal prevAngle = (start != current ? atan2(BA.y, BA.x) : 0);
 			for(auto p : neighbours[current])
 			{
-				if(p != prev)
+				if(p != prev && usedEdges.find(make_edge(current, p)) == usedEdges.end())
 				{
-					resIndices.push_back(p);
-					if(includedIndices.find(p) != includedIndices.end())	// We alreaded included this point, we found a loop
-						break;
-					includedIndices.insert(p);
-					prev = current;
-					current = p;
-					found = true;
-					break;
+					// Compute the angle from the current segment to this one
+					Point BC = points[p] - points[current];
+					PReal angle = atan2(BC.y, BC.x);
+					PReal delta = angle;
+				/*	PReal delta = fabs(angle - prevAngle);
+					if(delta > pi2)
+						delta -= pi2;
+				*/	if(delta < minAngle)
+					{
+						minAngle = delta;
+						best = p;
+					}
 				}
+			}
+
+			if(best != -1)
+			{
+				resIndices.push_back(best);
+				usedEdges.insert(make_edge(current, best));
+				prev = current;
+				current = best;
+				found = true;
+			}
+			else // Can we close the loop ?
+			{
+				if(neighbours[current].contains(start))
+					resIndices.push_back(start);
+				// Else: go back to a point with neighbours, and continue in another direction
 			}
 		}
 
@@ -110,10 +129,10 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > input, output, required;
+	Data< QVector<Point> > m_input, m_output;
 };
 
 int ModifierPoints_ConnectSegmentsClass = RegisterObject<ModifierPoints_ConnectSegments>("Modifier/Point/Connect segments")
-		.setDescription("Create a continous line from a list of segments, including the specified index");
+		.setDescription("Create a continous line from a list of segments");
 
 } // namespace Panda
