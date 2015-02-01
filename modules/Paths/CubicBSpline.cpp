@@ -16,75 +16,78 @@ public:
 
 	Curve_CubicBSpline(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData("input", "List of control points"))
-		, output(initData("output", "List of points on the spline"))
-		, steps(initData(6, "steps", "Number of points on each segment"))
-		, close(initData(0, "close", "Is the curve closed or not?"))
+		, m_input(initData("input", "List of control points"))
+		, m_output(initData("output", "List of points on the spline"))
+		, m_steps(initData(6, "steps", "Number of points on each segment"))
+		, m_close(initData(0, "close", "Is the curve closed or not?"))
 	{
-		addInput(input);
-		addInput(steps);
-		addInput(close);
-		close.setWidget("checkbox");
+		addInput(m_input);
+		addInput(m_steps);
+		addInput(m_close);
+		m_close.setWidget("checkbox");
 
-		addOutput(output);
+		addOutput(m_output);
 	}
 
 	void update()
 	{
-		const auto& ctrlPts = input.getValue();
-		auto outPts = output.getAccessor();
-		int nbCtrlPts = ctrlPts.size();
-		outPts->clear();
-		if(nbCtrlPts < 4)
-		{
-			cleanDirty();
-			return;
-		}
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+		output.clear();
+		output.resize(input.size());
 
-		int nbSteps = steps.getValue();
+		int nbSteps = m_steps.getValue();
 		computeCoefs(nbSteps);
 
-		bool closed = (close.getValue() && ctrlPts.front() == ctrlPts.back());
-
-		if(closed)
+		for(int l=0, nb=input.size(); l<nb; ++l)
 		{
-			for(int i=1; i<=nbCtrlPts; ++i)
+			const auto ctrlPts = input[l];
+			int nbCtrlPts = ctrlPts.size();
+			if(nbCtrlPts < 4)
+				continue;
+			auto& outPts = output[l];
+			bool closed = (m_close.getValue() && ctrlPts.front() == ctrlPts.back());
+
+			if(closed)
 			{
-				for(int j=0; j<nbSteps; ++j)
+				for(int i=1; i<=nbCtrlPts; ++i)
 				{
-					Point pt;
-					vec4 coef = coefs[j];
-					for(int k=0; k<4; ++k)
+					for(int j=0; j<nbSteps; ++j)
 					{
-						int index = i-1+k;
-						if(index >= nbCtrlPts)
-							index -= nbCtrlPts - 1; // We don't use the last point as it's the same as the first
-						pt += ctrlPts[index] * coef[k];
+						Point pt;
+						vec4 coef = m_coefs[j];
+						for(int k=0; k<4; ++k)
+						{
+							int index = i-1+k;
+							if(index >= nbCtrlPts)
+								index -= nbCtrlPts - 1; // We don't use the last point as it's the same as the first
+							pt += ctrlPts[index] * coef[k];
+						}
+
+						outPts.push_back(pt);
 					}
-
-					outPts->push_back(pt);
 				}
 			}
-		}
-		else
-		{
-			for(int i=1; i<nbCtrlPts-2; ++i)
+			else
 			{
-				for(int j=0; j<nbSteps; ++j)
+				for(int i=1; i<nbCtrlPts-2; ++i)
 				{
-					Point pt;
-					vec4 coef = coefs[j];
-					for(int k=0; k<4; ++k)
-						pt += ctrlPts[i-1+k] * coef[k];
+					for(int j=0; j<nbSteps; ++j)
+					{
+						Point pt;
+						vec4 coef = m_coefs[j];
+						for(int k=0; k<4; ++k)
+							pt += ctrlPts[i-1+k] * coef[k];
 
-					outPts->push_back(pt);
+						outPts.push_back(pt);
+					}
 				}
-			}
 
-			// Add the last point
-			outPts->push_back(ctrlPts[nbCtrlPts-3] * 1/6.0
-							+ ctrlPts[nbCtrlPts-2] * 4/6.0
-							+ ctrlPts[nbCtrlPts-1] * 1/6.0);
+				// Add the last point
+				outPts.push_back(ctrlPts[nbCtrlPts-3] * 1/6.0
+								+ ctrlPts[nbCtrlPts-2] * 4/6.0
+								+ ctrlPts[nbCtrlPts-1] * 1/6.0);
+			}
 		}
 
 		cleanDirty();
@@ -92,13 +95,13 @@ public:
 
 	void computeCoefs(int nbSteps)
 	{
-		if(coefs.size() == (nbSteps+1))
+		if(m_coefs.size() == (nbSteps+1))
 			return;
 
-		coefs.resize(nbSteps+1);
+		m_coefs.resize(nbSteps+1);
 
 		vec4 first = {1/(PReal)6.0, 4/(PReal)6.0, 1/(PReal)6.0, 0};
-		coefs.front() = first;
+		m_coefs.front() = first;
 
 		PReal fstep = 1.0 / nbSteps;
 		int i=1;
@@ -108,19 +111,19 @@ public:
 			PReal k1=1-3*t+3*t2-t3, k2=4-6*t2+3*t3, k3=1+3*t+3*t2-3*t3;
 
 			vec4 tmp = {1/(PReal)6.0 * k1, 1/(PReal)6.0 * k2, 1/(PReal)6.0 * k3, 1/(PReal)6.0 * t3};
-			coefs[i++] = tmp;
+			m_coefs[i++] = tmp;
 		}
 
 		vec4 last = {0, 1/(PReal)6.0, 4/(PReal)6.0, 1/(PReal)6.0};
-		coefs.back() = last;
+		m_coefs.back() = last;
 	}
 
 protected:
-	Data<Path> input, output;
-	Data<int> steps, close;
+	Data<QVector<Path>> m_input, m_output;
+	Data<int> m_steps, m_close;
 
 	typedef std::array<PReal, 4> vec4;
-	QVector<vec4> coefs;
+	QVector<vec4> m_coefs;
 };
 
 int Curve_CubicBSplineClass = RegisterObject<Curve_CubicBSpline>("Math/Path/Cubic B-spline").setDescription("Compute a cubic B-spline using the controls points");
