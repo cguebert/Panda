@@ -1,9 +1,11 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Point.h>
+#include <panda/types/Path.h>
+
 #include <QMap>
 #include <set>
+#include <algorithm>
 
 template<> static bool qMapLessThanKey<panda::types::Point>(const panda::types::Point& p1, const panda::types::Point& p2)
 {
@@ -12,6 +14,7 @@ template<> static bool qMapLessThanKey<panda::types::Point>(const panda::types::
 
 namespace panda {
 
+using types::Path;
 using types::Point;
 
 class ModifierPoints_ConnectSegments : public PandaObject
@@ -22,10 +25,14 @@ public:
 	ModifierPoints_ConnectSegments(PandaDocument *doc)
 		: PandaObject(doc)
 		, m_input(initData("input", "List of segments (pair of points)"))
-		, m_output(initData("output", "List of connected points" ))
+		, m_createLoop(initData("create loop", "Try to create a closed loop"))
+		, m_output(initData("output", "Output path" ))
 	{
 		addInput(m_input);
+		addInput(m_createLoop);
 		addOutput(m_output);
+
+		m_createLoop.setWidget("checkbox");
 	}
 
 	std::pair<int, int> make_edge(int a, int b)
@@ -36,100 +43,152 @@ public:
 			return std::make_pair(b, a);
 	}
 
+	void prepareSearchData(const QVector<Point>& points)
+	{
+		m_usedEdges.clear();
+		m_uniquePoints.clear();
+		m_neighbours.clear();
+
+		// Compute the "points around points" list
+		QMap<Point, int> pointsMap;
+		for(int i=0, nb=points.size()/2; i<nb; ++i)
+		{
+			const Point &pt1 = points[i*2], &pt2 = points[i*2+1];
+			if(!pointsMap.contains(pt1))
+			{
+				pointsMap[pt1] = m_uniquePoints.size();
+				m_uniquePoints.push_back(pt1);
+			}
+			if(!pointsMap.contains(pt2))
+			{
+				pointsMap[pt2] = m_uniquePoints.size();
+				m_uniquePoints.push_back(pt2);
+			}
+
+			int i1 = pointsMap[pt1], i2 = pointsMap[pt2];
+			m_neighbours[i1].push_back(i2);
+			m_neighbours[i2].push_back(i1);
+		}
+	}
+
+	bool usedEdge(int a, int b)
+	{
+		return m_usedEdges.find(make_edge(a, b)) != m_usedEdges.end();
+	}
+
+	PReal angleModulo(PReal angle) // Make sure angle is [0; 2*pi]
+	{
+		const PReal pi2 = 2 * (PReal)M_PI;
+		while(angle < 0)
+			angle += pi2;
+		while(angle > pi2)
+			angle -= pi2;
+		return angle;
+	}
+
+	int selectNextPoint(int currentId, int prevId)
+	{
+		QVector<int> candidates;
+		for(auto ptId : m_neighbours[currentId])
+			if(ptId != prevId && !usedEdge(currentId, ptId))
+				candidates.push_back(ptId);
+
+		if(candidates.size() == 1)
+			return candidates.front();
+
+		Point BA = m_uniquePoints[prevId] - m_uniquePoints[currentId];
+		PReal prevAngle = (prevId != currentId ? -atan2(BA.y, BA.x) : M_PI);
+
+		int best = -1;
+		PReal bestAngle = 10; // > 3 * pi
+		for(auto ptId : candidates)
+		{
+			// Compute the angle from the current segment to this one
+			Point BC = m_uniquePoints[ptId] - m_uniquePoints[currentId];
+			PReal angle = -atan2(BC.y, BC.x);
+			PReal delta = angleModulo(prevAngle - angle);
+			if(delta < bestAngle)
+			{
+				bestAngle = delta;
+				best = ptId;
+			}
+		}
+
+		return best;
+	}
+
 	void update()
 	{
-		const auto& inList = m_input.getValue();
+		const auto& input = m_input.getValue();
 
-		auto outList = m_output.getAccessor();
-		outList.clear();
+		auto output = m_output.getAccessor();
+		output.clear();
 
-		if(inList.empty())
+		if(input.empty())
 		{
 			cleanDirty();
 			return;
 		}
 
-		QMap<Point, int> pointsMap;
-		QVector<Point> points;
-		QMap<int, QVector<int> > neighbours;
-		for(int i=0, nb=inList.size()/2; i<nb; ++i)
+		prepareSearchData(input);
+
+		std::set<int> unusedIndices;
+		for(int i=0, nb=m_uniquePoints.size(); i<nb; ++i)
+			unusedIndices.insert(i);
+
+		while(!unusedIndices.empty())
 		{
-			const Point &pt1 = inList[i*2], &pt2 = inList[i*2+1];
-			if(!pointsMap.contains(pt1))
+			int start = *unusedIndices.begin();
+			unusedIndices.erase(start);
+			QList<int> resIndices;
+			resIndices.push_back(start);
+
+			int prev = start, current = start;
+			bool found = true;
+			while(found)
 			{
-				pointsMap[pt1] = points.size();
-				points.push_back(pt1);
-			}
-			if(!pointsMap.contains(pt2))
-			{
-				pointsMap[pt2] = points.size();
-				points.push_back(pt2);
-			}
+				found = false;
+				int best = selectNextPoint(current, prev);
 
-			int i1 = pointsMap[pt1], i2 = pointsMap[pt2];
-			neighbours[i1].push_back(i2);
-			neighbours[i2].push_back(i1);
-		}
-
-		int start = 0;
-		std::set<std::pair<int, int>> usedEdges;
-
-		QList<int> resIndices;
-		resIndices.push_back(start);
-
-		PReal pi2 = 2 * (PReal)M_PI;
-		int prev = start, current = start;
-		bool found = true;
-		while(found)
-		{
-			found = false;
-			int best = -1;
-			PReal minAngle = 7; // > 2 * pi
-			Point BA = points[start] - points[current];
-			PReal prevAngle = (start != current ? atan2(BA.y, BA.x) : 0);
-			for(auto p : neighbours[current])
-			{
-				if(p != prev && usedEdges.find(make_edge(current, p)) == usedEdges.end())
+				if(best != -1)
 				{
-					// Compute the angle from the current segment to this one
-					Point BC = points[p] - points[current];
-					PReal angle = atan2(BC.y, BC.x);
-					PReal delta = angle;
-				/*	PReal delta = fabs(angle - prevAngle);
-					if(delta > pi2)
-						delta -= pi2;
-				*/	if(delta < minAngle)
-					{
-						minAngle = delta;
-						best = p;
-					}
+					resIndices.push_back(best);
+					unusedIndices.erase(best);
+					m_usedEdges.insert(make_edge(current, best));
+					prev = current;
+					current = best;
+					found = true;
+
+					// Closed a loop
+					if(best == start)
+						break;
+				}
+				else // TODO: go back to a point with neighbours, and continue in another direction
+				{
+
 				}
 			}
 
-			if(best != -1)
+			if(resIndices.size() > 1)
 			{
-				resIndices.push_back(best);
-				usedEdges.insert(make_edge(current, best));
-				prev = current;
-				current = best;
-				found = true;
-			}
-			else // Can we close the loop ?
-			{
-				if(neighbours[current].contains(start))
-					resIndices.push_back(start);
-				// Else: go back to a point with neighbours, and continue in another direction
+				Path path;
+				for(auto p : resIndices)
+					path.push_back(m_uniquePoints[p]);
+				output.push_back(path);
 			}
 		}
-
-		for(auto p : resIndices)
-			outList.push_back(points[p]);
 
 		cleanDirty();
 	}
 
 protected:
-	Data< QVector<Point> > m_input, m_output;
+	Data< QVector<Point> > m_input;
+	Data< QVector<Path> > m_output;
+	Data<int> m_createLoop;
+
+	std::set<std::pair<int, int>> m_usedEdges;
+	QVector<Point> m_uniquePoints;
+	QMap<int, QVector<int> > m_neighbours;
 };
 
 int ModifierPoints_ConnectSegmentsClass = RegisterObject<ModifierPoints_ConnectSegments>("Modifier/Point/Connect segments")
