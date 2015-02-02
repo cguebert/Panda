@@ -25,14 +25,10 @@ public:
 	ModifierPoints_ConnectSegments(PandaDocument *doc)
 		: PandaObject(doc)
 		, m_input(initData("input", "List of segments (pair of points)"))
-		, m_createLoop(initData("create loop", "Try to create a closed loop"))
 		, m_output(initData("output", "Output path" ))
 	{
 		addInput(m_input);
-		addInput(m_createLoop);
 		addOutput(m_output);
-
-		m_createLoop.setWidget("checkbox");
 	}
 
 	std::pair<int, int> make_edge(int a, int b)
@@ -117,6 +113,23 @@ public:
 		return best;
 	}
 
+	int findTopLeftPoint(const std::set<int>& ptsId)
+	{
+		Point best = m_uniquePoints[*ptsId.begin()];
+		int bestId = *ptsId.begin();
+		for(const auto& ptId : ptsId)
+		{
+			Point pt = m_uniquePoints[ptId];
+			if(pt. y < best.y || (pt.y == best.y && pt.x < best.x))
+			{
+				best = pt;
+				bestId = ptId;
+			}
+		}
+
+		return bestId;
+	}
+
 	void update()
 	{
 		const auto& input = m_input.getValue();
@@ -138,7 +151,7 @@ public:
 
 		while(!unusedIndices.empty())
 		{
-			int start = *unusedIndices.begin();
+			int start = findTopLeftPoint(unusedIndices);
 			unusedIndices.erase(start);
 			QList<int> resIndices;
 			resIndices.push_back(start);
@@ -163,10 +176,6 @@ public:
 					if(best == start)
 						break;
 				}
-				else // TODO: go back to a point with neighbours, and continue in another direction
-				{
-
-				}
 			}
 
 			if(resIndices.size() > 1)
@@ -184,7 +193,6 @@ public:
 protected:
 	Data< QVector<Point> > m_input;
 	Data< QVector<Path> > m_output;
-	Data<int> m_createLoop;
 
 	std::set<std::pair<int, int>> m_usedEdges;
 	QVector<Point> m_uniquePoints;
