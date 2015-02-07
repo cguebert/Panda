@@ -35,7 +35,7 @@ qreal getDataHeight(GraphView* view, BaseData* data)
 	return 0;
 }
 
-QString findAvailableDataName(PandaObject* object, QString baseName, BaseData *data = nullptr)
+QString findAvailableDataName(PandaObject* object, QString baseName, BaseData* data = nullptr)
 {
 	QString name = baseName;
 	BaseData* testData = object->getData(name);
@@ -63,6 +63,7 @@ BaseData* duplicateData(Group* group, BaseData* data)
 	newData->setDisplayed(data->isDisplayed());
 	newData->setPersistent(data->isPersistent());
 	newData->setWidget(data->getWidget());
+	newData->setWidgetData(data->getWidgetData());
 	group->addGroupData(newData);
 
 	return newData.data();
