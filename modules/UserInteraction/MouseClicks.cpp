@@ -1,5 +1,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/types/Rect.h>
 
 #include <QApplication>
 #include <QElapsedTimer>
@@ -9,6 +10,7 @@
 namespace panda {
 
 using types::Point;
+using types::Rect;
 
 class UserInteraction_MouseClicks : public PandaObject, public MouseEventsReceiver
 {
@@ -156,6 +158,91 @@ protected:
 };
 
 int UserInteraction_MouseDoubleClicksClass = RegisterObject<UserInteraction_MouseDoubleClicks>("Interaction/Double clicks").setDescription("Detect mouse double clicks");
+
+//****************************************************************************//
+
+class UserInteraction_Button : public PandaObject, public MouseEventsReceiver
+{
+public:
+	PANDA_CLASS(UserInteraction_Button, PandaObject)
+
+	UserInteraction_Button(PandaDocument *doc)
+		: PandaObject(doc)
+		, MouseEventsReceiver(doc)
+		, m_buttons(initData("button", "Area of the button"))
+		, m_toggle(initData(false, "toggle", "If true, create a toggle button"))
+		, m_status(initData("status", "Status of the button"))
+	{
+		addInput(m_buttons);
+		addInput(m_toggle);
+		addOutput(m_status);
+
+		m_toggle.setWidget("checkbox");
+	}
+
+	void reset()
+	{
+		auto status = m_status.getAccessor();
+		status.clear();
+		status.resize(m_buttons.getValue().size());
+		m_clicsBuffer.clear();
+	}
+
+	void beginStep()
+	{
+		PandaObject::beginStep();
+		setDirtyValue(this);
+	}
+
+	void endStep()
+	{
+		PandaObject::endStep();
+		updateIfDirty();
+	}
+
+	void mousePressed(panda::types::Point pos)
+	{
+		m_clicsBuffer.push_back(pos);
+		setDirtyValue(this);
+	}
+
+	void update()
+	{
+		const auto& buttons = m_buttons.getValue();
+		auto status = m_status.getAccessor();
+		if(buttons.size() != status.size())
+			status.resize(buttons.size());
+
+		bool toggle = m_toggle.getValue();
+		if(!toggle)
+			status.wref().fill(0);
+
+		for(int i=0, nb=buttons.size(); i<nb; ++i)
+		{
+			const auto& rect = buttons[i];
+			for(const auto& pt : m_clicsBuffer)
+			{
+				if(rect.contains(pt))
+				{
+					if(toggle)
+						status[i] = !status[i];
+					else
+						status[i] = true;
+				}
+			}
+		}
+
+		m_clicsBuffer.clear();
+	}
+
+protected:
+	Data<QVector<Rect>> m_buttons;
+	Data<int> m_toggle;
+	Data<QVector<int>> m_status;
+	QVector<Point> m_clicsBuffer;
+};
+
+int UserInteraction_ButtonClass = RegisterObject<UserInteraction_Button>("Interaction/Button").setDescription("Detect mouse clicks in a rectangle");
 
 } // namespace Panda
 

@@ -86,13 +86,13 @@ public:
 					if(current == start)
 						break;
 
-				/*	if(ptsId.size() > 50)
+					if(ptsId.size() > borderEdges.size())
 					{
 						for(auto id : ptsId)
 							std::cout << id << " ";
 						std::cout << std::endl;
 						break;
-					}	*/
+					}
 				}
 
 				if(ptsId.size() > 1)
