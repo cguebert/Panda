@@ -42,10 +42,7 @@ public:
 		rect.resize(nb);
 
 		for(int i=0; i<nb; ++i)
-		{
-			PReal tl = l[i], tt = t[i];
-			rect[i] = Rect(tl, tt, r[i] - tl, b[i] - tt);
-		}
+			rect[i] = Rect(l[i], t[i], r[i], b[i]);
 
 		cleanDirty();
 	}
