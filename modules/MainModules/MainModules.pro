@@ -45,7 +45,6 @@ SOURCES       = \
 	modifiers/image/ColorInImage.cpp \
 	modifiers/image/ExtractImage.cpp \
 	modifiers/image/SaveImage.cpp \
-	modifiers/point/ConnectSegments.cpp \
 	modifiers/point/PointsInShapes.cpp \
 	modifiers/point/PointsUnion.cpp \
 	modifiers/point/RandomDisplacement.cpp \

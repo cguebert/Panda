@@ -84,6 +84,42 @@ int Polygon_DecomposeClass = RegisterObject<Polygon_Decompose>("Generator/Polygo
 
 //****************************************************************************//
 
+class Polygon_DecomposeToPaths : public PandaObject
+{
+public:
+	PANDA_CLASS(Polygon_DecomposeToPaths, PandaObject)
+
+	Polygon_DecomposeToPaths(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("polygon", "Input polygon"))
+		, m_output(initData("paths", "Output paths"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+		output.clear();
+		for(const auto& poly : input)
+		{
+			output.push_back(poly.contour);
+			for(const auto& hole : poly.holes)
+				output.push_back(hole);
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< QVector<Polygon> > m_input;
+	Data< QVector<Path> > m_output;
+};
+
+int Polygon_DecomposeToPathsClass = RegisterObject<Polygon_DecomposeToPaths>("Generator/Polygon/Polygon to paths").setDescription("Extract all the paths in a polygon");
+
 } // namespace Panda
 
 

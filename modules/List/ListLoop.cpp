@@ -35,12 +35,12 @@ public:
 		GenericDataDefinitionList defList;
 		defList.push_back(GenericDataDefinition(typeOfList,
 											 true, false,
-											 "init",
-											 "Value before the first iteration"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
 											 "input",
 											 "Value to use for the next iteration"));
+		defList.push_back(GenericDataDefinition(typeOfList,
+											 true, false,
+											 "init",
+											 "Value before the first iteration"));
 		defList.push_back(GenericDataDefinition(typeOfList,
 											 false, true,
 											 "output",
@@ -55,8 +55,8 @@ public:
 	void updateT(DataList& list)
 	{
 		typedef Data< QVector<T> > VecData;
-		VecData* dataInit = dynamic_cast<VecData*>(list[0]);
-		VecData* dataInput = dynamic_cast<VecData*>(list[1]);
+		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
+		VecData* dataInit = dynamic_cast<VecData*>(list[1]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[2]);
 		Q_ASSERT(dataInput && dataInit && dataOutput);
 

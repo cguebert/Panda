@@ -5,7 +5,6 @@
 
 #include <QMap>
 #include <set>
-#include <algorithm>
 
 template<> static bool qMapLessThanKey<panda::types::Point>(const panda::types::Point& p1, const panda::types::Point& p2)
 {
@@ -153,7 +152,7 @@ public:
 		{
 			int start = findTopLeftPoint(unusedIndices);
 			unusedIndices.erase(start);
-			QList<int> resIndices;
+			QVector<int> resIndices;
 			resIndices.push_back(start);
 
 			int prev = start, current = start;

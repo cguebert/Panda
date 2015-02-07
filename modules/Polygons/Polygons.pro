@@ -12,8 +12,10 @@ HEADERS       = \
 	libs\poly2tri\sweep\sweep_context.h
 SOURCES       = \
 	ComposePolygon.cpp \
-	PolygonOperations.cpp \
+	ConnectSegments.cpp \
+	MeshToPolygon.cpp \
 	PolygonMath.cpp \
+	PolygonOperations.cpp \
 	polygonsModule.cpp \
 	SimplePolygons.cpp \
 	Triangulation.cpp \

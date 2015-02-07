@@ -21,7 +21,7 @@ Mesh::EdgeID Mesh::getEdgeIndex(const Edge& e) const
 	return id;
 }
 
-const Mesh::EdgesInTriangle &Mesh::getEdgesInTriangle(TriangleID index)
+const Mesh::EdgesInTriangle& Mesh::getEdgesInTriangle(TriangleID index)
 {
 	if(hasEdgesInTriangle())
 		createEdgesInTriangleList();
@@ -43,7 +43,7 @@ const Mesh::EdgesIndicesList& Mesh::getEdgesAroundPoint(PointID index)
 	return m_edgesAroundPoint[index];
 }
 
-const Mesh::TrianglesIndicesList &Mesh::getTrianglesAroundPoint(PointID index)
+const Mesh::TrianglesIndicesList& Mesh::getTrianglesAroundPoint(PointID index)
 {
 	if(!hasTrianglesAroundPoint())
 		createTrianglesAroundPointList();
@@ -65,7 +65,7 @@ const Mesh::TrianglesIndicesList& Mesh::getTrianglesAroundEdge(EdgeID index)
 	return m_trianglesAroundEdge[index];
 }
 
-const QVector<Mesh::PointID> &Mesh::getPointsOnBorder()
+const QVector<Mesh::PointID>& Mesh::getPointsOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -73,7 +73,7 @@ const QVector<Mesh::PointID> &Mesh::getPointsOnBorder()
 	return m_pointsOnBorder;
 }
 
-const QVector<Mesh::EdgeID> &Mesh::getEdgesOnBorder()
+const QVector<Mesh::EdgeID>& Mesh::getEdgesOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -81,7 +81,7 @@ const QVector<Mesh::EdgeID> &Mesh::getEdgesOnBorder()
 	return m_edgesOnBorder;
 }
 
-const QVector<Mesh::TriangleID> &Mesh::getTrianglesOnBorder()
+const QVector<Mesh::TriangleID>& Mesh::getTrianglesOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();

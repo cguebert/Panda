@@ -48,8 +48,6 @@ int MeshMath_NumberOfPrimitivesClass = RegisterObject<MeshMath_NumberOfPrimitive
 
 //****************************************************************************//
 
-//****************************************************************************//
-
 class MeshMath_Area : public PandaObject
 {
 public:
