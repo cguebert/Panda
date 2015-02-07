@@ -85,9 +85,9 @@ public:
 	const QVector<EdgeID>& getEdgesOnBorder();
 	const QVector<TriangleID>& getTrianglesOnBorder();
 
-	TrianglesIndicesList getTrianglesAroundTriangle(TriangleID index);
-	TrianglesIndicesList getTrianglesAroundTriangles(const TrianglesIndicesList& listID);
-	TrianglesIndicesList getTrianglesConnectedToTriangle(TriangleID index);
+	TrianglesIndicesList getTrianglesAroundTriangle(TriangleID index, bool shareEdge);
+	TrianglesIndicesList getTrianglesAroundTriangles(const TrianglesIndicesList& listID, bool shareEdge);
+	TrianglesIndicesList getTrianglesConnectedToTriangle(TriangleID index, bool shareEdge);
 
 	PointID getOtherPointInEdge(const Edge& edge, PointID point) const;
 	PReal areaOfTriangle(const Triangle& poly) const;

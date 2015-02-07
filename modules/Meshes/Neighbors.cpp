@@ -16,21 +16,24 @@ public:
 
 	ModifierMesh_FindNeighbors(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData("mesh", "Mesh in which to search"))
-		, triangles(initData("input", "Triangles indices to test"))
-		, neighbors(initData("neighbors", "Indices of the triangles, neighbors of the input"))
+		, m_mesh(initData("mesh", "Mesh in which to search"))
+		, m_triangles(initData("input", "Triangles indices to test"))
+		, m_testEdges(initData(true, "share edges", "If true, meshes must shared edges (not only vertices)"))
+		, m_neighbors(initData("neighbors", "Indices of the triangles, neighbors of the input"))
 	{
-		addInput(mesh);
-		addInput(triangles);
+		addInput(m_mesh);
+		addInput(m_triangles);
+		addInput(m_testEdges);
+		m_testEdges.setWidget("checkbox");
 
-		addOutput(neighbors);
+		addOutput(m_neighbors);
 	}
 
 	void update()
 	{
-		Mesh inMesh = mesh.getValue();
+		Mesh inMesh = m_mesh.getValue();
 
-		const QVector<int>& polyIDs = triangles.getValue();
+		const QVector<int>& polyIDs = m_triangles.getValue();
 
 		Mesh::TrianglesIndicesList inputList;
 		for(auto p : polyIDs)
@@ -38,9 +41,9 @@ public:
 			if(p != Mesh::InvalidID)
 				inputList.push_back(p);
 		}
-		Mesh::TrianglesIndicesList outputList = inMesh.getTrianglesAroundTriangles(inputList);
+		Mesh::TrianglesIndicesList outputList = inMesh.getTrianglesAroundTriangles(inputList, m_testEdges.getValue());
 
-		auto output = neighbors.getAccessor();
+		auto output = m_neighbors.getAccessor();
 		output.clear();
 		for(auto p : outputList)
 			output.push_back(p);
@@ -49,8 +52,9 @@ public:
 	}
 
 protected:
-	Data< Mesh > mesh;
-	Data< QVector<int> > triangles, neighbors;
+	Data< Mesh > m_mesh;
+	Data< int > m_testEdges;
+	Data< QVector<int> > m_triangles, m_neighbors;
 };
 
 int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Find neighbors").setDescription("Find neighboring triangles to the input list");
@@ -64,32 +68,35 @@ public:
 
 	ModifierMesh_GetConnected(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData("mesh", "Mesh in which to search"))
-		, triangles(initData("input", "Triangles indices to test"))
-		, connected(initData("connected", "Indices of the triangles connected to the input"))
+		, m_mesh(initData("mesh", "Mesh in which to search"))
+		, m_triangles(initData("input", "Triangles indices to test"))
+		, m_testEdges(initData(true, "share edges", "If true, meshes must share edges (not only vertices)"))
+		, m_connected(initData("connected", "Indices of the triangles connected to the input"))
 	{
-		addInput(mesh);
-		addInput(triangles);
+		addInput(m_mesh);
+		addInput(m_triangles);
+		addInput(m_testEdges);
+		m_testEdges.setWidget("checkbox");
 
-		addOutput(connected);
+		addOutput(m_connected);
 	}
 
 	void update()
 	{
-		Mesh inMesh = mesh.getValue();
+		Mesh inMesh = m_mesh.getValue();
 
-		const QVector<int>& triIDs = triangles.getValue();
+		const QVector<int>& triIDs = m_triangles.getValue();
 		std::set<Mesh::TriangleID> outputSet;
 
 		for(auto triID : triIDs)
 		{
 			if(triID == Mesh::InvalidID)
 				continue;
-			Mesh::TrianglesIndicesList tmp = inMesh.getTrianglesConnectedToTriangle(triID);
+			Mesh::TrianglesIndicesList tmp = inMesh.getTrianglesConnectedToTriangle(triID, m_testEdges.getValue());
 			outputSet.insert(tmp.begin(), tmp.end());
 		}
 
-		auto output = connected.getAccessor();
+		auto output = m_connected.getAccessor();
 		output.clear();
 		for(auto p : outputSet)
 			output.push_back(p);
@@ -98,8 +105,9 @@ public:
 	}
 
 protected:
-	Data< Mesh > mesh;
-	Data< QVector<int> > triangles, connected;
+	Data< Mesh > m_mesh;
+	Data< int > m_testEdges;
+	Data< QVector<int> > m_triangles, m_connected;
 };
 
 int ModifierMesh_GetConnectedClass = RegisterObject<ModifierMesh_GetConnected>("Modifier/Mesh/Get connected").setDescription("Get connected triangles to the input list");
@@ -113,48 +121,57 @@ public:
 
 	ModifierMesh_SeparateDisconnected(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData("input", "Input mesh"))
-		, outputs(initData("output", "List of separated meshes"))
+		, m_input(initData("input", "Input mesh"))
+		, m_testEdges(initData(true, "share edges", "If true, meshes must share edges (not only vertices)"))
+		, m_output(initData("output", "List of separated meshes"))
 	{
-		addInput(input);
+		addInput(m_input);
+		addInput(m_testEdges);
+		m_testEdges.setWidget("checkbox");
 
-		addOutput(outputs);
+		addOutput(m_output);
 	}
 
 	void update()
 	{
-		Mesh inMesh = input.getValue();
+		const auto& input = m_input.getValue();
 
-		auto outMeshes = outputs.getAccessor();
-		outMeshes.clear();
+		auto output = m_output.getAccessor();
+		output.clear();
 
-		std::set<Mesh::TriangleID> triSet;
-		for(int i=0, nb=inMesh.nbTriangles(); i<nb; ++i)
-			triSet.insert(i);
+		bool testEdges = m_testEdges.getValue();
 
-		while(!triSet.empty())
+		for(auto mesh : input)
 		{
-			Mesh::TriangleID triID = *triSet.begin();
-			Mesh newMesh;
-			newMesh.addPoints(inMesh.getPoints());
-			auto list = inMesh.getTrianglesConnectedToTriangle(triID);
+			std::set<Mesh::TriangleID> triSet;
+			for(int i=0, nb=mesh.nbTriangles(); i<nb; ++i)
+				triSet.insert(i);
 
-			for(auto i : list)
+			while(!triSet.empty())
 			{
-				newMesh.addTriangle(inMesh.getTriangle(i));
-				triSet.erase(i);
-			}
+				Mesh::TriangleID triID = *triSet.begin();
+				Mesh newMesh;
+				newMesh.addPoints(mesh.getPoints());
+				auto list = mesh.getTrianglesConnectedToTriangle(triID, testEdges);
 
-			newMesh.removeUnusedPoints();
-			outMeshes.push_back(newMesh);
+				for(auto i : list)
+				{
+					newMesh.addTriangle(mesh.getTriangle(i));
+					triSet.erase(i);
+				}
+
+				newMesh.removeUnusedPoints();
+				output.push_back(newMesh);
+			}
 		}
 
 		cleanDirty();
 	}
 
 protected:
-	Data< Mesh > input;
-	Data< QVector<Mesh> > outputs;
+	Data< QVector<Mesh> > m_input;
+	Data< int > m_testEdges;
+	Data< QVector<Mesh> > m_output;
 };
 
 int ModifierMesh_SeparateDisconnectedClass = RegisterObject<ModifierMesh_SeparateDisconnected>("Modifier/Mesh/Separate disconnected")
