@@ -20,6 +20,12 @@ class Polygon_CreateFromMesh : public PandaObject
 public:
 	PANDA_CLASS(Polygon_CreateFromMesh, PandaObject)
 
+	using PointsList = QVector<Point>;
+	using IdSet = std::set<int>;
+	using Edge = std::pair<int, int>;
+	using EdgeSet = std::set<Edge>;
+	using Neighbours =  QMap<int, QVector<int>>;
+
 	Polygon_CreateFromMesh(PandaDocument *doc)
 		: PandaObject(doc)
 		, m_input(initData("input", "Input mesh"))
@@ -27,6 +33,162 @@ public:
 	{
 		addInput(m_input);
 		addOutput(m_output);
+	}
+
+	Edge make_edge(int a, int b)
+	{
+		if(a < b)
+			return std::make_pair(a, b);
+		else
+			return std::make_pair(b, a);
+	}
+
+	int findTopLeftPoint(const PointsList& points, const IdSet& ptsId)
+	{
+		Point best = points[*ptsId.begin()];
+		int bestId = *ptsId.begin();
+		for(const auto& ptId : ptsId)
+		{
+			Point pt = points[ptId];
+			if(pt. y < best.y || (pt.y == best.y && pt.x < best.x))
+			{
+				best = pt;
+				bestId = ptId;
+			}
+		}
+
+		return bestId;
+	}
+
+	PReal angleModulo(PReal angle) // Make sure angle is [0; 2*pi]
+	{
+		const PReal pi2 = 2 * (PReal)M_PI;
+		while(angle < 0)
+			angle += pi2;
+		while(angle > pi2)
+			angle -= pi2;
+		return angle;
+	}
+
+	int selectNextPoint(const PointsList& points, const Neighbours& neighbours, const EdgeSet& usedEdges, int currentId, int prevId)
+	{
+		QVector<int> candidates;
+		for(auto ptId : neighbours[currentId])
+			if(ptId != prevId && usedEdges.find(make_edge(currentId, ptId)) == usedEdges.end())
+				candidates.push_back(ptId);
+
+		if(candidates.size() == 1)
+			return candidates.front();
+
+		Point BA = points[prevId] - points[currentId];
+		PReal prevAngle = (prevId != currentId ? -atan2(BA.y, BA.x) : M_PI);
+
+		int best = -1;
+		PReal bestAngle = 10; // > 3 * pi
+		for(auto ptId : candidates)
+		{
+			// Compute the angle from the current segment to this one
+			Point BC = points[ptId] - points[currentId];
+			PReal angle = -atan2(BC.y, BC.x);
+			PReal delta = angleModulo(prevAngle - angle);
+			if(delta < bestAngle)
+			{
+				bestAngle = delta;
+				best = ptId;
+			}
+		}
+
+		return best;
+	}
+
+	QVector<Path> doSimpleSearch(const PointsList& points, const Neighbours& neighbours, IdSet& unusedPts)
+	{
+		QVector<Path> paths; // Before we can separate the contour from the holes
+		while(!unusedPts.empty())
+		{
+			int start = *unusedPts.begin();
+			unusedPts.erase(start);
+			QVector<int> ptsId;
+			ptsId.push_back(start);
+
+			int prev = start, current = start;
+			bool found = true;
+			while(found)
+			{
+				found = false;
+				for(auto ptId : neighbours[current])
+				{
+					if(ptId != prev && unusedPts.find(ptId) != unusedPts.end())
+					{
+						ptsId.push_back(ptId);
+						unusedPts.erase(ptId);
+						prev = current;
+						current = ptId;
+						found = true;
+						break;
+					}
+				}
+
+				// Can we close the loop ?
+				if(!found && neighbours[current].contains(start))
+					ptsId.push_back(start);
+			}
+
+			if(ptsId.size() > 1)
+			{
+				Path path;
+				for(auto p : ptsId)
+					path.push_back(points[p]);
+				paths.push_back(path);
+			}
+		}
+
+		return paths;
+	}
+
+	QVector<Path> doComplexSearch(const PointsList& points, const Neighbours& neighbours, IdSet& unusedPts)
+	{
+		QVector<Path> paths;
+		EdgeSet usedEdges;
+		while(!unusedPts.empty())
+		{
+			int start = findTopLeftPoint(points, unusedPts);
+			unusedPts.erase(start);
+			QVector<int> ptsId;
+			ptsId.push_back(start);
+
+			int prev = start, current = start;
+			bool found = true;
+			while(found)
+			{
+				found = false;
+				int best = selectNextPoint(points, neighbours, usedEdges, current, prev);
+
+				if(best != -1)
+				{
+					ptsId.push_back(best);
+					unusedPts.erase(best);
+					usedEdges.insert(make_edge(current, best));
+					prev = current;
+					current = best;
+					found = true;
+
+					// Closed a loop
+					if(best == start)
+						break;
+				}
+			}
+
+			if(ptsId.size() > 1)
+			{
+				Path path;
+				for(auto p : ptsId)
+					path.push_back(points[p]);
+				paths.push_back(path);
+			}
+		}
+
+		return paths;
 	}
 
 	void update()
@@ -46,8 +208,8 @@ public:
 		{
 			const auto& points = mesh.getPoints();
 			std::set<int> unusedPts;
-			QMap<int, QVector<int>> neighbours;
-			auto borderEdges = mesh.getEdgesOnBorder();
+			Neighbours neighbours;
+			auto borderEdges = mesh.getEdgesOnBorder(); // This is not const
 			for(auto edgeId : borderEdges)
 			{
 				const auto& edge = mesh.getEdge(edgeId);
@@ -57,52 +219,19 @@ public:
 				neighbours[edge[1]].push_back(edge[0]);
 			}
 
-			QVector<Path> tempPaths; // Before we can separate the contour from the holes
-			while(!unusedPts.empty())
+			bool simpleSearch = true;
+			for(const auto& n : neighbours)
 			{
-				int start = *unusedPts.begin();
-				unusedPts.erase(start);
-				QVector<int> ptsId;
-				ptsId.push_back(start);
-
-				int prev = start, current = start;
-				bool found = true;
-				while(found)
+				if(n.size() > 2)
 				{
-					found = false;
-					for(auto ptId : neighbours[current])
-					{
-						if(ptId != prev/* && unusedPts.find(ptId) != unusedPts.end()*/)
-						{
-							ptsId.push_back(ptId);
-							unusedPts.erase(ptId);
-							prev = current;
-							current = ptId;
-							found = true;
-							break;
-						}
-					}
-
-					if(current == start)
-						break;
-
-					if(ptsId.size() > borderEdges.size())
-					{
-						for(auto id : ptsId)
-							std::cout << id << " ";
-						std::cout << std::endl;
-						break;
-					}
-				}
-
-				if(ptsId.size() > 1)
-				{
-					Path path;
-					for(auto p : ptsId)
-						path.push_back(points[p]);
-					tempPaths.push_back(path);
+					simpleSearch = false;
+					break;
 				}
 			}
+
+			QVector<Path> tempPaths = simpleSearch ?
+						doSimpleSearch(points, neighbours, unusedPts) :
+						doComplexSearch(points, neighbours, unusedPts);
 
 			Polygon poly;
 			if(tempPaths.size() == 1)
