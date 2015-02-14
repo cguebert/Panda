@@ -18,20 +18,20 @@ public:
 
 	GeneratorMesh_OnePolygon(PandaDocument *doc)
 		: PandaObject(doc)
-		, points(initData("points", "List of points forming the polygon"))
-		, mesh(initData("mesh", "Mesh created from the list of points"))
+		, m_points(initData("points", "List of points forming the polygon"))
+		, m_mesh(initData("mesh", "Mesh created from the list of points"))
 	{
-		addInput(points);
+		addInput(m_points);
 
-		addOutput(mesh);
+		addOutput(m_mesh);
 	}
 
 	void update()
 	{
-		const QVector<Path>& paths = points.getValue();
+		const QVector<Path>& paths = m_points.getValue();
 		int nbPaths = paths.size();
 
-		auto outMesh = mesh.getAccessor();
+		auto outMesh = m_mesh.getAccessor();
 		outMesh.clear();
 		outMesh.resize(nbPaths);
 
@@ -67,8 +67,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > points;
-	Data< QVector<Mesh> > mesh;
+	Data< QVector<Path> > m_points;
+	Data< QVector<Mesh> > m_mesh;
 };
 
 int GeneratorMesh_OnePolygonClass = RegisterObject<GeneratorMesh_OnePolygon>("Generator/Mesh/Create one polygon").setName("Points to polygon").setDescription("Create a mesh (of one polygon) using a list of points");
@@ -82,19 +82,19 @@ public:
 
 	GeneratorMesh_Wireframe(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData("mesh", "Mesh from which to extract the edges"))
-		, points(initData("points", "Pairs of points forming the edges"))
+		, m_mesh(initData("mesh", "Mesh from which to extract the edges"))
+		, m_points(initData("points", "Pairs of points forming the edges"))
 	{
-		addInput(mesh);
+		addInput(m_mesh);
 
-		addOutput(points);
+		addOutput(m_points);
 	}
 
 	void update()
 	{
-		Mesh inMesh = mesh.getValue();
+		Mesh inMesh = m_mesh.getValue();
 		const QVector<Point>& meshPts = inMesh.getPoints();
-		auto pts = points.getAccessor();
+		auto pts = m_points.getAccessor();
 
 		pts.clear();
 
@@ -112,8 +112,8 @@ public:
 	}
 
 protected:
-	Data<Mesh> mesh;
-	Data< QVector<Point> > points;
+	Data<Mesh> m_mesh;
+	Data< QVector<Point> > m_points;
 };
 
 int GeneratorMesh_WireframeClass = RegisterObject<GeneratorMesh_Wireframe>("Generator/Mesh/Wireframe").setDescription("Extract the edges from a mesh");
@@ -127,27 +127,27 @@ public:
 
 	GeneratorMesh_Vertices(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData("mesh", "Mesh from which to extract the vertices"))
-		, points(initData("points", "Points used by the mesh"))
+		, m_mesh(initData("mesh", "Mesh from which to extract the vertices"))
+		, m_points(initData("points", "Points used by the mesh"))
 	{
-		addInput(mesh);
+		addInput(m_mesh);
 
-		addOutput(points);
+		addOutput(m_points);
 	}
 
 	void update()
 	{
-		const Mesh& inMesh = mesh.getValue();
+		const Mesh& inMesh = m_mesh.getValue();
 
-		auto pts = points.getAccessor();
+		auto pts = m_points.getAccessor();
 		pts = inMesh.getPoints();
 
 		cleanDirty();
 	}
 
 protected:
-	Data<Mesh> mesh;
-	Data< QVector<Point> > points;
+	Data<Mesh> m_mesh;
+	Data< QVector<Point> > m_points;
 };
 
 int GeneratorMesh_VerticesClass = RegisterObject<GeneratorMesh_Vertices>("Generator/Mesh/Vertices").setDescription("Extract the vertices of a mesh");
@@ -161,22 +161,22 @@ public:
 
 	GeneratorMesh_ExtractTriangles(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData("input", "Input mesh"))
-		, output(initData("output", "Output mesh"))
-		, triangles(initData("triangles", "Indices of the triangles to extract"))
+		, m_input(initData("input", "Input mesh"))
+		, m_output(initData("output", "Output mesh"))
+		, m_triangles(initData("triangles", "Indices of the triangles to extract"))
 	{
-		addInput(input);
-		addInput(triangles);
+		addInput(m_input);
+		addInput(m_triangles);
 
-		addOutput(output);
+		addOutput(m_output);
 	}
 
 	void update()
 	{
-		const Mesh& inMesh = input.getValue();
-		const QVector<int>& triId = triangles.getValue();
+		const Mesh& inMesh = m_input.getValue();
+		const QVector<int>& triId = m_triangles.getValue();
 
-		auto outMesh = output.getAccessor();
+		auto outMesh = m_output.getAccessor();
 
 		outMesh->clear();
 		outMesh->addPoints(inMesh.getPoints());
@@ -195,8 +195,8 @@ public:
 	}
 
 protected:
-	Data<Mesh> input, output;
-	Data< QVector<int> > triangles;
+	Data<Mesh> m_input, m_output;
+	Data< QVector<int> > m_triangles;
 };
 
 int GeneratorMesh_ExtractTrianglesClass = RegisterObject<GeneratorMesh_ExtractTriangles>("Generator/Mesh/Extract triangles")
@@ -211,16 +211,16 @@ public:
 
 	GeneratorMesh_BorderElements(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData("mesh", "Input mesh"))
-		, points(initData("points", "Indices of the points on the border"))
-		, edges(initData("edges", "Indices of the edges on the border"))
-		, triangles(initData("triangles", "Indices of the triangles on the border"))
+		, m_mesh(initData("mesh", "Input mesh"))
+		, m_points(initData("points", "Indices of the points on the border"))
+		, m_edges(initData("edges", "Indices of the edges on the border"))
+		, m_triangles(initData("triangles", "Indices of the triangles on the border"))
 	{
-		addInput(mesh);
+		addInput(m_mesh);
 
-		addOutput(points);
-		addOutput(edges);
-		addOutput(triangles);
+		addOutput(m_points);
+		addOutput(m_edges);
+		addOutput(m_triangles);
 	}
 
 	QVector<int> toIntVector(const QVector<unsigned int>& in)
@@ -234,11 +234,11 @@ public:
 
 	void update()
 	{
-		Mesh inMesh = mesh.getValue();
+		Mesh inMesh = m_mesh.getValue();
 
-		auto outPoints = points.getAccessor();
-		auto outEdges = edges.getAccessor();
-		auto outTriangles = triangles.getAccessor();
+		auto outPoints = m_points.getAccessor();
+		auto outEdges = m_edges.getAccessor();
+		auto outTriangles = m_triangles.getAccessor();
 
 		outPoints.wref() = toIntVector(inMesh.getPointsOnBorder());
 		outEdges.wref() = toIntVector(inMesh.getEdgesOnBorder());
@@ -248,8 +248,8 @@ public:
 	}
 
 protected:
-	Data<Mesh> mesh;
-	Data< QVector<int> > points, edges, triangles;
+	Data<Mesh> m_mesh;
+	Data< QVector<int> > m_points, m_edges, m_triangles;
 };
 
 int GeneratorMesh_BorderElementsClass = RegisterObject<GeneratorMesh_BorderElements>("Generator/Mesh/Border elements")
@@ -264,22 +264,22 @@ public:
 
 	GeneratorMesh_ExtractEdges(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData("input", "Input mesh"))
-		, output(initData("output", "Points pairs forming the extracted edges"))
-		, edges(initData("edges", "Indices of the edges to extract"))
+		, m_input(initData("input", "Input mesh"))
+		, m_output(initData("output", "Points pairs forming the extracted edges"))
+		, m_edges(initData("edges", "Indices of the edges to extract"))
 	{
-		addInput(input);
-		addInput(edges);
+		addInput(m_input);
+		addInput(m_edges);
 
-		addOutput(output);
+		addOutput(m_output);
 	}
 
 	void update()
 	{
-		Mesh inMesh = input.getValue();
-		const QVector<int>& edgesId = edges.getValue();
+		Mesh inMesh = m_input.getValue();
+		const QVector<int>& edgesId = m_edges.getValue();
 
-		auto outPts = output.getAccessor();
+		auto outPts = m_output.getAccessor();
 
 		outPts.clear();
 
@@ -301,12 +301,52 @@ public:
 	}
 
 protected:
-	Data<Mesh> input;
-	Data< QVector<Point> > output;
-	Data< QVector<int> > edges;
+	Data<Mesh> m_input;
+	Data< QVector<Point> > m_output;
+	Data< QVector<int> > m_edges;
 };
 
 int GeneratorMesh_ExtractEdgesClass = RegisterObject<GeneratorMesh_ExtractEdges>("Generator/Mesh/Extract edges")
 		.setDescription("Extract some edges from a mesh");
+
+//****************************************************************************//
+
+class ModifierMesh_MoveVertices : public PandaObject
+{
+public:
+	PANDA_CLASS(ModifierMesh_MoveVertices, PandaObject)
+
+	ModifierMesh_MoveVertices(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("input", "Input mesh"))
+		, m_output(initData("output", "Output mesh"))
+		, m_points(initData("vertices", "New position of the vertices"))
+	{
+		addInput(m_input);
+		addInput(m_points);
+
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const Mesh& input = m_input.getValue();
+		const QVector<Point>& points = m_points.getValue();
+		auto output = m_output.getAccessor();
+
+		output.wref() = input;
+		int nb = std::min(input.nbPoints(), points.size());
+		for(int i=0; i<nb; ++i)
+			output.wref().getPoint(i) = points[i];
+
+		cleanDirty();
+	}
+
+protected:
+	Data<Mesh> m_input, m_output;
+	Data< QVector<Point> > m_points;
+};
+
+int ModifierMesh_MoveVerticesClass = RegisterObject<ModifierMesh_MoveVertices>("Modifier/Mesh/Move vertices").setDescription("Move the vertices of a mesh");
 
 } // namespace Panda
