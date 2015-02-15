@@ -27,8 +27,8 @@ private:
 	void prepare(const Animation<PReal>& widthAnim);
 	void startCap();
 	void lines();
-	Point computeInternalDir(Point prevNormal, Point curNormal);
-	void segment(Mesh::PointID nextPtsId[3], int id, Point dir, PReal side);
+	std::pair<bool, Point> computeInternalDir(int id);
+	void segment(Mesh::PointID nextPtsId[3], int id, Point dir, PReal side, bool hasInternalPoint);
 	void join(Mesh::PointID nextPtsId[3], int id, Point dir, PReal side);
 	void lastSegment();
 	void endCap();
@@ -37,7 +37,7 @@ private:
 	Mesh& mesh;
 	Path& UV;
 	std::vector<Point> normals;
-	std::vector<PReal> abscissa, halfWidths;
+	std::vector<PReal> abscissa, lengths, halfWidths;
 	int capType, joinType, nbPts;
 	bool closePath;
 	Mesh::PointID prevPtsId[3];
@@ -146,7 +146,8 @@ void ExtrudeHelper::extrude()
 void ExtrudeHelper::prepare(const Animation<PReal>& widthAnim)
 {
 	nbPts = pts.size();
-	normals.resize(nbPts-1);
+	normals.resize(nbPts - 1);
+	lengths.resize(nbPts - 1);
 	abscissa.resize(nbPts);
 	halfWidths.resize(nbPts);
 
@@ -157,7 +158,8 @@ void ExtrudeHelper::prepare(const Animation<PReal>& widthAnim)
 	{
 		const Point &pt1=pts[i], &pt2=pts[i+1];
 		normals[i] = Point(pt2.y-pt1.y, pt1.x-pt2.x).normalized();
-		abscissa[i+1] = abscissa[i] + (pt2-pt1).norm();
+		lengths[i] = (pt2-pt1).norm();
+		abscissa[i+1] = abscissa[i] + lengths[i];
 	}
 	PReal length = abscissa.back();
 	const PReal firstAbs = abscissa[0];
@@ -247,35 +249,36 @@ void ExtrudeHelper::lines()
 	{
 		const Point curNor = normals[id], prevNor = normals[id-1];
 		PReal side = prevNor.cross(curNor);
-		if(fabs(side) < 1e-3)	// Don't create a join (nor points) if these 2 segments are aligned
+		if(fabs(side) < 1e-3 && prevNor * curNor > 0)	// Don't create a join (nor points) if these 2 segments are aligned
 			continue;
 
-		Point dir = halfWidths[id] * computeInternalDir(prevNor, curNor);
-
 		Mesh::PointID nextPtsId[3];
-		segment(nextPtsId, id, dir, side);
-		join(nextPtsId, id, dir, side);
+		auto internal = computeInternalDir(id);
+		segment(nextPtsId, id, internal.second, side, internal.first);
+		join(nextPtsId, id, internal.second, side);
 
 		for(int j=0; j<3; ++j)
 			prevPtsId[j] = nextPtsId[j];
 	}
 }
 
-Point ExtrudeHelper::computeInternalDir(Point prevNormal, Point curNormal)
+std::pair<bool, Point> ExtrudeHelper::computeInternalDir(int id)
 {
-	Point dir = prevNormal + curNormal;
-	dir = prevNormal / dir.dot(prevNormal) + curNormal / dir.dot(curNormal);
-/*	bool hasInteriorPt = true;
-	PReal norm2Dir = dir.norm2()
-		 , norm2Seg1 = (curPt-pts[id-1]).norm2()
-		 , norm2Seg2 = (pts[id+1]-curPt).norm2();
-	if(norm2Dir > norm2Seg1 && norm2Dir > norm2Seg2)
-		hasInteriorPt = false;	// I don't know what to do in this degenerated case!
-*/
-	return dir;
+	const Point curNor = normals[id], prevNor = normals[id-1];
+	if(prevNor.dot(curNor) < -0.999)
+		return std::make_pair(false, Point());
+
+	const PReal maxLen = std::min(lengths[id % (nbPts-1)], lengths[id-1]);
+	Point dir = prevNor + curNor;
+	dir = prevNor / dir.dot(prevNor) + curNor / dir.dot(curNor);
+	dir *= halfWidths[id];
+	if(prevNor.dot(curNor) < -0.9 && dir.norm2() > maxLen*maxLen)
+		return std::make_pair(false, dir);
+
+	return std::make_pair(true, dir);
 }
 
-void ExtrudeHelper::segment(Mesh::PointID nextPtsId[3], int id, Point dir, PReal side)
+void ExtrudeHelper::segment(Mesh::PointID nextPtsId[3], int id, Point dir, PReal side, bool hasInternalPoint)
 {
 	const PReal halfWidth = halfWidths[id], curAbs = abscissa[id];
 	const Point curPt = pts[id], curNor = normals[id], prevNor = normals[id-1];
@@ -288,7 +291,7 @@ void ExtrudeHelper::segment(Mesh::PointID nextPtsId[3], int id, Point dir, PReal
 
 	if(side > 0)
 	{
-		if(dir.norm2())
+		if(hasInternalPoint)
 		{
 			nextPtsId[2] = mesh.addPoint(curPt - dir);
 			UV.push_back(Point(curAbs, 0));
@@ -306,7 +309,7 @@ void ExtrudeHelper::segment(Mesh::PointID nextPtsId[3], int id, Point dir, PReal
 	}
 	else // side < 0
 	{
-		if(dir.norm2())
+		if(hasInternalPoint)
 		{
 			nextPtsId[0] = mesh.addPoint(curPt + dir);
 			UV.push_back(Point(curAbs, 1));
@@ -451,10 +454,9 @@ void ExtrudeHelper::lastSegment()
 	if(closePath)
 	{
 		PReal side = prevNor.cross(curNor);
-		Point dir = halfWidth * computeInternalDir(prevNor, curNor);
-
-		segment(nextPtsId, id, dir, side);
-		join(nextPtsId, id, dir, side);
+		auto internal = computeInternalDir(id);
+		segment(nextPtsId, id, internal.second, side, internal.first);
+		join(nextPtsId, id, internal.second, side);
 
 		for(int i=0; i<3; ++i)
 			mesh.getPoint(i) = mesh.getPoint(nextPtsId[i]);

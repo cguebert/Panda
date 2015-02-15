@@ -26,6 +26,8 @@ public:
 		addInput(m_input);
 		addInput(m_radiuses);
 		addOutput(m_output);
+
+		m_radiuses.getAccessor().push_back(5.0);
 	}
 
 	void reset()
