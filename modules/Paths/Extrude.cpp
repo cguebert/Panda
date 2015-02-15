@@ -498,7 +498,8 @@ void ExtrudeHelper::endCap()
 			Point dir = normals[nbPts-2] * halfWidth;
 			dir = -dir;
 			Mesh::PointID ptId = prevPtsId[2];
-			Point uvPt(0, 1), uvCenter(abscissa[nbPts-1], 0.5), uvMult(abscissa[0], -0.5);
+			const PReal lastAbs = abscissa[nbPts-1];
+			Point uvPt(0, 1), uvCenter(lastAbs, 0.5), uvMult(1-lastAbs, -0.5);
 			for(int i=0; i<nb-1; ++i)
 			{
 				dir = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
