@@ -41,7 +41,7 @@ void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program);
 bool bindTextures(QOpenGLShaderProgram& program, const std::vector<GLuint>& texIds);
 
 template <typename... Args>
-void renderImage(QOpenGLFramebufferObject &fbo, QOpenGLShaderProgram& program, Args... args)
+void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program, Args... args)
 {
 	std::vector<GLuint> texIds { static_cast<GLuint>(args)... };
 	if(bindTextures(program, texIds))
