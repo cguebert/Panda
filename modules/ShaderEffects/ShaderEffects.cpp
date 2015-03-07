@@ -1,6 +1,9 @@
 #include <panda/ObjectFactory.h>
 #include "ShaderEffects.h"
 
+#include <QOpenGLFunctions>
+#include <iostream>
+
 namespace panda {
 
 using types::ImageWrapper;
@@ -116,11 +119,24 @@ panda::ModuleHandle shadersEffectsModule = REGISTER_MODULE
 
 //****************************************************************************//
 
-bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size)
+bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size, const QOpenGLFramebufferObjectFormat &format)
 {
 	if(!fbo || fbo->size() != size)
 	{
-		fbo.reset(new QOpenGLFramebufferObject(size));
+		fbo.reset(new QOpenGLFramebufferObject(size, format));
+		return true;
+	}
+
+	return false;
+}
+
+bool resizeFBO(types::ImageWrapper& img, QSize size, const QOpenGLFramebufferObjectFormat& format)
+{
+	auto fbo = img.getFbo();
+	if(!fbo || img.size() != size)
+	{
+		auto newFbo = QSharedPointer<QOpenGLFramebufferObject>::create(size, format);
+		img.setFbo(newFbo);
 		return true;
 	}
 
@@ -166,18 +182,35 @@ void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program)
 	fbo.release();
 }
 
-void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program, GLuint texId)
+bool bindTextures(QOpenGLShaderProgram& program, const std::vector<GLuint>& texIds)
 {
 	program.bind();
-	program.setUniformValue("tex0", 0);
+	QOpenGLFunctions glFunctions(QOpenGLContext::currentContext());
 
-	glBindTexture(GL_TEXTURE_2D, texId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	int nb = static_cast<int>(texIds.size());
+	nb = std::min(nb, 32);
+	for(int i = 0; i < nb; ++i)
+	{
+		QString name = QString("tex") + QString::number(i);
+		int loc = program.uniformLocation(name);
+		if(loc == -1)
+		{
+			std::cerr << "Shader program does not have a uniform named " << name.toStdString() << std::endl;
+			return false;
+		}
 
-	renderImage(fbo, program);
+		program.setUniformValue(loc, i);
+		glFunctions.glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, texIds[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	}
+
+	glFunctions.glActiveTexture(GL_TEXTURE0);
+
+	return true;
 }
 
 } // namespace Panda

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+		<file>shaders/Difference.f.glsl</file>
         <file>shaders/Downsample2.f.glsl</file>
         <file>shaders/Downsample4.f.glsl</file>
 		<file>shaders/GBlur.f.glsl</file>

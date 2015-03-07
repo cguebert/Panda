@@ -1,10 +1,7 @@
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/ImageWrapper.h>
 
-#include <QOpenGLFramebufferObject>
-#include <QOpenGLShaderProgram>
+#include "ShaderEffects.h"
 
 namespace panda {
 
@@ -18,13 +15,27 @@ public:
 	ModifierImage_GaussianPyramid(PandaDocument* doc)
 		: PandaObject(doc)
 		, m_input(initData("input", "The original image"))
-		, m_output(initData("output", "List of scaled down images"))
+		, m_gaussian(initData("gaussian", "List of scaled down images"))
+		, m_laplacian(initData("laplacian", "List of substracted images"))
 		, m_levels(initData(4, "levels", "Number of levels to use"))
 	{
 		addInput(m_input);
 		addInput(m_levels);
 
-		addOutput(m_output);
+		addOutput(m_gaussian);
+		addOutput(m_laplacian);
+
+		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample2.f.glsl");
+		m_downscaleProgram.link();
+
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
+		m_upscaleProgram.link();
+
+		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Difference.f.glsl");
+		m_differenceProgram.link();
 	}
 
 	void update()
@@ -32,35 +43,64 @@ public:
 		cleanDirty();
 
 		const auto& inputVal = m_input.getValue();
-		GLuint inputTexId = inputVal.getTextureId();
-		int nbLevels = m_levels.getValue();
-		if(inputTexId && nbLevels)
+
+		GLuint inputTexId = m_input.getValue().getTextureId();
+		int nbLevels = std::min(m_levels.getValue(), 32);
+		if(!inputTexId || nbLevels <= 0)
 		{
-			QSize inputSize = inputVal.size();
-			auto outputAcc = m_output.getAccessor();
-			if(outputAcc.size() != nbLevels || outputAcc[0].size() != inputSize)
-			{
-				outputAcc.resize(nbLevels);
-				QSize size = inputSize;
-				for(int i=0; i<nbLevels; ++i)
-				{
-					auto newFbo = QSharedPointer<QOpenGLFramebufferObject>(new QOpenGLFramebufferObject(size));
-					outputAcc[i].setFbo(newFbo);
-					size /= 2;
-				}
-			}
+			m_gaussian.getAccessor().clear();
+			m_laplacian.getAccessor().clear();
+			return;
 		}
-		else
-			m_output.getAccessor().clear();
+
+		QSize inputSize = inputVal.size();
+		auto gaussianAcc = m_gaussian.getAccessor();
+		auto laplacianAcc = m_laplacian.getAccessor();
+		if(gaussianAcc.size() != nbLevels)
+		{
+			gaussianAcc.resize(nbLevels);
+			laplacianAcc.resize(nbLevels);
+			m_blurred.resize(nbLevels);
+		}
+
+		QOpenGLFramebufferObjectFormat floatFormat;
+		floatFormat.setInternalTextureFormat(GL_RGB16);
+
+		QSize size = inputSize;
+		GLuint texId = inputTexId;
+		for(int i=0; i<nbLevels; ++i)
+		{
+			auto& gaussianImg = gaussianAcc[i];
+			auto& laplacianImg = laplacianAcc[i];
+			auto& blurred = m_blurred[i];
+			resizeFBO(m_blurred[i], size);
+			resizeFBO(laplacianImg, size, floatFormat);
+			size /= 2;
+			resizeFBO(gaussianImg, size);
+
+			// Downscaling to get the gaussian
+			renderImage(*gaussianImg.getFbo(), m_downscaleProgram, texId);
+			auto gaussTexId = gaussianImg.getTextureId();
+
+			// Upscaling the gaussian to get the blurred image
+			renderImage(*blurred.data(), m_upscaleProgram, gaussTexId);
+
+			// Substraction of the original and the blurred
+			renderImage(*laplacianImg.getFbo(), m_differenceProgram, texId, blurred->texture());
+
+			texId = gaussTexId;
+		}
 	}
 
 protected:
+	QOpenGLShaderProgram m_downscaleProgram, m_upscaleProgram, m_differenceProgram;
+	QVector<QSharedPointer<QOpenGLFramebufferObject>> m_blurred;
 	Data< ImageWrapper > m_input;
-	Data< QVector< ImageWrapper > > m_output;
+	Data< QVector< ImageWrapper > > m_gaussian, m_laplacian;
 	Data< int > m_levels;
 };
 
-int ModifierImage_GaussianPyramidClass = RegisterObject<ModifierImage_GaussianPyramid>("Modifier/Image/Gaussian pyramid")
-		.setDescription("Create a stack of successively smaller images, each scaled down from the previous one");
+int ModifierImage_GaussianPyramidClass = RegisterObject<ModifierImage_GaussianPyramid>("Modifier/Image/Gaussian & Laplacian pyramids")
+		.setDescription("Build the Gaussian and Laplacian pyramid of an image");
 
 } // namespace Panda

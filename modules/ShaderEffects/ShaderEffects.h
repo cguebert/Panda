@@ -5,6 +5,8 @@
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
 
+#include <vector>
+
 namespace panda {
 
 class ShaderEffects : public PandaObject
@@ -32,8 +34,18 @@ protected:
 };
 
 // Returns true if it created a new fbo
-bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size);
-void renderImage(QOpenGLFramebufferObject &fbo, QOpenGLShaderProgram& program);
-void renderImage(QOpenGLFramebufferObject &fbo, QOpenGLShaderProgram& program, GLuint texId);
+bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size, const QOpenGLFramebufferObjectFormat& format = QOpenGLFramebufferObjectFormat());
+bool resizeFBO(types::ImageWrapper& img, QSize size, const QOpenGLFramebufferObjectFormat& format = QOpenGLFramebufferObjectFormat());
+void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program);
+
+bool bindTextures(QOpenGLShaderProgram& program, const std::vector<GLuint>& texIds);
+
+template <typename... Args>
+void renderImage(QOpenGLFramebufferObject &fbo, QOpenGLShaderProgram& program, Args... args)
+{
+	std::vector<GLuint> texIds { static_cast<GLuint>(args)... };
+	if(bindTextures(program, texIds))
+		renderImage(fbo, program);
+}
 
 } // namespace Panda
