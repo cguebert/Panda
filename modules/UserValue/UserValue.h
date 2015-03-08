@@ -34,40 +34,56 @@ public:
 
 	GeneratorUser(PandaDocument *doc)
 		: BaseGeneratorUser(doc)
-		, userValue("input", "The value you want to store", this)
-		, output(initData("value", "The value stored"))
+		, m_userValue("input", "The value you want to store", this)
+		, m_output(initData("value", "The value stored"))
 	{
-		addInput(userValue);
-		addOutput(output);
+		addInput(m_userValue);
+		addOutput(m_output);
 
-		output.setDisplayed(false);
+		m_output.setDisplayed(false);
 
-		dataSetParent(&output, &userValue);
+		dataSetParent(&m_output, &m_userValue);
 	}
 
 	bool hasConnectedInput()
 	{
-		return userValue.getParent();
+		return m_userValue.getParent();
 	}
 
 	bool hasConnectedOutput()
 	{
-		return !output.getOutputs().empty();
+		return !m_output.getOutputs().empty();
 	}
 
 	BaseData* getInputUserData()
 	{
-		return &userValue;
+		return &m_userValue;
 	}
 
 	BaseData* getOutputUserData()
 	{
-		return &output;
+		return &m_output;
+	}
+
+	void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*> *selected)
+	{	// Compared to PandaObject::save, we want to always save the userValue, because of the customData (widget & widgetData)
+		for(BaseData* data : m_datas)
+		{
+			if(data == &m_userValue ||
+					(data->isSet() && data->isPersistent() && !data->isReadOnly()
+					&& !(selected && data->getParent() && selected->contains(data->getParent()->getOwner()))))
+			{
+				QDomElement xmlData = doc.createElement("Data");
+				xmlData.setAttribute("name", data->getName());
+				data->save(doc, xmlData);
+				elem.appendChild(xmlData);
+			}
+		}
 	}
 
 protected:
-	CustomData<T> userValue;
-	Data<T> output;
+	CustomData<T> m_userValue;
+	Data<T> m_output;
 };
 
 } // namespace Panda

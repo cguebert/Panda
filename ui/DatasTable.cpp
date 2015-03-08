@@ -61,8 +61,9 @@ void DatasTable::populateTable()
 	m_stackedLayout->addWidget(scrollArea);
 	m_stackedLayout->setCurrentWidget(scrollArea);
 
+	auto objectDatas = m_currentObject->getDatas();
 	// inputs (or editable)
-	for (panda::BaseData* data : m_currentObject->getDatas())
+	for (panda::BaseData* data : objectDatas)
 	{
 		if (!data->isDisplayed() || data->isReadOnly())
 			continue;
@@ -82,7 +83,7 @@ void DatasTable::populateTable()
 	}
 
 	// outputs (or read only)
-	for (panda::BaseData* data : m_currentObject->getDatas())
+	for (panda::BaseData* data : objectDatas)
 	{
 		if (!data->isDisplayed() || !data->isReadOnly())
 			continue;
