@@ -34,6 +34,13 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 		node.setAttribute("output", data->isOutput());
 		node.setAttribute("name", data->getName());
 		node.setAttribute("help", data->getHelp());
+
+		const auto widget = data->getWidget();
+		const auto widgetData = data->getWidgetData();
+		if(!widget.isEmpty())
+			node.setAttribute("widget", widget);
+		if(!widgetData.isEmpty())
+			node.setAttribute("widgetData", widgetData);
 	}
 
 	// Saving data values
@@ -123,15 +130,21 @@ void Group::load(QDomElement& elem)
 	while(!groupDataNode.isNull())
 	{
 		quint32 type, input, output;
-		QString name, help;
+		QString name, help, widget, widgetData;
 		type = DataFactory::nameToType(groupDataNode.attribute("type"));
 		input = groupDataNode.attribute("input").toUInt();
 		output = groupDataNode.attribute("output").toUInt();
 		name = groupDataNode.attribute("name");
 		help = groupDataNode.attribute("help");
+		widget = groupDataNode.attribute("widget");
+		widgetData = groupDataNode.attribute("widgetData");
 
 		auto dataPtr = DataFactory::getInstance()->create(type, name, help, this);
 		auto data = dataPtr.data();
+		if(!widget.isEmpty())
+			data->setWidget(widget);
+		if(!widgetData.isEmpty())
+			data->setWidgetData(widgetData);
 		m_groupDatas.push_back(dataPtr);
 		if(input)
 			addInput(*data);
