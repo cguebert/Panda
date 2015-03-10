@@ -10,7 +10,7 @@ using types::ImageWrapper;
 using types::Point;
 
 ShaderEffects::ShaderEffects(PandaDocument* doc, int nbPasses)
-	: PandaObject(doc)
+	: OGLObject(doc)
 	, m_nbPasses(nbPasses)
 	, m_input(initData("input", "The original image"))
 	, m_output(initData("output", "Image created by the operation"))

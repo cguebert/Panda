@@ -113,6 +113,9 @@ public:
 	void onModifiedObject(PandaObject* object);
 	void onChangedDock(DockableObject* dockable); // When the dockable has changed dock
 
+	void initializeGL(); // Called by the render view, (PandaCore does not link with OpenGL)
+	bool isGLInitialized() const; // Can the objects use OpenGL yet?
+
 protected:
 	friend class ScopedMacro;
 
@@ -138,6 +141,11 @@ protected:
 	types::Point m_mousePositionBuffer;
 	int m_mouseClickBuffer;
 
+	int m_inCommandMacro;
+	bool m_resetting;
+
+	bool m_isGLInitialized;
+
 	bool m_animPlaying, m_animMultithread;
 	QTimer* m_animTimer;
 
@@ -145,9 +153,6 @@ protected:
 
 	QUndoStack* m_undoStack;
 	QUndoCommand* m_currentCommand;
-
-	int m_inCommandMacro;
-	bool m_resetting;
 
 	int m_iNbFrames;
 	QTime m_fpsTime;
@@ -258,6 +263,12 @@ inline bool PandaDocument::isInCommandMacro() const
 
 inline QUndoCommand* PandaDocument::getCurrentCommand() const
 { return m_currentCommand; }
+
+inline void PandaDocument::initializeGL()
+{ m_isGLInitialized = true; }
+
+inline bool PandaDocument::isGLInitialized() const
+{ return m_isGLInitialized; }
 
 } // namespace panda
 

@@ -9,13 +9,13 @@ namespace panda {
 using types::ImageWrapper;
 using types::Point;
 
-class TexturesOuterProduct : public PandaObject
+class TexturesOuterProduct : public OGLObject
 {
 public:
-	PANDA_CLASS(TexturesOuterProduct, PandaObject)
+	PANDA_CLASS(TexturesOuterProduct, OGLObject)
 
 	TexturesOuterProduct(PandaDocument* doc)
-		: PandaObject(doc)
+		: OGLObject(doc)
 		, m_inputH(initData("horizontal", "Texture to be used horizontally"))
 		, m_inputV(initData("vertical", "Texture to be used vertically"))
 		, m_output(initData("output", "Texture created by the operation"))
@@ -26,7 +26,10 @@ public:
 		addInput(m_size);
 
 		addOutput(m_output);
+	}
 
+	void initializeGL()
+	{
 		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/TextureOuterProduct.f.glsl");
 		m_shaderProgram.link();

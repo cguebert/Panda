@@ -7,14 +7,13 @@ namespace panda {
 
 using types::ImageWrapper;
 
-class ModifierImage_GaussianPyramid : public PandaObject
+class ModifierImage_GaussianPyramid : public OGLObject
 {
 public:
-	PANDA_CLASS(ModifierImage_GaussianPyramid, PandaObject)
+	PANDA_CLASS(ModifierImage_GaussianPyramid, OGLObject)
 
 	ModifierImage_GaussianPyramid(PandaDocument* doc)
-		: PandaObject(doc)
-		, m_initialized(false)
+		: OGLObject(doc)
 		, m_input(initData("input", "The original image"))
 		, m_gaussian(initData("gaussian", "List of scaled down images"))
 		, m_laplacian(initData("laplacian", "List of substracted images"))
@@ -27,24 +26,23 @@ public:
 		addOutput(m_laplacian);
 	}
 
+	void initializeGL()
+	{
+		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample2.f.glsl");
+		m_downscaleProgram.link();
+
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
+		m_upscaleProgram.link();
+
+		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Difference.f.glsl");
+		m_differenceProgram.link();
+	}
+
 	void update()
 	{
-		if(!m_initialized)
-		{
-			m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-			m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample2.f.glsl");
-			m_downscaleProgram.link();
-
-			m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-			m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
-			m_upscaleProgram.link();
-
-			m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-			m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Difference.f.glsl");
-			m_differenceProgram.link();
-			m_initialized = true;
-		}
-
 		const auto& inputVal = m_input.getValue();
 
 		GLuint inputTexId = m_input.getValue().getTextureId();
@@ -96,7 +94,6 @@ public:
 	}
 
 protected:
-	bool m_initialized;
 	QOpenGLShaderProgram m_downscaleProgram, m_upscaleProgram, m_differenceProgram;
 	QVector<QSharedPointer<QOpenGLFramebufferObject>> m_blurred;
 
@@ -117,7 +114,6 @@ public:
 
 	ModifierImage_CollapsePyramid(PandaDocument* doc)
 		: PandaObject(doc)
-		, m_initialized(false)
 		, m_gaussian(initData("gaussian", "List of scaled down images"))
 		, m_laplacian(initData("laplacian", "List of substracted images"))
 		, m_output(initData("output", "The reconstructed image"))
@@ -128,20 +124,19 @@ public:
 		addOutput(m_output);
 	}
 
+	void initializeGL()
+	{
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
+		m_upscaleProgram.link();
+
+		m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
+		m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Addition.f.glsl");
+		m_additionProgram.link();
+	}
+
 	void update()
 	{
-		if(!m_initialized)
-		{
-			m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-			m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
-			m_upscaleProgram.link();
-
-			m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-			m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Addition.f.glsl");
-			m_additionProgram.link();
-			m_initialized = true;
-		}
-
 		auto output = m_output.getAccessor();
 		const auto& gaussian = m_gaussian.getValue();
 		const auto& laplacian = m_laplacian.getValue();
@@ -182,7 +177,6 @@ public:
 	}
 
 protected:
-	bool m_initialized;
 	QOpenGLShaderProgram m_upscaleProgram, m_additionProgram;
 	QVector<QSharedPointer<QOpenGLFramebufferObject>> m_upscaled, m_recomposed;
 

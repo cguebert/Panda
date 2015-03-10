@@ -49,6 +49,8 @@ void OpenGLRenderView::initializeGL()
 {
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
+
+	m_document->initializeGL();
 }
 
 void OpenGLRenderView::paintGL()

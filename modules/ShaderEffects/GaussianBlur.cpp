@@ -19,19 +19,22 @@ public:
 		, m_halfKernelSize(0)
 	{
 		addInput(m_radius);
-
-		m_vertexShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Vertex);
-		m_vertexShader->compileSourceFile(":/shaders/PT_noColor_Tex.v.glsl");
-
-		m_fragmentShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Fragment);
-
-		m_shaderProgram = QSharedPointer<QOpenGLShaderProgram>::create();
 	}
 
 	~ModifierImage_GaussianBlur()
 	{
 		// Make sure to clear the program first so that the shaders can free themselves
 		m_shaderProgram.reset();
+	}
+
+	void initializeGL() override
+	{
+		m_vertexShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Vertex);
+		m_vertexShader->compileSourceFile(":/shaders/PT_noColor_Tex.v.glsl");
+
+		m_fragmentShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Fragment);
+
+		m_shaderProgram = QSharedPointer<QOpenGLShaderProgram>::create();
 	}
 
 	std::vector<float> computeHalfKernel()

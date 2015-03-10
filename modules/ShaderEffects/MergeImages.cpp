@@ -1,5 +1,5 @@
+#include <panda/OGLObject.h>
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/helper/system/FileRepository.h>
@@ -12,13 +12,13 @@ namespace panda {
 
 using types::ImageWrapper;
 
-class ModifierImage_MergeImages : public PandaObject
+class ModifierImage_MergeImages : public OGLObject
 {
 public:
-	PANDA_CLASS(ModifierImage_MergeImages, PandaObject)
+	PANDA_CLASS(ModifierImage_MergeImages, OGLObject)
 
 	ModifierImage_MergeImages(PandaDocument *doc)
-		: PandaObject(doc)
+		: OGLObject(doc)
 		, m_input1(initData("input1", "The first input image (in front)"))
 		, m_input2(initData("input2", "The second input image (in back)"))
 		, m_output(initData("output", "The combined image"))
@@ -37,16 +37,19 @@ public:
 									  "Xor;Plus;Multiply;Screen;Overlay;Darken;Lighten;"
 									  "ColorDodge;ColorBurn;HardLight;SoftLight;Difference;Exclusion");
 
+		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
+		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
+		m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
+		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
+	}
+
+	void initializeGL()
+	{
 		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,
 			helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
 		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,
 			helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
 		m_shaderProgram.link();
-
-		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
-		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
-		m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
-		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 	}
 
 	void update()

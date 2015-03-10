@@ -31,6 +31,7 @@ HEADERS += \
 	panda/Group.h \
 	panda/Layer.h \
 	panda/ObjectFactory.h \
+	panda/OGLObject.h \
 	panda/PandaDocument.h \
 	panda/PandaObject.h \
 	panda/Renderer.h \
@@ -80,6 +81,7 @@ SOURCES += \
 	panda/Group.cpp \
 	panda/Layer.cpp \
 	panda/ObjectFactory.cpp \
+	panda/OGLObject.cpp \
 	panda/PandaDocument.cpp \
 	panda/PandaObject.cpp \
 	panda/Renderer.cpp \

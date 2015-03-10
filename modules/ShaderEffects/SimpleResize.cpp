@@ -1,5 +1,4 @@
 #include <panda/ObjectFactory.h>
-#include <panda/PandaObject.h>
 #include <panda/types/ImageWrapper.h>
 
 #include <QOpenGLFramebufferObject>
@@ -12,13 +11,13 @@ namespace panda {
 
 using types::ImageWrapper;
 
-class ModifierImage_Downscale : public PandaObject
+class ModifierImage_Downscale : public OGLObject
 {
 public:
-	PANDA_CLASS(ModifierImage_Downscale, PandaObject)
+	PANDA_CLASS(ModifierImage_Downscale, OGLObject)
 
 	ModifierImage_Downscale(PandaDocument* doc)
-		: PandaObject(doc)
+		: OGLObject(doc)
 		, m_input(initData("input", "The original image"))
 		, m_output(initData("output", "Image created by the operation"))
 		, m_nbOfDownscales(initData(1, "downscales", "Number of times the image is to be downscaled"))
@@ -27,7 +26,10 @@ public:
 		addInput(m_nbOfDownscales);
 
 		addOutput(m_output);
+	}
 
+	void initializeGL()
+	{
 		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample2.f.glsl");
 		m_shaderProgram2x.link();
@@ -93,13 +95,13 @@ int ModifierImage_DownscaleClass = RegisterObject<ModifierImage_Downscale>("Modi
 
 //****************************************************************************//
 
-class ModifierImage_Upscale : public PandaObject
+class ModifierImage_Upscale : public OGLObject
 {
 public:
-	PANDA_CLASS(ModifierImage_Upscale, PandaObject)
+	PANDA_CLASS(ModifierImage_Upscale, OGLObject)
 
 	ModifierImage_Upscale(PandaDocument* doc)
-		: PandaObject(doc)
+		: OGLObject(doc)
 		, m_input(initData("input", "The original image"))
 		, m_output(initData("output", "Image created by the operation"))
 		, m_nbOfUpscales(initData(1, "upscales", "Number of times the image is to be upscaled"))
@@ -108,6 +110,10 @@ public:
 		addInput(m_nbOfUpscales);
 
 		addOutput(m_output);
+	}
+
+	void initializeGL()
+	{
 		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
 		m_shaderProgram.link();

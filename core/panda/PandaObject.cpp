@@ -69,18 +69,14 @@ void PandaObject::update()
 
 void PandaObject::updateIfDirty() const
 {
-	if(isDirty())
+	if(isDirty() && !m_isUpdating)
 	{
-		if(!m_isUpdating)
-		{
 #ifdef PANDA_LOG_EVENTS
-			helper::ScopedEvent log(helper::event_update, this);
+		helper::ScopedEvent log(helper::event_update, this);
 #endif
-			m_isUpdating = true;
-			const_cast<PandaObject*>(this)->update();
-			const_cast<PandaObject*>(this)->cleanDirty();	// Verify if we can remove this call
-			m_isUpdating = false;
-		}
+		m_isUpdating = true;
+		const_cast<PandaObject*>(this)->update();
+		const_cast<PandaObject*>(this)->cleanDirty();	// Verify if we can remove this call
 	}
 }
 

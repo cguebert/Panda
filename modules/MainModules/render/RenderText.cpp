@@ -29,7 +29,6 @@ public:
 		, color(initData("color", "Color of the text"))
 		, alignH(initData(2, "align H", "Horizontal alignment of the text"))
 		, alignV(initData(2, "align V", "Vertical alignment of the text"))
-		, functions(QOpenGLContext::currentContext())
 	{
 		addInput(text);
 		addInput(font);
@@ -78,6 +77,8 @@ public:
 				renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
 				displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
 			}
+
+			QOpenGLFunctions functions(QOpenGLContext::currentContext());
 
 			GLint previousFBO;
 			glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &previousFBO);
@@ -169,7 +170,6 @@ protected:
 	Data< int > alignH, alignV;
 
 	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
-	QOpenGLFunctions functions;
 };
 
 int RenderTextClass = RegisterObject<RenderText>("Render/Text").setDescription("Draw some text");

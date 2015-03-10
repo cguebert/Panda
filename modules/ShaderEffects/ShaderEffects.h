@@ -1,4 +1,4 @@
-#include <panda/PandaObject.h>
+#include <panda/OGLObject.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Point.h>
 
@@ -9,10 +9,10 @@
 
 namespace panda {
 
-class ShaderEffects : public PandaObject
+class ShaderEffects : public OGLObject
 {
 public:
-	PANDA_CLASS(ShaderEffects, PandaObject)
+	PANDA_CLASS(ShaderEffects, OGLObject)
 
 	ShaderEffects(PandaDocument* doc, int nbPasses = 1);
 
