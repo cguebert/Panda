@@ -1,11 +1,10 @@
 #include <panda/types/Shader.h>
 #include <panda/helper/ShaderCache.h>
+#include <panda/helper/typeList.h>
 #include <panda/helper/system/FileRepository.h>
 
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
-
-#include <boost/mpl/for_each.hpp>
 
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
@@ -21,7 +20,7 @@ namespace types
 
 Shader::Shader()
 {
-	boost::mpl::for_each<shaderValuesTypes>(functionCreatorWrapper(this));
+	helper::for_each_type<shaderValuesTypes>(functionCreatorWrapper(this));
 }
 
 Shader& Shader::operator=(const Shader& shader)

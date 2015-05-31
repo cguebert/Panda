@@ -10,13 +10,11 @@
 #include <panda/types/Mesh.h>
 #include <panda/types/Rect.h>
 #include <panda/types/Shader.h>
+#include <panda/helper/typeList.h>
 
 #include <QList>
 #include <QMap>
 #include <QSharedPointer>
-
-#include <boost/mpl/vector.hpp>
-#include <boost/mpl/for_each.hpp>
 
 class GenericObjectDrawStruct;
 
@@ -182,11 +180,11 @@ private:
 
 //****************************************************************************//
 
-typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString, types::ImageWrapper,
+typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, QString, types::ImageWrapper,
 	types::Gradient, types::Shader, types::Mesh, types::Path, types::Polygon> allDataTypes;
-typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect, QString> allSearchableTypes;
-typedef boost::mpl::vector<int, PReal, types::Color, types::Point, types::Rect> allNumericalTypes;
-typedef boost::mpl::vector<PReal, types::Color, types::Point, types::Gradient> allAnimationTypes;
+typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, QString> allSearchableTypes;
+typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect> allNumericalTypes;
+typedef std::tuple<PReal, types::Color, types::Point, types::Gradient> allAnimationTypes;
 
 #define GENERIC_OBJECT(T, L)								\
 	protected:												\
@@ -196,7 +194,7 @@ typedef boost::mpl::vector<PReal, types::Color, types::Point, types::Gradient> a
 	{														\
 		T* object;											\
 		functionCreatorWrapper(T* obj) : object(obj) {}		\
-		template<typename U> void operator()(U)				\
+		template<class U> void operator()(U)				\
 		{													\
 			int type = types::DataTypeId::getIdOf<U>();		\
 			object->registerFunction(type, &T::updateT<U>);	\
@@ -209,7 +207,7 @@ typedef boost::mpl::vector<PReal, types::Color, types::Point, types::Gradient> a
 	private:												\
 	virtual void registerFunctions()						\
 	{														\
-		boost::mpl::for_each<L>								\
+		helper::for_each_type<L>							\
 			(functionCreatorWrapper(this));					\
 	}														\
 	public:													\

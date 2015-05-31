@@ -5,6 +5,7 @@
 #include <limits>
 #include <typeinfo>
 #include <vector>
+#include <tuple>
 
 #include <QDomDocument>
 #include <QList>

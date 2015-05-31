@@ -10,7 +10,8 @@ DEFINES +=	PANDA_BUILD_CORE \
 			_CRT_SECURE_NO_WARNINGS \
 			_SCL_SECURE_NO_WARNINGS
 
-BOOST="../../boost_1_56_0"
+# Remember to modify boost path in modules/module.pri
+BOOST="../../boost_1_58_0/"
 
 INCLUDEPATH += $${BOOST}/
 LIBPATH += $${BOOST}/stage/lib
@@ -49,6 +50,7 @@ HEADERS += \
 	panda/helper/Perlin.h \
 	panda/helper/PointsGrid.h \
 	panda/helper/Random.h \
+	panda/helper/typeList.h \
 	panda/helper/ShaderCache.h \
 	panda/helper/UpdateLogger.h \
 	panda/helper/system/config.h \

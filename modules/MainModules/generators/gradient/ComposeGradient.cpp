@@ -10,7 +10,7 @@ using types::DataTypeId;
 
 class Gradients_Compose : public GenericObject
 {
-	GENERIC_OBJECT(Gradients_Compose, boost::mpl::vector<Color>)
+	GENERIC_OBJECT(Gradients_Compose, std::tuple<Color>)
 public:
 	PANDA_CLASS(Gradients_Compose, GenericObject)
 

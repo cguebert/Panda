@@ -14,7 +14,7 @@
 #include <QOpenGLShader>
 #include <QDomElement>
 
-#include <boost/mpl/vector.hpp>
+#include <tuple>
 
 class QOpenGLShaderProgram;
 
@@ -71,7 +71,7 @@ extern template class PANDA_CORE_API ShaderValue<QVector<Point>>;
 
 //****************************************************************************//
 
-typedef boost::mpl::vector<int, PReal, Color, Point,
+typedef std::tuple<int, PReal, Color, Point,
 	QVector<int>, QVector<PReal>, QVector<Color>, QVector<Point> > shaderValuesTypes;
 
 class PANDA_CORE_API Shader
