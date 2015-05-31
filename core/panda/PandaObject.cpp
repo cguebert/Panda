@@ -77,6 +77,7 @@ void PandaObject::updateIfDirty() const
 		m_isUpdating = true;
 		const_cast<PandaObject*>(this)->update();
 		const_cast<PandaObject*>(this)->cleanDirty();	// Verify if we can remove this call
+		m_isUpdating = false;
 	}
 }
 
