@@ -1,8 +1,6 @@
 #ifndef HELPER_TYPELIST_H
 #define HELPER_TYPELIST_H
 
-#include <tuple>
-
 namespace panda
 {
 
@@ -11,34 +9,39 @@ namespace helper
 
 namespace details
 {
-	template<int I, int N, class F, class... T> struct ForEachTypeImpl
+	template <class L, class F> struct ForEachTypeImpl
+	{
+		void operator()(F) const { }
+	};
+
+	template <template<class...> class L, class F, class T0, class...T>
+	struct ForEachTypeImpl < L<T0, T...>, F >
 	{
 		void operator()(F f) const
 		{
-			using Tp = typename std::tuple_element<I, std::tuple<T...>>::type;
-
-			Tp val{};
+			T0 val{};
 			f(val);
-			ForEachTypeImpl< I + 1, N, F, T... >()(f);
+			ForEachTypeImpl<L<T...>, F>()(f);
 		}
 	};
 
-	template<int N, class F, class... T> struct ForEachTypeImpl < N, N, F, T... >
+	template<template<class...> class L, class F>
+	struct ForEachTypeImpl< L<>, F >
 	{
 		void operator()(F) const { }
 	};
 
 	template <class L, class F> struct ForEachType
 	{
-		void operator()(F) { }
+		void operator()(F) const { }
 	};
 
 	template <template<class...> class L, class F, class...T>
 	struct ForEachType < L<T...>, F >
 	{
-		void operator()(F f)
+		void operator()(F f) const
 		{
-			ForEachTypeImpl<0, sizeof...(T), F, T...>()(f);
+			ForEachTypeImpl<L<T...>, F>()(f);
 		}
 	};
 
@@ -57,7 +60,6 @@ namespace details
 	{
 		using type = L<U..., T...>;
 	};
-
 } // namespace details
 
 /// Add one or multiple types to the front of a type list
