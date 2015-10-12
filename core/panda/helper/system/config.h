@@ -17,11 +17,11 @@ typedef float PReal;
 #endif
 
 #ifndef WIN32
-#	define SOFA_EXPORT_DYNAMIC_LIBRARY
-#   define SOFA_IMPORT_DYNAMIC_LIBRARY
+#	define EXPORT_DYNAMIC_LIBRARY
+#   define IMPORT_DYNAMIC_LIBRARY
 #else
-#	define SOFA_EXPORT_DYNAMIC_LIBRARY __declspec( dllexport )
-#   define SOFA_IMPORT_DYNAMIC_LIBRARY __declspec( dllimport )
+#	define EXPORT_DYNAMIC_LIBRARY __declspec( dllexport )
+#   define IMPORT_DYNAMIC_LIBRARY __declspec( dllimport )
 #   ifdef _MSC_VER
 #       pragma warning(disable : 4231)
 #       pragma warning(disable : 4910)

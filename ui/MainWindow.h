@@ -114,8 +114,6 @@ private:
 	QMenu* m_groupMenu;
 	QMenu* m_viewMenu;
 	QMenu* m_registryMenu;
-	QMenu* m_toolsMenu;
-	QMenu* m_optionsMenu;
 	QMenu* m_helpMenu;
 	QMenu* m_groupsRegistryMenu;
 	QToolBar* m_fileToolBar;

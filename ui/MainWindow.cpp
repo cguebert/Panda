@@ -52,7 +52,7 @@ MainWindow::MainWindow()
 	setCentralWidget(m_tabWidget);
 
 	// Set the application directories
-	QStringList standardPaths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+	QStringList standardPaths = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
 	for(const QString& path : standardPaths)
 		panda::helper::system::DataRepository.addPath(path);
 
