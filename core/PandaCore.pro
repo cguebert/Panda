@@ -15,6 +15,7 @@ BOOST="../../boost_1_58_0/"
 
 INCLUDEPATH += $${BOOST}/
 LIBPATH += $${BOOST}/stage/lib
+LIBS += -lopengl32
 
 PRECOMPILED_HEADER = panda/pch.h
 

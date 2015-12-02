@@ -60,3 +60,5 @@ SOURCES       = \
 	render/RenderTriangle.cpp \
 	render/modifiers/RenderModifierBlend.cpp \
 	render/modifiers/RenderModifierTransformations.cpp
+
+LIBS += -lopengl32

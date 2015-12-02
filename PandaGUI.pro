@@ -98,6 +98,7 @@ DEFINES +=	PANDA_LOG_EVENTS \
 DESTDIR = bin
 Release:LIBS += bin/PandaCore.lib
 Debug:LIBS += bin/PandaCore_d.lib
+LIBS += -lopengl32
 
 PRECOMPILED_HEADER = core/panda/pch.h
 

@@ -12,3 +12,5 @@ SOURCES       = \
 	TextureProduct.cpp
 
 RESOURCES     = ShaderEffects.qrc
+
+LIBS += -lopengl32

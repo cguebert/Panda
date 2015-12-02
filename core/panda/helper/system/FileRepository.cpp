@@ -15,7 +15,8 @@ namespace system
 
 void FileRepository::addPath(QString path)
 {
-	m_paths.push_back(path);
+	if(!m_paths.contains(path))
+		m_paths.push_back(path);
 }
 
 QString FileRepository::findFile(const QString& fileName)
