@@ -49,7 +49,13 @@ MainWindow::MainWindow()
 	m_tabWidget = new DetachableTabWidget;
 	m_tabWidget->addTab(m_graphViewContainer, tr("Graph"));
 	m_tabWidget->addTab(m_openGLViewContainer, tr("Render"));
+	m_tabWidget->setCurrentWidget(m_openGLViewContainer); // First go to the OpenGL view (initialize it)
 	setCentralWidget(m_tabWidget);
+
+	// Go back to the graph view asap
+	QTimer::singleShot(0, [this](){
+		m_tabWidget->setCurrentWidget(m_graphViewContainer);
+	});
 
 	// Set the application directories
 	QStringList standardPaths = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
