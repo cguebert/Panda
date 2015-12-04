@@ -28,6 +28,7 @@ public:
 	void reset()
 	{
 		m_firstTimestep = true;
+		m_movement.setValue(Point());
 		setDirtyValue(this);
 	}
 

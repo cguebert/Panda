@@ -101,7 +101,7 @@ public:
 	void setDataReady(BaseData* data) const; // Launch the tasks connected to this node
 	void waitForOtherTasksToFinish(bool mainThread = true) const; // Wait until the tasks we launched finish
 
-	// For undo-redo actionsB
+	// For undo-redo actions
 	void createUndoRedoActions(QObject* parent, QAction*& undoAction, QAction*& redoAction);
 	void addCommand(QUndoCommand* command);
 	QSharedPointer<ScopedMacro> beginCommandMacro(QString text);
@@ -128,6 +128,10 @@ protected:
 	Layer* m_defaultLayer;
 	QSharedPointer<QOpenGLFramebufferObject> m_renderFBO, m_secondRenderFBO;
 	QSharedPointer<QOpenGLShaderProgram> m_mergeLayersShader;
+
+	PReal m_animTimeVal;
+	types::Point m_mousePositionVal;
+	int m_mouseClickVal;
 
 	Data<types::Point> m_renderSize;
 	Data<types::Color> m_backgroundColor;
@@ -229,7 +233,7 @@ inline void PandaDocument::setRenderSize(QSize size)
 { m_renderSize.setValue(panda::types::Point(qMax(1, size.width()), qMax(1, size.height()))); }
 
 inline PReal PandaDocument::getAnimationTime() const
-{ return m_animTime.getValue(); }
+{ return m_animTimeVal; }
 
 inline PReal PandaDocument::getTimeStep() const
 { return m_timestep.getValue(); }
@@ -244,13 +248,13 @@ inline bool PandaDocument::animationIsMultithread() const
 { return m_animMultithread; }
 
 inline types::Point PandaDocument::getMousePosition() const
-{ return m_mousePosition.getValue(); }
+{ return m_mousePositionVal; }
 
 inline void PandaDocument::setMousePosition(const types::Point& pos)
 { m_mousePositionBuffer = pos; }
 
 inline int PandaDocument::getMouseClick() const
-{ return m_mouseClick.getValue(); }
+{ return m_mouseClickVal; }
 
 inline quint32 PandaDocument::getNextIndex()
 { return m_currentIndex++; }

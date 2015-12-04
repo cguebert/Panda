@@ -23,20 +23,20 @@ public:
 	RenderImage(PandaDocument* parent)
 		: Renderer(parent)
 		, image(initData("image", "Image to render on screen" ))
-		, center(initData("center", "Center position of the image"))
+		, position(initData("position", "Position of the image"))
 		, rotation(initData("rotation", "Rotation of the image"))
 		, drawCentered(initData(0, "drawCentered", "If non zero use the center of the image, else use the top-left corner"))
 		, shader(initData("shader", "Shaders used during the rendering"))
 	{
 		addInput(image);
-		addInput(center);
+		addInput(position);
 		addInput(rotation);
 		addInput(drawCentered);
 		addInput(shader);
 
 		drawCentered.setWidget("checkbox");
 
-		center.getAccessor().push_back(Point(0, 0));
+		position.getAccessor().push_back(Point(0, 0));
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
@@ -79,19 +79,19 @@ public:
 	void render()
 	{
 		const QVector<ImageWrapper>& listImage = image.getValue();
-		const QVector<Point>& listCenter = center.getValue();
+		const QVector<Point>& listPosition = position.getValue();
 		const QVector<PReal>& listRotation = rotation.getValue();
 
 		bool centered = (drawCentered.getValue() != 0);
 
 		int nbImage = listImage.size();
-		int nbCenter = listCenter.size();
+		int nbPosition = listPosition.size();
 		int nbRotation = listRotation.size();
 
-		if(nbImage && nbCenter)
+		if(nbImage && nbPosition)
 		{
-			if(nbImage < nbCenter) nbImage = 1;
-			if(nbRotation && nbRotation < nbCenter) nbRotation = 1;
+			if(nbImage < nbPosition) nbImage = 1;
+			if(nbRotation && nbRotation < nbPosition) nbRotation = 1;
 
 			if(!shader.getValue().apply(shaderProgram))
 				return;
@@ -112,13 +112,13 @@ public:
 			{
 				if(centered)
 				{
-					for(int i=0; i<nbCenter; ++i)
+					for(int i=0; i<nbPosition; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size() / 2;
 						if(!s.isValid()) continue;
 						QMatrix4x4 tmpMVP = MVP;
-						tmpMVP.translate(listCenter[i].x, listCenter[i].y, 0);
+						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
 						shaderProgram.setUniformValue("MVP", tmpMVP);
 						Rect area = Rect(-s.width(), -s.height(),
@@ -128,13 +128,13 @@ public:
 				}
 				else
 				{
-					for(int i=0; i<nbCenter; ++i)
+					for(int i=0; i<nbPosition; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size();
 						if(!s.isValid()) continue;
 						QMatrix4x4 tmpMVP = MVP;
-						tmpMVP.translate(listCenter[i].x, listCenter[i].y, 0);
+						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
 						shaderProgram.setUniformValue("MVP", tmpMVP);
 						Rect area = Rect(0, 0, s.width(), s.height());
@@ -146,26 +146,26 @@ public:
 			{
 				if(centered)
 				{
-					for(int i=0; i<nbCenter; ++i)
+					for(int i=0; i<nbPosition; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size() / 2;
 						if(!s.isValid()) continue;
-						Rect area = Rect(listCenter[i].x - s.width(),
-										 listCenter[i].y - s.height(),
-										 listCenter[i].x + s.width(),
-										 listCenter[i].y + s.height());
+						Rect area = Rect(listPosition[i].x - s.width(),
+										 listPosition[i].y - s.height(),
+										 listPosition[i].x + s.width(),
+										 listPosition[i].y + s.height());
 						drawTexture(img.getTextureId(), area);
 					}
 				}
 				else
 				{
-					for(int i=0; i<nbCenter; ++i)
+					for(int i=0; i<nbPosition; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
 						QSize s = img.size();
 						if(!s.isValid()) continue;
-						Rect area(listCenter[i], s.width(), s.height());
+						Rect area(listPosition[i], s.width(), s.height());
 						drawTexture(img.getTextureId(), area);
 					}
 				}
@@ -179,7 +179,7 @@ public:
 
 protected:
 	Data< QVector<ImageWrapper> > image;
-	Data< QVector<Point> > center;
+	Data< QVector<Point> > position;
 	Data< QVector<PReal> > rotation;
 	Data< int > drawCentered;
 	Data< Shader > shader;

@@ -383,8 +383,11 @@ void PandaDocument::resetDocument()
 
 	m_objects.clear();
 	m_currentIndex = 1;
+	m_animTimeVal = 0.0;
 	m_animTime.setValue(0.0);
 	m_timestep.setValue((PReal)0.01);
+	m_mouseClickVal = 0;
+	m_mouseClick.setValue(0);
 	m_useTimer.setValue(1);
 	m_renderSize.setValue(Point(800,600));
 	m_backgroundColor.setValue(Color::white());
@@ -931,6 +934,18 @@ void PandaDocument::step()
 	for(auto& object : m_objects)
 		object->setInStep(true);
 
+	// First update the value of the document (without modifying the corresponding Data)
+	// This is so an object reacting on the time having changed can get the correct value of the mouse position (and not the one from the previous step)
+	m_animTimeVal += m_timestep.getValue();
+	m_mousePositionVal = m_mousePositionBuffer;
+	if(m_mouseClickBuffer < 0)
+	{
+		m_mouseClickVal = 1;
+		m_mouseClickBuffer = 0;
+	}
+	else
+		m_mouseClickVal = m_mouseClickBuffer;
+
 	// Let some objects set dirtyValue for each step
 	for(auto& object : m_objects)
 		object->beginStep();
@@ -938,15 +953,11 @@ void PandaDocument::step()
 	if(m_animPlaying && m_animMultithread && m_scheduler)
 		m_scheduler->setDirty();
 
-	m_animTime.setValue(m_animTime.getValue() + m_timestep.getValue());
-	m_mousePosition.setValue(m_mousePositionBuffer);
-	if(m_mouseClickBuffer < 0)
-	{
-		m_mouseClick.setValue(1);
-		m_mouseClickBuffer = 0;
-	}
-	else
-		m_mouseClick.setValue(m_mouseClickBuffer);
+	// Update the documents Data (all the values are already correct if using the getters)
+	m_animTime.setValue(m_animTimeVal);
+	m_mousePosition.setValue(m_mousePositionVal);
+	m_mouseClick.setValue(m_mouseClickVal);
+
 	setDirtyValue(this);
 	updateIfDirty();
 
@@ -987,8 +998,11 @@ void PandaDocument::rewind()
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
 	m_renderFBO.reset();
+	m_animTimeVal = 0.0;
 	m_animTime.setValue(0.0);
+	m_mousePositionVal = m_mousePositionBuffer;
 	m_mousePosition.setValue(m_mousePositionBuffer);
+	m_mouseClickVal = 0;
 	m_mouseClick.setValue(0);
 	for(auto object : m_objects)
 		object->reset();

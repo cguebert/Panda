@@ -22,6 +22,11 @@ public:
 			addInput(*docTime);
 	}
 
+	void reset()
+	{
+		update();
+	}
+
 	void update()
 	{
 		animTime.setValue(m_parentDocument->getAnimationTime());

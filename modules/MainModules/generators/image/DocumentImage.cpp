@@ -14,7 +14,7 @@ public:
 
 	GeneratorImage_DocumentRendered(PandaDocument *doc)
 		: PandaObject(doc)
-		, previous(initData(0, "previous", "If true we get the image at the begining of the timestep, else at the end."))
+		, previous(initData(1, "previous", "If true we get the image at the begining of the timestep, else at the end."))
 		, image(initData("image", "The image rendered by the document"))
 	{
 		addInput(previous);
@@ -30,10 +30,7 @@ public:
 	{
 		PandaObject::beginStep();
 		if(previous.getValue())
-		{
-			image.getAccessor()->setFbo(m_parentDocument->getFBO());
-			cleanDirty();
-		}
+			update();
 	}
 
 	void update()
