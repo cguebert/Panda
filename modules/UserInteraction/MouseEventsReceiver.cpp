@@ -8,8 +8,8 @@ namespace panda
 
 MouseEventsReceiver::MouseEventsReceiver(PandaDocument* doc)
 {
-	connect(doc, SIGNAL(mousePressed(panda::types::Point)), this, SLOT(mousePressed(panda::types::Point)));
-	connect(doc, SIGNAL(mouseReleased(panda::types::Point)), this, SLOT(mouseReleased(panda::types::Point)));
+	doc->connect(doc, &PandaDocument::mousePressed, [this](panda::types::Point pt) { mousePressed(pt); });
+	doc->connect(doc, &PandaDocument::mouseReleased, [this](panda::types::Point pt) { mouseReleased(pt); });
 }
 
 }

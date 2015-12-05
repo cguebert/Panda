@@ -5,15 +5,8 @@
 
 namespace panda {
 
-class TimedMethodObject : public QObject
-{
-	Q_OBJECT
-public slots:
-	virtual void onTimeout() {}
-};
-
 template <class T>
-class StoreValue : public PandaObject, public TimedMethodObject
+class StoreValue : public PandaObject
 {
 public:
 	PANDA_CLASS(PANDA_TEMPLATE(StoreValue, T), PandaObject)
@@ -23,7 +16,6 @@ public:
 		, input(initData("input", "The value you want to store"))
 		, fileName(initData("file name", "File where to store the value"))
 		, singleValue(initData(1, "single value", "If false save all the values during the animation"))
-		, saveTimer(nullptr)
 	{
 		addInput(input);
 		addInput(fileName);
@@ -32,12 +24,9 @@ public:
 		fileName.setWidget("save file");
 		singleValue.setWidget("checkbox");
 
-		TimedMethodObject* tmo = dynamic_cast<TimedMethodObject*>(this);
+		saveTimer.setSingleShot(true);
 
-		saveTimer = new QTimer(tmo);
-		saveTimer->setSingleShot(true);
-
-		QObject::connect(saveTimer, SIGNAL(timeout()), tmo, SLOT(onTimeout()));
+		QObject::connect(&saveTimer, &QTimer::timeout, [this]() { onTimeout(); });
 	}
 
 	void removeChilds(QDomNode& node)
@@ -75,8 +64,8 @@ public:
 		addValue();
 		PandaObject::endStep();
 
-		saveTimer->stop();
-		saveTimer->start(500);
+		saveTimer.stop();
+		saveTimer.start(500);
 	}
 
 	void saveToFile()
@@ -102,7 +91,7 @@ protected:
 	Data<int> singleValue;
 	QDomDocument xmlDoc;
 	QDomElement xmlRoot;
-	QTimer* saveTimer;
+	QTimer saveTimer;
 };
 
 } // namespace Panda
