@@ -57,6 +57,9 @@ Path upscaleClipperPoints(const vector<Point> &inputPolygon)
 		prevPt = newPt;
    }
 
+   if (outputPolygon.size() > 1 && outputPolygon.front() == outputPolygon.back())
+	   outputPolygon.pop_back();
+
    return outputPolygon;
 }
 
