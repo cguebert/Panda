@@ -71,10 +71,8 @@ private slots:
 
 private:
 	void createActions();
-	void createMenus();
 	void createRegistryMenu();
 	void createGroupRegistryMenu();
-	void createToolBars();
 	void createStatusBar();
 	void readSettings();
 	void writeSettings();
@@ -85,22 +83,20 @@ private:
 	void updateRecentFileActions();
 	QString strippedName(const QString &fullFileName);
 
-	DetachableTabWidget* m_tabWidget;
-	GraphView* m_graphView;
-	ScrollContainer* m_graphViewContainer;
-	OpenGLRenderView* m_openGLRenderView;
-	QScrollArea* m_openGLViewContainer;
-	panda::PandaDocument* m_document;
-	DatasTable* m_datasTable;
-	QDockWidget* m_datasDock;
-	LayersTab* m_layersTab;
-	QDockWidget* m_layersDock;
+	DetachableTabWidget* m_tabWidget = nullptr;
+	GraphView* m_graphView = nullptr;
+	ScrollContainer* m_graphViewContainer = nullptr;
+	OpenGLRenderView* m_openGLRenderView = nullptr;
+	QScrollArea* m_openGLViewContainer = nullptr;
+	panda::PandaDocument* m_document = nullptr;
+	DatasTable* m_datasTable = nullptr;
+	QDockWidget* m_datasDock = nullptr;
+	LayersTab* m_layersTab = nullptr;
+	QDockWidget* m_layersDock = nullptr;
+	UpdateLoggerDialog* m_loggerDialog = nullptr;
 	QStringList m_recentFiles;
 	QString m_curFile;
-	UpdateLoggerDialog* m_loggerDialog;
-	bool m_fullScreen;
-	bool m_adjustRenderSizeToView;
-	bool m_undoEnabled, m_redoEnabled;
+	bool m_fullScreen = false, m_adjustRenderSizeToView = false, m_undoEnabled = false, m_redoEnabled = false;
 	QList<DetachedWindow*> m_detachedWindows;
 	QMap<ImageViewport*, QWidget*> m_imageViewports;
 
@@ -108,57 +104,38 @@ private:
 	QAction* m_recentFileActions[MaxRecentFiles];
 	QAction* m_separatorAction;
 
-	QMenu* m_fileMenu;
-	QMenu* m_editMenu;
-	QMenu* m_selectMenu;
-	QMenu* m_groupMenu;
-	QMenu* m_viewMenu;
-	QMenu* m_registryMenu;
-	QMenu* m_helpMenu;
-	QMenu* m_groupsRegistryMenu;
-	QToolBar* m_fileToolBar;
-	QToolBar* m_editToolBar;
-	QToolBar* m_animToolBar;
-	QAction* m_newAction;
-	QAction* m_openAction;
-	QAction* m_importAction;
-	QAction* m_saveAction;
-	QAction* m_saveAsAction;
-	QAction* m_exitAction;
-	QAction* m_cutAction;
-	QAction* m_copyAction;
-	QAction* m_pasteAction;
-	QAction* m_deleteAction;
-	QAction* m_selectAllAction;
-	QAction* m_selectNoneAction;
-	QAction* m_selectConnectedAction;
-	QAction* m_zoomResetAction;
-	QAction* m_zoomInAction;
-	QAction* m_zoomOutAction;
-	QAction* m_centerViewAction;
-	QAction* m_showAllAction;
-	QAction* m_showAllSelectedAction;
-	QAction* m_showGraphViewAction;
-	QAction* m_showOpenGLViewAction;
-	QAction* m_fullScreenAction;
-	QAction* m_aboutAction;
-	QAction* m_aboutQtAction;
-	QAction* m_playAction;
-	QAction* m_stepAction;
-	QAction* m_rewindAction;
-	QAction* m_groupAction;
-	QAction* m_ungroupAction;
-	QAction* m_editGroupAction;
-	QAction* m_saveGroupAction;
-	QAction* m_removeLinkAction;
-	QAction* m_copyDataAction;
-	QAction* m_showLoggerDialogAction;
-	QAction* m_showObjectsAndTypesAction;
-	QAction* m_undoAction;
-	QAction* m_redoAction;
-	QAction* m_adjustRenderSizeToViewAction;
-	QAction* m_showImageViewport;
-	QAction* m_chooseWidget;
+	QMenu *m_fileMenu,
+		*m_editMenu,
+		*m_selectMenu,
+		*m_groupMenu,
+		*m_viewMenu,
+		*m_helpMenu,
+		*m_registryMenu,
+		*m_groupsRegistryMenu = nullptr,
+		*m_alignHorizontallyMenu,
+		*m_alignVerticallyMenu,
+		*m_distributeHorizontallyMenu,
+		*m_distributeVerticallyMenu;
+	QToolBar *m_fileToolBar,
+		*m_editToolBar,
+		*m_animToolBar;
+	QAction *m_importAction,
+		*m_cutAction,
+		*m_copyAction,
+		*m_pasteAction,
+		*m_deleteAction,
+		*m_fullScreenAction,
+		*m_playAction,
+		*m_groupAction,
+		*m_ungroupAction,
+		*m_editGroupAction,
+		*m_saveGroupAction,
+		*m_removeLinkAction,
+		*m_copyDataAction,
+		*m_undoAction,
+		*m_redoAction,
+		*m_showImageViewport,
+		*m_chooseWidget;
 	QLabel* m_timeLabel;
 };
 

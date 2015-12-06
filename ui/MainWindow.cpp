@@ -18,6 +18,8 @@
 #include <ui/command/AddObjectCommand.h>
 #include <ui/command/RemoveObjectCommand.h>
 
+#include <ui/graph/alignObjects.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Group.h>
@@ -26,12 +28,6 @@
 #include <iostream>
 
 MainWindow::MainWindow()
-	: m_groupsRegistryMenu(nullptr)
-	, m_loggerDialog(nullptr)
-	, m_fullScreen(false)
-	, m_adjustRenderSizeToView(false)
-	, m_undoEnabled(false)
-	, m_redoEnabled(false)
 {
 	m_document = new panda::PandaDocument(this);
 
@@ -66,8 +62,6 @@ MainWindow::MainWindow()
 	PluginsManager::getInstance()->loadPlugins();
 
 	createActions();
-	createMenus();
-	createToolBars();
 	createStatusBar();
 
 	connect(m_document, SIGNAL(modified()), this, SLOT(documentModified()));
@@ -218,33 +212,34 @@ void MainWindow::documentModified()
 
 void MainWindow::createActions()
 {
-	m_newAction = new QAction(tr("&New"), this);
-	m_newAction->setIcon(QIcon(":/share/icons/new.png"));
-	m_newAction->setShortcut(QKeySequence::New);
-	m_newAction->setStatusTip(tr("Create a new panda document"));
-	connect(m_newAction, SIGNAL(triggered()), this, SLOT(newFile()));
+/*** Creation of actions ***/
+	auto newAction = new QAction(tr("&New"), this);
+	newAction->setIcon(QIcon(":/share/icons/new.png"));
+	newAction->setShortcut(QKeySequence::New);
+	newAction->setStatusTip(tr("Create a new panda document"));
+	connect(newAction, SIGNAL(triggered()), this, SLOT(newFile()));
 
-	m_openAction = new QAction(tr("&Open..."), this);
-	m_openAction->setIcon(QIcon(":/share/icons/open.png"));
-	m_openAction->setShortcut(QKeySequence::Open);
-	m_openAction->setStatusTip(tr("Open an existing panda document"));
-	connect(m_openAction, SIGNAL(triggered()), this, SLOT(open()));
+	auto openAction = new QAction(tr("&Open..."), this);
+	openAction->setIcon(QIcon(":/share/icons/open.png"));
+	openAction->setShortcut(QKeySequence::Open);
+	openAction->setStatusTip(tr("Open an existing panda document"));
+	connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 
 	m_importAction = new QAction(tr("&Import..."), this);
 	m_importAction->setIcon(QIcon(":/share/icons/open.png"));
 	m_importAction->setStatusTip(tr("Import an existing panda document into the current one"));
 	connect(m_importAction, SIGNAL(triggered()), this, SLOT(import()));
 
-	m_saveAction = new QAction(tr("&Save"), this);
-	m_saveAction->setIcon(QIcon(":/share/icons/save.png"));
-	m_saveAction->setShortcut(QKeySequence::Save);
-	m_saveAction->setStatusTip(tr("Save the document to disk"));
-	connect(m_saveAction, SIGNAL(triggered()), this, SLOT(save()));
+	auto saveAction = new QAction(tr("&Save"), this);
+	saveAction->setIcon(QIcon(":/share/icons/save.png"));
+	saveAction->setShortcut(QKeySequence::Save);
+	saveAction->setStatusTip(tr("Save the document to disk"));
+	connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
 
-	m_saveAsAction = new QAction(tr("Save &As..."), this);
-	m_saveAsAction->setStatusTip(tr("Save the document under a new "
+	auto saveAsAction = new QAction(tr("Save &As..."), this);
+	saveAsAction->setStatusTip(tr("Save the document under a new "
 								  "name"));
-	connect(m_saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
+	connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
 
 	for (int i = 0; i < MaxRecentFiles; ++i) {
 		m_recentFileActions[i] = new QAction(this);
@@ -253,10 +248,10 @@ void MainWindow::createActions()
 				this, SLOT(openRecentFile()));
 	}
 
-	m_exitAction = new QAction(tr("E&xit"), this);
-	m_exitAction->setShortcut(tr("Ctrl+Q"));
-	m_exitAction->setStatusTip(tr("Exit Panda"));
-	connect(m_exitAction, SIGNAL(triggered()), this, SLOT(close()));
+	auto exitAction = new QAction(tr("E&xit"), this);
+	exitAction->setShortcut(tr("Ctrl+Q"));
+	exitAction->setStatusTip(tr("Exit Panda"));
+	connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
 	m_cutAction = new QAction(tr("Cu&t"), this);
 	m_cutAction->setIcon(QIcon(":/share/icons/cut.png"));
@@ -285,23 +280,23 @@ void MainWindow::createActions()
 	connect(m_deleteAction, SIGNAL(triggered()), this, SLOT(del()));
 	addAction(m_deleteAction);
 
-	m_selectAllAction = new QAction(tr("Select &all"), this);
-	m_selectAllAction->setShortcut(tr("Ctrl+A"));
-	m_selectAllAction->setStatusTip(tr("Select all objects"));
-	connect(m_selectAllAction, SIGNAL(triggered()), m_document, SLOT(selectAll()));
-	addAction(m_selectAllAction);
+	auto selectAllAction = new QAction(tr("Select &all"), this);
+	selectAllAction->setShortcut(tr("Ctrl+A"));
+	selectAllAction->setStatusTip(tr("Select all objects"));
+	connect(selectAllAction, SIGNAL(triggered()), m_document, SLOT(selectAll()));
+	addAction(selectAllAction);
 
-	m_selectNoneAction = new QAction(tr("Select &none"), this);
-	m_selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
-	m_selectNoneAction->setStatusTip(tr("Deselect all objets"));
-	connect(m_selectNoneAction, SIGNAL(triggered()), m_document, SLOT(selectNone()));
-	addAction(m_selectNoneAction);
+	auto selectNoneAction = new QAction(tr("Select &none"), this);
+	selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
+	selectNoneAction->setStatusTip(tr("Deselect all objets"));
+	connect(selectNoneAction, SIGNAL(triggered()), m_document, SLOT(selectNone()));
+	addAction(selectNoneAction);
 
-	m_selectConnectedAction = new QAction(tr("Select &connected"), this);
-	m_selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
-	m_selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
-	connect(m_selectConnectedAction, SIGNAL(triggered()), m_document, SLOT(selectConnected()));
-	addAction(m_selectConnectedAction);
+	auto selectConnectedAction = new QAction(tr("Select &connected"), this);
+	selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
+	selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
+	connect(selectConnectedAction, SIGNAL(triggered()), m_document, SLOT(selectConnected()));
+	addAction(selectConnectedAction);
 
 	m_groupAction = new QAction(tr("&Group selected"), this);
 	m_groupAction->setShortcut(tr("Ctrl+G"));
@@ -331,61 +326,61 @@ void MainWindow::createActions()
 	connect(m_saveGroupAction, SIGNAL(triggered()), this, SLOT(saveGroup()));
 	addAction(m_saveGroupAction);
 
-	m_zoomResetAction = new QAction(tr("Reset &zoom"), this);
-	m_zoomResetAction->setShortcut(tr("Ctrl+0"));
-	m_zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
-	connect(m_zoomResetAction, SIGNAL(triggered()), m_graphView, SLOT(zoomReset()));
-	addAction(m_zoomResetAction);
+	auto zoomResetAction = new QAction(tr("Reset &zoom"), this);
+	zoomResetAction->setShortcut(tr("Ctrl+0"));
+	zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
+	connect(zoomResetAction, SIGNAL(triggered()), m_graphView, SLOT(zoomReset()));
+	addAction(zoomResetAction);
 
-	m_zoomInAction = new QAction(tr("Zoom &in"), this);
-	m_zoomInAction->setShortcut(tr("Ctrl++"));
-	m_zoomInAction->setStatusTip(tr("Zoom in"));
-	connect(m_zoomInAction, SIGNAL(triggered()), m_graphView, SLOT(zoomIn()));
-	addAction(m_zoomInAction);
+	auto zoomInAction = new QAction(tr("Zoom &in"), this);
+	zoomInAction->setShortcut(tr("Ctrl++"));
+	zoomInAction->setStatusTip(tr("Zoom in"));
+	connect(zoomInAction, SIGNAL(triggered()), m_graphView, SLOT(zoomIn()));
+	addAction(zoomInAction);
 
-	m_zoomOutAction = new QAction(tr("Zoom &out"), this);
-	m_zoomOutAction->setShortcut(tr("Ctrl+-"));
-	m_zoomOutAction->setStatusTip(tr("Zoom out"));
-	connect(m_zoomOutAction, SIGNAL(triggered()), m_graphView, SLOT(zoomOut()));
-	addAction(m_zoomOutAction);
+	auto zoomOutAction = new QAction(tr("Zoom &out"), this);
+	zoomOutAction->setShortcut(tr("Ctrl+-"));
+	zoomOutAction->setStatusTip(tr("Zoom out"));
+	connect(zoomOutAction, SIGNAL(triggered()), m_graphView, SLOT(zoomOut()));
+	addAction(zoomOutAction);
 
-	m_centerViewAction = new QAction(tr("&Center view"), this);
-	m_centerViewAction->setShortcut(tr("Ctrl+5"));
-	m_centerViewAction->setStatusTip(tr("Center the view"));
-	connect(m_centerViewAction, SIGNAL(triggered()), m_graphView, SLOT(centerView()));
-	addAction(m_centerViewAction);
+	auto centerViewAction = new QAction(tr("&Center view"), this);
+	centerViewAction->setShortcut(tr("Ctrl+5"));
+	centerViewAction->setStatusTip(tr("Center the view"));
+	connect(centerViewAction, SIGNAL(triggered()), m_graphView, SLOT(centerView()));
+	addAction(centerViewAction);
 
-	m_showAllAction = new QAction(tr("Show &all"), this);
-	m_showAllAction->setShortcut(tr("Ctrl+f"));
-	m_showAllAction->setStatusTip(tr("Center and zoom the view so that all objects are visible"));
-	connect(m_showAllAction, SIGNAL(triggered()), m_graphView, SLOT(showAll()));
-	addAction(m_showAllAction);
+	auto showAllAction = new QAction(tr("Show &all"), this);
+	showAllAction->setShortcut(tr("Ctrl+f"));
+	showAllAction->setStatusTip(tr("Center and zoom the view so that all objects are visible"));
+	connect(showAllAction, SIGNAL(triggered()), m_graphView, SLOT(showAll()));
+	addAction(showAllAction);
 
-	m_showAllSelectedAction = new QAction(tr("Show all &selected"), this);
-	m_showAllSelectedAction->setShortcut(tr("Ctrl+d"));
-	m_showAllSelectedAction->setStatusTip(tr("Center and zoom the view so that all selected objects are visible"));
-	connect(m_showAllSelectedAction, SIGNAL(triggered()), m_graphView, SLOT(showAllSelected()));
-	addAction(m_showAllSelectedAction);
+	auto showAllSelectedAction = new QAction(tr("Show all &selected"), this);
+	showAllSelectedAction->setShortcut(tr("Ctrl+d"));
+	showAllSelectedAction->setStatusTip(tr("Center and zoom the view so that all selected objects are visible"));
+	connect(showAllSelectedAction, SIGNAL(triggered()), m_graphView, SLOT(showAllSelected()));
+	addAction(showAllSelectedAction);
 
-	m_showGraphViewAction = new QAction(tr("Show &graph view"), this);
-	m_showGraphViewAction->setShortcut(tr("Ctrl+1"));
-	m_showGraphViewAction->setStatusTip(tr("Switch to the graph view"));
-	connect(m_showGraphViewAction, SIGNAL(triggered()), this, SLOT(switchToGraphView()));
-	addAction(m_showGraphViewAction);
+	auto showGraphViewAction = new QAction(tr("Show &graph view"), this);
+	showGraphViewAction->setShortcut(tr("Ctrl+1"));
+	showGraphViewAction->setStatusTip(tr("Switch to the graph view"));
+	connect(showGraphViewAction, SIGNAL(triggered()), this, SLOT(switchToGraphView()));
+	addAction(showGraphViewAction);
 
-	m_showOpenGLViewAction = new QAction(tr("Show &render view"), this);
-	m_showOpenGLViewAction->setShortcut(tr("Ctrl+2"));
-	m_showOpenGLViewAction->setStatusTip(tr("Switch to the render view"));
-	connect(m_showOpenGLViewAction, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
-	addAction(m_showOpenGLViewAction);
+	auto showOpenGLViewAction = new QAction(tr("Show &render view"), this);
+	showOpenGLViewAction->setShortcut(tr("Ctrl+2"));
+	showOpenGLViewAction->setStatusTip(tr("Switch to the render view"));
+	connect(showOpenGLViewAction, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
+	addAction(showOpenGLViewAction);
 
-	m_adjustRenderSizeToViewAction = new QAction(tr("Adjust size to &view"), this);
-	m_adjustRenderSizeToViewAction->setShortcut(tr("F10"));
-	m_adjustRenderSizeToViewAction->setStatusTip(tr("Adjust the render size to the view"));
-	m_adjustRenderSizeToViewAction->setCheckable(true);
-	m_adjustRenderSizeToViewAction->setChecked(false);
-	connect(m_adjustRenderSizeToViewAction, SIGNAL(triggered()), this, SLOT(adjustRenderSizeToView()));
-	addAction(m_adjustRenderSizeToViewAction);
+	auto adjustRenderSizeToViewAction = new QAction(tr("Adjust size to &view"), this);
+	adjustRenderSizeToViewAction->setShortcut(tr("F10"));
+	adjustRenderSizeToViewAction->setStatusTip(tr("Adjust the render size to the view"));
+	adjustRenderSizeToViewAction->setCheckable(true);
+	adjustRenderSizeToViewAction->setChecked(false);
+	connect(adjustRenderSizeToViewAction, SIGNAL(triggered()), this, SLOT(adjustRenderSizeToView()));
+	addAction(adjustRenderSizeToViewAction);
 
 	m_fullScreenAction = new QAction(tr("&Full screen"), this);
 	m_fullScreenAction->setShortcut(tr("F11"));
@@ -395,13 +390,13 @@ void MainWindow::createActions()
 	connect(m_fullScreenAction, SIGNAL(triggered()), this, SLOT(switchFullScreen()));
 	addAction(m_fullScreenAction);
 
-	m_aboutAction = new QAction(tr("&About"), this);
-	m_aboutAction->setStatusTip(tr("Show the application's About box"));
-	connect(m_aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+	auto aboutAction = new QAction(tr("&About"), this);
+	aboutAction->setStatusTip(tr("Show the application's About box"));
+	connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
 
-	m_aboutQtAction = new QAction(tr("About &Qt"), this);
-	m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
-	connect(m_aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+	auto aboutQtAction = new QAction(tr("About &Qt"), this);
+	aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
+	connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
 	m_playAction = new QAction(tr("Play"), this);
 	m_playAction->setIcon(QIcon(":/share/icons/play.png"));
@@ -412,19 +407,19 @@ void MainWindow::createActions()
 	connect(m_playAction, SIGNAL(triggered(bool)), this, SLOT(play(bool)));
 	addAction(m_playAction);
 
-	m_stepAction = new QAction(tr("Step"), this);
-	m_stepAction->setIcon(QIcon(":/share/icons/step.png"));
-	m_stepAction->setShortcut(tr("F6"));
-	m_stepAction->setStatusTip(tr("Do one step of the animation"));
-	connect(m_stepAction, SIGNAL(triggered()), m_document, SLOT(step()));
-	addAction(m_stepAction);
+	auto stepAction = new QAction(tr("Step"), this);
+	stepAction->setIcon(QIcon(":/share/icons/step.png"));
+	stepAction->setShortcut(tr("F6"));
+	stepAction->setStatusTip(tr("Do one step of the animation"));
+	connect(stepAction, SIGNAL(triggered()), m_document, SLOT(step()));
+	addAction(stepAction);
 
-	m_rewindAction = new QAction(tr("Rewind"), this);
-	m_rewindAction->setIcon(QIcon(":/share/icons/stop.png"));
-	m_rewindAction->setShortcut(tr("F7"));
-	m_rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
-	connect(m_rewindAction, SIGNAL(triggered()), m_document, SLOT(rewind()));
-	addAction(m_rewindAction);
+	auto rewindAction = new QAction(tr("Rewind"), this);
+	rewindAction->setIcon(QIcon(":/share/icons/stop.png"));
+	rewindAction->setShortcut(tr("F7"));
+	rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
+	connect(rewindAction, SIGNAL(triggered()), m_document, SLOT(rewind()));
+	addAction(rewindAction);
 
 	m_removeLinkAction = new QAction(tr("Remove link"), this);
 	m_removeLinkAction->setStatusTip(tr("Remove the link to this data"));
@@ -436,13 +431,13 @@ void MainWindow::createActions()
 	connect(m_copyDataAction, SIGNAL(triggered()), this, SLOT(copyDataToUserValue()));
 	addAction(m_copyDataAction);
 
-	m_showLoggerDialogAction = new QAction(tr("Show &log"), this);
-	m_showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
-	connect(m_showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
+	auto showLoggerDialogAction = new QAction(tr("Show &log"), this);
+	showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
+	connect(showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
 
-	m_showObjectsAndTypesAction = new QAction(tr("List types and objects"), this);
-	m_showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
-	connect(m_showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
+	auto showObjectsAndTypesAction = new QAction(tr("List types and objects"), this);
+	showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
+	connect(showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
 
 	m_showImageViewport = new QAction(tr("Open image viewport"), this);
 	m_showImageViewport->setStatusTip(tr("Open a new viewport to an image"));
@@ -459,21 +454,107 @@ void MainWindow::createActions()
 	m_redoAction->setShortcut(QKeySequence::Redo);
 	addAction(m_undoAction);
 	addAction(m_redoAction);
-}
 
-void MainWindow::createMenus()
-{
+	// Alignment (horizontal)
+	auto alignHorCenterAction = new QAction(tr("Center"), this);
+	alignHorCenterAction->setIcon(QIcon(":/share/icons/align-horizontal-center.png"));
+	alignHorCenterAction->setStatusTip(tr("Center on vertical axis"));
+	connect(alignHorCenterAction, &QAction::triggered, [this]() { alignHorizontallyCenter(m_graphView); });
+	addAction(alignHorCenterAction);
+
+	auto alignHorLeftAction = new QAction(tr("Left"), this);
+	alignHorLeftAction->setIcon(QIcon(":/share/icons/align-horizontal-left.png"));
+	alignHorLeftAction->setStatusTip(tr("Align left edges"));
+	connect(alignHorLeftAction, &QAction::triggered, [this]() { alignHorizontallyLeft(m_graphView); });
+	addAction(alignHorLeftAction);
+
+	auto alignHorRightAction = new QAction(tr("Right"), this);
+	alignHorRightAction->setIcon(QIcon(":/share/icons/align-horizontal-right.png"));
+	alignHorRightAction->setStatusTip(tr("Align right edges"));
+	connect(alignHorRightAction, &QAction::triggered, [this]() { alignHorizontallyRight(m_graphView); });
+	addAction(alignHorRightAction);
+
+	// Alignment (vertical)
+	auto alignVertCenterAction = new QAction(tr("Center"), this);
+	alignVertCenterAction->setIcon(QIcon(":/share/icons/align-vertical-center.png"));
+	alignVertCenterAction->setStatusTip(tr("Center on horizontal axis"));
+	connect(alignVertCenterAction, &QAction::triggered, [this]() { alignVerticallyCenter(m_graphView); });
+	addAction(alignVertCenterAction);
+
+	auto alignVertTopAction = new QAction(tr("Top"), this);
+	alignVertTopAction->setIcon(QIcon(":/share/icons/align-vertical-top.png"));
+	alignVertTopAction->setStatusTip(tr("Align top edges"));
+	connect(alignVertTopAction, &QAction::triggered, [this]() { alignVerticallyTop(m_graphView); });
+	addAction(alignVertTopAction);
+
+	auto alignVertBottomAction = new QAction(tr("Bottom"), this);
+	alignVertBottomAction->setIcon(QIcon(":/share/icons/align-vertical-bottom.png"));
+	alignVertBottomAction->setStatusTip(tr("Align bottom edges"));
+	connect(alignVertBottomAction, &QAction::triggered, [this]() { alignVerticallyBottom(m_graphView); });
+	addAction(alignVertBottomAction);
+
+	// Distribution (horizontal)
+	auto distributeHorCenterAction = new QAction(tr("Center"), this);
+	distributeHorCenterAction->setIcon(QIcon(":/share/icons/distribute-horizontal-center.png"));
+	distributeHorCenterAction->setStatusTip(tr("Distribute centers equidistantly horizontally"));
+	connect(distributeHorCenterAction, &QAction::triggered, [this]() { distributeHorizontallyCenter(m_graphView); });
+	addAction(distributeHorCenterAction);
+
+	auto distributeHorGapsAction = new QAction(tr("Gaps"), this);
+	distributeHorGapsAction->setIcon(QIcon(":/share/icons/distribute-horizontal-gaps.png"));
+	distributeHorGapsAction->setStatusTip(tr("Make horizontal gaps between objects equal"));
+	connect(distributeHorGapsAction, &QAction::triggered, [this]() { distributeHorizontallyGaps(m_graphView); });
+	addAction(distributeHorGapsAction);
+
+	auto distributeHorLeftAction = new QAction(tr("Left"), this);
+	distributeHorLeftAction->setIcon(QIcon(":/share/icons/distribute-horizontal-left.png"));
+	distributeHorLeftAction->setStatusTip(tr("Distribute left edges equidistantly"));
+	connect(distributeHorLeftAction, &QAction::triggered, [this]() { distributeHorizontallyLeft(m_graphView); });
+	addAction(distributeHorLeftAction);
+
+	auto distributeHorRightAction = new QAction(tr("Right"), this);
+	distributeHorRightAction->setIcon(QIcon(":/share/icons/distribute-horizontal-right.png"));
+	distributeHorRightAction->setStatusTip(tr("Distribute left edges equidistantly"));
+	connect(distributeHorRightAction, &QAction::triggered, [this]() { distributeHorizontallyRight(m_graphView); });
+	addAction(distributeHorRightAction);
+
+	// Distribution (vertical)
+	auto distributeVertCenterAction = new QAction(tr("Center"), this);
+	distributeVertCenterAction->setIcon(QIcon(":/share/icons/distribute-vertical-center.png"));
+	distributeVertCenterAction->setStatusTip(tr("Distribute centers equidistantly vertically"));
+	connect(distributeVertCenterAction, &QAction::triggered, [this]() { distributeVerticallyCenter(m_graphView); });
+	addAction(distributeVertCenterAction);
+
+	auto distributeVertGapsAction = new QAction(tr("Gaps"), this);
+	distributeVertGapsAction->setIcon(QIcon(":/share/icons/distribute-vertical-gaps.png"));
+	distributeVertGapsAction->setStatusTip(tr("Make vertical gaps between objects equal"));
+	connect(distributeVertGapsAction, &QAction::triggered, [this]() { distributeVerticallyGaps(m_graphView); });
+	addAction(distributeVertGapsAction);
+
+	auto distributeVertTopAction = new QAction(tr("Top"), this);
+	distributeVertTopAction->setIcon(QIcon(":/share/icons/distribute-vertical-top.png"));
+	distributeVertTopAction->setStatusTip(tr("Distribute top edges equidistantly"));
+	connect(distributeVertTopAction, &QAction::triggered, [this]() { distributeVerticallyTop(m_graphView); });
+	addAction(distributeVertTopAction);
+
+	auto distributeVertBottomAction = new QAction(tr("Bottom"), this);
+	distributeVertBottomAction->setIcon(QIcon(":/share/icons/distribute-vertical-bottom.png"));
+	distributeVertBottomAction->setStatusTip(tr("Distribute bottom edges equidistantly"));
+	connect(distributeVertBottomAction, &QAction::triggered, [this]() { distributeVerticallyBottom(m_graphView); });
+	addAction(distributeVertBottomAction);
+
+/*** Creation of menus ***/
 	m_fileMenu = menuBar()->addMenu(tr("&File"));
-	m_fileMenu->addAction(m_newAction);
-	m_fileMenu->addAction(m_openAction);
+	m_fileMenu->addAction(newAction);
+	m_fileMenu->addAction(openAction);
 	m_fileMenu->addAction(m_importAction);
-	m_fileMenu->addAction(m_saveAction);
-	m_fileMenu->addAction(m_saveAsAction);
+	m_fileMenu->addAction(saveAction);
+	m_fileMenu->addAction(saveAsAction);
 	m_separatorAction = m_fileMenu->addSeparator();
 	for (int i = 0; i < MaxRecentFiles; ++i)
 		m_fileMenu->addAction(m_recentFileActions[i]);
 	m_fileMenu->addSeparator();
-	m_fileMenu->addAction(m_exitAction);
+	m_fileMenu->addAction(exitAction);
 
 	m_editMenu = menuBar()->addMenu(tr("&Edit"));
 	m_editMenu->addAction(m_undoAction);
@@ -486,9 +567,9 @@ void MainWindow::createMenus()
 	m_editMenu->addSeparator();
 
 	m_selectMenu = m_editMenu->addMenu(tr("&Select"));
-	m_selectMenu->addAction(m_selectAllAction);
-	m_selectMenu->addAction(m_selectNoneAction);
-	m_selectMenu->addAction(m_selectConnectedAction);
+	m_selectMenu->addAction(selectAllAction);
+	m_selectMenu->addAction(selectNoneAction);
+	m_selectMenu->addAction(selectConnectedAction);
 
 	m_groupMenu = m_editMenu->addMenu(tr("&Group"));
 	m_groupMenu->addAction(m_groupAction);
@@ -496,33 +577,75 @@ void MainWindow::createMenus()
 	m_groupMenu->addAction(m_editGroupAction);
 	m_groupMenu->addAction(m_saveGroupAction);
 
+	m_editMenu->addSeparator();
+	m_alignHorizontallyMenu = m_editMenu->addMenu(tr("Align horizontally"));
+	m_alignHorizontallyMenu->addAction(alignHorLeftAction);
+	m_alignHorizontallyMenu->addAction(alignHorCenterAction);
+	m_alignHorizontallyMenu->addAction(alignHorRightAction);
+
+	m_alignVerticallyMenu = m_editMenu->addMenu(tr("Align vertically"));
+	m_alignVerticallyMenu->addAction(alignVertTopAction);
+	m_alignVerticallyMenu->addAction(alignVertCenterAction);
+	m_alignVerticallyMenu->addAction(alignVertBottomAction);
+
+	m_distributeHorizontallyMenu = m_editMenu->addMenu(tr("Distribute horizontally"));
+	m_distributeHorizontallyMenu->addAction(distributeHorLeftAction);
+	m_distributeHorizontallyMenu->addAction(distributeHorCenterAction);
+	m_distributeHorizontallyMenu->addAction(distributeHorRightAction);
+	m_distributeHorizontallyMenu->addAction(distributeHorGapsAction);
+
+	m_distributeVerticallyMenu = m_editMenu->addMenu(tr("Distribute vertically"));
+	m_distributeVerticallyMenu->addAction(distributeVertTopAction);
+	m_distributeVerticallyMenu->addAction(distributeVertCenterAction);
+	m_distributeVerticallyMenu->addAction(distributeVertBottomAction);
+	m_distributeVerticallyMenu->addAction(distributeVertGapsAction);
+
 	createRegistryMenu();
 
 	m_viewMenu = menuBar()->addMenu(tr("&View"));
-	m_viewMenu->addAction(m_zoomInAction);
-	m_viewMenu->addAction(m_zoomOutAction);
-	m_viewMenu->addAction(m_zoomResetAction);
+	m_viewMenu->addAction(zoomInAction);
+	m_viewMenu->addAction(zoomOutAction);
+	m_viewMenu->addAction(zoomResetAction);
 	m_viewMenu->addSeparator();
-	m_viewMenu->addAction(m_centerViewAction);
-	m_viewMenu->addAction(m_showAllAction);
-	m_viewMenu->addAction(m_showAllSelectedAction);
+	m_viewMenu->addAction(centerViewAction);
+	m_viewMenu->addAction(showAllAction);
+	m_viewMenu->addAction(showAllSelectedAction);
 	m_viewMenu->addSeparator();
-	m_viewMenu->addAction(m_showGraphViewAction);
-	m_viewMenu->addAction(m_showOpenGLViewAction);
-	m_viewMenu->addAction(m_adjustRenderSizeToViewAction);
+	m_viewMenu->addAction(showGraphViewAction);
+	m_viewMenu->addAction(showOpenGLViewAction);
+	m_viewMenu->addAction(adjustRenderSizeToViewAction);
 	m_viewMenu->addAction(m_fullScreenAction);
 #ifdef PANDA_LOG_EVENTS
 	m_viewMenu->addSeparator();
-	m_viewMenu->addAction(m_showLoggerDialogAction);
+	m_viewMenu->addAction(showLoggerDialogAction);
 #endif
 
 	menuBar()->addSeparator();
 
 	m_helpMenu = menuBar()->addMenu(tr("&Help"));
-	m_helpMenu->addAction(m_showObjectsAndTypesAction);
+	m_helpMenu->addAction(showObjectsAndTypesAction);
 	m_helpMenu->addSeparator();
-	m_helpMenu->addAction(m_aboutAction);
-	m_helpMenu->addAction(m_aboutQtAction);
+	m_helpMenu->addAction(aboutAction);
+	m_helpMenu->addAction(aboutQtAction);
+
+/*** Creation of toolbars ***/
+	m_fileToolBar = addToolBar(tr("&File"));
+	m_fileToolBar->setObjectName("FileToolBar");
+	m_fileToolBar->addAction(newAction);
+	m_fileToolBar->addAction(openAction);
+	m_fileToolBar->addAction(saveAction);
+
+	m_editToolBar = addToolBar(tr("&Edit"));
+	m_editToolBar->setObjectName("EditToolBar");
+	m_editToolBar->addAction(m_cutAction);
+	m_editToolBar->addAction(m_copyAction);
+	m_editToolBar->addAction(m_pasteAction);
+
+	m_animToolBar = addToolBar(tr("&Animation"));
+	m_animToolBar->setObjectName("AnimToolBar");
+	m_animToolBar->addAction(m_playAction);
+	m_animToolBar->addAction(stepAction);
+	m_animToolBar->addAction(rewindAction);
 }
 
 struct menuItemInfo
@@ -611,27 +734,6 @@ void MainWindow::createGroupRegistryMenu()
 
 		menuTree.registerActions(m_groupsRegistryMenu);
 	}
-}
-
-void MainWindow::createToolBars()
-{
-	m_fileToolBar = addToolBar(tr("&File"));
-	m_fileToolBar->setObjectName("FileToolBar");
-	m_fileToolBar->addAction(m_newAction);
-	m_fileToolBar->addAction(m_openAction);
-	m_fileToolBar->addAction(m_saveAction);
-
-	m_editToolBar = addToolBar(tr("&Edit"));
-	m_editToolBar->setObjectName("EditToolBar");
-	m_editToolBar->addAction(m_cutAction);
-	m_editToolBar->addAction(m_copyAction);
-	m_editToolBar->addAction(m_pasteAction);
-
-	m_animToolBar = addToolBar(tr("&Animation"));
-	m_animToolBar->setObjectName("AnimToolBar");
-	m_animToolBar->addAction(m_playAction);
-	m_animToolBar->addAction(m_stepAction);
-	m_animToolBar->addAction(m_rewindAction);
 }
 
 void MainWindow::createStatusBar()
@@ -940,7 +1042,7 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 		menu.addAction(m_showImageViewport);
 
 	int nbSelected = m_document->getSelection().size();
-	if(dynamic_cast<panda::Group*>(obj) && nbSelected == 1)
+	if(nbSelected == 1 && dynamic_cast<panda::Group*>(obj))
 	{
 		menu.addAction(m_ungroupAction);
 		menu.addAction(m_editGroupAction);
@@ -950,6 +1052,15 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 	if(nbSelected > 1)
 	{
 		menu.addAction(m_groupAction);
+		menu.addSeparator();
+		menu.addMenu(m_alignHorizontallyMenu);
+		menu.addMenu(m_alignVerticallyMenu);
+	}
+
+	if (nbSelected > 2)
+	{
+		menu.addMenu(m_distributeHorizontallyMenu);
+		menu.addMenu(m_distributeVerticallyMenu);
 	}
 
 	if(!menu.actions().empty())

@@ -38,6 +38,7 @@ set(HEADER_FILES
 	drawstruct/LayerDrawStruct.h
 	drawstruct/ObjectDrawStruct.h
 	drawstruct/UserValueDrawStruct.h
+	graph/alignObjects.h
 	widget/AnimationDataWidgetDialog.h
 	widget/DataWidget.h
 	widget/DataWidgetFactory.h
@@ -83,6 +84,7 @@ set(SOURCE_FILES
 	drawstruct/LayerDrawStruct.cpp
 	drawstruct/ObjectDrawStruct.cpp
 	drawstruct/UserValueDrawStruct.cpp
+	graph/alignObjects.cpp
 	widget/AnimationDataWidgetDialog.cpp
 	widget/ColorDataWidget.cpp
 	widget/EditGradientDialog.cpp
@@ -100,9 +102,9 @@ set(SOURCE_FILES
 GroupFiles(HEADER_FILES)
 GroupFiles(SOURCE_FILES)
 
-set(RESSOURCE_FILES ../${PROJECT_NAME}.qrc)
+set(RESSOURCE_FILES ${PROJECT_NAME}.qrc)
 if(WIN32)
-	set(RESSOURCE_FILES ${RESSOURCE_FILES} ../${PROJECT_NAME}.rc)
+	set(RESSOURCE_FILES ${RESSOURCE_FILES} ${PROJECT_NAME}.rc)
 endif()
 
 find_package(Qt5Widgets)

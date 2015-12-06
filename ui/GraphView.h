@@ -44,6 +44,7 @@ public:
 	void resetView();
 
 	ObjectDrawStruct* getObjectDrawStruct(panda::PandaObject* object);
+	QList<ObjectDrawStruct*> getObjectDrawStructs(const QList<panda::PandaObject*>& objects);
 	QSharedPointer<ObjectDrawStruct> getSharedObjectDrawStruct(panda::PandaObject* object);
 	void setObjectDrawStruct(panda::PandaObject* object, QSharedPointer<ObjectDrawStruct> drawStruct);
 

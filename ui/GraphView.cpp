@@ -149,6 +149,19 @@ ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
 	return m_objectDrawStructs.value(object).data();
 }
 
+QList<ObjectDrawStruct*> GraphView::getObjectDrawStructs(const QList<panda::PandaObject*>& objects)
+{
+	QList<ObjectDrawStruct*> odsList;
+	for (auto object : objects)
+	{
+		auto ods = getObjectDrawStruct(object);
+		if(ods)
+			odsList.push_back(ods);
+	}
+
+	return odsList;
+}
+
 QSharedPointer<ObjectDrawStruct> GraphView::getSharedObjectDrawStruct(panda::PandaObject* object)
 {
 	return m_objectDrawStructs.value(object);
