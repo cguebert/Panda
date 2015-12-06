@@ -42,10 +42,20 @@ Point::Point(const Point& pt)
 Path upscaleClipperPoints(const vector<Point> &inputPolygon)
 {
    Path outputPolygon;
-   outputPolygon.resize(inputPolygon.size());
+   outputPolygon.reserve(inputPolygon.size());
 
-   for(S32 i = 0; i < inputPolygon.size(); i++)
-      outputPolygon[i] = IntPoint(S64(inputPolygon[i].x * CLIPPER_SCALE_FACT), S64(inputPolygon[i].y * CLIPPER_SCALE_FACT));
+   IntPoint prevPt;
+   bool first = true;
+   for (const auto& pt : inputPolygon)
+   {
+	   IntPoint newPt(S64(pt.x * CLIPPER_SCALE_FACT), S64(pt.y * CLIPPER_SCALE_FACT));
+		if (first)
+			first = false;
+		else if (newPt == prevPt)
+			continue;
+		outputPolygon.push_back(newPt);
+		prevPt = newPt;
+   }
 
    return outputPolygon;
 }
@@ -58,12 +68,7 @@ Paths upscaleClipperPoints(const vector<vector<Point> > &inputPolygons)
    outputPolygons.resize(inputPolygons.size());
 
    for(S32 i = 0; i < inputPolygons.size(); i++)
-   {
-      outputPolygons[i].resize(inputPolygons[i].size());
-
-      for(S32 j = 0; j < inputPolygons[i].size(); j++)
-         outputPolygons[i][j] = IntPoint(S64(inputPolygons[i][j].x * CLIPPER_SCALE_FACT), S64(inputPolygons[i][j].y * CLIPPER_SCALE_FACT));
-   }
+	   outputPolygons[i] = upscaleClipperPoints(inputPolygons[i]);
 
    return outputPolygons;
 }

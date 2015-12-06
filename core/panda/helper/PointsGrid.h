@@ -34,10 +34,10 @@ protected:
 
 	typedef QList<types::Point> Cell;
 
-	types::Rect area;
-	PReal cellSize;
-	int width, height;
-	QVector<Cell> cells;
+	types::Rect m_area;
+	PReal m_cellSize;
+	int m_width, m_height;
+	QVector<Cell> m_cells;
 };
 
 } // namespace helper

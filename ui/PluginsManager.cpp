@@ -14,11 +14,7 @@ PluginsManager* PluginsManager::getInstance()
 void PluginsManager::loadPlugins()
 {
 	panda::ObjectFactory::getInstance()->moduleLoaded(); // Register core modules
-#ifdef NDEBUG
 	const QString modulesDir = "modules";
-#else
-	const QString modulesDir = "modules_d";
-#endif
 	QStringList modules = panda::helper::system::DataRepository.enumerateFilesInDir(modulesDir);
 	for(const QString& moduleName : modules)
 	{
