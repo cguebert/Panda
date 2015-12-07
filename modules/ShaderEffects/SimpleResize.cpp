@@ -30,12 +30,12 @@ public:
 
 	void initializeGL()
 	{
-		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample2.f.glsl");
+		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Downsample2.f.glsl");
 		m_shaderProgram2x.link();
 
-		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample4.f.glsl");
+		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Downsample4.f.glsl");
 		m_shaderProgram4x.link();
 	}
 
@@ -114,8 +114,8 @@ public:
 
 	void initializeGL()
 	{
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
+		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 		m_shaderProgram.link();
 	}
 

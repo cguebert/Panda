@@ -30,8 +30,8 @@ public:
 
 	void initializeGL()
 	{
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/TextureOuterProduct.f.glsl");
+		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/TextureOuterProduct.f.glsl");
 		m_shaderProgram.link();
 		m_shaderProgram.bind();
 

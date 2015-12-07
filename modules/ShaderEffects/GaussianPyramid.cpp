@@ -28,16 +28,16 @@ public:
 
 	void initializeGL()
 	{
-		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Downsample2.f.glsl");
+		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Downsample2.f.glsl");
 		m_downscaleProgram.link();
 
-		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 		m_upscaleProgram.link();
 
-		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Difference.f.glsl");
+		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Difference.f.glsl");
 		m_differenceProgram.link();
 	}
 
@@ -126,12 +126,12 @@ public:
 
 	void initializeGL()
 	{
-		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/PT_noColor_Tex.f.glsl");
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 		m_upscaleProgram.link();
 
-		m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/PT_noColor_Tex.v.glsl");
-		m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/Addition.f.glsl");
+		m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Addition.f.glsl");
 		m_additionProgram.link();
 	}
 

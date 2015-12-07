@@ -10,8 +10,8 @@ out vec4 fragColor;
 void main()
 {
 	const int stepCount = ~~1~~;
-	const float gWeights[stepCount] = { ~~2~~ };
-	const float gOffsets[stepCount] = { ~~3~~ };
+	const float gWeights[stepCount] = float[stepCount]( ~~2~~ );
+	const float gOffsets[stepCount] = float[stepCount]( ~~3~~ );
 
 	vec3 colOut = vec3( 0, 0, 0 );
 	for( int i = 0; i < stepCount; i++ )

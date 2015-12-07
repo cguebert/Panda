@@ -1,5 +1,6 @@
 #include "ShaderEffects.h"
 #include <panda/ObjectFactory.h>
+#include <panda/helper/system/FileRepository.h>
 
 #include <QFile>
 
@@ -30,9 +31,9 @@ public:
 	void initializeGL() override
 	{
 		m_vertexShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Vertex);
-		m_vertexShader->compileSourceFile(":/shaders/PT_noColor_Tex.v.glsl");
+		m_vertexShader->compileSourceFile("shaders/PT_noColor_Tex.v.glsl");
 
-		m_fragmentShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Fragment);
+		m_fragmentSource = helper::system::DataRepository.loadFile("shaders/GBlur.f.glsl");
 
 		m_shaderProgram = QSharedPointer<QOpenGLShaderProgram>::create();
 	}
@@ -63,51 +64,48 @@ public:
 		PReal radius = m_radius.getValue();
 		m_currentRadius = std::max(radius, (PReal)0.1);
 
-		QFile file(":/shaders/GBlur.f.glsl");
-		if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+		if (m_fragmentSource.isEmpty())
+			return;
+
+		QString source = m_fragmentSource;
+		std::vector<float> halfKernel = computeHalfKernel();
+		halfKernel[0] /= 2;
+
+		if(halfKernel.size() % 2)
+			halfKernel.push_back(0);
+
+		int numSamples = (int)halfKernel.size() / 2;
+		std::vector<float> weights(numSamples);
+		for (int i = 0; i < numSamples; ++i)
+			weights[i] = halfKernel[i*2+0] + halfKernel[i*2+1];
+
+		std::vector<float> offsets(numSamples);
+		for (int i = 0; i < numSamples; ++i)
+			offsets[i] = i*2.0f + halfKernel[i*2+1] / weights[i];
+
+		source.replace("~~1~~", QString::number(numSamples));
+
+		QString weightsString;
+		for(const auto& w : weights)
 		{
-			QString source = QTextStream(&file).readAll();
-			std::vector<float> halfKernel = computeHalfKernel();
-			halfKernel[0] /= 2;
-
-			if(halfKernel.size() % 2)
-				halfKernel.push_back(0);
-
-			int numSamples = (int)halfKernel.size() / 2;
-			std::vector<float> weights(numSamples);
-			for (int i = 0; i < numSamples; ++i)
-				weights[i] = halfKernel[i*2+0] + halfKernel[i*2+1];
-
-			std::vector<float> offsets(numSamples);
-			for (int i = 0; i < numSamples; ++i)
-				offsets[i] = i*2.0f + halfKernel[i*2+1] / weights[i];
-
-			source.replace("~~1~~", QString::number(numSamples));
-
-			QString weightsString;
-			for(const auto& w : weights)
-			{
-				if(!weightsString.isEmpty())
-					weightsString += ", ";
-				weightsString += QString::number(w, 'f');
-			}
-			source.replace("~~2~~", weightsString);
-
-			QString offsetsString;
-			for(const auto& off : offsets)
-			{
-				if(!offsetsString.isEmpty())
-					offsetsString += ", ";
-				offsetsString += QString::number(off, 'f');
-			}
-			source.replace("~~3~~", offsetsString);
-
-			m_fragmentShader->compileSourceCode(source);
+			if(!weightsString.isEmpty())
+				weightsString += ", ";
+			weightsString += QString::number(w, 'f');
 		}
+		source.replace("~~2~~", weightsString);
+
+		QString offsetsString;
+		for(const auto& off : offsets)
+		{
+			if(!offsetsString.isEmpty())
+				offsetsString += ", ";
+			offsetsString += QString::number(off, 'f');
+		}
+		source.replace("~~3~~", offsetsString);
 
 		m_shaderProgram->removeAllShaders();
 		m_shaderProgram->addShader(m_vertexShader.data());
-		m_shaderProgram->addShader(m_fragmentShader.data());
+		m_shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, source);
 	}
 
 	void prepareUpdate(QSize size)
@@ -119,15 +117,11 @@ public:
 
 	QOpenGLShaderProgram& preparePass(int passId)
 	{
-		m_shaderProgram->bind();
-		if(!passId)
-		{ // H
+		m_shaderProgram->bind(); // Will also link the program
+		if(!passId) // H
 			m_shaderProgram->setUniformValue("pixelOffset", QPointF(1.0/m_size.width(), 0));
-		}
-		else
-		{ // V
+		else // V
 			m_shaderProgram->setUniformValue("pixelOffset", QPointF(0, 1.0/m_size.height()));
-		}
 
 		return *m_shaderProgram.data();
 	}
@@ -137,7 +131,8 @@ protected:
 	PReal m_currentRadius;
 	int m_halfKernelSize;
 	QSize m_size;
-	QSharedPointer<QOpenGLShader> m_vertexShader, m_fragmentShader;
+	QString m_fragmentSource;
+	QSharedPointer<QOpenGLShader> m_vertexShader;
 	QSharedPointer<QOpenGLShaderProgram> m_shaderProgram;
 };
 
