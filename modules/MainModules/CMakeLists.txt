@@ -53,18 +53,6 @@ set(SOURCE_FILES
 	modifiers/point/PointsInShapes.cpp
 	modifiers/point/PointsUnion.cpp
 	modifiers/point/RandomDisplacement.cpp
-	render/RenderCircle.cpp
-	render/RenderDisk.cpp
-	render/RenderImage.cpp
-	render/RenderFill.cpp
-	render/RenderLine.cpp
-	render/RenderMesh.cpp
-	render/RenderRect.cpp
-	render/RenderSprite.cpp
-	render/RenderText.cpp
-	render/RenderTriangle.cpp
-	render/modifiers/RenderModifierBlend.cpp
-	render/modifiers/RenderModifierTransformations.cpp
 )
 
 GroupFiles(HEADER_FILES)
