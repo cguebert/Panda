@@ -121,7 +121,8 @@ public:
 
 		m_renderFrameBuffer->release();
 
-		QOpenGLFramebufferObject::blitFramebuffer(m_displayFrameBuffer.data(), m_renderFrameBuffer.data());
+		auto acc = m_image.getAccessor();
+		QOpenGLFramebufferObject::blitFramebuffer(acc->getFbo(), m_renderFrameBuffer.data());
 
 		cleanDirty();
 	}
