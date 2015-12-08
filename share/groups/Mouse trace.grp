@@ -1,0 +1,26 @@
+<Group type="panda::Group" description="Create a list of points from the position of the mouse during the last X frames.">
+    <GroupData output="0" help="Number of points to keep (put in negative)" type="integer" input="1" name="nb points"/>
+    <GroupData output="1" help="List of points created with the mouse" type="point_vector" input="0" name="points"/>
+    <Data name="name">Mouse trace</Data>
+    <Data int="-30" name="nb points"/>
+    <Object x="-239.9999999999999" y="-45.50000000000011" type="panda::GeneratorNumber_AnimationTime" index="1"/>
+    <Object x="93.99999999999943" y="9.499999999999886" type="panda::ListBuffer" index="2">
+        <CreatedData type="point"/>
+        <Data name="init #1"/>
+    </Object>
+    <Object x="-237.9999999999999" y="45.49999999999989" type="panda::GeneratorPoint_MouseInfo" index="3"/>
+    <Object x="-53.00000000000057" y="39.49999999999989" type="panda::ListConcatenation" index="4">
+        <CreatedData type="point"/>
+		<CreatedData type="point"/>
+    </Object>
+    <Object x="239.9999999999994" y="20.49999999999989" type="panda::ExtractTail" index="5">
+        <CreatedData type="point"/>
+    </Object>
+    <Link object1="2" data1="control" object2="1" data2="time"/>
+    <Link object1="2" data1="input #1" object2="4" data2="result #1"/>
+    <Link object1="4" data1="list #1" object2="5" data2="output #1"/>
+    <Link object1="4" data1="list #2" object2="3" data2="position"/>
+    <Link object1="5" data1="tail" object2="0" data2="nb points"/>
+    <Link object1="5" data1="input #1" object2="2" data2="output #1"/>
+    <Link object1="0" data1="points" object2="5" data2="output #1"/>
+</Group>

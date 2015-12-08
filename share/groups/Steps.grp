@@ -1,0 +1,27 @@
+<Group type="panda::Group" description="Create an enumeration based on min, max &amp; nb of values.">
+    <GroupData type="integer" name="# of values" input="1" output="0" help="Number of values in the enumeration"/>
+    <GroupData type="real" name="min" input="1" output="0" help="Minimum bound"/>
+    <GroupData type="real" name="max" input="1" output="0" help="Maximum bound"/>
+    <GroupData type="real_vector" name="output" input="0" output="1" help="The list of numbers"/>
+    <Data name="name">Steps</Data>
+    <Data name="# of values" int="4"/>
+    <Data real="0" name="min"/>
+    <Data real="1" name="max"/>
+    <Object type="panda::GeneratorReals_Enumeration" index="44" x="169.9085471081256" y="-76.30894503815046"/>
+    <Object type="panda::DoubleMath_Div" index="45" x="19.0914528918745" y="12.30894503815034"/>
+    <Object type="panda::DoubleMath_Sub" index="46" x="-169.9085471081255" y="16.30894503815034"/>
+    <Object type="panda::DoubleMath_Sub" index="47" x="-159.9085471081255" y="76.30894503815034">
+        <Data name="input 2">
+            <Value real="1"/>
+        </Data>
+    </Object>
+    <Link data1="# numbers" data2="# of values" object1="44" object2="0"/>
+    <Link data1="start" data2="min" object1="44" object2="0"/>
+    <Link data1="step" data2="result" object1="44" object2="45"/>
+    <Link data1="input 1" data2="result" object1="45" object2="46"/>
+    <Link data1="input 2" data2="result" object1="45" object2="47"/>
+    <Link data1="input 1" data2="max" object1="46" object2="0"/>
+    <Link data1="input 2" data2="min" object1="46" object2="0"/>
+    <Link data1="input 1" data2="# of values" object1="47" object2="0"/>
+    <Link data1="output" data2="numbers" object1="0" object2="44"/>
+</Group>

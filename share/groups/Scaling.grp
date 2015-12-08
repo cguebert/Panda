@@ -1,0 +1,29 @@
+<Group type="panda::Group" description="Scale a list of points around the center of the view.">
+    <GroupData type="point_vector" output="0" name="points" input="1" help="List of points to scale"/>
+    <GroupData type="real_vector" output="0" name="factor" input="1" help="Scaling factor"/>
+    <GroupData type="point_vector" output="1" name="result" input="0" help="Result of the scaling"/>
+    <Data name="name">Scaling</Data>
+    <Data name="points"/>
+    <Data name="factor"/>
+    <Object type="panda::GeneratorPoint_RenderSize" x="-312.5" y="-103.5" index="2"/>
+    <Object type="panda::PointMath_Division" x="-133.5" y="6.5" index="3">
+        <Data name="factor">
+            <Value double="2"/>
+        </Data>
+    </Object>
+    <Object type="panda::PointMath_Substraction" x="10.5" y="102.5" index="4">
+        <Data name="point 1"/>
+    </Object>
+    <Object type="panda::PointMath_Scale" x="138.5" y="73.5" index="5">
+        <Data name="factor"/>
+    </Object>
+    <Object type="panda::PointMath_Addition" x="312.5" y="103.5" index="6"/>
+    <Link data1="point" data2="size" object1="3" object2="2"/>
+    <Link data1="point 1" data2="points" object1="4" object2="0"/>
+    <Link data1="point 2" data2="result" object1="4" object2="3"/>
+    <Link data1="point" data2="result" object1="5" object2="4"/>
+    <Link data1="factor" data2="factor" object1="5" object2="0"/>
+    <Link data1="point 1" data2="result" object1="6" object2="5"/>
+    <Link data1="point 2" data2="result" object1="6" object2="3"/>
+    <Link data1="result" data2="result" object1="0" object2="6"/>
+</Group>

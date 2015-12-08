@@ -1,0 +1,112 @@
+<Panda>
+    <Data name="render size" x="800" y="600"/>
+    <Data r="1" name="background color" b="1" g="1" a="1"/>
+    <Data name="timestep" real="0.01"/>
+    <Data int="1" name="use timer"/>
+    <Data int="0" name="use multithread"/>
+    <Object x="351" type="panda::GeneratorReals_Enumeration" y="485" index="1"/>
+    <Object x="797" type="panda::PathMath_Rotate" y="372" index="2"/>
+    <Object x="501" type="panda::PolygonCreation_Rectangle" y="312" index="3"/>
+    <Object x="351" type="panda::GeneratorRectangles_ComposeCenter" y="312" index="4"/>
+    <Object x="474" type="panda::DoubleMath_Mult" y="485" index="5"/>
+    <Object x="1083" type="panda::RenderPath" y="372" index="6"/>
+    <Object x="652" type="panda::PathMath_Translation" y="372" index="7"/>
+    <Object x="929" type="panda::PathMath_Translation" y="372" index="8"/>
+    <Object x="797" type="panda::PointMath_Substraction" y="431" index="9">
+        <Data name="point 1">
+            <Value x="0" y="0"/>
+        </Data>
+    </Object>
+    <Object x="95.5" type="panda::Group" y="366" index="10">
+        <GroupData name="# of rects2" input="0" output="1" help="The value stored" widget="default" type="integer"/>
+        <GroupData name="# of rects" input="1" output="0" help="The value you want to store" widget="default" type="integer"/>
+        <GroupData name="Initial position2" input="0" output="1" help="The value stored" widget="default" type="point"/>
+        <GroupData name="Initial position" input="1" output="0" help="The value you want to store" widget="default" type="point"/>
+        <GroupData name="Rect size2" input="0" output="1" help="The value stored" widget="default" type="point"/>
+        <GroupData name="Rect size" input="1" output="0" help="The value you want to store" widget="default" type="point"/>
+        <GroupData name="Angle2" input="0" output="1" help="The value stored" widget="default" type="real"/>
+        <GroupData name="Angle" input="1" output="0" help="The value you want to store" widget="slider" widgetData="0 45 0.01" type="real"/>
+        <GroupData name="point" input="0" output="1" help="Point created from the 2 coordinates" widget="default" type="point_vector"/>
+        <GroupData name="Rot center X" input="1" output="0" help="The value you want to store" widget="slider" widgetData="-100 100 0.1" type="real"/>
+        <GroupData name="Rot center Y" input="1" output="0" help="The value you want to store" widget="slider" widgetData="-100 100 0.1" type="real"/>
+        <Data name="name">Parameters</Data>
+        <Data int="20" name="# of rects"/>
+        <Data name="Initial position" x="300" y="300"/>
+        <Data name="Rect size" x="200" y="100"/>
+        <Data name="Angle" real="20"/>
+        <Data name="Rot center X" real="0"/>
+        <Data name="Rot center Y" real="-67.7"/>
+        <Object x="76.5" type="panda::GeneratorUser&lt;int>" y="139" index="11">
+            <Data name="caption"># of rects</Data>
+            <Data int="20" name="input"/>
+        </Object>
+        <Object x="76.5" type="panda::GeneratorUser&lt;panda::types::Point>" y="71" index="12">
+            <Data name="caption">Initial position</Data>
+            <Data name="input" x="300" y="300"/>
+        </Object>
+        <Object x="76.5" type="panda::GeneratorUser&lt;panda::types::Point>" y="7" index="13">
+            <Data name="caption">Rect size</Data>
+            <Data name="input" x="200" y="100"/>
+        </Object>
+        <Object x="76.5" type="panda::GeneratorUser&lt;PReal>" y="-139" index="14">
+            <Data name="caption">Angle</Data>
+            <Data name="input" real="20" widget="slider" widgetData="0 45 0.01"/>
+        </Object>
+        <Object x="76.5" type="panda::GeneratorPoints_Compose" y="-61" index="15"/>
+        <Object x="-76.5" type="panda::GeneratorUser&lt;PReal>" y="-81" index="16">
+            <Data name="caption">Rot center X</Data>
+            <Data name="input" real="0" widget="slider" widgetData="-100 100 0.1"/>
+        </Object>
+        <Object x="-76.5" type="panda::GeneratorUser&lt;PReal>" y="-24" index="17">
+            <Data name="caption">Rot center Y</Data>
+            <Data name="input" real="-67.7" widget="slider" widgetData="-100 100 0.1"/>
+        </Object>
+        <Link object2="0" data2="# of rects" data1="input" object1="11"/>
+        <Link object2="0" data2="Initial position" data1="input" object1="12"/>
+        <Link object2="0" data2="Rect size" data1="input" object1="13"/>
+        <Link object2="0" data2="Angle" data1="input" object1="14"/>
+        <Link object2="16" data2="value" data1="x" object1="15"/>
+        <Link object2="17" data2="value" data1="y" object1="15"/>
+        <Link object2="0" data2="Rot center X" data1="input" object1="16"/>
+        <Link object2="0" data2="Rot center Y" data1="input" object1="17"/>
+        <Link object2="11" data2="value" data1="# of rects2" object1="0"/>
+        <Link object2="12" data2="value" data1="Initial position2" object1="0"/>
+        <Link object2="13" data2="value" data1="Rect size2" object1="0"/>
+        <Link object2="14" data2="value" data1="Angle2" object1="0"/>
+        <Link object2="15" data2="point" data1="point" object1="0"/>
+    </Object>
+    <Object dy="100" dx="200" x="20.75" type="panda::Annotation" y="364" index="18">
+        <Data name="text">Regrouped all parameters in a group.
+Easier to modify them while viewing the render.</Data>
+    </Object>
+    <Object dy="66" dx="262" x="344.75" type="panda::Annotation" y="305" index="19">
+        <Data int="2" name="type"/>
+        <Data name="text">Create the rectangle outline</Data>
+    </Object>
+    <Object dy="123" dx="387" x="646.75" type="panda::Annotation" y="365" index="20">
+        <Data int="2" name="type"/>
+        <Data name="text">Transformation (translation, rotation, inverse translation)</Data>
+    </Object>
+    <Object dy="62" dx="236" x="346.75" type="panda::Annotation" y="479" index="21">
+        <Data int="2" name="type"/>
+        <Data name="text">Convert 1 rectangle to many when applying rotation</Data>
+    </Object>
+    <Object dy="100" dx="200" x="1079.25" type="panda::Annotation" y="368.5" index="22">
+        <Data name="text">Render all rectangles</Data>
+    </Object>
+    <Link object2="10" data2="# of rects2" data1="# numbers" object1="1"/>
+    <Link object2="7" data2="output" data1="input" object1="2"/>
+    <Link object2="10" data2="Initial position2" data1="center" object1="2"/>
+    <Link object2="5" data2="result" data1="angle" object1="2"/>
+    <Link object2="4" data2="rectangle" data1="rectangle" object1="3"/>
+    <Link object2="10" data2="Initial position2" data1="center" object1="4"/>
+    <Link object2="10" data2="Rect size2" data1="size" object1="4"/>
+    <Link object2="1" data2="numbers" data1="input 1" object1="5"/>
+    <Link object2="10" data2="Angle2" data1="input 2" object1="5"/>
+    <Link object2="8" data2="output" data1="path" object1="6"/>
+    <Link object2="3" data2="path" data1="input" object1="7"/>
+    <Link object2="10" data2="point" data1="translation" object1="7"/>
+    <Link object2="2" data2="output" data1="input" object1="8"/>
+    <Link object2="9" data2="result" data1="translation" object1="8"/>
+    <Link object2="10" data2="point" data1="point 2" object1="9"/>
+</Panda>

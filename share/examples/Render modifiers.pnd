@@ -1,0 +1,99 @@
+<Panda>
+    <Data name="render size" y="600" x="800"/>
+    <Data name="background color" a="1" r="1" b="1" g="1"/>
+    <Data name="timestep" real="0.01"/>
+    <Data name="use timer" int="1"/>
+    <Data name="use multithread" int="0"/>
+    <Object y="291" index="1" type="panda::RenderFilledRect" x="918">
+        <Data name="color">
+            <Value a="1" r="0" b="0" g="0"/>
+        </Data>
+    </Object>
+    <Object y="231" index="2" type="panda::Layer" x="938">
+        <Data name="name">Layer #1</Data>
+    </Object>
+    <Object y="411" index="3" type="panda::RenderModifier_Rotation" x="918"/>
+    <Object y="471" index="4" type="panda::RenderModifier_Translation" x="918"/>
+    <Object y="368" index="5" type="panda::GeneratorUser&lt;panda::types::Point>" x="545">
+        <Data name="input" y="300" x="400"/>
+    </Object>
+    <Object y="353" index="6" type="panda::PointMath_Substraction" x="671">
+        <Data name="point 1">
+            <Value y="0" x="0"/>
+        </Data>
+    </Object>
+    <Object y="351" index="7" type="panda::RenderModifier_Translation" x="918"/>
+    <Object y="447" index="8" type="panda::GeneratorPoint_MouseInfo" x="279"/>
+    <Object y="447" index="9" type="panda::GeneratorPoints_Decompose" x="411"/>
+    <Object y="524" index="10" type="panda::GeneratorPoint_RenderSize" x="279"/>
+    <Object y="524" index="11" type="panda::GeneratorPoints_Decompose" x="411"/>
+    <Object y="474" index="12" type="panda::DoubleMath_Div" x="545"/>
+    <Object y="475" index="13" type="panda::DoubleMath_Mult" x="671">
+        <Data name="input 2">
+            <Value real="180"/>
+        </Data>
+    </Object>
+    <Object y="321" index="16" type="panda::GeneratorUser&lt;panda::types::Shader>" x="797">
+        <Data name="input" widgetData="Vertex;Fragment">
+            <Source type="1">#version 440
+in vec2 vertex;
+in vec2 texCoord;
+out vec2 f_texCoord;
+uniform mat4 MVP;
+void main(void)
+{
+  f_texCoord = texCoord;
+  gl_Position = MVP * vec4(vertex, 0, 1);
+}</Source>
+            <Source type="2">#version 440
+uniform vec4 color;
+in vec2 f_texCoord;
+out vec4 fragColor;
+void main(void)
+{
+   fragColor = vec4(f_texCoord.st,0.5,1);
+}</Source>
+        </Data>
+    </Object>
+    <Object y="605" index="17" type="panda::Annotation" dx="503" dy="-165" x="275.5">
+        <Data name="type" int="2"/>
+        <Data name="text">Compute the rotation based on the x position of the mouse</Data>
+    </Object>
+    <Object y="306" index="19" type="panda::GeneratorUser&lt;panda::types::Point>" x="279">
+        <Data name="caption">Rect size</Data>
+        <Data name="input" y="400" x="400"/>
+    </Object>
+    <Object y="368" index="20" type="panda::PointMath_Division" x="411">
+        <Data name="factor">
+            <Value real="2"/>
+        </Data>
+    </Object>
+    <Object y="291" index="21" type="panda::GeneratorRectangles_ComposeCenter" x="545"/>
+    <Object y="263" index="22" type="panda::Annotation" dx="96" dy="49" x="748.75">
+        <Data name="type" int="1"/>
+        <Data name="text">Custom shader to modify the colors</Data>
+    </Object>
+    <Object y="286" index="23" type="panda::Annotation" dx="245" dy="139" x="406.75">
+        <Data name="type" int="2"/>
+        <Data name="text">Rotate the rectangle around its center</Data>
+    </Object>
+    <Link object1="1" data1="rectangle" object2="21" data2="rectangle"/>
+    <Link object1="1" data1="shader" object2="16" data2="value"/>
+    <Link object1="3" data1="rotation" object2="13" data2="result"/>
+    <Link object1="4" data1="translation" object2="5" data2="value"/>
+    <Link object1="5" data1="input" object2="20" data2="result"/>
+    <Link object1="6" data1="point 2" object2="5" data2="value"/>
+    <Link object1="7" data1="translation" object2="6" data2="result"/>
+    <Link object1="9" data1="point" object2="8" data2="position"/>
+    <Link object1="11" data1="point" object2="10" data2="size"/>
+    <Link object1="12" data1="input 1" object2="9" data2="x"/>
+    <Link object1="12" data1="input 2" object2="11" data2="x"/>
+    <Link object1="13" data1="input 1" object2="12" data2="result"/>
+    <Link object1="20" data1="point" object2="10" data2="size"/>
+    <Link object1="21" data1="center" object2="20" data2="result"/>
+    <Link object1="21" data1="size" object2="19" data2="value"/>
+    <Dock docked="1" dock="2"/>
+    <Dock docked="7" dock="2"/>
+    <Dock docked="3" dock="2"/>
+    <Dock docked="4" dock="2"/>
+</Panda>

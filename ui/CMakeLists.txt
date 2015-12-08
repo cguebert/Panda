@@ -129,6 +129,7 @@ endif(NOT OPENGL_FOUND)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${TARGET_DIR})
 install(DIRECTORY "../share/shaders" DESTINATION ${TARGET_DIR})
+install(DIRECTORY "../share/groups" DESTINATION ${TARGET_DIR})
 
 # Install Qt files
 if(WIN32)

@@ -1,0 +1,134 @@
+<Panda>
+    <Data name="render size" x="800" y="600"/>
+    <Data r="1" name="background color" b="1" g="1" a="1"/>
+    <Data name="timestep" real="0.01"/>
+    <Data int="1" name="use timer"/>
+    <Data int="0" name="use multithread"/>
+    <Object x="361" type="panda::GeneratorPoint_MouseInfo" y="306" index="1"/>
+    <Object x="484" type="panda::DoubleMath_RiseCount" y="336" index="2"/>
+    <Object x="777" type="panda::ListBuffer" y="368" index="3">
+        <CreatedData type="point"/>
+        <CreatedData type="real"/>
+        <CreatedData type="real"/>
+        <CreatedData type="point"/>
+        <CreatedData type="point"/>
+    </Object>
+    <Object x="1589" type="panda::RenderDisk" y="454.5" index="4">
+        <Data name="radius">
+            <Value real="5"/>
+        </Data>
+        <Data name="color">
+            <Value r="0" b="0" g="0" a="1"/>
+        </Data>
+    </Object>
+    <Object x="356" type="panda::GeneratorNumber_AnimationTime" y="434" index="5"/>
+    <Object x="489" type="panda::DoubleMath_Add" y="467" index="6">
+        <Data name="input 2">
+            <Value real="0.3"/>
+        </Data>
+    </Object>
+    <Object x="361" type="panda::GeneratorPoints_Poisson" y="564" index="7">
+        <Data int="3495" name="seed"/>
+        <Data name="min distance" real="100"/>
+    </Object>
+    <Object x="1589" type="panda::RenderDisk" y="529.5" index="8">
+        <Data name="radius">
+            <Value real="5"/>
+        </Data>
+        <Data name="color">
+            <Value r="0" b="0" g="0" a="1"/>
+        </Data>
+    </Object>
+    <Object x="1025" type="panda::PointListMath_Nearest" y="286" index="9">
+        <Data name="maxDist" real="150"/>
+    </Object>
+    <Object x="1200" type="panda::AnimationInterpolation&lt;panda::types::Point>" y="425" index="10"/>
+    <Object x="1025" type="panda::DoubleMath_SmoothStep" y="455" index="11"/>
+    <Object x="957.4400024414063" type="panda::FindItem" y="563" index="12">
+        <CreatedData type="point"/>
+    </Object>
+    <Object x="1158.43994140625" type="panda::ReplaceItem" y="581" index="13">
+        <CreatedData type="point"/>
+    </Object>
+    <Object x="1349.43994140625" type="panda::DeleteItems" y="566" index="14">
+        <CreatedData type="point"/>
+    </Object>
+    <Object dy="95" dx="241" x="351" type="panda::Annotation" y="300" index="15">
+        <Data int="2" name="type"/>
+        <Data name="text">Update on mouse click</Data>
+    </Object>
+    <Object dy="100" dx="244" x="351" type="panda::Annotation" y="424" index="16">
+        <Data int="2" name="type"/>
+        <Data name="text">Save the time of the click, and also use it to move the point</Data>
+    </Object>
+    <Object dy="81" dx="123" x="354" type="panda::Annotation" y="564" index="17">
+        <Data int="0" name="type"/>
+        <Data name="text">Initial distribution</Data>
+    </Object>
+    <Object dy="100" dx="144" x="1002" type="panda::Annotation" y="286" index="18">
+        <Data int="0" name="type"/>
+        <Data name="text">Find the closest point from the mouse</Data>
+    </Object>
+    <Object dy="100" dx="298" x="1014" type="panda::Annotation" y="413" index="19">
+        <Data int="2" name="type"/>
+        <Data name="text">Animate the chosen point</Data>
+    </Object>
+    <Object dy="-108" dx="506" x="951" type="panda::Annotation" y="665" index="20">
+        <Data int="2" name="type"/>
+        <Data name="text">Draw all points but the animated one</Data>
+    </Object>
+    <Object x="1589" type="panda::RenderLine" y="364.5" index="21">
+        <Data name="width" real="1.5"/>
+        <Data name="color">
+            <Value r="0" b="0" g="0" a="1"/>
+        </Data>
+    </Object>
+    <Object x="1609" type="panda::Layer" y="304.5" index="22">
+        <Data name="name">Layer #1</Data>
+    </Object>
+    <Object x="1349.43994140625" type="panda::ListCondition" y="301" index="23">
+        <CreatedData type="point"/>
+    </Object>
+    <Object dy="82" dx="113" x="1345" type="panda::Annotation" y="294.5" index="24">
+        <Data int="0" name="type"/>
+        <Data name="text">Do not draw when no point has been found</Data>
+    </Object>
+    <Object dy="50" dx="69" x="754" type="panda::Annotation" y="366.5" index="25">
+        <Data int="0" name="type"/>
+        <Data name="text">When control changes,
+copies all inputs to outputs</Data>
+    </Object>
+    <Link object2="1" data2="click" data1="input" object1="2"/>
+    <Link object2="2" data2="count" data1="control" object1="3"/>
+    <Link object2="1" data2="position" data1="input #1" object1="3"/>
+    <Link object2="5" data2="time" data1="input #2" object1="3"/>
+    <Link object2="6" data2="result" data1="input #3" object1="3"/>
+    <Link object2="9" data2="output" data1="input #4" object1="3"/>
+    <Link object2="13" data2="output #1" data1="input #5" object1="3"/>
+    <Link object2="7" data2="points" data1="init #5" object1="3"/>
+    <Link object2="23" data2="result #1" data1="center" object1="4"/>
+    <Link object2="5" data2="time" data1="input 1" object1="6"/>
+    <Link object2="14" data2="output #1" data1="center" object1="8"/>
+    <Link object2="3" data2="output #1" data1="input" object1="9"/>
+    <Link object2="3" data2="output #5" data1="points" object1="9"/>
+    <Link object2="3" data2="output #4" data1="from" object1="10"/>
+    <Link object2="3" data2="output #1" data1="to" object1="10"/>
+    <Link object2="11" data2="result" data1="progress" object1="10"/>
+    <Link object2="3" data2="output #2" data1="min" object1="11"/>
+    <Link object2="3" data2="output #3" data1="max" object1="11"/>
+    <Link object2="5" data2="time" data1="input" object1="11"/>
+    <Link object2="3" data2="output #5" data1="input #1" object1="12"/>
+    <Link object2="9" data2="output" data1="values #1" object1="12"/>
+    <Link object2="3" data2="output #5" data1="input #1" object1="13"/>
+    <Link object2="12" data2="output #1" data1="indices #1" object1="13"/>
+    <Link object2="3" data2="output #1" data1="values #1" object1="13"/>
+    <Link object2="12" data2="output #1" data1="indices" object1="14"/>
+    <Link object2="13" data2="output #1" data1="input #1" object1="14"/>
+    <Link object2="10" data2="result" data1="point 1" object1="21"/>
+    <Link object2="3" data2="output #1" data1="point 2" object1="21"/>
+    <Link object2="9" data2="found" data1="control" object1="23"/>
+    <Link object2="10" data2="result" data1="true #1" object1="23"/>
+    <Dock docked="21" dock="22"/>
+    <Dock docked="4" dock="22"/>
+    <Dock docked="8" dock="22"/>
+</Panda>
