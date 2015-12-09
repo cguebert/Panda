@@ -1,102 +1,102 @@
 <Panda>
-    <Data x="300" y="300" name="render size"/>
-    <Data g="1" b="1" name="background color" a="1" r="1"/>
-    <Data real="0.1" name="timestep"/>
-    <Data int="1" name="use timer"/>
-    <Data int="0" name="use multithread"/>
-    <Object index="1" type="panda::Layer" x="-15.42105102539063" y="558.4210510253906">
+    <Data name="render size" y="300" x="300"/>
+    <Data name="background color" b="1" g="1" r="1" a="1"/>
+    <Data name="timestep" real="0.1"/>
+    <Data name="use timer" int="1"/>
+    <Data name="use multithread" int="0"/>
+    <Object index="1" y="558.4210205078125" type="panda::Layer" x="-15.42105102539063">
         <Data name="name">Purple Rect</Data>
-        <Data int="0" name="composition mode"/>
-        <Data real="1" name="opacity"/>
+        <Data name="composition mode" int="0"/>
+        <Data name="opacity" real="1"/>
     </Object>
-    <Object index="2" type="panda::Layer" x="132.5789489746094" y="558.4210510253906">
-        <Data name="name">Blue Rect</Data>
-        <Data real="1" name="opacity"/>
-    </Object>
-    <Object index="3" type="panda::Layer" x="-15.42105102539063" y="364.0526428222656">
-        <Data name="name">Orange Disk</Data>
-        <Data real="1" name="opacity"/>
-    </Object>
-    <Object index="6" type="panda::RenderDisk" x="-35.42105102539063" y="423.5526428222656">
-        <Data name="center">
-            <Value x="125" y="125"/>
-        </Data>
-        <Data name="radius">
-            <Value real="35"/>
-        </Data>
-        <Data name="color">
-            <Value g="0.53" b="0" a="1" r="1"/>
-        </Data>
-    </Object>
-    <Object index="8" type="panda::RenderFilledRect" x="112.5789489746094" y="617.9210510253906">
-        <Data name="rectangle">
-            <Value t="50" b="150" l="50" r="150"/>
-        </Data>
-        <Data name="color">
-            <Value g="0" b="1" a="1" r="0"/>
-        </Data>
-        <Data name="shader">
-            <Source type="1">#version 440
-in vec2 vertex;
-uniform mat4 MVP;
-void main(void)
-{
-	gl_Position = MVP * vec4(vertex, 0, 1);
-}</Source>
-            <Source type="2">#version 440
-uniform vec4 color;
-out vec4 fragColor;
-void main(void)
-{
-   fragColor = color;
-}</Source>
-        </Data>
-    </Object>
-    <Object index="9" type="panda::RenderFilledRect" x="-35.42105102539063" y="617.9210510253906">
-        <Data name="rectangle">
-            <Value t="125" b="200" l="125" r="200"/>
-        </Data>
-        <Data name="color">
-            <Value g="0" b="1" a="1" r="0.66"/>
-        </Data>
-        <Data name="shader">
-            <Source type="1">#version 440
-in vec2 vertex;
-uniform mat4 MVP;
-void main(void)
-{
-	gl_Position = MVP * vec4(vertex, 0, 1);
-}</Source>
-            <Source type="2">#version 440
-uniform vec4 color;
-out vec4 fragColor;
-void main(void)
-{
-   fragColor = color;
-}</Source>
-        </Data>
-    </Object>
-    <Object index="10" type="panda::Layer" x="132.5789489746094" y="364.0526428222656">
+    <Object index="7" y="364.0526428222656" type="panda::Layer" x="132.5789489746094">
         <Data name="name">Red Disk</Data>
-        <Data real="1" name="opacity"/>
+        <Data name="opacity" real="1"/>
     </Object>
-    <Object index="12" type="panda::RenderDisk" x="112.5789489746094" y="424.0526428222656">
+    <Object index="2" y="558.4210205078125" type="panda::Layer" x="132.5789489746094">
+        <Data name="name">Blue Rect</Data>
+        <Data name="opacity" real="1"/>
+    </Object>
+    <Object index="3" y="364.0526428222656" type="panda::Layer" x="-15.42105102539063">
+        <Data name="name">Orange Disk</Data>
+        <Data name="opacity" real="1"/>
+    </Object>
+    <Object index="4" y="423.5526428222656" type="panda::RenderDisk" x="-35.42105102539063">
         <Data name="center">
-            <Value x="200" y="200"/>
+            <Value y="125" x="125"/>
         </Data>
         <Data name="radius">
             <Value real="35"/>
         </Data>
         <Data name="color">
-            <Value g="0" b="0" a="1" r="1"/>
+            <Value b="0" g="0.53" r="1" a="1"/>
         </Data>
     </Object>
-    <Object index="13" type="panda::Annotation" x="-22.42105102539063" y="326.2368469238281" dx="200" dy="100">
-        <Data name="text">Layers can be reordered using the "Layers" dock widget.
+    <Object index="5" y="617.9210205078125" type="panda::RenderFilledRect" x="112.5789489746094">
+        <Data name="rectangle">
+            <Value l="50" b="150" t="50" r="150"/>
+        </Data>
+        <Data name="color">
+            <Value b="1" g="0" r="0" a="1"/>
+        </Data>
+        <Data name="shader">
+            <Source type="1">#version 330
+in vec2 vertex;
+uniform mat4 MVP;
+void main(void)
+{
+	gl_Position = MVP * vec4(vertex, 0, 1);
+}</Source>
+            <Source type="2">#version 330
+uniform vec4 color;
+out vec4 fragColor;
+void main(void)
+{
+   fragColor = color;
+}</Source>
+        </Data>
+    </Object>
+    <Object index="6" y="617.9210205078125" type="panda::RenderFilledRect" x="-35.42105102539063">
+        <Data name="rectangle">
+            <Value l="125" b="200" t="125" r="200"/>
+        </Data>
+        <Data name="color">
+            <Value b="1" g="0" r="0.66" a="1"/>
+        </Data>
+        <Data name="shader">
+            <Source type="1">#version 330
+in vec2 vertex;
+uniform mat4 MVP;
+void main(void)
+{
+	gl_Position = MVP * vec4(vertex, 0, 1);
+}</Source>
+            <Source type="2">#version 330
+uniform vec4 color;
+out vec4 fragColor;
+void main(void)
+{
+   fragColor = color;
+}</Source>
+        </Data>
+    </Object>
+    <Object index="8" y="424.0526428222656" type="panda::RenderDisk" x="112.5789489746094">
+        <Data name="center">
+            <Value y="200" x="200"/>
+        </Data>
+        <Data name="radius">
+            <Value real="35"/>
+        </Data>
+        <Data name="color">
+            <Value b="0" g="0" r="1" a="1"/>
+        </Data>
+    </Object>
+    <Object dy="100" index="9" y="326.2368469238281" type="panda::Annotation" x="-22.42105102539063" dx="200">
+        <Data name="text">Layers can be reordered using the "Layers" dock widget.&#xd;
 The blend mode and opacity of each can also be changed.</Data>
     </Object>
-    <Dock docked="9" dock="1"/>
-    <Dock docked="8" dock="2"/>
-    <Dock docked="6" dock="3"/>
-    <Dock docked="12" dock="10"/>
+    <Dock dock="1" docked="6"/>
+    <Dock dock="7" docked="8"/>
+    <Dock dock="2" docked="5"/>
+    <Dock dock="3" docked="4"/>
 </Panda>

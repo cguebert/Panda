@@ -1,0 +1,133 @@
+<Panda>
+    <Data x="800" name="render size" y="600"/>
+    <Data r="1" b="1" name="background color" g="1" a="1"/>
+    <Data name="timestep" real="0.01"/>
+    <Data name="use timer" int="1"/>
+    <Data name="use multithread" int="0"/>
+    <Object x="615.3858032226563" index="1" y="129.9344635009766" type="panda::Layer">
+        <Data name="name">All points</Data>
+    </Object>
+    <Object x="1089.1103515625" index="2" y="90.95859527587891" type="panda::Layer">
+        <Data name="name">Control points</Data>
+        <Data name="composition mode" int="0"/>
+    </Object>
+    <Object x="595.3858032226563" index="3" y="189.0194549560547" type="panda::RenderDisk">
+        <Data name="radius">
+            <Value real="3"/>
+        </Data>
+        <Data name="color">
+            <Value r="0.901961" b="0.901961" g="0.901961" a="1"/>
+        </Data>
+    </Object>
+    <Object x="132.9838104248047" index="4" y="540.664306640625" type="panda::GeneratorNumber_AnimationTime"/>
+    <Object x="381.8888854980469" index="5" y="540.664306640625" type="panda::DoubleMath_Floor"/>
+    <Object x="499.6299133300781" index="6" y="525.664306640625" type="panda::DoubleMath_Sub"/>
+    <Object x="802.3064575195313" index="7" y="351" type="panda::ListItem">
+        <CreatedData type="point"/>
+    </Object>
+    <Object x="670.9640502929688" index="8" y="351" type="panda::DoubleMath_Mod"/>
+    <Object x="1069.1103515625" index="9" y="150.6725540161133" type="panda::RenderDisk"/>
+    <Object x="413" index="10" y="187.9676513671875" type="panda::GeneratorPoints_Random"/>
+    <Object x="273.0086669921875" index="11" y="187.9676513671875" type="panda::GeneratorUser&lt;int>">
+        <Data name="caption"># points</Data>
+        <Data name="input" int="50"/>
+    </Object>
+    <Object x="1641.272583007813" index="12" y="274.9756164550781" type="panda::Layer">
+        <Data name="name">Moving</Data>
+    </Object>
+    <Object x="413" index="13" y="351" type="panda::GeneratorReals_Enumeration"/>
+    <Object x="284" index="14" y="351" type="panda::GeneratorUser&lt;int>">
+        <Data name="caption">snake # pts</Data>
+        <Data name="input" int="4"/>
+    </Object>
+    <Object x="530.7410278320313" index="15" y="351" type="panda::DoubleMath_Add"/>
+    <Object x="942.89208984375" index="16" y="369" type="panda::Curve_CubicBSpline">
+        <Data name="steps" int="20"/>
+    </Object>
+    <Object x="1621.272583007813" index="17" y="409.5575866699219" type="panda::RenderPath">
+        <Data name="color">
+            <Value r="0.745098" b="0.745098" g="0.745098" a="1"/>
+        </Data>
+    </Object>
+    <Object x="1467.780517578125" index="18" y="333.756103515625" type="panda::PathMath_GetPoint"/>
+    <Object x="1089.1103515625" index="19" y="448.1978454589844" type="panda::PathMath_Length"/>
+    <Object x="1235.22216796875" index="20" y="463.1978454589844" type="panda::DoubleMath_Mult"/>
+    <Object x="1621.272583007813" index="21" y="334.5575866699219" type="panda::RenderDisk">
+        <Data name="radius">
+            <Value real="10"/>
+        </Data>
+        <Data name="color">
+            <Value r="1" b="0" g="0" a="1"/>
+        </Data>
+    </Object>
+    <Object x="252.8888854980469" index="22" y="525.664306640625" type="panda::DoubleMath_Mult"/>
+    <Object x="132.9838104248047" index="23" y="470.408935546875" type="panda::GeneratorUser&lt;PReal>">
+        <Data name="caption">Time scaling</Data>
+        <Data name="input" real="2"/>
+    </Object>
+    <Object x="1069.1103515625" index="24" y="225.6725540161133" type="panda::RenderPath">
+        <Data name="width">
+            <Value real="1"/>
+        </Data>
+        <Data name="color">
+            <Value r="1" b="1" g="1" a="0.376471"/>
+        </Data>
+    </Object>
+    <Object x="264.8302612304688" dx="479.2893676757813" dy="192.7490844726563" index="25" y="119.9292755126953" type="panda::Annotation">
+        <Data name="type" int="2"/>
+        <Data name="text">Create a constant, random points cloud.</Data>
+    </Object>
+    <Object x="1013.686950683594" dx="479.2893676757813" dy="192.7490844726563" index="26" y="90.68080139160156" type="panda::Annotation">
+        <Data name="type" int="0"/>
+        <Data name="text">These are the control points of the spline on which the point move.</Data>
+    </Object>
+    <Object x="1607.5537109375" dx="479.2893676757813" dy="192.7490844726563" index="27" y="272.5153503417969" type="panda::Annotation">
+        <Data name="type" int="0"/>
+        <Data name="text">Render the spline and the moving point.</Data>
+    </Object>
+    <Object x="1082.03662109375" dx="259.2893676757813" dy="78.30464172363281" index="28" y="440.7864074707031" type="panda::Annotation">
+        <Data name="type" int="2"/>
+        <Data name="text">Convert a value between 0 and 1 to a length on the curve.</Data>
+    </Object>
+    <Object x="125.0921783447266" dx="479.2893676757813" dy="137.1935272216797" index="29" y="462.6197509765625" type="panda::Annotation">
+        <Data name="type" int="2"/>
+        <Data name="text">Scaled animation time, the integer and the fractional parts.</Data>
+    </Object>
+    <Object x="278.4255065917969" dx="772.6226806640625" dy="80.52686309814453" index="30" y="345.9530944824219" type="panda::Annotation">
+        <Data name="type" int="2"/>
+        <Data name="text">Select a few points based on the time, and create a Bezier spline out of them.</Data>
+    </Object>
+    <Object x="1436.481079101563" dx="479.2893676757813" dy="192.7490844726563" index="31" y="334.1197509765625" type="panda::Annotation">
+        <Data name="type" int="0"/>
+        <Data name="text">Move the point on the spline.</Data>
+    </Object>
+    <Link object2="10" object1="3" data2="points" data1="center"/>
+    <Link object2="22" object1="5" data2="result" data1="input"/>
+    <Link object2="22" object1="6" data2="result" data1="input 1"/>
+    <Link object2="5" object1="6" data2="result" data1="input 2"/>
+    <Link object2="8" object1="7" data2="result" data1="index"/>
+    <Link object2="10" object1="7" data2="points" data1="input #1"/>
+    <Link object2="15" object1="8" data2="result" data1="input 1"/>
+    <Link object2="11" object1="8" data2="value" data1="input 2"/>
+    <Link object2="7" object1="9" data2="output #1" data1="center"/>
+    <Link object2="11" object1="10" data2="value" data1="# points"/>
+    <Link object2="14" object1="13" data2="value" data1="# numbers"/>
+    <Link object2="13" object1="15" data2="numbers" data1="input 1"/>
+    <Link object2="5" object1="15" data2="result" data1="input 2"/>
+    <Link object2="7" object1="16" data2="output #1" data1="input"/>
+    <Link object2="16" object1="17" data2="output" data1="path"/>
+    <Link object2="16" object1="18" data2="output" data1="path"/>
+    <Link object2="20" object1="18" data2="result" data1="abscissa"/>
+    <Link object2="16" object1="19" data2="output" data1="path"/>
+    <Link object2="19" object1="20" data2="length" data1="input 1"/>
+    <Link object2="6" object1="20" data2="result" data1="input 2"/>
+    <Link object2="18" object1="21" data2="position" data1="center"/>
+    <Link object2="23" object1="22" data2="value" data1="input 1"/>
+    <Link object2="4" object1="22" data2="time" data1="input 2"/>
+    <Link object2="7" object1="24" data2="output #1" data1="path"/>
+    <Dock docked="3" dock="1"/>
+    <Dock docked="9" dock="2"/>
+    <Dock docked="24" dock="2"/>
+    <Dock docked="21" dock="12"/>
+    <Dock docked="17" dock="12"/>
+</Panda>

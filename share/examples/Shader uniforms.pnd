@@ -1,28 +1,28 @@
 <Panda>
-    <Data name="render size" y="600" x="800"/>
-    <Data name="background color" a="1" r="1" b="1" g="1"/>
-    <Data name="timestep" real="0.01"/>
-    <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
-    <Object y="213" index="1" type="panda::GradientTexture" x="239">
-        <Data name="length" int="512"/>
+    <Data y="600" name="render size" x="800"/>
+    <Data b="1" g="1" r="1" name="background color" a="1"/>
+    <Data real="0.01" name="timestep"/>
+    <Data int="1" name="use timer"/>
+    <Data int="0" name="use multithread"/>
+    <Object y="213" type="panda::GradientTexture" x="239" index="1">
+        <Data int="512" name="length"/>
     </Object>
-    <Object y="274" index="2" type="panda::GradientTexture" x="239">
-        <Data name="length" int="512"/>
+    <Object y="274" type="panda::GradientTexture" x="239" index="2">
+        <Data int="512" name="length"/>
     </Object>
-    <Object y="165" index="4" type="panda::RenderFilledRect" x="546">
+    <Object y="165" type="panda::RenderFilledRect" x="546" index="3">
         <Data name="color">
-            <Value a="1" r="1" b="1" g="1"/>
+            <Value b="1" g="1" r="1" a="1"/>
         </Data>
     </Object>
-    <Object y="274" index="6" type="panda::GeneratorUser&lt;panda::types::Gradient>" x="110">
+    <Object y="274" type="panda::GeneratorUser&lt;panda::types::Gradient>" x="110" index="4">
         <Data name="caption">Vertical</Data>
         <Data extend="0" name="input">
-            <Stop pos="0" a="1" r="1" b="0" g="1"/>
-            <Stop pos="1" a="1" r="0.478431" b="0.854902" g="0.819608"/>
+            <Stop b="0" g="1" r="1" pos="0" a="1"/>
+            <Stop b="0.854902" g="0.819608" r="0.478431" pos="1" a="1"/>
         </Data>
     </Object>
-    <Object y="195" index="7" type="panda::ModifierShader_SetUniform" x="404">
+    <Object y="195" type="panda::ModifierShader_SetUniform" x="404" index="5">
         <CreatedData type="image"/>
         <CreatedData type="image"/>
         <CreatedData type="point_vector"/>
@@ -30,9 +30,9 @@
         <Data name="name #2">tex2</Data>
         <Data name="name #3">mouse</Data>
     </Object>
-    <Object y="147" index="10" type="panda::GeneratorUser&lt;panda::types::Shader>" x="239">
-        <Data name="input" widgetData="Vertex;Fragment">
-            <Source type="1">#version 440
+    <Object y="147" type="panda::GeneratorUser&lt;panda::types::Shader>" x="239" index="6">
+        <Data widgetData="Vertex;Fragment" name="input">
+            <Source type="1">#version 330
 
 in vec2 vertex;
 in vec2 texCoord;
@@ -47,7 +47,7 @@ void main(void)
 	gl_Position = MVP * vec4(vertex, 0, 1);
 }
 </Source>
-            <Source type="2">#version 440
+            <Source type="2">#version 330
 
 in vec2 f_texCoord;
 
@@ -69,45 +69,45 @@ void main(void)
 </Source>
         </Data>
     </Object>
-    <Object y="131" index="11" type="panda::GeneratorRect_RenderArea" x="404"/>
-    <Object y="213" index="12" type="panda::GeneratorUser&lt;panda::types::Gradient>" x="110">
+    <Object y="131" type="panda::GeneratorRect_RenderArea" x="404" index="7"/>
+    <Object y="213" type="panda::GeneratorUser&lt;panda::types::Gradient>" x="110" index="8">
         <Data name="caption">Horizontal</Data>
         <Data extend="0" name="input">
-            <Stop pos="0" a="1" r="0.537255" b="0.831373" g="1"/>
-            <Stop pos="1" a="1" r="0.788235" b="1" g="0.0117647"/>
+            <Stop b="0.831373" g="1" r="0.537255" pos="0" a="1"/>
+            <Stop b="1" g="0.0117647" r="0.788235" pos="1" a="1"/>
         </Data>
     </Object>
-    <Object y="355" index="15" type="panda::Annotation" dx="117" dy="-150" x="231.5">
-        <Data name="type" int="2"/>
+    <Object dy="-150" y="355" dx="117" type="panda::Annotation" x="231.5" index="9">
+        <Data int="2" name="type"/>
         <Data name="text">Convert to textures</Data>
     </Object>
-    <Object y="145.9878804201455" index="16" type="panda::Annotation" dx="117" dy="-150" x="243.5866234952043">
-        <Data name="type" int="0"/>
+    <Object dy="-150" y="145.9878845214844" dx="117" type="panda::Annotation" x="243.5866241455078" index="10">
+        <Data int="0" name="type"/>
         <Data name="text">Custom shader</Data>
     </Object>
-    <Object y="206.437542957722" index="18" type="panda::Annotation" dx="114" dy="125" x="102.003854557033">
-        <Data name="type" int="2"/>
+    <Object dy="125" y="206.4375457763672" dx="114" type="panda::Annotation" x="102.0038528442383" index="11">
+        <Data int="2" name="type"/>
         <Data name="text">Input gradients</Data>
     </Object>
-    <Object y="373.4939402100728" index="19" type="panda::GeneratorPoint_MouseInfo" x="115.0019272785165"/>
-    <Object y="445.4939402100728" index="21" type="panda::GeneratorPoint_RenderSize" x="115.0019272785165"/>
-    <Object y="373.4939402100728" index="26" type="panda::PointMath_LinearDivision" x="247.0019272785165"/>
-    <Object y="524.4939402100728" index="27" type="panda::Annotation" dx="244" dy="-158" x="109.0019272785165">
-        <Data name="type" int="2"/>
+    <Object y="373.4939270019531" type="panda::GeneratorPoint_MouseInfo" x="115.0019302368164" index="12"/>
+    <Object y="445.4939270019531" type="panda::GeneratorPoint_RenderSize" x="115.0019302368164" index="13"/>
+    <Object y="373.4939270019531" type="panda::PointMath_LinearDivision" x="247.0019226074219" index="14"/>
+    <Object dy="-158" y="524.4939575195313" dx="244" type="panda::Annotation" x="109.0019302368164" index="15">
+        <Data int="2" name="type"/>
         <Data name="text">Convert mouse position to [0; 1] on each axis</Data>
     </Object>
-    <Object y="442.4939402100728" index="28" type="panda::Annotation" dx="100" dy="-96" x="383.0019272785165">
-        <Data name="type" int="1"/>
+    <Object dy="-96" y="442.4939270019531" dx="100" type="panda::Annotation" x="383.0019226074219" index="16">
+        <Data int="1" name="type"/>
         <Data name="text">Set the textures and mouse position as uniforms for the shader.</Data>
     </Object>
-    <Link object1="1" data1="gradient" object2="12" data2="value"/>
-    <Link object1="2" data1="gradient" object2="6" data2="value"/>
-    <Link object1="4" data1="rectangle" object2="11" data2="area"/>
-    <Link object1="4" data1="shader" object2="7" data2="output"/>
-    <Link object1="7" data1="input" object2="10" data2="value"/>
-    <Link object1="7" data1="value #1" object2="1" data2="texture"/>
-    <Link object1="7" data1="value #2" object2="2" data2="texture"/>
-    <Link object1="7" data1="value #3" object2="26" data2="result"/>
-    <Link object1="26" data1="point 1" object2="19" data2="position"/>
-    <Link object1="26" data1="point 2" object2="21" data2="size"/>
+    <Link object1="1" data1="gradient" object2="8" data2="value"/>
+    <Link object1="2" data1="gradient" object2="4" data2="value"/>
+    <Link object1="3" data1="rectangle" object2="7" data2="area"/>
+    <Link object1="3" data1="shader" object2="5" data2="output"/>
+    <Link object1="5" data1="input" object2="6" data2="value"/>
+    <Link object1="5" data1="value #1" object2="1" data2="texture"/>
+    <Link object1="5" data1="value #2" object2="2" data2="texture"/>
+    <Link object1="5" data1="value #3" object2="14" data2="result"/>
+    <Link object1="14" data1="point 1" object2="12" data2="position"/>
+    <Link object1="14" data1="point 2" object2="13" data2="size"/>
 </Panda>
