@@ -14,8 +14,10 @@ public:
 
 	ReplaceItem(PandaDocument *doc)
 		: GenericObject(doc)
+		, indices(initData("indices", "Indices of the items to replace"))
 		, generic(initData("input", "Connect here the lists to get the items from"))
 	{
+		addInput(indices);
 		addInput(generic);
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
@@ -24,10 +26,6 @@ public:
 											 true, false,
 											 "input",
 											 "Initial list in which to replace some values"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-											 true, false,
-											 "indices",
-											 "Indices of the items to replace"));
 		defList.push_back(GenericDataDefinition(typeOfList,
 											 true, false,
 											 "values",
@@ -46,13 +44,12 @@ public:
 		typedef Data< QVector<T> > VecData;
 		typedef Data< QVector<int> > VecIntData;
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
-		VecIntData* dataIndices = dynamic_cast<VecIntData*>(list[1]);
-		VecData* dataValues = dynamic_cast<VecData*>(list[2]);
-		VecData* dataOutput = dynamic_cast<VecData*>(list[3]);
-		Q_ASSERT(dataInput && dataIndices && dataValues && dataOutput);
+		VecData* dataValues = dynamic_cast<VecData*>(list[1]);
+		VecData* dataOutput = dynamic_cast<VecData*>(list[2]);
+		Q_ASSERT(dataInput && dataValues && dataOutput);
 
 		const QVector<T>& inList = dataInput->getValue();
-		const QVector<int>& id = dataIndices->getValue();
+		const QVector<int>& id = indices.getValue();
 		const QVector<T>& inVal = dataValues->getValue();
 		auto outVal = dataOutput->getAccessor();
 
@@ -72,6 +69,7 @@ public:
 	}
 
 protected:
+	Data< QVector<int> > indices;
 	GenericVectorData generic;
 };
 
