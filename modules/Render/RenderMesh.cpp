@@ -24,6 +24,78 @@ public:
 
 	RenderMesh(PandaDocument* parent)
 		: Renderer(parent)
+		, meshes(initData("mesh", "Mesh to render"))
+		, color(initData("color", "Color of the points"))
+		, shader(initData("shader", "Shaders used during the rendering"))
+	{
+		addInput(meshes);
+		addInput(color);
+		addInput(shader);
+
+		color.getAccessor().push_back(Color::black());
+
+		shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = shader.getAccessor();
+		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+	}
+
+	void render()
+	{
+		const QVector<Mesh>& inMeshes = meshes.getValue();
+		QVector<Color> listColor = color.getValue();
+
+		int nbMeshes = inMeshes.size();
+		int nbColor = listColor.size();
+
+		if(nbMeshes && nbColor)
+		{
+			if (nbColor < nbMeshes)
+				nbColor = 1;
+
+			if (!shader.getValue().apply(shaderProgram))
+				return;
+
+			int colorLocation = shaderProgram.uniformLocation("color");
+			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.enableAttributeArray("vertex");
+
+			for (int i = 0; i < nbMeshes; ++i)
+			{
+				const auto& mesh = inMeshes[i];
+				int nbTri = mesh.nbTriangles();
+
+				shaderProgram.setAttributeArray("vertex", mesh.getPoints().front().data(), 2);
+
+				auto color = listColor[i % nbColor];
+				shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
+
+				glDrawElements(GL_TRIANGLES, nbTri * 3, GL_UNSIGNED_INT, mesh.getTriangles().data());
+			}
+
+			shaderProgram.disableAttributeArray("vertex");
+		}
+	}
+
+protected:
+	Data< QVector<Mesh> > meshes;
+	Data< QVector<Color> > color;
+	Data< Shader > shader;
+
+	QOpenGLShaderProgram shaderProgram;
+};
+
+int RenderMeshClass = RegisterObject<RenderMesh>("Render/Filled/Plain mesh").setDescription("Draw a mesh");
+
+//****************************************************************************//
+
+class RenderMeshColoredPoints : public Renderer
+{
+public:
+	PANDA_CLASS(RenderMeshColoredPoints, Renderer)
+
+		RenderMeshColoredPoints(PandaDocument* parent)
+		: Renderer(parent)
 		, mesh(initData("mesh", "Mesh to render"))
 		, color(initData("color", "Color of the points"))
 		, shader(initData("shader", "Shaders used during the rendering"))
@@ -49,12 +121,12 @@ public:
 		int nbTri = inMesh.nbTriangles();
 		int nbColor = listColor.size();
 
-		if(nbTri && nbColor)
+		if (nbTri && nbColor)
 		{
-			if(nbColor < nbPts)
+			if (nbColor < nbPts)
 				listColor.fill(listColor[0], nbPts);
 
-			if(!shader.getValue().apply(shaderProgram))
+			if (!shader.getValue().apply(shaderProgram))
 				return;
 
 			shaderProgram.setUniformValue("MVP", getMVPMatrix());
@@ -80,7 +152,7 @@ protected:
 	QOpenGLShaderProgram shaderProgram;
 };
 
-int RenderMeshClass = RegisterObject<RenderMesh>("Render/Filled/Mesh").setDescription("Draw a mesh");
+int RenderMeshColoredPointsClass = RegisterObject<RenderMeshColoredPoints>("Render/Filled/Mesh").setDescription("Draw a mesh, each point having its own color");
 
 //****************************************************************************//
 
