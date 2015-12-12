@@ -157,7 +157,7 @@ private:
 
 #define EXPAND_MACRO(x) STRINGIFY_MACRO(x)
 #define STRINGIFY_MACRO(x) #x
-#define REGISTER_MODULE panda::RegisterModule(EXPAND_MACRO(TARGET_FILE))
+#define REGISTER_MODULE panda::RegisterModule(EXPAND_MACRO(TARGET))
 
 // This class is used by RegisterModule to automatically unregister a module when unloading a library
 class PANDA_CORE_API ModuleHandle
