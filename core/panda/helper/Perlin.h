@@ -29,7 +29,7 @@
 #include <panda/core.h>
 #include <panda/types/Point.h>
 
-#include <QVector3D>
+#include <array>
 #include <stdint.h>
 
 namespace panda
@@ -40,7 +40,8 @@ namespace helper
 
 class PANDA_CORE_API Perlin
 {
- public:
+public:
+	using P3D = std::array<float, 3>;
 	Perlin(uint8_t octaves = 4);
 	Perlin(uint8_t octaves, int32_t seed);
 
@@ -57,7 +58,7 @@ class PANDA_CORE_API Perlin
 	/// Derivative of fractal Brownian motion, corresponding with the values returned by fBm()
 	types::Point dfBm(PReal x, PReal y) const;
 	types::Point dfBm(const types::Point& p) const { return dfBm(p.x, p.y); }
-	QVector3D dfBm(PReal x, PReal y, PReal z) const;
+	P3D dfBm(PReal x, PReal y, PReal z) const;
 
 	/// Calculates a single octave of noise
 	PReal noise(PReal x) const;
@@ -66,9 +67,9 @@ class PANDA_CORE_API Perlin
 
 	/// Calculates the derivative of a single octave of noise
 	types::Point dnoise(PReal x, PReal y) const;
-	QVector3D dnoise(PReal x, PReal y, PReal z) const;
+	P3D dnoise(PReal x, PReal y, PReal z) const;
 
- private:
+private:
 	void initPermutationTable();
 
 	PReal grad(int32_t hash, PReal x) const;

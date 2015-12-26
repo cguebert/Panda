@@ -4,7 +4,7 @@
 #include <panda/core.h>
 #include <panda/types/Gradient.h>
 
-#include <QMultiHash>
+#include <unordered_map>
 
 namespace panda
 {
@@ -23,7 +23,7 @@ public:
 	void clearUnused();		/// Remove textures not used during the last render
 
 	unsigned int getTexture(const panda::types::Gradient& gradient, int size); /// Get the texture from the cache
-	static QVector<types::Color> createBuffer(const panda::types::Gradient& gradient, int size);
+	static std::vector<types::Color> createBuffer(const panda::types::Gradient& gradient, int size);
 
 private:
 	struct CacheItem
@@ -37,12 +37,12 @@ private:
 		bool m_used;
 	};
 
-	typedef QMultiHash<quint64, CacheItem> GradientTableHash;
+	typedef std::unordered_multimap<uint64_t, CacheItem> GradientTableHash;
 	GradientTableHash m_cache;
 
 	int nextPowerOf2(unsigned int v);
-	quint64 computeHash(const panda::types::Gradient& gradient);
-	unsigned int addGradient(quint64 hash, const panda::types::Gradient& gradient, int size);
+	static uint64_t computeHash(const panda::types::Gradient& gradient);
+	unsigned int addGradient(uint64_t hash, const panda::types::Gradient& gradient, int size);
 };
 
 } // namespace helper

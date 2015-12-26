@@ -56,7 +56,7 @@ Perlin::Perlin(uint8_t octaves, int32_t seed)
 void Perlin::initPermutationTable()
 {
 	std::mt19937 gen;
-	std::uniform_real_distribution<PReal> dist(0, 255);
+	std::uniform_int_distribution<> dist(0, 255);
 	gen.seed(m_seed);
 
 	for(size_t t = 0; t < 256; ++t)
@@ -136,14 +136,17 @@ Point Perlin::dfBm(PReal x, PReal y) const
 	return result;
 }
 
-QVector3D Perlin::dfBm(PReal x, PReal y, PReal z) const
+Perlin::P3D Perlin::dfBm(PReal x, PReal y, PReal z) const
 {
-	QVector3D result;
+	P3D result;
 	PReal amp = 0.5f;
 
 	for(uint8_t i = 0; i < m_octaves; i++)
 	{
-		result += dnoise(x, y, z) * amp;
+		auto noise = dnoise(x, y, z);
+
+		for (int j = 0; j < 3; ++j)
+			result[j] += noise[j] * amp;
 		x *= 2.0f; y *= 2.0f; z *= 2.0f;
 		amp *= 0.5f;
 	}
@@ -228,7 +231,7 @@ Point Perlin::dnoise(PReal x, PReal y) const
 	return Point(du * (k1 + k4 * v), dv * (k2 + k4 * u));
 }
 
-QVector3D Perlin::dnoise(PReal x, PReal y, PReal z) const
+Perlin::P3D Perlin::dnoise(PReal x, PReal y, PReal z) const
 {
 	int32_t X = ((int32_t)floorf(x)) & 255, Y = ((int32_t)floorf(y)) & 255, Z = ((int32_t)floorf(z)) & 255;
 	x -= floorf(x); y -= floorf(y); z -= floorf(z);
@@ -258,9 +261,9 @@ QVector3D Perlin::dnoise(PReal x, PReal y, PReal z) const
 	const PReal k6 =   a - b - e + f;
 	const PReal k7 =  -a + b + c - d + e - f - g + h;
 
-	return QVector3D(	du * (k1 + k4*v + k6*w + k7*v*w),
-					dv * (k2 + k5*w + k4*u + k7*w*u),
-					dw * (k3 + k6*u + k5*v + k7*u*v));
+	return P3D{ du * (k1 + k4*v + k6*w + k7*v*w),
+		dv * (k2 + k5*w + k4*u + k7*w*u),
+		dw * (k3 + k6*u + k5*v + k7*u*v) };
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////

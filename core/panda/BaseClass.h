@@ -4,7 +4,7 @@
 #include <panda/core.h>
 
 #include <QString>
-#include <QList>
+#include <vector>
 #include <typeinfo>
 
 namespace panda
@@ -37,7 +37,7 @@ public:
 	static QString decodeTemplateName(const std::type_info& type);
 
 protected:
-	QList<const BaseClass*> m_parents;
+	std::vector<const BaseClass*> m_parents;
 	QString m_typeName, m_namespaceName, m_className, m_templateName;
 };
 

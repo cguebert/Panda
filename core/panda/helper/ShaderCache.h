@@ -3,7 +3,8 @@
 
 #include <panda/core.h>
 
-#include <QMultiHash>
+#include <unordered_map>
+
 #include <QOpenGLShader>
 #include <QSharedPointer>
 
@@ -38,7 +39,7 @@ private:
 		bool m_used;
 	};
 
-	typedef QMultiHash<quint64, CacheItem> ShaderTableHash;
+	typedef std::unordered_multimap<quint64, CacheItem> ShaderTableHash;
 	ShaderTableHash m_cache;
 };
 

@@ -1,7 +1,7 @@
 #include <panda/helper/GradientCache.h>
 #include <QtGui/qopengl.h>
 
-#include <QVector>
+#include <vector>
 
 namespace panda
 {
@@ -18,14 +18,14 @@ GradientCache* GradientCache::getInstance()
 void GradientCache::clear()
 {
 	for(auto item : m_cache)
-		glDeleteTextures(1, &item.m_textureId);
+		glDeleteTextures(1, &item.second.m_textureId);
 	m_cache.clear();
 }
 
 void GradientCache::resetUsedFlag()
 {
 	for(auto& item : m_cache)
-		item.m_used = false;
+		item.second.m_used = false;
 }
 
 void GradientCache::clearUnused()
@@ -33,7 +33,7 @@ void GradientCache::clearUnused()
 	GradientTableHash::iterator it = m_cache.begin(), itEnd = m_cache.end();
 	while(it != itEnd)
 	{
-		const CacheItem& item = it.value();
+		const CacheItem& item = it->second;
 		if(!item.m_used)
 		{
 			glDeleteTextures(1, &item.m_textureId);
@@ -48,7 +48,7 @@ unsigned int GradientCache::getTexture(const types::Gradient& gradient, int size
 {
 	if(gradient.getStops().empty())
 		return 0;
-	quint64 hash = computeHash(gradient);
+	uint64_t hash = computeHash(gradient);
 	GradientTableHash::iterator it = m_cache.find(hash), itEnd = m_cache.end();
 
 	if(it == itEnd)
@@ -56,14 +56,14 @@ unsigned int GradientCache::getTexture(const types::Gradient& gradient, int size
 	else
 	{
 		do {
-			CacheItem& item = it.value();
+			CacheItem& item = it->second;
 			if(item.m_gradient == gradient && item.m_size >= size)
 			{
 				item.m_used = true;
 				return item.m_textureId;
 			}
 			++it;
-		} while(it != itEnd && it.key() == hash);
+		} while(it != itEnd && it->first == hash);
 		return addGradient(hash, gradient, size);
 	}
 }
@@ -82,9 +82,9 @@ int GradientCache::nextPowerOf2(unsigned int v)
 	return v;
 }
 
-quint64 GradientCache::computeHash(const panda::types::Gradient& gradient)
+uint64_t GradientCache::computeHash(const panda::types::Gradient& gradient)
 {
-	quint64 hash = 0;
+	uint64_t hash = 0;
 	auto stops = gradient.getStops();
 	for(int i=0, nb=stops.size(); i<nb && i<3; ++i)
 		hash += stops[i].second.toHex() * stops[i].first;
@@ -92,7 +92,7 @@ quint64 GradientCache::computeHash(const panda::types::Gradient& gradient)
 	return hash;
 }
 
-unsigned int GradientCache::addGradient(quint64 hash, const types::Gradient &gradient, int size)
+unsigned int GradientCache::addGradient(uint64_t hash, const types::Gradient &gradient, int size)
 {
 	size = qBound(64, nextPowerOf2(size), 1024);
 	CacheItem item(gradient, size);
@@ -100,17 +100,17 @@ unsigned int GradientCache::addGradient(quint64 hash, const types::Gradient &gra
 	auto buffer = createBuffer(gradient, size);
 	glGenTextures(1, &item.m_textureId);
 	glBindTexture(GL_TEXTURE_2D, item.m_textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, 1, 0, GL_RGBA, GL_FLOAT, buffer.constData());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, 1, 0, GL_RGBA, GL_FLOAT, buffer.data());
 
-	m_cache.insert(hash, item);
+	m_cache.emplace(hash, item);
 	return item.m_textureId;
 }
 
-QVector<types::Color> GradientCache::createBuffer(const panda::types::Gradient& gradient, int size)
+std::vector<types::Color> GradientCache::createBuffer(const panda::types::Gradient& gradient, int size)
 {
 	types::Gradient::GradientStops stops = gradient.getStops();
 	int nbStops = stops.size();
-	QVector<types::Color> buffer(size), colors(nbStops);
+	std::vector<types::Color> buffer(size), colors(nbStops);
 
 	for(int i=0; i<nbStops; ++i)
 		colors[i] = stops[i].second;

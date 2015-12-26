@@ -22,7 +22,7 @@ void ShaderCache::clear()
 void ShaderCache::resetUsedFlag()
 {
 	for(auto& item : m_cache)
-		item.m_used = false;
+		item.second.m_used = false;
 }
 
 void ShaderCache::clearUnused()
@@ -30,7 +30,7 @@ void ShaderCache::clearUnused()
 	ShaderTableHash::iterator it = m_cache.begin(), itEnd = m_cache.end();
 	while(it!=itEnd)
 	{
-		if(!it.value().m_used)
+		if(!it->second.m_used)
 			it = m_cache.erase(it);
 		else
 			++it;
@@ -48,14 +48,14 @@ QOpenGLShader* ShaderCache::getShader(QOpenGLShader::ShaderType type, QByteArray
 	else
 	{
 		do {
-			CacheItem& item = it.value();
+			CacheItem& item = it->second;
 			if(item.m_type == type)
 			{
 				item.m_used = true;
 				return item.m_shader.data();
 			}
 			++it;
-		} while(it != itEnd && it.key() == hash);
+		} while(it != itEnd && it->first == hash);
 		return addShader(type, sourceCode, hash);
 	}
 }
@@ -67,7 +67,7 @@ QOpenGLShader* ShaderCache::addShader(QOpenGLShader::ShaderType type, QByteArray
 	item.m_shader = QSharedPointer<QOpenGLShader>(new QOpenGLShader(type, this));
 	item.m_shader->compileSourceCode(sourceCode);
 
-	m_cache.insert(hash, item);
+	m_cache.emplace(hash, item);
 
 	return item.m_shader.data();
 }
