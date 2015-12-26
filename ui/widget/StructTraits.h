@@ -4,6 +4,8 @@
 #include <QVector>
 #include <QStringList>
 
+#include <vector>
+
 template<class T>
 class FlatDataTrait
 {
@@ -74,6 +76,38 @@ public:
 	static void set(vector_type& v, const row_type& r, int i=0)
 	{
 		if(i < size(v))
+			v[i] = r;
+	}
+	static void resize(vector_type& v, int s)
+	{
+		v.resize(s);
+	}
+};
+
+//****************************************************************************//
+
+template<class T>
+class VectorDataTrait< std::vector<T> >
+{
+public:
+	typedef std::vector<T> vector_type;
+	typedef T row_type;
+
+	enum { is_vector = 1 };
+	enum { is_single = 0 };
+	static int size(const vector_type& v) { return v.size(); }
+	static QStringList header(const vector_type&) { return QStringList; }
+	static const row_type* get(const vector_type& v, int i = 0)
+	{
+		return (i<size(v)) ? &(v[i]) : nullptr;
+	}
+	static row_type* get(vector_type& v, int i = 0)
+	{
+		return (i<size(v)) ? &(v[i]) : nullptr;
+	}
+	static void set(vector_type& v, const row_type& r, int i = 0)
+	{
+		if (i < size(v))
 			v[i] = r;
 	}
 	static void resize(vector_type& v, int s)

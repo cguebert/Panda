@@ -5,8 +5,7 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
 
-#include <QSet>
-#include <qmath.h>
+#include <cmath>
 
 inline uint qHash(const PReal& key)
 {
@@ -40,13 +39,13 @@ void Gradient::add(PReal position, Color color)
 	{
 		if(position < stops[i].first)
 		{
-			stops.insert(i, qMakePair(position, color));
+			stops.insert(stops.begin() + i, std::make_pair(position, color));
 			return;
 		}
 	}
 
 	// Or if the list is currently empty...
-	stops.push_back(qMakePair(position, color));
+	stops.emplace_back(position, color);
 }
 
 Color Gradient::get(PReal position) const
@@ -87,7 +86,7 @@ int Gradient::getExtend() const
 	return extend;
 }
 
-inline bool compareStops(const QPair<PReal, Color> &p1, const QPair<PReal, Color> &p2)
+inline bool compareStops(const std::pair<PReal, Color> &p1, const std::pair<PReal, Color> &p2)
 {
 	return p1.first < p2.first;
 }
@@ -95,7 +94,7 @@ inline bool compareStops(const QPair<PReal, Color> &p1, const QPair<PReal, Color
 void Gradient::setStops(GradientStops stopsPoints)
 {
 	stops = stopsPoints;
-	qStableSort(stops.begin(), stops.end(), compareStops);
+	std::stable_sort(stops.begin(), stops.end(), compareStops);
 }
 
 Gradient::GradientStops Gradient::getStops() const
@@ -103,8 +102,8 @@ Gradient::GradientStops Gradient::getStops() const
 	if(stops.empty())
 	{	// Same rule as Qt's: when empty, do instead a gradient from black to white
 		GradientStops temp;
-		temp.push_back(qMakePair(0, Color::black()));
-		temp.push_back(qMakePair(1, Color::white()));
+		temp.emplace_back(0.f, Color::black());
+		temp.emplace_back(1.f, Color::white());
 		return temp;
 	}
 
@@ -150,27 +149,21 @@ Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, PReal amt
 	const auto& stops1 = g1.getStops();
 	const auto& stops2 = g2.getStops();
 
-	QSet<PReal> keys;
-	for(const auto& stop : stops1)
-	{
-		PReal key = stop.first;
-		if(!keys.contains(key))
-		{
-			keys.insert(key);
-			Color color = interpolate(g1.get(key), g2.get(key), amt);
-			grad.add(key, color);
-		}
-	}
+	// Merging the keys of the 2 gradients, sorting them and making sure they are unique
+	std::vector<PReal> keys;
+	for (const auto& stop : stops1)
+		keys.push_back(stop.first);
+	for (const auto& stop : stops2)
+		keys.push_back(stop.first);
+	std::sort(keys.begin(), keys.end());
+	auto last = std::unique(keys.begin(), keys.end());
+	keys.erase(last, keys.end());
 
-	for(const auto& stop : stops2)
+	// Creating a gradient with stops at each of the original ones
+	for (const auto& key : keys)
 	{
-		PReal key = stop.first;
-		if(!keys.contains(key))
-		{
-			keys.insert(key);
-			Color color = interpolate(g1.get(key), g2.get(key), amt);
-			grad.add(key, color);
-		}
+		Color color = interpolate(g1.get(key), g2.get(key), amt);
+		grad.add(key, color);
 	}
 
 	return grad;

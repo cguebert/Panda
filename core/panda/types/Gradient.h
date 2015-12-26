@@ -4,8 +4,7 @@
 #include <panda/core.h>
 #include <panda/types/Color.h>
 
-#include <QPair>
-#include <QVector>
+#include <vector>
 
 namespace panda
 {
@@ -16,8 +15,8 @@ namespace types
 class PANDA_CORE_API Gradient
 {
 public:
-	typedef QPair<PReal, types::Color> GradientStop;
-	typedef QVector<GradientStop> GradientStops;
+	typedef std::pair<PReal, types::Color> GradientStop;
+	typedef std::vector<GradientStop> GradientStops;
 
 	enum Extend { EXTEND_PAD = 0, EXTEND_REPEAT = 1, EXTEND_REFLECT = 2 };
 

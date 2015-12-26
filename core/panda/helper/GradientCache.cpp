@@ -1,6 +1,8 @@
 #include <panda/helper/GradientCache.h>
 #include <QtGui/qopengl.h>
 
+#include <QVector>
+
 namespace panda
 {
 
@@ -119,7 +121,7 @@ QVector<types::Color> GradientCache::createBuffer(const panda::types::Gradient& 
 	PReal incr = 1.0 / PReal(size);
 	PReal fpos = 1.5 * incr;
 
-	while(fpos <= stops.first().first)
+	while(fpos <= stops.front().first)
 	{
 		buffer[pos++] = buffer[0];
 		fpos += incr;

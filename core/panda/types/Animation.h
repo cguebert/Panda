@@ -2,8 +2,7 @@
 #define TYPES_ANIMATION_H
 
 #include <panda/core.h>
-#include <QVector>
-#include <QPair>
+#include <vector>
 
 namespace panda
 {
@@ -25,10 +24,10 @@ public:
 	typedef T value_type;
 	typedef value_type& reference;
 	typedef const value_type& const_reference;
-	typedef QPair<PReal, value_type> AnimationStop;
-	typedef QVector<AnimationStop> AnimationStops;
-	typedef QVector<PReal> KeysList;
-	typedef QVector<value_type> ValuesList;
+	typedef std::pair<PReal, value_type> AnimationStop;
+	typedef std::vector<AnimationStop> AnimationStops;
+	typedef std::vector<PReal> KeysList;
+	typedef std::vector<value_type> ValuesList;
 
 	enum Extend { EXTEND_PAD = 0, EXTEND_REPEAT = 1, EXTEND_REFLECT = 2 };
 

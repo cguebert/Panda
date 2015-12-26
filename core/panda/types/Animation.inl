@@ -40,13 +40,13 @@ void Animation<T>::add(PReal position, value_type value)
 	{
 		if(position < stops[i].first)
 		{
-			stops.insert(i, qMakePair(position, value));
+			stops.insert(stops.begin() + i, std::make_pair(position, value));
 			return;
 		}
 	}
 
 	// Or if the list is currently empty...
-	stops.push_back(qMakePair(position, value));
+	stops.push_back(std::make_pair(position, value));
 }
 
 template <class T>
@@ -86,7 +86,7 @@ typename Animation<T>::value_type Animation<T>::get(PReal position) const
 template <class T>
 typename Animation<T>::reference Animation<T>::getAtIndex(int index)
 {
-	if(index < 0 || index >= stops.size())
+	if(index < 0 || index >= static_cast<int>(stops.size()))
 	{
 		static value_type tmp = value_type();
 		return tmp;
@@ -97,7 +97,7 @@ typename Animation<T>::reference Animation<T>::getAtIndex(int index)
 template <class T>
 typename Animation<T>::const_reference Animation<T>::getAtIndex(int index) const
 {
-	if(index < 0 || index >= stops.size())
+	if(index < 0 || index >= static_cast<int>(stops.size()))
 	{
 		static value_type tmp = value_type();
 		return tmp;
@@ -130,7 +130,7 @@ int Animation<T>::getExtend() const
 }
 
 template <class T>
-inline bool compareStops(const QPair<PReal, T> &p1, const QPair<PReal, T> &p2)
+inline bool compareStops(const std::pair<PReal, T> &p1, const std::pair<PReal, T> &p2)
 {
 	return p1.first < p2.first;
 }
@@ -139,7 +139,7 @@ template <class T>
 void Animation<T>::setStops(typename Animation<T>::AnimationStops stopsPoints)
 {
 	stops = stopsPoints;
-	qStableSort(stops.begin(), stops.end(), compareStops<T>);
+	std::stable_sort(stops.begin(), stops.end(), compareStops<T>);
 }
 
 template <class T>

@@ -290,7 +290,7 @@ void EditGradientDialog::changeExtend(int ext)
 
 void EditGradientDialog::chooseColor()
 {
-	if(selected < 0 || selected >= stops.size())
+	if(selected < 0 || selected >= static_cast<int>(stops.size()))
 		return;
 
 	QColor color = QColorDialog::getColor(toQColor(stops[selected].second), this, "", QColorDialog::ShowAlphaChannel);
@@ -304,7 +304,7 @@ void EditGradientDialog::chooseColor()
 
 void EditGradientDialog::changePosition()
 {
-	if(selected < 0 || selected >= stops.size())
+	if (selected < 0 || selected >= static_cast<int>(stops.size()))
 		return;
 
 	bool ok;
@@ -334,10 +334,10 @@ void EditGradientDialog::addStop()
 
 void EditGradientDialog::removeStop()
 {
-	if(selected < 0 || selected >= stops.size())
+	if (selected < 0 || selected >= static_cast<int>(stops.size()))
 		return;
 
-	stops.remove(selected);
+	stops.erase(stops.begin() + selected);
 
 	setSelected(-1);
 	view->setSelected(-1);
@@ -346,7 +346,7 @@ void EditGradientDialog::removeStop()
 
 void EditGradientDialog::positionHasChanged()
 {
-	if(selected < 0 || selected >= stops.size())
+	if (selected < 0 || selected >= static_cast<int>(stops.size()))
 		return;
 
 	posEdit->setText(QString::number(stops[selected].first));

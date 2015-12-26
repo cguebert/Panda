@@ -127,8 +127,8 @@ public:
 	void updateT(DataList& list)
 	{
 		typedef Data< Animation<T> > AnimData;
-		typedef Data< QVector<PReal> > KeysVecData;
-		typedef Data< QVector<T> > ValuesVecData;
+		typedef Data< std::vector<PReal> > KeysVecData;
+		typedef Data< std::vector<T> > ValuesVecData;
 		AnimData* dataInput = dynamic_cast<AnimData*>(list[0]);
 		KeysVecData* dataKeys = dynamic_cast<KeysVecData*>(list[1]);
 		ValuesVecData* dataValues = dynamic_cast<ValuesVecData*>(list[2]);
