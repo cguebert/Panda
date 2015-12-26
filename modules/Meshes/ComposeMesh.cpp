@@ -28,7 +28,7 @@ public:
 
 	void update()
 	{
-		const QVector<Path>& paths = m_points.getValue();
+		const std::vector<Path>& paths = m_points.getValue();
 		int nbPaths = paths.size();
 
 		auto outMesh = m_mesh.getAccessor();
@@ -67,8 +67,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > m_points;
-	Data< QVector<Mesh> > m_mesh;
+	Data< std::vector<Path> > m_points;
+	Data< std::vector<Mesh> > m_mesh;
 };
 
 int GeneratorMesh_OnePolygonClass = RegisterObject<GeneratorMesh_OnePolygon>("Generator/Mesh/Create one polygon").setName("Points to polygon").setDescription("Create a mesh (of one polygon) using a list of points");
@@ -93,7 +93,7 @@ public:
 	void update()
 	{
 		Mesh inMesh = m_mesh.getValue();
-		const QVector<Point>& meshPts = inMesh.getPoints();
+		const std::vector<Point>& meshPts = inMesh.getPoints();
 		auto pts = m_points.getAccessor();
 
 		pts.clear();
@@ -113,7 +113,7 @@ public:
 
 protected:
 	Data<Mesh> m_mesh;
-	Data< QVector<Point> > m_points;
+	Data< std::vector<Point> > m_points;
 };
 
 int GeneratorMesh_WireframeClass = RegisterObject<GeneratorMesh_Wireframe>("Generator/Mesh/Wireframe").setDescription("Extract the edges from a mesh");
@@ -147,7 +147,7 @@ public:
 
 protected:
 	Data<Mesh> m_mesh;
-	Data< QVector<Point> > m_points;
+	Data< std::vector<Point> > m_points;
 };
 
 int GeneratorMesh_VerticesClass = RegisterObject<GeneratorMesh_Vertices>("Generator/Mesh/Vertices").setDescription("Extract the vertices of a mesh");
@@ -174,7 +174,7 @@ public:
 	void update()
 	{
 		const Mesh& inMesh = m_input.getValue();
-		const QVector<int>& triId = m_triangles.getValue();
+		const std::vector<int>& triId = m_triangles.getValue();
 
 		auto outMesh = m_output.getAccessor();
 
@@ -196,7 +196,7 @@ public:
 
 protected:
 	Data<Mesh> m_input, m_output;
-	Data< QVector<int> > m_triangles;
+	Data< std::vector<int> > m_triangles;
 };
 
 int GeneratorMesh_ExtractTrianglesClass = RegisterObject<GeneratorMesh_ExtractTriangles>("Generator/Mesh/Extract triangles")
@@ -223,9 +223,9 @@ public:
 		addOutput(m_triangles);
 	}
 
-	QVector<int> toIntVector(const QVector<unsigned int>& in)
+	std::vector<int> toIntVector(const std::vector<unsigned int>& in)
 	{
-		QVector<int> tmp;
+		std::vector<int> tmp;
 		tmp.reserve(in.size());
 		for(auto v : in)
 			tmp.push_back(v);
@@ -249,7 +249,7 @@ public:
 
 protected:
 	Data<Mesh> m_mesh;
-	Data< QVector<int> > m_points, m_edges, m_triangles;
+	Data< std::vector<int> > m_points, m_edges, m_triangles;
 };
 
 int GeneratorMesh_BorderElementsClass = RegisterObject<GeneratorMesh_BorderElements>("Generator/Mesh/Border elements")
@@ -277,7 +277,7 @@ public:
 	void update()
 	{
 		Mesh inMesh = m_input.getValue();
-		const QVector<int>& edgesId = m_edges.getValue();
+		const std::vector<int>& edgesId = m_edges.getValue();
 
 		auto outPts = m_output.getAccessor();
 
@@ -302,8 +302,8 @@ public:
 
 protected:
 	Data<Mesh> m_input;
-	Data< QVector<Point> > m_output;
-	Data< QVector<int> > m_edges;
+	Data< std::vector<Point> > m_output;
+	Data< std::vector<int> > m_edges;
 };
 
 int GeneratorMesh_ExtractEdgesClass = RegisterObject<GeneratorMesh_ExtractEdges>("Generator/Mesh/Extract edges")
@@ -331,11 +331,11 @@ public:
 	void update()
 	{
 		const Mesh& input = m_input.getValue();
-		const QVector<Point>& points = m_points.getValue();
+		const std::vector<Point>& points = m_points.getValue();
 		auto output = m_output.getAccessor();
 
 		output.wref() = input;
-		int nb = std::min(input.nbPoints(), points.size());
+		int nb = std::min(input.nbPoints(), static_cast<int>(points.size()));
 		for(int i=0; i<nb; ++i)
 			output.wref().getPoint(i) = points[i];
 
@@ -344,7 +344,7 @@ public:
 
 protected:
 	Data<Mesh> m_input, m_output;
-	Data< QVector<Point> > m_points;
+	Data< std::vector<Point> > m_points;
 };
 
 int ModifierMesh_MoveVerticesClass = RegisterObject<ModifierMesh_MoveVertices>("Modifier/Mesh/Move vertices").setDescription("Move the vertices of a mesh");

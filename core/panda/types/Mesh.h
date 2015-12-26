@@ -3,9 +3,10 @@
 
 #include <panda/core.h>
 #include <panda/types/Point.h>
+#include <panda/helper/algorithm.h>
 
-#include <QVector>
 #include <array>
+#include <vector>
 
 namespace panda
 {
@@ -22,16 +23,16 @@ public:
 	typedef index_type EdgeID;
 	typedef index_type TriangleID;
 
-	typedef QVector<PointID> PointsIndicesList;
-	typedef QVector<EdgeID> EdgesIndicesList;
-	typedef QVector<TriangleID> TrianglesIndicesList;
+	typedef std::vector<PointID> PointsIndicesList;
+	typedef std::vector<EdgeID> EdgesIndicesList;
+	typedef std::vector<TriangleID> TrianglesIndicesList;
 
 	typedef std::array<PointID, 2> Edge;
 	typedef std::array<PointID, 3> Triangle;
 
-	typedef QVector<Point> SeqPoints;
-	typedef QVector<Edge> SeqEdges;
-	typedef QVector<Triangle> SeqTriangles;
+	typedef std::vector<Point> SeqPoints;
+	typedef std::vector<Edge> SeqEdges;
+	typedef std::vector<Triangle> SeqTriangles;
 
 	typedef std::array<EdgeID, 3> EdgesInTriangle;
 
@@ -70,20 +71,20 @@ public:
 	TriangleID getTriangleIndex(const Triangle& p) const;
 
 	const EdgesInTriangle& getEdgesInTriangle(TriangleID index);
-	const QVector<EdgesInTriangle>& getEdgesInTriangleList() const;
+	const std::vector<EdgesInTriangle>& getEdgesInTriangleList() const;
 
 	const EdgesIndicesList& getEdgesAroundPoint(PointID index);
-	const QVector<EdgesIndicesList>& getEdgesAroundPointList() const;
+	const std::vector<EdgesIndicesList>& getEdgesAroundPointList() const;
 
 	const TrianglesIndicesList& getTrianglesAroundPoint(PointID index);
-	const QVector<TrianglesIndicesList>& getTrianglesAroundPointList() const;
+	const std::vector<TrianglesIndicesList>& getTrianglesAroundPointList() const;
 
 	const TrianglesIndicesList& getTrianglesAroundEdge(EdgeID index);
-	const QVector<TrianglesIndicesList>& getTrianglesAroundEdgeList() const;
+	const std::vector<TrianglesIndicesList>& getTrianglesAroundEdgeList() const;
 
-	const QVector<PointID>& getPointsOnBorder();
-	const QVector<EdgeID>& getEdgesOnBorder();
-	const QVector<TriangleID>& getTrianglesOnBorder();
+	const std::vector<PointID>& getPointsOnBorder();
+	const std::vector<EdgeID>& getEdgesOnBorder();
+	const std::vector<TriangleID>& getTrianglesOnBorder();
 
 	TrianglesIndicesList getTrianglesAroundTriangle(TriangleID index, bool shareEdge);
 	TrianglesIndicesList getTrianglesAroundTriangles(const TrianglesIndicesList& listID, bool shareEdge);
@@ -132,9 +133,9 @@ protected:
 	SeqEdges m_edges;
 	SeqTriangles m_triangles;
 
-	QVector<EdgesInTriangle> m_edgesInTriangle;
-	QVector<EdgesIndicesList> m_edgesAroundPoint;
-	QVector<TrianglesIndicesList> m_trianglesAroundPoint, m_trianglesAroundEdge;
+	std::vector<EdgesInTriangle> m_edgesInTriangle;
+	std::vector<EdgesIndicesList> m_edgesAroundPoint;
+	std::vector<TrianglesIndicesList> m_trianglesAroundPoint, m_trianglesAroundEdge;
 
 	PointsIndicesList m_pointsOnBorder;
 	EdgesIndicesList m_edgesOnBorder;
@@ -165,7 +166,7 @@ inline Mesh::PointID Mesh::addPoint(const Point& point)
 { m_points.push_back(point); return m_points.size() - 1; }
 
 inline void Mesh::addPoints(const SeqPoints& pts)
-{ m_points += pts; }
+{ m_points.insert(m_points.end(), pts.begin(), pts.end()); }
 
 inline Mesh::EdgeID Mesh::addEdge(const Edge& e)
 { m_edges.push_back(e); return m_edges.size() - 1; }
@@ -174,7 +175,7 @@ inline Mesh::EdgeID Mesh::addEdge(PointID a, PointID b)
 { return addEdge(makeEdge(a, b)); }
 
 inline void Mesh::addEdges(const SeqEdges& edges)
-{ m_edges += edges; }
+{ m_edges.insert(m_edges.end(), edges.begin(), edges.end()); }
 
 inline Mesh::TriangleID Mesh::addTriangle(const Triangle& t)
 { m_triangles.push_back(t); return m_triangles.size() - 1; }
@@ -183,7 +184,7 @@ inline Mesh::TriangleID Mesh::addTriangle(PointID p1, PointID p2, PointID p3)
 { return addTriangle(makeTriangle(p1, p2, p3)); }
 
 inline void Mesh::addTriangles(const SeqTriangles& triangles)
-{ m_triangles += triangles; }
+{ m_triangles.insert(m_triangles.end(), triangles.begin(), triangles.end()); }
 
 inline int Mesh::nbPoints() const
 { return m_points.size(); }
@@ -216,24 +217,24 @@ inline Mesh::Triangle Mesh::getTriangle(TriangleID index) const
 { return m_triangles[index]; }
 
 inline Mesh::PointID Mesh::getPointIndex(const Point &pt) const
-{ return m_points.indexOf(pt); }
+{ return helper::indexOf(m_points, pt); }
 
 inline Mesh::EdgeID Mesh::getEdgeIndex(PointID a, PointID b) const
 { return getEdgeIndex(makeEdge(a, b)); }
 
 inline Mesh::TriangleID Mesh::getTriangleIndex(const Triangle& p) const
-{ return m_triangles.indexOf(p); }
+{ return helper::indexOf(m_triangles, p); }
 
-inline const QVector<Mesh::EdgesInTriangle>& Mesh::getEdgesInTriangleList() const
+inline const std::vector<Mesh::EdgesInTriangle>& Mesh::getEdgesInTriangleList() const
 { return m_edgesInTriangle; }
 
-inline const QVector<Mesh::EdgesIndicesList>& Mesh::getEdgesAroundPointList() const
+inline const std::vector<Mesh::EdgesIndicesList>& Mesh::getEdgesAroundPointList() const
 { return m_edgesAroundPoint; }
 
-inline const QVector<Mesh::TrianglesIndicesList>& Mesh::getTrianglesAroundPointList() const
+inline const std::vector<Mesh::TrianglesIndicesList>& Mesh::getTrianglesAroundPointList() const
 { return m_trianglesAroundPoint; }
 
-inline const QVector<Mesh::TrianglesIndicesList>& Mesh::getTrianglesAroundEdgeList() const
+inline const std::vector<Mesh::TrianglesIndicesList>& Mesh::getTrianglesAroundEdgeList() const
 { return m_trianglesAroundEdge; }
 
 inline void Mesh::reorientTriangle(Triangle& t)

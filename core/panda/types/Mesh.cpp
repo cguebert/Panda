@@ -3,7 +3,6 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
 
-#include <QMap>
 #include <set>
 
 namespace panda
@@ -15,9 +14,9 @@ namespace types
 Mesh::EdgeID Mesh::getEdgeIndex(const Edge& e) const
 {
 	Edge e2 = makeEdge(e[0], e[1]);
-	int id = m_edges.indexOf(e);
+	int id = helper::indexOf(m_edges, e);
 	if(id < 0)
-		return m_edges.indexOf(e2);
+		return helper::indexOf(m_edges, e2);
 	return id;
 }
 
@@ -65,7 +64,7 @@ const Mesh::TrianglesIndicesList& Mesh::getTrianglesAroundEdge(EdgeID index)
 	return m_trianglesAroundEdge[index];
 }
 
-const QVector<Mesh::PointID>& Mesh::getPointsOnBorder()
+const std::vector<Mesh::PointID>& Mesh::getPointsOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -73,7 +72,7 @@ const QVector<Mesh::PointID>& Mesh::getPointsOnBorder()
 	return m_pointsOnBorder;
 }
 
-const QVector<Mesh::EdgeID>& Mesh::getEdgesOnBorder()
+const std::vector<Mesh::EdgeID>& Mesh::getEdgesOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -81,7 +80,7 @@ const QVector<Mesh::EdgeID>& Mesh::getEdgesOnBorder()
 	return m_edgesOnBorder;
 }
 
-const QVector<Mesh::TriangleID>& Mesh::getTrianglesOnBorder()
+const std::vector<Mesh::TriangleID>& Mesh::getTrianglesOnBorder()
 {
 	if(!hasBorderElementsLists())
 		createElementsOnBorder();
@@ -175,7 +174,7 @@ Mesh::TrianglesIndicesList Mesh::getTrianglesConnectedToTriangle(TriangleID inde
 
 		for(int t : trianNext)
 		{
-			if(!trianAll.contains(t))
+			if (!helper::contains(trianAll, t))
 			{
 				trianAll.push_back(t);
 				trianPrev.push_back(t);
@@ -331,7 +330,7 @@ void Mesh::createEdgesInTriangleList()
 		if(!hasEdgesAroundPoint())
 			createEdgesAroundPointList();
 
-		const QVector<EdgesIndicesList>& eapl = getEdgesAroundPointList();
+		const std::vector<EdgesIndicesList>& eapl = getEdgesAroundPointList();
 
 		for(int i=0; i<nbTri; ++i)
 		{
@@ -437,11 +436,11 @@ void Mesh::createElementsOnBorder()
 			m_edgesOnBorder.push_back(i);
 
 			const int pt1Id = m_edges[i][0];
-			if(!m_pointsOnBorder.contains(pt1Id))
+			if (!helper::contains(m_pointsOnBorder, pt1Id))
 				m_pointsOnBorder.push_back(pt1Id);
 
 			const int pt2Id = m_edges[i][1];
-			if(!m_pointsOnBorder.contains(pt2Id))
+			if (!helper::contains(m_pointsOnBorder, pt2Id))
 				m_pointsOnBorder.push_back(pt2Id);
 		}
 	}
@@ -450,7 +449,7 @@ void Mesh::createElementsOnBorder()
 	{
 		for(auto trian : m_trianglesAroundPoint[pt])
 		{
-			if(!m_trianglesOnBorder.contains(trian))
+			if (!helper::contains(m_trianglesOnBorder, trian))
 				m_trianglesOnBorder.push_back(trian);
 		}
 	}
@@ -674,10 +673,10 @@ PANDA_CORE_API void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
 }
 
 template class Data< Mesh >;
-template class Data< QVector<Mesh> >;
+template class Data< std::vector<Mesh> >;
 
 int meshDataClass = RegisterData< Mesh >();
-int meshVectorDataClass = RegisterData< QVector<Mesh> >();
+int meshVectorDataClass = RegisterData< std::vector<Mesh> >();
 
 } // namespace types
 

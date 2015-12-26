@@ -19,7 +19,7 @@ public:
 	bool operator!=(const Polygon& p) const;
 
 	Path contour;
-	QVector<Path> holes;
+	std::vector<Path> holes;
 };
 
 PANDA_CORE_API void translate(Polygon& poly, const Point& delta);
@@ -40,7 +40,7 @@ inline bool Polygon::operator!=(const Polygon& p) const
 
 #ifndef PANDA_BUILD_CORE
 extern template class PANDA_CORE_API Data< Polygon >;
-extern template class PANDA_CORE_API Data< QVector<Polygon> >;
+extern template class PANDA_CORE_API Data< std::vector<Polygon> >;
 #endif
 
 } // namespace types

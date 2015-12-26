@@ -52,5 +52,5 @@ public:
 };
 
 RegisterWidget<OpenDialogDataWidget<Rect, TableDataWidgetDialog<Rect> > > DWClass_rect("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Rect>, TableDataWidgetDialog<QVector<Rect> > > > DWClass_rects_list("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Rect>, ListDataWidgetDialog<QVector<Rect> > > > DWClass_rects_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<Rect>, TableDataWidgetDialog<std::vector<Rect> > > > DWClass_rects_list("default");
+RegisterWidget<OpenDialogDataWidget<std::vector<Rect>, ListDataWidgetDialog<std::vector<Rect> > > > DWClass_rects_list_generic("generic");

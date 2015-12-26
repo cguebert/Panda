@@ -63,16 +63,16 @@ extern template class PANDA_CORE_API ShaderValue<int>;
 extern template class PANDA_CORE_API ShaderValue<PReal>;
 extern template class PANDA_CORE_API ShaderValue<Color>;
 extern template class PANDA_CORE_API ShaderValue<Point>;
-extern template class PANDA_CORE_API ShaderValue<QVector<int>>;
-extern template class PANDA_CORE_API ShaderValue<QVector<PReal>>;
-extern template class PANDA_CORE_API ShaderValue<QVector<Color>>;
-extern template class PANDA_CORE_API ShaderValue<QVector<Point>>;
+extern template class PANDA_CORE_API ShaderValue<std::vector<int>>;
+extern template class PANDA_CORE_API ShaderValue<std::vector<PReal>>;
+extern template class PANDA_CORE_API ShaderValue<std::vector<Color>>;
+extern template class PANDA_CORE_API ShaderValue<std::vector<Point>>;
 #endif
 
 //****************************************************************************//
 
 typedef std::tuple<int, PReal, Color, Point,
-	QVector<int>, QVector<PReal>, QVector<Color>, QVector<Point> > shaderValuesTypes;
+	std::vector<int>, std::vector<PReal>, std::vector<Color>, std::vector<Point> > shaderValuesTypes;
 
 class PANDA_CORE_API Shader
 {
@@ -112,7 +112,7 @@ public:
 		m_customTextures.push_back(qMakePair(name, img.getTextureId()));
 	}
 
-	typedef QVector< QSharedPointer< BaseShaderValue > > ValuesVector;
+	typedef std::vector< QSharedPointer< BaseShaderValue > > ValuesVector;
 	const ValuesVector& getValues() const;
 
 	void loadValue(QString type, QDomElement &elem);
@@ -163,7 +163,7 @@ protected:
 		setUniform(name, *static_cast<const T*>(value));
 	}
 
-	QVector<QPair<QString, GLuint>> m_customTextures;
+	std::vector<QPair<QString, GLuint>> m_customTextures;
 };
 
 } // namespace types

@@ -104,16 +104,16 @@ PANDA_CORE_API void DataTrait<Polygon>::readValue(QDomElement& elem, Polygon& po
 }
 
 template class PANDA_CORE_API Data< Polygon >;
-template class PANDA_CORE_API Data< QVector<Polygon> >;
+template class PANDA_CORE_API Data< std::vector<Polygon> >;
 
 int polygonDataClass = RegisterData< Polygon >();
-int polygonVectorDataClass = RegisterData< QVector<Polygon> >();
+int polygonVectorDataClass = RegisterData< std::vector<Polygon> >();
 
 } // namespace types
 
 } // namespace panda
 
-void convertType(const QVector<panda::types::Point>& from, panda::types::Polygon& to)
+void convertType(const std::vector<panda::types::Point>& from, panda::types::Polygon& to)
 {
 	to.contour = from;
 	to.holes.clear();
@@ -125,5 +125,5 @@ void convertType(const panda::types::Path& from, panda::types::Polygon& to)
 	to.holes.clear();
 }
 
-panda::types::RegisterTypeConverter<QVector<panda::types::Point>, panda::types::Polygon > PointsVectorPolygonConverter;
+panda::types::RegisterTypeConverter<std::vector<panda::types::Point>, panda::types::Polygon > PointsVectorPolygonConverter;
 panda::types::RegisterTypeConverter<panda::types::Path, panda::types::Polygon > PathPolygonConverter;

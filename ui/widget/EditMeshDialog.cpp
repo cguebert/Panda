@@ -51,9 +51,9 @@ public:
 };
 
 // Only here to be able to use a DataWidget, not registering into the Factory
-template panda::Data< QVector<Mesh::Edge> >;
+template panda::Data< std::vector<Mesh::Edge> >;
 
-typedef OpenDialogDataWidget<QVector<Mesh::Edge>, TableDataWidgetDialog<QVector<Mesh::Edge> > > EdgeDataWidget;
+typedef OpenDialogDataWidget<std::vector<Mesh::Edge>, TableDataWidgetDialog<std::vector<Mesh::Edge> > > EdgeDataWidget;
 
 //****************************************************************************//
 
@@ -98,9 +98,9 @@ public:
 };
 
 // Only here to be able to use a DataWidget, not registering into the Factory
-template panda::Data< QVector<Mesh::Triangle> >;
+template panda::Data< std::vector<Mesh::Triangle> >;
 
-typedef OpenDialogDataWidget<QVector<Mesh::Triangle>, TableDataWidgetDialog<QVector<Mesh::Triangle> > > TriangleDataWidget;
+typedef OpenDialogDataWidget<std::vector<Mesh::Triangle>, TableDataWidgetDialog<std::vector<Mesh::Triangle> > > TriangleDataWidget;
 
 //****************************************************************************//
 
@@ -137,13 +137,13 @@ EditMeshDialog::EditMeshDialog(BaseDataWidget* parent, bool readOnly, QString na
 		formLayout->addRow("points", pointsWidget);
 	}
 
-	const QVector<Mesh::Edge>* edges = &m_mesh.getEdges();
-	m_edgesWidget = DataWidgetPtr(new EdgeDataWidget(this, const_cast<QVector<Mesh::Edge>*>(edges), "", "edges", ""));
+	const std::vector<Mesh::Edge>* edges = &m_mesh.getEdges();
+	m_edgesWidget = DataWidgetPtr(new EdgeDataWidget(this, const_cast<std::vector<Mesh::Edge>*>(edges), "", "edges", ""));
 	QWidget* edgesWidget = m_edgesWidget->createWidgets(readOnly);
 	formLayout->addRow("edges", edgesWidget);
 
-	const QVector<Mesh::Triangle>* triangles = &m_mesh.getTriangles();
-	m_trianglesWidget = DataWidgetPtr(new TriangleDataWidget(this, const_cast<QVector<Mesh::Triangle>*>(triangles), "", "triangles", ""));
+	const std::vector<Mesh::Triangle>* triangles = &m_mesh.getTriangles();
+	m_trianglesWidget = DataWidgetPtr(new TriangleDataWidget(this, const_cast<std::vector<Mesh::Triangle>*>(triangles), "", "triangles", ""));
 	QWidget* trianglesWidget = m_trianglesWidget->createWidgets(readOnly);
 	formLayout->addRow("triangles", trianglesWidget);
 

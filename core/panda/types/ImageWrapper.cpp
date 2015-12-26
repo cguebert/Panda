@@ -192,10 +192,10 @@ template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isDisplayed() { return f
 template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isPersistent() { return false; }
 
 template class Data< ImageWrapper >;
-template class Data< QVector<ImageWrapper> >;
+template class Data< std::vector<ImageWrapper> >;
 
 int imageDataClass = RegisterData< ImageWrapper >();
-int imageVectorDataClass = RegisterData< QVector<ImageWrapper> >();
+int imageVectorDataClass = RegisterData< std::vector<ImageWrapper> >();
 
 } // namespace types
 

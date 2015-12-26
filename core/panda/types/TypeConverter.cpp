@@ -1,5 +1,5 @@
 #include <panda/types/TypeConverter.h>
-#include <QMap>
+#include <map>
 
 namespace panda
 {
@@ -7,7 +7,7 @@ namespace panda
 namespace types
 {
 
-typedef QMap<int, QMap<int, TypeConverter::FunctorPtr> > FunctorMap;
+typedef std::map<int, std::map<int, TypeConverter::FunctorPtr> > FunctorMap;
 
 static FunctorMap& getFunctorMap()
 {
@@ -18,21 +18,22 @@ static FunctorMap& getFunctorMap()
 bool TypeConverter::canConvert(int fromType, int toType)
 {
 	const FunctorMap& theMap = getFunctorMap();
-	if(!theMap.contains(fromType))
+	if(theMap.find(fromType) == theMap.end())
 		return false;
-	return theMap[fromType].contains(toType);
+	const auto& typeMap = theMap.at(fromType);
+	return typeMap.find(toType) != typeMap.end();
 }
 
 void TypeConverter::convert(int fromType, int toType, const void* valueFrom, void* valueTo)
 {
 	const FunctorMap& map1 = getFunctorMap();
-	if(!map1.contains(fromType))
+	if(map1.find(fromType) == map1.end())
 		return;
-	const auto& map2 = map1[fromType];
-	if(!map2.contains(toType))
+	const auto& map2 = map1.at(fromType);
+	if(map2.find(toType) == map2.end())
 		return;
 
-	auto functor = map2[toType];
+	auto functor = map2.at(toType);
 	functor->convert(valueFrom, valueTo);
 }
 

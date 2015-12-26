@@ -4,8 +4,7 @@
 #include <panda/core.h>
 #include <panda/types/Rect.h>
 
-#include <QList>
-#include <QVector>
+#include <vector>
 
 namespace panda
 {
@@ -20,7 +19,7 @@ public:
 	void initGrid(types::Rect area, PReal cellSize);
 	void clear();
 	void addPoint(const types::Point& point);
-	void addPoints(const QVector<types::Point>& points);
+	void addPoints(const std::vector<types::Point>& points);
 	int removePoint(const types::Point& point);
 	bool hasPoint(const types::Point& point);
 
@@ -32,12 +31,12 @@ public:
 protected:
 	int cellIndex(const types::Point& point);
 
-	typedef QList<types::Point> Cell;
+	typedef std::vector<types::Point> Cell;
 
 	types::Rect m_area;
 	PReal m_cellSize;
 	int m_width, m_height;
-	QVector<Cell> m_cells;
+	std::vector<Cell> m_cells;
 };
 
 } // namespace helper

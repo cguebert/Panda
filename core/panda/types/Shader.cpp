@@ -184,14 +184,14 @@ template<> void ShaderValue<Color>::apply(QOpenGLShaderProgram& program, const S
 template<> void ShaderValue<Point>::apply(QOpenGLShaderProgram& program, const Shader&) const
 { program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), 1, 2); }
 
-template<> void ShaderValue< QVector<int> >::apply(QOpenGLShaderProgram& program, const Shader&) const
+template<> void ShaderValue< std::vector<int> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 { program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), m_value.size()); }
 
-template<> void ShaderValue< QVector<PReal> >::apply(QOpenGLShaderProgram& program, const Shader&) const
+template<> void ShaderValue< std::vector<PReal> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 {
 	int nb = m_value.size();
 #ifdef PANDA_DOUBLE
-	QVector<float> copy(nb);
+	std::vector<float> copy(nb);
 	for(int i++; i<nb; ++i)
 		copy[i] = m_value[i]:
 	program.setUniformValueArray(program.uniformLocation(m_name), copy.data(), nb, 1);
@@ -200,13 +200,13 @@ template<> void ShaderValue< QVector<PReal> >::apply(QOpenGLShaderProgram& progr
 #endif
 }
 
-template<> void ShaderValue< QVector<Color> >::apply(QOpenGLShaderProgram& program, const Shader&) const
+template<> void ShaderValue< std::vector<Color> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 {
 	if(!m_value.empty())
 		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 4);
 }
 
-template<> void ShaderValue< QVector<Point> >::apply(QOpenGLShaderProgram& program, const Shader&) const
+template<> void ShaderValue< std::vector<Point> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 {
 	if(!m_value.empty())
 		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 2);
@@ -216,10 +216,10 @@ template class PANDA_CORE_API ShaderValue<int>;
 template class PANDA_CORE_API ShaderValue<PReal>;
 template class PANDA_CORE_API ShaderValue<Color>;
 template class PANDA_CORE_API ShaderValue<Point>;
-template class PANDA_CORE_API ShaderValue<QVector<int>>;
-template class PANDA_CORE_API ShaderValue<QVector<PReal>>;
-template class PANDA_CORE_API ShaderValue<QVector<Color>>;
-template class PANDA_CORE_API ShaderValue<QVector<Point>>;
+template class PANDA_CORE_API ShaderValue<std::vector<int>>;
+template class PANDA_CORE_API ShaderValue<std::vector<PReal>>;
+template class PANDA_CORE_API ShaderValue<std::vector<Color>>;
+template class PANDA_CORE_API ShaderValue<std::vector<Point>>;
 
 //****************************************************************************//
 
@@ -277,10 +277,10 @@ PANDA_CORE_API void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
 //****************************************************************************//
 
 template class Data<Shader>;
-template class Data< QVector<Shader> >;
+template class Data< std::vector<Shader> >;
 
 int shaderDataClass = RegisterData< Shader >();
-int shaderVectorDataClass = RegisterData< QVector<Shader> >();
+int shaderVectorDataClass = RegisterData< std::vector<Shader> >();
 
 } // namespace types
 

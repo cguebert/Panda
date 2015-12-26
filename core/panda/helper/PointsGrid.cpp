@@ -1,6 +1,7 @@
 #include <panda/helper/PointsGrid.h>
+#include <panda/helper/algorithm.h>
+
 #include <cmath>
-#include <qglobal.h>
 
 namespace panda
 {
@@ -24,8 +25,8 @@ void PointsGrid::initGrid(Rect newArea, PReal newCellSize)
 	m_area = newArea;
 	m_cellSize = newCellSize;
 
-	m_width = ceil(m_area.width() / m_cellSize);
-	m_height = ceil(m_area.height() / m_cellSize);
+	m_width = static_cast<int>(ceil(m_area.width() / m_cellSize));
+	m_height = static_cast<int>(ceil(m_area.height() / m_cellSize));
 
 	m_cells.resize(m_width * m_height);
 }
@@ -41,7 +42,7 @@ void PointsGrid::addPoint(const Point& point)
 	m_cells[cellIndex(point)].push_back(point);
 }
 
-void PointsGrid::addPoints(const QVector<Point>& points)
+void PointsGrid::addPoints(const std::vector<Point>& points)
 {
 	for(const auto& pt : points)
 		addPoint(pt);
@@ -49,20 +50,20 @@ void PointsGrid::addPoints(const QVector<Point>& points)
 
 int PointsGrid::removePoint(const Point& point)
 {
-	return m_cells[cellIndex(point)].removeAll(point);
+	return helper::removeAll(m_cells[cellIndex(point)], point);
 }
 
 bool PointsGrid::hasPoint(const Point& point)
 {
-	return m_cells[cellIndex(point)].contains(point);
+	return helper::contains(m_cells[cellIndex(point)], point);
 }
 
 bool PointsGrid::testNeighbor(const Point& point, PReal distance)
 {
-	int minX = floor(qMax<PReal>(0.0, (point.x - distance - m_area.left()) / m_cellSize));
-	int maxX = ceil(qMin<PReal>(m_width - 1.0, (point.x + distance - m_area.left()) / m_cellSize));
-	int minY = floor(qMax<PReal>(0.0, (point.y - distance - m_area.top()) / m_cellSize));
-	int maxY = ceil(qMin<PReal>(m_height - 1.0, (point.y + distance - m_area.top()) / m_cellSize));
+	int minX = static_cast<int>(floor(std::max<PReal>(0, (point.x - distance - m_area.left()) / m_cellSize)));
+	int maxX = static_cast<int>(ceil(std::min<PReal>(m_width - 1.f, (point.x + distance - m_area.left()) / m_cellSize)));
+	int minY = static_cast<int>(floor(std::max<PReal>(0, (point.y - distance - m_area.top()) / m_cellSize)));
+	int maxY = static_cast<int>(ceil(std::min<PReal>(m_height - 1.f, (point.y + distance - m_area.top()) / m_cellSize)));
 
 	PReal dist2 = distance*distance;
 	for(int y=minY; y<=maxY; y++)
@@ -81,10 +82,10 @@ bool PointsGrid::testNeighbor(const Point& point, PReal distance)
 
 bool PointsGrid::getNearest(const Point& point, PReal maxDist, Point& result)
 {
-	int minX = floor(qMax<PReal>(0.0, (point.x - maxDist - m_area.left()) / m_cellSize));
-	int maxX = ceil(qMin<PReal>(m_width - 1.0, (point.x + maxDist - m_area.left()) / m_cellSize));
-	int minY = floor(qMax<PReal>(0.0, (point.y - maxDist - m_area.top()) / m_cellSize));
-	int maxY = ceil(qMin<PReal>(m_height - 1.0, (point.y + maxDist - m_area.top()) / m_cellSize));
+	int minX = static_cast<int>(floor(std::max<PReal>(0, (point.x - maxDist - m_area.left()) / m_cellSize)));
+	int maxX = static_cast<int>(ceil(std::min<PReal>(m_width - 1.f, (point.x + maxDist - m_area.left()) / m_cellSize)));
+	int minY = static_cast<int>(floor(std::max<PReal>(0, (point.y - maxDist - m_area.top()) / m_cellSize)));
+	int maxY = static_cast<int>(ceil(std::min<PReal>(m_height - 1.f, (point.y + maxDist - m_area.top()) / m_cellSize)));
 
 	PReal minDist = maxDist*maxDist;
 	bool found = false;
@@ -111,14 +112,14 @@ bool PointsGrid::getNearest(const Point& point, PReal maxDist, Point& result)
 
 int PointsGrid::cellIndex(const Point& point)
 {
-	PReal x = qBound(m_area.left(), point.x, m_area.right());
-	PReal y = qBound(m_area.top(), point.y, m_area.bottom());
+	PReal x = helper::bound(m_area.left(), point.x, m_area.right());
+	PReal y = helper::bound(m_area.top(), point.y, m_area.bottom());
 
-	int gx = floor((x - m_area.left()) / m_cellSize);
-	int gy = floor((y - m_area.top()) / m_cellSize);
+	int gx = static_cast<int>(floor((x - m_area.left()) / m_cellSize));
+	int gy = static_cast<int>(floor((y - m_area.top()) / m_cellSize));
 
-	gx = qBound(0, gx, m_width - 1);
-	gy = qBound(0, gy, m_height - 1);
+	gx = helper::bound(0, gx, m_width - 1);
+	gy = helper::bound(0, gy, m_height - 1);
 	return gy * m_width + gx;
 }
 

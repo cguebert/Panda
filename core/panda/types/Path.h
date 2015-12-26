@@ -4,7 +4,7 @@
 #include <panda/core.h>
 #include <panda/types/Point.h>
 
-#include <QVector>
+#include <vector>
 
 namespace panda
 {
@@ -12,10 +12,10 @@ namespace panda
 namespace types
 {
 
-class PANDA_CORE_API Path : public QVector<Point>
+class PANDA_CORE_API Path : public std::vector<Point>
 {
 public:
-	Path& operator=(const QVector<Point>& v);
+	Path& operator=(const std::vector<Point>& v);
 
 	// Operation on all points
 	Path operator+(const Point& p) const;
@@ -49,7 +49,7 @@ PANDA_CORE_API void reorientPolygon(Path& poly);
 
 #ifndef PANDA_BUILD_CORE
 extern template class PANDA_CORE_API Data< Path >;
-extern template class PANDA_CORE_API Data< QVector<Path> >;
+extern template class PANDA_CORE_API Data< std::vector<Path> >;
 #endif
 
 } // namespace types

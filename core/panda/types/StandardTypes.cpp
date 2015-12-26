@@ -5,7 +5,7 @@
 #include <panda/types/AnimationTraits.h>
 
 #include <QString>
-#include <QVector>
+#include <vector>
 
 namespace panda
 {
@@ -60,17 +60,17 @@ template class Data<int>;
 template class Data<PReal>;
 template class Data<QString>;
 
-template class Data< QVector<int> >;
-template class Data< QVector<PReal> >;
-template class Data< QVector<QString> >;
+template class Data< std::vector<int> >;
+template class Data< std::vector<PReal> >;
+template class Data< std::vector<QString> >;
 
 int intDataClass = RegisterData< int >();
 int doubleDataClass = RegisterData< PReal >();
 int stringDataClass = RegisterData< QString >();
 
-int intVectorDataClass = RegisterData< QVector<int> >();
-int doubleVectorDataClass = RegisterData< QVector<PReal> >();
-int stringVectorDataClass = RegisterData< QVector<QString> >();
+int intVectorDataClass = RegisterData< std::vector<int> >();
+int doubleVectorDataClass = RegisterData< std::vector<PReal> >();
+int stringVectorDataClass = RegisterData< std::vector<QString> >();
 
 template class Animation<PReal>;
 template class Data< Animation<PReal> >;

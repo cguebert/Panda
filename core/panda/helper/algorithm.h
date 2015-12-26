@@ -1,18 +1,50 @@
 #ifndef HELPER_ALGORITHM_H
 #define HELPER_ALGORITHM_H
 
+#include <algorithm>
+
 namespace panda
 {
 
 namespace helper
 {
 
+template <class T>
+const T& bound(const T& min, const T& value, const T& max)
+{
+	return std::max(min, std::min(value, max));
+}
+
+template <class Container, class Value>
+bool contains(const Container& container, const Value& value)
+{
+	return std::find(std::begin(container), std::end(container), value) != std::end(container);
+}
+
+template <class Container, class Value>
+int indexOf(const Container& container, const Value& value)
+{
+	auto it = std::find(std::begin(container), std::end(container), value);
+	if (it == std::end(container))
+		return -1;
+	return std::distance(std::begin(container), it);
+}
+
+template <class Container, class Value>
+int removeAll(Container& container, const Value& value)
+{
+	auto last = std::remove(container.begin(),container.end(), value);
+	int dist = std::distance(last, container.end());
+	container.erase(last, container.end());
+	return dist;
+}
+
 template<class Container, class Indices>
-void removeIndices(Container& values, const Indices& indices)
+void removeIndices(Container& container, const Indices& indices)
 {
 	typedef typename Container::iterator iterator;
-	iterator first = std::begin(values);
-	iterator last = std::end(values);
+	iterator first = std::begin(container);
+	iterator last = std::end(container);
 
 	typedef typename Indices::const_iterator indices_iterator;
 	indices_iterator firstIndex = std::begin(indices);
@@ -27,7 +59,7 @@ void removeIndices(Container& values, const Indices& indices)
 			++firstIndex;
 	}
 
-	values.erase(result, last);
+	container.erase(result, last);
 }
 
 } // namespace helper

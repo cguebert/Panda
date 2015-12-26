@@ -74,16 +74,16 @@ PANDA_CORE_API void DataTrait<Point>::readValue(QDomElement& elem, Point& v)
 	v.y = elem.attribute("y").toFloat(); }
 #endif
 
-template class PANDA_CORE_API QVector<Point>;
+template class PANDA_CORE_API std::vector<Point>;
 
 template class PANDA_CORE_API Data< Point >;
-template class PANDA_CORE_API Data< QVector<Point> >;
+template class PANDA_CORE_API Data< std::vector<Point> >;
 
 template class PANDA_CORE_API Animation<Point>;
 template class PANDA_CORE_API Data< Animation<Point> >;
 
 int pointDataClass = RegisterData< Point >();
-int pointVectorDataClass = RegisterData< QVector<Point> >();
+int pointVectorDataClass = RegisterData< std::vector<Point> >();
 int pointAnimationDataClass = RegisterData< Animation<Point> >();
 
 } // namespace types

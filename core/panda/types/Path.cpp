@@ -10,9 +10,9 @@ namespace panda
 namespace types
 {
 
-Path& Path::operator=(const QVector<Point> &v)
+Path& Path::operator=(const std::vector<Point> &v)
 {
-	QVector<Point>::operator=(v);
+	std::vector<Point>::operator=(v);
 	return *this;
 }
 
@@ -252,20 +252,20 @@ PANDA_CORE_API void DataTrait<Path>::readValue(QDomElement& elem, Path& path)
 }
 
 template class PANDA_CORE_API Data< Path >;
-template class PANDA_CORE_API Data< QVector<Path> >;
+template class PANDA_CORE_API Data< std::vector<Path> >;
 
 int pathDataClass = RegisterData< Path >();
-int pathVectorDataClass = RegisterData< QVector<Path> >();
+int pathVectorDataClass = RegisterData< std::vector<Path> >();
 
 } // namespace types
 
 } // namespace panda
 
-void convertType(const panda::types::Path& from, QVector<panda::types::Point>& to)
-{ to = static_cast< QVector<panda::types::Point> >(from); }
-void convertType(const QVector<panda::types::Point>& from, panda::types::Path& to)
+void convertType(const panda::types::Path& from, std::vector<panda::types::Point>& to)
+{ to = static_cast< std::vector<panda::types::Point> >(from); }
+void convertType(const std::vector<panda::types::Point>& from, panda::types::Path& to)
 { to = from; }
 
-panda::types::RegisterTypeConverter<panda::types::Path, QVector<panda::types::Point> > PathPointsConverter;
-panda::types::RegisterTypeConverter<QVector<panda::types::Point>, panda::types::Path> PointsPathConverter;
+panda::types::RegisterTypeConverter<panda::types::Path, std::vector<panda::types::Point> > PathPointsConverter;
+panda::types::RegisterTypeConverter<std::vector<panda::types::Point>, panda::types::Path> PointsPathConverter;
 

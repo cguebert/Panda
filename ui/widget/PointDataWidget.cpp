@@ -112,8 +112,8 @@ public:
 
 //RegisterWidget<OpenDialogDataWidget<Point, TableDataWidgetDialog<Point> > > DWClass_point("default");
 RegisterWidget<SimpleDataWidget<Point> > DWClass_point("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Point>, TableDataWidgetDialog<QVector<Point> > > > DWClass_points_list("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Point>, ListDataWidgetDialog<QVector<Point> > > > DWClass_points_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<Point>, TableDataWidgetDialog<std::vector<Point> > > > DWClass_points_list("default");
+RegisterWidget<OpenDialogDataWidget<std::vector<Point>, ListDataWidgetDialog<std::vector<Point> > > > DWClass_points_list_generic("generic");
 RegisterWidget<OpenDialogDataWidget<Animation<Point>, AnimationDataWidgetDialog<Animation<Point> > > > DWClass_points_animation("default");
 
 //****************************************************************************//
@@ -149,4 +149,4 @@ public:
 };
 
 RegisterWidget<OpenDialogDataWidget<Path, TableDataWidgetDialog<Path> > > DWClass_strings_list("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Path>, ListDataWidgetDialog<QVector<Path> > > > DWClass_paths_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<Path>, ListDataWidgetDialog<std::vector<Path> > > > DWClass_paths_list_generic("generic");

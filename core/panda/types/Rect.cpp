@@ -80,10 +80,10 @@ PANDA_CORE_API void DataTrait<Rect>::readValue(QDomElement& elem, Rect& v)
 }
 
 template class Data< Rect >;
-template class Data< QVector<Rect> >;
+template class Data< std::vector<Rect> >;
 
 int rectDataClass = RegisterData< Rect >();
-int rectVectorDataClass = RegisterData< QVector<Rect> >();
+int rectVectorDataClass = RegisterData< std::vector<Rect> >();
 
 } // namespace types
 
