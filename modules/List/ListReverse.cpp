@@ -32,13 +32,13 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > ListData;
+		typedef Data< std::vector<T> > ListData;
 		ListData* dataInput = dynamic_cast<ListData*>(list[0]);
 		ListData* dataOutput = dynamic_cast<ListData*>(list[1]);
 
 		Q_ASSERT(dataInput && dataOutput);
 
-		const QVector<T> &valIn = dataInput->getValue();
+		const std::vector<T> &valIn = dataInput->getValue();
 		auto valOut = dataOutput->getAccessor();
 
 		int size = valIn.size();

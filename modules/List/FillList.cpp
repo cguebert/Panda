@@ -36,12 +36,12 @@ public:
 	void updateT(DataList& list)
 	{
 		int outputSize = size.getValue();
-		typedef Data< QVector<T> > VecData;
+		typedef Data< std::vector<T> > VecData;
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[1]);
 		Q_ASSERT(dataInput && dataOutput);
 
-		const QVector<T>& inVal = dataInput->getValue();
+		const std::vector<T>& inVal = dataInput->getValue();
 		auto outVal = dataOutput->getAccessor();
 		int inputSize = inVal.size();
 

@@ -34,23 +34,23 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > ListData;
+		typedef Data< std::vector<T> > ListData;
 		ListData* dataInput = dynamic_cast<ListData*>(list[0]);
 		ListData* dataOutput = dynamic_cast<ListData*>(list[1]);
 
 		Q_ASSERT(dataInput && dataOutput);
 
 		int val = value.getValue();
-		const QVector<T> &valIn = dataInput->getValue();
+		const std::vector<T> &valIn = dataInput->getValue();
 		auto valOut = dataOutput->getAccessor();
 		int nb = valIn.size();
 
-		if(val >= nb)
+		if (val >= nb)
 			valOut.clear();
-		else if(val > 0)
-			valOut = valIn.mid(val);
+		else if (val > 0)
+			valOut.wref().assign(valIn.begin() + val, valIn.end());
 		else
-			valOut = valIn.mid( qMax(0, valIn.size() + val) );
+			valOut.wref().assign(valIn.begin() + std::max<int>(0, valIn.size() + val), valIn.end());
 	}
 
 protected:

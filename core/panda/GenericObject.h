@@ -202,7 +202,7 @@ typedef std::tuple<PReal, types::Color, types::Point, types::Gradient> allAnimat
 	};														\
 	void registerFunction(int type, funcPtr ptr)			\
 	{														\
-		m_functions.emplace(type, ptr);						\
+		m_functions.push_back(std::make_pair(type, ptr));	\
 	}														\
 	private:												\
 	virtual void registerFunctions()						\
@@ -221,7 +221,7 @@ typedef std::tuple<PReal, types::Color, types::Point, types::Gradient> allAnimat
 	}														\
 	virtual void invokeFunction(int type, DataList& list)	\
 	{														\
-		auto it = std::find(m_functions.begin(),			\
+		auto it = std::find_if(m_functions.begin(),			\
 			m_functions.end(), [type](const FuncPair& func){\
 				return func.first == type;					\
 			});												\

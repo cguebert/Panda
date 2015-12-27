@@ -40,7 +40,7 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > ListData;
+		typedef Data< std::vector<T> > ListData;
 		ListData* dataInTrue = dynamic_cast<ListData*>(list[0]);
 		ListData* dataInFalse = dynamic_cast<ListData*>(list[1]);
 		ListData* dataOutput = dynamic_cast<ListData*>(list[2]);
@@ -76,7 +76,7 @@ public:
 	}
 
 protected:
-	Data< QVector<int> > control;
+	Data< std::vector<int> > control;
 	GenericVectorData generic;
 };
 

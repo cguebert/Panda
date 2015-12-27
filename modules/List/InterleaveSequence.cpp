@@ -45,7 +45,7 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > ListData;
+		typedef Data< std::vector<T> > ListData;
 		ListData* dataInput = dynamic_cast<ListData*>(list[0]);
 		ListData* dataOutput = dynamic_cast<ListData*>(list[1]);
 
@@ -57,14 +57,14 @@ public:
 
 		if(index == nbDatas)
 		{
-			QVector<const QVector<T>*> inputsList;
+			std::vector<const std::vector<T>*> inputsList;
 			for(auto baseDataInput : baseDataInputs)
 				inputsList.push_back(&dynamic_cast<ListData*>(baseDataInput)->getValue());
 
 			int nb = inputsList.size();
 			int minSize = inputsList[0]->size();
 			for(int i=0; i<nb; ++i)
-				minSize = qMin(minSize, inputsList[i]->size());
+				minSize = std::min<int>(minSize, inputsList[i]->size());
 
 			auto outVal = dataOutput->getAccessor();
 			outVal.wref().clear();
@@ -80,7 +80,7 @@ public:
 
 protected:
 	GenericVectorData generic;
-	QVector<BaseData*> baseDataInputs;
+	std::vector<BaseData*> baseDataInputs;
 	int index, nbDatas;
 };
 

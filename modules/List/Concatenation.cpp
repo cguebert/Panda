@@ -42,7 +42,7 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > ListData;
+		typedef Data< std::vector<T> > ListData;
 		ListData* dataInput = dynamic_cast<ListData*>(list[0]);
 		ListData* dataOutput = dynamic_cast<ListData*>(list[1]);
 
@@ -54,7 +54,9 @@ public:
 			outVal.clear();
 			firstUpdate = false;
 		}
-		outVal.wref() += dataInput->getValue();
+		const auto& inVal = dataInput->getValue();
+		auto& outVec = outVal.wref();
+		outVec.insert(outVec.end(), inVal.begin(), inVal.end());
 	}
 
 protected:

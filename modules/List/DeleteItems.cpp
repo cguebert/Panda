@@ -35,19 +35,19 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > ListData;
+		typedef Data< std::vector<T> > ListData;
 		ListData* dataInput = dynamic_cast<ListData*>(list[0]);
 		ListData* dataOutput = dynamic_cast<ListData*>(list[1]);
 
 		Q_ASSERT(dataInput && dataOutput);
 
-		const QVector<T> &valIn = dataInput->getValue();
+		const std::vector<T> &valIn = dataInput->getValue();
 		auto valOut = dataOutput->getAccessor();
-		const QVector<int> &valId = indices.getValue();
+		const std::vector<int> &valId = indices.getValue();
 
-		QVector<bool> mask;
+		std::vector<bool> mask;
 		unsigned int nbIn = valIn.size(), nbId = valId.size();
-		mask.fill(true, nbIn);
+		mask.resize(nbIn, true);
 		for(unsigned int i=0; i<nbId; ++i)
 		{
 			unsigned int id = valId[i];
@@ -59,13 +59,13 @@ public:
 		for(unsigned int i=0; i<nbIn; ++i)
 		{
 			if(mask[i])
-				valOut << valIn[i];
+				valOut.push_back(valIn[i]);
 		}
 
 	}
 
 protected:
-	Data< QVector<int> > indices;
+	Data< std::vector<int> > indices;
 	GenericVectorData generic;
 };
 

@@ -2,26 +2,23 @@
 #include <panda/ObjectFactory.h>
 #include <panda/GenericObject.h>
 
-#include <QMap>
+#include <algorithm>
 
 using panda::types::Color;
 using panda::types::Point;
 using panda::types::Rect;
 
-template<>
-static bool qMapLessThanKey<Color>(const Color& lhs, const Color& rhs)
+bool operator<(const Color& lhs, const Color& rhs)
 {
 	return lhs.toHex() < rhs.toHex();
 }
 
-template<>
-static bool qMapLessThanKey<Point>(const Point& p1, const Point& p2)
+bool operator<(const Point& p1, const Point& p2)
 {
 	return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
 }
 
-template<>
-static bool qMapLessThanKey<Rect>(const Rect& lhs, const Rect& rhs)
+bool operator<(const Rect& lhs, const Rect& rhs)
 {
 	if(lhs.left() < rhs.left()) return true;
 	if(rhs.left() < lhs.left()) return false;
@@ -36,6 +33,21 @@ static bool qMapLessThanKey<Rect>(const Rect& lhs, const Rect& rhs)
 	if(rhs.bottom() < lhs.bottom()) return false;
 
 	return false;
+}
+
+namespace
+{
+
+template <class T>
+struct Comparator
+{
+	using pair_type = std::pair<T, int>;
+	bool operator()(const pair_type& lhs, const pair_type& rhs)
+	{
+		return lhs.first < rhs.first;
+	}
+};
+
 }
 
 namespace panda {
@@ -74,24 +86,37 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > VecData;
-		typedef Data< QVector<int> > VecIntData;
+		typedef Data< std::vector<T> > VecData;
+		typedef Data< std::vector<int> > VecIntData;
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[1]);
 		VecIntData* dataIndices = dynamic_cast<VecIntData*>(list[2]);
 
 		Q_ASSERT(dataInput && dataOutput && dataIndices);
 
-		const QVector<T> &valIn = dataInput->getValue();
+		const std::vector<T> &valIn = dataInput->getValue();
 
-		QMap<T, int> tmpMap;
+		std::vector<std::pair<T, int>> tmpList;
 		int nb = valIn.size();
 
 		for(int i=0; i<nb; ++i)
-			tmpMap.insertMulti(valIn[i], i);
+			tmpList.emplace_back(valIn[i], i);
 
-		dataOutput->setValue(tmpMap.keys().toVector());
-		dataIndices->setValue(tmpMap.values().toVector());
+		std::sort(tmpList.begin(), tmpList.end(), Comparator<T>());
+
+		auto outValAcc = dataOutput->getAccessor();
+		auto outIndAcc = dataIndices->getAccessor();
+		auto& outVal = outValAcc.wref();
+		auto& outInd = outIndAcc.wref();
+		outVal.clear();
+		outInd.clear();
+		outVal.reserve(nb);
+		outInd.reserve(nb);
+		for (const auto& v : tmpList)
+		{
+			outVal.push_back(v.first);
+			outInd.push_back(v.second);
+		}
 	}
 
 protected:
