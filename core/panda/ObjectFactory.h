@@ -4,8 +4,8 @@
 #include <panda/BaseClass.h>
 
 #include <QStringList>
-#include <QSharedPointer>
 #include <map>
+#include <memory>
 
 namespace panda
 {
@@ -17,7 +17,7 @@ class PANDA_CORE_API BaseObjectCreator
 {
 public:
 	virtual ~BaseObjectCreator() {}
-	virtual QSharedPointer<PandaObject> create(PandaDocument* parent) = 0;
+	virtual std::shared_ptr<PandaObject> create(PandaDocument* parent) = 0;
 };
 
 class PANDA_CORE_API ObjectFactory
@@ -33,7 +33,7 @@ public:
 		QString className;
 		QString moduleName;
 		const BaseClass* theClass;
-		QSharedPointer<BaseObjectCreator> creator;
+		std::shared_ptr<BaseObjectCreator> creator;
 		bool hidden;
 	};
 
@@ -56,7 +56,7 @@ public:
 	{ return T::GetClass()->getTypeName(); }
 	static QString getRegistryName(PandaObject* object);
 
-	QSharedPointer<PandaObject> create(QString className, PandaDocument* parent) const;
+	std::shared_ptr<PandaObject> create(QString className, PandaDocument* parent) const;
 
 	typedef std::map< QString, ClassEntry > RegistryMap;
 	const RegistryMap& getRegistryMap() const
@@ -93,8 +93,8 @@ template<class T>
 class ObjectCreator : public BaseObjectCreator
 {
 public:
-	virtual QSharedPointer<PandaObject> create(PandaDocument* parent)
-	{ return QSharedPointer<PandaObject>(new T(parent), objectDeletor); }
+	virtual std::shared_ptr<PandaObject> create(PandaDocument* parent)
+	{ return std::shared_ptr<PandaObject>(new T(parent), objectDeletor); }
 };
 
 template <class T>
@@ -103,7 +103,7 @@ class RegisterObject
 public:
 	explicit RegisterObject(QString menuDisplay)
 	{
-		entry.creator = QSharedPointer<ObjectCreator<T>>::create();
+		entry.creator = std::make_shared<ObjectCreator<T>>();
 		entry.theClass = T::GetClass();
 		entry.menuDisplay = menuDisplay;
 		if(!menuDisplay.isEmpty())

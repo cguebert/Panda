@@ -22,10 +22,10 @@ Group::~Group()
 {
 }
 
-void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
+void Group::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*>* selected)
 {
 	// Saving group datas
-	for(QSharedPointer<BaseData> data : m_groupDatas)
+	for(const auto& data : m_groupDatas)
 	{
 		QDomElement node = doc.createElement("GroupData");
 		elem.appendChild(node);
@@ -47,27 +47,27 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 	PandaObject::save(doc, elem, selected);
 
 	typedef QPair<BaseData*, BaseData*> DataPair;
-	QList<DataPair> links;
+	std::vector<DataPair> links;
 
 	typedef QPair<quint32, quint32> IntPair;
-	QList<IntPair> dockedObjects;
+	std::vector<IntPair> dockedObjects;
 
 	PandaDocument::ObjectsSelection allObjects;
 	for(auto object : m_objects)
-		allObjects.push_back(object.data());
+		allObjects.push_back(object.get());
 	allObjects.push_back(this);
 
 	// Saving objects in this group
 	for(auto object : m_objects)
 	{
 		QDomElement node = doc.createElement("Object");
-		node.setAttribute("type", ObjectFactory::getRegistryName(object.data()));
+		node.setAttribute("type", ObjectFactory::getRegistryName(object.get()));
 		node.setAttribute("index", object->getIndex());
 		elem.appendChild(node);
 
 		object->save(doc, node, &allObjects);
 
-		QPointF pos = m_positions[object.data()];
+		QPointF pos = m_positions[object.get()];
 		node.setAttribute("x", pos.x());
 		node.setAttribute("y", pos.y());
 
@@ -80,7 +80,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>
 		}
 
 		// Preparing dockables list for docks
-		DockObject* dock = dynamic_cast<DockObject*>(object.data());
+		DockObject* dock = dynamic_cast<DockObject*>(object.get());
 		if(dock)
 		{
 			for(auto dockable : dock->getDockedObjects())
@@ -140,7 +140,7 @@ void Group::load(QDomElement& elem)
 		widgetData = groupDataNode.attribute("widgetData");
 
 		auto dataPtr = DataFactory::getInstance()->create(type, name, help, this);
-		auto data = dataPtr.data();
+		auto data = dataPtr.get();
 		if(!widget.isEmpty())
 			data->setWidget(widget);
 		if(!widgetData.isEmpty())
@@ -168,7 +168,7 @@ void Group::load(QDomElement& elem)
 		auto object = factory->create(registryName, m_parentDocument);
 		if(object)
 		{
-			importObjectsMap[index] = object.data();
+			importObjectsMap[index] = object.get();
 			addObject(object);
 
 			object->load(objectNode);
@@ -181,7 +181,7 @@ void Group::load(QDomElement& elem)
 			pos.setX(objectNode.attribute("x").toFloat());
 			pos.setY(objectNode.attribute("y").toFloat());
 #endif
-			m_positions[object.data()] = pos;
+			m_positions[object.get()] = pos;
 		}
 		else
 		{
@@ -329,7 +329,7 @@ void GroupWithLayer::addObject(ObjectPtr object)
 {
 	Group::addObject(object);
 
-	Layer* layer = dynamic_cast<Layer*>(object.data());
+	Layer* layer = dynamic_cast<Layer*>(object.get());
 	if(layer)
 	{
 		setLayer(layer);
@@ -337,7 +337,7 @@ void GroupWithLayer::addObject(ObjectPtr object)
 	}
 
 	Layer* defaultLayer = m_parentDocument->getDefaultLayer();
-	Renderer* renderer = dynamic_cast<Renderer*>(object.data());
+	Renderer* renderer = dynamic_cast<Renderer*>(object.get());
 	if(renderer)
 	{
 		if(renderer->getParentDock() == defaultLayer)

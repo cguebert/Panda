@@ -3,9 +3,10 @@
 
 #include <panda/core.h>
 
+#include <memory>
+#include <vector>
+
 #include <QUndoCommand>
-#include <QSharedPointer>
-#include <QVector>
 #include <QString>
 
 namespace panda
@@ -49,14 +50,14 @@ protected:
 class PANDA_CORE_API AddObjectToGroupCommand : public QUndoCommand
 {
 public:
-	AddObjectToGroupCommand(panda::Group* group, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
+	AddObjectToGroupCommand(panda::Group* group, std::shared_ptr<panda::PandaObject> object, QUndoCommand* parent = nullptr);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
 	panda::Group* m_group;
-	QSharedPointer<panda::PandaObject> m_object;
+	std::shared_ptr<panda::PandaObject> m_object;
 };
 
 //****************************************************************************//
@@ -64,14 +65,14 @@ protected:
 class PANDA_CORE_API RemoveObjectFromGroupCommand : public QUndoCommand
 {
 public:
-	RemoveObjectFromGroupCommand(panda::Group* group, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
+	RemoveObjectFromGroupCommand(panda::Group* group, std::shared_ptr<panda::PandaObject> object, QUndoCommand* parent = nullptr);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
 	panda::Group* m_group;
-	QSharedPointer<panda::PandaObject> m_object;
+	std::shared_ptr<panda::PandaObject> m_object;
 };
 
 //****************************************************************************//
@@ -85,7 +86,7 @@ public:
 		QString name, help;
 	};
 
-	EditGroupCommand(panda::Group* group, QString newName, QVector<DataInfo> newDatas, QUndoCommand* parent = nullptr);
+	EditGroupCommand(panda::Group* group, QString newName, std::vector<DataInfo> newDatas, QUndoCommand* parent = nullptr);
 
 	virtual void redo();
 	virtual void undo();
@@ -93,7 +94,7 @@ public:
 protected:
 	panda::Group* m_group;
 	QString m_prevName, m_newName;
-	QVector<DataInfo> m_prevDatas, m_newDatas;
+	std::vector<DataInfo> m_prevDatas, m_newDatas;
 };
 
 #endif

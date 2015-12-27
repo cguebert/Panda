@@ -3,7 +3,7 @@
 
 #include <panda/Dockable.h>
 #include <panda/types/ImageWrapper.h>
-#include <vector>
+
 #include <QMatrix4x4>
 
 class QOpenGLFramebufferObject;
@@ -43,7 +43,7 @@ public:
 
 protected:
 	virtual void iterateRenderers();
-	QSharedPointer<QOpenGLFramebufferObject> m_renderFrameBuffer, m_displayFrameBuffer;
+	std::shared_ptr<QOpenGLFramebufferObject> m_renderFrameBuffer, m_displayFrameBuffer;
 };
 
 //****************************************************************************//

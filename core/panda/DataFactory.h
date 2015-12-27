@@ -6,9 +6,9 @@
 #include <panda/Data.h>
 #include <panda/DataCopier.h>
 
-#include <QList>
-#include <QSharedPointer>
-#include <QMap>
+#include <map>
+#include <memory>
+#include <vector>
 
 namespace panda
 {
@@ -20,7 +20,7 @@ class PANDA_CORE_API BaseDataCreator
 {
 public:
 	virtual ~BaseDataCreator() {}
-	virtual QSharedPointer<BaseData> create(const QString& name, const QString& help, PandaObject* owner) = 0;
+	virtual std::shared_ptr<BaseData> create(const QString& name, const QString& help, PandaObject* owner) = 0;
 };
 
 class PANDA_CORE_API DataFactory
@@ -35,31 +35,31 @@ public:
 		QString className;
 		int fullType;
 		const BaseClass* theClass;
-		QSharedPointer<BaseDataCreator> creator;
+		std::shared_ptr<BaseDataCreator> creator;
 	};
 
 	static DataFactory* getInstance();
 	const DataEntry* getEntry(QString className) const;
 	const DataEntry* getEntry(int type) const;
 
-	QSharedPointer<BaseData> create(QString className, const QString& name, const QString& help, PandaObject* owner) const;
-	QSharedPointer<BaseData> create(int type, const QString& name, const QString& help, PandaObject* owner) const;
+	std::shared_ptr<BaseData> create(QString className, const QString& name, const QString& help, PandaObject* owner) const;
+	std::shared_ptr<BaseData> create(int type, const QString& name, const QString& help, PandaObject* owner) const;
 
 	static QString typeToName(int type);
 	static int nameToType(QString name);
 
-	typedef QList< QSharedPointer<DataEntry> > EntriesList;
+	typedef std::vector< std::shared_ptr<DataEntry> > EntriesList;
 	const EntriesList getEntries() const { return m_entries; }
 
 protected:
 	EntriesList m_entries;
-	QMap< QString, DataEntry* > m_registry;
-	QMap< QString, DataEntry* > m_nameRegistry;
-	QMap< int, DataEntry* > m_typeRegistry;
-	QMap< int, AbstractDataCopier* > m_copiersMap;
+	std::map< QString, DataEntry* > m_registry;
+	std::map< QString, DataEntry* > m_nameRegistry;
+	std::map< int, DataEntry* > m_typeRegistry;
+	std::map< int, AbstractDataCopier* > m_copiersMap;
 
 	template<class T> friend class RegisterData;
-	void registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator);
+	void registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, std::shared_ptr<BaseDataCreator> creator);
 
 private:
 	DataFactory() {}
@@ -69,9 +69,9 @@ template<class T>
 class DataCreator : public BaseDataCreator
 {
 public:
-	virtual QSharedPointer<BaseData> create(const QString& name, const QString& help, PandaObject* owner)
+	virtual std::shared_ptr<BaseData> create(const QString& name, const QString& help, PandaObject* owner)
 	{
-		return QSharedPointer<BaseData>(new T(name, help, owner));
+		return std::shared_ptr<BaseData>(new T(name, help, owner));
 	}
 };
 
@@ -96,7 +96,7 @@ public:
 
 		DataFactory::getInstance()->registerData(dataTrait,
 												 data_type::GetClass(),
-												 QSharedPointer< DataCreator<data_type> >::create());
+												 std::make_shared< DataCreator<data_type> >());
 		return 1;
 	}
 };

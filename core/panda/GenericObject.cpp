@@ -11,6 +11,17 @@
 
 #include <iostream>
 
+namespace
+{
+
+template <class Map, class Value>
+bool contains(const Map& map, const Value& value)
+{
+	return map.find(value) != map.end();
+}
+
+}
+
 namespace panda
 {
 
@@ -34,16 +45,16 @@ void GenericObject::setupGenericObject(BaseGenericData& data, const GenericDataD
 {
 	// Verify that there is no duplicate data name
 	// And that there is at least one input data
-	int nbInputDatas = 0;
-	for(int i=0; i<defList.size(); ++i)
+	int nbInputDatas = 0, nbDefs = defList.size();
+	for (int i = 0; i < nbDefs; ++i)
 	{
-		if(defList[i].input)
+		if (defList[i].input)
 			nbInputDatas++;
 
 		QString name = defList[i].name;
-		for(int j=i+1; j<defList.size(); ++j)
+		for (int j = i + 1; j < nbDefs; ++j)
 		{
-			if(name == defList[j].name)
+			if (name == defList[j].name)
 			{
 				std::cerr << "Fatal error : duplicate data name (" << name.toStdString() << ") in a GenericObject" << std::endl;
 				QCoreApplication::exit(-2);
@@ -51,7 +62,7 @@ void GenericObject::setupGenericObject(BaseGenericData& data, const GenericDataD
 		}
 	}
 
-	if(!nbInputDatas)
+	if (!nbInputDatas)
 	{
 		std::cerr << "Fatal error : no input data in a GenericObject" << std::endl;
 		QCoreApplication::exit(-3);
@@ -70,10 +81,10 @@ BaseData* GenericObject::createDatas(int type, int index)
 {
 	int valueType = types::DataTypeId::getValueType(type);
 
-	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
+	CreatedDatasStructPtr createdDatasStruct = std::make_shared<CreatedDatasStruct>();
 	createdDatasStruct->type = type;
-	if(index >= 0 && index < m_createdDatasStructs.size())
-		m_createdDatasStructs.insert(index, createdDatasStruct);
+	if(index >= 0 && index < static_cast<int>(m_createdDatasStructs.size()))
+		m_createdDatasStructs.insert(m_createdDatasStructs.begin() + index, createdDatasStruct);
 	else
 		m_createdDatasStructs.push_back(createdDatasStruct);
 	int nbCreated = m_createdDatasStructs.size();
@@ -100,7 +111,7 @@ BaseData* GenericObject::createDatas(int type, int index)
 			dataType = types::DataTypeId::replaceValueType(dataType, valueType);
 
 		auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
-		auto data = dataPtr.data();
+		auto data = dataPtr.get();
 
 		if(m_dataDefinitions[i].input)
 		{
@@ -113,7 +124,7 @@ BaseData* GenericObject::createDatas(int type, int index)
 			addOutput(*data);
 
 		createdDatasStruct->datas.push_back(dataPtr);
-		m_createdDatasMap.insert(data, createdDatasStruct);
+		m_createdDatasMap.emplace(data, createdDatasStruct);
 	}
 
 	if(index != -1)
@@ -140,8 +151,8 @@ void GenericObject::reorderDatas()
 	{
 		for(auto data : created->datas)
 		{
-			removeData(data.data());
-			addData(data.data());
+			removeData(data.get());
+			addData(data.get());
 		}
 	}
 
@@ -185,7 +196,7 @@ int GenericObject::nbOfCreatedDatas() const
 
 bool GenericObject::isCreatedData(BaseData* data) const
 {
-	return m_createdDatasMap.contains(data);
+	return contains(m_createdDatasMap, data);
 }
 
 void GenericObject::update()
@@ -211,7 +222,7 @@ void GenericObject::doUpdate(bool updateAllInputs)
 		DataList list;
 		list.reserve(created->datas.size());
 		for(BaseDataPtr ptr : created->datas)
-			list.push_back(ptr.data());
+			list.push_back(ptr.get());
 		invokeFunction(created->type, list);
 	}
 
@@ -230,7 +241,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		m_parentDocument->onModifiedObject(this);
 	}
-	else if(parent || !m_createdDatasMap.contains(data))
+	else if (parent || !contains(m_createdDatasMap, data))
 	{
 		PandaObject::dataSetParent(data, parent);
 	}
@@ -253,11 +264,11 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 			for(BaseDataPtr d : createdDatasStruct->datas)
 			{
-				removeData(d.data());
-				m_createdDatasMap.remove(d.data());
+				removeData(d.get());
+				m_createdDatasMap.erase(d.get());
 			}
 
-			m_createdDatasStructs.removeAll(createdDatasStruct);
+			helper::removeAll(m_createdDatasStructs, createdDatasStruct);
 			createdDatasStruct->datas.clear();
 			updateDataNames();
 		}
@@ -266,7 +277,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	}
 }
 
-void GenericObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected)
+void GenericObject::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*>* selected)
 {
 	for(CreatedDatasStructPtr created : m_createdDatasStructs)
 	{
@@ -314,7 +325,7 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 	auto currentCommand = m_parentDocument->getCurrentCommand();
 	if(currentCommand)
 	{
-		int index = m_createdDatasStructs.indexOf(createdData);
+		int index = helper::indexOf(m_createdDatasStructs, createdData);
 		new RemoveGenericDataCommand(this, createdData->type, index, currentCommand);
 	}
 }
@@ -344,9 +355,9 @@ void SingleTypeGenericObject::update()
 				dataPtr->updateIfDirty();
 
 			if(m_singleOutput && i && m_dataDefinitions[j].output && !m_dataDefinitions[j].input)
-				list.push_back(m_createdDatasStructs[0]->datas[j].data());
+				list.push_back(m_createdDatasStructs[0]->datas[j].get());
 			else
-				list.push_back(dataPtr.data());
+				list.push_back(dataPtr.get());
 		}
 
 		invokeFunction(created->type, list);
@@ -368,8 +379,8 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 
 	CreatedDatasStructPtr createdDatasStruct = CreatedDatasStructPtr(new CreatedDatasStruct);
 	createdDatasStruct->type = type;
-	if(index >= 0 && index < m_createdDatasStructs.size())
-		m_createdDatasStructs.insert(index, createdDatasStruct);
+	if(index >= 0 && index < static_cast<int>(m_createdDatasStructs.size()))
+		m_createdDatasStructs.insert(m_createdDatasStructs.begin() + index, createdDatasStruct);
 	else
 		m_createdDatasStructs.push_back(createdDatasStruct);
 	int nbCreated = m_createdDatasStructs.size();
@@ -402,7 +413,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 				dataType = types::DataTypeId::replaceValueType(dataType, valueType);
 
 			auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
-			auto data = dataPtr.data();
+			auto data = dataPtr.get();
 
 			if(m_dataDefinitions[i].input)
 			{
@@ -415,7 +426,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 				addOutput(*data);
 
 			createdDatasStruct->datas.push_back(dataPtr);
-			m_createdDatasMap.insert(data, createdDatasStruct);
+			m_createdDatasMap.emplace(data, createdDatasStruct);
 		}
 	}
 
@@ -451,7 +462,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		m_parentDocument->onModifiedObject(this);
 	}
 	// Changing connection
-	else if(parent || !m_createdDatasMap.contains(data))
+	else if(parent || !contains(m_createdDatasMap, data))
 	{
 		data->setParent(parent);
 		emitModified();
@@ -489,20 +500,20 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 				{
 					if(lastGeneric)
 					{
-						removeData(dataPtr.data());
-						m_createdDatasMap.remove(dataPtr.data());
+						removeData(dataPtr.get());
+						m_createdDatasMap.erase(dataPtr.get());
 					}
 					else if(dataPtr) // Copy this data to the next created data
 						m_createdDatasStructs[1]->datas[i] = dataPtr;
 				}
 				else
 				{
-					removeData(dataPtr.data());
-					m_createdDatasMap.remove(dataPtr.data());
+					removeData(dataPtr.get());
+					m_createdDatasMap.erase(dataPtr.get());
 				}
 			}
 
-			m_createdDatasStructs.removeAll(createdDatasStruct);
+			helper::removeAll(m_createdDatasStructs, createdDatasStruct);
 			createdDatasStruct->datas.clear();
 			updateDataNames();
 
@@ -518,7 +529,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 bool BaseGenericData::validParent(const BaseData* parent) const
 {
-	if(m_allowedTypes.size() && !m_allowedTypes.contains(parent->getDataTrait()->valueTypeId()))
+	if(m_allowedTypes.size() && !helper::contains(m_allowedTypes, parent->getDataTrait()->valueTypeId()))
 		return false;
 	return true;
 }
@@ -612,7 +623,7 @@ QString GenericAnimationData::getDescription() const
 bool GenericSpecificData::validParent(const BaseData* parent) const
 {
 	int fromType = parent->getDataTrait()->fullTypeId();
-	if(m_allowedTypes.contains(fromType)) // Directly contains this type
+	if(helper::contains(m_allowedTypes, fromType)) // Directly contains this type
 		return true;
 
 	return false;

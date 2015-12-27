@@ -5,6 +5,7 @@
 #include <panda/Layer.h>
 #include <panda/Renderer.h>
 #include <panda/Scheduler.h>
+#include <panda/helper/algorithm.h>
 #include <panda/helper/GradientCache.h>
 #include <panda/helper/ShaderCache.h>
 #include <panda/helper/system/FileRepository.h>
@@ -25,23 +26,13 @@
 #include <QTimer>
 #include <QUndoStack>
 
+#include <set>
+
 namespace panda {
 
 using types::Color;
 using types::ImageWrapper;
 using types::Point;
-
-template<class C, class V>
-bool contains(C& container, V value)
-{ return std::find(std::begin(container), std::end(container), value) != std::end(container); }
-
-template<class C, class V>
-void remove(C& container, V value)
-{
-	auto iter = std::find(std::begin(container), std::end(container), value);
-	if(iter != container.end())
-		container.erase(iter);
-}
 
 PandaDocument::PandaDocument(QObject* parent)
 	: PandaObject(nullptr)
@@ -138,7 +129,7 @@ bool PandaDocument::writeFile(const QString& fileName)
 	save(doc, root);	// The document's Datas
 	ObjectsSelection allObjects;
 	for(auto object : m_objects)
-		allObjects.push_back(object.data());
+		allObjects.push_back(object.get());
 	saveDoc(doc, root, allObjects);	// The document and all of its objects
 
 	file.write(doc.toByteArray(4));
@@ -202,7 +193,7 @@ bool PandaDocument::readTextDocument(QString& text)
 	if(!doc.setContent(text))
 		return false;
 
-	bool bSelected = !m_selectedObjects.isEmpty();
+	bool bSelected = !m_selectedObjects.empty();
 	m_selectedObjects.clear();
 
 	QDomElement root = doc.documentElement();
@@ -242,7 +233,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 		for(BaseData* data : object->getInputDatas())
 		{
 			BaseData* parent = data->getParent();
-			if(parent && contains(selected, parent->getOwner()))
+			if(parent && helper::contains(selected, parent->getOwner()))
 				links.push_back(qMakePair(data, parent));
 		}
 
@@ -299,11 +290,11 @@ bool PandaDocument::loadDoc(QDomElement& root)
 		{
 			addObject(object);
 			importIndicesMap[index] = object->getIndex();
-			m_selectedObjects.push_back(object.data());
+			m_selectedObjects.push_back(object.get());
 
 			object->load(elem);
 
-			emit loadingObject(elem, object.data());
+			emit loadingObject(elem, object.get());
 		}
 		else
 		{
@@ -377,7 +368,7 @@ void PandaDocument::resetDocument()
 
 	for(auto object : m_objects)
 	{
-		emit removedObject(object.data());
+		emit removedObject(object.get());
 		object->preDestruction();
 	}
 
@@ -393,7 +384,7 @@ void PandaDocument::resetDocument()
 	m_backgroundColor.setValue(Color::white());
 	m_renderedImage.getAccessor()->clear();
 	m_useMultithread.setValue(0);
-	m_renderFBO.clear();
+	m_renderFBO.reset();
 
 	m_animPlaying = false;
 	m_animMultithread = false;
@@ -414,7 +405,9 @@ void PandaDocument::resetDocument()
 
 PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object) const
 {
-	auto iter = std::find(m_objects.begin(), m_objects.end(), object);
+	auto iter = std::find_if(m_objects.begin(), m_objects.end(), [object](const ObjectPtr& ptr){
+		return ptr.get() == object;
+	});
 	if(iter != m_objects.end())
 		return *iter;
 
@@ -423,16 +416,20 @@ PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object) co
 
 int PandaDocument::getObjectPosition(PandaObject* object) const
 {
-	auto iter = std::find(m_objects.begin(), m_objects.end(), object);
+	auto iter = std::find_if(m_objects.begin(), m_objects.end(), [object](const ObjectPtr& ptr){
+		return ptr.get() == object;
+	});
 	if(iter != m_objects.end())
-		return iter - m_objects.begin();
+		return std::distance(m_objects.begin(), iter);
 
 	return -1;
 }
 
 void PandaDocument::reinsertObject(PandaObject* object, int pos)
 {
-	auto iter = std::find(m_objects.begin(), m_objects.end(), object);
+	auto iter = std::find_if(m_objects.begin(), m_objects.end(), [object](const ObjectPtr& ptr){
+		return ptr.get() == object;
+	});
 	if(iter == m_objects.end())
 		return;
 
@@ -443,7 +440,7 @@ void PandaDocument::reinsertObject(PandaObject* object, int pos)
 	if(pos > oldPos)
 		--pos;
 
-	m_objects.insert(pos, objectPtr);
+	m_objects.insert(m_objects.begin() + pos, objectPtr);
 
 	setDirtyValue(this);
 	emit reorderedObjects();
@@ -459,7 +456,7 @@ PandaObject* PandaDocument::getCurrentSelectedObject() const
 
 void PandaDocument::setCurrentSelectedObject(PandaObject* object)
 {
-	m_selectedObjects.removeAll(object);
+	helper::removeAll(m_selectedObjects, object);
 	m_selectedObjects.push_back(object);
 	emit selectedObject(object);
 	emit selectionChanged();
@@ -505,7 +502,7 @@ void PandaDocument::paste()
 
 void PandaDocument::selectionAdd(PandaObject* object)
 {
-	if(!contains(m_selectedObjects, object))
+	if(!helper::contains(m_selectedObjects, object))
 	{
 		m_selectedObjects.push_back(object);
 		emit selectedObject(object);
@@ -515,9 +512,9 @@ void PandaDocument::selectionAdd(PandaObject* object)
 
 void PandaDocument::selectionRemove(PandaObject* object)
 {
-	if(contains(m_selectedObjects, object))
+	if(helper::contains(m_selectedObjects, object))
 	{
-		m_selectedObjects.removeAll(object);
+		helper::removeAll(m_selectedObjects, object);
 		if(m_selectedObjects.empty())
 			emit selectedObject(nullptr);
 		else
@@ -530,7 +527,7 @@ void PandaDocument::selectAll()
 {
 	m_selectedObjects.clear();
 	for(auto object : m_objects)
-		m_selectedObjects.push_back(object.data());
+		m_selectedObjects.push_back(object.get());
 	emit selectedObject(m_selectedObjects.back());
 	emit selectionChanged();
 }
@@ -549,12 +546,12 @@ void PandaDocument::selectConnected()
 {
 	if(!m_selectedObjects.empty())
 	{
-		QSet<PandaObject*> closedList, openList;
-		openList = QSet<PandaObject*>::fromList(m_selectedObjects);
+		std::set<PandaObject*> closedList, openList;
+		openList.insert(m_selectedObjects.begin(), m_selectedObjects.end());
 		while(!openList.empty())
 		{
 			PandaObject* object = *openList.begin();
-			openList.remove(object);
+			openList.erase(object);
 			closedList.insert(object);
 
 			for(BaseData* data : object->getInputDatas())
@@ -562,7 +559,7 @@ void PandaDocument::selectConnected()
 				if(data->getParent())
 				{
 					PandaObject* connected = data->getParent()->getOwner();
-					if(!closedList.contains(connected))
+					if(!closedList.count(connected))
 						openList.insert(connected);
 				}
 			}
@@ -575,7 +572,7 @@ void PandaDocument::selectConnected()
 					if(otherData)
 					{
 						PandaObject* connected = otherData->getOwner();
-						if(!closedList.contains(connected))
+						if (!closedList.count(connected))
 							openList.insert(connected);
 					}
 				}
@@ -585,7 +582,7 @@ void PandaDocument::selectConnected()
 			if(dockable)
 			{
 				PandaObject* dock = dockable->getParentDock();
-				if(dock != m_defaultLayer && !closedList.contains(dock))
+				if (dock != m_defaultLayer && !closedList.count(dock))
 					openList.insert(dock);
 			}
 
@@ -594,14 +591,14 @@ void PandaDocument::selectConnected()
 			{
 				for(auto dockable : dock->getDockedObjects())
 				{
-					if(!closedList.contains(dockable))
+					if (!closedList.count(dockable))
 						openList.insert(dockable);
 				}
 			}
 		}
 
 		auto currentSelected = m_selectedObjects.back();
-		m_selectedObjects = closedList.toList();
+		m_selectedObjects.assign(closedList.begin(), closedList.end());
 		setCurrentSelectedObject(currentSelected);
 		emit selectionChanged();
 	}
@@ -611,14 +608,16 @@ void PandaDocument::addObject(ObjectPtr object)
 {
 	m_objects.push_back(object);
 	object->addedToDocument();
-	emit addedObject(object.data());
+	emit addedObject(object.get());
 }
 
 void PandaDocument::removeObject(PandaObject* object)
 {
 	object->removedFromDocument();
 	emit removedObject(object);
-	remove(m_objects, object);
+	helper::removeIf(m_objects, [object](const ObjectPtr& ptr){
+		return ptr.get() == object;
+	});
 
 	selectionRemove(object);
 	emit modified();
@@ -649,7 +648,7 @@ PandaObject* PandaDocument::findObject(quint32 objectIndex)
 	});
 
 	if(iter != m_objects.end())
-		return iter->data();
+		return iter->get();
 
 	return nullptr;
 }
@@ -725,7 +724,7 @@ void PandaDocument::update()
 
 	for(auto obj : m_objects)
 	{
-		if(dynamic_cast<BaseLayer*>(obj.data()))
+		if(dynamic_cast<BaseLayer*>(obj.get()))
 			obj->updateIfDirty();
 	}
 
@@ -742,7 +741,7 @@ const ImageWrapper& PandaDocument::getRenderedImage()
 	return m_renderedImage.getValue();
 }
 
-QSharedPointer<QOpenGLFramebufferObject> PandaDocument::getFBO()
+std::shared_ptr<QOpenGLFramebufferObject> PandaDocument::getFBO()
 {
 	updateIfDirty();
 	return m_renderFBO;
@@ -821,7 +820,7 @@ void PandaDocument::render()
 	bool inverse = false;
 	for(auto obj : m_objects)
 	{
-		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj.data());
+		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj.get());
 		if(layer)
 		{
 			float opacity = (float)layer->getOpacity();
@@ -871,7 +870,7 @@ void PandaDocument::render()
 #ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log3("blit FBO");
 #endif
-		QOpenGLFramebufferObject::blitFramebuffer(m_renderFBO.data(), m_secondRenderFBO.data());
+		QOpenGLFramebufferObject::blitFramebuffer(m_renderFBO.get(), m_secondRenderFBO.get());
 	}
 }
 
@@ -1048,11 +1047,11 @@ void PandaDocument::addCommand(QUndoCommand* command)
 	m_currentCommand = oldCommand;
 }
 
-QSharedPointer<ScopedMacro> PandaDocument::beginCommandMacro(QString text)
+std::shared_ptr<ScopedMacro> PandaDocument::beginCommandMacro(QString text)
 {
 	m_undoStack->beginMacro(text);
 	++m_inCommandMacro;
-	return QSharedPointer<ScopedMacro>(new ScopedMacro(this));
+	return std::make_shared<ScopedMacro>(this);
 }
 
 void PandaDocument::endCommandMacro()

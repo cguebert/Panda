@@ -26,7 +26,7 @@ GLuint ImageWrapper::getTextureId() const
 	{
 		if(!m_texture)
 			const_cast<ImageWrapper*>(this)->m_texture
-				= QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(m_image.mirrored()));
+				= std::make_shared<QOpenGLTexture>(m_image.mirrored());
 
 		return m_texture->textureId();
 	}
@@ -37,7 +37,7 @@ const QImage& ImageWrapper::getImage() const
 {
 	if(m_source == FBO && m_fbo && m_image.isNull())
 		const_cast<ImageWrapper*>(this)->m_image = m_fbo->toImage();
-	else if(m_source == TEXTURE && !m_buffer.isEmpty() && m_image.isNull())
+	else if(m_source == TEXTURE && !m_buffer.empty() && m_image.isNull())
 		const_cast<ImageWrapper*>(this)->createImageFromBuffer();
 
 	return m_image;
@@ -70,7 +70,7 @@ void ImageWrapper::setImage(const QImage& img)
 	m_buffer.clear();
 }
 
-void ImageWrapper::setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo)
+void ImageWrapper::setFbo(std::shared_ptr<QOpenGLFramebufferObject> fbo)
 {
 	m_image = QImage();
 	m_texture.reset();
@@ -81,7 +81,7 @@ void ImageWrapper::setFbo(QSharedPointer<QOpenGLFramebufferObject> fbo)
 	m_buffer.clear();
 }
 
-void ImageWrapper::createTexture(QVector<types::Color> buffer, int width, int height)
+void ImageWrapper::createTexture(std::vector<types::Color> buffer, int width, int height)
 {
 	m_buffer = buffer;
 	m_width = width;
@@ -92,14 +92,14 @@ void ImageWrapper::createTexture(QVector<types::Color> buffer, int width, int he
 
 	if(!m_texture || m_texture->width() != width || m_texture->height() != height)
 	{
-		m_texture = QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(QOpenGLTexture::Target2D));
+		m_texture = std::shared_ptr<QOpenGLTexture>(new QOpenGLTexture(QOpenGLTexture::Target2D));
 		m_texture->setSize(width, height);
 		m_texture->setFormat(QOpenGLTexture::RGBA32F);
 		m_texture->setMipLevels(m_texture->maximumMipLevels());
 		m_texture->allocateStorage();
 	}
 
-	m_texture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, buffer.constData());
+	m_texture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, buffer.data());
 
 	m_source = TEXTURE;
 }
@@ -108,7 +108,7 @@ void ImageWrapper::createImageFromBuffer()
 {
 	m_image = QImage(m_width, m_height, QImage::Format_ARGB32);
 	int nbPixels = m_width * m_height;
-	QVector<uchar> imgBuffer(nbPixels * 4);
+	std::vector<uchar> imgBuffer(nbPixels * 4);
 	for(int i=0; i<nbPixels; ++i)
 	{
 		imgBuffer[i*4  ] = m_buffer[i].b * 255;
@@ -116,7 +116,7 @@ void ImageWrapper::createImageFromBuffer()
 		imgBuffer[i*4+2] = m_buffer[i].r * 255;
 		imgBuffer[i*4+3] = m_buffer[i].a * 255;
 	}
-	memcpy(m_image.bits(), imgBuffer.constData(), nbPixels * 4);
+	memcpy(m_image.bits(), imgBuffer.data(), nbPixels * 4);
 }
 
 void ImageWrapper::clear()
@@ -140,7 +140,7 @@ ImageWrapper& ImageWrapper::operator=(const ImageWrapper& rhs)
 		m_image = QImage();
 		m_texture.reset();
 		m_fbo.reset(new QOpenGLFramebufferObject(rhsFBO->size()));
-		QOpenGLFramebufferObject::blitFramebuffer(m_fbo.data(), rhsFBO);
+		QOpenGLFramebufferObject::blitFramebuffer(m_fbo.get(), rhsFBO);
 
 		m_source = FBO;
 

@@ -32,9 +32,9 @@ class PANDA_CORE_API PandaDocument : public QObject, public PandaObject
 public:
 	PANDA_CLASS(PandaDocument, PandaObject)
 
-	typedef QSharedPointer<PandaObject> ObjectPtr;
-	typedef QVector<ObjectPtr> ObjectsList;
-	typedef QList<PandaObject*> ObjectsSelection;
+	typedef std::shared_ptr<PandaObject> ObjectPtr;
+	typedef std::vector<ObjectPtr> ObjectsList;
+	typedef std::vector<PandaObject*> ObjectsSelection;
 
 	explicit PandaDocument(QObject* parent = nullptr);
 	~PandaDocument();
@@ -92,7 +92,7 @@ public:
 	virtual void setDirtyValue(const DataNode* caller);
 
 	const types::ImageWrapper& getRenderedImage();
-	QSharedPointer<QOpenGLFramebufferObject> getFBO();
+	std::shared_ptr<QOpenGLFramebufferObject> getFBO();
 
 	Layer* getDefaultLayer() const;
 
@@ -104,7 +104,7 @@ public:
 	// For undo-redo actions
 	void createUndoRedoActions(QObject* parent, QAction*& undoAction, QAction*& redoAction);
 	void addCommand(QUndoCommand* command);
-	QSharedPointer<ScopedMacro> beginCommandMacro(QString text);
+	std::shared_ptr<ScopedMacro> beginCommandMacro(QString text);
 	void clearCommands();
 	bool isInCommandMacro() const;
 	QUndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
@@ -126,8 +126,8 @@ protected:
 	ObjectsSelection m_selectedObjects;
 	quint32 m_currentIndex;
 	Layer* m_defaultLayer;
-	QSharedPointer<QOpenGLFramebufferObject> m_renderFBO, m_secondRenderFBO;
-	QSharedPointer<QOpenGLShaderProgram> m_mergeLayersShader;
+	std::shared_ptr<QOpenGLFramebufferObject> m_renderFBO, m_secondRenderFBO;
+	std::shared_ptr<QOpenGLShaderProgram> m_mergeLayersShader;
 
 	PReal m_animTimeVal;
 	types::Point m_mousePositionVal;
@@ -153,7 +153,7 @@ protected:
 	bool m_animPlaying, m_animMultithread;
 	QTimer* m_animTimer;
 
-	QSharedPointer<Scheduler> m_scheduler;
+	std::shared_ptr<Scheduler> m_scheduler;
 
 	QUndoStack* m_undoStack;
 	QUndoCommand* m_currentCommand;

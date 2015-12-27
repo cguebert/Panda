@@ -23,7 +23,7 @@ MoveLayerCommand::MoveLayerCommand(panda::PandaDocument* document,
 		int nbLayer = 0;
 		for(int i=0, nb=objects.size(); i<nb; ++i)
 		{
-			auto object = objects[i].data();
+			auto object = objects[i].get();
 			if(object!=layer && dynamic_cast<panda::BaseLayer*>(object))
 			{
 				++nbLayer;

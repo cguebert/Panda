@@ -1,6 +1,7 @@
 #include <panda/PandaObject.h>
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
+#include <panda/helper/algorithm.h>
 
 #include <iostream>
 
@@ -31,7 +32,7 @@ void PandaObject::addData(BaseData* data)
 		std::cerr << "Fatal error : another data already have the name " << data->getName().toStdString() << std::endl;
 		return;
 	}
-	if(!m_datas.contains(data))
+	if(!helper::contains(m_datas, data))
 	{
 		m_datas.push_back(data);
 		emitModified();
@@ -40,7 +41,7 @@ void PandaObject::addData(BaseData* data)
 
 void PandaObject::removeData(BaseData* data)
 {
-	if(m_datas.removeAll(data))
+	if(helper::removeAll(m_datas, data))
 		emitModified();
 }
 
@@ -105,9 +106,9 @@ BaseData* PandaObject::getData(const QString& name) const
 		return nullptr;
 }
 
-QList<BaseData*> PandaObject::getInputDatas() const
+std::vector<BaseData*> PandaObject::getInputDatas() const
 {
-	QList<BaseData*> temp;
+	std::vector<BaseData*> temp;
 	for(BaseData* data : m_datas)
 	{
 		if(data->isInput())
@@ -117,9 +118,9 @@ QList<BaseData*> PandaObject::getInputDatas() const
 	return temp;
 }
 
-QList<BaseData*> PandaObject::getOutputDatas() const
+std::vector<BaseData*> PandaObject::getOutputDatas() const
 {
-	QList<BaseData*> temp;
+	std::vector<BaseData*> temp;
 	for(BaseData* data : m_datas)
 	{
 		if(data->isOutput())
@@ -129,12 +130,12 @@ QList<BaseData*> PandaObject::getOutputDatas() const
 	return temp;
 }
 
-void PandaObject::save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*> *selected)
+void PandaObject::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*> *selected)
 {
 	for(BaseData* data : m_datas)
 	{
 		if(data->isSet() && data->isPersistent() && !data->isReadOnly()
-				&& !(selected && data->getParent() && selected->contains(data->getParent()->getOwner())))
+				&& !(selected && data->getParent() && helper::contains(*selected, data->getParent()->getOwner())))
 		{
 			QDomElement xmlData = doc.createElement("Data");
 			xmlData.setAttribute("name", data->getName());

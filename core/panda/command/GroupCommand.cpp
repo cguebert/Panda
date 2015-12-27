@@ -5,6 +5,8 @@
 
 #include <panda/command/GroupCommand.h>
 
+#include <panda/helper/algorithm.h>
+
 SelectGroupCommand::SelectGroupCommand(panda::PandaDocument* document,
 									   panda::Group* group,
 									   QUndoCommand* parent)
@@ -20,7 +22,7 @@ void SelectGroupCommand::redo()
 	// If at least one of the object inside the group was selected, select the group
 	for(auto object : m_group->getObjects())
 	{
-		if(m_document->isSelected(object.data()))
+		if(m_document->isSelected(object.get()))
 		{
 			m_document->selectionAdd(m_group);
 			return;
@@ -34,7 +36,7 @@ void SelectGroupCommand::undo()
 	if(m_document->isSelected(m_group))
 	{
 		for(auto object : m_group->getObjects())
-			m_document->selectionAdd(object.data());
+			m_document->selectionAdd(object.get());
 	}
 }
 
@@ -56,7 +58,7 @@ void SelectObjectsInGroupCommand::redo()
 	if(m_document->isSelected(m_group))
 	{
 		for(auto object : m_group->getObjects())
-			m_document->selectionAdd(object.data());
+			m_document->selectionAdd(object.get());
 	}
 }
 
@@ -65,7 +67,7 @@ void SelectObjectsInGroupCommand::undo()
 	// If at least one of the object inside the group was selected, select the group
 	for(auto object : m_group->getObjects())
 	{
-		if(m_document->isSelected(object.data()))
+		if(m_document->isSelected(object.get()))
 		{
 			m_document->selectionAdd(m_group);
 			return;
@@ -76,7 +78,7 @@ void SelectObjectsInGroupCommand::undo()
 //****************************************************************************//
 
 AddObjectToGroupCommand::AddObjectToGroupCommand(panda::Group* group,
-											 QSharedPointer<panda::PandaObject> object,
+											 std::shared_ptr<panda::PandaObject> object,
 											 QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_group(group)
@@ -92,13 +94,13 @@ void AddObjectToGroupCommand::redo()
 
 void AddObjectToGroupCommand::undo()
 {
-	m_group->removeObject(m_object.data());
+	m_group->removeObject(m_object.get());
 }
 
 //****************************************************************************//
 
 RemoveObjectFromGroupCommand::RemoveObjectFromGroupCommand(panda::Group* group,
-											 QSharedPointer<panda::PandaObject> object,
+											 std::shared_ptr<panda::PandaObject> object,
 											 QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_group(group)
@@ -109,7 +111,7 @@ RemoveObjectFromGroupCommand::RemoveObjectFromGroupCommand(panda::Group* group,
 
 void RemoveObjectFromGroupCommand::redo()
 {
-	m_group->removeObject(m_object.data());
+	m_group->removeObject(m_object.get());
 }
 
 void RemoveObjectFromGroupCommand::undo()
@@ -121,7 +123,7 @@ void RemoveObjectFromGroupCommand::undo()
 
 EditGroupCommand::EditGroupCommand(panda::Group* group,
 								   QString newName,
-								   QVector<DataInfo> newDatas,
+								   std::vector<DataInfo> newDatas,
 								   QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_group(group)
@@ -132,7 +134,7 @@ EditGroupCommand::EditGroupCommand(panda::Group* group,
 	for(auto data : m_group->m_groupDatas)
 	{
 		DataInfo info;
-		info.data = data.data();
+		info.data = data.get();
 		info.name = data->getName();
 		info.help = data->getHelp();
 		m_prevDatas.push_back(info);
@@ -144,18 +146,18 @@ void EditGroupCommand::redo()
 {
 	m_group->m_groupName.setValue(m_newName);
 
-	QMap< panda::BaseData*, QSharedPointer<panda::BaseData> > datasPtrMap;
-	for(QSharedPointer<panda::BaseData> dataPtr : m_group->m_groupDatas)
-		datasPtrMap.insert(dataPtr.data(), dataPtr);
+	std::map< panda::BaseData*, std::shared_ptr<panda::BaseData> > datasPtrMap;
+	for(std::shared_ptr<panda::BaseData> dataPtr : m_group->m_groupDatas)
+		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
-	QList< QSharedPointer<panda::BaseData> > datasList;
+	std::vector< std::shared_ptr<panda::BaseData> > datasList;
 	for(auto info : m_newDatas)
 	{
 		info.data->setName(info.name);
 		info.data->setHelp(info.help);
-		m_group->m_datas.removeAll(info.data);
+		panda::helper::removeAll(m_group->m_datas, info.data);
 		m_group->m_datas.push_back(info.data);
-		datasList.push_back(datasPtrMap.value(info.data));
+		datasList.push_back(datasPtrMap.at(info.data));
 	}
 
 	m_group->m_groupDatas = datasList;
@@ -166,18 +168,18 @@ void EditGroupCommand::undo()
 {
 	m_group->m_groupName.setValue(m_prevName);
 
-	QMap< panda::BaseData*, QSharedPointer<panda::BaseData> > datasPtrMap;
-	for(QSharedPointer<panda::BaseData> dataPtr : m_group->m_groupDatas)
-		datasPtrMap.insert(dataPtr.data(), dataPtr);
+	std::map< panda::BaseData*, std::shared_ptr<panda::BaseData> > datasPtrMap;
+	for(std::shared_ptr<panda::BaseData> dataPtr : m_group->m_groupDatas)
+		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
-	QList< QSharedPointer<panda::BaseData> > datasList;
+	std::vector< std::shared_ptr<panda::BaseData> > datasList;
 	for(auto info : m_prevDatas)
 	{
 		info.data->setName(info.name);
 		info.data->setHelp(info.help);
-		m_group->m_datas.removeAll(info.data);
+		panda::helper::removeAll(m_group->m_datas, info.data);
 		m_group->m_datas.push_back(info.data);
-		datasList.push_back(datasPtrMap.value(info.data));
+		datasList.push_back(datasPtrMap.at(info.data));
 	}
 
 	m_group->m_groupDatas = datasList;

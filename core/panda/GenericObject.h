@@ -12,9 +12,8 @@
 #include <panda/types/Shader.h>
 #include <panda/helper/typeList.h>
 
-#include <QList>
-#include <QMap>
-#include <QSharedPointer>
+#include <map>
+#include <memory>
 
 class GenericObjectDrawStruct;
 
@@ -31,7 +30,7 @@ public:
 	virtual QString getTypesName(bool useFullDescription = false) const;
 	virtual int getCompatibleType(const BaseData* parent) const;
 
-	QList<int> m_allowedTypes;
+	std::vector<int> m_allowedTypes;
 };
 
 class PANDA_CORE_API GenericData : public BaseGenericData
@@ -102,8 +101,8 @@ public:
 		bool input, output;
 		QString name, help;
 	};
-	typedef QList<GenericDataDefinition> GenericDataDefinitionList;
-	typedef QList<BaseData*> DataList;
+	typedef std::vector<GenericDataDefinition> GenericDataDefinitionList;
+	typedef std::vector<BaseData*> DataList;
 
 	explicit GenericObject(PandaDocument* parent = nullptr);
 	virtual ~GenericObject();
@@ -115,9 +114,9 @@ public:
 
 	// use the GENERIC_OBJECT macro to create these functions
 	virtual void invokeFunction(int type, DataList& list) = 0;
-	virtual QList<int> getRegisteredTypes() = 0;
+	virtual std::vector<int> getRegisteredTypes() = 0;
 
-	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected = nullptr);
+	virtual void save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*>* selected = nullptr);
 	virtual void load(QDomElement& elem);
 
 	virtual BaseData* createDatas(int type, int index = -1);
@@ -137,8 +136,8 @@ private:
 
 	virtual void registerFunctions() {}
 
-	typedef QSharedPointer<BaseData> BaseDataPtr;
-	typedef QList<BaseDataPtr> DataPtrList;
+	typedef std::shared_ptr<BaseData> BaseDataPtr;
+	typedef std::vector<BaseDataPtr> DataPtrList;
 
 	struct CreatedDatasStruct
 	{
@@ -149,9 +148,9 @@ private:
 	BaseGenericData* m_genericData;
 	GenericDataDefinitionList m_dataDefinitions;
 
-	typedef QSharedPointer<CreatedDatasStruct> CreatedDatasStructPtr;
-	QList<CreatedDatasStructPtr> m_createdDatasStructs;
-	QMap<BaseData*, CreatedDatasStructPtr> m_createdDatasMap;
+	typedef std::shared_ptr<CreatedDatasStruct> CreatedDatasStructPtr;
+	std::vector<CreatedDatasStructPtr> m_createdDatasStructs;
+	std::map<BaseData*, CreatedDatasStructPtr> m_createdDatasMap;
 
 	void createUndoCommands(const CreatedDatasStructPtr& createdData);
 };
@@ -189,7 +188,8 @@ typedef std::tuple<PReal, types::Color, types::Point, types::Gradient> allAnimat
 #define GENERIC_OBJECT(T, L)								\
 	protected:												\
 	typedef void(T::*funcPtr)(DataList&);					\
-	QMap<int, funcPtr> m_functions;							\
+	typedef std::pair<int, funcPtr> FuncPair;				\
+	std::vector<FuncPair> m_functions;						\
 	struct functionCreatorWrapper							\
 	{														\
 		T* object;											\
@@ -202,7 +202,7 @@ typedef std::tuple<PReal, types::Color, types::Point, types::Gradient> allAnimat
 	};														\
 	void registerFunction(int type, funcPtr ptr)			\
 	{														\
-		m_functions[type] = ptr;							\
+		m_functions.emplace(type, ptr);						\
 	}														\
 	private:												\
 	virtual void registerFunctions()						\
@@ -211,13 +211,22 @@ typedef std::tuple<PReal, types::Color, types::Point, types::Gradient> allAnimat
 			(functionCreatorWrapper(this));					\
 	}														\
 	public:													\
-	virtual QList<int> getRegisteredTypes()					\
+	virtual std::vector<int> getRegisteredTypes()			\
 	{														\
-		return m_functions.keys();							\
+		std::vector<int> keys;								\
+		keys.reserve(m_functions.size());					\
+		for (const auto& func : m_functions)				\
+			keys.push_back(func.first);						\
+		return keys;										\
 	}														\
 	virtual void invokeFunction(int type, DataList& list)	\
 	{														\
-		(this->*m_functions[type])(list);					\
+		auto it = std::find(m_functions.begin(),			\
+			m_functions.end(), [type](const FuncPair& func){\
+				return func.first == type;					\
+			});												\
+		if(it != m_functions.end())							\
+			(this->*(it->second))(list);					\
 	}
 
 } // namespace panda

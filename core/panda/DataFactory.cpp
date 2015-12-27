@@ -13,41 +13,41 @@ DataFactory* DataFactory::getInstance()
 
 const DataFactory::DataEntry* DataFactory::getEntry(QString className) const
 {
-	return m_registry.value(className);
+	return m_registry.at(className);
 }
 
 const DataFactory::DataEntry* DataFactory::getEntry(int type) const
 {
-	return m_typeRegistry.value(type);
+	return m_typeRegistry.at(type);
 }
 
-QSharedPointer<BaseData> DataFactory::create(QString className, const QString& name, const QString& help, PandaObject* owner) const
+std::shared_ptr<BaseData> DataFactory::create(QString className, const QString& name, const QString& help, PandaObject* owner) const
 {
-	if(m_registry.contains(className))
-		return m_registry.value(className)->creator->create(name, help, owner);
+	if (m_registry.find(className) != m_registry.end())
+		return m_registry.at(className)->creator->create(name, help, owner);
 
 	std::cerr << "Data factory has no entry for " << className.toStdString() << std::endl;
-	return QSharedPointer<BaseData>();
+	return std::shared_ptr<BaseData>();
 }
 
-QSharedPointer<BaseData> DataFactory::create(int type, const QString& name, const QString& help, PandaObject* owner) const
+std::shared_ptr<BaseData> DataFactory::create(int type, const QString& name, const QString& help, PandaObject* owner) const
 {
-	if(m_typeRegistry.contains(type))
-		return m_typeRegistry.value(type)->creator->create(name, help, owner);
+	if (m_typeRegistry.find(type) != m_typeRegistry.end())
+		return m_typeRegistry.at(type)->creator->create(name, help, owner);
 
 	std::cerr << "Data factory has no entry for type " << type << std::endl;
-	return QSharedPointer<BaseData>();
+	return std::shared_ptr<BaseData>();
 }
 
-void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, QSharedPointer<BaseDataCreator> creator)
+void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, std::shared_ptr<BaseDataCreator> creator)
 {
 	QString className = theClass->getTemplateName();
-	DataEntry* entry = m_registry.value(className);
+	DataEntry* entry = m_registry.at(className);
 	if(!entry)
 	{
-		QSharedPointer<DataEntry> newEntry = QSharedPointer<DataEntry>::create();
+		std::shared_ptr<DataEntry> newEntry = std::make_shared<DataEntry>();
 		m_entries.push_back(newEntry);
-		entry = newEntry.data();
+		entry = newEntry.get();
 	}
 
 	entry->typeName = dataTrait->typeName();

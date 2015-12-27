@@ -208,7 +208,7 @@ QVector<PandaObject*> Scheduler::expandObjectsList(QVector<PandaObject*> objects
 		{
 			objects.removeAt(i);
 			for(auto object : group->getObjects())
-				objects.push_back(object.data());
+				objects.push_back(object.get());
 		}
 		else
 			++i;
@@ -262,7 +262,7 @@ void Scheduler::buildUpdateGraph()
 	// Initialize the tasks list
 	QVector<PandaObject*> objects;
 	for(auto object : m_document->getObjects())
-		objects.push_back(object.data());
+		objects.push_back(object.get());
 	objects = expandObjectsList(objects);
 	int nb = objects.size();
 	m_updateTasks.clear();

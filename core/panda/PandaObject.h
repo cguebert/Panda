@@ -5,7 +5,8 @@
 #include <panda/Data.h>
 #include <panda/BaseClass.h>
 
-#include <QSharedPointer>
+#include <memory>
+#include <vector>
 
 namespace panda
 {
@@ -33,9 +34,9 @@ public:
 	using DataNode::addOutput;
 
 	BaseData* getData(const QString& name) const;
-	QList<BaseData*> getDatas() const;
-	QList<BaseData*> getInputDatas() const;
-	QList<BaseData*> getOutputDatas() const;
+	std::vector<BaseData*> getDatas() const;
+	std::vector<BaseData*> getInputDatas() const;
+	std::vector<BaseData*> getOutputDatas() const;
 
 	BaseData::BaseInitData initData(QString name, QString help);
 
@@ -52,7 +53,7 @@ public:
 	virtual void beginStep();
 	virtual void endStep();
 
-	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*> *selected = nullptr);
+	virtual void save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*> *selected = nullptr);
 	virtual void load(QDomElement &elem);
 
 	virtual void dataSetParent(BaseData* data, BaseData* parent);
@@ -78,7 +79,7 @@ protected:
 	mutable bool m_isUpdating;
 	bool m_destructing;
 	QString m_name;
-	QList<BaseData*> m_datas;
+	std::vector<BaseData*> m_datas;
 
 	void setInternalData(const QString& name, quint32 index);
 	friend class ObjectFactory;
@@ -113,7 +114,7 @@ inline void PandaObject::beginStep()
 inline void PandaObject::endStep()
 { m_isInStep = false; }
 
-inline QList<BaseData*> PandaObject::getDatas() const
+inline std::vector<BaseData*> PandaObject::getDatas() const
 { return m_datas; }
 
 inline void PandaObject::setInternalData(const QString& name, quint32 index)

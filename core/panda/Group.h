@@ -20,14 +20,14 @@ public:
 	explicit Group(PandaDocument* parent = nullptr);
 	virtual ~Group();
 
-	virtual void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*>* selected = nullptr);
+	virtual void save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*>* selected = nullptr);
 	virtual void load(QDomElement& elem);
 
 	virtual void reset();
 
 	QString getGroupName();
 
-	typedef QSharedPointer<PandaObject> ObjectPtr;
+	typedef std::shared_ptr<PandaObject> ObjectPtr;
 	typedef QVector<ObjectPtr> ObjectsList;
 	const ObjectsList& getObjects() const;
 
@@ -37,8 +37,8 @@ public:
 	virtual void beginStep();
 	virtual void endStep();
 
-	typedef QSharedPointer<BaseData> DataPtr;
-	typedef QList<DataPtr> GroupDataList;
+	typedef std::shared_ptr<BaseData> DataPtr;
+	typedef std::vector<DataPtr> GroupDataList;
 
 	void addGroupData(DataPtr data);
 	const GroupDataList& getGroupDatas(); // Can modify the datas, not the list
@@ -50,7 +50,7 @@ protected:
 	Data<QString> m_groupName;
 
 	ObjectsList m_objects;
-	QMap<PandaObject*, QPointF> m_positions;
+	std::map<PandaObject*, QPointF> m_positions;
 	GroupDataList m_groupDatas;
 };
 
@@ -64,7 +64,7 @@ inline void Group::setPosition(PandaObject* object, QPointF pos)
 { m_positions[object] = pos; }
 
 inline QPointF Group::getPosition(PandaObject* object) const
-{ return m_positions.value(object); }
+{ return m_positions.at(object); }
 
 //****************************************************************************//
 

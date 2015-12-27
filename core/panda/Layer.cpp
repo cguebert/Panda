@@ -78,7 +78,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 
 	m_renderFrameBuffer->release();
 
-	QOpenGLFramebufferObject::blitFramebuffer(m_displayFrameBuffer.data(), m_renderFrameBuffer.data());
+	QOpenGLFramebufferObject::blitFramebuffer(m_displayFrameBuffer.get(), m_renderFrameBuffer.get());
 }
 
 void BaseLayer::iterateRenderers()
@@ -159,7 +159,7 @@ void Layer::postCreate()
 	int i = 1;
 	for(auto obj : m_parentDocument->getObjects())
 	{
-		if(dynamic_cast<Layer*>(obj.data()) && obj!=this)
+		if(dynamic_cast<Layer*>(obj.get()) && obj.get() != this)
 			++i;
 	}
 

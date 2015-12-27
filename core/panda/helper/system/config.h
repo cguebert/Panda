@@ -25,6 +25,7 @@ typedef float PReal;
 #   ifdef _MSC_VER
 #       pragma warning(disable : 4231)
 #       pragma warning(disable : 4910)
+#		pragma warning(disable : 4251)
 #   endif
 #endif
 
