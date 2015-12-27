@@ -6,7 +6,8 @@
 #include <QByteArray>
 #include <QString>
 #include <QStringList>
-#include <QVector>
+
+#include <vector>
 
 namespace panda
 {
@@ -31,7 +32,7 @@ public:
 	QStringList enumerateFilesInDir(const QString& dir, const QString& nameFilter = QString());
 
 protected:
-	QVector<QString> m_paths;
+	std::vector<QString> m_paths;
 };
 
 extern PANDA_CORE_API FileRepository DataRepository; /// Default repository

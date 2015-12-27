@@ -4,7 +4,6 @@
 #include <panda/types/DataTraits.h>
 #include <panda/types/Animation.h>
 
-#include <QVector>
 #include <QDomDocument>
 
 namespace panda

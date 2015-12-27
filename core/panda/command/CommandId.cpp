@@ -1,9 +1,9 @@
 #include <panda/command/CommandId.h>
 
-#include <QMap>
+#include <map>
 #include <typeindex>
 
-typedef QMap<std::type_index, int> CommandIdMap;
+typedef std::map<std::type_index, int> CommandIdMap;
 
 static CommandIdMap& getCommandIdMap()
 {
@@ -15,8 +15,8 @@ int getCommandId(const std::type_info& type)
 {
 	CommandIdMap& commandIdMap = getCommandIdMap();
 	std::type_index index(type);
-	if(commandIdMap.contains(index))
-		return commandIdMap.value(index);
+	if(commandIdMap.count(index))
+		return commandIdMap.at(index);
 	else
 	{
 		static int i = 1; // start at 1

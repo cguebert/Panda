@@ -3,7 +3,7 @@
 
 #include <panda/BaseClass.h>
 
-#include <QList>
+#include <vector>
 
 namespace panda
 {
@@ -12,7 +12,7 @@ class PANDA_CORE_API DataNode
 {
 public:
 	PANDA_ABSTRACT_CLASS(DataNode, void)
-	typedef QList<DataNode*> NodesList;
+	typedef std::vector<DataNode*> NodesList;
 
 	DataNode();
 	virtual ~DataNode();
@@ -87,13 +87,13 @@ inline void DataNode::doAddInput(DataNode& node)
 { m_inputs.push_back(&node); }
 
 inline void DataNode::doRemoveInput(DataNode& node)
-{ m_inputs.removeAll(&node); }
+{ m_inputs.erase(std::remove(m_inputs.begin(), m_inputs.end(), &node), m_inputs.end()); }
 
 inline void DataNode::doAddOutput(DataNode& node)
 { m_outputs.push_back(&node); }
 
 inline void DataNode::doRemoveOutput(DataNode& node)
-{ m_outputs.removeAll(&node); }
+{	m_outputs.erase(std::remove(m_outputs.begin(), m_outputs.end(), &node), m_outputs.end()); }
 
 } // namespace panda
 

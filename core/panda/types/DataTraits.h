@@ -4,7 +4,6 @@
 #include <panda/core.h>
 #include <panda/types/DataTypeId.h>
 
-#include <QVector>
 #include <QDomDocument>
 
 #include <vector>
@@ -127,72 +126,6 @@ public:
 //****************************************************************************//
 
 template<class T>
-class DataTrait< QVector<T> >
-{
-public:
-	typedef QVector<T> vector_type;
-	typedef T base_type;
-	typedef T value_type;
-	typedef DataTrait<base_type> base_trait;
-
-	enum { is_single = 0 };
-	enum { is_vector = 1 };
-	enum { is_animation = 0 };
-	static bool isDisplayed() { return base_trait::isDisplayed(); }
-	static bool isPersistent() { return base_trait::isPersistent(); }
-
-	static QString valueTypeName() { return base_trait::valueTypeName(); }
-	static QString valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
-	static QString typeName() { return valueTypeName() + "_vector"; }
-	static QString typeDescription() { return "vector of " + valueTypeNamePlural(); }
-	static const std::type_info& typeInfo() { return typeid(vector_type); }
-	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
-	static int fullTypeId() { return DataTypeId::getFullTypeOfVector(valueTypeId()); }
-	static int size(const vector_type& v) { return v.size(); }
-	static void clear(vector_type& v, int size, bool init)
-	{
-		if(init)
-			v.clear();
-		v.resize(size);
-	}
-	static const void* getVoidValue(const vector_type& vec, int index)
-	{
-		if(index < 0 || index >= vec.size())
-			return nullptr;
-		return &vec[index];
-	}
-	static void* getVoidValue(vector_type& vec, int index)
-	{
-		if(index < 0 || index >= vec.size())
-			return nullptr;
-		return &vec[index];
-	}
-	static void writeValue(QDomDocument& doc, QDomElement& elem, const vector_type& vec)
-	{
-		for(auto& v : vec)
-		{
-			QDomElement node = doc.createElement("Value");
-			base_trait::writeValue(doc, node, v);
-			elem.appendChild(node);
-		}
-	}
-	static void readValue(QDomElement& elem, vector_type& vec)
-	{
-		vec.clear();
-		T t = T();
-		QDomElement e = elem.firstChildElement("Value");
-		while(!e.isNull())
-		{
-			base_trait::readValue(e, t);
-			vec.push_back(t);
-			e = e.nextSiblingElement("Value");
-		}
-	}
-};
-
-//****************************************************************************//
-
-template<class T>
 class DataTrait< std::vector<T> >
 {
 public:
@@ -211,6 +144,7 @@ public:
 	static QString valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
 	static QString typeName() { return valueTypeName() + "_vector"; }
 	static QString typeDescription() { return "vector of " + valueTypeNamePlural(); }
+	static const std::type_info& typeInfo() { return typeid(vector_type); }
 	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
 	static int fullTypeId() { return DataTypeId::getFullTypeOfVector(valueTypeId()); }
 	static int size(const vector_type& v) { return v.size(); }

@@ -6,12 +6,12 @@
 #include <atomic>
 #include <functional>
 
-#include <QMap>
-#include <QVector>
 #include <QThread>
 #include <QRunnable>
 #include <QMutex>
 #include <QWaitCondition>
+
+#include <vector>
 
 #include <boost/lockfree/queue.hpp>
 
@@ -51,10 +51,10 @@ protected:
 	void readyTask(const SchedulerTask* task); // Add the task to the ready queue
 	void testForEnd();
 
-	QVector<PandaObject*> expandObjectsList(QVector<PandaObject*> objects);
-	QVector<DataNode*> computeConnected(QVector<DataNode*> nodes) const; // Get the outputs of the nodes, sorted by distance
-	QVector<DataNode*> computeConnected(DataNode* node) const;
-	QVector<int> getTasks(QVector<DataNode*> nodes) const;
+	std::vector<PandaObject*> expandObjectsList(std::vector<PandaObject*> objects);
+	std::vector<DataNode*> computeConnected(std::vector<DataNode*> nodes) const; // Get the outputs of the nodes, sorted by distance
+	std::vector<DataNode*> computeConnected(DataNode* node) const;
+	std::vector<int> getTasks(std::vector<DataNode*> nodes) const;
 	void prepareLaterUpdate(BaseData* data);
 
 	typedef std::function<void(PandaObject* object)> ObjectFunctor;
@@ -69,17 +69,17 @@ protected:
 		bool dirtyAtStart; // Value of dirty at the start of the timestep
 		bool restrictToMainThread; // For Objects that use OpenGL, update them only on the main thread
 		PandaObject* object; // Object concerned by this task
-		QVector<int> outputs; // Indices of other SchedulerTasks	
+		std::vector<int> outputs; // Indices of other SchedulerTasks	
 	};
 
 	PandaDocument* m_document;
-	QVector<DataNode*> m_setDirtyList; // At each step, all these nodes will always be dirty (connected to the mouse position or the animation time)
-	QMap< BaseData*, QPair<QVector<DataNode*>, QVector<int> > > m_laterUpdatesMap; // For nodes that will get dirty later (like Buffer or Replicator)
+	std::vector<DataNode*> m_setDirtyList; // At each step, all these nodes will always be dirty (connected to the mouse position or the animation time)
+	std::map< BaseData*, QPair<std::vector<DataNode*>, std::vector<int> > > m_laterUpdatesMap; // For nodes that will get dirty later (like Buffer or Replicator)
 
-	QVector<SchedulerTask> m_updateTasks;
-	QMap<PandaObject*, int> m_objectsIndexMap;
+	std::vector<SchedulerTask> m_updateTasks;
+	std::map<PandaObject*, int> m_objectsIndexMap;
 
-	QVector<SchedulerThread*> m_updateThreads;
+	std::vector<SchedulerThread*> m_updateThreads;
 
 	boost::lockfree::queue<const SchedulerTask*> m_readyTasks, m_readyMainTasks;
 	std::atomic_int m_nbReadyTasks;

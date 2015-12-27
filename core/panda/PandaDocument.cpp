@@ -213,11 +213,11 @@ bool PandaDocument::readTextDocument(QString& text)
 
 bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsSelection& selected)
 {
-	typedef QPair<BaseData*, BaseData*> DataPair;
-	QList<DataPair> links;
+	typedef std::pair<BaseData*, BaseData*> DataPair;
+	std::vector<DataPair> links;
 
-	typedef QPair<quint32, quint32> IntPair;
-	QList<IntPair> dockedObjects;
+	typedef std::pair<quint32, quint32> IntPair;
+	std::vector<IntPair> dockedObjects;
 
 	// Saving objects
 	for(auto object : selected)
@@ -234,7 +234,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 		{
 			BaseData* parent = data->getParent();
 			if(parent && helper::contains(selected, parent->getOwner()))
-				links.push_back(qMakePair(data, parent));
+				links.push_back(std::make_pair(data, parent));
 		}
 
 		// Preparing dockables list for docks
@@ -242,7 +242,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 		if(dock)
 		{
 			for(auto dockable : dock->getDockedObjects())
-				dockedObjects.push_back(qMakePair(dock->getIndex(), dockable->getIndex()));
+				dockedObjects.push_back(std::make_pair(dock->getIndex(), dockable->getIndex()));
 		}
 
 		emit savingObject(doc, elem, object);
@@ -274,7 +274,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 bool PandaDocument::loadDoc(QDomElement& root)
 {
 	emit startLoading();
-	QMap<quint32, quint32> importIndicesMap;
+	std::map<quint32, quint32> importIndicesMap;
 	auto factory = ObjectFactory::getInstance();
 
 	// Loading objects

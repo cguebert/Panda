@@ -4,9 +4,9 @@
 #include <panda/core.h>
 
 #include <unordered_map>
+#include <memory>
 
 #include <QOpenGLShader>
-#include <QSharedPointer>
 
 namespace panda
 {
@@ -35,7 +35,7 @@ private:
 
 		unsigned int m_sourceHash;
 		QOpenGLShader::ShaderType m_type;
-		QSharedPointer<QOpenGLShader> m_shader;
+		std::shared_ptr<QOpenGLShader> m_shader;
 		bool m_used;
 	};
 

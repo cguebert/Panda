@@ -3,7 +3,11 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
 
+#include <panda/helper/algorithm.h>
+
+#include <deque>
 #include <set>
+#include <map>
 
 namespace panda
 {
@@ -239,14 +243,14 @@ void Mesh::removeUnusedPoints()
 	clearTrianglesAroundEdge();
 	clearBorderElementLists();
 
-	QMap<PointID, PointID> pointsMap;
+	std::map<PointID, PointID> pointsMap;
 	SeqPoints newPoints;
 	int nbPoints = 0;
 	for(Triangle& t : m_triangles)
 	{
 		for(auto& id : t)
 		{
-			if(!pointsMap.contains(id))
+			if(!pointsMap.count(id))
 			{
 				pointsMap[id] = nbPoints++;
 				newPoints.push_back(m_points[id]);
@@ -272,7 +276,7 @@ void Mesh::createEdgeList()
 		clearTrianglesAroundEdge();
 	}
 
-	QMap<Edge, int> edgeMap;
+	std::map<Edge, int> edgeMap;
 	for(Triangle t : m_triangles)
 	{
 		for(int i=0; i<3; ++i)
@@ -282,7 +286,7 @@ void Mesh::createEdgeList()
 
 			const Edge e = ((p1<p2) ? makeEdge(p1, p2) : makeEdge(p2, p1));
 
-			if(!edgeMap.contains(e))
+			if (!edgeMap.count(e))
 			{
 				const int edgeId = edgeMap.size();
 				edgeMap[e] = edgeId;
@@ -302,7 +306,7 @@ void Mesh::createEdgesInTriangleList()
 
 	if(!hasEdges())
 	{
-		QMap<Edge, int> edgeMap;
+		std::map<Edge, int> edgeMap;
 
 		for(int i=0; i<nbTri; ++i)
 		{
@@ -314,7 +318,7 @@ void Mesh::createEdgesInTriangleList()
 
 				const Edge e = ((p1<p2) ? makeEdge(p1, p2) : makeEdge(p2, p1));
 
-				if(!edgeMap.contains(e))
+				if (!edgeMap.count(e))
 				{
 					const int edgeId = edgeMap.size();
 					edgeMap[e] = edgeId;
@@ -466,7 +470,7 @@ void Mesh::createTriangles()
 	if(hasTriangles())
 		clearTriangles();
 
-	QList<int> tmpEdgesId;
+	std::deque<int> tmpEdgesId;
 	const int nbE = nbEdges();
 	for(int i=0; i<nbE; ++i)
 		tmpEdgesId.push_back(i);
@@ -507,15 +511,15 @@ void Mesh::createTriangles()
 
 				m_trianglesAroundEdge[eid].push_back(triId);
 				if(m_trianglesAroundEdge[eid].size() == 2)
-					tmpEdgesId.removeOne(eid);
+					helper::removeOne(tmpEdgesId, eid);
 
 				m_trianglesAroundEdge[e2id].push_back(triId);
-				if(m_trianglesAroundEdge[e2id].size() == 2)
-					tmpEdgesId.removeOne(e2id);
+				if (m_trianglesAroundEdge[e2id].size() == 2)
+					helper::removeOne(tmpEdgesId, e2id);
 
 				m_trianglesAroundEdge[e3id].push_back(triId);
 				if(m_trianglesAroundEdge[e3id].size() == 2)
-					tmpEdgesId.removeOne(e3id);
+					helper::removeOne(tmpEdgesId, e3id);
 			}
 		}
 	}

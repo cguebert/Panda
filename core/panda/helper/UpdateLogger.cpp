@@ -122,7 +122,7 @@ void UpdateLogger::startLog(PandaDocument* doc)
 	m_events.resize(m_nbThreads);
 	m_logging = true;
 
-	m_logLevelMap.fill(-1, m_nbThreads);
+	m_logLevelMap.resize(m_nbThreads, -1);
 
 	m_nodeStates.clear();
 	for(auto object : doc->getObjects())
@@ -172,7 +172,7 @@ void UpdateLogger::setNbThreads(int nbThreads)
 	}
 }
 
-typedef QMap<std::thread::id, int> ThreadIdMap;
+typedef std::map<std::thread::id, int> ThreadIdMap;
 inline ThreadIdMap& getThreadIdMap()
 {
 	static ThreadIdMap theMap;

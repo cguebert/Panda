@@ -7,8 +7,6 @@
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/command/RemoveGenericDataCommand.h>
 
-#include <QApplication>
-
 #include <iostream>
 
 namespace
@@ -57,7 +55,7 @@ void GenericObject::setupGenericObject(BaseGenericData& data, const GenericDataD
 			if (name == defList[j].name)
 			{
 				std::cerr << "Fatal error : duplicate data name (" << name.toStdString() << ") in a GenericObject" << std::endl;
-				QCoreApplication::exit(-2);
+				std::terminate();
 			}
 		}
 	}
@@ -65,7 +63,7 @@ void GenericObject::setupGenericObject(BaseGenericData& data, const GenericDataD
 	if (!nbInputDatas)
 	{
 		std::cerr << "Fatal error : no input data in a GenericObject" << std::endl;
-		QCoreApplication::exit(-3);
+		std::terminate();
 	}
 
 	registerFunctions();	// Create template functions
@@ -539,7 +537,7 @@ QString BaseGenericData::getTypesName(bool useFullDescription) const
 	if(m_allowedTypes.empty())
 		return "";
 
-	QVector<QString> sortedTypeNames;
+	std::vector<QString> sortedTypeNames;
 	for(auto type : m_allowedTypes)
 	{
 		auto trait = DataTraitsList::getTrait(type);
@@ -551,7 +549,7 @@ QString BaseGenericData::getTypesName(bool useFullDescription) const
 				sortedTypeNames.push_back(trait->typeName());
 		}
 	}
-	qSort(sortedTypeNames);
+	std::sort(sortedTypeNames.begin(), sortedTypeNames.end());
 
 	QString types("\n (");
 	for(int i=0, nb=sortedTypeNames.size(); i<nb; ++i)

@@ -84,19 +84,6 @@ public:
 };
 
 template<class T>
-class DataAccessor< QVector<T> > : public DataAccessorVector< QVector<T> >
-{
-public:
-	typedef DataAccessorVector< QVector<T> > Inherit;
-	typedef typename Inherit::container_type container_type;
-	typedef typename Inherit::value_type value_type;
-	DataAccessor(container_type& c) : Inherit(c) {}
-	template<class U> void operator=(const U& v) { Inherit::operator=(v); }
-	container_type& operator<<(const container_type& v) { return Inherit::operator<<(v); }
-	container_type& operator<<(const value_type& v) { return Inherit::operator<<(v); }
-};
-
-template<class T>
 class DataAccessor< std::vector<T> > : public DataAccessorVector< std::vector<T> >
 {
 public:

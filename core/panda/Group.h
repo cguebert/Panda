@@ -28,7 +28,7 @@ public:
 	QString getGroupName();
 
 	typedef std::shared_ptr<PandaObject> ObjectPtr;
-	typedef QVector<ObjectPtr> ObjectsList;
+	typedef std::vector<ObjectPtr> ObjectsList;
 	const ObjectsList& getObjects() const;
 
 	virtual void addObject(ObjectPtr object);
@@ -53,6 +53,12 @@ protected:
 	std::map<PandaObject*, QPointF> m_positions;
 	GroupDataList m_groupDatas;
 };
+
+inline QString Group::getGroupName()
+{ return m_groupName.getValue(); }
+
+inline const Group::ObjectsList& Group::getObjects() const
+{ return m_objects; }
 
 inline void Group::addGroupData(DataPtr data)
 { m_groupDatas.push_back(data); }
@@ -135,15 +141,6 @@ protected:
 };
 
 //****************************************************************************//
-
-inline QString Group::getGroupName()
-{ return m_groupName.getValue(); }
-
-inline const Group::ObjectsList& Group::getObjects() const
-{ return m_objects; }
-
-inline void Group::addObject(ObjectPtr object)
-{ if(!m_objects.contains(object)) m_objects.push_back(object); }
 
 inline QString GroupWithLayer::getLayerName() const
 { if(m_layer) return m_layer->getLayerName(); else return m_groupName.getValue(); }

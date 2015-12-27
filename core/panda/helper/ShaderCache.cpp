@@ -52,7 +52,7 @@ QOpenGLShader* ShaderCache::getShader(QOpenGLShader::ShaderType type, QByteArray
 			if(item.m_type == type)
 			{
 				item.m_used = true;
-				return item.m_shader.data();
+				return item.m_shader.get();
 			}
 			++it;
 		} while(it != itEnd && it->first == hash);
@@ -64,12 +64,12 @@ QOpenGLShader* ShaderCache::addShader(QOpenGLShader::ShaderType type, QByteArray
 {
 	CacheItem item(type, hash);
 
-	item.m_shader = QSharedPointer<QOpenGLShader>(new QOpenGLShader(type, this));
+	item.m_shader = std::make_shared<QOpenGLShader>(type, this);
 	item.m_shader->compileSourceCode(sourceCode);
 
 	m_cache.emplace(hash, item);
 
-	return item.m_shader.data();
+	return item.m_shader.get();
 }
 
 } // namespace helper

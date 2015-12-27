@@ -186,7 +186,7 @@ inline Color Color::white()
 
 #ifndef PANDA_BUILD_CORE
 extern template class PANDA_CORE_API Data<Color>;
-extern template class PANDA_CORE_API Data< QVector<Color> >;
+extern template class PANDA_CORE_API Data< std::vector<Color> >;
 extern template class PANDA_CORE_API Animation<Color>;
 extern template class PANDA_CORE_API Data< Animation<Color> >;
 #endif

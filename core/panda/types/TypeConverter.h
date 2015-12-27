@@ -5,7 +5,7 @@
 #include <panda/types/DataTypeId.h>
 #include <panda/types/DataTraits.h>
 
-#include <QSharedPointer>
+#include <memory>
 
 namespace panda
 {
@@ -25,7 +25,7 @@ public:
 	static bool canConvert(int fromType, int toType);
 	static void convert(int fromType, int toType, const void* valueFrom, void* valueTo);
 
-	typedef QSharedPointer<BaseConverterFunctor> FunctorPtr;
+	typedef std::shared_ptr<BaseConverterFunctor> FunctorPtr;
 private:
 	template<class F, class T> friend class RegisterTypeConverter;
 
@@ -43,7 +43,7 @@ public:
 		ensureTypesAreRegistered();
 		int fromType = DataTypeId::getIdOf<From>();
 		int toType = DataTypeId::getIdOf<To>();
-		QSharedPointer<BaseConverterFunctor> functor(new TypeConverterGlobal<From, To>);
+		auto functor = std::make_shared<TypeConverterGlobal<From, To>>();
 
 		TypeConverter::registerFunctor(fromType, toType, functor);
 	}
@@ -53,7 +53,7 @@ public:
 		ensureTypesAreRegistered();
 		int fromType = DataTypeId::getIdOf<From>();
 		int toType = DataTypeId::getIdOf<To>();
-		QSharedPointer<BaseConverterFunctor> functor(new TypeConverterFunctor<From, To>(function));
+		auto functor = std::make_shared<TypeConverterGlobal<From, To>>(function);
 
 		TypeConverter::registerFunctor(fromType, toType, functor);
 	}

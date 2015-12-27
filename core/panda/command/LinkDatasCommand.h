@@ -4,7 +4,7 @@
 #include <panda/core.h>
 
 #include <QUndoCommand>
-#include <QVector>
+#include <vector>
 
 namespace panda
 {
@@ -35,7 +35,7 @@ protected:
 				m_newParentDataName;
 	};
 
-	QVector<LinkStruct> m_links;
+	std::vector<LinkStruct> m_links;
 };
 
 #endif

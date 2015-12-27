@@ -131,13 +131,13 @@ PANDA_CORE_API void DataTrait<Color>::readValue(QDomElement& elem, Color& v)
 //****************************************************************************//
 
 template class PANDA_CORE_API Data<Color>;
-template class PANDA_CORE_API Data< QVector<Color> >;
+template class PANDA_CORE_API Data< std::vector<Color> >;
 
 template class PANDA_CORE_API Animation<Color>;
 template class PANDA_CORE_API Data< Animation<Color> >;
 
 int colorDataClass = RegisterData< Color >();
-int colorVectorDataClass = RegisterData< QVector<Color> >();
+int colorVectorDataClass = RegisterData< std::vector<Color> >();
 int colorAnimationDataClass = RegisterData< Animation<Color> >();
 
 } // namespace types

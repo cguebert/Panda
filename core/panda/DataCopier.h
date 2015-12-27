@@ -58,7 +58,7 @@ bool DataCopier<T>::copyData(Data<T> *dest, const BaseData* from)
 	else if(fromTrait->isVector())
 	{
 		// The from is a vector of T
-		const Data< QVector<T> >* castedVectorFrom = dynamic_cast<const Data< QVector<T> >*>(from);
+		const Data< std::vector<T> >* castedVectorFrom = dynamic_cast<const Data< std::vector<T> >*>(from);
 		if(castedVectorFrom)
 		{
 			if(castedVectorFrom->getValue().size())
@@ -98,11 +98,11 @@ bool DataCopier<T>::copyData(Data<T> *dest, const BaseData* from)
 //****************************************************************************//
 
 template<class T>
-class DataCopier< QVector<T> >
+class DataCopier< std::vector<T> >
 {
 public:
 	typedef T value_type;
-	typedef QVector<value_type> vector_type;
+	typedef std::vector<value_type> vector_type;
 	typedef types::Animation<value_type> animation_type;
 	typedef Data<vector_type> data_type;
 

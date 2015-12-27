@@ -1,7 +1,7 @@
 #include <panda/types/DataTraits.h>
 #include <panda/types/DataTypeId.h>
 
-#include <QMap>
+#include <map>
 #include <typeindex>
 
 namespace panda
@@ -10,7 +10,7 @@ namespace panda
 namespace types
 {
 
-typedef QMap<int, AbstractDataTrait*> TraitsMap;
+typedef std::map<int, AbstractDataTrait*> TraitsMap;
 
 static TraitsMap& getTraitsMap()
 {
@@ -21,8 +21,8 @@ static TraitsMap& getTraitsMap()
 AbstractDataTrait* DataTraitsList::getTrait(int fullTypeId)
 {
 	const TraitsMap& traitsMap = getTraitsMap();
-	if(traitsMap.contains(fullTypeId))
-		return traitsMap.value(fullTypeId);
+	if(traitsMap.count(fullTypeId))
+		return traitsMap.at(fullTypeId);
 	else
 		return nullptr;
 }
@@ -36,8 +36,8 @@ void DataTraitsList::registerTrait(AbstractDataTrait* trait)
 {
 	TraitsMap& traitsMap = getTraitsMap();
 	int index = trait->fullTypeId();
-	if(!traitsMap.contains(index))
-		traitsMap[index] = trait;
+	if(!traitsMap.count(index))
+		traitsMap.emplace(index, trait);
 }
 
 } // namespace types

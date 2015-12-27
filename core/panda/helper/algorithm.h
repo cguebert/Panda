@@ -39,6 +39,17 @@ int removeAll(Container& container, const Value& value)
 	return dist;
 }
 
+template <class Container, class Value>
+bool removeOne(Container& container, const Value& value)
+{
+	auto it = std::find(container.begin(), container.end(), value);
+	if (it == container.end())
+		return false;
+
+	container.erase(it);
+	return true;
+}
+
 template <class Container, class Function>
 int removeIf(Container& container, const Function& function)
 {
@@ -46,6 +57,12 @@ int removeIf(Container& container, const Function& function)
 	int dist = std::distance(last, container.end());
 	container.erase(last, container.end());
 	return dist;
+}
+
+template <class Container>
+void removeAt(Container& container, unsigned int index)
+{
+	container.erase(container.begin() +  index);
 }
 
 template<class Container, class Indices>

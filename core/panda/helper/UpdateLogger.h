@@ -4,8 +4,8 @@
 #include <panda/core.h>
 
 #include <QString>
-#include <QVector>
-#include <QMap>
+#include <map>
+#include <vector>
 
 namespace panda
 {
@@ -59,8 +59,8 @@ private:
 class PANDA_CORE_API UpdateLogger
 {
 public:
-	typedef QVector<EventData> UpdateEvents;
-	typedef QMap<const DataNode*, bool> NodeStates;
+	typedef std::vector<EventData> UpdateEvents;
+	typedef std::map<const DataNode*, bool> NodeStates;
 
 	static UpdateLogger* getInstance();
 	static int getThreadId();
@@ -87,11 +87,11 @@ protected:
 	void addEvent(EventData event);
 	int& logLevel(int threadId);
 
-	QVector<UpdateEvents> m_events, m_prevEvents;
+	std::vector<UpdateEvents> m_events, m_prevEvents;
 	int m_nbThreads;
 	bool m_logging;
 	NodeStates m_nodeStates, m_prevNodeStates;
-	QVector<int> m_logLevelMap;
+	std::vector<int> m_logLevelMap;
 	PandaDocument* m_document;
 };
 

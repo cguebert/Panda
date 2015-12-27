@@ -1,6 +1,6 @@
 #include <panda/types/DataTypeId.h>
 
-#include <QMap>
+#include <map>
 #include <typeindex>
 
 namespace panda
@@ -9,7 +9,7 @@ namespace panda
 namespace types
 {
 
-typedef QMap<std::type_index, int> TypesIdMap;
+typedef std::map<std::type_index, int> TypesIdMap;
 
 static TypesIdMap& getTypesIdMap()
 {
@@ -21,8 +21,8 @@ int DataTypeId::getId(const std::type_info& type)
 {
 	TypesIdMap& typesIdMap = getTypesIdMap();
 	std::type_index index(type);
-	if(typesIdMap.contains(index))
-		return typesIdMap.value(index);
+	if(typesIdMap.count(index))
+		return typesIdMap.at(index);
 	else
 	{
 		static int i = 1; // start at 1
@@ -76,8 +76,8 @@ void DataTypeId::registerType(const std::type_info& type, int fullType)
 {
 	TypesIdMap& typesIdMap = getTypesIdMap();
 	std::type_index index(type);
-	if(!typesIdMap.contains(index))
-		typesIdMap[index] = fullType;
+	if(!typesIdMap.count(index))
+		typesIdMap.emplace(index, fullType);
 }
 
 std::vector<int> DataTypeId::getTypesList()

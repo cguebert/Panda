@@ -6,6 +6,7 @@
 #include <panda/DataFactory.h>
 #include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
+#include <panda/helper/algorithm.h>
 
 #include <QMessageBox>
 
@@ -20,6 +21,12 @@ Group::Group(PandaDocument* parent)
 
 Group::~Group()
 {
+}
+
+void Group::addObject(ObjectPtr object)
+{
+	if (!helper::contains(m_objects, object))
+		m_objects.push_back(object);
 }
 
 void Group::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*>* selected)
@@ -157,7 +164,7 @@ void Group::load(QDomElement& elem)
 	// Loading data values
 	PandaObject::load(elem);
 
-	QMap<quint32, PandaObject*> importObjectsMap;
+	std::map<quint32, PandaObject*> importObjectsMap;
 	ObjectFactory* factory = ObjectFactory::getInstance();
 
 	QDomElement objectNode = elem.firstChildElement("Object");

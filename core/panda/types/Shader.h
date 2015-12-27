@@ -7,13 +7,12 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/DataTraits.h>
 
-#include <QFlags>
 #include <QString>
-#include <QMap>
-#include <QSharedPointer>
 #include <QOpenGLShader>
 #include <QDomElement>
 
+#include <map>
+#include <memory>
 #include <tuple>
 
 class QOpenGLShaderProgram;
@@ -42,15 +41,15 @@ class ShaderValue : public BaseShaderValue
 {
 public:
 	ShaderValue(QString name, const T& val) : m_name(name), m_value(val) { }
-	virtual void apply(QOpenGLShaderProgram& program, const Shader& shader) const;
-	virtual void cleanup() const {}
-	virtual QString getName() const
+	void apply(QOpenGLShaderProgram& program, const Shader& shader) const override;
+	void cleanup() const override {}
+	QString getName() const override 
 	{ return m_name; }
-	virtual AbstractDataTrait* dataTrait() const
+	AbstractDataTrait* dataTrait() const override
 	{ return DataTraitsList::getTraitOf<T>(); }
-	virtual const void* getValue() const
+	const void* getValue() const override
 	{ return &m_value; }
-	virtual void* getValue()
+	void* getValue() override
 	{ return &m_value; }
 
 protected:
@@ -98,21 +97,21 @@ public:
 		{ return hash == s.hash; }
 	};
 
-	const QList<ShaderSource> getSources() const;
+	const std::vector<ShaderSource> getSources() const;
 
 	template<class T>
 	void setUniform(QString name, const T& value)
 	{
-		m_shaderValues.push_back(QSharedPointer<BaseShaderValue>(new ShaderValue<T>(name, value)));
+		m_shaderValues.push_back(std::make_shared<ShaderValue<T>>(name, value));
 	}
 
 	template<>
 	void setUniform(QString name, const ImageWrapper& img)
 	{
-		m_customTextures.push_back(qMakePair(name, img.getTextureId()));
+		m_customTextures.push_back(std::make_pair(name, img.getTextureId()));
 	}
 
-	typedef std::vector< QSharedPointer< BaseShaderValue > > ValuesVector;
+	typedef std::vector<std::shared_ptr<BaseShaderValue>> ValuesVector;
 	const ValuesVector& getValues() const;
 
 	void loadValue(QString type, QDomElement &elem);
@@ -122,16 +121,16 @@ public:
 	bool operator!=(const Shader& s) const;
 
 protected:
-	typedef QMap<QOpenGLShader::ShaderType, ShaderSource> SourcesMap;
+	typedef std::map<QOpenGLShader::ShaderType, ShaderSource> SourcesMap;
 	SourcesMap m_sourcesMap;
 
 	ValuesVector m_shaderValues;
 
 	typedef void(Shader::*loadValueFuncPtr)(QDomElement&);
-	QMap<QString, loadValueFuncPtr> m_loadValueFunctions;
+	std::map<QString, loadValueFuncPtr> m_loadValueFunctions;
 
 	typedef void(Shader::*copyValueFuncPtr)(QString, const void*);
-	QMap<QString, copyValueFuncPtr> m_copyValueFunctions;
+	std::map<QString, copyValueFuncPtr> m_copyValueFunctions;
 
 	struct functionCreatorWrapper
 	{
@@ -141,10 +140,10 @@ protected:
 		{
 			QString type = DataTraitsList::getTraitOf<T>()->typeName();
 			loadValueFuncPtr loadPtr = &Shader::loadValue<T>;
-			object->m_loadValueFunctions[type] = loadPtr;
+			object->m_loadValueFunctions.emplace(type, loadPtr);
 
 			copyValueFuncPtr copyPtr = &Shader::copyValue<T>;
-			object->m_copyValueFunctions[type] = copyPtr;
+			object->m_copyValueFunctions.emplace(type, copyPtr);
 		}
 	};
 
@@ -163,7 +162,7 @@ protected:
 		setUniform(name, *static_cast<const T*>(value));
 	}
 
-	std::vector<QPair<QString, GLuint>> m_customTextures;
+	std::vector<std::pair<QString, GLuint>> m_customTextures;
 };
 
 } // namespace types

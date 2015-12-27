@@ -1,6 +1,7 @@
 #include <panda/types/Shader.h>
 #include <panda/helper/ShaderCache.h>
 #include <panda/helper/typeList.h>
+#include <panda/helper/algorithm.h>
 #include <panda/helper/system/FileRepository.h>
 
 #include <panda/DataFactory.h>
@@ -69,24 +70,24 @@ void Shader::setSourceFromFile(QOpenGLShader::ShaderType type, const QString& fi
 
 void Shader::removeSource(QOpenGLShader::ShaderType type)
 {
-	m_sourcesMap.remove(type);
+	m_sourcesMap.erase(type);
 }
 
 bool Shader::apply(QOpenGLShaderProgram& program) const
 {
-	QList<QOpenGLShader*> currentShaders = program.shaders();
-	QList<QOpenGLShader*> newShaders;
+	auto currentShaders = program.shaders();
+	std::vector<QOpenGLShader*> newShaders;
 	helper::ShaderCache* shaderCache = helper::ShaderCache::getInstance();
 
 	// Get shader pointers from the cache
-	for(const ShaderSource& source : m_sourcesMap.values())
-		newShaders.push_back(shaderCache->getShader(source.type, source.sourceCode, source.hash));
+	for(const auto& source : m_sourcesMap)
+		newShaders.push_back(shaderCache->getShader(source.second.type, source.second.sourceCode, source.second.hash));
 
 	bool needLink = false;
 	// Removing from the program the shader we do not want
 	for(QOpenGLShader* shader : currentShaders)
 	{
-		if(!newShaders.contains(shader))
+		if(!helper::contains(newShaders, shader))
 		{
 			program.removeShader(shader);
 			needLink = true;
@@ -96,7 +97,7 @@ bool Shader::apply(QOpenGLShaderProgram& program) const
 	// Adding the one the program does not have yet
 	for(QOpenGLShader* shader : newShaders)
 	{
-		if(!currentShaders.contains(shader))
+		if (!helper::contains(currentShaders, shader))
 		{
 			program.addShader(shader);
 			needLink = true;
@@ -136,9 +137,12 @@ bool Shader::apply(QOpenGLShaderProgram& program) const
 	return true;
 }
 
-const QList<Shader::ShaderSource> Shader::getSources() const
+const std::vector<Shader::ShaderSource> Shader::getSources() const
 {
-	return m_sourcesMap.values();
+	std::vector<Shader::ShaderSource> sources;
+	for (const auto& source : m_sourcesMap)
+		sources.push_back(source.second);
+	return sources;
 }
 
 const Shader::ValuesVector& Shader::getValues() const
@@ -148,14 +152,14 @@ const Shader::ValuesVector& Shader::getValues() const
 
 void Shader::loadValue(QString type, QDomElement& elem)
 {
-	if(m_loadValueFunctions.contains(type))
-		(this->*m_loadValueFunctions[type])(elem);
+	if (m_loadValueFunctions.count(type))
+		(this->*m_loadValueFunctions.at(type))(elem);
 }
 
 void Shader::copyValue(QString type, QString name, const void* value)
 {
-	if(m_copyValueFunctions.contains(type))
-		(this->*m_copyValueFunctions[type])(name, value);
+	if (m_copyValueFunctions.count(type))
+		(this->*m_copyValueFunctions.at(type))(name, value);
 }
 
 bool Shader::operator==(const Shader& shader) const

@@ -1,4 +1,5 @@
 #include <panda/helper/system/FileRepository.h>
+#include <panda/helper/algorithm.h>
 
 #include <QStandardPaths>
 #include <QFile>
@@ -15,7 +16,7 @@ namespace system
 
 void FileRepository::addPath(QString path)
 {
-	if(!m_paths.contains(path))
+	if(!helper::contains(m_paths, path))
 		m_paths.push_back(path);
 }
 

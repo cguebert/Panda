@@ -2,10 +2,11 @@
 #include <panda/PandaDocument.h>
 #include <panda/Renderer.h>
 #include <panda/Group.h>
+#include <panda/helper/algorithm.h>
 
-#include <QList>
-#include <QQueue>
-#include <QSet>
+#include <deque>
+#include <set>
+
 #include <QMutexLocker>
 #include <QThreadPool>
 
@@ -63,15 +64,15 @@ struct InputsListNode
 {
 	DataNode* node;
 	int distance; // number of nodes between this node and the first node
-	QVector<int> parentsId;
+	std::vector<int> parentsId;
 };
 
-bool containsInput(const QVector<InputsListNode>& inputsList, int currentNodeId, const DataNode* nextNode)
+bool containsInput(const std::vector<InputsListNode>& inputsList, int currentNodeId, const DataNode* nextNode)
 {
-	if(currentNodeId < 0 || currentNodeId >= inputsList.size())
+	if(currentNodeId < 0 || currentNodeId >= static_cast<int>(inputsList.size()))
 		return false;
 
-	QList<int> openSet;
+	std::deque<int> openSet;
 	openSet.push_back(currentNodeId);
 	while(!openSet.empty())
 	{
@@ -87,19 +88,19 @@ bool containsInput(const QVector<InputsListNode>& inputsList, int currentNodeId,
 	return false;
 }
 
-QVector<DataNode*> Scheduler::computeConnected(QVector<DataNode*> nodes) const
+std::vector<DataNode*> Scheduler::computeConnected(std::vector<DataNode*> nodes) const
 {
-	QQueue<DataNode*> openSet;
-	QList<DataNode*> closedSet;
-	QVector<InputsListNode> inputsList;
-	QMap<DataNode*, int> indexMap;
+	std::deque<DataNode*> openSet;
+	std::vector<DataNode*> closedSet;
+	std::vector<InputsListNode> inputsList;
+	std::map<DataNode*, int> indexMap;
 
 	// Initialize the open list with the input nodes
 	for(int i=0, nb=nodes.size(); i<nb; ++i)
 	{
 		DataNode* node = nodes[i];
 		indexMap[node] = i;
-		openSet.enqueue(node);
+		openSet.push_back(node);
 		InputsListNode iln;
 		iln.node = node;
 		iln.distance = 0;
@@ -109,12 +110,13 @@ QVector<DataNode*> Scheduler::computeConnected(QVector<DataNode*> nodes) const
 	// Get all the connected nodes
 	while(!openSet.empty())
 	{
-		DataNode* node = openSet.dequeue();
+		DataNode* node = openSet.front();
+		openSet.pop_front();
 
 		int parentId = indexMap[node];
 		int dist = inputsList[parentId].distance + 1;
 
-		closedSet.removeOne(node);
+		helper::removeOne(closedSet, node);
 		closedSet.push_back(node);
 
 		PandaObject* object = dynamic_cast<PandaObject*>(node);
@@ -127,15 +129,15 @@ QVector<DataNode*> Scheduler::computeConnected(QVector<DataNode*> nodes) const
 			if(!containsInput(inputsList, parentId, output))
 			{
 				// Move the node on the back of the open list
-				openSet.removeOne(output);
-				openSet.enqueue(output);
+				helper::removeOne(openSet, output);
+				openSet.push_back(output);
 
 				// If node was already treated, update it
-				if(indexMap.contains(output))
+				if(indexMap.count(output))
 				{
 					InputsListNode& node = inputsList[indexMap[output]];
 					node.distance = dist;
-					if(!node.parentsId.contains(parentId))
+					if(!helper::contains(node.parentsId, parentId))
 						node.parentsId.push_back(parentId);
 				}
 				else // Create it
@@ -154,7 +156,7 @@ QVector<DataNode*> Scheduler::computeConnected(QVector<DataNode*> nodes) const
 		}
 	}
 
-	QVector<DataNode*> result = closedSet.toVector();
+	std::vector<DataNode*> result(closedSet.begin(), closedSet.end());
 
 	// Reverse the list (start from the node furthest from the input nodes)
 	std::reverse(result.begin(), result.end());
@@ -162,22 +164,22 @@ QVector<DataNode*> Scheduler::computeConnected(QVector<DataNode*> nodes) const
 	return result;
 }
 
-QVector<DataNode*> Scheduler::computeConnected(DataNode* node) const
+std::vector<DataNode*> Scheduler::computeConnected(DataNode* node) const
 {
-	QVector<DataNode*> nodes;
+	std::vector<DataNode*> nodes;
 	nodes.push_back(node);
 
 	return computeConnected(nodes);
 }
 
-QVector<int> Scheduler::getTasks(QVector<DataNode*> nodes) const
+std::vector<int> Scheduler::getTasks(std::vector<DataNode*> nodes) const
 {
-	QVector<int> tasks;
+	std::vector<int> tasks;
 	for(DataNode* node : nodes)
 	{
 		PandaObject* object = dynamic_cast<PandaObject*>(node);
 		if(object)
-			tasks.push_back(m_objectsIndexMap[object]);
+			tasks.push_back(m_objectsIndexMap.at(object));
 	}
 
 	return tasks;
@@ -186,7 +188,7 @@ QVector<int> Scheduler::getTasks(QVector<DataNode*> nodes) const
 void Scheduler::buildDirtyList()
 {
 	// Initialize the open list with the 3 document datas we modify at each time step
-	QVector<DataNode*> nodes;
+	std::vector<DataNode*> nodes;
 	const char* names[] = {"time", "mouse position", "mouse click"};
 	for(auto name : names)
 	{
@@ -198,15 +200,15 @@ void Scheduler::buildDirtyList()
 	m_setDirtyList = computeConnected(nodes);
 }
 
-QVector<PandaObject*> Scheduler::expandObjectsList(QVector<PandaObject*> objects)
+std::vector<PandaObject*> Scheduler::expandObjectsList(std::vector<PandaObject*> objects)
 {
-	int i=0;
+	unsigned int i=0;
 	while(i < objects.size())
 	{
 		Group* group = dynamic_cast<Group*>(objects[i]);
 		if(group)
 		{
-			objects.removeAt(i);
+			helper::removeAt(objects, i);
 			for(auto object : group->getObjects())
 				objects.push_back(object.get());
 		}
@@ -260,7 +262,7 @@ void Scheduler::forEachObjectOutput(PandaObject* startObject, Scheduler::ObjectF
 void Scheduler::buildUpdateGraph()
 {
 	// Initialize the tasks list
-	QVector<PandaObject*> objects;
+	std::vector<PandaObject*> objects;
 	for(auto object : m_document->getObjects())
 		objects.push_back(object.get());
 	objects = expandObjectsList(objects);
@@ -280,7 +282,7 @@ void Scheduler::buildUpdateGraph()
 	for(auto& task : m_updateTasks)
 	{
 		forEachObjectOutput(task.object, [this, &task](PandaObject* object){
-			if(m_objectsIndexMap.contains(object))
+			if(m_objectsIndexMap.count(object))
 				task.outputs.push_back(m_objectsIndexMap[object]);
 		});
 	}
@@ -325,13 +327,13 @@ void Scheduler::computeStartValues()
 	for(auto node : m_setDirtyList)
 	{
 		PandaObject* object = dynamic_cast<PandaObject*>(node);
-		if(!object || !m_objectsIndexMap.contains(object) || object->doesLaterUpdate())
+		if(!object || !m_objectsIndexMap.count(object) || object->doesLaterUpdate())
 			continue;
 
 		m_updateTasks[m_objectsIndexMap[object]].dirtyAtStart = true;
 
 		forEachObjectOutput(object, [this](PandaObject* object){
-			if(m_objectsIndexMap.contains(object))
+			if (m_objectsIndexMap.count(object))
 				++m_updateTasks[m_objectsIndexMap[object]].nbDirtyAtStart;
 		});
 	}
@@ -423,20 +425,20 @@ void Scheduler::prepareLaterUpdate(BaseData* data)
 {
 	auto connected = computeConnected(data);
 
-	QVector<int> outputsTasks;
+	std::vector<int> outputsTasks;
 	for(auto output : data->getOutputs())
 	{
 		PandaObject* object = dynamic_cast<PandaObject*>(output);
 		BaseData* data = dynamic_cast<BaseData*>(output);
 		if(object)
 		{
-			if(m_objectsIndexMap.contains(object))
+			if (m_objectsIndexMap.count(object))
 				outputsTasks.push_back(m_objectsIndexMap[object]);
 		}
 		else if(data)
 		{
 			PandaObject* owner = data->getOwner();
-			if(owner && m_objectsIndexMap.contains(owner))
+			if (owner && m_objectsIndexMap.count(owner))
 				outputsTasks.push_back(m_objectsIndexMap[owner]);
 		}
 	}
@@ -456,7 +458,7 @@ void Scheduler::setDataDirty(BaseData* dirtyData)
 	helper::ScopedEvent log("Scheduler/setDataDirty");
 #endif
 
-	if(!m_laterUpdatesMap.contains(dirtyData))
+	if (!m_laterUpdatesMap.count(dirtyData))
 		prepareLaterUpdate(dirtyData);
 
 	auto pair = m_laterUpdatesMap[dirtyData];
@@ -464,20 +466,21 @@ void Scheduler::setDataDirty(BaseData* dirtyData)
 		node->doSetDirty();
 
 	// For outputs tasks, we still have to do some recursion
-	QQueue<int> openSet;
+	std::deque<int> openSet;
 	for(auto taskId : pair.second)
-		openSet.enqueue(taskId);
+		openSet.push_back(taskId);
 
 	while(!openSet.empty())
 	{
-		int taskId = openSet.dequeue();
+		int taskId = openSet.front();
+		openSet.pop_front();
 		auto& task = m_updateTasks[taskId];
 		++task.nbDirtyInputs;
 		if(!task.dirty)
 		{
 			task.dirty = true;
 			for(auto outputs : task.outputs)
-				openSet.enqueue(outputs);
+				openSet.push_back(outputs);
 		}
 	}
 }
@@ -488,7 +491,7 @@ void Scheduler::setDataReady(BaseData* data)
 	helper::ScopedEvent log("Scheduler/setDataReady");
 #endif
 
-	if(!m_laterUpdatesMap.contains(data))
+	if(!m_laterUpdatesMap.count(data))
 		return;
 
 	for(auto taskId : m_laterUpdatesMap[data].second)

@@ -222,10 +222,10 @@ PANDA_CORE_API void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& 
 }
 
 template class Data< Gradient >;
-template class Data< QVector<Gradient> >;
+template class Data< std::vector<Gradient> >;
 
 int gradientDataClass = RegisterData< Gradient >();
-int gradientVectorDataClass = RegisterData< QVector<Gradient> >();
+int gradientVectorDataClass = RegisterData< std::vector<Gradient> >();
 
 //****************************************************************************//
 

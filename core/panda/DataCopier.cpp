@@ -1,13 +1,13 @@
 #include <panda/DataCopier.h>
 #include <panda/types/DataTypeId.h>
 
-#include <QMap>
+#include <map>
 #include <typeindex>
 
 namespace panda
 {
 
-typedef QMap<int, AbstractDataCopier*> CopiersMap;
+typedef std::map<int, AbstractDataCopier*> CopiersMap;
 
 static CopiersMap& getCopiersMap()
 {
@@ -18,8 +18,8 @@ static CopiersMap& getCopiersMap()
 AbstractDataCopier* DataCopiersList::getCopier(int fullTypeId)
 {
 	const CopiersMap& copiersMap = getCopiersMap();
-	if(copiersMap.contains(fullTypeId))
-		return copiersMap.value(fullTypeId);
+	if(copiersMap.count(fullTypeId))
+		return copiersMap.at(fullTypeId);
 	else
 		return nullptr;
 }
@@ -32,8 +32,8 @@ AbstractDataCopier* DataCopiersList::getCopier(const std::type_info& type)
 void DataCopiersList::registerCopier(int fullTypeId, AbstractDataCopier* copier)
 {
 	CopiersMap& copiersMap = getCopiersMap();
-	if(!copiersMap.contains(fullTypeId))
-		copiersMap[fullTypeId] = copier;
+	if(!copiersMap.count(fullTypeId))
+		copiersMap.emplace(fullTypeId, copier);
 }
 
 } // namespace panda
