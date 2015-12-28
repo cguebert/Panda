@@ -1,5 +1,6 @@
 #include <panda/types/DataTraits.h>
 #include <panda/types/DataTypeId.h>
+#include <panda/helper/algorithm.h>
 
 #include <map>
 #include <typeindex>
@@ -20,11 +21,7 @@ static TraitsMap& getTraitsMap()
 
 AbstractDataTrait* DataTraitsList::getTrait(int fullTypeId)
 {
-	const TraitsMap& traitsMap = getTraitsMap();
-	if(traitsMap.count(fullTypeId))
-		return traitsMap.at(fullTypeId);
-	else
-		return nullptr;
+	return helper::valueOrDefault(getTraitsMap(), fullTypeId, nullptr);
 }
 
 AbstractDataTrait* DataTraitsList::getTrait(const std::type_info& type)

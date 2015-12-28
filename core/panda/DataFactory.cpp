@@ -1,4 +1,5 @@
 #include <panda/DataFactory.h>
+#include <panda/helper/algorithm.h>
 
 #include <iostream>
 
@@ -23,7 +24,7 @@ const DataFactory::DataEntry* DataFactory::getEntry(int type) const
 
 std::shared_ptr<BaseData> DataFactory::create(QString className, const QString& name, const QString& help, PandaObject* owner) const
 {
-	if (m_registry.find(className) != m_registry.end())
+	if (m_registry.count(className))
 		return m_registry.at(className)->creator->create(name, help, owner);
 
 	std::cerr << "Data factory has no entry for " << className.toStdString() << std::endl;
@@ -32,7 +33,7 @@ std::shared_ptr<BaseData> DataFactory::create(QString className, const QString& 
 
 std::shared_ptr<BaseData> DataFactory::create(int type, const QString& name, const QString& help, PandaObject* owner) const
 {
-	if (m_typeRegistry.find(type) != m_typeRegistry.end())
+	if (m_typeRegistry.count(type))
 		return m_typeRegistry.at(type)->creator->create(name, help, owner);
 
 	std::cerr << "Data factory has no entry for type " << type << std::endl;
@@ -42,7 +43,7 @@ std::shared_ptr<BaseData> DataFactory::create(int type, const QString& name, con
 void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, std::shared_ptr<BaseDataCreator> creator)
 {
 	QString className = theClass->getTemplateName();
-	DataEntry* entry = m_registry.at(className);
+	DataEntry* entry = panda::helper::valueOrDefault(m_registry, className, nullptr);
 	if(!entry)
 	{
 		std::shared_ptr<DataEntry> newEntry = std::make_shared<DataEntry>();

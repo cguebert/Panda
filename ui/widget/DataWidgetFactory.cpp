@@ -2,6 +2,7 @@
 
 #include <panda/BaseData.h>
 #include <panda/DataFactory.h>
+#include <panda/helper/algorithm.h>
 
 DataWidgetFactory* DataWidgetFactory::getInstance()
 {
@@ -39,12 +40,12 @@ const BaseDataWidgetCreator* DataWidgetFactory::getCreator(int fullType, QString
 	if(map.size() == 1)
 		return map.begin()->second->creator.get();
 
-	DataWidgetEntry* entry = map.at(widgetName).get();
-	if(!entry && map.count("generic"))	// If the custom widget doesn't exist, first look for a generic one
-		entry = map.at("generic").get();
+	auto entry = panda::helper::valueOrDefault(map, widgetName);
+	if(!entry)	// If the custom widget doesn't exist, first look for a generic one
+		entry = panda::helper::valueOrDefault(map, "generic");
 
 	if(!entry && map.count("default"))	// Then use the default one
-		entry = map.at("default").get();
+		entry = panda::helper::valueOrDefault(map, "default");
 
 	// If a default one doesn't exist, we don't know which one to use
 	if(entry)
@@ -70,10 +71,7 @@ const DataWidgetFactory::DataWidgetEntry* DataWidgetFactory::getEntry(int fullTy
 std::vector<QString> DataWidgetFactory::getWidgetNames(int fullType) const
 {
 	std::vector<QString> result;
-	if (!registry.count(fullType))
-		return result;
-
-	const auto& widgetMap = registry.at(fullType);
+	const auto& widgetMap = panda::helper::valueOrDefault(registry, fullType);
 	for (const auto& w : widgetMap)
 		result.push_back(w.first);
 	return result;

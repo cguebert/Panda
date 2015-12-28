@@ -18,7 +18,7 @@ static FunctorMap& getFunctorMap()
 bool TypeConverter::canConvert(int fromType, int toType)
 {
 	const FunctorMap& theMap = getFunctorMap();
-	if(theMap.find(fromType) == theMap.end())
+	if(!theMap.count(fromType))
 		return false;
 	const auto& typeMap = theMap.at(fromType);
 	return typeMap.find(toType) != typeMap.end();
@@ -27,10 +27,10 @@ bool TypeConverter::canConvert(int fromType, int toType)
 void TypeConverter::convert(int fromType, int toType, const void* valueFrom, void* valueTo)
 {
 	const FunctorMap& map1 = getFunctorMap();
-	if(map1.find(fromType) == map1.end())
+	if(!map1.count(fromType))
 		return;
 	const auto& map2 = map1.at(fromType);
-	if(map2.find(toType) == map2.end())
+	if(!map2.count(toType))
 		return;
 
 	auto functor = map2.at(toType);

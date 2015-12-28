@@ -74,7 +74,7 @@ public:
 	int selectNextPoint(const PointsList& points, const Neighbours& neighbours, const EdgeSet& usedEdges, int currentId, int prevId)
 	{
 		std::vector<int> candidates;
-		for(auto ptId : neighbours.at(currentId))
+		for(auto ptId : helper::valueOrDefault(neighbours, currentId))
 			if(ptId != prevId && usedEdges.find(make_edge(currentId, ptId)) == usedEdges.end())
 				candidates.push_back(ptId);
 
@@ -117,7 +117,7 @@ public:
 			while(found)
 			{
 				found = false;
-				for(auto ptId : neighbours.at(current))
+				for(auto ptId : helper::valueOrDefault(neighbours, current))
 				{
 					if(ptId != prev && unusedPts.find(ptId) != unusedPts.end())
 					{
@@ -131,7 +131,7 @@ public:
 				}
 
 				// Can we close the loop ?
-				if(!found && helper::contains(neighbours.at(current), start))
+				if (!found && helper::contains(helper::valueOrDefault(neighbours, current), start))
 					ptsId.push_back(start);
 			}
 

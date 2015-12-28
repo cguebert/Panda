@@ -84,8 +84,8 @@ std::vector<int> DataTypeId::getTypesList()
 {
 	const TypesIdMap& typesIdMap = getTypesIdMap();
 	std::vector<int> types;
-	for (const auto& p : typesIdMap.values())
-		types.push_back(p);
+	for (const auto& p : typesIdMap)
+		types.push_back(p.second);
 	return types;
 }
 

@@ -100,6 +100,16 @@ void concatenate(Container1& to, const Container2& from)
 	to.insert(to.end(), from.begin(), from.end());
 }
 
+template <class Container, class Key>
+typename Container::mapped_type valueOrDefault(Container& map, const Key& key, const typename Container::mapped_type& defaultValue = typename Container::mapped_type())
+{
+	using value_type = typename Container::mapped_type;
+	auto it = map.find(key);
+	if (it == map.end())
+		return defaultValue;
+	return it->second;
+}
+
 } // namespace helper
 
 } // namespace panda
