@@ -35,7 +35,7 @@ public:
 	void update()
 	{
 		const QImage& img = image.getValue().getImage();
-		const QVector<Point>& pos = position.getValue();
+		const std::vector<Point>& pos = position.getValue();
 		auto colorsList = color.getAccessor();
 
 		int nb = pos.size();
@@ -55,8 +55,8 @@ public:
 
 protected:
 	Data< ImageWrapper > image;
-	Data< QVector<Point> > position;
-	Data< QVector<Color> > color;
+	Data< std::vector<Point> > position;
+	Data< std::vector<Color> > color;
 };
 
 int ModifierImage_GetPixelClass = RegisterObject<ModifierImage_GetPixel>("Modifier/Image/Get pixel").setDescription("Get colors in specific places in an image");
@@ -85,8 +85,8 @@ public:
 	void update()
 	{
 		const QImage& img = image.getValue().getImage();
-		const QVector<Point>& pos = position.getValue();
-		const QVector<Color>& col = color.getValue();
+		const std::vector<Point>& pos = position.getValue();
+		const std::vector<Color>& col = color.getValue();
 
 		QImage tmp = img;
 
@@ -110,8 +110,8 @@ public:
 
 protected:
 	Data< ImageWrapper > image, result;
-	Data< QVector<Point> > position;
-	Data< QVector<Color> > color;
+	Data< std::vector<Point> > position;
+	Data< std::vector<Color> > color;
 };
 
 int ModifierImage_SetPixelClass = RegisterObject<ModifierImage_SetPixel>("Modifier/Image/Set pixel").setDescription("Set colors in specific places in an image");
@@ -138,7 +138,7 @@ public:
 	void update()
 	{
 		const QImage& img = image.getValue().getImage();
-		const QVector<Rect>& rectList = rectangle.getValue();
+		const std::vector<Rect>& rectList = rectangle.getValue();
 		auto col = color.getAccessor();
 
 		if(img.format() != QImage::Format_ARGB32)
@@ -186,8 +186,8 @@ public:
 
 protected:
 	Data< ImageWrapper > image;
-	Data< QVector<Rect> > rectangle;
-	Data< QVector<Color> > color;
+	Data< std::vector<Rect> > rectangle;
+	Data< std::vector<Color> > color;
 };
 
 int ModifierImage_ColorInRectClass = RegisterObject<ModifierImage_ColorInRect>("Modifier/Image/Color in rectangle")

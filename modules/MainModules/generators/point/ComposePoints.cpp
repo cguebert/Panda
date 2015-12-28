@@ -25,7 +25,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal>	&xVal = ptX.getValue(),
+		const std::vector<PReal>	&xVal = ptX.getValue(),
 								&yVal = ptY.getValue();
 		auto pts = point.getAccessor();
 
@@ -41,8 +41,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > ptX, ptY;
-	Data< QVector<Point> > point;
+	Data< std::vector<PReal> > ptX, ptY;
+	Data< std::vector<Point> > point;
 };
 
 int GeneratorPoints_ComposeClass = RegisterObject<GeneratorPoints_Compose>("Generator/Point/Compose point").setName("Reals to point").setDescription("Create a point from 2 reals");
@@ -70,7 +70,7 @@ public:
 	{
 		auto xVal = ptX.getAccessor();
 		auto yVal = ptY.getAccessor();
-		const QVector<Point>& pts = point.getValue();
+		const std::vector<Point>& pts = point.getValue();
 
 		int nb = pts.size();
 		xVal.resize(nb);
@@ -86,8 +86,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > ptX, ptY;
-	Data< QVector<Point> > point;
+	Data< std::vector<PReal> > ptX, ptY;
+	Data< std::vector<Point> > point;
 };
 
 int GeneratorPoints_DecomposeClass = RegisterObject<GeneratorPoints_Decompose>("Generator/Point/Decompose point").setName("Point to reals").setDescription("Extract the coordinates of a point");

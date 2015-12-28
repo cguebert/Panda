@@ -52,7 +52,7 @@ protected:
 	Data<int> m_length;
 	Data<ImageWrapper> m_output;
 
-	QSharedPointer<QOpenGLTexture> m_texture;
+	std::shared_ptr<QOpenGLTexture> m_texture;
 };
 
 int GradientTextureClass = RegisterObject<GradientTexture>("Generator/Image/Gradient texture").setDescription("Create a 1d texture from a gradient");
@@ -87,7 +87,7 @@ public:
 			auto bufHor = helper::GradientCache::createBuffer(m_horizontalGradient.getValue(), width);
 			auto bufVer = helper::GradientCache::createBuffer(m_verticalGradient.getValue(), height);
 
-			QVector<Color> buffer(width * height);
+			std::vector<Color> buffer(width * height);
 			for(int y=0; y<height; ++y)
 				for(int x=0; x<width; ++x)
 					buffer[y*width+x] = bufHor[x] * bufVer[y];
@@ -105,7 +105,7 @@ protected:
 	Data<Point> m_size;
 	Data<ImageWrapper> m_output;
 
-	QSharedPointer<QOpenGLTexture> m_texture;
+	std::shared_ptr<QOpenGLTexture> m_texture;
 };
 
 int GradientTexture2DClass = RegisterObject<GradientTexture2D>("Generator/Image/2 gradients texture").setDescription("Create a 2d texture from the multiplication of 2 gradients");

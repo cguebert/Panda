@@ -2,7 +2,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Mesh.h>
-#include <QVector>
 
 #include <cmath>
 #include <algorithm>
@@ -51,8 +50,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Mesh> > m_input, m_output;
-	Data< QVector<Point> > m_delta;
+	Data< std::vector<Mesh> > m_input, m_output;
+	Data< std::vector<Point> > m_delta;
 };
 
 int MeshMath_TranslationClass = RegisterObject<MeshMath_Translation>("Math/Mesh/Translation").setName("Translate mesh").setDescription("Translate a mesh");
@@ -98,8 +97,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Mesh> > m_input, m_output;
-	Data< QVector<PReal> > m_scale;
+	Data< std::vector<Mesh> > m_input, m_output;
+	Data< std::vector<PReal> > m_scale;
 };
 
 int MeshMath_ScaleClass = RegisterObject<MeshMath_Scale>("Math/Mesh/Scale").setName("Scale mesh").setDescription("Scale a mesh");
@@ -159,9 +158,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Mesh> > m_input, m_output;
-	Data< QVector<Point> > m_center;
-	Data< QVector<PReal> > m_angle;
+	Data< std::vector<Mesh> > m_input, m_output;
+	Data< std::vector<Point> > m_center;
+	Data< std::vector<PReal> > m_angle;
 };
 
 int MeshMath_RotateClass = RegisterObject<MeshMath_Rotate>("Math/Mesh/Rotate").setName("Rotate mesh").setDescription("Rotate a mesh");

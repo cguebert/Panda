@@ -59,8 +59,7 @@ public:
 		int nbC = centers.size(), nbR = radiuses.size();
 		if(m_counter != m_centers.getCounter())
 		{
-			selection.resize(nbC);
-			selection.wref().fill(0);
+			selection.wref().resize(nbC, 0);
 			m_counter = m_centers.getCounter();
 		}
 		else if(nbC && nbR)
@@ -83,11 +82,11 @@ public:
 	}
 
 protected:
-	Data<QVector<Point>> m_centers;
-	Data<QVector<PReal>> m_radiuses;
-	Data<QVector<int>> m_selection;
+	Data<std::vector<Point>> m_centers;
+	Data<std::vector<PReal>> m_radiuses;
+	Data<std::vector<int>> m_selection;
 
-	QVector<Point> m_clicsBuffer;
+	std::vector<Point> m_clicsBuffer;
 	int m_counter;
 };
 
@@ -142,8 +141,7 @@ public:
 		int nbR = rectangles.size();
 		if(m_counter != m_rectangles.getCounter())
 		{
-			selection.resize(nbR);
-			selection.wref().fill(0);
+			selection.wref().resize(nbR, 0);
 			m_counter = m_rectangles.getCounter();
 		}
 		else if(nbR)
@@ -165,10 +163,10 @@ public:
 	}
 
 protected:
-	Data<QVector<Rect>> m_rectangles;
-	Data<QVector<int>> m_selection;
+	Data<std::vector<Rect>> m_rectangles;
+	Data<std::vector<int>> m_selection;
 
-	QVector<Point> m_clicsBuffer;
+	std::vector<Point> m_clicsBuffer;
 	int m_counter;
 };
 

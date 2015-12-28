@@ -52,8 +52,8 @@ public:
 
 	void accumulateForces(Particles& particles)
 	{
-		const QVector<Point>& forces = force.getValue();
-		const QVector<Rect>& boxes = box.getValue();
+		const std::vector<Point>& forces = force.getValue();
+		const std::vector<Rect>& boxes = box.getValue();
 
 		int nbForces = forces.size();
 		int nbBoxes = boxes.size();
@@ -74,8 +74,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > force;
-	Data< QVector<Rect> > box;
+	Data< std::vector<Point> > force;
+	Data< std::vector<Rect> > box;
 };
 
 int ParticleForceField_ForceInBoxClass = RegisterObject<ParticleForceField_ForceInBox>("Particles/Forces/Force in box")
@@ -101,9 +101,9 @@ public:
 
 	void accumulateForces(Particles& particles)
 	{
-		const QVector<Point>& forces = force.getValue();
-		const QVector<Point>& centers = center.getValue();
-		const QVector<PReal>& radiuses = radius.getValue();
+		const std::vector<Point>& forces = force.getValue();
+		const std::vector<Point>& centers = center.getValue();
+		const std::vector<PReal>& radiuses = radius.getValue();
 
 		int nbForces = forces.size();
 		int nbCenters = centers.size();
@@ -128,8 +128,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > force, center;
-	Data< QVector<PReal> > radius;
+	Data< std::vector<Point> > force, center;
+	Data< std::vector<PReal> > radius;
 };
 
 int ParticleForceField_ForceInCircleClass = RegisterObject<ParticleForceField_ForceInCircle>("Particles/Forces/Force in circle")
@@ -159,9 +159,9 @@ public:
 
 	void accumulateForces(Particles& particles)
 	{
-		const QVector<PReal>& forces = force.getValue();
-		const QVector<Point>& centers = center.getValue();
-		const QVector<PReal>& radiuses = radius.getValue();
+		const std::vector<PReal>& forces = force.getValue();
+		const std::vector<Point>& centers = center.getValue();
+		const std::vector<PReal>& radiuses = radius.getValue();
 
 		bool linearLaw = linear.getValue();
 		int nbForces = forces.size();
@@ -196,9 +196,9 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > force;
-	Data< QVector<Point> > center;
-	Data< QVector<PReal> > radius;
+	Data< std::vector<PReal> > force;
+	Data< std::vector<Point> > center;
+	Data< std::vector<PReal> > radius;
 	Data< int > linear;
 };
 

@@ -10,6 +10,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 
+#include <array>
 #include <cmath>
 
 namespace panda {
@@ -54,16 +55,16 @@ public:
 		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/sprite.f.glsl");
 	}
 
-	inline QVector4D colorToVector4(const Color& c)
+	inline std::array<float, 4> colorToVector4(const Color& c)
 	{
-		return QVector4D(c.r, c.g, c.b, c.a);
+		return std::array<float, 4>{c.r, c.g, c.b, c.a};
 	}
 
 	void render()
 	{
-		const QVector<Point>& listPosition = position.getValue();
-		QVector<PReal> listSize = size.getValue();
-		const QVector<Color>& listColor = color.getValue();
+		const std::vector<Point>& listPosition = position.getValue();
+		std::vector<PReal> listSize = size.getValue();
+		const std::vector<Color>& listColor = color.getValue();
 		GLuint texId = texture.getValue().getTextureId();
 
 		int nbPosition = listPosition.size();
@@ -82,11 +83,11 @@ public:
 			uniform_MVP = shaderProgram.uniformLocation("MVP");
 
 			if(nbSize < nbPosition)
-				listSize.fill(listSize[0], nbPosition);
+				listSize.resize(nbPosition, listSize[0]);
 
-			QVector<QVector4D> tmpColors(nbPosition);
+			std::vector<std::array<float, 4>> tmpColors(nbPosition);
 			if(nbColor < nbPosition)
-				tmpColors.fill(colorToVector4(listColor[0]), nbPosition);
+				tmpColors.resize(nbPosition, colorToVector4(listColor[0]));
 			else
 			{
 				for(int i = 0; i < nbPosition; ++i)
@@ -136,7 +137,7 @@ public:
 			shaderProgram.setUniformValue(uniform_MVP, getMVPMatrix());
 
 			shaderProgram.enableAttributeArray(attribute_color);
-			shaderProgram.setAttributeArray(attribute_color, tmpColors.data());
+			shaderProgram.setAttributeArray(attribute_color, GL_FLOAT, tmpColors.data(), 4);
 
 			glDrawArrays(GL_POINTS, 0, nbPosition);
 
@@ -151,9 +152,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > position;
-	Data< QVector<PReal> > size;
-	Data< QVector<Color> > color;
+	Data< std::vector<Point> > position;
+	Data< std::vector<PReal> > size;
+	Data< std::vector<Color> > color;
 	Data< ImageWrapper > texture;
 	Data< Shader > shader;
 

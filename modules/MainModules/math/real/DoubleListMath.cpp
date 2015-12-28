@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QVector>
+
 #include <cmath>
 #include <algorithm>
 
@@ -34,7 +34,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal>& list = input.getValue();
+		const std::vector<PReal>& list = input.getValue();
 		int nb = list.size();
 		nbElements.setValue(nb);
 
@@ -72,7 +72,7 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > input;
+	Data< std::vector<PReal> > input;
 	Data<int> nbElements;
 	Data<PReal> sum, mean, stdDev, vMin, vMax;
 };
@@ -100,7 +100,7 @@ public:
 
 	void update()
 	{
-		QVector<PReal> list = input.getValue();
+		std::vector<PReal> list = input.getValue();
 		int nb = list.size();
 		nbElements.setValue(nb);
 
@@ -118,7 +118,7 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > input;
+	Data< std::vector<PReal> > input;
 	Data<int> nbElements;
 	Data<PReal> median;
 };
@@ -160,7 +160,7 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > m_input, m_output;
+	Data< std::vector<PReal> > m_input, m_output;
 };
 
 int DoubleListMath_AccumulateClass = RegisterObject<DoubleListMath_Accumulate>("Math/List of reals/Accumulate").setDescription("Compute the accumulated sums of a list of values");

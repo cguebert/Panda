@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QVector>
+
 #include <cmath>
 
 /* Rules when there are many input parameters :
@@ -48,7 +48,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal>	&valInA = inputA.getValue(),
+		const std::vector<PReal>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
 		auto valOut = result.getAccessor();
@@ -76,7 +76,7 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > inputA, inputB, inputV, result;
+	Data< std::vector<PReal> > inputA, inputB, inputV, result;
 };
 
 int DoubleMath_SmoothStepClass = RegisterObject<DoubleMath_SmoothStep>("Math/Real/Functions/Smooth Step").setDescription("Compute the smooth step of the input between min and max");
@@ -99,7 +99,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal> &valIn = input.getValue();
+		const std::vector<PReal> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 
 		int size = valIn.size();
@@ -120,7 +120,7 @@ public:
 	{
 		PandaObject::reset();
 
-		const QVector<PReal> &valIn = input.getValue();
+		const std::vector<PReal> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 		int size = valIn.size();
 		prevValues.resize(size);
@@ -132,9 +132,9 @@ public:
 	}
 
 protected:
-	QVector<PReal> prevValues;
-	Data< QVector<PReal> > input;
-	Data< QVector<int> > count;
+	std::vector<PReal> prevValues;
+	Data< std::vector<PReal> > input;
+	Data< std::vector<int> > count;
 };
 
 int DoubleMath_RiseCountClass = RegisterObject<DoubleMath_RiseCount>("Math/Real/Functions/Rise count").setDescription("Count the number of rise transitions of a value");
@@ -157,7 +157,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal> &valIn = input.getValue();
+		const std::vector<PReal> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 
 		int size = valIn.size();
@@ -178,7 +178,7 @@ public:
 	{
 		PandaObject::reset();
 
-		const QVector<PReal> &valIn = input.getValue();
+		const std::vector<PReal> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 		int size = valIn.size();
 		prevValues.resize(size);
@@ -190,9 +190,9 @@ public:
 	}
 
 protected:
-	QVector<PReal> prevValues;
-	Data< QVector<PReal> > input;
-	Data< QVector<int> > count;
+	std::vector<PReal> prevValues;
+	Data< std::vector<PReal> > input;
+	Data< std::vector<int> > count;
 };
 
 int DoubleMath_FallCountClass = RegisterObject<DoubleMath_FallCount>("Math/Real/Functions/Fall count").setDescription("Count the number of fall transitions of a value");
@@ -227,7 +227,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal>	&valInA = inputA.getValue(),
+		const std::vector<PReal>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
 		auto valOut = result.getAccessor();
@@ -255,7 +255,7 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > inputA, inputB, inputV, result;
+	Data< std::vector<PReal> > inputA, inputB, inputV, result;
 };
 
 int DoubleMath_ConstrainClass = RegisterObject<DoubleMath_Constrain>("Math/Real/Functions/Constrain").setDescription("Constrain a value between a min and a max");
@@ -289,7 +289,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal>	&valInA = inputA.getValue(),
+		const std::vector<PReal>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
 		auto valOut = result.getAccessor();
@@ -317,8 +317,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > inputA, inputB, inputV;
-	Data< QVector<int> > result;
+	Data< std::vector<PReal> > inputA, inputB, inputV;
+	Data< std::vector<int> > result;
 };
 
 int DoubleMath_PulseClass = RegisterObject<DoubleMath_Pulse>("Math/Real/Functions/Pulse").setDescription("Set the output to 1 if the value is between min and max, 0 otherwise");
@@ -356,7 +356,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal>	&valInV = inputV.getValue(),
+		const std::vector<PReal>	&valInV = inputV.getValue(),
 								&valInMin = inputMin.getValue(),
 								&valInMax = inputMax.getValue(),
 								&valOutMin = outputMin.getValue(),
@@ -390,7 +390,7 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > inputV, inputMin, inputMax, outputMin, outputMax, result;
+	Data< std::vector<PReal> > inputV, inputMin, inputMax, outputMin, outputMax, result;
 };
 
 int DoubleMath_RemapClass = RegisterObject<DoubleMath_Remap>("Math/Real/Functions/Remap").setDescription("Re-maps a value from one range to another");

@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QVector>
+
 #include <cmath>
 
 namespace panda {
@@ -22,7 +22,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal> &valIn = input.getValue();
+		const std::vector<PReal> &valIn = input.getValue();
 		auto valOut = result.getAccessor();
 
 		int size = valIn.size();
@@ -37,7 +37,7 @@ public:
 	virtual PReal compute(const PReal& value) = 0;
 
 protected:
-	Data< QVector<PReal> > input, result;
+	Data< std::vector<PReal> > input, result;
 };
 
 //****************************************************************************//
@@ -61,7 +61,7 @@ public:
 
 	void update()
 	{
-		const QVector<PReal>	&valInA = inputA.getValue(),
+		const std::vector<PReal>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
@@ -84,7 +84,7 @@ public:
 	virtual PReal compute(const PReal& valA, const PReal& valB) = 0;
 
 protected:
-	Data< QVector<PReal> > inputA, inputB, result;
+	Data< std::vector<PReal> > inputA, inputB, result;
 };
 
 //****************************************************************************//

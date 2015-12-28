@@ -61,19 +61,19 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > VecData;
+		typedef Data< std::vector<T> > VecData;
 		typedef Data< Animation<T> > AnimData;
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
 		AnimData* dataOutput = dynamic_cast<AnimData*>(list[1]);
 		Q_ASSERT(dataInput && dataOutput);
 
-		const QVector<T>& inVal = dataInput->getValue();
+		const std::vector<T>& inVal = dataInput->getValue();
 		auto outVal = dataOutput->getAccessor();
 
 		outVal->setExtend(extend.getValue());
 		outVal->setInterpolation(interpolation.getValue());
 
-		const QVector<PReal>& keysList = keys.getValue();
+		const std::vector<PReal>& keysList = keys.getValue();
 
 		int nb = qMin(keysList.size(), inVal.size());
 		outVal->clear();
@@ -82,7 +82,7 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > keys;
+	Data< std::vector<PReal> > keys;
 	Data<int> interpolation, extend;
 	GenericVectorData generic;
 };

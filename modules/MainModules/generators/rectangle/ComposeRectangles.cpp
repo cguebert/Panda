@@ -31,10 +31,10 @@ public:
 
 	void update()
 	{
-		const QVector<PReal> &l = left.getValue();
-		const QVector<PReal> &t = top.getValue();
-		const QVector<PReal> &r = right.getValue();
-		const QVector<PReal> &b = bottom.getValue();
+		const std::vector<PReal> &l = left.getValue();
+		const std::vector<PReal> &t = top.getValue();
+		const std::vector<PReal> &r = right.getValue();
+		const std::vector<PReal> &b = bottom.getValue();
 
 		int nb = qMin(l.size(), qMin(t.size(), qMin(r.size(), b.size())));
 
@@ -48,8 +48,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > left, top, right, bottom;
-	Data< QVector<Rect> > rectangle;
+	Data< std::vector<PReal> > left, top, right, bottom;
+	Data< std::vector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_ComposeClass = RegisterObject<GeneratorRectangles_Compose>("Generator/Rectangle/Rectangle from 4 reals").setName("Reals to rectangle").setDescription("Create a rectangle from 4 reals");
@@ -75,8 +75,8 @@ public:
 
 	void update()
 	{
-		const QVector<Point> &c = center.getValue();
-		const QVector<Point> &s = size.getValue();
+		const std::vector<Point> &c = center.getValue();
+		const std::vector<Point> &s = size.getValue();
 
 		auto rect = rectangle.getAccessor();
 		rect.clear();
@@ -100,8 +100,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > center, size;
-	Data< QVector<Rect> > rectangle;
+	Data< std::vector<Point> > center, size;
+	Data< std::vector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_ComposeCenterClass = RegisterObject<GeneratorRectangles_ComposeCenter>("Generator/Rectangle/Rectangle from center and size").setName("Center to rectangle").setDescription("Create a rectangle from center and size");
@@ -127,8 +127,8 @@ public:
 
 	void update()
 	{
-		const QVector<Point> &tl = topleft.getValue();
-		const QVector<Point> &br = bottomright.getValue();
+		const std::vector<Point> &tl = topleft.getValue();
+		const std::vector<Point> &br = bottomright.getValue();
 
 		auto rect = rectangle.getAccessor();
 		rect.clear();
@@ -152,8 +152,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > topleft, bottomright;
-	Data< QVector<Rect> > rectangle;
+	Data< std::vector<Point> > topleft, bottomright;
+	Data< std::vector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_ComposeCornersClass = RegisterObject<GeneratorRectangles_ComposeCorners>("Generator/Rectangle/Rectangle from corners").setName("Corners to rectangle").setDescription("Create a rectangle from 2 corners");
@@ -183,7 +183,7 @@ public:
 
 	void update()
 	{
-		const QVector<Rect> &rect = rectangle.getValue();
+		const std::vector<Rect> &rect = rectangle.getValue();
 		int nb = rect.size();
 
 		auto l = left.getAccessor();
@@ -209,8 +209,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > left, top, right, bottom;
-	Data< QVector<Rect> > rectangle;
+	Data< std::vector<PReal> > left, top, right, bottom;
+	Data< std::vector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_DecomposeClass = RegisterObject<GeneratorRectangles_Decompose>("Generator/Rectangle/Rectangle to 4 reals").setName("Rectangle to reals").setDescription("Extract the boundary of a rectangles");
@@ -236,7 +236,7 @@ public:
 
 	void update()
 	{
-		const QVector<Rect> &rect = rectangle.getValue();
+		const std::vector<Rect> &rect = rectangle.getValue();
 		int nb = rect.size();
 
 		auto c = center.getAccessor();
@@ -256,8 +256,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > center, size;
-	Data< QVector<Rect> > rectangle;
+	Data< std::vector<Point> > center, size;
+	Data< std::vector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_DecomposeCenterClass = RegisterObject<GeneratorRectangles_DecomposeCenter>("Generator/Rectangle/Rectangle to center and size").setName("Rectangle to center").setDescription("Extract the center and size of a rectangle");
@@ -283,7 +283,7 @@ public:
 
 	void update()
 	{
-		const QVector<Rect> &rect = rectangle.getValue();
+		const std::vector<Rect> &rect = rectangle.getValue();
 		int nb = rect.size();
 
 		auto tl = topleft.getAccessor();
@@ -303,8 +303,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > topleft, bottomright;
-	Data< QVector<Rect> > rectangle;
+	Data< std::vector<Point> > topleft, bottomright;
+	Data< std::vector<Rect> > rectangle;
 };
 
 int GeneratorRectangles_DecomposeCornersClass = RegisterObject<GeneratorRectangles_DecomposeCorners>("Generator/Rectangle/Rectangle to corners").setName("Rectangle to corners").setDescription("Extract two corners of a rectangle");

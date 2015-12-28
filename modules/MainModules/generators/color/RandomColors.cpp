@@ -94,7 +94,7 @@ protected:
 	helper::RandomGenerator rnd;
 	Data< int > nbColors, seed, hsvMode;
 	Data< Color > colorMin, colorMax;
-	Data< QVector<Color> > colors;
+	Data< std::vector<Color> > colors;
 };
 
 int GeneratorColors_RandomClass = RegisterObject<GeneratorColors_Random>("Generator/Color/Random").setName("Random colors").setDescription("Generate colors by choosing randomly each component");

@@ -48,7 +48,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > position, velocity;
+	Data< std::vector<Point> > position, velocity;
 };
 
 int ParticleCreation_FromListsClass = RegisterObject<ParticleCreation_FromLists>("Particles/Creation/Particles from lists")

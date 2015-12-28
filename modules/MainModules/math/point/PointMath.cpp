@@ -2,7 +2,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Point.h>
-#include <QVector>
 
 #include <math.h>
 
@@ -32,8 +31,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Point>& valA = inputA.getValue();
-		const QVector<Point>& valB = inputB.getValue();
+		const std::vector<Point>& valA = inputA.getValue();
+		const std::vector<Point>& valB = inputB.getValue();
 		int nbA = valA.size(), nbB = valB.size();
 
 		if(nbA && nbB)
@@ -51,7 +50,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > inputA, inputB, result;
+	Data< std::vector<Point> > inputA, inputB, result;
 };
 
 int PointMath_AdditionClass = RegisterObject<PointMath_Addition>("Math/Point/Addition").setName("Add points").setDescription("Compute the addition of 2 points");
@@ -80,8 +79,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Point>& valA = inputA.getValue();
-		const QVector<Point>& valB = inputB.getValue();
+		const std::vector<Point>& valA = inputA.getValue();
+		const std::vector<Point>& valB = inputB.getValue();
 		int nbA = valA.size(), nbB = valB.size();
 
 		if(nbA && nbB)
@@ -99,7 +98,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > inputA, inputB, result;
+	Data< std::vector<Point> > inputA, inputB, result;
 };
 
 int PointMath_SubstractionClass = RegisterObject<PointMath_Substraction>("Math/Point/Substraction").setName("Substract points").setDescription("Compute the substraction of 2 points");
@@ -130,8 +129,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Point>& points = input.getValue();
-		const QVector<PReal>& reals = factor.getValue();
+		const std::vector<Point>& points = input.getValue();
+		const std::vector<PReal>& reals = factor.getValue();
 		int nbP = points.size(), nbR = reals.size();
 
 		if(nbP && nbR)
@@ -149,8 +148,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > input, result;
-	Data< QVector<PReal> > factor;
+	Data< std::vector<Point> > input, result;
+	Data< std::vector<PReal> > factor;
 };
 
 int PointMath_ScaleClass = RegisterObject<PointMath_Scale>("Math/Point/Multiply").setName("Scale point").setDescription("Multiply a point by a real");
@@ -181,8 +180,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Point>& points = input.getValue();
-		const QVector<PReal>& reals = factor.getValue();
+		const std::vector<Point>& points = input.getValue();
+		const std::vector<PReal>& reals = factor.getValue();
 		int nbP = points.size(), nbR = reals.size();
 
 		if(nbP && nbR)
@@ -200,8 +199,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > input, result;
-	Data< QVector<PReal> > factor;
+	Data< std::vector<Point> > input, result;
+	Data< std::vector<PReal> > factor;
 };
 
 int PointMath_DivisionClass = RegisterObject<PointMath_Division>("Math/Point/Division").setName("Divide point").setDescription("Divide a point by a real");
@@ -230,8 +229,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Point>& valA = inputA.getValue();
-		const QVector<Point>& valB = inputB.getValue();
+		const std::vector<Point>& valA = inputA.getValue();
+		const std::vector<Point>& valB = inputB.getValue();
 		int nbA = valA.size(), nbB = valB.size();
 
 		if(nbA && nbB)
@@ -249,8 +248,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > inputA, inputB;
-	Data< QVector<PReal> > result;
+	Data< std::vector<Point> > inputA, inputB;
+	Data< std::vector<PReal> > result;
 };
 
 int PointMath_DistanceClass = RegisterObject<PointMath_Distance>("Math/Point/Distance").setDescription("Compute the distance between 2 points");
@@ -281,9 +280,9 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Point>& points = input.getValue();
-		const QVector<Point>& centers = center.getValue();
-		const QVector<PReal>& angles = angle.getValue();
+		const std::vector<Point>& points = input.getValue();
+		const std::vector<Point>& centers = center.getValue();
+		const std::vector<PReal>& angles = angle.getValue();
 		int nbP = points.size(), nbC = centers.size(), nbA = angles.size();
 
 		if(nbP && nbC && nbA)
@@ -312,9 +311,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > input, result;
-	Data< QVector<Point> > center;
-	Data< QVector<PReal> > angle;
+	Data< std::vector<Point> > input, result;
+	Data< std::vector<Point> > center;
+	Data< std::vector<PReal> > angle;
 };
 
 int PointMath_RotationClass = RegisterObject<PointMath_Rotation>("Math/Point/Rotation").setDescription("Rotation of a point around a center");
@@ -341,7 +340,7 @@ public:
 		auto angleList = angle.getAccessor();
 		angleList.clear();
 
-		const QVector<Point>& vecList = vector.getValue();
+		const std::vector<Point>& vecList = vector.getValue();
 		int nb = vecList.size();
 
 		if(nb)
@@ -362,8 +361,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > vector;
-	Data< QVector<PReal> > angle;
+	Data< std::vector<Point> > vector;
+	Data< std::vector<PReal> > angle;
 };
 
 int PointMath_AngleOfVectorClass = RegisterObject<PointMath_AngleOfVector>("Math/Point/Angle of vector").setDescription("Computes the angle of a vector");
@@ -390,7 +389,7 @@ public:
 		auto vecList = vector.getAccessor();
 		vecList.clear();
 
-		const QVector<PReal>& angleList = angle.getValue();
+		const std::vector<PReal>& angleList = angle.getValue();
 		int nb = angleList.size();
 
 		if(nb)
@@ -408,8 +407,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > angle;
-	Data< QVector<Point> > vector;
+	Data< std::vector<PReal> > angle;
+	Data< std::vector<Point> > vector;
 };
 
 int PointMath_AngleToVectorClass = RegisterObject<PointMath_AngleToVector>("Math/Point/Angle to vector").setDescription("Creates a vector corresponding to a rotation");
@@ -436,7 +435,7 @@ public:
 		auto res = output.getAccessor();
 		res.clear();
 
-		const QVector<Point>& val = input.getValue();
+		const std::vector<Point>& val = input.getValue();
 		int nb = val.size();
 
 		if(nb)
@@ -450,8 +449,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > input;
-	Data< QVector<PReal> > output;
+	Data< std::vector<Point> > input;
+	Data< std::vector<PReal> > output;
 };
 
 int PointMath_NormClass = RegisterObject<PointMath_Norm>("Math/Point/Norm").setDescription("Compute the norm of a point");
@@ -478,7 +477,7 @@ public:
 		auto res = output.getAccessor();
 		res.clear();
 
-		const QVector<Point>& val = input.getValue();
+		const std::vector<Point>& val = input.getValue();
 		int nb = val.size();
 
 		if(nb)
@@ -492,8 +491,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > input;
-	Data< QVector<PReal> > output;
+	Data< std::vector<Point> > input;
+	Data< std::vector<PReal> > output;
 };
 
 int PointMath_Norm2Class = RegisterObject<PointMath_Norm2>("Math/Point/Norm2").setDescription("Compute the square of the norm of a point");
@@ -520,7 +519,7 @@ public:
 		auto res = output.getAccessor();
 		res.clear();
 
-		const QVector<Point>& val = input.getValue();
+		const std::vector<Point>& val = input.getValue();
 		int nb = val.size();
 
 		if(nb)
@@ -534,7 +533,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > input, output;
+	Data< std::vector<Point> > input, output;
 };
 
 int PointMath_NormalizeClass = RegisterObject<PointMath_Normalize>("Math/Point/Normalize").setDescription("Normalize a point");
@@ -563,8 +562,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Point>& valA = inputA.getValue();
-		const QVector<Point>& valB = inputB.getValue();
+		const std::vector<Point>& valA = inputA.getValue();
+		const std::vector<Point>& valB = inputB.getValue();
 		int nbA = valA.size(), nbB = valB.size();
 
 		if(nbA && nbB)
@@ -582,7 +581,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > inputA, inputB, result;
+	Data< std::vector<Point> > inputA, inputB, result;
 };
 
 int PointMath_LinearProductClass = RegisterObject<PointMath_LinearProduct>("Math/Point/Linear product").setDescription("Compute the linear product of 2 points");
@@ -611,8 +610,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Point>& valA = inputA.getValue();
-		const QVector<Point>& valB = inputB.getValue();
+		const std::vector<Point>& valA = inputA.getValue();
+		const std::vector<Point>& valB = inputB.getValue();
 		int nbA = valA.size(), nbB = valB.size();
 
 		if(nbA && nbB)
@@ -630,7 +629,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > inputA, inputB, result;
+	Data< std::vector<Point> > inputA, inputB, result;
 };
 
 int PointMath_LinearDivisionClass = RegisterObject<PointMath_LinearDivision>("Math/Point/Linear division").setDescription("Compute the linear division of 2 points");

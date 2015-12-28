@@ -50,9 +50,9 @@ public:
 	{
 		QEasingCurve curve(static_cast<QEasingCurve::Type>(mode.getValue()));
 
-		const QVector<T>& listFrom = inputA.getValue();
-		const QVector<T>& listTo = inputB.getValue();
-		const QVector<PReal>& listProg = progress.getValue();
+		const std::vector<T>& listFrom = inputA.getValue();
+		const std::vector<T>& listTo = inputB.getValue();
+		const std::vector<PReal>& listProg = progress.getValue();
 		auto listResult = result.getAccessor();
 		listResult.clear();
 
@@ -84,9 +84,9 @@ public:
 	}
 
 protected:
-	Data< QVector<T> > inputA, inputB;
-	Data< QVector<PReal> > progress;
-	Data< QVector<T> > result;
+	Data< std::vector<T> > inputA, inputB;
+	Data< std::vector<PReal> > progress;
+	Data< std::vector<T> > result;
 	Data<int> mode;
 };
 

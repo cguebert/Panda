@@ -33,17 +33,17 @@ void ShaderEffects::update()
 		QSize inputSize = inputVal.size();
 		auto outputAcc = m_output.getAccessor();
 		QOpenGLFramebufferObject* outputFbo = outputAcc->getFbo();
-		QOpenGLFramebufferObject* intermediaryFbo = m_intermediaryFbo.data();
+		QOpenGLFramebufferObject* intermediaryFbo = m_intermediaryFbo.get();
 		if(!outputFbo || outputFbo->size() != inputSize)
 		{
-			auto newFbo = QSharedPointer<QOpenGLFramebufferObject>(new QOpenGLFramebufferObject(inputSize));
+			auto newFbo = std::make_shared<QOpenGLFramebufferObject>(inputSize);
 			outputAcc->setFbo(newFbo);
-			outputFbo = newFbo.data();
+			outputFbo = newFbo.get();
 
 			if(m_nbPasses > 1)
 			{
-				m_intermediaryFbo.reset(new QOpenGLFramebufferObject(inputSize));
-				intermediaryFbo = m_intermediaryFbo.data();
+				m_intermediaryFbo = std::make_shared<QOpenGLFramebufferObject>(inputSize);
+				intermediaryFbo = m_intermediaryFbo.get();
 			}
 		}
 
@@ -119,7 +119,7 @@ panda::ModuleHandle shadersEffectsModule = REGISTER_MODULE
 
 //****************************************************************************//
 
-bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size, const QOpenGLFramebufferObjectFormat &format)
+bool resizeFBO(std::shared_ptr<QOpenGLFramebufferObject>& fbo, QSize size, const QOpenGLFramebufferObjectFormat &format)
 {
 	if(!fbo || fbo->size() != size)
 	{
@@ -135,7 +135,7 @@ bool resizeFBO(types::ImageWrapper& img, QSize size, const QOpenGLFramebufferObj
 	auto fbo = img.getFbo();
 	if(!fbo || img.size() != size)
 	{
-		auto newFbo = QSharedPointer<QOpenGLFramebufferObject>::create(size, format);
+		auto newFbo = std::make_shared<QOpenGLFramebufferObject>(size, format);
 		img.setFbo(newFbo);
 		return true;
 	}

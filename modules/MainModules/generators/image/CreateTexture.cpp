@@ -80,8 +80,8 @@ public:
 		{
 			QOpenGLFramebufferObjectFormat fmt;
 			fmt.setSamples(16);
-			m_renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
-			m_displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
+			m_renderFrameBuffer = std::make_shared<QOpenGLFramebufferObject>(renderSize, fmt);
+			m_displayFrameBuffer = std::make_shared<QOpenGLFramebufferObject>(renderSize);
 
 			// Setting the image Data to the display Fbo
 			m_image.getAccessor()->setFbo(m_displayFrameBuffer);
@@ -122,7 +122,7 @@ public:
 		m_renderFrameBuffer->release();
 
 		auto acc = m_image.getAccessor();
-		QOpenGLFramebufferObject::blitFramebuffer(acc->getFbo(), m_renderFrameBuffer.data());
+		QOpenGLFramebufferObject::blitFramebuffer(acc->getFbo(), m_renderFrameBuffer.get());
 
 		cleanDirty();
 	}
@@ -130,7 +130,7 @@ public:
 protected:
 	Data<Point> m_size;
 	Data<ImageWrapper> m_image;
-	QSharedPointer<QOpenGLFramebufferObject> m_renderFrameBuffer, m_displayFrameBuffer;
+	std::shared_ptr<QOpenGLFramebufferObject> m_renderFrameBuffer, m_displayFrameBuffer;
 	QMatrix4x4 m_mvpMatrix;
 };
 

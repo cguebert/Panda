@@ -45,9 +45,9 @@ public:
 
 	void render()
 	{
-		const QVector<Rect>& listRect = rect.getValue();
-		const QVector<Color>& listColor = color.getValue();
-		const QVector<PReal>& listWidth = lineWidth.getValue();
+		const std::vector<Rect>& listRect = rect.getValue();
+		const std::vector<Color>& listColor = color.getValue();
+		const std::vector<PReal>& listWidth = lineWidth.getValue();
 
 		int nbRect = listRect.size();
 		int nbColor = listColor.size();
@@ -92,9 +92,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Rect> > rect;
-	Data< QVector<PReal> > lineWidth;
-	Data< QVector<Color> > color;
+	Data< std::vector<Rect> > rect;
+	Data< std::vector<PReal> > lineWidth;
+	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
 	QOpenGLShaderProgram shaderProgram;
@@ -136,8 +136,8 @@ public:
 
 	void render()
 	{
-		const QVector<Rect>& listRect = rect.getValue();
-		const QVector<Color>& listColor = color.getValue();
+		const std::vector<Rect>& listRect = rect.getValue();
+		const std::vector<Color>& listColor = color.getValue();
 
 		int nbRect = listRect.size();
 		int nbColor = listColor.size();
@@ -186,8 +186,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Rect> > rect;
-	Data< QVector<Color> > color;
+	Data< std::vector<Rect> > rect;
+	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
 	GLfloat m_texCoords[8];
@@ -230,7 +230,7 @@ public:
 
 	void render()
 	{
-		const QVector<Rect>& listRect = rect.getValue();
+		const std::vector<Rect>& listRect = rect.getValue();
 
 		int nbRect = listRect.size();
 		int texId = texture.getValue().getTextureId();
@@ -275,7 +275,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Rect> > rect;
+	Data< std::vector<Rect> > rect;
 	Data< ImageWrapper > texture;
 	Data< Shader > shader;
 

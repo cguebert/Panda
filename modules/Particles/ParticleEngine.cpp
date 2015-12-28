@@ -78,7 +78,7 @@ void ParticleEngine::removeParticles()
 
 void ParticleEngine::createNewParticles()
 {
-	QVector<Particle> newParticles;
+	std::vector<Particle> newParticles;
 	int nbNew = 0;
 	for(auto effector : effectors)
 	{
@@ -86,7 +86,7 @@ void ParticleEngine::createNewParticles()
 		int nb = list.size();
 		if(nb)
 		{
-			newParticles += list;
+			newParticles.insert(newParticles.end(), list.begin(), list.end());
 			nbNew += nb;
 		}
 	}
@@ -94,7 +94,7 @@ void ParticleEngine::createNewParticles()
 	for(auto effector : effectors)
 		effector->onInitParticles(newParticles);
 
-	particles += newParticles;
+	particles.insert(particles.end(), newParticles.begin(), newParticles.end());
 
 	// update the particles' indices
 	int i=0;

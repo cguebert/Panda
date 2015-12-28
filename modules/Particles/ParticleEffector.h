@@ -13,7 +13,7 @@ class ParticleEffector : public DockableObject
 public:
 	PANDA_CLASS(ParticleEffector, DockableObject)
 
-	typedef QVector<Particle> Particles;
+	typedef std::vector<Particle> Particles;
 	typedef std::set<int> Indices;
 
 	ParticleEffector(PandaDocument *doc)

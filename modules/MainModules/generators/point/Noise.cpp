@@ -47,10 +47,10 @@ public:
 
 protected:
 	helper::Perlin perlin;
-	Data< QVector<Point> > input;
+	Data< std::vector<Point> > input;
 	Data<int> seed;
 	Data<PReal> scale;
-	Data< QVector<PReal> > output;
+	Data< std::vector<PReal> > output;
 };
 
 int GeneratorPoints_Noise2dClass = RegisterObject<GeneratorPoints_Noise2d>("Generator/Point/Noise 2d")

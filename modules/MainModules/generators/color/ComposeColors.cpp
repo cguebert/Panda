@@ -33,10 +33,10 @@ public:
 
 	void update()
 	{
-		const QVector<PReal> &r = R.getValue();
-		const QVector<PReal> &g = G.getValue();
-		const QVector<PReal> &b = B.getValue();
-		const QVector<PReal> &a = A.getValue();
+		const std::vector<PReal> &r = R.getValue();
+		const std::vector<PReal> &g = G.getValue();
+		const std::vector<PReal> &b = B.getValue();
+		const std::vector<PReal> &a = A.getValue();
 		auto c = color.getAccessor();
 
 		int nbR = r.size(), nbG = g.size(), nbB = b.size(), nbA = a.size();
@@ -66,8 +66,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > R, G, B, A;
-	Data< QVector<Color> > color;
+	Data< std::vector<PReal> > R, G, B, A;
+	Data< std::vector<Color> > color;
 };
 
 int GeneratorColors_ComposeRGBClass = RegisterObject<GeneratorColors_ComposeRGB>("Generator/Color/From RGB").setDescription("Create a color from red, green and blue components");
@@ -97,7 +97,7 @@ public:
 
 	void update()
 	{
-		const QVector<Color>& c = color.getValue();
+		const std::vector<Color>& c = color.getValue();
 		auto r = R.getAccessor();
 		auto g = G.getAccessor();
 		auto b = B.getAccessor();
@@ -116,8 +116,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > R, G, B, A;
-	Data< QVector<Color> > color;
+	Data< std::vector<PReal> > R, G, B, A;
+	Data< std::vector<Color> > color;
 };
 
 int GeneratorColors_DecomposeRGBClass = RegisterObject<GeneratorColors_DecomposeRGB>("Generator/Color/To RGB").setDescription("Extract red, green and blue components from a color");
@@ -149,10 +149,10 @@ public:
 
 	void update()
 	{
-		const QVector<PReal> &h = H.getValue();
-		const QVector<PReal> &s = S.getValue();
-		const QVector<PReal> &v = V.getValue();
-		const QVector<PReal> &a = A.getValue();
+		const std::vector<PReal> &h = H.getValue();
+		const std::vector<PReal> &s = S.getValue();
+		const std::vector<PReal> &v = V.getValue();
+		const std::vector<PReal> &a = A.getValue();
 		auto c = color.getAccessor();
 
 		int nbH = h.size(), nbS = s.size(), nbV = v.size(), nbA = a.size();
@@ -183,8 +183,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > H, S, V, A;
-	Data< QVector<Color> > color;
+	Data< std::vector<PReal> > H, S, V, A;
+	Data< std::vector<Color> > color;
 };
 
 int GeneratorColors_ComposeHSVClass = RegisterObject<GeneratorColors_ComposeHSV>("Generator/Color/From HSV").setDescription("Create a color from hue, saturation and value components");
@@ -214,7 +214,7 @@ public:
 
 	void update()
 	{
-		const QVector<Color>& c = color.getValue();
+		const std::vector<Color>& c = color.getValue();
 		auto h = H.getAccessor();
 		auto s = S.getAccessor();
 		auto v = V.getAccessor();
@@ -233,8 +233,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > H, S, V, A;
-	Data< QVector<Color> > color;
+	Data< std::vector<PReal> > H, S, V, A;
+	Data< std::vector<Color> > color;
 };
 
 int GeneratorColors_DecomposeHSVClass = RegisterObject<GeneratorColors_DecomposeHSV>("Generator/Color/To HSV").setDescription("Extract hue, saturation and value components from a color");

@@ -157,11 +157,11 @@ public:
 	}
 
 protected:
-	Data<QVector<Rect>> m_input, m_output;
+	Data<std::vector<Rect>> m_input, m_output;
 	Data<PReal> m_handleRadius;
-	Data<QVector<Point>> m_centerHandles, m_cornerHandles;
+	Data<std::vector<Point>> m_centerHandles, m_cornerHandles;
 
-	QVector<std::pair<bool, Point>> m_clicsBuffer;
+	std::vector<std::pair<bool, Point>> m_clicsBuffer;
 	Point m_moveStartPos;
 	int m_counter, m_currentSelection;
 	bool m_selectedHandle; // If true: center is selected; false: corner is selected

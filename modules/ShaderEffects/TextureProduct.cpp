@@ -56,9 +56,9 @@ public:
 		QOpenGLFramebufferObject* outputFbo = outputAcc->getFbo();
 		if(!outputFbo || outputAcc->getFbo()->size() != size)
 		{
-			auto newFbo = QSharedPointer<QOpenGLFramebufferObject>(new QOpenGLFramebufferObject(size));
+			auto newFbo = std::make_shared<QOpenGLFramebufferObject>(size);
 			outputAcc->setFbo(newFbo);
-			outputFbo = newFbo.data();
+			outputFbo = newFbo.get();
 		}
 
 		QOpenGLFunctions glFunctions(QOpenGLContext::currentContext());
@@ -79,7 +79,7 @@ protected:
 	Data<Point> m_size;
 
 	QOpenGLShaderProgram m_shaderProgram;
-	QSharedPointer<QOpenGLFramebufferObject> m_FBOs;
+	std::shared_ptr<QOpenGLFramebufferObject> m_FBOs;
 };
 
 int TexturesOuterProductClass = RegisterObject<TexturesOuterProduct>("Modifier/Image/Textures outer product")

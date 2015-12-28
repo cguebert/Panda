@@ -107,11 +107,11 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > m_input;
+	Data< std::vector<Path> > m_input;
 	Data< Animation<PReal> > m_width;
 	Data< int > m_capStyle, m_joinStyle, m_closePath;
-	Data< QVector<Mesh> > m_output;
-	Data< QVector<Path> > m_coordUV; // Hack: vector of vector of vec2
+	Data< std::vector<Mesh> > m_output;
+	Data< std::vector<Path> > m_coordUV; // Hack: vector of vector of vec2
 };
 
 //****************************************************************************//

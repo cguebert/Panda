@@ -29,10 +29,10 @@ public:
 	{
 		const Mesh& inMesh = mesh.getValue();
 
-		const QVector<Point>& pts = points.getValue();
+		const std::vector<Point>& pts = points.getValue();
 		auto output = indices.getAccessor();
 		int nbPts = pts.size();
-		output.wref().fill(Mesh::InvalidID, nbPts);
+		output.wref().resize(nbPts, Mesh::InvalidID);
 
 		int nbTri = inMesh.nbTriangles();
 
@@ -55,8 +55,8 @@ public:
 
 protected:
 	Data< Mesh > mesh;
-	Data< QVector<Point> > points;
-	Data< QVector<int> > indices;
+	Data< std::vector<Point> > points;
+	Data< std::vector<int> > indices;
 };
 
 int ModifierMesh_FindTriangleClass = RegisterObject<ModifierMesh_FindTriangle>("Modifier/Mesh/Find triangle").setDescription("Find triangles at specific positions");

@@ -2,8 +2,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/helper/system/FileRepository.h>
 
-#include <QFile>
-
 namespace panda {
 
 using types::ImageWrapper;
@@ -30,12 +28,12 @@ public:
 
 	void initializeGL() override
 	{
-		m_vertexShader = QSharedPointer<QOpenGLShader>::create(QOpenGLShader::Vertex);
+		m_vertexShader = std::make_shared<QOpenGLShader>(QOpenGLShader::Vertex);
 		m_vertexShader->compileSourceFile("shaders/PT_noColor_Tex.v.glsl");
 
 		m_fragmentSource = helper::system::DataRepository.loadFile("shaders/GBlur.f.glsl");
 
-		m_shaderProgram = QSharedPointer<QOpenGLShaderProgram>::create();
+		m_shaderProgram = std::make_shared<QOpenGLShaderProgram>();
 	}
 
 	std::vector<float> computeHalfKernel()
@@ -104,7 +102,7 @@ public:
 		source.replace("~~3~~", offsetsString);
 
 		m_shaderProgram->removeAllShaders();
-		m_shaderProgram->addShader(m_vertexShader.data());
+		m_shaderProgram->addShader(m_vertexShader.get());
 		m_shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, source);
 	}
 
@@ -123,7 +121,7 @@ public:
 		else // V
 			m_shaderProgram->setUniformValue("pixelOffset", QPointF(0, 1.0/m_size.height()));
 
-		return *m_shaderProgram.data();
+		return *m_shaderProgram.get();
 	}
 
 protected:
@@ -132,8 +130,8 @@ protected:
 	int m_halfKernelSize;
 	QSize m_size;
 	QString m_fragmentSource;
-	QSharedPointer<QOpenGLShader> m_vertexShader;
-	QSharedPointer<QOpenGLShaderProgram> m_shaderProgram;
+	std::shared_ptr<QOpenGLShader> m_vertexShader;
+	std::shared_ptr<QOpenGLShaderProgram> m_shaderProgram;
 };
 
 int ModifierImage_GaussianBlurClass = RegisterObject<ModifierImage_GaussianBlur>("Modifier/Image/Gaussian blur")

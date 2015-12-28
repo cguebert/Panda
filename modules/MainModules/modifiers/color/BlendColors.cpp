@@ -67,7 +67,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Color> > inputA, inputB, output;
+	Data< std::vector<Color> > inputA, inputB, output;
 	Data< int > blendMode;
 };
 

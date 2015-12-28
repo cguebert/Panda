@@ -49,7 +49,7 @@ public:
 
 		QMap<Point, Mesh::PointID> pointsMap;
 
-		const QVector<Mesh>& meshesList = inputs.getValue();
+		const std::vector<Mesh>& meshesList = inputs.getValue();
 		for(const Mesh& mesh : meshesList)
 		{
 			if(newPoints.empty())
@@ -100,7 +100,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Mesh> > inputs;
+	Data< std::vector<Mesh> > inputs;
 	Data< PReal > threshold;
 	Data< Mesh > output;
 };

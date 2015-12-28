@@ -28,7 +28,7 @@ public:
 	void update()
 	{
 		Gradient grad = gradient.getValue();
-		const QVector<PReal>& pos = position.getValue();
+		const std::vector<PReal>& pos = position.getValue();
 		auto colorsList = color.getAccessor();
 
 		int nb = pos.size();
@@ -41,8 +41,8 @@ public:
 
 protected:
 	Data< Gradient > gradient;
-	Data< QVector<PReal> > position;
-	Data< QVector<Color> > color;
+	Data< std::vector<PReal> > position;
+	Data< std::vector<Color> > color;
 };
 
 int ModifierColor_InGradientClass = RegisterObject<ModifierColor_InGradient>("Modifier/Color/Color in gradient").setDescription("Get colors in specific places in a gradient");

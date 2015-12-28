@@ -10,8 +10,6 @@
 
 #include "UserValue.h"
 
-#include <QVector>
-
 namespace panda {
 
 int GeneratorUser_ColorClass = RegisterObject< GeneratorUser<types::Color> >("Generator/Color/Color user value").setName("Color value").setDescription("Lets you store a value for use in other objects");
@@ -25,16 +23,16 @@ int GeneratorUser_RectClass = RegisterObject< GeneratorUser<types::Rect> >("Gene
 int GeneratorUser_ShaderClass = RegisterObject< GeneratorUser<types::Shader> >("Generator/Shader/Shader user value").setName("Shader value").setDescription("Lets you store a value for use in other objects");
 int GeneratorUser_StringClass = RegisterObject< GeneratorUser<QString> >("Generator/Text/Text user value").setName("Text value").setDescription("Lets you store a value for use in other objects");
 
-int GeneratorUser_VectorColorClass = RegisterObject< GeneratorUser< QVector<types::Color> > >("Generator/Color/Colors list user value").setName("Colors list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorDoubleClass = RegisterObject< GeneratorUser< QVector<PReal> > >("Generator/Real/Reals list user value").setName("Reals list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorGradientClass = RegisterObject< GeneratorUser< QVector<types::Gradient> > >("Generator/Gradient/Gradients list user value").setName("Gradients list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorIntegerClass = RegisterObject< GeneratorUser< QVector<int> > >("Generator/Integer/Integers list user value").setName("Integers list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorMeshClass = RegisterObject< GeneratorUser< QVector<types::Mesh> > >("Generator/Mesh/Meshes list user value").setName("Meshes list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorPathClass = RegisterObject< GeneratorUser< QVector<types::Path> > >("Generator/Path/Paths list user value").setName("Paths list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorPointClass = RegisterObject< GeneratorUser< QVector<types::Point> > >("Generator/Point/Points list user value").setName("Points list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorRectClass = RegisterObject< GeneratorUser< QVector<types::Rect> > >("Generator/Rectangle/Rectangles list user value").setName("Rectangles list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorShaderClass = RegisterObject< GeneratorUser< QVector<types::Shader> > >("Generator/Shader/Shaders list user value").setName("Shaders list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorStringClass = RegisterObject< GeneratorUser< QVector<QString> > >("Generator/Text/Texts list user value").setName("Texts list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorColorClass = RegisterObject< GeneratorUser< std::vector<types::Color> > >("Generator/Color/Colors list user value").setName("Colors list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorDoubleClass = RegisterObject< GeneratorUser< std::vector<PReal> > >("Generator/Real/Reals list user value").setName("Reals list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorGradientClass = RegisterObject< GeneratorUser< std::vector<types::Gradient> > >("Generator/Gradient/Gradients list user value").setName("Gradients list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorIntegerClass = RegisterObject< GeneratorUser< std::vector<int> > >("Generator/Integer/Integers list user value").setName("Integers list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorMeshClass = RegisterObject< GeneratorUser< std::vector<types::Mesh> > >("Generator/Mesh/Meshes list user value").setName("Meshes list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorPathClass = RegisterObject< GeneratorUser< std::vector<types::Path> > >("Generator/Path/Paths list user value").setName("Paths list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorPointClass = RegisterObject< GeneratorUser< std::vector<types::Point> > >("Generator/Point/Points list user value").setName("Points list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorRectClass = RegisterObject< GeneratorUser< std::vector<types::Rect> > >("Generator/Rectangle/Rectangles list user value").setName("Rectangles list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorShaderClass = RegisterObject< GeneratorUser< std::vector<types::Shader> > >("Generator/Shader/Shaders list user value").setName("Shaders list").setDescription("Lets you store a value for use in other objects");
+int GeneratorUser_VectorStringClass = RegisterObject< GeneratorUser< std::vector<QString> > >("Generator/Text/Texts list user value").setName("Texts list").setDescription("Lets you store a value for use in other objects");
 
 int GeneratorUser_AnimationColorClass = RegisterObject< GeneratorUser< types::Animation<types::Color> > >("Generator/Color/Colors animation user value").setName("Colors animation").setDescription("Lets you store a value for use in other objects");
 int GeneratorUser_AnimationDoubleClass = RegisterObject< GeneratorUser< types::Animation<PReal> > >("Generator/Real/Reals animation user value").setName("Reals animation").setDescription("Lets you store a value for use in other objects");

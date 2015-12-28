@@ -39,7 +39,7 @@ public:
 
 protected:
 	Data<Mesh> m_mesh;
-	Data< QVector<Point> > m_centroids;
+	Data< std::vector<Point> > m_centroids;
 };
 
 int MeshMath_CentroidsClass = RegisterObject<MeshMath_Centroids>("Math/Mesh/Centroids of triangles")
@@ -89,8 +89,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Mesh> > m_mesh;
-	Data< QVector<Point> > m_centroids;
+	Data< std::vector<Mesh> > m_mesh;
+	Data< std::vector<Point> > m_centroids;
 };
 
 int MeshMath_CentroidClass = RegisterObject<MeshMath_Centroid>("Math/Mesh/Centroid")

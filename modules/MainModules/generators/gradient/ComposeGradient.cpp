@@ -50,14 +50,14 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<Color> > VecColorData;
+		typedef Data< std::vector<Color> > VecColorData;
 		typedef Data< PReal > VecRealData;
 		VecColorData* dataColor = dynamic_cast<VecColorData*>(list[0]);
 		VecRealData* dataPosition = dynamic_cast<VecRealData*>(list[1]);
 
 		Q_ASSERT(dataColor && dataPosition);
 
-		const QVector<Color>& inColor = dataColor->getValue();
+		const std::vector<Color>& inColor = dataColor->getValue();
 		const PReal pos = dataPosition->getValue();
 		int nbColors = inColor.size();
 		int nbGrads = tempList.size();
@@ -74,8 +74,8 @@ public:
 
 protected:
 	Data<int> nbGradients;
-	Data< QVector<types::Gradient> > gradients;
-	QVector<types::Gradient> tempList;
+	Data< std::vector<types::Gradient> > gradients;
+	std::vector<types::Gradient> tempList;
 	GenericVectorData generic;
 };
 

@@ -44,18 +44,18 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > ValueData;
+		typedef Data< std::vector<T> > ValueData;
 		ValueData* dataInput = dynamic_cast<ValueData*>(list[0]);
 		Q_ASSERT(dataInput);
 
-		const QVector<T>& inVal = dataInput->getValue();
+		const std::vector<T>& inVal = dataInput->getValue();
 		int nb = inVal.size();
 		int prevNb = tempList.size();
 
 		if(!prevNb)
-			tempList.fill(format.getValue(), nb);
+			tempList.resize(nb, format.getValue());
 		else if(prevNb == 1 && nb > 1)
-			tempList.fill(tempList[0], nb);
+			tempList.resize(nb, tempList[0]);
 		else if(nb == 1 && prevNb > 1)
 			nb = 1;
 		else
@@ -68,8 +68,8 @@ public:
 
 protected:
 	Data<QString> format;
-	Data< QVector<QString> > text;
-	QVector<QString> tempList;
+	Data< std::vector<QString> > text;
+	std::vector<QString> tempList;
 	GenericVectorData generic;
 };
 

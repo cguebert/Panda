@@ -2,7 +2,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Path.h>
-#include <QVector>
 
 #include <cmath>
 #include <algorithm>
@@ -52,8 +51,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > m_input, m_output;
-	Data< QVector<Point> > m_delta;
+	Data< std::vector<Path> > m_input, m_output;
+	Data< std::vector<Point> > m_delta;
 };
 
 int PathMath_TranslationClass = RegisterObject<PathMath_Translation>("Math/Path/Translation").setName("Translate path").setDescription("Translate a path");
@@ -100,8 +99,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > m_input, m_output;
-	Data< QVector<PReal> > m_scale;
+	Data< std::vector<Path> > m_input, m_output;
+	Data< std::vector<PReal> > m_scale;
 };
 
 int PathMath_ScaleClass = RegisterObject<PathMath_Scale>("Math/Path/Scale").setName("Scale path").setDescription("Scale a path");
@@ -162,9 +161,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > m_input, m_output;
-	Data< QVector<Point> > m_center;
-	Data< QVector<PReal> > m_angle;
+	Data< std::vector<Path> > m_input, m_output;
+	Data< std::vector<Point> > m_center;
+	Data< std::vector<PReal> > m_angle;
 };
 
 int PathMath_RotateClass = RegisterObject<PathMath_Rotate>("Math/Path/Rotate").setName("Rotate path").setDescription("Rotate a path");
@@ -190,7 +189,7 @@ public:
 
 	void update()
 	{
-		const QVector<Path>& paths = input.getValue();
+		const std::vector<Path>& paths = input.getValue();
 		int nb = paths.size();
 
 		auto nbPtsList = nbPoints.getAccessor();
@@ -222,9 +221,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > input;
-	Data< QVector<int> > nbPoints;
-	Data< QVector<PReal> > length;
+	Data< std::vector<Path> > input;
+	Data< std::vector<int> > nbPoints;
+	Data< std::vector<PReal> > length;
 };
 
 int PathMath_LengthClass = RegisterObject<PathMath_Length>("Math/Path/Curve length").setDescription("Compute the length of a series of segments");
@@ -253,7 +252,7 @@ public:
 	void update()
 	{
 		const Path& curve = input.getValue();
-		const QVector<PReal>& listAbscissa = abscissa.getValue();
+		const std::vector<PReal>& listAbscissa = abscissa.getValue();
 		unsigned int nbPts = curve.size();
 		unsigned int nbAbscissa = listAbscissa.size();
 
@@ -267,7 +266,7 @@ public:
 
 			// Some precomputation
 			PReal totalLength = 0.0;
-			QVector<PReal> lengths, starts, ends;
+			std::vector<PReal> lengths, starts, ends;
 			lengths.resize(nbPts - 1);
 			starts.resize(nbPts - 1);
 			ends.resize(nbPts - 1);
@@ -286,7 +285,7 @@ public:
 			for(unsigned int i=0; i<nbAbscissa; ++i)
 			{
 				PReal a = qBound<PReal>(0.0, listAbscissa[i], totalLength - 1e-3);
-				QVector<PReal>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
+				std::vector<PReal>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
 
 				unsigned int index = iter - ends.begin();
 				PReal p = 0.0;
@@ -309,7 +308,7 @@ public:
 
 protected:
 	Data< Path > input, position;
-	Data< QVector<PReal> > abscissa, rotation;
+	Data< std::vector<PReal> > abscissa, rotation;
 };
 
 int PathMath_GetPointClass = RegisterObject<PathMath_GetPoint>("Math/Path/Point on curve").setDescription("Get the position and the rotation of a point on a curve based on his abscissa");
@@ -344,8 +343,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > m_input;
-	Data< QVector<Point> > m_output;
+	Data< std::vector<Path> > m_input;
+	Data< std::vector<Point> > m_output;
 };
 
 int PathMath_CentroidClass = RegisterObject<PathMath_Centroid>("Math/Path/Centroid")
@@ -382,8 +381,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > m_input;
-	Data< QVector<PReal> > m_output;
+	Data< std::vector<Path> > m_input;
+	Data< std::vector<PReal> > m_output;
 };
 
 int PathMath_AreaClass = RegisterObject<PathMath_Area>("Math/Path/Area")

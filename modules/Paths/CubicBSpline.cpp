@@ -119,11 +119,11 @@ public:
 	}
 
 protected:
-	Data<QVector<Path>> m_input, m_output;
+	Data<std::vector<Path>> m_input, m_output;
 	Data<int> m_steps, m_close;
 
 	typedef std::array<PReal, 4> vec4;
-	QVector<vec4> m_coefs;
+	std::vector<vec4> m_coefs;
 };
 
 int Curve_CubicBSplineClass = RegisterObject<Curve_CubicBSpline>("Math/Path/Cubic B-spline").setDescription("Compute a cubic B-spline using the controls points");

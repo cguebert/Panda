@@ -48,9 +48,9 @@ public:
 
 	void render()
 	{
-		const QVector<Point>& valA = inputA.getValue();
-		const QVector<Point>& valB = inputB.getValue();
-		const QVector<Color>& listColor = color.getValue();
+		const std::vector<Point>& valA = inputA.getValue();
+		const std::vector<Point>& valB = inputB.getValue();
+		const std::vector<Color>& listColor = color.getValue();
 
 		int nbA = valA.size(), nbB = valB.size();
 		int nbLines = qMin(valA.size(), valB.size());
@@ -74,7 +74,7 @@ public:
 			shaderProgram.bind();
 			shaderProgram.setUniformValue("MVP", getMVPMatrix());
 
-			QVector<Point> tmpVertices;
+			std::vector<Point> tmpVertices;
 			int vertexLocation = shaderProgram.attributeLocation("vertex");
 			shaderProgram.enableAttributeArray(vertexLocation);
 			if(useTwoLists)
@@ -90,7 +90,7 @@ public:
 			else
 				shaderProgram.setAttributeArray(vertexLocation, valA.front().data(), 2);
 
-			QVector<Color> tmpColors;
+			std::vector<Color> tmpColors;
 			int colorLocation = shaderProgram.attributeLocation("color");
 			shaderProgram.enableAttributeArray(colorLocation);
 			if(nbColor >= nbVertices) // We have one color for each vertex
@@ -114,9 +114,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > inputA, inputB;
+	Data< std::vector<Point> > inputA, inputB;
 	Data<PReal> width;
-	Data< QVector<Color> > color;
+	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
 	QOpenGLShaderProgram shaderProgram;
@@ -154,9 +154,9 @@ public:
 
 	void render()
 	{
-		const QVector<Path>& paths = input.getValue();
-		const QVector<Color>& listColor = color.getValue();
-		const QVector<PReal>& listWidth = lineWidth.getValue();
+		const std::vector<Path>& paths = input.getValue();
+		const std::vector<Color>& listColor = color.getValue();
+		const std::vector<PReal>& listWidth = lineWidth.getValue();
 
 		int nbPaths = paths.size();
 		int nbColor = listColor.size();
@@ -198,9 +198,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > input;
-	Data< QVector<PReal> > lineWidth;
-	Data< QVector<Color> > color;
+	Data< std::vector<Path> > input;
+	Data< std::vector<PReal> > lineWidth;
+	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
 	QOpenGLShaderProgram shaderProgram;
@@ -239,7 +239,7 @@ public:
 
 	void update()
 	{
-		const QVector<Path>& paths = input.getValue();
+		const std::vector<Path>& paths = input.getValue();
 		int nbPaths = paths.size();
 
 		texCoordsBuffer.clear();
@@ -276,9 +276,9 @@ public:
 
 	void render()
 	{
-		const QVector<Path>& paths = input.getValue();
-		const QVector<Gradient>& listGradient = gradient.getValue();
-		const QVector<PReal>& listWidth = lineWidth.getValue();
+		const std::vector<Path>& paths = input.getValue();
+		const std::vector<Gradient>& listGradient = gradient.getValue();
+		const std::vector<PReal>& listWidth = lineWidth.getValue();
 
 		int nbPaths = paths.size();
 		int nbGradient = listGradient.size();
@@ -363,13 +363,13 @@ public:
 	}
 
 protected:
-	Data< QVector<Path> > input;
-	Data< QVector<PReal> > lineWidth;
-	Data< QVector<Gradient> > gradient;
+	Data< std::vector<Path> > input;
+	Data< std::vector<PReal> > lineWidth;
+	Data< std::vector<Gradient> > gradient;
 	Data< Shader > shader;
 
-	QVector<PReal> pathLengths;
-	QVector< QVector<Point> > texCoordsBuffer;
+	std::vector<PReal> pathLengths;
+	std::vector< std::vector<Point> > texCoordsBuffer;
 
 	QOpenGLShaderProgram shaderProgram;
 };

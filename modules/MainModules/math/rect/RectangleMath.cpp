@@ -2,7 +2,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Rect.h>
-#include <QVector>
 
 #include <qmath.h>
 
@@ -33,8 +32,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Rect>& rects = input.getValue();
-		const QVector<Point>& trans = translation.getValue();
+		const std::vector<Rect>& rects = input.getValue();
+		const std::vector<Point>& trans = translation.getValue();
 		int nbR = rects.size(), nbT = trans.size();
 
 		if(nbR && nbT)
@@ -50,8 +49,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Rect> > input, result;
-	Data< QVector<Point> > translation;
+	Data< std::vector<Rect> > input, result;
+	Data< std::vector<Point> > translation;
 };
 
 int RectangleMath_TranslationClass = RegisterObject<RectangleMath_Translation>("Math/Rectangle/Translation")
@@ -81,8 +80,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Rect>& rects = input.getValue();
-		const QVector<Rect>& adj = adjust.getValue();
+		const std::vector<Rect>& rects = input.getValue();
+		const std::vector<Rect>& adj = adjust.getValue();
 		int nbR = rects.size(), nbA = adj.size();
 
 		if(nbR && nbA)
@@ -98,7 +97,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Rect> > input, adjust, result;
+	Data< std::vector<Rect> > input, adjust, result;
 };
 
 int RectangleMath_AdjustClass = RegisterObject<RectangleMath_Adjust>("Math/Rectangle/Adjust")
@@ -128,8 +127,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Rect>& rectsA = inputA.getValue();
-		const QVector<Rect>& rectsB = inputB.getValue();
+		const std::vector<Rect>& rectsA = inputA.getValue();
+		const std::vector<Rect>& rectsB = inputB.getValue();
 		int nbA = rectsA.size(), nbB = rectsB.size();
 
 		if(nbA)
@@ -156,7 +155,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Rect> > inputA, inputB, result;
+	Data< std::vector<Rect> > inputA, inputB, result;
 };
 
 int RectangleMath_IntersectionClass = RegisterObject<RectangleMath_Intersection>("Math/Rectangle/Intersection")
@@ -186,8 +185,8 @@ public:
 		auto res = result.getAccessor();
 		res.clear();
 
-		const QVector<Rect>& rectsA = inputA.getValue();
-		const QVector<Rect>& rectsB = inputB.getValue();
+		const std::vector<Rect>& rectsA = inputA.getValue();
+		const std::vector<Rect>& rectsB = inputB.getValue();
 		int nbA = rectsA.size(), nbB = rectsB.size();
 
 		if(nbA)
@@ -214,7 +213,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Rect> > inputA, inputB, result;
+	Data< std::vector<Rect> > inputA, inputB, result;
 };
 
 int RectangleMath_UnionClass = RegisterObject<RectangleMath_Union>("Math/Rectangle/Union")

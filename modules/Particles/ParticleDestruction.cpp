@@ -67,7 +67,7 @@ public:
 
 protected:
 	Data<PReal> maxAge, variation;
-	QVector<PReal> birth;
+	std::vector<PReal> birth;
 	std::mt19937 gen;
 };
 
@@ -98,7 +98,7 @@ public:
 	}
 
 protected:
-	Data< QVector<int> > indices;
+	Data< std::vector<int> > indices;
 };
 
 int ParticleDestruction_IndexClass = RegisterObject<ParticleDestruction_Index>("Particles/Destruction/Remove particles by index")
@@ -126,7 +126,7 @@ public:
 	{
 		Indices tmp;
 		int nb = particles.size();
-		const QVector<Rect>& rectangles = rectangle.getValue();
+		const std::vector<Rect>& rectangles = rectangle.getValue();
 		for(const Rect& r : rectangles)
 		{
 			for(int i=0; i<nb; ++i)
@@ -156,7 +156,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Rect> > rectangle;
+	Data< std::vector<Rect> > rectangle;
 	Data< int > inverse;
 };
 

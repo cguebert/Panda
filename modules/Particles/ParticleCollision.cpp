@@ -28,7 +28,7 @@ public:
 
 	virtual void accumulateForces(Particles& particles)
 	{
-		const QVector<Point> pts = lines.getValue();
+		const std::vector<Point> pts = lines.getValue();
 		const PReal maxForce = repulsionForce.getValue();
 		PReal maxDist = influenceDist.getValue();
 		maxDist *= maxDist;
@@ -68,7 +68,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > lines;
+	Data< std::vector<Point> > lines;
 	Data< PReal> repulsionForce, influenceDist;
 	Data< int > bothSides;
 };

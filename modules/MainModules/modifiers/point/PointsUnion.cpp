@@ -32,7 +32,7 @@ public:
 	{
 		const QImage& img = image.getValue().getImage();
 
-		const QVector<Point>& inPts = inputPoints.getValue();
+		const std::vector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
 		auto outId = outputIndices.getAccessor();
 		int nb = inPts.size();
@@ -62,8 +62,8 @@ public:
 
 protected:
 	Data<ImageWrapper> image;
-	Data< QVector<Point> > inputPoints, outputPoints;
-	Data< QVector<int> > outputIndices;
+	Data< std::vector<Point> > inputPoints, outputPoints;
+	Data< std::vector<int> > outputIndices;
 };
 
 int ModifierPoints_UnionClass = RegisterObject<ModifierPoints_Union>("Modifier/Point/Union").setName("Points union").setDescription("Remove points that are in dark areas of the image");

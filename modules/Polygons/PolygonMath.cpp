@@ -2,7 +2,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Polygon.h>
-#include <QVector>
 
 #include <cmath>
 #include <algorithm>
@@ -51,8 +50,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Polygon> > m_input, m_output;
-	Data< QVector<Point> > m_delta;
+	Data< std::vector<Polygon> > m_input, m_output;
+	Data< std::vector<Point> > m_delta;
 };
 
 int PolygonMath_TranslationClass = RegisterObject<PolygonMath_Translation>("Math/Polygon/Translation").setName("Translate polygon").setDescription("Translate a polygon");
@@ -98,8 +97,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Polygon> > m_input, m_output;
-	Data< QVector<PReal> > m_scale;
+	Data< std::vector<Polygon> > m_input, m_output;
+	Data< std::vector<PReal> > m_scale;
 };
 
 int PolygonMath_ScaleClass = RegisterObject<PolygonMath_Scale>("Math/Polygon/Scale").setName("Scale polygon").setDescription("Scale a polygon");
@@ -159,9 +158,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Polygon> > m_input, m_output;
-	Data< QVector<Point> > m_center;
-	Data< QVector<PReal> > m_angle;
+	Data< std::vector<Polygon> > m_input, m_output;
+	Data< std::vector<Point> > m_center;
+	Data< std::vector<PReal> > m_angle;
 };
 
 int PolygonMath_RotateClass = RegisterObject<PolygonMath_Rotate>("Math/Polygon/Rotate").setName("Rotate polygon").setDescription("Rotate a polygon");
@@ -210,8 +209,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Polygon> > m_input;
-	Data< QVector<Point> > m_output;
+	Data< std::vector<Polygon> > m_input;
+	Data< std::vector<Point> > m_output;
 };
 
 int PolygonMath_CentroidClass = RegisterObject<PolygonMath_Centroid>("Math/Polygon/Centroid")
@@ -254,8 +253,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Polygon> > m_input;
-	Data< QVector<PReal> > m_output;
+	Data< std::vector<Polygon> > m_input;
+	Data< std::vector<PReal> > m_output;
 };
 
 int PolygonMath_AreaClass = RegisterObject<PolygonMath_Area>("Math/Polygon/Area")

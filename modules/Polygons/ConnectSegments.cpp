@@ -3,12 +3,20 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/Path.h>
 
-#include <QMap>
 #include <set>
+#include <map>
 
-template<> static bool qMapLessThanKey<panda::types::Point>(const panda::types::Point& p1, const panda::types::Point& p2)
+namespace
 {
-	return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
+
+struct PointCompare
+{
+	bool operator()(const panda::types::Point& p1, const panda::types::Point& p2)
+	{
+		return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
+	}
+};
+
 }
 
 namespace panda {
@@ -38,23 +46,23 @@ public:
 			return std::make_pair(b, a);
 	}
 
-	void prepareSearchData(const QVector<Point>& points)
+	void prepareSearchData(const std::vector<Point>& points)
 	{
 		m_usedEdges.clear();
 		m_uniquePoints.clear();
 		m_neighbours.clear();
 
 		// Compute the "points around points" list
-		QMap<Point, int> pointsMap;
+		std::map<Point, int, PointCompare> pointsMap;
 		for(int i=0, nb=points.size()/2; i<nb; ++i)
 		{
 			const Point &pt1 = points[i*2], &pt2 = points[i*2+1];
-			if(!pointsMap.contains(pt1))
+			if(!pointsMap.count(pt1))
 			{
 				pointsMap[pt1] = m_uniquePoints.size();
 				m_uniquePoints.push_back(pt1);
 			}
-			if(!pointsMap.contains(pt2))
+			if(!pointsMap.count(pt2))
 			{
 				pointsMap[pt2] = m_uniquePoints.size();
 				m_uniquePoints.push_back(pt2);
@@ -83,7 +91,7 @@ public:
 
 	int selectNextPoint(int currentId, int prevId)
 	{
-		QVector<int> candidates;
+		std::vector<int> candidates;
 		for(auto ptId : m_neighbours[currentId])
 			if(ptId != prevId && !usedEdge(currentId, ptId))
 				candidates.push_back(ptId);
@@ -152,7 +160,7 @@ public:
 		{
 			int start = findTopLeftPoint(unusedIndices);
 			unusedIndices.erase(start);
-			QVector<int> resIndices;
+			std::vector<int> resIndices;
 			resIndices.push_back(start);
 
 			int prev = start, current = start;
@@ -190,12 +198,12 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > m_input;
-	Data< QVector<Path> > m_output;
+	Data< std::vector<Point> > m_input;
+	Data< std::vector<Path> > m_output;
 
 	std::set<std::pair<int, int>> m_usedEdges;
-	QVector<Point> m_uniquePoints;
-	QMap<int, QVector<int> > m_neighbours;
+	std::vector<Point> m_uniquePoints;
+	std::map<int, std::vector<int> > m_neighbours;
 };
 
 int ModifierPoints_ConnectSegmentsClass = RegisterObject<ModifierPoints_ConnectSegments>("Modifier/Point/Connect segments")

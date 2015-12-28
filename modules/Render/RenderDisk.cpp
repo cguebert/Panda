@@ -50,9 +50,9 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& listCenter = center.getValue();
-		const QVector<PReal>& listRadius = radius.getValue();
-		const QVector<Color>& listColor = color.getValue();
+		const std::vector<Point>& listCenter = center.getValue();
+		const std::vector<PReal>& listRadius = radius.getValue();
+		const std::vector<Color>& listColor = color.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
@@ -132,15 +132,15 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > center;
-	Data< QVector<PReal> > radius;
-	Data< QVector<Color> > color;
+	Data< std::vector<Point> > center;
+	Data< std::vector<PReal> > radius;
+	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
-	QVector<Point> vertexBuffer;
-	QVector<GLint> firstBuffer;
-	QVector<GLsizei> countBuffer;
-	QVector<Color> colorBuffer;
+	std::vector<Point> vertexBuffer;
+	std::vector<GLint> firstBuffer;
+	std::vector<GLsizei> countBuffer;
+	std::vector<Color> colorBuffer;
 
 	QOpenGLShaderProgram shaderProgram;
 };
@@ -178,8 +178,8 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& listCenter = center.getValue();
-		const QVector<PReal>& listRadius = radius.getValue();
+		const std::vector<Point>& listCenter = center.getValue();
+		const std::vector<PReal>& listRadius = radius.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
@@ -238,8 +238,8 @@ public:
 
 	void render()
 	{
-		const QVector<PReal>& listRadius = radius.getValue();
-		const QVector<Gradient>& listGradient = gradient.getValue();
+		const std::vector<PReal>& listRadius = radius.getValue();
+		const std::vector<Gradient>& listGradient = gradient.getValue();
 
 		int nbRadius = listRadius.size();
 		int nbGradient = listGradient.size();
@@ -304,14 +304,14 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > center;
-	Data< QVector<PReal> > radius;
-	Data< QVector<Gradient> > gradient;
+	Data< std::vector<Point> > center;
+	Data< std::vector<PReal> > radius;
+	Data< std::vector<Gradient> > gradient;
 	Data< Shader > shader;
 
-	QVector<Point> vertexBuffer, texCoordsBuffer;
-	QVector<GLint> firstBuffer;
-	QVector<GLsizei> countBuffer;
+	std::vector<Point> vertexBuffer, texCoordsBuffer;
+	std::vector<GLint> firstBuffer;
+	std::vector<GLsizei> countBuffer;
 
 	QOpenGLShaderProgram shaderProgram;
 };
@@ -349,8 +349,8 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& listCenter = center.getValue();
-		const QVector<PReal>& listRadius = radius.getValue();
+		const std::vector<Point>& listCenter = center.getValue();
+		const std::vector<PReal>& listRadius = radius.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
@@ -408,7 +408,7 @@ public:
 
 	void render()
 	{
-		const QVector<PReal>& listRadius = radius.getValue();
+		const std::vector<PReal>& listRadius = radius.getValue();
 		const int texId = texture.getValue().getTextureId();
 
 		int nbRadius = listRadius.size();
@@ -447,14 +447,14 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > center;
-	Data< QVector<PReal> > radius;
+	Data< std::vector<Point> > center;
+	Data< std::vector<PReal> > radius;
 	Data< ImageWrapper > texture;
 	Data< Shader > shader;
 
-	QVector<Point> vertexBuffer, texCoordsBuffer;
-	QVector<GLint> firstBuffer;
-	QVector<GLsizei> countBuffer;
+	std::vector<Point> vertexBuffer, texCoordsBuffer;
+	std::vector<GLint> firstBuffer;
+	std::vector<GLsizei> countBuffer;
 
 	QOpenGLShaderProgram shaderProgram;
 };

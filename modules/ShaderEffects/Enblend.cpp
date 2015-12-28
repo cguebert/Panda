@@ -41,7 +41,7 @@ public:
 			QOpenGLFramebufferObject* outputFbo = outputAcc->getFbo();
 			if(!outputFbo || outputFbo->size() != inputSize)
 			{
-				auto newFbo = QSharedPointer<QOpenGLFramebufferObject>(new QOpenGLFramebufferObject(inputSize));
+				auto newFbo = std::make_shared<QOpenGLFramebufferObject>(inputSize);
 				outputAcc->setFbo(newFbo);
 				outputFbo = newFbo.data();
 
@@ -54,9 +54,9 @@ public:
 				QSize size = inputSize;
 				for(int i=0; i<nbLevels; ++i)
 				{
-					m_laplacianFbos.push_back(QSharedPointer<QOpenGLFramebufferObject>(new QOpenGLFramebufferObject(size)));
+					m_laplacianFbos.push_back(std::make_shared<QOpenGLFramebufferObject>(size));
 					size /= 2;
-					m_gaussianFbos.push_back(QSharedPointer<QOpenGLFramebufferObject>(new QOpenGLFramebufferObject(size)));
+					m_gaussianFbos.push_back(std::make_shared<QOpenGLFramebufferObject>(size));
 				}
 			}
 		}
@@ -66,7 +66,7 @@ protected:
 	Data< ImageWrapper > m_input, m_output;
 	Data< int > m_levels;
 
-	QVector< QSharedPointer<QOpenGLFramebufferObject> > m_gaussianFbos, m_laplacianFbos;
+	std::vector< std::shared_ptr<QOpenGLFramebufferObject> > m_gaussianFbos, m_laplacianFbos;
 };
 
 int ModifierImage_EnblendClass = RegisterObject<ModifierImage_Enblend>("Modifier/Image/Effects/Enblend")

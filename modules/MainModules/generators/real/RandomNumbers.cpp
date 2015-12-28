@@ -47,7 +47,7 @@ protected:
 	helper::RandomGenerator rnd;
 	Data<int> nbNumbers, seed;
 	Data<PReal> numMin, numMax;
-	Data< QVector<PReal> > numbers;
+	Data< std::vector<PReal> > numbers;
 };
 
 int GeneratorReals_RandomClass = RegisterObject<GeneratorReals_Random>("Generator/Real/Random").setName("Random numbers").setDescription("Generate a list of random numbers");

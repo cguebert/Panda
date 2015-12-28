@@ -41,7 +41,7 @@ public:
 	void render()
 	{
 		const Mesh& inMesh = mesh.getValue();
-		QVector<Color> listColor = color.getValue();
+		std::vector<Color> listColor = color.getValue();
 
 		int nbTri = inMesh.nbTriangles();
 		int nbColor = listColor.size();
@@ -76,7 +76,7 @@ public:
 
 protected:
 	Data< Mesh > mesh;
-	Data< QVector<Color> > color;
+	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
 	QOpenGLShaderProgram shaderProgram;

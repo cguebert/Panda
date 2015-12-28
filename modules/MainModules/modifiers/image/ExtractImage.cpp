@@ -33,7 +33,7 @@ public:
 	void update()
 	{
 		const ImageWrapper& imgWrapper = image.getValue();
-		const QVector<Rect>& rectList = rectangle.getValue();
+		const std::vector<Rect>& rectList = rectangle.getValue();
 		auto resList = result.getAccessor();
 
 		int nb = rectList.size();
@@ -64,15 +64,14 @@ public:
 					if(!size.isValid())
 						continue;
 
-					QSharedPointer<QOpenGLFramebufferObject> newFbo
-							= QSharedPointer<QOpenGLFramebufferObject>(new QOpenGLFramebufferObject(size));
+					auto newFbo = std::make_shared<QOpenGLFramebufferObject>(size);
 
 					int l = std::floor(rect.left()), t = std::floor(rect.top()),
 						w = std::floor(rect.width()), h = std::floor(rect.height());
 					QSize sourceSize = fbo->size();
 					QRect sourceRect = QRect(l, sourceSize.height() - t - h, w, h);
 					QRect targetRect = QRect(QPoint(0, 0), size);
-					QOpenGLFramebufferObject::blitFramebuffer(newFbo.data(), targetRect, fbo, sourceRect);
+					QOpenGLFramebufferObject::blitFramebuffer(newFbo.get(), targetRect, fbo, sourceRect);
 					resList[i].setFbo(newFbo);
 				}
 			}
@@ -83,8 +82,8 @@ public:
 
 protected:
 	Data< ImageWrapper > image;
-	Data< QVector< Rect > > rectangle;
-	Data< QVector< ImageWrapper > > result;
+	Data< std::vector< Rect > > rectangle;
+	Data< std::vector< ImageWrapper > > result;
 };
 
 int ModifierImage_ExtractImageClass = RegisterObject<ModifierImage_ExtractImage>("Modifier/Image/Extract image").setDescription("Extract a region of an image to create a new one.");

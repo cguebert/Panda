@@ -48,7 +48,7 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& pts = vertices.getValue();
+		const std::vector<Point>& pts = vertices.getValue();
 		auto outMesh = mesh.getAccessor();
 
 		outMesh->clear();
@@ -96,7 +96,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > vertices;
+	Data< std::vector<Point> > vertices;
 	Data<Mesh> mesh;
 };
 

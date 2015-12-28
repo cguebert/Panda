@@ -3,9 +3,10 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/Mesh.h>
 #include <panda/types/Polygon.h>
+#include <panda/helper/algorithm.h>
 
-#include <QMap>
 #include <set>
+#include <map>
 #include <iostream>
 
 namespace panda {
@@ -20,11 +21,11 @@ class Polygon_CreateFromMesh : public PandaObject
 public:
 	PANDA_CLASS(Polygon_CreateFromMesh, PandaObject)
 
-	using PointsList = QVector<Point>;
+	using PointsList = std::vector<Point>;
 	using IdSet = std::set<int>;
 	using Edge = std::pair<int, int>;
 	using EdgeSet = std::set<Edge>;
-	using Neighbours =  QMap<int, QVector<int>>;
+	using Neighbours =  std::map<int, std::vector<int>>;
 
 	Polygon_CreateFromMesh(PandaDocument *doc)
 		: PandaObject(doc)
@@ -72,8 +73,8 @@ public:
 
 	int selectNextPoint(const PointsList& points, const Neighbours& neighbours, const EdgeSet& usedEdges, int currentId, int prevId)
 	{
-		QVector<int> candidates;
-		for(auto ptId : neighbours[currentId])
+		std::vector<int> candidates;
+		for(auto ptId : neighbours.at(currentId))
 			if(ptId != prevId && usedEdges.find(make_edge(currentId, ptId)) == usedEdges.end())
 				candidates.push_back(ptId);
 
@@ -101,14 +102,14 @@ public:
 		return best;
 	}
 
-	QVector<Path> doSimpleSearch(const PointsList& points, const Neighbours& neighbours, IdSet& unusedPts)
+	std::vector<Path> doSimpleSearch(const PointsList& points, const Neighbours& neighbours, IdSet& unusedPts)
 	{
-		QVector<Path> paths; // Before we can separate the contour from the holes
+		std::vector<Path> paths; // Before we can separate the contour from the holes
 		while(!unusedPts.empty())
 		{
 			int start = *unusedPts.begin();
 			unusedPts.erase(start);
-			QVector<int> ptsId;
+			std::vector<int> ptsId;
 			ptsId.push_back(start);
 
 			int prev = start, current = start;
@@ -116,7 +117,7 @@ public:
 			while(found)
 			{
 				found = false;
-				for(auto ptId : neighbours[current])
+				for(auto ptId : neighbours.at(current))
 				{
 					if(ptId != prev && unusedPts.find(ptId) != unusedPts.end())
 					{
@@ -130,7 +131,7 @@ public:
 				}
 
 				// Can we close the loop ?
-				if(!found && neighbours[current].contains(start))
+				if(!found && helper::contains(neighbours.at(current), start))
 					ptsId.push_back(start);
 			}
 
@@ -146,15 +147,15 @@ public:
 		return paths;
 	}
 
-	QVector<Path> doComplexSearch(const PointsList& points, const Neighbours& neighbours, IdSet& unusedPts)
+	std::vector<Path> doComplexSearch(const PointsList& points, const Neighbours& neighbours, IdSet& unusedPts)
 	{
-		QVector<Path> paths;
+		std::vector<Path> paths;
 		EdgeSet usedEdges;
 		while(!unusedPts.empty())
 		{
 			int start = findTopLeftPoint(points, unusedPts);
 			unusedPts.erase(start);
-			QVector<int> ptsId;
+			std::vector<int> ptsId;
 			ptsId.push_back(start);
 
 			int prev = start, current = start;
@@ -222,14 +223,14 @@ public:
 			bool simpleSearch = true;
 			for(const auto& n : neighbours)
 			{
-				if(n.size() > 2)
+				if(n.second.size() > 2)
 				{
 					simpleSearch = false;
 					break;
 				}
 			}
 
-			QVector<Path> tempPaths = simpleSearch ?
+			std::vector<Path> tempPaths = simpleSearch ?
 						doSimpleSearch(points, neighbours, unusedPts) :
 						doComplexSearch(points, neighbours, unusedPts);
 
@@ -268,8 +269,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Mesh> > m_input;
-	Data< QVector<Polygon> > m_output;
+	Data< std::vector<Mesh> > m_input;
+	Data< std::vector<Polygon> > m_output;
 };
 
 int Polygon_CreateFromMeshClass = RegisterObject<Polygon_CreateFromMesh>("Modifier/Mesh/Mesh to polygon")

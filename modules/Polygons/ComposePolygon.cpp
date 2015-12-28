@@ -3,7 +3,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/Polygon.h>
 #include <panda/types/Rect.h>
-#include <QVector>
 
 #include <cmath>
 #include <algorithm>
@@ -41,7 +40,7 @@ public:
 
 protected:
 	Data< Path > m_contour;
-	Data< QVector<Path> > m_innerPaths;
+	Data< std::vector<Path> > m_innerPaths;
 	Data< Polygon > m_output;
 };
 
@@ -77,7 +76,7 @@ public:
 protected:
 	Data< Polygon > m_input;
 	Data< Path > m_contour;
-	Data< QVector<Path> > m_innerPaths;
+	Data< std::vector<Path> > m_innerPaths;
 };
 
 int Polygon_DecomposeClass = RegisterObject<Polygon_Decompose>("Generator/Polygon/Decompose polygon").setDescription("Extract the contour and the inner paths of a polygon");
@@ -114,8 +113,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Polygon> > m_input;
-	Data< QVector<Path> > m_output;
+	Data< std::vector<Polygon> > m_input;
+	Data< std::vector<Path> > m_output;
 };
 
 int Polygon_DecomposeToPathsClass = RegisterObject<Polygon_DecomposeToPaths>("Generator/Polygon/Polygon to paths").setDescription("Extract all the paths in a polygon");

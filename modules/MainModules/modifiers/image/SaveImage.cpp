@@ -58,8 +58,8 @@ public:
 	}
 
 protected:
-	Data< QVector<QString> > fileName;
-	Data< QVector<ImageWrapper> > image;
+	Data< std::vector<QString> > fileName;
+	Data< std::vector<ImageWrapper> > image;
 	bool inStep;
 };
 

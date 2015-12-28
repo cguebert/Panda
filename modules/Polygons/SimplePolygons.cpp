@@ -3,7 +3,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/Path.h>
 #include <panda/types/Rect.h>
-#include <QVector>
 
 #include <cmath>
 #include <algorithm>
@@ -30,7 +29,7 @@ public:
 
 	void update()
 	{
-		const QVector<Rect>& rects = m_rectangles.getValue();
+		const std::vector<Rect>& rects = m_rectangles.getValue();
 		int nb = rects.size();
 
 		auto paths = m_paths.getAccessor();
@@ -51,8 +50,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Rect> > m_rectangles;
-	Data< QVector<Path> > m_paths;
+	Data< std::vector<Rect> > m_rectangles;
+	Data< std::vector<Path> > m_paths;
 };
 
 int PolygonCreation_RectangleClass = RegisterObject<PolygonCreation_Rectangle>("Generator/Polygon/Rectangle path").setDescription("Create a rectangular path");
@@ -79,8 +78,8 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& centers = m_centers.getValue();
-		const QVector<PReal>& radiuses = m_radiuses.getValue();
+		const std::vector<Point>& centers = m_centers.getValue();
+		const std::vector<PReal>& radiuses = m_radiuses.getValue();
 		int nbC = centers.size();
 		int nbR = radiuses.size();
 		auto paths = m_paths.getAccessor();
@@ -127,10 +126,10 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > m_centers;
-	Data< QVector<PReal> > m_radiuses;
+	Data< std::vector<Point> > m_centers;
+	Data< std::vector<PReal> > m_radiuses;
 	Data< PReal > m_precision;
-	Data< QVector<Path> > m_paths;
+	Data< std::vector<Path> > m_paths;
 };
 
 int PolygonCreation_CircleClass = RegisterObject<PolygonCreation_Circle>("Generator/Polygon/Circle path").setDescription("Create a circular path");

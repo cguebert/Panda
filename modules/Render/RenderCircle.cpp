@@ -47,10 +47,10 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& listCenter = center.getValue();
-		const QVector<PReal>& listRadius = radius.getValue();
-		const QVector<PReal>& listWidth = lineWidth.getValue();
-		const QVector<Color>& listColor = color.getValue();
+		const std::vector<Point>& listCenter = center.getValue();
+		const std::vector<PReal>& listRadius = radius.getValue();
+		const std::vector<PReal>& listWidth = lineWidth.getValue();
+		const std::vector<Color>& listColor = color.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
@@ -135,16 +135,16 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > center;
-	Data< QVector<PReal> > radius, lineWidth;
-	Data< QVector<Color> > color;
+	Data< std::vector<Point> > center;
+	Data< std::vector<PReal> > radius, lineWidth;
+	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
-	QVector<Point> vertexBuffer;
-	QVector<PReal> widthBuffer;
-	QVector<Color> colorBuffer;
-	QVector<GLint> firstBuffer;
-	QVector<GLsizei> countBuffer;
+	std::vector<Point> vertexBuffer;
+	std::vector<PReal> widthBuffer;
+	std::vector<Color> colorBuffer;
+	std::vector<GLint> firstBuffer;
+	std::vector<GLsizei> countBuffer;
 
 	QOpenGLShaderProgram shaderProgram;
 };

@@ -65,9 +65,9 @@ public:
 			QOpenGLFramebufferObject* outputFbo = outputAcc->getFbo();
 			if(!outputFbo || outputFbo->size() != inputSize)
 			{
-				auto newFbo = QSharedPointer<QOpenGLFramebufferObject>(new QOpenGLFramebufferObject(inputSize));
+				auto newFbo = std::make_shared<QOpenGLFramebufferObject>(inputSize);
 				outputAcc->setFbo(newFbo);
-				outputFbo = newFbo.data();
+				outputFbo = newFbo.get();
 			}
 
 			glClearColor(0, 0, 0, 0);

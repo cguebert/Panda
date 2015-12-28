@@ -2,7 +2,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Point.h>
-#include <QVector>
 
 #include <cmath>
 #include <algorithm>
@@ -34,7 +33,7 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& list = input.getValue();
+		const std::vector<Point>& list = input.getValue();
 		int nb = list.size();
 		nbElements.setValue(nb);
 
@@ -73,7 +72,7 @@ public:
 	}
 
 protected:
-	Data< QVector<Point> > input;
+	Data< std::vector<Point> > input;
 	Data<int> nbElements;
 	Data<Point> center;
 	Data<PReal> mean, stdDev;

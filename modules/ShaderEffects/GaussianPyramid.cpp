@@ -84,7 +84,7 @@ public:
 			auto gaussTexId = gaussianImg.getTextureId();
 
 			// Upscaling the gaussian to get the blurred image
-			renderImage(*blurred.data(), m_upscaleProgram, gaussTexId);
+			renderImage(*blurred.get(), m_upscaleProgram, gaussTexId);
 
 			// Substraction of the original and the blurred
 			renderImage(*laplacianImg.getFbo(), m_differenceProgram, texId, blurred->texture());
@@ -95,10 +95,10 @@ public:
 
 protected:
 	QOpenGLShaderProgram m_downscaleProgram, m_upscaleProgram, m_differenceProgram;
-	QVector<QSharedPointer<QOpenGLFramebufferObject>> m_blurred;
+	std::vector<std::shared_ptr<QOpenGLFramebufferObject>> m_blurred;
 
 	Data< ImageWrapper > m_input;
-	Data< QVector< ImageWrapper > > m_gaussian, m_laplacian;
+	Data< std::vector< ImageWrapper > > m_gaussian, m_laplacian;
 	Data< int > m_levels;
 };
 
@@ -167,10 +167,10 @@ public:
 				resizeFBO(output.wref(), size);
 
 			// Upscaling the gaussian
-			renderImage(*upscaled.data(), m_upscaleProgram, prevLevelTexId);
+			renderImage(*upscaled.get(), m_upscaleProgram, prevLevelTexId);
 
 			// Addition of the original and the upscaled
-			QOpenGLFramebufferObject& recomposed = (i ? *m_recomposed[i-1].data() : *output->getFbo());
+			QOpenGLFramebufferObject& recomposed = (i ? *m_recomposed[i-1].get() : *output->getFbo());
 			renderImage(recomposed, m_additionProgram, upscaled->texture(), laplacianImg.getTextureId());
 			prevLevelTexId = recomposed.texture();
 		}
@@ -178,9 +178,9 @@ public:
 
 protected:
 	QOpenGLShaderProgram m_upscaleProgram, m_additionProgram;
-	QVector<QSharedPointer<QOpenGLFramebufferObject>> m_upscaled, m_recomposed;
+	std::vector<std::shared_ptr<QOpenGLFramebufferObject>> m_upscaled, m_recomposed;
 
-	Data< QVector< ImageWrapper > > m_gaussian, m_laplacian;
+	Data< std::vector< ImageWrapper > > m_gaussian, m_laplacian;
 	Data< ImageWrapper > m_output;
 };
 

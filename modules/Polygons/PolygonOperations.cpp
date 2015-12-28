@@ -2,7 +2,6 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/Polygon.h>
-#include <QVector>
 
 #include <cmath>
 #include <algorithm>
@@ -92,7 +91,7 @@ public:
 
 protected:
 	Data< Polygon > m_inputA, m_inputB;
-	Data< QVector<Polygon> > m_output;
+	Data< std::vector<Polygon> > m_output;
 };
 
 int PolygonOperation_DifferenceClass = RegisterObject<PolygonOperation_Difference>("Math/Polygon/Difference").setDescription("Compute the difference of two polygons");
@@ -175,7 +174,7 @@ public:
 
 protected:
 	Data< Polygon > m_inputA, m_inputB;
-	Data< QVector<Polygon> > m_output;
+	Data< std::vector<Polygon> > m_output;
 };
 
 int PolygonOperation_UnionClass = RegisterObject<PolygonOperation_Union>("Math/Polygon/Union").setDescription("Compute the union of two polygons");

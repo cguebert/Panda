@@ -5,8 +5,6 @@
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
 
-#include <vector>
-
 namespace panda {
 
 class ShaderEffects : public OGLObject
@@ -28,13 +26,13 @@ protected:
 	const int m_nbPasses;
 	Data< types::ImageWrapper > m_input, m_output;
 
-	QSharedPointer<QOpenGLFramebufferObject> m_intermediaryFbo;
-	QVector< QSharedPointer<QOpenGLShaderProgram> > m_shaderPrograms;
+	std::shared_ptr<QOpenGLFramebufferObject> m_intermediaryFbo;
+	std::vector< std::shared_ptr<QOpenGLShaderProgram> > m_shaderPrograms;
 	GLfloat m_texCoords[8];
 };
 
 // Returns true if it created a new fbo
-bool resizeFBO(QSharedPointer<QOpenGLFramebufferObject>& fbo, QSize size, const QOpenGLFramebufferObjectFormat& format = QOpenGLFramebufferObjectFormat());
+bool resizeFBO(std::shared_ptr<QOpenGLFramebufferObject>& fbo, QSize size, const QOpenGLFramebufferObjectFormat& format = QOpenGLFramebufferObjectFormat());
 bool resizeFBO(types::ImageWrapper& img, QSize size, const QOpenGLFramebufferObjectFormat& format = QOpenGLFramebufferObjectFormat());
 void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program);
 

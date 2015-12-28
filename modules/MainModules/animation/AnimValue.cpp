@@ -42,14 +42,14 @@ public:
 	template <class T>
 	void updateT(DataList& list)
 	{
-		typedef Data< QVector<T> > VecData;
+		typedef Data< std::vector<T> > VecData;
 		typedef Data< Animation<T> > AnimData;
 		AnimData* dataInput = dynamic_cast<AnimData*>(list[0]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[1]);
 
 		Q_ASSERT(dataInput && dataOutput);
 
-		const QVector<PReal>& key = progress.getValue();
+		const std::vector<PReal>& key = progress.getValue();
 		const Animation<T>& inVal = dataInput->getValue();
 		auto outVal = dataOutput->getAccessor();
 
@@ -60,7 +60,7 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > progress;
+	Data< std::vector<PReal> > progress;
 	GenericAnimationData generic;
 };
 

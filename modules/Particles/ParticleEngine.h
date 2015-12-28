@@ -4,8 +4,6 @@
 #include <panda/Dockable.h>
 #include <modules/particles/Particle.h>
 
-#include <QVector>
-
 namespace panda {
 
 class PandaDocument;
@@ -28,9 +26,9 @@ public:
 	void createNewParticles();
 
 protected:
-	QVector<ParticleEffector*> effectors;
-	QVector<Particle> particles;
-	Data< QVector<types::Point> > positions, velocities, accelerations;
+	std::vector<ParticleEffector*> effectors;
+	std::vector<Particle> particles;
+	Data< std::vector<types::Point> > positions, velocities, accelerations;
 	PReal prevTime;
 };
 

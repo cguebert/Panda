@@ -1,8 +1,6 @@
 #include <panda/PandaObject.h>
 #include <panda/Group.h> // For BaseGeneratorUser
 
-#include <QFile>
-
 namespace panda {
 
 template <class T>

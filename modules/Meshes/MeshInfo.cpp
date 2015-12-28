@@ -82,8 +82,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Mesh> > m_input;
-	Data< QVector<PReal> > m_output;
+	Data< std::vector<Mesh> > m_input;
+	Data< std::vector<PReal> > m_output;
 };
 
 int MeshMath_AreaClass = RegisterObject<MeshMath_Area>("Math/Mesh/Area")

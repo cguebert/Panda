@@ -33,7 +33,7 @@ public:
 	{
 		Mesh inMesh = m_mesh.getValue();
 
-		const QVector<int>& polyIDs = m_triangles.getValue();
+		const std::vector<int>& polyIDs = m_triangles.getValue();
 
 		Mesh::TrianglesIndicesList inputList;
 		for(auto p : polyIDs)
@@ -54,7 +54,7 @@ public:
 protected:
 	Data< Mesh > m_mesh;
 	Data< int > m_testEdges;
-	Data< QVector<int> > m_triangles, m_neighbors;
+	Data< std::vector<int> > m_triangles, m_neighbors;
 };
 
 int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Find neighbors").setDescription("Find neighboring triangles to the input list");
@@ -85,7 +85,7 @@ public:
 	{
 		Mesh inMesh = m_mesh.getValue();
 
-		const QVector<int>& triIDs = m_triangles.getValue();
+		const std::vector<int>& triIDs = m_triangles.getValue();
 		std::set<Mesh::TriangleID> outputSet;
 
 		for(auto triID : triIDs)
@@ -107,7 +107,7 @@ public:
 protected:
 	Data< Mesh > m_mesh;
 	Data< int > m_testEdges;
-	Data< QVector<int> > m_triangles, m_connected;
+	Data< std::vector<int> > m_triangles, m_connected;
 };
 
 int ModifierMesh_GetConnectedClass = RegisterObject<ModifierMesh_GetConnected>("Modifier/Mesh/Get connected").setDescription("Get connected triangles to the input list");
@@ -169,9 +169,9 @@ public:
 	}
 
 protected:
-	Data< QVector<Mesh> > m_input;
+	Data< std::vector<Mesh> > m_input;
 	Data< int > m_testEdges;
-	Data< QVector<Mesh> > m_output;
+	Data< std::vector<Mesh> > m_output;
 };
 
 int ModifierMesh_SeparateDisconnectedClass = RegisterObject<ModifierMesh_SeparateDisconnected>("Modifier/Mesh/Separate disconnected")

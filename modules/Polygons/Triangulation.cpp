@@ -3,7 +3,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/Polygon.h>
 #include <panda/types/Mesh.h>
-#include <QVector>
 
 #include "libs/clip2tri/clip2tri.h"
 
@@ -89,8 +88,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Polygon> > m_input;
-	Data< QVector<Mesh> > m_output;
+	Data< std::vector<Polygon> > m_input;
+	Data< std::vector<Mesh> > m_output;
 };
 
 int Polygon_TriangulationClass = RegisterObject<Polygon_Triangulation>("Generator/Mesh/Triangulation").setDescription("Compute a triangulation of a polygon");

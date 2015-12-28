@@ -52,7 +52,7 @@ public:
 	void update()
 	{
 		// Make sure we compute each image before the rendering
-		const QVector<ImageWrapper>& listImage = image.getValue();
+		const std::vector<ImageWrapper>& listImage = image.getValue();
 		for(const ImageWrapper& image : listImage)
 			image.getTextureId();
 	}
@@ -78,9 +78,9 @@ public:
 
 	void render()
 	{
-		const QVector<ImageWrapper>& listImage = image.getValue();
-		const QVector<Point>& listPosition = position.getValue();
-		const QVector<PReal>& listRotation = rotation.getValue();
+		const std::vector<ImageWrapper>& listImage = image.getValue();
+		const std::vector<Point>& listPosition = position.getValue();
+		const std::vector<PReal>& listRotation = rotation.getValue();
 
 		bool centered = (drawCentered.getValue() != 0);
 
@@ -178,9 +178,9 @@ public:
 	}
 
 protected:
-	Data< QVector<ImageWrapper> > image;
-	Data< QVector<Point> > position;
-	Data< QVector<PReal> > rotation;
+	Data< std::vector<ImageWrapper> > image;
+	Data< std::vector<Point> > position;
+	Data< std::vector<PReal> > rotation;
 	Data< int > drawCentered;
 	Data< Shader > shader;
 

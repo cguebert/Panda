@@ -110,10 +110,10 @@ public:
 	}
 
 protected:
-	Data<QVector<Point>> m_input, m_output;
-	Data<QVector<PReal>> m_radiuses;
+	Data<std::vector<Point>> m_input, m_output;
+	Data<std::vector<PReal>> m_radiuses;
 
-	QVector<std::pair<bool, Point>> m_clicsBuffer;
+	std::vector<std::pair<bool, Point>> m_clicsBuffer;
 	Point m_moveStartPos;
 	int m_counter, m_currentSelection;
 };
@@ -216,9 +216,9 @@ public:
 	}
 
 protected:
-	Data<QVector<Rect>> m_input, m_output;
+	Data<std::vector<Rect>> m_input, m_output;
 
-	QVector<std::pair<bool, Point>> m_clicsBuffer;
+	std::vector<std::pair<bool, Point>> m_clicsBuffer;
 	Point m_moveStartPos;
 	int m_counter, m_currentSelection;
 };

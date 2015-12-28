@@ -39,8 +39,8 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& inPts = input.getValue();
-		const QVector<Point>& searchPts = points.getValue();
+		const std::vector<Point>& inPts = input.getValue();
+		const std::vector<Point>& searchPts = points.getValue();
 		int nb = inPts.size();
 
 		if(nb && searchPts.size())
@@ -84,9 +84,9 @@ public:
 protected:
 	helper::PointsGrid grid;
 
-	Data< QVector<Point> > input, points, output;
+	Data< std::vector<Point> > input, points, output;
 	Data<int> unique, notSelf;
-	Data< QVector<int> > found;
+	Data< std::vector<int> > found;
 	Data<PReal> maxDist;
 };
 

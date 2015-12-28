@@ -97,7 +97,7 @@ protected:
 
 	Data<int> m_seed, m_samples;
 	Data<PReal> minimumDistance;
-	Data< QVector<Point> > m_points;
+	Data< std::vector<Point> > m_points;
 	Data<int> m_nbPoints;
 	Data<Rect> m_area;
 };

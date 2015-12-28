@@ -1,7 +1,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <QVector>
 
 namespace panda {
 
@@ -23,8 +22,8 @@ public:
 
 	void update()
 	{
-		const QVector<PReal> &valInA = inputA.getValue();
-		const QVector<PReal> &valInB = inputB.getValue();
+		const std::vector<PReal> &valInA = inputA.getValue();
+		const std::vector<PReal> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
 
@@ -48,8 +47,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > inputA, inputB;
-	Data< QVector<int> > result;
+	Data< std::vector<PReal> > inputA, inputB;
+	Data< std::vector<int> > result;
 };
 
 int BooleanMath_GreaterClass = RegisterObject<BooleanMath_Greater>("Math/Boolean/Greater").setDescription("Compare 2 reals; output is 1 if A > B, 0 otherwise");
@@ -74,8 +73,8 @@ public:
 
 	void update()
 	{
-		const QVector<PReal> &valInA = inputA.getValue();
-		const QVector<PReal> &valInB = inputB.getValue();
+		const std::vector<PReal> &valInA = inputA.getValue();
+		const std::vector<PReal> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
 
@@ -99,8 +98,8 @@ public:
 	}
 
 protected:
-	Data< QVector<PReal> > inputA, inputB;
-	Data< QVector<int> > result;
+	Data< std::vector<PReal> > inputA, inputB;
+	Data< std::vector<int> > result;
 };
 
 int BooleanMath_EqualClass = RegisterObject<BooleanMath_Equal>("Math/Boolean/Equal").setDescription("Compare 2 reals; output is 1 if A is equal to B, 0 otherwise");
@@ -125,8 +124,8 @@ public:
 
 	void update()
 	{
-		const QVector<int> &valInA = inputA.getValue();
-		const QVector<int> &valInB = inputB.getValue();
+		const std::vector<int> &valInA = inputA.getValue();
+		const std::vector<int> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
 
@@ -150,7 +149,7 @@ public:
 	}
 
 protected:
-	Data< QVector<int> > inputA, inputB, result;
+	Data< std::vector<int> > inputA, inputB, result;
 };
 
 int BooleanMath_OrClass = RegisterObject<BooleanMath_Or>("Math/Boolean/Or").setDescription("Compute the boolean operation OR on the 2 inputs");
@@ -175,8 +174,8 @@ public:
 
 	void update()
 	{
-		const QVector<int> &valInA = inputA.getValue();
-		const QVector<int> &valInB = inputB.getValue();
+		const std::vector<int> &valInA = inputA.getValue();
+		const std::vector<int> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
 
@@ -200,7 +199,7 @@ public:
 	}
 
 protected:
-	Data< QVector<int> > inputA, inputB, result;
+	Data< std::vector<int> > inputA, inputB, result;
 };
 
 int BooleanMath_AndClass = RegisterObject<BooleanMath_And>("Math/Boolean/And").setDescription("Compute the boolean operation AND on the 2 inputs");
@@ -225,8 +224,8 @@ public:
 
 	void update()
 	{
-		const QVector<int> &valInA = inputA.getValue();
-		const QVector<int> &valInB = inputB.getValue();
+		const std::vector<int> &valInA = inputA.getValue();
+		const std::vector<int> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
 
@@ -250,7 +249,7 @@ public:
 	}
 
 protected:
-	Data< QVector<int> > inputA, inputB, result;
+	Data< std::vector<int> > inputA, inputB, result;
 };
 
 int BooleanMath_XorClass = RegisterObject<BooleanMath_Xor>("Math/Boolean/Xor").setDescription("Compute the boolean operation XOR on the 2 inputs");
@@ -274,7 +273,7 @@ public:
 
 	void update()
 	{
-		const QVector<int> &valIn = input.getValue();
+		const std::vector<int> &valIn = input.getValue();
 		auto valOut = result.getAccessor();
 
 		int nb = valIn.size();
@@ -287,7 +286,7 @@ public:
 	}
 
 protected:
-	Data< QVector<int> > input, result;
+	Data< std::vector<int> > input, result;
 };
 
 int BooleanMath_NotClass = RegisterObject<BooleanMath_Not>("Math/Boolean/Not").setDescription("Compute the negation of the input");

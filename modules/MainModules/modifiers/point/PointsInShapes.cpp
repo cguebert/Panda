@@ -31,7 +31,7 @@ public:
 	{
 		const Rect& rect = rectangle.getValue();
 
-		const QVector<Point>& inPts = inputPoints.getValue();
+		const std::vector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
 		auto outId = outputIndices.getAccessor();
 		int nb = inPts.size();
@@ -53,8 +53,8 @@ public:
 
 protected:
 	Data< Rect > rectangle;
-	Data< QVector<Point> > inputPoints, outputPoints;
-	Data< QVector<int> > outputIndices;
+	Data< std::vector<Point> > inputPoints, outputPoints;
+	Data< std::vector<int> > outputIndices;
 };
 
 int ModifierPoints_PointsInRectClass = RegisterObject<ModifierPoints_PointsInRect>("Modifier/Point/Points in rectangle").setDescription("Select points that are inside a rectangle");
@@ -88,7 +88,7 @@ public:
 		PReal r = radius.getValue();
 		PReal r2 = r*r;
 
-		const QVector<Point>& inPts = inputPoints.getValue();
+		const std::vector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
 		auto outId = outputIndices.getAccessor();
 		int nb = inPts.size();
@@ -112,8 +112,8 @@ public:
 protected:
 	Data< Point > center;
 	Data< PReal > radius;
-	Data< QVector<Point> > inputPoints, outputPoints;
-	Data< QVector<int> > outputIndices;
+	Data< std::vector<Point> > inputPoints, outputPoints;
+	Data< std::vector<int> > outputIndices;
 };
 
 int ModifierPoints_PointsInDiskClass = RegisterObject<ModifierPoints_PointsInDisk>("Modifier/Point/Points in disk").setDescription("Select points that are inside a disk");

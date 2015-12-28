@@ -163,10 +163,10 @@ public:
 	}
 
 protected:
-	Data< QVector<QString> > text;
+	Data< std::vector<QString> > text;
 	Data< QString > font;
-	Data< QVector<Rect> > rect;
-	Data< QVector<Color> > color;
+	Data< std::vector<Rect> > rect;
+	Data< std::vector<Color> > color;
 	Data< int > alignH, alignV;
 
 	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;

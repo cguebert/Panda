@@ -42,8 +42,8 @@ public:
 
 	void render()
 	{
-		const QVector<Mesh>& inMeshes = meshes.getValue();
-		QVector<Color> listColor = color.getValue();
+		const std::vector<Mesh>& inMeshes = meshes.getValue();
+		std::vector<Color> listColor = color.getValue();
 
 		int nbMeshes = inMeshes.size();
 		int nbColor = listColor.size();
@@ -78,8 +78,8 @@ public:
 	}
 
 protected:
-	Data< QVector<Mesh> > meshes;
-	Data< QVector<Color> > color;
+	Data< std::vector<Mesh> > meshes;
+	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
 	QOpenGLShaderProgram shaderProgram;
@@ -115,7 +115,7 @@ public:
 	void render()
 	{
 		const Mesh& inMesh = mesh.getValue();
-		QVector<Color> listColor = color.getValue();
+		std::vector<Color> listColor = color.getValue();
 
 		int nbPts = inMesh.nbPoints();
 		int nbTri = inMesh.nbTriangles();
@@ -124,7 +124,7 @@ public:
 		if (nbTri && nbColor)
 		{
 			if (nbColor < nbPts)
-				listColor.fill(listColor[0], nbPts);
+				listColor.resize(nbPts, listColor[0]);
 
 			if (!shader.getValue().apply(shaderProgram))
 				return;
@@ -146,7 +146,7 @@ public:
 
 protected:
 	Data< Mesh > mesh;
-	Data< QVector<Color> > color;
+	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
 	QOpenGLShaderProgram shaderProgram;
@@ -182,7 +182,7 @@ public:
 	void render()
 	{
 		const Mesh& inMesh = mesh.getValue();
-		QVector<Point> listCoords = uvCoords.getValue();
+		std::vector<Point> listCoords = uvCoords.getValue();
 		const int texId = texture.getValue().getTextureId();
 
 		int nbPts = inMesh.nbPoints();
@@ -218,7 +218,7 @@ public:
 
 protected:
 	Data< Mesh > mesh;
-	Data< QVector<Point> > uvCoords;
+	Data< std::vector<Point> > uvCoords;
 	Data< ImageWrapper > texture;
 	Data< Shader > shader;
 

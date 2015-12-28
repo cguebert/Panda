@@ -39,7 +39,7 @@ public:
 
 	void update()
 	{
-		const QVector<Point>& inPts = inputPoints.getValue();
+		const std::vector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
 		int nb = inPts.size();
 		outPts.resize(nb);
@@ -61,7 +61,7 @@ public:
 
 protected:
 	helper::RandomGenerator rnd;
-	Data< QVector<Point> > inputPoints, outputPoints;
+	Data< std::vector<Point> > inputPoints, outputPoints;
 	Data<PReal> minAngle, maxAngle, minDist, maxDist;
 	Data<int> seed;
 };

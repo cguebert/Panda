@@ -66,9 +66,9 @@ public:
 	}
 
 protected:
-	Data<QVector<Point>> m_clics;
+	Data<std::vector<Point>> m_clics;
 	Data<int> m_accumulate;
-	QVector<Point> m_clicsBuffer;
+	std::vector<Point> m_clicsBuffer;
 };
 
 int UserInteraction_MouseClicksClass = RegisterObject<UserInteraction_MouseClicks>("Interaction/Mouse clicks").setDescription("Detect mouse clicks");
@@ -148,12 +148,12 @@ public:
 	}
 
 protected:
-	Data<QVector<Point>> m_clics;
+	Data<std::vector<Point>> m_clics;
 	Data<int> m_accumulate;
 
 	int m_doubleClickInterval;
 	Point m_currentClic;
-	QVector<Point> m_clicsBuffer;
+	std::vector<Point> m_clicsBuffer;
 	QElapsedTimer m_clicTimer;
 };
 
@@ -215,7 +215,7 @@ public:
 
 		bool toggle = m_toggle.getValue();
 		if(!toggle)
-			status.wref().fill(0);
+			status.wref().assign(status.size(), 0);
 
 		for(int i=0, nb=buttons.size(); i<nb; ++i)
 		{
@@ -236,10 +236,10 @@ public:
 	}
 
 protected:
-	Data<QVector<Rect>> m_buttons;
+	Data<std::vector<Rect>> m_buttons;
 	Data<int> m_toggle;
-	Data<QVector<int>> m_status;
-	QVector<Point> m_clicsBuffer;
+	Data<std::vector<int>> m_status;
+	std::vector<Point> m_clicsBuffer;
 };
 
 int UserInteraction_ButtonClass = RegisterObject<UserInteraction_Button>("Interaction/Button").setDescription("Detect mouse clicks in a rectangle");

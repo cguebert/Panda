@@ -67,7 +67,7 @@ public:
 			renderSize /= 4;
 			auto& fbo = m_FBOs[i];
 			resizeFBO(fbo, renderSize);
-			renderImage(*fbo.data(), m_shaderProgram4x, texId);
+			renderImage(*fbo.get(), m_shaderProgram4x, texId);
 			texId = fbo->texture();
 		}
 
@@ -76,7 +76,7 @@ public:
 			renderSize /= 2;
 			auto& fbo = m_FBOs.back();
 			resizeFBO(fbo, renderSize);
-			renderImage(*fbo.data(), m_shaderProgram2x, texId);
+			renderImage(*fbo.get(), m_shaderProgram2x, texId);
 		}
 
 		m_output.getAccessor()->setFbo(m_FBOs.back());
@@ -87,7 +87,7 @@ protected:
 	Data< int > m_nbOfDownscales;
 
 	QOpenGLShaderProgram m_shaderProgram2x, m_shaderProgram4x;
-	QVector<QSharedPointer<QOpenGLFramebufferObject>> m_FBOs;
+	std::vector<std::shared_ptr<QOpenGLFramebufferObject>> m_FBOs;
 };
 
 int ModifierImage_DownscaleClass = RegisterObject<ModifierImage_Downscale>("Modifier/Image/Downscale")
@@ -134,7 +134,7 @@ public:
 		if(resizeFBO(m_outputFBO, renderSize))
 			m_output.getAccessor()->setFbo(m_outputFBO);
 
-		renderImage(*m_outputFBO.data(), m_shaderProgram, texId);
+		renderImage(*m_outputFBO.get(), m_shaderProgram, texId);
 	}
 
 protected:
@@ -142,7 +142,7 @@ protected:
 	Data< int > m_nbOfUpscales;
 
 	QOpenGLShaderProgram m_shaderProgram;
-	QSharedPointer<QOpenGLFramebufferObject> m_outputFBO;
+	std::shared_ptr<QOpenGLFramebufferObject> m_outputFBO;
 };
 
 int ModifierImage_UpscaleClass = RegisterObject<ModifierImage_Upscale>("Modifier/Image/Upscale")

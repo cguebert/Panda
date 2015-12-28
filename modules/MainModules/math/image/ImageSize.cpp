@@ -25,7 +25,7 @@ public:
 
 	void update()
 	{
-		const QVector<ImageWrapper>& listImage = image.getValue();
+		const std::vector<ImageWrapper>& listImage = image.getValue();
 		auto listSize = size.getAccessor();
 
 		unsigned int nb = listImage.size();
@@ -43,8 +43,8 @@ public:
 	}
 
 protected:
-	Data< QVector<ImageWrapper> > image;
-	Data< QVector<Point> > size;
+	Data< std::vector<ImageWrapper> > image;
+	Data< std::vector<Point> > size;
 };
 
 int ImageMath_GetSizeClass = RegisterObject<ImageMath_GetSize>("Math/Image/Image size").setDescription("Compute the size of the image");

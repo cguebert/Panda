@@ -61,7 +61,7 @@ public:
 protected:
 	helper::RandomGenerator m_rnd;
 	Data<int> m_nbPoints, m_seed;
-	Data< QVector<Point> > m_points;
+	Data< std::vector<Point> > m_points;
 	Data<Rect> m_area;
 };
 

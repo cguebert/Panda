@@ -10,8 +10,6 @@
 
 #include "StoreValue.h"
 
-#include <QVector>
-
 namespace panda {
 
 int StoreValue_ColorClass = RegisterObject< StoreValue<types::Color> >("File/Color/Save color").setDescription("Save a value in a file for later use");
@@ -25,16 +23,16 @@ int StoreValue_RectClass = RegisterObject< StoreValue<types::Rect> >("File/Recta
 int StoreValue_ShaderClass = RegisterObject< StoreValue<types::Shader> >("File/Shader/Save shader").setDescription("Save a value in a file for later use");
 int StoreValue_StringClass = RegisterObject< StoreValue<QString> >("File/Text/Save text").setDescription("Save a value in a file for later use");
 
-int StoreValue_VectorColorClass = RegisterObject< StoreValue< QVector<types::Color> > >("File/Color/Save colors list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorDoubleClass = RegisterObject< StoreValue< QVector<PReal> > >("File/Real/Save reals list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorGradientClass = RegisterObject< StoreValue< QVector<types::Gradient> > >("File/Gradient/Save gradients list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorIntegerClass = RegisterObject< StoreValue< QVector<int> > >("File/Integer/Save integers list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorMeshClass = RegisterObject< StoreValue< QVector<types::Mesh> > >("File/Mesh/Save meshes list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorPathClass = RegisterObject< StoreValue< QVector<types::Path> > >("File/Path/Save paths list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorPointClass = RegisterObject< StoreValue< QVector<types::Point> > >("File/Point/Save points list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorRectClass = RegisterObject< StoreValue< QVector<types::Rect> > >("File/Rectangle/Save rectangles list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorShaderClass = RegisterObject< StoreValue< QVector<types::Shader> > >("File/Shader/Save shaders list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorStringClass = RegisterObject< StoreValue< QVector<QString> > >("File/Text/Save texts list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorColorClass = RegisterObject< StoreValue< std::vector<types::Color> > >("File/Color/Save colors list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorDoubleClass = RegisterObject< StoreValue< std::vector<PReal> > >("File/Real/Save reals list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorGradientClass = RegisterObject< StoreValue< std::vector<types::Gradient> > >("File/Gradient/Save gradients list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorIntegerClass = RegisterObject< StoreValue< std::vector<int> > >("File/Integer/Save integers list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorMeshClass = RegisterObject< StoreValue< std::vector<types::Mesh> > >("File/Mesh/Save meshes list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorPathClass = RegisterObject< StoreValue< std::vector<types::Path> > >("File/Path/Save paths list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorPointClass = RegisterObject< StoreValue< std::vector<types::Point> > >("File/Point/Save points list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorRectClass = RegisterObject< StoreValue< std::vector<types::Rect> > >("File/Rectangle/Save rectangles list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorShaderClass = RegisterObject< StoreValue< std::vector<types::Shader> > >("File/Shader/Save shaders list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorStringClass = RegisterObject< StoreValue< std::vector<QString> > >("File/Text/Save texts list").setDescription("Save a value in a file for later use");
 
 int StoreValue_AnimationColorClass = RegisterObject< StoreValue< types::Animation<types::Color> > >("File/Color/Save colors animation").setDescription("Save a value in a file for later use");
 int StoreValue_AnimationDoubleClass = RegisterObject< StoreValue< types::Animation<PReal> > >("File/Real/Save reals animation").setDescription("Save a value in a file for later use");
