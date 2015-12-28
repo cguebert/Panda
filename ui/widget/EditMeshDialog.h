@@ -19,7 +19,7 @@ public:
 protected:
 	panda::types::Mesh m_mesh;
 
-	typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
+	typedef std::shared_ptr<BaseDataWidget> DataWidgetPtr;
 	DataWidgetPtr m_pointsWidget, m_edgesWidget, m_trianglesWidget;
 };
 

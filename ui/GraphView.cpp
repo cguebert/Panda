@@ -9,6 +9,7 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
 
+#include <panda/helper/algorithm.h>
 #include <panda/types/DataTraits.h>
 #include <panda/command/DockableCommand.h>
 #include <panda/command/LinkDatasCommand.h>
@@ -117,8 +118,8 @@ panda::PandaObject* GraphView::getObjectAtPos(const QPointF& pt)
 	for(int i=objects.size()-1; i>=0; --i)
 	{
 		auto object = objects[i];
-		if(m_objectDrawStructs[object.data()]->contains(pt))
-			return object.data();
+		if(m_objectDrawStructs[object.get()]->contains(pt))
+			return object.get();
 	}
 	return nullptr;
 }
@@ -146,12 +147,12 @@ bool GraphView::isCompatible(const panda::BaseData* data1, const panda::BaseData
 
 ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
 {
-	return m_objectDrawStructs.value(object).data();
+	return m_objectDrawStructs.at(object).get();
 }
 
-QList<ObjectDrawStruct*> GraphView::getObjectDrawStructs(const QList<panda::PandaObject*>& objects)
+std::vector<ObjectDrawStruct*> GraphView::getObjectDrawStructs(const std::vector<panda::PandaObject*>& objects)
 {
-	QList<ObjectDrawStruct*> odsList;
+	std::vector<ObjectDrawStruct*> odsList;
 	for (auto object : objects)
 	{
 		auto ods = getObjectDrawStruct(object);
@@ -162,12 +163,12 @@ QList<ObjectDrawStruct*> GraphView::getObjectDrawStructs(const QList<panda::Pand
 	return odsList;
 }
 
-QSharedPointer<ObjectDrawStruct> GraphView::getSharedObjectDrawStruct(panda::PandaObject* object)
+std::shared_ptr<ObjectDrawStruct> GraphView::getSharedObjectDrawStruct(panda::PandaObject* object)
 {
-	return m_objectDrawStructs.value(object);
+	return m_objectDrawStructs.at(object);
 }
 
-void GraphView::setObjectDrawStruct(panda::PandaObject* object, QSharedPointer<ObjectDrawStruct> drawStruct)
+void GraphView::setObjectDrawStruct(panda::PandaObject* object, std::shared_ptr<ObjectDrawStruct> drawStruct)
 {
 	m_objectDrawStructs[object] = drawStruct;
 }
@@ -187,10 +188,10 @@ void GraphView::moveView(const QPointF& delta)
 	{
 		m_viewDelta += delta;
 		for(auto& drawStruct : m_objectDrawStructs)
-			drawStruct->moveVisual(delta);
+			drawStruct.second->moveVisual(delta);
 
-		for(auto tag : m_linkTags.values())
-			tag->moveView(delta);
+		for(auto& tag : m_linkTags)
+			tag.second->moveView(delta);
 	}
 }
 
@@ -211,11 +212,11 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 
 	// Give a possibility to draw behind normal objects
 	for(auto object : m_pandaDocument->getObjects())
-		m_objectDrawStructs[object.data()]->drawBackground(&painter);
+		m_objectDrawStructs[object.get()]->drawBackground(&painter);
 
 	// Draw the objects
 	for(auto object : m_pandaDocument->getObjects())
-		m_objectDrawStructs[object.data()]->draw(&painter);
+		m_objectDrawStructs[object.get()]->draw(&painter);
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for(auto object : m_pandaDocument->getSelection())
@@ -224,15 +225,15 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	// Draw links
 	painter.setBrush(Qt::NoBrush);
 	for(auto object : m_pandaDocument->getObjects())
-		m_objectDrawStructs[object.data()]->drawLinks(&painter);
+		m_objectDrawStructs[object.get()]->drawLinks(&painter);
 
 	// Give a possibility to draw in front of normal objects
 	for(auto object : m_pandaDocument->getObjects())
-		m_objectDrawStructs[object.data()]->drawForeground(&painter);
+		m_objectDrawStructs[object.get()]->drawForeground(&painter);
 
 	// Draw links tags
-	for(auto& tag : m_linkTags.values())
-		tag->draw(&painter);
+	for(auto& tag : m_linkTags)
+		tag.second->draw(&painter);
 
 	// Highlight connected Datas
 	if(m_highlightConnectedDatas)
@@ -271,8 +272,8 @@ void GraphView::paintLogDebug(QPainter* painter)
 		auto states = logDlg->getNodeStates();
 		for(auto object : m_pandaDocument->getObjects())
 		{
-			auto ods = m_objectDrawStructs[object.data()];
-			if(states[object.data()])
+			auto ods = m_objectDrawStructs[object.get()];
+			if(states[object.get()])
 				painter->setBrush(QColor(255,0,0,32));
 			else
 				painter->setBrush(QColor(0,255,0,32));
@@ -378,7 +379,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 				if(m_objectDrawStructs[object]->mousePressEvent(event))
 				{
 					m_movingAction = MOVING_CUSTOM;
-					m_capturedDrawStruct = m_objectDrawStructs[object].data();
+					m_capturedDrawStruct = m_objectDrawStructs[object].get();
 				}
 			}
 		}
@@ -427,7 +428,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				auto ods = m_objectDrawStructs[selected];
 				if(ods->acceptsMagneticSnap())
 				{
-					prepareSnapTargets(ods.data());
+					prepareSnapTargets(ods.get());
 					auto possiblePosition = ods->getPosition() + delta;
 					computeSnapDelta(possiblePosition);
 					delta = delta + m_snapDelta;
@@ -561,8 +562,9 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			if(m_movingAction == MOVING_NONE)
 			{
 				// Look for link tags
-				for(auto& tag : m_linkTags)
+				for(auto& tagPair : m_linkTags)
 				{
+					auto& tag = tagPair.second;
 					bool hover = tag->isHovering(zoomedMouse);
 					if(hover != tag->hovering)
 					{
@@ -606,12 +608,12 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				int newIndex = -1;
 				for(auto object : m_pandaDocument->getObjects())
 				{
-					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.data());
+					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.get());
 					if(dock)
 					{
 						if(dockableArea.intersects(m_objectDrawStructs[dock]->getObjectArea()) && dock->accepts(dockable))
 						{
-							newIndex = dynamic_cast<DockObjectDrawStruct*>(m_objectDrawStructs[dock].data())->getDockableIndex(dockableArea);
+							newIndex = dynamic_cast<DockObjectDrawStruct*>(m_objectDrawStructs[dock].get())->getDockableIndex(dockableArea);
 							newDock = dock;
 							break;
 						}
@@ -665,9 +667,9 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		QRectF selectionRect = QRectF(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).normalized();
 		for(auto object : m_pandaDocument->getObjects())
 		{
-			QRectF objectArea = m_objectDrawStructs[object.data()]->getObjectArea();
+			QRectF objectArea = m_objectDrawStructs[object.get()]->getObjectArea();
 			if(selectionRect.contains(objectArea) || selectionRect.intersects(objectArea))
-				m_pandaDocument->selectionAdd(object.data());
+				m_pandaDocument->selectionAdd(object.get());
 		}
 
 		update();
@@ -865,7 +867,7 @@ void GraphView::centerView()
 		QRectF totalView;
 		for(auto object : m_pandaDocument->getObjects())
 		{
-			QRectF objectArea = m_objectDrawStructs[object.data()]->getObjectArea();
+			QRectF objectArea = m_objectDrawStructs[object.get()]->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
 
@@ -882,7 +884,7 @@ void GraphView::showAll()
 		QRectF totalView;
 		for(auto object : m_pandaDocument->getObjects())
 		{
-			QRectF objectArea = m_objectDrawStructs[object.data()]->getObjectArea();
+			QRectF objectArea = m_objectDrawStructs[object.get()]->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
 
@@ -947,10 +949,10 @@ void GraphView::addedObject(panda::PandaObject* object)
 {
 	// Creating a DrawStruct depending on the class of the object been added
 	// When undoing a delete command, the DrawStruct has already been reinserted
-	if(!m_objectDrawStructs.contains(object))
+	if(!m_objectDrawStructs.count(object))
 	{
 		ObjectDrawStruct* ods = ObjectDrawStructFactory::getInstance()->createDrawStruct(this, object);
-		m_objectDrawStructs.insert(object, QSharedPointer<ObjectDrawStruct>(ods));
+		m_objectDrawStructs.emplace(object, std::shared_ptr<ObjectDrawStruct>(ods));
 	}
 
 	update();
@@ -959,7 +961,7 @@ void GraphView::addedObject(panda::PandaObject* object)
 
 void GraphView::removeObject(panda::PandaObject* object)
 {
-	m_objectDrawStructs.remove(object);
+	m_objectDrawStructs.erase(object);
 	m_capturedDrawStruct = nullptr;
 	m_movingAction = MOVING_NONE;
 	m_linkTags.clear();
@@ -971,7 +973,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 
 void GraphView::modifiedObject(panda::PandaObject* object)
 {
-	if(m_objectDrawStructs.contains(object))	// Can be called before the object is fully created
+	if(m_objectDrawStructs.count(object))	// Can be called before the object is fully created
 	{
 		m_objectDrawStructs[object]->update();
 		m_linkTags.clear();
@@ -999,8 +1001,9 @@ int GraphView::getAvailableLinkTagIndex()
 	int nb = m_linkTags.size();
 	QVector<bool> indices(nb, true);
 
-	for(auto& tag : m_linkTags)
+	for(auto& tagPair : m_linkTags)
 	{
+		auto& tag = tagPair.second;
 		if(tag->index < nb)
 			indices[tag->index] = false;
 	}
@@ -1021,11 +1024,11 @@ qreal GraphView::getZoom()
 
 void GraphView::addLinkTag(panda::BaseData* input, panda::BaseData* output)
 {
-	if(m_linkTags.contains(input))
+	if(m_linkTags.count(input))
 		m_linkTags[input]->addOutput(output);
 	else
 	{
-		QSharedPointer<LinkTag> tag(new LinkTag(this, input, output));
+		std::shared_ptr<LinkTag> tag(new LinkTag(this, input, output));
 		tag->index = getAvailableLinkTagIndex();
 		m_linkTags[input] = tag;
 	}
@@ -1033,12 +1036,12 @@ void GraphView::addLinkTag(panda::BaseData* input, panda::BaseData* output)
 
 void GraphView::removeLinkTag(panda::BaseData* input, panda::BaseData* output)
 {
-	if(m_linkTags.contains(input))
+	if(m_linkTags.count(input))
 	{
-		LinkTag* tag = m_linkTags[input].data();
+		LinkTag* tag = m_linkTags[input].get();
 		tag->removeOutput(output);
 		if(tag->isEmpty())
-			m_linkTags.remove(input);
+			m_linkTags.erase(input);
 	}
 }
 
@@ -1062,13 +1065,14 @@ void GraphView::updateLinkTags(bool reset)
 		}
 	}
 
-	QMutableMapIterator<panda::BaseData*, QSharedPointer<LinkTag> > iterTag(m_linkTags);
-	while(iterTag.hasNext())
+	// Updating tags and removing empty ones
+	for (auto it = m_linkTags.begin(); it != m_linkTags.end();)
 	{
-		iterTag.next();
-		iterTag.value()->update();
-		if(iterTag.value()->isEmpty())
-			iterTag.remove();
+		it->second->update();
+		if (it->second->isEmpty())
+			it = m_linkTags.erase(it);
+		else
+			++it;
 	}
 }
 
@@ -1112,7 +1116,7 @@ void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sour
 			if(data)
 			{
 				panda::PandaObject* object = data->getOwner();
-				if(m_objectDrawStructs.contains(object))
+				if(m_objectDrawStructs.count(object))
 				{
 					QRectF rect;
 					if(m_objectDrawStructs[object]->getDataRect(data, rect))
@@ -1131,7 +1135,7 @@ void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sour
 		if(data)
 		{
 			panda::PandaObject* object = data->getOwner();
-			if(m_objectDrawStructs.contains(object))
+			if(m_objectDrawStructs.count(object))
 			{
 				QRectF rect;
 				if(m_objectDrawStructs[object]->getDataRect(data, rect))
@@ -1175,9 +1179,10 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 	auto viewRect = QRectF(contentsRect());
 
 	// Use x position of every visible object
-	for(auto ods : m_objectDrawStructs)
+	for(auto odsPair : m_objectDrawStructs)
 	{
-		if(ods == selectedDrawStruct || !ods->acceptsMagneticSnap())
+		auto& ods = odsPair.second;
+		if(ods.get() == selectedDrawStruct || !ods->acceptsMagneticSnap())
 			continue;
 
 		if(viewRect.intersects(ods->getObjectArea()))
@@ -1202,7 +1207,7 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 				if(data2 && data2->getOwner())
 				{
 					auto owner = data2->getOwner();
-					if(m_objectDrawStructs.contains(owner))
+					if(m_objectDrawStructs.count(owner))
 					{
 						auto ods = m_objectDrawStructs[owner];
 						if(ods->getDataRect(data2, dataRect))
@@ -1226,7 +1231,7 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 				if(data2 && data2->getOwner())
 				{
 					auto owner = data2->getOwner();
-					if(m_objectDrawStructs.contains(owner))
+					if(m_objectDrawStructs.count(owner))
 					{
 						auto ods = m_objectDrawStructs[owner];
 						if(ods->getDataRect(data2, dataRect))
@@ -1267,7 +1272,7 @@ void GraphView::computeSnapDelta(QPointF position)
 	}
 }
 
-void GraphView::moveObjects(QList<panda::PandaObject*> objects, QPointF delta)
+void GraphView::moveObjects(std::vector<panda::PandaObject*> objects, QPointF delta)
 {
 	for(auto object : objects)
 	{
@@ -1330,7 +1335,7 @@ void GraphView::sortAllDockables()
 {
 	for(const auto object : m_pandaDocument->getObjects())
 	{
-		const auto dockable = dynamic_cast<panda::DockableObject*>(object.data());
+		const auto dockable = dynamic_cast<panda::DockableObject*>(object.get());
 		if(!dockable)
 			continue;
 		auto defaultDock = dockable->getDefaultDock();
@@ -1386,7 +1391,7 @@ void GraphView::updateViewRect()
 	m_viewRect = QRectF();
 	for(const auto& ods : m_objectDrawStructs)
 	{
-		QRectF area = ods->getObjectArea();
+		QRectF area = ods.second->getObjectArea();
 		QRectF zoomedArea = QRectF(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
 		m_viewRect |= zoomedArea; // Union
 	}

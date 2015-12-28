@@ -1,6 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/GenericObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/helper/algorithm.h>
 
 namespace panda {
 
@@ -55,8 +56,7 @@ public:
 			firstUpdate = false;
 		}
 		const auto& inVal = dataInput->getValue();
-		auto& outVec = outVal.wref();
-		outVec.insert(outVec.end(), inVal.begin(), inVal.end());
+		helper::concatenate(outVal.wref(), inVal);
 	}
 
 protected:

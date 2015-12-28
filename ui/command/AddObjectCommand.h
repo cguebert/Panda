@@ -2,8 +2,9 @@
 #define ADDOBJECTCOMMAND_H
 
 #include <QUndoCommand>
-#include <QSharedPointer>
-#include <QVector>
+
+#include <memory>
+#include <vector>
 
 namespace panda
 {
@@ -17,9 +18,9 @@ class ObjectDrawStruct;
 class AddObjectCommand : public QUndoCommand
 {
 public:
-	AddObjectCommand(panda::PandaDocument* document, GraphView* view, QSharedPointer<panda::PandaObject> object, QUndoCommand* parent = nullptr);
-	AddObjectCommand(panda::PandaDocument* document, GraphView* view, QVector<QSharedPointer<panda::PandaObject>> objects, QUndoCommand* parent = nullptr);
-	AddObjectCommand(panda::PandaDocument* document, GraphView* view, QList<panda::PandaObject*> objects, QUndoCommand* parent = nullptr);
+	AddObjectCommand(panda::PandaDocument* document, GraphView* view, std::shared_ptr<panda::PandaObject> object, QUndoCommand* parent = nullptr);
+	AddObjectCommand(panda::PandaDocument* document, GraphView* view, std::vector<std::shared_ptr<panda::PandaObject>> objects, QUndoCommand* parent = nullptr);
+	AddObjectCommand(panda::PandaDocument* document, GraphView* view, std::vector<panda::PandaObject*> objects, QUndoCommand* parent = nullptr);
 
 	virtual int id() const;
 
@@ -32,8 +33,8 @@ protected:
 	panda::PandaDocument* m_document;
 	GraphView* m_view;
 	bool m_ignoreRedo;
-	QVector<QSharedPointer<panda::PandaObject>> m_objects;
-	QVector<QSharedPointer<ObjectDrawStruct>> m_drawStructs;
+	std::vector<std::shared_ptr<panda::PandaObject>> m_objects;
+	std::vector<std::shared_ptr<ObjectDrawStruct>> m_drawStructs;
 };
 
 #endif

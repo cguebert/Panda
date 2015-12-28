@@ -2,13 +2,14 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/command/CommandId.h>
+#include <panda/helper/algorithm.h>
 #include <ui/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/command/AddObjectCommand.h>
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   GraphView* view,
-								   QSharedPointer<panda::PandaObject> object,
+								   std::shared_ptr<panda::PandaObject> object,
 								   QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_document(document)
@@ -21,7 +22,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   GraphView* view,
-								   QVector<QSharedPointer<panda::PandaObject>> objects,
+								   std::vector<std::shared_ptr<panda::PandaObject>> objects,
 								   QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_document(document)
@@ -34,7 +35,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   GraphView* view,
-								   QList<panda::PandaObject*> objects,
+								   std::vector<panda::PandaObject*> objects,
 								   QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_document(document)
@@ -77,14 +78,14 @@ void AddObjectCommand::undo()
 	{
 		for(auto object : m_objects)
 		{
-			auto ods = m_view->getSharedObjectDrawStruct(object.data());
+			auto ods = m_view->getSharedObjectDrawStruct(object.get());
 			if(ods)
 				m_drawStructs.push_back(ods);
 		}
 	}
 
 	for(auto object : m_objects)
-		m_document->removeObject(object.data());
+		m_document->removeObject(object.get());
 }
 
 bool AddObjectCommand::mergeWith(const QUndoCommand *other)
@@ -99,8 +100,8 @@ bool AddObjectCommand::mergeWith(const QUndoCommand *other)
 
 	if(m_document == command->m_document)
 	{
-		m_objects += command->m_objects;
-		m_drawStructs += command->m_drawStructs;
+		panda::helper::concatenate(m_objects, command->m_objects);
+		panda::helper::concatenate(m_drawStructs, command->m_drawStructs);
 		return true;
 	}
 

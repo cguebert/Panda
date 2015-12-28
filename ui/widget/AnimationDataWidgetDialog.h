@@ -35,7 +35,7 @@ protected:
 	typedef VectorDataTrait<ValuesList> values_list_trait;
 
 	typedef DataWidget<value_type> ChildDataWidget;
-	typedef QSharedPointer<ChildDataWidget> DataWidgetPtr;
+	typedef std::shared_ptr<ChildDataWidget> DataWidgetPtr;
 
 	bool readOnly;
 	QScrollArea* scrollArea;

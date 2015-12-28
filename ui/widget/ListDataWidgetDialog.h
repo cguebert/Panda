@@ -34,7 +34,7 @@ protected:
 	typedef typename row_trait::row_type row_type;
 
 	typedef DataWidget<row_type> ChildDataWidget;
-	typedef QSharedPointer<ChildDataWidget> DataWidgetPtr;
+	typedef std::shared_ptr<ChildDataWidget> DataWidgetPtr;
 
 	bool readOnly;
 	QScrollArea* scrollArea;
@@ -44,7 +44,7 @@ protected:
 	DataWidget<value_type>* parentDW;
 	int rowTypeFullId;
 	value_type valueCopy;
-	QVector<DataWidgetPtr> dataWidgets;
+	std::vector<DataWidgetPtr> dataWidgets;
 	const BaseDataWidgetCreator* dataWidgetCreator;
 
 public:

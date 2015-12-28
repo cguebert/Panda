@@ -19,7 +19,7 @@ public:
 protected:
 	panda::types::Polygon m_polygon;
 
-	typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
+	typedef std::shared_ptr<BaseDataWidget> DataWidgetPtr;
 	DataWidgetPtr m_contourWidget, m_holesWidget;
 };
 

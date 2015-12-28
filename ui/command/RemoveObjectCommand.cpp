@@ -3,12 +3,13 @@
 #include <panda/PandaDocument.h>
 #include <panda/command/CommandId.h>
 #include <panda/command/LinkDatasCommand.h>
+#include <panda/helper/algorithm.h>
 #include <ui/GraphView.h>
 #include <ui/command/RemoveObjectCommand.h>
 
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 GraphView* view,
-										 const QList<panda::PandaObject*>& objects,
+										 const std::vector<panda::PandaObject*>& objects,
 										 bool unlinkDatas,
 										 QUndoCommand* parent)
 	: QUndoCommand(parent)
@@ -28,20 +29,20 @@ RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 	, m_document(document)
 	, m_view(view)
 {
-	QList<panda::PandaObject*> objects;
+	std::vector<panda::PandaObject*> objects;
 	objects.push_back(object);
 	prepareCommand(objects, unlinkDatas);
 	setText(QCoreApplication::translate("RemoveObjectCommand", "delete objects"));
 }
 
-void RemoveObjectCommand::prepareCommand(const QList<panda::PandaObject*>& objects, bool unlinkDatas)
+void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>& objects, bool unlinkDatas)
 {
 	for(auto object : objects)
 	{
 		auto objectPtr = m_document->getSharedPointer(object);
 		auto ods = m_view->getSharedObjectDrawStruct(object);
 		if(objectPtr && ods)
-			m_objects.push_back(qMakePair(objectPtr, ods));
+			m_objects.emplace_back(objectPtr, ods);
 
 		if(unlinkDatas)
 		{
@@ -76,14 +77,14 @@ int RemoveObjectCommand::id() const
 void RemoveObjectCommand::redo()
 {
 	for(auto object : m_objects)
-		m_document->removeObject(object.first.data());
+		m_document->removeObject(object.first.get());
 }
 
 void RemoveObjectCommand::undo()
 {
 	for(auto object : m_objects)
 	{
-		m_view->setObjectDrawStruct(object.first.data(), object.second);
+		m_view->setObjectDrawStruct(object.first.get(), object.second);
 		m_document->addObject(object.first);
 	}
 }
@@ -99,7 +100,7 @@ bool RemoveObjectCommand::mergeWith(const QUndoCommand *other)
 		return false;
 	if(m_document == command->m_document)
 	{
-		m_objects += command->m_objects;
+		panda::helper::concatenate(m_objects, command->m_objects);
 		return true;
 	}
 

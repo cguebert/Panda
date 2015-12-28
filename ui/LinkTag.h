@@ -2,7 +2,7 @@
 #define LINKTAG_H
 
 #include <QRectF>
-#include <QMap>
+#include <map>
 
 namespace panda
 {
@@ -36,7 +36,7 @@ protected:
 	GraphView* parentView;
 	panda::BaseData* inputData;
 	QRectF inputDataRect;
-	QMap<panda::BaseData*, QRectF> outputDatas;
+	std::map<panda::BaseData*, QRectF> outputDatas;
 };
 
 #endif

@@ -3,7 +3,9 @@
 
 #include <QWidget>
 #include <QDomDocument>
-#include <QMap>
+
+#include <map>
+#include <memory>
 #include <set>
 
 #include <ui/ScrollContainer.h>
@@ -44,9 +46,9 @@ public:
 	void resetView();
 
 	ObjectDrawStruct* getObjectDrawStruct(panda::PandaObject* object);
-	QList<ObjectDrawStruct*> getObjectDrawStructs(const QList<panda::PandaObject*>& objects);
-	QSharedPointer<ObjectDrawStruct> getSharedObjectDrawStruct(panda::PandaObject* object);
-	void setObjectDrawStruct(panda::PandaObject* object, QSharedPointer<ObjectDrawStruct> drawStruct);
+	std::vector<ObjectDrawStruct*> getObjectDrawStructs(const std::vector<panda::PandaObject*>& objects);
+	std::shared_ptr<ObjectDrawStruct> getSharedObjectDrawStruct(panda::PandaObject* object);
+	void setObjectDrawStruct(panda::PandaObject* object, std::shared_ptr<ObjectDrawStruct> drawStruct);
 
 	QRectF getDataRect(panda::BaseData* data);
 
@@ -61,7 +63,7 @@ public:
 		MENU_IMAGE = 0x8
 	};
 
-	void moveObjects(QList<panda::PandaObject*> objects, QPointF delta);
+	void moveObjects(std::vector<panda::PandaObject*> objects, QPointF delta);
 
 	void setRecomputeTags(); /// Same as calling updateLinkTags, but it does it next redraw
 
@@ -145,10 +147,10 @@ private:
 
 	panda::BaseData *m_clickedData, *m_hoverData, *m_contextMenuData;
 
-	QMap<panda::PandaObject*, QSharedPointer<ObjectDrawStruct> > m_objectDrawStructs;
+	std::map<panda::PandaObject*, std::shared_ptr<ObjectDrawStruct> > m_objectDrawStructs;
 	ObjectDrawStruct* m_capturedDrawStruct; /// Clicked ObjectDrawStruct that want to intercept mouse events
 
-	QMap<panda::BaseData*, QSharedPointer<LinkTag> > m_linkTags;
+	std::map<panda::BaseData*, std::shared_ptr<LinkTag> > m_linkTags;
 	bool m_recomputeTags; /// Should we recompute the linkTags next PaintEvent?
 
 	QTimer* m_hoverTimer; /// Counting how long the mouse is staying over a Data
@@ -158,9 +160,9 @@ private:
 	std::set<qreal> m_snapTargetsX, m_snapTargetsY;
 	QPointF m_snapDelta;
 
-	QList<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied
+	std::vector<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied
 
-	QSharedPointer<panda::ScopedMacro> m_moveObjectsMacro;
+	std::shared_ptr<panda::ScopedMacro> m_moveObjectsMacro;
 
 	QRectF m_viewRect; /// Area taken by the objects on the screen
 

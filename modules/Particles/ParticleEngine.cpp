@@ -86,7 +86,7 @@ void ParticleEngine::createNewParticles()
 		int nb = list.size();
 		if(nb)
 		{
-			newParticles.insert(newParticles.end(), list.begin(), list.end());
+			helper::concatenate(newParticles, list);
 			nbNew += nb;
 		}
 	}
@@ -94,7 +94,7 @@ void ParticleEngine::createNewParticles()
 	for(auto effector : effectors)
 		effector->onInitParticles(newParticles);
 
-	particles.insert(particles.end(), newParticles.begin(), newParticles.end());
+	helper::concatenate(particles, newParticles);
 
 	// update the particles' indices
 	int i=0;

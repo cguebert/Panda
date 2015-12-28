@@ -284,4 +284,4 @@ RegisterWidget<SimpleDataWidget<QString, FileDataWidgetContainer<false> > > DWCl
 RegisterWidget<SimpleDataWidget<QString, FontDataWidgetContainer> > DWClass_font("font");
 RegisterWidget<SimpleDataWidget<QString, MultilineDataWidgetContainer> > DWClass_multiline("multiline");
 
-RegisterWidget<OpenDialogDataWidget<QVector<QString>, ListDataWidgetDialog<QVector<QString> > > > DWClass_strings_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<QString>, ListDataWidgetDialog<std::vector<QString> > > > DWClass_strings_list_generic("generic");

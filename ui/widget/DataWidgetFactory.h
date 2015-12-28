@@ -3,8 +3,8 @@
 
 #include <panda/types/DataTraits.h>
 
-#include <QSharedPointer>
-#include <QMap>
+#include <map>
+#include <memory>
 
 class QWidget;
 class BaseDataWidget;
@@ -31,7 +31,7 @@ private:
 	DataWidgetFactory() {}
 
 public:
-	typedef QSharedPointer<BaseDataWidgetCreator> DataWidgetCreatorPtr;
+	typedef std::shared_ptr<BaseDataWidgetCreator> DataWidgetCreatorPtr;
 
 	class DataWidgetEntry
 	{
@@ -46,15 +46,15 @@ public:
 	static DataWidgetFactory* getInstance();
 	const DataWidgetEntry* getEntry(int fullType, QString widgetName) const;
 	const BaseDataWidgetCreator* getCreator(int fullType, QString widgetName) const;
-	QList<QString> getWidgetNames(int fullType) const;
+	std::vector<QString> getWidgetNames(int fullType) const;
 
 	BaseDataWidget* create(QWidget* parent, panda::BaseData* data) const;
 	BaseDataWidget* create(QWidget* parent, void* pValue, int fullType,
 						   QString widget, QString displayName, QString parameters) const;
 
 protected:
-	typedef QSharedPointer<DataWidgetEntry> DataWidgetEntryPtr;
-	typedef QMap< int, QMap<QString, DataWidgetEntryPtr> > RegistryMap;
+	typedef std::shared_ptr<DataWidgetEntry> DataWidgetEntryPtr;
+	typedef std::map< int, std::map<QString, DataWidgetEntryPtr> > RegistryMap;
 	RegistryMap registry;
 
 	template<class T> friend class RegisterWidget;
@@ -101,7 +101,7 @@ public:
 
 		int fullType = panda::types::VirtualDataTrait<T::TData::value_type>::get()->fullTypeId();
 		DataWidgetFactory::getInstance()->registerWidget(fullType, widgetName
-							, QSharedPointer<DataWidgetCreator<T>>::create());
+							, std::make_shared<DataWidgetCreator<T>>());
 	}
 
 private:

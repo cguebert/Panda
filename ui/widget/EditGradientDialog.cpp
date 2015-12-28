@@ -468,5 +468,5 @@ public:
 //****************************************************************************//
 
 RegisterWidget<SimpleDataWidget<Gradient> > DWClass_gradient("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Gradient>, ListDataWidgetDialog<QVector<Gradient> > > > DWClass_gradients_list("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<Gradient>, ListDataWidgetDialog<std::vector<Gradient> > > > DWClass_gradients_list("generic");
 RegisterWidget<OpenDialogDataWidget<Animation<Gradient>, AnimationDataWidgetDialog<Animation<Gradient> > > > DWClass_gradients_animation("default");

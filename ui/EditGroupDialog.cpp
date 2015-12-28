@@ -48,7 +48,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget* parent)
 	int rowIndex = 0;
 	for(auto data : groupDatas)
 	{
-		populateRow(rowIndex, const_cast<panda::BaseData*>(data.data()));
+		populateRow(rowIndex, const_cast<panda::BaseData*>(data.get()));
 		++rowIndex;
 	}
 
@@ -177,7 +177,7 @@ void EditGroupDialog::updateGroup()
 		groupName = m_editGroupName->text();
 
 	EditGroupCommand::DataInfo tempInfo;
-	QVector<EditGroupCommand::DataInfo> datasList;
+	std::vector<EditGroupCommand::DataInfo> datasList;
 	for(int i=0, nb=m_tableWidget->rowCount(); i<nb; ++i)
 	{
 		panda::BaseData* data = (panda::BaseData*)m_tableWidget->item(i,0)->data(Qt::UserRole).value<void*>();
@@ -199,7 +199,7 @@ void EditGroupDialog::updateGroup()
 	for(int i=0, nb=m_tableWidget->rowCount(); i<nb; ++i)
 	{
 		panda::BaseData* data = (panda::BaseData*)m_tableWidget->item(i,0)->data(Qt::UserRole).value<void*>();
-		if(data != groupDatas[i]) { modified = true; break; }
+		if(data != groupDatas[i].get()) { modified = true; break; }
 
 		QString name = m_tableWidget->item(i,0)->text();
 		if(name != groupDatas[i]->getName()) { modified = true; break; }

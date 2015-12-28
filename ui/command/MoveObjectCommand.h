@@ -2,8 +2,9 @@
 #define MOVEOBJECTCOMMAND_H
 
 #include <QUndoCommand>
-#include <QList>
 #include <QPointF>
+
+#include <vector>
 
 namespace panda
 {
@@ -16,7 +17,7 @@ class MoveObjectCommand : public QUndoCommand
 {
 public:
 	MoveObjectCommand(GraphView* view, panda::PandaObject* object, QPointF delta, QUndoCommand* parent = nullptr);
-	MoveObjectCommand(GraphView* view, QList<panda::PandaObject*> objects, QPointF delta, QUndoCommand* parent = nullptr);
+	MoveObjectCommand(GraphView* view, std::vector<panda::PandaObject*> objects, QPointF delta, QUndoCommand* parent = nullptr);
 
 	virtual int id() const;
 
@@ -27,7 +28,7 @@ public:
 
 protected:
 	GraphView* m_view;
-	QList<panda::PandaObject*> m_objects;
+	std::vector<panda::PandaObject*> m_objects;
 	QPointF m_delta;
 };
 

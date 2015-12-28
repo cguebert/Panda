@@ -1,6 +1,7 @@
 #include <ui/UpdateLoggerDialog.h>
 
-#include <QVector>
+#include <panda/helper/algorithm.h>
+#include <vector>
 #include <algorithm>
 
 UpdateLoggerDialog* UpdateLoggerDialog::m_instance = nullptr;
@@ -105,7 +106,7 @@ void UpdateLoggerView::updateEvents()
 	UpdateEvents events;
 	m_nbThreads = logger->getNbThreads();
 	for(int i=0; i<m_nbThreads; ++i)
-		events += logger->getEvents(i);
+		panda::helper::concatenate(events, logger->getEvents(i));
 
 	if(events.empty())
 		return;

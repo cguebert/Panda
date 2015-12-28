@@ -2,9 +2,9 @@
 #define DELETEOBJECTCOMMAND_H
 
 #include <QUndoCommand>
-#include <QSharedPointer>
-#include <QVector>
-#include <QPair>
+
+#include <memory>
+#include <vector>
 
 namespace panda
 {
@@ -19,7 +19,7 @@ class RemoveObjectCommand : public QUndoCommand
 {
 public:
 	RemoveObjectCommand(panda::PandaDocument* document, GraphView* view,
-						const QList<panda::PandaObject*>& objects, bool unlinkDatas = true, QUndoCommand* parent = nullptr);
+						const std::vector<panda::PandaObject*>& objects, bool unlinkDatas = true, QUndoCommand* parent = nullptr);
 	RemoveObjectCommand(panda::PandaDocument* document, GraphView* view,
 						panda::PandaObject* object, bool unlinkDatas = true, QUndoCommand* parent = nullptr);
 
@@ -33,9 +33,9 @@ public:
 protected:
 	panda::PandaDocument* m_document;
 	GraphView* m_view;
-	QVector< QPair< QSharedPointer<panda::PandaObject>, QSharedPointer<ObjectDrawStruct> > > m_objects;
+	std::vector< std::pair< std::shared_ptr<panda::PandaObject>, std::shared_ptr<ObjectDrawStruct> > > m_objects;
 
-	void prepareCommand(const QList<panda::PandaObject*>& objects, bool unlinkDatas);
+	void prepareCommand(const std::vector<panda::PandaObject*>& objects, bool unlinkDatas);
 };
 
 #endif

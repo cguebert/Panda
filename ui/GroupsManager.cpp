@@ -161,7 +161,7 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 		return nullptr;
 	}
 
-	return object.data();
+	return object.get();
 }
 
 const GroupsManager::GroupsMap& GroupsManager::getGroups()

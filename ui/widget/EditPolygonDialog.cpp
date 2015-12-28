@@ -74,4 +74,4 @@ void EditPolygonDialog::writeToData(panda::types::Polygon& polygon)
 //****************************************************************************//
 
 RegisterWidget<OpenDialogDataWidget<panda::types::Polygon, EditPolygonDialog> > DWClass_polygon("default");
-RegisterWidget<OpenDialogDataWidget<QVector<panda::types::Polygon>, ListDataWidgetDialog<QVector<panda::types::Polygon> > > > DWClass_polygon_list("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<panda::types::Polygon>, ListDataWidgetDialog<std::vector<panda::types::Polygon> > > > DWClass_polygon_list("generic");

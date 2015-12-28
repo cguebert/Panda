@@ -12,7 +12,7 @@
 using namespace panda;
 using namespace panda::types;
 
-bool dataTypeIdLessThan(const QSharedPointer<DataFactory::DataEntry>& e1, const QSharedPointer<DataFactory::DataEntry>& e2)
+bool dataTypeIdLessThan(const std::shared_ptr<DataFactory::DataEntry>& e1, const std::shared_ptr<DataFactory::DataEntry>& e2)
 {
 	return e1->fullType < e2->fullType;
 }
@@ -83,14 +83,14 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 	out << "  <h1>Types</h1>\n";
 
 	auto dataEntriesList = DataFactory::getInstance()->getEntries();
-	qSort(dataEntriesList.begin(), dataEntriesList.end(), dataTypeIdLessThan);
+	std::sort(dataEntriesList.begin(), dataEntriesList.end(), dataTypeIdLessThan);
 
-	QVector<EnrichedDataEntry> dataEntries;
+	std::vector<EnrichedDataEntry> dataEntries;
 	// Copy entries and get additional info
 	for(auto d : dataEntriesList)
 	{
 		EnrichedDataEntry e = *d;
-		QSharedPointer<BaseData> tmpData = QSharedPointer<BaseData>(DataFactory::getInstance()->create(d->fullType, "", "", nullptr));
+		auto tmpData = DataFactory::getInstance()->create(d->fullType, "", "", nullptr);
 		if(tmpData)
 		{
 			e.description = tmpData->getDescription();
@@ -152,10 +152,10 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 
 	out << "  <h1>Objects</h1>\n";
 
-	QVector<ObjectFactory::ClassEntry> objectsEntries;
+	std::vector<ObjectFactory::ClassEntry> objectsEntries;
 	for(const auto& object : ObjectFactory::getInstance()->getRegistryMap())
 		objectsEntries.push_back(object.second);
-	qSort(objectsEntries.begin(), objectsEntries.end(), objectsMenuLessThan);
+	std::sort(objectsEntries.begin(), objectsEntries.end(), objectsMenuLessThan);
 
 	for(const auto& o : objectsEntries)
 	{

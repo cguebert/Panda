@@ -6,7 +6,8 @@
 #include <ui/widget/DataWidget.h>
 
 #include <QDialog>
-#include <QMap>
+
+#include <map>
 
 class QTabWidget;
 class QTextEdit;
@@ -31,8 +32,8 @@ protected:
 	QOpenGLShader::ShaderType m_flags;
 	QScrollArea* m_valuesArea;
 
-	typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
-	QList<DataWidgetPtr> m_dataWidgets;
+	typedef std::shared_ptr<BaseDataWidget> DataWidgetPtr;
+	std::vector<DataWidgetPtr> m_dataWidgets;
 
 	struct ShaderSourceItem
 	{
@@ -40,7 +41,7 @@ protected:
 		QTextEdit* sourceEdit;
 
 	};
-	QMap<QOpenGLShader::ShaderType, ShaderSourceItem> m_sourceWidgets;
+	std::map<QOpenGLShader::ShaderType, ShaderSourceItem> m_sourceWidgets;
 };
 
 #endif // EDITSHADERDIALOG_H

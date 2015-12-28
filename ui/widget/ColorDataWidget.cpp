@@ -109,6 +109,6 @@ public:
 //****************************************************************************//
 
 RegisterWidget<SimpleDataWidget<Color> > DWClass_color("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Color>, ListDataWidgetDialog<QVector<Color> > > > DWClass_colors_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<Color>, ListDataWidgetDialog<std::vector<Color> > > > DWClass_colors_list_generic("generic");
 RegisterWidget<OpenDialogDataWidget<Animation<Color>, AnimationDataWidgetDialog<Animation<Color> > > > DWClass_colors_animation("default");
 

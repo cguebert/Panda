@@ -167,4 +167,4 @@ void EditMeshDialog::writeToData(Mesh& mesh)
 //****************************************************************************//
 
 RegisterWidget<OpenDialogDataWidget<Mesh, EditMeshDialog> > DWClass_mesh("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Mesh>, ListDataWidgetDialog<QVector<Mesh> > > > DWClass_meshes_list("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<Mesh>, ListDataWidgetDialog<std::vector<Mesh> > > > DWClass_meshes_list("generic");

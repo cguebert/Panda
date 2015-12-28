@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QDomDocument>
 
+#include <memory>
+
 class GraphView;
 
 namespace panda
@@ -66,7 +68,7 @@ protected:
 	QRectF m_objectArea;
 
 	typedef QPair<QRectF, panda::BaseData*> RectDataPair;
-	QList<RectDataPair> m_datas;
+	std::vector<RectDataPair> m_datas;
 };
 
 inline bool ObjectDrawStruct::acceptsMagneticSnap()
@@ -129,7 +131,7 @@ public:
 protected:
 	void addCreator(BaseObjectDrawCreator* creator);
 
-	QList< QSharedPointer<BaseObjectDrawCreator> > creators;
+	std::vector< std::shared_ptr<BaseObjectDrawCreator> > creators;
 
 	template <class O, class D> friend class RegisterDrawObject;
 };

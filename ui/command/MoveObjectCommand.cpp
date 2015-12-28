@@ -17,7 +17,7 @@ MoveObjectCommand::MoveObjectCommand(GraphView* view,
 }
 
 MoveObjectCommand::MoveObjectCommand(GraphView* view,
-									 QList<panda::PandaObject*> objects,
+									 std::vector<panda::PandaObject*> objects,
 									 QPointF delta,
 									 QUndoCommand* parent)
 	: QUndoCommand(parent)

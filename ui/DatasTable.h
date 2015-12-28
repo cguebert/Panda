@@ -2,8 +2,9 @@
 #define DATASTABLE_H
 
 #include <QWidget>
-#include <QList>
-#include <QSharedPointer>
+
+#include <memory>
+#include <vector>
 
 #include <ui/widget/DataWidget.h>
 
@@ -23,7 +24,7 @@ class DatasTable : public QWidget
 public:
 	explicit DatasTable(panda::PandaDocument* m_document, QWidget* parent = nullptr);
 
-	typedef QSharedPointer<BaseDataWidget> DataWidgetPtr;
+	typedef std::shared_ptr<BaseDataWidget> DataWidgetPtr;
 
 protected:
 	QStackedLayout* m_stackedLayout;
@@ -32,7 +33,7 @@ protected:
 	panda::PandaObject *m_currentObject, *m_nextObject;
 	bool m_waitingPopulate;
 
-	QList<DataWidgetPtr> m_dataWidgets;
+	std::vector<DataWidgetPtr> m_dataWidgets;
 
 signals:
 

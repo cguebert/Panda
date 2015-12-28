@@ -2,8 +2,9 @@
 #define PLUGINSMANAGER_H
 
 #include <QLibrary>
-#include <QSharedPointer>
-#include <QVector>
+
+#include <memory>
+#include <vector>
 
 class PluginsManager
 {
@@ -13,8 +14,8 @@ public:
 	void loadPlugins();
 
 protected:
-	typedef QSharedPointer<QLibrary> LibraryPtr;
-	QVector<LibraryPtr> m_plugins;
+	typedef std::shared_ptr<QLibrary> LibraryPtr;
+	std::vector<LibraryPtr> m_plugins;
 };
 
 #endif // PLUGINSMANAGER_H

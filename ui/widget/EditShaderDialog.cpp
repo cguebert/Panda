@@ -97,9 +97,9 @@ void EditShaderDialog::readFromData(const Shader& shader)
 	auto sources = shader.getSources();
 	for(auto source : sources)
 	{
-		if(m_sourceWidgets.contains(source.type))
+		if(m_sourceWidgets.count(source.type))
 		{
-			m_sourceWidgets[source.type].sourceEdit->setPlainText(source.sourceCode);
+			m_sourceWidgets.at(source.type).sourceEdit->setPlainText(source.sourceCode);
 		}
 	}
 
@@ -109,11 +109,11 @@ void EditShaderDialog::readFromData(const Shader& shader)
 
 void EditShaderDialog::writeToData(Shader& shader)
 {
-	for(auto it = m_sourceWidgets.cbegin(), itEnd = m_sourceWidgets.cend(); it != itEnd; ++it)
-		shader.setSource(it.key(), it.value().sourceEdit->toPlainText());
+	for(const auto& it : m_sourceWidgets)
+		shader.setSource(it.first, it.second.sourceEdit->toPlainText());
 }
 
 //****************************************************************************//
 
 RegisterWidget<OpenDialogDataWidget<Shader, EditShaderDialog> > DWClass_shader("default");
-RegisterWidget<OpenDialogDataWidget<QVector<Shader>, ListDataWidgetDialog<QVector<Shader> > > > DWClass_shaders_list("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<Shader>, ListDataWidgetDialog<std::vector<Shader> > > > DWClass_shaders_list("generic");

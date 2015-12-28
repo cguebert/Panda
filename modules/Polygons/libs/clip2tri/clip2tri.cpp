@@ -70,7 +70,7 @@ Paths upscaleClipperPoints(const vector<vector<Point> > &inputPolygons)
 
    outputPolygons.resize(inputPolygons.size());
 
-   for(S32 i = 0; i < inputPolygons.size(); i++)
+   for (U32 i = 0; i < inputPolygons.size(); i++)
 	   outputPolygons[i] = upscaleClipperPoints(inputPolygons[i]);
 
    return outputPolygons;
@@ -247,18 +247,18 @@ bool triangulateComplex(vector<Point> &outputTriangles, const Path &outline,
    // Clean up memory used with poly2tri
    //
    // Clean-up workers
-   for(S32 i = 0; i < cdtRegistry.size(); i++)
+   for(U32 i = 0; i < cdtRegistry.size(); i++)
       delete cdtRegistry[i];
 
    // Free the polylines
-   for(S32 i = 0; i < polylinesRegistry.size(); i++)
+   for(U32 i = 0; i < polylinesRegistry.size(); i++)
    {
       vector<p2t::Point*> polyline = polylinesRegistry[i];
       deleteAndClear(polyline);
    }
 
    // Free the holes
-   for(S32 i = 0; i < holesRegistry.size(); i++)
+   for(U32 i = 0; i < holesRegistry.size(); i++)
    {
       vector<p2t::Point*> hole = holesRegistry[i];
       deleteAndClear(hole);

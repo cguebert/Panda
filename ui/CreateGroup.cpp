@@ -57,16 +57,15 @@ BaseData* duplicateData(Group* group, BaseData* data)
 {
 	QString name = findAvailableDataName(group, data->getName());
 
-	QSharedPointer<BaseData> newData = QSharedPointer<BaseData>(
-		DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(),
-										   name, data->getHelp(), group) );
+	auto newData = DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(),
+										   name, data->getHelp(), group);
 	newData->setDisplayed(data->isDisplayed());
 	newData->setPersistent(data->isPersistent());
 	newData->setWidget(data->getWidget());
 	newData->setWidgetData(data->getWidgetData());
 	group->addGroupData(newData);
 
-	return newData.data();
+	return newData.get();
 }
 
 bool createGroup(PandaDocument* doc, GraphView* view)
@@ -113,14 +112,14 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	{
 		auto object = factory->create(ObjectFactory::getRegistryName<GroupWithLayer>(), doc);
 		doc->addCommand(new AddObjectCommand(doc, view, object));
-		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(object.data());
+		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(object.get());
 		group = groupWithLayer;
 	}
 	else
 	{
 		auto object = factory->create(ObjectFactory::getRegistryName<Group>(), doc);
 		doc->addCommand(new AddObjectCommand(doc, view, object));
-		group = dynamic_cast<Group*>(object.data());
+		group = dynamic_cast<Group*>(object.get());
 	}
 	if(!group)
 		return false;
@@ -252,7 +251,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				{
 					if(data->getParent() == outputData)
 					{
-						data->setName(findAvailableDataName(group, caption, data.data()));
+						data->setName(findAvailableDataName(group, caption, data.get()));
 						data->setDisplayed(true);
 					}
 				}
@@ -316,7 +315,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		panda::Group::ObjectsList docks;
 		for(auto object : group->getObjects())
 		{
-			panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.data());
+			panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.get());
 			if(dock)
 				docks.push_back(object);
 			else
@@ -325,10 +324,10 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 				doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
 
 				// Placing the object in the view
-				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
-				QPointF delta = groupPos + group->getPosition(object.data()) - ods->getPosition();
+				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
+				QPointF delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
 				if(!delta.isNull())
-					doc->addCommand(new MoveObjectCommand(view, object.data(), delta));
+					doc->addCommand(new MoveObjectCommand(view, object.get(), delta));
 			}
 		}
 
@@ -339,10 +338,10 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 			doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
 
 			// Placing the object in the view
-			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.data());
-			QPointF delta = groupPos + group->getPosition(object.data()) - ods->getPosition();
+			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
+			QPointF delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
 			if(!delta.isNull())
-				doc->addCommand(new MoveObjectCommand(view, object.data(), delta));
+				doc->addCommand(new MoveObjectCommand(view, object.get(), delta));
 		}
 
 		// Reconnecting datas

@@ -21,7 +21,7 @@ void ObjectDrawStruct::update()
 	m_objectArea = QRectF(m_position + m_parentView->getViewDelta(), getObjectSize());
 
 	m_datas.clear();
-	QList<panda::BaseData*> inputDatas, outputDatas;
+	std::vector<panda::BaseData*> inputDatas, outputDatas;
 	inputDatas = m_object->getInputDatas();
 	outputDatas = m_object->getOutputDatas();
 	int nbInputs = inputDatas.size(), nbOutputs = outputDatas.size();
@@ -57,7 +57,7 @@ void ObjectDrawStruct::moveVisual(const QPointF& delta)
 	if(!delta.isNull())
 	{
 		m_objectArea.translate(delta);
-		for(QList<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
+		for(std::vector<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
 			iter->first.translate(delta);
 	}
 }
@@ -77,7 +77,7 @@ QSize ObjectDrawStruct::getObjectSize()
 
 panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* center)
 {
-	for(QList<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
+	for(std::vector<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
 	{
 		if(iter->first.contains(pt))
 		{
@@ -92,7 +92,7 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* cent
 
 bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect)
 {
-	for(QList<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
+	for(std::vector<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
 	{
 		if(iter->second == data)
 		{
@@ -213,7 +213,7 @@ ObjectDrawStructFactory* ObjectDrawStructFactory::getInstance()
 
 ObjectDrawStruct* ObjectDrawStructFactory::createDrawStruct(GraphView* view, panda::PandaObject* obj)
 {
-	for(QSharedPointer<BaseObjectDrawCreator> creator : creators)
+	for(const auto& creator : creators)
 	{
 		if(creator->getClass()->isInstance(obj))
 			return creator->create(view, obj);
@@ -225,7 +225,7 @@ ObjectDrawStruct* ObjectDrawStructFactory::createDrawStruct(GraphView* view, pan
 void ObjectDrawStructFactory::addCreator(BaseObjectDrawCreator* creator)
 {
 	const panda::BaseClass* newClass = creator->getClass();
-	QSharedPointer<BaseObjectDrawCreator> ptr(creator);
+	std::shared_ptr<BaseObjectDrawCreator> ptr(creator);
 
 	unsigned int nb = creators.size();
 	for(unsigned int i=0; i<nb; ++i)
@@ -233,7 +233,7 @@ void ObjectDrawStructFactory::addCreator(BaseObjectDrawCreator* creator)
 		const panda::BaseClass* prevClass = creators[i]->getClass();
 		if(newClass->hasParent(prevClass))
 		{
-			creators.insert(i, ptr);
+			creators.insert(creators.begin() + i, ptr);
 			return;
 		}
 	}

@@ -29,7 +29,7 @@ void GenericObjectDrawStruct::update()
 	m_objectArea = QRectF(m_position + m_parentView->getViewDelta(), getObjectSize());
 
 	m_datas.clear();
-	QList<panda::BaseData*> inputDatas, outputDatas;
+	std::vector<panda::BaseData*> inputDatas, outputDatas;
 	inputDatas = m_object->getInputDatas();
 	outputDatas = m_object->getOutputDatas();
 	int nbInputs = inputDatas.size(), nbOutputs = outputDatas.size();
@@ -45,7 +45,7 @@ void GenericObjectDrawStruct::update()
 	for(int i=0; i<nbInputs; ++i)
 	{
 		panda::BaseData* data = inputDatas[i];
-		if(!m_genericObject->m_createdDatasMap.contains(data) && data != m_genericObject->m_genericData)
+		if(!m_genericObject->m_createdDatasMap.count(data) && data != m_genericObject->m_genericData)
 		{
 			QRectF dataArea(xi, startY + index * dh,
 							dataRectSize, dataRectSize);
@@ -59,7 +59,7 @@ void GenericObjectDrawStruct::update()
 	for(int i=0; i<nbOutputs; ++i)
 	{
 		panda::BaseData* data = outputDatas[i];
-		if(!m_genericObject->m_createdDatasMap.contains(data))
+		if(!m_genericObject->m_createdDatasMap.count(data))
 		{
 			QRectF dataArea(xo, startY + index * dh,
 							dataRectSize, dataRectSize);
@@ -85,13 +85,13 @@ void GenericObjectDrawStruct::update()
 			if(m_genericObject->m_dataDefinitions[j].input)
 			{
 				QRectF dataArea(xi, y + inputIndex * dh, dataRectSize, dataRectSize);
-				m_datas.push_back(qMakePair(dataArea, createdDatas[j].data()));
+				m_datas.emplace_back(dataArea, createdDatas[j].get());
 				++inputIndex;
 			}
 			if(m_genericObject->m_dataDefinitions[j].output)
 			{
 				QRectF dataArea(xo, y + outputIndex * dh, dataRectSize, dataRectSize);
-				m_datas.push_back(qMakePair(dataArea, createdDatas[j].data()));
+				m_datas.emplace_back(dataArea, createdDatas[j].get());
 				++outputIndex;
 			}
 		}

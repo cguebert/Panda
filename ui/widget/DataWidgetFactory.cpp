@@ -31,41 +31,57 @@ BaseDataWidget* DataWidgetFactory::create(QWidget* parent, void* pValue, int ful
 
 const BaseDataWidgetCreator* DataWidgetFactory::getCreator(int fullType, QString widgetName) const
 {
-	const QMap<QString, DataWidgetEntryPtr>& map = registry.value(fullType);
-	if(map.empty())
+	if (!registry.count(fullType))
 		return nullptr;
+	const auto& map = registry.at(fullType);
 
 	// Special case : for lists and animations, we use the same DataWidget which will create other ones later
 	if(map.size() == 1)
-		return map.begin().value()->creator.data();
+		return map.begin()->second->creator.get();
 
-	DataWidgetEntry* entry = map.value(widgetName).data();
-	if(!entry)	// If the custom widget doesn't exist, first look for a generic one
-		entry = map.value("generic").data();
+	DataWidgetEntry* entry = map.at(widgetName).get();
+	if(!entry && map.count("generic"))	// If the custom widget doesn't exist, first look for a generic one
+		entry = map.at("generic").get();
 
-	if(!entry)	// Then use the default one
-		entry = map.value("default").data();
+	if(!entry && map.count("default"))	// Then use the default one
+		entry = map.at("default").get();
 
 	// If a default one doesn't exist, we don't know which one to use
 	if(entry)
-		return entry->creator.data();
+		return entry->creator.get();
 
 	return nullptr;
 }
 
 const DataWidgetFactory::DataWidgetEntry* DataWidgetFactory::getEntry(int fullType, QString widgetName) const
 {
-	return registry.value(fullType).value(widgetName).data();
+	auto it1 = registry.find(fullType);
+	if (it1 == registry.end())
+		return nullptr;
+
+	const auto& widgetMap = it1->second;
+	auto it2 = widgetMap.find(widgetName);
+	if (it2 == widgetMap.end())
+		return nullptr;
+
+	return it2->second.get();
 }
 
-QList<QString> DataWidgetFactory::getWidgetNames(int fullType) const
+std::vector<QString> DataWidgetFactory::getWidgetNames(int fullType) const
 {
-	return registry.value(fullType).keys();
+	std::vector<QString> result;
+	if (!registry.count(fullType))
+		return result;
+
+	const auto& widgetMap = registry.at(fullType);
+	for (const auto& w : widgetMap)
+		result.push_back(w.first);
+	return result;
 }
 
 void DataWidgetFactory::registerWidget(int fullType, QString widgetName, DataWidgetCreatorPtr creator)
 {
-	DataWidgetEntryPtr entry = DataWidgetEntryPtr::create();
+	DataWidgetEntryPtr entry = std::make_shared<DataWidgetEntry>();
 	entry->fullType = fullType;
 	entry->widgetName = widgetName;
 	entry->creator = creator;

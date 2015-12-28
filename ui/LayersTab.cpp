@@ -274,7 +274,7 @@ void LayersTab::reorderObjects()
 	auto objects = m_document->getObjects();
 	for(auto object : objects)
 	{
-		auto layer = dynamic_cast<panda::BaseLayer*>(object.data());
+		auto layer = dynamic_cast<panda::BaseLayer*>(object.get());
 		if(layer)
 			newList.push_back(layer);
 	}

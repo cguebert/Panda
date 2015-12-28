@@ -55,7 +55,7 @@ void OpenGLRenderView::initializeGL()
 
 void OpenGLRenderView::paintGL()
 {
-	QOpenGLFramebufferObject* fbo = m_document->getFBO().data();
+	QOpenGLFramebufferObject* fbo = m_document->getFBO().get();
 
 	QColor col = palette().window().color();
 	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);

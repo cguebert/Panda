@@ -4,6 +4,7 @@
 #include <ui/widget/DataWidgetFactory.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/helper/algorithm.h>
 
 #include <type_traits>
 #include <iostream>
@@ -20,15 +21,18 @@ ChooseWidgetDialog::ChooseWidgetDialog(panda::BaseData* data, QWidget* parent)
 	m_types = new QComboBox;
 	int fullTypeId = data->getDataTrait()->fullTypeId();
 	int valueTypeId = panda::types::DataTypeId::getValueType(fullTypeId);
-	QList<QString> types = DataWidgetFactory::getInstance()->getWidgetNames(fullTypeId);
+	std::vector<QString> types = DataWidgetFactory::getInstance()->getWidgetNames(fullTypeId);
 	if(valueTypeId != fullTypeId)
 	{
-		types += DataWidgetFactory::getInstance()->getWidgetNames(valueTypeId);
-		if(types.count("default") > 1)
-			types.removeOne("default");
+		panda::helper::concatenate(types, DataWidgetFactory::getInstance()->getWidgetNames(valueTypeId));
+		if (panda::helper::count(types, "default") > 1)
+			panda::helper::removeOne(types, "default");
 	}
 
-	m_types->addItems(types);
+	QStringList items;
+	for (const auto& type : types)
+		items.push_back(type);
+	m_types->addItems(items);
 	m_types->setCurrentText(data->getWidget());
 	formLayout->addRow(tr("widget:"), m_types);
 

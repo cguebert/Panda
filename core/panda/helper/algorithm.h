@@ -22,6 +22,12 @@ bool contains(const Container& container, const Value& value)
 }
 
 template <class Container, class Value>
+int count(const Container& container, const Value& value)
+{
+	return std::count(std::begin(container), std::end(container), value);
+}
+
+template <class Container, class Value>
 int indexOf(const Container& container, const Value& value)
 {
 	auto it = std::find(std::begin(container), std::end(container), value);
@@ -86,6 +92,12 @@ void removeIndices(Container& container, const Indices& indices)
 	}
 
 	container.erase(result, last);
+}
+
+template <class Container1, class Container2>
+void concatenate(Container1& to, const Container2& from)
+{
+	to.insert(to.end(), from.begin(), from.end());
 }
 
 } // namespace helper
