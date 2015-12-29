@@ -1,139 +1,139 @@
 <Panda>
-    <Data name="render size" x="800" y="600"/>
-    <Data a="1" b="0" name="background color" g="0" r="0"/>
-    <Data name="timestep" real="0.01"/>
-    <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
-    <Object type="panda::GeneratorPoint_MouseInfo" index="1" x="442.25" y="271.8380667800537"/>
-    <Object type="panda::GeneratorPoints_Poisson" index="2" x="433.0044463965313" y="435.6814411072069">
-        <Data name="seed" int="87"/>
-        <Data name="min distance" real="30"/>
+    <Data x="800" y="600" name="render size"/>
+    <Data g="0" a="1" r="0" b="0" name="background color"/>
+    <Data real="0.01" name="timestep"/>
+    <Data int="1" name="use timer"/>
+    <Data int="0" name="use multithread"/>
+    <Object index="1" type="panda::GeneratorPoint_MouseInfo" x="442.25" y="271.8380737304688"/>
+    <Object index="2" type="panda::GeneratorPoints_Poisson" x="433.0044555664063" y="435.6814270019531">
+        <Data int="87" name="seed"/>
+        <Data real="30" name="min distance"/>
     </Object>
-    <Object type="panda::RenderDisk" index="3" x="1763.925444821736" y="459.3302169159285">
+    <Object index="3" type="panda::RenderDisk" x="1763.925415039063" y="459.3302307128906">
         <Data name="radius">
             <Value real="3"/>
         </Data>
         <Data name="color">
-            <Value a="1" b="0.5" g="0.5" r="0.5"/>
+            <Value g="0.5" a="1" r="0.5" b="0.5"/>
         </Data>
     </Object>
-    <Object type="panda::RenderDisk" index="4" x="1763.925444821736" y="309.3302169159285">
+    <Object index="4" type="panda::RenderDisk" x="1763.925415039063" y="309.3302307128906">
         <Data name="radius">
             <Value real="5"/>
         </Data>
         <Data name="color">
-            <Value a="1" b="0" g="0" r="1"/>
+            <Value g="0" a="1" r="1" b="0"/>
         </Data>
     </Object>
-    <Object type="panda::Layer" index="5" x="1783.925444821736" y="249.836900265538">
+    <Object index="5" type="panda::Layer" x="1783.925415039063" y="249.8368988037109">
         <Data name="name">Layer #1</Data>
-        <Data name="opacity" real="1"/>
+        <Data real="1" name="opacity"/>
     </Object>
-    <Object type="panda::RenderDisk" index="6" x="1763.925444821736" y="384.3302169159285">
+    <Object index="6" type="panda::RenderDisk" x="1763.925415039063" y="384.3302307128906">
         <Data name="color">
-            <Value a="1" b="0" g="0.5" r="1"/>
+            <Value g="0.5" a="1" r="1" b="0"/>
         </Data>
     </Object>
-    <Object type="panda::GeneratorUser&lt;PReal>" index="7" x="579.7776098515997" y="520.9594437156569">
+    <Object index="7" type="panda::GeneratorUser&lt;real>" x="579.777587890625" y="520.95947265625">
         <Data name="caption">Max distance</Data>
-        <Data name="input" real="100"/>
+        <Data real="100" name="input"/>
     </Object>
-    <Object type="panda::DoubleMath_Remap" index="8" x="1151.759052477383" y="478.7218478018776">
+    <Object index="8" type="panda::DoubleMath_Remap" x="1151.759033203125" y="478.7218627929688">
         <Data name="iMin">
             <Value real="0"/>
         </Data>
     </Object>
-    <Object type="panda::FilterItems" index="9" x="949.5592783505156" y="368">
+    <Object index="9" type="panda::FilterItems" x="949.5592651367188" y="368">
         <CreatedData type="real"/>
         <CreatedData type="point"/>
         <CreatedData type="point"/>
     </Object>
-    <Object type="panda::BooleanMath_Greater" index="10" x="810.447998046875" y="314.5880667800537"/>
-    <Object type="panda::GeneratorUser&lt;PReal>" index="13" x="579.7776098515997" y="692.2805876142588">
+    <Object index="10" type="panda::BooleanMath_Greater" x="810.447998046875" y="314.5880737304688"/>
+    <Object index="11" type="panda::GeneratorUser&lt;real>" x="579.777587890625" y="692.2805786132813">
         <Data name="caption">Min size</Data>
-        <Data name="input" real="2"/>
+        <Data real="2" name="input"/>
     </Object>
-    <Object type="panda::GeneratorUser&lt;PReal>" index="14" x="579.7776098515997" y="635.1735396480582">
+    <Object index="12" type="panda::GeneratorUser&lt;real>" x="579.777587890625" y="635.1735229492188">
         <Data name="caption">Max size</Data>
-        <Data name="input" real="15"/>
+        <Data real="15" name="input"/>
     </Object>
-    <Object dy="237.7938144329897" type="panda::Annotation" index="15" x="574.8085376866512" y="513.2975819420381" dx="109.9381443298969">
-        <Data name="type" int="2"/>
+    <Object index="13" dy="237.7938079833984" dx="109.9381408691406" type="panda::Annotation" x="574.8085327148438" y="513.297607421875">
+        <Data int="2" name="type"/>
         <Data name="text">Parameters</Data>
     </Object>
-    <Object dy="132.2282257080078" type="panda::Annotation" index="16" x="438.25" y="265.8380667800537" dx="480.73876953125">
-        <Data name="type" int="2"/>
+    <Object index="14" dy="132.2282257080078" dx="480.73876953125" type="panda::Annotation" x="438.25" y="265.8380737304688">
+        <Data int="2" name="type"/>
         <Data name="text">Compute the distance between the mouse and each point</Data>
     </Object>
-    <Object dy="65.43298969072166" type="panda::Annotation" index="17" x="933.7949854270696" y="289.5051546391751" dx="80.75257731958763">
-        <Data name="type" int="1"/>
+    <Object index="15" dy="65.43299102783203" dx="80.75257873535156" type="panda::Annotation" x="933.7949829101563" y="289.5051574707031">
+        <Data int="1" name="type"/>
         <Data name="text">Keep only the points that are close</Data>
     </Object>
-    <Object dy="37" type="panda::Annotation" index="18" x="1252.863886810593" y="540.402112878367" dx="90">
-        <Data name="type" int="0"/>
-        <Data name="text">Change the size of the disks
+    <Object index="16" dy="37" dx="90" type="panda::Annotation" x="1252.863891601563" y="540.402099609375">
+        <Data int="0" name="type"/>
+        <Data name="text">Change the size of the disks&#xd;
 based on their distance</Data>
     </Object>
-    <Object type="panda::PointMath_Substraction" index="20" x="570.852294921875" y="341.1105582351318"/>
-    <Object type="panda::PointMath_Norm" index="21" x="684.4920043945313" y="341.1105582351318"/>
-    <Object type="panda::PointMath_Normalize" index="22" x="1145.43760319346" y="355.7949829101561"/>
-    <Object type="panda::PointMath_Scale" index="23" x="1494.477441570031" y="355.7949829101561"/>
-    <Object type="panda::PointMath_Addition" index="24" x="1620.996204185909" y="340.794982910156"/>
-    <Object type="panda::BooleanMath_Not" index="26" x="1060.638856051261" y="587.0257429156387"/>
-    <Object type="panda::FilterItems" index="27" x="1203.245545504386" y="605.6843732867325">
+    <Object index="17" type="panda::PointMath_Substraction" x="570.852294921875" y="341.1105651855469"/>
+    <Object index="18" type="panda::PointMath_Norm" x="684.4920043945313" y="341.1105651855469"/>
+    <Object index="19" type="panda::PointMath_Normalize" x="1145.437622070313" y="355.7949829101563"/>
+    <Object index="20" type="panda::PointMath_Scale" x="1494.477416992188" y="355.7949829101563"/>
+    <Object index="21" type="panda::PointMath_Addition" x="1620.996215820313" y="340.7949829101563"/>
+    <Object index="22" type="panda::BooleanMath_Not" x="1060.638916015625" y="587.0257568359375"/>
+    <Object index="23" type="panda::FilterItems" x="1203.24560546875" y="605.6843872070313">
         <CreatedData type="point"/>
     </Object>
-    <Object dy="131.0288356505719" type="panda::Annotation" index="28" x="1139.867046552835" y="336.9509582519531" dx="587.7684518086542">
-        <Data name="type" int="2"/>
+    <Object index="24" dy="131.0288391113281" dx="587.7684326171875" type="panda::Annotation" x="1139.867065429688" y="336.9509582519531">
+        <Data int="2" name="type"/>
         <Data name="text">Move these points away from the mouse</Data>
     </Object>
-    <Object dy="-96.06315612792969" type="panda::Annotation" index="29" x="1039.577282275488" y="674.8900686848074" dx="278.4648903129028">
-        <Data name="type" int="2"/>
+    <Object index="25" dy="-96.06315612792969" dx="278.4649047851563" type="panda::Annotation" x="1039.577270507813" y="674.8900756835938">
+        <Data int="2" name="type"/>
         <Data name="text">Keep the points that are further</Data>
     </Object>
-    <Object dy="37" type="panda::Annotation" index="30" x="446.675253281297" y="529.9398029236132" dx="90">
-        <Data name="type" int="0"/>
+    <Object index="26" dy="37" dx="90" type="panda::Annotation" x="446.6752624511719" y="529.9398193359375">
+        <Data int="0" name="type"/>
         <Data name="text">Points cloud</Data>
     </Object>
-    <Object type="panda::DoubleMath_Sub" index="31" x="1145.43760319346" y="412.0942344117962"/>
-    <Object type="panda::DoubleMath_Sub" index="32" x="1375.820899185349" y="396.6867475883812"/>
-    <Object type="panda::DoubleMath_Mult" index="35" x="1260.150073172339" y="411.6867475883811"/>
-    <Object type="panda::GeneratorUser&lt;PReal>" index="36" x="579.7776098515997" y="578.0664916818575">
+    <Object index="27" type="panda::DoubleMath_Sub" x="1145.437622070313" y="412.09423828125"/>
+    <Object index="28" type="panda::DoubleMath_Sub" x="1375.820922851563" y="396.6867370605469"/>
+    <Object index="29" type="panda::DoubleMath_Mult" x="1260.150024414063" y="411.6867370605469"/>
+    <Object index="30" type="panda::GeneratorUser&lt;real>" x="579.777587890625" y="578.0664672851563">
         <Data name="caption">Displacement factor</Data>
-        <Data name="input" real="0.75"/>
+        <Data real="0.75" name="input"/>
     </Object>
-    <Link object2="27" data2="output #1" object1="3" data1="center"/>
-    <Link object2="1" data2="position" object1="4" data1="center"/>
-    <Link object2="24" data2="result" object1="6" data1="center"/>
-    <Link object2="8" data2="result" object1="6" data1="radius"/>
-    <Link object2="9" data2="output #1" object1="8" data1="input"/>
-    <Link object2="7" data2="value" object1="8" data1="iMax"/>
-    <Link object2="14" data2="value" object1="8" data1="oMin"/>
-    <Link object2="13" data2="value" object1="8" data1="oMax"/>
-    <Link object2="10" data2="result" object1="9" data1="condition"/>
-    <Link object2="21" data2="output" object1="9" data1="input #1"/>
-    <Link object2="2" data2="points" object1="9" data1="input #2"/>
-    <Link object2="20" data2="result" object1="9" data1="input #3"/>
-    <Link object2="7" data2="value" object1="10" data1="inputA"/>
-    <Link object2="21" data2="output" object1="10" data1="inputB"/>
-    <Link object2="2" data2="points" object1="20" data1="point 1"/>
-    <Link object2="1" data2="position" object1="20" data1="point 2"/>
-    <Link object2="20" data2="result" object1="21" data1="input"/>
-    <Link object2="9" data2="output #3" object1="22" data1="input"/>
-    <Link object2="22" data2="output" object1="23" data1="point"/>
-    <Link object2="32" data2="result" object1="23" data1="factor"/>
-    <Link object2="1" data2="position" object1="24" data1="point 1"/>
-    <Link object2="23" data2="result" object1="24" data1="point 2"/>
-    <Link object2="10" data2="result" object1="26" data1="input"/>
-    <Link object2="26" data2="result" object1="27" data1="condition"/>
-    <Link object2="2" data2="points" object1="27" data1="input #1"/>
-    <Link object2="7" data2="value" object1="31" data1="input 1"/>
-    <Link object2="9" data2="output #1" object1="31" data1="input 2"/>
-    <Link object2="7" data2="value" object1="32" data1="input 1"/>
-    <Link object2="35" data2="result" object1="32" data1="input 2"/>
-    <Link object2="31" data2="result" object1="35" data1="input 1"/>
-    <Link object2="36" data2="value" object1="35" data1="input 2"/>
-    <Dock docked="4" dock="5"/>
-    <Dock docked="6" dock="5"/>
-    <Dock docked="3" dock="5"/>
+    <Link object1="3" data2="output #1" data1="center" object2="23"/>
+    <Link object1="4" data2="position" data1="center" object2="1"/>
+    <Link object1="6" data2="result" data1="center" object2="21"/>
+    <Link object1="6" data2="result" data1="radius" object2="8"/>
+    <Link object1="8" data2="output #1" data1="input" object2="9"/>
+    <Link object1="8" data2="value" data1="iMax" object2="7"/>
+    <Link object1="8" data2="value" data1="oMin" object2="12"/>
+    <Link object1="8" data2="value" data1="oMax" object2="11"/>
+    <Link object1="9" data2="result" data1="condition" object2="10"/>
+    <Link object1="9" data2="output" data1="input #1" object2="18"/>
+    <Link object1="9" data2="points" data1="input #2" object2="2"/>
+    <Link object1="9" data2="result" data1="input #3" object2="17"/>
+    <Link object1="10" data2="value" data1="inputA" object2="7"/>
+    <Link object1="10" data2="output" data1="inputB" object2="18"/>
+    <Link object1="17" data2="points" data1="point 1" object2="2"/>
+    <Link object1="17" data2="position" data1="point 2" object2="1"/>
+    <Link object1="18" data2="result" data1="input" object2="17"/>
+    <Link object1="19" data2="output #3" data1="input" object2="9"/>
+    <Link object1="20" data2="output" data1="point" object2="19"/>
+    <Link object1="20" data2="result" data1="factor" object2="28"/>
+    <Link object1="21" data2="position" data1="point 1" object2="1"/>
+    <Link object1="21" data2="result" data1="point 2" object2="20"/>
+    <Link object1="22" data2="result" data1="input" object2="10"/>
+    <Link object1="23" data2="result" data1="condition" object2="22"/>
+    <Link object1="23" data2="points" data1="input #1" object2="2"/>
+    <Link object1="27" data2="value" data1="input 1" object2="7"/>
+    <Link object1="27" data2="output #1" data1="input 2" object2="9"/>
+    <Link object1="28" data2="value" data1="input 1" object2="7"/>
+    <Link object1="28" data2="result" data1="input 2" object2="29"/>
+    <Link object1="29" data2="result" data1="input 1" object2="27"/>
+    <Link object1="29" data2="value" data1="input 2" object2="30"/>
+    <Dock dock="5" docked="4"/>
+    <Dock dock="5" docked="6"/>
+    <Dock dock="5" docked="3"/>
 </Panda>

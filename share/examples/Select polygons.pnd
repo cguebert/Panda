@@ -1,125 +1,125 @@
 <Panda>
-    <Data name="render size" x="800" y="600"/>
-    <Data r="1" name="background color" b="1" g="1" a="1"/>
-    <Data name="timestep" real="0.01"/>
+    <Data x="800" y="600" name="render size"/>
+    <Data g="1" a="1" r="1" b="1" name="background color"/>
+    <Data real="0.01" name="timestep"/>
     <Data int="1" name="use timer"/>
     <Data int="0" name="use multithread"/>
-    <Object x="1217.293823242188" type="panda::ListBuffer" y="161.0786285400391" index="1">
+    <Object index="1" type="panda::ListBuffer" x="1217.293823242188" y="161.0786285400391">
         <CreatedData type="integer"/>
     </Object>
-    <Object x="581.8463745117188" type="panda::ListConcatenation" y="283.483642578125" index="2">
+    <Object index="2" type="panda::ListConcatenation" x="581.8463745117188" y="283.483642578125">
         <CreatedData type="integer"/>
         <CreatedData type="integer"/>
     </Object>
-    <Object x="283.63916015625" type="panda::GeneratorPoint_MouseInfo" y="243.0927886962891" index="3"/>
-    <Object x="145.5876312255859" type="panda::GeneratorPoints_Poisson" y="110.8041229248047" index="4">
+    <Object index="3" type="panda::GeneratorPoint_MouseInfo" x="283.63916015625" y="243.0927886962891"/>
+    <Object index="4" type="panda::GeneratorPoints_Poisson" x="145.5876312255859" y="110.8041229248047">
         <Data int="3730" name="seed"/>
-        <Data name="min distance" real="50"/>
+        <Data real="50" name="min distance"/>
     </Object>
-    <Object x="283.63916015625" type="panda::GeneratorMesh_Delaunay" y="110.8041229248047" index="5"/>
-    <Object x="1091.202514648438" type="panda::GeneratorNumber_AnimationTime" y="136.756103515625" index="6"/>
-    <Object x="414.0425415039063" type="panda::ModifierMesh_FindTriangle" y="228.0927886962891" index="7"/>
-    <Object x="1464.509221857244" type="panda::GeneratorMesh_ExtractTriangles" y="78.19614410400391" index="8"/>
-    <Object x="2208.434326171875" type="panda::RenderTriangle" y="150.8294966322523" index="9">
+    <Object index="5" type="panda::GeneratorMesh_Delaunay" x="283.63916015625" y="110.8041229248047"/>
+    <Object index="6" type="panda::GeneratorNumber_AnimationTime" x="1091.202514648438" y="136.756103515625"/>
+    <Object index="7" type="panda::ModifierMesh_FindTriangle" x="414.0425415039063" y="228.0927886962891"/>
+    <Object index="8" type="panda::GeneratorMesh_ExtractTriangles" x="1464.50927734375" y="78.19614410400391"/>
+    <Object index="9" type="panda::RenderTriangle" x="2208.434326171875" y="150.8294982910156">
         <Data name="color">
-            <Value r="0.75" b="1" g="1" a="1"/>
+            <Value g="1" a="1" r="0.75" b="1"/>
         </Data>
     </Object>
-    <Object x="718.6336059570313" type="panda::DeleteItems" y="204.3985443115234" index="10">
+    <Object index="10" type="panda::DeleteItems" x="718.6336059570313" y="204.3985443115234">
         <CreatedData type="integer"/>
     </Object>
-    <Object x="579.2719116210938" type="panda::FindItem" y="210.7815246582031" index="11">
+    <Object index="11" type="panda::FindItem" x="579.2719116210938" y="210.7815246582031">
         <CreatedData type="integer"/>
     </Object>
-    <Object x="853.739990234375" type="panda::ListCondition" y="198.0155639648438" index="12">
+    <Object index="12" type="panda::ListCondition" x="853.739990234375" y="198.0155639648438">
         <CreatedData type="integer"/>
     </Object>
-    <Object dy="-253.6585388183594" dx="807.4159545898438" x="547.1364135742188" type="panda::Annotation" y="381.2802734375" index="13">
+    <Object index="13" dy="-253.6585388183594" dx="807.4159545898438" type="panda::Annotation" x="547.1364135742188" y="381.2802734375">
         <Data int="2" name="type"/>
         <Data name="text">This adds or remove polygons from the selection based on the status of the mouse.</Data>
         <Data name="font">MS Shell Dlg 2,8,-1,5,50,0,0,0,0,0</Data>
     </Object>
-    <Object x="970.162841796875" type="panda::RemoveDuplicates" y="202.8982543945313" index="14">
+    <Object index="14" type="panda::RemoveDuplicates" x="970.162841796875" y="202.8982543945313">
         <CreatedData type="integer"/>
     </Object>
-    <Object x="1091.202514648438" type="panda::SortList" y="195.3332672119141" index="15">
+    <Object index="15" type="panda::SortList" x="1091.202514648438" y="195.3332672119141">
         <CreatedData type="integer"/>
     </Object>
-    <Object x="1624.752960205077" type="panda::GeneratorMesh_BorderElements" y="99.8843647349965" index="16"/>
-    <Object x="1764.542153098366" type="panda::GeneratorMesh_ExtractEdges" y="78.19614410400391" index="17"/>
-    <Object x="2228.434326171875" type="panda::Layer" y="-58.49039077758789" index="18">
+    <Object index="16" type="panda::GeneratorMesh_BorderElements" x="1624.7529296875" y="99.88436126708984"/>
+    <Object index="17" type="panda::GeneratorMesh_ExtractEdges" x="1764.542114257813" y="78.19614410400391"/>
+    <Object index="18" type="panda::Layer" x="2228.434326171875" y="-58.49039077758789">
         <Data name="name">Layer #1</Data>
-        <Data name="opacity" real="1"/>
+        <Data real="1" name="opacity"/>
     </Object>
-    <Object x="1914.558618718927" type="panda::ModifierPoints_ConnectSegments" y="78.19614410400391" index="20"/>
-    <Object x="2064.575084339489" type="panda::Curve_CubicBSpline" y="78.19614410400391" index="21">
+    <Object index="19" type="panda::ModifierPoints_ConnectSegments" x="1914.55859375" y="78.19614410400391"/>
+    <Object index="20" type="panda::Curve_CubicBSpline" x="2064.5751953125" y="78.19614410400391">
         <Data int="1" name="close"/>
     </Object>
-    <Object x="2208.434326171875" type="panda::RenderPath" y="75.8294966322523" index="22">
+    <Object index="21" type="panda::RenderPath" x="2208.434326171875" y="75.82949829101563">
         <Data name="width">
             <Value real="3"/>
         </Data>
         <Data name="color">
-            <Value r="0.87" b="0.87" g="0.14" a="1"/>
+            <Value g="0.14" a="1" r="0.87" b="0.87"/>
         </Data>
     </Object>
-    <Object x="1638.389323841441" type="panda::GeneratorMesh_Wireframe" y="210.8294966322522" index="23"/>
-    <Object x="2208.434326171875" type="panda::RenderLine" y="210.8294966322523" index="24">
+    <Object index="22" type="panda::GeneratorMesh_Wireframe" x="1638.389282226563" y="210.8294982910156"/>
+    <Object index="23" type="panda::RenderLine" x="2208.434326171875" y="210.8294982910156">
         <Data name="color">
-            <Value r="0.745098" b="0.745098" g="0.745098" a="1"/>
+            <Value g="0.745098" a="1" r="0.745098" b="0.745098"/>
         </Data>
     </Object>
-    <Object x="1764.542153098366" type="panda::MeshMath_Centroid" y="1.003280162811279" index="25"/>
-    <Object x="2208.434326171875" type="panda::RenderDisk" y="0.829496632252301" index="26"/>
-    <Object x="1614.525687477805" type="panda::ModifierMesh_SeparateDisconnected" y="1.003280162811279" index="27"/>
-    <Object dy="77" dx="250" x="141.1048155193143" type="panda::Annotation" y="103.4238118553849" index="28">
+    <Object index="24" type="panda::MeshMath_Centroid" x="1764.542114257813" y="1.003280162811279"/>
+    <Object index="25" type="panda::RenderDisk" x="2208.434326171875" y="0.8294966220855713"/>
+    <Object index="26" type="panda::ModifierMesh_SeparateDisconnected" x="1614.525634765625" y="1.003280162811279"/>
+    <Object index="27" dy="77" dx="250" type="panda::Annotation" x="141.1048126220703" y="103.4238128662109">
         <Data int="2" name="type"/>
         <Data name="text">Create a random mesh.</Data>
     </Object>
-    <Object dy="-102" dx="247" x="275.1048155193143" type="panda::Annotation" y="323.4238118553849" index="29">
+    <Object index="28" dy="-102" dx="247" type="panda::Annotation" x="275.1048278808594" y="323.4237976074219">
         <Data int="2" name="type"/>
         <Data name="text">Find the triangle where the mouse is</Data>
     </Object>
-    <Object dy="64.5" dx="260.2272727272728" x="1609.974031563543" type="panda::Annotation" y="-5.488685185929626" index="30">
+    <Object index="29" dy="64.5" dx="260.2272644042969" type="panda::Annotation" x="1609.973999023438" y="-5.488685131072998">
         <Data int="2" name="type"/>
         <Data name="text">Compute the centroid of each part</Data>
     </Object>
-    <Object dy="-113.9090909090909" dx="554.5454462224784" x="1617.928577018087" type="panda::Annotation" y="182.0113148140705" index="31">
+    <Object index="30" dy="-113.9090881347656" dx="554.5454711914063" type="panda::Annotation" x="1617.928588867188" y="182.0113220214844">
         <Data int="2" name="type"/>
         <Data name="text">Extract the outline and smooth it.</Data>
     </Object>
-    <Link object2="6" data2="time" data1="control" object1="1"/>
-    <Link object2="15" data2="output #1" data1="input #1" object1="1"/>
-    <Link object2="7" data2="indices" data1="list #1" object1="2"/>
-    <Link object2="1" data2="output #1" data1="list #2" object1="2"/>
-    <Link object2="4" data2="points" data1="vertices" object1="5"/>
-    <Link object2="5" data2="mesh" data1="mesh" object1="7"/>
-    <Link object2="3" data2="position" data1="points" object1="7"/>
-    <Link object2="5" data2="mesh" data1="input" object1="8"/>
-    <Link object2="1" data2="output #1" data1="triangles" object1="8"/>
-    <Link object2="8" data2="output" data1="mesh" object1="9"/>
-    <Link object2="11" data2="output #1" data1="indices" object1="10"/>
-    <Link object2="1" data2="output #1" data1="input #1" object1="10"/>
-    <Link object2="1" data2="output #1" data1="input #1" object1="11"/>
-    <Link object2="7" data2="indices" data1="values #1" object1="11"/>
-    <Link object2="3" data2="click" data1="control" object1="12"/>
-    <Link object2="10" data2="output #1" data1="true #1" object1="12"/>
-    <Link object2="2" data2="result #1" data1="false #1" object1="12"/>
-    <Link object2="12" data2="result #1" data1="input #1" object1="14"/>
-    <Link object2="14" data2="output #1" data1="input #1" object1="15"/>
-    <Link object2="8" data2="output" data1="mesh" object1="16"/>
-    <Link object2="8" data2="output" data1="input" object1="17"/>
-    <Link object2="16" data2="edges" data1="edges" object1="17"/>
-    <Link object2="17" data2="output" data1="input" object1="20"/>
-    <Link object2="20" data2="output" data1="input" object1="21"/>
-    <Link object2="21" data2="output" data1="path" object1="22"/>
-    <Link object2="5" data2="mesh" data1="mesh" object1="23"/>
-    <Link object2="23" data2="points" data1="point 1" object1="24"/>
-    <Link object2="27" data2="output" data1="mesh" object1="25"/>
-    <Link object2="25" data2="centroids" data1="center" object1="26"/>
-    <Link object2="8" data2="output" data1="input" object1="27"/>
-    <Dock docked="26" dock="18"/>
-    <Dock docked="22" dock="18"/>
-    <Dock docked="9" dock="18"/>
-    <Dock docked="24" dock="18"/>
+    <Link object1="1" data2="time" data1="control" object2="6"/>
+    <Link object1="1" data2="output #1" data1="input #1" object2="15"/>
+    <Link object1="2" data2="indices" data1="list #1" object2="7"/>
+    <Link object1="2" data2="output #1" data1="list #2" object2="1"/>
+    <Link object1="5" data2="points" data1="vertices" object2="4"/>
+    <Link object1="7" data2="mesh" data1="mesh" object2="5"/>
+    <Link object1="7" data2="position" data1="points" object2="3"/>
+    <Link object1="8" data2="mesh" data1="input" object2="5"/>
+    <Link object1="8" data2="output #1" data1="triangles" object2="1"/>
+    <Link object1="9" data2="output" data1="mesh" object2="8"/>
+    <Link object1="10" data2="output #1" data1="indices" object2="11"/>
+    <Link object1="10" data2="output #1" data1="input #1" object2="1"/>
+    <Link object1="11" data2="output #1" data1="input #1" object2="1"/>
+    <Link object1="11" data2="indices" data1="values #1" object2="7"/>
+    <Link object1="12" data2="click" data1="control" object2="3"/>
+    <Link object1="12" data2="output #1" data1="true #1" object2="10"/>
+    <Link object1="12" data2="result #1" data1="false #1" object2="2"/>
+    <Link object1="14" data2="result #1" data1="input #1" object2="12"/>
+    <Link object1="15" data2="output #1" data1="input #1" object2="14"/>
+    <Link object1="16" data2="output" data1="mesh" object2="8"/>
+    <Link object1="17" data2="output" data1="input" object2="8"/>
+    <Link object1="17" data2="edges" data1="edges" object2="16"/>
+    <Link object1="19" data2="output" data1="input" object2="17"/>
+    <Link object1="20" data2="output" data1="input" object2="19"/>
+    <Link object1="21" data2="output" data1="path" object2="20"/>
+    <Link object1="22" data2="mesh" data1="mesh" object2="5"/>
+    <Link object1="23" data2="points" data1="point 1" object2="22"/>
+    <Link object1="24" data2="output" data1="mesh" object2="26"/>
+    <Link object1="25" data2="centroids" data1="center" object2="24"/>
+    <Link object1="26" data2="output" data1="input" object2="8"/>
+    <Dock dock="18" docked="25"/>
+    <Dock dock="18" docked="21"/>
+    <Dock dock="18" docked="9"/>
+    <Dock dock="18" docked="23"/>
 </Panda>

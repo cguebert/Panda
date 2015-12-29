@@ -68,6 +68,7 @@ private slots:
 	void openDetachedWindow(DetachedWindow* window);
 	void closeDetachedWindow(DetachedWindow* window);
 	void closeViewport(ImageViewport* viewport);
+	void convertSavedDocuments();
 
 private:
 	void createActions();

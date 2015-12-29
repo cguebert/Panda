@@ -1,116 +1,121 @@
-<Group description="Constructs a slider usable on the render view." type="panda::GroupWithLayer">
-    <GroupData input="1" help="Minimum value of the slider." type="real" output="0" name="min"/>
-    <GroupData input="1" help="Minimum value of the slider." type="real" output="0" name="max"/>
-    <GroupData input="1" help="Initial value of the slider." type="real" output="0" name="init"/>
-	<GroupData input="1" help="Where is the slider drawn." type="rectangle" output="0" name="area"/>
-    <GroupData input="0" help="Current value of the slider." type="real" output="1" name="value"/>
+<Group type="panda::GroupWithLayer" description="Constructs a slider usable on the render view.">
+    <GroupData output="0" help="Minimum value of the slider." type="real" widget="default" name="min" input="1"/>
+    <GroupData output="0" help="Minimum value of the slider." type="real" widget="default" name="max" input="1"/>
+    <GroupData output="0" help="Initial value of the slider." type="real" widget="default" name="init" input="1"/>
+    <GroupData output="0" help="Where is the slider drawn." type="rectangle" widget="default" name="area" input="1"/>
+    <GroupData output="1" help="Current value of the slider." type="real" widget="default" name="value" input="0"/>
     <Data name="name">Slider</Data>
-    <Data real="0" name="min"/>
-    <Data real="100" name="max"/>
-    <Data l="10" r="210" b="40" t="10" name="area"/>
-    <Data real="50" name="init"/>
-    <Object index="1" type="panda::GeneratorUser&lt;PReal>" x="-751.3198242187497" y="42.77337646484364">
+    <Data name="min" real="0"/>
+    <Data name="max" real="100"/>
+    <Data name="init" real="50"/>
+    <Data l="10" t="10" name="area" r="210" b="40"/>
+    <Object x="-751.31982421875" type="panda::GeneratorUser&lt;PReal>" y="42.77337646484375" index="10">
         <Data name="caption">min</Data>
+        <Data name="input" real="0"/>
     </Object>
-    <Object index="2" type="panda::GeneratorUser&lt;PReal>" x="-751.3198242187497" y="98.77337646484364">
+    <Object x="-751.31982421875" type="panda::GeneratorUser&lt;PReal>" y="98.77337646484375" index="11">
         <Data name="caption">max</Data>
+        <Data name="input" real="100"/>
     </Object>
-    <Object index="3" type="panda::GeneratorUser&lt;panda::types::Rect>" x="-751.3198242187497" y="265.7733764648436">
+    <Object x="-751.31982421875" type="panda::GeneratorUser&lt;rectangle>" y="265.7733764648438" index="12">
         <Data name="caption">area</Data>
+        <Data l="10" t="10" name="input" r="210" b="40"/>
     </Object>
-    <Object index="4" type="panda::RenderRect" x="711.3198242187503" y="249.7306823730468">
+    <Object x="711.31982421875" type="panda::RenderRect" y="249.7306823730469" index="13">
         <Data name="lineWidth">
             <Value real="2"/>
         </Data>
         <Data name="color">
-            <Value r="0" a="1" b="0" g="0"/>
+            <Value g="0" a="1" r="0" b="0"/>
         </Data>
     </Object>
-    <Object index="5" type="panda::ListBuffer" x="233.6047363281253" y="-120.1739578247071">
+    <Object x="233.604736328125" type="panda::ListBuffer" y="-120.173957824707" index="14">
         <CreatedData type="real"/>
     </Object>
-    <Object index="6" type="panda::GeneratorPoint_MouseInfo" x="-688.0488586425778" y="-178.2720336914064"/>
-    <Object index="7" type="panda::ModifierPoints_PointsInRect" x="-494.2167968749997" y="-175.7648162841798"/>
-    <Object index="8" type="panda::DoubleMath_Remap" x="-58.80737304687466" y="-57.2226028442384"/>
-    <Object index="9" type="panda::GeneratorRectangles_Decompose" x="-293.2172851562497" y="92.44494628906239"/>
-    <Object index="10" type="panda::GeneratorPoints_Decompose" x="-494.2167968749997" y="-57.2226028442384"/>
-    <Object index="11" type="panda::RenderLine" x="711.3198242187503" y="174.7306671142577">
-        <Data real="3" name="width"/>
+    <Object x="-688.048828125" type="panda::GeneratorPoint_MouseInfo" y="-178.2720336914063" index="15"/>
+    <Object x="-494.216796875" type="panda::ModifierPoints_PointsInRect" y="-175.7648162841797" index="16"/>
+    <Object x="-58.807373046875" type="panda::DoubleMath_Remap" y="-57.22260284423828" index="17"/>
+    <Object x="-293.21728515625" type="panda::GeneratorRectangles_Decompose" y="92.4449462890625" index="18"/>
+    <Object x="-494.216796875" type="panda::GeneratorPoints_Decompose" y="-57.22260284423828" index="19"/>
+    <Object x="711.31982421875" type="panda::RenderLine" y="174.7306671142578" index="20">
+        <Data name="width" real="3"/>
         <Data name="color">
-            <Value r="0.333333" a="1" b="1" g="0.666667"/>
+            <Value g="0.666667" a="1" r="0.333333" b="1"/>
         </Data>
     </Object>
-    <Object index="12" type="panda::GeneratorPoints_Compose" x="551.9832763671878" y="92.44494628906239"/>
-    <Object index="13" type="panda::GeneratorPoints_Compose" x="551.9832763671878" y="154.9391784667968"/>
-    <Object index="14" type="panda::GeneratorNumber_AnimationTime" x="-494.2167968749997" y="-115.7110519409181"/>
-    <Object index="15" type="panda::DoubleMath_Mult" x="-231.8222656249997" y="-130.3451995849611"/>
-    <Object index="16" type="panda::DoubleMath_Remap" x="381.8093261718753" y="14.35874176025379"/>
-    <Object index="17" type="panda::Layer" x="731.3198242187503" y="115.0243835449218">
+    <Object x="551.9832763671875" type="panda::GeneratorPoints_Compose" y="92.4449462890625" index="21"/>
+    <Object x="551.9832763671875" type="panda::GeneratorPoints_Compose" y="154.9391784667969" index="22"/>
+    <Object x="-494.216796875" type="panda::GeneratorNumber_AnimationTime" y="-115.711051940918" index="23"/>
+    <Object x="-231.822265625" type="panda::DoubleMath_Mult" y="-130.3451995849609" index="24"/>
+    <Object x="381.809326171875" type="panda::DoubleMath_Remap" y="14.35874176025391" index="25"/>
+    <Object x="731.31982421875" type="panda::Layer" y="115.0243835449219" index="26">
         <Data name="name">Slider</Data>
-        <Data real="1" name="opacity"/>
+        <Data name="opacity" real="1"/>
     </Object>
-    <Object index="18" type="panda::ListSize" x="-357.363128662109" y="-177.8135986328126">
+    <Object x="-357.3631286621094" type="panda::ListSize" y="-177.8135986328125" index="27">
         <CreatedData type="point"/>
     </Object>
-    <Object index="19" type="panda::DoubleMath_Mult" x="-58.80737304687466" y="-193.2282257080079"/>
-    <Object index="20" type="panda::ListBuffer" x="-231.8222656249997" y="-226.2282257080079">
+    <Object x="-58.807373046875" type="panda::DoubleMath_Mult" y="-193.2282257080078" index="28"/>
+    <Object x="-231.822265625" type="panda::ListBuffer" y="-226.2282257080078" index="29">
         <CreatedData type="integer"/>
         <Data name="init #1">
             <Value int="0"/>
         </Data>
     </Object>
-    <Object index="21" type="panda::DoubleMath_RiseCount" x="-494.2167968749997" y="-300.024383544922"/>
-    <Object index="22" type="panda::DoubleMath_Constrain" x="82.88079833984409" y="-87.2226028442384"/>
-    <Object index="23" type="panda::BooleanMath_Not" x="-494.2167968749997" y="-234.292694091797"/>
-    <Object index="24" type="panda::GeneratorUser&lt;PReal>" x="-751.3198242187497" y="157.2926788330077">
+    <Object x="-494.216796875" type="panda::DoubleMath_RiseCount" y="-300.0243835449219" index="30"/>
+    <Object x="82.88079833984375" type="panda::DoubleMath_Constrain" y="-87.22260284423828" index="31"/>
+    <Object x="-494.216796875" type="panda::BooleanMath_Not" y="-234.2926940917969" index="32"/>
+    <Object x="-751.31982421875" type="panda::GeneratorUser&lt;PReal>" y="157.2926788330078" index="33">
         <Data name="caption">init</Data>
+        <Data name="input" real="50"/>
     </Object>
-    <Object index="27" type="panda::GeneratorUser&lt;PReal>" x="740.3168945312503" y="-112.4116210937501">
+    <Object x="740.31689453125" type="panda::GeneratorUser&lt;PReal>" y="-112.41162109375" index="34">
         <Data name="caption">value</Data>
+        <Data name="input" real="50"/>
     </Object>
-    <Link data2="min" object1="1" object2="0" data1="input"/>
-    <Link data2="max" object1="2" object2="0" data1="input"/>
-    <Link data2="area" object1="3" object2="0" data1="input"/>
-    <Link data2="value" object1="4" object2="3" data1="rectangle"/>
-    <Link data2="result" object1="5" object2="19" data1="control"/>
-    <Link data2="result" object1="5" object2="22" data1="input #1"/>
-    <Link data2="value" object1="5" object2="24" data1="init #1"/>
-    <Link data2="value" object1="7" object2="3" data1="rectangle"/>
-    <Link data2="position" object1="7" object2="6" data1="input"/>
-    <Link data2="x" object1="8" object2="10" data1="input"/>
-    <Link data2="left" object1="8" object2="9" data1="iMin"/>
-    <Link data2="right" object1="8" object2="9" data1="iMax"/>
-    <Link data2="value" object1="8" object2="1" data1="oMin"/>
-    <Link data2="value" object1="8" object2="2" data1="oMax"/>
-    <Link data2="value" object1="9" object2="3" data1="rectangle"/>
-    <Link data2="position" object1="10" object2="6" data1="point"/>
-    <Link data2="point" object1="11" object2="12" data1="point 1"/>
-    <Link data2="point" object1="11" object2="13" data1="point 2"/>
-    <Link data2="result" object1="12" object2="16" data1="x"/>
-    <Link data2="top" object1="12" object2="9" data1="y"/>
-    <Link data2="result" object1="13" object2="16" data1="x"/>
-    <Link data2="bottom" object1="13" object2="9" data1="y"/>
-    <Link data2="time" object1="15" object2="14" data1="input 1"/>
-    <Link data2="click" object1="15" object2="6" data1="input 2"/>
-    <Link data2="output #1" object1="16" object2="5" data1="input"/>
-    <Link data2="value" object1="16" object2="1" data1="iMin"/>
-    <Link data2="value" object1="16" object2="2" data1="iMax"/>
-    <Link data2="left" object1="16" object2="9" data1="oMin"/>
-    <Link data2="right" object1="16" object2="9" data1="oMax"/>
-    <Link data2="output" object1="18" object2="7" data1="input #1"/>
-    <Link data2="result" object1="19" object2="15" data1="input 2"/>
-    <Link data2="count" object1="20" object2="21" data1="control"/>
-    <Link data2="result" object1="20" object2="23" data1="reset"/>
-    <Link data2="size #1" object1="20" object2="18" data1="input #1"/>
-	<Link data2="output #1" object1="19" object2="20" data1="input 1"/>
-    <Link data2="click" object1="21" object2="6" data1="input"/>
-    <Link data2="value" object1="22" object2="1" data1="min"/>
-    <Link data2="value" object1="22" object2="2" data1="max"/>
-    <Link data2="result" object1="22" object2="8" data1="input"/>
-    <Link data2="click" object1="23" object2="6" data1="input"/>
-    <Link data2="init" object1="24" object2="0" data1="input"/>
-    <Link data2="output #1" object1="27" object2="5" data1="input"/>
-    <Link data2="value" object1="0" object2="27" data1="value"/>
-    <Dock dock="17" docked="11"/>
-    <Dock dock="17" docked="4"/>
+    <Link object2="0" object1="10" data1="input" data2="min"/>
+    <Link object2="0" object1="11" data1="input" data2="max"/>
+    <Link object2="0" object1="12" data1="input" data2="area"/>
+    <Link object2="12" object1="13" data1="rectangle" data2="value"/>
+    <Link object2="28" object1="14" data1="control" data2="result"/>
+    <Link object2="31" object1="14" data1="input #1" data2="result"/>
+    <Link object2="33" object1="14" data1="init #1" data2="value"/>
+    <Link object2="12" object1="16" data1="rectangle" data2="value"/>
+    <Link object2="15" object1="16" data1="input" data2="position"/>
+    <Link object2="19" object1="17" data1="input" data2="x"/>
+    <Link object2="18" object1="17" data1="iMin" data2="left"/>
+    <Link object2="18" object1="17" data1="iMax" data2="right"/>
+    <Link object2="10" object1="17" data1="oMin" data2="value"/>
+    <Link object2="11" object1="17" data1="oMax" data2="value"/>
+    <Link object2="12" object1="18" data1="rectangle" data2="value"/>
+    <Link object2="15" object1="19" data1="point" data2="position"/>
+    <Link object2="21" object1="20" data1="point 1" data2="point"/>
+    <Link object2="22" object1="20" data1="point 2" data2="point"/>
+    <Link object2="25" object1="21" data1="x" data2="result"/>
+    <Link object2="18" object1="21" data1="y" data2="top"/>
+    <Link object2="25" object1="22" data1="x" data2="result"/>
+    <Link object2="18" object1="22" data1="y" data2="bottom"/>
+    <Link object2="23" object1="24" data1="input 1" data2="time"/>
+    <Link object2="15" object1="24" data1="input 2" data2="click"/>
+    <Link object2="14" object1="25" data1="input" data2="output #1"/>
+    <Link object2="10" object1="25" data1="iMin" data2="value"/>
+    <Link object2="11" object1="25" data1="iMax" data2="value"/>
+    <Link object2="18" object1="25" data1="oMin" data2="left"/>
+    <Link object2="18" object1="25" data1="oMax" data2="right"/>
+    <Link object2="16" object1="27" data1="input #1" data2="output"/>
+    <Link object2="29" object1="28" data1="input 1" data2="output #1"/>
+    <Link object2="24" object1="28" data1="input 2" data2="result"/>
+    <Link object2="30" object1="29" data1="control" data2="count"/>
+    <Link object2="32" object1="29" data1="reset" data2="result"/>
+    <Link object2="27" object1="29" data1="input #1" data2="size #1"/>
+    <Link object2="15" object1="30" data1="input" data2="click"/>
+    <Link object2="10" object1="31" data1="min" data2="value"/>
+    <Link object2="11" object1="31" data1="max" data2="value"/>
+    <Link object2="17" object1="31" data1="input" data2="result"/>
+    <Link object2="15" object1="32" data1="input" data2="click"/>
+    <Link object2="0" object1="33" data1="input" data2="init"/>
+    <Link object2="14" object1="34" data1="input" data2="output #1"/>
+    <Link object2="34" object1="0" data1="value" data2="value"/>
+    <Dock dock="26" docked="20"/>
+    <Dock dock="26" docked="13"/>
 </Group>

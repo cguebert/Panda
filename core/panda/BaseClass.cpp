@@ -81,11 +81,6 @@ QString BaseClass::decodeTypeName(const std::type_info& type)
 	name.replace("struct ", "");
 	name.replace(" ", "");
 
-#ifdef PANDA_DOUBLE
-	name.replace("<double>", "<PReal>");
-#else
-	name.replace("<float>", "<PReal>");
-#endif
 	return name;
 }
 

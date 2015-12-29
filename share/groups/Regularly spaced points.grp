@@ -1,32 +1,35 @@
-<Group description="Place points on a curve, separated by a fixed distance." type="panda::Group">
-    <GroupData output="0" name="input" help="Curve on which to place points" type="path" input="1"/>
-    <GroupData output="1" name="output" help="Points placed on the curve" type="path" input="0"/>
-    <GroupData output="0" name="step" help="Spacing between 2 points" type="real" input="1"/>
+<Group type="panda::Group" description="Place points on a curve, separated by a fixed distance.">
+    <GroupData output="0" help="Curve on which to place points" type="path" widget="default" name="input" input="1"/>
+    <GroupData output="1" help="Points placed on the curve" type="path" widget="default" name="output" input="0"/>
+    <GroupData output="0" help="Spacing between 2 points" type="real" widget="default" name="step" input="1"/>
     <Data name="name">Regularly spaced points</Data>
     <Data name="input"/>
     <Data name="step" real="20"/>
-    <Object index="1" x="77.89422607421875" y="-3.950119018554688" type="panda::GeneratorReals_Enumeration"/>
-    <Object index="2" x="-66.10577392578125" y="-3.950119018554688" type="panda::DoubleMath_Div"/>
-    <Object index="3" x="218.8942260742188" y="-18.95011901855469" type="panda::PathMath_GetPoint"/>
-    <Object index="4" x="-355.3942260742188" y="-55" type="panda::GeneratorUser&lt;panda::types::Path>">
+    <Object x="77.89422607421875" type="panda::GeneratorReals_Enumeration" y="-3.950119018554688" index="2"/>
+    <Object x="-66.10577392578125" type="panda::DoubleMath_Div" y="-3.950119018554688" index="3"/>
+    <Object x="218.8942260742188" type="panda::PathMath_GetPoint" y="-18.95011901855469" index="4"/>
+    <Object x="-355.3942260742188" type="panda::GeneratorUser&lt;path>" y="-55" index="5">
         <Data name="caption">input</Data>
+        <Data name="input"/>
     </Object>
-    <Object index="5" x="355.3942260742188" y="-18.95011901855469" type="panda::GeneratorUser&lt;panda::types::Path>">
+    <Object x="355.3942260742188" type="panda::GeneratorUser&lt;path>" y="-18.95011901855469" index="6">
         <Data name="caption">output</Data>
+        <Data name="input"/>
     </Object>
-    <Object index="6" x="-355.3942260742188" y="55" type="panda::GeneratorUser&lt;PReal>">
+    <Object x="-355.3942260742188" type="panda::GeneratorUser&lt;PReal>" y="55" index="7">
         <Data name="caption">step</Data>
+        <Data name="input" real="20"/>
     </Object>
-    <Object index="7" x="-195.1057739257813" y="-18.95011901855469" type="panda::PathMath_Length"/>
-    <Link object1="1" data1="# numbers" object2="2" data2="result"/>
-    <Link object1="1" data1="step" object2="6" data2="value"/>
-    <Link object1="2" data1="input 1" object2="7" data2="length"/>
-    <Link object1="2" data1="input 2" object2="6" data2="value"/>
-    <Link object1="3" data1="path" object2="4" data2="value"/>
-    <Link object1="3" data1="abscissa" object2="1" data2="numbers"/>
-    <Link object1="4" data1="input" object2="0" data2="input"/>
-    <Link object1="5" data1="input" object2="3" data2="position"/>
-    <Link object1="6" data1="input" object2="0" data2="step"/>
-    <Link object1="7" data1="path" object2="4" data2="value"/>
-    <Link object1="0" data1="output" object2="5" data2="value"/>
+    <Object x="-195.1057739257813" type="panda::PathMath_Length" y="-18.95011901855469" index="8"/>
+    <Link object2="3" object1="2" data1="# numbers" data2="result"/>
+    <Link object2="7" object1="2" data1="step" data2="value"/>
+    <Link object2="8" object1="3" data1="input 1" data2="length"/>
+    <Link object2="7" object1="3" data1="input 2" data2="value"/>
+    <Link object2="5" object1="4" data1="path" data2="value"/>
+    <Link object2="2" object1="4" data1="abscissa" data2="numbers"/>
+    <Link object2="0" object1="5" data1="input" data2="input"/>
+    <Link object2="4" object1="6" data1="input" data2="position"/>
+    <Link object2="0" object1="7" data1="input" data2="step"/>
+    <Link object2="5" object1="8" data1="path" data2="value"/>
+    <Link object2="6" object1="0" data1="output" data2="value"/>
 </Group>

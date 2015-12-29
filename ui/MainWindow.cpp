@@ -455,6 +455,9 @@ void MainWindow::createActions()
 	addAction(m_undoAction);
 	addAction(m_redoAction);
 
+	auto convertDocumentsAction = new QAction(tr("Convert documents"), this);
+	connect(convertDocumentsAction, SIGNAL(triggered()), this, SLOT(convertSavedDocuments()));
+
 	// Alignment (horizontal)
 	auto alignHorCenterAction = new QAction(tr("Center"), this);
 	alignHorCenterAction->setIcon(QIcon(":/share/icons/align-horizontal-center.png"));
@@ -624,6 +627,7 @@ void MainWindow::createActions()
 
 	m_helpMenu = menuBar()->addMenu(tr("&Help"));
 	m_helpMenu->addAction(showObjectsAndTypesAction);
+//	m_helpMenu->addAction(convertDocumentsAction);
 	m_helpMenu->addSeparator();
 	m_helpMenu->addAction(aboutAction);
 	m_helpMenu->addAction(aboutQtAction);
@@ -1187,4 +1191,37 @@ void MainWindow::closeViewport(ImageViewport* viewport)
 			return;
 		}
 	}
+}
+
+void MainWindow::convertSavedDocuments()
+{	// When the save format changes, this can be usd to open and resave all documents in a directory
+	QString dirPath = QFileDialog::getExistingDirectory(this, tr("Directory containing documents to convert"));
+	QDir dir(dirPath);
+	QStringList filters;
+    filters << "*.pnd";
+	auto entries = dir.entryInfoList(filters, QDir::Files);
+
+	int nb = 0;
+	for (const auto& entry : entries)
+	{
+		auto path = entry.absoluteFilePath();
+		m_document->resetDocument();
+		if (m_document->readFile(path))
+		{
+			m_document->writeFile(path);
+			++nb;
+		}
+		else
+		{
+			if (QMessageBox::Abort == QMessageBox::question(this, 
+				tr("Error loading document"), 
+				tr("Could not open %1").arg(entry.fileName()), 
+				QMessageBox::Abort | QMessageBox::Ignore))
+				break;
+		}
+	}
+	m_document->resetDocument();
+	setWindowModified(false);
+
+	QMessageBox::information(this, tr("Operation finished"), tr("Converted %1/%2 documents").arg(nb).arg(entries.size()));
 }

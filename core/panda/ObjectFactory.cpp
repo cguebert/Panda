@@ -139,6 +139,7 @@ void ObjectFactory::moduleLoaded()
 
 void ObjectFactory::allObjectsRegistered()
 {
+	// Creating aliases for templated objects
 	auto registryCopy = m_registry;
 	for (const auto &it : registryCopy)
 	{

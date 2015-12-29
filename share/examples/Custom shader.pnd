@@ -9,7 +9,7 @@
         <Data name="name #1">time</Data>
     </Object>
     <Object index="2" y="287" type="panda::GeneratorNumber_AnimationTime" x="362"/>
-    <Object index="3" y="227" type="panda::GeneratorUser&lt;panda::types::Shader>" x="362">
+    <Object index="3" type="panda::GeneratorUser&lt;shader>" x="362" y="227">
         <Data name="input" widgetData="Vertex;Fragment">
             <Source type="1">#version 330
 

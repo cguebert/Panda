@@ -1,39 +1,39 @@
 <Panda>
-    <Data name="render size" x="800" y="600"/>
-    <Data r="0" name="background color" b="0" g="0" a="1"/>
-    <Data name="timestep" real="0.005"/>
+    <Data x="800" y="600" name="render size"/>
+    <Data g="0" a="1" r="0" b="0" name="background color"/>
+    <Data real="0.005" name="timestep"/>
     <Data int="0" name="use timer"/>
     <Data int="0" name="use multithread"/>
-    <Object x="821" type="panda::ParticleEngine" y="367" index="1"/>
-    <Object x="801" type="panda::ParticleCreation_FromLists" y="426.34375" index="2"/>
-    <Object x="801" type="panda::ParticleDestruction_Age" y="486.34375" index="3">
-        <Data name="max age" real="3"/>
-        <Data name="variation" real="0.5"/>
+    <Object index="1" type="panda::ParticleEngine" x="821" y="367"/>
+    <Object index="2" type="panda::ParticleCreation_FromLists" x="801" y="426.34375"/>
+    <Object index="3" type="panda::ParticleDestruction_Age" x="801" y="486.34375">
+        <Data real="3" name="max age"/>
+        <Data real="0.5" name="variation"/>
     </Object>
-    <Object x="511.5" type="panda::GeneratorPoint_MouseInfo" y="388.34375" index="4"/>
-    <Object x="801" type="panda::ParticleForceField_ConstantForce" y="546.34375" index="5">
-        <Data name="force" x="0" y="50"/>
+    <Object index="4" type="panda::GeneratorPoint_MouseInfo" x="511.5" y="388.34375"/>
+    <Object index="5" type="panda::ParticleForceField_ConstantForce" x="801" y="546.34375">
+        <Data x="0" y="50" name="force"/>
     </Object>
-    <Object x="221.375" type="panda::GeneratorInteger_RandomSeed" y="458.5106506347656" index="6">
+    <Object index="6" type="panda::GeneratorInteger_RandomSeed" x="221.375" y="458.5106506347656">
         <Data int="4161" name="seed"/>
     </Object>
-    <Object x="511.5" type="panda::PointMath_AngleToVector" y="511.6808471679688" index="7"/>
-    <Object x="382.5" type="panda::GeneratorReals_Random" y="481.5531921386719" index="8">
-        <Data name="maximum" real="360"/>
+    <Object index="7" type="panda::PointMath_AngleToVector" x="511.5" y="511.6808471679688"/>
+    <Object index="8" type="panda::GeneratorReals_Random" x="382.5" y="481.5531921386719">
+        <Data real="360" name="maximum"/>
     </Object>
-    <Object x="382.5" type="panda::GeneratorReals_Random" y="564.1595458984375" index="9">
-        <Data name="minimum" real="50"/>
-        <Data name="maximum" real="100"/>
+    <Object index="9" type="panda::GeneratorReals_Random" x="382.5" y="564.1595458984375">
+        <Data real="50" name="minimum"/>
+        <Data real="100" name="maximum"/>
     </Object>
-    <Object x="631.627685546875" type="panda::PointMath_Scale" y="511.6808471679688" index="10"/>
-    <Object x="1615.744873046875" type="panda::Layer" y="265.25" index="11">
+    <Object index="10" type="panda::PointMath_Scale" x="631.627685546875" y="511.6808471679688"/>
+    <Object index="11" type="panda::Layer" x="1615.744873046875" y="265.25">
         <Data name="name">Layer #2</Data>
-        <Data name="opacity" real="1"/>
+        <Data real="1" name="opacity"/>
     </Object>
-    <Object x="1595.744873046875" type="panda::RenderModifier_BlendMode" y="414.6875" index="12">
+    <Object index="12" type="panda::RenderModifier_BlendMode" x="1595.744873046875" y="414.6875">
         <Data int="7" name="destination"/>
     </Object>
-    <Object x="1430.492065429688" type="panda::GeneratorColors_ComposeRGB" y="211.9388275146484" index="13">
+    <Object index="13" type="panda::GeneratorColors_ComposeRGB" x="1430.492065429688" y="211.9388275146484">
         <Data name="b">
             <Value real="0.5"/>
         </Data>
@@ -41,36 +41,36 @@
             <Value real="1"/>
         </Data>
     </Object>
-    <Object x="1062.875" type="panda::GeneratorPoints_Decompose" y="184.875" index="14"/>
-    <Object x="914.2579956054688" type="panda::GeneratorPoint_RenderSize" y="261.875" index="15"/>
-    <Object x="1250.875" type="panda::DoubleMath_Div" y="184.875" index="16"/>
-    <Object x="1062.875" type="panda::GeneratorPoints_Decompose" y="261.875" index="17"/>
-    <Object x="1250.875" type="panda::DoubleMath_Div" y="261.875" index="18"/>
-    <Object x="221.375" type="panda::GeneratorUser&lt;int>" y="528.1236572265625" index="19">
+    <Object index="14" type="panda::GeneratorPoints_Decompose" x="1062.875" y="184.875"/>
+    <Object index="15" type="panda::GeneratorPoint_RenderSize" x="914.2579956054688" y="261.875"/>
+    <Object index="16" type="panda::DoubleMath_Div" x="1250.875" y="184.875"/>
+    <Object index="17" type="panda::GeneratorPoints_Decompose" x="1062.875" y="261.875"/>
+    <Object index="18" type="panda::DoubleMath_Div" x="1250.875" y="261.875"/>
+    <Object index="19" type="panda::GeneratorUser&lt;integer>" x="221.375" y="528.1236572265625">
         <Data int="5" name="input"/>
     </Object>
-    <Object dy="203.8881175467955" dx="522.9147562261298" x="215.4495883021364" type="panda::Annotation" y="453.2727437738702" index="20">
+    <Object index="20" dy="203.8881225585938" dx="522.9147338867188" type="panda::Annotation" x="215.4495849609375" y="453.2727355957031">
         <Data int="2" name="type"/>
         <Data name="text">Random velocity for the new particles</Data>
         <Data name="font">MS Shell Dlg 2,8,-1,5,50,0,0,0,0,0</Data>
     </Object>
-    <Object dy="147.3404235839844" dx="626.9149169921875" x="908.0133056640625" type="panda::Annotation" y="173.1449432373047" index="21">
+    <Object index="21" dy="147.3404235839844" dx="626.9149169921875" type="panda::Annotation" x="908.0133056640625" y="173.1449432373047">
         <Data int="2" name="type"/>
         <Data name="text">Color of the sprite based on the position on the screen</Data>
         <Data name="font">MS Shell Dlg 2,8,-1,5,50,0,0,0,0,0</Data>
     </Object>
-    <Object x="221.375" type="panda::GeneratorInteger_RandomSeed" y="601.5" index="22">
+    <Object index="22" type="panda::GeneratorInteger_RandomSeed" x="221.375" y="601.5">
         <Data int="8660" name="seed"/>
     </Object>
-    <Object x="1595.744873046875" type="panda::RenderSprite" y="324.6875" index="23">
+    <Object index="23" type="panda::RenderSprite" x="1595.744873046875" y="324.6875">
         <Data name="size">
             <Value real="10"/>
         </Data>
     </Object>
-    <Object x="1386.008666992188" type="panda::GeneratorImage_CreateTexture" y="401.6536560058594" index="24">
-        <Data name="size" x="32" y="32"/>
+    <Object index="24" type="panda::GeneratorImage_CreateTexture" x="1386.008666992188" y="401.6536560058594">
+        <Data x="32" y="32" name="size"/>
     </Object>
-    <Object x="1366.008666992188" type="panda::RenderDisk_Gradient" y="461.6272888183594" index="25">
+    <Object index="25" type="panda::RenderDisk_Gradient" x="1366.008666992188" y="461.6272888183594">
         <Data name="center">
             <Value x="16" y="16"/>
         </Data>
@@ -79,64 +79,64 @@
         </Data>
         <Data name="gradient">
             <Value extend="0">
-                <Stop pos="0.5625" r="1" b="1" g="1" a="1"/>
-                <Stop pos="1" r="1" b="1" g="1" a="0"/>
+                <Stop g="1" a="1" pos="0.5625" r="1" b="1"/>
+                <Stop g="1" a="0" pos="1" r="1" b="1"/>
             </Value>
         </Data>
     </Object>
-    <Object dy="195.4545440673828" dx="180.6818237304688" x="1354.917724609375" type="panda::Annotation" y="394.3354797363281" index="26">
+    <Object index="26" dy="195.4545440673828" dx="180.6818237304688" type="panda::Annotation" x="1354.917724609375" y="394.3354797363281">
         <Data int="2" name="type"/>
         <Data name="text">Creation of the sprite</Data>
     </Object>
-    <Object dy="195.4545440673828" dx="180.6818237304688" x="780.6070789747523" type="panda::Annotation" y="364.730154449055" index="27">
+    <Object index="27" dy="195.4545440673828" dx="180.6818237304688" type="panda::Annotation" x="780.6070556640625" y="364.7301635742188">
         <Data int="0" name="type"/>
         <Data name="text">Particles simulation, with modifiers.</Data>
     </Object>
-    <Object dy="-3.600347634260231" dx="-43.50626136784649" x="991.7357518070442" type="panda::Annotation" y="455.4379361478634" index="28">
+    <Object index="28" dy="-3.600347518920898" dx="-43.50625991821289" type="panda::Annotation" x="991.7357788085938" y="455.4379272460938">
         <Data int="1" name="type"/>
         <Data name="text">Creation</Data>
     </Object>
-    <Object dy="-3.600347518920898" dx="-43.50625991821289" x="991.7357518070442" type="panda::Annotation" y="515.6434575644821" index="29">
+    <Object index="29" dy="-3.600347518920898" dx="-43.50625991821289" type="panda::Annotation" x="991.7357788085938" y="515.6434326171875">
         <Data int="1" name="type"/>
         <Data name="text">Suppression</Data>
     </Object>
-    <Object dy="-3.600347518920898" dx="-43.50625991821289" x="991.7357518070442" type="panda::Annotation" y="575.8489789811008" index="30">
+    <Object index="30" dy="-3.600347518920898" dx="-43.50625991821289" type="panda::Annotation" x="991.7357788085938" y="575.8489990234375">
         <Data int="1" name="type"/>
         <Data name="text">Gravity</Data>
     </Object>
-    <Object dy="195.4545440673828" dx="180.6818237304688" x="1605.128383666347" type="panda::Annotation" y="261.0567340712306" index="31">
+    <Object index="31" dy="195.4545440673828" dx="180.6818237304688" type="panda::Annotation" x="1605.12841796875" y="261.0567321777344">
         <Data int="0" name="type"/>
         <Data name="text">Additive particles rendering</Data>
     </Object>
-    <Object dy="63.88812255859375" dx="124.9147338867188" x="482.0889334135896" type="panda::Annotation" y="387.2626164241717" index="32">
+    <Object index="32" dy="63.88812255859375" dx="124.9147338867188" type="panda::Annotation" x="482.0889282226563" y="387.2626037597656">
         <Data int="0" name="type"/>
         <Data name="text">Create particles on the mouse</Data>
         <Data name="font">MS Shell Dlg 2,8,-1,5,50,0,0,0,0,0</Data>
     </Object>
-    <Link object2="4" data2="position" data1="position" object1="2"/>
-    <Link object2="10" data2="result" data1="velocity" object1="2"/>
-    <Link object2="8" data2="numbers" data1="angle" object1="7"/>
-    <Link object2="19" data2="value" data1="# numbers" object1="8"/>
-    <Link object2="6" data2="value" data1="seed" object1="8"/>
-    <Link object2="19" data2="value" data1="# numbers" object1="9"/>
-    <Link object2="22" data2="value" data1="seed" object1="9"/>
-    <Link object2="7" data2="vector" data1="point" object1="10"/>
-    <Link object2="9" data2="numbers" data1="factor" object1="10"/>
-    <Link object2="16" data2="result" data1="r" object1="13"/>
-    <Link object2="18" data2="result" data1="g" object1="13"/>
-    <Link object2="1" data2="positions" data1="point" object1="14"/>
-    <Link object2="14" data2="x" data1="input 1" object1="16"/>
-    <Link object2="17" data2="x" data1="input 2" object1="16"/>
-    <Link object2="15" data2="size" data1="point" object1="17"/>
-    <Link object2="14" data2="y" data1="input 1" object1="18"/>
-    <Link object2="17" data2="y" data1="input 2" object1="18"/>
-    <Link object2="1" data2="positions" data1="position" object1="23"/>
-    <Link object2="13" data2="color" data1="color" object1="23"/>
-    <Link object2="24" data2="texture" data1="texture" object1="23"/>
-    <Dock docked="2" dock="1"/>
-    <Dock docked="3" dock="1"/>
-    <Dock docked="5" dock="1"/>
-    <Dock docked="23" dock="11"/>
-    <Dock docked="12" dock="11"/>
-    <Dock docked="25" dock="24"/>
+    <Link object1="2" data2="position" data1="position" object2="4"/>
+    <Link object1="2" data2="result" data1="velocity" object2="10"/>
+    <Link object1="7" data2="numbers" data1="angle" object2="8"/>
+    <Link object1="8" data2="value" data1="# numbers" object2="19"/>
+    <Link object1="8" data2="value" data1="seed" object2="6"/>
+    <Link object1="9" data2="value" data1="# numbers" object2="19"/>
+    <Link object1="9" data2="value" data1="seed" object2="22"/>
+    <Link object1="10" data2="vector" data1="point" object2="7"/>
+    <Link object1="10" data2="numbers" data1="factor" object2="9"/>
+    <Link object1="13" data2="result" data1="r" object2="16"/>
+    <Link object1="13" data2="result" data1="g" object2="18"/>
+    <Link object1="14" data2="positions" data1="point" object2="1"/>
+    <Link object1="16" data2="x" data1="input 1" object2="14"/>
+    <Link object1="16" data2="x" data1="input 2" object2="17"/>
+    <Link object1="17" data2="size" data1="point" object2="15"/>
+    <Link object1="18" data2="y" data1="input 1" object2="14"/>
+    <Link object1="18" data2="y" data1="input 2" object2="17"/>
+    <Link object1="23" data2="positions" data1="position" object2="1"/>
+    <Link object1="23" data2="color" data1="color" object2="13"/>
+    <Link object1="23" data2="texture" data1="texture" object2="24"/>
+    <Dock dock="1" docked="2"/>
+    <Dock dock="1" docked="3"/>
+    <Dock dock="1" docked="5"/>
+    <Dock dock="11" docked="23"/>
+    <Dock dock="11" docked="12"/>
+    <Dock dock="24" docked="25"/>
 </Panda>
