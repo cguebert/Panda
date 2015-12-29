@@ -2,9 +2,7 @@
 #define BASEDATA_H
 
 #include <panda/DataNode.h>
-#include <typeinfo>
 
-#include <QString>
 #include <QDomDocument>
 
 namespace panda
@@ -39,10 +37,10 @@ public:
 	{
 	public:
 		BaseInitData() : owner(nullptr) {}
-		BaseInitData(const QString& name, const QString& help, PandaObject* owner)
+		BaseInitData(const std::string& name, const std::string& help, PandaObject* owner)
 			: name(name), help(help), owner(owner) {}
 		PandaObject* owner;
-		QString name, help;
+		std::string name, help;
 	};
 
 	template <class ValueType>
@@ -50,23 +48,23 @@ public:
 	{
 	public:
 		InitData() : value(ValueType()) {}
-		InitData(const ValueType& value, const QString& name, const QString& help, PandaObject* owner)
+		InitData(const ValueType& value, const std::string& name, const std::string& help, PandaObject* owner)
 			: BaseInitData(name, help, owner), value(value) {}
 		ValueType value;
 	};
 
 	explicit BaseData(const BaseInitData& init, const std::type_info& type);
-	BaseData(const QString& name, const QString& help, PandaObject* owner, const std::type_info& type);
+	BaseData(const std::string& name, const std::string& help, PandaObject* owner, const std::type_info& type);
 	virtual ~BaseData() {}
 
-	const QString getName() const;	/// Name used in the UI and for saving / loading
-	void setName(const QString& name);
-	const QString getHelp() const;	/// Message describing the Data
-	void setHelp(const QString& help);
-	const QString getWidget() const; /// Custom widget to use for this Data
-	void setWidget(const QString& widget);
-	const QString getWidgetData() const; /// Some custom widgets need parameters, they are saved in string format
-	void setWidgetData(const QString& widgetData);
+	const std::string& getName() const;	/// Name used in the UI and for saving / loading
+	void setName(const std::string& name);
+	const std::string& getHelp() const;	/// Message describing the Data
+	void setHelp(const std::string& help);
+	const std::string& getWidget() const; /// Custom widget to use for this Data
+	void setWidget(const std::string& widget);
+	const std::string& getWidgetData() const; /// Some custom widgets need parameters, they are saved in string format
+	void setWidgetData(const std::string& widgetData);
 
 	bool isSet() const; /// Has the value changed from the default
 	void unset();		/// As if the current value is the default
@@ -96,7 +94,7 @@ public:
 	virtual const void* getVoidValue() const = 0; /// Return a void* pointing to the value (use the DataTrait to exploit it)
 	VoidDataAccessor getVoidAccessor(); /// Return a wrapper around the void*, that will call endEdit when destroyed
 
-	virtual QString getDescription() const; /// Get a readable name of the type stored in this Data
+	virtual std::string getDescription() const; /// Get a readable name of the type stored in this Data
 
 	void copyValueFrom(const BaseData* parent); /// Copy the value from parent to this Data
 
@@ -140,7 +138,7 @@ protected:
 	BaseData* m_parentBaseData;
 	types::AbstractDataTrait* m_dataTrait;
 	AbstractDataCopier* m_dataCopier;
-	QString m_name, m_help, m_widget, m_widgetData;
+	std::string m_name, m_help, m_widget, m_widgetData;
 
 private:
 	BaseData() {}
@@ -160,28 +158,28 @@ inline void* VoidDataAccessor::get()
 inline VoidDataAccessor::operator void *()
 { return m_value; }
 
-inline const QString BaseData::getName() const
+inline const std::string& BaseData::getName() const
 { return m_name; }
 
-inline void BaseData::setName(const QString& name)
+inline void BaseData::setName(const std::string& name)
 { m_name = name; }
 
-inline const QString BaseData::getHelp() const
+inline const std::string& BaseData::getHelp() const
 { return m_help; }
 
-inline void BaseData::setHelp(const QString& help)
+inline void BaseData::setHelp(const std::string& help)
 { m_help = help; }
 
-inline const QString BaseData::getWidget() const
+inline const std::string& BaseData::getWidget() const
 { return m_widget; }
 
-inline void BaseData::setWidget(const QString& widget)
+inline void BaseData::setWidget(const std::string& widget)
 { m_widget = widget; }
 
-inline const QString BaseData::getWidgetData() const
+inline const std::string& BaseData::getWidgetData() const
 { return m_widgetData; }
 
-inline void BaseData::setWidgetData(const QString& widgetData)
+inline void BaseData::setWidgetData(const std::string& widgetData)
 { m_widgetData = widgetData; }
 
 inline bool BaseData::isSet() const

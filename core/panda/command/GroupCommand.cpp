@@ -122,7 +122,7 @@ void RemoveObjectFromGroupCommand::undo()
 //****************************************************************************//
 
 EditGroupCommand::EditGroupCommand(panda::Group* group,
-								   QString newName,
+								   std::string newName,
 								   std::vector<DataInfo> newDatas,
 								   QUndoCommand* parent)
 	: QUndoCommand(parent)

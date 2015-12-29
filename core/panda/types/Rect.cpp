@@ -54,7 +54,7 @@ bool Rect::contains(const Rect& r) const
 
 //****************************************************************************//
 
-template<> PANDA_CORE_API QString DataTrait<Rect>::valueTypeName() { return "rectangle"; }
+template<> PANDA_CORE_API std::string DataTrait<Rect>::valueTypeName() { return "rectangle"; }
 
 template<>
 PANDA_CORE_API void DataTrait<Rect>::writeValue(QDomDocument&, QDomElement& elem, const Rect& v)

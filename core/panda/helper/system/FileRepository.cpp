@@ -1,9 +1,24 @@
 #include <panda/helper/system/FileRepository.h>
 #include <panda/helper/algorithm.h>
 
+#include <fstream>
+
 #include <QStandardPaths>
 #include <QFile>
 #include <QDir>
+
+namespace
+{
+
+std::vector<std::string> convert(const QStringList& list)
+{
+	std::vector<std::string> result;
+	for (const auto& s : list)
+		result.push_back(s.toStdString());
+	return result;
+}
+
+}
 
 namespace panda
 {
@@ -14,70 +29,75 @@ namespace helper
 namespace system
 {
 
-void FileRepository::addPath(QString path)
+void FileRepository::addPath(const std::string& path)
 {
 	if(!helper::contains(m_paths, path))
 		m_paths.push_back(path);
 }
 
-QString FileRepository::findFile(const QString& fileName)
+std::string FileRepository::findFile(const std::string& fileName)
 {
-	if(QDir::isAbsolutePath(fileName))
+	auto qFileName = QString::fromStdString(fileName);
+	if(QDir::isAbsolutePath(qFileName))
 	{
-		if(QFile::exists(fileName))
+		if(QFile::exists(qFileName))
 			return fileName;
 		else
-			return QString();
+			return std::string();
 	}
 
-	for(const QString& path : m_paths)
+	for(const std::string& path : m_paths)
 	{
-		QDir dir(path);
-		if(dir.exists(dir.filePath(fileName)))
-			return QDir::cleanPath(dir.absoluteFilePath(fileName));
+		QDir dir(QString::fromStdString(path));
+		if(dir.exists(dir.filePath(qFileName)))
+			return QDir::cleanPath(dir.absoluteFilePath(qFileName)).toStdString();
 	}
 
-	return QString();
+	return std::string();
 }
 
-QByteArray FileRepository::loadFile(const QString& fileName)
+std::string FileRepository::loadFile(const std::string& fileName)
 {
-	QString path = findFile(fileName);
-	if(!path.isEmpty())
+	std::string contents;
+	std::ifstream in(fileName, std::ios_base::binary);
+	if (in)
 	{
-		QFile file(path);
-		if(file.open(QIODevice::ReadOnly))
-			return file.readAll();
+		in.seekg(0, std::ios::end);
+		contents.resize((size_t)in.tellg());
+		in.seekg(0, std::ios::beg);
+		in.read(&contents[0], contents.size());
+		in.close();
 	}
-
-	return QByteArray();
+	return contents;
 }
 
-QStringList FileRepository::enumerateFilesInDir(const QString& dirPath, const QString& nameFilter)
+std::vector<std::string> FileRepository::enumerateFilesInDir(const std::string& dirPath, const std::string& nameFilter)
 {
-	QStringList nameFilters(nameFilter);
-	if(QDir::isAbsolutePath(dirPath))
+	auto qNameFilter = QString::fromStdString(nameFilter);
+	auto qDirPath = QString::fromStdString(dirPath);
+	QStringList nameFilters(qNameFilter);
+	if(QDir::isAbsolutePath(qDirPath))
 	{
-		QDir dir(dirPath);
-		if(nameFilter.isEmpty())
-			return dir.entryList(QDir::Files, QDir::Name);
+		QDir dir(qDirPath);
+		if(qNameFilter.isEmpty())
+			return convert(dir.entryList(QDir::Files, QDir::Name));
 		else
-			return dir.entryList(nameFilters, QDir::Files, QDir::Name);
+			return convert(dir.entryList(nameFilters, QDir::Files, QDir::Name));
 	}
 
 	QStringList result;
-	for(const QString& path : m_paths)
+	for(const std::string& path : m_paths)
 	{
-		QDir dir(path);
-		dir.setPath(dirPath);
-		if(nameFilter.isEmpty())
+		QDir dir(QString::fromStdString(path));
+		dir.setPath(qDirPath);
+		if(qNameFilter.isEmpty())
 			result.append(dir.entryList(QDir::Files, QDir::Name));
 		else
 			result.append(dir.entryList(nameFilters, QDir::Files, QDir::Name));
 	}
 	result.sort(Qt::CaseInsensitive);
 	result.removeDuplicates();
-	return result;
+	return convert(result);
 }
 
 FileRepository DataRepository;

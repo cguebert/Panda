@@ -35,7 +35,6 @@ set(HEADER_FILES
 	panda/command/MoveLayerCommand.h
 	panda/command/RemoveGenericDataCommand.h
 	panda/helper/algorithm.h
-	panda/helper/Factory.h
 	panda/helper/gl.h
 	panda/helper/GradientCache.h
 	panda/helper/Perlin.h
@@ -86,7 +85,6 @@ set(SOURCE_FILES
 	panda/command/LinkDatasCommand.cpp
 	panda/command/MoveLayerCommand.cpp
 	panda/command/RemoveGenericDataCommand.cpp
-	panda/helper/Factory.cpp
 	panda/helper/GradientCache.cpp
 	panda/helper/Perlin.cpp
 	panda/helper/PointsGrid.cpp

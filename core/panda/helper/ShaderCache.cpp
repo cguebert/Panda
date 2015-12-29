@@ -2,6 +2,9 @@
 
 #include <QOpenGLShaderProgram>
 
+#include <functional>
+#include <string>
+
 namespace panda
 {
 
@@ -37,10 +40,10 @@ void ShaderCache::clearUnused()
 	}
 }
 
-QOpenGLShader* ShaderCache::getShader(QOpenGLShader::ShaderType type, QByteArray sourceCode, unsigned int hash)
+QOpenGLShader* ShaderCache::getShader(QOpenGLShader::ShaderType type, const std::string& sourceCode, std::size_t hash)
 {
 	if(!hash)
-		hash = qHash(sourceCode);
+		hash = std::hash<std::string>()(sourceCode);
 	ShaderTableHash::iterator it = m_cache.find(hash), itEnd = m_cache.end();
 
 	if(it == itEnd)
@@ -60,12 +63,12 @@ QOpenGLShader* ShaderCache::getShader(QOpenGLShader::ShaderType type, QByteArray
 	}
 }
 
-QOpenGLShader* ShaderCache::addShader(QOpenGLShader::ShaderType type, QByteArray sourceCode, unsigned int hash)
+QOpenGLShader* ShaderCache::addShader(QOpenGLShader::ShaderType type, const std::string& sourceCode, std::size_t hash)
 {
 	CacheItem item(type, hash);
 
 	item.m_shader = std::make_shared<QOpenGLShader>(type, this);
-	item.m_shader->compileSourceCode(sourceCode);
+	item.m_shader->compileSourceCode(QString::fromStdString(sourceCode));
 
 	m_cache.emplace(hash, item);
 

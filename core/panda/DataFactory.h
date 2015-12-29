@@ -8,7 +8,6 @@
 
 #include <map>
 #include <memory>
-#include <vector>
 
 namespace panda
 {
@@ -20,7 +19,7 @@ class PANDA_CORE_API BaseDataCreator
 {
 public:
 	virtual ~BaseDataCreator() {}
-	virtual std::shared_ptr<BaseData> create(const QString& name, const QString& help, PandaObject* owner) = 0;
+	virtual std::shared_ptr<BaseData> create(const std::string& name, const std::string& help, PandaObject* owner) = 0;
 };
 
 class PANDA_CORE_API DataFactory
@@ -31,30 +30,30 @@ public:
 	public:
 		DataEntry() {}
 
-		QString typeName;
-		QString className;
+		std::string typeName;
+		std::string className;
 		int fullType;
 		const BaseClass* theClass;
 		std::shared_ptr<BaseDataCreator> creator;
 	};
 
 	static DataFactory* getInstance();
-	const DataEntry* getEntry(QString className) const;
+	const DataEntry* getEntry(const std::string& className) const;
 	const DataEntry* getEntry(int type) const;
 
-	std::shared_ptr<BaseData> create(QString className, const QString& name, const QString& help, PandaObject* owner) const;
-	std::shared_ptr<BaseData> create(int type, const QString& name, const QString& help, PandaObject* owner) const;
+	std::shared_ptr<BaseData> create(const std::string& className, const std::string& name, const std::string& help, PandaObject* owner) const;
+	std::shared_ptr<BaseData> create(int type, const std::string& name, const std::string& help, PandaObject* owner) const;
 
-	static QString typeToName(int type);
-	static int nameToType(QString name);
+	static std::string typeToName(int type);
+	static int nameToType(const std::string& name);
 
 	typedef std::vector< std::shared_ptr<DataEntry> > EntriesList;
 	const EntriesList getEntries() const { return m_entries; }
 
 protected:
 	EntriesList m_entries;
-	std::map< QString, DataEntry* > m_registry;
-	std::map< QString, DataEntry* > m_nameRegistry;
+	std::map< std::string, DataEntry* > m_registry;
+	std::map< std::string, DataEntry* > m_nameRegistry;
 	std::map< int, DataEntry* > m_typeRegistry;
 	std::map< int, AbstractDataCopier* > m_copiersMap;
 
@@ -69,7 +68,7 @@ template<class T>
 class DataCreator : public BaseDataCreator
 {
 public:
-	virtual std::shared_ptr<BaseData> create(const QString& name, const QString& help, PandaObject* owner)
+	virtual std::shared_ptr<BaseData> create(const std::string& name, const std::string& help, PandaObject* owner)
 	{
 		return std::shared_ptr<BaseData>(new T(name, help, owner));
 	}

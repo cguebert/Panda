@@ -16,6 +16,24 @@
 
 #include <iostream>
 
+namespace
+{
+
+// For debug purposes
+std::string getName(panda::DataNode* node)
+{
+	auto data = dynamic_cast<panda::BaseData*>(node);
+	if(data)
+		return data->getOwner()->getName() + "/" + data->getName();
+	auto object = dynamic_cast<panda::PandaObject*>(node);
+	if(object)
+		return object->getName();
+
+	return "";
+}
+
+}
+
 namespace panda
 {
 
@@ -24,19 +42,6 @@ Scheduler::Scheduler(PandaDocument* document)
 	, m_readyTasks(256)
 	, m_readyMainTasks(128)
 {
-}
-
-// For debug purposes
-QString getName(DataNode* node)
-{
-	BaseData* data = dynamic_cast<BaseData*>(node);
-	if(data)
-		return data->getOwner()->getName() + "/" + data->getName();
-	PandaObject* object = dynamic_cast<PandaObject*>(node);
-	if(object)
-		return object->getName();
-
-	return "";
 }
 
 void Scheduler::init()

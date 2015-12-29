@@ -3,8 +3,6 @@
 
 #include <panda/BaseClass.h>
 
-#include <vector>
-
 namespace panda
 {
 
@@ -86,14 +84,8 @@ inline void DataNode::updateIfDirty() const
 inline void DataNode::doAddInput(DataNode& node)
 { m_inputs.push_back(&node); }
 
-inline void DataNode::doRemoveInput(DataNode& node)
-{ m_inputs.erase(std::remove(m_inputs.begin(), m_inputs.end(), &node), m_inputs.end()); }
-
 inline void DataNode::doAddOutput(DataNode& node)
 { m_outputs.push_back(&node); }
-
-inline void DataNode::doRemoveOutput(DataNode& node)
-{	m_outputs.erase(std::remove(m_outputs.begin(), m_outputs.end(), &node), m_outputs.end()); }
 
 } // namespace panda
 

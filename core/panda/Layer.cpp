@@ -2,9 +2,9 @@
 #include <panda/Renderer.h>
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
+#include <panda/helper/algorithm.h>
 
 #include <QOpenGLFramebufferObject>
-#include <QCoreApplication>
 
 #include <panda/command/MoveLayerCommand.h>
 
@@ -163,8 +163,7 @@ void Layer::postCreate()
 			++i;
 	}
 
-	QString text = QCoreApplication::translate("Layer", "Layer #%1");
-	m_layerName.setValue(text.arg(i));
+	m_layerName.setValue("Layer #" + std::to_string(i));
 }
 
 void Layer::removedFromDocument()

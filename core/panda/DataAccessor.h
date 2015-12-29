@@ -1,8 +1,6 @@
 #ifndef HELPER_ACCESSOR_H
 #define HELPER_ACCESSOR_H
 
-#include <vector>
-
 namespace panda
 {
 

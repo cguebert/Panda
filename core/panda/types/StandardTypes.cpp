@@ -4,7 +4,7 @@
 #include <panda/types/Animation.inl>
 #include <panda/types/AnimationTraits.h>
 
-#include <QString>
+#include <string>
 #include <vector>
 
 namespace panda
@@ -13,9 +13,9 @@ namespace panda
 namespace types
 {
 
-template<> PANDA_CORE_API QString DataTrait<int>::valueTypeName() { return "integer"; }
-template<> PANDA_CORE_API QString DataTrait<PReal>::valueTypeName() { return "real"; }
-template<> PANDA_CORE_API QString DataTrait<QString>::valueTypeName() { return "text"; }
+template<> PANDA_CORE_API std::string DataTrait<int>::valueTypeName() { return "integer"; }
+template<> PANDA_CORE_API std::string DataTrait<PReal>::valueTypeName() { return "real"; }
+template<> PANDA_CORE_API std::string DataTrait<std::string>::valueTypeName() { return "text"; }
 
 //****************************************************************************//
 // Overrides for writeValue xml
@@ -29,9 +29,9 @@ PANDA_CORE_API void DataTrait<PReal>::writeValue(QDomDocument&, QDomElement& ele
 { elem.setAttribute("real", v); }
 
 template<>
-PANDA_CORE_API void DataTrait<QString>::writeValue(QDomDocument& doc, QDomElement& elem, const QString& v)
+PANDA_CORE_API void DataTrait<std::string>::writeValue(QDomDocument& doc, QDomElement& elem, const std::string& v)
 {
-	QDomText node = doc.createTextNode(v);
+	QDomText node = doc.createTextNode(QString::fromStdString(v));
 	elem.appendChild(node);
 }
 
@@ -51,26 +51,26 @@ PANDA_CORE_API void DataTrait<PReal>::readValue(QDomElement& elem, PReal& v)
 #endif
 
 template<>
-PANDA_CORE_API void DataTrait<QString>::readValue(QDomElement& elem, QString& v)
-{ v = elem.text(); }
+PANDA_CORE_API void DataTrait<std::string>::readValue(QDomElement& elem, std::string& v)
+{ v = elem.text().toStdString(); }
 
 //****************************************************************************//
 
 template class Data<int>;
 template class Data<PReal>;
-template class Data<QString>;
+template class Data<std::string>;
 
 template class Data< std::vector<int> >;
 template class Data< std::vector<PReal> >;
-template class Data< std::vector<QString> >;
+template class Data< std::vector<std::string> >;
 
 int intDataClass = RegisterData< int >();
 int doubleDataClass = RegisterData< PReal >();
-int stringDataClass = RegisterData< QString >();
+int stringDataClass = RegisterData< std::string >();
 
 int intVectorDataClass = RegisterData< std::vector<int> >();
 int doubleVectorDataClass = RegisterData< std::vector<PReal> >();
-int stringVectorDataClass = RegisterData< std::vector<QString> >();
+int stringVectorDataClass = RegisterData< std::vector<std::string> >();
 
 template class Animation<PReal>;
 template class Data< Animation<PReal> >;

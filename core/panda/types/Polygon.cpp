@@ -67,7 +67,7 @@ Polygon rotated(const Polygon& poly, const Point& center, PReal angle)
 
 //****************************************************************************//
 
-template<> PANDA_CORE_API QString DataTrait<Polygon>::valueTypeName() { return "polygon"; }
+template<> PANDA_CORE_API std::string DataTrait<Polygon>::valueTypeName() { return "polygon"; }
 
 template<>
 PANDA_CORE_API void DataTrait<Polygon>::writeValue(QDomDocument& doc, QDomElement& elem, const Polygon& poly)

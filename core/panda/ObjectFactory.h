@@ -3,7 +3,6 @@
 
 #include <panda/BaseClass.h>
 
-#include <QStringList>
 #include <map>
 #include <memory>
 
@@ -27,11 +26,11 @@ public:
 	{
 		ClassEntry() : hidden(false), theClass(nullptr) {}
 
-		QString menuDisplay;
-		QString objectName;
-		QString description;
-		QString className;
-		QString moduleName;
+		std::string menuDisplay;
+		std::string objectName;
+		std::string description;
+		std::string className;
+		std::string moduleName;
 		const BaseClass* theClass;
 		std::shared_ptr<BaseObjectCreator> creator;
 		bool hidden;
@@ -39,12 +38,12 @@ public:
 
 	struct ModuleEntry
 	{
-		QString name;
-		QString description;
-		QString license;
-		QString version;
+		std::string name;
+		std::string description;
+		std::string license;
+		std::string version;
 
-		bool operator==(const QString& n) const { return name == n; }
+		bool operator==(const std::string& n) const { return name == n; }
 		bool operator<(const ModuleEntry& e) const { return name < e.name; }
 	};
 
@@ -52,13 +51,13 @@ public:
 	static ObjectFactory* getInstance();
 
 	template <class T>
-	static QString getRegistryName()
+	static std::string getRegistryName()
 	{ return T::GetClass()->getTypeName(); }
-	static QString getRegistryName(PandaObject* object);
+	static std::string getRegistryName(PandaObject* object);
 
-	std::shared_ptr<PandaObject> create(QString className, PandaDocument* parent) const;
+	std::shared_ptr<PandaObject> create(const std::string& className, PandaDocument* parent) const;
 
-	typedef std::map< QString, ClassEntry > RegistryMap;
+	typedef std::map< std::string, ClassEntry > RegistryMap;
 	const RegistryMap& getRegistryMap() const
 	{ return m_registry; }
 
@@ -68,11 +67,11 @@ public:
 
 protected:
 	template<class T> friend class RegisterObject;
-	void registerObject(QString className, ClassEntry entry);
+	void registerObject(const std::string& className, ClassEntry entry);
 
 	friend class ModuleHandle;
 	void registerModule(ModuleEntry entry);
-	void unregisterModule(QString moduleName);
+	void unregisterModule(const std::string& moduleName);
 
 	friend class PluginsManager;
 	void moduleLoaded(); /// Copy the temporary list into the main one, and modify their module
@@ -101,19 +100,23 @@ template <class T>
 class RegisterObject
 {
 public:
-	explicit RegisterObject(QString menuDisplay)
+	explicit RegisterObject(std::string menuDisplay)
 	{
 		entry.creator = std::make_shared<ObjectCreator<T>>();
 		entry.theClass = T::GetClass();
 		entry.menuDisplay = menuDisplay;
-		if(!menuDisplay.isEmpty())
-			entry.objectName = menuDisplay.split("/").last();
+		if (!menuDisplay.empty())
+		{
+			auto it = menuDisplay.rfind('/');
+			if (it != std::string::npos)
+				entry.objectName = menuDisplay.substr(it + 1);
+		}
 	}
 
-	RegisterObject& setDescription(QString description)
+	RegisterObject& setDescription(std::string description)
 	{ entry.description = description; return *this; }
 
-	RegisterObject& setName(QString name)
+	RegisterObject& setName(std::string name)
 	{ entry.objectName = name; return *this; }
 
 	RegisterObject& setHidden(bool hid)
@@ -121,7 +124,7 @@ public:
 
 	operator int()
 	{
-		QString typeName = entry.theClass->getTypeName();
+		std::string typeName = entry.theClass->getTypeName();
 		ObjectFactory::getInstance()->registerObject(typeName, entry);
 
 		return 1;
@@ -141,10 +144,10 @@ private:
 class PANDA_CORE_API RegisterModule
 {
 public:
-	explicit RegisterModule(QString moduleName);
-	RegisterModule& setDescription(QString description);
-	RegisterModule& setLicense(QString license);
-	RegisterModule& setVersion(QString version);
+	explicit RegisterModule(std::string moduleName);
+	RegisterModule& setDescription(std::string description);
+	RegisterModule& setLicense(std::string license);
+	RegisterModule& setVersion(std::string version);
 
 protected:
 	ObjectFactory::ModuleEntry m_entry;

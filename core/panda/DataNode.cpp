@@ -1,5 +1,7 @@
 #include <panda/DataNode.h>
 
+#include <algorithm>
+
 namespace panda
 {
 
@@ -40,6 +42,16 @@ void DataNode::removeOutput(DataNode& node)
 {
 	doRemoveOutput(node);
 	node.doRemoveInput(*this);
+}
+
+void DataNode::doRemoveInput(DataNode& node)
+{ 
+	m_inputs.erase(std::remove(m_inputs.begin(), m_inputs.end(), &node), m_inputs.end()); 
+}
+
+void DataNode::doRemoveOutput(DataNode& node)
+{	
+	m_outputs.erase(std::remove(m_outputs.begin(), m_outputs.end(), &node), m_outputs.end()); 
 }
 
 } // namespace panda

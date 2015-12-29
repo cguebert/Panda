@@ -3,9 +3,9 @@
 
 #include <panda/core.h>
 
-#include <QString>
-#include <vector>
+#include <string>
 #include <typeinfo>
+#include <vector>
 
 namespace panda
 {
@@ -19,10 +19,10 @@ protected:
 	virtual ~BaseClass();
 
 public:
-	QString getTypeName() const;
-	QString getNamespaceName() const;
-	QString getClassName() const;
-	QString getTemplateName() const;
+	const std::string& getTypeName() const;
+	const std::string& getNamespaceName() const;
+	const std::string& getClassName() const;
+	const std::string& getTemplateName() const;
 
 	bool hasParent(const BaseClass* c) const;
 	bool operator==(const BaseClass& c) const;
@@ -31,14 +31,14 @@ public:
 	virtual void* dynamicCast(DataNode* obj) const = 0;
 	virtual bool isInstance(DataNode* obj) const = 0;
 
-	static QString decodeTypeName(const std::type_info& type);
-	static QString decodeClassName(const std::type_info& type);
-	static QString decodeNamespaceName(const std::type_info& type);
-	static QString decodeTemplateName(const std::type_info& type);
+	static std::string decodeTypeName(const std::type_info& type);
+	static std::string decodeClassName(const std::type_info& type);
+	static std::string decodeNamespaceName(const std::type_info& type);
+	static std::string decodeTemplateName(const std::type_info& type);
 
 protected:
 	std::vector<const BaseClass*> m_parents;
-	QString m_typeName, m_namespaceName, m_className, m_templateName;
+	std::string m_typeName, m_namespaceName, m_className, m_templateName;
 };
 
 #define PANDA_TEMPLATE(Class,P1) Class<P1>

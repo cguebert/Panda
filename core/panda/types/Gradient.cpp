@@ -179,7 +179,7 @@ Gradient Gradient::defaultGradient()
 
 //****************************************************************************//
 
-template<> PANDA_CORE_API QString DataTrait<Gradient>::valueTypeName() { return "gradient"; }
+template<> PANDA_CORE_API std::string DataTrait<Gradient>::valueTypeName() { return "gradient"; }
 
 template<>
 PANDA_CORE_API void DataTrait<Gradient>::writeValue(QDomDocument& doc, QDomElement& elem, const Gradient& grad)

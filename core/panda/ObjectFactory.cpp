@@ -1,6 +1,7 @@
 #include <panda/ObjectFactory.h>
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
+#include <panda/helper/algorithm.h>
 
 #include <panda/types/DataTypeId.h>
 #include <panda/types/DataTraits.h>
@@ -10,7 +11,7 @@
 namespace
 {
 
-using NamesReplacementList = std::vector<std::pair<QString, QString>>;
+using NamesReplacementList = std::vector<std::pair<std::string, std::string>>;
 
 static NamesReplacementList& getNamesReplacementList()
 {
@@ -30,11 +31,11 @@ static NamesReplacementList& getNamesReplacementList()
 	return list;
 }
 
-QString replaceTypeNames(const QString& input)
+std::string replaceTypeNames(const std::string& input)
 {
-	QString output = input;
+	std::string output = input;
 	for (const auto& p : getNamesReplacementList())
-		output.replace(p.first, p.second);
+		panda::helper::replaceAll(output, p.first, p.second);
 	return output;
 }
 
@@ -56,7 +57,7 @@ ObjectFactory* ObjectFactory::getInstance()
 	return &instance;
 }
 
-std::shared_ptr<PandaObject> ObjectFactory::create(QString className, PandaDocument* parent) const
+std::shared_ptr<PandaObject> ObjectFactory::create(const std::string& className, PandaDocument* parent) const
 {
 	auto iter = m_registry.find(className);
 	if(iter != m_registry.end())
@@ -74,35 +75,35 @@ std::shared_ptr<PandaObject> ObjectFactory::create(QString className, PandaDocum
 		}
 	}
 
-	std::cerr << "Factory has no entry for " << className.toStdString() << std::endl;
+	std::cerr << "Factory has no entry for " << className << std::endl;
 	return std::shared_ptr<PandaObject>();
 }
 
-QString ObjectFactory::getRegistryName(PandaObject* object)
+std::string ObjectFactory::getRegistryName(PandaObject* object)
 {
 	return replaceTypeNames(object->getClass()->getTypeName());
 }
 
-void ObjectFactory::registerObject(QString className, ClassEntry entry)
+void ObjectFactory::registerObject(const std::string& className, ClassEntry entry)
 {
 	entry.className = className;
 	if(m_registry.find(className) != m_registry.end() || m_tempRegistry.find(className) != m_tempRegistry.end())
-		std::cerr << "Factory already has an entry for " << className.toStdString() << std::endl;
+		std::cerr << "Factory already has an entry for " << className << std::endl;
 	m_tempRegistry.emplace(className, entry);
 }
 
 void ObjectFactory::registerModule(ModuleEntry entry)
 {
 	if(std::find(m_modules.begin(), m_modules.end(), entry.name) != m_modules.end())
-		std::cerr << "Factory already has the module " << entry.name.toStdString() << std::endl;
+		std::cerr << "Factory already has the module " << entry.name << std::endl;
 	m_tempModules.push_back(entry);
 }
 
-void ObjectFactory::unregisterModule(QString moduleName)
+void ObjectFactory::unregisterModule(const std::string& moduleName)
 {
 	if(std::find(m_modules.begin(), m_modules.end(), moduleName) == m_modules.end())
 	{
-		std::cerr << "Factory has no module " << moduleName.toStdString() << std::endl;
+		std::cerr << "Factory has no module " << moduleName << std::endl;
 		return;
 	}
 
@@ -123,14 +124,14 @@ void ObjectFactory::moduleLoaded()
 		std::cerr << "More than one module registered" << std::endl;
 	else
 	{
-		QString moduleName = m_tempModules.front().name;
+		std::string moduleName = m_tempModules.front().name;
 		for(auto& it : m_tempRegistry)
 			it.second.moduleName = moduleName;
 		m_registry.insert(m_tempRegistry.begin(), m_tempRegistry.end());
 		m_modules.push_back(m_tempModules.front());
 		std::sort(m_modules.begin(), m_modules.end());
 
-		std::cout << "Module " << m_tempModules.front().name.toStdString() << " registered "
+		std::cout << "Module " << m_tempModules.front().name << " registered "
 				  << m_tempRegistry.size() << " components" << std::endl;
 	}
 	m_tempRegistry.clear();
@@ -158,24 +159,24 @@ void objectDeletor(PandaObject* object)
 
 //****************************************************************************//
 
-RegisterModule::RegisterModule(QString moduleName)
+RegisterModule::RegisterModule(std::string moduleName)
 {
 	m_entry.name = moduleName;
 }
 
-RegisterModule& RegisterModule::setDescription(QString description)
+RegisterModule& RegisterModule::setDescription(std::string description)
 {
 	m_entry.description = description;
 	return *this;
 }
 
-RegisterModule& RegisterModule::setLicense(QString license)
+RegisterModule& RegisterModule::setLicense(std::string license)
 {
 	m_entry.license = license;
 	return *this;
 }
 
-RegisterModule& RegisterModule::setVersion(QString version)
+RegisterModule& RegisterModule::setVersion(std::string version)
 {
 	m_entry.version = version;
 	return *this;

@@ -27,7 +27,7 @@ public:
 		: Data<int>(init) {}
 
 	virtual bool validParent(const BaseData* parent) const override;
-	virtual QString getTypesName(bool useFullDescription = false) const;
+	virtual std::string getTypesName(bool useFullDescription = false) const;
 	virtual int getCompatibleType(const BaseData* parent) const;
 
 	std::vector<int> m_allowedTypes;
@@ -39,7 +39,7 @@ public:
 	explicit GenericData(const BaseData::BaseInitData& init)
 		: BaseGenericData(init) {}
 
-	virtual QString getDescription() const override;
+	virtual std::string getDescription() const override;
 };
 
 class PANDA_CORE_API GenericSingleValueData : public BaseGenericData
@@ -49,7 +49,7 @@ public:
 		: BaseGenericData(init) {}
 
 	virtual bool validParent(const BaseData* parent) const override;
-	virtual QString getDescription() const override;
+	virtual std::string getDescription() const override;
 };
 
 class PANDA_CORE_API GenericVectorData : public BaseGenericData
@@ -59,7 +59,7 @@ public:
 		: BaseGenericData(init) {}
 
 	virtual bool validParent(const BaseData* parent) const override;
-	virtual QString getDescription() const override;
+	virtual std::string getDescription() const override;
 };
 
 class PANDA_CORE_API GenericAnimationData : public BaseGenericData
@@ -69,7 +69,7 @@ public:
 		: BaseGenericData(init) {}
 
 	virtual bool validParent(const BaseData* parent) const override;
-	virtual QString getDescription() const override;
+	virtual std::string getDescription() const override;
 };
 
 class PANDA_CORE_API GenericSpecificData : public BaseGenericData	// Accepts only the specific types given allowedTypes
@@ -79,7 +79,7 @@ public:
 		: BaseGenericData(init) {}
 
 	virtual bool validParent(const BaseData* parent) const override;
-	virtual QString getDescription() const override;
+	virtual std::string getDescription() const override;
 	virtual int getCompatibleType(const BaseData* parent) const;
 };
 
@@ -94,12 +94,12 @@ public:
 	{
 		GenericDataDefinition()
 			: type(0), input(false), output(false) {}
-		GenericDataDefinition(int type, bool input, bool output, QString name, QString help)
+		GenericDataDefinition(int type, bool input, bool output, std::string name, std::string help)
 			: type(type), input(input), output(output), name(name), help(help) {}
 
 		int type;	// Leave the value type part at 0 to use the value type of the connected Data
 		bool input, output;
-		QString name, help;
+		std::string name, help;
 	};
 	typedef std::vector<GenericDataDefinition> GenericDataDefinitionList;
 	typedef std::vector<BaseData*> DataList;
@@ -179,9 +179,9 @@ private:
 
 //****************************************************************************//
 
-typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, QString, types::ImageWrapper,
+typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, std::string, types::ImageWrapper,
 	types::Gradient, types::Shader, types::Mesh, types::Path, types::Polygon> allDataTypes;
-typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, QString> allSearchableTypes;
+typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, std::string> allSearchableTypes;
 typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect> allNumericalTypes;
 typedef std::tuple<PReal, types::Color, types::Point, types::Gradient> allAnimationTypes;
 

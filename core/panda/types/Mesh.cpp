@@ -600,8 +600,8 @@ Mesh rotated(const Mesh& mesh, const Point& center, PReal angle)
 
 //****************************************************************************//
 
-template<> PANDA_CORE_API QString DataTrait<Mesh>::valueTypeName() { return "mesh"; }
-template<> PANDA_CORE_API QString DataTrait<Mesh>::valueTypeNamePlural() { return "meshes"; }
+template<> PANDA_CORE_API std::string DataTrait<Mesh>::valueTypeName() { return "mesh"; }
+template<> PANDA_CORE_API std::string DataTrait<Mesh>::valueTypeNamePlural() { return "meshes"; }
 
 template<>
 PANDA_CORE_API void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& elem, const Mesh& v)

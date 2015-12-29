@@ -28,8 +28,8 @@ public:
 	typedef std::vector<Renderer*> RenderersList;
 	virtual RenderersList getRenderers() = 0;
 
-	virtual QString getLayerName() const = 0;
-	virtual Data<QString>& getLayerNameData() = 0;
+	virtual const std::string& getLayerName() const = 0;
+	virtual Data<std::string>& getLayerNameData() = 0;
 
 	virtual int getCompositionMode() const = 0;
 	virtual Data<int>& getCompositionModeData() = 0;
@@ -60,8 +60,8 @@ public:
 
 	virtual RenderersList getRenderers();
 
-	virtual QString getLayerName() const;
-	virtual Data<QString>& getLayerNameData();
+	virtual const std::string& getLayerName() const;
+	virtual Data<std::string>& getLayerNameData();
 
 	virtual int getCompositionMode() const;
 	virtual Data<int>& getCompositionModeData();
@@ -77,7 +77,7 @@ public:
 	virtual void removedFromDocument();
 
 protected:
-	Data<QString> m_layerName;
+	Data<std::string> m_layerName;
 	Data<types::ImageWrapper> m_image;
 	Data<int> m_compositionMode;
 	Data<PReal> m_opacity;
@@ -86,10 +86,10 @@ protected:
 
 //****************************************************************************//
 
-inline QString Layer::getLayerName() const
+inline const std::string& Layer::getLayerName() const
 { return m_layerName.getValue(); }
 
-inline Data<QString>& Layer::getLayerNameData()
+inline Data<std::string>& Layer::getLayerNameData()
 { return m_layerName; }
 
 inline int Layer::getCompositionMode() const

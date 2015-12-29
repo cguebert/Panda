@@ -29,7 +29,7 @@ void PandaObject::addData(BaseData* data)
 {
 	if(getData(data->getName()))
 	{
-		std::cerr << "Fatal error : another data already have the name " << data->getName().toStdString() << std::endl;
+		std::cerr << "Fatal error : another data already have the name " << data->getName() << std::endl;
 		return;
 	}
 	if(!helper::contains(m_datas, data))
@@ -95,7 +95,7 @@ void PandaObject::setDirtyValue(const DataNode* caller)
 	emitDirty();
 }
 
-BaseData* PandaObject::getData(const QString& name) const
+BaseData* PandaObject::getData(const std::string& name) const
 {
 	auto iter = std::find_if(m_datas.begin(), m_datas.end(), [name](BaseData* d){
 		return d->getName() == name;
@@ -138,7 +138,7 @@ void PandaObject::save(QDomDocument& doc, QDomElement& elem, const std::vector<P
 				&& !(selected && data->getParent() && helper::contains(*selected, data->getParent()->getOwner())))
 		{
 			QDomElement xmlData = doc.createElement("Data");
-			xmlData.setAttribute("name", data->getName());
+			xmlData.setAttribute("name", QString::fromStdString(data->getName()));
 			data->save(doc, xmlData);
 			elem.appendChild(xmlData);
 		}
@@ -150,7 +150,7 @@ void PandaObject::load(QDomElement& elem)
 	QDomElement e = elem.firstChildElement("Data");
 	while(!e.isNull())
 	{
-		BaseData* data = getData(e.attribute("name"));
+		BaseData* data = getData(e.attribute("name").toStdString());
 		if(data)
 			data->load(e);
 		e = e.nextSiblingElement("Data");

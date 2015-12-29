@@ -3,8 +3,8 @@
 
 #include <panda/core.h>
 
-#include <QString>
 #include <map>
+#include <string>
 #include <vector>
 
 namespace panda
@@ -35,7 +35,7 @@ struct EventData
 public:
 	EventType m_type;
 	unsigned long long m_startTime, m_endTime;
-	QString m_text;
+	std::string m_text;
 	int m_objectIndex, m_level, m_threadId;
 	bool m_dirtyStart, m_dirtyEnd;
 	const DataNode* m_node;
@@ -47,7 +47,7 @@ class PANDA_CORE_API ScopedEvent
 public:
 	ScopedEvent(EventType type, const PandaObject* object);
 	ScopedEvent(EventType type, const BaseData* data);
-	ScopedEvent(QString text, DataNode* node = nullptr);
+	ScopedEvent(const std::string& text, DataNode* node = nullptr);
 	~ScopedEvent();
 
 private:

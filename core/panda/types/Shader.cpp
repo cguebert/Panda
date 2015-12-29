@@ -7,10 +7,12 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
 
+#include <QDomElement>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 #include <QFile>
 
+#include <functional>
 #include <iostream>
 
 namespace panda
@@ -44,27 +46,27 @@ void Shader::clear()
 	m_customTextures.clear();
 }
 
-void Shader::setSource(QOpenGLShader::ShaderType type, const QString& sourceCode)
+void Shader::setSource(QOpenGLShader::ShaderType type, const std::string& sourceCode)
 {
 	ShaderSource shaderSource;
 	shaderSource.type = type;
-	shaderSource.sourceCode = sourceCode.toLatin1();
-	shaderSource.hash = qHash(shaderSource.sourceCode);
+	shaderSource.sourceCode = sourceCode;
+	shaderSource.hash = std::hash<std::string>()(sourceCode);
 	m_sourcesMap[type] = shaderSource;
 }
 
-void Shader::setSourceFromFile(QOpenGLShader::ShaderType type, const QString& fileName)
+void Shader::setSourceFromFile(QOpenGLShader::ShaderType type, const std::string& fileName)
 {
-	QByteArray contents = helper::system::DataRepository.loadFile(fileName);
-	if (contents.isEmpty()) {
-		qWarning() << "Shader: Unable to open file" << fileName;
+	auto contents = helper::system::DataRepository.loadFile(fileName);
+	if (contents.empty()) {
+		std::cerr << "Shader: Unable to open file" << fileName;
 		return;
 	}
 
 	ShaderSource shaderSource;
 	shaderSource.type = type;
 	shaderSource.sourceCode = contents;
-	shaderSource.hash = qHash(shaderSource.sourceCode);
+	shaderSource.hash = std::hash<std::string>()(contents);
 	m_sourcesMap[type] = shaderSource;
 }
 
@@ -121,7 +123,7 @@ bool Shader::apply(QOpenGLShaderProgram& program) const
 			if(!id)
 				continue;
 
-			int loc = program.uniformLocation(m_customTextures[i].first);
+			int loc = program.uniformLocation(QString::fromStdString(m_customTextures[i].first));
 			if(loc == -1)
 				continue;
 
@@ -150,13 +152,13 @@ const Shader::ValuesVector& Shader::getValues() const
 	return m_shaderValues;
 }
 
-void Shader::loadValue(QString type, QDomElement& elem)
+void Shader::loadValue(std::string type, QDomElement& elem)
 {
 	if (m_loadValueFunctions.count(type))
 		(this->*m_loadValueFunctions.at(type))(elem);
 }
 
-void Shader::copyValue(QString type, QString name, const void* value)
+void Shader::copyValue(std::string type, std::string name, const void* value)
 {
 	if (m_copyValueFunctions.count(type))
 		(this->*m_copyValueFunctions.at(type))(name, value);
@@ -177,19 +179,19 @@ bool Shader::operator!=(const Shader& shader) const
 //****************************************************************************//
 
 template<> void ShaderValue<int>::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValue(program.uniformLocation(m_name), m_value); }
+{ program.setUniformValue(program.uniformLocation(QString::fromStdString(m_name)), m_value); }
 
 template<> void ShaderValue<PReal>::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValue(program.uniformLocation(m_name), (float)m_value); }
+{ program.setUniformValue(program.uniformLocation(QString::fromStdString(m_name)), (float)m_value); }
 
 template<> void ShaderValue<Color>::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), 1, 4); }
+{ program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value.data(), 1, 4); }
 
 template<> void ShaderValue<Point>::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), 1, 2); }
+{ program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value.data(), 1, 2); }
 
 template<> void ShaderValue< std::vector<int> >::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), m_value.size()); }
+{ program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value.data(), m_value.size()); }
 
 template<> void ShaderValue< std::vector<PReal> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 {
@@ -198,22 +200,22 @@ template<> void ShaderValue< std::vector<PReal> >::apply(QOpenGLShaderProgram& p
 	std::vector<float> copy(nb);
 	for(int i++; i<nb; ++i)
 		copy[i] = m_value[i]:
-	program.setUniformValueArray(program.uniformLocation(m_name), copy.data(), nb, 1);
+	program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), copy.data(), nb, 1);
 #else
-	program.setUniformValueArray(program.uniformLocation(m_name), m_value.data(), nb, 1);
+	program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value.data(), nb, 1);
 #endif
 }
 
 template<> void ShaderValue< std::vector<Color> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 {
 	if(!m_value.empty())
-		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 4);
+		program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value[0].data(), m_value.size(), 4);
 }
 
 template<> void ShaderValue< std::vector<Point> >::apply(QOpenGLShaderProgram& program, const Shader&) const
 {
 	if(!m_value.empty())
-		program.setUniformValueArray(program.uniformLocation(m_name), m_value[0].data(), m_value.size(), 2);
+		program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value[0].data(), m_value.size(), 2);
 }
 
 template class PANDA_CORE_API ShaderValue<int>;
@@ -227,7 +229,7 @@ template class PANDA_CORE_API ShaderValue<std::vector<Point>>;
 
 //****************************************************************************//
 
-template<> PANDA_CORE_API QString DataTrait<Shader>::valueTypeName() { return "shader"; }
+template<> PANDA_CORE_API std::string DataTrait<Shader>::valueTypeName() { return "shader"; }
 
 template<>
 PANDA_CORE_API void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement& elem, const Shader& v)
@@ -240,7 +242,7 @@ PANDA_CORE_API void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement
 		elem.appendChild(sourceNode);
 		sourceNode.setAttribute("type", (int)source.type);
 
-		QDomText node = doc.createTextNode(source.sourceCode);
+		QDomText node = doc.createTextNode(QString::fromStdString(source.sourceCode));
 		sourceNode.appendChild(node);
 	}
 
@@ -248,8 +250,8 @@ PANDA_CORE_API void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement
 	for(const auto& value : values)
 	{
 		QDomElement valueNode = doc.createElement("Uniform");
-		valueNode.setAttribute("name", value->getName());
-		valueNode.setAttribute("type", value->dataTrait()->typeName());
+		valueNode.setAttribute("name", QString::fromStdString(value->getName()));
+		valueNode.setAttribute("type", QString::fromStdString(value->dataTrait()->typeName()));
 		elem.appendChild(valueNode);
 
 		value->dataTrait()->writeValue(doc, valueNode, value->getValue());
@@ -265,14 +267,14 @@ PANDA_CORE_API void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
 	while(!sourceNode.isNull())
 	{
 		int type = sourceNode.attribute("type").toInt();
-		v.setSource(QOpenGLShader::ShaderType(type), sourceNode.text());
+		v.setSource(QOpenGLShader::ShaderType(type), sourceNode.text().toStdString());
 		sourceNode = sourceNode.nextSiblingElement("Source");
 	}
 
 	QDomElement valueNode = elem.firstChildElement("Uniform");
 	while(!valueNode.isNull())
 	{
-		QString type = valueNode.attribute("type");
+		std::string type = valueNode.attribute("type").toStdString();
 		v.loadValue(type, valueNode);
 		valueNode = valueNode.nextSiblingElement("Uniform");
 	}

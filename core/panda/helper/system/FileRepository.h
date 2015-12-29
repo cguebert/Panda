@@ -3,10 +3,7 @@
 
 #include <panda/core.h>
 
-#include <QByteArray>
-#include <QString>
-#include <QStringList>
-
+#include <string>
 #include <vector>
 
 namespace panda
@@ -23,16 +20,16 @@ namespace system
 class PANDA_CORE_API FileRepository
 {
 public:
-	void addPath(QString path);
+	void addPath(const std::string& path);
 
-	QString findFile(const QString& fileName);
-	QByteArray loadFile(const QString& fileName);
+	std::string findFile(const std::string& fileName);
+	std::string loadFile(const std::string& fileName);
 
 	/// List the relative paths of files in all the listed directories
-	QStringList enumerateFilesInDir(const QString& dir, const QString& nameFilter = QString());
+	std::vector<std::string> enumerateFilesInDir(const std::string& dir, const std::string& nameFilter = std::string());
 
 protected:
-	std::vector<QString> m_paths;
+	std::vector<std::string> m_paths;
 };
 
 extern PANDA_CORE_API FileRepository DataRepository; /// Default repository

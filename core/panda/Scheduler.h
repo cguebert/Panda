@@ -5,13 +5,13 @@
 
 #include <atomic>
 #include <functional>
+#include <string>
+#include <vector>
 
 #include <QThread>
 #include <QRunnable>
 #include <QMutex>
 #include <QWaitCondition>
-
-#include <vector>
 
 #include <boost/lockfree/queue.hpp>
 

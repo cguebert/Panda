@@ -29,7 +29,7 @@ BaseData::BaseData(const BaseInitData& init, const std::type_info& type)
 		m_owner->addData(this);
 }
 
-BaseData::BaseData(const QString& name, const QString& help, PandaObject* owner, const std::type_info& type)
+BaseData::BaseData(const std::string& name, const std::string& help, PandaObject* owner, const std::type_info& type)
 	: m_dataFlags(FLAG_DEFAULT)
 	, m_counter(0)
 	, m_name(name)
@@ -101,7 +101,7 @@ void BaseData::setParent(BaseData* parent)
 	setFlag(FLAG_SETPARENTPROTECTION, false);
 }
 
-QString BaseData::getDescription() const
+std::string BaseData::getDescription() const
 {
 	return getDataTrait()->typeDescription();
 }
@@ -124,12 +124,12 @@ void BaseData::load(QDomElement& elem)
 {
 	auto acc = getVoidAccessor();
 	getDataTrait()->readValue(elem, acc);
-	QString w = elem.attribute("widget");
-	if(!w.isEmpty())
+	std::string w = elem.attribute("widget").toStdString();
+	if(!w.empty())
 		setWidget(w);
 
-	QString d = elem.attribute("widgetData");
-	if(!d.isEmpty())
+	std::string d = elem.attribute("widgetData").toStdString();
+	if(!d.empty())
 		setWidgetData(d);
 }
 

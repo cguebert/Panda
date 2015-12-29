@@ -23,23 +23,23 @@ public:
 	void resetUsedFlag();	// Prepare the flags at the start of a render
 	void clearUnused();		// Remove shaders not used during the last render
 
-	QOpenGLShader* getShader(QOpenGLShader::ShaderType type, QByteArray sourceCode, unsigned int hash = 0);
+	QOpenGLShader* getShader(QOpenGLShader::ShaderType type, const std::string& sourceCode, std::size_t hash = 0);
 
 private:
-	QOpenGLShader* addShader(QOpenGLShader::ShaderType type, QByteArray sourceCode, unsigned int hash);
+	QOpenGLShader* addShader(QOpenGLShader::ShaderType type, const std::string& sourceCode, std::size_t hash);
 
 	struct CacheItem
 	{
 		CacheItem(QOpenGLShader::ShaderType type, uint hash)
 			: m_sourceHash(hash), m_type(type), m_used(true) {}
 
-		unsigned int m_sourceHash;
+		std::size_t m_sourceHash;
 		QOpenGLShader::ShaderType m_type;
 		std::shared_ptr<QOpenGLShader> m_shader;
 		bool m_used;
 	};
 
-	typedef std::unordered_multimap<quint64, CacheItem> ShaderTableHash;
+	typedef std::unordered_multimap<std::size_t, CacheItem> ShaderTableHash;
 	ShaderTableHash m_cache;
 };
 

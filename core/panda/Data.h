@@ -26,7 +26,7 @@ public:
 
 	explicit Data(const BaseData::BaseInitData& init);
 	template<class U> explicit Data(const BaseData::InitData<U>& init);
-	Data(const QString& name, const QString& help, PandaObject* owner);
+	Data(const std::string& name, const std::string& help, PandaObject* owner);
 	virtual ~Data();
 
 	virtual void update() override;
@@ -100,7 +100,7 @@ Data<T>::Data(const BaseData::InitData<U>& init)
 }
 
 template<class T>
-Data<T>::Data(const QString& name, const QString& help, PandaObject* owner)
+Data<T>::Data(const std::string& name, const std::string& help, PandaObject* owner)
 	: BaseData(name, help, owner, typeid(T))
 	, m_value(T())
 	, m_parentData(nullptr)

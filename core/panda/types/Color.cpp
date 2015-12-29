@@ -106,7 +106,7 @@ Color Color::fromHex(uint32_t hexValue)
 
 //****************************************************************************//
 
-template<> PANDA_CORE_API QString DataTrait<Color>::valueTypeName() { return "color"; }
+template<> PANDA_CORE_API std::string DataTrait<Color>::valueTypeName() { return "color"; }
 
 template<>
 PANDA_CORE_API void DataTrait<Color>::writeValue(QDomDocument&, QDomElement& elem, const Color& v)

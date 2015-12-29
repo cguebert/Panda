@@ -19,12 +19,7 @@ public:
 	PANDA_CLASS(PandaObject, DataNode)
 	explicit PandaObject(PandaDocument* document);
 
-	QString getTypeName() const;
-	QString getClassName() const;
-	QString getNamespaceName() const;
-	QString getTemplateName() const;
-
-	QString getName() const;
+	const std::string& getName() const;
 	quint32 getIndex() const;
 
 	void addData(BaseData* data);
@@ -33,15 +28,15 @@ public:
 	void addOutput(BaseData& data);
 	using DataNode::addOutput;
 
-	BaseData* getData(const QString& name) const;
-	std::vector<BaseData*> getDatas() const;
+	BaseData* getData(const std::string& name) const;
+	const std::vector<BaseData*>& getDatas() const;
 	std::vector<BaseData*> getInputDatas() const;
 	std::vector<BaseData*> getOutputDatas() const;
 
-	BaseData::BaseInitData initData(QString name, QString help);
+	BaseData::BaseInitData initData(std::string name, std::string help);
 
 	template<class ValueType>
-	typename BaseData::InitData<ValueType> initData(const ValueType& value, QString name, QString help)
+	typename BaseData::InitData<ValueType> initData(const ValueType& value, std::string name, std::string help)
 	{ return BaseData::InitData<ValueType>(value, name, help, this); }
 
 	virtual void postCreate();
@@ -78,31 +73,19 @@ protected:
 	bool m_laterUpdate; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
 	mutable bool m_isUpdating;
 	bool m_destructing;
-	QString m_name;
+	std::string m_name;
 	std::vector<BaseData*> m_datas;
 
-	void setInternalData(const QString& name, quint32 index);
+	void setInternalData(const std::string& name, quint32 index);
 	friend class ObjectFactory;
 };
 
 //****************************************************************************//
 
-inline BaseData::BaseInitData PandaObject::initData(QString name, QString help)
+inline BaseData::BaseInitData PandaObject::initData(std::string name, std::string help)
 { return BaseData::BaseInitData(name, help, this); }
 
-inline QString PandaObject::getTypeName() const
-{ return getClass()->getTypeName(); }
-
-inline QString PandaObject::getClassName() const
-{ return getClass()->getClassName(); }
-
-inline QString PandaObject::getNamespaceName() const
-{ return getClass()->getNamespaceName(); }
-
-inline QString PandaObject::getTemplateName() const
-{ return getClass()->getTemplateName(); }
-
-inline QString PandaObject::getName() const
+inline const std::string& PandaObject::getName() const
 { return m_name; }
 
 inline quint32 PandaObject::getIndex() const
@@ -114,10 +97,10 @@ inline void PandaObject::beginStep()
 inline void PandaObject::endStep()
 { m_isInStep = false; }
 
-inline std::vector<BaseData*> PandaObject::getDatas() const
+inline const std::vector<BaseData*>& PandaObject::getDatas() const
 { return m_datas; }
 
-inline void PandaObject::setInternalData(const QString& name, quint32 index)
+inline void PandaObject::setInternalData(const std::string& name, quint32 index)
 { m_name = name; m_index = index; }
 
 inline bool PandaObject::doesLaterUpdate()

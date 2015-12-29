@@ -214,7 +214,7 @@ void reorientPolygon(Path& poly)
 
 //****************************************************************************//
 
-template<> PANDA_CORE_API QString DataTrait<Path>::valueTypeName() { return "path"; }
+template<> PANDA_CORE_API std::string DataTrait<Path>::valueTypeName() { return "path"; }
 template<> PANDA_CORE_API int DataTrait<Path>::size(const Path& v) { return v.size(); }
 template<> PANDA_CORE_API void DataTrait<Path>::clear(Path& v, int size, bool init)
 {

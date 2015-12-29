@@ -25,7 +25,7 @@ public:
 
 	virtual void reset();
 
-	QString getGroupName();
+	const std::string& getGroupName();
 
 	typedef std::shared_ptr<PandaObject> ObjectPtr;
 	typedef std::vector<ObjectPtr> ObjectsList;
@@ -47,14 +47,14 @@ public:
 	QPointF getPosition(PandaObject* object) const;
 
 protected:
-	Data<QString> m_groupName;
+	Data<std::string> m_groupName;
 
 	ObjectsList m_objects;
 	std::map<PandaObject*, QPointF> m_positions;
 	GroupDataList m_groupDatas;
 };
 
-inline QString Group::getGroupName()
+inline const std::string& Group::getGroupName()
 { return m_groupName.getValue(); }
 
 inline const Group::ObjectsList& Group::getObjects() const
@@ -86,8 +86,8 @@ public:
 
 	virtual RenderersList getRenderers();
 
-	virtual QString getLayerName() const;
-	virtual Data<QString>& getLayerNameData();
+	virtual const std::string& getLayerName() const;
+	virtual Data<std::string>& getLayerNameData();
 
 	virtual int getCompositionMode() const;
 	virtual Data<int>& getCompositionModeData();
@@ -127,7 +127,7 @@ public:
 		, m_caption(initData("caption", "The caption to use in the graph view"))
 	{ }
 
-	const QString& getCaption()
+	const std::string& getCaption()
 	{ return m_caption.getValue(); }
 
 	virtual bool hasConnectedInput() = 0;
@@ -137,15 +137,15 @@ public:
 	virtual BaseData* getOutputUserData() = 0;
 
 protected:
-	Data<QString> m_caption;
+	Data<std::string> m_caption;
 };
 
 //****************************************************************************//
 
-inline QString GroupWithLayer::getLayerName() const
+inline const std::string& GroupWithLayer::getLayerName() const
 { if(m_layer) return m_layer->getLayerName(); else return m_groupName.getValue(); }
 
-inline Data<QString>& GroupWithLayer::getLayerNameData()
+inline Data<std::string>& GroupWithLayer::getLayerNameData()
 { if(m_layer) return m_layer->getLayerNameData(); else return m_groupName; }
 
 inline int GroupWithLayer::getCompositionMode() const

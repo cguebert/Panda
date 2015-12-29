@@ -58,7 +58,7 @@ Point fromPolar(Point pol)
 
 //****************************************************************************//
 
-template<> PANDA_CORE_API QString DataTrait<Point>::valueTypeName() { return "point"; }
+template<> PANDA_CORE_API std::string DataTrait<Point>::valueTypeName() { return "point"; }
 
 template<>
 PANDA_CORE_API void DataTrait<Point>::writeValue(QDomDocument&, QDomElement& elem, const Point& v)

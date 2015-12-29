@@ -4,7 +4,6 @@
 #include <panda/PandaObject.h>
 
 #include <vector>
-#include <QPointer>
 
 namespace panda
 {

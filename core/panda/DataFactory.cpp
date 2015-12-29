@@ -12,7 +12,7 @@ DataFactory* DataFactory::getInstance()
 	return &instance;
 }
 
-const DataFactory::DataEntry* DataFactory::getEntry(QString className) const
+const DataFactory::DataEntry* DataFactory::getEntry(const std::string& className) const
 {
 	return m_registry.at(className);
 }
@@ -22,16 +22,16 @@ const DataFactory::DataEntry* DataFactory::getEntry(int type) const
 	return m_typeRegistry.at(type);
 }
 
-std::shared_ptr<BaseData> DataFactory::create(QString className, const QString& name, const QString& help, PandaObject* owner) const
+std::shared_ptr<BaseData> DataFactory::create(const std::string& className, const std::string& name, const std::string& help, PandaObject* owner) const
 {
 	if (m_registry.count(className))
 		return m_registry.at(className)->creator->create(name, help, owner);
 
-	std::cerr << "Data factory has no entry for " << className.toStdString() << std::endl;
+	std::cerr << "Data factory has no entry for " << className << std::endl;
 	return std::shared_ptr<BaseData>();
 }
 
-std::shared_ptr<BaseData> DataFactory::create(int type, const QString& name, const QString& help, PandaObject* owner) const
+std::shared_ptr<BaseData> DataFactory::create(int type, const std::string& name, const std::string& help, PandaObject* owner) const
 {
 	if (m_typeRegistry.count(type))
 		return m_typeRegistry.at(type)->creator->create(name, help, owner);
@@ -42,7 +42,7 @@ std::shared_ptr<BaseData> DataFactory::create(int type, const QString& name, con
 
 void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, std::shared_ptr<BaseDataCreator> creator)
 {
-	QString className = theClass->getTemplateName();
+	std::string className = theClass->getTemplateName();
 	DataEntry* entry = panda::helper::valueOrDefault(m_registry, className, nullptr);
 	if(!entry)
 	{
@@ -62,7 +62,7 @@ void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseCl
 	m_nameRegistry[dataTrait->typeName()] = entry;
 }
 
-QString DataFactory::typeToName(int type)
+std::string DataFactory::typeToName(int type)
 {
 	const DataFactory::DataEntry* entry = DataFactory::getInstance()->getEntry(type);
 	if(entry)
@@ -70,9 +70,9 @@ QString DataFactory::typeToName(int type)
 	return "unknown";
 }
 
-int DataFactory::nameToType(QString name)
+int DataFactory::nameToType(const std::string& name)
 {
-	const DataFactory::DataEntry* entry = DataFactory::getInstance()->m_nameRegistry[name];
+	const DataFactory::DataEntry* entry = helper::valueOrDefault(DataFactory::getInstance()->m_nameRegistry, name);
 	if(entry)
 		return entry->fullType;
 	return -1;

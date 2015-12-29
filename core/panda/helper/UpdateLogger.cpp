@@ -48,7 +48,7 @@ ScopedEvent::ScopedEvent(EventType type, const BaseData* data)
 	m_event.m_dirtyStart = data->isDirty();
 }
 
-ScopedEvent::ScopedEvent(QString text, DataNode* node)
+ScopedEvent::ScopedEvent(const std::string& text, DataNode* node)
 	: m_changeLevel(true)
 {
 	m_event.m_type = event_custom;

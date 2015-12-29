@@ -15,7 +15,7 @@ namespace panda
 
 Group::Group(PandaDocument* parent)
 	: PandaObject(parent)
-	, m_groupName(initData(QString("Group"), "name", "Name to be displayed for this group"))
+	, m_groupName(initData(std::string("Group"), "name", "Name to be displayed for this group"))
 {
 }
 
@@ -36,18 +36,18 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaOb
 	{
 		QDomElement node = doc.createElement("GroupData");
 		elem.appendChild(node);
-		node.setAttribute("type", DataFactory::typeToName(data->getDataTrait()->fullTypeId()));
+		node.setAttribute("type", QString::fromStdString(DataFactory::typeToName(data->getDataTrait()->fullTypeId())));
 		node.setAttribute("input", data->isInput());
 		node.setAttribute("output", data->isOutput());
-		node.setAttribute("name", data->getName());
-		node.setAttribute("help", data->getHelp());
+		node.setAttribute("name", QString::fromStdString(data->getName()));
+		node.setAttribute("help",QString::fromStdString( data->getHelp()));
 
 		const auto widget = data->getWidget();
 		const auto widgetData = data->getWidgetData();
-		if(!widget.isEmpty())
-			node.setAttribute("widget", widget);
-		if(!widgetData.isEmpty())
-			node.setAttribute("widgetData", widgetData);
+		if(!widget.empty())
+			node.setAttribute("widget", QString::fromStdString(widget));
+		if(!widgetData.empty())
+			node.setAttribute("widgetData", QString::fromStdString(widgetData));
 	}
 
 	// Saving data values
@@ -68,7 +68,7 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaOb
 	for(auto object : m_objects)
 	{
 		QDomElement node = doc.createElement("Object");
-		node.setAttribute("type", ObjectFactory::getRegistryName(object.get()));
+		node.setAttribute("type", QString::fromStdString(ObjectFactory::getRegistryName(object.get())));
 		node.setAttribute("index", object->getIndex());
 		elem.appendChild(node);
 
@@ -111,13 +111,13 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaOb
 			node.setAttribute("object1", 0);
 		else
 			node.setAttribute("object1", link.first->getOwner()->getIndex());
-		node.setAttribute("data1", link.first->getName());
+		node.setAttribute("data1", QString::fromStdString(link.first->getName()));
 
 		if(link.second->getOwner() == this)
 			node.setAttribute("object2", 0);
 		else
 			node.setAttribute("object2", link.second->getOwner()->getIndex());
-		node.setAttribute("data2", link.second->getName());
+		node.setAttribute("data2", QString::fromStdString(link.second->getName()));
 		elem.appendChild(node);
 	}
 
@@ -137,20 +137,20 @@ void Group::load(QDomElement& elem)
 	while(!groupDataNode.isNull())
 	{
 		quint32 type, input, output;
-		QString name, help, widget, widgetData;
-		type = DataFactory::nameToType(groupDataNode.attribute("type"));
+		std::string name, help, widget, widgetData;
+		type = DataFactory::nameToType(groupDataNode.attribute("type").toStdString());
 		input = groupDataNode.attribute("input").toUInt();
 		output = groupDataNode.attribute("output").toUInt();
-		name = groupDataNode.attribute("name");
-		help = groupDataNode.attribute("help");
-		widget = groupDataNode.attribute("widget");
-		widgetData = groupDataNode.attribute("widgetData");
+		name = groupDataNode.attribute("name").toStdString();
+		help = groupDataNode.attribute("help").toStdString();
+		widget = groupDataNode.attribute("widget").toStdString();
+		widgetData = groupDataNode.attribute("widgetData").toStdString();
 
 		auto dataPtr = DataFactory::getInstance()->create(type, name, help, this);
 		auto data = dataPtr.get();
-		if(!widget.isEmpty())
+		if(!widget.empty())
 			data->setWidget(widget);
-		if(!widgetData.isEmpty())
+		if(!widgetData.empty())
 			data->setWidgetData(widgetData);
 		m_groupDatas.push_back(dataPtr);
 		if(input)
@@ -172,7 +172,7 @@ void Group::load(QDomElement& elem)
 	{
 		QString registryName = objectNode.attribute("type");
 		quint32 index = objectNode.attribute("index").toUInt();
-		auto object = factory->create(registryName, m_parentDocument);
+		auto object = factory->create(registryName.toStdString(), m_parentDocument);
 		if(object)
 		{
 			importObjectsMap[index] = object.get();
@@ -206,11 +206,11 @@ void Group::load(QDomElement& elem)
 	while(!linkNode.isNull())
 	{
 		quint32 index1, index2;
-		QString name1, name2;
+		std::string name1, name2;
 		index1 = linkNode.attribute("object1").toUInt();
 		index2 = linkNode.attribute("object2").toUInt();
-		name1 = linkNode.attribute("data1");
-		name2 = linkNode.attribute("data2");
+		name1 = linkNode.attribute("data1").toStdString();
+		name2 = linkNode.attribute("data2").toStdString();
 
 		PandaObject *object1, *object2;
 		BaseData *data1=nullptr, *data2=nullptr;

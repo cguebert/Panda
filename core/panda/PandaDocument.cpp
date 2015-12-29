@@ -111,9 +111,9 @@ PandaDocument::~PandaDocument()
 	m_undoStack->clear();
 }
 
-bool PandaDocument::writeFile(const QString& fileName)
+bool PandaDocument::writeFile(const std::string& fileName)
 {
-	QFile file(fileName);
+	QFile file(QString::fromStdString(fileName));
 	if (!file.open(QIODevice::WriteOnly))
 	{
 		QMessageBox::warning(nullptr, tr("Panda"),
@@ -137,9 +137,9 @@ bool PandaDocument::writeFile(const QString& fileName)
 	return true;
 }
 
-bool PandaDocument::readFile(const QString& fileName, bool isImport)
+bool PandaDocument::readFile(const std::string& fileName, bool isImport)
 {
-	QFile file(fileName);
+	QFile file(QString::fromStdString(fileName));
 	if (!file.open(QIODevice::ReadOnly))
 	{
 		QMessageBox::warning(nullptr, tr("Panda"),
@@ -176,7 +176,7 @@ bool PandaDocument::readFile(const QString& fileName, bool isImport)
 	return true;
 }
 
-QString PandaDocument::writeTextDocument()
+std::string PandaDocument::writeTextDocument()
 {
 	QDomDocument doc;
 	QDomElement root = doc.createElement("Panda");
@@ -184,13 +184,13 @@ QString PandaDocument::writeTextDocument()
 
 	saveDoc(doc, root, m_selectedObjects);
 
-	return doc.toString(4);
+	return doc.toString(4).toStdString();
 }
 
-bool PandaDocument::readTextDocument(QString& text)
+bool PandaDocument::readTextDocument(const std::string& text)
 {
 	QDomDocument doc("Panda");
-	if(!doc.setContent(text))
+	if(!doc.setContent(QString::fromStdString(text)))
 		return false;
 
 	bool bSelected = !m_selectedObjects.empty();
@@ -223,7 +223,7 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 	for(auto object : selected)
 	{
 		QDomElement elem = doc.createElement("Object");
-		elem.setAttribute("type", ObjectFactory::getRegistryName(object));
+		elem.setAttribute("type", QString::fromStdString(ObjectFactory::getRegistryName(object)));
 		elem.setAttribute("index", object->getIndex());
 		root.appendChild(elem);
 
@@ -249,18 +249,18 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 	}
 
 	// Saving links
-	for(DataPair link : links)
+	for(const auto& link : links)
 	{
 		QDomElement elem = doc.createElement("Link");
 		elem.setAttribute("object1", link.first->getOwner()->getIndex());
-		elem.setAttribute("data1", link.first->getName());
+		elem.setAttribute("data1", QString::fromStdString(link.first->getName()));
 		elem.setAttribute("object2", link.second->getOwner()->getIndex());
-		elem.setAttribute("data2", link.second->getName());
+		elem.setAttribute("data2", QString::fromStdString(link.second->getName()));
 		root.appendChild(elem);
 	}
 
 	// Saving docked objects list
-	for(IntPair dockable : dockedObjects)
+	for(const auto& dockable : dockedObjects)
 	{
 		QDomElement elem = doc.createElement("Dock");
 		elem.setAttribute("dock", dockable.first);
@@ -281,8 +281,8 @@ bool PandaDocument::loadDoc(QDomElement& root)
 	QDomElement elem = root.firstChildElement("Object");
 	while(!elem.isNull())
 	{
-		QString registryName = elem.attribute("type");
-		if(registryName.isEmpty())
+		std::string registryName = elem.attribute("type").toStdString();
+		if(registryName.empty())
 			return false;
 		quint32 index = elem.attribute("index").toUInt();
 		auto object = factory->create(registryName, this);
@@ -300,7 +300,7 @@ bool PandaDocument::loadDoc(QDomElement& root)
 		{
 			QMessageBox::warning(nullptr, tr("Panda"),
 				tr("Could not create the object %1.\nA plugin must be missing.")
-				.arg(registryName));
+				.arg(QString::fromStdString(registryName)));
 			return false;
 		}
 
@@ -312,14 +312,14 @@ bool PandaDocument::loadDoc(QDomElement& root)
 	while(!elem.isNull())
 	{
 		quint32 index1, index2;
-		QString name1, name2;
+		std::string name1, name2;
 		index1 = elem.attribute("object1").toUInt();
 		index2 = elem.attribute("object2").toUInt();
 		index1 = importIndicesMap[index1];
 		index2 = importIndicesMap[index2];
 
-		name1 = elem.attribute("data1");
-		name2 = elem.attribute("data2");
+		name1 = elem.attribute("data1").toStdString();
+		name2 = elem.attribute("data2").toStdString();
 
 		BaseData *data1, *data2;
 		data1 = findData(index1, name1);
@@ -486,7 +486,7 @@ void PandaDocument::copy()
 	if(m_selectedObjects.empty())
 		return;
 	QClipboard* clipboard = QApplication::clipboard();
-	clipboard->setText(writeTextDocument());
+	clipboard->setText(QString::fromStdString(writeTextDocument()));
 }
 
 void PandaDocument::paste()
@@ -495,7 +495,7 @@ void PandaDocument::paste()
 	const QMimeData* mimeData = clipboard->mimeData();
 	if(mimeData->hasText())
 	{
-		QString clipText = mimeData->text();
+		std::string clipText = mimeData->text().toStdString();
 		readTextDocument(clipText);
 	}
 }
@@ -653,7 +653,7 @@ PandaObject* PandaDocument::findObject(quint32 objectIndex)
 	return nullptr;
 }
 
-BaseData* PandaDocument::findData(quint32 objectIndex, const QString& dataName)
+BaseData* PandaDocument::findData(quint32 objectIndex, const std::string& dataName)
 {
 	PandaObject* object = findObject(objectIndex);
 	if(object)
@@ -702,9 +702,9 @@ void PandaDocument::update()
 	{
 		m_mergeLayersShader.reset(new QOpenGLShaderProgram());
 		m_mergeLayersShader->addShaderFromSourceCode(QOpenGLShader::Vertex,
-			helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
+			QString::fromStdString(helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl")));
 		m_mergeLayersShader->addShaderFromSourceCode(QOpenGLShader::Fragment,
-			helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
+			QString::fromStdString(helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl")));
 		m_mergeLayersShader->link();
 		m_mergeLayersShader->bind();
 
@@ -1018,7 +1018,7 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 	if(!entry)
 		return;
 
-	QString registryName = QString("panda::GeneratorUser<") + entry->className + ">";
+	std::string registryName = std::string("panda::GeneratorUser<") + entry->className + ">";
 	auto object = ObjectFactory::getInstance()->create(registryName, this);
 	if(!object)
 		return;
@@ -1047,9 +1047,9 @@ void PandaDocument::addCommand(QUndoCommand* command)
 	m_currentCommand = oldCommand;
 }
 
-std::shared_ptr<ScopedMacro> PandaDocument::beginCommandMacro(QString text)
+std::shared_ptr<ScopedMacro> PandaDocument::beginCommandMacro(const std::string& text)
 {
-	m_undoStack->beginMacro(text);
+	m_undoStack->beginMacro(QString::fromStdString(text));
 	++m_inCommandMacro;
 	return std::make_shared<ScopedMacro>(this);
 }

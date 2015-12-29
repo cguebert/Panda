@@ -4,10 +4,10 @@
 #include <panda/core.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <QUndoCommand>
-#include <QString>
 
 namespace panda
 {
@@ -83,17 +83,17 @@ public:
 	struct DataInfo
 	{
 		panda::BaseData* data;
-		QString name, help;
+		std::string name, help;
 	};
 
-	EditGroupCommand(panda::Group* group, QString newName, std::vector<DataInfo> newDatas, QUndoCommand* parent = nullptr);
+	EditGroupCommand(panda::Group* group, std::string newName, std::vector<DataInfo> newDatas, QUndoCommand* parent = nullptr);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
 	panda::Group* m_group;
-	QString m_prevName, m_newName;
+	std::string m_prevName, m_newName;
 	std::vector<DataInfo> m_prevDatas, m_newDatas;
 };
 

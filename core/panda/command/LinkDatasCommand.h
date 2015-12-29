@@ -30,7 +30,7 @@ protected:
 		panda::PandaObject	*m_targetObject,
 							*m_initialParentObject,
 							*m_newParentObject;
-		QString m_targetDataName,
+		std::string m_targetDataName,
 				m_initialParentDataName,
 				m_newParentDataName;
 	};

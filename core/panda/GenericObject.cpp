@@ -3,22 +3,12 @@
 #include <panda/DataFactory.h>
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
+#include <panda/helper/algorithm.h>
 
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/command/RemoveGenericDataCommand.h>
 
 #include <iostream>
-
-namespace
-{
-
-template <class Map, class Value>
-bool contains(const Map& map, const Value& value)
-{
-	return map.find(value) != map.end();
-}
-
-}
 
 namespace panda
 {
@@ -49,12 +39,12 @@ void GenericObject::setupGenericObject(BaseGenericData& data, const GenericDataD
 		if (defList[i].input)
 			nbInputDatas++;
 
-		QString name = defList[i].name;
+		std::string name = defList[i].name;
 		for (int j = i + 1; j < nbDefs; ++j)
 		{
 			if (name == defList[j].name)
 			{
-				std::cerr << "Fatal error : duplicate data name (" << name.toStdString() << ") in a GenericObject" << std::endl;
+				std::cerr << "Fatal error : duplicate data name (" << name << ") in a GenericObject" << std::endl;
 				std::terminate();
 			}
 		}
@@ -95,12 +85,12 @@ BaseData* GenericObject::createDatas(int type, int index)
 	int nbDefs = m_dataDefinitions.size();
 	for(int i=0; i<nbDefs; ++i)
 	{
-		QString nameType = DataFactory::typeToName(type);
-		QString dataName = m_dataDefinitions[i].name;
-		if(dataName.contains("%1"))
-			dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
+		std::string nameType = DataFactory::typeToName(type);
+		std::string dataName = m_dataDefinitions[i].name;
+		if(dataName.find("%1") != std::string::npos)
+			dataName = helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
 
-		dataName += QString(" #%2").arg(nbCreated);	// Add the count
+		dataName += " " + std::to_string(nbCreated);	// Add the count
 
 		int dataType = m_dataDefinitions[i].type;
 		if(!dataType) // If the type in the definition is 0, use the full type of the connected Data
@@ -164,17 +154,17 @@ void GenericObject::updateDataNames()
 	int nbDefs = m_dataDefinitions.size();
 	for(CreatedDatasStructPtr created : m_createdDatasStructs)
 	{
-		QString nameType = DataFactory::typeToName(created->type);
+		std::string nameType = DataFactory::typeToName(created->type);
 		for(int i=0; i<nbDefs; ++i)
 		{
 			if(!created->datas[i])
 				continue;
 
-			QString dataName = m_dataDefinitions[i].name;
-			if(dataName.contains("%1"))
-				dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
+			std::string dataName = m_dataDefinitions[i].name;
+			if(dataName.find("%1") != std::string::npos)
+				dataName = helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
 
-			dataName += QString(" #%2").arg(index);	// Add the count
+			dataName += " " + std::to_string(index);	// Add the index
 			created->datas[i]->setName(dataName);
 		}
 
@@ -194,7 +184,7 @@ int GenericObject::nbOfCreatedDatas() const
 
 bool GenericObject::isCreatedData(BaseData* data) const
 {
-	return contains(m_createdDatasMap, data);
+	return m_createdDatasMap.count(data);
 }
 
 void GenericObject::update()
@@ -239,7 +229,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		m_parentDocument->onModifiedObject(this);
 	}
-	else if (parent || !contains(m_createdDatasMap, data))
+	else if (parent || !m_createdDatasMap.count(data))
 	{
 		PandaObject::dataSetParent(data, parent);
 	}
@@ -280,7 +270,7 @@ void GenericObject::save(QDomDocument& doc, QDomElement& elem, const std::vector
 	for(CreatedDatasStructPtr created : m_createdDatasStructs)
 	{
 		QDomElement e = doc.createElement("CreatedData");
-		e.setAttribute("type", DataFactory::typeToName(created->type));
+		e.setAttribute("type", QString::fromStdString(DataFactory::typeToName(created->type)));
 		elem.appendChild(e);
 	}
 
@@ -292,7 +282,7 @@ void GenericObject::load(QDomElement& elem)
 	QDomElement e = elem.firstChildElement("CreatedData");
 	while(!e.isNull())
 	{
-		createDatas(DataFactory::nameToType(e.attribute("type")));
+		createDatas(DataFactory::nameToType(e.attribute("type").toStdString()));
 		e = e.nextSiblingElement("CreatedData");
 	}
 
@@ -397,12 +387,12 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 		}
 		else
 		{
-			QString nameType = DataFactory::typeToName(type);
-			QString dataName = m_dataDefinitions[i].name;
-			if(dataName.contains("%1"))
-				dataName = dataName.arg(nameType);	// Insert the type's name into the data's name
+			std::string nameType = DataFactory::typeToName(type);
+			std::string dataName = m_dataDefinitions[i].name;
+			if(dataName.find("%1") != std::string::npos)
+				dataName = helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
 
-			dataName += QString(" #%2").arg(nbCreated);	// Add the count
+			dataName += " " + std::to_string(nbCreated);	// Add the count
 
 			int dataType = m_dataDefinitions[i].type;
 			if(!dataType) // If the type in the definition is 0, use the full type of the connected Data
@@ -460,7 +450,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		m_parentDocument->onModifiedObject(this);
 	}
 	// Changing connection
-	else if(parent || !contains(m_createdDatasMap, data))
+	else if(parent || !m_createdDatasMap.count(data))
 	{
 		data->setParent(parent);
 		emitModified();
@@ -532,12 +522,12 @@ bool BaseGenericData::validParent(const BaseData* parent) const
 	return true;
 }
 
-QString BaseGenericData::getTypesName(bool useFullDescription) const
+std::string BaseGenericData::getTypesName(bool useFullDescription) const
 {
 	if(m_allowedTypes.empty())
 		return "";
 
-	std::vector<QString> sortedTypeNames;
+	std::vector<std::string> sortedTypeNames;
 	for(auto type : m_allowedTypes)
 	{
 		auto trait = DataTraitsList::getTrait(type);
@@ -551,7 +541,7 @@ QString BaseGenericData::getTypesName(bool useFullDescription) const
 	}
 	std::sort(sortedTypeNames.begin(), sortedTypeNames.end());
 
-	QString types("\n (");
+	std::string types("\n (");
 	for(int i=0, nb=sortedTypeNames.size(); i<nb; ++i)
 	{
 		if(i)
@@ -572,9 +562,9 @@ int BaseGenericData::getCompatibleType(const BaseData* parent) const
 
 //****************************************************************************//
 
-QString GenericData::getDescription() const
+std::string GenericData::getDescription() const
 {
-	return QString("Accepting single values, lists & animations" + getTypesName());
+	return std::string("Accepting single values, lists & animations" + getTypesName());
 }
 
 //****************************************************************************//
@@ -584,9 +574,9 @@ bool GenericSingleValueData::validParent(const BaseData* parent) const
 	return parent->getDataTrait()->isSingleValue() && BaseGenericData::validParent(parent);
 }
 
-QString GenericSingleValueData::getDescription() const
+std::string GenericSingleValueData::getDescription() const
 {
-	return QString("Accepting single values" + getTypesName());
+	return std::string("Accepting single values" + getTypesName());
 }
 
 //****************************************************************************//
@@ -599,9 +589,9 @@ bool GenericVectorData::validParent(const BaseData* parent) const
 			&& BaseGenericData::validParent(parent);
 }
 
-QString GenericVectorData::getDescription() const
+std::string GenericVectorData::getDescription() const
 {
-	return QString("Accepting lists" + getTypesName());
+	return std::string("Accepting lists" + getTypesName());
 }
 
 //****************************************************************************//
@@ -611,9 +601,9 @@ bool GenericAnimationData::validParent(const BaseData* parent) const
 	return parent->getDataTrait()->isAnimation() && BaseGenericData::validParent(parent);
 }
 
-QString GenericAnimationData::getDescription() const
+std::string GenericAnimationData::getDescription() const
 {
-	return QString("Accepting animations" + getTypesName());
+	return std::string("Accepting animations" + getTypesName());
 }
 
 //****************************************************************************//
@@ -627,9 +617,9 @@ bool GenericSpecificData::validParent(const BaseData* parent) const
 	return false;
 }
 
-QString GenericSpecificData::getDescription() const
+std::string GenericSpecificData::getDescription() const
 {
-	return QString("Accepting these types :" + getTypesName(true));
+	return std::string("Accepting these types :" + getTypesName(true));
 }
 
 int GenericSpecificData::getCompatibleType(const BaseData* parent) const

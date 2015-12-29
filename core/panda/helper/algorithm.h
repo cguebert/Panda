@@ -110,6 +110,24 @@ typename Container::mapped_type valueOrDefault(Container& map, const Key& key, c
 	return it->second;
 }
 
+template <class String>
+String replaceAll(const String& val, const String& from, const String& to)
+{
+	if (from.empty())
+		return val;
+
+	String ret = val;
+	auto fromSize = from.size(), toSize = to.size();
+	size_t pos = 0;
+	while ((pos = val.find(from, pos)) != String::npos)
+	{
+		ret.replace(pos, fromSize, to);
+		pos += toSize;
+	}
+
+	return ret;
+}
+
 } // namespace helper
 
 } // namespace panda

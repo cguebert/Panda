@@ -39,11 +39,11 @@ public:
 	explicit PandaDocument(QObject* parent = nullptr);
 	~PandaDocument();
 
-	bool writeFile(const QString& fileName);
-	bool readFile(const QString& fileName, bool isImport=false);
+	bool writeFile(const std::string& fileName);
+	bool readFile(const std::string& fileName, bool isImport=false);
 
-	QString writeTextDocument();
-	bool readTextDocument(QString &text);
+	std::string writeTextDocument();
+	bool readTextDocument(const std::string& text);
 
 	bool saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsSelection& selected);
 	bool loadDoc(QDomElement& root);
@@ -86,7 +86,7 @@ public:
 
 	quint32 getNextIndex();
 	PandaObject* findObject(quint32 objectIndex);
-	BaseData* findData(quint32 objectIndex, const QString& dataName);
+	BaseData* findData(quint32 objectIndex, const std::string& dataName);
 
 	virtual void update();
 	virtual void setDirtyValue(const DataNode* caller);
@@ -104,7 +104,7 @@ public:
 	// For undo-redo actions
 	void createUndoRedoActions(QObject* parent, QAction*& undoAction, QAction*& redoAction);
 	void addCommand(QUndoCommand* command);
-	std::shared_ptr<ScopedMacro> beginCommandMacro(QString text);
+	std::shared_ptr<ScopedMacro> beginCommandMacro(const std::string& text);
 	void clearCommands();
 	bool isInCommandMacro() const;
 	QUndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
