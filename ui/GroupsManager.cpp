@@ -84,6 +84,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 	QDir dir;
 	dir.mkpath(fileInfo.dir().path());
 	QFile file(fileName);
+	QString description;
 
 	// If already exists
 	if(file.exists())
@@ -94,6 +95,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 							  QMessageBox::Yes)
 				!= QMessageBox::Yes)
 			return false;
+		getGroupDescription(fileName, description);
 	}
 
 	if (!file.open(QIODevice::WriteOnly))
@@ -109,11 +111,11 @@ bool GroupsManager::saveGroup(panda::Group *group)
 	QDomElement root = doc.createElement("Group");
 	doc.appendChild(root);
 
-	QString desc = QInputDialog::getText(nullptr, tr("Save group"),
-										 tr("Group description:"), QLineEdit::Normal,
-										 "", &ok);
+	description = QInputDialog::getText(nullptr, tr("Save group"),
+										tr("Group description:"), QLineEdit::Normal,
+										description, &ok);
 
-	root.setAttribute("description", desc);
+	root.setAttribute("description", description);
 	root.setAttribute("type", panda::ObjectFactory::getRegistryName(group));
 
 	group->save(doc, root);
