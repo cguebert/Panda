@@ -76,6 +76,7 @@ protected:
 
 	friend class PluginsManager;
 	void moduleLoaded(); /// Copy the temporary list into the main one, and modify their module
+	void allObjectsRegistered();
 
 	RegistryMap m_registry, m_tempRegistry;
 	ModulesList m_modules, m_tempModules;

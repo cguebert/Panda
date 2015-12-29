@@ -2,7 +2,43 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 
+#include <panda/types/DataTypeId.h>
+#include <panda/types/DataTraits.h>
+
 #include <iostream>
+
+namespace
+{
+
+using NamesReplacementList = std::vector<std::pair<QString, QString>>;
+
+static NamesReplacementList& getNamesReplacementList()
+{
+	static NamesReplacementList list;
+	if (list.empty())
+	{
+		auto types = panda::types::DataTypeId::getTypesList();
+		for (auto type : types)
+		{
+			auto trait = panda::types::DataTraitsList::getTrait(type);
+			auto typeName = panda::BaseClass::decodeTypeName(trait->typeInfo());
+			auto replacement = trait->typeName();
+			if (typeName != replacement)
+				list.emplace_back("<"+typeName+">", "<"+replacement+">");
+		}
+	}
+	return list;
+}
+
+QString replaceTypeNames(const QString& input)
+{
+	QString output = input;
+	for (const auto& p : getNamesReplacementList())
+		output.replace(p.first, p.second);
+	return output;
+}
+
+}
 
 namespace panda
 {
@@ -44,7 +80,7 @@ QSharedPointer<PandaObject> ObjectFactory::create(QString className, PandaDocume
 
 QString ObjectFactory::getRegistryName(PandaObject* object)
 {
-	return object->getClass()->getTypeName();
+	return replaceTypeNames(object->getClass()->getTypeName());
 }
 
 void ObjectFactory::registerObject(QString className, ClassEntry entry)
@@ -99,6 +135,18 @@ void ObjectFactory::moduleLoaded()
 	}
 	m_tempRegistry.clear();
 	m_tempModules.clear();
+}
+
+void ObjectFactory::allObjectsRegistered()
+{
+	auto registryCopy = m_registry;
+	for (const auto &it : registryCopy)
+	{
+		const auto& name = it.first;
+		auto alias = replaceTypeNames(name);
+		if (name != alias)
+			m_registry.emplace(alias, it.second);
+	}
 }
 
 void objectDeletor(PandaObject* object)

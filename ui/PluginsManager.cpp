@@ -13,7 +13,9 @@ PluginsManager* PluginsManager::getInstance()
 
 void PluginsManager::loadPlugins()
 {
-	panda::ObjectFactory::getInstance()->moduleLoaded(); // Register core modules
+	auto factory = panda::ObjectFactory::getInstance();
+	factory->moduleLoaded(); // Register core modules
+
 	const QString modulesDir = "modules";
 	QStringList modules = panda::helper::system::DataRepository.enumerateFilesInDir(modulesDir);
 	for(const QString& moduleName : modules)
@@ -26,11 +28,13 @@ void PluginsManager::loadPlugins()
 			if(library->load())
 			{
 				m_plugins.push_back(library);
-				panda::ObjectFactory::getInstance()->moduleLoaded();
+				factory->moduleLoaded();
 			}
 			else
 				std::cerr << "Could not load library " << moduleName.toStdString() << std::endl;
 		}
 	}
+
+	factory->allObjectsRegistered();
 }
 

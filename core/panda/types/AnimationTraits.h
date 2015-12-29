@@ -32,6 +32,7 @@ public:
 	static QString valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
 	static QString typeName() { return valueTypeName() + "_animation"; }
 	static QString typeDescription() { return "animation of " + valueTypeNamePlural(); }
+	static const std::type_info& typeInfo() { return typeid(animation_type); }
 	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
 	static int fullTypeId() { return DataTypeId::getFullTypeOfAnimation(valueTypeId()); }
 	static int size(const animation_type& a) { return a.size(); }

@@ -80,6 +80,15 @@ void DataTypeId::registerType(const std::type_info& type, int fullType)
 		typesIdMap[index] = fullType;
 }
 
+std::vector<int> DataTypeId::getTypesList()
+{
+	const TypesIdMap& typesIdMap = getTypesIdMap();
+	std::vector<int> types;
+	for (const auto& p : typesIdMap.values())
+		types.push_back(p);
+	return types;
+}
+
 } // namespace types
 
 } // namespace panda

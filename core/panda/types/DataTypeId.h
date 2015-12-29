@@ -3,6 +3,7 @@
 
 #include <panda/core.h>
 #include <typeinfo>
+#include <vector>
 
 template<class T> class RegisterWidget;
 
@@ -31,6 +32,8 @@ public:
 	static bool isVector(int fullType);
 	static bool isAnimation(int fullType);
 	static int replaceValueType(int fullType, int newType);
+
+	static std::vector<int> getTypesList();
 
 private:
 	DataTypeId();

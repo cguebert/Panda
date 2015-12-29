@@ -29,6 +29,7 @@ public:
 	virtual QString valueTypeNamePlural() const = 0;	/// Plural form ("integers")
 	virtual QString typeName() const = 0;				/// When we save the type ("integer_vector")
 	virtual QString typeDescription() const = 0;		/// Full display string ("vector of integers")
+	virtual const std::type_info& typeInfo() const = 0;
 	virtual int valueTypeId() const = 0;
 	virtual int fullTypeId() const = 0;
 
@@ -65,6 +66,7 @@ public:
 	static QString valueTypeNamePlural() { return valueTypeName() + "s"; }
 	static QString typeName() { return valueTypeName(); }
 	static QString typeDescription() { return valueTypeName() + " value"; }
+	static const std::type_info& typeInfo() { return typeid(T); }
 	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
 	static int fullTypeId() { return DataTypeId::getFullTypeOfSingleValue(valueTypeId()); }
 	static int size(const value_type& /*v*/) { return 1; }
@@ -101,6 +103,7 @@ public:
 	virtual QString valueTypeNamePlural() const { return value_trait::valueTypeNamePlural(); }
 	virtual QString typeName() const { return value_trait::typeName(); }
 	virtual QString typeDescription() const { return value_trait::typeDescription(); }
+	virtual const std::type_info& typeInfo() const { return value_trait::typeInfo(); }
 	virtual int valueTypeId() const { return value_trait::valueTypeId(); }
 	virtual int fullTypeId() const { return value_trait::fullTypeId(); }
 
@@ -140,6 +143,7 @@ public:
 	static QString valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
 	static QString typeName() { return valueTypeName() + "_vector"; }
 	static QString typeDescription() { return "vector of " + valueTypeNamePlural(); }
+	static const std::type_info& typeInfo() { return typeid(vector_type); }
 	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
 	static int fullTypeId() { return DataTypeId::getFullTypeOfVector(valueTypeId()); }
 	static int size(const vector_type& v) { return v.size(); }
