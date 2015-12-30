@@ -52,13 +52,13 @@ public:
 		int nb = qMin(names.size(), images.size());
 		for(int i=0; i<nb; ++i)
 		{
-			if(!names[i].isEmpty())
-				images[i].getImage().save(names[i]);
+			if(!names[i].empty())
+				images[i].getImage().save(QString::fromStdString(names[i]));
 		}
 	}
 
 protected:
-	Data< std::vector<QString> > fileName;
+	Data< std::vector<std::string> > fileName;
 	Data< std::vector<ImageWrapper> > image;
 	bool inStep;
 };

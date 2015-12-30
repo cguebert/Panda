@@ -41,7 +41,7 @@ public:
 											 "value",
 											 "Value to set in the shader"));
 		// Create a single int value
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<QString>()),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<std::string>()),
 											 true, false,
 											 "name",
 											 "Name of the uniform in the shader"));
@@ -60,14 +60,14 @@ public:
 	void updateT(DataList& list)
 	{
 		typedef Data< T > ValueData;
-		typedef Data< QString > StringData;
+		typedef Data< std::string > StringData;
 		ValueData* dataValue = dynamic_cast<ValueData*>(list[0]);
 		StringData* dataName = dynamic_cast<StringData*>(list[1]);
 
 		Q_ASSERT(dataValue && dataName);
 
 		const T& inVal = dataValue->getValue();
-		const QString name = dataName->getValue();
+		const std::string name = dataName->getValue();
 
 		output.getAccessor()->setUniform(name, inVal);
 	}

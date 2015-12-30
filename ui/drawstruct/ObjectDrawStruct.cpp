@@ -5,6 +5,7 @@
 
 #include <panda/PandaObject.h>
 #include <panda/PandaDocument.h>
+#include <panda/XmlDocument.h>
 
 ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 	: m_parentView(view), m_object(obj)
@@ -153,7 +154,7 @@ void ObjectDrawStruct::drawText(QPainter* painter)
 {
 	int margin = dataRectSize+dataRectMargin+3;
 	QRectF textArea = m_objectArea.adjusted(margin, 0, -margin, 0);
-	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, m_object->getName());
+	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, QString::fromStdString(m_object->getName()));
 }
 
 void ObjectDrawStruct::drawLinks(QPainter* painter)
@@ -184,13 +185,13 @@ void ObjectDrawStruct::drawLinks(QPainter* painter)
 	}
 }
 
-void ObjectDrawStruct::save(QDomDocument&, QDomElement& elem)
+void ObjectDrawStruct::save(panda::XmlElement& elem)
 {
 	elem.setAttribute("x", m_position.x());
 	elem.setAttribute("y", m_position.y());
 }
 
-void ObjectDrawStruct::load(QDomElement& elem)
+void ObjectDrawStruct::load(panda::XmlElement& elem)
 {
 	QPointF newPos;
 #ifdef PANDA_DOUBLE

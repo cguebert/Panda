@@ -2,7 +2,6 @@
 #define OBJECTDRAWSTRUCT_H
 
 #include <QWidget>
-#include <QDomDocument>
 
 #include <memory>
 
@@ -13,6 +12,7 @@ namespace panda
 	class PandaObject;
 	class BaseData;
 	class BaseClass;
+	class XmlElement;
 }
 
 class ObjectDrawStruct
@@ -36,14 +36,14 @@ public:
 	virtual void moveVisual(const QPointF& delta);	// The view is moving (not the position of the object)
 	virtual bool contains(const QPointF& point);	// Is this point inside of the shape of this object ? (which can be complex)
 
-	virtual void save(QDomDocument& doc, QDomElement& elem);
-	virtual void load(QDomElement& elem);
+	virtual void save(panda::XmlElement& elem);
+	virtual void load(panda::XmlElement& elem);
 
 	virtual bool mousePressEvent(QMouseEvent*) { return false; }	// Return true to capture the mouse for this object
 	virtual void mouseMoveEvent(QMouseEvent*) {}
 	virtual void mouseReleaseEvent(QMouseEvent*) {}
 
-	virtual bool acceptsMagneticSnap(); // If this object is used for the magnetic snap when moving objects
+	virtual bool acceptsMagneticSnap() const; // If this object is used for the magnetic snap when moving objects
 
 	virtual QSize getObjectSize();
 	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr);
@@ -71,7 +71,7 @@ protected:
 	std::vector<RectDataPair> m_datas;
 };
 
-inline bool ObjectDrawStruct::acceptsMagneticSnap()
+inline bool ObjectDrawStruct::acceptsMagneticSnap() const
 { return true; }
 
 inline bool ObjectDrawStruct::contains(const QPointF& point)

@@ -21,7 +21,7 @@ int StoreValue_PathClass = RegisterObject< StoreValue<types::Path> >("File/Path/
 int StoreValue_PointClass = RegisterObject< StoreValue<types::Point> >("File/Point/Save point").setDescription("Save a value in a file for later use");
 int StoreValue_RectClass = RegisterObject< StoreValue<types::Rect> >("File/Rectangle/Save rectangle").setDescription("Save a value in a file for later use");
 int StoreValue_ShaderClass = RegisterObject< StoreValue<types::Shader> >("File/Shader/Save shader").setDescription("Save a value in a file for later use");
-int StoreValue_StringClass = RegisterObject< StoreValue<QString> >("File/Text/Save text").setDescription("Save a value in a file for later use");
+int StoreValue_StringClass = RegisterObject< StoreValue<std::string> >("File/Text/Save text").setDescription("Save a value in a file for later use");
 
 int StoreValue_VectorColorClass = RegisterObject< StoreValue< std::vector<types::Color> > >("File/Color/Save colors list").setDescription("Save a value in a file for later use");
 int StoreValue_VectorDoubleClass = RegisterObject< StoreValue< std::vector<PReal> > >("File/Real/Save reals list").setDescription("Save a value in a file for later use");
@@ -32,7 +32,7 @@ int StoreValue_VectorPathClass = RegisterObject< StoreValue< std::vector<types::
 int StoreValue_VectorPointClass = RegisterObject< StoreValue< std::vector<types::Point> > >("File/Point/Save points list").setDescription("Save a value in a file for later use");
 int StoreValue_VectorRectClass = RegisterObject< StoreValue< std::vector<types::Rect> > >("File/Rectangle/Save rectangles list").setDescription("Save a value in a file for later use");
 int StoreValue_VectorShaderClass = RegisterObject< StoreValue< std::vector<types::Shader> > >("File/Shader/Save shaders list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorStringClass = RegisterObject< StoreValue< std::vector<QString> > >("File/Text/Save texts list").setDescription("Save a value in a file for later use");
+int StoreValue_VectorStringClass = RegisterObject< StoreValue< std::vector<std::string> > >("File/Text/Save texts list").setDescription("Save a value in a file for later use");
 
 int StoreValue_AnimationColorClass = RegisterObject< StoreValue< types::Animation<types::Color> > >("File/Color/Save colors animation").setDescription("Save a value in a file for later use");
 int StoreValue_AnimationDoubleClass = RegisterObject< StoreValue< types::Animation<PReal> > >("File/Real/Save reals animation").setDescription("Save a value in a file for later use");

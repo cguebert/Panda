@@ -77,17 +77,15 @@ void EditShaderDialog::updateValuesTab(const Shader::ValuesVector& values)
 
 	for(auto value : values)
 	{
-		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()
-												 ->create(dummyContainer, value->getValue(),
-														  value->dataTrait()->fullTypeId(),
-														  "", value->getName(), "")
-												 );
+		DataWidgetPtr dataWidget = DataWidgetPtr(DataWidgetFactory::getInstance()->create(
+			dummyContainer, value->getValue(), value->dataTrait()->fullTypeId(),
+			"", QString::fromStdString(value->getName()), "") );
 
 		if (dataWidget)
 		{
 			m_dataWidgets.push_back(dataWidget);
 			QWidget* widget = dataWidget->createWidgets(m_readOnly);
-			valuesLayout->addRow(value->getName(), widget);
+			valuesLayout->addRow(QString::fromStdString(value->getName()), widget);
 		}
 	}
 }
@@ -99,7 +97,7 @@ void EditShaderDialog::readFromData(const Shader& shader)
 	{
 		if(m_sourceWidgets.count(source.type))
 		{
-			m_sourceWidgets.at(source.type).sourceEdit->setPlainText(source.sourceCode);
+			m_sourceWidgets.at(source.type).sourceEdit->setPlainText(QString::fromStdString(source.sourceCode));
 		}
 	}
 
@@ -110,7 +108,7 @@ void EditShaderDialog::readFromData(const Shader& shader)
 void EditShaderDialog::writeToData(Shader& shader)
 {
 	for(const auto& it : m_sourceWidgets)
-		shader.setSource(it.first, it.second.sourceEdit->toPlainText());
+		shader.setSource(it.first, it.second.sourceEdit->toPlainText().toStdString());
 }
 
 //****************************************************************************//

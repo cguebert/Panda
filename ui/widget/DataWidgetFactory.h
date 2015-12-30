@@ -6,6 +6,8 @@
 #include <map>
 #include <memory>
 
+#include <QString>
+
 class QWidget;
 class BaseDataWidget;
 

@@ -19,7 +19,7 @@ void alignHorizontallyCenter(GraphView* view)
 
 	qreal center = sum / odsList.size();
 
-	auto moveMacro = document->beginCommandMacro(view->tr("center on vertical axis"));
+	auto moveMacro = document->beginCommandMacro(view->tr("center on vertical axis").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -42,7 +42,7 @@ void alignHorizontallyLeft(GraphView* view)
 		left = std::min(pos.x(), left);
 	}
 
-	auto moveMacro = document->beginCommandMacro(view->tr("align left edges"));
+	auto moveMacro = document->beginCommandMacro(view->tr("align left edges").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -64,7 +64,7 @@ void alignHorizontallyRight(GraphView* view)
 		right = std::max(pos.x() + area.width(), right);
 	}
 
-	auto moveMacro = document->beginCommandMacro(view->tr("align right edges"));
+	auto moveMacro = document->beginCommandMacro(view->tr("align right edges").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -90,7 +90,7 @@ void alignVerticallyCenter(GraphView* view)
 
 	qreal center = sum / odsList.size();
 
-	auto moveMacro = document->beginCommandMacro(view->tr("center on horizontal axis"));
+	auto moveMacro = document->beginCommandMacro(view->tr("center on horizontal axis").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -113,7 +113,7 @@ void alignVerticallyTop(GraphView* view)
 		top = std::min(pos.y(), top);
 	}
 
-	auto moveMacro = document->beginCommandMacro(view->tr("align top edges"));
+	auto moveMacro = document->beginCommandMacro(view->tr("align top edges").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -135,7 +135,7 @@ void alignVerticallyBottom(GraphView* view)
 		bottom = std::max(pos.y() + area.height(), bottom);
 	}
 
-	auto moveMacro = document->beginCommandMacro(view->tr("align bottom edges"));
+	auto moveMacro = document->beginCommandMacro(view->tr("align bottom edges").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -170,7 +170,7 @@ void distributeHorizontallyCenter(GraphView* view)
 	qreal right = positions.back().first;
 	qreal step = (right - left) / (nb - 1);
 
-	auto moveMacro = document->beginCommandMacro(view->tr("distribute centers horizontally"));
+	auto moveMacro = document->beginCommandMacro(view->tr("distribute centers horizontally").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -214,7 +214,7 @@ void distributeHorizontallyGaps(GraphView* view)
 
 	qreal step = (right - left - width) / (nb - 1);
 
-	auto moveMacro = document->beginCommandMacro(view->tr("distribute gaps horizontally"));
+	auto moveMacro = document->beginCommandMacro(view->tr("distribute gaps horizontally").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -254,7 +254,7 @@ void distributeHorizontallyLeft(GraphView* view)
 	qreal right = positions.back().first;
 	qreal step = (right - left) / (nb - 1);
 
-	auto moveMacro = document->beginCommandMacro(view->tr("distribute left edges"));
+	auto moveMacro = document->beginCommandMacro(view->tr("distribute left edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -292,7 +292,7 @@ void distributeHorizontallyRight(GraphView* view)
 	qreal right = positions.back().first;
 	qreal step = (right - left) / (nb - 1);
 
-	auto moveMacro = document->beginCommandMacro(view->tr("distribute right edges"));
+	auto moveMacro = document->beginCommandMacro(view->tr("distribute right edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -330,7 +330,7 @@ void distributeVerticallyCenter(GraphView* view)
 	qreal bottom = positions.back().first;
 	qreal step = (bottom - top) / (nb - 1);
 
-	auto moveMacro = document->beginCommandMacro(view->tr("distribute centers vertically"));
+	auto moveMacro = document->beginCommandMacro(view->tr("distribute centers vertically").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -374,7 +374,7 @@ void distributeVerticallyGaps(GraphView* view)
 
 	qreal step = (bottom - top - height) / (nb - 1);
 
-	auto moveMacro = document->beginCommandMacro(view->tr("distribute gaps vertically"));
+	auto moveMacro = document->beginCommandMacro(view->tr("distribute gaps vertically").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -414,7 +414,7 @@ void distributeVerticallyTop(GraphView* view)
 	qreal bottom = positions.back().first;
 	qreal step = (bottom - top) / (nb - 1);
 
-	auto moveMacro = document->beginCommandMacro(view->tr("distribute top edges"));
+	auto moveMacro = document->beginCommandMacro(view->tr("distribute top edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -452,7 +452,7 @@ void distributeVerticallyBottom(GraphView* view)
 	qreal bottom = positions.back().first;
 	qreal step = (bottom - top) / (nb - 1);
 
-	auto moveMacro = document->beginCommandMacro(view->tr("distribute bottom edges"));
+	auto moveMacro = document->beginCommandMacro(view->tr("distribute bottom edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{

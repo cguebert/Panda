@@ -56,8 +56,8 @@ MainWindow::MainWindow()
 	// Set the application directories
 	QStringList standardPaths = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
 	for(const QString& path : standardPaths)
-		panda::helper::system::DataRepository.addPath(path);
-	panda::helper::system::DataRepository.addPath(QCoreApplication::applicationDirPath());
+		panda::helper::system::DataRepository.addPath(path.toStdString());
+	panda::helper::system::DataRepository.addPath(QCoreApplication::applicationDirPath().toStdString());
 
 	PluginsManager::getInstance()->loadPlugins();
 
@@ -685,16 +685,16 @@ void MainWindow::createRegistryMenu()
 			if(entry.hidden)
 				continue;
 
-			QString display = entry.menuDisplay;
+			QString display = QString::fromStdString(entry.menuDisplay);
 			QStringList hierarchy = display.split("/");
 			menuItemInfo* currentMenu = &menuTree;
 			for(int i=0; i<hierarchy.count()-1; ++i)
 				currentMenu = &currentMenu->childs[hierarchy[i]];
 
 			QAction* tempAction = new QAction(hierarchy.last(), this);
-			if(!entry.description.isEmpty())
-				tempAction->setStatusTip(entry.description);
-			tempAction->setData(entry.className);
+			if(!entry.description.empty())
+				tempAction->setStatusTip(QString::fromStdString(entry.description));
+			tempAction->setData(QString::fromStdString(entry.className));
 			currentMenu->actions[hierarchy.last()] = tempAction;
 
 			connect(tempAction, SIGNAL(triggered()), this, SLOT(createObject()));
@@ -796,7 +796,7 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile(const QString &fileName, bool import)
 {
-	if (!m_document->readFile(fileName, import))
+	if (!m_document->readFile(fileName.toStdString(), import))
 	{
 		statusBar()->showMessage(tr("Loading failed"), 2000);
 		return false;
@@ -817,7 +817,7 @@ bool MainWindow::loadFile(const QString &fileName, bool import)
 
 bool MainWindow::saveFile(const QString &fileName)
 {
-	if (!m_document->writeFile(fileName))
+	if (!m_document->writeFile(fileName.toStdString()))
 	{
 		statusBar()->showMessage(tr("Saving failed"), 2000);
 		return false;
@@ -881,7 +881,7 @@ void MainWindow::createObject()
 	QAction *action = qobject_cast<QAction *>(sender());
 	if(action)
 	{
-		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString(), m_document);
+		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString().toStdString(), m_document);
 		m_document->addCommand(new AddObjectCommand(m_document, m_graphView, object));
 	}
 }
@@ -955,7 +955,7 @@ void MainWindow::del()
 	auto selection = m_document->getSelection();
 	if(!selection.empty())
 	{
-		auto macro = m_document->beginCommandMacro(tr("delete objects"));
+		auto macro = m_document->beginCommandMacro(tr("delete objects").toStdString());
 		m_document->addCommand(new RemoveObjectCommand(m_document, m_graphView, selection));
 	}
 }
@@ -1035,11 +1035,11 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 		auto data = m_graphView->getContextMenuData();
 		if(data)
 			owner = data->getOwner();
-		if(owner && owner->getClassName() == "GeneratorUser" && owner->getNamespaceName() == "panda")
+		if(owner && owner->getClass()->getClassName() == "GeneratorUser" && owner->getClass()->getNamespaceName() == "panda")
 			menu.addAction(m_chooseWidget);
 	}
 
-	if(obj && obj->getClassName() == "GeneratorUser" && obj->getNamespaceName() == "panda")
+	if(obj && obj->getClass()->getClassName() == "GeneratorUser" && obj->getClass()->getNamespaceName() == "panda")
 		menu.addAction(m_chooseWidget);
 
 	if(flags & GraphView::MENU_IMAGE)
@@ -1154,7 +1154,7 @@ void MainWindow::showImageViewport()
 		container->setWidget(imageViewport);
 		m_imageViewports[imageViewport] = container;
 
-		QString label = clickedData->getOwner()->getName() + "." + clickedData->getName();
+		QString label = QString::fromStdString(clickedData->getOwner()->getName()) + "." + QString::fromStdString(clickedData->getName());
 		m_tabWidget->addTab(container, label, true);
 	}
 }
@@ -1206,9 +1206,9 @@ void MainWindow::convertSavedDocuments()
 	{
 		auto path = entry.absoluteFilePath();
 		m_document->resetDocument();
-		if (m_document->readFile(path))
+		if (m_document->readFile(path.toStdString()))
 		{
-			m_document->writeFile(path);
+			m_document->writeFile(path.toStdString());
 			++nb;
 		}
 		else

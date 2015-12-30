@@ -1,7 +1,7 @@
 #include <panda/PandaObject.h>
+#include <panda/XmlDocument.h>
 
 #include <QTimer>
-#include <QFile>
 
 namespace panda {
 
@@ -13,50 +13,44 @@ public:
 
 	StoreValue(PandaDocument *doc)
 		: PandaObject(doc)
-		, input(initData("input", "The value you want to store"))
-		, fileName(initData("file name", "File where to store the value"))
-		, singleValue(initData(1, "single value", "If false save all the values during the animation"))
+		, m_input(initData("input", "The value you want to store"))
+		, m_fileName(initData("file name", "File where to store the value"))
+		, m_singleValue(initData(1, "single value", "If false save all the values during the animation"))
 	{
-		addInput(input);
-		addInput(fileName);
-		addInput(singleValue);
+		addInput(m_input);
+		addInput(m_fileName);
+		addInput(m_singleValue);
 
-		fileName.setWidget("save file");
-		singleValue.setWidget("checkbox");
+		m_fileName.setWidget("save file");
+		m_singleValue.setWidget("checkbox");
 
-		saveTimer.setSingleShot(true);
+		m_saveTimer.setSingleShot(true);
 
-		QObject::connect(&saveTimer, &QTimer::timeout, [this]() { onTimeout(); });
+		QObject::connect(&m_saveTimer, &QTimer::timeout, [this]() { onTimeout(); });
 	}
 
-	void removeChilds(QDomNode& node)
+	void initRoot()
 	{
-		auto children = node.childNodes();
-		int nb=children.size();
-		for(int i=nb-1; i>=0; --i)
-			node.removeChild(children.at(i));
+		m_xmlDoc.clear();
+		m_xmlRoot = m_xmlDoc.root();
+		m_xmlRoot.setName("PandaValue");
 	}
 
 	void reset()
 	{
-		if(!xmlRoot.isNull())
-			removeChilds(xmlRoot);
+		initRoot();
 	}
 
 	void addValue()
 	{
-		if(xmlRoot.isNull())
-		{
-			xmlRoot = xmlDoc.createElement("PandaValue");
-			xmlDoc.appendChild(xmlRoot);
-		}
+		if(!m_xmlRoot)
+			initRoot();
 
-		if(singleValue.getValue() || !m_isInStep)
-			removeChilds(xmlRoot);
+		if (m_singleValue.getValue() || !m_isInStep)
+			initRoot();
 
-		QDomElement xmlData = xmlDoc.createElement("SavedData");
-		input.save(xmlDoc, xmlData);
-		xmlRoot.appendChild(xmlData);
+		auto xmlData = m_xmlRoot.addChild("SavedData");
+		m_input.save(xmlData);
 	}
 
 	void endStep()
@@ -64,20 +58,17 @@ public:
 		addValue();
 		PandaObject::endStep();
 
-		saveTimer.stop();
-		saveTimer.start(500);
+		m_saveTimer.stop();
+		m_saveTimer.start(500);
 	}
 
 	void saveToFile()
 	{
-		QString tmpFileName = fileName.getValue();
-		if(tmpFileName.isEmpty())
-			return;
-		QFile file(tmpFileName);
-		if (!file.open(QIODevice::WriteOnly))
+		auto tmpFileName = m_fileName.getValue();
+		if(tmpFileName.empty())
 			return;
 
-		file.write(xmlDoc.toByteArray(4));
+		m_xmlDoc.saveToFile(tmpFileName);
 	}
 
 	void onTimeout()
@@ -86,12 +77,12 @@ public:
 	}
 
 protected:
-	Data<T> input;
-	Data<QString> fileName;
-	Data<int> singleValue;
-	QDomDocument xmlDoc;
-	QDomElement xmlRoot;
-	QTimer saveTimer;
+	Data<T> m_input;
+	Data<std::string> m_fileName;
+	Data<int> m_singleValue;
+	XmlDocument m_xmlDoc;
+	XmlElement m_xmlRoot;
+	QTimer m_saveTimer;
 };
 
 } // namespace Panda

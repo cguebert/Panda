@@ -51,7 +51,7 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, GraphView* view)
 	for(const auto& entry : ObjectFactory::getInstance()->getRegistryMap())
 	{
 		if(!entry.second.hidden)
-			m_menuStringsList << entry.second.menuDisplay;
+			m_menuStringsList << QString::fromStdString(entry.second.menuDisplay);
 	}
 
 	// Adding groups
@@ -64,7 +64,7 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, GraphView* view)
 	updateDescLabel();
 }
 
-bool getFactoryEntry(QString menu, ObjectFactory::ClassEntry& entry)
+bool getFactoryEntry(const std::string& menu, ObjectFactory::ClassEntry& entry)
 {
 	for(const auto& iter : ObjectFactory::getInstance()->getRegistryMap())
 	{
@@ -96,8 +96,8 @@ void QuickCreateDialog::updateDescLabel()
 		else
 		{
 			ObjectFactory::ClassEntry entry;
-			if(getFactoryEntry(selectedItemText, entry))
-				m_descLabel->setText(entry.description);
+			if(getFactoryEntry(selectedItemText.toStdString(), entry))
+				m_descLabel->setText(QString::fromStdString(entry.description));
 			else
 				m_descLabel->setText("");
 		}
@@ -192,7 +192,7 @@ void QuickCreateDialog::createObject()
 		else
 		{
 			ObjectFactory::ClassEntry entry;
-			if(getFactoryEntry(selectedItemText, entry))
+			if(getFactoryEntry(selectedItemText.toStdString(), entry))
 			{
 				auto object = ObjectFactory::getInstance()->create(entry.className, m_document);
 				m_document->addCommand(new AddObjectCommand(m_document, m_view, object));

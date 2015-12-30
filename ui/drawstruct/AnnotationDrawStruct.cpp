@@ -4,6 +4,7 @@
 #include <ui/command/ModifyAnnotationCommand.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/XmlDocument.h>
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -27,13 +28,13 @@ void AnnotationDrawStruct::drawBackground(QPainter* painter)
 	painter->setBrush(Qt::NoBrush);
 
 	// Compute the bounding box of the text, if it changed
-	const QString& text = m_annotation->m_text.getValue();
+	const QString& text = QString::fromStdString(m_annotation->m_text.getValue());
 	int textCounter = m_annotation->m_text.getCounter();
 	int fontCounter = m_annotation->m_font.getCounter();
 	if(m_textSize.isEmpty() || m_textCounter != textCounter || m_fontCounter != fontCounter)
 	{
 		QFont theFont;
-		theFont.fromString(m_annotation->m_font.getValue());
+		theFont.fromString(QString::fromStdString(m_annotation->m_font.getValue()));
 		painter->setFont(theFont);
 
 		QRectF tempArea = QRectF(m_startPos, QSizeF(1000, 1000));
@@ -56,7 +57,7 @@ void AnnotationDrawStruct::drawForeground(QPainter* painter)
 	painter->save();
 	painter->setBrush(Qt::NoBrush);
 	QFont theFont;
-	theFont.fromString(m_annotation->m_font.getValue());
+	theFont.fromString(QString::fromStdString(m_annotation->m_font.getValue()));
 	painter->setFont(theFont);
 
 	// Draw the box behind the text
@@ -67,7 +68,7 @@ void AnnotationDrawStruct::drawForeground(QPainter* painter)
 	painter->restore();
 
 	// Draw the text
-	painter->drawText(m_textArea.adjusted(5, 5, -5, -5), Qt::AlignLeft | Qt::AlignTop, m_annotation->m_text.getValue());
+	painter->drawText(m_textArea.adjusted(5, 5, -5, -5), Qt::AlignLeft | Qt::AlignTop, QString::fromStdString(m_annotation->m_text.getValue()));
 
 	// Draw the handle
 	const panda::PandaDocument* doc = m_parentView->getDocument();
@@ -185,15 +186,15 @@ void AnnotationDrawStruct::update()
 		 m_objectArea |= QRectF(m_startPos, m_endPos).normalized();
 }
 
-void AnnotationDrawStruct::save(QDomDocument& doc, QDomElement& elem)
+void AnnotationDrawStruct::save(panda::XmlElement& elem)
 {
-	ObjectDrawStruct::save(doc, elem);
+	ObjectDrawStruct::save(elem);
 
 	elem.setAttribute("dx", m_deltaToEnd.x());
 	elem.setAttribute("dy", m_deltaToEnd.y());
 }
 
-void AnnotationDrawStruct::load(QDomElement& elem)
+void AnnotationDrawStruct::load(panda::XmlElement& elem)
 {
 #ifdef PANDA_DOUBLE
 	m_deltaToEnd.setX(elem.attribute("dx").toDouble());

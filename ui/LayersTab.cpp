@@ -111,7 +111,7 @@ void LayersTab::updateTable()
 	int rowIndex = nbRows-1;
 	for(panda::BaseLayer* layer : m_layers)
 	{
-		QTableWidgetItem *item = new QTableWidgetItem(layer->getLayerName());
+		QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(layer->getLayerName()));
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 		item->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(layer)));
 		m_tableWidget->setItem(rowIndex, 0, item);
@@ -130,7 +130,7 @@ void LayersTab::addedObject(panda::PandaObject* object)
 		{
 			m_selectedLayer = layer;
 			m_nameEdit->setEnabled(true);
-			m_nameEdit->setText(m_selectedLayer->getLayerName());
+			m_nameEdit->setText(QString::fromStdString(m_selectedLayer->getLayerName()));
 			m_compositionBox->setEnabled(true);
 			m_compositionBox->setCurrentIndex(m_selectedLayer->getCompositionMode());
 			m_opacitySlider->setEnabled(true);
@@ -170,7 +170,7 @@ void LayersTab::dirtyObject(panda::PandaObject* object)
 {
 	if(m_selectedLayer && m_selectedLayer == dynamic_cast<panda::BaseLayer*>(object))
 	{
-		m_nameEdit->setText(m_selectedLayer->getLayerName());
+		m_nameEdit->setText(QString::fromStdString(m_selectedLayer->getLayerName()));
 		m_compositionBox->setCurrentIndex(m_selectedLayer->getCompositionMode());
 		m_opacitySlider->setValue(m_selectedLayer->getOpacity() * 100);
 	}
@@ -183,7 +183,7 @@ void LayersTab::itemClicked(QTableWidgetItem* item)
 	if(m_selectedLayer)
 	{
 		m_nameEdit->setEnabled(true);
-		m_nameEdit->setText(m_selectedLayer->getLayerName());
+		m_nameEdit->setText(QString::fromStdString(m_selectedLayer->getLayerName()));
 		m_compositionBox->setEnabled(true);
 		m_compositionBox->setCurrentIndex(m_selectedLayer->getCompositionMode());
 		m_opacitySlider->setEnabled(true);
@@ -254,7 +254,7 @@ void LayersTab::moveLayerDown()
 
 void LayersTab::nameChanged()
 {
-	QString name = m_nameEdit->text();
+	auto name = m_nameEdit->text().toStdString();
 	if(m_selectedLayer)
 	{
 		auto data = &m_selectedLayer->getLayerNameData();
@@ -262,7 +262,7 @@ void LayersTab::nameChanged()
 		if(oldValue != name)
 		{
 			auto owner = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-			m_document->addCommand(new SetDataValueCommand<QString>(data, oldValue, name, owner));
+			m_document->addCommand(new SetDataValueCommand<std::string>(data, oldValue, name, owner));
 			updateTable();
 		}
 	}

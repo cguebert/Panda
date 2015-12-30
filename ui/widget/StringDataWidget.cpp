@@ -6,10 +6,10 @@
 #include <QtWidgets>
 
 template<>
-class DataWidgetContainer< QString >
+class DataWidgetContainer< std::string >
 {
 protected:
-	typedef QString value_type;
+	typedef std::string value_type;
 	QLineEdit* lineEdit;
 
 public:
@@ -24,12 +24,13 @@ public:
 	}
 	void readFromData(const value_type& v)
 	{
-		if (lineEdit->text() != v)
-			lineEdit->setText(v);
+		auto qVal = QString::fromStdString(v);
+		if (lineEdit->text() != qVal)
+			lineEdit->setText(qVal);
 	}
 	void writeToData(value_type& v)
 	{
-		v = lineEdit->text();
+		v = lineEdit->text().toStdString();
 	}
 };
 
@@ -39,7 +40,7 @@ template <bool openMode>
 class FileDataWidgetContainer : public BaseOpenDialogObject
 {
 protected:
-	typedef QString value_type;
+	typedef std::string value_type;
 	QWidget* container;
 	QLineEdit* lineEdit;
 
@@ -74,11 +75,11 @@ public:
 	}
 	void readFromData(const value_type& v)
 	{
-		lineEdit->setText(v);
+		lineEdit->setText(QString::fromStdString(v));
 	}
 	void writeToData(value_type& v)
 	{
-		v = lineEdit->text();
+		v = lineEdit->text().toStdString();
 	}
 	virtual void onShowDialog()
 	{
@@ -105,7 +106,7 @@ public:
 class FontDataWidgetContainer : public BaseOpenDialogObject, public ObjectWithPreview
 {
 protected:
-	typedef QString value_type;
+	typedef std::string value_type;
 	QWidget* container;
 	PreviewView* preview;
 	QFont theFont;
@@ -140,12 +141,12 @@ public:
 	}
 	void readFromData(const value_type& v)
 	{
-		theFont.fromString(v);
+		theFont.fromString(QString::fromStdString(v));
 		updatePreview();
 	}
 	void writeToData(value_type& v)
 	{
-		v = theFont.toString();
+		v = theFont.toString().toStdString();
 		updatePreview();
 	}
 	virtual void onShowDialog()
@@ -176,7 +177,7 @@ public:
 class MultilineDataWidgetDialog : public QDialog
 {
 protected:
-	typedef QString value_type;
+	typedef std::string value_type;
 	QTextEdit* textEdit;
 
 public:
@@ -187,7 +188,7 @@ public:
 		QVBoxLayout* mainLayout = new QVBoxLayout();
 
 		textEdit = new QTextEdit;
-		textEdit->setPlainText(v);
+		textEdit->setPlainText(QString::fromStdString(v));
 		textEdit->setEnabled(!readOnly);
 		mainLayout->addWidget(textEdit);
 
@@ -207,19 +208,19 @@ public:
 		setWindowTitle(tr("Multiline edit") + (readOnly ? tr(" (read-only)") : ""));
 	}
 
-	QString getText()
+	std::string getText()
 	{
-		return textEdit->toPlainText();
+		return textEdit->toPlainText().toStdString();
 	}
 };
 
 class MultilineDataWidgetContainer : public BaseOpenDialogObject
 {
 protected:
-	typedef QString value_type;
+	typedef std::string value_type;
 	QWidget* container;
 	QLabel* label;
-	QString theText;
+	std::string theText;
 	bool isReadOnly;
 
 public:
@@ -255,7 +256,7 @@ public:
 	void readFromData(const value_type& v)
 	{
 		theText = v;
-		label->setText(v);
+		label->setText(QString::fromStdString(v));
 	}
 	void writeToData(value_type& v)
 	{
@@ -267,7 +268,7 @@ public:
 		if(dlg.exec() == QDialog::Accepted)
 		{
 			theText = dlg.getText();
-			label->setText(theText);
+			label->setText(QString::fromStdString(theText));
 			emit editingFinished();
 		}
 	}
@@ -278,10 +279,10 @@ public:
 
 //****************************************************************************//
 
-RegisterWidget<SimpleDataWidget<QString> > DWClass_string("default");
-RegisterWidget<SimpleDataWidget<QString, FileDataWidgetContainer<true> > > DWClass_file_open("open file");
-RegisterWidget<SimpleDataWidget<QString, FileDataWidgetContainer<false> > > DWClass_file_save("save file");
-RegisterWidget<SimpleDataWidget<QString, FontDataWidgetContainer> > DWClass_font("font");
-RegisterWidget<SimpleDataWidget<QString, MultilineDataWidgetContainer> > DWClass_multiline("multiline");
+RegisterWidget<SimpleDataWidget<std::string> > DWClass_string("default");
+RegisterWidget<SimpleDataWidget<std::string, FileDataWidgetContainer<true> > > DWClass_file_open("open file");
+RegisterWidget<SimpleDataWidget<std::string, FileDataWidgetContainer<false> > > DWClass_file_save("save file");
+RegisterWidget<SimpleDataWidget<std::string, FontDataWidgetContainer> > DWClass_font("font");
+RegisterWidget<SimpleDataWidget<std::string, MultilineDataWidgetContainer> > DWClass_multiline("multiline");
 
-RegisterWidget<OpenDialogDataWidget<std::vector<QString>, ListDataWidgetDialog<std::vector<QString> > > > DWClass_strings_list_generic("generic");
+RegisterWidget<OpenDialogDataWidget<std::vector<std::string>, ListDataWidgetDialog<std::vector<std::string> > > > DWClass_strings_list_generic("generic");

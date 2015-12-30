@@ -35,27 +35,27 @@ qreal getDataHeight(GraphView* view, BaseData* data)
 	return 0;
 }
 
-QString findAvailableDataName(PandaObject* object, QString baseName, BaseData* data = nullptr)
+std::string findAvailableDataName(PandaObject* object, const std::string& baseName, BaseData* data = nullptr)
 {
-	QString name = baseName;
+	auto name = baseName;
 	BaseData* testData = object->getData(name);
 	if(testData && testData != data)
 	{
 		int i=2;
-		testData = object->getData(name + QString::number(i));
+		testData = object->getData(name + std::to_string(i));
 		while(testData && testData != data)
 		{
 			++i;
-			testData = object->getData(name + QString::number(i));
+			testData = object->getData(name + std::to_string(i));
 		}
-		name = name + QString::number(i);
+		name = name + std::to_string(i);
 	}
 	return name;
 }
 
 BaseData* duplicateData(Group* group, BaseData* data)
 {
-	QString name = findAvailableDataName(group, data->getName());
+	auto name = findAvailableDataName(group, data->getName());
 
 	auto newData = DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(),
 										   name, data->getHelp(), group);
@@ -101,7 +101,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		}
 	}
 
-	auto macro = doc->beginCommandMacro(QCoreApplication::translate("createGroup", "Create Group"));
+	auto macro = doc->beginCommandMacro(QCoreApplication::translate("createGroup", "Create Group").toStdString());
 
 	if(layer == doc->getDefaultLayer())	// Won't be added in the group!
 		layer = nullptr;
@@ -179,7 +179,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 					else
 					{
 						createdData = connectedInputDatas.value(otherData);
-						QString name = findAvailableDataName(group, otherData->getName(), createdData);
+						auto name = findAvailableDataName(group, otherData->getName(), createdData);
 						if(name != createdData->getName())
 						{
 							createdData->setName(name);
@@ -224,9 +224,9 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 
 		// Looking for UserValue objects that can be used as inputs or outputs to the group
 		BaseGeneratorUser* userValue = dynamic_cast<BaseGeneratorUser*>(object);
-		if(userValue && !userValue->getCaption().isEmpty())
+		if(userValue && !userValue->getCaption().empty())
 		{
-			QString caption = userValue->getCaption();
+			auto caption = userValue->getCaption();
 			auto inputData = userValue->getInputUserData();
 			auto outputData = userValue->getOutputUserData();
 			if(userValue->hasConnectedInput())
@@ -304,7 +304,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 	if(groups.isEmpty())
 		return false;
 
-	auto macro = doc->beginCommandMacro(QCoreApplication::translate("createGroup", "ungroup selection"));
+	auto macro = doc->beginCommandMacro(QCoreApplication::translate("createGroup", "ungroup selection").toStdString());
 
 	// For each group in the selection
 	for(auto group : groups)

@@ -25,8 +25,8 @@ public:
 	virtual void update();
 	virtual bool contains(const QPointF& point);
 
-	virtual void save(QDomDocument& doc, QDomElement& elem);
-	virtual void load(QDomElement& elem);
+	virtual void save(panda::XmlElement& elem);
+	virtual void load(panda::XmlElement& elem);
 
 	virtual bool mousePressEvent(QMouseEvent* event);
 	virtual void mouseMoveEvent(QMouseEvent* event);

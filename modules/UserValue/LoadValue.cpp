@@ -21,7 +21,7 @@ int LoadValue_PathClass = RegisterObject< LoadValue<types::Path> >("File/Path/Lo
 int LoadValue_PointClass = RegisterObject< LoadValue<types::Point> >("File/Point/Load point").setDescription("Load a value from a file");
 int LoadValue_RectClass = RegisterObject< LoadValue<types::Rect> >("File/Rectangle/Load rectangle").setDescription("Load a value from a file");
 int LoadValue_ShaderClass = RegisterObject< LoadValue<types::Shader> >("File/Shader/Load shader").setDescription("Load a value from a file");
-int LoadValue_StringClass = RegisterObject< LoadValue<QString> >("File/Text/Load text").setDescription("Load a value from a file");
+int LoadValue_StringClass = RegisterObject< LoadValue<std::string> >("File/Text/Load text").setDescription("Load a value from a file");
 
 int LoadValue_VectorColorClass = RegisterObject< LoadValue< std::vector<types::Color> > >("File/Color/Load colors list").setDescription("Load a value from a file");
 int LoadValue_VectorDoubleClass = RegisterObject< LoadValue< std::vector<PReal> > >("File/Real/Load reals list").setDescription("Load a value from a file");
@@ -32,7 +32,7 @@ int LoadValue_VectorPathClass = RegisterObject< LoadValue< std::vector<types::Pa
 int LoadValue_VectorPointClass = RegisterObject< LoadValue< std::vector<types::Point> > >("File/Point/Load points list").setDescription("Load a value from a file");
 int LoadValue_VectorRectClass = RegisterObject< LoadValue< std::vector<types::Rect> > >("File/Rectangle/Load rectangles list").setDescription("Load a value from a file");
 int LoadValue_VectorShaderClass = RegisterObject< LoadValue< std::vector<types::Shader> > >("File/Shader/Load shaders list").setDescription("Load a value from a file");
-int LoadValue_VectorStringClass = RegisterObject< LoadValue< std::vector<QString> > >("File/Text/Load texts list").setDescription("Load a value from a file");
+int LoadValue_VectorStringClass = RegisterObject< LoadValue< std::vector<std::string> > >("File/Text/Load texts list").setDescription("Load a value from a file");
 
 int LoadValue_AnimationColorClass = RegisterObject< LoadValue< types::Animation<types::Color> > >("File/Color/Load colors animation").setDescription("Load a value from a file");
 int LoadValue_AnimationDoubleClass = RegisterObject< LoadValue< types::Animation<PReal> > >("File/Real/Load reals animation").setDescription("Load a value from a file");

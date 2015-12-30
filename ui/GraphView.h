@@ -20,6 +20,7 @@ class Renderer;
 class ScopedMacro;
 class DockableObject;
 class DockObject;
+class XmlElement;
 }
 
 class LinkTag;
@@ -124,8 +125,8 @@ public slots:
 	void addedObject(panda::PandaObject* object);
 	void removeObject(panda::PandaObject* object);
 	void modifiedObject(panda::PandaObject* object);
-	void savingObject(QDomDocument&, QDomElement&, panda::PandaObject*);
-	void loadingObject(QDomElement&, panda::PandaObject*);
+	void savingObject(panda::XmlElement&, panda::PandaObject*);
+	void loadingObject(panda::XmlElement&, panda::PandaObject*);
 	void updateLinkTags(bool reset=false);
 	void removeLink();
 	void hoverDataInfo();

@@ -1,6 +1,5 @@
 #include <panda/PandaObject.h>
-
-#include <QFile>
+#include <panda/XmlDocument.h>
 
 namespace panda {
 
@@ -23,38 +22,29 @@ public:
 
 	void reset()
 	{
-		QString tmpFileName = m_fileName.getValue();
-		if(tmpFileName.isEmpty())
-			return;
-		QFile file(tmpFileName);
-		if (!file.open(QIODevice::ReadOnly))
+		m_xmlData = XmlElement();
+		if (!m_xmlDoc.loadFromFile(m_fileName.getValue()))
 			return;
 
-		QDomDocument doc;
-		int errLine, errCol;
-		if (!doc.setContent(&file, nullptr, &errLine, &errCol))
-			return;
-
-		m_xmlRoot = doc.documentElement();
-		m_xmlData = m_xmlRoot.firstChildElement("SavedData");
+		m_xmlData = m_xmlDoc.root().firstChild("SavedData");
 	}
 
 	void beginStep()
 	{
 		PandaObject::beginStep();
 
-		if(!m_xmlData.isNull())
+		if(m_xmlData)
 		{
 			m_output.load(m_xmlData);
-
-			m_xmlData = m_xmlData.nextSiblingElement("SavedData");
+			m_xmlData = m_xmlData.nextSibling("SavedData");
 		}
 	}
 
 protected:
 	Data<T> m_output;
-	Data<QString> m_fileName;
-	QDomElement m_xmlRoot, m_xmlData;
+	Data<std::string> m_fileName;
+	XmlDocument m_xmlDoc;
+	XmlElement m_xmlData;
 };
 
 } // namespace Panda

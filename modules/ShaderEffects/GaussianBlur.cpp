@@ -1,5 +1,6 @@
 #include "ShaderEffects.h"
 #include <panda/ObjectFactory.h>
+#include <panda/helper/algorithm.h>
 #include <panda/helper/system/FileRepository.h>
 
 namespace panda {
@@ -62,10 +63,10 @@ public:
 		PReal radius = m_radius.getValue();
 		m_currentRadius = std::max(radius, (PReal)0.1);
 
-		if (m_fragmentSource.isEmpty())
+		if (m_fragmentSource.empty())
 			return;
 
-		QString source = m_fragmentSource;
+		std::string source = m_fragmentSource;
 		std::vector<float> halfKernel = computeHalfKernel();
 		halfKernel[0] /= 2;
 
@@ -81,29 +82,29 @@ public:
 		for (int i = 0; i < numSamples; ++i)
 			offsets[i] = i*2.0f + halfKernel[i*2+1] / weights[i];
 
-		source.replace("~~1~~", QString::number(numSamples));
+		helper::replaceAll<std::string>(source, "~~1~~", std::to_string(numSamples));
 
-		QString weightsString;
+		std::string weightsString;
 		for(const auto& w : weights)
 		{
-			if(!weightsString.isEmpty())
+			if(!weightsString.empty())
 				weightsString += ", ";
-			weightsString += QString::number(w, 'f');
+			weightsString += std::to_string(w);
 		}
-		source.replace("~~2~~", weightsString);
+		helper::replaceAll<std::string>(source, "~~2~~", weightsString);
 
-		QString offsetsString;
+		std::string offsetsString;
 		for(const auto& off : offsets)
 		{
-			if(!offsetsString.isEmpty())
+			if(!offsetsString.empty())
 				offsetsString += ", ";
-			offsetsString += QString::number(off, 'f');
+			offsetsString += std::to_string(off);
 		}
-		source.replace("~~3~~", offsetsString);
+		helper::replaceAll<std::string>(source, "~~3~~", offsetsString);
 
 		m_shaderProgram->removeAllShaders();
 		m_shaderProgram->addShader(m_vertexShader.get());
-		m_shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, source);
+		m_shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, QString::fromStdString(source));
 	}
 
 	void prepareUpdate(QSize size)
@@ -129,7 +130,7 @@ protected:
 	PReal m_currentRadius;
 	int m_halfKernelSize;
 	QSize m_size;
-	QString m_fragmentSource;
+	std::string m_fragmentSource;
 	std::shared_ptr<QOpenGLShader> m_vertexShader;
 	std::shared_ptr<QOpenGLShaderProgram> m_shaderProgram;
 };

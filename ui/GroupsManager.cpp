@@ -6,6 +6,7 @@
 #include <panda/Group.h>
 #include <panda/ObjectFactory.h>
 #include <panda/PandaDocument.h>
+#include <panda/XmlDocument.h>
 
 GroupsManager::GroupsManager()
 {
@@ -54,18 +55,14 @@ void GroupsManager::createGroupsList()
 
 bool GroupsManager::getGroupDescription(const QString &fileName, QString& description)
 {
-	QFile file(fileName);
-	if(!file.open(QIODevice::ReadOnly))
+	panda::XmlDocument doc;
+	if (!doc.loadFromFile(fileName.toStdString()))
 		return false;
 
-	QDomDocument doc;
-	if(!doc.setContent(&file))
+	auto descAtt = doc.root().attribute("description");
+	if(!descAtt)
 		return false;
-
-	QDomElement root = doc.documentElement();
-	if(!root.hasAttribute("description"))
-		return false;
-	description = root.attribute("description");
+	description = QString::fromStdString(descAtt.toString());
 
 	return true;
 }
@@ -75,7 +72,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 	bool ok;
 	QString text = QInputDialog::getText(nullptr, tr("Save group"),
 										 tr("Group name:"), QLineEdit::Normal,
-										 group->getGroupName(), &ok);
+										 QString::fromStdString(group->getGroupName()), &ok);
 	if (!ok || text.isEmpty())
 		return false;
 
@@ -106,46 +103,44 @@ bool GroupsManager::saveGroup(panda::Group *group)
 							 .arg(file.errorString()));
 		return false;
 	}
+	file.close();
 
-	QDomDocument doc;
-	QDomElement root = doc.createElement("Group");
-	doc.appendChild(root);
+	panda::XmlDocument doc;
+	auto root = doc.root();
+	root.setName("Group");
 
 	description = QInputDialog::getText(nullptr, tr("Save group"),
 										tr("Group description:"), QLineEdit::Normal,
 										description, &ok);
 
-	root.setAttribute("description", description);
+	root.setAttribute("description", description.toStdString());
 	root.setAttribute("type", panda::ObjectFactory::getRegistryName(group));
 
-	group->save(doc, root);
+	group->save(root);
 
-	file.write(doc.toByteArray(4));
+	doc.saveToFile(fileName.toStdString());
 	return true;
 }
 
 panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* document, GraphView* view, QString groupPath)
 {
-	QFile file(m_groupsDirPath + "/" + groupPath + ".grp");
+	QString fileName = m_groupsDirPath + "/" + groupPath + ".grp";
+	QFile file(fileName);
 	if(!file.open(QIODevice::ReadOnly))
 	{
 		QMessageBox::warning(nullptr, tr("Panda"), tr("Could not open the file."));
 		return nullptr;
 	}
 
-	QDomDocument doc;
-	int errLine, errCol;
-	if (!doc.setContent(&file, nullptr, &errLine, &errCol))
+	panda::XmlDocument doc;
+	if (!doc.loadFromFile(fileName.toStdString()))
 	{
-		QMessageBox::warning(nullptr, tr("Panda"),
-							 tr("Cannot parse xml: error in ligne %2, column %3")
-							 .arg(errLine)
-							 .arg(errCol));
+		QMessageBox::warning(nullptr, tr("Panda"), tr("Xml error"));
 		return false;
 	}
 
-	QDomElement root = doc.documentElement();
-	QString registryName = root.attribute("type");
+	auto root = doc.root();
+	auto registryName = root.attribute("type").toString();
 
 	auto object = panda::ObjectFactory::getInstance()->create(registryName, document);
 	if(object)
@@ -157,7 +152,7 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 	{
 		QMessageBox::warning(nullptr, tr("Panda"),
 			tr("Could not create the object %1.\nA plugin must be missing.")
-			.arg(registryName));
+			.arg(QString::fromStdString(registryName)));
 		return nullptr;
 	}
 

@@ -57,7 +57,7 @@ void DatasTable::populateTable()
 		delete m_stackedLayout->currentWidget();
 	m_dataWidgets.clear();
 
-	m_nameLabel->setText(m_currentObject->getName());
+	m_nameLabel->setText(QString::fromStdString(m_currentObject->getName()));
 	m_stackedLayout->addWidget(scrollArea);
 	m_stackedLayout->setCurrentWidget(scrollArea);
 
@@ -75,9 +75,9 @@ void DatasTable::populateTable()
 			m_dataWidgets.push_back(dataWidget);
 			bool readOnly = (data->getParent() != nullptr);
 			QWidget* widget = dataWidget->createWidgets(readOnly);
-			QLabel* label = new QLabel(data->getName(), scrollArea);
+			QLabel* label = new QLabel(QString::fromStdString(data->getName()), scrollArea);
 			label->setBuddy(widget);
-			label->setToolTip(data->getHelp());
+			label->setToolTip(QString::fromStdString(data->getHelp()));
 			formLayout->addRow(label, widget);
 		}
 	}
@@ -95,9 +95,9 @@ void DatasTable::populateTable()
 			m_dataWidgets.push_back(dataWidget);
 
 			QWidget* widget = dataWidget->createWidgets(true);
-			QLabel* label = new QLabel(data->getName(), scrollArea);
+			QLabel* label = new QLabel(QString::fromStdString(data->getName()), scrollArea);
 			label->setBuddy(widget);
-			label->setToolTip(data->getHelp());
+			label->setToolTip(QString::fromStdString(data->getHelp()));
 			formLayout->addRow(label, widget);
 		}
 	}

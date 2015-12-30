@@ -51,7 +51,7 @@ public:
 		cleanDirty();
 	}
 
-	void load(QDomElement &elem)
+	void load(XmlElement& elem)
 	{
 		PandaObject::load(elem);
 

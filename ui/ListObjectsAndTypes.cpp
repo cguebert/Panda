@@ -22,11 +22,12 @@ bool objectsMenuLessThan(const ObjectFactory::ClassEntry& e1, const ObjectFactor
 	return e1.menuDisplay < e2.menuDisplay;
 }
 
-QString toHtml(QString text)
+QString toHtml(std::string text)
 {
-	text.replace("<", "&lt;");
-	text.replace(">", "&gt;");
-	return text;
+	QString result = QString::fromStdString(text);
+	result.replace("<", "&lt;");
+	result.replace(">", "&gt;");
+	return result;
 }
 
 struct EnrichedDataEntry
@@ -43,9 +44,9 @@ struct EnrichedDataEntry
 		, trait(nullptr)
 	{}
 
-	QString typeName;
-	QString className;
-	QString description;
+	std::string typeName;
+	std::string className;
+	std::string description;
 	int fullType;
 	const AbstractDataTrait* trait;
 };
@@ -102,7 +103,7 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 
 	for(const auto& d : dataEntries)
 	{
-		out << "   <h2>" << d.description << "</h2>\n"
+		out << "   <h2>" << QString::fromStdString(d.description) << "</h2>\n"
 			<< "    <p>Type: " << toHtml(d.className) << "</p>\n"
 			<< "    <p>Id: " << d.fullType << "</p>\n";
 
@@ -124,7 +125,7 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 				}
 				else
 					out << ", ";
-				out << d2.description;
+				out << QString::fromStdString(d2.description);
 			}
 		}
 		if(!hasConversions)
@@ -159,10 +160,10 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 
 	for(const auto& o : objectsEntries)
 	{
-		out << "   <h2>" << o.menuDisplay << "</h2>\n";
+		out << "   <h2>" << QString::fromStdString(o.menuDisplay) << "</h2>\n";
 		out << "	<p>In module: " << toHtml(o.moduleName) << "</p>\n";
 		out << "    <p>Type: " << toHtml(o.className) << "</p>\n";
-		out << "    <p>" << o.description << "</p>\n";
+		out << "    <p>" << QString::fromStdString(o.description) << "</p>\n";
 
 		if(o.creator)
 		{
@@ -173,9 +174,9 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 				out << "    <h3>Datas</h3>\n";
 			for(auto d : datas)
 			{
-				out << "     <p>" << d->getName() << ": "
-					<< d->getDescription() << ". "
-					<< d->getHelp() << "</p>\n";
+				out << "     <p>" << QString::fromStdString(d->getName()) << ": "
+					<< QString::fromStdString(d->getDescription()) << ". "
+					<< QString::fromStdString(d->getHelp()) << "</p>\n";
 			}
 		}
 	}

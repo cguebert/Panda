@@ -48,8 +48,8 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	connect(m_pandaDocument, SIGNAL(addedObject(panda::PandaObject*)), this, SLOT(addedObject(panda::PandaObject*)));
 	connect(m_pandaDocument, SIGNAL(removedObject(panda::PandaObject*)), this, SLOT(removeObject(panda::PandaObject*)));
 	connect(m_pandaDocument, SIGNAL(modifiedObject(panda::PandaObject*)), this, SLOT(modifiedObject(panda::PandaObject*)));
-	connect(m_pandaDocument, SIGNAL(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)), this, SLOT(savingObject(QDomDocument&,QDomElement&,panda::PandaObject*)));
-	connect(m_pandaDocument, SIGNAL(loadingObject(QDomElement&,panda::PandaObject*)), this, SLOT(loadingObject(QDomElement&,panda::PandaObject*)));
+	connect(m_pandaDocument, SIGNAL(savingObject(panda::XmlElement&,panda::PandaObject*)), this, SLOT(savingObject(panda::XmlElement&,panda::PandaObject*)));
+	connect(m_pandaDocument, SIGNAL(loadingObject(panda::XmlElement&,panda::PandaObject*)), this, SLOT(loadingObject(panda::XmlElement&,panda::PandaObject*)));
 	connect(m_pandaDocument, SIGNAL(startLoading()), this, SLOT(startLoading()));
 	connect(m_pandaDocument, SIGNAL(loadingFinished()), this, SLOT(loadingFinished()));
 	connect(m_pandaDocument, SIGNAL(changedDock(panda::DockableObject*)), this, SLOT(changedDock(panda::DockableObject*)));
@@ -446,7 +446,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				m_customSelection.push_back(object);
 			}
 
-			m_moveObjectsMacro = m_pandaDocument->beginCommandMacro(tr("move objects"));
+			m_moveObjectsMacro = m_pandaDocument->beginCommandMacro(tr("move objects").toStdString());
 
 			if(!delta.isNull())
 				m_pandaDocument->addCommand(new MoveObjectCommand(this, m_customSelection, delta));
@@ -540,11 +540,11 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				if(m_objectDrawStructs[object]->getDataRect(m_hoverData, dataRect))
 				{
 					QString display = QString("%1\n%2")
-							.arg(m_hoverData->getName())
-							.arg(m_hoverData->getDescription());
+							.arg(QString::fromStdString(m_hoverData->getName()))
+							.arg(QString::fromStdString(m_hoverData->getDescription()));
 					QToolTip::showText(event->globalPos(), display, this, dataRect.toRect());
-					if(!m_hoverData->getHelp().isEmpty())
-						emit showStatusBarMessage(m_hoverData->getHelp());
+					if(!m_hoverData->getHelp().empty())
+						emit showStatusBarMessage(QString::fromStdString(m_hoverData->getHelp()));
 				}
 			}
 		}
@@ -986,12 +986,12 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 	}
 }
 
-void GraphView::savingObject(QDomDocument& doc, QDomElement& elem, panda::PandaObject* object)
+void GraphView::savingObject(panda::XmlElement& elem, panda::PandaObject* object)
 {
-	m_objectDrawStructs[object]->save(doc, elem);
+	m_objectDrawStructs[object]->save(elem);
 }
 
-void GraphView::loadingObject(QDomElement& elem, panda::PandaObject* object)
+void GraphView::loadingObject(panda::XmlElement& elem, panda::PandaObject* object)
 {
 	m_objectDrawStructs[object]->load(elem);
 }
@@ -1179,9 +1179,9 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 	auto viewRect = QRectF(contentsRect());
 
 	// Use x position of every visible object
-	for(auto odsPair : m_objectDrawStructs)
+	for(const auto& odsPair : m_objectDrawStructs)
 	{
-		auto& ods = odsPair.second;
+		const auto& ods = odsPair.second;
 		if(ods.get() == selectedDrawStruct || !ods->acceptsMagneticSnap())
 			continue;
 
@@ -1287,7 +1287,7 @@ void GraphView::moveObjects(std::vector<panda::PandaObject*> objects, QPointF de
 
 void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)
 {
-	auto macro = m_pandaDocument->beginCommandMacro(tr("change link"));
+	auto macro = m_pandaDocument->beginCommandMacro(tr("change link").toStdString());
 	m_pandaDocument->addCommand(new LinkDatasCommand(target, parent));
 }
 
@@ -1409,7 +1409,7 @@ void GraphView::showChooseWidgetDialog()
 	else
 	{
 		auto obj = m_pandaDocument->getCurrentSelectedObject();
-		if(obj && obj->getClassName() == "GeneratorUser" && obj->getNamespaceName() == "panda")
+		if(obj && obj->getClass()->getClassName() == "GeneratorUser" && obj->getClass()->getNamespaceName() == "panda")
 		{
 			auto data = obj->getData("input");
 			if(data)

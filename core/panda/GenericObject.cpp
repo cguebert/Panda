@@ -88,7 +88,7 @@ BaseData* GenericObject::createDatas(int type, int index)
 		std::string nameType = DataFactory::typeToName(type);
 		std::string dataName = m_dataDefinitions[i].name;
 		if(dataName.find("%1") != std::string::npos)
-			dataName = helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
+			helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
 
 		dataName += " " + std::to_string(nbCreated);	// Add the count
 
@@ -162,7 +162,7 @@ void GenericObject::updateDataNames()
 
 			std::string dataName = m_dataDefinitions[i].name;
 			if(dataName.find("%1") != std::string::npos)
-				dataName = helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
+				helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
 
 			dataName += " " + std::to_string(index);	// Add the index
 			created->datas[i]->setName(dataName);
@@ -389,7 +389,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 			std::string nameType = DataFactory::typeToName(type);
 			std::string dataName = m_dataDefinitions[i].name;
 			if(dataName.find("%1") != std::string::npos)
-				dataName = helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
+				helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
 
 			dataName += " " + std::to_string(nbCreated);	// Add the count
 

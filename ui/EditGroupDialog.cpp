@@ -17,7 +17,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget* parent)
 	QVBoxLayout* vLayout = new QVBoxLayout;
 
 	QLabel* groupNameLabel = new QLabel(tr("group name:"), this);
-	m_editGroupName = new QLineEdit(group->getGroupName(), this);
+	m_editGroupName = new QLineEdit(QString::fromStdString(group->getGroupName()), this);
 	QHBoxLayout* groupNameLayout = new QHBoxLayout;
 	groupNameLayout->addWidget(groupNameLabel);
 	groupNameLayout->addWidget(m_editGroupName);
@@ -101,7 +101,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget* parent)
 
 void EditGroupDialog::populateRow(int rowIndex, panda::BaseData* data)
 {
-	QTableWidgetItem *item0 = new QTableWidgetItem(data->getName());
+	QTableWidgetItem *item0 = new QTableWidgetItem(QString::fromStdString(data->getName()));
 	item0->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 	item0->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
 	QTableWidgetItem *item1 = new QTableWidgetItem(data->isInput()?"true":"false");
@@ -110,7 +110,7 @@ void EditGroupDialog::populateRow(int rowIndex, panda::BaseData* data)
 	QTableWidgetItem *item2 = new QTableWidgetItem(data->isOutput()?"true":"false");
 	item2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 	item2->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
-	QTableWidgetItem *item3 = new QTableWidgetItem(data->getHelp());
+	QTableWidgetItem *item3 = new QTableWidgetItem(QString::fromStdString(data->getHelp()));
 	item3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 	item3->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
 	m_tableWidget->setItem(rowIndex, 0, item0);
@@ -172,9 +172,9 @@ void EditGroupDialog::dataHelpEdited(QString text)
 
 void EditGroupDialog::updateGroup()
 {
-	QString groupName = m_group->getGroupName();
+	auto groupName = m_group->getGroupName();
 	if(m_editGroupName->text().size())
-		groupName = m_editGroupName->text();
+		groupName = m_editGroupName->text().toStdString();
 
 	EditGroupCommand::DataInfo tempInfo;
 	std::vector<EditGroupCommand::DataInfo> datasList;
@@ -184,8 +184,8 @@ void EditGroupDialog::updateGroup()
 		if(data)
 		{
 			tempInfo.data = data;
-			tempInfo.name = m_tableWidget->item(i,0)->text();
-			tempInfo.help = m_tableWidget->item(i,3)->text();
+			tempInfo.name = m_tableWidget->item(i,0)->text().toStdString();
+			tempInfo.help = m_tableWidget->item(i,3)->text().toStdString();
 			datasList.push_back(tempInfo);
 		}
 	}
@@ -201,10 +201,10 @@ void EditGroupDialog::updateGroup()
 		panda::BaseData* data = (panda::BaseData*)m_tableWidget->item(i,0)->data(Qt::UserRole).value<void*>();
 		if(data != groupDatas[i].get()) { modified = true; break; }
 
-		QString name = m_tableWidget->item(i,0)->text();
+		auto name = m_tableWidget->item(i,0)->text().toStdString();
 		if(name != groupDatas[i]->getName()) { modified = true; break; }
 
-		QString help = m_tableWidget->item(i,3)->text();
+		auto help = m_tableWidget->item(i,3)->text().toStdString();
 		if(help != groupDatas[i]->getHelp()) { modified = true; break; }
 	}
 

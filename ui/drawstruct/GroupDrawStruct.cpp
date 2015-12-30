@@ -20,11 +20,11 @@ void GroupDrawStruct::drawShape(QPainter* painter)
 
 void GroupDrawStruct::drawText(QPainter* painter)
 {
-	if(m_group && !m_group->getGroupName().isEmpty())
+	if(m_group && !m_group->getGroupName().empty())
 	{
 		int margin = dataRectSize+dataRectMargin+3;
 		QRectF textArea = m_objectArea.adjusted(margin, 0, -margin, 0);
-		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, m_group->getGroupName());
+		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, QString::fromStdString(m_group->getGroupName()));
 	}
 	else
 		ObjectDrawStruct::drawText(painter);

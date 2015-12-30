@@ -1,5 +1,6 @@
 #include <panda/PandaObject.h>
 #include <panda/Group.h> // For BaseGeneratorUser
+#include <panda/XmlDocument.h>
 
 namespace panda {
 
@@ -9,17 +10,17 @@ class CustomData : public Data<T>
 public:
 	PANDA_CLASS(PANDA_TEMPLATE(CustomData, T), PANDA_TEMPLATE(Data, T))
 
-	CustomData(const QString& name, const QString& help, PandaObject* owner)
+	CustomData(const std::string& name, const std::string& help, PandaObject* owner)
 		: Data<T>(name, help, owner)
 	{ }
-	virtual void save(QDomDocument& doc, QDomElement& elem) const override
+	virtual void save(XmlElement& elem) const override
 	{
-		Data<T>::save(doc, elem);
-		QString w = getWidget();
+		Data<T>::save(elem);
+		std::string w = getWidget();
 		if(w != "default")
 			elem.setAttribute("widget", w);
-		QString d = getWidgetData();
-		if(!d.isEmpty())
+		std::string d = getWidgetData();
+		if(!d.empty())
 			elem.setAttribute("widgetData", d);
 	}
 };
@@ -44,26 +45,18 @@ public:
 	}
 
 	bool hasConnectedInput()
-	{
-		return m_userValue.getParent();
-	}
+	{ return m_userValue.getParent(); }
 
 	bool hasConnectedOutput()
-	{
-		return !m_output.getOutputs().empty();
-	}
+	{ return !m_output.getOutputs().empty(); }
 
 	BaseData* getInputUserData()
-	{
-		return &m_userValue;
-	}
+	{ return &m_userValue; }
 
 	BaseData* getOutputUserData()
-	{
-		return &m_output;
-	}
+	{ return &m_output; }
 
-	void save(QDomDocument& doc, QDomElement& elem, const QList<PandaObject*> *selected)
+	void save(XmlDocument& elem, const QList<PandaObject*> *selected)
 	{	// Compared to PandaObject::save, we want to always save the userValue, because of the customData (widget & widgetData)
 		for(BaseData* data : m_datas)
 		{
@@ -71,10 +64,9 @@ public:
 					(data->isSet() && data->isPersistent() && !data->isReadOnly()
 					&& !(selected && data->getParent() && selected->contains(data->getParent()->getOwner()))))
 			{
-				QDomElement xmlData = doc.createElement("Data");
+				auto xmlData = elem.addChild("Data");
 				xmlData.setAttribute("name", data->getName());
 				data->save(doc, xmlData);
-				elem.appendChild(xmlData);
 			}
 		}
 	}

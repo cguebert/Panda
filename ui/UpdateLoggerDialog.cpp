@@ -460,14 +460,15 @@ void UpdateLoggerView::keyPressEvent(QKeyEvent* event)
 
 QString UpdateLoggerView::eventDescription(const EventData& event)
 {
+	auto text = QString::fromStdString(event.m_text);
 	switch (event.m_type)
 	{
-	case panda::helper::event_update:		return QString("Update of %1").arg(event.m_text);
-	case panda::helper::event_getValue:		return QString("GetValue of %1").arg(event.m_text);
-	case panda::helper::event_render:		return QString("Render of %1").arg(event.m_text);
-	case panda::helper::event_copyValue:	return QString("Copy to data: %1").arg(event.m_text);
-	case panda::helper::event_setDirty:		return QString("SetDirty of %1").arg(event.m_text);
-	default:								return event.m_text;
+	case panda::helper::event_update:		return QString("Update of %1").arg(text);
+	case panda::helper::event_getValue:		return QString("GetValue of %1").arg(text);
+	case panda::helper::event_render:		return QString("Render of %1").arg(text);
+	case panda::helper::event_copyValue:	return QString("Copy to data: %1").arg(text);
+	case panda::helper::event_setDirty:		return QString("SetDirty of %1").arg(text);
+	default:								return text;
 	}
 }
 

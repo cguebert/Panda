@@ -3,7 +3,6 @@
 
 #include <panda/Data.h>
 #include <panda/PandaDocument.h>
-#include <panda/helper/Factory.h>
 
 #include <ui/command/SetDataValueCommand.h>
 
@@ -126,12 +125,12 @@ public:
 	typedef typename TData::const_reference const_reference;
 
 	DataWidget(QWidget* parent, TData* d)
-		: BaseDataWidget(parent, d->getWidget(), d->getName(), d->getWidgetData())
+		: BaseDataWidget(parent, QString::fromStdString(d->getWidget()), QString::fromStdString(d->getName()), QString::fromStdString(d->getWidgetData()))
 		, m_data(d)
 		, m_value(nullptr)
 	{}
 
-	DataWidget(QWidget* parent, value_type* pValue, QString widgetName, QString name, QString parameters)
+	DataWidget(QWidget* parent, value_type* pValue, const QString& widgetName, const QString& name, const QString& parameters)
 		: BaseDataWidget(parent, widgetName, name, parameters)
 		, m_data(nullptr)
 		, m_value(pValue)

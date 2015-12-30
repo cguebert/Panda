@@ -191,11 +191,11 @@ bool bindTextures(QOpenGLShaderProgram& program, const std::vector<GLuint>& texI
 	nb = std::min(nb, 32);
 	for(int i = 0; i < nb; ++i)
 	{
-		QString name = QString("tex") + QString::number(i);
-		int loc = program.uniformLocation(name);
+		std::string name = "tex" + std::to_string(i);
+		int loc = program.uniformLocation(QString::fromStdString(name));
 		if(loc == -1)
 		{
-			std::cerr << "Shader program does not have a uniform named " << name.toStdString() << std::endl;
+			std::cerr << "Shader program does not have a uniform named " << name << std::endl;
 			return false;
 		}
 

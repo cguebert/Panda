@@ -1,10 +1,22 @@
 #include <panda/PandaDocument.h>
 #include <panda/GenericObject.h>
 #include <panda/ObjectFactory.h>
+#include <panda/helper/algorithm.h>
+
+namespace
+{
+
+template <class T> std::string convert(const T& value)
+{ return std::to_string(value); }
+
+std::string convert(const std::string& value)
+{ return value; }
+
+}
 
 namespace panda {
 
-typedef std::tuple<int, PReal, QString> formatTypes;
+typedef std::tuple<int, PReal, std::string> formatTypes;
 
 class GeneratorText_Format : public GenericObject
 {
@@ -62,14 +74,17 @@ public:
 			tempList.resize(qMin(prevNb, nb));
 		int size = tempList.size();
 
-		for(int i=0; i<size; ++i)
-			tempList[i] = tempList[i].arg(inVal[i%nb]);
+		for (int i = 0; i < size; ++i)
+		{
+			std::string key = "%" + std::to_string(i);
+			helper::replaceAll(tempList[i], key, convert(inVal[i%nb]));
+		}
 	}
 
 protected:
-	Data<QString> format;
-	Data< std::vector<QString> > text;
-	std::vector<QString> tempList;
+	Data<std::string> format;
+	Data< std::vector<std::string> > text;
+	std::vector<std::string> tempList;
 	GenericVectorData generic;
 };
 

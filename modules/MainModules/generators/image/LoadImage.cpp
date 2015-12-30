@@ -25,10 +25,10 @@ public:
 
 	void update()
 	{
-		QString fileName = m_fileName.getValue();
-		if(!fileName.isEmpty())
+		std::string fileName = m_fileName.getValue();
+		if(!fileName.empty())
 		{
-			QImage image(fileName);
+			QImage image(QString::fromStdString(fileName));
 			if(!image.isNull())
 				m_image.getAccessor()->setImage(image.convertToFormat(QImage::Format_ARGB32));
 			else
@@ -40,7 +40,7 @@ public:
 	}
 
 protected:
-	Data<QString> m_fileName;
+	Data<std::string> m_fileName;
 	Data<ImageWrapper> m_image;
 };
 

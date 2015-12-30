@@ -39,7 +39,7 @@ public:
 
 		font.setWidget("font");
 		QFont tmp;
-		font.setValue(tmp.toString());
+		font.setValue(tmp.toString().toStdString());
 
 		alignH.setWidget("enum");
 		alignH.setWidgetData("Left;Right;Center;Justify");
@@ -106,7 +106,7 @@ public:
 			painter.setBrush(Qt::NoBrush);
 			painter.setPen(Qt::NoPen);
 			QFont theFont;
-			theFont.fromString(font.getValue());
+			theFont.fromString(QString::fromStdString(font.getValue()));
 			painter.setFont(theFont);
 
 			if(nbText < nbRect) nbText = 1;
@@ -119,7 +119,7 @@ public:
 				painter.setPen(QPen(col));
 				Rect r = listRect[i];
 				QRectF rect = QRectF(r.left(), r.top(), r.width(), r.height());
-				painter.drawText(rect, alignment, listText[i % nbText]);
+				painter.drawText(rect, alignment, QString::fromStdString(listText[i % nbText]));
 			}
 
 			painter.end();
@@ -163,8 +163,8 @@ public:
 	}
 
 protected:
-	Data< std::vector<QString> > text;
-	Data< QString > font;
+	Data< std::vector<std::string> > text;
+	Data< std::string > font;
 	Data< std::vector<Rect> > rect;
 	Data< std::vector<Color> > color;
 	Data< int > alignH, alignV;

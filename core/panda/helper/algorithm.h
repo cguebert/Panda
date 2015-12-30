@@ -111,21 +111,18 @@ typename Container::mapped_type valueOrDefault(Container& map, const Key& key, c
 }
 
 template <class String>
-String replaceAll(const String& val, const String& from, const String& to)
+void replaceAll(String& val, const String& from, const String& to)
 {
 	if (from.empty())
-		return val;
+		return;
 
-	String ret = val;
 	auto fromSize = from.size(), toSize = to.size();
 	size_t pos = 0;
 	while ((pos = val.find(from, pos)) != String::npos)
 	{
-		ret.replace(pos, fromSize, to);
+		val.replace(pos, fromSize, to);
 		pos += toSize;
 	}
-
-	return ret;
 }
 
 } // namespace helper

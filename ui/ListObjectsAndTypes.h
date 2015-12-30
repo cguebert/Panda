@@ -6,6 +6,6 @@
 namespace panda
 { class PandaDocument; }
 
-QString createObjectsAndTypesPage(panda::PandaDocument *document);
+QString createObjectsAndTypesPage(panda::PandaDocument* document);
 
 #endif // LISTOBJECTSANDTYPES_H

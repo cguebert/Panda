@@ -21,7 +21,7 @@ ChooseWidgetDialog::ChooseWidgetDialog(panda::BaseData* data, QWidget* parent)
 	m_types = new QComboBox;
 	int fullTypeId = data->getDataTrait()->fullTypeId();
 	int valueTypeId = panda::types::DataTypeId::getValueType(fullTypeId);
-	std::vector<QString> types = DataWidgetFactory::getInstance()->getWidgetNames(fullTypeId);
+	auto types = DataWidgetFactory::getInstance()->getWidgetNames(fullTypeId);
 	if(valueTypeId != fullTypeId)
 	{
 		panda::helper::concatenate(types, DataWidgetFactory::getInstance()->getWidgetNames(valueTypeId));
@@ -33,7 +33,7 @@ ChooseWidgetDialog::ChooseWidgetDialog(panda::BaseData* data, QWidget* parent)
 	for (const auto& type : types)
 		items.push_back(type);
 	m_types->addItems(items);
-	m_types->setCurrentText(data->getWidget());
+	m_types->setCurrentText(QString::fromStdString(data->getWidget()));
 	formLayout->addRow(tr("widget:"), m_types);
 
 	m_format = new QLabel;
@@ -41,7 +41,7 @@ ChooseWidgetDialog::ChooseWidgetDialog(panda::BaseData* data, QWidget* parent)
 	formLayout->addRow(tr("format:"), m_format);
 
 	m_parameters = new QTextEdit;
-	m_parameters->setPlainText(data->getWidgetData());
+	m_parameters->setPlainText(QString::fromStdString(data->getWidgetData()));
 	formLayout->addRow(tr("parameters:"), m_parameters);
 
 	vLayout->addLayout(formLayout);
@@ -64,7 +64,7 @@ ChooseWidgetDialog::ChooseWidgetDialog(panda::BaseData* data, QWidget* parent)
 	connect(this, SIGNAL(accepted()), this, SLOT(changeData()));
 	connect(m_types, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(changedType(const QString&)));
 
-	changedType(data->getWidget());
+	changedType(QString::fromStdString(data->getWidget()));
 }
 
 QSize ChooseWidgetDialog::sizeHint() const
@@ -89,10 +89,10 @@ void ChooseWidgetDialog::changedType(const QString& type)
 
 void ChooseWidgetDialog::changeData()
 {
-	m_data->setWidget(m_types->currentText());
+	m_data->setWidget(m_types->currentText().toStdString());
 	if(m_format->text().isEmpty())
 		m_data->setWidgetData("");
 	else
-		m_data->setWidgetData(m_parameters->toPlainText());
+		m_data->setWidgetData(m_parameters->toPlainText().toStdString());
 	m_data->forceSet();
 }

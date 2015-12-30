@@ -15,13 +15,13 @@ LayerDrawStruct::LayerDrawStruct(GraphView* view, panda::Layer* object)
 
 void LayerDrawStruct::drawText(QPainter* painter)
 {
-	if(m_layer && !m_layer->getLayerName().isEmpty())
+	if(m_layer && !m_layer->getLayerName().empty())
 	{
 		int margin = dataRectSize+dataRectMargin+3;
 		QRectF textArea = m_objectArea;
 		textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
 		textArea.adjust(margin, 0, -margin, 0);
-		QString text = m_layer->getLayerName() + "\n(" + m_layer->getName() + ")";
+		QString text = QString::fromStdString(m_layer->getLayerName()) + "\n(" + QString::fromStdString(m_layer->getName()) + ")";
 		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, text);
 	}
 	else

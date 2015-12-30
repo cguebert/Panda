@@ -12,7 +12,7 @@ public:
 
 	GeneratorText_DateTime(PandaDocument *doc)
 		: PandaObject(doc)
-		, format(initData(QString("hh:mm:ss"), "format", "Format used to create the text"))
+		, format(initData(std::string("hh:mm:ss"), "format", "Format used to create the text"))
 		, text(initData("text", "Text containing the date & time using the format"))
 		, delta(initData("delta", "Delta in milliseconds added to the current time"))
 	{
@@ -44,13 +44,13 @@ public:
 		date.addMSecs(delta.getValue());
 		previousDate = date;
 
-		text.setValue(date.toString(format.getValue()));
+		text.setValue(date.toString(QString::fromStdString(format.getValue())).toStdString());
 
 		cleanDirty();
 	}
 
 protected:
-	Data<QString> format, text;
+	Data<std::string> format, text;
 	Data<int> delta;
 	QDateTime previousDate;
 };

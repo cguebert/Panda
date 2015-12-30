@@ -15,11 +15,11 @@ UserValueDrawStruct::UserValueDrawStruct(GraphView* view, panda::BaseGeneratorUs
 
 void UserValueDrawStruct::drawText(QPainter* painter)
 {
-	if(m_userValueObject && !m_userValueObject->getCaption().isEmpty())
+	if(m_userValueObject && !m_userValueObject->getCaption().empty())
 	{
 		int margin = dataRectSize+dataRectMargin+3;
 		QRectF textArea = m_objectArea.adjusted(margin, 0, -margin, 0);
-		QString text = m_userValueObject->getCaption() + "\n(" + m_userValueObject->getName() + ")";
+		QString text = QString::fromStdString(m_userValueObject->getCaption()) + "\n(" + QString::fromStdString(m_userValueObject->getName()) + ")";
 		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, text);
 	}
 	else

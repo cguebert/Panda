@@ -13,7 +13,7 @@ DataWidgetFactory* DataWidgetFactory::getInstance()
 BaseDataWidget* DataWidgetFactory::create(QWidget* parent, panda::BaseData* data) const
 {
 	const int fullType = data->getDataTrait()->fullTypeId();
-	const QString widgetName = data->getWidget();
+	const QString widgetName = QString::fromStdString(data->getWidget());
 
 	const BaseDataWidgetCreator* creator = getCreator(fullType, widgetName);
 	if(creator)

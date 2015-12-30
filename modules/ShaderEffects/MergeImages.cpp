@@ -46,9 +46,9 @@ public:
 	void initializeGL()
 	{
 		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,
-			helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
+			QString::fromStdString(helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl")));
 		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,
-			helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
+			QString::fromStdString(helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl")));
 		m_shaderProgram.link();
 	}
 
