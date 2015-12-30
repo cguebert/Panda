@@ -84,10 +84,10 @@ LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
 	mainLayout->addLayout(moveButtonsLayout);
 	setLayout(mainLayout);
 
-	connect(m_document, SIGNAL(addedObject(panda::PandaObject*)), this, SLOT(addedObject(panda::PandaObject*)));
-	connect(m_document, SIGNAL(removedObject(panda::PandaObject*)), this, SLOT(removedObject(panda::PandaObject*)));
-	connect(m_document, SIGNAL(dirtyObject(panda::PandaObject*)), this, SLOT(dirtyObject(panda::PandaObject*)));
-	connect(m_document, SIGNAL(reorderedObjects()), this, SLOT(reorderObjects()));
+	m_observer.get(m_document->m_addedObjectSignal).connect<LayersTab, &LayersTab::addedObject>(this);
+	m_observer.get(m_document->m_removedObjectSignal).connect<LayersTab, &LayersTab::removedObject>(this);
+	m_observer.get(m_document->m_dirtyObjectSignal).connect<LayersTab, &LayersTab::dirtyObject>(this);
+	m_observer.get(m_document->m_reorderedObjectsSignal).connect<LayersTab, &LayersTab::reorderObjects>(this);
 
 	connect(m_nameEdit, SIGNAL(editingFinished()), this, SLOT(nameChanged()));
 	connect(m_tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));

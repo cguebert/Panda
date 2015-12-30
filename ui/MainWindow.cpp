@@ -64,8 +64,9 @@ MainWindow::MainWindow()
 	createActions();
 	createStatusBar();
 
-	connect(m_document, SIGNAL(modified()), this, SLOT(documentModified()));
-	connect(m_document, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(selectedObject(panda::PandaObject*)));
+	m_observer.get(m_document->m_modifiedSignal).connect<MainWindow, &MainWindow::documentModified>(this);
+	m_observer.get(m_document->m_selectedObjectSignal).connect<MainWindow, &MainWindow::selectedObject>(this);
+
 	connect(m_graphView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(m_graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(m_graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
@@ -283,19 +284,19 @@ void MainWindow::createActions()
 	auto selectAllAction = new QAction(tr("Select &all"), this);
 	selectAllAction->setShortcut(tr("Ctrl+A"));
 	selectAllAction->setStatusTip(tr("Select all objects"));
-	connect(selectAllAction, SIGNAL(triggered()), m_document, SLOT(selectAll()));
+	connect(selectAllAction, &QAction::triggered, m_document, &panda::PandaDocument::selectAll);
 	addAction(selectAllAction);
 
 	auto selectNoneAction = new QAction(tr("Select &none"), this);
 	selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
 	selectNoneAction->setStatusTip(tr("Deselect all objets"));
-	connect(selectNoneAction, SIGNAL(triggered()), m_document, SLOT(selectNone()));
+	connect(selectNoneAction, &QAction::triggered, m_document, &panda::PandaDocument::selectNone);
 	addAction(selectNoneAction);
 
 	auto selectConnectedAction = new QAction(tr("Select &connected"), this);
 	selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
 	selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
-	connect(selectConnectedAction, SIGNAL(triggered()), m_document, SLOT(selectConnected()));
+	connect(selectConnectedAction, &QAction::triggered, m_document, &panda::PandaDocument::selectConnected);
 	addAction(selectConnectedAction);
 
 	m_groupAction = new QAction(tr("&Group selected"), this);
@@ -403,7 +404,7 @@ void MainWindow::createActions()
 	m_playAction->setShortcut(tr("F5"));
 	m_playAction->setStatusTip(tr("Start the animation"));
 	m_playAction->setCheckable(true);
-	connect(m_playAction, SIGNAL(triggered(bool)), m_document, SLOT(play(bool)));
+	connect(m_playAction, &QAction::triggered, m_document, &panda::PandaDocument::play);
 	connect(m_playAction, SIGNAL(triggered(bool)), this, SLOT(play(bool)));
 	addAction(m_playAction);
 
@@ -411,14 +412,14 @@ void MainWindow::createActions()
 	stepAction->setIcon(QIcon(":/share/icons/step.png"));
 	stepAction->setShortcut(tr("F6"));
 	stepAction->setStatusTip(tr("Do one step of the animation"));
-	connect(stepAction, SIGNAL(triggered()), m_document, SLOT(step()));
+	connect(stepAction, &QAction::triggered, m_document, &panda::PandaDocument::step);
 	addAction(stepAction);
 
 	auto rewindAction = new QAction(tr("Rewind"), this);
 	rewindAction->setIcon(QIcon(":/share/icons/stop.png"));
 	rewindAction->setShortcut(tr("F7"));
 	rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
-	connect(rewindAction, SIGNAL(triggered()), m_document, SLOT(rewind()));
+	connect(rewindAction, &QAction::triggered, m_document, &panda::PandaDocument::rewind);
 	addAction(rewindAction);
 
 	m_removeLinkAction = new QAction(tr("Remove link"), this);
@@ -748,7 +749,7 @@ void MainWindow::createStatusBar()
 
 	statusBar()->addWidget(m_timeLabel);
 
-	connect(m_document, SIGNAL(timeChanged()), this, SLOT(updateStatusBar()));
+	m_observer.get(m_document->m_timeChangedSignal).connect<MainWindow, &MainWindow::updateStatusBar>(this);
 
 	updateStatusBar();
 }

@@ -23,6 +23,8 @@
 
 #include <set>
 
+#include <panda/Messaging.h>
+
 namespace panda {
 
 using types::Color;
@@ -73,17 +75,13 @@ PandaDocument::PandaDocument(QObject* parent)
 
 	m_useMultithread.setWidget("checkbox");
 
-	connect(this, SIGNAL(modifiedObject(panda::PandaObject*)), this, SIGNAL(modified()));
-	connect(this, SIGNAL(addedObject(panda::PandaObject*)), this, SIGNAL(modified()));
-	connect(this, SIGNAL(reorderedObjects()), this, SIGNAL(modified()));
-
 	m_defaultLayer = new Layer(this);
 	m_defaultLayer->getLayerNameData().setValue("Default Layer");
 
 	setInternalData("Document", 0);
 
 	m_animTimer = new QTimer(this);
-	connect(m_animTimer, SIGNAL(timeout()), this, SLOT(step()));
+	connect(m_animTimer, &QTimer::timeout, this, &PandaDocument::step);
 
 	m_undoStack = new QUndoStack(this);
 	m_undoStack->setUndoLimit(25);
@@ -148,8 +146,8 @@ bool PandaDocument::readFile(const std::string& fileName, bool isImport)
 	for(auto object : m_objects)
 		object->reset();
 
-	emit selectionChanged();
-	emit selectedObject(getCurrentSelectedObject());
+	m_selectionChangedSignal.run();
+	m_selectedObjectSignal.run(getCurrentSelectedObject());
 
 	return true;
 }
@@ -182,8 +180,8 @@ bool PandaDocument::readTextDocument(const std::string& text)
 
 	if(bSelected || !m_selectedObjects.empty())
 	{
-		emit selectionChanged();
-		emit selectedObject(getCurrentSelectedObject());
+		m_selectionChangedSignal.run();
+		m_selectedObjectSignal.run(getCurrentSelectedObject());
 	}
 
 	return bVal;
@@ -222,7 +220,7 @@ bool PandaDocument::saveDoc(XmlElement& root, const ObjectsSelection& selected)
 				dockedObjects.push_back(std::make_pair(dock->getIndex(), dockable->getIndex()));
 		}
 
-		emit savingObject(elem, object);
+		m_savingObjectSignal.run(elem, object);
 	}
 
 	// Saving links
@@ -248,7 +246,7 @@ bool PandaDocument::saveDoc(XmlElement& root, const ObjectsSelection& selected)
 
 bool PandaDocument::loadDoc(XmlElement& root)
 {
-	emit startLoading();
+	m_startLoadingSignal.run();
 	std::map<quint32, quint32> importIndicesMap;
 	auto factory = ObjectFactory::getInstance();
 
@@ -269,7 +267,7 @@ bool PandaDocument::loadDoc(XmlElement& root)
 
 			object->load(elem);
 
-			emit loadingObject(elem, object.get());
+			m_loadingObjectSignal.run(elem, object.get());
 		}
 		else
 		{
@@ -328,7 +326,7 @@ bool PandaDocument::loadDoc(XmlElement& root)
 		elem = elem.nextSibling("Dock");
 	}
 
-	emit loadingFinished(); // For example if the view wants to do some computation
+	m_loadingFinishedSignal.run(); // For example if the view wants to do some computation
 
 	return true;
 }
@@ -338,12 +336,12 @@ void PandaDocument::resetDocument()
 	m_resetting = true;
 
 	m_selectedObjects.clear();
-	emit selectedObject(nullptr);
-	emit selectionChanged();
+	m_selectedObjectSignal.run(nullptr);
+	m_selectionChangedSignal.run();
 
 	for(auto object : m_objects)
 	{
-		emit removedObject(object.get());
+		m_removedObjectSignal.run(object.get());
 		object->preDestruction();
 	}
 
@@ -372,8 +370,8 @@ void PandaDocument::resetDocument()
 	helper::GradientCache::getInstance()->clear();
 	helper::ShaderCache::getInstance()->clear();
 
-	emit modified();
-	emit timeChanged();
+	m_modifiedSignal.run();
+	m_timeChangedSignal.run();
 
 	m_resetting = false;
 }
@@ -418,7 +416,8 @@ void PandaDocument::reinsertObject(PandaObject* object, int pos)
 	m_objects.insert(m_objects.begin() + pos, objectPtr);
 
 	setDirtyValue(this);
-	emit reorderedObjects();
+	m_reorderedObjectsSignal.run();
+	m_modifiedSignal.run();
 }
 
 PandaObject* PandaDocument::getCurrentSelectedObject() const
@@ -433,8 +432,8 @@ void PandaDocument::setCurrentSelectedObject(PandaObject* object)
 {
 	helper::removeAll(m_selectedObjects, object);
 	m_selectedObjects.push_back(object);
-	emit selectedObject(object);
-	emit selectionChanged();
+	m_selectedObjectSignal.run(object);
+	m_selectionChangedSignal.run();
 }
 
 QSize PandaDocument::getRenderSize() const
@@ -450,10 +449,10 @@ void PandaDocument::setMouseClick(bool clicked, const types::Point& pos)
 	else
 		m_mouseClickBuffer = clicked;
 
-	if(clicked)
-		emit mousePressed(pos);
+	if (clicked)
+		m_mousePressedSignal.run(pos);
 	else
-		emit mouseReleased(pos);
+		m_mouseReleasedSignal.run(pos);
 }
 
 void PandaDocument::selectionAdd(PandaObject* object)
@@ -461,8 +460,8 @@ void PandaDocument::selectionAdd(PandaObject* object)
 	if(!helper::contains(m_selectedObjects, object))
 	{
 		m_selectedObjects.push_back(object);
-		emit selectedObject(object);
-		emit selectionChanged();
+		m_selectedObjectSignal.run(object);
+		m_selectionChangedSignal.run();
 	}
 }
 
@@ -471,11 +470,11 @@ void PandaDocument::selectionRemove(PandaObject* object)
 	if(helper::contains(m_selectedObjects, object))
 	{
 		helper::removeAll(m_selectedObjects, object);
-		if(m_selectedObjects.empty())
-			emit selectedObject(nullptr);
+		if (m_selectedObjects.empty())
+			m_selectedObjectSignal.run(nullptr);
 		else
-			emit selectedObject(m_selectedObjects.back());
-		emit selectionChanged();
+			m_selectedObjectSignal.run(m_selectedObjects.back());
+		m_selectionChangedSignal.run();
 	}
 }
 
@@ -484,8 +483,8 @@ void PandaDocument::selectAll()
 	m_selectedObjects.clear();
 	for(auto object : m_objects)
 		m_selectedObjects.push_back(object.get());
-	emit selectedObject(m_selectedObjects.back());
-	emit selectionChanged();
+	m_selectedObjectSignal.run(m_selectedObjects.back());
+	m_selectionChangedSignal.run();
 }
 
 void PandaDocument::selectNone()
@@ -493,8 +492,8 @@ void PandaDocument::selectNone()
 	if(!m_selectedObjects.empty())
 	{
 		m_selectedObjects.clear();
-		emit selectedObject(nullptr);
-		emit selectionChanged();
+		m_selectedObjectSignal.run(nullptr);
+		m_selectionChangedSignal.run();
 	}
 }
 
@@ -556,7 +555,7 @@ void PandaDocument::selectConnected()
 		auto currentSelected = m_selectedObjects.back();
 		m_selectedObjects.assign(closedList.begin(), closedList.end());
 		setCurrentSelectedObject(currentSelected);
-		emit selectionChanged();
+		m_selectionChangedSignal.run();
 	}
 }
 
@@ -564,19 +563,20 @@ void PandaDocument::addObject(ObjectPtr object)
 {
 	m_objects.push_back(object);
 	object->addedToDocument();
-	emit addedObject(object.get());
+	m_addedObjectSignal.run(object.get());
+	m_modifiedSignal.run();
 }
 
 void PandaDocument::removeObject(PandaObject* object)
 {
 	object->removedFromDocument();
-	emit removedObject(object);
+	m_removedObjectSignal.run(object);
 	helper::removeIf(m_objects, [object](const ObjectPtr& ptr){
 		return ptr.get() == object;
 	});
 
 	selectionRemove(object);
-	emit modified();
+	m_modifiedSignal.run();
 }
 
 void PandaDocument::setDataDirty(BaseData* data) const
@@ -623,10 +623,10 @@ void PandaDocument::onDirtyObject(PandaObject* object)
 	if(m_resetting)
 		return;
 
-	emit dirtyObject(object);
+	m_dirtyObjectSignal.run(object);
 	if(object == getCurrentSelectedObject())
-		emit selectedObjectIsDirty(object);
-	emit modified();
+		m_selectedObjectIsDirtySignal.run(object);
+	m_modifiedSignal.run();
 }
 
 void PandaDocument::onModifiedObject(PandaObject* object)
@@ -634,7 +634,8 @@ void PandaDocument::onModifiedObject(PandaObject* object)
 	if(m_resetting)
 		return;
 
-	emit modifiedObject(object);
+	m_modifiedObjectSignal.run(object);
+	m_modifiedSignal.run();
 }
 
 void PandaDocument::onChangedDock(DockableObject* dockable)
@@ -642,7 +643,7 @@ void PandaDocument::onChangedDock(DockableObject* dockable)
 	if(m_resetting)
 		return;
 
-	emit changedDock(dockable);
+	m_changedDockSignal.run(dockable);
 }
 
 void PandaDocument::update()
@@ -834,10 +835,10 @@ void PandaDocument::setDirtyValue(const DataNode* caller)
 {
 	PandaObject::setDirtyValue(caller);
 	if(!m_isInStep && !getCurrentSelectedObject())
-		emit selectedObjectIsDirty(this);
+		m_selectedObjectIsDirtySignal.run(this);
 
 	if(caller == &m_renderSize)
-		emit renderSizeChanged();
+		m_renderSizeChangedSignal.run();
 }
 
 void PandaDocument::play(bool playing)
@@ -925,14 +926,14 @@ void PandaDocument::step()
 #endif
 
 	unsigned int lastFrameDuration = durationTimer.elapsed();
-	emit timeChanged();
+	m_timeChangedSignal.run();
 
 	const auto obj = getCurrentSelectedObject();
-	if(obj)
-		emit selectedObjectIsDirty(obj);
+	if (obj)
+		m_selectedObjectIsDirtySignal.run(obj);
 	else
-		emit selectedObjectIsDirty(this);
-	emit modified();
+		m_selectedObjectIsDirtySignal.run(this);
+	m_modifiedSignal.run();
 
 	if(m_animPlaying && m_useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
 		m_animTimer->start(qMax((PReal)0.0, m_timestep.getValue() * 1000 - lastFrameDuration - 1));
@@ -962,7 +963,7 @@ void PandaDocument::rewind()
 	for(auto object : m_objects)
 		object->reset();
 	setDirtyValue(this);
-	emit timeChanged();
+	m_timeChangedSignal.run();
 }
 
 void PandaDocument::copyDataToUserValue(const BaseData* data)

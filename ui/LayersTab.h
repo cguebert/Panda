@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QStyledItemDelegate>
 
+#include <panda/messaging.h>
+
 class QTableWidget;
 class QTableWidgetItem;
 class QComboBox;
@@ -35,7 +37,7 @@ protected:
 	QList<panda::BaseLayer*> m_layers;
 	panda::BaseLayer* m_selectedLayer;
 
-signals:
+	panda::msg::Observer m_observer;
 
 public slots:
 	void updateTable();

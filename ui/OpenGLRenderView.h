@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QGLWidget>
 
+#include <panda/messaging.h>
+
 namespace panda
 {
 class PandaDocument;
@@ -37,6 +39,8 @@ protected:
 
 	panda::PandaDocument* m_document;
 	bool m_adjustRenderSize;
+
+	panda::msg::Observer m_observer;
 };
 
 #endif // OPENGLRENDERVIEW_H

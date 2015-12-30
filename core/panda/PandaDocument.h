@@ -8,6 +8,8 @@
 #include <panda/types/Point.h>
 #include <panda/types/ImageWrapper.h>
 
+#include <panda/messaging.h>
+
 #include <QObject>
 #include <QSize>
 #include <QTime>
@@ -163,27 +165,28 @@ protected:
 	QTime m_fpsTime;
 	PReal m_currentFPS;
 
-signals:
-	void modified();
-	void modifiedObject(panda::PandaObject*);
-	void dirtyObject(panda::PandaObject*);
-	void addedObject(panda::PandaObject*);
-	void removedObject(panda::PandaObject*);
-	void savingObject(XmlElement&, panda::PandaObject*);
-	void loadingObject(XmlElement&, panda::PandaObject*);
-	void selectedObject(panda::PandaObject*);
-	void selectedObjectIsDirty(panda::PandaObject*);
-	void selectionChanged();
-	void timeChanged();
-	void renderSizeChanged();
-	void reorderedObjects();
-	void startLoading();
-	void loadingFinished();
-	void changedDock(panda::DockableObject*);
-	void mousePressed(panda::types::Point);
-	void mouseReleased(panda::types::Point);
+public:
+// Signals
+	msg::Signal<void()> m_modifiedSignal;
+	msg::Signal<void(panda::PandaObject*)> m_modifiedObjectSignal;
+	msg::Signal<void(panda::PandaObject*)> m_dirtyObjectSignal;
+	msg::Signal<void(panda::PandaObject*)> m_addedObjectSignal;
+	msg::Signal<void(panda::PandaObject*)> m_removedObjectSignal;
+	msg::Signal<void(panda::PandaObject*)> m_selectedObjectSignal;
+	msg::Signal<void(panda::PandaObject*)> m_selectedObjectIsDirtySignal;
+	msg::Signal<void(XmlElement&, panda::PandaObject*)> m_savingObjectSignal;
+	msg::Signal<void(XmlElement&, panda::PandaObject*)> m_loadingObjectSignal;
+	msg::Signal<void()> m_selectionChangedSignal;
+	msg::Signal<void()> m_timeChangedSignal;
+	msg::Signal<void()> m_renderSizeChangedSignal;
+	msg::Signal<void()> m_reorderedObjectsSignal;
+	msg::Signal<void()> m_startLoadingSignal;
+	msg::Signal<void()> m_loadingFinishedSignal;
+	msg::Signal<void(panda::DockableObject*)> m_changedDockSignal;
+	msg::Signal<void(panda::types::Point)> m_mousePressedSignal;
+	msg::Signal<void(panda::types::Point)> m_mouseReleasedSignal;
 
-public slots:
+// Slots or called only by the UI
 	void selectionAdd(panda::PandaObject* object);
 	void selectionRemove(panda::PandaObject* object);
 	void selectAll();

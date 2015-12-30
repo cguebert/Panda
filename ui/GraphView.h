@@ -2,13 +2,13 @@
 #define GRAPHVIEW_H
 
 #include <QWidget>
-#include <QDomDocument>
 
 #include <map>
 #include <memory>
 #include <set>
 
 #include <ui/ScrollContainer.h>
+#include <panda/messaging.h>
 
 namespace panda
 {
@@ -168,6 +168,8 @@ private:
 	QRectF m_viewRect; /// Area taken by the objects on the screen
 
 	bool m_isLoading; /// We don't update the view while loading (unnecessary events)
+
+	panda::msg::Observer m_observer; /// Used to connect to signals (and disconnect automatically on destruction)
 };
 
 #endif

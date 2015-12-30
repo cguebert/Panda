@@ -22,9 +22,9 @@ DatasTable::DatasTable(panda::PandaDocument* doc, QWidget* parent)
 
 	queuePopulate(nullptr);
 
-	connect(doc, SIGNAL(selectedObject(panda::PandaObject*)), this, SLOT(queuePopulate(panda::PandaObject*)));
-	connect(doc, SIGNAL(selectedObjectIsDirty(panda::PandaObject*)), this, SLOT(queuePopulate(panda::PandaObject*)));
-	connect(doc, SIGNAL(modifiedObject(panda::PandaObject*)), this, SLOT(onModifiedObject(panda::PandaObject*)));
+	m_observer.get(doc->m_selectedObjectSignal).connect<DatasTable, &DatasTable::queuePopulate>(this);
+	m_observer.get(doc->m_selectedObjectIsDirtySignal).connect<DatasTable, &DatasTable::queuePopulate>(this);
+	m_observer.get(doc->m_modifiedObjectSignal).connect<DatasTable, &DatasTable::onModifiedObject>(this);
 }
 
 void DatasTable::populateTable()

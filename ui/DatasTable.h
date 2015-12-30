@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <ui/widget/DataWidget.h>
+#include <panda/messaging.h>
 
 class QStackedLayout;
 class QLabel;
@@ -32,11 +33,10 @@ protected:
 	panda::PandaDocument* m_document;
 	panda::PandaObject *m_currentObject, *m_nextObject;
 	bool m_waitingPopulate;
+	panda::msg::Observer m_observer;
 
 	std::vector<DataWidgetPtr> m_dataWidgets;
-
-signals:
-
+	
 public slots:
 	void queuePopulate(panda::PandaObject*);
 	void populateTable();

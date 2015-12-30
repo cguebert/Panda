@@ -16,7 +16,7 @@ OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 
 	resize(doc->getRenderSize());
 
-	connect(doc, SIGNAL(renderSizeChanged()), this, SLOT(renderSizeChanged()));
+	m_observer.get(doc->m_renderSizeChangedSignal).connect<OpenGLRenderView, &OpenGLRenderView::renderSizeChanged>(this);
 }
 
 QSize OpenGLRenderView::minimumSizeHint() const

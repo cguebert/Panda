@@ -22,6 +22,7 @@ set(HEADER_FILES
 	panda/GenericObject.h
 	panda/Group.h
 	panda/Layer.h
+	panda/messaging.h
 	panda/ObjectFactory.h
 	panda/OGLObject.h
 	panda/PandaDocument.h

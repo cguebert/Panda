@@ -43,16 +43,17 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setFocusPolicy(Qt::StrongFocus);
 
-	connect(m_pandaDocument, SIGNAL(modified()), this, SLOT(update()));
-	connect(m_pandaDocument, SIGNAL(selectionChanged()), this, SLOT(update()));
-	connect(m_pandaDocument, SIGNAL(addedObject(panda::PandaObject*)), this, SLOT(addedObject(panda::PandaObject*)));
-	connect(m_pandaDocument, SIGNAL(removedObject(panda::PandaObject*)), this, SLOT(removeObject(panda::PandaObject*)));
-	connect(m_pandaDocument, SIGNAL(modifiedObject(panda::PandaObject*)), this, SLOT(modifiedObject(panda::PandaObject*)));
-	connect(m_pandaDocument, SIGNAL(savingObject(panda::XmlElement&,panda::PandaObject*)), this, SLOT(savingObject(panda::XmlElement&,panda::PandaObject*)));
-	connect(m_pandaDocument, SIGNAL(loadingObject(panda::XmlElement&,panda::PandaObject*)), this, SLOT(loadingObject(panda::XmlElement&,panda::PandaObject*)));
-	connect(m_pandaDocument, SIGNAL(startLoading()), this, SLOT(startLoading()));
-	connect(m_pandaDocument, SIGNAL(loadingFinished()), this, SLOT(loadingFinished()));
-	connect(m_pandaDocument, SIGNAL(changedDock(panda::DockableObject*)), this, SLOT(changedDock(panda::DockableObject*)));
+	m_observer.get(m_pandaDocument->m_modifiedSignal).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(m_pandaDocument->m_selectionChangedSignal).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(m_pandaDocument->m_addedObjectSignal).connect<GraphView, &GraphView::addedObject>(this);
+	m_observer.get(m_pandaDocument->m_removedObjectSignal).connect<GraphView, &GraphView::removeObject>(this);
+	m_observer.get(m_pandaDocument->m_modifiedObjectSignal).connect<GraphView, &GraphView::modifiedObject>(this);
+	m_observer.get(m_pandaDocument->m_savingObjectSignal).connect<GraphView, &GraphView::savingObject>(this);
+	m_observer.get(m_pandaDocument->m_loadingObjectSignal).connect<GraphView, &GraphView::loadingObject>(this);
+	m_observer.get(m_pandaDocument->m_startLoadingSignal).connect<GraphView, &GraphView::startLoading>(this);
+	m_observer.get(m_pandaDocument->m_loadingFinishedSignal).connect<GraphView, &GraphView::loadingFinished>(this);
+	m_observer.get(m_pandaDocument->m_changedDockSignal).connect<GraphView, &GraphView::changedDock>(this);
+
 	connect(m_hoverTimer, SIGNAL(timeout()), this, SLOT(hoverDataInfo()));
 
 	m_hoverTimer->setSingleShot(true);
@@ -628,7 +629,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 					if(newDock)
 					{
 						m_pandaDocument->addCommand(new AttachDockableCommand(newDock, dockable, newIndex));
-						m_pandaDocument->changedDock(dockable);
+						m_pandaDocument->onChangedDock(dockable);
 					}
 				}
 				else if(prevDock != defaultDock) // (maybe) Changing place in the dock

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <panda/messaging.h>
 
 class QAction;
 class QDockWidget;
@@ -101,6 +102,7 @@ private:
 	bool m_fullScreen = false, m_adjustRenderSizeToView = false, m_undoEnabled = false, m_redoEnabled = false;
 	QList<DetachedWindow*> m_detachedWindows;
 	QMap<ImageViewport*, QWidget*> m_imageViewports;
+	panda::msg::Observer m_observer;
 
 	enum { MaxRecentFiles = 5 };
 	QAction* m_recentFileActions[MaxRecentFiles];

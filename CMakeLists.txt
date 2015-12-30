@@ -7,6 +7,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 include(cmake/functions.cmake)
 include_directories(".")
+include_directories("extlibs")
 
 set(LIBRARIES_BASE_DIR "" CACHE PATH "Directory where other libraries are installed")
 set(LIBRARIES_INCLUDE_DIR ${LIBRARIES_BASE_DIR}/include)
