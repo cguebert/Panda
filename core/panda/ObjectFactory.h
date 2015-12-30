@@ -110,6 +110,8 @@ public:
 			auto it = menuDisplay.rfind('/');
 			if (it != std::string::npos)
 				entry.objectName = menuDisplay.substr(it + 1);
+			else
+				entry.objectName = menuDisplay;
 		}
 	}
 
