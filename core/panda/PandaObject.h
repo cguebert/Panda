@@ -12,6 +12,7 @@ namespace panda
 {
 
 class PandaDocument;
+class XmlElement;
 
 class PANDA_CORE_API PandaObject : public DataNode
 {
@@ -20,7 +21,7 @@ public:
 	explicit PandaObject(PandaDocument* document);
 
 	const std::string& getName() const;
-	quint32 getIndex() const;
+	uint32_t getIndex() const;
 
 	void addData(BaseData* data);
 	void removeData(BaseData* data);
@@ -48,8 +49,8 @@ public:
 	virtual void beginStep();
 	virtual void endStep();
 
-	virtual void save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*> *selected = nullptr);
-	virtual void load(QDomElement &elem);
+	virtual void save(XmlElement& elem, const std::vector<PandaObject*> *selected = nullptr);
+	virtual void load(XmlElement& elem);
 
 	virtual void dataSetParent(BaseData* data, BaseData* parent);
 
@@ -68,7 +69,7 @@ public:
 
 protected:
 	PandaDocument* m_parentDocument;
-	quint32 m_index;
+	uint32_t m_index;
 	bool m_doEmitModified, m_doEmitDirty, m_isInStep;
 	bool m_laterUpdate; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
 	mutable bool m_isUpdating;
@@ -76,7 +77,7 @@ protected:
 	std::string m_name;
 	std::vector<BaseData*> m_datas;
 
-	void setInternalData(const std::string& name, quint32 index);
+	void setInternalData(const std::string& name, uint32_t index);
 	friend class ObjectFactory;
 };
 
@@ -88,7 +89,7 @@ inline BaseData::BaseInitData PandaObject::initData(std::string name, std::strin
 inline const std::string& PandaObject::getName() const
 { return m_name; }
 
-inline quint32 PandaObject::getIndex() const
+inline uint32_t PandaObject::getIndex() const
 { return m_index; }
 
 inline void PandaObject::beginStep()
@@ -100,7 +101,7 @@ inline void PandaObject::endStep()
 inline const std::vector<BaseData*>& PandaObject::getDatas() const
 { return m_datas; }
 
-inline void PandaObject::setInternalData(const std::string& name, quint32 index)
+inline void PandaObject::setInternalData(const std::string& name, uint32_t index)
 { m_name = name; m_index = index; }
 
 inline bool PandaObject::doesLaterUpdate()

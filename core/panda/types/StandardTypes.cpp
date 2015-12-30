@@ -21,29 +21,26 @@ template<> PANDA_CORE_API std::string DataTrait<std::string>::valueTypeName() { 
 // Overrides for writeValue xml
 
 template<>
-PANDA_CORE_API void DataTrait<int>::writeValue(QDomDocument&, QDomElement& elem, const int& v)
+PANDA_CORE_API void DataTrait<int>::writeValue(XmlElement& elem, const int& v)
 { elem.setAttribute("int", v); }
 
 template<>
-PANDA_CORE_API void DataTrait<PReal>::writeValue(QDomDocument&, QDomElement& elem, const PReal& v)
+PANDA_CORE_API void DataTrait<PReal>::writeValue(XmlElement& elem, const PReal& v)
 { elem.setAttribute("real", v); }
 
 template<>
-PANDA_CORE_API void DataTrait<std::string>::writeValue(QDomDocument& doc, QDomElement& elem, const std::string& v)
-{
-	QDomText node = doc.createTextNode(QString::fromStdString(v));
-	elem.appendChild(node);
-}
+PANDA_CORE_API void DataTrait<std::string>::writeValue(XmlElement& elem, const std::string& v)
+{ elem.setText(v); }
 
 //****************************************************************************//
 // Overrides for readValue xml
 
 template<>
-PANDA_CORE_API void DataTrait<int>::readValue(QDomElement& elem, int& v)
+PANDA_CORE_API void DataTrait<int>::readValue(XmlElement& elem, int& v)
 { v = elem.attribute("int").toInt(); }
 
 template<>
-PANDA_CORE_API void DataTrait<PReal>::readValue(QDomElement& elem, PReal& v)
+PANDA_CORE_API void DataTrait<PReal>::readValue(XmlElement& elem, PReal& v)
 #ifdef PANDA_DOUBLE
 { v = elem.attribute("real").toDouble(); }
 #else
@@ -51,8 +48,8 @@ PANDA_CORE_API void DataTrait<PReal>::readValue(QDomElement& elem, PReal& v)
 #endif
 
 template<>
-PANDA_CORE_API void DataTrait<std::string>::readValue(QDomElement& elem, std::string& v)
-{ v = elem.text().toStdString(); }
+PANDA_CORE_API void DataTrait<std::string>::readValue(XmlElement& elem, std::string& v)
+{ v = elem.text(); }
 
 //****************************************************************************//
 

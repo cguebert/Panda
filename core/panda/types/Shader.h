@@ -113,7 +113,7 @@ public:
 	typedef std::vector<std::shared_ptr<BaseShaderValue>> ValuesVector;
 	const ValuesVector& getValues() const;
 
-	void loadValue(std::string type, QDomElement &elem);
+	void loadValue(std::string type, XmlElement& elem);
 	void copyValue(std::string type, std::string name, const void* value);
 
 	bool operator==(const Shader& s) const;
@@ -125,7 +125,7 @@ protected:
 
 	ValuesVector m_shaderValues;
 
-	typedef void(Shader::*loadValueFuncPtr)(QDomElement&);
+	typedef void(Shader::*loadValueFuncPtr)(XmlElement&);
 	std::map<std::string, loadValueFuncPtr> m_loadValueFunctions;
 
 	typedef void(Shader::*copyValueFuncPtr)(std::string, const void*);
@@ -147,9 +147,9 @@ protected:
 	};
 
 	template<class T>
-	void loadValue(QDomElement& elem)
+	void loadValue(XmlElement& elem)
 	{
-		std::string name = elem.attribute("name").toStdString();
+		std::string name = elem.attribute("name").toString();
 		T value;
 		DataTraitsList::getTraitOf<T>()->readValue(elem, &value);
 		setUniform(name, value);

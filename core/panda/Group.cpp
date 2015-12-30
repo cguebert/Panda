@@ -29,29 +29,28 @@ void Group::addObject(ObjectPtr object)
 		m_objects.push_back(object);
 }
 
-void Group::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*>* selected)
+void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 {
 	// Saving group datas
 	for(const auto& data : m_groupDatas)
 	{
-		QDomElement node = doc.createElement("GroupData");
-		elem.appendChild(node);
-		node.setAttribute("type", QString::fromStdString(DataFactory::typeToName(data->getDataTrait()->fullTypeId())));
+		auto node = elem.addChild("GroupData");
+		node.setAttribute("type", DataFactory::typeToName(data->getDataTrait()->fullTypeId()));
 		node.setAttribute("input", data->isInput());
 		node.setAttribute("output", data->isOutput());
-		node.setAttribute("name", QString::fromStdString(data->getName()));
-		node.setAttribute("help",QString::fromStdString( data->getHelp()));
+		node.setAttribute("name", data->getName());
+		node.setAttribute("help", data->getHelp());
 
 		const auto widget = data->getWidget();
 		const auto widgetData = data->getWidgetData();
 		if(!widget.empty())
-			node.setAttribute("widget", QString::fromStdString(widget));
+			node.setAttribute("widget", widget);
 		if(!widgetData.empty())
-			node.setAttribute("widgetData", QString::fromStdString(widgetData));
+			node.setAttribute("widgetData", widgetData);
 	}
 
 	// Saving data values
-	PandaObject::save(doc, elem, selected);
+	PandaObject::save(elem, selected);
 
 	typedef QPair<BaseData*, BaseData*> DataPair;
 	std::vector<DataPair> links;
@@ -67,12 +66,11 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaOb
 	// Saving objects in this group
 	for(auto object : m_objects)
 	{
-		QDomElement node = doc.createElement("Object");
-		node.setAttribute("type", QString::fromStdString(ObjectFactory::getRegistryName(object.get())));
+		auto node = elem.addChild("Object");
+		node.setAttribute("type", ObjectFactory::getRegistryName(object.get()));
 		node.setAttribute("index", object->getIndex());
-		elem.appendChild(node);
 
-		object->save(doc, node, &allObjects);
+		object->save(node, &allObjects);
 
 		QPointF pos = m_positions[object.get()];
 		node.setAttribute("x", pos.x());
@@ -106,45 +104,43 @@ void Group::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaOb
 	// Saving links
 	for(DataPair link : links)
 	{
-		QDomElement node = doc.createElement("Link");
+		auto node = elem.addChild("Link");
 		if(link.first->getOwner() == this)
 			node.setAttribute("object1", 0);
 		else
 			node.setAttribute("object1", link.first->getOwner()->getIndex());
-		node.setAttribute("data1", QString::fromStdString(link.first->getName()));
+		node.setAttribute("data1", link.first->getName());
 
 		if(link.second->getOwner() == this)
 			node.setAttribute("object2", 0);
 		else
 			node.setAttribute("object2", link.second->getOwner()->getIndex());
-		node.setAttribute("data2", QString::fromStdString(link.second->getName()));
-		elem.appendChild(node);
+		node.setAttribute("data2", link.second->getName());
 	}
 
 	// Saving docked objects list
 	for(IntPair dockable : dockedObjects)
 	{
-		QDomElement node = doc.createElement("Dock");
+		auto node = elem.addChild("Dock");
 		node.setAttribute("dock", dockable.first);
 		node.setAttribute("docked", dockable.second);
-		elem.appendChild(node);
 	}
 }
 
-void Group::load(QDomElement& elem)
+void Group::load(XmlElement& elem)
 {
-	QDomElement groupDataNode = elem.firstChildElement("GroupData");
-	while(!groupDataNode.isNull())
+	auto groupDataNode = elem.firstChild("GroupData");
+	while(groupDataNode)
 	{
 		quint32 type, input, output;
 		std::string name, help, widget, widgetData;
-		type = DataFactory::nameToType(groupDataNode.attribute("type").toStdString());
-		input = groupDataNode.attribute("input").toUInt();
-		output = groupDataNode.attribute("output").toUInt();
-		name = groupDataNode.attribute("name").toStdString();
-		help = groupDataNode.attribute("help").toStdString();
-		widget = groupDataNode.attribute("widget").toStdString();
-		widgetData = groupDataNode.attribute("widgetData").toStdString();
+		type = DataFactory::nameToType(groupDataNode.attribute("type").toString());
+		input = groupDataNode.attribute("input").toUnsigned();
+		output = groupDataNode.attribute("output").toUnsigned();
+		name = groupDataNode.attribute("name").toString();
+		help = groupDataNode.attribute("help").toString();
+		widget = groupDataNode.attribute("widget").toString();
+		widgetData = groupDataNode.attribute("widgetData").toString();
 
 		auto dataPtr = DataFactory::getInstance()->create(type, name, help, this);
 		auto data = dataPtr.get();
@@ -158,7 +154,7 @@ void Group::load(QDomElement& elem)
 		if(output)
 			addOutput(*data);
 
-		groupDataNode = groupDataNode.nextSiblingElement("GroupData");
+		groupDataNode = groupDataNode.nextSibling("GroupData");
 	}
 
 	// Loading data values
@@ -167,12 +163,12 @@ void Group::load(QDomElement& elem)
 	std::map<quint32, PandaObject*> importObjectsMap;
 	ObjectFactory* factory = ObjectFactory::getInstance();
 
-	QDomElement objectNode = elem.firstChildElement("Object");
-	while(!objectNode.isNull())
+	auto objectNode = elem.firstChild("Object");
+	while(objectNode)
 	{
-		QString registryName = objectNode.attribute("type");
-		quint32 index = objectNode.attribute("index").toUInt();
-		auto object = factory->create(registryName.toStdString(), m_parentDocument);
+		std::string registryName = objectNode.attribute("type").toString();
+		quint32 index = objectNode.attribute("index").toUnsigned();
+		auto object = factory->create(registryName, m_parentDocument);
 		if(object)
 		{
 			importObjectsMap[index] = object.get();
@@ -194,23 +190,23 @@ void Group::load(QDomElement& elem)
 		{
 			QMessageBox::warning(nullptr, tr("Panda"),
 				tr("Could not create the object %1.\nA plugin must be missing.")
-				.arg(registryName));
+				.arg(QString::fromStdString(registryName)));
 			return;
 		}
 
-		objectNode = objectNode.nextSiblingElement("Object");
+		objectNode = objectNode.nextSibling("Object");
 	}
 
 	// Create links
-	QDomElement linkNode = elem.firstChildElement("Link");
-	while(!linkNode.isNull())
+	auto linkNode = elem.firstChild("Link");
+	while(linkNode)
 	{
 		quint32 index1, index2;
 		std::string name1, name2;
-		index1 = linkNode.attribute("object1").toUInt();
-		index2 = linkNode.attribute("object2").toUInt();
-		name1 = linkNode.attribute("data1").toStdString();
-		name2 = linkNode.attribute("data2").toStdString();
+		index1 = linkNode.attribute("object1").toUnsigned();
+		index2 = linkNode.attribute("object2").toUnsigned();
+		name1 = linkNode.attribute("data1").toString();
+		name2 = linkNode.attribute("data2").toString();
 
 		PandaObject *object1, *object2;
 		BaseData *data1=nullptr, *data2=nullptr;
@@ -236,16 +232,16 @@ void Group::load(QDomElement& elem)
 		if(data1 && data2)
 			data1->setParent(data2);
 
-		linkNode = linkNode.nextSiblingElement("Link");
+		linkNode = linkNode.nextSibling("Link");
 	}
 
 	// Put dockables in their docks
-	QDomElement dockNode = elem.firstChildElement("Dock");
-	while(!dockNode.isNull())
+	auto dockNode = elem.firstChild("Dock");
+	while(dockNode)
 	{
 		quint32 dockIndex, dockableIndex;
-		dockIndex = dockNode.attribute("dock").toUInt();
-		dockableIndex = dockNode.attribute("docked").toUInt();
+		dockIndex = dockNode.attribute("dock").toUnsigned();
+		dockableIndex = dockNode.attribute("docked").toUnsigned();
 
 		DockObject* dock = dynamic_cast<DockObject*>(importObjectsMap[dockIndex]);
 		DockableObject* dockable = dynamic_cast<DockableObject*>(importObjectsMap[dockableIndex]);
@@ -257,7 +253,7 @@ void Group::load(QDomElement& elem)
 			dock->addDockable(dockable);
 		}
 
-		dockNode = dockNode.nextSiblingElement("Dock");
+		dockNode = dockNode.nextSibling("Dock");
 	}
 
 	m_parentDocument->onModifiedObject(this);

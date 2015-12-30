@@ -3,8 +3,7 @@
 
 #include <panda/core.h>
 #include <panda/types/DataTypeId.h>
-
-#include <QDomDocument>
+#include <panda/XmlDocument.h>
 
 #include <vector>
 
@@ -39,8 +38,8 @@ public:
 	virtual const void* getVoidValue(const void* value, int index) const = 0;
 	virtual void* getVoidValue(void* value, int index) const = 0;
 
-	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const = 0;
-	virtual void readValue(QDomElement& elem, void* value) const = 0;
+	virtual void writeValue(XmlElement& elem, const void* value) const = 0;
+	virtual void readValue(XmlElement& elem, void* value) const = 0;
 };
 
 //****************************************************************************//
@@ -74,8 +73,8 @@ public:
 	static void clear(value_type& v, int /*size*/, bool init) { if(init) v = T(); }
 	static const void* getVoidValue(const value_type& v, int /*index*/) { return &v; }
 	static void* getVoidValue(value_type& v, int /*index*/) { return &v; }
-	static void writeValue(QDomDocument&, QDomElement&, const value_type&); // Override for each type
-	static void readValue(QDomElement&, value_type&); // Override for each type
+	static void writeValue(XmlElement&, const value_type&); // Override for each type
+	static void readValue(XmlElement&, value_type&); // Override for each type
 };
 
 //****************************************************************************//
@@ -117,9 +116,9 @@ public:
 	virtual void* getVoidValue(void* value, int index) const
 	{ return value_trait::getVoidValue(*static_cast<value_type*>(value), index); }
 
-	virtual void writeValue(QDomDocument& doc, QDomElement& elem, const void* value) const
-	{ return value_trait::writeValue(doc, elem, *static_cast<const value_type*>(value)); }
-	virtual void readValue(QDomElement& elem, void* value) const
+	virtual void writeValue(XmlElement& elem, const void* value) const
+	{ return value_trait::writeValue(elem, *static_cast<const value_type*>(value)); }
+	virtual void readValue(XmlElement& elem, void* value) const
 	{ return value_trait::readValue(elem, *static_cast<value_type*>(value)); }
 };
 
@@ -166,25 +165,24 @@ public:
 			return nullptr;
 		return &vec[index];
 	}
-	static void writeValue(QDomDocument& doc, QDomElement& elem, const vector_type& vec)
+	static void writeValue(XmlElement& elem, const vector_type& vec)
 	{
 		for (auto& v : vec)
 		{
-			QDomElement node = doc.createElement("Value");
-			base_trait::writeValue(doc, node, v);
-			elem.appendChild(node);
+			auto node = elem.addChild("Value");
+			base_trait::writeValue(node, v);
 		}
 	}
-	static void readValue(QDomElement& elem, vector_type& vec)
+	static void readValue(XmlElement& elem, vector_type& vec)
 	{
 		vec.clear();
 		T t = T();
-		QDomElement e = elem.firstChildElement("Value");
-		while (!e.isNull())
+		XmlElement e = elem.firstChild("Value");
+		while (e)
 		{
 			base_trait::readValue(e, t);
 			vec.push_back(t);
-			e = e.nextSiblingElement("Value");
+			e = e.nextSibling("Value");
 		}
 	}
 };

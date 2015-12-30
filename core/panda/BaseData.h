@@ -3,12 +3,11 @@
 
 #include <panda/DataNode.h>
 
-#include <QDomDocument>
-
 namespace panda
 {
 
 class PandaObject;
+class XmlElement;
 class BaseData;
 class AbstractDataCopier;
 namespace types { class AbstractDataTrait; }
@@ -98,8 +97,8 @@ public:
 
 	void copyValueFrom(const BaseData* parent); /// Copy the value from parent to this Data
 
-	virtual void save(QDomDocument& doc, QDomElement& elem) const; /// Save the value of the Data in a Xml node
-	virtual void load(QDomElement& elem); /// Load the value from Xml
+	virtual void save(XmlElement& elem) const; /// Save the value of the Data in a Xml node
+	virtual void load(XmlElement& elem); /// Load the value from Xml
 
 	void setDirtyValue(const DataNode* caller) override;
 
@@ -243,7 +242,7 @@ inline void BaseData::setFlag(DataFlagsEnum flag, bool b)
 { if(b) m_dataFlags |= (DataFlags)flag; else m_dataFlags &= ~(DataFlags)flag; }
 
 inline bool BaseData::getFlag(DataFlagsEnum flag) const
-{ return m_dataFlags & (DataFlags)flag; }
+{ return (m_dataFlags & (DataFlags)flag) != 0; }
 
 } // namespace panda
 

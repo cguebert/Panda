@@ -3,6 +3,8 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
 
+#include <algorithm>
+
 namespace panda
 {
 
@@ -57,14 +59,14 @@ bool Rect::contains(const Rect& r) const
 template<> PANDA_CORE_API std::string DataTrait<Rect>::valueTypeName() { return "rectangle"; }
 
 template<>
-PANDA_CORE_API void DataTrait<Rect>::writeValue(QDomDocument&, QDomElement& elem, const Rect& v)
+PANDA_CORE_API void DataTrait<Rect>::writeValue(XmlElement& elem, const Rect& v)
 {	elem.setAttribute("l", v.left());
 	elem.setAttribute("t", v.top());
 	elem.setAttribute("r", v.right());
 	elem.setAttribute("b", v.bottom()); }
 
 template<>
-PANDA_CORE_API void DataTrait<Rect>::readValue(QDomElement& elem, Rect& v)
+PANDA_CORE_API void DataTrait<Rect>::readValue(XmlElement& elem, Rect& v)
 {
 #ifdef PANDA_DOUBLE
 	v.setLeft(  elem.attribute("l").toDouble());

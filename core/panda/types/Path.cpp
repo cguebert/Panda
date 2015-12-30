@@ -224,30 +224,29 @@ template<> PANDA_CORE_API void DataTrait<Path>::clear(Path& v, int size, bool in
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Path>::writeValue(QDomDocument& doc, QDomElement& elem, const Path& path)
+PANDA_CORE_API void DataTrait<Path>::writeValue(XmlElement& elem, const Path& path)
 {
 	auto pointTrait = DataTraitsList::getTraitOf<Point>();
 	for(const auto& pt : path)
 	{
-		QDomElement ptNode = doc.createElement("Point");
-		pointTrait->writeValue(doc, ptNode, &pt);
-		elem.appendChild(ptNode);
+		auto ptNode = elem.addChild("Point");
+		pointTrait->writeValue(ptNode, &pt);
 	}
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Path>::readValue(QDomElement& elem, Path& path)
+PANDA_CORE_API void DataTrait<Path>::readValue(XmlElement& elem, Path& path)
 {
 	path.clear();
 	auto pointTrait = DataTraitsList::getTraitOf<Point>();
 
-	QDomElement ptNode = elem.firstChildElement("Point");
-	while(!ptNode.isNull())
+	auto ptNode = elem.firstChild("Point");
+	while(ptNode)
 	{
 		Point pt;
 		pointTrait->readValue(ptNode, &pt);
 		path.push_back(pt);
-		ptNode = ptNode.nextSiblingElement("Point");
+		ptNode = ptNode.nextSibling("Point");
 	}
 }
 

@@ -182,7 +182,7 @@ Gradient Gradient::defaultGradient()
 template<> PANDA_CORE_API std::string DataTrait<Gradient>::valueTypeName() { return "gradient"; }
 
 template<>
-PANDA_CORE_API void DataTrait<Gradient>::writeValue(QDomDocument& doc, QDomElement& elem, const Gradient& grad)
+PANDA_CORE_API void DataTrait<Gradient>::writeValue(XmlElement& elem, const Gradient& grad)
 {
 	auto colorTrait = DataTraitsList::getTraitOf<Color>();
 
@@ -190,23 +190,22 @@ PANDA_CORE_API void DataTrait<Gradient>::writeValue(QDomDocument& doc, QDomEleme
 
 	for(const auto& s : grad.getStops())
 	{
-		QDomElement stopNode = doc.createElement("Stop");
-		elem.appendChild(stopNode);
+		auto stopNode = elem.addChild("Stop");
 		stopNode.setAttribute("pos", s.first);
-		colorTrait->writeValue(doc, stopNode, &s.second);
+		colorTrait->writeValue(stopNode, &s.second);
 	}
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& grad)
+PANDA_CORE_API void DataTrait<Gradient>::readValue(XmlElement& elem, Gradient& grad)
 {
 	auto colorTrait = DataTraitsList::getTraitOf<Color>();
 
 	grad.clear();
 	grad.setExtend(elem.attribute("extend").toInt());
 
-	QDomElement stopNode = elem.firstChildElement("Stop");
-	while(!stopNode.isNull())
+	auto stopNode = elem.firstChild("Stop");
+	while(stopNode)
 	{
 #ifdef PANDA_DOUBLE
 		PReal pos = stopNode.attribute("pos").toDouble();
@@ -217,7 +216,7 @@ PANDA_CORE_API void DataTrait<Gradient>::readValue(QDomElement& elem, Gradient& 
 		colorTrait->readValue(stopNode, &color);
 
 		grad.add(pos, color);
-		stopNode = stopNode.nextSiblingElement("Stop");
+		stopNode = stopNode.nextSibling("Stop");
 	}
 }
 

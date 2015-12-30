@@ -265,25 +265,24 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	}
 }
 
-void GenericObject::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*>* selected)
+void GenericObject::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 {
 	for(CreatedDatasStructPtr created : m_createdDatasStructs)
 	{
-		QDomElement e = doc.createElement("CreatedData");
-		e.setAttribute("type", QString::fromStdString(DataFactory::typeToName(created->type)));
-		elem.appendChild(e);
+		auto e = elem.addChild("CreatedData");
+		e.setAttribute("type", DataFactory::typeToName(created->type));
 	}
 
-	PandaObject::save(doc, elem, selected);
+	PandaObject::save(elem, selected);
 }
 
-void GenericObject::load(QDomElement& elem)
+void GenericObject::load(XmlElement& elem)
 {
-	QDomElement e = elem.firstChildElement("CreatedData");
-	while(!e.isNull())
+	auto e = elem.firstChild("CreatedData");
+	while(e)
 	{
-		createDatas(DataFactory::nameToType(e.attribute("type").toStdString()));
-		e = e.nextSiblingElement("CreatedData");
+		createDatas(DataFactory::nameToType(e.attribute("type").toString()));
+		e = e.nextSibling("CreatedData");
 	}
 
 	PandaObject::load(elem);

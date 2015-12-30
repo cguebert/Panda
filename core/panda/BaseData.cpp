@@ -115,20 +115,20 @@ void BaseData::copyValueFrom(const BaseData* from)
 		forceSet();
 }
 
-void BaseData::save(QDomDocument& doc, QDomElement& elem) const
+void BaseData::save(XmlElement& elem) const
 {
-	getDataTrait()->writeValue(doc, elem, getVoidValue());
+	getDataTrait()->writeValue(elem, getVoidValue());
 }
 
-void BaseData::load(QDomElement& elem)
+void BaseData::load(XmlElement& elem)
 {
 	auto acc = getVoidAccessor();
 	getDataTrait()->readValue(elem, acc);
-	std::string w = elem.attribute("widget").toStdString();
+	std::string w = elem.attribute("widget").toString();
 	if(!w.empty())
 		setWidget(w);
 
-	std::string d = elem.attribute("widgetData").toStdString();
+	std::string d = elem.attribute("widgetData").toString();
 	if(!d.empty())
 		setWidgetData(d);
 }

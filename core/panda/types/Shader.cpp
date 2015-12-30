@@ -7,7 +7,6 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
 
-#include <QDomElement>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 #include <QFile>
@@ -152,7 +151,7 @@ const Shader::ValuesVector& Shader::getValues() const
 	return m_shaderValues;
 }
 
-void Shader::loadValue(std::string type, QDomElement& elem)
+void Shader::loadValue(std::string type, XmlElement& elem)
 {
 	if (m_loadValueFunctions.count(type))
 		(this->*m_loadValueFunctions.at(type))(elem);
@@ -232,51 +231,47 @@ template class PANDA_CORE_API ShaderValue<std::vector<Point>>;
 template<> PANDA_CORE_API std::string DataTrait<Shader>::valueTypeName() { return "shader"; }
 
 template<>
-PANDA_CORE_API void DataTrait<Shader>::writeValue(QDomDocument& doc, QDomElement& elem, const Shader& v)
+PANDA_CORE_API void DataTrait<Shader>::writeValue(XmlElement& elem, const Shader& v)
 {
 	auto sources = v.getSources();
 
 	for(const auto& source : sources)
 	{
-		QDomElement sourceNode = doc.createElement("Source");
-		elem.appendChild(sourceNode);
+		auto sourceNode = elem.addChild("Source");
 		sourceNode.setAttribute("type", (int)source.type);
-
-		QDomText node = doc.createTextNode(QString::fromStdString(source.sourceCode));
-		sourceNode.appendChild(node);
+		sourceNode.setText(source.sourceCode);
 	}
 
 	const auto& values = v.getValues();
 	for(const auto& value : values)
 	{
-		QDomElement valueNode = doc.createElement("Uniform");
-		valueNode.setAttribute("name", QString::fromStdString(value->getName()));
-		valueNode.setAttribute("type", QString::fromStdString(value->dataTrait()->typeName()));
-		elem.appendChild(valueNode);
+		auto valueNode = elem.addChild("Uniform");
+		valueNode.setAttribute("name", value->getName());
+		valueNode.setAttribute("type", value->dataTrait()->typeName());
 
-		value->dataTrait()->writeValue(doc, valueNode, value->getValue());
+		value->dataTrait()->writeValue(valueNode, value->getValue());
 	}
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Shader>::readValue(QDomElement& elem, Shader& v)
+PANDA_CORE_API void DataTrait<Shader>::readValue(XmlElement& elem, Shader& v)
 {
 	v.clear();
 
-	QDomElement sourceNode = elem.firstChildElement("Source");
-	while(!sourceNode.isNull())
+	auto sourceNode = elem.firstChild("Source");
+	while(sourceNode)
 	{
 		int type = sourceNode.attribute("type").toInt();
-		v.setSource(QOpenGLShader::ShaderType(type), sourceNode.text().toStdString());
-		sourceNode = sourceNode.nextSiblingElement("Source");
+		v.setSource(QOpenGLShader::ShaderType(type), sourceNode.text());
+		sourceNode = sourceNode.nextSibling("Source");
 	}
 
-	QDomElement valueNode = elem.firstChildElement("Uniform");
-	while(!valueNode.isNull())
+	auto valueNode = elem.firstChild("Uniform");
+	while(valueNode)
 	{
-		std::string type = valueNode.attribute("type").toStdString();
+		std::string type = valueNode.attribute("type").toString();
 		v.loadValue(type, valueNode);
-		valueNode = valueNode.nextSiblingElement("Uniform");
+		valueNode = valueNode.nextSibling("Uniform");
 	}
 }
 

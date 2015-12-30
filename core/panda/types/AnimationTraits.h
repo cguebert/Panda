@@ -51,27 +51,26 @@ public:
 			return nullptr;
 		return &anim.getAtIndex(index);
 	}
-	static void writeValue(QDomDocument& doc, QDomElement& elem, const animation_type& anim)
+	static void writeValue(XmlElement& elem, const animation_type& anim)
 	{
 		elem.setAttribute("extend", anim.getExtend());
 		elem.setAttribute("interpolation", anim.getInterpolation());
 		for(auto stop : anim.getStops())
 		{
-			QDomElement node = doc.createElement("Value");
+			auto node = elem.addChild("Value");
 			node.setAttribute("key", stop.first);
-			base_trait::writeValue(doc, node, stop.second);
-			elem.appendChild(node);
+			base_trait::writeValue(node, stop.second);
 		}
 	}
-	static void readValue(QDomElement& elem, animation_type& anim)
+	static void readValue(XmlElement& elem, animation_type& anim)
 	{
 		anim.setExtend(elem.attribute("extend").toInt());
 		anim.setInterpolation(elem.attribute("interpolation").toInt());
 		anim.clear();
 		T val = T();
 		PReal key;
-		QDomElement e = elem.firstChildElement("Value");
-		while(!e.isNull())
+		auto e = elem.firstChild("Value");
+		while(e)
 		{
 #ifdef PANDA_DOUBLE
 			key = e.attribute("key").toDouble();
@@ -80,7 +79,7 @@ public:
 #endif
 			base_trait::readValue(e, val);
 			anim.add(key, val);
-			e = e.nextSiblingElement("Value");
+			e = e.nextSibling("Value");
 		}
 	}
 };

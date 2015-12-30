@@ -185,8 +185,8 @@ bool ImageWrapper::operator!=(const ImageWrapper& img) const
 
 template<> PANDA_CORE_API std::string DataTrait<ImageWrapper>::valueTypeName() { return "image"; }
 
-template<> PANDA_CORE_API void DataTrait<ImageWrapper>::writeValue(QDomDocument&, QDomElement&, const ImageWrapper&) {}
-template<> PANDA_CORE_API void DataTrait<ImageWrapper>::readValue(QDomElement&, ImageWrapper&) {}
+template<> PANDA_CORE_API void DataTrait<ImageWrapper>::writeValue(XmlElement&, const ImageWrapper&) {}
+template<> PANDA_CORE_API void DataTrait<ImageWrapper>::readValue(XmlElement&, ImageWrapper&) {}
 
 template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isDisplayed() { return false; }
 template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isPersistent() { return false; }

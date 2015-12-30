@@ -70,36 +70,35 @@ Polygon rotated(const Polygon& poly, const Point& center, PReal angle)
 template<> PANDA_CORE_API std::string DataTrait<Polygon>::valueTypeName() { return "polygon"; }
 
 template<>
-PANDA_CORE_API void DataTrait<Polygon>::writeValue(QDomDocument& doc, QDomElement& elem, const Polygon& poly)
+PANDA_CORE_API void DataTrait<Polygon>::writeValue(XmlElement& elem, const Polygon& poly)
 {
 	auto pathTrait = DataTraitsList::getTraitOf<Path>();
-	QDomElement ctNode = doc.createElement("Contour");
-	pathTrait->writeValue(doc, ctNode, &poly.contour);
-	elem.appendChild(ctNode);
+	auto ctNode = elem.addChild("Contour");
+	pathTrait->writeValue(ctNode, &poly.contour);
+
 	for(const auto& hole : poly.holes)
 	{
-		QDomElement holeNode = doc.createElement("Hole");
-		pathTrait->writeValue(doc, holeNode, &hole);
-		elem.appendChild(holeNode);
+		auto holeNode = elem.addChild("Hole");
+		pathTrait->writeValue(holeNode, &hole);
 	}
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Polygon>::readValue(QDomElement& elem, Polygon& poly)
+PANDA_CORE_API void DataTrait<Polygon>::readValue(XmlElement& elem, Polygon& poly)
 {
 	poly.clear();
 	auto pathTrait = DataTraitsList::getTraitOf<Path>();
-	QDomElement ctNode = elem.firstChildElement("Contour");
-	if(!ctNode.isNull())
+	auto ctNode = elem.firstChild("Contour");
+	if(ctNode)
 		pathTrait->readValue(ctNode, &poly.contour);
 
-	QDomElement holeNode = elem.firstChildElement("Hole");
-	while(!holeNode.isNull())
+	auto holeNode = elem.firstChild("Hole");
+	while(holeNode)
 	{
 		Path path;
 		pathTrait->readValue(holeNode, &path);
 		poly.holes.push_back(path);
-		holeNode = holeNode.nextSiblingElement("Hole");
+		holeNode = holeNode.nextSibling("Hole");
 	}
 }
 

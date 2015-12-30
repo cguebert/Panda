@@ -20,8 +20,8 @@ public:
 	explicit Group(PandaDocument* parent = nullptr);
 	virtual ~Group();
 
-	virtual void save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*>* selected = nullptr);
-	virtual void load(QDomElement& elem);
+	virtual void save(XmlElement& elem, const std::vector<PandaObject*>* selected = nullptr);
+	virtual void load(XmlElement& elem);
 
 	virtual void reset();
 

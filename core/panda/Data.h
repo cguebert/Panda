@@ -96,7 +96,7 @@ Data<T>::Data(const BaseData::InitData<U>& init)
 	: BaseData(init, typeid(T))
 	, m_parentData(nullptr)
 {
-	m_value = init.value;
+	m_value = static_cast<T>(init.value);
 }
 
 template<class T>

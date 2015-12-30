@@ -82,7 +82,7 @@ public:
 	void clear();
 
 private:
-	std::unique_ptr<tinyxml2::XMLDocument> m_document;
+	std::shared_ptr<tinyxml2::XMLDocument> m_document;
 };
 
 } // namespace panda

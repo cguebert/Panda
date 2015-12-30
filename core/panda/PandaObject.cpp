@@ -1,6 +1,7 @@
 #include <panda/PandaObject.h>
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
+#include <panda/XmlDocument.h>
 #include <panda/helper/algorithm.h>
 
 #include <iostream>
@@ -8,8 +9,6 @@
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>
 #endif
-
-#include <QDomDocument>
 
 namespace panda {
 
@@ -130,30 +129,29 @@ std::vector<BaseData*> PandaObject::getOutputDatas() const
 	return temp;
 }
 
-void PandaObject::save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*> *selected)
+void PandaObject::save(XmlElement& elem, const std::vector<PandaObject*> *selected)
 {
 	for(BaseData* data : m_datas)
 	{
 		if(data->isSet() && data->isPersistent() && !data->isReadOnly()
 				&& !(selected && data->getParent() && helper::contains(*selected, data->getParent()->getOwner())))
 		{
-			QDomElement xmlData = doc.createElement("Data");
-			xmlData.setAttribute("name", QString::fromStdString(data->getName()));
-			data->save(doc, xmlData);
-			elem.appendChild(xmlData);
+			auto xmlData = elem.addChild("Data");
+			xmlData.setAttribute("name", data->getName());
+			data->save(xmlData);
 		}
 	}
 }
 
-void PandaObject::load(QDomElement& elem)
+void PandaObject::load(XmlElement& elem)
 {
-	QDomElement e = elem.firstChildElement("Data");
-	while(!e.isNull())
+	auto e = elem.firstChild("Data");
+	while(e)
 	{
-		BaseData* data = getData(e.attribute("name").toStdString());
+		BaseData* data = getData(e.attribute("name").toString());
 		if(data)
 			data->load(e);
-		e = e.nextSiblingElement("Data");
+		e = e.nextSibling("Data");
 	}
 }
 

@@ -109,7 +109,7 @@ Color Color::fromHex(uint32_t hexValue)
 template<> PANDA_CORE_API std::string DataTrait<Color>::valueTypeName() { return "color"; }
 
 template<>
-PANDA_CORE_API void DataTrait<Color>::writeValue(QDomDocument&, QDomElement& elem, const Color& v)
+PANDA_CORE_API void DataTrait<Color>::writeValue(XmlElement& elem, const Color& v)
 {
 	elem.setAttribute("r", v.r);
 	elem.setAttribute("g", v.g);
@@ -118,7 +118,7 @@ PANDA_CORE_API void DataTrait<Color>::writeValue(QDomDocument&, QDomElement& ele
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Color>::readValue(QDomElement& elem, Color& v)
+PANDA_CORE_API void DataTrait<Color>::readValue(XmlElement& elem, Color& v)
 {
 	Color c;
 	c.r = elem.attribute("r").toFloat();

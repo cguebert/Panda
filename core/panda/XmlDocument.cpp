@@ -188,7 +188,7 @@ void XmlElement::setText(const std::string& text)
 //****************************************************************************//
 
 XmlDocument::XmlDocument()
-	: m_document(std::make_unique<tinyxml2::XMLDocument>())
+	: m_document(std::make_shared<tinyxml2::XMLDocument>())
 {
 }
 

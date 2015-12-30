@@ -116,8 +116,8 @@ public:
 	virtual void invokeFunction(int type, DataList& list) = 0;
 	virtual std::vector<int> getRegisteredTypes() = 0;
 
-	virtual void save(QDomDocument& doc, QDomElement& elem, const std::vector<PandaObject*>* selected = nullptr);
-	virtual void load(QDomElement& elem);
+	virtual void save(XmlElement& elem, const std::vector<PandaObject*>* selected = nullptr);
+	virtual void load(XmlElement& elem);
 
 	virtual BaseData* createDatas(int type, int index = -1);
 

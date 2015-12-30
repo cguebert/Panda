@@ -61,11 +61,11 @@ Point fromPolar(Point pol)
 template<> PANDA_CORE_API std::string DataTrait<Point>::valueTypeName() { return "point"; }
 
 template<>
-PANDA_CORE_API void DataTrait<Point>::writeValue(QDomDocument&, QDomElement& elem, const Point& v)
+PANDA_CORE_API void DataTrait<Point>::writeValue(XmlElement& elem, const Point& v)
 { elem.setAttribute("x", v.x); elem.setAttribute("y", v.y); }
 
 template<>
-PANDA_CORE_API void DataTrait<Point>::readValue(QDomElement& elem, Point& v)
+PANDA_CORE_API void DataTrait<Point>::readValue(XmlElement& elem, Point& v)
 #ifdef PANDA_DOUBLE
 {	v.x = elem.attribute("x").toDouble();
 	v.y = elem.attribute("y").toDouble(); }

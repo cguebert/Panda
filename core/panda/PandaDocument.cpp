@@ -16,7 +16,6 @@
 
 #include <QApplication>
 #include <QClipboard>
-#include <QDomDocument>
 #include <QElapsedTimer>
 #include <QFile>
 #include <QMessageBox>
@@ -113,56 +112,39 @@ PandaDocument::~PandaDocument()
 
 bool PandaDocument::writeFile(const std::string& fileName)
 {
-	QFile file(QString::fromStdString(fileName));
-	if (!file.open(QIODevice::WriteOnly))
-	{
-		QMessageBox::warning(nullptr, tr("Panda"),
-							 tr("Cannot write file %1:\n%2.")
-							 .arg(file.fileName())
-							 .arg(file.errorString()));
-		return false;
-	}
-
-	QDomDocument doc;
-	QDomElement root = doc.createElement("Panda");
-	doc.appendChild(root);
-	save(doc, root);	// The document's Datas
+	XmlDocument doc;
+	auto root = doc.root();
+	root.setName("Panda");
+	save(root);	// The document's Datas
 	ObjectsSelection allObjects;
 	for(auto object : m_objects)
 		allObjects.push_back(object.get());
-	saveDoc(doc, root, allObjects);	// The document and all of its objects
+	saveDoc(root, allObjects);	// The document and all of its objects
 
-	file.write(doc.toByteArray(4));
+	bool result = doc.saveToFile(fileName);
+	if (!result)
+	{
+		QMessageBox::warning(nullptr, tr("Panda"),
+							 tr("Cannot write file %1.")
+							 .arg(QString::fromStdString(fileName)));
+	}
 
-	return true;
+	return result;
 }
 
 bool PandaDocument::readFile(const std::string& fileName, bool isImport)
 {
-	QFile file(QString::fromStdString(fileName));
-	if (!file.open(QIODevice::ReadOnly))
+	XmlDocument doc;
+	if (!doc.loadFromFile(fileName))
 	{
 		QMessageBox::warning(nullptr, tr("Panda"),
-							 tr("Cannot read file %1:\n%2.")
-							 .arg(file.fileName())
-							 .arg(file.errorString()));
-		return false;
-	}
-
-	QDomDocument doc;
-	int errLine, errCol;
-	if (!doc.setContent(&file, nullptr, &errLine, &errCol))
-	{
-		QMessageBox::warning(nullptr, tr("Panda"),
-							 tr("Cannot parse xml file %1. Error in ligne %2, column %3")
-							 .arg(file.fileName())
-							 .arg(errLine)
-							 .arg(errCol));
+							 tr("Cannot parse xml file %1.")
+							 .arg(QString::fromStdString(fileName)));
 		return false;
 	}
 
 	m_selectedObjects.clear();
-	QDomElement root = doc.documentElement();
+	auto root = doc.root();
 	if(!isImport)	// Bugfix: don't read the doc's datas if we are merging 2 documents
 		load(root);		// Only the document's Datas
 	loadDoc(root);	// All the document's objects
@@ -178,25 +160,25 @@ bool PandaDocument::readFile(const std::string& fileName, bool isImport)
 
 std::string PandaDocument::writeTextDocument()
 {
-	QDomDocument doc;
-	QDomElement root = doc.createElement("Panda");
-	doc.appendChild(root);
+	XmlDocument doc;
+	auto root = doc.root();
+	root.setName("Panda");
 
-	saveDoc(doc, root, m_selectedObjects);
+	saveDoc(root, m_selectedObjects);
 
-	return doc.toString(4).toStdString();
+	return doc.saveToMemory();
 }
 
 bool PandaDocument::readTextDocument(const std::string& text)
 {
-	QDomDocument doc("Panda");
-	if(!doc.setContent(QString::fromStdString(text)))
+	XmlDocument doc;
+	if (!doc.loadFromMemory(text))
 		return false;
 
 	bool bSelected = !m_selectedObjects.empty();
 	m_selectedObjects.clear();
 
-	QDomElement root = doc.documentElement();
+	auto root = doc.root();
 	bool bVal = loadDoc(root);
 
 	for(auto object : m_selectedObjects)
@@ -211,7 +193,7 @@ bool PandaDocument::readTextDocument(const std::string& text)
 	return bVal;
 }
 
-bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsSelection& selected)
+bool PandaDocument::saveDoc(XmlElement& root, const ObjectsSelection& selected)
 {
 	typedef std::pair<BaseData*, BaseData*> DataPair;
 	std::vector<DataPair> links;
@@ -222,12 +204,11 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 	// Saving objects
 	for(auto object : selected)
 	{
-		QDomElement elem = doc.createElement("Object");
-		elem.setAttribute("type", QString::fromStdString(ObjectFactory::getRegistryName(object)));
+		auto elem = root.addChild("Object");
+		elem.setAttribute("type", ObjectFactory::getRegistryName(object));
 		elem.setAttribute("index", object->getIndex());
-		root.appendChild(elem);
 
-		object->save(doc, elem, &selected);
+		object->save(elem, &selected);
 
 		// Preparing links
 		for(BaseData* data : object->getInputDatas())
@@ -245,46 +226,44 @@ bool PandaDocument::saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsS
 				dockedObjects.push_back(std::make_pair(dock->getIndex(), dockable->getIndex()));
 		}
 
-		emit savingObject(doc, elem, object);
+		emit savingObject(elem, object);
 	}
 
 	// Saving links
 	for(const auto& link : links)
 	{
-		QDomElement elem = doc.createElement("Link");
+		auto elem = root.addChild("Link");
 		elem.setAttribute("object1", link.first->getOwner()->getIndex());
-		elem.setAttribute("data1", QString::fromStdString(link.first->getName()));
+		elem.setAttribute("data1", link.first->getName());
 		elem.setAttribute("object2", link.second->getOwner()->getIndex());
-		elem.setAttribute("data2", QString::fromStdString(link.second->getName()));
-		root.appendChild(elem);
+		elem.setAttribute("data2", link.second->getName());
 	}
 
 	// Saving docked objects list
 	for(const auto& dockable : dockedObjects)
 	{
-		QDomElement elem = doc.createElement("Dock");
+		auto elem = root.addChild("Dock");
 		elem.setAttribute("dock", dockable.first);
 		elem.setAttribute("docked", dockable.second);
-		root.appendChild(elem);
 	}
 
 	return true;
 }
 
-bool PandaDocument::loadDoc(QDomElement& root)
+bool PandaDocument::loadDoc(XmlElement& root)
 {
 	emit startLoading();
 	std::map<quint32, quint32> importIndicesMap;
 	auto factory = ObjectFactory::getInstance();
 
 	// Loading objects
-	QDomElement elem = root.firstChildElement("Object");
-	while(!elem.isNull())
+	auto elem = root.firstChild("Object");
+	while(elem)
 	{
-		std::string registryName = elem.attribute("type").toStdString();
+		std::string registryName = elem.attribute("type").toString();
 		if(registryName.empty())
 			return false;
-		quint32 index = elem.attribute("index").toUInt();
+		quint32 index = elem.attribute("index").toUnsigned();
 		auto object = factory->create(registryName, this);
 		if(object)
 		{
@@ -304,22 +283,22 @@ bool PandaDocument::loadDoc(QDomElement& root)
 			return false;
 		}
 
-		elem = elem.nextSiblingElement("Object");
+		elem = elem.nextSibling("Object");
 	}
 
 	// Create links
-	elem = root.firstChildElement("Link");
-	while(!elem.isNull())
+	elem = root.firstChild("Link");
+	while(elem)
 	{
 		quint32 index1, index2;
 		std::string name1, name2;
-		index1 = elem.attribute("object1").toUInt();
-		index2 = elem.attribute("object2").toUInt();
+		index1 = elem.attribute("object1").toUnsigned();
+		index2 = elem.attribute("object2").toUnsigned();
 		index1 = importIndicesMap[index1];
 		index2 = importIndicesMap[index2];
 
-		name1 = elem.attribute("data1").toStdString();
-		name2 = elem.attribute("data2").toStdString();
+		name1 = elem.attribute("data1").toString();
+		name2 = elem.attribute("data2").toString();
 
 		BaseData *data1, *data2;
 		data1 = findData(index1, name1);
@@ -327,16 +306,16 @@ bool PandaDocument::loadDoc(QDomElement& root)
 		if(data1 && data2)
 			data1->setParent(data2);
 
-		elem = elem.nextSiblingElement("Link");
+		elem = elem.nextSibling("Link");
 	}
 
 	// Put dockables in their docks
-	elem = root.firstChildElement("Dock");
-	while(!elem.isNull())
+	elem = root.firstChild("Dock");
+	while(elem)
 	{
 		quint32 dockIndex, dockableIndex;
-		dockIndex = elem.attribute("dock").toUInt();
-		dockableIndex = elem.attribute("docked").toUInt();
+		dockIndex = elem.attribute("dock").toUnsigned();
+		dockableIndex = elem.attribute("docked").toUnsigned();
 		dockIndex = importIndicesMap[dockIndex];
 		dockableIndex = importIndicesMap[dockableIndex];
 
@@ -350,7 +329,7 @@ bool PandaDocument::loadDoc(QDomElement& root)
 			dock->addDockable(dockable);
 		}
 
-		elem = elem.nextSiblingElement("Dock");
+		elem = elem.nextSibling("Dock");
 	}
 
 	emit loadingFinished(); // For example if the view wants to do some computation

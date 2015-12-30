@@ -358,7 +358,7 @@ void Mesh::createEdgesInTriangleList()
 					}
 				}
 
-				Q_ASSERT(found);
+				assert(found);
 			}
 		}
 	}
@@ -604,28 +604,25 @@ template<> PANDA_CORE_API std::string DataTrait<Mesh>::valueTypeName() { return 
 template<> PANDA_CORE_API std::string DataTrait<Mesh>::valueTypeNamePlural() { return "meshes"; }
 
 template<>
-PANDA_CORE_API void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& elem, const Mesh& v)
+PANDA_CORE_API void DataTrait<Mesh>::writeValue(XmlElement& elem, const Mesh& v)
 {
 	for(const auto& p : v.getPoints())
 	{
-		QDomElement ptNode = doc.createElement("Point");
-		elem.appendChild(ptNode);
+		auto ptNode = elem.addChild("Point");
 		ptNode.setAttribute("x", p.x);
 		ptNode.setAttribute("y", p.y);
 	}
 
 	for(const auto& e : v.getEdges())
 	{
-		QDomElement edgeNode = doc.createElement("Edge");
-		elem.appendChild(edgeNode);
+		auto edgeNode = elem.addChild("Edge");
 		edgeNode.setAttribute("p1", e[0]);
 		edgeNode.setAttribute("p2", e[1]);
 	}
 
 	for(const auto& t : v.getTriangles())
 	{
-		QDomElement triangleNode = doc.createElement("Triangle");
-		elem.appendChild(triangleNode);
+		auto triangleNode = elem.addChild("Triangle");
 		triangleNode.setAttribute("p1", t[0]);
 		triangleNode.setAttribute("p2", t[1]);
 		triangleNode.setAttribute("p3", t[2]);
@@ -633,12 +630,12 @@ PANDA_CORE_API void DataTrait<Mesh>::writeValue(QDomDocument& doc, QDomElement& 
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
+PANDA_CORE_API void DataTrait<Mesh>::readValue(XmlElement& elem, Mesh& v)
 {
 	Mesh tmpMesh;
 
-	QDomElement ptNode = elem.firstChildElement("Point");
-	while(!ptNode.isNull())
+	auto ptNode = elem.firstChild("Point");
+	while(ptNode)
 	{
 		Point pt;
 #ifdef PANDA_DOUBLE
@@ -649,28 +646,28 @@ PANDA_CORE_API void DataTrait<Mesh>::readValue(QDomElement& elem, Mesh& v)
 		pt.y = ptNode.attribute("y").toFloat();
 #endif
 		tmpMesh.addPoint(pt);
-		ptNode = ptNode.nextSiblingElement("Point");
+		ptNode = ptNode.nextSibling("Point");
 	}
 
-	QDomElement edgeNode = elem.firstChildElement("Edge");
-	while(!edgeNode.isNull())
+	auto edgeNode = elem.firstChild("Edge");
+	while(edgeNode)
 	{
 		Mesh::Edge edge;
 		edge[0] = edgeNode.attribute("p1").toInt();
 		edge[1] = edgeNode.attribute("p2").toInt();
 		tmpMesh.addEdge(edge);
-		edgeNode = edgeNode.nextSiblingElement("Edge");
+		edgeNode = edgeNode.nextSibling("Edge");
 	}
 
-	QDomElement triangleNode = elem.firstChildElement("Triangle");
-	while(!triangleNode.isNull())
+	auto triangleNode = elem.firstChild("Triangle");
+	while(triangleNode)
 	{
 		Mesh::Triangle triangle;
 		triangle[0] = triangleNode.attribute("p1").toInt();
 		triangle[1] = triangleNode.attribute("p2").toInt();
 		triangle[2] = triangleNode.attribute("p3").toInt();
 		tmpMesh.addTriangle(triangle);
-		triangleNode = triangleNode.nextSiblingElement("Triangle");
+		triangleNode = triangleNode.nextSibling("Triangle");
 	}
 
 	v = std::move(tmpMesh);

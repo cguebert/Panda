@@ -25,6 +25,7 @@ class Layer;
 class Scheduler;
 class ScopedMacro;
 class DockableObject;
+class XmlElement;
 
 class PANDA_CORE_API PandaDocument : public QObject, public PandaObject
 {
@@ -45,8 +46,8 @@ public:
 	std::string writeTextDocument();
 	bool readTextDocument(const std::string& text);
 
-	bool saveDoc(QDomDocument& doc, QDomElement& root, const ObjectsSelection& selected);
-	bool loadDoc(QDomElement& root);
+	bool saveDoc(XmlElement& root, const ObjectsSelection& selected);
+	bool loadDoc(XmlElement& root);
 
 	void resetDocument();
 
@@ -168,8 +169,8 @@ signals:
 	void dirtyObject(panda::PandaObject*);
 	void addedObject(panda::PandaObject*);
 	void removedObject(panda::PandaObject*);
-	void savingObject(QDomDocument&, QDomElement&, panda::PandaObject*);
-	void loadingObject(QDomElement&, panda::PandaObject*);
+	void savingObject(XmlElement&, panda::PandaObject*);
+	void loadingObject(XmlElement&, panda::PandaObject*);
 	void selectedObject(panda::PandaObject*);
 	void selectedObjectIsDirty(panda::PandaObject*);
 	void selectionChanged();
