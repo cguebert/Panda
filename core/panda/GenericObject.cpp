@@ -90,7 +90,7 @@ BaseData* GenericObject::createDatas(int type, int index)
 		if(dataName.find("%1") != std::string::npos)
 			helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
 
-		dataName += " " + std::to_string(nbCreated);	// Add the count
+		dataName += " #" + std::to_string(nbCreated);	// Add the count
 
 		int dataType = m_dataDefinitions[i].type;
 		if(!dataType) // If the type in the definition is 0, use the full type of the connected Data
@@ -164,7 +164,7 @@ void GenericObject::updateDataNames()
 			if(dataName.find("%1") != std::string::npos)
 				helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
 
-			dataName += " " + std::to_string(index);	// Add the index
+			dataName += " #" + std::to_string(index);	// Add the index
 			created->datas[i]->setName(dataName);
 		}
 
@@ -391,7 +391,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 			if(dataName.find("%1") != std::string::npos)
 				helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
 
-			dataName += " " + std::to_string(nbCreated);	// Add the count
+			dataName += " #" + std::to_string(nbCreated);	// Add the count
 
 			int dataType = m_dataDefinitions[i].type;
 			if(!dataType) // If the type in the definition is 0, use the full type of the connected Data
