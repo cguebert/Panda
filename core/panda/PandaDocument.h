@@ -184,8 +184,6 @@ signals:
 	void mouseReleased(panda::types::Point);
 
 public slots:
-	void copy();
-	void paste();
 	void selectionAdd(panda::PandaObject* object);
 	void selectionRemove(panda::PandaObject* object);
 	void selectAll();

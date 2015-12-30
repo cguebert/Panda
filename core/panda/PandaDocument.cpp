@@ -14,12 +14,8 @@
 #include <panda/helper/UpdateLogger.h>
 #endif
 
-#include <QApplication>
-#include <QClipboard>
 #include <QElapsedTimer>
-#include <QFile>
 #include <QMessageBox>
-#include <QMimeData>
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLFunctions>
 #include <QTimer>
@@ -458,25 +454,6 @@ void PandaDocument::setMouseClick(bool clicked, const types::Point& pos)
 		emit mousePressed(pos);
 	else
 		emit mouseReleased(pos);
-}
-
-void PandaDocument::copy()
-{
-	if(m_selectedObjects.empty())
-		return;
-	QClipboard* clipboard = QApplication::clipboard();
-	clipboard->setText(QString::fromStdString(writeTextDocument()));
-}
-
-void PandaDocument::paste()
-{
-	const QClipboard* clipboard = QApplication::clipboard();
-	const QMimeData* mimeData = clipboard->mimeData();
-	if(mimeData->hasText())
-	{
-		std::string clipText = mimeData->text().toStdString();
-		readTextDocument(clipText);
-	}
 }
 
 void PandaDocument::selectionAdd(PandaObject* object)

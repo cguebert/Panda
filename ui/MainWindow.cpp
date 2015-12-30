@@ -264,7 +264,7 @@ void MainWindow::createActions()
 	m_copyAction->setIcon(QIcon(":/share/icons/copy.png"));
 	m_copyAction->setShortcut(QKeySequence::Copy);
 	m_copyAction->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
-	connect(m_copyAction, SIGNAL(triggered()), m_document, SLOT(copy()));
+	connect(m_copyAction, SIGNAL(triggered()), this, SLOT(copy()));
 	addAction(m_copyAction);
 
 	m_pasteAction = new QAction(tr("&Paste"), this);
@@ -933,15 +933,28 @@ void MainWindow::showStatusBarMessage(QString text)
 	statusBar()->showMessage(text, 2000);
 }
 
+void MainWindow::copy()
+{
+	if (m_document->getSelection().empty())
+		return;
+
+	QApplication::clipboard()->setText(QString::fromStdString(m_document->writeTextDocument()));
+}
+
 void MainWindow::cut()
 {
-	m_document->copy();
+	copy();
 	del();
 }
 
 void MainWindow::paste()
 {
-	m_document->paste();
+	const QMimeData* mimeData = QApplication::clipboard()->mimeData();
+	if (!mimeData->hasText())
+		return;
+	
+	m_document->readTextDocument(mimeData->text().toStdString());
+
 	m_graphView->moveSelectedToCenter();
 	m_graphView->updateLinkTags();
 

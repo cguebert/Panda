@@ -49,6 +49,7 @@ private slots:
 	void switchToOpenGLView();
 	void switchFullScreen();
 	void showStatusBarMessage(QString);
+	void copy();
 	void cut();
 	void paste();
 	void del();
