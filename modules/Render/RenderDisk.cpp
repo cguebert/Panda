@@ -8,9 +8,7 @@
 #include <panda/types/Gradient.h>
 #include <panda/types/Shader.h>
 #include <panda/helper/GradientCache.h>
-
-#include <QOpenGLShaderProgram>
-#include <cmath>
+#include <panda/graphics/ShaderProgram.h>
 
 namespace panda {
 
@@ -44,8 +42,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void update()
@@ -111,7 +109,7 @@ public:
 			return;
 
 		shaderProgram.bind();
-		shaderProgram.setUniformValue("MVP", getMVPMatrix());
+		shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 		shaderProgram.enableAttributeArray("vertex");
 		shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
@@ -121,8 +119,7 @@ public:
 		int nb = countBuffer.size();
 		for(int i=0; i<nb; ++i)
 		{
-			auto color = colorBuffer[i];
-			shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
+			shaderProgram.setUniformValueArray(colorLocation, colorBuffer[i].data(), 1, 4);
 
 			glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
 		}
@@ -142,7 +139,7 @@ protected:
 	std::vector<GLsizei> countBuffer;
 	std::vector<Color> colorBuffer;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderDiskClass = RegisterObject<RenderDisk>("Render/Filled/Disk").setDescription("Draw a plain disk");
@@ -172,8 +169,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 	}
 
 	void update()
@@ -254,7 +251,7 @@ public:
 				return;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
@@ -313,7 +310,7 @@ protected:
 	std::vector<GLint> firstBuffer;
 	std::vector<GLsizei> countBuffer;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderDisk_GradientClass = RegisterObject<RenderDisk_Gradient>("Render/Gradient/Disk")
@@ -343,8 +340,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 	}
 
 	void update()
@@ -422,7 +419,7 @@ public:
 				return;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
@@ -456,7 +453,7 @@ protected:
 	std::vector<GLint> firstBuffer;
 	std::vector<GLsizei> countBuffer;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderDisk_TexturedClass = RegisterObject<RenderDisk_Textured>("Render/Textured/Disk")

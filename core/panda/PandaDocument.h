@@ -18,7 +18,6 @@ class QOpenGLFramebufferObject;
 class QAction;
 class QUndoCommand;
 class QUndoStack;
-class QOpenGLShaderProgram;
 
 namespace panda {
 
@@ -28,6 +27,11 @@ class Scheduler;
 class ScopedMacro;
 class DockableObject;
 class XmlElement;
+
+namespace graphics
+{ 
+	class ShaderProgram; 
+}
 
 class PANDA_CORE_API PandaDocument : public QObject, public PandaObject
 {
@@ -130,7 +134,7 @@ protected:
 	quint32 m_currentIndex;
 	Layer* m_defaultLayer;
 	std::shared_ptr<QOpenGLFramebufferObject> m_renderFBO, m_secondRenderFBO;
-	std::shared_ptr<QOpenGLShaderProgram> m_mergeLayersShader;
+	std::shared_ptr<graphics::ShaderProgram> m_mergeLayersShader;
 
 	PReal m_animTimeVal;
 	types::Point m_mousePositionVal;

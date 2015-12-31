@@ -5,9 +5,9 @@
 #include <panda/types/Color.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Shader.h>
+#include <panda/graphics/ShaderProgram.h>
 
 #include <QOpenGLBuffer>
-#include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 
 #include <array>
@@ -51,8 +51,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/sprite.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/sprite.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/sprite.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/sprite.f.glsl");
 	}
 
 	inline std::array<float, 4> colorToVector4(const Color& c)
@@ -134,7 +134,7 @@ public:
 			sizeBuffer.release();
 
 			shaderProgram.setUniformValue(uniform_texture, 0);
-			shaderProgram.setUniformValue(uniform_MVP, getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			shaderProgram.enableAttributeArray(attribute_color);
 			shaderProgram.setAttributeArray(attribute_color, GL_FLOAT, tmpColors.data(), 4);
@@ -159,7 +159,7 @@ protected:
 	Data< Shader > shader;
 
 	QOpenGLBuffer posBuffer, sizeBuffer;
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 	int attribute_pos, attribute_color, attribute_size;
 	int uniform_texture, uniform_MVP;
 };

@@ -5,8 +5,7 @@
 #include <panda/types/Mesh.h>
 #include <panda/types/Shader.h>
 #include <panda/Renderer.h>
-
-#include <QOpenGLShaderProgram>
+#include <panda/graphics/ShaderProgram.h>
 
 namespace panda {
 
@@ -34,8 +33,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -53,7 +52,7 @@ public:
 			if(!shader.getValue().apply(shaderProgram))
 				return;
 
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);
@@ -64,8 +63,7 @@ public:
 
 			for(int i=0; i<nbTri; ++i)
 			{
-				auto color = listColor[i % nbColor];
-				shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
+				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
 
 				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, triangles[i].data());
 			}
@@ -79,7 +77,7 @@ protected:
 	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderTriangleClass = RegisterObject<RenderTriangle>("Render/Filled/Triangle").setDescription("Draw a triangle");

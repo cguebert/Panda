@@ -29,7 +29,7 @@ protected:
 
 	bool m_readOnly;
 	QTabWidget* m_tabWidget;
-	QOpenGLShader::ShaderType m_flags;
+	panda::types::Shader::ShaderType m_flags;
 	QScrollArea* m_valuesArea;
 
 	typedef std::shared_ptr<BaseDataWidget> DataWidgetPtr;
@@ -41,7 +41,7 @@ protected:
 		QTextEdit* sourceEdit;
 
 	};
-	std::map<QOpenGLShader::ShaderType, ShaderSourceItem> m_sourceWidgets;
+	std::map<panda::types::Shader::ShaderType, ShaderSourceItem> m_sourceWidgets;
 };
 
 #endif // EDITSHADERDIALOG_H

@@ -10,10 +10,17 @@
 #include <panda/DataFactory.h>
 #include <panda/Data.h>
 
-#include <QOpenGLShaderProgram>
-
-#include <functional>
 #include <iostream>
+
+namespace
+{
+
+panda::graphics::ShaderType convert(panda::types::Shader::ShaderType type)
+{
+	return static_cast<panda::graphics::ShaderType>(static_cast<char>(type));
+}
+
+}
 
 namespace panda
 {
@@ -46,7 +53,7 @@ void Shader::clear()
 	m_customTextures.clear();
 }
 
-void Shader::setSource(QOpenGLShader::ShaderType type, const std::string& sourceCode)
+void Shader::setSource(ShaderType type, const std::string& sourceCode)
 {
 	ShaderSource shaderSource;
 	shaderSource.type = type;
@@ -55,7 +62,7 @@ void Shader::setSource(QOpenGLShader::ShaderType type, const std::string& source
 	m_sourcesMap[type] = shaderSource;
 }
 
-void Shader::setSourceFromFile(QOpenGLShader::ShaderType type, const std::string& fileName)
+void Shader::setSourceFromFile(ShaderType type, const std::string& fileName)
 {
 	auto contents = helper::system::DataRepository.loadFile(fileName);
 	if (contents.empty()) {
@@ -70,50 +77,34 @@ void Shader::setSourceFromFile(QOpenGLShader::ShaderType type, const std::string
 	m_sourcesMap[type] = shaderSource;
 }
 
-void Shader::removeSource(QOpenGLShader::ShaderType type)
+void Shader::removeSource(ShaderType type)
 {
 	m_sourcesMap.erase(type);
 }
 
-bool Shader::apply(QOpenGLShaderProgram& program) const
+bool Shader::apply(graphics::ShaderProgram& program) const
 {
-	auto currentShaders = program.shaders();
-	std::vector<QOpenGLShader*> newShaders;
+	program.clear();
+
+	// Get shader from the cache (compile them if necessary)
 	helper::ShaderCache* shaderCache = helper::ShaderCache::getInstance();
-
-	// Get shader pointers from the cache
-	for(const auto& source : m_sourcesMap)
-		newShaders.push_back(shaderCache->getShader(source.second.type, source.second.sourceCode, source.second.hash));
-
-	bool needLink = false;
-	// Removing from the program the shader we do not want
-	for(QOpenGLShader* shader : currentShaders)
+	for (const auto& source : m_sourcesMap)
 	{
-		if(!helper::contains(newShaders, shader))
-		{
-			program.removeShader(shader);
-			needLink = true;
-		}
+		auto type = convert(source.second.type);
+		auto id = shaderCache->getShader(type, source.second.sourceCode, source.second.hash);
+		if (!id)
+			return false;
+		
+		program.addShader(type, id);
 	}
 
-	// Adding the one the program does not have yet
-	for(QOpenGLShader* shader : newShaders)
-	{
-		if (!helper::contains(currentShaders, shader))
-		{
-			program.addShader(shader);
-			needLink = true;
-		}
-	}
-
-	if(needLink)
-		program.link();
+	program.link();
 
 	if(program.isLinked())
 	{
 		program.bind();
-		for(auto value : m_shaderValues)
-			value->apply(program, *this);
+		for(const auto& value : m_shaderValues)
+			value->apply(program);
 
 		// Register custom textures
 		for(unsigned int i=0, nb=m_customTextures.size(); i<nb; ++i)
@@ -122,13 +113,13 @@ bool Shader::apply(QOpenGLShaderProgram& program) const
 			if(!id)
 				continue;
 
-			int loc = program.uniformLocation(QString::fromStdString(m_customTextures[i].first));
+			int loc = program.uniformLocation(m_customTextures[i].first.c_str());
 			if(loc == -1)
 				continue;
 
 			glActiveTexture(GL_TEXTURE8 + i);
 			glBindTexture(GL_TEXTURE_2D, m_customTextures[i].second);
-			program.setUniformValue(loc, 8 + i);
+			glUniform1i(loc, 8 + i);
 			glActiveTexture(0);
 		}
 	}
@@ -177,44 +168,44 @@ bool Shader::operator!=(const Shader& shader) const
 
 //****************************************************************************//
 
-template<> void ShaderValue<int>::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValue(program.uniformLocation(QString::fromStdString(m_name)), m_value); }
+template<> void ShaderValue<int>::apply(graphics::ShaderProgram& program) const
+{ program.setUniformValue(m_name.c_str(), m_value); }
 
-template<> void ShaderValue<PReal>::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValue(program.uniformLocation(QString::fromStdString(m_name)), (float)m_value); }
+template<> void ShaderValue<PReal>::apply(graphics::ShaderProgram& program) const
+{ program.setUniformValue(m_name.c_str(), m_value); }
 
-template<> void ShaderValue<Color>::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value.data(), 1, 4); }
+template<> void ShaderValue<Color>::apply(graphics::ShaderProgram& program) const
+{ program.setUniformValueArray(m_name.c_str(), m_value.data(), 1, 4); }
 
-template<> void ShaderValue<Point>::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value.data(), 1, 2); }
+template<> void ShaderValue<Point>::apply(graphics::ShaderProgram& program) const
+{ program.setUniformValueArray(m_name.c_str(), m_value.data(), 1, 2); }
 
-template<> void ShaderValue< std::vector<int> >::apply(QOpenGLShaderProgram& program, const Shader&) const
-{ program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value.data(), m_value.size()); }
+template<> void ShaderValue< std::vector<int> >::apply(graphics::ShaderProgram& program) const
+{ program.setUniformValue(m_name.c_str(), m_value); }
 
-template<> void ShaderValue< std::vector<PReal> >::apply(QOpenGLShaderProgram& program, const Shader&) const
+template<> void ShaderValue< std::vector<PReal> >::apply(graphics::ShaderProgram& program) const
 {
-	int nb = m_value.size();
 #ifdef PANDA_DOUBLE
+	const int nb = m_value.size();
 	std::vector<float> copy(nb);
 	for(int i++; i<nb; ++i)
 		copy[i] = m_value[i]:
-	program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), copy.data(), nb, 1);
+	program.setUniformValue(m_name.c_str(), copy);
 #else
-	program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value.data(), nb, 1);
+	program.setUniformValue(m_name.c_str(), m_value);
 #endif
 }
 
-template<> void ShaderValue< std::vector<Color> >::apply(QOpenGLShaderProgram& program, const Shader&) const
+template<> void ShaderValue< std::vector<Color> >::apply(graphics::ShaderProgram& program) const
 {
 	if(!m_value.empty())
-		program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value[0].data(), m_value.size(), 4);
+		program.setUniformValueArray(m_name.c_str(), m_value[0].data(), m_value.size(), 4);
 }
 
-template<> void ShaderValue< std::vector<Point> >::apply(QOpenGLShaderProgram& program, const Shader&) const
+template<> void ShaderValue< std::vector<Point> >::apply(graphics::ShaderProgram& program) const
 {
 	if(!m_value.empty())
-		program.setUniformValueArray(program.uniformLocation(QString::fromStdString(m_name)), m_value[0].data(), m_value.size(), 2);
+		program.setUniformValueArray(m_name.c_str(), m_value[0].data(), m_value.size(), 2);
 }
 
 template class PANDA_CORE_API ShaderValue<int>;
@@ -262,7 +253,7 @@ PANDA_CORE_API void DataTrait<Shader>::readValue(XmlElement& elem, Shader& v)
 	while(sourceNode)
 	{
 		int type = sourceNode.attribute("type").toInt();
-		v.setSource(QOpenGLShader::ShaderType(type), sourceNode.text());
+		v.setSource(static_cast<Shader::ShaderType>(type), sourceNode.text());
 		sourceNode = sourceNode.nextSibling("Source");
 	}
 

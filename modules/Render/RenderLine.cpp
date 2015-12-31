@@ -7,8 +7,7 @@
 #include <panda/types/Path.h>
 #include <panda/types/Shader.h>
 #include <panda/helper/GradientCache.h>
-
-#include <QOpenGLShaderProgram>
+#include <panda/graphics/ShaderProgram.h>
 
 namespace panda {
 
@@ -42,8 +41,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_attColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_attColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_attColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_attColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -72,7 +71,7 @@ public:
 			int nbVertices = nbLines * 2;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			std::vector<Point> tmpVertices;
 			int vertexLocation = shaderProgram.attributeLocation("vertex");
@@ -119,7 +118,7 @@ protected:
 	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderLineClass = RegisterObject<RenderLine>("Render/Line/Line").setDescription("Draw a line between 2 points");
@@ -148,8 +147,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -171,7 +170,7 @@ public:
 			if(nbWidth < nbPaths) nbWidth = 1;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			int vertexLocation = shaderProgram.attributeLocation("vertex");
 			shaderProgram.enableAttributeArray(vertexLocation);
@@ -182,8 +181,7 @@ public:
 			{
 				glLineWidth(listWidth[i % nbWidth]);
 
-				auto color = listColor[i % nbColor];
-				shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
+				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
 
 				const Path& path = paths[i];
 				shaderProgram.setAttributeArray(vertexLocation, path.front().data(), 2);
@@ -203,7 +201,7 @@ protected:
 	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderPathClass = RegisterObject<RenderPath>("Render/Line/Path").setDescription("Draw a path");
@@ -233,8 +231,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 	}
 
 	void update()
@@ -293,7 +291,7 @@ public:
 			if(nbWidth < nbPaths) nbWidth = 1;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			int vertexLocation = shaderProgram.attributeLocation("vertex");
 			shaderProgram.enableAttributeArray(vertexLocation);
@@ -371,7 +369,7 @@ protected:
 	std::vector<PReal> pathLengths;
 	std::vector< std::vector<Point> > texCoordsBuffer;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderGradientPathClass = RegisterObject<RenderGradientPath>("Render/Gradient/Path")

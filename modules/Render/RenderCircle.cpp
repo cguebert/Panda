@@ -5,9 +5,7 @@
 #include <panda/types/Color.h>
 #include <panda/types/Point.h>
 #include <panda/types/Shader.h>
-
-#include <QOpenGLShaderProgram>
-#include <cmath>
+#include <panda/graphics/ShaderProgram.h>
 
 namespace panda {
 
@@ -41,8 +39,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void update()
@@ -111,7 +109,7 @@ public:
 
 		glEnable(GL_LINE_SMOOTH);
 		shaderProgram.bind();
-		shaderProgram.setUniformValue("MVP", getMVPMatrix());
+		shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 		shaderProgram.enableAttributeArray("vertex");
 		shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
@@ -123,8 +121,7 @@ public:
 		{
 			glLineWidth(widthBuffer[i]);
 
-			auto color = colorBuffer[i];
-			shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
+			shaderProgram.setUniformValueArray(colorLocation, colorBuffer[i].data(), 1, 4);
 
 			glDrawArrays(GL_LINE_LOOP, firstBuffer[i], countBuffer[i]);
 		}
@@ -146,7 +143,7 @@ protected:
 	std::vector<GLint> firstBuffer;
 	std::vector<GLsizei> countBuffer;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderCircleClass = RegisterObject<RenderCircle>("Render/Line/Circle").setDescription("Draw a circle");

@@ -665,6 +665,8 @@ void PandaDocument::onChangedDock(DockableObject* dockable)
 
 void PandaDocument::update()
 {
+	static const int loadGlewVal = loadGlew();
+
 	if(!m_renderFBO || m_renderFBO->size() != getRenderSize())
 	{
 		m_renderFBO.reset(new QOpenGLFramebufferObject(getRenderSize()));
@@ -674,11 +676,11 @@ void PandaDocument::update()
 
 	if(!m_mergeLayersShader)
 	{
-		m_mergeLayersShader.reset(new QOpenGLShaderProgram());
-		m_mergeLayersShader->addShaderFromSourceCode(QOpenGLShader::Vertex,
-			QString::fromStdString(helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl")));
-		m_mergeLayersShader->addShaderFromSourceCode(QOpenGLShader::Fragment,
-			QString::fromStdString(helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl")));
+		m_mergeLayersShader = std::make_shared<graphics::ShaderProgram>();
+		m_mergeLayersShader->addShaderFromMemory(graphics::ShaderType::Vertex,
+			helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
+		m_mergeLayersShader->addShaderFromMemory(graphics::ShaderType::Fragment,
+			helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
 		m_mergeLayersShader->link();
 		m_mergeLayersShader->bind();
 
@@ -723,8 +725,6 @@ std::shared_ptr<QOpenGLFramebufferObject> PandaDocument::getFBO()
 
 void PandaDocument::render()
 {
-	static const int loadGlewVal = loadGlew();
-
 	GLfloat w = m_renderFBO->width(), h = m_renderFBO->height();
 
 #ifdef PANDA_LOG_EVENTS
@@ -750,7 +750,7 @@ void PandaDocument::render()
 
 	QMatrix4x4 mvp;
 	mvp.ortho(0, w, h, 0, -10, 10);
-	m_mergeLayersShader->setUniformValue("MVP", mvp);
+	m_mergeLayersShader->setUniformValueMat4("MVP", mvp.constData());
 
 	GLfloat verts[8], texCoords[8];
 

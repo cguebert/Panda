@@ -3,10 +3,9 @@
 
 #include <panda/core.h>
 
-#include <unordered_map>
-#include <memory>
+#include <panda/graphics/ShaderProgram.h>
 
-#include <QOpenGLShader>
+#include <unordered_map>
 
 namespace panda
 {
@@ -14,7 +13,7 @@ namespace panda
 namespace helper
 {
 
-class PANDA_CORE_API ShaderCache : public QObject
+class PANDA_CORE_API ShaderCache
 {
 public:
 	static ShaderCache* getInstance();
@@ -23,19 +22,19 @@ public:
 	void resetUsedFlag();	// Prepare the flags at the start of a render
 	void clearUnused();		// Remove shaders not used during the last render
 
-	QOpenGLShader* getShader(QOpenGLShader::ShaderType type, const std::string& sourceCode, std::size_t hash = 0);
+	graphics::ShaderId::SPtr getShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash = 0);
 
 private:
-	QOpenGLShader* addShader(QOpenGLShader::ShaderType type, const std::string& sourceCode, std::size_t hash);
+	graphics::ShaderId::SPtr addShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash);
 
 	struct CacheItem
 	{
-		CacheItem(QOpenGLShader::ShaderType type, uint hash)
-			: m_sourceHash(hash), m_type(type), m_used(true) {}
+		CacheItem(graphics::ShaderType type, graphics::ShaderId::SPtr id, size_t hash)
+			: m_type(type), m_shader(id), m_sourceHash(hash), m_used(true) {}
 
+		graphics::ShaderType m_type;
+		graphics::ShaderId::SPtr m_shader;
 		std::size_t m_sourceHash;
-		QOpenGLShader::ShaderType m_type;
-		std::shared_ptr<QOpenGLShader> m_shader;
 		bool m_used;
 	};
 

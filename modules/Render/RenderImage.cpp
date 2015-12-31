@@ -5,8 +5,7 @@
 #include <panda/types/Rect.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Shader.h>
-
-#include <QOpenGLShaderProgram>
+#include <panda/graphics/ShaderProgram.h>
 
 namespace panda {
 
@@ -40,8 +39,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 
 		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
 		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
@@ -98,7 +97,7 @@ public:
 
 			shaderProgram.bind();
 			const QMatrix4x4& MVP = getMVPMatrix();
-			shaderProgram.setUniformValue("MVP", MVP);
+			shaderProgram.setUniformValueMat4("MVP", MVP.constData());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", m_verts, 2);
@@ -120,7 +119,7 @@ public:
 						QMatrix4x4 tmpMVP = MVP;
 						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
-						shaderProgram.setUniformValue("MVP", tmpMVP);
+						shaderProgram.setUniformValueMat4("MVP", tmpMVP.constData());
 						Rect area = Rect(-s.width(), -s.height(),
 											 s.width(), s.height());
 						drawTexture(img.getTextureId(), area);
@@ -136,7 +135,7 @@ public:
 						QMatrix4x4 tmpMVP = MVP;
 						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
-						shaderProgram.setUniformValue("MVP", tmpMVP);
+						shaderProgram.setUniformValueMat4("MVP", tmpMVP.constData());
 						Rect area = Rect(0, 0, s.width(), s.height());
 						drawTexture(img.getTextureId(), area);
 					}
@@ -186,7 +185,7 @@ protected:
 
 	GLfloat m_verts[8], m_texCoords[8];
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderImageClass = RegisterObject<RenderImage>("Render/Textured/Image").setDescription("Renders an image");

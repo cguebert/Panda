@@ -35,9 +35,9 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 	// Parse the widget parameters (which shaders types to accept)
 	const char* typesNames[] = { "Vertex", "Fragment", "Geometry",
 								 "TessellationControl", "TessellationEvaluation", "Compute" };
-	QOpenGLShader::ShaderType typesValues[] = { QOpenGLShader::Vertex, QOpenGLShader::Fragment,
-												QOpenGLShader::Geometry, QOpenGLShader::TessellationControl,
-												QOpenGLShader::TessellationEvaluation, QOpenGLShader::Compute};
+	using ShaderType = panda::types::Shader::ShaderType;
+	ShaderType typesValues[] = { ShaderType::Vertex, ShaderType::Fragment, ShaderType::Geometry, 
+		ShaderType::TessellationControl, ShaderType::TessellationEvaluation, ShaderType::Compute};
 	const int nbTypes = sizeof(typesNames) / sizeof(const char*);
 
 	QString params = parent->getParameters();

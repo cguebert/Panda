@@ -1,7 +1,5 @@
 #include <panda/helper/ShaderCache.h>
 
-#include <QOpenGLShaderProgram>
-
 #include <functional>
 #include <string>
 
@@ -40,7 +38,7 @@ void ShaderCache::clearUnused()
 	}
 }
 
-QOpenGLShader* ShaderCache::getShader(QOpenGLShader::ShaderType type, const std::string& sourceCode, std::size_t hash)
+graphics::ShaderId::SPtr ShaderCache::getShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash)
 {
 	if(!hash)
 		hash = std::hash<std::string>()(sourceCode);
@@ -50,29 +48,29 @@ QOpenGLShader* ShaderCache::getShader(QOpenGLShader::ShaderType type, const std:
 		return addShader(type, sourceCode, hash);
 	else
 	{
-		do {
+		for (; it != itEnd && it->first == hash; ++it)
+		{
 			CacheItem& item = it->second;
 			if(item.m_type == type)
 			{
 				item.m_used = true;
-				return item.m_shader.get();
+				return item.m_shader;
 			}
-			++it;
-		} while(it != itEnd && it->first == hash);
+		} 
 		return addShader(type, sourceCode, hash);
 	}
 }
 
-QOpenGLShader* ShaderCache::addShader(QOpenGLShader::ShaderType type, const std::string& sourceCode, std::size_t hash)
+graphics::ShaderId::SPtr ShaderCache::addShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash)
 {
-	CacheItem item(type, hash);
+	auto id = graphics::ShaderProgram::compileShader(type, sourceCode);
+	if (!id)
+		return nullptr;
 
-	item.m_shader = std::make_shared<QOpenGLShader>(type, this);
-	item.m_shader->compileSourceCode(QString::fromStdString(sourceCode));
-
+	CacheItem item(type, id, hash);
 	m_cache.emplace(hash, item);
 
-	return item.m_shader.get();
+	return id;
 }
 
 } // namespace helper

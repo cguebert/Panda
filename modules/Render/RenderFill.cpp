@@ -7,8 +7,7 @@
 #include <panda/types/Rect.h>
 #include <panda/types/Shader.h>
 #include <panda/helper/GradientCache.h>
-
-#include <QOpenGLShaderProgram>
+#include <panda/graphics/ShaderProgram.h>
 
 namespace panda {
 
@@ -34,8 +33,8 @@ public:
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 
 		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 0;
 		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 0;
@@ -68,7 +67,7 @@ public:
 		m_shaderProgram.setUniformValue("tex0", 0);
 
 		m_shaderProgram.bind();
-		m_shaderProgram.setUniformValue("MVP", getMVPMatrix());
+		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 		PReal verts[8];
 		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
@@ -95,7 +94,7 @@ protected:
 	Data<Shader> m_shader;
 
 	GLfloat m_texCoords[8];
-	QOpenGLShaderProgram m_shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
 };
 
 int RenderGradient_HorizontalClass = RegisterObject<RenderGradient_Horizontal>("Render/Gradient/Horizontal")
@@ -120,8 +119,8 @@ public:
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 
 		m_texCoords[0*2+0] = 0; m_texCoords[0*2+1] = 0;
 		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 0;
@@ -154,7 +153,7 @@ public:
 		m_shaderProgram.setUniformValue("tex0", 0);
 
 		m_shaderProgram.bind();
-		m_shaderProgram.setUniformValue("MVP", getMVPMatrix());
+		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 		PReal verts[8];
 		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
@@ -181,7 +180,7 @@ protected:
 	Data<Shader> m_shader;
 
 	GLfloat m_texCoords[8];
-	QOpenGLShaderProgram m_shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
 };
 
 int RenderGradient_VerticalClass = RegisterObject<RenderGradient_Vertical>("Render/Gradient/Vertical")
@@ -206,8 +205,8 @@ public:
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 	}
 
 	void render()
@@ -237,7 +236,7 @@ public:
 		m_shaderProgram.setUniformValue("tex0", 0);
 
 		m_shaderProgram.bind();
-		m_shaderProgram.setUniformValue("MVP", getMVPMatrix());
+		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 		PReal verts[8], texCoords[8];
 		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
@@ -269,7 +268,7 @@ protected:
 	Data<Rect> m_area;
 	Data<Shader> m_shader;
 
-	QOpenGLShaderProgram m_shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
 };
 
 int RenderFill_MotifClass = RegisterObject<RenderFill_Motif>("Render/Textured/Fill with motif")

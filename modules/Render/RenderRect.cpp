@@ -6,8 +6,7 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Rect.h>
 #include <panda/types/Shader.h>
-
-#include <QOpenGLShaderProgram>
+#include <panda/graphics/ShaderProgram.h>
 
 namespace panda {
 
@@ -39,8 +38,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -63,7 +62,7 @@ public:
 			PReal verts[8];
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", verts, 2);
@@ -72,8 +71,7 @@ public:
 
 			for(int i=0; i<nbRect; ++i)
 			{
-				auto color = listColor[i % nbColor];
-				shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
+				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
 
 				glLineWidth(listWidth[i % nbWidth]);
 
@@ -97,7 +95,7 @@ protected:
 	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderRectClass = RegisterObject<RenderRect>("Render/Line/Rectangle")
@@ -125,8 +123,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 
 		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
 		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
@@ -150,7 +148,7 @@ public:
 			if(nbColor < nbRect) nbColor = 1;
 			PReal verts[8];
 
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", verts, 2);
@@ -166,8 +164,7 @@ public:
 
 			for(int i=0; i<nbRect; ++i)
 			{
-				auto color = listColor[i % nbColor];
-				shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
+				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
 
 				Rect rect = listRect[i % nbRect];
 				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
@@ -192,7 +189,7 @@ protected:
 
 	GLfloat m_texCoords[8];
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderFilledRectClass = RegisterObject<RenderFilledRect>("Render/Filled/Rectangle")
@@ -219,8 +216,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 
 		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
 		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
@@ -242,7 +239,7 @@ public:
 
 			PReal verts[8];
 
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", verts, 2);
@@ -281,7 +278,7 @@ protected:
 
 	GLfloat m_texCoords[8];
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderTexturedRectClass = RegisterObject<RenderTexturedRect>("Render/Textured/Rectangle")

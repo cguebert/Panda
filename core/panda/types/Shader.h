@@ -7,17 +7,18 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/DataTraits.h>
 
-#include <QOpenGLShader>
-
 #include <map>
 #include <memory>
 #include <string>
 #include <tuple>
 
-class QOpenGLShaderProgram;
-
 namespace panda
 {
+
+namespace graphics
+{ 
+	class ShaderProgram; 
+}
 
 namespace types
 {
@@ -27,7 +28,7 @@ class Shader;
 class BaseShaderValue
 {
 public:
-	virtual void apply(QOpenGLShaderProgram& program, const Shader& shader) const = 0; // Add the value to the shader program
+	virtual void apply(graphics::ShaderProgram& program) const = 0; // Add the value to the shader program
 	virtual void cleanup() const = 0;	// Disable the array from the shader after rendering
 	virtual const std::string& getName() const = 0;
 	virtual AbstractDataTrait* dataTrait() const = 0;
@@ -40,7 +41,7 @@ class ShaderValue : public BaseShaderValue
 {
 public:
 	ShaderValue(std::string name, const T& val) : m_name(name), m_value(val) { }
-	void apply(QOpenGLShaderProgram& program, const Shader& shader) const override;
+	void apply(graphics::ShaderProgram& program) const override;
 	void cleanup() const override {}
 	const std::string& getName() const override 
 	{ return m_name; }
@@ -75,20 +76,23 @@ typedef std::tuple<int, PReal, Color, Point,
 class PANDA_CORE_API Shader
 {
 public:
+	enum class ShaderType : char { Vertex = 1, Fragment, Geometry, 
+		TessellationControl, TessellationEvaluation, Compute };
+
 	Shader();
 
 	Shader& operator=(const Shader& shader);
 
 	void clear(); /// Remove all sources & all data
-	void setSource(QOpenGLShader::ShaderType type, const std::string& sourceCode);
-	void setSourceFromFile(QOpenGLShader::ShaderType type, const std::string& fileName);
-	void removeSource(QOpenGLShader::ShaderType type);
+	void setSource(ShaderType type, const std::string& sourceCode);
+	void setSourceFromFile(ShaderType type, const std::string& fileName);
+	void removeSource(ShaderType type);
 
-	bool apply(QOpenGLShaderProgram& program) const;
+	bool apply(graphics::ShaderProgram& program) const;
 
 	struct ShaderSource
 	{
-		QOpenGLShader::ShaderType type;
+		ShaderType type;
 		std::string sourceCode;
 		unsigned int hash;
 
@@ -100,15 +104,11 @@ public:
 
 	template<class T>
 	void setUniform(std::string name, const T& value)
-	{
-		m_shaderValues.push_back(std::make_shared<ShaderValue<T>>(name, value));
-	}
+	{ m_shaderValues.push_back(std::make_shared<ShaderValue<T>>(name, value)); }
 
 	template<>
 	void setUniform(std::string name, const ImageWrapper& img)
-	{
-		m_customTextures.push_back(std::make_pair(name, img.getTextureId()));
-	}
+	{ m_customTextures.push_back(std::make_pair(name, img.getTextureId())); }
 
 	typedef std::vector<std::shared_ptr<BaseShaderValue>> ValuesVector;
 	const ValuesVector& getValues() const;
@@ -120,7 +120,7 @@ public:
 	bool operator!=(const Shader& s) const;
 
 protected:
-	typedef std::map<QOpenGLShader::ShaderType, ShaderSource> SourcesMap;
+	typedef std::map<ShaderType, ShaderSource> SourcesMap;
 	SourcesMap m_sourcesMap;
 
 	ValuesVector m_shaderValues;
@@ -157,11 +157,9 @@ protected:
 
 	template<class T>
 	void copyValue(std::string name, const void* value)
-	{
-		setUniform(name, *static_cast<const T*>(value));
-	}
+	{ setUniform(name, *static_cast<const T*>(value)); }
 
-	std::vector<std::pair<std::string, GLuint>> m_customTextures;
+	std::vector<std::pair<std::string, unsigned int>> m_customTextures;
 };
 
 } // namespace types

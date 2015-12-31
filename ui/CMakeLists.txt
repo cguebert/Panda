@@ -118,7 +118,7 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE} ${HEADER_FILES} ${SOURCE_FILES} ${RES
 #set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Applications")
 
 target_link_libraries(${PROJECT_NAME} "PandaCore")
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL Qt5::Xml)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL)
 
 find_package(OpenGL REQUIRED)
 if(NOT OPENGL_FOUND)
@@ -131,7 +131,7 @@ install(DIRECTORY "../share/groups" DESTINATION ${TARGET_DIR})
 
 # Install Qt files
 if(WIN32)
-	set(QT_LIBS Qt5Core Qt5Gui Qt5OpenGL Qt5Widgets Qt5Xml)
+	set(QT_LIBS Qt5Core Qt5Gui Qt5OpenGL Qt5Widgets)
 	
 	set(qtLibsRelease)
 	set(qtLibsDebug)

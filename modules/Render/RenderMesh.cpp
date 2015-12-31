@@ -6,8 +6,7 @@
 #include <panda/types/Mesh.h>
 #include <panda/types/Shader.h>
 #include <panda/Renderer.h>
-
-#include <QOpenGLShaderProgram>
+#include <panda/graphics/ShaderProgram.h>
 
 namespace panda {
 
@@ -36,8 +35,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -57,7 +56,7 @@ public:
 				return;
 
 			int colorLocation = shaderProgram.uniformLocation("color");
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 			shaderProgram.enableAttributeArray("vertex");
 
 			for (int i = 0; i < nbMeshes; ++i)
@@ -66,9 +65,7 @@ public:
 				int nbTri = mesh.nbTriangles();
 
 				shaderProgram.setAttributeArray("vertex", mesh.getPoints().front().data(), 2);
-
-				auto color = listColor[i % nbColor];
-				shaderProgram.setUniformValue(colorLocation, color.r, color.g, color.b, color.a);
+				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
 
 				glDrawElements(GL_TRIANGLES, nbTri * 3, GL_UNSIGNED_INT, mesh.getTriangles().data());
 			}
@@ -82,7 +79,7 @@ protected:
 	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderMeshClass = RegisterObject<RenderMesh>("Render/Filled/Plain mesh").setDescription("Draw a mesh");
@@ -108,8 +105,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_attColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_attColor_noTex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_attColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_attColor_noTex.f.glsl");
 	}
 
 	void render()
@@ -129,7 +126,7 @@ public:
 			if (!shader.getValue().apply(shaderProgram))
 				return;
 
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);
@@ -149,7 +146,7 @@ protected:
 	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderMeshColoredPointsClass = RegisterObject<RenderMeshColoredPoints>("Render/Filled/Mesh").setDescription("Draw a mesh, each point having its own color");
@@ -175,8 +172,8 @@ public:
 
 		shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 	}
 
 	void render()
@@ -194,7 +191,7 @@ public:
 			if(!shader.getValue().apply(shaderProgram))
 				return;
 
-			shaderProgram.setUniformValue("MVP", getMVPMatrix());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);
@@ -222,7 +219,7 @@ protected:
 	Data< ImageWrapper > texture;
 	Data< Shader > shader;
 
-	QOpenGLShaderProgram shaderProgram;
+	graphics::ShaderProgram shaderProgram;
 };
 
 int RenderMesh_TexturedClass = RegisterObject<RenderMesh_Textured>("Render/Textured/Mesh")
