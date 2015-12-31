@@ -8,7 +8,6 @@
 #include <ui/GroupsManager.h>
 #include <ui/ImageViewport.h>
 #include <ui/OpenGLRenderView.h>
-#include <ui/PluginsManager.h>
 #include <ui/LayersTab.h>
 #include <ui/ListObjectsAndTypes.h>
 #include <ui/MainWindow.h>
@@ -24,6 +23,7 @@
 #include <panda/ObjectFactory.h>
 #include <panda/Group.h>
 #include <panda/helper/system/FileRepository.h>
+#include <panda/PluginsManager.h>
 
 #include <iostream>
 
@@ -59,7 +59,7 @@ MainWindow::MainWindow()
 		panda::helper::system::DataRepository.addPath(path.toStdString());
 	panda::helper::system::DataRepository.addPath(QCoreApplication::applicationDirPath().toStdString());
 
-	PluginsManager::getInstance()->loadPlugins();
+	panda::PluginsManager::getInstance()->loadPlugins();
 
 	createActions();
 	createStatusBar();

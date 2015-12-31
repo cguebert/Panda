@@ -22,7 +22,6 @@ set(HEADER_FILES
 	ListObjectsAndTypes.h
 	MainWindow.h
 	OpenGLRenderView.h
-	PluginsManager.h
 	QuickCreateDialog.h
 	ScrollContainer.h
 	UpdateLoggerDialog.h
@@ -69,7 +68,6 @@ set(SOURCE_FILES
 	ListObjectsAndTypes.cpp
 	MainWindow.cpp
 	OpenGLRenderView.cpp
-	PluginsManager.cpp
 	QuickCreateDialog.cpp
 	ScrollContainer.cpp
 	UpdateLoggerDialog.cpp

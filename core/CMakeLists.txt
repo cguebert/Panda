@@ -27,6 +27,7 @@ set(HEADER_FILES
 	panda/OGLObject.h
 	panda/PandaDocument.h
 	panda/PandaObject.h
+	panda/PluginsManager.h
 	panda/Renderer.h
 	panda/Scheduler.h
 	panda/XmlDocument.h
@@ -79,6 +80,7 @@ set(SOURCE_FILES
 	panda/OGLObject.cpp
 	panda/PandaDocument.cpp
 	panda/PandaObject.cpp
+	panda/PluginsManager.cpp
 	panda/Renderer.cpp
 	panda/Scheduler.cpp
 	panda/XmlDocument.cpp
@@ -125,7 +127,7 @@ add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
 add_definitions(-DPANDA_BUILD_CORE)
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL Qt5::Xml)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL)
 
 add_library("TinyXML2" SHARED IMPORTED)
 set_target_properties("TinyXML2" PROPERTIES 
