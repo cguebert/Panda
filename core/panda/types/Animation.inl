@@ -3,10 +3,7 @@
 
 #include <panda/types/Animation.h>
 
-#include <QColor>
 #include <QEasingCurve>
-
-#include <qmath.h>
 
 namespace panda
 {
@@ -179,7 +176,7 @@ PReal Animation<T>::extendPos(PReal position, PReal pMin, PReal pMax) const
 	{
 		PReal w = pMax - pMin;
 		PReal p = (position - pMin) / w;
-		p = p - qFloor(p);
+		p = p - std::floor(p);
 		return pMin + p * w;
 	}
 
@@ -187,8 +184,8 @@ PReal Animation<T>::extendPos(PReal position, PReal pMin, PReal pMax) const
 	{
 		PReal w = pMax - pMin;
 		PReal p = (position - pMin) / w;
-		PReal t = position - qFloor(position);
-		p = ((qFloor(p) % 2) ? 1.0 - t : t);
+		PReal t = position - std::floor(position);
+		p = ((static_cast<int>(std::floor(p)) % 2) ? 1.0 - t : t);
 		return pMin + p * w;
 	}
 	}

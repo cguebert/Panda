@@ -121,14 +121,14 @@ PReal Gradient::extendPos(PReal position) const
 	{
 	default:
 	case EXTEND_PAD:
-		return qBound<PReal>(0.0, position, 1.0);
+		return std::max<PReal>(0.0, std::min<PReal>(position, 1.0));
 
 	case EXTEND_REPEAT:
-		return position - qFloor(position);
+		return position - std::floor(position);
 
 	case EXTEND_REFLECT:
-		PReal p = position - qFloor(position);
-		return ((qFloor(position) % 2) ? 1.0 - p : p);
+		PReal p = position - std::floor(position);
+		return ((static_cast<int>(std::floor(position)) % 2) ? 1.0 - p : p);
 	}
 }
 

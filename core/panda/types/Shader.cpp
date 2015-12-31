@@ -9,7 +9,6 @@
 
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
-#include <QFile>
 
 #include <functional>
 #include <iostream>
