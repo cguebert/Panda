@@ -1,8 +1,12 @@
+#define GLEW_STATIC
+#include <GL/glew.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/DataFactory.h>
 #include <panda/Layer.h>
+#include <panda/Messaging.h>
 #include <panda/Renderer.h>
 #include <panda/Scheduler.h>
 #include <panda/helper/algorithm.h>
@@ -17,13 +21,26 @@
 #include <QElapsedTimer>
 #include <QMessageBox>
 #include <QOpenGLFramebufferObject>
-#include <QOpenGLFunctions>
 #include <QTimer>
 #include <QUndoStack>
 
 #include <set>
 
-#include <panda/Messaging.h>
+namespace
+{
+
+int loadGlew()
+{
+	// Get OpenGL functions
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	  fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+
+	return 1;
+}
+
+}
 
 namespace panda {
 
@@ -706,8 +723,9 @@ std::shared_ptr<QOpenGLFramebufferObject> PandaDocument::getFBO()
 
 void PandaDocument::render()
 {
+	static const int loadGlewVal = loadGlew();
+
 	GLfloat w = m_renderFBO->width(), h = m_renderFBO->height();
-	QOpenGLFunctions glFunctions(QOpenGLContext::currentContext());
 
 #ifdef PANDA_LOG_EVENTS
 	{
@@ -760,11 +778,11 @@ void PandaDocument::render()
 	m_mergeLayersShader->setUniformValue("opacity", 1.0f);
 	m_mergeLayersShader->setUniformValue("mode", 0);
 
-	glFunctions.glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_defaultLayer->getTextureId());
-	glFunctions.glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
-	glFunctions.glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -791,25 +809,25 @@ void PandaDocument::render()
 			m_mergeLayersShader->setUniformValue("opacity", opacity);
 			m_mergeLayersShader->setUniformValue("mode", layer->getCompositionMode());
 
-			glFunctions.glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, layer->getTextureId());
 
 			inverse = !inverse;
 			if(inverse)
 			{
 				m_secondRenderFBO->bind();
-				glFunctions.glActiveTexture(GL_TEXTURE1);
+				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, m_renderFBO->texture());
 			}
 			else
 			{
 				m_renderFBO->bind();
-				glFunctions.glActiveTexture(GL_TEXTURE1);
+				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
 			}
 
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-			glFunctions.glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE0);
 
 			if(inverse)
 				m_secondRenderFBO->release();

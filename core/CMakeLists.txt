@@ -142,4 +142,6 @@ endif(NOT OPENGL_FOUND)
  
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
+target_link_libraries(${PROJECT_NAME} "${LIBRARIES_LIB_DIR}/glew32s.lib")
+
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${TARGET_DIR})

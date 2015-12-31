@@ -1,3 +1,6 @@
+#define GLEW_STATIC
+#include <GL/glew.h>
+
 #include <panda/types/Shader.h>
 #include <panda/helper/ShaderCache.h>
 #include <panda/helper/typeList.h>
@@ -8,7 +11,6 @@
 #include <panda/Data.h>
 
 #include <QOpenGLShaderProgram>
-#include <QOpenGLFunctions>
 
 #include <functional>
 #include <iostream>
@@ -114,7 +116,6 @@ bool Shader::apply(QOpenGLShaderProgram& program) const
 			value->apply(program, *this);
 
 		// Register custom textures
-		QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
 		for(unsigned int i=0, nb=m_customTextures.size(); i<nb; ++i)
 		{
 			GLuint id = m_customTextures[i].second;
@@ -125,10 +126,10 @@ bool Shader::apply(QOpenGLShaderProgram& program) const
 			if(loc == -1)
 				continue;
 
-			glFuncs.glActiveTexture(GL_TEXTURE8 + i);
+			glActiveTexture(GL_TEXTURE8 + i);
 			glBindTexture(GL_TEXTURE_2D, m_customTextures[i].second);
 			program.setUniformValue(loc, 8 + i);
-			glFuncs.glActiveTexture(0);
+			glActiveTexture(0);
 		}
 	}
 	else
