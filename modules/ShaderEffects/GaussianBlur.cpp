@@ -1,6 +1,7 @@
 #include "ShaderEffects.h"
 #include <panda/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
+#include <panda/helper/ShaderCache.h>
 #include <panda/helper/system/FileRepository.h>
 
 namespace panda {
@@ -24,17 +25,15 @@ public:
 	~ModifierImage_GaussianBlur()
 	{
 		// Make sure to clear the program first so that the shaders can free themselves
-		m_shaderProgram.reset();
+		m_shaderProgram.clear();
 	}
 
 	void initializeGL() override
 	{
-		m_vertexShader = std::make_shared<QOpenGLShader>(QOpenGLShader::Vertex);
-		m_vertexShader->compileSourceFile("shaders/PT_noColor_Tex.v.glsl");
+		m_vertexShader = helper::ShaderCache::getInstance()->getShader(graphics::ShaderType::Vertex,
+			helper::system::DataRepository.loadFile("shaders/PT_noColor_Tex.v.glsl"));
 
 		m_fragmentSource = helper::system::DataRepository.loadFile("shaders/GBlur.f.glsl");
-
-		m_shaderProgram = std::make_shared<QOpenGLShaderProgram>();
 	}
 
 	std::vector<float> computeHalfKernel()
@@ -102,9 +101,9 @@ public:
 		}
 		helper::replaceAll<std::string>(source, "~~3~~", offsetsString);
 
-		m_shaderProgram->removeAllShaders();
-		m_shaderProgram->addShader(m_vertexShader.get());
-		m_shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, QString::fromStdString(source));
+		m_shaderProgram.clear();
+		m_shaderProgram.addShader(graphics::ShaderType::Vertex, m_vertexShader);
+		m_shaderProgram.addShaderFromMemory(graphics::ShaderType::Fragment, source);
 	}
 
 	void prepareUpdate(QSize size)
@@ -114,15 +113,17 @@ public:
 			updateShaders();
 	}
 
-	QOpenGLShaderProgram& preparePass(int passId)
+	graphics::ShaderProgram& preparePass(int passId)
 	{
-		m_shaderProgram->bind(); // Will also link the program
+		if (!m_shaderProgram.isLinked())
+			m_shaderProgram.link();
+		m_shaderProgram.bind();
 		if(!passId) // H
-			m_shaderProgram->setUniformValue("pixelOffset", QPointF(1.0/m_size.width(), 0));
+			m_shaderProgram.setUniformValueArray("pixelOffset", types::Point(1.0/m_size.width(), 0).data(), 1, 2);
 		else // V
-			m_shaderProgram->setUniformValue("pixelOffset", QPointF(0, 1.0/m_size.height()));
+			m_shaderProgram.setUniformValueArray("pixelOffset", types::Point(0, 1.0/m_size.height()).data(), 1, 2);
 
-		return *m_shaderProgram.get();
+		return m_shaderProgram;
 	}
 
 protected:
@@ -131,8 +132,8 @@ protected:
 	int m_halfKernelSize;
 	QSize m_size;
 	std::string m_fragmentSource;
-	std::shared_ptr<QOpenGLShader> m_vertexShader;
-	std::shared_ptr<QOpenGLShaderProgram> m_shaderProgram;
+	graphics::ShaderId::SPtr m_vertexShader;
+	graphics::ShaderProgram m_shaderProgram;
 };
 
 int ModifierImage_GaussianBlurClass = RegisterObject<ModifierImage_GaussianBlur>("Modifier/Image/Gaussian blur")

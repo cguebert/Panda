@@ -1,8 +1,9 @@
 #include <panda/ObjectFactory.h>
 #include "ShaderEffects.h"
 
-#include <QOpenGLFunctions>
 #include <iostream>
+
+#include <QMatrix4x4>
 
 namespace panda {
 
@@ -92,7 +93,7 @@ void ShaderEffects::update()
 			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-			program.setUniformValue("MVP", mvp);
+			program.setUniformValueMat4("MVP", mvp.constData());
 			program.setUniformValue("tex0", 0);
 
 			program.enableAttributeArray("vertex");
@@ -143,7 +144,7 @@ bool resizeFBO(types::ImageWrapper& img, QSize size, const QOpenGLFramebufferObj
 	return false;
 }
 
-void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program)
+void renderImage(QOpenGLFramebufferObject& fbo, graphics::ShaderProgram& program)
 {
 	fbo.bind();
 
@@ -165,7 +166,7 @@ void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program)
 	const GLfloat texCoords[8] = {1, 1, 0, 1, 1, 0, 0, 0};
 
 	program.bind();
-	program.setUniformValue("MVP", mvp);
+	program.setUniformValueMat4("MVP", mvp.constData());
 
 	program.enableAttributeArray("vertex");
 	program.setAttributeArray("vertex", verts, 2);
@@ -182,17 +183,16 @@ void renderImage(QOpenGLFramebufferObject& fbo, QOpenGLShaderProgram& program)
 	fbo.release();
 }
 
-bool bindTextures(QOpenGLShaderProgram& program, const std::vector<GLuint>& texIds)
+bool bindTextures(graphics::ShaderProgram& program, const std::vector<GLuint>& texIds)
 {
 	program.bind();
-	QOpenGLFunctions glFunctions(QOpenGLContext::currentContext());
 
 	int nb = static_cast<int>(texIds.size());
 	nb = std::min(nb, 32);
 	for(int i = 0; i < nb; ++i)
 	{
 		std::string name = "tex" + std::to_string(i);
-		int loc = program.uniformLocation(QString::fromStdString(name));
+		int loc = program.uniformLocation(name.c_str());
 		if(loc == -1)
 		{
 			std::cerr << "Shader program does not have a uniform named " << name << std::endl;
@@ -200,7 +200,7 @@ bool bindTextures(QOpenGLShaderProgram& program, const std::vector<GLuint>& texI
 		}
 
 		program.setUniformValue(loc, i);
-		glFunctions.glActiveTexture(GL_TEXTURE0 + i);
+		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, texIds[i]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -208,7 +208,7 @@ bool bindTextures(QOpenGLShaderProgram& program, const std::vector<GLuint>& texI
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
 
-	glFunctions.glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);
 
 	return true;
 }

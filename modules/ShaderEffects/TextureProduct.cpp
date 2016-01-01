@@ -1,6 +1,6 @@
 #include <panda/ObjectFactory.h>
 
-#include <QOpenGLFunctions>
+#include <GL/glew.h>
 
 #include "ShaderEffects.h"
 
@@ -30,8 +30,8 @@ public:
 
 	void initializeGL()
 	{
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/TextureOuterProduct.f.glsl");
+		m_shaderProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_shaderProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/TextureOuterProduct.f.glsl");
 		m_shaderProgram.link();
 		m_shaderProgram.bind();
 
@@ -61,13 +61,11 @@ public:
 			outputFbo = newFbo.get();
 		}
 
-		QOpenGLFunctions glFunctions(QOpenGLContext::currentContext());
-
-		glFunctions.glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texH);
-		glFunctions.glActiveTexture(GL_TEXTURE1);
+		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texV);
-		glFunctions.glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0);
 
 		renderImage(*outputFbo, m_shaderProgram);
 
@@ -78,7 +76,7 @@ protected:
 	Data<ImageWrapper> m_inputH, m_inputV, m_output;
 	Data<Point> m_size;
 
-	QOpenGLShaderProgram m_shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
 	std::shared_ptr<QOpenGLFramebufferObject> m_FBOs;
 };
 

@@ -3,9 +3,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
 
-#include <QOpenGLFramebufferObject>
-#include <QOpenGLShaderProgram>
-
 namespace panda {
 
 using types::ImageWrapper;

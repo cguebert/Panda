@@ -1,10 +1,6 @@
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
 
-#include <QOpenGLFramebufferObject>
-#include <QOpenGLShaderProgram>
-#include <QSharedPointer>
-
 #include "ShaderEffects.h"
 
 namespace panda {
@@ -30,12 +26,12 @@ public:
 
 	void initializeGL()
 	{
-		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		m_shaderProgram2x.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Downsample2.f.glsl");
+		m_shaderProgram2x.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_shaderProgram2x.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/Downsample2.f.glsl");
 		m_shaderProgram2x.link();
 
-		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		m_shaderProgram4x.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Downsample4.f.glsl");
+		m_shaderProgram4x.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_shaderProgram4x.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/Downsample4.f.glsl");
 		m_shaderProgram4x.link();
 	}
 
@@ -86,7 +82,7 @@ protected:
 	Data< ImageWrapper > m_input, m_output;
 	Data< int > m_nbOfDownscales;
 
-	QOpenGLShaderProgram m_shaderProgram2x, m_shaderProgram4x;
+	graphics::ShaderProgram m_shaderProgram2x, m_shaderProgram4x;
 	std::vector<std::shared_ptr<QOpenGLFramebufferObject>> m_FBOs;
 };
 
@@ -114,8 +110,8 @@ public:
 
 	void initializeGL()
 	{
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		m_shaderProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_shaderProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 		m_shaderProgram.link();
 	}
 
@@ -141,7 +137,7 @@ protected:
 	Data< ImageWrapper > m_input, m_output;
 	Data< int > m_nbOfUpscales;
 
-	QOpenGLShaderProgram m_shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
 	std::shared_ptr<QOpenGLFramebufferObject> m_outputFBO;
 };
 

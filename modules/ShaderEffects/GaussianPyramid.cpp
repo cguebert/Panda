@@ -28,16 +28,16 @@ public:
 
 	void initializeGL()
 	{
-		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		m_downscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Downsample2.f.glsl");
+		m_downscaleProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_downscaleProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/Downsample2.f.glsl");
 		m_downscaleProgram.link();
 
-		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		m_upscaleProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_upscaleProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 		m_upscaleProgram.link();
 
-		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		m_differenceProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Difference.f.glsl");
+		m_differenceProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_differenceProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/Difference.f.glsl");
 		m_differenceProgram.link();
 	}
 
@@ -94,7 +94,7 @@ public:
 	}
 
 protected:
-	QOpenGLShaderProgram m_downscaleProgram, m_upscaleProgram, m_differenceProgram;
+	graphics::ShaderProgram m_downscaleProgram, m_upscaleProgram, m_differenceProgram;
 	std::vector<std::shared_ptr<QOpenGLFramebufferObject>> m_blurred;
 
 	Data< ImageWrapper > m_input;
@@ -126,12 +126,12 @@ public:
 
 	void initializeGL()
 	{
-		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		m_upscaleProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		m_upscaleProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_upscaleProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 		m_upscaleProgram.link();
 
-		m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		m_additionProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/Addition.f.glsl");
+		m_additionProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		m_additionProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/Addition.f.glsl");
 		m_additionProgram.link();
 	}
 
@@ -177,7 +177,7 @@ public:
 	}
 
 protected:
-	QOpenGLShaderProgram m_upscaleProgram, m_additionProgram;
+	graphics::ShaderProgram m_upscaleProgram, m_additionProgram;
 	std::vector<std::shared_ptr<QOpenGLFramebufferObject>> m_upscaled, m_recomposed;
 
 	Data< std::vector< ImageWrapper > > m_gaussian, m_laplacian;

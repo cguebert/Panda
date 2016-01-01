@@ -2,11 +2,13 @@
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/graphics/ShaderProgram.h>
 #include <panda/helper/system/FileRepository.h>
 
+#include <GL/glew.h>
+
+#include <QMatrix4x4>
 #include <QOpenGLFramebufferObject>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLFunctions>
 
 namespace panda {
 
@@ -45,10 +47,10 @@ public:
 
 	void initializeGL()
 	{
-		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,
-			QString::fromStdString(helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl")));
-		m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,
-			QString::fromStdString(helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl")));
+		m_shaderProgram.addShaderFromMemory(graphics::ShaderType::Vertex,
+			helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
+		m_shaderProgram.addShaderFromMemory(graphics::ShaderType::Fragment,
+			helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
 		m_shaderProgram.link();
 	}
 
@@ -82,19 +84,17 @@ public:
 			verts[3*2+0] = 0;					verts[3*2+1] = inputSize.height();
 			verts[2*2+0] = inputSize.width();	verts[2*2+1] = inputSize.height();
 
-			QOpenGLFunctions glFunctions(QOpenGLContext::currentContext());
-
 			m_shaderProgram.bind();
 			outputFbo->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glFunctions.glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, tex1Id);
-			glFunctions.glActiveTexture(GL_TEXTURE1);
+			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, tex2Id);
-			glFunctions.glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE0);
 
-			m_shaderProgram.setUniformValue("MVP", mvp);
+			m_shaderProgram.setUniformValueMat4("MVP", mvp.constData());
 			m_shaderProgram.setUniformValue("texS", 0);
 			m_shaderProgram.setUniformValue("texD", 1);
 
@@ -123,7 +123,7 @@ protected:
 	Data< ImageWrapper > m_input1, m_input2, m_output;
 	Data< int > m_compositionMode;
 
-	QOpenGLShaderProgram m_shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
 	GLfloat m_texCoords[8];
 };
 
