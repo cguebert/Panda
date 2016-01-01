@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GRAPHICS_SHADERPROGRAM_H
+#define GRAPHICS_SHADERPROGRAM_H
 
 #include <panda/core.h>
 
@@ -101,3 +102,5 @@ protected:
 } // namespace graphics
 
 } // namespace panda
+
+#endif // GRAPHICS_SHADERPROGRAM_H

@@ -35,7 +35,7 @@ public:
 
 	void update()
 	{
-		image.getAccessor()->setFbo(m_parentDocument->getFBO());
+	//	image.getAccessor()->setFbo(m_parentDocument->getFBO());
 		cleanDirty();
 	}
 

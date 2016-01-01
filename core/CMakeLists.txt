@@ -37,7 +37,10 @@ set(HEADER_FILES
 	panda/command/LinkDatasCommand.h
 	panda/command/MoveLayerCommand.h
 	panda/command/RemoveGenericDataCommand.h
+	panda/graphics/Framebuffer.h
+	panda/graphics/Image.h
 	panda/graphics/ShaderProgram.h
+	panda/graphics/Texture.h
 	panda/helper/algorithm.h
 	panda/helper/gl.h
 	panda/helper/GradientCache.h
@@ -91,7 +94,10 @@ set(SOURCE_FILES
 	panda/command/LinkDatasCommand.cpp
 	panda/command/MoveLayerCommand.cpp
 	panda/command/RemoveGenericDataCommand.cpp
+	panda/graphics/Framebuffer.cpp
+	panda/graphics/Image.cpp
 	panda/graphics/ShaderProgram.cpp
+	panda/graphics/Texture.cpp
 	panda/helper/GradientCache.cpp
 	panda/helper/Perlin.cpp
 	panda/helper/PointsGrid.cpp
@@ -144,6 +150,7 @@ endif(NOT OPENGL_FOUND)
  
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
-target_link_libraries(${PROJECT_NAME} "${LIBRARIES_LIB_DIR}/glew32s.lib")
+target_link_libraries(${PROJECT_NAME} "${LIBRARIES_LIB_DIR}/glew32.lib")
 
+install(FILES ${LIBRARIES_LIB_DIR}/glew32.dll DESTINATION ${TARGET_DIR})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${TARGET_DIR})

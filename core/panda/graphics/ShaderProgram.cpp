@@ -1,6 +1,5 @@
 #include <panda/graphics/ShaderProgram.h>
 
-#define GLEW_STATIC
 #include <GL/glew.h>
 
 #include <algorithm>
