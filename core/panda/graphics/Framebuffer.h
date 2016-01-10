@@ -2,7 +2,6 @@
 #define GRAPHICS_FRAMEBUFFER_H
 
 #include <panda/core.h>
-#include <panda/types/Rect.h>
 #include <panda/graphics/Image.h>
 
 #include <memory>
@@ -10,6 +9,11 @@
 
 namespace panda
 {
+
+namespace types
+{
+class Rect;
+}
 
 namespace graphics
 {
@@ -19,7 +23,10 @@ class FramebufferId;
 class PANDA_CORE_API Framebuffer
 {
 public:
+	Framebuffer();
 	Framebuffer(int width, int height, int samples = 0);
+
+	explicit operator bool() const; // Returns true if an OpenGL FBO has been created for this object
 
 	unsigned int id() const;
 	void bind() const;
@@ -28,6 +35,7 @@ public:
 
 	int width() const;
 	int height() const;
+	int samples() const;
 
 	unsigned int texture() const;
 
@@ -43,7 +51,7 @@ public:
 
 protected:
 	std::shared_ptr<FramebufferId> m_id;
-	int m_width = 0, m_height = 0;
+	int m_width = 0, m_height = 0, m_samples = 0;
 };
 
 } // namespace graphics

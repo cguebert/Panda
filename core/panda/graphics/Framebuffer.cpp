@@ -1,6 +1,8 @@
 #include <panda/graphics/Framebuffer.h>
+#include <panda/types/Rect.h>
 
 #include <GL/glew.h>
+#include <algorithm>
 
 namespace panda
 {
@@ -30,14 +32,24 @@ private:
 
 //****************************************************************************//
 
+Framebuffer::Framebuffer()
+{ }
+
 Framebuffer::Framebuffer(int width, int height, int samples)
+	: m_width(width), m_height(height)
 {
 	GLuint fboId = 0, texId = 0, rdrBufId = 0;
 	glGenFramebuffers(1, &fboId);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
 
+	samples = std::max(0, samples);
+
 	if (!GLEW_EXT_framebuffer_multisample || !GLEW_EXT_framebuffer_blit)
 		samples = 0;
+
+	GLint maxSamples = 0;
+	glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
+	samples = std::min(samples, maxSamples);
 
 	if (!samples)
 	{
@@ -61,9 +73,17 @@ Framebuffer::Framebuffer(int width, int height, int samples)
 		glBindRenderbuffer(GL_RENDERBUFFER, rdrBufId);
 		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_RGBA8, m_width, m_height);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rdrBufId);
+
+		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_SAMPLES, &samples); // Update the number of samples
 	}
 
+	m_samples = samples;
 	m_id = std::make_shared<FramebufferId>(fboId, texId, rdrBufId);
+}
+
+Framebuffer::operator bool() const
+{
+	return (id() != 0);
 }
 
 unsigned int Framebuffer::id() const
@@ -98,6 +118,11 @@ int Framebuffer::width() const
 int Framebuffer::height() const
 {
 	return m_height;
+}
+
+int Framebuffer::samples() const
+{
+	return m_samples;
 }
 
 unsigned int Framebuffer::texture() const
