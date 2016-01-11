@@ -39,7 +39,9 @@ set(HEADER_FILES
 	panda/command/RemoveGenericDataCommand.h
 	panda/graphics/Framebuffer.h
 	panda/graphics/Image.h
+	panda/graphics/PointInt.h
 	panda/graphics/ShaderProgram.h
+	panda/graphics/Size.h
 	panda/graphics/Texture.h
 	panda/helper/algorithm.h
 	panda/helper/gl.h
@@ -97,6 +99,7 @@ set(SOURCE_FILES
 	panda/graphics/Framebuffer.cpp
 	panda/graphics/Image.cpp
 	panda/graphics/ShaderProgram.cpp
+	panda/graphics/Size.cpp
 	panda/graphics/Texture.cpp
 	panda/helper/GradientCache.cpp
 	panda/helper/Perlin.cpp
