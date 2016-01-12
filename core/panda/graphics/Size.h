@@ -16,7 +16,7 @@ public:
 	Size();
 	Size(int width, int height);
 
-	bool empty() const; // Returns true if the area is null or negative
+	bool empty() const; // Returns true if the area is null
 
 	int width() const;
 	int height() const;
@@ -52,7 +52,7 @@ public:
 	friend inline const Size operator/(const Size&, float);
 
 protected:
-	int m_width = -1, m_height = -1;
+	int m_width = 0, m_height = 0;
 };
 
 inline Size::Size()

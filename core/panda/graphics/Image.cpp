@@ -21,7 +21,7 @@ struct ImageData
 };
 
 ImageData::ImageData(Size s)
-	: size(s), contents(0, s.width() * s.height() * 4) { }
+	: size(s), contents(s.width() * s.height() * 4, 0) { }
 
 ImageData::ImageData(Size s, const std::vector<unsigned char>& c)
 	: size(s), contents(c) { }
@@ -102,6 +102,23 @@ Image Image::clone() const
 	if (!m_data)
 		return Image();
 	return Image(m_data->size, m_data->contents);
+}
+
+Image Image::mirrored() const
+{
+	if (!m_data)
+		return Image();
+
+	Image img(m_data->size);
+
+	const auto* src = data();
+	auto* dst = img.data();
+	int w = m_data->size.width(), h = m_data->size.height();
+	int bytesPerLine = w * 4;
+	for (int y = 0; y < h; ++y)
+		std::memcpy(dst + y * bytesPerLine, src + (h - y - 1) * bytesPerLine, bytesPerLine);
+
+	return img;
 }
 
 bool Image::operator==(const Image& img) const

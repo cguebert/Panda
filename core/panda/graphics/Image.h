@@ -53,6 +53,7 @@ public:
 	void setPixel(int x, int y, unsigned int color);
 
 	Image clone() const;
+	Image mirrored() const;
 
 	static void blitImage(Image& target, PointInt targetPos, const Image& source, PointInt sourcePos, Size sourceSize);
 	static void blitImage(Image& target, int tX, int tY, const Image& source, int sX1, int sY1, int sX2, int sY2);

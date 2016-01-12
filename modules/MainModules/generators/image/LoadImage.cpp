@@ -35,6 +35,7 @@ public:
 			if (!image.isNull())
 			{
 				image.convertToFormat(QImage::Format_ARGB32);
+				image = image.rgbSwapped();
 				graphics::Size size(image.width(), image.height());
 				graphics::Image newImg(size, image.bits());
 				m_image.getAccessor()->setImage(newImg);

@@ -37,63 +37,15 @@ FramebufferFormat::FramebufferFormat()
 
 //****************************************************************************//
 
-Framebuffer::Framebuffer(Size size, FramebufferFormat format)
-	: m_data(std::make_shared<FramebufferData>())
+namespace
 {
-	m_data->size = size;
-	m_data->format = format;
 
-	int w = size.width(), h = size.height();
-	glGenFramebuffers(1, &m_data->fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_data->fbo);
-
-	format.samples = std::max(0, format.samples);
-	int samples = format.samples;
-
-	if (!GLEW_EXT_framebuffer_multisample || !GLEW_EXT_framebuffer_blit)
-		samples = 0;
-
-	GLint maxSamples = 0;
-	glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
-	samples = std::min(samples, maxSamples);
-
-	if (!samples)
-	{
-		// Generate texture
-		glGenTextures(1, &m_data->texture);
-		glBindTexture(GL_TEXTURE_2D, m_data->texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, format.internalFormat, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		// Attach it to currently bound framebuffer object
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_data->texture, 0);
-	}
-	else
-	{
-		// Use a multisample render buffer
-		glGenRenderbuffers(1, &m_data->colorBuffer);
-		glBindRenderbuffer(GL_RENDERBUFFER, m_data->colorBuffer);
-		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format.internalFormat, w, h);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_data->colorBuffer);
-
-		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_SAMPLES, &samples); // Update the number of samples
-	}
-
-	createAttachments();
-
-	m_data->format.samples = samples; // Set the real number of samples for this FBO
-}
-
-void Framebuffer::createAttachments()
+void createAttachments(FramebufferData& data)
 {
 	GLuint depthBuffer = 0, stencilBuffer = 0;
-	auto attachment = m_data->format.attachment;
-	auto samples = m_data->format.samples;
-	int w = m_data->size.width(), h = m_data->size.height();
+	auto attachment = data.format.attachment;
+	auto samples = data.format.samples;
+	int w = data.size.width(), h = data.size.height();
 
 	if (attachment == FramebufferFormat::Attachment::DepthAndStencil && GLEW_EXT_packed_depth_stencil)
 	{
@@ -134,14 +86,76 @@ void Framebuffer::createAttachments()
 	}
 
 	if (depthBuffer && stencilBuffer)
-		m_data->format.attachment = FramebufferFormat::Attachment::DepthAndStencil;
+		data.format.attachment = FramebufferFormat::Attachment::DepthAndStencil;
 	else if (depthBuffer)
-		m_data->format.attachment = FramebufferFormat::Attachment::Depth;
+		data.format.attachment = FramebufferFormat::Attachment::Depth;
 	else
-		m_data->format.attachment = FramebufferFormat::Attachment::NoAttachment;
+		data.format.attachment = FramebufferFormat::Attachment::NoAttachment;
 
-	m_data->depthBuffer = depthBuffer;
-	m_data->stencilBuffer = stencilBuffer;
+	data.depthBuffer = depthBuffer;
+	data.stencilBuffer = stencilBuffer;
+}
+
+void createFrameBuffer(FramebufferData& data)
+{
+	int w = data.size.width(), h = data.size.height();
+	glGenFramebuffers(1, &data.fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, data.fbo);
+
+	data.format.samples = std::max(0, data.format.samples);
+	int samples = data.format.samples;
+
+	if (!GLEW_EXT_framebuffer_multisample || !GLEW_EXT_framebuffer_blit)
+		samples = 0;
+
+	GLint maxSamples = 0;
+	glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
+	samples = std::min(samples, maxSamples);
+
+	if (!samples)
+	{
+		GLuint pixelType = GL_UNSIGNED_BYTE;
+		if (data.format.internalFormat == GL_RGB10_A2 || data.format.internalFormat == GL_RGB10)
+			pixelType = GL_UNSIGNED_INT_2_10_10_10_REV;
+
+		// Generate texture
+		glGenTextures(1, &data.texture);
+		glBindTexture(GL_TEXTURE_2D, data.texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, data.format.internalFormat, w, h, 0, GL_RGBA, pixelType, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		// Attach it to currently bound framebuffer object
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, data.texture, 0);
+	}
+	else
+	{
+		// Use a multisample render buffer
+		glGenRenderbuffers(1, &data.colorBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, data.colorBuffer);
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, data.format.internalFormat, w, h);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, data.colorBuffer);
+
+		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_SAMPLES, &samples); // Update the number of samples
+	}
+
+	createAttachments(data);
+
+	data.format.samples = samples; // Set the real number of samples for this FBO
+}
+
+}
+
+Framebuffer::Framebuffer(Size size, FramebufferFormat format)
+	: m_data(std::make_shared<FramebufferData>())
+{
+	m_data->size = size;
+	m_data->format = format;
+
+	createFrameBuffer(*m_data);
 }
 
 unsigned int Framebuffer::id() const
@@ -191,7 +205,28 @@ unsigned int Framebuffer::texture() const
 
 Image Framebuffer::toImage() const
 {
-	return Image();
+	// Cannot read from a multisample FBO
+	if (format().samples)
+	{
+		Framebuffer tmp(size());
+		blitFramebuffer(tmp, *this);
+		return tmp.toImage();
+	}
+
+	GLint prev = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prev);
+
+	if (prev != id())
+		glBindFramebuffer(GL_FRAMEBUFFER, id());
+
+	const auto size = m_data->size;
+	Image img(size);
+	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, img.data());
+
+	if (prev != id())
+		glBindFramebuffer(GL_FRAMEBUFFER, prev);
+
+	return img.mirrored();
 }
 
 void Framebuffer::blitFramebuffer(Framebuffer& target, const Framebuffer& source)

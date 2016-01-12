@@ -19,8 +19,6 @@ namespace graphics
 // To destroy the framebuffer object only when every copy is destroyed
 struct FramebufferData;
 
-class Image;
-
 class PANDA_CORE_API FramebufferFormat
 {
 public:
@@ -66,8 +64,6 @@ public:
 		unsigned int sourceId, const types::Rect& sourceRect);
 
 private:
-	void createAttachments();
-
 	std::shared_ptr<FramebufferData> m_data;
 };
 

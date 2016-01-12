@@ -59,7 +59,7 @@ public:
 			{
 				const auto img = images[i].getImage();
 				QImage qtImg(img.data(), img.width(), img.height(), QImage::Format_ARGB32);
-				qtImg.save(QString::fromStdString(names[i]));
+				qtImg.rgbSwapped().save(QString::fromStdString(names[i]));
 			}
 		}
 	}

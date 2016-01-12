@@ -32,9 +32,11 @@ unsigned int ImageWrapper::getTextureId() const
 		return m_fbo->texture();
 	if(m_source == IMAGE && m_image)
 	{
-		if(!m_texture)
-			const_cast<ImageWrapper*>(this)->m_texture
-				= std::make_shared<Texture>(*m_image);
+		if (!m_texture)
+		{
+			auto mirrored = m_image->mirrored();
+			const_cast<ImageWrapper*>(this)->m_texture = std::make_shared<Texture>(mirrored);
+		}
 
 		return m_texture->id();
 	}
@@ -48,31 +50,26 @@ const Image& ImageWrapper::getImage() const
 	else if(m_source == TEXTURE && !m_buffer.empty() && !m_image)
 		const_cast<ImageWrapper*>(this)->createImageFromBuffer();
 
+	if(!m_image)
+		const_cast<ImageWrapper*>(this)->m_image = std::make_shared<Image>();
+
 	return *m_image;
 }
 
 void ImageWrapper::setImage(const Image& img)
 {
+	clear();
 	m_image = std::make_shared<Image>(img);
-	m_texture.reset();
-	m_fbo.reset();
-
 	m_source = IMAGE;
-
 	m_size = img.size();
-	m_buffer.clear();
 }
 
 void ImageWrapper::setFbo(const Framebuffer& fbo)
 {
-	m_image.reset();
-	m_texture.reset();
+	clear();
 	m_fbo = std::make_shared<Framebuffer>(fbo);
-
-	m_size = fbo.size();
 	m_source = FBO;
-
-	m_buffer.clear();
+	m_size = fbo.size();
 }
 
 void ImageWrapper::createTexture(Size size, const std::vector<types::Color>& buffer)

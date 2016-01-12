@@ -35,7 +35,7 @@ GLuint createTexture(panda::graphics::Size size, GLenum format, GLenum type, con
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	
 	
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_FLOAT, data);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, format, type, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	return id;
