@@ -8,8 +8,8 @@ namespace panda
 
 MouseEventsReceiver::MouseEventsReceiver(PandaDocument* doc)
 {
-	m_observer.get(doc->m_mousePressedSignal).connect([this](panda::types::Point pt) { mousePressed(pt); });
-	m_observer.get(doc->m_mouseReleasedSignal).connect([this](panda::types::Point pt) { mouseReleased(pt); });
+	m_observer.get(doc->m_mousePressedSignal).connect<MouseEventsReceiver, &MouseEventsReceiver::mousePressed>(this);
+	m_observer.get(doc->m_mouseReleasedSignal).connect<MouseEventsReceiver, &MouseEventsReceiver::mouseReleased>(this);
 }
 
 }
