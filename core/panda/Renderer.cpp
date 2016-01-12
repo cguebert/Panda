@@ -22,7 +22,7 @@ QMatrix4x4& Renderer::getMVPMatrix()
 	return getDrawTarget()->getMVPMatrix();
 }
 
-QSize Renderer::getLayerSize() const
+graphics::Size Renderer::getLayerSize() const
 {
 	return getDrawTarget()->getLayerSize();
 }

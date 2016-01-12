@@ -4,12 +4,14 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Rect.h>
 
-#include <QOpenGLFramebufferObject>
-#include <QPainter>
+#include <panda/graphics/Framebuffer.h>
+#include <panda/graphics/Image.h>
+
 #include <cmath>
 
 namespace panda {
 
+using types::Point;
 using types::Rect;
 using types::ImageWrapper;
 
@@ -41,37 +43,35 @@ public:
 
 		if(imgWrapper.hasImage())
 		{
-			const QImage& img = imgWrapper.getImage();
+			const auto& img = imgWrapper.getImage();
 			for(int i=0; i<nb; ++i)
 			{
 				const Rect rect = rectList[i];
-				QImage tmpImg(std::floor(rect.width()), std::floor(rect.height()), QImage::Format_ARGB32);
-				tmpImg.fill(QColor(0,0,0,0));
-				QPainter painter(&tmpImg);
-				painter.drawImage(0, 0, img, rect.left(), rect.top(), rect.width(), rect.height());
+				graphics::Image tmpImg(std::floor(rect.width()), std::floor(rect.height()));
+				graphics::Image::blitImage(tmpImg, 0, 0, img, rect.left(), rect.top(), rect.right(), rect.bottom());
 				resList[i].setImage(tmpImg);
 			}
 		}
 		else if(imgWrapper.hasTexture())
 		{
-			QOpenGLFramebufferObject* fbo = imgWrapper.getFbo();
+			auto fbo = imgWrapper.getFbo();
 			if(fbo)
 			{
 				for(int i=0; i<nb; ++i)
 				{
 					const Rect rect = rectList[i];
-					QSize size = QSize(std::floor(rect.width()), std::floor(rect.height()));
-					if(!size.isValid())
+					graphics::Size size(std::floor(rect.width()), std::floor(rect.height()));
+					if(!size.empty())
 						continue;
 
-					auto newFbo = std::make_shared<QOpenGLFramebufferObject>(size);
+					auto newFbo = graphics::Framebuffer(size);
 
 					int l = std::floor(rect.left()), t = std::floor(rect.top()),
 						w = std::floor(rect.width()), h = std::floor(rect.height());
-					QSize sourceSize = fbo->size();
-					QRect sourceRect = QRect(l, sourceSize.height() - t - h, w, h);
-					QRect targetRect = QRect(QPoint(0, 0), size);
-					QOpenGLFramebufferObject::blitFramebuffer(newFbo.get(), targetRect, fbo, sourceRect);
+					auto sourceSize = fbo->size();
+					Rect sourceRect(l, sourceSize.height() - t - h, w, h);
+					Rect targetRect(0, 0, size.width(), size.height());
+					graphics::Framebuffer::blitFramebuffer(newFbo, targetRect, *fbo, sourceRect);
 					resList[i].setFbo(newFbo);
 				}
 			}

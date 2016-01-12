@@ -1,10 +1,12 @@
+#include <GL/glew.h>
+
 #include <panda/Layer.h>
 #include <panda/Renderer.h>
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
 
-#include <QOpenGLFramebufferObject>
+#include <panda/graphics/Framebuffer.h>
 
 #include <panda/command/MoveLayerCommand.h>
 
@@ -31,17 +33,17 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 		helper::ScopedEvent log1("prepareLayer");
 #endif
 
-	QSize renderSize = doc->getRenderSize();
+	auto renderSize = doc->getRenderSize();
 	auto output = getImage()->getAccessor(); // At the end of the function, the accessor destructor calls cleanDirty & setDirtyOutputs
 	if(!m_renderFrameBuffer || m_renderFrameBuffer->size() != renderSize)
 	{
-		QOpenGLFramebufferObjectFormat fmt;
-		fmt.setSamples(16);
-		m_renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
-		m_displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
+		graphics::FramebufferFormat format;
+		format.samples = 16;
+		m_renderFrameBuffer = std::make_shared<graphics::Framebuffer>(renderSize, format);
+		m_displayFrameBuffer = std::make_shared<graphics::Framebuffer>(renderSize);
 
 		// Setting the image Data to the display Fbo
-		output->setFbo(m_displayFrameBuffer);
+		output->setFbo(*m_displayFrameBuffer);
 	}
 
 	m_renderFrameBuffer->bind();
@@ -78,7 +80,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 
 	m_renderFrameBuffer->release();
 
-	QOpenGLFramebufferObject::blitFramebuffer(m_displayFrameBuffer.get(), m_renderFrameBuffer.get());
+	graphics::Framebuffer::blitFramebuffer(*m_displayFrameBuffer, *m_renderFrameBuffer);
 }
 
 void BaseLayer::iterateRenderers()
@@ -174,7 +176,7 @@ void Layer::removedFromDocument()
 		m_parentDocument->addCommand(new MoveLayerCommand(m_parentDocument, this, 0));
 }
 
-QSize Layer::getLayerSize() const
+graphics::Size Layer::getLayerSize() const
 {
 	return m_parentDocument->getRenderSize();
 }

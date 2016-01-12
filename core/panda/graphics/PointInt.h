@@ -47,7 +47,7 @@ protected:
 	int m_x = 0, m_y = 0;
 };
 
-int dotProduct(const PointInt& p1, const PointInt& p2)
+inline int dotProduct(const PointInt& p1, const PointInt& p2)
 { return p1.x() * p2.x() + p1.y() * p2.y(); }
 
 inline PointInt::PointInt() {}
@@ -80,7 +80,7 @@ inline PointInt& PointInt::operator-=(const PointInt& p)
 { m_x -= p.m_x; m_y -= p.m_y; return *this; }
 
 inline PointInt& PointInt::operator*=(float v)
-{ m_x = std::round(m_x * v); m_y = std::round(m_y * v); return *this; }
+{ m_x = std::lround(m_x * v); m_y = std::lround(m_y * v); return *this; }
 
 inline PointInt& PointInt::operator*=(int v)
 { m_x = m_x * v; m_y = m_y * v; return *this; }
@@ -98,13 +98,13 @@ inline const PointInt operator-(const PointInt& p1, const PointInt& p2)
 { return PointInt(p1.m_x - p2.m_x, p1.m_y - p2.m_y); }
 
 inline const PointInt operator*(const PointInt& p, float v)
-{ return PointInt(std::round(p.m_x * v), std::round(p.m_y * v)); }
+{ return PointInt(std::lround(p.m_x * v), std::lround(p.m_y * v)); }
 
 inline const PointInt operator*(const PointInt& p, int v)
 { return PointInt(p.m_x * v, p.m_y * v); }
 
 inline const PointInt operator*(float v, const PointInt& p)
-{ return PointInt(std::round(p.m_x * v), std::round(p.m_y * v)); }
+{ return PointInt(std::lround(p.m_x * v), std::lround(p.m_y * v)); }
 
 inline const PointInt operator*(int v, const PointInt& p)
 { return PointInt(p.m_x * v, p.m_y * v); }
@@ -116,10 +116,10 @@ inline const PointInt operator-(const PointInt& p)
 { return PointInt(-p.m_x, -p.m_y); }
 
 inline PointInt& PointInt::operator/=(float v)
-{ m_x = std::round(m_x / v); m_y = std::round(m_y / v); return *this; }
+{ m_x = std::lround(m_x / v); m_y = std::lround(m_y / v); return *this; }
 
 inline const PointInt operator/(const PointInt& p, float v)
-{ return PointInt(std::round(p.m_x / v), std::round(p.m_y / v)); }
+{ return PointInt(std::lround(p.m_x / v), std::lround(p.m_y / v)); }
 
 } // namespace graphics
 

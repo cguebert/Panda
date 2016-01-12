@@ -2,6 +2,9 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/graphics/Image.h>
+
+#include <QImage>
 
 namespace panda {
 
@@ -29,8 +32,13 @@ public:
 		if(!fileName.empty())
 		{
 			QImage image(QString::fromStdString(fileName));
-			if(!image.isNull())
-				m_image.getAccessor()->setImage(image.convertToFormat(QImage::Format_ARGB32));
+			if (!image.isNull())
+			{
+				image.convertToFormat(QImage::Format_ARGB32);
+				graphics::Size size(image.width(), image.height());
+				graphics::Image newImg(size, image.bits());
+				m_image.getAccessor()->setImage(newImg);
+			}
 			else
 				m_image.getAccessor()->clear();
 		}

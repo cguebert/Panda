@@ -2,18 +2,23 @@
 #define TYPES_IMAGEWRAPPER_H
 
 #include <panda/core.h>
+#include <panda/graphics/Size.h>
 #include <panda/types/Color.h>
-
-#include <QImage>
 
 #include <memory>
 #include <vector>
 
 class QOpenGLTexture;
-class QOpenGLFramebufferObject;
 
 namespace panda
 {
+
+namespace graphics
+{
+class Framebuffer;
+class Image;
+class Texture;
+}
 
 namespace types
 {
@@ -24,15 +29,17 @@ public:
 	ImageWrapper();
 
 	unsigned int getTextureId() const;
-	const QImage& getImage() const;
+	const graphics::Image& getImage() const;
 
-	QSize size() const;
+	graphics::Size size() const;
 	int width() const;
 	int height() const;
 
-	void setImage(const QImage& img);
-	void setFbo(std::shared_ptr<QOpenGLFramebufferObject> fbo);
-	void createTexture(std::vector<types::Color> buffer, int width, int height);
+	void setImage(const graphics::Image& img);
+	void setFbo(const graphics::Framebuffer& fbo);
+
+	void createTexture(graphics::Size size, const std::vector<types::Color>& buffer);
+	void createTexture(int width, int height, const std::vector<types::Color>& buffer);
 
 	void clear(); /// Remove all sources
 	bool isNull() const; /// Does it have one valid source
@@ -42,7 +49,7 @@ public:
 
 	ImageWrapper& operator=(const ImageWrapper& rhs);
 
-	QOpenGLFramebufferObject* getFbo() const; /// Will return null if image source
+	graphics::Framebuffer* getFbo() const; /// Will return null if image source
 
 	bool operator==(const ImageWrapper& img) const;
 	bool operator!=(const ImageWrapper& img) const;
@@ -50,18 +57,24 @@ public:
 private:
 	void createImageFromBuffer();
 
-	QImage m_image;
-	std::shared_ptr<QOpenGLTexture> m_texture;
-	std::shared_ptr<QOpenGLFramebufferObject> m_fbo;
+	std::shared_ptr<graphics::Image> m_image;
+	std::shared_ptr<graphics::Texture> m_texture;
+	std::shared_ptr<graphics::Framebuffer> m_fbo;
 
 	enum SourceType : unsigned char { NONE=0, IMAGE, TEXTURE, FBO };
 	SourceType m_source;
-	int m_width, m_height;
+	graphics::Size m_size;
 	std::vector<types::Color> m_buffer;
 };
 
-inline QSize ImageWrapper::size() const
-{ return QSize(width(), height()); }
+inline graphics::Size ImageWrapper::size() const
+{ return m_size; }
+
+inline int ImageWrapper::width() const
+{ return m_size.width(); }
+
+inline int ImageWrapper::height() const
+{ return m_size.height(); }
 
 inline bool ImageWrapper::isNull() const
 { return m_source == NONE; }
@@ -72,8 +85,11 @@ inline bool ImageWrapper::hasImage() const
 inline bool ImageWrapper::hasTexture() const
 { return m_source == TEXTURE || m_source == FBO; }
 
-inline QOpenGLFramebufferObject* ImageWrapper::getFbo() const
+inline graphics::Framebuffer* ImageWrapper::getFbo() const
 { return m_fbo.get(); }
+
+inline void ImageWrapper::createTexture(int width, int height, const std::vector<types::Color>& buffer)
+{ createTexture(graphics::Size(width, height), buffer); }
 
 } // namespace types
 

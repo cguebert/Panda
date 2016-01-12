@@ -104,6 +104,11 @@ Color Color::fromHex(uint32_t hexValue)
 	return Color(red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f);
 }
 
+Color Color::fromByte(const unsigned char* px)
+{
+	return Color(px[2] / 255.0f, px[1] / 255.0f, px[0] / 255.0f, px[4] / 255.0f);
+}
+
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Color>::valueTypeName() { return "color"; }

@@ -1,8 +1,9 @@
-#include "ShaderEffects.h"
 #include <panda/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/ShaderCache.h>
 #include <panda/helper/system/FileRepository.h>
+
+#include "ShaderEffects.h"
 
 namespace panda {
 
@@ -38,11 +39,11 @@ public:
 
 	std::vector<float> computeHalfKernel()
 	{
-		m_halfKernelSize = ceil(m_currentRadius / 2) + 1;
+		m_halfKernelSize = static_cast<int>(std::ceil(m_currentRadius / 2)) + 1;
 
 		std::vector<float> kernel(m_halfKernelSize);
 		const float cPI = 3.14159265358979323846f;
-		float sigma		= 0.8 + 0.3 * (m_currentRadius / 2 - 1);
+		float sigma		= 0.8f + 0.3f * (m_currentRadius / 2 - 1);
 		double sum		= 0.0;
 		for (int x = 0; x < m_halfKernelSize; ++x)
 		{
@@ -50,7 +51,7 @@ public:
 			kernel[x] = val;
 			sum += x ? val * 2 : val;
 		}
-		float sumf = (float)sum;
+		float sumf = static_cast<float>(sum);
 		for (int x = 0; x < m_halfKernelSize; ++x)
 			kernel[x] /= sumf;
 
@@ -106,7 +107,7 @@ public:
 		m_shaderProgram.addShaderFromMemory(graphics::ShaderType::Fragment, source);
 	}
 
-	void prepareUpdate(QSize size)
+	void prepareUpdate(graphics::Size size)
 	{
 		m_size = size;
 		if(m_currentRadius < 0 || m_radius.getValue() != m_currentRadius)
@@ -119,9 +120,9 @@ public:
 			m_shaderProgram.link();
 		m_shaderProgram.bind();
 		if(!passId) // H
-			m_shaderProgram.setUniformValueArray("pixelOffset", types::Point(1.0/m_size.width(), 0).data(), 1, 2);
+			m_shaderProgram.setUniformValueArray("pixelOffset", types::Point(1.0f / m_size.width(), 0).data(), 1, 2);
 		else // V
-			m_shaderProgram.setUniformValueArray("pixelOffset", types::Point(0, 1.0/m_size.height()).data(), 1, 2);
+			m_shaderProgram.setUniformValueArray("pixelOffset", types::Point(0, 1.0f / m_size.height()).data(), 1, 2);
 
 		return m_shaderProgram;
 	}
@@ -130,7 +131,7 @@ protected:
 	Data< PReal > m_radius;
 	PReal m_currentRadius;
 	int m_halfKernelSize;
-	QSize m_size;
+	graphics::Size m_size;
 	std::string m_fragmentSource;
 	graphics::ShaderId::SPtr m_vertexShader;
 	graphics::ShaderProgram m_shaderProgram;

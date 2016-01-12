@@ -1,5 +1,7 @@
-#include <panda/ObjectFactory.h>
 #include "ShaderEffects.h"
+
+#include <panda/ObjectFactory.h>
+#include <panda/graphics/ShaderProgram.h>
 
 #include <iostream>
 
@@ -7,6 +9,10 @@
 
 namespace panda {
 
+using graphics::Framebuffer;
+using graphics::FramebufferFormat;
+using graphics::ShaderProgram;
+using graphics::Size;
 using types::ImageWrapper;
 using types::Point;
 
@@ -31,20 +37,20 @@ void ShaderEffects::update()
 	GLuint inputTexId = inputVal.getTextureId();
 	if(inputTexId)
 	{
-		QSize inputSize = inputVal.size();
+		auto inputSize = inputVal.size();
 		auto outputAcc = m_output.getAccessor();
-		QOpenGLFramebufferObject* outputFbo = outputAcc->getFbo();
-		QOpenGLFramebufferObject* intermediaryFbo = m_intermediaryFbo.get();
+		Framebuffer* outputFbo = outputAcc->getFbo();
+		Framebuffer* intermediaryFbo = &m_intermediaryFbo;
 		if(!outputFbo || outputFbo->size() != inputSize)
 		{
-			auto newFbo = std::make_shared<QOpenGLFramebufferObject>(inputSize);
+			auto newFbo = Framebuffer(inputSize);
 			outputAcc->setFbo(newFbo);
-			outputFbo = newFbo.get();
+			outputFbo = &newFbo;
 
 			if(m_nbPasses > 1)
 			{
-				m_intermediaryFbo = std::make_shared<QOpenGLFramebufferObject>(inputSize);
-				intermediaryFbo = m_intermediaryFbo.get();
+				m_intermediaryFbo = Framebuffer(inputSize);
+				intermediaryFbo = &m_intermediaryFbo;
 			}
 		}
 
@@ -64,7 +70,7 @@ void ShaderEffects::update()
 
 		for(int i=0; i<m_nbPasses; ++i)
 		{
-			QOpenGLFramebufferObject* destFbo = nullptr;
+			Framebuffer* destFbo = nullptr;
 			GLuint texId = 0;
 
 			if(m_nbPasses % 2) // odd # of passes, go first to output, then ping-pong
@@ -120,23 +126,23 @@ panda::ModuleHandle shadersEffectsModule = REGISTER_MODULE
 
 //****************************************************************************//
 
-bool resizeFBO(std::shared_ptr<QOpenGLFramebufferObject>& fbo, QSize size, const QOpenGLFramebufferObjectFormat &format)
+bool resizeFBO(Framebuffer& fbo, Size size, const FramebufferFormat& format)
 {
-	if(!fbo || fbo->size() != size)
+	if(!fbo || fbo.size() != size)
 	{
-		fbo.reset(new QOpenGLFramebufferObject(size, format));
+		fbo = Framebuffer(size, format);
 		return true;
 	}
 
 	return false;
 }
 
-bool resizeFBO(types::ImageWrapper& img, QSize size, const QOpenGLFramebufferObjectFormat& format)
+bool resizeFBO(types::ImageWrapper& img, Size size, const FramebufferFormat& format)
 {
 	auto fbo = img.getFbo();
 	if(!fbo || img.size() != size)
 	{
-		auto newFbo = std::make_shared<QOpenGLFramebufferObject>(size, format);
+		auto newFbo = Framebuffer(size, format);
 		img.setFbo(newFbo);
 		return true;
 	}
@@ -144,11 +150,11 @@ bool resizeFBO(types::ImageWrapper& img, QSize size, const QOpenGLFramebufferObj
 	return false;
 }
 
-void renderImage(QOpenGLFramebufferObject& fbo, graphics::ShaderProgram& program)
+void renderImage(Framebuffer& fbo, ShaderProgram& program)
 {
 	fbo.bind();
 
-	QSize size = fbo.size();
+	auto size = fbo.size();
 	glViewport(0, 0, size.width(), size.height());
 
 	QMatrix4x4 mvp;
@@ -183,7 +189,7 @@ void renderImage(QOpenGLFramebufferObject& fbo, graphics::ShaderProgram& program
 	fbo.release();
 }
 
-bool bindTextures(graphics::ShaderProgram& program, const std::vector<GLuint>& texIds)
+bool bindTextures(ShaderProgram& program, const std::vector<GLuint>& texIds)
 {
 	program.bind();
 

@@ -106,15 +106,6 @@ class Observer
         }
     }
 
-    //-----------------------------------------------------------------PROTECTED
-
-    protected:
-
-    ~Observer()
-    {
-        removeAll();
-    }
-
     //--------------------------------------------------------------------PUBLIC
 
     public:
@@ -123,6 +114,7 @@ class Observer
     Observer(const Observer& other) = delete; // non construction-copyable
     Observer& operator=(const Observer&) = delete; // non copyable
 
+	~Observer() { removeAll(); }
 };
 
 } // namespace Nano ------------------------------------------------------------

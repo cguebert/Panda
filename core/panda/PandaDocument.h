@@ -8,14 +8,15 @@
 #include <panda/types/Point.h>
 #include <panda/types/ImageWrapper.h>
 
+#include <panda/graphics/Size.h>
+
 #include <panda/messaging.h>
 
 #include <QObject>
-#include <QSize>
 #include <QTime>
 
-class QOpenGLFramebufferObject;
 class QAction;
+class QTimer;
 class QUndoCommand;
 class QUndoStack;
 
@@ -29,7 +30,8 @@ class DockableObject;
 class XmlElement;
 
 namespace graphics
-{ 
+{
+	class Framebuffer;
 	class ShaderProgram; 
 }
 
@@ -76,8 +78,8 @@ public:
 	types::Color getBackgroundColor() const;
 	void setBackgroundColor(types::Color color);
 
-	QSize getRenderSize() const;
-	void setRenderSize(QSize size);
+	graphics::Size getRenderSize() const;
+	void setRenderSize(graphics::Size size);
 
 	PReal getAnimationTime() const;
 	PReal getTimeStep() const;
@@ -99,7 +101,7 @@ public:
 	virtual void setDirtyValue(const DataNode* caller);
 
 	const types::ImageWrapper& getRenderedImage();
-	std::shared_ptr<QOpenGLFramebufferObject> getFBO();
+	std::shared_ptr<graphics::Framebuffer> getFBO();
 
 	Layer* getDefaultLayer() const;
 
@@ -133,7 +135,7 @@ protected:
 	ObjectsSelection m_selectedObjects;
 	quint32 m_currentIndex;
 	Layer* m_defaultLayer;
-	std::shared_ptr<QOpenGLFramebufferObject> m_renderFBO, m_secondRenderFBO;
+	std::shared_ptr<graphics::Framebuffer> m_renderFBO, m_secondRenderFBO;
 	std::shared_ptr<graphics::ShaderProgram> m_mergeLayersShader;
 
 	PReal m_animTimeVal;
@@ -235,7 +237,7 @@ inline types::Color PandaDocument::getBackgroundColor() const
 inline void PandaDocument::setBackgroundColor(types::Color color)
 { m_backgroundColor.setValue(color); }
 
-inline void PandaDocument::setRenderSize(QSize size)
+inline void PandaDocument::setRenderSize(graphics::Size size)
 { m_renderSize.setValue(panda::types::Point(qMax(1, size.width()), qMax(1, size.height()))); }
 
 inline PReal PandaDocument::getAnimationTime() const

@@ -7,8 +7,6 @@
 
 #include <panda/helper/GradientCache.h>
 
-#include <QOpenGLTexture>
-
 namespace panda {
 
 using types::Color;
@@ -39,7 +37,7 @@ public:
 		if(size > 0)
 		{
 			auto buffer = helper::GradientCache::createBuffer(m_gradient.getValue(), size);
-			m_output.getAccessor()->createTexture(buffer, size, 1);
+			m_output.getAccessor()->createTexture(size, 1, buffer);
 		}
 		else
 			m_output.getAccessor()->clear();
@@ -51,8 +49,6 @@ protected:
 	Data<Gradient> m_gradient;
 	Data<int> m_length;
 	Data<ImageWrapper> m_output;
-
-	std::shared_ptr<QOpenGLTexture> m_texture;
 };
 
 int GradientTextureClass = RegisterObject<GradientTexture>("Generator/Image/Gradient texture").setDescription("Create a 1d texture from a gradient");
@@ -92,7 +88,7 @@ public:
 				for(int x=0; x<width; ++x)
 					buffer[y*width+x] = bufHor[x] * bufVer[y];
 
-			m_output.getAccessor()->createTexture(buffer, width, height);
+			m_output.getAccessor()->createTexture(width, height, buffer);
 		}
 		else
 			m_output.getAccessor()->clear();
@@ -104,8 +100,6 @@ protected:
 	Data<Gradient> m_horizontalGradient, m_verticalGradient;
 	Data<Point> m_size;
 	Data<ImageWrapper> m_output;
-
-	std::shared_ptr<QOpenGLTexture> m_texture;
 };
 
 int GradientTexture2DClass = RegisterObject<GradientTexture2D>("Generator/Image/2 gradients texture").setDescription("Create a 2d texture from the multiplication of 2 gradients");

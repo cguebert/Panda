@@ -2,6 +2,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/ShaderProgram.h>
 #include <panda/helper/system/FileRepository.h>
 
@@ -62,14 +63,13 @@ public:
 		GLuint tex2Id = input2Val.getTextureId();
 		if(tex1Id && tex2Id && input1Val.size() == input2Val.size())
 		{
-			QSize inputSize = input1Val.size();
+			auto inputSize = input1Val.size();
 			auto outputAcc = m_output.getAccessor();
-			QOpenGLFramebufferObject* outputFbo = outputAcc->getFbo();
+			auto outputFbo = outputAcc->getFbo();
 			if(!outputFbo || outputFbo->size() != inputSize)
 			{
-				auto newFbo = std::make_shared<QOpenGLFramebufferObject>(inputSize);
-				outputAcc->setFbo(newFbo);
-				outputFbo = newFbo.get();
+				outputAcc->setFbo(graphics::Framebuffer(inputSize));
+				outputFbo = outputAcc->getFbo();
 			}
 
 			glClearColor(0, 0, 0, 0);

@@ -182,15 +182,10 @@ RegisterModule& RegisterModule::setVersion(std::string version)
 	return *this;
 }
 
-const ObjectFactory::ModuleEntry RegisterModule::getEntry() const
-{
-	return m_entry;
-}
-
 //****************************************************************************//
 
 ModuleHandle::ModuleHandle(const RegisterModule& registerInfo)
-	: m_entry(registerInfo.getEntry())
+	: m_entry(registerInfo.m_entry)
 {
 	ObjectFactory::getInstance()->registerModule(m_entry);
 }

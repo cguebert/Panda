@@ -23,9 +23,8 @@ typedef float PReal;
 #	define EXPORT_DYNAMIC_LIBRARY __declspec( dllexport )
 #   define IMPORT_DYNAMIC_LIBRARY __declspec( dllimport )
 #   ifdef _MSC_VER
-#       pragma warning(disable : 4231)
-#       pragma warning(disable : 4910)
-#		pragma warning(disable : 4251)
+#		pragma warning(disable : 4251) /* class 'type' needs to have dll-interface to be used by clients of class 'type2' */
+#		pragma warning(disable : 4275) /* non - DLL-interface classkey 'identifier' used as base for DLL-interface classkey 'identifier' */
 #   endif
 #endif
 

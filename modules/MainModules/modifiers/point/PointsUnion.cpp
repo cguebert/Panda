@@ -4,6 +4,8 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Point.h>
 
+#include <panda/graphics/Image.h>
+
 namespace panda {
 
 using types::ImageWrapper;
@@ -30,7 +32,7 @@ public:
 
 	void update()
 	{
-		const QImage& img = image.getValue().getImage();
+		const auto& img = image.getValue().getImage();
 
 		const std::vector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
@@ -39,16 +41,15 @@ public:
 		outPts.clear();
 		outId.clear();
 
-		if(!img.isNull())
+		if(img)
 		{
 			for(int i=0; i<nb; ++i)
 			{
 				Point pt = inPts[i];
-				QPoint iPt(qRound(pt.x), qRound(pt.y));
+				graphics::PointInt iPt(std::lround(pt.x), std::lround(pt.y));
 				if(img.valid(iPt))
 				{
-					QRgb color = img.pixel(iPt);
-					if(qGray(color) > 128)
+					if(graphics::gray(img.pixel(iPt)) > 128)
 					{
 						outPts.push_back(pt);
 						outId.push_back(i);

@@ -75,12 +75,13 @@ void ImageViewport::paintGL()
 		return;
 	}
 
-	QSize imgSize = img.size();
-	QSize renderSize = imgSize * m_zoomFactor;
+	auto imgSize = img.size();
+	auto renderSize = imgSize * m_zoomFactor;
+	QSize qRenderSize(renderSize.width(), renderSize.height());
 	QRect viewRect = contentsRect();
 
-	if(renderSize != viewRect.size())
-		resize(renderSize);
+	if(qRenderSize != viewRect.size())
+		resize(qRenderSize);
 
 	glViewport(0, 0, renderSize.width(), renderSize.height());
 

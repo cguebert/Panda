@@ -26,7 +26,7 @@ public:
 	void update()
 	{
 		cleanDirty();
-		QSize tmpSize = m_parentDocument->getRenderSize();
+		auto tmpSize = m_parentDocument->getRenderSize();
 		renderSize.setValue(Point(tmpSize.width(), tmpSize.height()));
 	}
 
@@ -57,7 +57,7 @@ public:
 	void update()
 	{
 		cleanDirty();
-		QSize tmpSize = m_parentDocument->getRenderSize();
+		auto tmpSize = m_parentDocument->getRenderSize();
 		renderArea.setValue(types::Rect(0, 0, tmpSize.width(), tmpSize.height()));
 	}
 

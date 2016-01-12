@@ -57,7 +57,7 @@ namespace panda
 
 				template <typename L> 
 				void connect(L* instance)
-				{ m_signal.insert(Delegate::template bind(instance), m_observer); }
+				{ m_signal.insert(Delegate::template bind(instance), m_observer->observer()); }
 
 				template <typename L> 
 				void connect(L& instance)
@@ -65,15 +65,15 @@ namespace panda
 
 				template <Ret(*fun_ptr)(Args...)> 
 				void connect()
-				{ m_signal.insert(Delegate::template bind<fun_ptr>(), m_observer); }
+				{ m_signal.insert(Delegate::template bind<fun_ptr>(), m_observer->observer()); }
 
 				template <typename T, Ret(T::*mem_ptr)(Args...)> 
 				void connect(T* instance)
-				{ m_signal.insert(Delegate::template bind<T, mem_ptr>(instance), m_observer); }
+				{ m_signal.insert(Delegate::template bind<T, mem_ptr>(instance), m_observer->observer()); }
 
 				template <typename T, Ret(T::*mem_ptr)(Args...) const> 
 				void connect(T* instance)
-				{ m_signal.insert(Delegate::template bind<T, mem_ptr>(instance), m_observer); }
+				{ m_signal.insert(Delegate::template bind<T, mem_ptr>(instance), m_observer->observer()); }
 
 				template <typename T, Ret(T::*mem_ptr)(Args...)> 
 				void connect(T& instance)
@@ -92,12 +92,18 @@ namespace panda
 
 		// This class is used to connect to signals
 		// When released, it unregister itself from the signals it was connected to
-		class PANDA_CORE_API Observer : public Nano::Observer
+		class PANDA_CORE_API Observer
 		{
 		public:
 			template <typename Ret, typename... Args>
 			details::Wrapper<Ret(Args...)> get(Signal<Ret(Args...)>& signal)
 			{ return details::Wrapper<Ret(Args...)>(signal, this); }
+
+			Nano::Observer* observer()
+			{ return &m_observer; }
+
+		private:
+			Nano::Observer m_observer;
 		};
 
 	} // namespace msg

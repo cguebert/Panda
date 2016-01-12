@@ -185,6 +185,9 @@ void ExtrudeHelper::prepare(const Animation<PReal>& widthAnim)
 			normals.push_back(normals.front());
 		}
 	}
+
+	if (!closePath)
+		normals.push_back(normals.back());
 }
 
 void ExtrudeHelper::startCap()

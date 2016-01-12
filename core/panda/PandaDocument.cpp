@@ -8,6 +8,7 @@
 #include <panda/Messaging.h>
 #include <panda/Renderer.h>
 #include <panda/Scheduler.h>
+#include <panda/graphics/Framebuffer.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/GradientCache.h>
 #include <panda/helper/ShaderCache.h>
@@ -452,10 +453,10 @@ void PandaDocument::setCurrentSelectedObject(PandaObject* object)
 	m_selectionChangedSignal.run();
 }
 
-QSize PandaDocument::getRenderSize() const
+graphics::Size PandaDocument::getRenderSize() const
 {
 	Point pt = m_renderSize.getValue();
-	return QSize(qMax<PReal>(1, floor(pt.x)), qMax<PReal>(1, floor(pt.y)));
+	return graphics::Size(std::max<PReal>(1, floor(pt.x)), std::max<PReal>(1, floor(pt.y)));
 }
 
 void PandaDocument::setMouseClick(bool clicked, const types::Point& pos)
@@ -666,11 +667,12 @@ void PandaDocument::update()
 {
 	static const int loadGlewVal = loadGlew();
 
-	if(!m_renderFBO || m_renderFBO->size() != getRenderSize())
+	auto renderSize = getRenderSize();
+	if(!m_renderFBO || m_renderFBO->size() != renderSize)
 	{
-		m_renderFBO.reset(new QOpenGLFramebufferObject(getRenderSize()));
-		m_secondRenderFBO.reset(new QOpenGLFramebufferObject(getRenderSize()));
-		m_renderedImage.getAccessor()->setFbo(m_renderFBO);
+		m_renderFBO = std::make_shared<graphics::Framebuffer>(renderSize);
+		m_secondRenderFBO = std::make_shared<graphics::Framebuffer>(renderSize);
+		m_renderedImage.getAccessor()->setFbo(*m_renderFBO);
 	}
 
 	if(!m_mergeLayersShader)
@@ -716,7 +718,7 @@ const ImageWrapper& PandaDocument::getRenderedImage()
 	return m_renderedImage.getValue();
 }
 
-std::shared_ptr<QOpenGLFramebufferObject> PandaDocument::getFBO()
+std::shared_ptr<graphics::Framebuffer> PandaDocument::getFBO()
 {
 	updateIfDirty();
 	return m_renderFBO;
@@ -844,7 +846,7 @@ void PandaDocument::render()
 #ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log3("blit FBO");
 #endif
-		QOpenGLFramebufferObject::blitFramebuffer(m_renderFBO.get(), m_secondRenderFBO.get());
+		graphics::Framebuffer::blitFramebuffer(*m_renderFBO, *m_secondRenderFBO);
 	}
 }
 

@@ -2,10 +2,13 @@
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/graphics/Image.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>
 #endif
+
+#include <QImage>
 
 namespace panda {
 
@@ -52,8 +55,12 @@ public:
 		int nb = qMin(names.size(), images.size());
 		for(int i=0; i<nb; ++i)
 		{
-			if(!names[i].empty())
-				images[i].getImage().save(QString::fromStdString(names[i]));
+			if (!names[i].empty())
+			{
+				const auto img = images[i].getImage();
+				QImage qtImg(img.data(), img.width(), img.height(), QImage::Format_ARGB32);
+				qtImg.save(QString::fromStdString(names[i]));
+			}
 		}
 	}
 

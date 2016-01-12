@@ -10,39 +10,45 @@ namespace panda
 namespace graphics
 {
 
-class FramebufferId
+struct FramebufferData
 {
 public:
-	FramebufferId(GLuint fboId, GLuint texId, GLuint rdBufId) 
-		: m_fboId(fboId), m_texId(texId), m_rdBufId(rdBufId) {}
-
-	~FramebufferId() 
+	~FramebufferData() 
 	{ 
-		glDeleteFramebuffers(1, &m_fboId); 
-		glDeleteTextures(1, &m_texId); 
-		glDeleteRenderbuffers(1, &m_rdBufId);
+		glDeleteFramebuffers(1, &fbo); 
+		glDeleteTextures(1, &texture); 
+		glDeleteRenderbuffers(1, &colorBuffer);
+		glDeleteRenderbuffers(1, &depthBuffer);
+		glDeleteRenderbuffers(1, &stencilBuffer);
 	}
 
-	GLuint fboId() { return m_fboId; }
-	GLuint texId() { return m_texId; }
-
-private:
-	GLuint m_fboId, m_texId, m_rdBufId;
+	Size size;
+	FramebufferFormat format;
+	GLuint fbo = 0, texture = 0, 
+		colorBuffer = 0, depthBuffer = 0, stencilBuffer = 0;
 };
 
 //****************************************************************************//
 
-Framebuffer::Framebuffer()
-{ }
-
-Framebuffer::Framebuffer(int width, int height, int samples)
-	: m_width(width), m_height(height)
+FramebufferFormat::FramebufferFormat()
+	: internalFormat(GL_RGBA8)
 {
-	GLuint fboId = 0, texId = 0, rdrBufId = 0;
-	glGenFramebuffers(1, &fboId);
-	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+}
 
-	samples = std::max(0, samples);
+//****************************************************************************//
+
+Framebuffer::Framebuffer(Size size, FramebufferFormat format)
+	: m_data(std::make_shared<FramebufferData>())
+{
+	m_data->size = size;
+	m_data->format = format;
+
+	int w = size.width(), h = size.height();
+	glGenFramebuffers(1, &m_data->fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_data->fbo);
+
+	format.samples = std::max(0, format.samples);
+	int samples = format.samples;
 
 	if (!GLEW_EXT_framebuffer_multisample || !GLEW_EXT_framebuffer_blit)
 		samples = 0;
@@ -54,9 +60,9 @@ Framebuffer::Framebuffer(int width, int height, int samples)
 	if (!samples)
 	{
 		// Generate texture
-		glGenTextures(1, &texId);
-		glBindTexture(GL_TEXTURE_2D, texId);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glGenTextures(1, &m_data->texture);
+		glBindTexture(GL_TEXTURE_2D, m_data->texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, format.internalFormat, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -64,32 +70,84 @@ Framebuffer::Framebuffer(int width, int height, int samples)
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		// Attach it to currently bound framebuffer object
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_data->texture, 0);
 	}
 	else
 	{
 		// Use a multisample render buffer
-		glGenRenderbuffers(1, &rdrBufId);
-		glBindRenderbuffer(GL_RENDERBUFFER, rdrBufId);
-		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_RGBA8, m_width, m_height);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rdrBufId);
+		glGenRenderbuffers(1, &m_data->colorBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_data->colorBuffer);
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format.internalFormat, w, h);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_data->colorBuffer);
 
 		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_SAMPLES, &samples); // Update the number of samples
 	}
 
-	m_samples = samples;
-	m_id = std::make_shared<FramebufferId>(fboId, texId, rdrBufId);
+	createAttachments();
+
+	m_data->format.samples = samples; // Set the real number of samples for this FBO
 }
 
-Framebuffer::operator bool() const
+void Framebuffer::createAttachments()
 {
-	return (id() != 0);
+	GLuint depthBuffer = 0, stencilBuffer = 0;
+	auto attachment = m_data->format.attachment;
+	auto samples = m_data->format.samples;
+	int w = m_data->size.width(), h = m_data->size.height();
+
+	if (attachment == FramebufferFormat::Attachment::DepthAndStencil && GLEW_EXT_packed_depth_stencil)
+	{
+		glGenRenderbuffers(1, &depthBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+
+		if (samples && GLEW_EXT_framebuffer_multisample)
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH24_STENCIL8, w, h);
+		else
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, w, h);
+
+		stencilBuffer = depthBuffer;
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
+	}
+
+	if (!depthBuffer && (attachment == FramebufferFormat::Attachment::Depth 
+		|| attachment == FramebufferFormat::Attachment::DepthAndStencil))
+	{
+		glGenRenderbuffers(1, &depthBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+		if (samples && GLEW_EXT_framebuffer_multisample)
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, w, h);
+		else
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+	}
+
+	if (!stencilBuffer && attachment == FramebufferFormat::Attachment::DepthAndStencil)
+	{
+		glGenRenderbuffers(1, &stencilBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, stencilBuffer);
+		if (samples && GLEW_EXT_framebuffer_multisample)
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_STENCIL_INDEX, w, h);
+		else
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX, w, h);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
+	}
+
+	if (depthBuffer && stencilBuffer)
+		m_data->format.attachment = FramebufferFormat::Attachment::DepthAndStencil;
+	else if (depthBuffer)
+		m_data->format.attachment = FramebufferFormat::Attachment::Depth;
+	else
+		m_data->format.attachment = FramebufferFormat::Attachment::NoAttachment;
+
+	m_data->depthBuffer = depthBuffer;
+	m_data->stencilBuffer = stencilBuffer;
 }
 
 unsigned int Framebuffer::id() const
 {
-	if (m_id)
-		return m_id->fboId();
+	if (m_data)
+		return m_data->fbo;
 	return 0;
 }
 
@@ -110,25 +168,24 @@ bool Framebuffer::isBound() const
 	return id() == fbo;
 }
 
-int Framebuffer::width() const
+Size Framebuffer::size() const
 {
-	return m_width;
+	if (m_data)
+		return m_data->size;
+	return Size();
 }
 
-int Framebuffer::height() const
+FramebufferFormat Framebuffer::format() const
 {
-	return m_height;
-}
-
-int Framebuffer::samples() const
-{
-	return m_samples;
+	if (m_data)
+		return m_data->format;
+	return FramebufferFormat();
 }
 
 unsigned int Framebuffer::texture() const
 {
-	if (m_id)
-		return m_id->texId();
+	if (m_data)
+		return m_data->texture;
 	return 0;
 }
 
@@ -137,7 +194,7 @@ Image Framebuffer::toImage() const
 	return Image();
 }
 
-void Framebuffer::blitFramebuffer(Framebuffer& target, Framebuffer& source)
+void Framebuffer::blitFramebuffer(Framebuffer& target, const Framebuffer& source)
 {
 	types::Rect targetRect(0.f, 0.f, static_cast<PReal>(target.width()), static_cast<PReal>(target.height()));
 	types::Rect sourceRect(0.f, 0.f, static_cast<PReal>(source.width()), static_cast<PReal>(source.height()));
@@ -145,7 +202,7 @@ void Framebuffer::blitFramebuffer(Framebuffer& target, Framebuffer& source)
 }
 
 void Framebuffer::blitFramebuffer(Framebuffer& target, const types::Rect& targetRect,
-	Framebuffer& source, const types::Rect& sourceRect)
+	const Framebuffer& source, const types::Rect& sourceRect)
 {
 	blitFramebuffer(target.id(), targetRect, source.id(), sourceRect);
 }

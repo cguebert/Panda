@@ -379,7 +379,7 @@ void GroupWithLayer::removedFromDocument()
 	}
 }
 
-QSize GroupWithLayer::getLayerSize() const
+graphics::Size GroupWithLayer::getLayerSize() const
 {
 	if(m_layer)
 		return m_layer->getLayerSize();

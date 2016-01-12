@@ -97,7 +97,7 @@ public:
 
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();
-	virtual QSize getLayerSize() const;
+	virtual graphics::Size getLayerSize() const;
 
 	virtual void addObject(ObjectPtr object);
 	virtual void removeObject(PandaObject* object);

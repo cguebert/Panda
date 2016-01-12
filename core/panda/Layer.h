@@ -6,18 +6,21 @@
 
 #include <QMatrix4x4>
 
-class QOpenGLFramebufferObject;
-
 namespace panda
 {
 
 class Renderer;
 
+namespace graphics
+{
+	class Framebuffer;
+}
+
 class BaseDrawTarget
 {
 public:
 	virtual QMatrix4x4& getMVPMatrix() = 0;
-	virtual QSize getLayerSize() const = 0;
+	virtual graphics::Size getLayerSize() const = 0;
 };
 
 class PANDA_CORE_API BaseLayer : public BaseDrawTarget
@@ -43,7 +46,7 @@ public:
 
 protected:
 	virtual void iterateRenderers();
-	std::shared_ptr<QOpenGLFramebufferObject> m_renderFrameBuffer, m_displayFrameBuffer;
+	std::shared_ptr<graphics::Framebuffer> m_renderFrameBuffer, m_displayFrameBuffer;
 };
 
 //****************************************************************************//
@@ -71,7 +74,7 @@ public:
 
 	virtual Data<types::ImageWrapper>* getImage();
 	virtual QMatrix4x4& getMVPMatrix();
-	virtual QSize getLayerSize() const;
+	virtual graphics::Size getLayerSize() const;
 
 	virtual void postCreate();
 	virtual void removedFromDocument();

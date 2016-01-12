@@ -1,3 +1,6 @@
+#include <GL/glew.h>
+
+
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
@@ -48,7 +51,7 @@ public:
 		Rect area = m_area.getValue();
 		if(area.empty())
 		{
-			QSize size = getLayerSize();
+			auto size = getLayerSize();
 			area = Rect(0, 0, size.width(), size.height());
 		}
 
@@ -134,7 +137,7 @@ public:
 		Rect area = m_area.getValue();
 		if(area.empty())
 		{
-			QSize size = getLayerSize();
+			auto size = getLayerSize();
 			area = Rect(0, 0, size.width(), size.height());
 		}
 
@@ -214,7 +217,7 @@ public:
 		Rect area = m_area.getValue();
 		if(area.empty())
 		{
-			QSize size = getLayerSize();
+			auto size = getLayerSize();
 			area = Rect(0, 0, size.width(), size.height());
 		}
 
@@ -226,7 +229,7 @@ public:
 		if(!m_shader.getValue().apply(m_shaderProgram))
 			return;
 
-		QSize texSize = texValue.size();
+		auto texSize = texValue.size();
 
 		glBindTexture(GL_TEXTURE_2D, texId);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

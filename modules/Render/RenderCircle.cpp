@@ -1,3 +1,6 @@
+#include <GL/glew.h>
+
+
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>

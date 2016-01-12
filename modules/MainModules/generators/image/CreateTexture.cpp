@@ -1,3 +1,5 @@
+#include <GL/glew.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
@@ -5,10 +7,10 @@
 #include <panda/Renderer.h>
 #include <panda/Layer.h>
 
-#include <panda/types/Point.h>
+#include <panda/types/Rect.h>
 #include <panda/types/ImageWrapper.h>
 
-#include <QOpenGLFramebufferObject>
+#include <panda/graphics/Framebuffer.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>
@@ -44,10 +46,10 @@ public:
 		return m_mvpMatrix;
 	}
 
-	QSize getLayerSize() const
+	graphics::Size getLayerSize() const
 	{
 		Point size = m_size.getValue();
-		return QSize(std::max(1, (int)size.x), std::max(1, (int)size.y));
+		return graphics::Size(std::max(1, (int)size.x), std::max(1, (int)size.y));
 	}
 
 	typedef std::vector<Renderer*> RenderersList;
@@ -74,20 +76,20 @@ public:
 			renderer->updateIfDirty();
 		}
 
-		QSize renderSize = getLayerSize();
+		auto renderSize = getLayerSize();
 
-		if(!m_renderFrameBuffer || m_renderFrameBuffer->size() != renderSize)
+		if(!m_renderFrameBuffer || m_renderFrameBuffer.size() != renderSize)
 		{
-			QOpenGLFramebufferObjectFormat fmt;
-			fmt.setSamples(16);
-			m_renderFrameBuffer = std::make_shared<QOpenGLFramebufferObject>(renderSize, fmt);
-			m_displayFrameBuffer = std::make_shared<QOpenGLFramebufferObject>(renderSize);
+			graphics::FramebufferFormat format;
+			format.samples = 16;
+			m_renderFrameBuffer = graphics::Framebuffer(renderSize, format);
+			m_displayFrameBuffer = graphics::Framebuffer(renderSize);
 
 			// Setting the image Data to the display Fbo
 			m_image.getAccessor()->setFbo(m_displayFrameBuffer);
 		}
 
-		m_renderFrameBuffer->bind();
+		m_renderFrameBuffer.bind();
 
 		glViewport(0, 0, renderSize.width(), renderSize.height());
 
@@ -119,10 +121,11 @@ public:
 
 		glDisable(GL_BLEND);
 
-		m_renderFrameBuffer->release();
+		m_renderFrameBuffer.release();
 
 		auto acc = m_image.getAccessor();
-		QOpenGLFramebufferObject::blitFramebuffer(acc->getFbo(), m_renderFrameBuffer.get());
+		panda::types::Rect area(0, 0, renderSize.width(), renderSize.height());
+		graphics::Framebuffer::blitFramebuffer(*acc->getFbo(), area, m_renderFrameBuffer, area);
 
 		cleanDirty();
 	}
@@ -130,7 +133,7 @@ public:
 protected:
 	Data<Point> m_size;
 	Data<ImageWrapper> m_image;
-	std::shared_ptr<QOpenGLFramebufferObject> m_renderFrameBuffer, m_displayFrameBuffer;
+	graphics::Framebuffer m_renderFrameBuffer, m_displayFrameBuffer;
 	QMatrix4x4 m_mvpMatrix;
 };
 

@@ -1,11 +1,13 @@
+#include <GL/glew.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
 #include <panda/Renderer.h>
 #include <panda/types/Color.h>
 #include <panda/types/Rect.h>
+#include <panda/graphics/Framebuffer.h>
 
-#include <QOpenGLFramebufferObject>
 #include <QOpenGLPaintDevice>
 #include <QOpenGLFunctions>
 #include <QPainter>
@@ -68,21 +70,21 @@ public:
 			int alignVIndex = qBound(0, alignV.getValue(), 3);
 			int alignment = alignHVals[alignHIndex] | alignVVals[alignVIndex];
 
-			QSize renderSize = m_parentDocument->getRenderSize();
-			if(!renderFrameBuffer || renderFrameBuffer->size() != renderSize)
+			auto renderSize = m_parentDocument->getRenderSize();
+			if(!renderFrameBuffer || renderFrameBuffer.size() != renderSize)
 			{
-				QOpenGLFramebufferObjectFormat fmt;
-				fmt.setSamples(16);
-				fmt.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
-				renderFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize, fmt));
-				displayFrameBuffer.reset(new QOpenGLFramebufferObject(renderSize));
+				graphics::FramebufferFormat format;
+				format.samples = 16;
+				format.attachment = graphics::FramebufferFormat::Attachment::DepthAndStencil;
+				renderFrameBuffer = graphics::Framebuffer(renderSize, format);
+				displayFrameBuffer = graphics::Framebuffer(renderSize);
 			}
 
 			QOpenGLFunctions functions(QOpenGLContext::currentContext());
 
 			GLint previousFBO;
 			glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &previousFBO);
-			renderFrameBuffer->bind();
+			renderFrameBuffer.bind();
 
 			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -98,7 +100,7 @@ public:
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			QOpenGLPaintDevice device(renderSize);
+			QOpenGLPaintDevice device(renderSize.width(), renderSize.height());
 			QPainter painter;
 			painter.begin(&device);
 			painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
@@ -128,12 +130,12 @@ public:
 			glDisable(GL_DEPTH_TEST);
 			glDepthMask(GL_FALSE);
 
-			renderFrameBuffer->release();
-			QOpenGLFramebufferObject::blitFramebuffer(displayFrameBuffer.data(), renderFrameBuffer.data());
+			renderFrameBuffer.release();
+			graphics::Framebuffer::blitFramebuffer(displayFrameBuffer, renderFrameBuffer);
 			functions.glBindFramebuffer(GL_FRAMEBUFFER, previousFBO);
 
 			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, displayFrameBuffer->texture());
+			glBindTexture(GL_TEXTURE_2D, displayFrameBuffer.texture());
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -169,7 +171,7 @@ protected:
 	Data< std::vector<Color> > color;
 	Data< int > alignH, alignV;
 
-	QSharedPointer<QOpenGLFramebufferObject> renderFrameBuffer, displayFrameBuffer;
+	graphics::Framebuffer renderFrameBuffer, displayFrameBuffer;
 };
 
 int RenderTextClass = RegisterObject<RenderText>("Render/Text").setDescription("Draw some text");

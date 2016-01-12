@@ -155,7 +155,6 @@ protected:
 	ObjectFactory::ModuleEntry m_entry;
 
 	friend class ModuleHandle;
-	const ObjectFactory::ModuleEntry getEntry() const;
 
 private:
 	RegisterModule();

@@ -2,7 +2,7 @@
 #define RENDERER_H
 
 #include <panda/Dockable.h>
-#include <panda/helper/gl.h>
+#include <panda/graphics/Size.h>
 #include <QMatrix4x4>
 
 namespace panda
@@ -23,7 +23,7 @@ public:
 
 protected:
 	QMatrix4x4& getMVPMatrix();
-	QSize getLayerSize() const;
+	graphics::Size getLayerSize() const;
 	BaseDrawTarget* getDrawTarget() const;
 };
 

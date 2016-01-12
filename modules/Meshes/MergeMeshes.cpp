@@ -4,12 +4,17 @@
 #include <panda/types/Mesh.h>
 #include <panda/helper/PointsGrid.h>
 
-#include <QMap>
-
-// To be able to use Point in QMaps
-template<> static bool qMapLessThanKey<panda::types::Point>(const panda::types::Point& p1, const panda::types::Point& p2)
+namespace
 {
-	return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
+
+struct PointCompare
+{
+	bool operator()(const panda::types::Point& p1, const panda::types::Point& p2)
+	{
+		return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
+	}
+};
+
 }
 
 namespace panda {
@@ -38,7 +43,7 @@ public:
 	void update()
 	{
 		helper::PointsGrid grid;
-		QSize size = m_parentDocument->getRenderSize();
+		auto size = m_parentDocument->getRenderSize();
 		Rect area(0, 0, size.width(), size.height());
 		grid.initGrid(area, 10);
 
@@ -47,7 +52,7 @@ public:
 		Mesh::SeqPoints newPoints;
 		Mesh::SeqTriangles newTriangles;
 
-		QMap<Point, Mesh::PointID> pointsMap;
+		std::map<Point, Mesh::PointID, PointCompare> pointsMap;
 
 		const std::vector<Mesh>& meshesList = inputs.getValue();
 		for(const Mesh& mesh : meshesList)
@@ -62,7 +67,7 @@ public:
 			}
 			else
 			{
-				QMap<Mesh::PointID, Mesh::PointID> tmpIDMap;
+				std::map<Mesh::PointID, Mesh::PointID> tmpIDMap;
 				for(int i=0, nb=mesh.nbPoints(); i<nb; ++i)
 				{
 					const Point& pt = mesh.getPoint(i);

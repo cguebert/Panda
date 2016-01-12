@@ -71,6 +71,8 @@ public:
 	uint32_t toHex() const;
 	static Color fromHex(uint32_t hexValue);
 
+	static Color fromByte(const unsigned char* px);
+
 	static Color null();
 	static Color black();
 	static Color white();

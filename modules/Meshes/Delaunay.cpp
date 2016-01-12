@@ -64,7 +64,7 @@ public:
 
 		outMesh->addPoints(pts);
 
-		QSize s = m_parentDocument->getRenderSize();
+		auto s = m_parentDocument->getRenderSize();
 		Rect area = Rect(0, 0, s.width(), s.height());
 
 		for(EdgeIterator it = vd.edges().begin(); it != vd.edges().end(); ++it)

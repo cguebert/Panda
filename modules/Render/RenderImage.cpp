@@ -1,3 +1,5 @@
+#include <GL/glew.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
@@ -114,8 +116,8 @@ public:
 					for(int i=0; i<nbPosition; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
-						QSize s = img.size() / 2;
-						if(!s.isValid()) continue;
+						auto s = img.size() / 2;
+						if(s.empty()) continue;
 						QMatrix4x4 tmpMVP = MVP;
 						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
@@ -130,8 +132,8 @@ public:
 					for(int i=0; i<nbPosition; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
-						QSize s = img.size();
-						if(!s.isValid()) continue;
+						auto s = img.size();
+						if(s.empty()) continue;
 						QMatrix4x4 tmpMVP = MVP;
 						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
@@ -148,8 +150,8 @@ public:
 					for(int i=0; i<nbPosition; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
-						QSize s = img.size() / 2;
-						if(!s.isValid()) continue;
+						auto s = img.size() / 2;
+						if(s.empty()) continue;
 						Rect area = Rect(listPosition[i].x - s.width(),
 										 listPosition[i].y - s.height(),
 										 listPosition[i].x + s.width(),
@@ -162,8 +164,8 @@ public:
 					for(int i=0; i<nbPosition; ++i)
 					{
 						const ImageWrapper& img = listImage[i % nbImage];
-						QSize s = img.size();
-						if(!s.isValid()) continue;
+						auto s = img.size();
+						if(s.empty()) continue;
 						Rect area(listPosition[i], s.width(), s.height());
 						drawTexture(img.getTextureId(), area);
 					}

@@ -52,13 +52,12 @@ public:
 
 		auto outputAcc = m_output.getAccessor();
 		Point psize = m_size.getValue();
-		QSize size = QSize(psize.x, psize.y);
-		QOpenGLFramebufferObject* outputFbo = outputAcc->getFbo();
+		graphics::Size size(static_cast<int>(psize.x), static_cast<int>(psize.y));
+		auto outputFbo = outputAcc->getFbo();
 		if(!outputFbo || outputAcc->getFbo()->size() != size)
 		{
-			auto newFbo = std::make_shared<QOpenGLFramebufferObject>(size);
-			outputAcc->setFbo(newFbo);
-			outputFbo = newFbo.get();
+			outputAcc->setFbo(graphics::Framebuffer(size));
+			outputFbo = outputAcc->getFbo();
 		}
 
 		glActiveTexture(GL_TEXTURE0);
@@ -77,7 +76,6 @@ protected:
 	Data<Point> m_size;
 
 	graphics::ShaderProgram m_shaderProgram;
-	std::shared_ptr<QOpenGLFramebufferObject> m_FBOs;
 };
 
 int TexturesOuterProductClass = RegisterObject<TexturesOuterProduct>("Modifier/Image/Textures outer product")

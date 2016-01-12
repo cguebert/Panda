@@ -6,6 +6,8 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Rect.h>
 
+#include <panda/graphics/Image.h>
+
 #include <cmath>
 
 namespace panda {
@@ -14,6 +16,7 @@ using types::Color;
 using types::ImageWrapper;
 using types::Point;
 using types::Rect;
+using graphics::PointInt;
 
 class ModifierImage_GetPixel : public PandaObject
 {
@@ -34,7 +37,7 @@ public:
 
 	void update()
 	{
-		const QImage& img = image.getValue().getImage();
+		const auto& img = image.getValue().getImage();
 		const std::vector<Point>& pos = position.getValue();
 		auto colorsList = color.getAccessor();
 
@@ -43,9 +46,9 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			const Point p = pos[i];
-			const QPoint pt = QPoint(std::floor(p.x), std::floor(p.y));
+			const PointInt pt(std::floor(p.x), std::floor(p.y));
 			if(img.valid(pt))
-				colorsList[i] = Color::fromHex(img.pixel(pt));
+				colorsList[i] = Color::fromByte(img.pixel(pt));
 			else
 				colorsList[i] = Color::null();
 		}
@@ -84,11 +87,11 @@ public:
 
 	void update()
 	{
-		const QImage& img = image.getValue().getImage();
+		const auto img = image.getValue().getImage();
 		const std::vector<Point>& pos = position.getValue();
 		const std::vector<Color>& col = color.getValue();
 
-		QImage tmp = img;
+		graphics::Image tmp = img.clone();
 
 		int nbP = pos.size();
 		int nbC = col.size();
@@ -98,7 +101,7 @@ public:
 		for(int i=0; i<nbP; ++i)
 		{
 			const Point p = pos[i];
-			const QPoint pt = QPoint(std::floor(p.x), std::floor(p.y));
+			const PointInt pt(std::floor(p.x), std::floor(p.y));
 			if(tmp.valid(pt))
 				tmp.setPixel(pt, col[i%nbC].toHex());
 		}
@@ -137,15 +140,9 @@ public:
 
 	void update()
 	{
-		const QImage& img = image.getValue().getImage();
+		const auto& img = image.getValue().getImage();
 		const std::vector<Rect>& rectList = rectangle.getValue();
 		auto col = color.getAccessor();
-
-		if(img.format() != QImage::Format_ARGB32)
-		{
-			col.clear();
-			return;
-		}
 
 		int nbRects = rectList.size();
 		col.resize(nbRects);
@@ -162,14 +159,14 @@ public:
 			ulong a=0, r=0, g=0, b=0;
 			for(int y=y1; y<=y2; ++y)
 			{
-				const QRgb* line = reinterpret_cast<const QRgb*>(img.scanLine(y));
+				const auto line = img.pixel(0, y);
 				for(int x=x1; x<=x2; ++x)
 				{
-					QRgb p = line[x];
-					a += qAlpha(p);
-					r += qRed(p);
-					g += qGreen(p);
-					b += qBlue(p);
+					const auto p = &line[x * 4];
+					a += graphics::alpha(p);
+					r += graphics::red(p);
+					g += graphics::green(p);
+					b += graphics::blue(p);
 					++nb;
 				}
 			}

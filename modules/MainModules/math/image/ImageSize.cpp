@@ -35,7 +35,7 @@ public:
 		for(unsigned int i=0; i<nb; ++i)
 		{
 			const ImageWrapper& imgWrapper = listImage[i];
-			QSize size = imgWrapper.size();
+			auto size = imgWrapper.size();
 			listSize[i] = Point(size.width(), size.height());
 		}
 
