@@ -18,12 +18,12 @@
 #include <panda/helper/UpdateLogger.h>
 #endif
 
-#include <QElapsedTimer>
 #include <QMessageBox>
 #include <QOpenGLFramebufferObject>
 #include <QTimer>
 #include <QUndoStack>
 
+#include <chrono>
 #include <set>
 
 namespace
@@ -38,6 +38,21 @@ int loadGlew()
 	  fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 
 	return 1;
+}
+
+long long currentTime()
+{
+	using namespace std::chrono;
+	auto now = time_point_cast<microseconds>(high_resolution_clock::now());
+	return now.time_since_epoch().count();
+}
+
+double toSeconds(long long elapsed)
+{
+	using namespace std::chrono;
+	microseconds durMicro(elapsed);
+	auto durSec = duration_cast<seconds>(durMicro);
+	return duration_cast<duration<double>>(durSec).count();
 }
 
 }
@@ -885,7 +900,7 @@ void PandaDocument::play(bool playing)
 			m_animTimer->start(0);
 
 		m_iNbFrames = 0;
-		m_fpsTime.start();
+		m_fpsTime = currentTime();
 	}
 	else
 	{
@@ -898,8 +913,7 @@ void PandaDocument::play(bool playing)
 
 void PandaDocument::step()
 {
-	QElapsedTimer durationTimer;
-	durationTimer.start();
+	auto startTime = std::chrono::high_resolution_clock::now();
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
@@ -944,7 +958,6 @@ void PandaDocument::step()
 	panda::helper::UpdateLogger::getInstance()->stopLog();
 #endif
 
-	unsigned int lastFrameDuration = durationTimer.elapsed();
 	m_timeChangedSignal.run();
 
 	const auto obj = getCurrentSelectedObject();
@@ -954,15 +967,20 @@ void PandaDocument::step()
 		m_selectedObjectIsDirtySignal.run(this);
 	m_modifiedSignal.run();
 
-	if(m_animPlaying && m_useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
-		m_animTimer->start(qMax((PReal)0.0, m_timestep.getValue() * 1000 - lastFrameDuration - 1));
+	if (m_animPlaying && m_useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
+	{
+		auto endTime = std::chrono::high_resolution_clock::now();
+		auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+		m_animTimer->start(std::max(0.0f, m_timestep.getValue() * 1000 - frameDuration.count() - 1));
+	}
 
 	++m_iNbFrames;
-	int elapsed = m_fpsTime.elapsed();
-	if(m_animPlaying && elapsed > 1000)
+	auto now = currentTime();
+	int elapsedDur = toSeconds(now - m_fpsTime);
+	if(m_animPlaying && elapsedDur > 1.0)
 	{
-		m_currentFPS = m_iNbFrames * 1000.0 / elapsed;
-		m_fpsTime.start();
+		m_currentFPS = m_iNbFrames / elapsedDur;
+		m_fpsTime = now;
 		m_iNbFrames = 0;
 	}
 }

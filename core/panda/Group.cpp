@@ -188,8 +188,8 @@ void Group::load(XmlElement& elem)
 		}
 		else
 		{
-			QMessageBox::warning(nullptr, tr("Panda"),
-				tr("Could not create the object %1.\nA plugin must be missing.")
+			QMessageBox::warning(nullptr, PandaDocument::tr("Panda"),
+				PandaDocument::tr("Could not create the object %1.\nA plugin must be missing.")
 				.arg(QString::fromStdString(registryName)));
 			return;
 		}

@@ -10,9 +10,8 @@ namespace panda
 
 class PandaDocument;
 
-class PANDA_CORE_API Group : public QObject, public PandaObject
+class PANDA_CORE_API Group : public PandaObject
 {
-	Q_OBJECT
 	friend class EditGroupCommand;
 public:
 	PANDA_CLASS(Group, PandaObject)

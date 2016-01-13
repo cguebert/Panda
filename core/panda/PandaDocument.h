@@ -13,7 +13,6 @@
 #include <panda/messaging.h>
 
 #include <QObject>
-#include <QTime>
 
 class QAction;
 class QTimer;
@@ -168,7 +167,7 @@ protected:
 	QUndoCommand* m_currentCommand;
 
 	int m_iNbFrames;
-	QTime m_fpsTime;
+	long long m_fpsTime;
 	PReal m_currentFPS;
 
 public:

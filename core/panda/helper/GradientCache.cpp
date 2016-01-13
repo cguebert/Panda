@@ -1,6 +1,8 @@
-#include <panda/helper/GradientCache.h>
-#include <QtGui/qopengl.h>
+#include <GL/glew.h>
 
+#include <panda/helper/GradientCache.h>
+
+#include <algorithm>
 #include <vector>
 
 namespace panda
@@ -17,7 +19,7 @@ GradientCache* GradientCache::getInstance()
 
 void GradientCache::clear()
 {
-	for(auto item : m_cache)
+	for(const auto& item : m_cache)
 		glDeleteTextures(1, &item.second.m_textureId);
 	m_cache.clear();
 }
@@ -87,14 +89,14 @@ uint64_t GradientCache::computeHash(const panda::types::Gradient& gradient)
 	uint64_t hash = 0;
 	auto stops = gradient.getStops();
 	for(int i=0, nb=stops.size(); i<nb && i<3; ++i)
-		hash += stops[i].second.toHex() * stops[i].first;
+		hash += static_cast<uint64_t>(stops[i].second.toHex() * stops[i].first);
 
 	return hash;
 }
 
 unsigned int GradientCache::addGradient(uint64_t hash, const types::Gradient &gradient, int size)
 {
-	size = qBound(64, nextPowerOf2(size), 1024);
+	size = std::max(64, std::min(nextPowerOf2(size), 1024));
 	CacheItem item(gradient, size);
 
 	auto buffer = createBuffer(gradient, size);
@@ -118,8 +120,8 @@ std::vector<types::Color> GradientCache::createBuffer(const panda::types::Gradie
 	int pos = 0;
 	types::Color prevColor = colors[0];
 	buffer[pos++] = prevColor;
-	PReal incr = 1.0 / PReal(size);
-	PReal fpos = 1.5 * incr;
+	PReal incr = 1.0f / size;
+	PReal fpos = 1.5f * incr;
 
 	while(fpos <= stops.front().first)
 	{
