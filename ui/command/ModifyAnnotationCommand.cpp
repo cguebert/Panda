@@ -1,17 +1,13 @@
-#include <QCoreApplication>
-
 #include <panda/command/CommandId.h>
 #include <ui/drawstruct/AnnotationDrawStruct.h>
 #include <ui/command/ModifyAnnotationCommand.h>
 
 MoveAnnotationTextCommand::MoveAnnotationTextCommand(AnnotationDrawStruct* drawStruct,
-													 QPointF delta,
-													 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_drawStruct(drawStruct)
+													 QPointF delta)
+	: m_drawStruct(drawStruct)
 	, m_delta(delta)
 {
-	setText(QCoreApplication::translate("MoveAnnotationTextCommand", "move annotation"));
+	setText("move annotation");
 }
 
 int MoveAnnotationTextCommand::id() const
@@ -29,7 +25,7 @@ void MoveAnnotationTextCommand::undo()
 	m_drawStruct->moveText(-m_delta);
 }
 
-bool MoveAnnotationTextCommand::mergeWith(const QUndoCommand *other)
+bool MoveAnnotationTextCommand::mergeWith(const panda::UndoCommand *other)
 {
 	const MoveAnnotationTextCommand* command = dynamic_cast<const MoveAnnotationTextCommand*>(other);
 	if(!command)
@@ -46,13 +42,11 @@ bool MoveAnnotationTextCommand::mergeWith(const QUndoCommand *other)
 //****************************************************************************//
 
 MoveAnnotationEndCommand::MoveAnnotationEndCommand(AnnotationDrawStruct* drawStruct,
-												   QPointF delta,
-												   QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_drawStruct(drawStruct)
+												   QPointF delta)
+	: m_drawStruct(drawStruct)
 	, m_delta(delta)
 {
-	setText(QCoreApplication::translate("MoveAnnotationEndCommand", "modify annotation"));
+	setText("modify annotation");
 }
 
 int MoveAnnotationEndCommand::id() const
@@ -70,7 +64,7 @@ void MoveAnnotationEndCommand::undo()
 	m_drawStruct->moveEnd(-m_delta);
 }
 
-bool MoveAnnotationEndCommand::mergeWith(const QUndoCommand *other)
+bool MoveAnnotationEndCommand::mergeWith(const panda::UndoCommand *other)
 {
 	const MoveAnnotationEndCommand* command = dynamic_cast<const MoveAnnotationEndCommand*>(other);
 	if(!command)

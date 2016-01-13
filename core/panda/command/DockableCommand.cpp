@@ -1,17 +1,13 @@
-#include <QCoreApplication>
-
 #include <panda/Dockable.h>
 #include <panda/command/DockableCommand.h>
 
 DetachDockableCommand::DetachDockableCommand(panda::DockObject* dock,
-											 panda::DockableObject* dockable,
-											 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_dock(dock)
+											 panda::DockableObject* dockable)
+	: m_dock(dock)
 	, m_dockable(dockable)
 {
 	m_index = dock->getIndexOfDockable(dockable);
-	setText(QCoreApplication::translate("DetachDockableCommand", "detach dockable object"));
+	setText("detach dockable object");
 }
 
 void DetachDockableCommand::redo()
@@ -28,14 +24,12 @@ void DetachDockableCommand::undo()
 
 AttachDockableCommand::AttachDockableCommand(panda::DockObject* dock,
 											 panda::DockableObject* dockable,
-											 int index,
-											 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_dock(dock)
+											 int index)
+	: m_dock(dock)
 	, m_dockable(dockable)
 	, m_index(index)
 {
-	setText(QCoreApplication::translate("AttachDockableCommand", "attach dockable object"));
+	setText("attach dockable object");
 }
 
 void AttachDockableCommand::redo()
@@ -52,15 +46,13 @@ void AttachDockableCommand::undo()
 
 ReorderDockableCommand::ReorderDockableCommand(panda::DockObject* dock,
 											 panda::DockableObject* dockable,
-											 int index,
-											 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_dock(dock)
+											 int index)
+	: m_dock(dock)
 	, m_dockable(dockable)
 	, m_newIndex(index)
 {
 	m_oldIndex = dock->getIndexOfDockable(dockable);
-	setText(QCoreApplication::translate("ReorderDockableCommand", "reorder dockable object"));
+	setText("reorder dockable object");
 }
 
 void ReorderDockableCommand::redo()

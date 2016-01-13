@@ -1,13 +1,9 @@
-#include <QCoreApplication>
-
 #include <panda/PandaObject.h>
 #include <panda/command/CommandId.h>
 #include <panda/command/LinkDatasCommand.h>
 
 LinkDatasCommand::LinkDatasCommand(panda::BaseData* targetData,
-								   panda::BaseData* parentData,
-								   QUndoCommand* parent)
-	: QUndoCommand(parent)
+								   panda::BaseData* parentData)
 {
 	LinkStruct link;
 	link.m_targetObject = targetData->getOwner();
@@ -31,7 +27,7 @@ LinkDatasCommand::LinkDatasCommand(panda::BaseData* targetData,
 		link.m_initialParentObject = nullptr;
 	m_links.push_back(link);
 
-	setText(QCoreApplication::translate("LinkDatasCommand", "change data link"));
+	setText("change data link");
 }
 
 int LinkDatasCommand::id() const
@@ -53,13 +49,13 @@ void LinkDatasCommand::redo()
 	}
 
 	// Use childs if present
-	QUndoCommand::redo();
+	UndoCommand::redo();
 }
 
 void LinkDatasCommand::undo()
 {
 	// Use childs if present
-	QUndoCommand::undo();
+	UndoCommand::undo();
 
 	for(auto link : m_links)
 	{
@@ -73,7 +69,7 @@ void LinkDatasCommand::undo()
 	}
 }
 /*
-bool LinkDatasCommand::mergeWith(const QUndoCommand *other)
+bool LinkDatasCommand::mergeWith(const panda::UndoCommand* other)
 {
 	const LinkDatasCommand* command = dynamic_cast<const LinkDatasCommand*>(other);
 	if(!command)

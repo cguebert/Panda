@@ -146,7 +146,7 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 	if(object)
 	{
 		object->load(root);
-		document->addCommand(new AddObjectCommand(document, view, object));
+		document->addCommand(std::make_shared<AddObjectCommand>(document, view, object));
 	}
 	else
 	{

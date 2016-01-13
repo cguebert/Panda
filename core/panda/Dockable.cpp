@@ -92,10 +92,10 @@ void DockObject::removedFromDocument()
 		for(auto it = docked.rbegin(); it != docked.rend(); ++it)
 		{
 			auto dockable = *it;
-			m_parentDocument->addCommand(new DetachDockableCommand(this, dockable));
+			m_parentDocument->addCommand(std::make_shared<DetachDockableCommand>(this, dockable));
 			auto defaultDock = dockable->getDefaultDock();
 			if(defaultDock)
-				m_parentDocument->addCommand(new AttachDockableCommand(defaultDock, dockable, 0));
+				m_parentDocument->addCommand(std::make_shared<AttachDockableCommand>(defaultDock, dockable, 0));
 			m_parentDocument->onChangedDock(dockable);
 		}
 	}
@@ -119,7 +119,7 @@ void DockableObject::postCreate()
 void DockableObject::removedFromDocument()
 {
 	if(m_parentDock && m_parentDocument->isInCommandMacro())
-		m_parentDocument->addCommand(new DetachDockableCommand(m_parentDock, this));
+		m_parentDocument->addCommand(std::make_shared<DetachDockableCommand>(m_parentDock, this));
 }
 
 } // namespace panda

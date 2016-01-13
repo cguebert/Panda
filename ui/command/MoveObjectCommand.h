@@ -1,7 +1,7 @@
 #ifndef MOVEOBJECTCOMMAND_H
 #define MOVEOBJECTCOMMAND_H
 
-#include <QUndoCommand>
+#include <panda/UndoStack.h>
 #include <QPointF>
 
 #include <vector>
@@ -13,18 +13,18 @@ class PandaObject;
 
 class GraphView;
 
-class MoveObjectCommand : public QUndoCommand
+class MoveObjectCommand : public panda::UndoCommand
 {
 public:
-	MoveObjectCommand(GraphView* view, panda::PandaObject* object, QPointF delta, QUndoCommand* parent = nullptr);
-	MoveObjectCommand(GraphView* view, std::vector<panda::PandaObject*> objects, QPointF delta, QUndoCommand* parent = nullptr);
+	MoveObjectCommand(GraphView* view, panda::PandaObject* object, QPointF delta);
+	MoveObjectCommand(GraphView* view, std::vector<panda::PandaObject*> objects, QPointF delta);
 
 	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();
 
-	virtual bool mergeWith(const QUndoCommand *other);
+	virtual bool mergeWith(const panda::UndoCommand *other);
 
 protected:
 	GraphView* m_view;

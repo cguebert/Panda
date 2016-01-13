@@ -2,7 +2,7 @@
 #define DETACHDOCKABLECOMMAND_H
 
 #include <panda/core.h>
-#include <QUndoCommand>
+#include <panda/UndoStack.h>
 
 namespace panda
 {
@@ -10,10 +10,10 @@ class DockObject;
 class DockableObject;
 }
 
-class PANDA_CORE_API DetachDockableCommand : public QUndoCommand
+class PANDA_CORE_API DetachDockableCommand : public panda::UndoCommand
 {
 public:
-	DetachDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, QUndoCommand* parent = nullptr);
+	DetachDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable);
 
 	virtual void redo();
 	virtual void undo();
@@ -26,10 +26,10 @@ protected:
 
 //****************************************************************************//
 
-class PANDA_CORE_API AttachDockableCommand : public QUndoCommand
+class PANDA_CORE_API AttachDockableCommand : public panda::UndoCommand
 {
 public:
-	AttachDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, int index, QUndoCommand* parent = nullptr);
+	AttachDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, int index);
 
 	virtual void redo();
 	virtual void undo();
@@ -42,10 +42,10 @@ protected:
 
 //****************************************************************************//
 
-class PANDA_CORE_API ReorderDockableCommand : public QUndoCommand
+class PANDA_CORE_API ReorderDockableCommand : public panda::UndoCommand
 {
 public:
-	ReorderDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, int index, QUndoCommand* parent = nullptr);
+	ReorderDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, int index);
 
 	virtual void redo();
 	virtual void undo();

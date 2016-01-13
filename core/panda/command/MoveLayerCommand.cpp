@@ -1,15 +1,11 @@
-#include <QCoreApplication>
-
 #include <panda/PandaDocument.h>
 #include <panda/Layer.h>
 #include <panda/command/MoveLayerCommand.h>
 
 MoveLayerCommand::MoveLayerCommand(panda::PandaDocument* document,
 								   panda::PandaObject* layer,
-								   int pos,
-								   QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_document(document)
+								   int pos)
+	: m_document(document)
 	, m_layer(layer)
 {
 	m_prevPos = m_document->getObjectPosition(layer);
@@ -39,7 +35,7 @@ MoveLayerCommand::MoveLayerCommand(panda::PandaDocument* document,
 	if(m_newPos < m_prevPos)
 		++m_prevPos;
 
-	setText(QCoreApplication::translate("MoveLayerCommand", "move layer"));
+	setText("move layer");
 }
 
 void MoveLayerCommand::redo()

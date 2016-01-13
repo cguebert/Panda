@@ -80,7 +80,7 @@ void DockObjectDrawStruct::update()
 
 		auto doc = m_parentView->getDocument();
 		if(doc->isInCommandMacro())
-			doc->addCommand(new MoveObjectCommand(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
+			doc->addCommand(std::make_shared<MoveObjectCommand>(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
 
 		m_dockablesY.push_back(objectStruct->getObjectArea().top());
 

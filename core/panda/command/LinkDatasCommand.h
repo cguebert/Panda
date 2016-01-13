@@ -3,7 +3,7 @@
 
 #include <panda/core.h>
 
-#include <QUndoCommand>
+#include <panda/UndoStack.h>
 #include <vector>
 
 namespace panda
@@ -12,17 +12,17 @@ class PandaObject;
 class BaseData;
 }
 
-class PANDA_CORE_API LinkDatasCommand : public QUndoCommand
+class PANDA_CORE_API LinkDatasCommand : public panda::UndoCommand
 {
 public:
-	LinkDatasCommand(panda::BaseData* targetData, panda::BaseData* parentData, QUndoCommand* parent = nullptr);
+	LinkDatasCommand(panda::BaseData* targetData, panda::BaseData* parentData);
 
 	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();
 
-//	virtual bool mergeWith(const QUndoCommand *other);
+//	virtual bool mergeWith(const panda::UndoCommand* other);
 
 protected:
 	struct LinkStruct

@@ -67,6 +67,11 @@ MainWindow::MainWindow()
 	m_observer.get(m_document->m_modifiedSignal).connect<MainWindow, &MainWindow::documentModified>(this);
 	m_observer.get(m_document->m_selectedObjectSignal).connect<MainWindow, &MainWindow::selectedObject>(this);
 
+	m_observer.get(m_document->undoStack().m_canUndoChangedSignal).connect<MainWindow, &MainWindow::undoEnabled>(this);
+	m_observer.get(m_document->undoStack().m_canRedoChangedSignal).connect<MainWindow, &MainWindow::redoEnabled>(this);
+	m_observer.get(m_document->undoStack().m_undoTextChangedSignal).connect<MainWindow, &MainWindow::undoTextChanged>(this);
+	m_observer.get(m_document->undoStack().m_redoTextChangedSignal).connect<MainWindow, &MainWindow::redoTextChanged>(this);
+
 	connect(m_graphView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(m_graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(m_graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
@@ -149,7 +154,7 @@ void MainWindow::import()
 
 			auto selection = m_document->getSelection();
 			if(!selection.empty())
-				m_document->addCommand(new AddObjectCommand(m_document, m_graphView, selection));
+				m_document->addCommand(std::make_shared<AddObjectCommand>(m_document, m_graphView, selection));
 		}
 	}
 }
@@ -450,10 +455,14 @@ void MainWindow::createActions()
 	connect(m_chooseWidget, SIGNAL(triggered()), m_graphView, SLOT(showChooseWidgetDialog()));
 	addAction(m_chooseWidget);
 
-	m_document->createUndoRedoActions(this, m_undoAction, m_redoAction);
+	m_undoAction = new QAction(tr("Undo"), this);
 	m_undoAction->setShortcut(QKeySequence::Undo);
-	m_redoAction->setShortcut(QKeySequence::Redo);
+	connect(m_undoAction, &QAction::triggered, [this]() { m_document->undoStack().undo(); });
 	addAction(m_undoAction);
+
+	m_redoAction = new QAction(tr("Redo"), this);
+	m_redoAction->setShortcut(QKeySequence::Redo);
+	connect(m_undoAction, &QAction::triggered, [this]() { m_document->undoStack().redo(); });
 	addAction(m_redoAction);
 
 	auto convertDocumentsAction = new QAction(tr("Convert documents"), this);
@@ -883,7 +892,7 @@ void MainWindow::createObject()
 	if(action)
 	{
 		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString().toStdString(), m_document);
-		m_document->addCommand(new AddObjectCommand(m_document, m_graphView, object));
+		m_document->addCommand(std::make_shared<AddObjectCommand>(m_document, m_graphView, object));
 	}
 }
 
@@ -961,7 +970,7 @@ void MainWindow::paste()
 
 	auto selection = m_document->getSelection();
 	if(!selection.empty())
-		m_document->addCommand(new AddObjectCommand(m_document, m_graphView, selection));
+		m_document->addCommand(std::make_shared<AddObjectCommand>(m_document, m_graphView, selection));
 }
 
 void MainWindow::del()
@@ -970,7 +979,7 @@ void MainWindow::del()
 	if(!selection.empty())
 	{
 		auto macro = m_document->beginCommandMacro(tr("delete objects").toStdString());
-		m_document->addCommand(new RemoveObjectCommand(m_document, m_graphView, selection));
+		m_document->addCommand(std::make_shared<RemoveObjectCommand>(m_document, m_graphView, selection));
 	}
 }
 
@@ -1238,4 +1247,30 @@ void MainWindow::convertSavedDocuments()
 	setWindowModified(false);
 
 	QMessageBox::information(this, tr("Operation finished"), tr("Converted %1/%2 documents").arg(nb).arg(entries.size()));
+}
+
+void MainWindow::undoEnabled(bool enabled)
+{
+	m_undoAction->setEnabled(enabled);
+}
+
+void MainWindow::redoEnabled(bool enabled)
+{
+	m_redoAction->setEnabled(enabled);
+}
+
+void MainWindow::undoTextChanged(const std::string& text)
+{
+	if (text.empty())
+		m_undoAction->setText(tr("Undo"));
+	else
+		m_undoAction->setText(tr("Undo %1").arg(QString::fromStdString(text)));
+}
+
+void MainWindow::redoTextChanged(const std::string& text)
+{
+	if (text.empty())
+		m_redoAction->setText(tr("Redo"));
+	else
+		m_redoAction->setText(tr("Redo %1").arg(QString::fromStdString(text)));
 }

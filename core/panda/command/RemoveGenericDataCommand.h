@@ -2,17 +2,17 @@
 #define REMOVEGENERICDATACOMMAND_H
 
 #include <panda/core.h>
-#include <QUndoCommand>
+#include <panda/UndoStack.h>
 
 namespace panda
 {
 class GenericObject;
 }
 
-class PANDA_CORE_API RemoveGenericDataCommand : public QUndoCommand
+class PANDA_CORE_API RemoveGenericDataCommand : public panda::UndoCommand
 {
 public:
-	RemoveGenericDataCommand(panda::GenericObject* object, int type, int index, QUndoCommand* parent = nullptr);
+	RemoveGenericDataCommand(panda::GenericObject* object, int type, int index);
 
 	virtual void redo();
 	virtual void undo();

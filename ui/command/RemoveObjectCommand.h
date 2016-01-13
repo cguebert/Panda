@@ -1,7 +1,7 @@
 #ifndef DELETEOBJECTCOMMAND_H
 #define DELETEOBJECTCOMMAND_H
 
-#include <QUndoCommand>
+#include <panda/UndoStack.h>
 
 #include <memory>
 #include <vector>
@@ -15,20 +15,20 @@ class PandaObject;
 class GraphView;
 class ObjectDrawStruct;
 
-class RemoveObjectCommand : public QUndoCommand
+class RemoveObjectCommand : public panda::UndoCommand
 {
 public:
 	RemoveObjectCommand(panda::PandaDocument* document, GraphView* view,
-						const std::vector<panda::PandaObject*>& objects, bool unlinkDatas = true, QUndoCommand* parent = nullptr);
+						const std::vector<panda::PandaObject*>& objects, bool unlinkDatas = true);
 	RemoveObjectCommand(panda::PandaDocument* document, GraphView* view,
-						panda::PandaObject* object, bool unlinkDatas = true, QUndoCommand* parent = nullptr);
+						panda::PandaObject* object, bool unlinkDatas = true);
 
 	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();
 
-	virtual bool mergeWith(const QUndoCommand *other);
+	virtual bool mergeWith(const panda::UndoCommand *other);
 
 protected:
 	panda::PandaDocument* m_document;

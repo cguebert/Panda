@@ -15,7 +15,6 @@
 #include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
 
-#include <QCoreApplication>
 #include <QMessageBox>
 
 namespace panda
@@ -87,21 +86,19 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				layer = dynamic_cast<Layer*>(renderer->getParentDock());
 			else if(layer != renderer->getParentDock())
 			{
-				QMessageBox::warning(nullptr, "Panda",
-					QCoreApplication::translate("createGroup", "All renderers must be placed in the same layer."));
+				QMessageBox::warning(nullptr, "Panda", "All renderers must be placed in the same layer.");
 				return false;
 			}
 
 			if(layer && layer != doc->getDefaultLayer() && !doc->isSelected(layer))
 			{
-				QMessageBox::warning(nullptr, "Panda",
-					QCoreApplication::translate("createGroup", "Renderers must be grouped with their layers"));
+				QMessageBox::warning(nullptr, "Panda", "Renderers must be grouped with their layers");
 				return false;
 			}
 		}
 	}
 
-	auto macro = doc->beginCommandMacro(QCoreApplication::translate("createGroup", "Create Group").toStdString());
+	auto macro = doc->beginCommandMacro("create Group");
 
 	if(layer == doc->getDefaultLayer())	// Won't be added in the group!
 		layer = nullptr;
@@ -111,14 +108,14 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	if(hasRenderer)
 	{
 		auto object = factory->create(ObjectFactory::getRegistryName<GroupWithLayer>(), doc);
-		doc->addCommand(new AddObjectCommand(doc, view, object));
+		doc->addCommand(std::make_shared<AddObjectCommand>(doc, view, object));
 		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(object.get());
 		group = groupWithLayer;
 	}
 	else
 	{
 		auto object = factory->create(ObjectFactory::getRegistryName<Group>(), doc);
-		doc->addCommand(new AddObjectCommand(doc, view, object));
+		doc->addCommand(std::make_shared<AddObjectCommand>(doc, view, object));
 		group = dynamic_cast<Group*>(object.get());
 	}
 	if(!group)
@@ -151,7 +148,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		auto objectPtr = doc->getSharedPointer(object);
 		if(!objectPtr)
 			continue;
-		doc->addCommand(new AddObjectToGroupCommand(group, objectPtr));
+		doc->addCommand(std::make_shared<AddObjectToGroupCommand>(group, objectPtr));
 
 		// Storing the position of this object in respect to the group object
 		QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
@@ -172,7 +169,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 						createdData = duplicateData(group, data);
 						createdData->copyValueFrom(otherData);
 						group->addInput(*createdData);
-						doc->addCommand(new LinkDatasCommand(createdData, otherData));
+						doc->addCommand(std::make_shared<LinkDatasCommand>(createdData, otherData));
 						connectedInputDatas.insert(otherData, createdData);
 						createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, otherData)));
 					}
@@ -188,7 +185,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 					}
 
 					if(createdData)
-						doc->addCommand(new LinkDatasCommand(data, createdData));
+						doc->addCommand(std::make_shared<LinkDatasCommand>(data, createdData));
 				}
 			}
 		}
@@ -216,7 +213,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 							createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, data)));
 						}
 
-						doc->addCommand(new LinkDatasCommand(otherData, createdData));
+						doc->addCommand(std::make_shared<LinkDatasCommand>(otherData, createdData));
 					}
 				}
 			}
@@ -241,7 +238,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				createdData->copyValueFrom(inputData);
 				createdData->setName(findAvailableDataName(group, caption, createdData));
 				group->addInput(*createdData);
-				doc->addCommand(new LinkDatasCommand(inputData, createdData));
+				doc->addCommand(std::make_shared<LinkDatasCommand>(inputData, createdData));
 				createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, inputData)));
 			}
 
@@ -280,10 +277,10 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	}
 
 	// Select the group
-	doc->addCommand(new SelectGroupCommand(doc, group));
+	doc->addCommand(std::make_shared<SelectGroupCommand>(doc, group));
 
 	// Removing the objects from the document, but don't unlink datas
-	doc->addCommand(new RemoveObjectCommand(doc, view, selection, false));
+	doc->addCommand(std::make_shared<RemoveObjectCommand>(doc, view, selection, false));
 
 	return true;
 }
@@ -304,7 +301,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 	if(groups.isEmpty())
 		return false;
 
-	auto macro = doc->beginCommandMacro(QCoreApplication::translate("createGroup", "ungroup selection").toStdString());
+	auto macro = doc->beginCommandMacro("ungroup selection");
 
 	// For each group in the selection
 	for(auto group : groups)
@@ -320,28 +317,28 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 				docks.push_back(object);
 			else
 			{
-				doc->addCommand(new AddObjectCommand(doc, view, object));
-				doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
+				doc->addCommand(std::make_shared<AddObjectCommand>(doc, view, object));
+				doc->addCommand(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
 
 				// Placing the object in the view
 				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
 				QPointF delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
 				if(!delta.isNull())
-					doc->addCommand(new MoveObjectCommand(view, object.get(), delta));
+					doc->addCommand(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
 			}
 		}
 
 		// We extract docks last (their docked objects must be out first)
 		for(auto object : docks)
 		{
-			doc->addCommand(new AddObjectCommand(doc, view, object));
-			doc->addCommand(new RemoveObjectFromGroupCommand(group, object));
+			doc->addCommand(std::make_shared<AddObjectCommand>(doc, view, object));
+			doc->addCommand(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
 
 			// Placing the object in the view
 			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
 			QPointF delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
 			if(!delta.isNull())
-				doc->addCommand(new MoveObjectCommand(view, object.get(), delta));
+				doc->addCommand(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
 		}
 
 		// Reconnecting datas
@@ -353,12 +350,12 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 			{
 				auto outData = dynamic_cast<panda::BaseData*>(node);
 				if(outData)
-					doc->addCommand(new LinkDatasCommand(outData, parent));
+					doc->addCommand(std::make_shared<LinkDatasCommand>(outData, parent));
 			}
 		}
 
-		doc->addCommand(new SelectObjectsInGroupCommand(doc, group)); // Select all the object that were in the group
-		doc->addCommand(new RemoveObjectCommand(doc, view, group));
+		doc->addCommand(std::make_shared<SelectObjectsInGroupCommand>(doc, group)); // Select all the object that were in the group
+		doc->addCommand(std::make_shared<RemoveObjectCommand>(doc, view, group));
 	}
 
 	view->sortAllDockables();

@@ -173,7 +173,7 @@ void Layer::removedFromDocument()
 	DockObject::removedFromDocument();
 
 	if(m_parentDocument->isInCommandMacro())
-		m_parentDocument->addCommand(new MoveLayerCommand(m_parentDocument, this, 0));
+		m_parentDocument->addCommand(std::make_shared<MoveLayerCommand>(m_parentDocument, this, 0));
 }
 
 graphics::Size Layer::getLayerSize() const

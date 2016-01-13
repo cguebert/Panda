@@ -1,29 +1,26 @@
 #ifndef SETDATAVALUECOMMAND_H
 #define SETDATAVALUECOMMAND_H
 
-#include <QUndoCommand>
-#include <QCoreApplication>
+#include <panda/UndoStack.h>
 
 #include <panda/Data.h>
 #include <panda/command/CommandId.h>
 
 template <class T>
-class SetDataValueCommand : public QUndoCommand
+class SetDataValueCommand : public panda::UndoCommand
 {
 public:
 	typedef panda::Data<T> TData;
 	SetDataValueCommand(TData* data, T oldValue, T newValue,
-						panda::PandaObject* owner = nullptr, /// Refresh another object when the value changes (used with GroupWithLayer)
-						QUndoCommand* parent = nullptr)
-		: QUndoCommand(parent)
-		, m_data(data)
+						panda::PandaObject* owner = nullptr) /// Refresh another object when the value changes (used with GroupWithLayer)
+		: m_data(data)
 		, m_oldValue(oldValue)
 		, m_newValue(newValue)
 		, m_owner(nullptr)
 	{
 		if(m_data->getOwner() != owner)
 			m_owner = owner;
-		setText(QCoreApplication::translate("SetDataValueCommand", "modify data value"));
+		setText("modify data value");
 	}
 
 	virtual int id() const
@@ -53,7 +50,7 @@ public:
 		}
 	}
 
-	virtual bool mergeWith(const QUndoCommand *other)
+	virtual bool mergeWith(const panda::UndoCommand *other)
 	{
 		const SetDataValueCommand<T>* command = dynamic_cast<const SetDataValueCommand<T>*>(other);
 		if(!command)

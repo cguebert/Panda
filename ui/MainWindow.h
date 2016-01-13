@@ -86,6 +86,11 @@ private:
 	void updateRecentFileActions();
 	QString strippedName(const QString &fullFileName);
 
+	void undoEnabled(bool enabled);
+	void redoEnabled(bool enabled);
+	void undoTextChanged(const std::string& text);
+	void redoTextChanged(const std::string& text);
+
 	DetachableTabWidget* m_tabWidget = nullptr;
 	GraphView* m_graphView = nullptr;
 	ScrollContainer* m_graphViewContainer = nullptr;

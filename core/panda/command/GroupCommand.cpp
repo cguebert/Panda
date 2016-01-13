@@ -1,5 +1,3 @@
-#include <QCoreApplication>
-
 #include <panda/PandaDocument.h>
 #include <panda/Group.h>
 
@@ -8,13 +6,11 @@
 #include <panda/helper/algorithm.h>
 
 SelectGroupCommand::SelectGroupCommand(panda::PandaDocument* document,
-									   panda::Group* group,
-									   QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_document(document)
+									   panda::Group* group)
+	: m_document(document)
 	, m_group(group)
 {
-	setText(QCoreApplication::translate("SelectGroupCommand", "select group"));
+	setText("select group");
 }
 
 void SelectGroupCommand::redo()
@@ -43,13 +39,11 @@ void SelectGroupCommand::undo()
 //****************************************************************************//
 
 SelectObjectsInGroupCommand::SelectObjectsInGroupCommand(panda::PandaDocument* document,
-									   panda::Group* group,
-									   QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_document(document)
+									   panda::Group* group)
+	: m_document(document)
 	, m_group(group)
 {
-	setText(QCoreApplication::translate("SelectObjectsInGroupCommand", "select objects in group"));
+	setText("select objects in group");
 }
 
 void SelectObjectsInGroupCommand::redo()
@@ -78,13 +72,11 @@ void SelectObjectsInGroupCommand::undo()
 //****************************************************************************//
 
 AddObjectToGroupCommand::AddObjectToGroupCommand(panda::Group* group,
-											 std::shared_ptr<panda::PandaObject> object,
-											 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_group(group)
+											 std::shared_ptr<panda::PandaObject> object)
+	: m_group(group)
 	, m_object(object)
 {
-	setText(QCoreApplication::translate("AddObjectToGroupCommand", "add object to group"));
+	setText("add object to group");
 }
 
 void AddObjectToGroupCommand::redo()
@@ -100,13 +92,11 @@ void AddObjectToGroupCommand::undo()
 //****************************************************************************//
 
 RemoveObjectFromGroupCommand::RemoveObjectFromGroupCommand(panda::Group* group,
-											 std::shared_ptr<panda::PandaObject> object,
-											 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_group(group)
+											 std::shared_ptr<panda::PandaObject> object)
+	: m_group(group)
 	, m_object(object)
 {
-	setText(QCoreApplication::translate("RemoveObjectFromGroupCommand", "remove object from group"));
+	setText("remove object from group");
 }
 
 void RemoveObjectFromGroupCommand::redo()
@@ -123,10 +113,8 @@ void RemoveObjectFromGroupCommand::undo()
 
 EditGroupCommand::EditGroupCommand(panda::Group* group,
 								   std::string newName,
-								   std::vector<DataInfo> newDatas,
-								   QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_group(group)
+								   std::vector<DataInfo> newDatas)
+	: m_group(group)
 	, m_newName(newName)
 	, m_newDatas(newDatas)
 {
@@ -139,7 +127,7 @@ EditGroupCommand::EditGroupCommand(panda::Group* group,
 		info.help = data->getHelp();
 		m_prevDatas.push_back(info);
 	}
-	setText(QCoreApplication::translate("EditGroupCommand", "edit group"));
+	setText("edit group");
 }
 
 void EditGroupCommand::redo()

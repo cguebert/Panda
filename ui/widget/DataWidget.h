@@ -152,7 +152,7 @@ public:
 			if(oldValue != value)
 			{
 				if(m_data->getOwner())
-					m_data->getOwner()->getParentDocument()->addCommand(new SetDataValueCommand<T>(m_data, oldValue, value));
+					m_data->getOwner()->getParentDocument()->addCommand(std::make_shared<SetDataValueCommand<T>>(m_data, oldValue, value));
 				else
 					m_data->setValue(value);
 			}

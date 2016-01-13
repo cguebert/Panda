@@ -1,5 +1,3 @@
-#include <QCoreApplication>
-
 #include <panda/PandaDocument.h>
 #include <panda/command/CommandId.h>
 #include <panda/helper/algorithm.h>
@@ -9,36 +7,30 @@
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   GraphView* view,
-								   std::shared_ptr<panda::PandaObject> object,
-								   QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_document(document)
+								   std::shared_ptr<panda::PandaObject> object)
+	: m_document(document)
 	, m_view(view)
 	, m_ignoreRedo(false)
 {
 	m_objects.push_back(object);
-	setText(QCoreApplication::translate("AddObjectCommand", "add object"));
+	setText("add object");
 }
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   GraphView* view,
-								   std::vector<std::shared_ptr<panda::PandaObject>> objects,
-								   QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_document(document)
+								   std::vector<std::shared_ptr<panda::PandaObject>> objects)
+	: m_document(document)
 	, m_view(view)
 	, m_objects(objects)
 	, m_ignoreRedo(false)
 {
-	setText(QCoreApplication::translate("AddObjectCommand", "add objects"));
+	setText("add objects");
 }
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   GraphView* view,
-								   std::vector<panda::PandaObject*> objects,
-								   QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_document(document)
+								   std::vector<panda::PandaObject*> objects)
+	: m_document(document)
 	, m_view(view)
 	, m_ignoreRedo(true) // This version is used when importing a document: when the command is created, objects are already added
 {
@@ -49,7 +41,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 			m_objects.push_back(objectPtr);
 	}
 
-	setText(QCoreApplication::translate("AddObjectCommand", "add objects"));
+	setText("add objects");
 }
 
 int AddObjectCommand::id() const
@@ -88,7 +80,7 @@ void AddObjectCommand::undo()
 		m_document->removeObject(object.get());
 }
 
-bool AddObjectCommand::mergeWith(const QUndoCommand *other)
+bool AddObjectCommand::mergeWith(const UndoCommand *other)
 {
 	// Only merge if creating a macro of multiple commands (not in case of multiple users actions)
 	if(!m_document->isInCommandMacro())

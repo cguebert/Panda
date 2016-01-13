@@ -1,31 +1,25 @@
-#include <QCoreApplication>
-
 #include <ui/GraphView.h>
 #include <panda/command/CommandId.h>
 #include <ui/command/MoveObjectCommand.h>
 
 MoveObjectCommand::MoveObjectCommand(GraphView* view,
 									 panda::PandaObject* object,
-									 QPointF delta,
-									 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_view(view)
+									 QPointF delta)
+	: m_view(view)
 	, m_delta(delta)
 {
 	m_objects.push_back(object);
-	setText(QCoreApplication::translate("MoveObjectCommand", "move objects"));
+	setText("move objects");
 }
 
 MoveObjectCommand::MoveObjectCommand(GraphView* view,
 									 std::vector<panda::PandaObject*> objects,
-									 QPointF delta,
-									 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_view(view)
+									 QPointF delta)
+	: m_view(view)
 	, m_objects(objects)
 	, m_delta(delta)
 {
-	setText(QCoreApplication::translate("MoveObjectCommand", "move objects"));
+	setText("move objects");
 }
 
 int MoveObjectCommand::id() const
@@ -43,7 +37,7 @@ void MoveObjectCommand::undo()
 	m_view->moveObjects(m_objects, -m_delta);
 }
 
-bool MoveObjectCommand::mergeWith(const QUndoCommand *other)
+bool MoveObjectCommand::mergeWith(const panda::UndoCommand *other)
 {
 	const MoveObjectCommand* command = dynamic_cast<const MoveObjectCommand*>(other);
 	if(!command)

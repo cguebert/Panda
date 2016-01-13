@@ -10,14 +10,11 @@
 
 #include <panda/graphics/Size.h>
 
-#include <panda/messaging.h>
+#include <panda/UndoStack.h>
 
 #include <QObject>
 
-class QAction;
 class QTimer;
-class QUndoCommand;
-class QUndoStack;
 
 namespace panda {
 
@@ -110,12 +107,12 @@ public:
 	void waitForOtherTasksToFinish(bool mainThread = true) const; // Wait until the tasks we launched finish
 
 	// For undo-redo actions
-	void createUndoRedoActions(QObject* parent, QAction*& undoAction, QAction*& redoAction);
-	void addCommand(QUndoCommand* command);
+	void addCommand(UndoCommand::SPtr command);
 	std::shared_ptr<ScopedMacro> beginCommandMacro(const std::string& text);
 	void clearCommands();
 	bool isInCommandMacro() const;
-	QUndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
+	UndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
+	UndoStack& undoStack();
 
 	void onDirtyObject(PandaObject* object);
 	void onModifiedObject(PandaObject* object);
@@ -163,8 +160,8 @@ protected:
 
 	std::shared_ptr<Scheduler> m_scheduler;
 
-	QUndoStack* m_undoStack;
-	QUndoCommand* m_currentCommand;
+	UndoStack m_undoStack;
+	UndoCommand::SPtr m_currentCommand;
 
 	int m_iNbFrames;
 	long long m_fpsTime;
@@ -272,8 +269,11 @@ inline Layer* PandaDocument::getDefaultLayer() const
 inline bool PandaDocument::isInCommandMacro() const
 { return m_inCommandMacro > 0; }
 
-inline QUndoCommand* PandaDocument::getCurrentCommand() const
-{ return m_currentCommand; }
+inline UndoCommand* PandaDocument::getCurrentCommand() const
+{ return m_currentCommand.get(); }
+
+inline UndoStack& PandaDocument::undoStack()
+{ return m_undoStack; }
 
 inline void PandaDocument::initializeGL()
 { m_isGLInitialized = true; }

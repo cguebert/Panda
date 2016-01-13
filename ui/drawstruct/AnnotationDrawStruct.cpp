@@ -237,9 +237,9 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 		return;
 
 	if(m_movingAction == MOVING_TEXT)
-		m_parentView->getDocument()->addCommand(new MoveAnnotationTextCommand(this, delta));
+		m_parentView->getDocument()->addCommand(std::make_shared<MoveAnnotationTextCommand>(this, delta));
 	else if(m_movingAction == MOVING_POINT)
-		m_parentView->getDocument()->addCommand(new MoveAnnotationEndCommand(this, delta));
+		m_parentView->getDocument()->addCommand(std::make_shared<MoveAnnotationEndCommand>(this, delta));
 }
 
 void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent*)

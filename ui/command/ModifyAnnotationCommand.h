@@ -1,22 +1,22 @@
 #ifndef MODIFYANNOTATIONCOMMAND_H
 #define MODIFYANNOTATIONCOMMAND_H
 
-#include <QUndoCommand>
+#include <panda/UndoStack.h>
 #include <QPointF>
 
 class AnnotationDrawStruct;
 
-class MoveAnnotationTextCommand : public QUndoCommand
+class MoveAnnotationTextCommand : public panda::UndoCommand
 {
 public:
-	MoveAnnotationTextCommand(AnnotationDrawStruct* drawStruct, QPointF delta, QUndoCommand* parent = nullptr);
+	MoveAnnotationTextCommand(AnnotationDrawStruct* drawStruct, QPointF delta);
 
 	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();
 
-	virtual bool mergeWith(const QUndoCommand *other);
+	virtual bool mergeWith(const panda::UndoCommand *other);
 
 protected:
 	AnnotationDrawStruct* m_drawStruct;
@@ -25,17 +25,17 @@ protected:
 
 //****************************************************************************//
 
-class MoveAnnotationEndCommand : public QUndoCommand
+class MoveAnnotationEndCommand : public panda::UndoCommand
 {
 public:
-	MoveAnnotationEndCommand(AnnotationDrawStruct* drawStruct, QPointF delta, QUndoCommand* parent = nullptr);
+	MoveAnnotationEndCommand(AnnotationDrawStruct* drawStruct, QPointF delta);
 
 	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();
 
-	virtual bool mergeWith(const QUndoCommand *other);
+	virtual bool mergeWith(const panda::UndoCommand *other);
 
 protected:
 	AnnotationDrawStruct* m_drawStruct;

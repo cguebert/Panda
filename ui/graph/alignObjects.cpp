@@ -27,7 +27,7 @@ void alignHorizontallyCenter(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(center - pos.x() - area.width() / 2, 0);
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -48,7 +48,7 @@ void alignHorizontallyLeft(GraphView* view)
 	{
 		QPointF delta = QPointF(left - ods->getPosition().x(), 0);
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -72,7 +72,7 @@ void alignHorizontallyRight(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(right - pos.x() - area.width(), 0);
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -98,7 +98,7 @@ void alignVerticallyCenter(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, center - pos.y() - area.height() / 2);
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -119,7 +119,7 @@ void alignVerticallyTop(GraphView* view)
 	{
 		QPointF delta = QPointF(0, top - ods->getPosition().y());
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -143,7 +143,7 @@ void alignVerticallyBottom(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, bottom - pos.y() - area.height());
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -181,7 +181,7 @@ void distributeHorizontallyCenter(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(left - pos.x() - area.width() / 2, 0);
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -225,7 +225,7 @@ void distributeHorizontallyGaps(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(left - pos.x(), 0);
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 
 		left += area.width();
 	}
@@ -265,7 +265,7 @@ void distributeHorizontallyLeft(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(left - pos.x(), 0);
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -303,7 +303,7 @@ void distributeHorizontallyRight(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(left - pos.x() - area.width(), 0);
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -341,7 +341,7 @@ void distributeVerticallyCenter(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, top - pos.y() - area.height() / 2);
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -385,7 +385,7 @@ void distributeVerticallyGaps(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, top - pos.y());
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 
 		top += area.height();
 	}
@@ -425,7 +425,7 @@ void distributeVerticallyTop(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, top - pos.y());
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
@@ -463,6 +463,6 @@ void distributeVerticallyBottom(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, top - pos.y() - area.height());
 		if(!delta.isNull())
-			document->addCommand(new MoveObjectCommand(view, ods->getObject(), delta));
+			document->addCommand(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }

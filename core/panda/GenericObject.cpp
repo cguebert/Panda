@@ -303,7 +303,7 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 			{
 				BaseData* target = dynamic_cast<BaseData*>(output);
 				if(target)
-					m_parentDocument->addCommand(new LinkDatasCommand(target, nullptr));
+					m_parentDocument->addCommand(std::make_shared<LinkDatasCommand>(target, nullptr));
 			}
 		}
 	}
@@ -313,7 +313,7 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 	if(currentCommand)
 	{
 		int index = helper::indexOf(m_createdDatasStructs, createdData);
-		new RemoveGenericDataCommand(this, createdData->type, index, currentCommand);
+		currentCommand->push(std::make_shared<RemoveGenericDataCommand>(this, createdData->type, index));
 	}
 }
 

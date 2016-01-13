@@ -1,5 +1,3 @@
-#include <QCoreApplication>
-
 #include <panda/PandaDocument.h>
 #include <panda/command/CommandId.h>
 #include <panda/command/LinkDatasCommand.h>
@@ -10,29 +8,25 @@
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 GraphView* view,
 										 const std::vector<panda::PandaObject*>& objects,
-										 bool unlinkDatas,
-										 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_document(document)
+										 bool unlinkDatas)
+	: m_document(document)
 	, m_view(view)
 {
 	prepareCommand(objects, unlinkDatas);
-	setText(QCoreApplication::translate("RemoveObjectCommand", "delete objects"));
+	setText("delete objects");
 }
 
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 GraphView* view,
 										 panda::PandaObject* object,
-										 bool unlinkDatas,
-										 QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_document(document)
+										 bool unlinkDatas)
+	: m_document(document)
 	, m_view(view)
 {
 	std::vector<panda::PandaObject*> objects;
 	objects.push_back(object);
 	prepareCommand(objects, unlinkDatas);
-	setText(QCoreApplication::translate("RemoveObjectCommand", "delete objects"));
+	setText("delete objects");
 }
 
 void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>& objects, bool unlinkDatas)
@@ -54,7 +48,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 				{
 					auto data2 = dynamic_cast<panda::BaseData*>(output);
 					if(data2 && data2->getOwner())
-						m_document->addCommand(new LinkDatasCommand(data2, nullptr));
+						m_document->addCommand(std::make_shared<LinkDatasCommand>(data2, nullptr));
 				}
 			}
 
@@ -63,7 +57,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 			for(auto data : objectPtr->getInputDatas())
 			{
 				if(data->getParent())
-					m_document->addCommand(new LinkDatasCommand(data, nullptr));
+					m_document->addCommand(std::make_shared<LinkDatasCommand>(data, nullptr));
 			}
 		}
 	}
@@ -76,20 +70,20 @@ int RemoveObjectCommand::id() const
 
 void RemoveObjectCommand::redo()
 {
-	for(auto object : m_objects)
+	for(auto& object : m_objects)
 		m_document->removeObject(object.first.get());
 }
 
 void RemoveObjectCommand::undo()
 {
-	for(auto object : m_objects)
+	for(auto& object : m_objects)
 	{
 		m_view->setObjectDrawStruct(object.first.get(), object.second);
 		m_document->addObject(object.first);
 	}
 }
 
-bool RemoveObjectCommand::mergeWith(const QUndoCommand *other)
+bool RemoveObjectCommand::mergeWith(const panda::UndoCommand *other)
 {
 	// Only merge if creating a macro of multiple commands (not in case of multiple users actions)
 	if(!m_document->isInCommandMacro())

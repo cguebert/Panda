@@ -2,7 +2,7 @@
 #define MOVELAYERCOMMAND_H
 
 #include <panda/core.h>
-#include <QUndoCommand>
+#include <panda/UndoStack.h>
 
 namespace panda
 {
@@ -10,10 +10,10 @@ class PandaDocument;
 class PandaObject;
 }
 
-class PANDA_CORE_API MoveLayerCommand : public QUndoCommand
+class PANDA_CORE_API MoveLayerCommand : public panda::UndoCommand
 {
 public:
-	MoveLayerCommand(panda::PandaDocument* document, panda::PandaObject* layer, int pos, QUndoCommand* parent = nullptr);
+	MoveLayerCommand(panda::PandaDocument* document, panda::PandaObject* layer, int pos);
 
 	virtual void redo();
 	virtual void undo();

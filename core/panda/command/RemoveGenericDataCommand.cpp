@@ -1,18 +1,14 @@
-#include <QCoreApplication>
-
 #include <panda/GenericObject.h>
 #include <panda/command/RemoveGenericDataCommand.h>
 
 RemoveGenericDataCommand::RemoveGenericDataCommand(panda::GenericObject* object,
 												   int type,
-												   int index,
-												   QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_object(object)
+												   int index)
+	: m_object(object)
 	, m_type(type)
 	, m_index(index)
 {
-	setText(QCoreApplication::translate("RemoveGenericDataCommand", "remove generic data"));
+	setText("remove generic data");
 }
 
 void RemoveGenericDataCommand::redo()

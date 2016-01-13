@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include <QUndoCommand>
+#include <panda/UndoStack.h>
 
 namespace panda
 {
@@ -17,10 +17,10 @@ class PandaDocument;
 class BaseData;
 }
 
-class PANDA_CORE_API SelectGroupCommand : public QUndoCommand
+class PANDA_CORE_API SelectGroupCommand : public panda::UndoCommand
 {
 public:
-	SelectGroupCommand(panda::PandaDocument* document, panda::Group* group, QUndoCommand* parent = nullptr);
+	SelectGroupCommand(panda::PandaDocument* document, panda::Group* group);
 
 	virtual void redo();
 	virtual void undo();
@@ -32,10 +32,10 @@ protected:
 
 //****************************************************************************//
 
-class PANDA_CORE_API SelectObjectsInGroupCommand : public QUndoCommand
+class PANDA_CORE_API SelectObjectsInGroupCommand : public panda::UndoCommand
 {
 public:
-	SelectObjectsInGroupCommand(panda::PandaDocument* document, panda::Group* group, QUndoCommand* parent = nullptr);
+	SelectObjectsInGroupCommand(panda::PandaDocument* document, panda::Group* group);
 
 	virtual void redo();
 	virtual void undo();
@@ -47,10 +47,10 @@ protected:
 
 //****************************************************************************//
 
-class PANDA_CORE_API AddObjectToGroupCommand : public QUndoCommand
+class PANDA_CORE_API AddObjectToGroupCommand : public panda::UndoCommand
 {
 public:
-	AddObjectToGroupCommand(panda::Group* group, std::shared_ptr<panda::PandaObject> object, QUndoCommand* parent = nullptr);
+	AddObjectToGroupCommand(panda::Group* group, std::shared_ptr<panda::PandaObject> object);
 
 	virtual void redo();
 	virtual void undo();
@@ -62,10 +62,10 @@ protected:
 
 //****************************************************************************//
 
-class PANDA_CORE_API RemoveObjectFromGroupCommand : public QUndoCommand
+class PANDA_CORE_API RemoveObjectFromGroupCommand : public panda::UndoCommand
 {
 public:
-	RemoveObjectFromGroupCommand(panda::Group* group, std::shared_ptr<panda::PandaObject> object, QUndoCommand* parent = nullptr);
+	RemoveObjectFromGroupCommand(panda::Group* group, std::shared_ptr<panda::PandaObject> object);
 
 	virtual void redo();
 	virtual void undo();
@@ -77,7 +77,7 @@ protected:
 
 //****************************************************************************//
 
-class PANDA_CORE_API EditGroupCommand : public QUndoCommand
+class PANDA_CORE_API EditGroupCommand : public panda::UndoCommand
 {
 public:
 	struct DataInfo
@@ -86,7 +86,7 @@ public:
 		std::string name, help;
 	};
 
-	EditGroupCommand(panda::Group* group, std::string newName, std::vector<DataInfo> newDatas, QUndoCommand* parent = nullptr);
+	EditGroupCommand(panda::Group* group, std::string newName, std::vector<DataInfo> newDatas);
 
 	virtual void redo();
 	virtual void undo();
