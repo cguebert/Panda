@@ -102,7 +102,7 @@ void UndoStack::undo()
 
 	int index = m_index - 1;
 	m_commands[index]->undo();
-	changeIndex(index + 1);
+	changeIndex(index);
 }
 
 void UndoStack::redo()

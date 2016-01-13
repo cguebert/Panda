@@ -42,9 +42,11 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 		{
 			// Create (and apply) unlink commands
 			// We start from output datas
-			for(auto data : objectPtr->getOutputDatas())
+			const auto outputsDatas = objectPtr->getOutputDatas();
+			for(auto data : outputsDatas)
 			{
-				for(auto output : data->getOutputs())
+				const auto outputs = data->getOutputs();
+				for(auto output : outputs)
 				{
 					auto data2 = dynamic_cast<panda::BaseData*>(output);
 					if(data2 && data2->getOwner())

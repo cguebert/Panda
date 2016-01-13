@@ -462,7 +462,7 @@ void MainWindow::createActions()
 
 	m_redoAction = new QAction(tr("Redo"), this);
 	m_redoAction->setShortcut(QKeySequence::Redo);
-	connect(m_undoAction, &QAction::triggered, [this]() { m_document->undoStack().redo(); });
+	connect(m_redoAction, &QAction::triggered, [this]() { m_document->undoStack().redo(); });
 	addAction(m_redoAction);
 
 	auto convertDocumentsAction = new QAction(tr("Convert documents"), this);
