@@ -15,7 +15,7 @@ namespace panda
 
 	namespace msg
 	{
-		class Observer;
+		class BaseObserver;
 		template <typename Ret> class Signal;
 
 		namespace details
@@ -30,7 +30,7 @@ namespace panda
 			{
 				using Thunk = RT (*)(void*, Args...);
 
-				friend class Observer;
+				friend class BaseObserver;
 
 				void* m_this_ptr; // instance pointer
 				Thunk m_stub_ptr; // free function pointer
@@ -88,7 +88,7 @@ namespace panda
 			class Wrapper<Ret(Args...)>
 			{
 			public:
-				Wrapper(Signal<Ret(Args...)>& signal, Observer* observer)
+				Wrapper(Signal<Ret(Args...)>& signal, BaseObserver* observer)
 					: m_signal(signal)
 					, m_observer(observer)
 				{}
@@ -125,32 +125,27 @@ namespace panda
 
 			private:
 				Signal<Ret(Args...)>& m_signal;
-				Observer* m_observer;
+				BaseObserver* m_observer;
 			};
 
 		} // namespace details
 
-		// This class is used to connect to signals
-		// When released, it unregister itself from the signals it was connected to
-		class PANDA_CORE_API Observer
+		// This class stores a list of listeners
+		class PANDA_CORE_API BaseObserver
 		{
 		public:
-			template <typename Ret, typename... Args>
-			details::Wrapper<Ret(Args...)> get(Signal<Ret(Args...)>& signal)
-			{ return details::Wrapper<Ret(Args...)>(signal, this); }
+			BaseObserver() = default;
+			BaseObserver(const BaseObserver& other) = delete; // non construction-copyable
+			BaseObserver& operator=(const BaseObserver&) = delete; // non copyable
 
-			Observer() = default;
-			Observer(const Observer& other) = delete; // non construction-copyable
-			Observer& operator=(const Observer&) = delete; // non copyable
-
-			~Observer()
+			~BaseObserver()
 			{ removeAll(); }
 
 		private:
 			template <typename T> friend class Signal;
 			template <typename T> friend class details::Wrapper;
 
-			void insert(const details::DelegateKey& key, Observer* obs)
+			void insert(const details::DelegateKey& key, BaseObserver* obs)
 			{ m_list.emplace_front(key, obs); }
 
 			void insert(const details::DelegateKey& key)
@@ -191,39 +186,47 @@ namespace panda
 					accumulate(Delegate(p.first)(std::forward<Uref>(args)...));
 			}
 
-			using DelegateKeyObserverPair = std::pair<details::DelegateKey, Observer*>;
+			using DelegateKeyObserverPair = std::pair<details::DelegateKey, BaseObserver*>;
 			std::forward_list<DelegateKeyObserverPair> m_list;
+		};
+
+		// This class is used to connect to signals
+		// When released, it unregister itself from the signals it was connected to
+		class PANDA_CORE_API Observer : public BaseObserver
+		{
+		public:
+			template <typename Ret, typename... Args>
+			details::Wrapper<Ret(Args...)> get(Signal<Ret(Args...)>& signal)
+			{ return details::Wrapper<Ret(Args...)>(signal, this); }
 		};
 
 		// This class describes a signal
 		// Observers can connect to it, and will be notified when it is run
 		template <typename Ret, typename... Args>
-		class Signal<Ret(Args...)> : public Observer
+		class Signal<Ret(Args...)> : public BaseObserver
 		{
 		public:
 			using Delegate = details::Function<Ret(Args...)>;
 
-			void insert(const details::DelegateKey& key, Observer* obs)
-			{
-				obs->insert(key, this);
-				Observer::insert(key, obs);
-			}
-
 			template <typename... Args>
 			void run(Args&&... args)
-			{
-				Observer::onEach<Delegate>(std::forward<Args>(args)...);
-			}
+			{ BaseObserver::onEach<Delegate>(std::forward<Args>(args)...); }
 
 			template <typename Accumulate, typename... Args>
 			void accumulate(Accumulate&& accumulate, Args&&... args)
-			{
-				Observer::onEach_Accumulate<Delegate, Accumulate>
+			{ 
+				BaseObserver::onEach_Accumulate<Delegate, Accumulate>
 					(std::forward<Accumulate>(accumulate), std::forward<Args>(args)...);
 			}
 
 		private:
-			template <typename T> friend class Wrapper;
+			template <typename T> friend class details::Wrapper;
+
+			void insert(const details::DelegateKey& key, BaseObserver* obs)
+			{
+				obs->insert(key, this);
+				BaseObserver::insert(key, obs);
+			}
 		};
 
 	} // namespace msg
