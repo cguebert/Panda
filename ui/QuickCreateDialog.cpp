@@ -48,11 +48,22 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, GraphView* view)
 
 	m_lineEdit->setFocus(Qt::PopupFocusReason);
 
+	// Get the display text of all objects
+	std::vector<std::string> displayNames;
 	for(const auto& entry : ObjectFactory::getInstance()->getRegistryMap())
 	{
-		if(!entry.second.hidden)
-			m_menuStringsList << QString::fromStdString(entry.second.menuDisplay);
+		if (!entry.second.hidden)
+			displayNames.push_back(entry.second.menuDisplay);
 	}
+
+	// Remove aliases
+	std::sort(displayNames.begin(), displayNames.end());
+	auto last = std::unique(displayNames.begin(), displayNames.end());
+	displayNames.erase(last, displayNames.end());
+
+	// Convert to a QStringList
+	for(const auto& name : displayNames)
+		m_menuStringsList << QString::fromStdString(name);
 
 	// Adding groups
 	for(const auto& group : GroupsManager::getInstance()->getGroups())
