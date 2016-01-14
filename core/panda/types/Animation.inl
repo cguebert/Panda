@@ -2,8 +2,7 @@
 #define ANIMATION_INL
 
 #include <panda/types/Animation.h>
-
-#include <QEasingCurve>
+#include <algorithm>
 
 namespace panda
 {
@@ -12,118 +11,112 @@ namespace types
 {
 
 template <class T>
-Animation<T>::Animation()
-	: interpolation(QEasingCurve::Linear)
-	, extend(EXTEND_PAD)
-{}
-
-template <class T>
 int Animation<T>::size() const
 {
-	return stops.size();
+	return m_stops.size();
 }
 
 template <class T>
 void Animation<T>::clear()
 {
-	stops.clear();
+	m_stops.clear();
 }
 
 template <class T>
 void Animation<T>::add(PReal position, value_type value)
 {
 	// Insert already at the right place
-	for(int i=0, nb=stops.size(); i<nb; ++i)
+	for(int i=0, nb=m_stops.size(); i<nb; ++i)
 	{
-		if(position < stops[i].first)
+		if(position < m_stops[i].first)
 		{
-			stops.insert(stops.begin() + i, std::make_pair(position, value));
+			m_stops.insert(m_stops.begin() + i, std::make_pair(position, value));
 			return;
 		}
 	}
 
 	// Or if the list is currently empty...
-	stops.push_back(std::make_pair(position, value));
+	m_stops.push_back(std::make_pair(position, value));
 }
 
 template <class T>
 typename Animation<T>::value_type Animation<T>::get(PReal position) const
 {
-	int nb = stops.size();
+	int nb = m_stops.size();
 	if(!nb)
 		return value_type();
 	else if(nb == 1)
-		return stops.front().second;
+		return m_stops.front().second;
 
-	PReal pMin = stops.front().first;
-	PReal pMax = stops.back().first;
+	PReal pMin = m_stops.front().first;
+	PReal pMax = m_stops.back().first;
 	PReal pos = 0.5;
 	if(pMax - pMin > 1e-10) // If the interval is too small, consider pos to be in the middle
 		pos = extendPos(position, pMin, pMax);
 
 	if(pos <= pMin)
-		return stops.front().second;
+		return m_stops.front().second;
 	else if(pos >= pMax)
-		return stops.back().second;
+		return m_stops.back().second;
 	else if(nb == 2)
-		return interpolate(stops.front(), stops.back(), pos);
+		return interpolate(m_stops.front(), m_stops.back(), pos);
 	else
 	{
 		int i;
 		for(i=0; i+2<nb; ++i)
 		{
-			if(stops[i+1].first > pos)
+			if(m_stops[i+1].first > pos)
 				break;
 		}
 
-		return interpolate(stops[i], stops[i+1], pos);
+		return interpolate(m_stops[i], m_stops[i+1], pos);
 	}
 }
 
 template <class T>
 typename Animation<T>::reference Animation<T>::getAtIndex(int index)
 {
-	if(index < 0 || index >= static_cast<int>(stops.size()))
+	if(index < 0 || index >= static_cast<int>(m_stops.size()))
 	{
 		static value_type tmp = value_type();
 		return tmp;
 	}
-	return stops[index].second;
+	return m_stops[index].second;
 }
 
 template <class T>
 typename Animation<T>::const_reference Animation<T>::getAtIndex(int index) const
 {
-	if(index < 0 || index >= static_cast<int>(stops.size()))
+	if(index < 0 || index >= static_cast<int>(m_stops.size()))
 	{
 		static value_type tmp = value_type();
 		return tmp;
 	}
-	return stops[index].second;
+	return m_stops[index].second;
 }
 
 template <class T>
 void Animation<T>::setInterpolation(int method)
 {
-	interpolation = method;
+	m_interpolation.setType(static_cast<helper::EasingFunctions::Type>(method));
 }
 
 template <class T>
 int Animation<T>::getInterpolation() const
 {
-	return interpolation;
+	return static_cast<int>(m_interpolation.type());
 }
 
 template <class T>
 void Animation<T>::setExtend(int method)
 {
-	extend = static_cast<Extend>(method);
+	m_extend = static_cast<Extend>(method);
 }
 
 template <class T>
 int Animation<T>::getExtend() const
 {
-	return extend;
+	return static_cast<int>(m_extend);
 }
 
 template <class T>
@@ -135,21 +128,21 @@ inline bool compareStops(const std::pair<PReal, T> &p1, const std::pair<PReal, T
 template <class T>
 void Animation<T>::setStops(typename Animation<T>::AnimationStops stopsPoints)
 {
-	stops = stopsPoints;
-	std::stable_sort(stops.begin(), stops.end(), compareStops<T>);
+	m_stops = stopsPoints;
+	std::stable_sort(m_stops.begin(), m_stops.end(), compareStops<T>);
 }
 
 template <class T>
 typename Animation<T>::AnimationStops Animation<T>::getStops() const
 {
-	return stops;
+	return m_stops;
 }
 
 template <class T>
 typename Animation<T>::KeysList Animation<T>::getKeys() const
 {
 	KeysList tmp;
-	for(auto stop : stops)
+	for(const auto& stop : m_stops)
 		tmp.push_back(stop.first);
 	return tmp;
 }
@@ -158,7 +151,7 @@ template <class T>
 typename Animation<T>::ValuesList Animation<T>::getValues() const
 {
 	ValuesList tmp;
-	for(auto stop : stops)
+	for(const auto& stop : m_stops)
 		tmp.push_back(stop.second);
 	return tmp;
 }
@@ -166,13 +159,13 @@ typename Animation<T>::ValuesList Animation<T>::getValues() const
 template <class T>
 PReal Animation<T>::extendPos(PReal position, PReal pMin, PReal pMax) const
 {
-	switch(extend)
+	switch(m_extend)
 	{
 	default:
-	case EXTEND_PAD:
-		return qBound(pMin, position, pMax);
+	case Extend::Pad:
+		return std::max(pMin, std::min(position, pMax));
 
-	case EXTEND_REPEAT:
+	case Extend::Repeat:
 	{
 		PReal w = pMax - pMin;
 		PReal p = (position - pMin) / w;
@@ -180,12 +173,12 @@ PReal Animation<T>::extendPos(PReal position, PReal pMin, PReal pMax) const
 		return pMin + p * w;
 	}
 
-	case EXTEND_REFLECT:
+	case Extend::Reflect:
 	{
 		PReal w = pMax - pMin;
 		PReal p = (position - pMin) / w;
 		PReal t = position - std::floor(position);
-		p = ((static_cast<int>(std::floor(p)) % 2) ? 1.0 - t : t);
+		p = ((static_cast<int>(std::floor(p)) % 2) ? 1.f - t : t);
 		return pMin + p * w;
 	}
 	}
@@ -195,8 +188,7 @@ template <class T>
 typename Animation<T>::value_type Animation<T>::interpolate(const AnimationStop& s1, const AnimationStop& s2, PReal pos) const
 {
 	PReal amt = (pos - s1.first) / (s2.first - s1.first);
-	QEasingCurve ec(static_cast<QEasingCurve::Type>(interpolation));
-	amt = ec.valueForProgress(amt);
+	amt = m_interpolation.valueForProgress(amt);
 	return types::interpolate(s1.second, s2.second, amt);
 }
 

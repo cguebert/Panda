@@ -1,8 +1,7 @@
 #ifndef TYPES_ANIMATION_H
 #define TYPES_ANIMATION_H
 
-#include <panda/core.h>
-#include <vector>
+#include <panda/helper/EasingFunctions.h>
 
 namespace panda
 {
@@ -29,9 +28,7 @@ public:
 	typedef std::vector<PReal> KeysList;
 	typedef std::vector<value_type> ValuesList;
 
-	enum Extend { EXTEND_PAD = 0, EXTEND_REPEAT = 1, EXTEND_REFLECT = 2 };
-
-	Animation();
+	enum class Extend { Pad, Repeat, Reflect };
 
 	int size() const;
 	void clear();
@@ -55,9 +52,9 @@ public:
 
 	inline bool operator==(const Animation& rhs)
 	{
-		return interpolation == rhs.interpolation
-				&& extend == rhs.extend
-				&& stops == rhs.stops;
+		return m_interpolation.type() == rhs.m_interpolation.type()
+				&& m_extend == rhs.m_extend
+				&& m_stops == rhs.m_stops;
 	}
 
 	inline bool operator!=(const Animation& rhs)
@@ -69,9 +66,9 @@ protected:
 	PReal extendPos(PReal position, PReal pMin, PReal pMax) const;
 	value_type interpolate(const AnimationStop& s1, const AnimationStop& s2, PReal pos) const;
 
-	int interpolation;
-	Extend extend;
-	AnimationStops stops;
+	helper::EasingFunctions m_interpolation;
+	Extend m_extend = Extend::Pad;
+	AnimationStops m_stops;
 };
 
 } // namespace types

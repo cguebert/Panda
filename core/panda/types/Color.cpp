@@ -7,6 +7,20 @@
 
 #include <cmath>
 
+namespace
+{
+
+	float bound(float min, float v, float max)
+	{
+		if (v < min)
+			return min;
+		if (v > max)
+			return max;
+		return v;
+	}
+
+}
+
 namespace panda
 {
 
@@ -16,10 +30,10 @@ namespace types
 Color Color::bounded() const
 {
 	return Color(
-				qBound(0.0f, r, 1.0f),
-				qBound(0.0f, g, 1.0f),
-				qBound(0.0f, b, 1.0f),
-				qBound(0.0f, a, 1.0f));
+				bound(0.0f, r, 1.0f),
+				bound(0.0f, g, 1.0f),
+				bound(0.0f, b, 1.0f),
+				bound(0.0f, a, 1.0f));
 }
 
 void Color::getHsv(float& hue, float& sat, float& val, float& alpha) const
@@ -85,10 +99,10 @@ Color Color::fromHsv(float hue, float sat, float val, float alpha)
 
 uint32_t Color::toHex() const
 {
-	uint8_t alpha = a * 0xFF;
-	uint8_t red = r * 0xFF;
-	uint8_t green = g * 0xFF;
-	uint8_t blue = b * 0xFF;
+	uint8_t alpha = static_cast<uint8_t>(a * 0xFF);
+	uint8_t red = static_cast<uint8_t>(r * 0xFF);
+	uint8_t green = static_cast<uint8_t>(g * 0xFF);
+	uint8_t blue = static_cast<uint8_t>(b * 0xFF);
 	return  (alpha & 0xFF) << 24 |
 			(red   & 0xFF) << 16 |
 			(green & 0xFF) << 8  |

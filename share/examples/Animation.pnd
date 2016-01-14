@@ -14,7 +14,7 @@
         </Data>
     </Object>
     <Object index="6" type="panda::AnimationInterpolation&lt;point>" x="549.12255859375" y="471.26171875">
-        <Data int="19" name="mode"/>
+        <Data int="3" name="mode"/>
     </Object>
     <Object index="7" type="panda::DoubleMath_Mod" x="4.997724533081055" y="578.7910766601563">
         <Data name="input 2">

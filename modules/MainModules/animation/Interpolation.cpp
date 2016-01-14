@@ -1,9 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PandaObject.h>
 #include <panda/ObjectFactory.h>
-#include <panda/types/Animation.h>
-
-#include <QEasingCurve>
+#include <panda/helper/EasingFunctions.h>
 
 namespace panda {
 
@@ -31,24 +29,20 @@ public:
 
 		addOutput(result);
 
+		const auto interpolationNames = helper::EasingFunctions::TypeNames();
+		std::string interpolationWidgetData;
+		for (const auto& name : interpolationNames)
+			interpolationWidgetData += name + ";";
+		interpolationWidgetData = interpolationWidgetData.substr(0, interpolationWidgetData.size() - 1);
+
 		mode.setWidget("enum");
-		mode.setWidgetData("Linear"
-							";InQuad;OutQuad;InOutQuad;OutInQuad"
-							";InCubic;OutCubic;InOutCubic;OutInCubic"
-							";InQuart;OutQuart;InOutQuart;OutInQuart"
-							";InQuint;OutQuint;InOutQuint;OutInQuint"
-							";InSine;OutSine;InOutSine;OutInSine"
-							";InExpo;OutExpo;InOutExpo;OutInExpo"
-							";InCirc;OutCirc;InOutCirc;OutInCirc"
-							";InElastic;OutElastic;InOutElastic;OutInElastic"
-							";InBack;OutBack;InOutBack;OutInBack"
-							";InBounce;OutBounce;InOutBounce;OutInBounce"
-							";InCurve;OutCurve;SineCurve;CosineCurve");
+		mode.setWidgetData(interpolationWidgetData);
 	}
 
 	void update()
 	{
-		QEasingCurve curve(static_cast<QEasingCurve::Type>(mode.getValue()));
+		helper::EasingFunctions easingFunc;
+		easingFunc.setType(static_cast<helper::EasingFunctions::Type>(mode.getValue()));
 
 		const std::vector<T>& listFrom = inputA.getValue();
 		const std::vector<T>& listTo = inputB.getValue();
@@ -74,7 +68,7 @@ public:
 			for(int i=0; i<nb; ++i)
 			{
 				PReal prog = qBound<PReal>(0.0, listProg[i%nbV], 1.0);
-				PReal amt = curve.valueForProgress(prog);
+				PReal amt = easingFunc.valueForProgress(prog);
 
 				listResult[i] = types::interpolate(listFrom[i%nbP], listTo[i%nbP], amt);
 			}

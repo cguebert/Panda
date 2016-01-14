@@ -26,19 +26,14 @@ public:
 		addInput(extend);
 		addInput(generic);
 
+		const auto interpolationNames = helper::EasingFunctions::TypeNames();
+		std::string interpolationWidgetData;
+		for (const auto& name : interpolationNames)
+			interpolationWidgetData += name + ";";
+		interpolationWidgetData = interpolationWidgetData.substr(0, interpolationWidgetData.size() - 1);
+
 		interpolation.setWidget("enum");
-		interpolation.setWidgetData("Linear"
-									";InQuad;OutQuad;InOutQuad;OutInQuad"
-									";InCubic;OutCubic;InOutCubic;OutInCubic"
-									";InQuart;OutQuart;InOutQuart;OutInQuart"
-									";InQuint;OutQuint;InOutQuint;OutInQuint"
-									";InSine;OutSine;InOutSine;OutInSine"
-									";InExpo;OutExpo;InOutExpo;OutInExpo"
-									";InCirc;OutCirc;InOutCirc;OutInCirc"
-									";InElastic;OutElastic;InOutElastic;OutInElastic"
-									";InBack;OutBack;InOutBack;OutInBack"
-									";InBounce;OutBounce;InOutBounce;OutInBounce"
-									";InCurve;OutCurve;SineCurve;CosineCurve");
+		interpolation.setWidgetData(interpolationWidgetData);
 
 		extend.setWidget("enum");
 		extend.setWidgetData("Pad;Repeat;Reflect");
