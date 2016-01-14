@@ -3,12 +3,11 @@
 #include <panda/object/OGLObject.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/graphics/Framebuffer.h>
+#include <panda/graphics/Mat4x4.h>
 #include <panda/graphics/ShaderProgram.h>
 #include <panda/helper/system/FileRepository.h>
 
 #include <GL/glew.h>
-
-#include <QMatrix4x4>
 
 namespace panda {
 
@@ -74,7 +73,7 @@ public:
 			glClearColor(0, 0, 0, 0);
 			glViewport(0, 0, inputSize.width(), inputSize.height());
 
-			QMatrix4x4 mvp = QMatrix4x4();
+			graphics::Mat4x4 mvp;
 			mvp.ortho(0, inputSize.width(), inputSize.height(), 0, -10, 10);
 
 			GLfloat verts[8];
@@ -93,7 +92,7 @@ public:
 			glBindTexture(GL_TEXTURE_2D, tex2Id);
 			glActiveTexture(GL_TEXTURE0);
 
-			m_shaderProgram.setUniformValueMat4("MVP", mvp.constData());
+			m_shaderProgram.setUniformValueMat4("MVP", mvp.data());
 			m_shaderProgram.setUniformValue("texS", 0);
 			m_shaderProgram.setUniformValue("texD", 1);
 

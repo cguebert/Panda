@@ -17,7 +17,7 @@ DockObject* Renderer::getDefaultDock() const
 	return m_parentDocument->getDefaultLayer();
 }
 
-QMatrix4x4& Renderer::getMVPMatrix()
+graphics::Mat4x4& Renderer::getMVPMatrix()
 {
 	return getDrawTarget()->getMVPMatrix();
 }

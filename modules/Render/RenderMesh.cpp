@@ -58,7 +58,7 @@ public:
 				return;
 
 			int colorLocation = shaderProgram.uniformLocation("color");
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 			shaderProgram.enableAttributeArray("vertex");
 
 			for (int i = 0; i < nbMeshes; ++i)
@@ -128,7 +128,7 @@ public:
 			if (!shader.getValue().apply(shaderProgram))
 				return;
 
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);
@@ -193,7 +193,7 @@ public:
 			if(!shader.getValue().apply(shaderProgram))
 				return;
 
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);

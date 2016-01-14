@@ -1,6 +1,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/Group.h> // For BaseGeneratorUser
 #include <panda/XmlDocument.h>
+#include <panda/helper/algorithm.h>
 
 namespace panda {
 
@@ -13,7 +14,8 @@ public:
 	CustomData(const std::string& name, const std::string& help, PandaObject* owner)
 		: Data<T>(name, help, owner)
 	{ }
-	virtual void save(XmlElement& elem) const override
+	
+	void save(XmlElement& elem) const override
 	{
 		Data<T>::save(elem);
 		std::string w = getWidget();
@@ -45,7 +47,7 @@ public:
 	}
 
 	bool hasConnectedInput()
-	{ return m_userValue.getParent(); }
+	{ return m_userValue.getParent() != nullptr; }
 
 	bool hasConnectedOutput()
 	{ return !m_output.getOutputs().empty(); }
@@ -56,17 +58,17 @@ public:
 	BaseData* getOutputUserData()
 	{ return &m_output; }
 
-	void save(XmlDocument& elem, const QList<PandaObject*> *selected)
+	void save(XmlElement& elem, const std::vector<PandaObject*> *selected) override
 	{	// Compared to PandaObject::save, we want to always save the userValue, because of the customData (widget & widgetData)
 		for(BaseData* data : m_datas)
 		{
 			if(data == &m_userValue ||
 					(data->isSet() && data->isPersistent() && !data->isReadOnly()
-					&& !(selected && data->getParent() && selected->contains(data->getParent()->getOwner()))))
+					&& !(selected && data->getParent() && helper::contains(*selected, data->getParent()->getOwner()))))
 			{
 				auto xmlData = elem.addChild("Data");
 				xmlData.setAttribute("name", data->getName());
-				data->save(doc, xmlData);
+				data->save(xmlData);
 			}
 		}
 	}

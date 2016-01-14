@@ -3,8 +3,7 @@
 
 #include <panda/object/Dockable.h>
 #include <panda/types/ImageWrapper.h>
-
-#include <QMatrix4x4>
+#include <panda/graphics/Mat4x4.h>
 
 namespace panda
 {
@@ -19,7 +18,7 @@ namespace graphics
 class BaseDrawTarget
 {
 public:
-	virtual QMatrix4x4& getMVPMatrix() = 0;
+	virtual graphics::Mat4x4& getMVPMatrix() = 0;
 	virtual graphics::Size getLayerSize() const = 0;
 };
 
@@ -58,23 +57,24 @@ public:
 
 	explicit Layer(PandaDocument* parent = nullptr);
 
-	virtual void update();
-	virtual bool accepts(DockableObject* dockable) const;
+	void update() override;
+	bool accepts(DockableObject* dockable) const override;
 
-	virtual RenderersList getRenderers();
+	RenderersList getRenderers();
 
-	virtual const std::string& getLayerName() const;
-	virtual Data<std::string>& getLayerNameData();
+	const std::string& getLayerName() const override;
+	Data<std::string>& getLayerNameData() override;
 
-	virtual int getCompositionMode() const;
-	virtual Data<int>& getCompositionModeData();
+	int getCompositionMode() const override;
+	Data<int>& getCompositionModeData() override;
 
-	virtual PReal getOpacity() const;
-	virtual Data<PReal>& getOpacityData();
+	PReal getOpacity() const override;
+	Data<PReal>& getOpacityData() override;
 
-	virtual Data<types::ImageWrapper>* getImage();
-	virtual QMatrix4x4& getMVPMatrix();
-	virtual graphics::Size getLayerSize() const;
+	Data<types::ImageWrapper>* getImage() override;
+
+	graphics::Mat4x4& getMVPMatrix() override;
+	graphics::Size getLayerSize() const override;
 
 	virtual void postCreate();
 	virtual void removedFromDocument();
@@ -84,7 +84,7 @@ protected:
 	Data<types::ImageWrapper> m_image;
 	Data<int> m_compositionMode;
 	Data<PReal> m_opacity;
-	QMatrix4x4 m_mvpMatrix;
+	graphics::Mat4x4 m_mvpMatrix;
 };
 
 //****************************************************************************//
@@ -110,7 +110,7 @@ inline Data<PReal>& Layer::getOpacityData()
 inline Data<types::ImageWrapper>* Layer::getImage()
 { return &m_image; }
 
-inline QMatrix4x4& Layer::getMVPMatrix()
+inline graphics::Mat4x4& Layer::getMVPMatrix()
 { return m_mvpMatrix; }
 
 } // namespace panda

@@ -98,8 +98,8 @@ public:
 				return;
 
 			shaderProgram.bind();
-			const QMatrix4x4& MVP = getMVPMatrix();
-			shaderProgram.setUniformValueMat4("MVP", MVP.constData());
+			const graphics::Mat4x4& MVP = getMVPMatrix();
+			shaderProgram.setUniformValueMat4("MVP", MVP.data());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", m_verts, 2);
@@ -118,10 +118,10 @@ public:
 						const ImageWrapper& img = listImage[i % nbImage];
 						auto s = img.size() / 2;
 						if(s.empty()) continue;
-						QMatrix4x4 tmpMVP = MVP;
+						graphics::Mat4x4 tmpMVP = MVP;
 						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
-						shaderProgram.setUniformValueMat4("MVP", tmpMVP.constData());
+						shaderProgram.setUniformValueMat4("MVP", tmpMVP.data());
 						Rect area = Rect(-s.width(), -s.height(),
 											 s.width(), s.height());
 						drawTexture(img.getTextureId(), area);
@@ -134,10 +134,10 @@ public:
 						const ImageWrapper& img = listImage[i % nbImage];
 						auto s = img.size();
 						if(s.empty()) continue;
-						QMatrix4x4 tmpMVP = MVP;
+						graphics::Mat4x4 tmpMVP = MVP;
 						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
-						shaderProgram.setUniformValueMat4("MVP", tmpMVP.constData());
+						shaderProgram.setUniformValueMat4("MVP", tmpMVP.data());
 						Rect area = Rect(0, 0, s.width(), s.height());
 						drawTexture(img.getTextureId(), area);
 					}

@@ -18,6 +18,21 @@
 
 #include <QMessageBox>
 
+namespace
+{
+
+panda::types::Point convert(QPointF pt)
+{
+	return panda::types::Point(pt.x(), pt.y());
+}
+
+QPointF convert(panda::types::Point pt)
+{
+	return QPointF(pt.x, pt.y);
+}
+
+}
+
 namespace panda
 {
 
@@ -137,7 +152,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	QPointF groupPos = ods->getPosition();
 
 	// If multiple outside datas are connected to the same data, merge them
-	QMap<BaseData*, BaseData*> connectedInputDatas;
+	std::map<BaseData*, BaseData*> connectedInputDatas;
 
 	// To sort the created datas by the height of their parents
 	typedef QPair<BaseData*, qreal> DataHeightPair;
@@ -153,7 +168,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 
 		// Storing the position of this object in respect to the group object
 		QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
-		group->setPosition(object, delta);
+		group->setPosition(object, convert(delta));
 
 		// Adding input datas
 		for(BaseData* data : object->getInputDatas())
@@ -165,18 +180,18 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				if(owner && !doc->isSelected(owner) && owner!=doc)
 				{
 					BaseData* createdData = nullptr;
-					if(!connectedInputDatas.contains(otherData))
+					if(!connectedInputDatas.count(otherData))
 					{
 						createdData = duplicateData(group, data);
 						createdData->copyValueFrom(otherData);
 						group->addInput(*createdData);
 						doc->addCommand(std::make_shared<LinkDatasCommand>(createdData, otherData));
-						connectedInputDatas.insert(otherData, createdData);
+						connectedInputDatas.emplace(otherData, createdData);
 						createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, otherData)));
 					}
 					else
 					{
-						createdData = connectedInputDatas.value(otherData);
+						createdData = connectedInputDatas.at(otherData);
 						auto name = findAvailableDataName(group, otherData->getName(), createdData);
 						if(name != createdData->getName())
 						{
@@ -323,7 +338,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 
 				// Placing the object in the view
 				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
-				QPointF delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
+				QPointF delta = groupPos + convert(group->getPosition(object.get())) - ods->getPosition();
 				if(!delta.isNull())
 					doc->addCommand(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
 			}
@@ -337,7 +352,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 
 			// Placing the object in the view
 			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
-			QPointF delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
+			QPointF delta = groupPos + convert(group->getPosition(object.get())) - ods->getPosition();
 			if(!delta.isNull())
 				doc->addCommand(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
 		}

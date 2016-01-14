@@ -33,6 +33,7 @@ set(HEADER_FILES
 	panda/data/DataNode.h
 	panda/graphics/Framebuffer.h
 	panda/graphics/Image.h
+	panda/graphics/Mat4x4.h
 	panda/graphics/PointInt.h
 	panda/graphics/ShaderProgram.h
 	panda/graphics/Size.h
@@ -95,6 +96,7 @@ set(SOURCE_FILES
 	panda/data/DataNode.cpp
 	panda/graphics/Framebuffer.cpp
 	panda/graphics/Image.cpp
+	panda/graphics/Mat4x4.cpp
 	panda/graphics/ShaderProgram.cpp
 	panda/graphics/Size.cpp
 	panda/graphics/Texture.cpp

@@ -54,7 +54,7 @@ public:
 			if(!shader.getValue().apply(shaderProgram))
 				return;
 
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);

@@ -56,8 +56,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	QMatrix4x4& mvp = getMVPMatrix();
-	mvp = QMatrix4x4();
+	auto& mvp = getMVPMatrix();
 	mvp.ortho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
 
 	glClearColor(0, 0, 0, 0);

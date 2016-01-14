@@ -73,7 +73,7 @@ public:
 			int nbVertices = nbLines * 2;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			std::vector<Point> tmpVertices;
 			int vertexLocation = shaderProgram.attributeLocation("vertex");
@@ -172,7 +172,7 @@ public:
 			if(nbWidth < nbPaths) nbWidth = 1;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			int vertexLocation = shaderProgram.attributeLocation("vertex");
 			shaderProgram.enableAttributeArray(vertexLocation);
@@ -293,7 +293,7 @@ public:
 			if(nbWidth < nbPaths) nbWidth = 1;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			int vertexLocation = shaderProgram.attributeLocation("vertex");
 			shaderProgram.enableAttributeArray(vertexLocation);

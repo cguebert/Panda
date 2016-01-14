@@ -3,6 +3,7 @@
 
 #include <panda/object/PandaObject.h>
 #include <panda/object/Layer.h>
+#include <panda/types/Point.h>
 
 class EditGroupCommand;
 namespace panda
@@ -19,10 +20,10 @@ public:
 	explicit Group(PandaDocument* parent = nullptr);
 	virtual ~Group();
 
-	virtual void save(XmlElement& elem, const std::vector<PandaObject*>* selected = nullptr);
-	virtual void load(XmlElement& elem);
+	void save(XmlElement& elem, const std::vector<PandaObject*>* selected = nullptr) override;
+	void load(XmlElement& elem) override;
 
-	virtual void reset();
+	void reset() override;
 
 	const std::string& getGroupName();
 
@@ -33,8 +34,8 @@ public:
 	virtual void addObject(ObjectPtr object);
 	virtual void removeObject(PandaObject*) {} // Bugfix: we never remove objects from groups, there are freed if the group is destroyed
 
-	virtual void beginStep();
-	virtual void endStep();
+	void beginStep() override;
+	void endStep() override;
 
 	typedef std::shared_ptr<BaseData> DataPtr;
 	typedef std::vector<DataPtr> GroupDataList;
@@ -42,14 +43,14 @@ public:
 	void addGroupData(DataPtr data);
 	const GroupDataList& getGroupDatas(); // Can modify the datas, not the list
 
-	void setPosition(PandaObject* object, QPointF pos);
-	QPointF getPosition(PandaObject* object) const;
+	void setPosition(PandaObject* object, types::Point pos);
+	types::Point getPosition(PandaObject* object) const;
 
 protected:
 	Data<std::string> m_groupName;
 
 	ObjectsList m_objects;
-	std::map<PandaObject*, QPointF> m_positions;
+	std::map<PandaObject*, types::Point> m_positions;
 	GroupDataList m_groupDatas;
 };
 
@@ -65,10 +66,10 @@ inline void Group::addGroupData(DataPtr data)
 inline const Group::GroupDataList& Group::getGroupDatas()
 { return m_groupDatas; }
 
-inline void Group::setPosition(PandaObject* object, QPointF pos)
+inline void Group::setPosition(PandaObject* object, types::Point pos)
 { m_positions[object] = pos; }
 
-inline QPointF Group::getPosition(PandaObject* object) const
+inline types::Point Group::getPosition(PandaObject* object) const
 { return m_positions.at(object); }
 
 //****************************************************************************//
@@ -81,34 +82,35 @@ public:
 	explicit GroupWithLayer(PandaDocument* parent);
 	void setLayer(Layer* m_layer);
 
-	virtual void update();
+	void update() override;
 
-	virtual RenderersList getRenderers();
+	RenderersList getRenderers() override;
 
-	virtual const std::string& getLayerName() const;
-	virtual Data<std::string>& getLayerNameData();
+	const std::string& getLayerName() const override;
+	Data<std::string>& getLayerNameData() override;
 
-	virtual int getCompositionMode() const;
-	virtual Data<int>& getCompositionModeData();
+	int getCompositionMode() const override;
+	Data<int>& getCompositionModeData() override;
 
-	virtual PReal getOpacity() const;
-	virtual Data<PReal>& getOpacityData();
+	PReal getOpacity() const override;
+	Data<PReal>& getOpacityData() override;
 
-	virtual Data<types::ImageWrapper>* getImage();
-	virtual QMatrix4x4& getMVPMatrix();
-	virtual graphics::Size getLayerSize() const;
+	Data<types::ImageWrapper>* getImage() override;
 
-	virtual void addObject(ObjectPtr object);
-	virtual void removeObject(PandaObject* object);
+	graphics::Mat4x4& getMVPMatrix() override;
+	graphics::Size getLayerSize() const override;
 
-	virtual void removedFromDocument();
+	void addObject(ObjectPtr object) override;
+	void removeObject(PandaObject* object) override;
+
+	void removedFromDocument() override;
 
 protected:
 	Data<types::ImageWrapper> m_image;
 	Data<int> m_compositionMode;
 	Data<PReal> m_opacity;
 
-	QMatrix4x4 m_mvpMatrix;
+	graphics::Mat4x4 m_mvpMatrix;
 
 	Layer* m_layer;
 	RenderersList m_renderers;
@@ -162,7 +164,7 @@ inline Data<PReal>& GroupWithLayer::getOpacityData()
 inline Data<types::ImageWrapper>* GroupWithLayer::getImage()
 { if(m_layer) return m_layer->getImage(); else return &m_image; }
 
-inline QMatrix4x4& GroupWithLayer::getMVPMatrix()
+inline graphics::Mat4x4& GroupWithLayer::getMVPMatrix()
 { if(m_layer) return m_layer->getMVPMatrix(); else return m_mvpMatrix; }
 
 } // namespace panda

@@ -74,7 +74,7 @@ protected:
 
 	PandaDocument* m_document;
 	std::vector<DataNode*> m_setDirtyList; // At each step, all these nodes will always be dirty (connected to the mouse position or the animation time)
-	std::map< BaseData*, QPair<std::vector<DataNode*>, std::vector<int> > > m_laterUpdatesMap; // For nodes that will get dirty later (like Buffer or Replicator)
+	std::map< BaseData*, std::pair<std::vector<DataNode*>, std::vector<int> > > m_laterUpdatesMap; // For nodes that will get dirty later (like Buffer or Replicator)
 
 	std::vector<SchedulerTask> m_updateTasks;
 	std::map<PandaObject*, int> m_objectsIndexMap;

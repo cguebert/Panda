@@ -3,7 +3,7 @@
 
 #include <panda/object/Dockable.h>
 #include <panda/graphics/Size.h>
-#include <QMatrix4x4>
+#include <panda/graphics/Mat4x4.h>
 
 namespace panda
 {
@@ -22,7 +22,7 @@ public:
 	virtual void render() = 0;
 
 protected:
-	QMatrix4x4& getMVPMatrix();
+	graphics::Mat4x4& getMVPMatrix();
 	graphics::Size getLayerSize() const;
 	BaseDrawTarget* getDrawTarget() const;
 };

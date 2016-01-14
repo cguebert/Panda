@@ -51,10 +51,10 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	// Saving data values
 	PandaObject::save(elem, selected);
 
-	typedef QPair<BaseData*, BaseData*> DataPair;
+	typedef std::pair<BaseData*, BaseData*> DataPair;
 	std::vector<DataPair> links;
 
-	typedef QPair<quint32, quint32> IntPair;
+	typedef std::pair<quint32, quint32> IntPair;
 	std::vector<IntPair> dockedObjects;
 
 	PandaDocument::ObjectsSelection allObjects;
@@ -71,16 +71,16 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 
 		object->save(node, &allObjects);
 
-		QPointF pos = m_positions[object.get()];
-		node.setAttribute("x", pos.x());
-		node.setAttribute("y", pos.y());
+		auto pos = m_positions[object.get()];
+		node.setAttribute("x", pos.x);
+		node.setAttribute("y", pos.y);
 
 		// Preparing links
 		for(BaseData* data : object->getInputDatas())
 		{
 			BaseData* parent = data->getParent();
 			if(parent)
-				links.push_back(qMakePair(data, parent));
+				links.push_back(std::make_pair(data, parent));
 		}
 
 		// Preparing dockables list for docks
@@ -88,7 +88,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 		if(dock)
 		{
 			for(auto dockable : dock->getDockedObjects())
-				dockedObjects.push_back(qMakePair(dock->getIndex(), dockable->getIndex()));
+				dockedObjects.push_back(std::make_pair(dock->getIndex(), dockable->getIndex()));
 		}
 	}
 
@@ -97,11 +97,11 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	{
 		BaseData* parent = data->getParent();
 		if(parent)
-			links.push_back(qMakePair(data, parent));
+			links.push_back(std::make_pair(data, parent));
 	}
 
 	// Saving links
-	for(DataPair link : links)
+	for(const DataPair& link : links)
 	{
 		auto node = elem.addChild("Link");
 		if(link.first->getOwner() == this)
@@ -118,7 +118,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	}
 
 	// Saving docked objects list
-	for(IntPair dockable : dockedObjects)
+	for(const IntPair& dockable : dockedObjects)
 	{
 		auto node = elem.addChild("Dock");
 		node.setAttribute("dock", dockable.first);
@@ -175,13 +175,13 @@ void Group::load(XmlElement& elem)
 
 			object->load(objectNode);
 
-			QPointF pos;
+			types::Point pos;
 #ifdef PANDA_DOUBLE
-			pos.setX(objectNode.attribute("x").toDouble());
-			pos.setY(objectNode.attribute("y").toDouble());
+			pos.x = objectNode.attribute("x").toDouble();
+			pos.y = objectNode.attribute("y").toDouble();
 #else
-			pos.setX(objectNode.attribute("x").toFloat());
-			pos.setY(objectNode.attribute("y").toFloat());
+			pos.x = objectNode.attribute("x").toFloat();
+			pos.y = objectNode.attribute("y").toFloat();
 #endif
 			m_positions[object.get()] = pos;
 		}
@@ -346,9 +346,9 @@ void GroupWithLayer::addObject(ObjectPtr object)
 		addInput(*renderer);
 
 		// Sort the renderers by their position in the view
-		auto rpos = m_positions[renderer].y();
+		auto rpos = m_positions[renderer].y;
 		auto iter = std::find_if(m_renderers.begin(), m_renderers.end(), [&](Renderer* val){
-			auto lpos = m_positions[val].y();
+			auto lpos = m_positions[val].y;
 			return lpos > rpos;
 		});
 		m_renderers.insert(iter, renderer);

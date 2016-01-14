@@ -111,7 +111,7 @@ public:
 			return;
 
 		shaderProgram.bind();
-		shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+		shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 		shaderProgram.enableAttributeArray("vertex");
 		shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
@@ -253,7 +253,7 @@ public:
 				return;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
@@ -421,7 +421,7 @@ public:
 				return;
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);

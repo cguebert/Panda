@@ -137,7 +137,7 @@ public:
 			sizeBuffer.release();
 
 			shaderProgram.setUniformValue(uniform_texture, 0);
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			shaderProgram.enableAttributeArray(attribute_color);
 			shaderProgram.setAttributeArray(attribute_color, GL_FLOAT, tmpColors.data(), 4);

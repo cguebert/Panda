@@ -41,7 +41,7 @@ public:
 		return dynamic_cast<Renderer*>(dockable) != nullptr;
 	}
 
-	QMatrix4x4& getMVPMatrix()
+	graphics::Mat4x4& getMVPMatrix()
 	{
 		return m_mvpMatrix;
 	}
@@ -99,8 +99,7 @@ public:
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		QMatrix4x4& mvp = getMVPMatrix();
-		mvp = QMatrix4x4();
+		auto& mvp = getMVPMatrix();
 		mvp.ortho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
 
 		glClearColor(0, 0, 0, 0);
@@ -134,7 +133,7 @@ protected:
 	Data<Point> m_size;
 	Data<ImageWrapper> m_image;
 	graphics::Framebuffer m_renderFrameBuffer, m_displayFrameBuffer;
-	QMatrix4x4 m_mvpMatrix;
+	graphics::Mat4x4 m_mvpMatrix;
 };
 
 int GeneratorImage_CreateTextureClass = RegisterObject<GeneratorImage_CreateTexture>("Generator/Image/Create texture").setDescription("Create a texture and render on it");

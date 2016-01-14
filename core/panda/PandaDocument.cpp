@@ -753,9 +753,9 @@ void PandaDocument::render()
 
 	m_mergeLayersShader->bind();
 
-	QMatrix4x4 mvp;
+	graphics::Mat4x4 mvp;
 	mvp.ortho(0, w, h, 0, -10, 10);
-	m_mergeLayersShader->setUniformValueMat4("MVP", mvp.constData());
+	m_mergeLayersShader->setUniformValueMat4("MVP", mvp.data());
 
 	GLfloat verts[8], texCoords[8];
 

@@ -448,7 +448,7 @@ void Scheduler::prepareLaterUpdate(BaseData* data)
 		}
 	}
 
-	m_laterUpdatesMap[data] = qMakePair(connected, outputsTasks);
+	m_laterUpdatesMap[data] = std::make_pair(connected, outputsTasks);
 /*
 	std::cout << "prepareLaterUpdate for " << data->getName().toStdString() << std::endl;
 	std::cout << "  outputs: ";
@@ -466,7 +466,7 @@ void Scheduler::setDataDirty(BaseData* dirtyData)
 	if (!m_laterUpdatesMap.count(dirtyData))
 		prepareLaterUpdate(dirtyData);
 
-	auto pair = m_laterUpdatesMap[dirtyData];
+	const auto& pair = m_laterUpdatesMap[dirtyData];
 	for(auto* node : pair.first)
 		node->doSetDirty();
 

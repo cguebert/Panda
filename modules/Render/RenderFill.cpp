@@ -70,7 +70,7 @@ public:
 		m_shaderProgram.setUniformValue("tex0", 0);
 
 		m_shaderProgram.bind();
-		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 		PReal verts[8];
 		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
@@ -156,7 +156,7 @@ public:
 		m_shaderProgram.setUniformValue("tex0", 0);
 
 		m_shaderProgram.bind();
-		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 		PReal verts[8];
 		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
@@ -239,7 +239,7 @@ public:
 		m_shaderProgram.setUniformValue("tex0", 0);
 
 		m_shaderProgram.bind();
-		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 		PReal verts[8], texCoords[8];
 		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();

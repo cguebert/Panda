@@ -1,11 +1,11 @@
 #include "ShaderEffects.h"
 
 #include <panda/object/ObjectFactory.h>
+#include <panda/graphics/Mat4x4.h>
 #include <panda/graphics/ShaderProgram.h>
 
+#include <algorithm>
 #include <iostream>
-
-#include <QMatrix4x4>
 
 namespace panda {
 
@@ -57,14 +57,15 @@ void ShaderEffects::update()
 		glClearColor(0, 0, 0, 0);
 		glViewport(0, 0, inputSize.width(), inputSize.height());
 
-		QMatrix4x4 mvp = QMatrix4x4();
+		graphics::Mat4x4 mvp;
 		mvp.ortho(0, inputSize.width(), inputSize.height(), 0, -10, 10);
 
 		GLfloat verts[8];
-		verts[0*2+0] = inputSize.width();	verts[0*2+1] = 0;
-		verts[1*2+0] = 0;					verts[1*2+1] = 0;
-		verts[3*2+0] = 0;					verts[3*2+1] = inputSize.height();
-		verts[2*2+0] = inputSize.width();	verts[2*2+1] = inputSize.height();
+		GLfloat w = static_cast<float>(inputSize.width()), h = static_cast<float>(inputSize.height());
+		verts[0*2+0] = w;	verts[0*2+1] = 0;
+		verts[1*2+0] = 0;	verts[1*2+1] = 0;
+		verts[3*2+0] = 0;	verts[3*2+1] = h;
+		verts[2*2+0] = w;	verts[2*2+1] = h;
 
 		prepareUpdate(inputSize);
 
@@ -99,7 +100,7 @@ void ShaderEffects::update()
 			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-			program.setUniformValueMat4("MVP", mvp.constData());
+			program.setUniformValueMat4("MVP", mvp.data());
 			program.setUniformValue("tex0", 0);
 
 			program.enableAttributeArray("vertex");
@@ -157,22 +158,23 @@ void renderImage(Framebuffer& fbo, ShaderProgram& program)
 	auto size = fbo.size();
 	glViewport(0, 0, size.width(), size.height());
 
-	QMatrix4x4 mvp;
+	graphics::Mat4x4 mvp;
 	mvp.ortho(0, size.width(), size.height(), 0, -10, 10);
 
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	GLfloat verts[8];
-	verts[0*2+0] = size.width(); verts[0*2+1] = 0;
-	verts[1*2+0] = 0;  verts[1*2+1] = 0;
-	verts[3*2+0] = 0;  verts[3*2+1] = size.height();
-	verts[2*2+0] = size.width(); verts[2*2+1] = size.height();
+	GLfloat w = static_cast<float>(size.width()), h = static_cast<float>(size.height());
+	verts[0*2+0] = w;	verts[0*2+1] = 0;
+	verts[1*2+0] = 0;	verts[1*2+1] = 0;
+	verts[3*2+0] = 0;	verts[3*2+1] = h;
+	verts[2*2+0] = w;	verts[2*2+1] = h;
 
 	const GLfloat texCoords[8] = {1, 1, 0, 1, 1, 0, 0, 0};
 
 	program.bind();
-	program.setUniformValueMat4("MVP", mvp.constData());
+	program.setUniformValueMat4("MVP", mvp.data());
 
 	program.enableAttributeArray("vertex");
 	program.setAttributeArray("vertex", verts, 2);

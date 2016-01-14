@@ -64,7 +64,7 @@ public:
 			PReal verts[8];
 
 			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", verts, 2);
@@ -150,7 +150,7 @@ public:
 			if(nbColor < nbRect) nbColor = 1;
 			PReal verts[8];
 
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", verts, 2);
@@ -241,7 +241,7 @@ public:
 
 			PReal verts[8];
 
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().constData());
+			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			shaderProgram.enableAttributeArray("vertex");
 			shaderProgram.setAttributeArray("vertex", verts, 2);
