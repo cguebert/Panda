@@ -1,5 +1,5 @@
 #include <panda/PandaDocument.h>
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
 
 #include <random>
 #include <panda/helper/Random.h>

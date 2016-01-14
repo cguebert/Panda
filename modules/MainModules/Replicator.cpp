@@ -1,8 +1,8 @@
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
-#include <panda/ObjectFactory.h>
-#include <panda/Renderer.h>
-#include <panda/Layer.h>
+#include <panda/object/PandaObject.h>
+#include <panda/object/ObjectFactory.h>
+#include <panda/object/Renderer.h>
+#include <panda/object/Layer.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>

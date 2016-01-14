@@ -1,5 +1,5 @@
-#include <panda/PandaObject.h>
-#include <panda/Group.h> // For BaseGeneratorUser
+#include <panda/object/PandaObject.h>
+#include <panda/object/Group.h> // For BaseGeneratorUser
 #include <panda/XmlDocument.h>
 
 namespace panda {

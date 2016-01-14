@@ -1,7 +1,7 @@
 #ifndef PARTICLEENGINE_H
 #define PARTICLEENGINE_H
 
-#include <panda/Dockable.h>
+#include <panda/object/Dockable.h>
 #include <modules/particles/Particle.h>
 
 namespace panda {

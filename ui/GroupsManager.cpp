@@ -3,8 +3,8 @@
 #include <ui/GroupsManager.h>
 #include <ui/command/AddObjectCommand.h>
 
-#include <panda/Group.h>
-#include <panda/ObjectFactory.h>
+#include <panda/object/Group.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/PandaDocument.h>
 #include <panda/XmlDocument.h>
 

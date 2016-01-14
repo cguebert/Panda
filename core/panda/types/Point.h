@@ -5,7 +5,7 @@
 
 #ifndef PANDA_BUILD_CORE
 #include <panda/types/Animation.h>
-#include <panda/Data.h>
+#include <panda/data/Data.h>
 #endif
 
 #include <cassert>

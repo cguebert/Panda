@@ -1,7 +1,6 @@
 #include <panda/types/Mesh.h>
 
-#include <panda/DataFactory.h>
-#include <panda/Data.h>
+#include <panda/data/DataFactory.h>
 
 #include <panda/helper/algorithm.h>
 

@@ -1,4 +1,4 @@
-#include <panda/OGLObject.h>
+#include <panda/object/OGLObject.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Point.h>
 

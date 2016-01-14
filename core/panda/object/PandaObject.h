@@ -2,8 +2,8 @@
 #define PANDAOBJECT_H
 
 #include <panda/helper/system/config.h>
-#include <panda/Data.h>
-#include <panda/BaseClass.h>
+#include <panda/data/BaseClass.h>
+#include <panda/data/Data.h>
 
 #include <memory>
 #include <vector>

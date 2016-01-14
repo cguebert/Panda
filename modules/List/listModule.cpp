@@ -1,4 +1,4 @@
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
 
 panda::ModuleHandle listModule = REGISTER_MODULE
 		.setDescription("Generic objects that accept multiple types, and manipulate lists.")

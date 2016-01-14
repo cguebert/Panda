@@ -2,7 +2,7 @@
 #include <ui/GraphView.h>
 
 #include <panda/PandaDocument.h>
-#include <panda/Layer.h>
+#include <panda/object/Layer.h>
 
 #include <QPainter>
 

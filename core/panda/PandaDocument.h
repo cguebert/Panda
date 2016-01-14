@@ -2,7 +2,7 @@
 #define PANDADOCUMENT_H
 
 #include <panda/core.h>
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 
 #include <panda/types/Color.h>
 #include <panda/types/Point.h>

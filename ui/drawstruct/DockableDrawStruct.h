@@ -1,7 +1,7 @@
 #ifndef DOCKABLEDRAWSTRUCT_H
 #define DOCKABLEDRAWSTRUCT_H
 
-#include <panda/Dockable.h>
+#include <panda/object/Dockable.h>
 
 #include <ui/drawstruct/ObjectDrawStruct.h>
 

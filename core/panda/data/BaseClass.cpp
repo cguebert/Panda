@@ -1,4 +1,4 @@
-#include <panda/BaseClass.h>
+#include <panda/data/BaseClass.h>
 #include <panda/helper/algorithm.h>
 
 #ifdef __GNUC__

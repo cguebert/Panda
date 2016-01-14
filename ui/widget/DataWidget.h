@@ -1,7 +1,7 @@
 #ifndef DATAWIDGET_H
 #define DATAWIDGET_H
 
-#include <panda/Data.h>
+#include <panda/data/Data.h>
 #include <panda/PandaDocument.h>
 
 #include <ui/command/SetDataValueCommand.h>

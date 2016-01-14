@@ -1,8 +1,8 @@
 #ifndef GROUP_H
 #define GROUP_H
 
-#include <panda/PandaObject.h>
-#include <panda/Layer.h>
+#include <panda/object/PandaObject.h>
+#include <panda/object/Layer.h>
 
 class EditGroupCommand;
 namespace panda

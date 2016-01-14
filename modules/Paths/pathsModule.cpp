@@ -1,4 +1,4 @@
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
 
 panda::ModuleHandle pathsModule = REGISTER_MODULE
 		.setDescription("Components to create and manipulate paths (lists of points)")

@@ -1,6 +1,6 @@
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
-#include <panda/ObjectFactory.h>
+#include <panda/object/PandaObject.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/types/Mesh.h>
 #include <panda/types/Animation.h>
 #include <panda/types/Path.h>

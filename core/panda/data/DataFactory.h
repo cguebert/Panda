@@ -1,10 +1,10 @@
 #ifndef DATAFACTORY_H
 #define DATAFACTORY_H
 
-#include <panda/BaseClass.h>
+#include <panda/data/BaseClass.h>
+#include <panda/data/Data.h>
+#include <panda/data/DataCopier.h>
 #include <panda/types/DataTraits.h>
-#include <panda/Data.h>
-#include <panda/DataCopier.h>
 
 #include <map>
 #include <memory>

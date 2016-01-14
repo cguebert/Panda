@@ -5,7 +5,7 @@
 #include <panda/command/MoveLayerCommand.h>
 
 #include <panda/PandaDocument.h>
-#include <panda/Layer.h>
+#include <panda/object/Layer.h>
 
 LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
 	: QWidget(parent)

@@ -1,5 +1,5 @@
 #include <panda/PandaDocument.h>
-#include <panda/Layer.h>
+#include <panda/object/Layer.h>
 #include <panda/command/MoveLayerCommand.h>
 
 MoveLayerCommand::MoveLayerCommand(panda::PandaDocument* document,

@@ -1,11 +1,11 @@
 #include <GL/glew.h>
 
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
-#include <panda/ObjectFactory.h>
-#include <panda/Dockable.h>
-#include <panda/Renderer.h>
-#include <panda/Layer.h>
+#include <panda/object/PandaObject.h>
+#include <panda/object/ObjectFactory.h>
+#include <panda/object/Dockable.h>
+#include <panda/object/Renderer.h>
+#include <panda/object/Layer.h>
 
 #include <panda/types/Rect.h>
 #include <panda/types/ImageWrapper.h>

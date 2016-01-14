@@ -1,5 +1,5 @@
-#include <panda/PandaObject.h>
-#include <panda/ObjectFactory.h>
+#include <panda/object/PandaObject.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 
 #include "MouseEventsReceiver.h"

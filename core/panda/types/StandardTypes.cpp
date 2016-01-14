@@ -1,4 +1,4 @@
-#include <panda/DataFactory.h>
+#include <panda/data/DataFactory.h>
 
 #include <panda/types/StandardTypes.h>
 #include <panda/types/Animation.inl>

@@ -1,7 +1,7 @@
 #ifndef DATACOPIER_H
 #define DATACOPIER_H
 
-#include <panda/Data.h>
+#include <panda/data/Data.h>
 #include <panda/types/DataTraits.h>
 #include <panda/types/Animation.h>
 #include <panda/types/TypeConverter.h>

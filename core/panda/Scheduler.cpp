@@ -1,7 +1,7 @@
 #include <panda/Scheduler.h>
 #include <panda/PandaDocument.h>
-#include <panda/Renderer.h>
-#include <panda/Group.h>
+#include <panda/object/Renderer.h>
+#include <panda/object/Group.h>
 #include <panda/helper/algorithm.h>
 
 #include <deque>

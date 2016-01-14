@@ -1,7 +1,7 @@
 #ifndef DATANODE_H
 #define DATANODE_H
 
-#include <panda/BaseClass.h>
+#include <panda/data/BaseClass.h>
 
 namespace panda
 {

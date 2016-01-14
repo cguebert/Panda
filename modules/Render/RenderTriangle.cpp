@@ -1,12 +1,12 @@
 #include <GL/glew.h>
 
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
-#include <panda/ObjectFactory.h>
+#include <panda/object/PandaObject.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/types/Color.h>
 #include <panda/types/Mesh.h>
 #include <panda/types/Shader.h>
-#include <panda/Renderer.h>
+#include <panda/object/Renderer.h>
 #include <panda/graphics/ShaderProgram.h>
 
 namespace panda {

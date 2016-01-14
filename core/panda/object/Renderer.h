@@ -1,7 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <panda/Dockable.h>
+#include <panda/object/Dockable.h>
 #include <panda/graphics/Size.h>
 #include <QMatrix4x4>
 

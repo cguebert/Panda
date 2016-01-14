@@ -21,8 +21,8 @@
 #include <ui/graph/alignObjects.h>
 
 #include <panda/PandaDocument.h>
-#include <panda/ObjectFactory.h>
-#include <panda/Group.h>
+#include <panda/object/ObjectFactory.h>
+#include <panda/object/Group.h>
 #include <panda/helper/system/FileRepository.h>
 #include <panda/PluginsManager.h>
 

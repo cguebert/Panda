@@ -10,25 +10,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 set(HEADER_FILES
-	panda/BaseClass.h
-	panda/BaseData.h
 	panda/core.h
-	panda/Data.h
-	panda/DataAccessor.h
-	panda/DataCopier.h
-	panda/DataFactory.h
-	panda/DataNode.h
-	panda/Dockable.h
-	panda/GenericObject.h
-	panda/Group.h
-	panda/Layer.h
 	panda/messaging.h
-	panda/ObjectFactory.h
-	panda/OGLObject.h
 	panda/PandaDocument.h
-	panda/PandaObject.h
 	panda/PluginsManager.h
-	panda/Renderer.h
 	panda/Scheduler.h
 	panda/SimpleGUI.h
 	panda/UndoStack.h
@@ -39,6 +24,13 @@ set(HEADER_FILES
 	panda/command/LinkDatasCommand.h
 	panda/command/MoveLayerCommand.h
 	panda/command/RemoveGenericDataCommand.h
+	panda/data/BaseClass.h
+	panda/data/BaseData.h
+	panda/data/Data.h
+	panda/data/DataAccessor.h
+	panda/data/DataCopier.h
+	panda/data/DataFactory.h
+	panda/data/DataNode.h
 	panda/graphics/Framebuffer.h
 	panda/graphics/Image.h
 	panda/graphics/PointInt.h
@@ -57,6 +49,14 @@ set(HEADER_FILES
 	panda/helper/UpdateLogger.h
 	panda/helper/system/config.h
 	panda/helper/system/FileRepository.h
+	panda/object/Dockable.h
+	panda/object/GenericObject.h
+	panda/object/Group.h
+	panda/object/Layer.h
+	panda/object/ObjectFactory.h
+	panda/object/OGLObject.h
+	panda/object/PandaObject.h
+	panda/object/Renderer.h
 	panda/types/Animation.h
 	panda/types/AnimationTraits.h
 	panda/types/Color.h
@@ -75,22 +75,9 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
-	panda/BaseClass.cpp
-	panda/BaseData.cpp
 	panda/core.cpp
-	panda/DataCopier.cpp
-	panda/DataFactory.cpp
-	panda/DataNode.cpp
-	panda/Dockable.cpp
-	panda/GenericObject.cpp
-	panda/Group.cpp
-	panda/Layer.cpp
-	panda/ObjectFactory.cpp
-	panda/OGLObject.cpp
 	panda/PandaDocument.cpp
-	panda/PandaObject.cpp
 	panda/PluginsManager.cpp
-	panda/Renderer.cpp
 	panda/Scheduler.cpp
 	panda/SimpleGUI.cpp
 	panda/UndoStack.cpp
@@ -101,6 +88,11 @@ set(SOURCE_FILES
 	panda/command/LinkDatasCommand.cpp
 	panda/command/MoveLayerCommand.cpp
 	panda/command/RemoveGenericDataCommand.cpp
+	panda/data/BaseClass.cpp
+	panda/data/BaseData.cpp
+	panda/data/DataCopier.cpp
+	panda/data/DataFactory.cpp
+	panda/data/DataNode.cpp
 	panda/graphics/Framebuffer.cpp
 	panda/graphics/Image.cpp
 	panda/graphics/ShaderProgram.cpp
@@ -114,6 +106,14 @@ set(SOURCE_FILES
 	panda/helper/ShaderCache.cpp
 	panda/helper/UpdateLogger.cpp
 	panda/helper/system/FileRepository.cpp
+	panda/object/Dockable.cpp
+	panda/object/GenericObject.cpp
+	panda/object/Group.cpp
+	panda/object/Layer.cpp
+	panda/object/ObjectFactory.cpp
+	panda/object/OGLObject.cpp
+	panda/object/PandaObject.cpp
+	panda/object/Renderer.cpp
 	panda/types/Animation.inl
 	panda/types/Color.cpp
 	panda/types/DataTraits.cpp

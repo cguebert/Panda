@@ -3,7 +3,7 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/GraphView.h>
 
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 #include <panda/PandaDocument.h>
 #include <panda/XmlDocument.h>
 

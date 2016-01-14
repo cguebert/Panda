@@ -1,4 +1,4 @@
-#include <panda/Dockable.h>
+#include <panda/object/Dockable.h>
 #include <panda/command/DockableCommand.h>
 
 DetachDockableCommand::DetachDockableCommand(panda::DockObject* dock,

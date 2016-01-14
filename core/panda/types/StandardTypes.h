@@ -1,5 +1,5 @@
 #include <panda/core.h>
-#include <panda/Data.h>
+#include <panda/data/Data.h>
 
 #include <string>
 #include <vector>

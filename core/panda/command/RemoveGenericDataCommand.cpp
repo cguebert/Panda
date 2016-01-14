@@ -1,4 +1,4 @@
-#include <panda/GenericObject.h>
+#include <panda/object/GenericObject.h>
 #include <panda/command/RemoveGenericDataCommand.h>
 
 RemoveGenericDataCommand::RemoveGenericDataCommand(panda::GenericObject* object,

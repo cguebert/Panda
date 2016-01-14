@@ -1,7 +1,7 @@
 #ifndef GENERICOBJECT_H
 #define GENERICOBJECT_H
 
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 #include <panda/types/DataTypeId.h>
 #include <panda/types/Color.h>
 #include <panda/types/Gradient.h>

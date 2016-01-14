@@ -3,7 +3,7 @@
 
 #include <panda/UndoStack.h>
 
-#include <panda/Data.h>
+#include <panda/data/Data.h>
 #include <panda/command/CommandId.h>
 
 template <class T>

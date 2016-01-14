@@ -1,4 +1,4 @@
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 #include <panda/command/CommandId.h>
 #include <panda/command/LinkDatasCommand.h>
 

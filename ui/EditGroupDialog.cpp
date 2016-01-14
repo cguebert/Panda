@@ -3,7 +3,7 @@
 #include <ui/EditGroupDialog.h>
 #include <panda/command/GroupCommand.h>
 
-#include <panda/Group.h>
+#include <panda/object/Group.h>
 #include <panda/PandaDocument.h>
 
 using panda::ObjectFactory;

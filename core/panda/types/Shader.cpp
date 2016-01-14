@@ -6,8 +6,7 @@
 #include <panda/helper/algorithm.h>
 #include <panda/helper/system/FileRepository.h>
 
-#include <panda/DataFactory.h>
-#include <panda/Data.h>
+#include <panda/data/DataFactory.h>
 
 #include <iostream>
 

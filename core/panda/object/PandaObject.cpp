@@ -1,6 +1,6 @@
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 #include <panda/PandaDocument.h>
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/XmlDocument.h>
 #include <panda/helper/algorithm.h>
 

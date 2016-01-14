@@ -1,7 +1,7 @@
 #ifndef OGLOBJECT_H
 #define OGLOBJECT_H
 
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 
 namespace panda
 {

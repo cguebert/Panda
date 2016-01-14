@@ -1,4 +1,4 @@
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
 
 #include "ShaderEffects.h"

@@ -1,7 +1,6 @@
 #include <ui/widget/DataWidgetFactory.h>
 
-#include <panda/BaseData.h>
-#include <panda/DataFactory.h>
+#include <panda/data/DataFactory.h>
 #include <panda/helper/algorithm.h>
 
 DataWidgetFactory* DataWidgetFactory::getInstance()

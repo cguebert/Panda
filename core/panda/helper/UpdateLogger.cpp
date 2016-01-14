@@ -1,5 +1,5 @@
 #include <panda/helper/UpdateLogger.h>
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 #include <panda/PandaDocument.h>
 
 #include <windows.h>

@@ -1,5 +1,5 @@
 #include <panda/PandaDocument.h>
-#include <panda/Group.h>
+#include <panda/object/Group.h>
 
 #include <panda/command/GroupCommand.h>
 

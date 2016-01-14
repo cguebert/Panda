@@ -1,7 +1,7 @@
 #ifndef IMAGEVIEWPORT_H
 #define IMAGEVIEWPORT_H
 
-#include <panda/DataNode.h>
+#include <panda/data/DataNode.h>
 
 #include <QGLWidget>
 

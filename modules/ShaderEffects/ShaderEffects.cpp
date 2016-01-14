@@ -1,6 +1,6 @@
 #include "ShaderEffects.h"
 
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/graphics/ShaderProgram.h>
 
 #include <iostream>

@@ -1,6 +1,6 @@
-#include <panda/GenericObject.h>
+#include <panda/object/GenericObject.h>
 #include <panda/PandaDocument.h>
-#include <panda/DataFactory.h>
+#include <panda/data/DataFactory.h>
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
 #include <panda/helper/algorithm.h>

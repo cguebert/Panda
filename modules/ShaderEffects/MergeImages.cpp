@@ -1,6 +1,6 @@
-#include <panda/OGLObject.h>
 #include <panda/PandaDocument.h>
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
+#include <panda/object/OGLObject.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/ShaderProgram.h>
@@ -9,7 +9,6 @@
 #include <GL/glew.h>
 
 #include <QMatrix4x4>
-#include <QOpenGLFramebufferObject>
 
 namespace panda {
 

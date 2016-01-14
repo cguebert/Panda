@@ -4,7 +4,7 @@
 #include <ui/widget/OpenDialogDataWidget.h>
 #include <ui/widget/TableDataWidgetDialog.h>
 
-#include <panda/Data.h>
+#include <panda/data/Data.h>
 
 #include <QtWidgets>
 

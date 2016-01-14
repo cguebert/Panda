@@ -1,4 +1,4 @@
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/ShaderCache.h>
 #include <panda/helper/system/FileRepository.h>

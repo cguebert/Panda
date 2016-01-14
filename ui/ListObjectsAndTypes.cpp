@@ -4,10 +4,10 @@
 
 #include <ui/ListObjectsAndTypes.h>
 #include <ui/widget/DataWidgetFactory.h>
-#include <panda/ObjectFactory.h>
-#include <panda/DataFactory.h>
+#include <panda/object/ObjectFactory.h>
+#include <panda/data/DataFactory.h>
 #include <panda/types/TypeConverter.h>
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 
 using namespace panda;
 using namespace panda::types;

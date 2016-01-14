@@ -1,7 +1,7 @@
 #ifndef DOCKABLE_H
 #define DOCKABLE_H
 
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 
 #include <vector>
 

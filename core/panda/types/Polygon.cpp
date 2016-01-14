@@ -1,7 +1,6 @@
 #include <panda/types/Polygon.h>
 
-#include <panda/DataFactory.h>
-#include <panda/Data.h>
+#include <panda/data/DataFactory.h>
 
 namespace panda
 {

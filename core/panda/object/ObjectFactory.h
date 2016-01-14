@@ -1,7 +1,7 @@
 #ifndef OBJECTFACTORY_H
 #define OBJECTFACTORY_H
 
-#include <panda/BaseClass.h>
+#include <panda/data/BaseClass.h>
 
 #include <map>
 #include <memory>

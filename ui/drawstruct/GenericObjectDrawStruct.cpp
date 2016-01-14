@@ -1,7 +1,7 @@
 #include <ui/drawstruct/GenericObjectDrawStruct.h>
 #include <ui/GraphView.h>
 
-#include <panda/GenericObject.h>
+#include <panda/object/GenericObject.h>
 
 #include <QPainter>
 

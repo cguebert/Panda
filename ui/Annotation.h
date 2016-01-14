@@ -1,7 +1,7 @@
 #ifndef ANNOTATION_H
 #define ANNOTATION_H
 
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 
 namespace panda
 {

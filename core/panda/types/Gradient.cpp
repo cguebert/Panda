@@ -2,8 +2,7 @@
 #include <panda/types/Animation.inl>
 #include <panda/types/AnimationTraits.h>
 
-#include <panda/DataFactory.h>
-#include <panda/Data.h>
+#include <panda/data/DataFactory.h>
 
 #include <cmath>
 

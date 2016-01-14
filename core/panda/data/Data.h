@@ -1,8 +1,8 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <panda/BaseData.h>
-#include <panda/DataAccessor.h>
+#include <panda/data/BaseData.h>
+#include <panda/data/DataAccessor.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/helper/UpdateLogger.h>

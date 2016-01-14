@@ -1,4 +1,4 @@
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 
 #include <modules/particles/ParticleEffector.h>

@@ -1,4 +1,4 @@
-#include <panda/ObjectFactory.h>
+#include <panda/object/ObjectFactory.h>
 
 panda::ModuleHandle coreModule = panda::RegisterModule("core")
 		.setDescription("Core components")

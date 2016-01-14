@@ -1,8 +1,7 @@
 #include <panda/types/Point.h>
 #include <panda/types/Path.h>
 
-#include <panda/DataFactory.h>
-#include <panda/Data.h>
+#include <panda/data/DataFactory.h>
 
 namespace panda
 {

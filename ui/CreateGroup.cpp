@@ -6,12 +6,13 @@
 #include <ui/command/RemoveObjectCommand.h>
 #include <ui/command/MoveObjectCommand.h>
 
-#include <panda/Group.h>
+
 #include <panda/PandaDocument.h>
-#include <panda/ObjectFactory.h>
-#include <panda/Layer.h>
-#include <panda/Renderer.h>
-#include <panda/DataFactory.h>
+#include <panda/data/DataFactory.h>
+#include <panda/object/Group.h>
+#include <panda/object/Renderer.h>
+#include <panda/object/ObjectFactory.h>
+#include <panda/object/Layer.h>
 #include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
 

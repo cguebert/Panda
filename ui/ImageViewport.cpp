@@ -2,7 +2,7 @@
 #include <ui/ImageViewport.h>
 
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 #include <panda/types/ImageWrapper.h>
 
 #include <iostream>

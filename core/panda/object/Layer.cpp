@@ -1,9 +1,9 @@
 #include <GL/glew.h>
 
-#include <panda/Layer.h>
-#include <panda/Renderer.h>
 #include <panda/PandaDocument.h>
-#include <panda/ObjectFactory.h>
+#include <panda/object/Layer.h>
+#include <panda/object/Renderer.h>
+#include <panda/object/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
 
 #include <panda/graphics/Framebuffer.h>

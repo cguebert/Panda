@@ -1,7 +1,7 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include <panda/Dockable.h>
+#include <panda/object/Dockable.h>
 #include <panda/types/ImageWrapper.h>
 
 #include <QMatrix4x4>

@@ -1,6 +1,6 @@
-#include <panda/BaseData.h>
-#include <panda/PandaObject.h>
-#include <panda/DataCopier.h>
+#include <panda/data/BaseData.h>
+#include <panda/data/DataCopier.h>
+#include <panda/object/PandaObject.h>
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
 

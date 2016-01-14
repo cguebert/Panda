@@ -1,7 +1,6 @@
 #include <panda/types/ImageWrapper.h>
 
-#include <panda/DataFactory.h>
-#include <panda/Data.h>
+#include <panda/data/DataFactory.h>
 
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Image.h>

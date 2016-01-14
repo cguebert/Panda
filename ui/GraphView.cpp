@@ -20,7 +20,7 @@
 #endif
 
 #include <panda/PandaDocument.h>
-#include <panda/PandaObject.h>
+#include <panda/object/PandaObject.h>
 
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	: QWidget(parent)

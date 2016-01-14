@@ -1,7 +1,7 @@
 #ifndef BASEDATA_H
 #define BASEDATA_H
 
-#include <panda/DataNode.h>
+#include <panda/data/DataNode.h>
 
 namespace panda
 {

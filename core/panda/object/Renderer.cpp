@@ -1,6 +1,6 @@
-#include <panda/Renderer.h>
 #include <panda/PandaDocument.h>
-#include <panda/Layer.h>
+#include <panda/object/Renderer.h>
+#include <panda/object/Layer.h>
 
 namespace panda
 {
