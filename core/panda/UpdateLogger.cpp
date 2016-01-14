@@ -1,6 +1,6 @@
-#include <panda/helper/UpdateLogger.h>
-#include <panda/object/PandaObject.h>
+#include <panda/UpdateLogger.h>
 #include <panda/PandaDocument.h>
+#include <panda/object/PandaObject.h>
 
 #include <windows.h>
 #include <thread>

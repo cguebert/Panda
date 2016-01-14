@@ -16,6 +16,7 @@ set(HEADER_FILES
 	panda/PluginsManager.h
 	panda/Scheduler.h
 	panda/SimpleGUI.h
+	panda/UpdateLogger.h
 	panda/UndoStack.h
 	panda/XmlDocument.h
 	panda/command/CommandId.h
@@ -47,7 +48,6 @@ set(HEADER_FILES
 	panda/helper/Random.h
 	panda/helper/typeList.h
 	panda/helper/ShaderCache.h
-	panda/helper/UpdateLogger.h
 	panda/helper/system/config.h
 	panda/helper/system/FileRepository.h
 	panda/object/Dockable.h
@@ -81,6 +81,7 @@ set(SOURCE_FILES
 	panda/PluginsManager.cpp
 	panda/Scheduler.cpp
 	panda/SimpleGUI.cpp
+	panda/UpdateLogger.cpp
 	panda/UndoStack.cpp
 	panda/XmlDocument.cpp
 	panda/command/CommandId.cpp
@@ -106,7 +107,6 @@ set(SOURCE_FILES
 	panda/helper/PointsGrid.cpp
 	panda/helper/Random.cpp
 	panda/helper/ShaderCache.cpp
-	panda/helper/UpdateLogger.cpp
 	panda/helper/system/FileRepository.cpp
 	panda/object/Dockable.cpp
 	panda/object/GenericObject.cpp

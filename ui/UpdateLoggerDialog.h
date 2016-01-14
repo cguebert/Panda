@@ -1,7 +1,7 @@
 #ifndef UPDATELOGGERDIALOG_H
 #define UPDATELOGGERDIALOG_H
 
-#include <panda/helper/UpdateLogger.h>
+#include <panda/UpdateLogger.h>
 
 #include <QStylePainter>
 #include <QtWidgets>

@@ -5,7 +5,7 @@
 #include <panda/graphics/Image.h>
 
 #ifdef PANDA_LOG_EVENTS
-#include <panda/helper/UpdateLogger.h>
+#include <panda/UpdateLogger.h>
 #endif
 
 #include <QImage>

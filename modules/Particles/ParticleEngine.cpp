@@ -12,7 +12,7 @@
 #include <cmath>
 
 #ifdef PANDA_LOG_EVENTS
-#include <panda/helper/UpdateLogger.h>
+#include <panda/UpdateLogger.h>
 #endif
 
 namespace panda {

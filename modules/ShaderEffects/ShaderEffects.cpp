@@ -57,11 +57,12 @@ void ShaderEffects::update()
 		glClearColor(0, 0, 0, 0);
 		glViewport(0, 0, inputSize.width(), inputSize.height());
 
+		GLfloat w = static_cast<float>(inputSize.width()), h = static_cast<float>(inputSize.height());
+
 		graphics::Mat4x4 mvp;
-		mvp.ortho(0, inputSize.width(), inputSize.height(), 0, -10, 10);
+		mvp.ortho(0, w, h, 0, -10.f, 10.f);
 
 		GLfloat verts[8];
-		GLfloat w = static_cast<float>(inputSize.width()), h = static_cast<float>(inputSize.height());
 		verts[0*2+0] = w;	verts[0*2+1] = 0;
 		verts[1*2+0] = 0;	verts[1*2+1] = 0;
 		verts[3*2+0] = 0;	verts[3*2+1] = h;
@@ -158,14 +159,15 @@ void renderImage(Framebuffer& fbo, ShaderProgram& program)
 	auto size = fbo.size();
 	glViewport(0, 0, size.width(), size.height());
 
+	GLfloat w = static_cast<float>(size.width()), h = static_cast<float>(size.height());
+
 	graphics::Mat4x4 mvp;
-	mvp.ortho(0, size.width(), size.height(), 0, -10, 10);
+	mvp.ortho(0, w, h, 0, -10.f, 10.f);
 
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	GLfloat verts[8];
-	GLfloat w = static_cast<float>(size.width()), h = static_cast<float>(size.height());
 	verts[0*2+0] = w;	verts[0*2+1] = 0;
 	verts[1*2+0] = 0;	verts[1*2+1] = 0;
 	verts[3*2+0] = 0;	verts[3*2+1] = h;
