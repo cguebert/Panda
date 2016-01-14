@@ -12,6 +12,7 @@
 #include <ui/ListObjectsAndTypes.h>
 #include <ui/MainWindow.h>
 #include <ui/ScrollContainer.h>
+#include <ui/SimpleGUIImpl.h>
 #include <ui/UpdateLoggerDialog.h>
 
 #include <ui/command/AddObjectCommand.h>
@@ -29,10 +30,12 @@
 
 MainWindow::MainWindow()
 {
-	m_document = new panda::PandaDocument(this);
+	m_simpleGUI = new SimpleGUIImpl(this);
+	m_document = new panda::PandaDocument(this, *m_simpleGUI);
 
 	m_graphView = new GraphView(m_document);
 	m_graphViewContainer = new ScrollContainer();
+
 	m_graphViewContainer->setFrameStyle(0); // No frame
 	m_graphViewContainer->setView(m_graphView);
 
@@ -1196,7 +1199,7 @@ void MainWindow::closeDetachedWindow(DetachedWindow* window)
 void MainWindow::closeViewport(ImageViewport* viewport)
 {
 	QWidget* container = m_imageViewports[viewport];
-	m_imageViewports.remove(viewport);
+	m_imageViewports.erase(viewport);
 	for(DetachedWindow* window : m_detachedWindows)
 	{
 		if(window->getTabInfo().widget == container)
@@ -1273,4 +1276,9 @@ void MainWindow::redoTextChanged(const std::string& text)
 		m_redoAction->setText(tr("Redo"));
 	else
 		m_redoAction->setText(tr("Redo %1").arg(QString::fromStdString(text)));
+}
+
+void MainWindow::updateOpenGLView() const
+{
+	m_graphView->update();
 }

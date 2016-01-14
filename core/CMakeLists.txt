@@ -30,6 +30,7 @@ set(HEADER_FILES
 	panda/PluginsManager.h
 	panda/Renderer.h
 	panda/Scheduler.h
+	panda/SimpleGUI.h
 	panda/UndoStack.h
 	panda/XmlDocument.h
 	panda/command/CommandId.h
@@ -91,6 +92,7 @@ set(SOURCE_FILES
 	panda/PluginsManager.cpp
 	panda/Renderer.cpp
 	panda/Scheduler.cpp
+	panda/SimpleGUI.cpp
 	panda/UndoStack.cpp
 	panda/XmlDocument.cpp
 	panda/command/CommandId.cpp

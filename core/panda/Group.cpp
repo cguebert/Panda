@@ -1,14 +1,13 @@
-#include <panda/Group.h>
-#include <panda/PandaDocument.h>
-#include <panda/ObjectFactory.h>
-#include <panda/Layer.h>
-#include <panda/Renderer.h>
 #include <panda/DataFactory.h>
+#include <panda/Group.h>
+#include <panda/Layer.h>
+#include <panda/ObjectFactory.h>
+#include <panda/PandaDocument.h>
+#include <panda/Renderer.h>
+#include <panda/SimpleGUI.h>
 #include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/helper/algorithm.h>
-
-#include <QMessageBox>
 
 namespace panda
 {
@@ -188,9 +187,7 @@ void Group::load(XmlElement& elem)
 		}
 		else
 		{
-			QMessageBox::warning(nullptr, PandaDocument::tr("Panda"),
-				PandaDocument::tr("Could not create the object %1.\nA plugin must be missing.")
-				.arg(QString::fromStdString(registryName)));
+			getParentDocument()->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
 			return;
 		}
 

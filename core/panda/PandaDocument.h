@@ -31,6 +31,11 @@ namespace graphics
 	class ShaderProgram; 
 }
 
+namespace gui
+{
+	class BaseGUI;
+}
+
 class PANDA_CORE_API PandaDocument : public QObject, public PandaObject
 {
 	Q_OBJECT
@@ -41,7 +46,7 @@ public:
 	typedef std::vector<ObjectPtr> ObjectsList;
 	typedef std::vector<PandaObject*> ObjectsSelection;
 
-	explicit PandaDocument(QObject* parent = nullptr);
+	explicit PandaDocument(QObject* parent, gui::BaseGUI& gui);
 	~PandaDocument();
 
 	bool writeFile(const std::string& fileName);
@@ -121,6 +126,8 @@ public:
 	void initializeGL(); // Called by the render view, (PandaCore does not link with OpenGL)
 	bool isGLInitialized() const; // Can the objects use OpenGL yet?
 
+	gui::BaseGUI& getGUI() const;
+
 protected:
 	friend class ScopedMacro;
 
@@ -166,6 +173,8 @@ protected:
 	int m_iNbFrames;
 	long long m_fpsTime;
 	PReal m_currentFPS;
+
+	gui::BaseGUI& m_gui;
 
 public:
 // Signals
@@ -280,6 +289,9 @@ inline void PandaDocument::initializeGL()
 
 inline bool PandaDocument::isGLInitialized() const
 { return m_isGLInitialized; }
+
+inline gui::BaseGUI& PandaDocument::getGUI() const
+{ return m_gui; }
 
 } // namespace panda
 

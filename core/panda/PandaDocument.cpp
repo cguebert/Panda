@@ -8,6 +8,7 @@
 #include <panda/Messaging.h>
 #include <panda/Renderer.h>
 #include <panda/Scheduler.h>
+#include <panda/SimpleGUI.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/GradientCache.h>
@@ -18,7 +19,6 @@
 #include <panda/helper/UpdateLogger.h>
 #endif
 
-#include <QMessageBox>
 #include <QTimer>
 
 #include <chrono>
@@ -61,7 +61,7 @@ using types::Color;
 using types::ImageWrapper;
 using types::Point;
 
-PandaDocument::PandaDocument(QObject* parent)
+PandaDocument::PandaDocument(QObject* parent, gui::BaseGUI& gui)
 	: PandaObject(nullptr)
 	, QObject(parent)
 	, m_currentIndex(1)
@@ -82,6 +82,7 @@ PandaDocument::PandaDocument(QObject* parent)
 	, m_animMultithread(false)
 	, m_iNbFrames(0)
 	, m_currentFPS(0)
+	, m_gui(gui)
 {
 	addInput(m_renderSize);
 	addInput(m_backgroundColor);
@@ -145,11 +146,7 @@ bool PandaDocument::writeFile(const std::string& fileName)
 
 	bool result = doc.saveToFile(fileName);
 	if (!result)
-	{
-		QMessageBox::warning(nullptr, tr("Panda"),
-							 tr("Cannot write file %1.")
-							 .arg(QString::fromStdString(fileName)));
-	}
+		m_gui.messageBox(gui::MessageBoxType::warning, "Panda", "Cannot write file " + fileName);
 
 	return result;
 }
@@ -159,9 +156,7 @@ bool PandaDocument::readFile(const std::string& fileName, bool isImport)
 	XmlDocument doc;
 	if (!doc.loadFromFile(fileName))
 	{
-		QMessageBox::warning(nullptr, tr("Panda"),
-							 tr("Cannot parse xml file %1.")
-							 .arg(QString::fromStdString(fileName)));
+		m_gui.messageBox(gui::MessageBoxType::warning, "Panda", "Cannot parse xml file  " + fileName + ".");
 		return false;
 	}
 
@@ -299,9 +294,7 @@ bool PandaDocument::loadDoc(XmlElement& root)
 		}
 		else
 		{
-			QMessageBox::warning(nullptr, tr("Panda"),
-				tr("Could not create the object %1.\nA plugin must be missing.")
-				.arg(QString::fromStdString(registryName)));
+			m_gui.messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
 			return false;
 		}
 

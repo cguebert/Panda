@@ -24,6 +24,7 @@ set(HEADER_FILES
 	OpenGLRenderView.h
 	QuickCreateDialog.h
 	ScrollContainer.h
+	SimpleGUIImpl.h
 	UpdateLoggerDialog.h
 	command/AddObjectCommand.h
 	command/ModifyAnnotationCommand.h
@@ -70,6 +71,7 @@ set(SOURCE_FILES
 	OpenGLRenderView.cpp
 	QuickCreateDialog.cpp
 	ScrollContainer.cpp
+	SimpleGUIImpl.cpp
 	UpdateLoggerDialog.cpp
 	command/AddObjectCommand.cpp
 	command/ModifyAnnotationCommand.cpp

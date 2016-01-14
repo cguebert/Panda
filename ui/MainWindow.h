@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 #include <panda/messaging.h>
+#include <map>
 
 class QAction;
 class QDockWidget;
@@ -16,6 +18,7 @@ class GraphView;
 class ImageViewport;
 class LayersTab;
 class OpenGLRenderView;
+class SimpleGUIImpl;
 class ScrollContainer;
 class UpdateLoggerDialog;
 
@@ -31,6 +34,8 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow();
+
+	void updateOpenGLView() const;
 
 protected:
 	void closeEvent(QCloseEvent* event);
@@ -102,11 +107,12 @@ private:
 	LayersTab* m_layersTab = nullptr;
 	QDockWidget* m_layersDock = nullptr;
 	UpdateLoggerDialog* m_loggerDialog = nullptr;
+	SimpleGUIImpl* m_simpleGUI = nullptr;
 	QStringList m_recentFiles;
 	QString m_curFile;
 	bool m_fullScreen = false, m_adjustRenderSizeToView = false, m_undoEnabled = false, m_redoEnabled = false;
 	QList<DetachedWindow*> m_detachedWindows;
-	QMap<ImageViewport*, QWidget*> m_imageViewports;
+	std::map<ImageViewport*, QWidget*> m_imageViewports;
 	panda::msg::Observer m_observer;
 
 	enum { MaxRecentFiles = 5 };
