@@ -54,7 +54,7 @@ public:
 		const std::vector<Color>& listColor = color.getValue();
 
 		int nbA = valA.size(), nbB = valB.size();
-		int nbLines = qMin(valA.size(), valB.size());
+		int nbLines = std::min(valA.size(), valB.size());
 		bool useTwoLists = true;
 		if(nbA && !nbB)
 		{
@@ -104,7 +104,7 @@ public:
 				shaderProgram.setAttributeArray(colorLocation, tmpColors.front().data(), 4);
 			}
 
-			glLineWidth(qMax((PReal)1.0, width.getValue()));
+			glLineWidth(std::max((PReal)1.0, width.getValue()));
 			glDrawArrays(GL_LINES, 0, nbVertices);
 			glLineWidth(0);
 

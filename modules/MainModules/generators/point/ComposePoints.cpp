@@ -32,7 +32,7 @@ public:
 		int nbx = xVal.size(), nby = yVal.size();
 		if (nbx && nby)
 		{
-			int nb = qMax(nbx, nby);
+			int nb = std::max(nbx, nby);
 			if (nbx < nby) nbx = 1;
 			else if (nby < nbx) nby = 1;
 			pts.resize(nb);

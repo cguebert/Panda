@@ -33,7 +33,7 @@ public:
 		{
 			if(nbPos < nbVel) nbPos = 1;
 			if(nbVel > 0 && nbVel < nbPos) nbVel = 1;
-			int nb = qMax(nbPos, nbVel);
+			int nb = std::max(nbPos, nbVel);
 		
 			newParticles.resize(nb);
 			for(int i=0; i<nb; ++i)

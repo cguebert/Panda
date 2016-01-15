@@ -352,7 +352,7 @@ void Scheduler::computeStartValues()
 
 void Scheduler::prepareThreads()
 {
-	int nbThreads = qMax(1, QThread::idealThreadCount() / 2);
+	int nbThreads = std::max(1, QThread::idealThreadCount() / 2);
 
 	m_updateThreads.push_back(new SchedulerThread(this, 0));
 	for(int i=1; i<nbThreads; ++i)

@@ -6,9 +6,6 @@ project(${PROJECT_NAME})
 set(QT_BASE_DIR "" CACHE PATH "Qt5 install prefix") # C:/Qt/5/msvc2015/
 list(APPEND CMAKE_PREFIX_PATH ${QT_BASE_DIR})
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
 set(HEADER_FILES
 	panda/core.h
 	panda/messaging.h

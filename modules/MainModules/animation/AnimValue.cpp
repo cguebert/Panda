@@ -47,7 +47,7 @@ public:
 		AnimData* dataInput = dynamic_cast<AnimData*>(list[0]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[1]);
 
-		Q_ASSERT(dataInput && dataOutput);
+		assert(dataInput && dataOutput);
 
 		const std::vector<PReal>& key = progress.getValue();
 		const Animation<T>& inVal = dataInput->getValue();

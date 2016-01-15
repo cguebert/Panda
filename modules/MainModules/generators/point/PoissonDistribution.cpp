@@ -4,6 +4,8 @@
 #include <panda/helper/Random.h>
 #include <panda/helper/PointsGrid.h>
 
+#include <QList>
+
 namespace panda {
 
 using types::Point;

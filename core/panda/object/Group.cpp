@@ -54,7 +54,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	typedef std::pair<BaseData*, BaseData*> DataPair;
 	std::vector<DataPair> links;
 
-	typedef std::pair<quint32, quint32> IntPair;
+	typedef std::pair<uint32_t, uint32_t> IntPair;
 	std::vector<IntPair> dockedObjects;
 
 	PandaDocument::ObjectsSelection allObjects;
@@ -131,7 +131,7 @@ void Group::load(XmlElement& elem)
 	auto groupDataNode = elem.firstChild("GroupData");
 	while(groupDataNode)
 	{
-		quint32 type, input, output;
+		uint32_t type, input, output;
 		std::string name, help, widget, widgetData;
 		type = DataFactory::nameToType(groupDataNode.attribute("type").toString());
 		input = groupDataNode.attribute("input").toUnsigned();
@@ -159,14 +159,14 @@ void Group::load(XmlElement& elem)
 	// Loading data values
 	PandaObject::load(elem);
 
-	std::map<quint32, PandaObject*> importObjectsMap;
+	std::map<uint32_t, PandaObject*> importObjectsMap;
 	ObjectFactory* factory = ObjectFactory::getInstance();
 
 	auto objectNode = elem.firstChild("Object");
 	while(objectNode)
 	{
 		std::string registryName = objectNode.attribute("type").toString();
-		quint32 index = objectNode.attribute("index").toUnsigned();
+		uint32_t index = objectNode.attribute("index").toUnsigned();
 		auto object = factory->create(registryName, m_parentDocument);
 		if(object)
 		{
@@ -198,7 +198,7 @@ void Group::load(XmlElement& elem)
 	auto linkNode = elem.firstChild("Link");
 	while(linkNode)
 	{
-		quint32 index1, index2;
+		uint32_t index1, index2;
 		std::string name1, name2;
 		index1 = linkNode.attribute("object1").toUnsigned();
 		index2 = linkNode.attribute("object2").toUnsigned();
@@ -236,7 +236,7 @@ void Group::load(XmlElement& elem)
 	auto dockNode = elem.firstChild("Dock");
 	while(dockNode)
 	{
-		quint32 dockIndex, dockableIndex;
+		uint32_t dockIndex, dockableIndex;
 		dockIndex = dockNode.attribute("dock").toUnsigned();
 		dockableIndex = dockNode.attribute("docked").toUnsigned();
 

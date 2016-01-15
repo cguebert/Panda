@@ -150,13 +150,13 @@ public:
 		for(int i=0; i<nbRects; ++i)
 		{
 			Rect rect = rectList[i];
-			int x1 = qMax<int>(0, std::floor(rect.left()));
-			int y1 = qMax<int>(0, std::floor(rect.top()));
-			int x2 = qMin<int>(img.width()-1, std::floor(rect.right()));
-			int y2 = qMin<int>(img.height()-1, std::floor(rect.bottom()));
+			int x1 = std::max<int>(0, std::floor(rect.left()));
+			int y1 = std::max<int>(0, std::floor(rect.top()));
+			int x2 = std::min<int>(img.width()-1, std::floor(rect.right()));
+			int y2 = std::min<int>(img.height()-1, std::floor(rect.bottom()));
 
 			int nb = 0;
-			ulong a=0, r=0, g=0, b=0;
+			uint64_t a=0, r=0, g=0, b=0;
 			for(int y=y1; y<=y2; ++y)
 			{
 				const auto line = img.pixel(0, y);

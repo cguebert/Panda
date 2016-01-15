@@ -57,7 +57,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	glLoadIdentity();
 
 	auto& mvp = getMVPMatrix();
-	mvp.ortho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
+	mvp.ortho(0, static_cast<float>(renderSize.width()), static_cast<float>(renderSize.height()), 0, -10.f, 10.f);
 
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);

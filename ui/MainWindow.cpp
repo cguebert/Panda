@@ -31,7 +31,7 @@
 MainWindow::MainWindow()
 {
 	m_simpleGUI = new SimpleGUIImpl(this);
-	m_document = new panda::PandaDocument(this, *m_simpleGUI);
+	m_document = new panda::PandaDocument(*m_simpleGUI);
 
 	m_graphView = new GraphView(m_document);
 	m_graphViewContainer = new ScrollContainer();
@@ -292,19 +292,19 @@ void MainWindow::createActions()
 	auto selectAllAction = new QAction(tr("Select &all"), this);
 	selectAllAction->setShortcut(tr("Ctrl+A"));
 	selectAllAction->setStatusTip(tr("Select all objects"));
-	connect(selectAllAction, &QAction::triggered, m_document, &panda::PandaDocument::selectAll);
+	connect(selectAllAction, &QAction::triggered, [this]() { m_document->selectAll(); });
 	addAction(selectAllAction);
 
 	auto selectNoneAction = new QAction(tr("Select &none"), this);
 	selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
 	selectNoneAction->setStatusTip(tr("Deselect all objets"));
-	connect(selectNoneAction, &QAction::triggered, m_document, &panda::PandaDocument::selectNone);
+	connect(selectNoneAction, &QAction::triggered, [this]() { m_document->selectNone(); });
 	addAction(selectNoneAction);
 
 	auto selectConnectedAction = new QAction(tr("Select &connected"), this);
 	selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
 	selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
-	connect(selectConnectedAction, &QAction::triggered, m_document, &panda::PandaDocument::selectConnected);
+	connect(selectConnectedAction, &QAction::triggered, [this]() { m_document->selectConnected(); });
 	addAction(selectConnectedAction);
 
 	m_groupAction = new QAction(tr("&Group selected"), this);
@@ -412,7 +412,7 @@ void MainWindow::createActions()
 	m_playAction->setShortcut(tr("F5"));
 	m_playAction->setStatusTip(tr("Start the animation"));
 	m_playAction->setCheckable(true);
-	connect(m_playAction, &QAction::triggered, m_document, &panda::PandaDocument::play);
+	connect(m_playAction, &QAction::triggered, [this](bool playing) { m_document->play(playing); });
 	connect(m_playAction, SIGNAL(triggered(bool)), this, SLOT(play(bool)));
 	addAction(m_playAction);
 
@@ -420,14 +420,14 @@ void MainWindow::createActions()
 	stepAction->setIcon(QIcon(":/share/icons/step.png"));
 	stepAction->setShortcut(tr("F6"));
 	stepAction->setStatusTip(tr("Do one step of the animation"));
-	connect(stepAction, &QAction::triggered, m_document, &panda::PandaDocument::step);
+	connect(stepAction, &QAction::triggered, [this]() { m_document->step(); });
 	addAction(stepAction);
 
 	auto rewindAction = new QAction(tr("Rewind"), this);
 	rewindAction->setIcon(QIcon(":/share/icons/stop.png"));
 	rewindAction->setShortcut(tr("F7"));
 	rewindAction->setStatusTip(tr("Rewind the animation back to the begining"));
-	connect(rewindAction, &QAction::triggered, m_document, &panda::PandaDocument::rewind);
+	connect(rewindAction, &QAction::triggered, [this]() { m_document->rewind(); });
 	addAction(rewindAction);
 
 	m_removeLinkAction = new QAction(tr("Remove link"), this);

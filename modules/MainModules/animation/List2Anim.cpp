@@ -60,7 +60,7 @@ public:
 		typedef Data< Animation<T> > AnimData;
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
 		AnimData* dataOutput = dynamic_cast<AnimData*>(list[1]);
-		Q_ASSERT(dataInput && dataOutput);
+		assert(dataInput && dataOutput);
 
 		const std::vector<T>& inVal = dataInput->getValue();
 		auto outVal = dataOutput->getAccessor();
@@ -70,7 +70,7 @@ public:
 
 		const std::vector<PReal>& keysList = keys.getValue();
 
-		int nb = qMin(keysList.size(), inVal.size());
+		int nb = std::min(keysList.size(), inVal.size());
 		outVal->clear();
 		for(int i=0; i<nb; ++i)
 			outVal->add(keysList[i], inVal[i]);
@@ -127,7 +127,7 @@ public:
 		AnimData* dataInput = dynamic_cast<AnimData*>(list[0]);
 		KeysVecData* dataKeys = dynamic_cast<KeysVecData*>(list[1]);
 		ValuesVecData* dataValues = dynamic_cast<ValuesVecData*>(list[2]);
-		Q_ASSERT(dataInput && dataKeys && dataValues);
+		assert(dataInput && dataKeys && dataValues);
 
 		const auto& anim = dataInput->getValue();
 		dataKeys->getAccessor() = anim.getKeys();

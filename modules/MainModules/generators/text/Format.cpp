@@ -58,7 +58,7 @@ public:
 	{
 		typedef Data< std::vector<T> > ValueData;
 		ValueData* dataInput = dynamic_cast<ValueData*>(list[0]);
-		Q_ASSERT(dataInput);
+		assert(dataInput);
 
 		const std::vector<T>& inVal = dataInput->getValue();
 		int nb = inVal.size();
@@ -71,7 +71,7 @@ public:
 		else if(nb == 1 && prevNb > 1)
 			nb = 1;
 		else
-			tempList.resize(qMin(prevNb, nb));
+			tempList.resize(std::min(prevNb, nb));
 		int size = tempList.size();
 
 		for (int i = 0; i < size; ++i)

@@ -49,7 +49,7 @@ public:
 		RealData* dataLength = dynamic_cast<RealData*>(list[1]);
 		IntData* dataSize = dynamic_cast<IntData*>(list[2]);
 
-		Q_ASSERT(dataInput && dataLength && dataSize);
+		assert(dataInput && dataLength && dataSize);
 
 		const Animation<T>& inVal = dataInput->getValue();
 		auto keys = inVal.getKeys();

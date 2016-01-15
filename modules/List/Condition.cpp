@@ -45,7 +45,7 @@ public:
 		ListData* dataInFalse = dynamic_cast<ListData*>(list[1]);
 		ListData* dataOutput = dynamic_cast<ListData*>(list[2]);
 
-		Q_ASSERT(dataInTrue && dataInFalse && dataOutput);
+		assert(dataInTrue && dataInFalse && dataOutput);
 
 		const auto& c = control.getValue();
 		int nbC = c.size();
@@ -58,7 +58,7 @@ public:
 
 		const auto& inT = dataInTrue->getValue();
 		const auto& inF = dataInFalse->getValue();
-		int nb = qMin(inT.size(), inF.size());
+		int nb = std::min(inT.size(), inF.size());
 		if(nbC == 1 || nbC < nb)
 			outVal = c[0] ? inT : inF;
 		else if(nb == 1)

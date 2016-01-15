@@ -71,7 +71,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			valOut.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -226,7 +226,7 @@ public:
 		: DoubleMath_1Value(doc) { }
 
 	virtual PReal compute(const PReal& val)
-	{ return qRound(val); }
+	{ return std::round(val); }
 };
 
 int DoubleMath_RoundClass = RegisterObject<DoubleMath_Round>("Math/Real/Rounding").setDescription("Rounded value of the input");

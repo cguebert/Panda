@@ -7,6 +7,7 @@
 #include <panda/types/Color.h>
 #include <panda/types/Rect.h>
 #include <panda/graphics/Framebuffer.h>
+#include <panda/helper/algorithm.h>
 
 #include <QOpenGLPaintDevice>
 #include <QOpenGLFunctions>
@@ -66,8 +67,8 @@ public:
 		{
 			const int alignHVals[] = {Qt::AlignLeft, Qt::AlignRight, Qt::AlignHCenter, Qt::AlignJustify};
 			const int alignVVals[] = {Qt::AlignTop, Qt::AlignBottom, Qt::AlignVCenter, Qt::AlignBaseline};
-			int alignHIndex = qBound(0, alignH.getValue(), 3);
-			int alignVIndex = qBound(0, alignV.getValue(), 3);
+			int alignHIndex = helper::bound(0, alignH.getValue(), 3);
+			int alignVIndex = helper::bound(0, alignV.getValue(), 3);
 			int alignment = alignHVals[alignHIndex] | alignVVals[alignVIndex];
 
 			auto renderSize = m_parentDocument->getRenderSize();

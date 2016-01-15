@@ -40,7 +40,7 @@ public:
 		typedef Data< std::vector<T> > VecData;
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[1]);
-		Q_ASSERT(dataInput && dataOutput);
+		assert(dataInput && dataOutput);
 
 		const std::vector<int>& id = indexData.getValue();
 		const std::vector<T>& inVal = dataInput->getValue();
@@ -52,7 +52,7 @@ public:
 		if(size)
 		{
 			for(int i=0; i<nb; ++i)
-				outVal[i] = inVal[qBound(0, id[i], size-1)];
+				outVal[i] = inVal[helper::bound(0, id[i], size-1)];
 		}
 	}
 

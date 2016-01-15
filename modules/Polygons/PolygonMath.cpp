@@ -39,7 +39,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			output.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -86,7 +86,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			output.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -144,7 +144,7 @@ public:
 			{
 				if(nbC > nbA && nbA > 1)		nbC = nbA;
 				else if(nbA > nbC && nbC > 1)	nbA = nbC;
-				nb = qMax(nbA, nbC);
+				nb = std::max(nbA, nbC);
 			}
 
 			output.resize(nb);

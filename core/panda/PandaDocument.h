@@ -12,8 +12,6 @@
 
 #include <panda/UndoStack.h>
 
-#include <QObject>
-
 namespace panda {
 
 class BaseLayer;
@@ -34,9 +32,8 @@ namespace gui
 	class BaseGUI;
 }
 
-class PANDA_CORE_API PandaDocument : public QObject, public PandaObject
+class PANDA_CORE_API PandaDocument : public PandaObject
 {
-	Q_OBJECT
 public:
 	PANDA_CLASS(PandaDocument, PandaObject)
 
@@ -44,7 +41,7 @@ public:
 	typedef std::vector<ObjectPtr> ObjectsList;
 	typedef std::vector<PandaObject*> ObjectsSelection;
 
-	explicit PandaDocument(QObject* parent, gui::BaseGUI& gui);
+	explicit PandaDocument(gui::BaseGUI& gui);
 	~PandaDocument();
 
 	bool writeFile(const std::string& fileName);
@@ -92,9 +89,9 @@ public:
 	int getMouseClick() const;
 	void setMouseClick(bool clicked, const types::Point& pos);
 
-	quint32 getNextIndex();
-	PandaObject* findObject(quint32 objectIndex);
-	BaseData* findData(quint32 objectIndex, const std::string& dataName);
+	uint32_t getNextIndex();
+	PandaObject* findObject(uint32_t objectIndex);
+	BaseData* findData(uint32_t objectIndex, const std::string& dataName);
 
 	virtual void update();
 	virtual void setDirtyValue(const DataNode* caller);
@@ -134,7 +131,7 @@ protected:
 
 	ObjectsList m_objects;
 	ObjectsSelection m_selectedObjects;
-	quint32 m_currentIndex;
+	uint32_t m_currentIndex;
 	Layer* m_defaultLayer;
 	std::shared_ptr<graphics::Framebuffer> m_renderFBO, m_secondRenderFBO;
 	std::shared_ptr<graphics::ShaderProgram> m_mergeLayersShader;
@@ -240,9 +237,6 @@ inline types::Color PandaDocument::getBackgroundColor() const
 inline void PandaDocument::setBackgroundColor(types::Color color)
 { m_backgroundColor.setValue(color); }
 
-inline void PandaDocument::setRenderSize(graphics::Size size)
-{ m_renderSize.setValue(panda::types::Point(qMax(1, size.width()), qMax(1, size.height()))); }
-
 inline PReal PandaDocument::getAnimationTime() const
 { return m_animTimeVal; }
 
@@ -267,7 +261,7 @@ inline void PandaDocument::setMousePosition(const types::Point& pos)
 inline int PandaDocument::getMouseClick() const
 { return m_mouseClickVal; }
 
-inline quint32 PandaDocument::getNextIndex()
+inline uint32_t PandaDocument::getNextIndex()
 { return m_currentIndex++; }
 
 inline Layer* PandaDocument::getDefaultLayer() const

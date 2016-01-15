@@ -1,10 +1,10 @@
 #include <panda/PandaDocument.h>
+#include <panda/helper/algorithm.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Path.h>
 
 #include <cmath>
-#include <algorithm>
 
 namespace panda {
 
@@ -40,7 +40,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			output.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -88,7 +88,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			output.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -147,7 +147,7 @@ public:
 			{
 				if(nbC > nbA && nbA > 1)		nbC = nbA;
 				else if(nbA > nbC && nbC > 1)	nbA = nbC;
-				nb = qMax(nbA, nbC);
+				nb = std::max(nbA, nbC);
 			}
 
 			output.resize(nb);
@@ -282,9 +282,10 @@ public:
 				ends[i] = totalLength;
 			}
 
+			const PReal pi = static_cast<PReal>(M_PI);
 			for(unsigned int i=0; i<nbAbscissa; ++i)
 			{
-				PReal a = qBound<PReal>(0.0, listAbscissa[i], totalLength - 1e-3);
+				PReal a = helper::bound<PReal>(0.0, listAbscissa[i], totalLength - 1e-3f);
 				std::vector<PReal>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
 
 				unsigned int index = iter - ends.begin();
@@ -293,8 +294,8 @@ public:
 					p = (a - starts[index]) / lengths[index];
 				const Point& pt1 = curve[index];
 				const Point& pt2 = curve[index+1];
-				listPos.wref()[i] = pt1 * (1.0 - p) + pt2 * p;
-				listRot[i] = atan2(pt2.y-pt1.y, pt2.x-pt1.x) * 180.0 / M_PI;
+				listPos.wref()[i] = pt1 * (1.f - p) + pt2 * p;
+				listRot[i] = atan2(pt2.y-pt1.y, pt2.x-pt1.x) * 180.f / pi;
 			}
 		}
 		else

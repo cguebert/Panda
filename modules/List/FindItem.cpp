@@ -44,7 +44,7 @@ public:
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
 		VecData* dataValues = dynamic_cast<VecData*>(list[1]);
 		VecIntData* dataOutput = dynamic_cast<VecIntData*>(list[2]);
-		Q_ASSERT(dataInput && dataValues && dataOutput);
+		assert(dataInput && dataValues && dataOutput);
 
 		const std::vector<T>& inList = dataInput->getValue();
 		const std::vector<T>& inVal = dataValues->getValue();

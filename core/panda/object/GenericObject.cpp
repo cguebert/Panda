@@ -184,7 +184,7 @@ int GenericObject::nbOfCreatedDatas() const
 
 bool GenericObject::isCreatedData(BaseData* data) const
 {
-	return m_createdDatasMap.count(data);
+	return m_createdDatasMap.count(data) != 0;
 }
 
 void GenericObject::update()

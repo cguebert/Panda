@@ -47,8 +47,8 @@ public:
 				PReal v = list[i];
 				E += v;
 				E2 += v*v;
-				tMin = qMin(tMin, v);
-				tMax = qMax(tMax, v);
+				tMin = std::min(tMin, v);
+				tMax = std::max(tMax, v);
 			}
 
 			sum.setValue(E);

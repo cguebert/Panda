@@ -46,7 +46,7 @@ public:
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
 		VecData* dataValues = dynamic_cast<VecData*>(list[1]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[2]);
-		Q_ASSERT(dataInput && dataValues && dataOutput);
+		assert(dataInput && dataValues && dataOutput);
 
 		const std::vector<T>& inList = dataInput->getValue();
 		const std::vector<int>& id = indices.getValue();

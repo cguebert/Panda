@@ -55,7 +55,7 @@ public:
 		VecColorData* dataColor = dynamic_cast<VecColorData*>(list[0]);
 		VecRealData* dataPosition = dynamic_cast<VecRealData*>(list[1]);
 
-		Q_ASSERT(dataColor && dataPosition);
+		assert(dataColor && dataPosition);
 
 		const std::vector<Color>& inColor = dataColor->getValue();
 		const PReal pos = dataPosition->getValue();

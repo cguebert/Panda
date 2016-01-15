@@ -92,7 +92,7 @@ public:
 		VecData* dataOutput = dynamic_cast<VecData*>(list[1]);
 		VecIntData* dataIndices = dynamic_cast<VecIntData*>(list[2]);
 
-		Q_ASSERT(dataInput && dataOutput && dataIndices);
+		assert(dataInput && dataOutput && dataIndices);
 
 		const std::vector<T> &valIn = dataInput->getValue();
 

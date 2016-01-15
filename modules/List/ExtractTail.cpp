@@ -38,7 +38,7 @@ public:
 		ListData* dataInput = dynamic_cast<ListData*>(list[0]);
 		ListData* dataOutput = dynamic_cast<ListData*>(list[1]);
 
-		Q_ASSERT(dataInput && dataOutput);
+		assert(dataInput && dataOutput);
 
 		int val = value.getValue();
 		const std::vector<T> &valIn = dataInput->getValue();

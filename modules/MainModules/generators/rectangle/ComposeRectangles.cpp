@@ -36,7 +36,7 @@ public:
 		const std::vector<PReal> &r = right.getValue();
 		const std::vector<PReal> &b = bottom.getValue();
 
-		int nb = qMin(l.size(), qMin(t.size(), qMin(r.size(), b.size())));
+		int nb = std::min(l.size(), std::min(t.size(), std::min(r.size(), b.size())));
 
 		auto rect = rectangle.getAccessor();
 		rect.resize(nb);
@@ -89,7 +89,7 @@ public:
 			if(nbS < nbC) nbS = 1;
 			if(nbC < nbS) nbC = 1;
 
-			int nb = qMax(nbC, nbS);
+			int nb = std::max(nbC, nbS);
 			rect.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -141,7 +141,7 @@ public:
 			if(nbTL < nbBR) nbTL = 1;
 			if(nbBR < nbTL) nbBR = 1;
 
-			int nb = qMax(nbTL, nbBR);
+			int nb = std::max(nbTL, nbBR);
 			rect.resize(nb);
 
 			for(int i=0; i<nb; ++i)

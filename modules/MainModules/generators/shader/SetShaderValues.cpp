@@ -64,7 +64,7 @@ public:
 		ValueData* dataValue = dynamic_cast<ValueData*>(list[0]);
 		StringData* dataName = dynamic_cast<StringData*>(list[1]);
 
-		Q_ASSERT(dataValue && dataName);
+		assert(dataValue && dataName);
 
 		const T& inVal = dataValue->getValue();
 		const std::string name = dataName->getValue();

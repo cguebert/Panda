@@ -60,9 +60,8 @@ using types::Color;
 using types::ImageWrapper;
 using types::Point;
 
-PandaDocument::PandaDocument(QObject* parent, gui::BaseGUI& gui)
+PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	: PandaObject(nullptr)
-	, QObject(parent)
 	, m_currentIndex(1)
 	, m_renderSize(initData(Point(800,600), "render size", "Size of the image to be rendered"))
 	, m_backgroundColor(initData(Color::white(), "background color", "Background color of the image to be rendered"))
@@ -459,6 +458,16 @@ graphics::Size PandaDocument::getRenderSize() const
 {
 	Point pt = m_renderSize.getValue();
 	return graphics::Size(std::max<PReal>(1, floor(pt.x)), std::max<PReal>(1, floor(pt.y)));
+}
+
+void PandaDocument::setRenderSize(graphics::Size size)
+{ 
+	m_renderSize.setValue(
+		panda::types::Point(
+			std::max<PReal>(1, size.width()), 
+			std::max<PReal>(1, size.height())
+			)
+		); 
 }
 
 void PandaDocument::setMouseClick(bool clicked, const types::Point& pos)

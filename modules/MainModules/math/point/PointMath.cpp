@@ -39,7 +39,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			res.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -87,7 +87,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			res.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -137,7 +137,7 @@ public:
 		{
 			if(nbR < nbP && nbR > 1)		nbP = nbR;	// Either 1 real, or equal nb of reals & points
 			else if(nbP < nbR && nbP > 1)	nbR = nbP;
-			int nb = qMax(nbP, nbR);
+			int nb = std::max(nbP, nbR);
 			res.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -188,7 +188,7 @@ public:
 		{
 			if(nbR < nbP && nbR > 1)		nbP = nbR;	// Either 1 real, or equal nb of reals & points
 			else if(nbP < nbR && nbP > 1)	nbR = nbP;
-			int nb = qMax(nbP, nbR);
+			int nb = std::max(nbP, nbR);
 			res.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -237,7 +237,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			res.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -297,7 +297,7 @@ public:
 			{
 				if(nbC > nbA && nbA > 1)		nbC = nbA;
 				else if(nbA > nbC && nbC > 1)	nbA = nbC;
-				nb = qMax(nbA, nbC);
+				nb = std::max(nbA, nbC);
 			}
 
 			res.resize(nb);
@@ -570,7 +570,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			res.resize(nb);
 
 			for(int i=0; i<nb; ++i)
@@ -618,7 +618,7 @@ public:
 		{
 			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
 			else if(nbB < nbA && nbB > 1)	nbA = nbB;
-			int nb = qMax(nbA, nbB);
+			int nb = std::max(nbA, nbB);
 			res.resize(nb);
 
 			for(int i=0; i<nb; ++i)

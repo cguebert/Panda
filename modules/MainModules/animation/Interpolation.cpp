@@ -1,6 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
+#include <panda/helper/algorithm.h>
 #include <panda/helper/EasingFunctions.h>
 
 namespace panda {
@@ -51,7 +52,7 @@ public:
 		listResult.clear();
 
 		int nbV = listProg.size();
-		int nbP = qMin(listFrom.size(), listTo.size());
+		int nbP = std::min(listFrom.size(), listTo.size());
 
 		if(nbV && nbP)
 		{
@@ -67,7 +68,7 @@ public:
 
 			for(int i=0; i<nb; ++i)
 			{
-				PReal prog = qBound<PReal>(0.0, listProg[i%nbV], 1.0);
+				PReal prog = helper::bound<PReal>(0.0, listProg[i%nbV], 1.0);
 				PReal amt = easingFunc.valueForProgress(prog);
 
 				listResult[i] = types::interpolate(listFrom[i%nbP], listTo[i%nbP], amt);

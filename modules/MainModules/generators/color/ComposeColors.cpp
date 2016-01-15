@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
-
+#include <panda/helper/algorithm.h>
 #include <panda/types/Color.h>
 
 namespace panda {
@@ -47,7 +47,7 @@ public:
 			return;
 		}
 
-		int nb = qMax(nbR, qMax(nbG, qMax(nbB, nbA)));
+		int nb = std::max(nbR, std::max(nbG, std::max(nbB, nbA)));
 		if(nbR < nb) nbR = 1;
 		if(nbG < nb) nbG = 1;
 		if(nbB < nb) nbB = 1;
@@ -56,10 +56,10 @@ public:
 		c.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
-			c[i].set(qBound<float>(0.0f, r[i%nbR], 1.0f),
-					 qBound<float>(0.0f, g[i%nbG], 1.0f),
-					 qBound<float>(0.0f, b[i%nbB], 1.0f),
-					 qBound<float>(0.0f, a[i%nbA], 1.0f));
+			c[i].set(helper::bound<float>(0.0f, r[i%nbR], 1.0f),
+					 helper::bound<float>(0.0f, g[i%nbG], 1.0f),
+					 helper::bound<float>(0.0f, b[i%nbB], 1.0f),
+					 helper::bound<float>(0.0f, a[i%nbA], 1.0f));
 		}
 
 		cleanDirty();
@@ -163,7 +163,7 @@ public:
 			return;
 		}
 
-		int nb = qMax(nbH, qMax(nbS, qMax(nbV, nbA)));
+		int nb = std::max(nbH, std::max(nbS, std::max(nbV, nbA)));
 		if(nbH < nb) nbH = 1;
 		if(nbS < nb) nbS = 1;
 		if(nbV < nb) nbV = 1;
@@ -173,10 +173,10 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			c[i] = Color::fromHsv(
-					qBound<float>(0.0f, h[i%nbH], 1.0f),
-					qBound<float>(0.0f, s[i%nbS], 1.0f),
-					qBound<float>(0.0f, v[i%nbV], 1.0f),
-					qBound<float>(0.0f, a[i%nbA], 1.0f));
+					helper::bound<float>(0.0f, h[i%nbH], 1.0f),
+					helper::bound<float>(0.0f, s[i%nbS], 1.0f),
+					helper::bound<float>(0.0f, v[i%nbV], 1.0f),
+					helper::bound<float>(0.0f, a[i%nbA], 1.0f));
 		}
 
 		cleanDirty();

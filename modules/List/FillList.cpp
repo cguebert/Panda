@@ -39,7 +39,7 @@ public:
 		typedef Data< std::vector<T> > VecData;
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[1]);
-		Q_ASSERT(dataInput && dataOutput);
+		assert(dataInput && dataOutput);
 
 		const std::vector<T>& inVal = dataInput->getValue();
 		auto outVal = dataOutput->getAccessor();

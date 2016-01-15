@@ -58,7 +58,7 @@ public:
 		if(nbA && nbB && nbV)
 		{
 			int nb = nbV;
-			int nbP = qMin(nbA, nbB);
+			int nbP = std::min(nbA, nbB);
 			if(nbV > 1)
 			{
 				if(nbP != nbV)
@@ -237,7 +237,7 @@ public:
 		if(nbA && nbB && nbV)
 		{
 			int nb = nbV;
-			int nbP = qMin(nbA, nbB);
+			int nbP = std::min(nbA, nbB);
 			if(nbV > 1)
 			{
 				if(nbP != nbV)
@@ -299,7 +299,7 @@ public:
 		if(nbA && nbB && nbV)
 		{
 			int nb = nbV;
-			int nbP = qMin(nbA, nbB);
+			int nbP = std::min(nbA, nbB);
 			if(nbV > 1)
 			{
 				if(nbP != nbV)
@@ -370,7 +370,7 @@ public:
 		if(nbV && nbInMin && nbInMax && nbOutMin && nbOutMax)
 		{
 			int nb = nbV;
-			int nbP = qMin(qMin(nbInMin, nbInMax), qMin(nbOutMin, nbOutMax));
+			int nbP = std::min(std::min(nbInMin, nbInMax), std::min(nbOutMin, nbOutMax));
 			if(nbV > 1)
 			{
 				if(nbP != nbV)

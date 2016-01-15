@@ -40,7 +40,7 @@ public:
 		ListData* dataInput = dynamic_cast<ListData*>(list[0]);
 		IntData* dataSize = dynamic_cast<IntData*>(list[1]);
 
-		Q_ASSERT(dataInput && dataSize);
+		assert(dataInput && dataSize);
 
 		const std::vector<T>& inVal = dataInput->getValue();
 		dataSize->setValue(inVal.size());

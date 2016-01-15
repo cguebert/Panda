@@ -37,7 +37,7 @@ public:
 		typedef Data<int> IntData;
 		BaseData* dataInput = list[0];
 		IntData* dataCounter = dynamic_cast<IntData*>(list[1]);
-		Q_ASSERT(dataInput && dataCounter);
+		assert(dataInput && dataCounter);
 
 		dataCounter->setValue(dataInput->getCounter());
 	}

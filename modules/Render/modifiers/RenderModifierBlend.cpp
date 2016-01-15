@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/helper/algorithm.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
@@ -40,8 +41,8 @@ public:
 								GL_SRC_ALPHA_SATURATE,
 								GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
 								GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA};
-		int src = qBound(0, source.getValue(), 7);
-		int dest = qBound(0, destination.getValue(), 8);
+		int src = helper::bound(0, source.getValue(), 7);
+		int dest = helper::bound(0, destination.getValue(), 8);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(srcVals[src], destVals[dest]);

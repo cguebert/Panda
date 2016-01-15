@@ -58,7 +58,7 @@ public:
 		VecData* dataInput = dynamic_cast<VecData*>(list[0]);
 		VecData* dataInit = dynamic_cast<VecData*>(list[1]);
 		VecData* dataOutput = dynamic_cast<VecData*>(list[2]);
-		Q_ASSERT(dataInput && dataInit && dataOutput);
+		assert(dataInput && dataInit && dataOutput);
 
 		m_parentDocument->setDataDirty(dataOutput);
 		if(m_copyInit)

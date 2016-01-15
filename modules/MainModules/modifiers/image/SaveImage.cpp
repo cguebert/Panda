@@ -52,7 +52,7 @@ public:
 		const auto& names = fileName.getValue();
 		const auto& images = image.getValue();
 
-		int nb = qMin(names.size(), images.size());
+		int nb = std::min(names.size(), images.size());
 		for(int i=0; i<nb; ++i)
 		{
 			if (!names[i].empty())
