@@ -14,8 +14,6 @@
 
 #include <QObject>
 
-class QTimer;
-
 namespace panda {
 
 class BaseLayer;
@@ -163,7 +161,7 @@ protected:
 	bool m_isGLInitialized;
 
 	bool m_animPlaying, m_animMultithread;
-	QTimer* m_animTimer;
+	int m_animFunctionIndex = -1;
 
 	std::shared_ptr<Scheduler> m_scheduler;
 

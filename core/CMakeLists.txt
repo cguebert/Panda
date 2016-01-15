@@ -16,6 +16,7 @@ set(HEADER_FILES
 	panda/PluginsManager.h
 	panda/Scheduler.h
 	panda/SimpleGUI.h
+	panda/TimedFunctions.h
 	panda/UpdateLogger.h
 	panda/UndoStack.h
 	panda/XmlDocument.h
@@ -81,6 +82,7 @@ set(SOURCE_FILES
 	panda/PluginsManager.cpp
 	panda/Scheduler.cpp
 	panda/SimpleGUI.cpp
+	panda/TimedFunctions.cpp
 	panda/UpdateLogger.cpp
 	panda/UndoStack.cpp
 	panda/XmlDocument.cpp

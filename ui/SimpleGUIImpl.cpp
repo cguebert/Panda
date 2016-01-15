@@ -44,7 +44,7 @@ void SimpleGUIImpl::executeByUI(panda::gui::CallbackFunc func)
 	}
 
 	if (empty) // Ask for the execution on the thread where the object was created
-		QMetaObject::invokeMethod(this, "execute", Qt::QueuedConnection);
+		QMetaObject::invokeMethod(this, "executeFunctions", Qt::QueuedConnection);
 }
 
 void SimpleGUIImpl::executeFunctions()

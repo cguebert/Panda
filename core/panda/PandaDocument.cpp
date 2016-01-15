@@ -4,6 +4,7 @@
 #include <panda/Messaging.h>
 #include <panda/Scheduler.h>
 #include <panda/SimpleGUI.h>
+#include <panda/TimedFunctions.h>
 #include <panda/data/DataFactory.h>
 #include <panda/object/Layer.h>
 #include <panda/object/PandaObject.h>
@@ -18,8 +19,6 @@
 #ifdef PANDA_LOG_EVENTS
 #include <panda/UpdateLogger.h>
 #endif
-
-#include <QTimer>
 
 #include <chrono>
 #include <set>
@@ -110,9 +109,6 @@ PandaDocument::PandaDocument(QObject* parent, gui::BaseGUI& gui)
 
 	setInternalData("Document", 0);
 
-	m_animTimer = new QTimer(this);
-	connect(m_animTimer, &QTimer::timeout, this, &PandaDocument::step);
-
 	m_undoStack.setUndoLimit(25);
 
 	m_parentDocument = this;
@@ -122,6 +118,8 @@ PandaDocument::~PandaDocument()
 {
 	if(m_scheduler)
 		m_scheduler->stop();
+
+	TimedFunctions::instance().shutdown();
 
 	m_resetting = true;
 
@@ -382,7 +380,7 @@ void PandaDocument::resetDocument()
 
 	m_animPlaying = false;
 	m_animMultithread = false;
-	m_animTimer->stop();
+	TimedFunctions::instance().cancelAll();
 	if(m_scheduler)
 		m_scheduler->stop();
 
@@ -883,20 +881,18 @@ void PandaDocument::play(bool playing)
 			helper::UpdateLogger::getInstance()->setupThread(0);
 		}
 #endif
-		if(m_useTimer.getValue())
-			m_animTimer->start(qMax((PReal)0.0, m_timestep.getValue() * 1000));
-		else
-			m_animTimer->start(0);
+
+		m_gui.executeByUI([this]() { step(); });
 
 		m_iNbFrames = 0;
 		m_fpsTime = currentTime();
 	}
 	else
 	{
-		m_animTimer->stop();
 		if(m_animMultithread && m_scheduler)
 			m_scheduler->stop();
 		m_animMultithread = false;
+		TimedFunctions::instance().cancelRun(m_animFunctionIndex);
 	}
 }
 
@@ -956,11 +952,20 @@ void PandaDocument::step()
 		m_selectedObjectIsDirtySignal.run(this);
 	m_modifiedSignal.run();
 
-	if (m_animPlaying && m_useTimer.getValue())	// Restart the timer taking into consideration the time it took to render this frame
+	if (m_animPlaying)	
 	{
-		auto endTime = std::chrono::high_resolution_clock::now();
-		auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-		m_animTimer->start(std::max(0.0f, m_timestep.getValue() * 1000 - frameDuration.count() - 1));
+		if (m_useTimer.getValue()) // Restart the timer taking into consideration the time it took to render this frame
+		{
+			auto endTime = std::chrono::high_resolution_clock::now();
+			auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+			double delay = m_timestep.getValue() - frameDuration.count() / 1000.0 - 0.001; // How long do we wait until we start the next step ?
+			TimedFunctions::instance().cancelRun(m_animFunctionIndex); // Remove previous
+			m_animFunctionIndex = TimedFunctions::instance().delayRun(delay, [this]() { // Ask for the delayed execution of step()
+				m_gui.executeByUI([this]() { step(); });  // But we want step() to be run on the GUI thread
+			});
+		}
+		else
+			m_gui.executeByUI([this]() { step(); }); // Run ASAP on the GUI thread
 	}
 
 	++m_iNbFrames;

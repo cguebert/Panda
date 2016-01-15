@@ -21,9 +21,10 @@ public:
 	void updateView() override;
 	void executeByUI(panda::gui::CallbackFunc func) override;
 
-protected:
+protected slots:
 	void executeFunctions();
 
+protected:
 	MainWindow* m_mainWindow;
 
 	std::vector<panda::gui::CallbackFunc> m_functions;
