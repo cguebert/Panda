@@ -100,7 +100,7 @@ public:
 			return candidates.front();
 
 		Point BA = m_uniquePoints[prevId] - m_uniquePoints[currentId];
-		PReal prevAngle = (prevId != currentId ? -atan2(BA.y, BA.x) : M_PI);
+		PReal prevAngle = (prevId != currentId ? -atan2(BA.y, BA.x) : static_cast<PReal>(M_PI));
 
 		int best = -1;
 		PReal bestAngle = 10; // > 3 * pi

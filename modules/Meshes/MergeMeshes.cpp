@@ -44,7 +44,7 @@ public:
 	{
 		helper::PointsGrid grid;
 		auto size = m_parentDocument->getRenderSize();
-		Rect area(0, 0, size.width(), size.height());
+		Rect area(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
 		grid.initGrid(area, 10);
 
 		PReal thres = threshold.getValue();

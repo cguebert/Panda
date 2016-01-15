@@ -209,7 +209,7 @@ void ExtrudeHelper::startCap()
 		case 1:	// Round cap
 		{
 			int nb = static_cast<int>(floor(halfWidths[0] * M_PI));
-			PReal angle = M_PI / nb; // We do a half turn
+			PReal angle = static_cast<PReal>(M_PI) / nb; // We do a half turn
 			PReal ca = cos(angle), sa = sin(angle);
 			Point uvPt(0, 1), uvCenter(currentAbs, 0.5), uvMult(-currentAbs, 0.5);
 			Mesh::PointID ptId = prevPtsId[0];
@@ -495,7 +495,7 @@ void ExtrudeHelper::endCap()
 		{
 			const PReal halfWidth = halfWidths.back();
 			int nb = static_cast<int>(floor(halfWidth * M_PI));
-			PReal angle = M_PI / nb; // We do a half turn
+			PReal angle = static_cast<PReal>(M_PI) / nb; // We do a half turn
 			PReal ca = cos(angle), sa = sin(angle);
 			Point center = pts[nbPts-1];
 			Point dir = normals[nbPts-2] * halfWidth;

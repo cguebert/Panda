@@ -163,7 +163,7 @@ public:
 		const std::vector<Point>& centers = center.getValue();
 		const std::vector<PReal>& radiuses = radius.getValue();
 
-		bool linearLaw = linear.getValue();
+		bool linearLaw = linear.getValue() != 0;
 		int nbForces = forces.size();
 		int nbCenters = centers.size();
 		int nbRadiuses = radiuses.size();

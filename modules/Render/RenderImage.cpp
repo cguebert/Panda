@@ -122,8 +122,8 @@ public:
 						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
 						shaderProgram.setUniformValueMat4("MVP", tmpMVP.data());
-						Rect area = Rect(-s.width(), -s.height(),
-											 s.width(), s.height());
+						PReal w = static_cast<PReal>(s.width()), h = static_cast<PReal>(s.height());
+						Rect area = Rect(-w, -h, w, h);
 						drawTexture(img.getTextureId(), area);
 					}
 				}
@@ -138,7 +138,8 @@ public:
 						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
 						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
 						shaderProgram.setUniformValueMat4("MVP", tmpMVP.data());
-						Rect area = Rect(0, 0, s.width(), s.height());
+						PReal w = static_cast<PReal>(s.width()), h = static_cast<PReal>(s.height());
+						Rect area = Rect(0, 0, w, h);
 						drawTexture(img.getTextureId(), area);
 					}
 				}
@@ -152,10 +153,11 @@ public:
 						const ImageWrapper& img = listImage[i % nbImage];
 						auto s = img.size() / 2;
 						if(s.empty()) continue;
-						Rect area = Rect(listPosition[i].x - s.width(),
-										 listPosition[i].y - s.height(),
-										 listPosition[i].x + s.width(),
-										 listPosition[i].y + s.height());
+						PReal w = static_cast<PReal>(s.width()), h = static_cast<PReal>(s.height());
+						Rect area = Rect(listPosition[i].x - w,
+										 listPosition[i].y - h,
+										 listPosition[i].x + w,
+										 listPosition[i].y + h);
 						drawTexture(img.getTextureId(), area);
 					}
 				}
@@ -166,7 +168,8 @@ public:
 						const ImageWrapper& img = listImage[i % nbImage];
 						auto s = img.size();
 						if(s.empty()) continue;
-						Rect area(listPosition[i], s.width(), s.height());
+						PReal w = static_cast<PReal>(s.width()), h = static_cast<PReal>(s.height());
+						Rect area(listPosition[i], w, h);
 						drawTexture(img.getTextureId(), area);
 					}
 				}

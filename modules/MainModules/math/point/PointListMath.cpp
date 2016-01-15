@@ -43,7 +43,7 @@ public:
 			for(const auto& pt : list)
 				sum += pt;
 
-			sum /= nb;
+			sum /= static_cast<PReal>(nb);
 
 			center.setValue(sum);
 

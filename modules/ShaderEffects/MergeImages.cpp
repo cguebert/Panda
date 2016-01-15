@@ -73,14 +73,15 @@ public:
 			glClearColor(0, 0, 0, 0);
 			glViewport(0, 0, inputSize.width(), inputSize.height());
 
+			GLfloat w = static_cast<GLfloat>(inputSize.width()), h = static_cast<GLfloat>(inputSize.height());
 			graphics::Mat4x4 mvp;
-			mvp.ortho(0, inputSize.width(), inputSize.height(), 0, -10, 10);
+			mvp.ortho(0, w, h, 0, -10, 10);
 
 			GLfloat verts[8];
-			verts[0*2+0] = inputSize.width();	verts[0*2+1] = 0;
-			verts[1*2+0] = 0;					verts[1*2+1] = 0;
-			verts[3*2+0] = 0;					verts[3*2+1] = inputSize.height();
-			verts[2*2+0] = inputSize.width();	verts[2*2+1] = inputSize.height();
+			verts[0*2+0] = w;	verts[0*2+1] = 0;
+			verts[1*2+0] = 0;	verts[1*2+1] = 0;
+			verts[3*2+0] = 0;	verts[3*2+1] = h;
+			verts[2*2+0] = w;	verts[2*2+1] = h;
 
 			m_shaderProgram.bind();
 			outputFbo->bind();

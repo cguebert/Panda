@@ -47,7 +47,7 @@ public:
 		{
 			PReal maxD = maxDist.getValue();
 			auto size = m_parentDocument->getRenderSize();
-			Rect area = Rect(0, 0, size.width()-1, size.height()-1);
+			Rect area = Rect(0, 0, static_cast<PReal>(size.width()-1), static_cast<PReal>(size.height()-1));
 			grid.initGrid(area, std::max<PReal>(maxD, 10.0));
 			grid.addPoints(searchPts);
 
@@ -57,8 +57,8 @@ public:
 			outPts.resize(nb);
 			outFound.resize(nb);
 
-			bool removePts = unique.getValue();
-			bool filterSelf = notSelf.getValue();
+			bool removePts = unique.getValue() != 0;
+			bool filterSelf = notSelf.getValue() != 0;
 			for(int i=0; i<nb; ++i)
 			{
 				int removedSelfNb = 0;

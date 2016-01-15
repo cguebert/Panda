@@ -307,7 +307,7 @@ public:
 			if(nbGradient == 1)
 			{
 				PReal maxLength = *std::max_element(pathLengths.begin(), pathLengths.end());
-				GLuint texture = GradientCache::getInstance()->getTexture(listGradient.front(), maxLength);
+				GLuint texture = GradientCache::getInstance()->getTexture(listGradient.front(), static_cast<int>(std::ceil(maxLength)));
 
 				glBindTexture(GL_TEXTURE_2D, texture);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -342,7 +342,7 @@ public:
 					shaderProgram.setAttributeArray(texCoordLocation, uvList.front().data(), 2);
 					shaderProgram.setAttributeArray(vertexLocation, path.front().data(), 2);
 
-					GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], pathLengths[i]);
+					GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(std::ceil(pathLengths[i])));
 					if(!texture)
 						continue;
 					glBindTexture(GL_TEXTURE_2D, texture);

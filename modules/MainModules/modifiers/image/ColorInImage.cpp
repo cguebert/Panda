@@ -46,7 +46,7 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			const Point p = pos[i];
-			const PointInt pt(std::floor(p.x), std::floor(p.y));
+			const PointInt pt(static_cast<int>(p.x), static_cast<int>(p.y));
 			if(img.valid(pt))
 				colorsList[i] = Color::fromByte(img.pixel(pt));
 			else
@@ -101,7 +101,7 @@ public:
 		for(int i=0; i<nbP; ++i)
 		{
 			const Point p = pos[i];
-			const PointInt pt(std::floor(p.x), std::floor(p.y));
+			const PointInt pt(static_cast<int>(p.x), static_cast<int>(p.y));
 			if(tmp.valid(pt))
 				tmp.setPixel(pt, col[i%nbC].toHex());
 		}
@@ -150,10 +150,10 @@ public:
 		for(int i=0; i<nbRects; ++i)
 		{
 			Rect rect = rectList[i];
-			int x1 = std::max<int>(0, std::floor(rect.left()));
-			int y1 = std::max<int>(0, std::floor(rect.top()));
-			int x2 = std::min<int>(img.width()-1, std::floor(rect.right()));
-			int y2 = std::min<int>(img.height()-1, std::floor(rect.bottom()));
+			int x1 = std::max<int>(0, static_cast<int>(rect.left()));
+			int y1 = std::max<int>(0, static_cast<int>(rect.top()));
+			int x2 = std::min<int>(img.width()-1, static_cast<int>(rect.right()));
+			int y2 = std::min<int>(img.height()-1, static_cast<int>(rect.bottom()));
 
 			int nb = 0;
 			uint64_t a=0, r=0, g=0, b=0;
@@ -171,7 +171,7 @@ public:
 				}
 			}
 
-			float n = nb * 255;
+			float n = static_cast<float>(nb * 255);
 			if(nb)
 				col[i] = Color(r/n, g/n, b/n, a/n);
 			else

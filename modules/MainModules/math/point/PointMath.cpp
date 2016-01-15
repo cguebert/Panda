@@ -346,6 +346,7 @@ public:
 		if(nb)
 		{
 			angleList.resize(nb);
+			const PReal pi = static_cast<PReal>(M_PI);
 
 			for(int i=0; i<nb; ++i)
 			{
@@ -353,7 +354,7 @@ public:
 				if(pt.norm2() < 1e-10)
 					angleList[i] = 0;
 				else
-					angleList[i] = -atan2(pt.y, pt.x) * 180 / M_PI;
+					angleList[i] = -atan2(pt.y, pt.x) * 180 / pi;
 			}
 		}
 
@@ -396,9 +397,10 @@ public:
 		{
 			vecList.resize(nb);
 
+			const PReal pi180 = static_cast<PReal>(M_PI) / 180;
 			for(int i=0; i<nb; ++i)
 			{
-				PReal a = -angleList[i] * M_PI / 180;
+				PReal a = -angleList[i] * pi180;
 				vecList[i] = Point(cos(a), sin(a));
 			}
 		}

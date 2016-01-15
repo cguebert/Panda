@@ -47,8 +47,10 @@ public:
 			for(int i=0; i<nb; ++i)
 			{
 				const Rect rect = rectList[i];
-				graphics::Image tmpImg(std::floor(rect.width()), std::floor(rect.height()));
-				graphics::Image::blitImage(tmpImg, 0, 0, img, rect.left(), rect.top(), rect.right(), rect.bottom());
+				int l = static_cast<int>(rect.left()),  t = static_cast<int>(rect.top()),
+					w = static_cast<int>(rect.width()), h = static_cast<int>(rect.height());
+				graphics::Image tmpImg(w, h);
+				graphics::Image::blitImage(tmpImg, 0, 0, img, l, t, l+w, t+h);
 				resList[i].setImage(tmpImg);
 			}
 		}
@@ -60,17 +62,17 @@ public:
 				for(int i=0; i<nb; ++i)
 				{
 					const Rect rect = rectList[i];
-					graphics::Size size(std::floor(rect.width()), std::floor(rect.height()));
+					graphics::Size size(static_cast<int>(rect.width()), static_cast<int>(rect.height()));
 					if(!size.empty())
 						continue;
 
 					auto newFbo = graphics::Framebuffer(size);
 
-					int l = std::floor(rect.left()), t = std::floor(rect.top()),
-						w = std::floor(rect.width()), h = std::floor(rect.height());
+					PReal l = rect.left(),  t = rect.top(),
+						  w = rect.width(), h = rect.height();
 					auto sourceSize = fbo->size();
 					Rect sourceRect(l, sourceSize.height() - t - h, w, h);
-					Rect targetRect(0, 0, size.width(), size.height());
+					Rect targetRect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
 					graphics::Framebuffer::blitFramebuffer(newFbo, targetRect, *fbo, sourceRect);
 					resList[i].setFbo(newFbo);
 				}

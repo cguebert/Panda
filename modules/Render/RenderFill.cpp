@@ -52,10 +52,10 @@ public:
 		if(area.empty())
 		{
 			auto size = getLayerSize();
-			area = Rect(0, 0, size.width(), size.height());
+			area = Rect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
 		}
 
-		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, area.width());
+		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, static_cast<int>(std::ceil(area.width())));
 		if(!texture)
 			return;
 
@@ -138,10 +138,10 @@ public:
 		if(area.empty())
 		{
 			auto size = getLayerSize();
-			area = Rect(0, 0, size.width(), size.height());
+			area = Rect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
 		}
 
-		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, area.height());
+		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, static_cast<int>(std::ceil(area.height())));
 		if(!texture)
 			return;
 
@@ -218,7 +218,7 @@ public:
 		if(area.empty())
 		{
 			auto size = getLayerSize();
-			area = Rect(0, 0, size.width(), size.height());
+			area = Rect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
 		}
 
 		const auto& texValue = texture.getValue();

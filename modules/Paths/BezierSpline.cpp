@@ -58,7 +58,7 @@ public:
 		if(coefs.size() != p || coefs[0].size() != c)
 		{
 			coefs.resize(p);
-			PReal s = 1.0 / (PReal)(p - 1);
+			PReal s = 1 / static_cast<PReal>(p - 1);
 			for(int i=0; i<p; ++i)
 			{
 				coefs[i].resize(c);

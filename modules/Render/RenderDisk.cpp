@@ -218,7 +218,7 @@ public:
 				PReal angle = PI2 / nbSeg;
 				PReal ca = cos(angle), sa = sin(angle);
 				Point dir = Point(valRadius, 0);
-				PReal step = 1.0 / nbSeg;
+				PReal step = 1.f / nbSeg;
 				PReal texY = 0;
 
 				for(int i=0; i<=nbSeg; ++i)
@@ -267,7 +267,7 @@ public:
 			if(nbGradient == 1)
 			{
 				PReal maxRadius = *std::max_element(listRadius.begin(), listRadius.end());
-				GLuint texture = GradientCache::getInstance()->getTexture(listGradient.front(), static_cast<int>(ceil(maxRadius)));
+				GLuint texture = GradientCache::getInstance()->getTexture(listGradient.front(), static_cast<int>(std::ceil(maxRadius)));
 
 				glBindTexture(GL_TEXTURE_2D, texture);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -283,7 +283,7 @@ public:
 
 				for(int i=0; i<nbDisks; ++i)
 				{
-					GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(ceil(listRadius[i % nbRadius])));
+					GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(std::ceil(listRadius[i % nbRadius])));
 					if(!texture)
 						continue;
 					glBindTexture(GL_TEXTURE_2D, texture);

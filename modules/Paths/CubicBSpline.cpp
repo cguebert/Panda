@@ -103,7 +103,7 @@ public:
 		vec4 first = {1/(PReal)6.0, 4/(PReal)6.0, 1/(PReal)6.0, 0};
 		m_coefs.front() = first;
 
-		PReal fstep = 1.0 / nbSteps;
+		PReal fstep = 1.f / nbSteps;
 		int i=1;
 		for(PReal t=fstep; t<1; t+=fstep)
 		{

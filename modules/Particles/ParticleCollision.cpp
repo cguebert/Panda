@@ -32,7 +32,7 @@ public:
 		const PReal maxForce = repulsionForce.getValue();
 		PReal maxDist = influenceDist.getValue();
 		maxDist *= maxDist;
-		bool twoSides = bothSides.getValue();
+		bool twoSides = bothSides.getValue() != 0;
 
 		int nbPts = pts.size();
 		for(int i=0; i<nbPts-1; ++i)
@@ -46,7 +46,7 @@ public:
 				const Point& pos = particle.position;
 				Point AP = pos - ptA;
 				PReal r = (AP * AB) / ABn2;
-				int sign = 1;
+				float sign = 1;
 				if(AB.cross(AP) > 0)
 				{
 					if(!twoSides)

@@ -46,7 +46,7 @@ public:
 		const auto& cMin = colorMin.getValue();
 		const auto& cMax = colorMax.getValue();
 
-		bool useHSV = hsvMode.getValue();
+		bool useHSV = hsvMode.getValue() != 0;
 
 		float minA, minR, minG, minB, maxA, maxR, maxG, maxB;
 		if(useHSV)

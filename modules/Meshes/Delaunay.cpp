@@ -55,7 +55,7 @@ public:
 
 		vector<IPoint> points;
 		for(const auto& p : pts)
-			points.push_back(IPoint(p.x, p.y));
+			points.push_back(IPoint(static_cast<int>(p.x), static_cast<int>(p.y)));
 
 		vector<Segment> segments;
 
@@ -65,7 +65,7 @@ public:
 		outMesh->addPoints(pts);
 
 		auto s = m_parentDocument->getRenderSize();
-		Rect area = Rect(0, 0, s.width(), s.height());
+		Rect area = Rect(0, 0, static_cast<float>(s.width()), static_cast<float>(s.height()));
 
 		for(EdgeIterator it = vd.edges().begin(); it != vd.edges().end(); ++it)
 		{
@@ -73,12 +73,12 @@ public:
 			bool bp1 = false, bp2 = false;
 			if(it->vertex0())
 			{
-				Point pt = Point(it->vertex0()->x(), it->vertex0()->y());
+				Point pt = Point(static_cast<PReal>(it->vertex0()->x()), static_cast<PReal>(it->vertex0()->y()));
 				bp1 = area.contains(pt);
 			}
 			if(it->vertex1())
 			{
-				Point pt = Point(it->vertex1()->x(), it->vertex1()->y());
+				Point pt = Point(static_cast<PReal>(it->vertex1()->x()), static_cast<PReal>(it->vertex1()->y()));
 				bp2 = area.contains(pt);
 			}
 			if(it->twin() && (bp1 || bp2))

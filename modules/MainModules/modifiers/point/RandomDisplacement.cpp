@@ -48,9 +48,10 @@ public:
 		PReal minA = minAngle.getValue(), maxA = maxAngle.getValue();
 		PReal minD = minDist.getValue(), maxD = maxDist.getValue();
 
+		const PReal pi180 = static_cast<PReal>(M_PI) / 180;
 		for(int i=0; i<nb; ++i)
 		{
-			PReal a = rnd.random(minA, maxA) * M_PI / 180.0;
+			PReal a = rnd.random(minA, maxA) * pi180;
 			PReal d = rnd.random(minD, maxD);
 			Point disp(cos(a)*d, sin(a)*d);
 			outPts[i] = inPts[i] + disp;

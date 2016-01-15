@@ -41,7 +41,7 @@ public:
 			if(p != Mesh::InvalidID)
 				inputList.push_back(p);
 		}
-		Mesh::TrianglesIndicesList outputList = inMesh.getTrianglesAroundTriangles(inputList, m_testEdges.getValue());
+		Mesh::TrianglesIndicesList outputList = inMesh.getTrianglesAroundTriangles(inputList, m_testEdges.getValue() != 0);
 
 		auto output = m_neighbors.getAccessor();
 		output.clear();
@@ -92,7 +92,7 @@ public:
 		{
 			if(triID == Mesh::InvalidID)
 				continue;
-			Mesh::TrianglesIndicesList tmp = inMesh.getTrianglesConnectedToTriangle(triID, m_testEdges.getValue());
+			Mesh::TrianglesIndicesList tmp = inMesh.getTrianglesConnectedToTriangle(triID, m_testEdges.getValue() != 0);
 			outputSet.insert(tmp.begin(), tmp.end());
 		}
 
@@ -139,7 +139,7 @@ public:
 		auto output = m_output.getAccessor();
 		output.clear();
 
-		bool testEdges = m_testEdges.getValue();
+		bool testEdges = m_testEdges.getValue() != 0;
 
 		for(auto mesh : input)
 		{

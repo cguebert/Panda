@@ -100,7 +100,7 @@ public:
 		glLoadIdentity();
 
 		auto& mvp = getMVPMatrix();
-		mvp.ortho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
+		mvp.ortho(0, static_cast<float>(renderSize.width()), static_cast<float>(renderSize.height()), 0, -10.f, 10.f);
 
 		glClearColor(0, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -123,7 +123,7 @@ public:
 		m_renderFrameBuffer.release();
 
 		auto acc = m_image.getAccessor();
-		panda::types::Rect area(0, 0, renderSize.width(), renderSize.height());
+		panda::types::Rect area(0, 0, static_cast<PReal>(renderSize.width()), static_cast<PReal>(renderSize.height()));
 		graphics::Framebuffer::blitFramebuffer(*acc->getFbo(), area, m_renderFrameBuffer, area);
 
 		cleanDirty();

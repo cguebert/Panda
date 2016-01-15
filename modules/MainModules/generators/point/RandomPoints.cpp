@@ -47,7 +47,7 @@ public:
 		if(area.empty())
 		{
 			auto size = m_parentDocument->getRenderSize();
-			area = Rect(0, 0, size.width()-1, size.height()-1);
+			area = Rect(0, 0, static_cast<PReal>(size.width()-1), static_cast<PReal>(size.height()-1));
 		}
 		PReal w = area.width(), h = area.height();
 		Point origin = area.topLeft();
