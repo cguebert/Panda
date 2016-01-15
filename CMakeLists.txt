@@ -14,10 +14,12 @@ set(LIBRARIES_INCLUDE_DIR ${LIBRARIES_BASE_DIR}/include)
 set(LIBRARIES_LIB_DIR ${LIBRARIES_BASE_DIR}/lib)
 include_directories(${LIBRARIES_INCLUDE_DIR})
 
+set(BOOST_BASE_DIR "" CACHE PATH "Root directory of the Boost librairies")
 set(USE_STATIC_BOOST ON CACHE BOOL "Use the static version of the Boost librairies")
 set(Boost_USE_STATIC_LIBS ${USE_STATIC_BOOST})
 set(Boost_USE_MULTITHREADED ON)
 add_definitions(-DBOOST_ALL_NO_LIB)
+set(BOOST_ROOT ${BOOST_BASE_DIR})
 
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})

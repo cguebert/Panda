@@ -67,11 +67,11 @@ namespace panda
 		factory->moduleLoaded(); // Register core modules
 
 #if defined(WIN32)
-		const std::string filter = "*.dll";
+		const std::string filter = ".dll";
 #elif defined(__APPLE__)
-		const std::string filter = "*.dylib";
+		const std::string filter = ".dylib";
 #else
-		const std::string filter = "*.so";
+		const std::string filter = ".so";
 #endif
 
 		auto modules = panda::helper::system::DataRepository.enumerateFilesInDir(directory, filter);

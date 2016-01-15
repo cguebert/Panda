@@ -3,22 +3,9 @@
 
 #include <fstream>
 
-#include <QStandardPaths>
-#include <QFile>
-#include <QDir>
+#include <boost/filesystem.hpp>
 
-namespace
-{
-
-std::vector<std::string> convert(const QStringList& list)
-{
-	std::vector<std::string> result;
-	for (const auto& s : list)
-		result.push_back(s.toStdString());
-	return result;
-}
-
-}
+namespace fs = boost::filesystem;
 
 namespace panda
 {
@@ -37,20 +24,21 @@ void FileRepository::addPath(const std::string& path)
 
 std::string FileRepository::findFile(const std::string& fileName)
 {
-	auto qFileName = QString::fromStdString(fileName);
-	if(QDir::isAbsolutePath(qFileName))
+	fs::path filePath(fileName);
+	if(filePath.is_absolute())
 	{
-		if(QFile::exists(qFileName))
+		if(exists(filePath))
 			return fileName;
 		else
 			return std::string();
 	}
 
-	for(const std::string& path : m_paths)
+	for(const auto& path : m_paths)
 	{
-		QDir dir(QString::fromStdString(path));
-		if(dir.exists(dir.filePath(qFileName)))
-			return QDir::cleanPath(dir.absoluteFilePath(qFileName)).toStdString();
+		fs::path dir(path);
+		filePath = dir / fileName;
+		if(exists(filePath))
+			return absolute(filePath).string();
 	}
 
 	return std::string();
@@ -71,33 +59,36 @@ std::string FileRepository::loadFile(const std::string& fileName)
 	return contents;
 }
 
-std::vector<std::string> FileRepository::enumerateFilesInDir(const std::string& dirPath, const std::string& nameFilter)
+std::vector<std::string> FileRepository::enumerateFilesInDir(const std::string& dirPath, const std::string& extension)
 {
-	auto qNameFilter = QString::fromStdString(nameFilter);
-	auto qDirPath = QString::fromStdString(dirPath);
-	QStringList nameFilters(qNameFilter);
-	if(QDir::isAbsolutePath(qDirPath))
+	std::vector<std::string> files;
+	fs::path dir(dirPath);
+	if(dir.is_absolute() && exists(dir) && is_directory(dir))
 	{
-		QDir dir(qDirPath);
-		if(qNameFilter.isEmpty())
-			return convert(dir.entryList(QDir::Files, QDir::Name));
-		else
-			return convert(dir.entryList(nameFilters, QDir::Files, QDir::Name));
+		for (auto&& x : fs::recursive_directory_iterator(dir))
+		{
+			if (extension.empty() || x.path().extension() == extension)
+				files.push_back(x.path().string());
+		}
+		return files;
 	}
 
-	QStringList result;
 	for(const std::string& path : m_paths)
 	{
-		QDir dir(QString::fromStdString(path));
-		dir.setPath(qDirPath);
-		if(qNameFilter.isEmpty())
-			result.append(dir.entryList(QDir::Files, QDir::Name));
-		else
-			result.append(dir.entryList(nameFilters, QDir::Files, QDir::Name));
+		dir = fs::path(path) / dirPath;
+		if (exists(dir) && is_directory(dir))
+		{
+			for (auto&& x : fs::directory_iterator(dir))
+			{
+				if (extension.empty() || x.path().extension() == extension)
+					files.push_back(x.path().filename().string());
+			}
+		}
 	}
-	result.sort(Qt::CaseInsensitive);
-	result.removeDuplicates();
-	return convert(result);
+	std::sort(files.begin(), files.end());
+	auto last = std::unique(files.begin(), files.end());
+	files.erase(last, files.end());
+	return files;
 }
 
 FileRepository DataRepository;

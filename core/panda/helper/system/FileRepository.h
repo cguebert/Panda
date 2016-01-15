@@ -26,7 +26,7 @@ public:
 	std::string loadFile(const std::string& fileName);
 
 	/// List the relative paths of files in all the listed directories
-	std::vector<std::string> enumerateFilesInDir(const std::string& dir, const std::string& nameFilter = std::string());
+	std::vector<std::string> enumerateFilesInDir(const std::string& dir, const std::string& extension = std::string());
 
 protected:
 	std::vector<std::string> m_paths;

@@ -136,16 +136,13 @@ GroupFiles(HEADER_FILES)
 GroupFiles(SOURCE_FILES)
 
 find_package(Qt5Widgets)
-find_package(Qt5OpenGL)
-find_package(Qt5Xml)
-
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
 #set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Libraries")
 
 add_definitions(-DPANDA_BUILD_CORE)
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 
 add_library("TinyXML2" SHARED IMPORTED)
 set_target_properties("TinyXML2" PROPERTIES 
@@ -161,6 +158,11 @@ endif(NOT OPENGL_FOUND)
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
 target_link_libraries(${PROJECT_NAME} "${LIBRARIES_LIB_DIR}/glew32.lib")
+
+find_package(Boost REQUIRED COMPONENTS filesystem system)
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 
 install(FILES ${LIBRARIES_LIB_DIR}/glew32.dll DESTINATION ${TARGET_DIR})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${TARGET_DIR})
