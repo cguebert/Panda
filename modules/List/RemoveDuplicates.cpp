@@ -56,7 +56,6 @@ using types::DataTypeId;
 
 class RemoveDuplicates : public GenericObject
 {
-	GENERIC_OBJECT(RemoveDuplicates, allSearchableTypes)
 public:
 	PANDA_CLASS(RemoveDuplicates, GenericObject)
 
@@ -76,7 +75,7 @@ public:
 											 false, true,
 											 "output",
 											 "Output list"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allSearchableTypes>(this, generic, defList);
 	}
 
 	template <class T>

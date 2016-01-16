@@ -6,7 +6,6 @@ namespace panda {
 
 class ListReverse : public GenericObject
 {
-	GENERIC_OBJECT(ListReverse, allDataTypes)
 public:
 	PANDA_CLASS(ListReverse, GenericObject)
 
@@ -26,7 +25,7 @@ public:
 											 false, true,
 											 "output",
 											 "Reversed list"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	template <class T>

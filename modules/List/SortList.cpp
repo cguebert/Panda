@@ -54,9 +54,8 @@ namespace panda {
 
 using types::DataTypeId;
 
-class SortList  : public GenericObject
+class SortList : public GenericObject
 {
-	GENERIC_OBJECT(SortList, allSearchableTypes)
 public:
 	PANDA_CLASS(SortList, GenericObject)
 
@@ -80,7 +79,7 @@ public:
 											 false, true,
 											 "indices",
 											 "Indices corresponding to the sorted list"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allSearchableTypes>(this, generic, defList);
 	}
 
 	template <class T>

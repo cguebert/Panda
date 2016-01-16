@@ -20,7 +20,6 @@ typedef std::tuple<int, PReal, std::string> formatTypes;
 
 class GeneratorText_Format : public GenericObject
 {
-	GENERIC_OBJECT(GeneratorText_Format, formatTypes)
 public:
 	PANDA_CLASS(GeneratorText_Format, GenericObject)
 
@@ -41,7 +40,7 @@ public:
 											 true, false,
 											 "input",
 											 "Value to use in the format operation"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<formatTypes>(this, generic, defList);
 	}
 
 	void update()

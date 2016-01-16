@@ -7,7 +7,6 @@ namespace panda {
 
 class DeleteItems : public GenericObject
 {
-	GENERIC_OBJECT(DeleteItems, allDataTypes)
 public:
 	PANDA_CLASS(DeleteItems, GenericObject)
 
@@ -29,7 +28,7 @@ public:
 											 false, true,
 											 "output",
 											 "Result of the deletion"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	template <class T>

@@ -8,7 +8,6 @@ using types::DataTypeId;
 
 class FindItem : public GenericObject
 {
-	GENERIC_OBJECT(FindItem, allSearchableTypes)
 public:
 	PANDA_CLASS(FindItem, GenericObject)
 
@@ -33,7 +32,7 @@ public:
 											 "output",
 											 "Indices of the values in the input list"));
 
-		setupGenericObject(generic, defList);
+		setupGenericObject<allSearchableTypes>(this, generic, defList);
 	}
 
 	template <class T>

@@ -10,7 +10,6 @@ using types::Animation;
 
 class AnimValue : public GenericObject
 {
-	GENERIC_OBJECT(AnimValue, allAnimationTypes)
 public:
 	PANDA_CLASS(AnimValue, GenericObject)
 
@@ -36,7 +35,7 @@ public:
 											 "output",
 											 "Values extracted from the animation"));
 
-		setupGenericObject(generic, defList);
+		setupGenericObject<allAnimationTypes>(this, generic, defList);
 	}
 
 	template <class T>

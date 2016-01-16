@@ -8,7 +8,6 @@ using types::DataTypeId;
 
 class ListSize : public GenericObject
 {
-	GENERIC_OBJECT(ListSize, allDataTypes)
 public:
 	PANDA_CLASS(ListSize, GenericObject)
 
@@ -29,7 +28,7 @@ public:
 											 false, true,
 											 "size",
 											 "Number of values in this list"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	template <class T>

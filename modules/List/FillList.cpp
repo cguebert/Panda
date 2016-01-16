@@ -6,7 +6,6 @@ namespace panda {
 
 class FillList  : public GenericObject
 {
-	GENERIC_OBJECT(FillList, allDataTypes)
 public:
 	PANDA_CLASS(FillList, GenericObject)
 
@@ -29,7 +28,7 @@ public:
 											 "output",
 											 "List created from the given value"));
 
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	template <class T>

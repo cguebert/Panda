@@ -10,7 +10,6 @@ using types::DataTypeId;
 
 class Gradients_Compose : public GenericObject
 {
-	GENERIC_OBJECT(Gradients_Compose, std::tuple<Color>)
 public:
 	PANDA_CLASS(Gradients_Compose, GenericObject)
 
@@ -34,7 +33,7 @@ public:
 											 true, false,
 											 "position",
 											 "Position where to insert the color"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<std::tuple<Color>>(this, generic, defList);
 	}
 
 	void update()

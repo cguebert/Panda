@@ -10,7 +10,6 @@ using types::Animation;
 
 class AnimLength : public GenericObject
 {
-	GENERIC_OBJECT(AnimLength, allAnimationTypes)
 public:
 	PANDA_CLASS(AnimLength, GenericObject)
 
@@ -36,7 +35,7 @@ public:
 											 false, true,
 											 "size",
 											 "Number of keys in this animation"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allAnimationTypes>(this, generic, defList);
 	}
 
 	template <class T>

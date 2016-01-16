@@ -8,7 +8,6 @@ using types::DataTypeId;
 
 class ReplaceItem : public GenericObject
 {
-	GENERIC_OBJECT(ReplaceItem, allDataTypes)
 public:
 	PANDA_CLASS(ReplaceItem, GenericObject)
 
@@ -35,7 +34,7 @@ public:
 											 "output",
 											 "Modified list"));
 
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	template <class T>

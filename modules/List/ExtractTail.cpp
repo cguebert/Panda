@@ -6,7 +6,6 @@ namespace panda {
 
 class ExtractTail : public GenericObject
 {
-	GENERIC_OBJECT(ExtractTail, allDataTypes)
 public:
 	PANDA_CLASS(ExtractTail, GenericObject)
 
@@ -28,7 +27,7 @@ public:
 											 false, true,
 											 "output",
 											 "Result of the extraction"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	template <class T>

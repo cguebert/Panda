@@ -12,8 +12,8 @@
 #include <panda/types/Shader.h>
 #include <panda/helper/typeList.h>
 
+#include <functional>
 #include <map>
-#include <memory>
 
 class GenericObjectDrawStruct;
 
@@ -107,14 +107,8 @@ public:
 	explicit GenericObject(PandaDocument* parent = nullptr);
 	virtual ~GenericObject();
 
-	void setupGenericObject(BaseGenericData& data, const GenericDataDefinitionList& defList);
-
 	virtual void update();
 	virtual void dataSetParent(BaseData* data, BaseData* parent);
-
-	// use the GENERIC_OBJECT macro to create these functions
-	virtual void invokeFunction(int type, DataList& list) = 0;
-	virtual std::vector<int> getRegisteredTypes() = 0;
 
 	virtual void save(XmlElement& elem, const std::vector<PandaObject*>* selected = nullptr);
 	virtual void load(XmlElement& elem);
@@ -129,12 +123,18 @@ protected:
 	BaseGenericData* const getGenericData() const; // Access to m_genericData
 	int nbOfCreatedDatas() const; // Size of m_createdDatasStructs
 	bool isCreatedData(BaseData* data) const; // Return true if data has been created by the GenericObject
+	std::vector<int> getRegisteredTypes();
+	
+	template <class Types, class Parent>
+	void setupGenericObject(Parent* ptr, BaseGenericData& data, const GenericDataDefinitionList& defList)
+	{
+		setupGenericData(data, defList);
+		helper::for_each_type<Types>(functionCreatorWrapper<Parent>(ptr));
+	}
 
 private:
 	friend class SingleTypeGenericObject;
 	friend class GenericObjectDrawStruct;
-
-	virtual void registerFunctions() {}
 
 	typedef std::shared_ptr<BaseData> BaseDataPtr;
 	typedef std::vector<BaseDataPtr> DataPtrList;
@@ -153,6 +153,27 @@ private:
 	std::map<BaseData*, CreatedDatasStructPtr> m_createdDatasMap;
 
 	void createUndoCommands(const CreatedDatasStructPtr& createdData);
+	void setupGenericData(BaseGenericData& data, const GenericDataDefinitionList& defList);
+
+	using FuncPtr = std::function<void(DataList&)>;
+	typedef std::pair<int, FuncPtr> TypeFuncPair;
+	std::vector<TypeFuncPair> m_functions;
+
+	template <class T>
+	struct functionCreatorWrapper
+	{
+		functionCreatorWrapper(T* obj) : object(obj) {}
+		template<class U> void operator()(U)
+		{
+			int type = types::DataTypeId::getIdOf<U>();
+			auto obj = object;
+			object->m_functions.emplace_back(type, [obj](DataList& list) { obj->updateT<U>(list); });
+		}
+
+		T* object;
+	};
+
+	void invokeFunction(int type, DataList& list);
 };
 
 //****************************************************************************//
@@ -184,50 +205,6 @@ typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, std::str
 typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, std::string> allSearchableTypes;
 typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect> allNumericalTypes;
 typedef std::tuple<PReal, types::Color, types::Point, types::Gradient> allAnimationTypes;
-
-#define GENERIC_OBJECT(T, L)								\
-	protected:												\
-	typedef void(T::*funcPtr)(DataList&);					\
-	typedef std::pair<int, funcPtr> FuncPair;				\
-	std::vector<FuncPair> m_functions;						\
-	struct functionCreatorWrapper							\
-	{														\
-		T* object;											\
-		functionCreatorWrapper(T* obj) : object(obj) {}		\
-		template<class U> void operator()(U)				\
-		{													\
-			int type = types::DataTypeId::getIdOf<U>();		\
-			object->registerFunction(type, &T::updateT<U>);	\
-		}													\
-	};														\
-	void registerFunction(int type, funcPtr ptr)			\
-	{														\
-		m_functions.push_back(std::make_pair(type, ptr));	\
-	}														\
-	private:												\
-	virtual void registerFunctions()						\
-	{														\
-		helper::for_each_type<L>							\
-			(functionCreatorWrapper(this));					\
-	}														\
-	public:													\
-	virtual std::vector<int> getRegisteredTypes()			\
-	{														\
-		std::vector<int> keys;								\
-		keys.reserve(m_functions.size());					\
-		for (const auto& func : m_functions)				\
-			keys.push_back(func.first);						\
-		return keys;										\
-	}														\
-	virtual void invokeFunction(int type, DataList& list)	\
-	{														\
-		auto it = std::find_if(m_functions.begin(),			\
-			m_functions.end(), [type](const FuncPair& func){\
-				return func.first == type;					\
-			});												\
-		if(it != m_functions.end())							\
-			(this->*(it->second))(list);					\
-	}
 
 } // namespace panda
 

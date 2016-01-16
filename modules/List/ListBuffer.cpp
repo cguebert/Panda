@@ -6,8 +6,6 @@ namespace panda {
 
 class ListBuffer : public GenericObject
 {
-	GENERIC_OBJECT(ListBuffer, allDataTypes)
-
 public:
 	PANDA_CLASS(ListBuffer, GenericObject)
 
@@ -38,7 +36,7 @@ public:
 											 "output",
 											 "Value stored in the buffer"));
 
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 
 		m_laterUpdate = true;
 	}

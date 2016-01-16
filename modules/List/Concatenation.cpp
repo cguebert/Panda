@@ -7,7 +7,6 @@ namespace panda {
 
 class ListConcatenation : public SingleTypeGenericObject
 {
-	GENERIC_OBJECT(ListConcatenation, allDataTypes)
 public:
 	PANDA_CLASS(ListConcatenation, SingleTypeGenericObject)
 
@@ -30,7 +29,7 @@ public:
 											 false, true,
 											 "result",
 											 "Result of the concatenation"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	void update()

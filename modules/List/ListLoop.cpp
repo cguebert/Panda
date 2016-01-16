@@ -8,8 +8,6 @@ namespace panda {
 
 class ListLoop : public GenericObject
 {
-	GENERIC_OBJECT(ListLoop, allDataTypes)
-
 public:
 	PANDA_CLASS(ListLoop, GenericObject)
 
@@ -46,7 +44,7 @@ public:
 											 "output",
 											 "Corresponding value at the previous iteration"));
 
-		setupGenericObject(m_generic, defList);
+		setupGenericObject<allDataTypes>(this, m_generic, defList);
 
 		m_laterUpdate = true;
 	}

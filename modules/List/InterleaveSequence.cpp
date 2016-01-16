@@ -6,7 +6,6 @@ namespace panda {
 
 class InterleaveSequence : public SingleTypeGenericObject
 {
-	GENERIC_OBJECT(InterleaveSequence, allDataTypes)
 public:
 	PANDA_CLASS(InterleaveSequence, SingleTypeGenericObject)
 
@@ -30,7 +29,7 @@ public:
 											 false, true,
 											 "result",
 											 "Result of the interleaving"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	void update()

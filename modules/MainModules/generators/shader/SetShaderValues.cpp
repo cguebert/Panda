@@ -16,7 +16,6 @@ typedef helper::push_back<types::shaderValuesTypes, types::ImageWrapper> uniform
 
 class ModifierShader_SetUniform : public GenericObject
 {
-	GENERIC_OBJECT(ModifierShader_SetUniform, uniformTypes)
 public:
 	PANDA_CLASS(ModifierShader_SetUniform, GenericObject)
 
@@ -45,7 +44,7 @@ public:
 											 true, false,
 											 "name",
 											 "Name of the uniform in the shader"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<uniformTypes>(this, generic, defList);
 	}
 
 	void update()

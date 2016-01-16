@@ -6,7 +6,6 @@ namespace panda {
 
 class ListItem : public GenericObject
 {
-	GENERIC_OBJECT(ListItem, allDataTypes)
 public:
 	PANDA_CLASS(ListItem, GenericObject)
 
@@ -31,7 +30,7 @@ public:
 											 "output",
 											 "Value extracted from the list"));
 
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	template <class T>

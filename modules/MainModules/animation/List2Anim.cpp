@@ -10,7 +10,6 @@ using types::Animation;
 
 class List2Anim : public GenericObject
 {
-	GENERIC_OBJECT(List2Anim, allAnimationTypes)
 public:
 	PANDA_CLASS(List2Anim, GenericObject)
 
@@ -50,7 +49,7 @@ public:
 											 "output",
 											 "Animation created from the given list"));
 
-		setupGenericObject(generic, defList);
+		setupGenericObject<allAnimationTypes>(this, generic, defList);
 	}
 
 	template <class T>
@@ -88,7 +87,6 @@ int List2AnimClass = RegisterObject<List2Anim>("Animation/Lists to Animation").s
 
 class Anim2List : public GenericObject
 {
-	GENERIC_OBJECT(Anim2List, allAnimationTypes)
 public:
 	PANDA_CLASS(Anim2List, GenericObject)
 
@@ -115,7 +113,7 @@ public:
 											 "values",
 											 "List of values of the given animation"));
 
-		setupGenericObject(generic, defList);
+		setupGenericObject<allAnimationTypes>(this, generic, defList);
 	}
 
 	template <class T>

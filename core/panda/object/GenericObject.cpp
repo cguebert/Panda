@@ -29,7 +29,7 @@ GenericObject::~GenericObject()
 	m_createdDatasStructs.clear();
 }
 
-void GenericObject::setupGenericObject(BaseGenericData& data, const GenericDataDefinitionList &defList)
+void GenericObject::setupGenericData(BaseGenericData& data, const GenericDataDefinitionList &defList)
 {
 	// Verify that there is no duplicate data name
 	// And that there is at least one input data
@@ -55,8 +55,6 @@ void GenericObject::setupGenericObject(BaseGenericData& data, const GenericDataD
 		std::cerr << "Fatal error : no input data in a GenericObject" << std::endl;
 		std::terminate();
 	}
-
-	registerFunctions();	// Create template functions
 
 	m_genericData = &data;
 	m_genericData->setDisplayed(false);
@@ -263,6 +261,24 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 
 		m_parentDocument->onModifiedObject(this);
 	}
+}
+
+std::vector<int> GenericObject::getRegisteredTypes()
+{
+	std::vector<int> keys;
+	keys.reserve(m_functions.size());
+	for (const auto& func : m_functions)
+		keys.push_back(func.first);
+	return keys;
+}
+
+void GenericObject::invokeFunction(int type, DataList& list)
+{
+	auto it = std::find_if(m_functions.begin(), m_functions.end(), [type](const TypeFuncPair& func){
+		return func.first == type;
+	});
+	if (it != m_functions.end())
+		it->second(list);
 }
 
 void GenericObject::save(XmlElement& elem, const std::vector<PandaObject*>* selected)

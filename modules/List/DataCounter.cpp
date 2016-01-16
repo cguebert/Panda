@@ -6,8 +6,6 @@ namespace panda {
 
 class ListDataCounter : public GenericObject
 {
-	GENERIC_OBJECT(ListDataCounter, allDataTypes)
-
 public:
 	PANDA_CLASS(ListDataCounter, GenericObject)
 
@@ -28,7 +26,7 @@ public:
 											 "counter",
 											 "Counter of the input data"));
 
-		setupGenericObject(m_generic, defList);
+		setupGenericObject<allDataTypes>(this, m_generic, defList);
 	}
 
 	template <class T>

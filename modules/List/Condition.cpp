@@ -6,7 +6,6 @@ namespace panda {
 
 class ListCondition : public GenericObject
 {
-	GENERIC_OBJECT(ListCondition, allDataTypes)
 public:
 	PANDA_CLASS(ListCondition, GenericObject)
 
@@ -34,7 +33,7 @@ public:
 											 false, true,
 											 "result",
 											 "Result of the condition"));
-		setupGenericObject(generic, defList);
+		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
 	template <class T>
