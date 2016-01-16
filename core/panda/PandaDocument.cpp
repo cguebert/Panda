@@ -651,10 +651,17 @@ void PandaDocument::onDirtyObject(PandaObject* object)
 	if(m_resetting)
 		return;
 
-	m_dirtyObjectSignal.run(object);
-	if(object == getCurrentSelectedObject())
-		m_selectedObjectIsDirtySignal.run(object);
-	m_modifiedSignal.run();
+	if (m_isInStep)
+	{
+		m_dirtyObjects.push_back(object);
+	}
+	else
+	{
+		m_dirtyObjectSignal.run(object);
+		if (object == getCurrentSelectedObject())
+			m_selectedObjectIsDirtySignal.run(object);
+		m_modifiedSignal.run();
+	}
 }
 
 void PandaDocument::onModifiedObject(PandaObject* object)
@@ -952,6 +959,10 @@ void PandaDocument::step()
 #endif
 
 	m_timeChangedSignal.run();
+
+	for (auto obj : m_dirtyObjects)
+		m_dirtyObjectSignal.run(obj);
+	m_dirtyObjects.clear();
 
 	const auto obj = getCurrentSelectedObject();
 	if (obj)

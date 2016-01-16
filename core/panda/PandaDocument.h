@@ -131,6 +131,7 @@ protected:
 
 	ObjectsList m_objects;
 	ObjectsSelection m_selectedObjects;
+	ObjectsSelection m_dirtyObjects; // All the objects that were dirty during the current step
 	uint32_t m_currentIndex;
 	Layer* m_defaultLayer;
 	std::shared_ptr<graphics::Framebuffer> m_renderFBO, m_secondRenderFBO;
