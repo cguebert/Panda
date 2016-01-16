@@ -8,8 +8,6 @@
 #include <thread>
 #include <deque>
 
-#include <iostream>
-
 using namespace std::chrono;
 
 namespace panda
@@ -56,8 +54,7 @@ void TimedFunctionsData::shutdown()
 
 int TimedFunctionsData::add(double delay, TimedFunctions::VoidFunc func)
 {
-	auto micro = microseconds(std::lround(delay * 1e6));
-	auto time = high_resolution_clock::now() + micro;
+	high_resolution_clock::time_point time = high_resolution_clock::now() + microseconds(std::lround(delay * 1e6));
 
 	std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -67,9 +64,9 @@ int TimedFunctionsData::add(double delay, TimedFunctions::VoidFunc func)
 	});
 
 	FuncData data;
-	auto id = ++m_index;
-	if (m_index < 0)
-		m_index = 0;
+	int id = ++m_index;
+	if (id < 0)
+		m_index = id = 1;
 	data.index = id;
 	data.time = time;
 	data.function = std::move(func);
@@ -123,16 +120,24 @@ void TimedFunctionsData::threadFunc()
 		}
 		else // Or wait until the function can be executed
 		{
-			m_condition.wait_until(lock, m_functions.front().time, [this]() {
+			high_resolution_clock::time_point nextTime = m_functions.front().time;
+			m_condition.wait_until(lock, nextTime, [this, nextTime]() {
 				if (!m_running || m_functions.empty()) // If remove has been called while waiting
+					return true;
+				
+				auto time = m_functions.front().time;
+				if (time < nextTime) // Another function has been inserted, we need to change the sleep
 					return true;
 
 				// Test if we can execute the next function
-				return high_resolution_clock::now() >= m_functions.front().time;
+				return high_resolution_clock::now() >= time;
 			});
 
 			if (!m_functions.empty() && m_running)
 			{
+				if (high_resolution_clock::now() < m_functions.front().time) // If we inserted another function, but we still need to wait
+					continue;
+
 				// Pop the function
 				const FuncData funcData = m_functions.front();
 				m_functions.pop_front();
