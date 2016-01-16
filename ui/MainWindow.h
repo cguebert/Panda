@@ -34,6 +34,7 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow();
+	~MainWindow();
 
 	void updateOpenGLView() const;
 

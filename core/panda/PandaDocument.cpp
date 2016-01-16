@@ -118,13 +118,13 @@ PandaDocument::~PandaDocument()
 	if(m_scheduler)
 		m_scheduler->stop();
 
-	TimedFunctions::instance().shutdown();
-
 	m_resetting = true;
 
 	// Just to be sure everything goes smoothly
 	for(auto object : m_objects)
 		object->preDestruction();
+
+	TimedFunctions::instance().shutdown();
 
 	m_objects.clear();
 	m_undoStack.clear();

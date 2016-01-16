@@ -104,6 +104,11 @@ MainWindow::MainWindow()
 	readSettings();
 }
 
+MainWindow::~MainWindow()
+{
+	delete m_document; // Quick hack until I put the document in a smart pointer
+}
+
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 	if (okToContinue())

@@ -17,14 +17,11 @@ set(SOURCE_FILES
 
 EnablePrecompiledHeaders(SOURCE_FILES)
 
-find_package(Qt5Widgets)
-
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Modules")
 
 target_link_libraries(${PROJECT_NAME} "PandaCore")
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${MODULES_DIR})
 

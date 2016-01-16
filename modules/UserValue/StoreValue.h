@@ -1,7 +1,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/XmlDocument.h>
-
-#include <QTimer>
+#include <panda/SimpleGUI.h>
+#include <panda/TimedFunctions.h>
 
 namespace panda {
 
@@ -23,10 +23,12 @@ public:
 
 		m_fileName.setWidget("save file");
 		m_singleValue.setWidget("checkbox");
+	}
 
-		m_saveTimer.setSingleShot(true);
-
-		QObject::connect(&m_saveTimer, &QTimer::timeout, [this]() { onTimeout(); });
+	void preDestruction() override
+	{
+		if (TimedFunctions::instance().cancelRun(m_saveTimerId))
+			saveToFile();
 	}
 
 	void initRoot()
@@ -58,8 +60,12 @@ public:
 		addValue();
 		PandaObject::endStep();
 
-		m_saveTimer.stop();
-		m_saveTimer.start(500);
+		TimedFunctions::instance().cancelRun(m_saveTimerId);
+		m_saveTimerId = TimedFunctions::instance().delayRun(0.5, [this]() { 
+			getParentDocument()->getGUI().executeByUI([this](){
+				saveToFile();
+			});
+		});
 	}
 
 	void saveToFile()
@@ -71,18 +77,13 @@ public:
 		m_xmlDoc.saveToFile(tmpFileName);
 	}
 
-	void onTimeout()
-	{
-		saveToFile();
-	}
-
 protected:
 	Data<T> m_input;
 	Data<std::string> m_fileName;
 	Data<int> m_singleValue;
 	XmlDocument m_xmlDoc;
 	XmlElement m_xmlRoot;
-	QTimer m_saveTimer;
+	int m_saveTimerId = -1;
 };
 
 } // namespace Panda
