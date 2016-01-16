@@ -212,7 +212,7 @@ bool PandaDocument::saveDoc(XmlElement& root, const ObjectsSelection& selected)
 	typedef std::pair<BaseData*, BaseData*> DataPair;
 	std::vector<DataPair> links;
 
-	typedef std::pair<quint32, quint32> IntPair;
+	typedef std::pair<uint32_t, uint32_t> IntPair;
 	std::vector<IntPair> dockedObjects;
 
 	// Saving objects
@@ -267,7 +267,7 @@ bool PandaDocument::saveDoc(XmlElement& root, const ObjectsSelection& selected)
 bool PandaDocument::loadDoc(XmlElement& root)
 {
 	m_startLoadingSignal.run();
-	std::map<quint32, quint32> importIndicesMap;
+	std::map<uint32_t, uint32_t> importIndicesMap;
 	auto factory = ObjectFactory::getInstance();
 
 	// Loading objects
@@ -277,7 +277,7 @@ bool PandaDocument::loadDoc(XmlElement& root)
 		std::string registryName = elem.attribute("type").toString();
 		if(registryName.empty())
 			return false;
-		quint32 index = elem.attribute("index").toUnsigned();
+		uint32_t index = elem.attribute("index").toUnsigned();
 		auto object = factory->create(registryName, this);
 		if(object)
 		{
@@ -302,7 +302,7 @@ bool PandaDocument::loadDoc(XmlElement& root)
 	elem = root.firstChild("Link");
 	while(elem)
 	{
-		quint32 index1, index2;
+		uint32_t index1, index2;
 		std::string name1, name2;
 		index1 = elem.attribute("object1").toUnsigned();
 		index2 = elem.attribute("object2").toUnsigned();
@@ -325,7 +325,7 @@ bool PandaDocument::loadDoc(XmlElement& root)
 	elem = root.firstChild("Dock");
 	while(elem)
 	{
-		quint32 dockIndex, dockableIndex;
+		uint32_t dockIndex, dockableIndex;
 		dockIndex = elem.attribute("dock").toUnsigned();
 		dockableIndex = elem.attribute("docked").toUnsigned();
 		dockIndex = importIndicesMap[dockIndex];
@@ -625,7 +625,7 @@ void PandaDocument::waitForOtherTasksToFinish(bool mainThread) const
 		m_scheduler->waitForOtherTasks(mainThread);
 }
 
-PandaObject* PandaDocument::findObject(quint32 objectIndex)
+PandaObject* PandaDocument::findObject(uint32_t objectIndex)
 {
 	auto iter = std::find_if(m_objects.cbegin(), m_objects.cend(), [objectIndex](const ObjectPtr& object){
 		return object->getIndex() == objectIndex;
@@ -637,7 +637,7 @@ PandaObject* PandaDocument::findObject(quint32 objectIndex)
 	return nullptr;
 }
 
-BaseData* PandaDocument::findData(quint32 objectIndex, const std::string& dataName)
+BaseData* PandaDocument::findData(uint32_t objectIndex, const std::string& dataName)
 {
 	PandaObject* object = findObject(objectIndex);
 	if(object)

@@ -5,16 +5,13 @@
 #include <panda/helper/algorithm.h>
 
 #include <deque>
-#include <set>
-
-#include <QMutexLocker>
-#include <QThreadPool>
+#include <thread>
 
 #ifdef PANDA_LOG_EVENTS
 #include <panda/UpdateLogger.h>
 #endif
 
-#include <iostream>
+//#include <iostream>
 
 namespace
 {
@@ -58,8 +55,6 @@ void Scheduler::stop()
 	{
 		for(auto& thread : m_updateThreads)
 			thread->close();
-
-		delete m_updateThreads[0];
 
 		m_updateThreads.clear();
 	}
@@ -352,17 +347,14 @@ void Scheduler::computeStartValues()
 
 void Scheduler::prepareThreads()
 {
-	int nbThreads = std::max(1, QThread::idealThreadCount() / 2);
+	int nbThreads = std::max(1u, std::thread::hardware_concurrency() / 2);
 
-	m_updateThreads.push_back(new SchedulerThread(this, 0));
+	m_updateThreads.push_back(std::make_shared<SchedulerThread>(this, 0));
 	for(int i=1; i<nbThreads; ++i)
 	{
-		SchedulerThread* thread = new SchedulerThread(this, i);
-
-		if(QThreadPool::globalInstance()->tryStart(thread))
-			m_updateThreads.push_back(thread);
-		else
-			delete thread;
+		auto st = std::make_shared<SchedulerThread>(this, i);
+		m_updateThreads.push_back(st);
+		std::thread(&SchedulerThread::run, *st).detach();
 	}
 	
 #ifdef PANDA_LOG_EVENTS
@@ -601,8 +593,8 @@ void SchedulerThread::run()
 
 void SchedulerThread::idle()
 {
-	while(!m_mustWakeUp)
-		QThread::yieldCurrentThread();
+	while (!m_mustWakeUp)
+		std::this_thread::yield();
 
 	m_mustWakeUp = false;
 }

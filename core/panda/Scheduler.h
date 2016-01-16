@@ -5,13 +5,9 @@
 
 #include <atomic>
 #include <functional>
-#include <string>
+#include <memory>
+#include <map>
 #include <vector>
-
-#include <QThread>
-#include <QRunnable>
-#include <QMutex>
-#include <QWaitCondition>
 
 #include <boost/lockfree/queue.hpp>
 
@@ -79,7 +75,7 @@ protected:
 	std::vector<SchedulerTask> m_updateTasks;
 	std::map<PandaObject*, int> m_objectsIndexMap;
 
-	std::vector<SchedulerThread*> m_updateThreads;
+	std::vector<std::shared_ptr<SchedulerThread>> m_updateThreads;
 
 	boost::lockfree::queue<const SchedulerTask*> m_readyTasks, m_readyMainTasks;
 	std::atomic_int m_nbReadyTasks;
@@ -87,11 +83,11 @@ protected:
 
 //****************************************************************************//
 
-class SchedulerThread : public QRunnable
+class SchedulerThread
 {
 public:
 	SchedulerThread(Scheduler* scheduler, int threadId);
-	virtual void run();
+	void run();
 
 	void close();
 	void sleep();
