@@ -133,7 +133,7 @@ protected:
 	ObjectsSelection m_selectedObjects;
 	ObjectsSelection m_dirtyObjects; // All the objects that were dirty during the current step
 	uint32_t m_currentIndex;
-	Layer* m_defaultLayer;
+	std::shared_ptr<Layer> m_defaultLayer;
 	std::shared_ptr<graphics::Framebuffer> m_renderFBO, m_secondRenderFBO;
 	std::shared_ptr<graphics::ShaderProgram> m_mergeLayersShader;
 
@@ -266,7 +266,7 @@ inline uint32_t PandaDocument::getNextIndex()
 { return m_currentIndex++; }
 
 inline Layer* PandaDocument::getDefaultLayer() const
-{ return m_defaultLayer; }
+{ return m_defaultLayer.get(); }
 
 inline bool PandaDocument::isInCommandMacro() const
 { return m_inCommandMacro > 0; }

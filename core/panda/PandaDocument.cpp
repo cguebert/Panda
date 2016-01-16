@@ -103,7 +103,7 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 
 	m_useMultithread.setWidget("checkbox");
 
-	m_defaultLayer = new Layer(this);
+	m_defaultLayer = std::make_shared<Layer>(this);
 	m_defaultLayer->getLayerNameData().setValue("Default Layer");
 
 	setInternalData("Document", 0);
@@ -565,7 +565,7 @@ void PandaDocument::selectConnected()
 			if(dockable)
 			{
 				PandaObject* dock = dockable->getParentDock();
-				if (dock != m_defaultLayer && !closedList.count(dock))
+				if (dock != m_defaultLayer.get() && !closedList.count(dock))
 					openList.insert(dock);
 			}
 
@@ -886,7 +886,7 @@ void PandaDocument::play(bool playing)
 		if(m_animMultithread)
 		{
 			if(!m_scheduler)
-				m_scheduler.reset(new Scheduler(this));
+				m_scheduler = std::make_shared<Scheduler>(this);
 			m_scheduler->init();
 		}
 #ifdef PANDA_LOG_EVENTS
