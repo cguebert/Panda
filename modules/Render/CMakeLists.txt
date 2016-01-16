@@ -25,6 +25,8 @@ set(SOURCE_FILES
 GroupFiles(HEADER_FILES)
 GroupFiles(SOURCE_FILES)
 
+EnablePrecompiledHeaders(SOURCE_FILES)
+
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Modules")

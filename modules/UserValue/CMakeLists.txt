@@ -15,6 +15,8 @@ set(SOURCE_FILES
 	UserValue.cpp
 )
 
+EnablePrecompiledHeaders(SOURCE_FILES)
+
 find_package(Qt5Widgets)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})

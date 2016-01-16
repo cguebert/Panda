@@ -30,6 +30,9 @@ list(APPEND CMAKE_PREFIX_PATH ${QT_BASE_DIR})
 set(TARGET_DIR "${CMAKE_INSTALL_PREFIX}/\${BUILD_TYPE}")
 set(MODULES_DIR "${TARGET_DIR}/modules")
 
+set(USE_PCH ON CACHE BOOL "Use precompiled headers")
+set(PCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/core/panda/helper/system/pch.h)
+
 # Multiprocessor build on Visual C++
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")

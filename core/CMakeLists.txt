@@ -45,6 +45,7 @@ set(HEADER_FILES
 	panda/helper/ShaderCache.h
 	panda/helper/system/config.h
 	panda/helper/system/FileRepository.h
+	panda/helper/system/pch.h
 	panda/object/Dockable.h
 	panda/object/GenericObject.h
 	panda/object/Group.h
@@ -131,6 +132,9 @@ set(SOURCE_FILES
 # Regroup files by folder
 GroupFiles(HEADER_FILES)
 GroupFiles(SOURCE_FILES)
+
+# Use a precompiled header
+EnablePrecompiledHeaders(SOURCE_FILES)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
