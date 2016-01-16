@@ -3,9 +3,6 @@ cmake_minimum_required(VERSION 3.1)
 set(PROJECT_NAME "PandaCore")
 project(${PROJECT_NAME})
 
-set(QT_BASE_DIR "" CACHE PATH "Qt5 install prefix") # C:/Qt/5/msvc2015/
-list(APPEND CMAKE_PREFIX_PATH ${QT_BASE_DIR})
-
 set(HEADER_FILES
 	panda/core.h
 	panda/messaging.h
@@ -135,14 +132,11 @@ set(SOURCE_FILES
 GroupFiles(HEADER_FILES)
 GroupFiles(SOURCE_FILES)
 
-find_package(Qt5Widgets)
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
 #set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Libraries")
 
 add_definitions(-DPANDA_BUILD_CORE)
-
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 
 add_library("TinyXML2" SHARED IMPORTED)
 set_target_properties("TinyXML2" PROPERTIES 

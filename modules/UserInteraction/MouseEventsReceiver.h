@@ -1,4 +1,3 @@
-#include <QObject>
 #include <panda/types/Point.h>
 #include <panda/messaging.h>
 

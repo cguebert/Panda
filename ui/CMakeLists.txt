@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.1)
 set(PROJECT_NAME "Panda")
 project(${PROJECT_NAME})
 
+set(QT_BASE_DIR "" CACHE PATH "Qt5 install prefix") # C:/Qt/5/msvc2015/
+list(APPEND CMAKE_PREFIX_PATH ${QT_BASE_DIR})
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -109,7 +112,6 @@ endif()
 
 find_package(Qt5Widgets)
 find_package(Qt5OpenGL)
-find_package(Qt5XML)
 
 if(WIN32)
 	set(GUI_TYPE WIN32)

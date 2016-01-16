@@ -2,8 +2,7 @@
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 
-#include <QApplication>
-#include <QElapsedTimer>
+#include <chrono>
 
 #include "MouseEventsReceiver.h"
 
@@ -66,8 +65,8 @@ public:
 	}
 
 protected:
-	Data<std::vector<Point>> m_clics;
 	Data<int> m_accumulate;
+	Data<std::vector<Point>> m_clics;
 	std::vector<Point> m_clicsBuffer;
 };
 
@@ -84,20 +83,13 @@ public:
 		: PandaObject(doc)
 		, MouseEventsReceiver(doc)
 		, m_accumulate(initData("accumulate", "If true, keep previous double clics"))
+		, m_doubleClickInterval(initData(0.4f, "db click interval", "Max duration beteen clicks in a double click"))
 		, m_clics(initData("position", "Position of the mouse double clic"))
 	{
 		addInput(m_accumulate);
 		addOutput(m_clics);
 
 		m_accumulate.setWidget("checkbox");
-
-		QApplication* app = dynamic_cast<QApplication*>(QCoreApplication::instance());
-		if(app)
-			m_doubleClickInterval = app->doubleClickInterval();
-		else
-			m_doubleClickInterval = 400;
-
-		m_clicTimer.invalidate();
 	}
 
 	void reset()
@@ -120,16 +112,23 @@ public:
 
 	void mousePressed(panda::types::Point pos)
 	{
-		if(m_clicTimer.isValid() // Had a first clic
-				&& m_clicTimer.elapsed() < m_doubleClickInterval // Not too long ago
-				&& (pos-m_currentClic).norm2() < 100) // Not too far (10 pixels)
+		using namespace std::chrono;
+		auto now = time_point_cast<milliseconds>(high_resolution_clock::now()).time_since_epoch().count();
+		long long elapsed = 0;
+		if (m_clicTime)
+			elapsed = m_clicTime - now;
+
+		bool doubleClick = elapsed < m_doubleClickInterval.getValue() * 1000	// Not too long ago
+			&& (pos - m_currentClic).norm2() < 100; // Not too far (10 pixels)
+
+		if (doubleClick)
 		{
 			m_clicsBuffer.push_back(m_currentClic);
-			m_clicTimer.invalidate();
+			m_clicTime = 0;
 		}
 		else
 		{
-			m_clicTimer.start();
+			m_clicTime = now;
 			m_currentClic = pos;
 		}
 	}
@@ -150,11 +149,11 @@ public:
 protected:
 	Data<std::vector<Point>> m_clics;
 	Data<int> m_accumulate;
+	Data<PReal> m_doubleClickInterval;
 
-	int m_doubleClickInterval;
 	Point m_currentClic;
 	std::vector<Point> m_clicsBuffer;
-	QElapsedTimer m_clicTimer;
+	long long m_clicTime;
 };
 
 int UserInteraction_MouseDoubleClicksClass = RegisterObject<UserInteraction_MouseDoubleClicks>("Interaction/Double clicks").setDescription("Detect mouse double clicks");
@@ -213,7 +212,7 @@ public:
 		if(buttons.size() != status.size())
 			status.resize(buttons.size());
 
-		bool toggle = m_toggle.getValue();
+		bool toggle = m_toggle.getValue() != 0;
 		if(!toggle)
 			status.wref().assign(status.size(), 0);
 

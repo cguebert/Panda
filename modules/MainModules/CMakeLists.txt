@@ -64,6 +64,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Modules")
 
 target_link_libraries(${PROJECT_NAME} "PandaCore")
 
+find_package(Qt5Widgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
+
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${MODULES_DIR})
 
 add_definitions(-DTARGET="${PROJECT_NAME}")

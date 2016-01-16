@@ -5,7 +5,6 @@
 #include <modules/particles/ParticleEngine.h>
 #include <modules/particles/ParticleEffector.h>
 
-#include <QList>
 #include <algorithm>
 #include <panda/helper/algorithm.h>
 
@@ -125,7 +124,7 @@ void ParticleEngine::update()
 		effector->postUpdate(particles);
 
 	// move the particles
-	qreal dt = m_parentDocument->getTimeStep();
+	PReal dt = m_parentDocument->getTimeStep();
 	for(auto& p : particles)
 	{
 		Point oldVel = p.velocity;

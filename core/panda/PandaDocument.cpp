@@ -457,15 +457,15 @@ void PandaDocument::setCurrentSelectedObject(PandaObject* object)
 graphics::Size PandaDocument::getRenderSize() const
 {
 	Point pt = m_renderSize.getValue();
-	return graphics::Size(std::max<PReal>(1, floor(pt.x)), std::max<PReal>(1, floor(pt.y)));
+	return graphics::Size(std::max(1, static_cast<int>(pt.x)), std::max(1, static_cast<int>(pt.y)));
 }
 
 void PandaDocument::setRenderSize(graphics::Size size)
 { 
 	m_renderSize.setValue(
 		panda::types::Point(
-			std::max<PReal>(1, size.width()), 
-			std::max<PReal>(1, size.height())
+			std::max<PReal>(1.f, static_cast<PReal>(size.width())), 
+			std::max<PReal>(1.f, static_cast<PReal>(size.height()))
 			)
 		); 
 }
@@ -737,14 +737,12 @@ std::shared_ptr<graphics::Framebuffer> PandaDocument::getFBO()
 
 void PandaDocument::render()
 {
-	GLfloat w = m_renderFBO->width(), h = m_renderFBO->height();
-
 #ifdef PANDA_LOG_EVENTS
 	{
 		helper::ScopedEvent log1("prepareRender");
 #endif
 
-	glViewport(0, 0, w, h);
+	glViewport(0, 0, m_renderFBO->width(), m_renderFBO->height());
 	Color col = m_backgroundColor.getValue();
 	glClearColor(col.r, col.g, col.b, col.a);
 
@@ -761,6 +759,7 @@ void PandaDocument::render()
 	m_mergeLayersShader->bind();
 
 	graphics::Mat4x4 mvp;
+	GLfloat w = static_cast<GLfloat>(m_renderFBO->width()), h = static_cast<GLfloat>(m_renderFBO->height());
 	mvp.ortho(0, w, h, 0, -10, 10);
 	m_mergeLayersShader->setUniformValueMat4("MVP", mvp.data());
 
@@ -876,7 +875,7 @@ void PandaDocument::play(bool playing)
 	m_animPlaying = playing;
 	if(m_animPlaying)
 	{
-		m_animMultithread = m_useMultithread.getValue();
+		m_animMultithread = m_useMultithread.getValue() != 0;
 		if(m_animMultithread)
 		{
 			if(!m_scheduler)
@@ -979,7 +978,7 @@ void PandaDocument::step()
 
 	++m_iNbFrames;
 	auto now = currentTime();
-	int elapsedDur = toSeconds(now - m_fpsTime);
+	PReal elapsedDur = static_cast<PReal>(toSeconds(now - m_fpsTime));
 	if(m_animPlaying && elapsedDur > 1.0)
 	{
 		m_currentFPS = m_iNbFrames / elapsedDur;
