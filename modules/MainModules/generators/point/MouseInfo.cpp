@@ -23,6 +23,10 @@ public:
 		addOutput(m_clickState);
 
 		m_clickState.setWidget("checkbox");
+
+		BaseData* docTime = doc->getData("mouse position");
+		if (docTime)
+			addInput(*docTime);
 	}
 
 	void reset()
