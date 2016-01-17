@@ -336,7 +336,7 @@ void Scheduler::buildUpdateGraph()
 	{
 		PandaObject* object = objects[i];
 		m_updateTasks[i].object = object;
-		if(dynamic_cast<Layer*>(object))
+		if(object->updateOnMainThread())
 			m_updateTasks[i].restrictToMainThread = true;
 		m_objectsIndexMap[object] = i;
 	}

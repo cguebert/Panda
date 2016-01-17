@@ -128,6 +128,8 @@ Layer::Layer(PandaDocument* parent)
 
 	addOutput(*parent);
 	addOutput(m_image);
+
+	m_updateOnMainThread = true;
 }
 
 void Layer::update()

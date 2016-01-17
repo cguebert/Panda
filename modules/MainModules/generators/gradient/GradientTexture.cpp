@@ -29,6 +29,8 @@ public:
 		addInput(m_length);
 
 		addOutput(m_output);
+
+		m_updateOnMainThread = true;
 	}
 
 	void update()
@@ -72,6 +74,8 @@ public:
 		addInput(m_size);
 
 		addOutput(m_output);
+
+		m_updateOnMainThread = true;
 	}
 
 	void update()

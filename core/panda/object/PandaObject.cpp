@@ -12,18 +12,6 @@
 
 namespace panda {
 
-PandaObject::PandaObject(PandaDocument* document)
-	: m_index(0)
-	, m_parentDocument(document)
-	, m_doEmitModified(true)
-	, m_doEmitDirty(true)
-	, m_isInStep(false)
-	, m_isUpdating(false)
-	, m_laterUpdate(false)
-	, m_destructing(false)
-{
-}
-
 void PandaObject::addData(BaseData* data)
 {
 	if(getData(data->getName()))

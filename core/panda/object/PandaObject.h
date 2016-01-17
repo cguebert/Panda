@@ -58,6 +58,7 @@ public:
 	void emitDirty();
 
 	bool doesLaterUpdate();
+	bool updateOnMainThread();
 
 	PandaDocument* getParentDocument();
 
@@ -69,11 +70,12 @@ public:
 
 protected:
 	PandaDocument* m_parentDocument;
-	uint32_t m_index;
-	bool m_doEmitModified, m_doEmitDirty, m_isInStep;
-	bool m_laterUpdate; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
-	mutable bool m_isUpdating;
-	bool m_destructing;
+	uint32_t m_index = 0;
+	bool m_doEmitModified = true, m_doEmitDirty = true, m_isInStep = false;
+	bool m_laterUpdate = false; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
+	bool m_updateOnMainThread = false; // Flag for the scheduler: if true, this object will always be updated on the main thread
+	mutable bool m_isUpdating = false;
+	bool m_destructing = false;
 	std::string m_name;
 	std::vector<BaseData*> m_datas;
 
@@ -82,6 +84,9 @@ protected:
 };
 
 //****************************************************************************//
+
+inline PandaObject::PandaObject(PandaDocument* document)
+	: m_parentDocument(document) { }
 
 inline BaseData::BaseInitData PandaObject::initData(std::string name, std::string help)
 { return BaseData::BaseInitData(name, help, this); }
@@ -106,6 +111,9 @@ inline void PandaObject::setInternalData(const std::string& name, uint32_t index
 
 inline bool PandaObject::doesLaterUpdate()
 { return m_laterUpdate; }
+
+inline bool PandaObject::updateOnMainThread()
+{ return m_updateOnMainThread; }
 
 inline PandaDocument* PandaObject::getParentDocument()
 { return m_parentDocument; }
