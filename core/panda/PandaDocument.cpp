@@ -72,14 +72,6 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	, m_mouseClick(initData(0, "mouse click", "1 if the left mouse button is pressed"))
 	, m_renderedImage(initData("rendered image", "Current image displayed"))
 	, m_useMultithread(initData(0, "use multithread", "Optimize computation for multiple CPU cores"))
-	, m_mouseClickBuffer(0)
-	, m_inCommandMacro(0)
-	, m_resetting(false)
-	, m_isGLInitialized(false)
-	, m_animPlaying(false)
-	, m_animMultithread(false)
-	, m_iNbFrames(0)
-	, m_currentFPS(0)
 	, m_gui(gui)
 {
 	addInput(m_renderSize);
@@ -908,11 +900,21 @@ void PandaDocument::play(bool playing)
 			m_scheduler->stop();
 		m_animMultithread = false;
 		TimedFunctions::instance().cancelRun(m_animFunctionIndex);
+
+		if (m_stepQueued)
+			m_stepCanceled = true; // Ignore the next step
 	}
 }
 
 void PandaDocument::step()
 {
+	m_stepQueued = false;
+	if (m_stepCanceled)	// The user clicked stop after a step has been queued
+	{
+		m_stepCanceled = false;
+		return;
+	}
+
 	auto startTime = std::chrono::high_resolution_clock::now();
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
@@ -935,12 +937,12 @@ void PandaDocument::step()
 	else
 		m_mouseClickVal = m_mouseClickBuffer;
 
+	if (m_animPlaying && m_animMultithread && m_scheduler)
+		m_scheduler->setDirty();
+
 	// Let some objects set dirtyValue for each step
 	for(auto& object : m_objects)
 		object->beginStep();
-
-	if(m_animPlaying && m_animMultithread && m_scheduler)
-		m_scheduler->setDirty();
 
 	// Update the documents Data (all the values are already correct if using the getters)
 	m_animTime.setValue(m_animTimeVal);
@@ -973,6 +975,7 @@ void PandaDocument::step()
 
 	if (m_animPlaying)	
 	{
+		m_stepQueued = true; // We want another step
 		if (m_useTimer.getValue()) // Restart the timer taking into consideration the time it took to render this frame
 		{
 			auto endTime = std::chrono::high_resolution_clock::now();

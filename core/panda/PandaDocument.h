@@ -151,14 +151,15 @@ protected:
 	Data<int> m_useMultithread;
 
 	types::Point m_mousePositionBuffer;
-	int m_mouseClickBuffer;
+	int m_mouseClickBuffer = 0;
 
-	int m_inCommandMacro;
-	bool m_resetting;
+	int m_inCommandMacro = 0;
+	bool m_resetting = false;
 
-	bool m_isGLInitialized;
+	bool m_isGLInitialized = false;
 
-	bool m_animPlaying, m_animMultithread;
+	bool m_animPlaying = false, m_animMultithread = false;
+	bool m_stepQueued = false, m_stepCanceled = false;
 	int m_animFunctionIndex = -1;
 
 	std::shared_ptr<Scheduler> m_scheduler;
@@ -166,9 +167,9 @@ protected:
 	UndoStack m_undoStack;
 	UndoCommand::SPtr m_currentCommand;
 
-	int m_iNbFrames;
-	long long m_fpsTime;
-	PReal m_currentFPS;
+	int m_iNbFrames = 0;
+	long long m_fpsTime = 0;
+	PReal m_currentFPS = 0;
 
 	gui::BaseGUI& m_gui;
 
