@@ -137,9 +137,9 @@ protected:
 	std::shared_ptr<graphics::Framebuffer> m_renderFBO, m_secondRenderFBO;
 	std::shared_ptr<graphics::ShaderProgram> m_mergeLayersShader;
 
-	PReal m_animTimeVal;
+	PReal m_animTimeVal = 0.0;
 	types::Point m_mousePositionVal;
-	int m_mouseClickVal;
+	int m_mouseClickVal = 0;
 
 	Data<types::Point> m_renderSize;
 	Data<types::Color> m_backgroundColor;

@@ -899,9 +899,8 @@ void PandaDocument::play(bool playing)
 		if(m_animMultithread && m_scheduler)
 			m_scheduler->stop();
 		m_animMultithread = false;
-		TimedFunctions::instance().cancelRun(m_animFunctionIndex);
 
-		if (m_stepQueued)
+		if (m_stepQueued && !TimedFunctions::instance().cancelRun(m_animFunctionIndex))
 			m_stepCanceled = true; // Ignore the next step
 	}
 }

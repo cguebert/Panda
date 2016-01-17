@@ -151,7 +151,7 @@ bool containsInput(const std::vector<InputsListNode>& inputsList, int currentNod
 	return false;
 }
 
-std::vector<DataNode*> Scheduler::computeConnected(std::vector<DataNode*> nodes) const
+std::vector<DataNode*> Scheduler::computeConnected(const std::vector<DataNode*>& nodes) const
 {
 	std::deque<DataNode*> openSet;
 	std::vector<DataNode*> closedSet;
@@ -235,7 +235,7 @@ std::vector<DataNode*> Scheduler::computeConnected(DataNode* node) const
 	return computeConnected(nodes);
 }
 
-std::vector<int> Scheduler::getTasks(std::vector<DataNode*> nodes) const
+std::vector<int> Scheduler::getTasks(const std::vector<DataNode*>& nodes) const
 {
 	std::vector<int> tasks;
 	for(DataNode* node : nodes)
