@@ -81,42 +81,6 @@ protected:
 	std::atomic_int m_nbReadyTasks;
 };
 
-//****************************************************************************//
-
-class SchedulerThread
-{
-public:
-	SchedulerThread(Scheduler* scheduler, int threadId);
-	void run();
-
-	void close();
-	void sleep();
-	void wakeUp();
-
-	int threadId() const;
-
-protected:
-	void idle();
-	void doWork();
-
-	Scheduler* m_scheduler;
-	int m_threadId;
-	bool m_mainThread;
-	std::atomic_bool m_closing, m_canSleep, m_mustWakeUp;
-};
-
-inline void SchedulerThread::close()
-{ m_closing = true; m_mustWakeUp = true; }
-
-inline void SchedulerThread::sleep()
-{ m_canSleep = true; m_mustWakeUp = false;  }
-
-inline void SchedulerThread::wakeUp()
-{ m_mustWakeUp = true; }
-
-inline int SchedulerThread::threadId() const
-{ return m_threadId; }
-
 } // namespace panda
 
 #endif // SCHEDULER_H

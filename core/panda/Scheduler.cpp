@@ -34,6 +34,66 @@ std::string getName(panda::DataNode* node)
 namespace panda
 {
 
+class SchedulerThread
+{
+public:
+	SchedulerThread(Scheduler* scheduler, int threadId);
+	void run();
+
+	void close();
+	void sleep();
+	void wakeUp();
+
+	using ThreadPtr = std::shared_ptr<std::thread>;
+	void setThread(ThreadPtr ptr);
+	void joinThread();
+
+	int threadId() const;
+
+protected:
+	void idle();
+	void doWork();
+
+	Scheduler* m_scheduler;
+	ThreadPtr m_thread;
+	int m_threadId;
+	bool m_mainThread;
+	std::atomic_bool m_closing, m_canSleep, m_mustWakeUp;
+};
+
+inline void SchedulerThread::close()
+{
+	m_closing = true; m_mustWakeUp = true; m_canSleep = false;
+}
+
+inline void SchedulerThread::sleep()
+{
+	m_canSleep = true; m_mustWakeUp = false;
+}
+
+inline void SchedulerThread::wakeUp()
+{
+	m_mustWakeUp = true;
+}
+
+inline void SchedulerThread::setThread(ThreadPtr ptr)
+{
+	m_thread = ptr;
+}
+
+inline void SchedulerThread::joinThread()
+{
+	if (m_thread && m_thread->joinable())
+		m_thread->join();
+}
+
+inline int SchedulerThread::threadId() const
+{
+	return m_threadId;
+}
+
+//****************************************************************************//
+
 Scheduler::Scheduler(PandaDocument* document)
 	: m_document(document)
 	, m_readyTasks(256)
@@ -55,6 +115,9 @@ void Scheduler::stop()
 	{
 		for(auto& thread : m_updateThreads)
 			thread->close();
+
+		for (auto& thread : m_updateThreads)
+			thread->joinThread();
 
 		m_updateThreads.clear();
 	}
@@ -354,7 +417,8 @@ void Scheduler::prepareThreads()
 	{
 		auto st = std::make_shared<SchedulerThread>(this, i);
 		m_updateThreads.push_back(st);
-		std::thread(&SchedulerThread::run, *st).detach();
+		auto thread = std::make_shared<std::thread>(&SchedulerThread::run, st.get());
+		st->setThread(thread);
 	}
 	
 #ifdef PANDA_LOG_EVENTS
@@ -441,12 +505,6 @@ void Scheduler::prepareLaterUpdate(BaseData* data)
 	}
 
 	m_laterUpdatesMap[data] = std::make_pair(connected, outputsTasks);
-/*
-	std::cout << "prepareLaterUpdate for " << data->getName().toStdString() << std::endl;
-	std::cout << "  outputs: ";
-	for(auto taskId : outputsTasks)
-		std::cout << taskId << " ";
-	std::cout << std::endl; */
 }
 
 void Scheduler::setDataDirty(BaseData* dirtyData)
