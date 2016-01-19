@@ -14,7 +14,7 @@ inline int mipLevelSize(int mipLevel, int baseSize)
     return std::max(1, baseSize >> mipLevel);
 }
 
-GLuint createTexture(panda::graphics::Size size, GLenum format, GLenum type, const void* data)
+GLuint createTexture(panda::graphics::Size size, GLenum internalFormat, GLenum format, GLenum type, const void* data)
 {
 	const int w = size.width(), h = size.height();
 	GLuint id = 0;
@@ -23,11 +23,14 @@ GLuint createTexture(panda::graphics::Size size, GLenum format, GLenum type, con
 
 	int nbLevels = 1 + static_cast<int>(std::floor(std::log2(std::max(w, h))));
 	if (GLEW_ARB_texture_storage || GLEW_VERSION_4_2)
-		glTextureStorage2D(id, nbLevels, GL_RGBA32F, w, h);
+		glTextureStorage2D(id, nbLevels, internalFormat, w, h);
 	else
 	{
-		for (int level = 0; level < nbLevels; ++level)
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mipLevelSize(level, w), mipLevelSize(level, h), 0, format, type, data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, nbLevels - 1);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, data);
+	//	for (int level = 0; level < nbLevels; ++level)
+	//		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, mipLevelSize(level, w), mipLevelSize(level, h), 0, format, type, data);
 	}
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -62,7 +65,7 @@ struct TextureData
 
 Texture::Texture(const Image& img)
 {
-	GLuint id = createTexture(img.size(), GL_RGBA, GL_UNSIGNED_BYTE, img.data());
+	GLuint id = createTexture(img.size(), GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, img.data());
 
 	if (id)
 	{
@@ -75,7 +78,7 @@ Texture::Texture(const Image& img)
 Texture::Texture(Size size, const float* data)
 	: m_data(std::make_shared<TextureData>())
 {
-	GLuint id = createTexture(size, GL_RGBA, GL_FLOAT, data);
+	GLuint id = createTexture(size, GL_RGBA32F, GL_RGBA, GL_FLOAT, data);
 
 	if (id)
 	{
