@@ -90,19 +90,19 @@ inline int Image::height() const
 { return size().height(); }
 
 inline bool Image::valid(PointInt pt) const
-{ return valid(pt.x(), pt.y()); }
+{ return valid(pt.x, pt.y); }
 
 inline const unsigned char* Image::pixel(PointInt pt) const
-{ return pixel(pt.x(), pt.y()); }
+{ return pixel(pt.x, pt.y); }
 
 inline unsigned char* Image::pixel(PointInt pt)
-{ return pixel(pt.x(), pt.y()); }
+{ return pixel(pt.x, pt.y); }
 
 inline void Image::setPixel(PointInt pt, unsigned int color)
-{ setPixel(pt.x(), pt.y(), color); }
+{ setPixel(pt.x, pt.y, color); }
 
 inline void Image::blitImage(Image& target, PointInt targetPos, const Image& source, PointInt sourcePos, Size sourceSize)
-{ blitImage(target, targetPos.x(), targetPos.y(), source, sourcePos.x(), sourcePos.y(), sourcePos.x() + sourceSize.width(), sourcePos.y() + sourceSize.height()); }
+{ blitImage(target, targetPos.x, targetPos.y, source, sourcePos.x, sourcePos.y, sourcePos.x + sourceSize.width(), sourcePos.y + sourceSize.height()); }
 
 //****************************************************************************//
 

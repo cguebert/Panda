@@ -62,17 +62,17 @@ public:
 				for(int i=0; i<nb; ++i)
 				{
 					const Rect rect = rectList[i];
-					graphics::Size size(static_cast<int>(rect.width()), static_cast<int>(rect.height()));
+					int l = static_cast<int>(rect.left()),  t = static_cast<int>(rect.top()),
+						w = static_cast<int>(rect.width()), h = static_cast<int>(rect.height());
+
+					graphics::Size size(w, h);
 					if(!size.empty())
 						continue;
 
 					auto newFbo = graphics::Framebuffer(size);
-
-					PReal l = rect.left(),  t = rect.top(),
-						  w = rect.width(), h = rect.height();
 					auto sourceSize = fbo->size();
-					Rect sourceRect(l, sourceSize.height() - t - h, w, h);
-					Rect targetRect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
+					graphics::RectInt sourceRect(l, sourceSize.height() - t - h, w, h);
+					graphics::RectInt targetRect(0, 0, size.width(), size.height());
 					graphics::Framebuffer::blitFramebuffer(newFbo, targetRect, *fbo, sourceRect);
 					resList[i].setFbo(newFbo);
 				}

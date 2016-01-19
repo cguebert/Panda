@@ -2,6 +2,7 @@
 #define GRAPHICS_FRAMEBUFFER_H
 
 #include <panda/graphics/Image.h>
+#include <panda/graphics/RectInt.h>
 
 #include <memory>
 #include <vector>
@@ -57,11 +58,11 @@ public:
 
 	static void blitFramebuffer(Framebuffer& target, const Framebuffer& source);
 
-	static void blitFramebuffer(Framebuffer& target, const types::Rect& targetRect,
-		const Framebuffer& source, const types::Rect& sourceRect);
+	static void blitFramebuffer(Framebuffer& target, const RectInt& targetRect,
+		const Framebuffer& source, const RectInt& sourceRect);
 
-	static void blitFramebuffer(unsigned int targetId, const types::Rect& targetRect,
-		unsigned int sourceId, const types::Rect& sourceRect);
+	static void blitFramebuffer(unsigned int targetId, const RectInt& targetRect,
+		unsigned int sourceId, const RectInt& sourceRect);
 
 private:
 	std::shared_ptr<FramebufferData> m_data;

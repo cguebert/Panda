@@ -31,6 +31,7 @@ set(HEADER_FILES
 	panda/graphics/Image.h
 	panda/graphics/Mat4x4.h
 	panda/graphics/PointInt.h
+	panda/graphics/RectInt.h
 	panda/graphics/ShaderProgram.h
 	panda/graphics/Size.h
 	panda/graphics/Texture.h

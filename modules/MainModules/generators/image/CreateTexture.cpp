@@ -123,7 +123,7 @@ public:
 		m_renderFrameBuffer.release();
 
 		auto acc = m_image.getAccessor();
-		panda::types::Rect area(0, 0, static_cast<PReal>(renderSize.width()), static_cast<PReal>(renderSize.height()));
+		graphics::RectInt area(0, 0, renderSize.width(), renderSize.height());
 		graphics::Framebuffer::blitFramebuffer(*acc->getFbo(), area, m_renderFrameBuffer, area);
 
 		cleanDirty();

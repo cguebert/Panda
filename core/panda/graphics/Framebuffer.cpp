@@ -231,39 +231,29 @@ Image Framebuffer::toImage() const
 
 void Framebuffer::blitFramebuffer(Framebuffer& target, const Framebuffer& source)
 {
-	types::Rect targetRect(0.f, 0.f, static_cast<PReal>(target.width()), static_cast<PReal>(target.height()));
-	types::Rect sourceRect(0.f, 0.f, static_cast<PReal>(source.width()), static_cast<PReal>(source.height()));
+	RectInt targetRect(0, 0, target.width(), target.height());
+	RectInt sourceRect(0, 0, source.width(), source.height());
 	blitFramebuffer(target, targetRect, source, sourceRect);
 }
 
-void Framebuffer::blitFramebuffer(Framebuffer& target, const types::Rect& targetRect,
-	const Framebuffer& source, const types::Rect& sourceRect)
+void Framebuffer::blitFramebuffer(Framebuffer& target, const RectInt& targetRect,
+	const Framebuffer& source, const RectInt& sourceRect)
 {
 	blitFramebuffer(target.id(), targetRect, source.id(), sourceRect);
 }
 
-void Framebuffer::blitFramebuffer(unsigned int targetId, const types::Rect& targetRect,
-	unsigned int sourceId, const types::Rect& sourceRect)
+void Framebuffer::blitFramebuffer(unsigned int targetId, const RectInt& tr,
+	unsigned int sourceId, const RectInt& sr)
 {
 	if (!GLEW_EXT_framebuffer_blit)
 		return;
-
-	const int sx0 = static_cast<int>(sourceRect.left());
-	const int sx1 = static_cast<int>(sourceRect.right());
-	const int sy0 = static_cast<int>(sourceRect.top());
-	const int sy1 = static_cast<int>(sourceRect.bottom());
-
-	const int tx0 = static_cast<int>(targetRect.left());
-	const int tx1 = static_cast<int>(targetRect.right());
-	const int ty0 = static_cast<int>(targetRect.top());
-	const int ty1 = static_cast<int>(targetRect.bottom());
 
 	GLint prev = 0;
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prev);
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, sourceId);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, targetId);
-	glBlitFramebuffer(sx0, sy0, sx1, sy1, tx0, ty0, tx1, ty1, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBlitFramebuffer(sr.x1, sr.y1, sr.x2, sr.y2, tr.x1, tr.y1, tr.x2, tr.y2, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, prev);
 }
