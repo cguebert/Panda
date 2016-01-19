@@ -278,9 +278,6 @@ inline UndoCommand* PandaDocument::getCurrentCommand() const
 inline UndoStack& PandaDocument::undoStack()
 { return m_undoStack; }
 
-inline void PandaDocument::initializeGL()
-{ m_isGLInitialized = true; }
-
 inline bool PandaDocument::isGLInitialized() const
 { return m_isGLInitialized; }
 

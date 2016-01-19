@@ -675,8 +675,6 @@ void PandaDocument::onChangedDock(DockableObject* dockable)
 
 void PandaDocument::update()
 {
-	static const int loadGlewVal = loadGlew();
-
 	auto renderSize = getRenderSize();
 	if(!m_renderFBO || m_renderFBO->size() != renderSize)
 	{
@@ -732,6 +730,12 @@ std::shared_ptr<graphics::Framebuffer> PandaDocument::getFBO()
 {
 	updateIfDirty();
 	return m_renderFBO;
+}
+
+void PandaDocument::initializeGL()
+{
+	static const int loadGlewVal = loadGlew();
+	m_isGLInitialized = true; 
 }
 
 void PandaDocument::render()
