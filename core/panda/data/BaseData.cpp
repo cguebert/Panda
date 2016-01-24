@@ -76,7 +76,8 @@ void BaseData::setParent(BaseData* parent)
 		* This is for the special case of the Group objects
 		* where an output Data is connected to another Data
 		*/
-		for(DataNode* node : m_inputs)
+		auto inputs = m_inputs; // Iterate over a copy
+		for(DataNode* node : inputs)
 		{
 			if(!dynamic_cast<PandaObject*>(node))
 				removeInput(*node);
