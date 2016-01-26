@@ -47,6 +47,14 @@ void Model::create()
 	m_indicesEBO.release();
 }
 
+void Model::clear()
+{
+	m_VAO.clear();
+	m_verticesVBO.clear();
+	m_texCoordsVBO.clear();
+	m_indicesEBO.clear();
+}
+
 void Model::render()
 {
 	m_VAO.bind();

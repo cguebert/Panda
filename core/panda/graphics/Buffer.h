@@ -41,6 +41,7 @@ public:
 	bool isCreated() const;
 
 	void create(BufferType type = BufferType::ArrayBuffer, BufferUsage usage = BufferUsage::StaticDraw);
+	void clear();
 
 	BufferType type() const;
 	BufferUsage usage() const;
@@ -90,6 +91,9 @@ inline Buffer::operator bool() const
 
 inline bool Buffer::isCreated() const
 { return (id() != 0); }
+
+inline void Buffer::clear()
+{ m_data.reset(); }
 
 inline void Buffer::allocate(int count) 
 { allocate(nullptr, count); }

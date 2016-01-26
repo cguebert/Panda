@@ -27,14 +27,18 @@ set(HEADER_FILES
 	panda/data/DataCopier.h
 	panda/data/DataFactory.h
 	panda/data/DataNode.h
+	panda/document/DocumentRenderer.h
+	panda/graphics/Buffer.h
 	panda/graphics/Framebuffer.h
 	panda/graphics/Image.h
 	panda/graphics/Mat4x4.h
+	panda/graphics/Model.h
 	panda/graphics/PointInt.h
 	panda/graphics/RectInt.h
 	panda/graphics/ShaderProgram.h
 	panda/graphics/Size.h
 	panda/graphics/Texture.h
+	panda/graphics/VertexArrayObject.h
 	panda/helper/algorithm.h
 	panda/helper/EasingFunctions.h
 	panda/helper/gl.h
@@ -93,12 +97,16 @@ set(SOURCE_FILES
 	panda/data/DataCopier.cpp
 	panda/data/DataFactory.cpp
 	panda/data/DataNode.cpp
+	panda/document/DocumentRenderer.cpp
+	panda/graphics/Buffer.cpp
 	panda/graphics/Framebuffer.cpp
 	panda/graphics/Image.cpp
 	panda/graphics/Mat4x4.cpp
+	panda/graphics/Model.cpp
 	panda/graphics/ShaderProgram.cpp
 	panda/graphics/Size.cpp
 	panda/graphics/Texture.cpp
+	panda/graphics/VertexArrayObject.cpp
 	panda/helper/EasingFunctions.cpp
 	panda/helper/GradientCache.cpp
 	panda/helper/Perlin.cpp

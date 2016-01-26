@@ -19,6 +19,8 @@ public:
 	bool isCreated() const;
 
 	void create();
+	void clear();
+
 	unsigned int id() const;
 	void bind() const;
 	void release() const;
@@ -32,6 +34,9 @@ inline VertexArrayObject::operator bool() const
 
 inline bool VertexArrayObject::isCreated() const
 { return (id() != 0); }
+
+inline void VertexArrayObject::clear()
+{ m_data.reset(); }
 
 } // namespace graphics
 

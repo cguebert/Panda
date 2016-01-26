@@ -24,6 +24,7 @@ public:
 	explicit operator bool() const; // Returns true if an OpenGL VAO has been created for this object
 
 	void create();
+	void clear();
 	void render();
 
 	void setVertices(const Vertices& pts);
