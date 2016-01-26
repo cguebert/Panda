@@ -1,10 +1,12 @@
-#include <SimpleGUIImpl.h>
-#include <MainWindow.h>
+#include <ui/SimpleGUIImpl.h>
+#include <ui/OpenGLRenderView.h>
+#include <ui/MainWindow.h>
 #include <QtWidgets>
 
 SimpleGUIImpl::SimpleGUIImpl(MainWindow* mainWindow)
 	: m_mainWindow(mainWindow)
 {
+	assert(mainWindow != nullptr);
 }
 
 int SimpleGUIImpl::messageBox(panda::gui::MessageBoxType type, const std::string& caption, const std::string& text, int buttons)
@@ -30,8 +32,17 @@ int SimpleGUIImpl::messageBox(panda::gui::MessageBoxType type, const std::string
 
 void SimpleGUIImpl::updateView()
 {
-	if (m_mainWindow)
-		m_mainWindow->updateOpenGLView();
+	m_mainWindow->getOpenGLView()->update();
+}
+
+void SimpleGUIImpl::contextMakeCurrent()
+{
+	m_mainWindow->getOpenGLView()->makeCurrent();
+}
+
+void SimpleGUIImpl::contextDoneCurrent()
+{
+	m_mainWindow->getOpenGLView()->doneCurrent();
 }
 
 void SimpleGUIImpl::executeByUI(panda::gui::CallbackFunc func)

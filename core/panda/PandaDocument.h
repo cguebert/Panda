@@ -6,7 +6,6 @@
 
 #include <panda/types/Color.h>
 #include <panda/types/Point.h>
-#include <panda/types/ImageWrapper.h>
 
 #include <panda/graphics/Size.h>
 
@@ -15,10 +14,11 @@
 namespace panda {
 
 class BaseLayer;
+class DockableObject;
+class DocumentRenderer;
 class Layer;
 class Scheduler;
 class ScopedMacro;
-class DockableObject;
 class XmlElement;
 
 namespace graphics
@@ -96,8 +96,7 @@ public:
 	virtual void update();
 	virtual void setDirtyValue(const DataNode* caller);
 
-	const types::ImageWrapper& getRenderedImage();
-	std::shared_ptr<graphics::Framebuffer> getFBO();
+	graphics::Framebuffer& getFBO();
 
 	Layer* getDefaultLayer() const;
 
@@ -118,10 +117,13 @@ public:
 	void onModifiedObject(PandaObject* object);
 	void onChangedDock(DockableObject* dockable); // When the dockable has changed dock
 
-	void initializeGL(); // Called by the render view, (PandaCore does not link with OpenGL)
+	void initializeGL();
 	bool isGLInitialized() const; // Can the objects use OpenGL yet?
 
+	void resizeGL(int w, int h);
+
 	gui::BaseGUI& getGUI() const;
+	DocumentRenderer* getRenderer() const;
 
 protected:
 	friend class ScopedMacro;
@@ -134,8 +136,6 @@ protected:
 	ObjectsSelection m_dirtyObjects; // All the objects that were dirty during the current step
 	uint32_t m_currentIndex;
 	std::shared_ptr<Layer> m_defaultLayer;
-	std::shared_ptr<graphics::Framebuffer> m_renderFBO, m_secondRenderFBO;
-	std::shared_ptr<graphics::ShaderProgram> m_mergeLayersShader;
 
 	PReal m_animTimeVal = 0.0;
 	types::Point m_mousePositionVal;
@@ -147,7 +147,6 @@ protected:
 	Data<int> m_useTimer;
 	Data<types::Point> m_mousePosition;
 	Data<int> m_mouseClick;
-	Data<types::ImageWrapper> m_renderedImage;
 	Data<int> m_useMultithread;
 
 	types::Point m_mousePositionBuffer;
@@ -172,6 +171,8 @@ protected:
 	PReal m_currentFPS = 0;
 
 	gui::BaseGUI& m_gui;
+
+	std::unique_ptr<DocumentRenderer> m_renderer;
 
 public:
 // Signals
@@ -283,6 +284,9 @@ inline bool PandaDocument::isGLInitialized() const
 
 inline gui::BaseGUI& PandaDocument::getGUI() const
 { return m_gui; }
+
+inline DocumentRenderer* PandaDocument::getRenderer() const
+{ return m_renderer.get(); }
 
 } // namespace panda
 

@@ -6,11 +6,13 @@
 #include <panda/SimpleGUI.h>
 #include <panda/TimedFunctions.h>
 #include <panda/data/DataFactory.h>
+#include <panda/document/DocumentRenderer.h>
 #include <panda/object/Layer.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
 #include <panda/graphics/Framebuffer.h>
+#include <panda/graphics/Model.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/GradientCache.h>
 #include <panda/helper/ShaderCache.h>
@@ -70,7 +72,6 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	, m_useTimer(initData(1, "use timer", "If true, wait before the next timestep. If false, compute the next one as soon as the previous finished."))
 	, m_mousePosition(initData("mouse position", "Current position of the mouse in the render view"))
 	, m_mouseClick(initData(0, "mouse click", "1 if the left mouse button is pressed"))
-	, m_renderedImage(initData("rendered image", "Current image displayed"))
 	, m_useMultithread(initData(0, "use multithread", "Optimize computation for multiple CPU cores"))
 	, m_gui(gui)
 {
@@ -101,6 +102,8 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	setInternalData("Document", 0);
 
 	m_undoStack.setUndoLimit(25);
+
+	m_renderer = std::make_unique<DocumentRenderer>(*this);
 
 	m_parentDocument = this;
 }
@@ -365,9 +368,7 @@ void PandaDocument::resetDocument()
 	m_useTimer.setValue(1);
 	m_renderSize.setValue(Point(800,600));
 	m_backgroundColor.setValue(Color::white());
-	m_renderedImage.getAccessor()->clear();
 	m_useMultithread.setValue(0);
-	m_renderFBO.reset();
 
 	m_animPlaying = false;
 	m_animMultithread = false;
@@ -675,192 +676,25 @@ void PandaDocument::onChangedDock(DockableObject* dockable)
 
 void PandaDocument::update()
 {
-	auto renderSize = getRenderSize();
-	if(!m_renderFBO || m_renderFBO->size() != renderSize)
-	{
-		m_renderFBO = std::make_shared<graphics::Framebuffer>(renderSize);
-		m_secondRenderFBO = std::make_shared<graphics::Framebuffer>(renderSize);
-		m_renderedImage.getAccessor()->setFbo(*m_renderFBO);
-	}
-
-	if(!m_mergeLayersShader)
-	{
-		m_mergeLayersShader = std::make_shared<graphics::ShaderProgram>();
-		m_mergeLayersShader->addShaderFromMemory(graphics::ShaderType::Vertex,
-			helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
-		m_mergeLayersShader->addShaderFromMemory(graphics::ShaderType::Fragment,
-			helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
-		m_mergeLayersShader->link();
-		m_mergeLayersShader->bind();
-
-		m_mergeLayersShader->setUniformValue("texS", 0);
-		m_mergeLayersShader->setUniformValue("texD", 1);
-
-		m_mergeLayersShader->release();
-	}
-
 	helper::GradientCache::getInstance()->resetUsedFlag();
 //	helper::ShaderCache::getInstance()->resetUsedFlag();
 
 	if(m_animMultithread && m_scheduler)
 		m_scheduler->update();
 
-	m_defaultLayer->updateIfDirty();
-
-	for(auto obj : m_objects)
-	{
-		if(dynamic_cast<BaseLayer*>(obj.get()))
-			obj->updateIfDirty();
-	}
-
-	render();
+	m_gui.contextMakeCurrent();
+	m_renderer->renderGL();
+	m_gui.contextDoneCurrent();
 
 	helper::GradientCache::getInstance()->clearUnused();
 //	helper::ShaderCache::getInstance()->clearUnused();
 	cleanDirty();
 }
 
-const ImageWrapper& PandaDocument::getRenderedImage()
+graphics::Framebuffer& PandaDocument::getFBO()
 {
 	updateIfDirty();
-	return m_renderedImage.getValue();
-}
-
-std::shared_ptr<graphics::Framebuffer> PandaDocument::getFBO()
-{
-	updateIfDirty();
-	return m_renderFBO;
-}
-
-void PandaDocument::initializeGL()
-{
-	static const int loadGlewVal = loadGlew();
-	m_isGLInitialized = true; 
-}
-
-void PandaDocument::render()
-{
-#ifdef PANDA_LOG_EVENTS
-	{
-		helper::ScopedEvent log1("prepareRender");
-#endif
-
-	glViewport(0, 0, m_renderFBO->width(), m_renderFBO->height());
-	Color col = m_backgroundColor.getValue();
-	glClearColor(col.r, col.g, col.b, col.a);
-
-	m_secondRenderFBO->bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	m_secondRenderFBO->release();
-
-	m_renderFBO->bind();
-
-#ifdef PANDA_LOG_EVENTS
-	}
-#endif
-
-	m_mergeLayersShader->bind();
-
-	graphics::Mat4x4 mvp;
-	GLfloat w = static_cast<GLfloat>(m_renderFBO->width()), h = static_cast<GLfloat>(m_renderFBO->height());
-	mvp.ortho(0, w, h, 0, -10, 10);
-	m_mergeLayersShader->setUniformValueMat4("MVP", mvp.data());
-
-	GLfloat verts[8], texCoords[8];
-
-	verts[2*2+0] = w; verts[2*2+1] = 0;
-	verts[3*2+0] = 0; verts[3*2+1] = 0;
-	verts[1*2+0] = 0; verts[1*2+1] = h;
-	verts[0*2+0] = w; verts[0*2+1] = h;
-
-	texCoords[0*2+0] = 1; texCoords[0*2+1] = 0;
-	texCoords[1*2+0] = 0; texCoords[1*2+1] = 0;
-	texCoords[3*2+0] = 0; texCoords[3*2+1] = 1;
-	texCoords[2*2+0] = 1; texCoords[2*2+1] = 1;
-
-#ifdef PANDA_LOG_EVENTS
-	{
-	helper::ScopedEvent log("merge default Layer");
-#endif
-
-	m_mergeLayersShader->enableAttributeArray("vertex");
-	m_mergeLayersShader->setAttributeArray("vertex", verts, 2);
-
-	m_mergeLayersShader->enableAttributeArray("texCoord");
-	m_mergeLayersShader->setAttributeArray("texCoord", texCoords, 2);
-
-	m_mergeLayersShader->setUniformValue("opacity", 1.0f);
-	m_mergeLayersShader->setUniformValue("mode", 0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_defaultLayer->getTextureId());
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
-	glActiveTexture(GL_TEXTURE0);
-
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	m_renderFBO->release();
-
-#ifdef PANDA_LOG_EVENTS
-	}
-#endif
-
-	bool inverse = false;
-	for(auto obj : m_objects)
-	{
-		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj.get());
-		if(layer)
-		{
-			float opacity = (float)layer->getOpacity();
-			if(!opacity)
-				continue;
-
-#ifdef PANDA_LOG_EVENTS
-			helper::ScopedEvent log2("merge Layer");
-#endif
-
-			m_mergeLayersShader->setUniformValue("opacity", opacity);
-			m_mergeLayersShader->setUniformValue("mode", layer->getCompositionMode());
-
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, layer->getTextureId());
-
-			inverse = !inverse;
-			if(inverse)
-			{
-				m_secondRenderFBO->bind();
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, m_renderFBO->texture());
-			}
-			else
-			{
-				m_renderFBO->bind();
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO->texture());
-			}
-
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-			glActiveTexture(GL_TEXTURE0);
-
-			if(inverse)
-				m_secondRenderFBO->release();
-			else
-				m_renderFBO->release();
-		}
-	}
-
-	m_mergeLayersShader->disableAttributeArray("vertex");
-	m_mergeLayersShader->disableAttributeArray("texCoord");
-	m_mergeLayersShader->release();
-
-	if(inverse)
-	{
-#ifdef PANDA_LOG_EVENTS
-		helper::ScopedEvent log3("blit FBO");
-#endif
-		graphics::Framebuffer::blitFramebuffer(*m_renderFBO, *m_secondRenderFBO);
-	}
+	return m_renderer->getFBO();
 }
 
 void PandaDocument::setDirtyValue(const DataNode* caller)
@@ -1009,7 +843,6 @@ void PandaDocument::rewind()
 #ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
-	m_renderFBO.reset();
 	m_animTimeVal = 0.0;
 	m_animTime.setValue(0.0);
 	m_mousePositionVal = m_mousePositionBuffer;

@@ -36,7 +36,7 @@ public:
 	MainWindow();
 	~MainWindow();
 
-	void updateOpenGLView() const;
+	OpenGLRenderView* getOpenGLView() const;
 
 protected:
 	void closeEvent(QCloseEvent* event);
@@ -154,5 +154,8 @@ private:
 		*m_chooseWidget;
 	QLabel* m_timeLabel;
 };
+
+inline OpenGLRenderView* MainWindow::getOpenGLView() const
+{ return m_openGLRenderView; }
 
 #endif

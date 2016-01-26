@@ -52,6 +52,9 @@ public:
 
 	virtual void updateView() = 0; // Update the OpenGL view
 
+	virtual void contextMakeCurrent() = 0; // Make the OpenGL context corresponding to the view current
+	virtual void contextDoneCurrent() = 0; // Release the context
+
 	virtual void executeByUI(CallbackFunc func) = 0; // Put the function on a queue that will be executed on the UI thread
 };
 

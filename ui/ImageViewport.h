@@ -3,7 +3,7 @@
 
 #include <panda/data/DataNode.h>
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 namespace panda
 {
@@ -11,25 +11,24 @@ class DataNode;
 class BaseData;
 }
 
-class ImageViewport : public QGLWidget, public panda::DataNode
+class ImageViewport : public QOpenGLWidget, public panda::DataNode
 {
 	Q_OBJECT
 public:
-	explicit ImageViewport(const panda::BaseData* data, QGLWidget* shareWidget, QWidget* parent = nullptr);
+	explicit ImageViewport(const panda::BaseData* data, QWidget* parent = nullptr);
 
 	QSize minimumSizeHint() const;
 	QSize sizeHint() const;
 
-	virtual void update() {}
-	virtual void setDirtyValue(const panda::DataNode* caller);
-	virtual void doRemoveInput(panda::DataNode& node) override;
+	void update() override {}
+	void setDirtyValue(const panda::DataNode* caller) override;
+	void doRemoveInput(panda::DataNode& node) override;
 
 signals:
 	void closeViewport(ImageViewport* viewport);
 
 protected:
-	virtual void initializeGL();
-	virtual void paintGL();
+	void paintGL() override;
 
 	virtual void wheelEvent(QWheelEvent* event);
 

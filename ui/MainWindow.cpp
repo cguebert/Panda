@@ -30,6 +30,13 @@
 
 MainWindow::MainWindow()
 {
+	QSurfaceFormat format;
+	format.setDepthBufferSize(24);
+	format.setStencilBufferSize(8);
+	format.setVersion(3, 0);
+	format.setProfile(QSurfaceFormat::CoreProfile);
+	QSurfaceFormat::setDefaultFormat(format);
+	
 	m_simpleGUI = new SimpleGUIImpl(this);
 	m_document = new panda::PandaDocument(*m_simpleGUI);
 
@@ -1177,7 +1184,7 @@ void MainWindow::showImageViewport()
 	const panda::BaseData* clickedData = m_graphView->getContextMenuData();
 	if(clickedData)
 	{
-		ImageViewport* imageViewport = new ImageViewport(clickedData, m_openGLRenderView, this);
+		ImageViewport* imageViewport = new ImageViewport(clickedData, this);
 		connect(imageViewport, SIGNAL(closeViewport(ImageViewport*)), this, SLOT(closeViewport(ImageViewport*)));
 		QScrollArea* container = new QScrollArea();
 		container->setFrameStyle(0);
@@ -1281,9 +1288,4 @@ void MainWindow::redoTextChanged(const std::string& text)
 		m_redoAction->setText(tr("Redo"));
 	else
 		m_redoAction->setText(tr("Redo %1").arg(QString::fromStdString(text)));
-}
-
-void MainWindow::updateOpenGLView() const
-{
-	m_graphView->update();
 }

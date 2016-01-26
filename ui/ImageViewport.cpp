@@ -9,10 +9,10 @@
 
 using panda::Data;
 using panda::types::ImageWrapper;
-typedef Data<ImageWrapper> ImageData;
+using ImageData = Data<ImageWrapper>;
 
-ImageViewport::ImageViewport(const panda::BaseData* data, QGLWidget* shareWidget, QWidget* parent)
-	: QGLWidget(parent, shareWidget)
+ImageViewport::ImageViewport(const panda::BaseData* data, QWidget* parent)
+	: QOpenGLWidget(parent)
 	, m_data(data)
 	, m_zoomLevel(0)
 	, m_wheelTicks(0)
@@ -53,12 +53,6 @@ void ImageViewport::doRemoveInput(DataNode& node)
 		emit closeViewport(this);
 }
 
-void ImageViewport::initializeGL()
-{
-	glEnable(GL_DEPTH_TEST);
-	glShadeModel(GL_SMOOTH);
-}
-
 void ImageViewport::paintGL()
 {
 	const ImageData* imageData = dynamic_cast<const ImageData*>(m_data);
@@ -83,22 +77,13 @@ void ImageViewport::paintGL()
 	if(qRenderSize != viewRect.size())
 		resize(qRenderSize);
 
-	glViewport(0, 0, renderSize.width(), renderSize.height());
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, imgSize.width(), imgSize.height(), 0, -10, 10);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glColor4f(1, 1, 1, 1);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	drawTexture(QPointF(), img.getTextureId());
-
-	glDisable(GL_BLEND);
+	glViewport(0, 0, viewRect.width(), viewRect.height());
+	auto fbo = img.getFbo();
+	if (fbo)
+	{
+		panda::graphics::RectInt rect(0, 0, img.width(), img.height());
+		panda::graphics::Framebuffer::blitFramebuffer(defaultFramebufferObject(), rect, fbo->id(), rect);
+	}
 }
 
 void ImageViewport::wheelEvent(QWheelEvent* event)

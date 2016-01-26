@@ -3,7 +3,10 @@
 #include <ui/OpenGLRenderView.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/document/DocumentRenderer.h>
 #include <panda/graphics/Framebuffer.h>
+#include <panda/graphics/Mat4x4.h>
+#include <panda/graphics/ShaderProgram.h>
 
 namespace
 {
@@ -15,7 +18,7 @@ namespace
 }
 
 OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
-	: QGLWidget(parent)
+	: QOpenGLWidget(parent)
 	, m_document(doc)
 	, m_adjustRenderSize(false)
 {
@@ -57,38 +60,21 @@ void OpenGLRenderView::renderSizeChanged()
 
 void OpenGLRenderView::initializeGL()
 {
-	glEnable(GL_DEPTH_TEST);
-	glShadeModel(GL_SMOOTH);
+	m_document->getRenderer()->initializeGL();
+}
 
-	m_document->initializeGL();
+void OpenGLRenderView::resizeGL(int w, int h)
+{
+	m_document->getRenderer()->resizeGL(w, h);
 }
 
 void OpenGLRenderView::paintGL()
 {
-	auto* fbo = m_document->getFBO().get();
-
-	QColor col = palette().window().color();
-	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
-	glDepthMask( GL_TRUE );
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	QRect viewRect = contentsRect();
-	glViewport(0, 0, viewRect.width(), viewRect.height());
+	auto fbo = m_document->getFBO();
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, viewRect.width(), viewRect.height(), 0, -10, 10);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glColor4f(1, 1, 1, 1);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	drawTexture(QPointF(), fbo->texture());
-
-	glDisable(GL_BLEND);
+	panda::graphics::RectInt rect(0, 0, viewRect.width(), viewRect.height());
+	panda::graphics::Framebuffer::blitFramebuffer(defaultFramebufferObject(), rect, fbo.id(), rect);
 }
 
 void OpenGLRenderView::mousePressEvent(QMouseEvent* event)
@@ -110,7 +96,7 @@ void OpenGLRenderView::mouseReleaseEvent(QMouseEvent* event)
 
 void OpenGLRenderView::resizeEvent(QResizeEvent* event)
 {
-	QGLWidget::resizeEvent(event);
+	QOpenGLWidget::resizeEvent(event);
 	if(m_adjustRenderSize)
 	{
 		QRect viewRect = contentsRect();

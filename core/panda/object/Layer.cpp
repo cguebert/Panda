@@ -46,16 +46,9 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 		output->setFbo(*m_displayFrameBuffer);
 	}
 
-	m_renderFrameBuffer->bind();
-
 	glViewport(0, 0, renderSize.width(), renderSize.height());
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
+	m_renderFrameBuffer->bind();
+	
 	auto& mvp = getMVPMatrix();
 	mvp.ortho(0, static_cast<float>(renderSize.width()), static_cast<float>(renderSize.height()), 0, -10.f, 10.f);
 

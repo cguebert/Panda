@@ -1,8 +1,7 @@
 #ifndef OPENGLRENDERVIEW_H
 #define OPENGLRENDERVIEW_H
 
-#include <QWidget>
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 #include <panda/messaging.h>
 
@@ -13,11 +12,11 @@ class PandaObject;
 class BaseData;
 }
 
-class OpenGLRenderView : public QGLWidget
+class OpenGLRenderView : public QOpenGLWidget
 {
 	Q_OBJECT
 public:
-	explicit OpenGLRenderView(panda::PandaDocument* doc, QWidget* parent = nullptr);
+	OpenGLRenderView(panda::PandaDocument* doc, QWidget* parent = nullptr);
 
 	QSize minimumSizeHint() const;
 	QSize sizeHint() const;
@@ -28,14 +27,15 @@ public slots:
 	void renderSizeChanged();
 
 protected:
-	void initializeGL();
-	void paintGL();
+	void initializeGL() override;
+	void resizeGL(int w, int h) override;
+	void paintGL() override;
 
-	void mousePressEvent(QMouseEvent* event);
-	void mouseMoveEvent(QMouseEvent* event);
-	void mouseReleaseEvent(QMouseEvent* event);
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
 
-	void resizeEvent(QResizeEvent* event);
+	void resizeEvent(QResizeEvent* event) override;
 
 	panda::PandaDocument* m_document;
 	bool m_adjustRenderSize;
