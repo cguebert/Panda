@@ -90,16 +90,9 @@ public:
 		}
 
 		m_renderFrameBuffer.bind();
-
+		
 		glViewport(0, 0, renderSize.width(), renderSize.height());
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0, renderSize.width(), renderSize.height(), 0, -10, 10);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		auto& mvp = getMVPMatrix();
+		auto& mvp = getMVPMatrix(); // Modify the matrix that will be used by the renderers
 		mvp.ortho(0, static_cast<float>(renderSize.width()), static_cast<float>(renderSize.height()), 0, -10.f, 10.f);
 
 		glClearColor(0, 0, 0, 0);

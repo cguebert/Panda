@@ -1,8 +1,8 @@
 #version 330
 
-in vec2 position;
-in float size;
-in vec4 color;
+layout (location = 0) in vec2 position;
+layout (location = 1) in vec4 color;
+layout (location = 2) in float size;
 
 uniform mat4 MVP;
 

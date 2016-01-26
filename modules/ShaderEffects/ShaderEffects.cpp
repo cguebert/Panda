@@ -55,7 +55,6 @@ void ShaderEffects::update()
 		}
 
 		glClearColor(0, 0, 0, 0);
-		glViewport(0, 0, inputSize.width(), inputSize.height());
 
 		GLfloat w = static_cast<float>(inputSize.width()), h = static_cast<float>(inputSize.height());
 
@@ -104,15 +103,15 @@ void ShaderEffects::update()
 			program.setUniformValueMat4("MVP", mvp.data());
 			program.setUniformValue("tex0", 0);
 
-			program.enableAttributeArray("vertex");
-			program.setAttributeArray("vertex", verts, 2);
+			program.enableAttributeArray("position");
+			program.setAttributeArray("position", verts, 2);
 
 			program.enableAttributeArray("texCoord");
 			program.setAttributeArray("texCoord", m_texCoords, 2);
 
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-			program.disableAttributeArray("vertex");
+			program.disableAttributeArray("position");
 			program.disableAttributeArray("texCoord");
 			program.release();
 
@@ -157,7 +156,6 @@ void renderImage(Framebuffer& fbo, ShaderProgram& program)
 	fbo.bind();
 
 	auto size = fbo.size();
-	glViewport(0, 0, size.width(), size.height());
 
 	GLfloat w = static_cast<float>(size.width()), h = static_cast<float>(size.height());
 
@@ -178,15 +176,15 @@ void renderImage(Framebuffer& fbo, ShaderProgram& program)
 	program.bind();
 	program.setUniformValueMat4("MVP", mvp.data());
 
-	program.enableAttributeArray("vertex");
-	program.setAttributeArray("vertex", verts, 2);
+	program.enableAttributeArray("position");
+	program.setAttributeArray("position", verts, 2);
 
 	program.enableAttributeArray("texCoord");
 	program.setAttributeArray("texCoord", texCoords, 2);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	program.disableAttributeArray("vertex");
+	program.disableAttributeArray("position");
 	program.disableAttributeArray("texCoord");
 	program.release();
 

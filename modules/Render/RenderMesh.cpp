@@ -59,20 +59,20 @@ public:
 
 			int colorLocation = shaderProgram.uniformLocation("color");
 			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
-			shaderProgram.enableAttributeArray("vertex");
+			shaderProgram.enableAttributeArray("position");
 
 			for (int i = 0; i < nbMeshes; ++i)
 			{
 				const auto& mesh = inMeshes[i];
 				int nbTri = mesh.nbTriangles();
 
-				shaderProgram.setAttributeArray("vertex", mesh.getPoints().front().data(), 2);
+				shaderProgram.setAttributeArray("position", mesh.getPoints().front().data(), 2);
 				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
 
 				glDrawElements(GL_TRIANGLES, nbTri * 3, GL_UNSIGNED_INT, mesh.getTriangles().data());
 			}
 
-			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("position");
 		}
 	}
 
@@ -130,15 +130,15 @@ public:
 
 			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			shaderProgram.enableAttributeArray("vertex");
-			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);
+			shaderProgram.enableAttributeArray("position");
+			shaderProgram.setAttributeArray("position", inMesh.getPoints().front().data(), 2);
 
 			shaderProgram.enableAttributeArray("color");
 			shaderProgram.setAttributeArray("color", listColor.front().data(), 4);
 
 			glDrawElements(GL_TRIANGLES, nbTri * 3, GL_UNSIGNED_INT, inMesh.getTriangles().data());
 
-			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("position");
 			shaderProgram.disableAttributeArray("color");
 		}
 	}
@@ -195,8 +195,8 @@ public:
 
 			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			shaderProgram.enableAttributeArray("vertex");
-			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);
+			shaderProgram.enableAttributeArray("position");
+			shaderProgram.setAttributeArray("position", inMesh.getPoints().front().data(), 2);
 
 			shaderProgram.enableAttributeArray("texCoord");
 			shaderProgram.setAttributeArray("texCoord", listCoords.front().data(), 2);
@@ -210,7 +210,7 @@ public:
 
 			glDrawElements(GL_TRIANGLES, nbTri * 3, GL_UNSIGNED_INT, inMesh.getTriangles().data());
 
-			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("position");
 			shaderProgram.disableAttributeArray("texCoord");
 		}
 	}

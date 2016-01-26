@@ -56,8 +56,8 @@ public:
 
 			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			shaderProgram.enableAttributeArray("vertex");
-			shaderProgram.setAttributeArray("vertex", inMesh.getPoints().front().data(), 2);
+			shaderProgram.enableAttributeArray("position");
+			shaderProgram.setAttributeArray("position", inMesh.getPoints().front().data(), 2);
 
 			int colorLocation = shaderProgram.uniformLocation("color");
 
@@ -70,7 +70,7 @@ public:
 				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, triangles[i].data());
 			}
 
-			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("position");
 		}
 	}
 

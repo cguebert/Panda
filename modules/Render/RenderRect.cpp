@@ -8,6 +8,7 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Rect.h>
 #include <panda/types/Shader.h>
+#include <panda/graphics/Model.h>
 #include <panda/graphics/ShaderProgram.h>
 
 namespace panda {
@@ -66,8 +67,8 @@ public:
 			shaderProgram.bind();
 			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			shaderProgram.enableAttributeArray("vertex");
-			shaderProgram.setAttributeArray("vertex", verts, 2);
+			shaderProgram.enableAttributeArray("position");
+			shaderProgram.setAttributeArray("position", verts, 2);
 
 			int colorLocation = shaderProgram.uniformLocation("color");
 
@@ -86,7 +87,7 @@ public:
 				glDrawArrays(GL_LINE_LOOP, 0, 4);
 			}
 
-			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("position");
 			shaderProgram.release();
 		}
 	}
@@ -127,11 +128,6 @@ public:
 		auto shaderAcc = shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
-
-		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
-		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
-		m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
-		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 	}
 
 	void render()
@@ -147,39 +143,32 @@ public:
 			if(!shader.getValue().apply(shaderProgram))
 				return;
 
-			if(nbColor < nbRect) nbColor = 1;
-			PReal verts[8];
+			if (!model)
+			{
+				std::vector<GLfloat> verts = { 0, 0, 1, 0, 0, 1, 1, 1 };
+				std::vector<GLfloat> texCoords = { 0, 1, 1, 1, 0, 0, 1, 0};
+				model.setVertices(verts);
+				model.setTexCoords(texCoords);
+				model.create();
+			}
 
 			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			shaderProgram.enableAttributeArray("vertex");
-			shaderProgram.setAttributeArray("vertex", verts, 2);
-
+			if(nbColor < nbRect) nbColor = 1;
 			int colorLocation = shaderProgram.uniformLocation("color");
 
-			int texCoordLocation = shaderProgram.attributeLocation("texCoord");
-			if(texCoordLocation != -1)
-			{
-				shaderProgram.enableAttributeArray(texCoordLocation);
-				shaderProgram.setAttributeArray(texCoordLocation, m_texCoords, 2);
-			}
-
+			std::vector<GLfloat> verts(8);
 			for(int i=0; i<nbRect; ++i)
 			{
 				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
 
 				Rect rect = listRect[i % nbRect];
-				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
-				verts[1*2+0] = rect.left(); verts[1*2+1] = rect.top();
-				verts[2*2+0] = rect.right(); verts[2*2+1] = rect.bottom();
-				verts[3*2+0] = rect.left(); verts[3*2+1] = rect.bottom();
+				PReal l = rect.left(), r = rect.right(), t = rect.top(), b = rect.bottom();
+				model.setVertices({ l, b, r, b, l, t, r, t });
 
-				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+				model.render();
 			}
 
-			shaderProgram.disableAttributeArray("vertex");
-			if(texCoordLocation != -1)
-				shaderProgram.disableAttributeArray(texCoordLocation);
 			shaderProgram.release();
 		}
 	}
@@ -189,8 +178,7 @@ protected:
 	Data< std::vector<Color> > color;
 	Data< Shader > shader;
 
-	GLfloat m_texCoords[8];
-
+	graphics::Model model;
 	graphics::ShaderProgram shaderProgram;
 };
 
@@ -243,8 +231,8 @@ public:
 
 			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			shaderProgram.enableAttributeArray("vertex");
-			shaderProgram.setAttributeArray("vertex", verts, 2);
+			shaderProgram.enableAttributeArray("position");
+			shaderProgram.setAttributeArray("position", verts, 2);
 
 			shaderProgram.enableAttributeArray("texCoord");
 			shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
@@ -267,7 +255,7 @@ public:
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			}
 
-			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("position");
 			shaderProgram.disableAttributeArray("texCoord");
 			shaderProgram.release();
 		}

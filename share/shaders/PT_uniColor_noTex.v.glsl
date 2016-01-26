@@ -1,10 +1,10 @@
 #version 330
 
-in vec2 vertex;
+layout (location = 0) in vec2 position;
 
 uniform mat4 MVP;
 
 void main(void)
 {
-	gl_Position = MVP * vec4(vertex, 0, 1);
+	gl_Position = MVP * vec4(position, 0, 1);
 }

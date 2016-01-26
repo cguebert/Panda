@@ -78,15 +78,15 @@ public:
 		verts[2*2+0] = area.right(); verts[2*2+1] = area.bottom();
 		verts[3*2+0] = area.left(); verts[3*2+1] = area.bottom();
 
-		m_shaderProgram.enableAttributeArray("vertex");
-		m_shaderProgram.setAttributeArray("vertex", verts, 2);
+		m_shaderProgram.enableAttributeArray("position");
+		m_shaderProgram.setAttributeArray("position", verts, 2);
 
 		m_shaderProgram.enableAttributeArray("texCoord");
 		m_shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		m_shaderProgram.disableAttributeArray("vertex");
+		m_shaderProgram.disableAttributeArray("position");
 		m_shaderProgram.disableAttributeArray("texCoord");
 		m_shaderProgram.release();
 	}
@@ -164,15 +164,15 @@ public:
 		verts[2*2+0] = area.right(); verts[2*2+1] = area.bottom();
 		verts[3*2+0] = area.left(); verts[3*2+1] = area.bottom();
 
-		m_shaderProgram.enableAttributeArray("vertex");
-		m_shaderProgram.setAttributeArray("vertex", verts, 2);
+		m_shaderProgram.enableAttributeArray("position");
+		m_shaderProgram.setAttributeArray("position", verts, 2);
 
 		m_shaderProgram.enableAttributeArray("texCoord");
 		m_shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		m_shaderProgram.disableAttributeArray("vertex");
+		m_shaderProgram.disableAttributeArray("position");
 		m_shaderProgram.disableAttributeArray("texCoord");
 		m_shaderProgram.release();
 	}
@@ -253,15 +253,15 @@ public:
 		texCoords[3*2+0] = 0;	texCoords[3*2+1] = 0;
 		texCoords[2*2+0] = tw;	texCoords[2*2+1] = 0;
 
-		m_shaderProgram.enableAttributeArray("vertex");
-		m_shaderProgram.setAttributeArray("vertex", verts, 2);
+		m_shaderProgram.enableAttributeArray("position");
+		m_shaderProgram.setAttributeArray("position", verts, 2);
 
 		m_shaderProgram.enableAttributeArray("texCoord");
 		m_shaderProgram.setAttributeArray("texCoord", texCoords, 2);
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		m_shaderProgram.disableAttributeArray("vertex");
+		m_shaderProgram.disableAttributeArray("position");
 		m_shaderProgram.disableAttributeArray("texCoord");
 		m_shaderProgram.release();
 	}

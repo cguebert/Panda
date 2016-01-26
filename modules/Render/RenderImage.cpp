@@ -101,8 +101,8 @@ public:
 			const graphics::Mat4x4& MVP = getMVPMatrix();
 			shaderProgram.setUniformValueMat4("MVP", MVP.data());
 
-			shaderProgram.enableAttributeArray("vertex");
-			shaderProgram.setAttributeArray("vertex", m_verts, 2);
+			shaderProgram.enableAttributeArray("position");
+			shaderProgram.setAttributeArray("position", m_verts, 2);
 
 			shaderProgram.enableAttributeArray("texCoord");
 			shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
@@ -175,7 +175,7 @@ public:
 				}
 			}
 
-			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("position");
 			shaderProgram.disableAttributeArray("texCoord");
 			shaderProgram.release();
 		}

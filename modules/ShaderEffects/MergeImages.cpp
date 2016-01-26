@@ -71,7 +71,6 @@ public:
 			}
 
 			glClearColor(0, 0, 0, 0);
-			glViewport(0, 0, inputSize.width(), inputSize.height());
 
 			GLfloat w = static_cast<GLfloat>(inputSize.width()), h = static_cast<GLfloat>(inputSize.height());
 			graphics::Mat4x4 mvp;
@@ -97,8 +96,8 @@ public:
 			m_shaderProgram.setUniformValue("texS", 0);
 			m_shaderProgram.setUniformValue("texD", 1);
 
-			m_shaderProgram.enableAttributeArray("vertex");
-			m_shaderProgram.setAttributeArray("vertex", verts, 2);
+			m_shaderProgram.enableAttributeArray("position");
+			m_shaderProgram.setAttributeArray("position", verts, 2);
 
 			m_shaderProgram.enableAttributeArray("texCoord");
 			m_shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
@@ -108,7 +107,7 @@ public:
 
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-			m_shaderProgram.disableAttributeArray("vertex");
+			m_shaderProgram.disableAttributeArray("position");
 			m_shaderProgram.disableAttributeArray("texCoord");
 			m_shaderProgram.release();
 

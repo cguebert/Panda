@@ -114,8 +114,8 @@ public:
 		shaderProgram.bind();
 		shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-		shaderProgram.enableAttributeArray("vertex");
-		shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
+		shaderProgram.enableAttributeArray("position");
+		shaderProgram.setAttributeArray("position", vertexBuffer.front().data(), 2);
 
 		int colorLocation = shaderProgram.uniformLocation("color");
 
@@ -129,7 +129,7 @@ public:
 			glDrawArrays(GL_LINE_LOOP, firstBuffer[i], countBuffer[i]);
 		}
 
-		shaderProgram.disableAttributeArray("vertex");
+		shaderProgram.disableAttributeArray("position");
 		shaderProgram.release();
 		glDisable(GL_LINE_SMOOTH);
 	}

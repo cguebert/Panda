@@ -113,8 +113,8 @@ public:
 		shaderProgram.bind();
 		shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-		shaderProgram.enableAttributeArray("vertex");
-		shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
+		shaderProgram.enableAttributeArray("position");
+		shaderProgram.setAttributeArray("position", vertexBuffer.front().data(), 2);
 
 		int colorLocation = shaderProgram.uniformLocation("color");
 
@@ -126,7 +126,7 @@ public:
 			glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
 		}
 
-		shaderProgram.disableAttributeArray("vertex");
+		shaderProgram.disableAttributeArray("position");
 		shaderProgram.release();
 	}
 
@@ -255,8 +255,8 @@ public:
 			shaderProgram.bind();
 			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			shaderProgram.enableAttributeArray("vertex");
-			shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
+			shaderProgram.enableAttributeArray("position");
+			shaderProgram.setAttributeArray("position", vertexBuffer.front().data(), 2);
 
 			shaderProgram.enableAttributeArray("texCoord");
 			shaderProgram.setAttributeArray("texCoord", texCoordsBuffer.front().data(), 2);
@@ -296,7 +296,7 @@ public:
 			}
 			}
 
-			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("position");
 			shaderProgram.disableAttributeArray("texCoord");
 			shaderProgram.release();
 		}
@@ -423,8 +423,8 @@ public:
 			shaderProgram.bind();
 			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			shaderProgram.enableAttributeArray("vertex");
-			shaderProgram.setAttributeArray("vertex", vertexBuffer.front().data(), 2);
+			shaderProgram.enableAttributeArray("position");
+			shaderProgram.setAttributeArray("position", vertexBuffer.front().data(), 2);
 
 			shaderProgram.enableAttributeArray("texCoord");
 			shaderProgram.setAttributeArray("texCoord", texCoordsBuffer.front().data(), 2);
@@ -439,7 +439,7 @@ public:
 			for(int i=0; i<nbDisks; ++i)
 				glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
 
-			shaderProgram.disableAttributeArray("vertex");
+			shaderProgram.disableAttributeArray("position");
 			shaderProgram.disableAttributeArray("texCoord");
 			shaderProgram.release();
 		}
