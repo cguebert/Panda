@@ -118,7 +118,7 @@ bool Shader::apply(graphics::ShaderProgram& program) const
 			glActiveTexture(GL_TEXTURE8 + i);
 			glBindTexture(GL_TEXTURE_2D, m_customTextures[i].second);
 			glUniform1i(loc, 8 + i);
-			glActiveTexture(0);
+			glActiveTexture(GL_TEXTURE0);
 		}
 	}
 	else
