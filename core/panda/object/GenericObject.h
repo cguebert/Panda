@@ -128,8 +128,8 @@ protected:
 	template <class Types, class Parent>
 	void setupGenericObject(Parent* ptr, BaseGenericData& data, const GenericDataDefinitionList& defList)
 	{
-		setupGenericData(data, defList);
 		helper::for_each_type<Types>(functionCreatorWrapper<Parent>(ptr));
+		setupGenericData(data, defList);
 	}
 
 private:
