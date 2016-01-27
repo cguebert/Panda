@@ -2,6 +2,8 @@
 #define IMAGEVIEWPORT_H
 
 #include <panda/data/DataNode.h>
+#include <panda/graphics/Model.h>
+#include <panda/graphics/ShaderProgram.h>
 
 #include <QOpenGLWidget>
 
@@ -16,6 +18,7 @@ class ImageViewport : public QOpenGLWidget, public panda::DataNode
 	Q_OBJECT
 public:
 	explicit ImageViewport(const panda::BaseData* data, QWidget* parent = nullptr);
+	~ImageViewport();
 
 	QSize minimumSizeHint() const;
 	QSize sizeHint() const;
@@ -28,6 +31,7 @@ signals:
 	void closeViewport(ImageViewport* viewport);
 
 protected:
+	void initializeGL() override;
 	void paintGL() override;
 
 	virtual void wheelEvent(QWheelEvent* event);
@@ -35,6 +39,9 @@ protected:
 	const panda::BaseData* m_data;
 	int m_zoomLevel, m_wheelTicks;
 	float m_zoomFactor;
+
+	panda::graphics::ShaderProgram m_texturedShader;
+	panda::graphics::Model m_rectModel;
 };
 
 #endif // IMAGEVIEWPORT_H
