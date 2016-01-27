@@ -70,9 +70,12 @@ void OpenGLRenderView::resizeGL(int w, int h)
 
 void OpenGLRenderView::paintGL()
 {
-	QRect viewRect = contentsRect();
+	m_document->getRenderer()->setRenderingMainView(true);
+	m_document->updateIfDirty();
+	m_document->getRenderer()->setRenderingMainView(false);
 	auto fbo = m_document->getFBO();
 
+	QRect viewRect = contentsRect();
 	panda::graphics::RectInt rect(0, 0, viewRect.width(), viewRect.height());
 	panda::graphics::Framebuffer::blitFramebuffer(defaultFramebufferObject(), rect, fbo.id(), rect);
 }

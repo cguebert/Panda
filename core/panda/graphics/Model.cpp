@@ -43,7 +43,6 @@ void Model::create()
 	}
 
 	m_VAO.release();
-	Buffer::release(BufferType::ArrayBuffer);
 	m_indicesEBO.release();
 }
 

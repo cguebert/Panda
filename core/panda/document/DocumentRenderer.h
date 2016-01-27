@@ -18,12 +18,16 @@ public:
 	void resizeGL(int w, int h);
 	void renderGL();
 
+	bool renderingMainView() const;
+	void setRenderingMainView(bool v);
+
 	const graphics::Mat4x4& MVPMatrix() const;
 
 	graphics::Framebuffer& getFBO();
 
 private:
 	PandaDocument& m_document;
+	bool m_isRenderingMainView = false; // If true, the context of the main render view has already been made current
 	graphics::Framebuffer m_renderFBO, m_secondRenderFBO;
 	graphics::ShaderProgram m_mergeLayersShader;
 	graphics::Model m_rectModel;
@@ -37,6 +41,12 @@ inline graphics::Framebuffer& DocumentRenderer::getFBO()
 
 inline const graphics::Mat4x4& DocumentRenderer::MVPMatrix() const
 { return m_MVP; }
+
+inline bool DocumentRenderer::renderingMainView() const
+{ return m_isRenderingMainView; }
+
+inline void DocumentRenderer::setRenderingMainView(bool v)
+{ m_isRenderingMainView = v; }
 
 } // namespace panda
 

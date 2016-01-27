@@ -77,6 +77,7 @@ public:
 		}
 
 		auto renderSize = getLayerSize();
+		int w = renderSize.width(), h = renderSize.height();
 
 		if(!m_renderFrameBuffer || m_renderFrameBuffer.size() != renderSize)
 		{
@@ -91,9 +92,9 @@ public:
 
 		m_renderFrameBuffer.bind();
 		
-		glViewport(0, 0, renderSize.width(), renderSize.height());
+		glViewport(0, 0, w, h);
 		auto& mvp = getMVPMatrix(); // Modify the matrix that will be used by the renderers
-		mvp.ortho(0, static_cast<float>(renderSize.width()), static_cast<float>(renderSize.height()), 0, -10.f, 10.f);
+		mvp.ortho(0, static_cast<float>(w), static_cast<float>(h), 0, -10.f, 10.f);
 
 		glClearColor(0, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

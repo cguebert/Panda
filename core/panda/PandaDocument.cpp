@@ -682,9 +682,11 @@ void PandaDocument::update()
 	if(m_animMultithread && m_scheduler)
 		m_scheduler->update();
 
-	m_gui.contextMakeCurrent();
+	if(!m_renderer->renderingMainView())
+		m_gui.contextMakeCurrent();
 	m_renderer->renderGL();
-	m_gui.contextDoneCurrent();
+	if(!m_renderer->renderingMainView())
+		m_gui.contextDoneCurrent();
 
 	helper::GradientCache::getInstance()->clearUnused();
 //	helper::ShaderCache::getInstance()->clearUnused();
