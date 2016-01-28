@@ -25,80 +25,172 @@ public:
 
 	RenderRect(PandaDocument* parent)
 		: Renderer(parent)
-		, rect(initData("rectangle", "Position and size of the rectangle"))
-		, lineWidth(initData("lineWidth", "Width of the line"))
-		, color(initData("color", "Color of the rectangle"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_rect(initData("rectangle", "Position and size of the rectangle"))
+		, m_lineWidth(initData("lineWidth", "Width of the line"))
+		, m_color(initData("color", "Color of the rectangle"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
+		, m_widthRange({1, 1})
 	{
-		addInput(rect);
-		addInput(lineWidth);
-		addInput(color);
-		addInput(shader);
+		addInput(m_rect);
+		addInput(m_lineWidth);
+		addInput(m_color);
+		addInput(m_shader);
 
-		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
-		color.getAccessor().push_back(Color::black());
-		lineWidth.getAccessor().push_back(0.0);
+		m_rect.getAccessor().push_back(Rect(100, 100, 150, 150));
+		m_color.getAccessor().push_back(Color::black());
+		m_lineWidth.getAccessor().push_back(0.0);
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_attColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_attColor_noTex.f.glsl");
+	}
+
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_colorsVBO.create();
+		m_colorsVBO.bind();
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+
+		glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, m_widthRange.data());
+	}
+
+	float boundWidth(float w)
+	{
+		return w;
+	//	return std::max(m_widthRange[0], std::min(w, m_widthRange[1]));
+	}
+
+	void update()
+	{
+		const std::vector<Rect>& listRect = m_rect.getValue();
+		const std::vector<Color>& listColor = m_color.getValue();
+		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+
+		m_ptsBuffer.clear();
+		m_colorBuffer.clear();
+
+		m_firstBuffer.clear();
+		m_countBuffer.clear();
+
+		if (!listRect.empty() && !listColor.empty() && !listWidth.empty())
+		{
+			int nbRect = listRect.size();
+
+			m_firstBuffer.resize(nbRect);
+			for (int i = 0; i < nbRect; ++i)
+				m_firstBuffer[i] = i * 4;
+
+			m_countBuffer.assign(nbRect, 4);
+
+			m_ptsBuffer.reserve(nbRect * 4);
+			for (const auto& rect : listRect)
+			{
+				m_ptsBuffer.emplace_back(rect.right(), rect.top());
+				m_ptsBuffer.emplace_back(rect.left(),  rect.top());
+				m_ptsBuffer.emplace_back(rect.left(),  rect.bottom());
+				m_ptsBuffer.emplace_back(rect.right(), rect.bottom());
+			}
+
+			m_colorBuffer.reserve(nbRect * 4);
+			int nbColor = listColor.size();
+			if (nbColor < nbRect)
+			{
+				m_colorBuffer.assign(nbRect * 4, listColor[0]);
+			}
+			else
+			{
+				for (const auto& color : listColor)
+				{
+					m_colorBuffer.push_back(color);
+					m_colorBuffer.push_back(color);
+					m_colorBuffer.push_back(color);
+					m_colorBuffer.push_back(color);
+				}
+			}
+		}
 	}
 
 	void render()
 	{
-		const std::vector<Rect>& listRect = rect.getValue();
-		const std::vector<Color>& listColor = color.getValue();
-		const std::vector<PReal>& listWidth = lineWidth.getValue();
-
-		int nbRect = listRect.size();
-		int nbColor = listColor.size();
+		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
 		int nbWidth = listWidth.size();
 
-		if(nbRect && nbColor || nbWidth)
+		if(!m_ptsBuffer.empty() && !m_colorBuffer.empty() && nbWidth)
 		{
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
-			if(nbColor < nbRect) nbColor = 1;
+			if (!m_VAO)
+				initGL();
+
+			glEnable(GL_LINE_SMOOTH);
+
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_ptsBuffer);
+
+			m_colorsVBO.bind();
+			m_colorsVBO.write(m_colorBuffer);
+			
+			m_VAO.bind();
+
+			int nbRect = m_countBuffer.size();
 			if(nbWidth < nbRect) nbWidth = 1;
-			PReal verts[8];
 
-			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			shaderProgram.enableAttributeArray("position");
-			shaderProgram.setAttributeArray("position", verts, 2);
-
-			int colorLocation = shaderProgram.uniformLocation("color");
-
-			for(int i=0; i<nbRect; ++i)
+			if (nbWidth < nbRect)
 			{
-				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
+				glLineWidth(boundWidth(listWidth[0]));
 
-				glLineWidth(listWidth[i % nbWidth]);
+				glMultiDrawArrays(GL_LINE_LOOP, m_firstBuffer.data(), m_countBuffer.data(), nbRect);
+			}
+			else
+			{
+				for (int i = 0; i < nbRect; ++i)
+				{
+					glLineWidth(boundWidth(listWidth[i]));
 
-				Rect rect = listRect[i % nbRect];
-				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
-				verts[1*2+0] = rect.left(); verts[1*2+1] = rect.top();
-				verts[2*2+0] = rect.left(); verts[2*2+1] = rect.bottom();
-				verts[3*2+0] = rect.right(); verts[3*2+1] = rect.bottom();
-
-				glDrawArrays(GL_LINE_LOOP, 0, 4);
+					glDrawArrays(GL_LINE_LOOP, i * 4, 4);
+				}
 			}
 
-			shaderProgram.disableAttributeArray("position");
-			shaderProgram.release();
+			m_shaderProgram.release();
+
+			m_VAO.release();
+
+			glDisable(GL_LINE_SMOOTH);
 		}
 	}
 
 protected:
-	Data< std::vector<Rect> > rect;
-	Data< std::vector<PReal> > lineWidth;
-	Data< std::vector<Color> > color;
-	Data< Shader > shader;
+	Data< std::vector<Rect> > m_rect;
+	Data< std::vector<PReal> > m_lineWidth;
+	Data< std::vector<Color> > m_color;
+	Data< Shader > m_shader;
 
-	graphics::ShaderProgram shaderProgram;
+	std::vector<types::Point> m_ptsBuffer;
+	std::vector<types::Color> m_colorBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
+
+	std::array<GLfloat, 2> m_widthRange;
+
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_colorsVBO;
 };
 
 int RenderRectClass = RegisterObject<RenderRect>("Render/Line/Rectangle")
@@ -113,73 +205,124 @@ public:
 
 	RenderFilledRect(PandaDocument* parent)
 		: Renderer(parent)
-		, rect(initData("rectangle", "Position and size of the rectangle"))
-		, color(initData("color", "Color of the rectangle"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_rect(initData("rectangle", "Position and size of the rectangle"))
+		, m_color(initData("color", "Color of the rectangle"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(rect);
-		addInput(color);
-		addInput(shader);
+		addInput(m_rect);
+		addInput(m_color);
+		addInput(m_shader);
 
-		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
-		color.getAccessor().push_back(Color::black());
+		m_rect.getAccessor().push_back(Rect(100, 100, 150, 150));
+		m_color.getAccessor().push_back(Color::black());
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
+	void update()
+	{
+		const std::vector<Rect>& listRect = m_rect.getValue();
+		const std::vector<Color>& listColor = m_color.getValue();
+
+		m_ptsBuffer.clear();
+		m_texCoordsBuffer.clear();
+		if (!listRect.empty() && !listColor.empty())
+		{
+			int nbRect = listRect.size();
+			m_ptsBuffer.reserve(nbRect * 4);
+			for (const auto& rect : listRect)
+			{
+				m_ptsBuffer.emplace_back(rect.right(), rect.top());
+				m_ptsBuffer.emplace_back(rect.left(),  rect.top());
+				m_ptsBuffer.emplace_back(rect.right(), rect.bottom());
+				m_ptsBuffer.emplace_back(rect.left(),  rect.bottom());
+			}
+
+			m_texCoordsBuffer.reserve(nbRect * 4);
+			for (const auto& rect : listRect)
+			{
+				m_texCoordsBuffer.emplace_back(1.f, 1.f);
+				m_texCoordsBuffer.emplace_back(0.f, 1.f);
+				m_texCoordsBuffer.emplace_back(1.f, 0.f);
+				m_texCoordsBuffer.emplace_back(0.f, 0.f);
+			}
+		}
+	}
+
 	void render()
 	{
-		const std::vector<Rect>& listRect = rect.getValue();
-		const std::vector<Color>& listColor = color.getValue();
-
-		int nbRect = listRect.size();
+		const std::vector<Color>& listColor = m_color.getValue();
 		int nbColor = listColor.size();
 
-		if(nbRect && nbColor)
+		if(!m_ptsBuffer.empty() && !m_texCoordsBuffer.empty() && nbColor)
 		{
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
-			if (!model)
+			if (!m_VAO)
+				initGL();
+
+			glEnable(GL_LINE_SMOOTH);
+
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_ptsBuffer);
+
+			m_texCoordsVBO.bind();
+			m_texCoordsVBO.write(m_texCoordsBuffer);
+			
+			m_VAO.bind();
+
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+
+			int colorLocation = m_shaderProgram.uniformLocation("color");
+			int nbRect = m_ptsBuffer.size() / 4;
+			for(int i=0; i < nbRect; ++i)
 			{
-				std::vector<GLfloat> verts = { 0, 0, 1, 0, 0, 1, 1, 1 };
-				std::vector<GLfloat> texCoords = { 0, 1, 1, 1, 0, 0, 1, 0};
-				model.setVertices(verts);
-				model.setTexCoords(texCoords);
-				model.create();
+				m_shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
+
+				glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
 			}
 
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+			m_shaderProgram.release();
 
-			if(nbColor < nbRect) nbColor = 1;
-			int colorLocation = shaderProgram.uniformLocation("color");
+			m_VAO.release();
 
-			std::vector<GLfloat> verts(8);
-			for(int i=0; i<nbRect; ++i)
-			{
-				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
-
-				Rect rect = listRect[i % nbRect];
-				PReal l = rect.left(), r = rect.right(), t = rect.top(), b = rect.bottom();
-				model.setVertices({ l, b, r, b, l, t, r, t });
-
-				model.render();
-			}
-
-			shaderProgram.release();
+			glDisable(GL_LINE_SMOOTH);
 		}
 	}
 
 protected:
-	Data< std::vector<Rect> > rect;
-	Data< std::vector<Color> > color;
-	Data< Shader > shader;
+	Data< std::vector<Rect> > m_rect;
+	Data< std::vector<Color> > m_color;
+	Data< Shader > m_shader;
 
-	graphics::Model model;
-	graphics::ShaderProgram shaderProgram;
+	std::vector<types::Point> m_ptsBuffer, m_texCoordsBuffer;
+
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
 int RenderFilledRectClass = RegisterObject<RenderFilledRect>("Render/Filled/Rectangle")
@@ -194,81 +337,133 @@ public:
 
 	RenderTexturedRect(PandaDocument* parent)
 		: Renderer(parent)
-		, rect(initData("rectangle", "Position and size of the rectangle"))
-		, texture(initData("texture", "Texture to apply to the rectangle"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_rect(initData("rectangle", "Position and size of the rectangle"))
+		, m_texture(initData("texture", "Texture to apply to the rectangle"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(rect);
-		addInput(texture);
-		addInput(shader);
+		addInput(m_rect);
+		addInput(m_texture);
+		addInput(m_shader);
 
-		rect.getAccessor().push_back(Rect(100, 100, 150, 150));
+		m_rect.getAccessor().push_back(Rect(100, 100, 150, 150));
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+	}
 
-		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
-		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
-		m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
-		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
+	void update()
+	{
+		const std::vector<Rect>& listRect = m_rect.getValue();
+
+		m_ptsBuffer.clear();
+		m_texCoordsBuffer.clear();
+
+		m_firstBuffer.clear();
+		m_countBuffer.clear();
+
+		if (!listRect.empty())
+		{
+			int nbRect = listRect.size();
+
+			m_firstBuffer.resize(nbRect);
+			for (int i = 0; i < nbRect; ++i)
+				m_firstBuffer[i] = i * 4;
+
+			m_countBuffer.assign(nbRect, 4);
+
+			m_ptsBuffer.reserve(nbRect * 4);
+			for (const auto& rect : listRect)
+			{
+				m_ptsBuffer.emplace_back(rect.right(), rect.top());
+				m_ptsBuffer.emplace_back(rect.left(),  rect.top());
+				m_ptsBuffer.emplace_back(rect.right(), rect.bottom());
+				m_ptsBuffer.emplace_back(rect.left(),  rect.bottom());
+			}
+
+			m_texCoordsBuffer.reserve(nbRect * 4);
+			for (const auto& rect : listRect)
+			{
+				m_texCoordsBuffer.emplace_back(1.f, 1.f);
+				m_texCoordsBuffer.emplace_back(0.f, 1.f);
+				m_texCoordsBuffer.emplace_back(1.f, 0.f);
+				m_texCoordsBuffer.emplace_back(0.f, 0.f);
+			}
+		}
 	}
 
 	void render()
 	{
-		const std::vector<Rect>& listRect = rect.getValue();
-
-		int nbRect = listRect.size();
-		int texId = texture.getValue().getTextureId();
-
-		if(nbRect && texId)
+		int texId = m_texture.getValue().getTextureId();
+		if(!m_ptsBuffer.empty() && !m_texCoordsBuffer.empty() && texId)
 		{
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
-			PReal verts[8];
+			if (!m_VAO)
+				initGL();
 
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+			glEnable(GL_LINE_SMOOTH);
 
-			shaderProgram.enableAttributeArray("position");
-			shaderProgram.setAttributeArray("position", verts, 2);
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_ptsBuffer);
 
-			shaderProgram.enableAttributeArray("texCoord");
-			shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
+			m_texCoordsVBO.bind();
+			m_texCoordsVBO.write(m_texCoordsBuffer);
+			
+			m_VAO.bind();
+
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			glBindTexture(GL_TEXTURE_2D, texId);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			shaderProgram.setUniformValue("tex0", 0);
+			m_shaderProgram.setUniformValue("tex0", 0);
 
-			for(int i=0; i<nbRect; ++i)
-			{
-				Rect rect = listRect[i % nbRect];
-				verts[0*2+0] = rect.right(); verts[0*2+1] = rect.top();
-				verts[1*2+0] = rect.left(); verts[1*2+1] = rect.top();
-				verts[2*2+0] = rect.right(); verts[2*2+1] = rect.bottom();
-				verts[3*2+0] = rect.left(); verts[3*2+1] = rect.bottom();
+			glMultiDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
 
-				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-			}
+			m_shaderProgram.release();
 
-			shaderProgram.disableAttributeArray("position");
-			shaderProgram.disableAttributeArray("texCoord");
-			shaderProgram.release();
+			m_VAO.release();
+
+			glDisable(GL_LINE_SMOOTH);
 		}
 	}
 
 protected:
-	Data< std::vector<Rect> > rect;
-	Data< ImageWrapper > texture;
-	Data< Shader > shader;
+	Data< std::vector<Rect> > m_rect;
+	Data< ImageWrapper > m_texture;
+	Data< Shader > m_shader;
 
-	GLfloat m_texCoords[8];
+	std::vector<types::Point> m_ptsBuffer, m_texCoordsBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
 
-	graphics::ShaderProgram shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
 int RenderTexturedRectClass = RegisterObject<RenderTexturedRect>("Render/Textured/Rectangle")
