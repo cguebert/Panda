@@ -52,8 +52,10 @@ public:
 	void release() const;
 	static void release(BufferType type);
 
+	int size() const;
+
 	// For the following methods, we assume the buffer has been created and is currently bound to the context
-	void write(int offset, const void* data, int count);
+	void write(int offset, const void* data, int count); // Automatically calls allocate if count > current size
 
     void allocate(const void* data, int count);
 	void allocate(int count);

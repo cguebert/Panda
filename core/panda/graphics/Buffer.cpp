@@ -22,8 +22,9 @@ struct BufferData
 	~BufferData();
 
 	unsigned int id = 0;
+	int size = -1;
 	BufferType type = BufferType::ArrayBuffer;
-	BufferUsage usage = BufferUsage::StaticDraw;
+	BufferUsage usage = BufferUsage::DynamicDraw;
 };
 
 BufferData::~BufferData()
@@ -73,6 +74,13 @@ unsigned int Buffer::id() const
 	return 0;
 }
 
+int Buffer::size() const
+{
+	if (m_data)
+		return m_data->size;
+	return -1;
+}
+
 void Buffer::bind() const
 {
 	if (m_data)
@@ -93,13 +101,20 @@ void Buffer::release(BufferType type)
 void Buffer::write(int offset, const void* data, int count)
 {
 	if (m_data)
+	{
+		if (count > m_data->size)
+			allocate(count);
 		glBufferSubData(toGL(m_data->type), offset, count, data);
+	}
 }
 
 void Buffer::allocate(const void* data, int count)
 {
 	if (m_data)
+	{
 		glBufferData(toGL(m_data->type), count, data, toGL(m_data->usage));
+		m_data->size = count;
+	}
 }
 
 } // namespace graphics
