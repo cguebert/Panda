@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/SimpleGUI.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Model.h>
@@ -66,6 +67,9 @@ void DocumentRenderer::resizeGL(int w, int h)
 
 void DocumentRenderer::renderGL()
 {
+	if(!m_isRenderingMainView) // If it not already the case, make the OpenGL context current
+		m_document.getGUI().contextMakeCurrent();
+
 	m_document.getDefaultLayer()->updateIfDirty();
 
 	for(auto& obj : m_document.getObjects())
@@ -174,6 +178,9 @@ void DocumentRenderer::renderGL()
 #endif
 		graphics::Framebuffer::blitFramebuffer(m_renderFBO, m_secondRenderFBO);
 	}
+
+	if(!m_isRenderingMainView) // Release the context if we made it current ourselves
+		m_document.getGUI().contextDoneCurrent();
 }
 
 } // namespace panda

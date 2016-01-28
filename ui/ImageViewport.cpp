@@ -2,6 +2,7 @@
 #include <ui/ImageViewport.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/SimpleGUI.h>
 #include <panda/helper/system/FileRepository.h>
 #include <panda/graphics/Mat4x4.h>
 #include <panda/object/PandaObject.h>
@@ -41,19 +42,41 @@ QSize ImageViewport::minimumSizeHint() const
 
 QSize ImageViewport::sizeHint() const
 {
-	const ImageData* imageData = dynamic_cast<const ImageData*>(m_data);
-	const ImageWrapper& img = imageData->getValue();
-	if(img.isNull())
-		return QSize(600, 400);
-	return QSize(img.width(), img.height());
-//	return QSize(600, 400);
+	return QSize(600, 400); // If we ask the size of the image here, we could create the OpenGL objects in a wrong context
 }
 
 void ImageViewport::setDirtyValue(const panda::DataNode* /*caller*/)
 {
-	if(!m_data->isDirty() // Just got modified
-	|| !m_data->getOwner()->getParentDocument()->animationIsPlaying()) // Or animation not playing
-		QWidget::update();
+	auto document = m_data->getOwner()->getParentDocument();
+	if (!m_data->isDirty() // Just got modified
+		|| !document->animationIsPlaying()) // Or animation not playing
+		updateData();
+}
+
+void ImageViewport::updateData()
+{
+	auto document = m_data->getOwner()->getParentDocument();
+	document->getGUI().executeByUI([this, document]() { // Execute this outside of any rendering
+		if (m_data->isDirty())
+		{
+			// Update the data
+			auto& gui = document->getGUI();
+			gui.contextMakeCurrent();
+			m_data->updateIfDirty();
+			gui.contextDoneCurrent();
+
+			// Resize the widget
+			QSize s = size();
+			const ImageData* imageData = dynamic_cast<const ImageData*>(m_data);
+			const ImageWrapper& img = imageData->getValue();
+			if(img.isNull())
+				resize(600, 400);
+			resize(img.width(), img.height());
+
+			// Ask for a redraw
+			QWidget::update();
+		}
+	});
 }
 
 void ImageViewport::doRemoveInput(DataNode& node)
@@ -79,6 +102,8 @@ void ImageViewport::initializeGL()
 	m_rectModel.setVertices(verts);
 	m_rectModel.setTexCoords(texCoords);
 	m_rectModel.create();
+
+	updateData();
 }
 
 void ImageViewport::paintGL()
@@ -97,14 +122,11 @@ void ImageViewport::paintGL()
 		return;
 	}
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	auto imgSize = img.size();
 	auto renderSize = imgSize * m_zoomFactor;
-	QSize qRenderSize(renderSize.width(), renderSize.height());
-	QRect viewRect = contentsRect();
-
-	if(qRenderSize != viewRect.size())
-		resize(qRenderSize);
-
 	glViewport(0, 0, renderSize.width(), renderSize.height());
 	panda::graphics::Mat4x4 mvp;
 	GLfloat fw = static_cast<float>(renderSize.width()), fh = static_cast<float>(renderSize.height());
@@ -120,6 +142,8 @@ void ImageViewport::paintGL()
 
 	m_rectModel.render();
 	m_texturedShader.release();
+
+	glDisable(GL_BLEND);
 }
 
 void ImageViewport::wheelEvent(QWheelEvent* event)

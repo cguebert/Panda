@@ -36,6 +36,8 @@ protected:
 
 	virtual void wheelEvent(QWheelEvent* event);
 
+	void updateData();
+
 	const panda::BaseData* m_data;
 	int m_zoomLevel, m_wheelTicks;
 	float m_zoomFactor;
