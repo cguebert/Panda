@@ -25,9 +25,13 @@ public:
 	graphics::ShaderId::SPtr getShader(graphics::ShaderType type,std::size_t hash);
 	graphics::ShaderId::SPtr getShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash = 0);
 
-	using ShaderPair = std::pair<graphics::ShaderType, std::size_t>;
+	using ShaderPair = std::pair<graphics::ShaderType, std::size_t>; // Type and hash
 	using ShadersList = std::vector<ShaderPair>;
 	graphics::ShaderProgram getShaderProgram(const ShadersList& shaders);
+
+	using ShaderSourcePair = std::pair<graphics::ShaderType, std::string>; // Type and source code
+	using ShadersSourceList = std::vector<ShaderSourcePair>;
+	graphics::ShaderProgram getShaderProgram(const ShadersSourceList& shaders);
 
 private:
 	graphics::ShaderId::SPtr addShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash);

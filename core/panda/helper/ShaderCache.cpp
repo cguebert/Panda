@@ -104,6 +104,20 @@ graphics::ShaderProgram ShaderCache::getShaderProgram(const ShadersList& shaders
 	return program;
 }
 
+graphics::ShaderProgram ShaderCache::getShaderProgram(const ShadersSourceList& shaders)
+{
+	helper::ShaderCache::ShadersList shadersList;
+	for (const auto& source : shaders)
+	{
+		auto hash = std::hash<std::string>()(source.second);
+		if(!getShader(source.first, source.second, hash))
+			return graphics::ShaderProgram();
+		shadersList.emplace_back(source.first, hash);
+	}
+
+	return getShaderProgram(shadersList);
+}
+
 graphics::ShaderId::SPtr ShaderCache::addShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash)
 {
 	auto id = graphics::ShaderProgram::compileShader(type, sourceCode);
