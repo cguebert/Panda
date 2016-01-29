@@ -30,7 +30,6 @@ public:
 		, m_lineWidth(initData("lineWidth", "Width of the line"))
 		, m_color(initData("color", "Color of the rectangle"))
 		, m_shader(initData("shader", "Shaders used during the rendering"))
-		, m_widthRange({1, 1})
 	{
 		addInput(m_rect);
 		addInput(m_lineWidth);
@@ -63,14 +62,6 @@ public:
 		glEnableVertexAttribArray(1);
 
 		m_VAO.release();
-
-		glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, m_widthRange.data());
-	}
-
-	float boundWidth(float w)
-	{
-		return w;
-	//	return std::max(m_widthRange[0], std::min(w, m_widthRange[1]));
 	}
 
 	void update()
@@ -88,36 +79,48 @@ public:
 		if (!listRect.empty() && !listColor.empty() && !listWidth.empty())
 		{
 			int nbRect = listRect.size();
+			int nbColor = listColor.size();
+			int nbWidth = listWidth.size();
+
+			if(nbWidth < nbRect) nbWidth = 1;
 
 			m_firstBuffer.resize(nbRect);
 			for (int i = 0; i < nbRect; ++i)
 				m_firstBuffer[i] = i * 4;
 
-			m_countBuffer.assign(nbRect, 4);
+			m_countBuffer.assign(nbRect, 10);
 
-			m_ptsBuffer.reserve(nbRect * 4);
-			for (const auto& rect : listRect)
+			m_ptsBuffer.reserve(nbRect * 10);
+			for(int i = 0; i < nbRect; ++i)
 			{
-				m_ptsBuffer.emplace_back(rect.right(), rect.top());
-				m_ptsBuffer.emplace_back(rect.left(),  rect.top());
-				m_ptsBuffer.emplace_back(rect.left(),  rect.bottom());
-				m_ptsBuffer.emplace_back(rect.right(), rect.bottom());
+				const auto& rect = listRect[i];
+				PReal maxWidth = std::min(rect.width(), rect.height()) - 0.5f;
+				PReal width = helper::bound(1.f, listWidth[i % nbWidth], maxWidth);
+				PReal w = width / 2;
+
+				m_ptsBuffer.emplace_back(rect.right() + w, rect.top() - w);
+				m_ptsBuffer.emplace_back(rect.right() - w, rect.top() + w);
+				m_ptsBuffer.emplace_back(rect.left() - w,  rect.top() - w);
+				m_ptsBuffer.emplace_back(rect.left() + w,  rect.top() + w);
+				m_ptsBuffer.emplace_back(rect.left() - w,  rect.bottom() + w);
+				m_ptsBuffer.emplace_back(rect.left() + w,  rect.bottom() - w);
+				m_ptsBuffer.emplace_back(rect.right() + w, rect.bottom() + w);
+				m_ptsBuffer.emplace_back(rect.right() - w, rect.bottom() - w);
+				m_ptsBuffer.emplace_back(rect.right() + w, rect.top() - w);
+				m_ptsBuffer.emplace_back(rect.right() - w, rect.top() + w);
 			}
 
-			m_colorBuffer.reserve(nbRect * 4);
-			int nbColor = listColor.size();
+			m_colorBuffer.reserve(nbRect * 10);
 			if (nbColor < nbRect)
 			{
-				m_colorBuffer.assign(nbRect * 4, listColor[0]);
+				m_colorBuffer.assign(nbRect * 8, listColor[0]);
 			}
 			else
 			{
 				for (const auto& color : listColor)
 				{
-					m_colorBuffer.push_back(color);
-					m_colorBuffer.push_back(color);
-					m_colorBuffer.push_back(color);
-					m_colorBuffer.push_back(color);
+					for (int i = 0; i < 10; ++i)
+						m_colorBuffer.push_back(color);
 				}
 			}
 		}
@@ -136,8 +139,6 @@ public:
 			if (!m_VAO)
 				initGL();
 
-			glEnable(GL_LINE_SMOOTH);
-
 			m_verticesVBO.bind();
 			m_verticesVBO.write(m_ptsBuffer);
 
@@ -152,27 +153,10 @@ public:
 			m_shaderProgram.bind();
 			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			if (nbWidth < nbRect)
-			{
-				glLineWidth(boundWidth(listWidth[0]));
-
-				glMultiDrawArrays(GL_LINE_LOOP, m_firstBuffer.data(), m_countBuffer.data(), nbRect);
-			}
-			else
-			{
-				for (int i = 0; i < nbRect; ++i)
-				{
-					glLineWidth(boundWidth(listWidth[i]));
-
-					glDrawArrays(GL_LINE_LOOP, i * 4, 4);
-				}
-			}
+			glMultiDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), nbRect);
 
 			m_shaderProgram.release();
-
 			m_VAO.release();
-
-			glDisable(GL_LINE_SMOOTH);
 		}
 	}
 
@@ -186,8 +170,6 @@ protected:
 	std::vector<types::Color> m_colorBuffer;
 	std::vector<GLint> m_firstBuffer;
 	std::vector<GLsizei> m_countBuffer;
-
-	std::array<GLfloat, 2> m_widthRange;
 
 	graphics::ShaderProgram m_shaderProgram;
 	graphics::VertexArrayObject m_VAO;

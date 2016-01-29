@@ -89,11 +89,7 @@ public:
 			{
 				PReal valRadius = listRadius[i % nbRadius];
 				PReal maxWidth = valRadius - 0.5f;
-				PReal width = listWidth[i % nbWidth];
-				if (width > maxWidth)
-					width = maxWidth;
-				if (width < 1)
-					width = 1;
+				PReal width = helper::bound(1.f, listWidth[i % nbWidth], maxWidth);
 
 				int nbSeg = static_cast<int>(floor((valRadius + width) * PI2));
 				if(nbSeg < 3) continue;
