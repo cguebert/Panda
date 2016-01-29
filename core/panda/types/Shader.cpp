@@ -82,47 +82,43 @@ void Shader::removeSource(ShaderType type)
 
 bool Shader::apply(graphics::ShaderProgram& program) const
 {
-	program.clear();
-
 	// Get shader from the cache (compile them if necessary)
 	helper::ShaderCache* shaderCache = helper::ShaderCache::getInstance();
+	helper::ShaderCache::ShadersList shadersList;
 	for (const auto& source : m_sourcesMap)
 	{
 		auto type = convert(source.second.type);
 		auto id = shaderCache->getShader(type, source.second.sourceCode, source.second.hash);
 		if (!id)
 			return false;
+		shadersList.emplace_back(type, source.second.hash);
+	}
+
+	program = shaderCache->getShaderProgram(shadersList);
 		
-		program.addShader(type, id);
-	}
-
-	program.link();
-
-	if(program.isLinked())
-	{
-		program.bind();
-		for(const auto& value : m_shaderValues)
-			value->apply(program);
-
-		// Register custom textures
-		for(unsigned int i=0, nb=m_customTextures.size(); i<nb; ++i)
-		{
-			GLuint id = m_customTextures[i].second;
-			if(!id)
-				continue;
-
-			int loc = program.uniformLocation(m_customTextures[i].first.c_str());
-			if(loc == -1)
-				continue;
-
-			glActiveTexture(GL_TEXTURE8 + i);
-			glBindTexture(GL_TEXTURE_2D, m_customTextures[i].second);
-			glUniform1i(loc, 8 + i);
-			glActiveTexture(GL_TEXTURE0);
-		}
-	}
-	else
+	if(!program.isLinked())
 		return false;
+
+	program.bind();
+	for(const auto& value : m_shaderValues)
+		value->apply(program);
+
+	// Register custom textures
+	for(unsigned int i=0, nb=m_customTextures.size(); i<nb; ++i)
+	{
+		GLuint id = m_customTextures[i].second;
+		if(!id)
+			continue;
+
+		int loc = program.uniformLocation(m_customTextures[i].first.c_str());
+		if(loc == -1)
+			continue;
+
+		glActiveTexture(GL_TEXTURE8 + i);
+		glBindTexture(GL_TEXTURE_2D, m_customTextures[i].second);
+		glUniform1i(loc, 8 + i);
+		glActiveTexture(GL_TEXTURE0);
+	}
 
 	return true;
 }

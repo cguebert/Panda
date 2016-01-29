@@ -49,6 +49,8 @@ enum class ShaderType : char
 class PANDA_CORE_API ShaderProgram
 {
 public:
+	ShaderProgram(ShaderProgramId::SPtr id = nullptr);
+
 	bool addShaderFromMemory(ShaderType type, const std::string& content);
 	bool addShaderFromFile(ShaderType type, const std::string& path);
 	void addShader(ShaderType type, ShaderId::SPtr id);
@@ -61,6 +63,8 @@ public:
 	void clear(); // Remove shaders
 
 	unsigned int id() const;
+	ShaderProgramId::SPtr getProgramId() const;
+
 	void bind() const;
 	void release() const;
 
@@ -98,6 +102,15 @@ protected:
 	std::vector<ShaderPair> m_shaders;
 	ShaderProgramId::SPtr m_programId;
 };
+
+inline ShaderProgram::ShaderProgram(ShaderProgramId::SPtr id)
+	: m_programId(id) {}
+
+inline ShaderProgramId::SPtr ShaderProgram::getProgramId() const
+{ return m_programId; }
+
+inline bool ShaderProgram::isLinked()
+{ return m_programId != nullptr; }
 
 } // namespace graphics
 

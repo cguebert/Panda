@@ -22,14 +22,19 @@ public:
 	void resetUsedFlag();	// Prepare the flags at the start of a render
 	void clearUnused();		// Remove shaders not used during the last render
 
+	graphics::ShaderId::SPtr getShader(graphics::ShaderType type,std::size_t hash);
 	graphics::ShaderId::SPtr getShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash = 0);
+
+	using ShaderPair = std::pair<graphics::ShaderType, std::size_t>;
+	using ShadersList = std::vector<ShaderPair>;
+	graphics::ShaderProgram getShaderProgram(const ShadersList& shaders);
 
 private:
 	graphics::ShaderId::SPtr addShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash);
 
-	struct CacheItem
+	struct ShaderCacheItem
 	{
-		CacheItem(graphics::ShaderType type, graphics::ShaderId::SPtr id, size_t hash)
+		ShaderCacheItem(graphics::ShaderType type, graphics::ShaderId::SPtr id, size_t hash)
 			: m_type(type), m_shader(id), m_sourceHash(hash), m_used(true) {}
 
 		graphics::ShaderType m_type;
@@ -38,8 +43,21 @@ private:
 		bool m_used;
 	};
 
-	typedef std::unordered_multimap<std::size_t, CacheItem> ShaderTableHash;
-	ShaderTableHash m_cache;
+	using ShadersTableHash = std::unordered_multimap<std::size_t, ShaderCacheItem>;
+	ShadersTableHash m_shadersCache;
+
+	struct ProgramCacheItem
+	{
+		ProgramCacheItem(const ShadersList& shaders, graphics::ShaderProgramId::SPtr program)
+			: m_shaders(shaders), m_program(program) {}
+
+		ShadersList m_shaders;
+		graphics::ShaderProgramId::SPtr m_program;
+		bool m_used;
+	};
+
+	using ProgramsList = std::vector<ProgramCacheItem>;
+	ProgramsList m_programsCache;
 };
 
 } // namespace helper

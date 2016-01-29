@@ -144,9 +144,6 @@ bool ShaderProgram::link()
 	return true;
 }
 
-bool ShaderProgram::isLinked()
-{ return m_programId != nullptr; }
-
 void ShaderProgram::clear()
 {
 	m_shaders.clear();
@@ -231,13 +228,13 @@ void ShaderProgram::disableAttributeArray(const char* name) const
 void ShaderProgram::setAttributeArray(int location, const float* values, int tupleSize, int stride)
 { glVertexAttribPointer(location, tupleSize, GL_FLOAT, GL_FALSE, stride, values); }
 
-void ShaderProgram::setAttributeArray(int location, GLenum type, const void* values, int tupleSize, int stride)
+void ShaderProgram::setAttributeArray(int location, unsigned int type, const void* values, int tupleSize, int stride)
 { glVertexAttribPointer(location, tupleSize, type, GL_FALSE, stride, values); }
 
 void ShaderProgram::setAttributeArray(const char* name, const float* values, int tupleSize, int stride)
 { setAttributeArray(attributeLocation(name), values, tupleSize, stride); }
 
-void ShaderProgram::setAttributeArray(const char* name, GLenum type, const void* values, int tupleSize, int stride)
+void ShaderProgram::setAttributeArray(const char* name, unsigned int type, const void* values, int tupleSize, int stride)
 { setAttributeArray(attributeLocation(name), type, values, tupleSize, stride); }
 
 } // namespace graphics
