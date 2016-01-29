@@ -68,16 +68,20 @@ public:
 
 protected:
 	data_type& m_data;
+	bool m_movedFrom = false;
 
 public:
-	DataAccessor(data_type& data) : Inherit(data.beginEdit()) , m_data(data) {}
-	~DataAccessor() { m_data.endEdit(); }
+	DataAccessor(data_type& data) : Inherit(data.beginEdit()), m_data(data) {}
+	~DataAccessor() { if(!m_movedFrom) m_data.endEdit(); }
 
 	template<class U> void operator=(const U& value) { Inherit::operator=(value); }
 
 	/// DataAccessor is noncopyable
 	DataAccessor(const DataAccessor&) = delete;
 	DataAccessor& operator=(const DataAccessor&) = delete;
+
+	/// But DataAccessor is move contrustible
+	DataAccessor(DataAccessor&& da) : Inherit(da.wref()), m_data(da.m_data) { da.m_movedFrom = true; }
 };
 
 //****************************************************************************//
