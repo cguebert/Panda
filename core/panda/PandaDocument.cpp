@@ -677,7 +677,10 @@ void PandaDocument::onChangedDock(DockableObject* dockable)
 void PandaDocument::update()
 {
 	helper::GradientCache::getInstance()->resetUsedFlag();
-//	helper::ShaderCache::getInstance()->resetUsedFlag();
+	helper::ShaderCache::getInstance()->resetUsedFlag();
+
+	if(!m_renderer->renderingMainView()) // If it not already the case, make the OpenGL context current
+		m_gui.contextMakeCurrent();
 
 	if(m_animMultithread && m_scheduler)
 		m_scheduler->update();
@@ -685,7 +688,11 @@ void PandaDocument::update()
 	m_renderer->renderGL();
 
 	helper::GradientCache::getInstance()->clearUnused();
-//	helper::ShaderCache::getInstance()->clearUnused();
+	helper::ShaderCache::getInstance()->clearUnused();
+
+	if(!m_renderer->renderingMainView()) // Release the context if we made it current ourselves
+		m_gui.contextDoneCurrent();
+
 	cleanDirty();
 }
 
