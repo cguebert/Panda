@@ -8,8 +8,9 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Rect.h>
 #include <panda/types/Shader.h>
-#include <panda/graphics/Model.h>
+#include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
+#include <panda/graphics/VertexArrayObject.h>
 
 namespace panda {
 

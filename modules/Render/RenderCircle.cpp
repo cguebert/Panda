@@ -8,7 +8,9 @@
 #include <panda/types/Color.h>
 #include <panda/types/Point.h>
 #include <panda/types/Shader.h>
+#include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
+#include <panda/graphics/VertexArrayObject.h>
 
 namespace panda {
 
@@ -23,46 +25,58 @@ public:
 
 	RenderCircle(PandaDocument* parent)
 		: Renderer(parent)
-		, center(initData("center", "Center position of the circle"))
-		, radius(initData("radius", "Radius of the circle" ))
-		, lineWidth(initData("lineWidth", "Width of the line"))
-		, color(initData("color", "Color of the circle"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_center(initData("center", "Center position of the circle"))
+		, m_radius(initData("radius", "Radius of the circle" ))
+		, m_lineWidth(initData("lineWidth", "Width of the line"))
+		, m_color(initData("color", "Color of the circle"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(center);
-		addInput(radius);
-		addInput(lineWidth);
-		addInput(color);
-		addInput(shader);
+		addInput(m_center);
+		addInput(m_radius);
+		addInput(m_lineWidth);
+		addInput(m_color);
+		addInput(m_shader);
 
-		center.getAccessor().push_back(Point(100, 100));
-		radius.getAccessor().push_back(5.0);
-		lineWidth.getAccessor().push_back(0.0);
-		color.getAccessor().push_back(Color::black());
+		m_center.getAccessor().push_back(Point(100, 100));
+		m_radius.getAccessor().push_back(5.0);
+		m_lineWidth.getAccessor().push_back(1.0);
+		m_color.getAccessor().push_back(Color::black());
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_VAO.release();
+	}
+
 	void update()
 	{
-		const std::vector<Point>& listCenter = center.getValue();
-		const std::vector<PReal>& listRadius = radius.getValue();
-		const std::vector<PReal>& listWidth = lineWidth.getValue();
-		const std::vector<Color>& listColor = color.getValue();
+		const std::vector<Point>& listCenter = m_center.getValue();
+		const std::vector<PReal>& listRadius = m_radius.getValue();
+		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+		const std::vector<Color>& listColor = m_color.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
 		int nbWidth = listWidth.size();
 		int nbColor = listColor.size();
 
-		vertexBuffer.clear();
-		widthBuffer.clear();
-		colorBuffer.clear();
-		firstBuffer.clear();
-		countBuffer.clear();
+		m_vertexBuffer.clear();
+		m_colorBuffer.clear();
+		m_firstBuffer.clear();
+		m_countBuffer.clear();
 
 		if(nbCenter && nbRadius && nbColor && nbWidth)
 		{
@@ -71,31 +85,40 @@ public:
 			if(nbWidth < nbCenter) nbWidth = 1;
 
 			PReal PI2 = static_cast<PReal>(M_PI) * 2;
-			for(int i=0; i<nbCenter; ++i)
+			for(int i = 0; i < nbCenter; ++i)
 			{
 				PReal valRadius = listRadius[i % nbRadius];
-				int nbSeg = static_cast<int>(floor(valRadius * PI2));
+				PReal maxWidth = valRadius - 0.5f;
+				PReal width = listWidth[i % nbWidth];
+				if (width > maxWidth)
+					width = maxWidth;
+				if (width < 1)
+					width = 1;
+
+				int nbSeg = static_cast<int>(floor((valRadius + width) * PI2));
 				if(nbSeg < 3) continue;
 
-				colorBuffer.push_back(listColor[i % nbColor]);
-				widthBuffer.push_back(listWidth[i % nbWidth]);
+				m_colorBuffer.push_back(listColor[i % nbColor]);
 
-				int nbVertices = vertexBuffer.size();
-				firstBuffer.push_back(nbVertices);
-				countBuffer.push_back(nbSeg);
+				int nbVertices = m_vertexBuffer.size();
+				int count = 2 * (nbSeg + 1);
+				m_firstBuffer.push_back(nbVertices);
+				m_countBuffer.push_back(count);
 
-				vertexBuffer.resize(nbVertices + nbSeg + 1);
+				m_vertexBuffer.resize(nbVertices + count);
 
 				const Point& valCenter = listCenter[i];
 				PReal angle = PI2 / nbSeg;
 				PReal ca = cos(angle), sa = sin(angle);
-				Point dir = Point(valRadius, 0);
+				Point inDir = Point(valRadius + width, 0), outDir = Point(valRadius - width, 0);
 
 				for(int i=0; i<=nbSeg; ++i)
 				{
-					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-					vertexBuffer[nbVertices + i] = valCenter + pt;
-					dir = pt;
+					outDir = Point(outDir.x * ca + outDir.y * sa, outDir.y * ca - outDir.x * sa);
+					m_vertexBuffer[nbVertices + i * 2] = valCenter + outDir;
+
+					inDir = Point(inDir.x * ca + inDir.y * sa, inDir.y * ca - inDir.x * sa);
+					m_vertexBuffer[nbVertices + i * 2 + 1] = valCenter + inDir;
 				}
 			}
 		}
@@ -103,50 +126,51 @@ public:
 
 	void render()
 	{
-
-		if(vertexBuffer.empty())
+		if(m_vertexBuffer.empty())
 			return;
 
-		if(!shader.getValue().apply(shaderProgram))
+		if(!m_shader.getValue().apply(m_shaderProgram))
 			return;
 
-		glEnable(GL_LINE_SMOOTH);
-		shaderProgram.bind();
-		shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+		if (!m_VAO)
+			initGL();
 
-		shaderProgram.enableAttributeArray("position");
-		shaderProgram.setAttributeArray("position", vertexBuffer.front().data(), 2);
+		m_shaderProgram.bind();
+		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-		int colorLocation = shaderProgram.uniformLocation("color");
+		m_verticesVBO.bind();
+		m_verticesVBO.write(m_vertexBuffer);
 
-		int nb = countBuffer.size();
+		m_VAO.bind();
+
+		int colorLocation = m_shaderProgram.uniformLocation("color");
+
+		int nb = m_countBuffer.size();
 		for(int i=0; i<nb; ++i)
 		{
-			glLineWidth(widthBuffer[i]);
+			m_shaderProgram.setUniformValueArray(colorLocation, m_colorBuffer[i].data(), 1, 4);
 
-			shaderProgram.setUniformValueArray(colorLocation, colorBuffer[i].data(), 1, 4);
-
-			glDrawArrays(GL_LINE_LOOP, firstBuffer[i], countBuffer[i]);
+			glDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
 		}
 
-		shaderProgram.disableAttributeArray("position");
-		shaderProgram.release();
-		glDisable(GL_LINE_SMOOTH);
+		m_shaderProgram.release();
+		m_VAO.release();
 	}
 
 protected:
-	Data< std::vector<Point> > center;
-	Data< std::vector<PReal> > radius, lineWidth;
-	Data< std::vector<Color> > color;
-	Data< Shader > shader;
+	Data< std::vector<Point> > m_center;
+	Data< std::vector<PReal> > m_radius, m_lineWidth;
+	Data< std::vector<Color> > m_color;
+	Data< Shader > m_shader;
 
-	std::vector<Point> vertexBuffer;
-	std::vector<PReal> widthBuffer;
-	std::vector<Color> colorBuffer;
-	std::vector<GLint> firstBuffer;
-	std::vector<GLsizei> countBuffer;
+	std::vector<Point> m_vertexBuffer;
+	std::vector<Color> m_colorBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
 
-	graphics::ShaderProgram shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO;
 };
 
 int RenderCircleClass = RegisterObject<RenderCircle>("Render/Line/Circle").setDescription("Draw a circle");
