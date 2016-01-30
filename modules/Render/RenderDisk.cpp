@@ -10,7 +10,9 @@
 #include <panda/types/Gradient.h>
 #include <panda/types/Shader.h>
 #include <panda/helper/GradientCache.h>
+#include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
+#include <panda/graphics/VertexArrayObject.h>
 
 namespace panda {
 
@@ -28,40 +30,53 @@ public:
 
 	RenderDisk(PandaDocument* parent)
 		: Renderer(parent)
-		, center(initData("center", "Center position of the disk"))
-		, radius(initData("radius", "Radius of the disk"))
-		, color(initData("color", "Color of the plain disk"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_center(initData("center", "Center position of the disk"))
+		, m_radius(initData("radius", "Radius of the disk"))
+		, m_color(initData("color", "Color of the plain disk"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(center);
-		addInput(radius);
-		addInput(color);
-		addInput(shader);
+		addInput(m_center);
+		addInput(m_radius);
+		addInput(m_color);
+		addInput(m_shader);
 
-		center.getAccessor().push_back(Point(100, 100));
-		radius.getAccessor().push_back(5.0);
-		color.getAccessor().push_back(Color::black());
+		m_center.getAccessor().push_back(Point(100, 100));
+		m_radius.getAccessor().push_back(5.0);
+		m_color.getAccessor().push_back(Color::black());
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_VAO.release();
+	}
+
 	void update()
 	{
-		const std::vector<Point>& listCenter = center.getValue();
-		const std::vector<PReal>& listRadius = radius.getValue();
-		const std::vector<Color>& listColor = color.getValue();
+		const std::vector<Point>& listCenter = m_center.getValue();
+		const std::vector<PReal>& listRadius = m_radius.getValue();
+		const std::vector<Color>& listColor = m_color.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
 		int nbColor = listColor.size();
 
-		vertexBuffer.clear();
-		firstBuffer.clear();
-		countBuffer.clear();
-		colorBuffer.clear();
+		m_vertexBuffer.clear();
+		m_firstBuffer.clear();
+		m_countBuffer.clear();
+		m_colorBuffer.clear();
 
 		if(nbCenter && nbRadius && nbColor)
 		{
@@ -75,16 +90,16 @@ public:
 				int nbSeg = static_cast<int>(floor(valRadius * PI2));
 				if(nbSeg < 3) continue;
 
-				colorBuffer.push_back(listColor[i % nbColor]);
+				m_colorBuffer.push_back(listColor[i % nbColor]);
 
-				int nbVertices = vertexBuffer.size();
-				firstBuffer.push_back(nbVertices);
-				countBuffer.push_back(nbSeg + 2);
+				int nbVertices = m_vertexBuffer.size();
+				m_firstBuffer.push_back(nbVertices);
+				m_countBuffer.push_back(nbSeg + 2);
 
-				vertexBuffer.resize(nbVertices + nbSeg + 2);
+				m_vertexBuffer.resize(nbVertices + nbSeg + 2);
 
 				const Point& valCenter = listCenter[i];
-				vertexBuffer[nbVertices] = valCenter;
+				m_vertexBuffer[nbVertices] = valCenter;
 
 				PReal angle = PI2 / nbSeg;
 				PReal ca = cos(angle), sa = sin(angle);
@@ -93,7 +108,7 @@ public:
 				for(int i=0; i<=nbSeg; ++i)
 				{
 					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-					vertexBuffer[nbVertices + 1 + i] = valCenter + pt;
+					m_vertexBuffer[nbVertices + 1 + i] = valCenter + pt;
 					dir = pt;
 				}
 			}
@@ -104,44 +119,51 @@ public:
 
 	void render()
 	{
-		if(vertexBuffer.empty())
+		if(m_vertexBuffer.empty())
 			return;
 
-		if(!shader.getValue().apply(shaderProgram))
+		if(!m_shader.getValue().apply(m_shaderProgram))
 			return;
 
-		shaderProgram.bind();
-		shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+		if (!m_VAO)
+			initGL();
 
-		shaderProgram.enableAttributeArray("position");
-		shaderProgram.setAttributeArray("position", vertexBuffer.front().data(), 2);
+		m_verticesVBO.bind();
+		m_verticesVBO.write(m_vertexBuffer);
 
-		int colorLocation = shaderProgram.uniformLocation("color");
+		m_VAO.bind();
 
-		int nb = countBuffer.size();
+		m_shaderProgram.bind();
+		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+
+		int colorLocation = m_shaderProgram.uniformLocation("color");
+
+		int nb = m_countBuffer.size();
 		for(int i=0; i<nb; ++i)
 		{
-			shaderProgram.setUniformValueArray(colorLocation, colorBuffer[i].data(), 1, 4);
+			m_shaderProgram.setUniformValueArray(colorLocation, m_colorBuffer[i].data(), 1, 4);
 
-			glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
+			glDrawArrays(GL_TRIANGLE_FAN, m_firstBuffer[i], m_countBuffer[i]);
 		}
 
-		shaderProgram.disableAttributeArray("position");
-		shaderProgram.release();
+		m_shaderProgram.release();
+		m_VAO.release();
 	}
 
 protected:
-	Data< std::vector<Point> > center;
-	Data< std::vector<PReal> > radius;
-	Data< std::vector<Color> > color;
-	Data< Shader > shader;
+	Data< std::vector<Point> > m_center;
+	Data< std::vector<PReal> > m_radius;
+	Data< std::vector<Color> > m_color;
+	Data< Shader > m_shader;
 
-	std::vector<Point> vertexBuffer;
-	std::vector<GLint> firstBuffer;
-	std::vector<GLsizei> countBuffer;
-	std::vector<Color> colorBuffer;
+	std::vector<Point> m_vertexBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
+	std::vector<Color> m_colorBuffer;
 
-	graphics::ShaderProgram shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO;
 };
 
 int RenderDiskClass = RegisterObject<RenderDisk>("Render/Filled/Disk").setDescription("Draw a plain disk");
@@ -155,38 +177,56 @@ public:
 
 	RenderDisk_Gradient(PandaDocument* parent)
 		: Renderer(parent)
-		, center(initData("center", "Center position of the disk"))
-		, radius(initData("radius", "Radius of the disk"))
-		, gradient(initData("gradient", "Gradient used to fill the disk"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_center(initData("center", "Center position of the disk"))
+		, m_radius(initData("radius", "Radius of the disk"))
+		, m_gradient(initData("gradient", "Gradient used to fill the disk"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(center);
-		addInput(radius);
-		addInput(gradient);
-		addInput(shader);
+		addInput(m_center);
+		addInput(m_radius);
+		addInput(m_gradient);
+		addInput(m_shader);
 
-		center.getAccessor().push_back(Point(100, 100));
-		radius.getAccessor().push_back(5.0);
-		gradient.getAccessor().push_back(Gradient::defaultGradient());
+		m_center.getAccessor().push_back(Point(100, 100));
+		m_radius.getAccessor().push_back(5.0);
+		m_gradient.getAccessor().push_back(Gradient::defaultGradient());
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 	}
 
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
 	void update()
 	{
-		const std::vector<Point>& listCenter = center.getValue();
-		const std::vector<PReal>& listRadius = radius.getValue();
+		const std::vector<Point>& listCenter = m_center.getValue();
+		const std::vector<PReal>& listRadius = m_radius.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
 
-		vertexBuffer.clear();
-		texCoordsBuffer.clear();
-		firstBuffer.clear();
-		countBuffer.clear();
+		m_vertexBuffer.clear();
+		m_texCoordsBuffer.clear();
+		m_firstBuffer.clear();
+		m_countBuffer.clear();
 
 		if(nbCenter && nbRadius)
 		{
@@ -199,21 +239,21 @@ public:
 				int nbSeg = static_cast<int>(floor(valRadius * PI2));
 				if(nbSeg < 3)
 				{
-					firstBuffer.push_back(0);
-					countBuffer.push_back(0);
+					m_firstBuffer.push_back(0);
+					m_countBuffer.push_back(0);
 					continue;
 				}
 
-				int nbVertices = vertexBuffer.size();
-				firstBuffer.push_back(nbVertices);
-				countBuffer.push_back(nbSeg + 2);
+				int nbVertices = m_vertexBuffer.size();
+				m_firstBuffer.push_back(nbVertices);
+				m_countBuffer.push_back(nbSeg + 2);
 
-				vertexBuffer.resize(nbVertices + nbSeg + 2);
-				texCoordsBuffer.resize(nbVertices + nbSeg + 2);
+				m_vertexBuffer.resize(nbVertices + nbSeg + 2);
+				m_texCoordsBuffer.resize(nbVertices + nbSeg + 2);
 
 				const Point& valCenter = listCenter[i];
-				vertexBuffer[nbVertices] = valCenter;
-				texCoordsBuffer[nbVertices] = Point(0, 0);
+				m_vertexBuffer[nbVertices] = valCenter;
+				m_texCoordsBuffer[nbVertices] = Point(0, 0);
 
 				PReal angle = PI2 / nbSeg;
 				PReal ca = cos(angle), sa = sin(angle);
@@ -224,8 +264,8 @@ public:
 				for(int i=0; i<=nbSeg; ++i)
 				{
 					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-					vertexBuffer[nbVertices + 1 + i] = valCenter + pt;
-					texCoordsBuffer[nbVertices + 1 + i] = Point(1, texY);
+					m_vertexBuffer[nbVertices + 1 + i] = valCenter + pt;
+					m_texCoordsBuffer[nbVertices + 1 + i] = Point(1, texY);
 					dir = pt;
 					texY += step;
 				}
@@ -237,31 +277,36 @@ public:
 
 	void render()
 	{
-		const std::vector<PReal>& listRadius = radius.getValue();
-		const std::vector<Gradient>& listGradient = gradient.getValue();
+		const std::vector<PReal>& listRadius = m_radius.getValue();
+		const std::vector<Gradient>& listGradient = m_gradient.getValue();
 
 		int nbRadius = listRadius.size();
 		int nbGradient = listGradient.size();
-		int nbDisks = countBuffer.size();
+		int nbDisks = m_countBuffer.size();
 
 		if(nbDisks && nbGradient)
 		{
 			if(nbRadius < nbDisks) nbRadius = 1;
 			if(nbGradient < nbDisks) nbGradient = 1;
 
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
-			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+			if (!m_VAO)
+				initGL();
 
-			shaderProgram.enableAttributeArray("position");
-			shaderProgram.setAttributeArray("position", vertexBuffer.front().data(), 2);
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_vertexBuffer);
 
-			shaderProgram.enableAttributeArray("texCoord");
-			shaderProgram.setAttributeArray("texCoord", texCoordsBuffer.front().data(), 2);
+			m_texCoordsVBO.bind();
+			m_texCoordsVBO.write(m_texCoordsBuffer);
 
-			shaderProgram.setUniformValue("tex0", 0);
+			m_VAO.bind();
+
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+
+			m_shaderProgram.setUniformValue("tex0", 0);
 
 			// Optimization when we use only one gradient
 			if(nbGradient == 1)
@@ -276,7 +321,7 @@ public:
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 				for(int i=0; i<nbDisks; ++i)
-					glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
+					glDrawArrays(GL_TRIANGLE_FAN, m_firstBuffer[i], m_countBuffer[i]);
 			}
 			else
 			{
@@ -292,27 +337,28 @@ public:
 					glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-					glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
-			}
+					glDrawArrays(GL_TRIANGLE_FAN, m_firstBuffer[i], m_countBuffer[i]);
+				}
 			}
 
-			shaderProgram.disableAttributeArray("position");
-			shaderProgram.disableAttributeArray("texCoord");
-			shaderProgram.release();
+			m_shaderProgram.release();
+			m_VAO.release();
 		}
 	}
 
 protected:
-	Data< std::vector<Point> > center;
-	Data< std::vector<PReal> > radius;
-	Data< std::vector<Gradient> > gradient;
-	Data< Shader > shader;
+	Data< std::vector<Point> > m_center;
+	Data< std::vector<PReal> > m_radius;
+	Data< std::vector<Gradient> > m_gradient;
+	Data< Shader > m_shader;
 
-	std::vector<Point> vertexBuffer, texCoordsBuffer;
-	std::vector<GLint> firstBuffer;
-	std::vector<GLsizei> countBuffer;
+	std::vector<Point> m_vertexBuffer, m_texCoordsBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
 
-	graphics::ShaderProgram shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
 int RenderDisk_GradientClass = RegisterObject<RenderDisk_Gradient>("Render/Gradient/Disk")
@@ -327,37 +373,55 @@ public:
 
 	RenderDisk_Textured(PandaDocument* parent)
 		: Renderer(parent)
-		, center(initData("center", "Center position of the disk"))
-		, radius(initData("radius", "Radius of the disk"))
-		, texture(initData("texture", "Texture applied to the disk"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_center(initData("center", "Center position of the disk"))
+		, m_radius(initData("radius", "Radius of the disk"))
+		, m_texture(initData("texture", "Texture applied to the disk"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(center);
-		addInput(radius);
-		addInput(texture);
-		addInput(shader);
+		addInput(m_center);
+		addInput(m_radius);
+		addInput(m_texture);
+		addInput(m_shader);
 
-		center.getAccessor().push_back(Point(100, 100));
-		radius.getAccessor().push_back(5.0);
+		m_center.getAccessor().push_back(Point(100, 100));
+		m_radius.getAccessor().push_back(5.0);
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 	}
 
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
 	void update()
 	{
-		const std::vector<Point>& listCenter = center.getValue();
-		const std::vector<PReal>& listRadius = radius.getValue();
+		const std::vector<Point>& listCenter = m_center.getValue();
+		const std::vector<PReal>& listRadius = m_radius.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
 
-		vertexBuffer.clear();
-		texCoordsBuffer.clear();
-		firstBuffer.clear();
-		countBuffer.clear();
+		m_vertexBuffer.clear();
+		m_texCoordsBuffer.clear();
+		m_firstBuffer.clear();
+		m_countBuffer.clear();
 
 		if(nbCenter && nbRadius)
 		{
@@ -370,21 +434,21 @@ public:
 				int nbSeg = static_cast<int>(floor(valRadius * PI2));
 				if(nbSeg < 3)
 				{
-					firstBuffer.push_back(0);
-					countBuffer.push_back(0);
+					m_firstBuffer.push_back(0);
+					m_countBuffer.push_back(0);
 					continue;
 				}
 
-				int nbVertices = vertexBuffer.size();
-				firstBuffer.push_back(nbVertices);
-				countBuffer.push_back(nbSeg + 2);
+				int nbVertices = m_vertexBuffer.size();
+				m_firstBuffer.push_back(nbVertices);
+				m_countBuffer.push_back(nbSeg + 2);
 
-				vertexBuffer.resize(nbVertices + nbSeg + 2);
-				texCoordsBuffer.resize(nbVertices + nbSeg + 2);
+				m_vertexBuffer.resize(nbVertices + nbSeg + 2);
+				m_texCoordsBuffer.resize(nbVertices + nbSeg + 2);
 
 				const Point& valCenter = listCenter[i];
-				vertexBuffer[nbVertices] = valCenter;
-				texCoordsBuffer[nbVertices] = Point(0.5, 0.5);
+				m_vertexBuffer[nbVertices] = valCenter;
+				m_texCoordsBuffer[nbVertices] = Point(0.5, 0.5);
 
 				PReal angle = PI2 / nbSeg;
 				PReal ca = cos(angle), sa = sin(angle);
@@ -395,8 +459,8 @@ public:
 				for(int i=0; i<=nbSeg; ++i)
 				{
 					Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-					vertexBuffer[nbVertices + 1 + i] = valCenter + pt * valRadius;
-					texCoordsBuffer[nbVertices + 1 + i] = texCenter + pt.linearProduct(texScale);
+					m_vertexBuffer[nbVertices + 1 + i] = valCenter + pt * valRadius;
+					m_texCoordsBuffer[nbVertices + 1 + i] = texCenter + pt.linearProduct(texScale);
 					dir = pt;
 				}
 			}
@@ -407,55 +471,60 @@ public:
 
 	void render()
 	{
-		const std::vector<PReal>& listRadius = radius.getValue();
-		const int texId = texture.getValue().getTextureId();
+		const std::vector<PReal>& listRadius = m_radius.getValue();
+		const int texId = m_texture.getValue().getTextureId();
 
 		int nbRadius = listRadius.size();
-		int nbDisks = countBuffer.size();
+		int nbDisks = m_countBuffer.size();
 
 		if(nbDisks && texId)
 		{
 			if(nbRadius < nbDisks) nbRadius = 1;
 
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
-			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+			if (!m_VAO)
+				initGL();
 
-			shaderProgram.enableAttributeArray("position");
-			shaderProgram.setAttributeArray("position", vertexBuffer.front().data(), 2);
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_vertexBuffer);
 
-			shaderProgram.enableAttributeArray("texCoord");
-			shaderProgram.setAttributeArray("texCoord", texCoordsBuffer.front().data(), 2);
+			m_texCoordsVBO.bind();
+			m_texCoordsVBO.write(m_texCoordsBuffer);
+
+			m_VAO.bind();
+
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			glBindTexture(GL_TEXTURE_2D, texId);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			shaderProgram.setUniformValue("tex0", 0);
+			m_shaderProgram.setUniformValue("tex0", 0);
 
-			for(int i=0; i<nbDisks; ++i)
-				glDrawArrays(GL_TRIANGLE_FAN, firstBuffer[i], countBuffer[i]);
+			glMultiDrawArrays(GL_TRIANGLE_FAN, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
 
-			shaderProgram.disableAttributeArray("position");
-			shaderProgram.disableAttributeArray("texCoord");
-			shaderProgram.release();
+			m_shaderProgram.release();
+			m_VAO.release();
 		}
 	}
 
 protected:
-	Data< std::vector<Point> > center;
-	Data< std::vector<PReal> > radius;
-	Data< ImageWrapper > texture;
-	Data< Shader > shader;
+	Data< std::vector<Point> > m_center;
+	Data< std::vector<PReal> > m_radius;
+	Data< ImageWrapper > m_texture;
+	Data< Shader > m_shader;
 
-	std::vector<Point> vertexBuffer, texCoordsBuffer;
-	std::vector<GLint> firstBuffer;
-	std::vector<GLsizei> countBuffer;
+	std::vector<Point> m_vertexBuffer, m_texCoordsBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
 
-	graphics::ShaderProgram shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
 int RenderDisk_TexturedClass = RegisterObject<RenderDisk_Textured>("Render/Textured/Disk")
