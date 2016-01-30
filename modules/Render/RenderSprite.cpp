@@ -1,5 +1,4 @@
 #include <GL/glew.h>
-#include <panda/helper/gl.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
@@ -8,10 +7,9 @@
 #include <panda/types/Color.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Shader.h>
+#include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
-
-#include <QOpenGLBuffer>
-#include <QOpenGLFunctions>
+#include <panda/graphics/VertexArrayObject.h>
 
 #include <array>
 #include <cmath>
@@ -30,45 +28,57 @@ public:
 
 	RenderSprite(PandaDocument* parent)
 		: Renderer(parent)
-		, position(initData("position", "Position of the sprite"))
-		, size(initData("size", "Size of the sprite" ))
-		, color(initData("color", "Color of the sprite"))
-		, texture(initData("texture", "Texture of the sprite"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_position(initData("position", "Position of the sprite"))
+		, m_size(initData("size", "Size of the sprite" ))
+		, m_color(initData("color", "Color of the sprite"))
+		, m_texture(initData("texture", "Texture of the sprite"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(position);
-		addInput(size);
-		addInput(color);
-		addInput(texture);
-		addInput(shader);
+		addInput(m_position);
+		addInput(m_size);
+		addInput(m_color);
+		addInput(m_texture);
+		addInput(m_shader);
 
-		position.getAccessor().push_back(Point(100, 100));
-		size.getAccessor().push_back(5.0);
-		color.getAccessor().push_back(Color::white());
+		m_position.getAccessor().push_back(Point(100, 100));
+		m_size.getAccessor().push_back(5.0);
+		m_color.getAccessor().push_back(Color::white());
 
-		posBuffer.setUsagePattern(QOpenGLBuffer::DynamicDraw);
-		posBuffer.create();
-
-		sizeBuffer.setUsagePattern(QOpenGLBuffer::DynamicDraw);
-		sizeBuffer.create();
-
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/sprite.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/sprite.f.glsl");
 	}
 
-	inline std::array<float, 4> colorToVector4(const Color& c)
+	void initGL()
 	{
-		return std::array<float, 4>{c.r, c.g, c.b, c.a};
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_colorsVBO.create();
+		m_colorsVBO.bind();
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_sizeVBO.create();
+		m_sizeVBO.bind();
+		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(2);
+
+		m_VAO.release();
 	}
 
 	void render()
 	{
-		const std::vector<Point>& listPosition = position.getValue();
-		std::vector<PReal> listSize = size.getValue();
-		const std::vector<Color>& listColor = color.getValue();
-		GLuint texId = texture.getValue().getTextureId();
+		const std::vector<Point>& listPosition = m_position.getValue();
+		const std::vector<PReal>& listSize = m_size.getValue();
+		const std::vector<Color>& listColor = m_color.getValue();
+		GLuint texId = m_texture.getValue().getTextureId();
 
 		int nbPosition = listPosition.size();
 		int nbSize = listSize.size();
@@ -76,78 +86,52 @@ public:
 
 		if(nbPosition && nbSize && nbColor && texId)
 		{
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
-			attribute_pos = shaderProgram.attributeLocation("position");
-			attribute_size = shaderProgram.attributeLocation("size");
-			attribute_color = shaderProgram.attributeLocation("color");
-			uniform_texture = shaderProgram.uniformLocation("tex0");
-			uniform_MVP = shaderProgram.uniformLocation("MVP");
+			if (!m_VAO)
+				initGL();
 
-			if(nbSize < nbPosition)
-				listSize.resize(nbPosition, listSize[0]);
+			m_verticesVBO.bind();
+			m_verticesVBO.write(listPosition);
 
-			std::vector<std::array<float, 4>> tmpColors(nbPosition);
-			if(nbColor < nbPosition)
-				tmpColors.resize(nbPosition, colorToVector4(listColor[0]));
-			else
+			m_sizeVBO.bind();
+			if (nbSize < nbPosition)
 			{
-				for(int i = 0; i < nbPosition; ++i)
-					tmpColors[i] = colorToVector4(listColor[i]);
-			}
-
-			int posBytes = nbPosition * sizeof(PReal) * 2;
-			int sizeBytes = nbPosition * sizeof(PReal);
-			if(posBuffer.size() < posBytes)
-			{
-				posBuffer.bind();
-				posBuffer.allocate(listPosition.data(), posBytes);
-				sizeBuffer.bind();
-				sizeBuffer.allocate(listSize.data(), sizeBytes);
+				 std::vector<PReal> tmpSize(nbPosition, listSize[0]);
+				 m_sizeVBO.write(tmpSize);
 			}
 			else
+				m_sizeVBO.write(listSize);
+
+			m_colorsVBO.bind();
+			if (nbColor < nbPosition)
 			{
-				posBuffer.bind();
-				posBuffer.write(0, listPosition.data(), posBytes);
-				sizeBuffer.bind();
-				sizeBuffer.write(0, listSize.data(), sizeBytes);
+				std::vector<types::Color> tmpColors(nbPosition, listColor[0]);
+				m_colorsVBO.write(tmpColors);
 			}
-			QOpenGLBuffer::release(QOpenGLBuffer::VertexBuffer);
+			else
+				m_colorsVBO.write(listColor);
+
+			m_VAO.bind();
 
 			glEnable(GL_POINT_SPRITE);
 			glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			glBindTexture(GL_TEXTURE_2D, texId);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			shaderProgram.bind();
-
-			posBuffer.bind();
-			shaderProgram.enableAttributeArray(attribute_pos);
-			shaderProgram.setAttributeArray(attribute_pos, GL_PREAL, nullptr, 2);
-			posBuffer.release();
-
-			sizeBuffer.bind();
-			shaderProgram.enableAttributeArray(attribute_size);
-			shaderProgram.setAttributeArray(attribute_size, GL_PREAL, nullptr, 1);
-			sizeBuffer.release();
-
-			shaderProgram.setUniformValue(uniform_texture, 0);
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
-
-			shaderProgram.enableAttributeArray(attribute_color);
-			shaderProgram.setAttributeArray(attribute_color, GL_FLOAT, tmpColors.data(), 4);
-
+			m_shaderProgram.setUniformValue("tex0", 0);
+			
 			glDrawArrays(GL_POINTS, 0, nbPosition);
 
-			shaderProgram.disableAttributeArray(attribute_pos);
-			shaderProgram.disableAttributeArray(attribute_size);
-			shaderProgram.disableAttributeArray(attribute_color);
-			shaderProgram.release();
+			m_shaderProgram.release();
+			m_VAO.release();
 
 			glDisable(GL_POINT_SPRITE);
 			glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
@@ -155,16 +139,15 @@ public:
 	}
 
 protected:
-	Data< std::vector<Point> > position;
-	Data< std::vector<PReal> > size;
-	Data< std::vector<Color> > color;
-	Data< ImageWrapper > texture;
-	Data< Shader > shader;
+	Data< std::vector<Point> > m_position;
+	Data< std::vector<PReal> > m_size;
+	Data< std::vector<Color> > m_color;
+	Data< ImageWrapper > m_texture;
+	Data< Shader > m_shader;
 
-	QOpenGLBuffer posBuffer, sizeBuffer;
-	graphics::ShaderProgram shaderProgram;
-	int attribute_pos, attribute_color, attribute_size;
-	int uniform_texture, uniform_MVP;
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_colorsVBO, m_sizeVBO;
 };
 
 int RenderSpriteClass = RegisterObject<RenderSprite>("Render/Textured/Sprite").setDescription("Draw a sprite");
