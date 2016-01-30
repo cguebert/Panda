@@ -41,7 +41,6 @@ set(HEADER_FILES
 	panda/graphics/VertexArrayObject.h
 	panda/helper/algorithm.h
 	panda/helper/EasingFunctions.h
-	panda/helper/gl.h
 	panda/helper/GradientCache.h
 	panda/helper/Perlin.h
 	panda/helper/PointsGrid.h

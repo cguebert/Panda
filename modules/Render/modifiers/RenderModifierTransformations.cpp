@@ -4,7 +4,6 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
-#include <panda/helper/gl.h>
 
 #include <cmath>
 
@@ -26,10 +25,8 @@ public:
 
 	void render()
 	{
-		const Point tr = translation.getValue();
-		glTranslateReal(tr.x, tr.y, 0);
-
 		auto& mvpMatrix = getMVPMatrix();
+		const Point tr = translation.getValue();
 		mvpMatrix.translate(tr.x, tr.y, 0);
 	}
 
@@ -55,8 +52,6 @@ public:
 
 	void render()
 	{
-		glRotateReal(rotation.getValue(), 0, 0, -1);
-
 		auto& mvpMatrix = getMVPMatrix();
 		mvpMatrix.rotate(rotation.getValue(), 0, 0, -1);
 	}
@@ -83,10 +78,8 @@ public:
 
 	void render()
 	{
-		const Point& sc = scale.getValue();
-		glScaleReal(sc.x, sc.y, 1);
-
 		auto& mvpMatrix = getMVPMatrix();
+		const Point& sc = scale.getValue();
 		mvpMatrix.scale(sc.x, sc.y, 1);
 	}
 
