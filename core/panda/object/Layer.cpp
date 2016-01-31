@@ -19,7 +19,7 @@ namespace panda
 
 void BaseLayer::updateLayer(PandaDocument* doc)
 {
-	// Bugfix : we update the input Datas of the renderers before setting the opengl context
+	// Bugfix : we update the input Datas of the renderers before setting the viewport
 	//  as getting the image from an ImageWrapper can screw it up
 	for(const auto& renderer : getRenderers())
 	{
