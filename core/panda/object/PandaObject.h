@@ -23,7 +23,7 @@ public:
 	const std::string& getName() const;
 	uint32_t getIndex() const;
 
-	void addData(BaseData* data);
+	void addData(BaseData* data, int index = -1); // Insert a new Data at the specified index. If index < 0, add at the end
 	void removeData(BaseData* data);
 
 	void addOutput(BaseData& data);

@@ -12,18 +12,19 @@
 
 namespace panda {
 
-void PandaObject::addData(BaseData* data)
+void PandaObject::addData(BaseData* data, int index)
 {
-	if(getData(data->getName()))
-	{
-		std::cerr << "Fatal error : another data already have the name " << data->getName() << std::endl;
-		return;
-	}
-	if(!helper::contains(m_datas, data))
-	{
+	helper::removeAll(m_datas, data);
+	
+	if(index < 0)
 		m_datas.push_back(data);
-		emitModified();
+	else
+	{
+		index = std::min<int>(index, m_datas.size());
+		auto it = m_datas.begin() + index;
+		m_datas.insert(it, data);
 	}
+	emitModified();
 }
 
 void PandaObject::removeData(BaseData* data)
