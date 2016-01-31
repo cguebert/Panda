@@ -147,13 +147,10 @@ public:
 			
 			m_VAO.bind();
 
-			int nbRect = m_countBuffer.size();
-			if(nbWidth < nbRect) nbWidth = 1;
-
 			m_shaderProgram.bind();
 			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			glMultiDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), nbRect);
+			glMultiDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
 
 			m_shaderProgram.release();
 			m_VAO.release();

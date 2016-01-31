@@ -7,7 +7,9 @@
 #include <panda/types/Mesh.h>
 #include <panda/types/Shader.h>
 #include <panda/object/Renderer.h>
+#include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
+#include <panda/graphics/VertexArrayObject.h>
 
 namespace panda {
 
@@ -23,63 +25,119 @@ public:
 
 	RenderTriangle(PandaDocument* parent)
 		: Renderer(parent)
-		, mesh(initData("mesh", "Triangle to render"))
-		, color(initData("color", "Color of the triangle"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_mesh(initData("mesh", "Triangle to render"))
+		, m_color(initData("color", "Color of the triangle"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(mesh);
-		addInput(color);
-		addInput(shader);
+		addInput(m_mesh);
+		addInput(m_color);
+		addInput(m_shader);
 
-		color.getAccessor().push_back(Color::black());
+		m_color.getAccessor().push_back(Color::black());
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
-		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
-		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_attColor_noTex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_attColor_noTex.f.glsl");
+	}
+
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_colorsVBO.create();
+		m_colorsVBO.bind();
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
+	void update()
+	{
+		const Mesh& inMesh = m_mesh.getValue();
+		const std::vector<Color>& listColor = m_color.getValue();
+
+		m_verticesBuffer.clear();
+		m_colorBuffer.clear();
+
+		if (inMesh.hasTriangles() && inMesh.hasPoints() && !listColor.empty())
+		{
+			int nbTri = inMesh.nbTriangles();
+			int nbColor = listColor.size();
+
+			const auto& points = inMesh.getPoints();
+			const auto& triangles = inMesh.getTriangles();
+
+			m_verticesBuffer.reserve(nbTri * 3);
+			for (auto tri : triangles)
+			{
+				m_verticesBuffer.push_back(points[tri[0]]);
+				m_verticesBuffer.push_back(points[tri[1]]);
+				m_verticesBuffer.push_back(points[tri[2]]);
+			}
+
+			m_colorBuffer.reserve(nbTri * 3);
+			if (nbColor < nbTri)
+			{
+				m_colorBuffer.assign(nbTri * 3, listColor[0]);
+			}
+			else
+			{
+				for (const auto& color : listColor)
+				{
+					for (int i = 0; i < 3; ++i)
+						m_colorBuffer.push_back(color);
+				}
+			}
+		}
 	}
 
 	void render()
 	{
-		const Mesh& inMesh = mesh.getValue();
-		std::vector<Color> listColor = color.getValue();
-
-		int nbTri = inMesh.nbTriangles();
-		int nbColor = listColor.size();
-
-		if(nbTri && nbColor)
+		if(!m_verticesBuffer.empty() && !m_colorBuffer.empty())
 		{
-			if(nbColor < nbTri) nbColor = 1;
-
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+			if (!m_VAO)
+				initGL();
 
-			shaderProgram.enableAttributeArray("position");
-			shaderProgram.setAttributeArray("position", inMesh.getPoints().front().data(), 2);
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_verticesBuffer);
 
-			int colorLocation = shaderProgram.uniformLocation("color");
+			m_colorsVBO.bind();
+			m_colorsVBO.write(m_colorBuffer);
 
-			const auto& triangles = inMesh.getTriangles();
+			m_VAO.bind();
 
-			for(int i=0; i<nbTri; ++i)
-			{
-				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, triangles[i].data());
-			}
+			glDrawArrays(GL_TRIANGLES, 0, m_verticesBuffer.size());
 
-			shaderProgram.disableAttributeArray("position");
+			m_shaderProgram.release();
+			m_VAO.release();
 		}
 	}
 
 protected:
-	Data< Mesh > mesh;
-	Data< std::vector<Color> > color;
-	Data< Shader > shader;
+	Data< Mesh > m_mesh;
+	Data< std::vector<Color> > m_color;
+	Data< Shader > m_shader;
 
-	graphics::ShaderProgram shaderProgram;
+	std::vector<types::Point> m_verticesBuffer;
+	std::vector<types::Color> m_colorBuffer;
+
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_colorsVBO;
 };
 
 int RenderTriangleClass = RegisterObject<RenderTriangle>("Render/Filled/Triangle").setDescription("Draw a triangle");
