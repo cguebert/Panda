@@ -7,7 +7,9 @@
 #include <panda/types/Rect.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Shader.h>
+#include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
+#include <panda/graphics/VertexArrayObject.h>
 
 namespace panda {
 
@@ -23,67 +25,154 @@ public:
 
 	RenderImage(PandaDocument* parent)
 		: Renderer(parent)
-		, image(initData("image", "Image to render on screen" ))
-		, position(initData("position", "Position of the image"))
-		, rotation(initData("rotation", "Rotation of the image"))
-		, drawCentered(initData(0, "drawCentered", "If non zero use the center of the image, else use the top-left corner"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_image(initData("image", "Image to render on screen" ))
+		, m_position(initData("position", "Position of the image"))
+		, m_rotation(initData("rotation", "Rotation of the image"))
+		, m_drawCentered(initData(0, "drawCentered", "If non zero use the center of the image, else use the top-left corner"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(image);
-		addInput(position);
-		addInput(rotation);
-		addInput(drawCentered);
-		addInput(shader);
+		addInput(m_image);
+		addInput(m_position);
+		addInput(m_rotation);
+		addInput(m_drawCentered);
+		addInput(m_shader);
 
-		drawCentered.setWidget("checkbox");
+		m_drawCentered.setWidget("checkbox");
 
-		position.getAccessor().push_back(Point(0, 0));
+		m_position.getAccessor().push_back(Point(0, 0));
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 
-		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
-		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
-		m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
-		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
+		m_updateOnMainThread = true; // Because we manipulate images that may have to be converted to textures
+	}
+
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
+	void createVertices(Point pos, graphics::Size size, bool centered)
+	{
+		PReal w = static_cast<PReal>(size.width()), h = static_cast<PReal>(size.height());
+		PReal l, r, t, b;
+		if (centered)
+		{
+			l = pos.x - w / 2.f;
+			r = pos.x + w / 2.f;
+			t = pos.y - h / 2.f;
+			b = pos.y + h / 2.f;
+		}
+		else
+		{
+			l = pos.x;
+			r = pos.x + w;
+			t = pos.y;
+			b = pos.y + h;
+		}
+
+		m_verticesBuffer.emplace_back(r, t);
+		m_verticesBuffer.emplace_back(l, t);
+		m_verticesBuffer.emplace_back(r, b);
+		m_verticesBuffer.emplace_back(l, b);
+	}
+
+	inline Point rotated(Point pt, Point center, PReal ca, PReal sa)
+	{
+		Point trPt = pt - center;
+		return center + Point(trPt.x * ca - trPt.y * sa, trPt.x * sa + trPt.y * ca);
+	}
+
+	void createVertices(Point pos, graphics::Size size, PReal angle, bool centered)
+	{
+		PReal w = static_cast<PReal>(size.width()), h = static_cast<PReal>(size.height());
+		Rect rect;
+		if (centered)
+			rect = Rect(pos.x - w / 2.f, pos.y - h / 2.f, pos.x + w / 2.f, pos.y + h / 2.f);
+		else
+			rect = Rect(pos, w, h);
+
+		PReal a = angle * static_cast<PReal>(0.01745329251994329576923690768489);
+		PReal ca = cos(a), sa = sin(a);
+
+		m_verticesBuffer.emplace_back(rotated(rect.topRight(),    pos, ca, sa));
+		m_verticesBuffer.emplace_back(rotated(rect.topLeft(),	  pos, ca, sa));
+		m_verticesBuffer.emplace_back(rotated(rect.bottomRight(), pos, ca, sa));
+		m_verticesBuffer.emplace_back(rotated(rect.bottomLeft(),  pos, ca, sa));
 	}
 
 	void update()
 	{
-		// Make sure we compute each image before the rendering
-		const std::vector<ImageWrapper>& listImage = image.getValue();
-		for(const ImageWrapper& image : listImage)
-			image.getTextureId();
-	}
+		const std::vector<ImageWrapper>& listImage = m_image.getValue();
+		const std::vector<Point>& listPosition = m_position.getValue();
+		const std::vector<PReal>& listRotation = m_rotation.getValue();
 
-	void drawTexture(GLuint texId, Rect area)
-	{
-		if(!texId)
-			return;
+		m_verticesBuffer.clear();
+		m_texCoordsBuffer.clear();
+		m_firstBuffer.clear();
+		m_countBuffer.clear();
 
-		glBindTexture(GL_TEXTURE_2D, texId);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		if (!listImage.empty() && !listPosition.empty())
+		{
+			int nbImage = listImage.size();
+			int nbPosition = listPosition.size();
+			int nbRotation = listRotation.size();
+			if(nbImage < nbPosition) nbImage = 1;
+			if(nbRotation && nbRotation < nbPosition) nbRotation = 1;
 
-		m_verts[0*2+0] = area.right(); m_verts[0*2+1] = area.top();
-		m_verts[1*2+0] = area.left();  m_verts[1*2+1] = area.top();
-		m_verts[3*2+0] = area.left();  m_verts[3*2+1] = area.bottom();
-		m_verts[2*2+0] = area.right(); m_verts[2*2+1] = area.bottom();
+			m_firstBuffer.resize(nbPosition);
+			for (int i = 0; i < nbPosition; ++i)
+				m_firstBuffer[i] = i * 4;
 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			m_countBuffer.assign(nbPosition, 4);
+
+			m_texCoordsBuffer.reserve(nbPosition * 4);
+			for (int i = 0; i < nbPosition; ++i)
+			{
+				m_texCoordsBuffer.emplace_back(1.f, 1.f);
+				m_texCoordsBuffer.emplace_back(0.f, 1.f);
+				m_texCoordsBuffer.emplace_back(1.f, 0.f);
+				m_texCoordsBuffer.emplace_back(0.f, 0.f);
+			}
+
+			bool centered = (m_drawCentered.getValue() != 0);
+			m_verticesBuffer.reserve(nbPosition * 4);
+			if (nbRotation)
+			{
+				for (int i = 0; i < nbPosition; ++i)
+					createVertices(listPosition[i], listImage[i % nbImage].size(), listRotation[i % nbRotation], centered);
+			}
+			else
+			{
+				for (int i = 0; i < nbPosition; ++i)
+					for (int i = 0; i < nbPosition; ++i)
+					createVertices(listPosition[i], listImage[i % nbImage].size(), centered);
+			}
+		}
 	}
 
 	void render()
 	{
-		const std::vector<ImageWrapper>& listImage = image.getValue();
-		const std::vector<Point>& listPosition = position.getValue();
-		const std::vector<PReal>& listRotation = rotation.getValue();
+		const std::vector<ImageWrapper>& listImage = m_image.getValue();
+		const std::vector<Point>& listPosition = m_position.getValue();
+		const std::vector<PReal>& listRotation = m_rotation.getValue();
 
-		bool centered = (drawCentered.getValue() != 0);
+		bool centered = (m_drawCentered.getValue() != 0);
 
 		int nbImage = listImage.size();
 		int nbPosition = listPosition.size();
@@ -94,103 +183,69 @@ public:
 			if(nbImage < nbPosition) nbImage = 1;
 			if(nbRotation && nbRotation < nbPosition) nbRotation = 1;
 
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
-			shaderProgram.bind();
+			if (!m_VAO)
+				initGL();
+
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_verticesBuffer);
+
+			m_texCoordsVBO.bind();
+			m_texCoordsVBO.write(m_texCoordsBuffer);
+			
+			m_VAO.bind();
+
+			m_shaderProgram.bind();
 			const graphics::Mat4x4& MVP = getMVPMatrix();
-			shaderProgram.setUniformValueMat4("MVP", MVP.data());
+			m_shaderProgram.setUniformValueMat4("MVP", MVP.data());
 
-			shaderProgram.enableAttributeArray("position");
-			shaderProgram.setAttributeArray("position", m_verts, 2);
+			m_shaderProgram.setUniformValue("tex0", 0);
 
-			shaderProgram.enableAttributeArray("texCoord");
-			shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
-
-			shaderProgram.setUniformValue("tex0", 0);
-
-			if(nbRotation)
+			if (nbImage == 1)
 			{
-				if(centered)
-				{
-					for(int i=0; i<nbPosition; ++i)
-					{
-						const ImageWrapper& img = listImage[i % nbImage];
-						auto s = img.size() / 2;
-						if(s.empty()) continue;
-						graphics::Mat4x4 tmpMVP = MVP;
-						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
-						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
-						shaderProgram.setUniformValueMat4("MVP", tmpMVP.data());
-						PReal w = static_cast<PReal>(s.width()), h = static_cast<PReal>(s.height());
-						Rect area = Rect(-w, -h, w, h);
-						drawTexture(img.getTextureId(), area);
-					}
-				}
-				else
-				{
-					for(int i=0; i<nbPosition; ++i)
-					{
-						const ImageWrapper& img = listImage[i % nbImage];
-						auto s = img.size();
-						if(s.empty()) continue;
-						graphics::Mat4x4 tmpMVP = MVP;
-						tmpMVP.translate(listPosition[i].x, listPosition[i].y, 0);
-						tmpMVP.rotate(listRotation[i % nbRotation], 0, 0, 1);
-						shaderProgram.setUniformValueMat4("MVP", tmpMVP.data());
-						PReal w = static_cast<PReal>(s.width()), h = static_cast<PReal>(s.height());
-						Rect area = Rect(0, 0, w, h);
-						drawTexture(img.getTextureId(), area);
-					}
-				}
+				glBindTexture(GL_TEXTURE_2D, listImage[0].getTextureId());
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+				glMultiDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
 			}
 			else
 			{
-				if(centered)
+				for (int i = 0; i < nbImage; ++i)
 				{
-					for(int i=0; i<nbPosition; ++i)
-					{
-						const ImageWrapper& img = listImage[i % nbImage];
-						auto s = img.size() / 2;
-						if(s.empty()) continue;
-						PReal w = static_cast<PReal>(s.width()), h = static_cast<PReal>(s.height());
-						Rect area = Rect(listPosition[i].x - w,
-										 listPosition[i].y - h,
-										 listPosition[i].x + w,
-										 listPosition[i].y + h);
-						drawTexture(img.getTextureId(), area);
-					}
-				}
-				else
-				{
-					for(int i=0; i<nbPosition; ++i)
-					{
-						const ImageWrapper& img = listImage[i % nbImage];
-						auto s = img.size();
-						if(s.empty()) continue;
-						PReal w = static_cast<PReal>(s.width()), h = static_cast<PReal>(s.height());
-						Rect area(listPosition[i], w, h);
-						drawTexture(img.getTextureId(), area);
-					}
+					glBindTexture(GL_TEXTURE_2D, listImage[i].getTextureId());
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+					glDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
 				}
 			}
 
-			shaderProgram.disableAttributeArray("position");
-			shaderProgram.disableAttributeArray("texCoord");
-			shaderProgram.release();
+			m_shaderProgram.release();
+			m_VAO.release();
 		}
 	}
 
 protected:
-	Data< std::vector<ImageWrapper> > image;
-	Data< std::vector<Point> > position;
-	Data< std::vector<PReal> > rotation;
-	Data< int > drawCentered;
-	Data< Shader > shader;
+	Data< std::vector<ImageWrapper> > m_image;
+	Data< std::vector<Point> > m_position;
+	Data< std::vector<PReal> > m_rotation;
+	Data< int > m_drawCentered;
+	Data< Shader > m_shader;
 
-	GLfloat m_verts[8], m_texCoords[8];
+	std::vector<types::Point> m_verticesBuffer, m_texCoordsBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
 
-	graphics::ShaderProgram shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
 int RenderImageClass = RegisterObject<RenderImage>("Render/Textured/Image").setDescription("Renders an image");

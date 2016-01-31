@@ -70,7 +70,7 @@ public:
 		const std::vector<Color>& listColor = m_color.getValue();
 		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
 
-		m_ptsBuffer.clear();
+		m_verticesBuffer.clear();
 		m_colorBuffer.clear();
 
 		m_firstBuffer.clear();
@@ -90,7 +90,7 @@ public:
 
 			m_countBuffer.assign(nbRect, 10);
 
-			m_ptsBuffer.reserve(nbRect * 10);
+			m_verticesBuffer.reserve(nbRect * 10);
 			for(int i = 0; i < nbRect; ++i)
 			{
 				const auto& rect = listRect[i];
@@ -98,16 +98,16 @@ public:
 				PReal width = helper::bound(1.f, listWidth[i % nbWidth], maxWidth);
 				PReal w = width / 2;
 
-				m_ptsBuffer.emplace_back(rect.right() + w, rect.top() - w);
-				m_ptsBuffer.emplace_back(rect.right() - w, rect.top() + w);
-				m_ptsBuffer.emplace_back(rect.left() - w,  rect.top() - w);
-				m_ptsBuffer.emplace_back(rect.left() + w,  rect.top() + w);
-				m_ptsBuffer.emplace_back(rect.left() - w,  rect.bottom() + w);
-				m_ptsBuffer.emplace_back(rect.left() + w,  rect.bottom() - w);
-				m_ptsBuffer.emplace_back(rect.right() + w, rect.bottom() + w);
-				m_ptsBuffer.emplace_back(rect.right() - w, rect.bottom() - w);
-				m_ptsBuffer.emplace_back(rect.right() + w, rect.top() - w);
-				m_ptsBuffer.emplace_back(rect.right() - w, rect.top() + w);
+				m_verticesBuffer.emplace_back(rect.right() + w, rect.top() - w);
+				m_verticesBuffer.emplace_back(rect.right() - w, rect.top() + w);
+				m_verticesBuffer.emplace_back(rect.left() - w,  rect.top() - w);
+				m_verticesBuffer.emplace_back(rect.left() + w,  rect.top() + w);
+				m_verticesBuffer.emplace_back(rect.left() - w,  rect.bottom() + w);
+				m_verticesBuffer.emplace_back(rect.left() + w,  rect.bottom() - w);
+				m_verticesBuffer.emplace_back(rect.right() + w, rect.bottom() + w);
+				m_verticesBuffer.emplace_back(rect.right() - w, rect.bottom() - w);
+				m_verticesBuffer.emplace_back(rect.right() + w, rect.top() - w);
+				m_verticesBuffer.emplace_back(rect.right() - w, rect.top() + w);
 			}
 
 			m_colorBuffer.reserve(nbRect * 10);
@@ -131,7 +131,7 @@ public:
 		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
 		int nbWidth = listWidth.size();
 
-		if(!m_ptsBuffer.empty() && !m_colorBuffer.empty() && nbWidth)
+		if(!m_verticesBuffer.empty() && !m_colorBuffer.empty() && nbWidth)
 		{
 			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
@@ -140,7 +140,7 @@ public:
 				initGL();
 
 			m_verticesVBO.bind();
-			m_verticesVBO.write(m_ptsBuffer);
+			m_verticesVBO.write(m_verticesBuffer);
 
 			m_colorsVBO.bind();
 			m_colorsVBO.write(m_colorBuffer);
@@ -166,7 +166,7 @@ protected:
 	Data< std::vector<Color> > m_color;
 	Data< Shader > m_shader;
 
-	std::vector<types::Point> m_ptsBuffer;
+	std::vector<types::Point> m_verticesBuffer;
 	std::vector<types::Color> m_colorBuffer;
 	std::vector<GLint> m_firstBuffer;
 	std::vector<GLsizei> m_countBuffer;
@@ -228,18 +228,18 @@ public:
 		const std::vector<Rect>& listRect = m_rect.getValue();
 		const std::vector<Color>& listColor = m_color.getValue();
 
-		m_ptsBuffer.clear();
+		m_verticesBuffer.clear();
 		m_texCoordsBuffer.clear();
 		if (!listRect.empty() && !listColor.empty())
 		{
 			int nbRect = listRect.size();
-			m_ptsBuffer.reserve(nbRect * 4);
+			m_verticesBuffer.reserve(nbRect * 4);
 			for (const auto& rect : listRect)
 			{
-				m_ptsBuffer.emplace_back(rect.right(), rect.top());
-				m_ptsBuffer.emplace_back(rect.left(),  rect.top());
-				m_ptsBuffer.emplace_back(rect.right(), rect.bottom());
-				m_ptsBuffer.emplace_back(rect.left(),  rect.bottom());
+				m_verticesBuffer.emplace_back(rect.right(), rect.top());
+				m_verticesBuffer.emplace_back(rect.left(),  rect.top());
+				m_verticesBuffer.emplace_back(rect.right(), rect.bottom());
+				m_verticesBuffer.emplace_back(rect.left(),  rect.bottom());
 			}
 
 			m_texCoordsBuffer.reserve(nbRect * 4);
@@ -258,7 +258,7 @@ public:
 		const std::vector<Color>& listColor = m_color.getValue();
 		int nbColor = listColor.size();
 
-		if(!m_ptsBuffer.empty() && !m_texCoordsBuffer.empty() && nbColor)
+		if(!m_verticesBuffer.empty() && !m_texCoordsBuffer.empty() && nbColor)
 		{
 			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
@@ -269,7 +269,7 @@ public:
 			glEnable(GL_LINE_SMOOTH);
 
 			m_verticesVBO.bind();
-			m_verticesVBO.write(m_ptsBuffer);
+			m_verticesVBO.write(m_verticesBuffer);
 
 			m_texCoordsVBO.bind();
 			m_texCoordsVBO.write(m_texCoordsBuffer);
@@ -280,7 +280,7 @@ public:
 			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 			int colorLocation = m_shaderProgram.uniformLocation("color");
-			int nbRect = m_ptsBuffer.size() / 4;
+			int nbRect = m_verticesBuffer.size() / 4;
 			for(int i=0; i < nbRect; ++i)
 			{
 				m_shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
@@ -301,7 +301,7 @@ protected:
 	Data< std::vector<Color> > m_color;
 	Data< Shader > m_shader;
 
-	std::vector<types::Point> m_ptsBuffer, m_texCoordsBuffer;
+	std::vector<types::Point> m_verticesBuffer, m_texCoordsBuffer;
 
 	graphics::ShaderProgram m_shaderProgram;
 	graphics::VertexArrayObject m_VAO;
@@ -358,7 +358,7 @@ public:
 	{
 		const std::vector<Rect>& listRect = m_rect.getValue();
 
-		m_ptsBuffer.clear();
+		m_verticesBuffer.clear();
 		m_texCoordsBuffer.clear();
 
 		m_firstBuffer.clear();
@@ -374,17 +374,17 @@ public:
 
 			m_countBuffer.assign(nbRect, 4);
 
-			m_ptsBuffer.reserve(nbRect * 4);
+			m_verticesBuffer.reserve(nbRect * 4);
 			for (const auto& rect : listRect)
 			{
-				m_ptsBuffer.emplace_back(rect.right(), rect.top());
-				m_ptsBuffer.emplace_back(rect.left(),  rect.top());
-				m_ptsBuffer.emplace_back(rect.right(), rect.bottom());
-				m_ptsBuffer.emplace_back(rect.left(),  rect.bottom());
+				m_verticesBuffer.emplace_back(rect.right(), rect.top());
+				m_verticesBuffer.emplace_back(rect.left(),  rect.top());
+				m_verticesBuffer.emplace_back(rect.right(), rect.bottom());
+				m_verticesBuffer.emplace_back(rect.left(),  rect.bottom());
 			}
 
 			m_texCoordsBuffer.reserve(nbRect * 4);
-			for (const auto& rect : listRect)
+			for (int i = 0; i < nbRect; ++i)
 			{
 				m_texCoordsBuffer.emplace_back(1.f, 1.f);
 				m_texCoordsBuffer.emplace_back(0.f, 1.f);
@@ -397,18 +397,18 @@ public:
 	void render()
 	{
 		int texId = m_texture.getValue().getTextureId();
-		if(!m_ptsBuffer.empty() && !m_texCoordsBuffer.empty() && texId)
+		if(!m_verticesBuffer.empty() && !m_texCoordsBuffer.empty() && texId)
 		{
 			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
 			if (!m_VAO)
 				initGL();
-
+			
 			glEnable(GL_LINE_SMOOTH);
 
 			m_verticesVBO.bind();
-			m_verticesVBO.write(m_ptsBuffer);
+			m_verticesVBO.write(m_verticesBuffer);
 
 			m_texCoordsVBO.bind();
 			m_texCoordsVBO.write(m_texCoordsBuffer);
@@ -440,7 +440,7 @@ protected:
 	Data< ImageWrapper > m_texture;
 	Data< Shader > m_shader;
 
-	std::vector<types::Point> m_ptsBuffer, m_texCoordsBuffer;
+	std::vector<types::Point> m_verticesBuffer, m_texCoordsBuffer;
 	std::vector<GLint> m_firstBuffer;
 	std::vector<GLsizei> m_countBuffer;
 
