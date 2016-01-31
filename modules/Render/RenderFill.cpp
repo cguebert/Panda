@@ -1,6 +1,5 @@
 #include <GL/glew.h>
 
-
 #include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
@@ -10,27 +9,28 @@
 #include <panda/types/Rect.h>
 #include <panda/types/Shader.h>
 #include <panda/helper/GradientCache.h>
+#include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
+#include <panda/graphics/VertexArrayObject.h>
 
 namespace panda {
 
 using types::ImageWrapper;
 using types::Gradient;
+using types::Point;
 using types::Rect;
 using types::Shader;
 
-class RenderGradient_Horizontal : public Renderer
+class BaseRenderFill : public Renderer
 {
 public:
-	PANDA_CLASS(RenderGradient_Horizontal, Renderer)
+	PANDA_CLASS(BaseRenderFill, Renderer)
 
-	RenderGradient_Horizontal(PandaDocument* parent)
+	BaseRenderFill(PandaDocument* parent)
 		: Renderer(parent)
-		, m_gradient(initData("gradient", "Gradient to paint on the screen"))
 		, m_area(initData("area", "Area to paint the gradient in. If null, the render area is used instead"))
 		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(m_gradient);
 		addInput(m_area);
 		addInput(m_shader);
 
@@ -38,16 +38,28 @@ public:
 		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
-
-		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 0;
-		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 0;
-		m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
-		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 	}
 
-	void render()
+	void initGL()
 	{
-		const Gradient& grad = m_gradient.getValue();
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
+	Rect getArea()
+	{
 		Rect area = m_area.getValue();
 		if(area.empty())
 		{
@@ -55,12 +67,39 @@ public:
 			area = Rect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
 		}
 
-		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, static_cast<int>(std::ceil(area.width())));
+		return area;
+	}
+
+	void renderFill(GLuint texture, std::vector<Point> texCoords = {})
+	{
 		if(!texture)
 			return;
 
+		Rect area = m_area.getValue();
+		if(area.empty())
+		{
+			auto size = getLayerSize();
+			area = Rect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
+		}
+
 		if(!m_shader.getValue().apply(m_shaderProgram))
 			return;
+
+		if (!m_VAO)
+			initGL();
+
+		std::vector<Point> pts = { area.topRight(), area.topLeft(), area.bottomRight(), area.bottomLeft() };
+		m_verticesVBO.bind();
+		m_verticesVBO.write(pts);
+
+		// Textures coordinates are inversed vertically
+		if(texCoords.empty())
+			texCoords = { {1, 1}, {0, 1}, {1, 0}, {0, 0} };
+		m_texCoordsVBO.bind();
+		m_texCoordsVBO.write(texCoords);
+
+		m_shaderProgram.bind();
+		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -69,35 +108,48 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		m_shaderProgram.setUniformValue("tex0", 0);
 
-		m_shaderProgram.bind();
-		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
-
-		PReal verts[8];
-		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
-		verts[1*2+0] = area.left(); verts[1*2+1] = area.top();
-		verts[2*2+0] = area.right(); verts[2*2+1] = area.bottom();
-		verts[3*2+0] = area.left(); verts[3*2+1] = area.bottom();
-
-		m_shaderProgram.enableAttributeArray("position");
-		m_shaderProgram.setAttributeArray("position", verts, 2);
-
-		m_shaderProgram.enableAttributeArray("texCoord");
-		m_shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
-
+		m_VAO.bind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		m_VAO.release();
 
-		m_shaderProgram.disableAttributeArray("position");
-		m_shaderProgram.disableAttributeArray("texCoord");
 		m_shaderProgram.release();
 	}
 
 protected:
-	Data<Gradient> m_gradient;
 	Data<Rect> m_area;
 	Data<Shader> m_shader;
 
-	GLfloat m_texCoords[8];
 	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
+};
+
+//****************************************************************************//
+
+class RenderGradient_Horizontal : public BaseRenderFill
+{
+public:
+	PANDA_CLASS(RenderGradient_Horizontal, BaseRenderFill)
+
+	RenderGradient_Horizontal(PandaDocument* parent)
+		: BaseRenderFill(parent)
+		, m_gradient(initData("gradient", "Gradient to paint on the screen"))
+	{
+		addInput(m_gradient);
+		addData(&m_gradient, 0);
+	}
+
+	void render()
+	{
+		const Gradient& grad = m_gradient.getValue();
+		int width = static_cast<int>(std::ceil(getArea().width()));
+		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, width);
+
+		renderFill(texture);
+	}
+
+protected:
+	Data<Gradient> m_gradient;
 };
 
 int RenderGradient_HorizontalClass = RegisterObject<RenderGradient_Horizontal>("Render/Gradient/Horizontal")
@@ -105,85 +157,30 @@ int RenderGradient_HorizontalClass = RegisterObject<RenderGradient_Horizontal>("
 
 //****************************************************************************//
 
-class RenderGradient_Vertical : public Renderer
+class RenderGradient_Vertical : public BaseRenderFill
 {
 public:
-	PANDA_CLASS(RenderGradient_Vertical, Renderer)
+	PANDA_CLASS(RenderGradient_Vertical, BaseRenderFill)
 
 	RenderGradient_Vertical(PandaDocument* parent)
-		: Renderer(parent)
-		, gradient(initData("gradient", "Gradient to paint on the screen"))
-		, m_area(initData("area", "Area to paint the gradient in. If null, the render area is used instead"))
-		, m_shader(initData("shader", "Shaders used during the rendering"))
+		: BaseRenderFill(parent)
+		, m_gradient(initData("gradient", "Gradient to paint on the screen"))
 	{
-		addInput(gradient);
-		addInput(m_area);
-		addInput(m_shader);
-
-		m_shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = m_shader.getAccessor();
-		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
-
-		m_texCoords[0*2+0] = 0; m_texCoords[0*2+1] = 0;
-		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 0;
-		m_texCoords[3*2+0] = 1; m_texCoords[3*2+1] = 0;
-		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
+		addInput(m_gradient);
+		addData(&m_gradient, 0);
 	}
 
 	void render()
 	{
-		const Gradient& grad = gradient.getValue();
-		Rect area = m_area.getValue();
-		if(area.empty())
-		{
-			auto size = getLayerSize();
-			area = Rect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
-		}
+		const Gradient& grad = m_gradient.getValue();
+		int height = static_cast<int>(std::ceil(getArea().height()));
+		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, height);
 
-		GLuint texture = helper::GradientCache::getInstance()->getTexture(grad, static_cast<int>(std::ceil(area.height())));
-		if(!texture)
-			return;
-
-		if(!m_shader.getValue().apply(m_shaderProgram))
-			return;
-
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		m_shaderProgram.setUniformValue("tex0", 0);
-
-		m_shaderProgram.bind();
-		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
-
-		PReal verts[8];
-		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
-		verts[1*2+0] = area.left(); verts[1*2+1] = area.top();
-		verts[2*2+0] = area.right(); verts[2*2+1] = area.bottom();
-		verts[3*2+0] = area.left(); verts[3*2+1] = area.bottom();
-
-		m_shaderProgram.enableAttributeArray("position");
-		m_shaderProgram.setAttributeArray("position", verts, 2);
-
-		m_shaderProgram.enableAttributeArray("texCoord");
-		m_shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
-
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-		m_shaderProgram.disableAttributeArray("position");
-		m_shaderProgram.disableAttributeArray("texCoord");
-		m_shaderProgram.release();
+		renderFill(texture, { {0, 1}, {0, 0}, {1, 1}, {1, 0} });
 	}
 
 protected:
-	Data<Gradient> gradient;
-	Data<Rect> m_area;
-	Data<Shader> m_shader;
-
-	GLfloat m_texCoords[8];
-	graphics::ShaderProgram m_shaderProgram;
+	Data<Gradient> m_gradient;
 };
 
 int RenderGradient_VerticalClass = RegisterObject<RenderGradient_Vertical>("Render/Gradient/Vertical")
@@ -191,87 +188,35 @@ int RenderGradient_VerticalClass = RegisterObject<RenderGradient_Vertical>("Rend
 
 //****************************************************************************//
 
-class RenderFill_Motif : public Renderer
+class RenderFill_Motif : public BaseRenderFill
 {
 public:
-	PANDA_CLASS(RenderFill_Motif, Renderer)
+	PANDA_CLASS(RenderFill_Motif, BaseRenderFill)
 
 	RenderFill_Motif(PandaDocument* parent)
-		: Renderer(parent)
-		, texture(initData("texture", "Motif to paint on the screen"))
-		, m_area(initData("area", "Area to paint the gradient in. If null, the render area is used instead"))
-		, m_shader(initData("shader", "Shaders used during the rendering"))
+		: BaseRenderFill(parent)
+		, m_texture(initData("texture", "Motif to paint on the screen"))
 	{
-		addInput(texture);
-		addInput(m_area);
-		addInput(m_shader);
-
-		m_shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = m_shader.getAccessor();
-		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
-		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+		addInput(m_texture);
+		addData(&m_texture, 0);
 	}
 
 	void render()
 	{
-		Rect area = m_area.getValue();
-		if(area.empty())
-		{
-			auto size = getLayerSize();
-			area = Rect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
-		}
+		Rect area = getArea();
 
-		const auto& texValue = texture.getValue();
+		const auto& texValue = m_texture.getValue();
 		GLuint texId = texValue.getTextureId();
 		if(!texId)
 			return;
 
-		if(!m_shader.getValue().apply(m_shaderProgram))
-			return;
-
 		auto texSize = texValue.size();
-
-		glBindTexture(GL_TEXTURE_2D, texId);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		m_shaderProgram.setUniformValue("tex0", 0);
-
-		m_shaderProgram.bind();
-		m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
-
-		PReal verts[8], texCoords[8];
-		verts[0*2+0] = area.right(); verts[0*2+1] = area.top();
-		verts[1*2+0] = area.left(); verts[1*2+1] = area.top();
-		verts[2*2+0] = area.right(); verts[2*2+1] = area.bottom();
-		verts[3*2+0] = area.left(); verts[3*2+1] = area.bottom();
-
-		float tw = area.width() / texSize.width(), th = area.height() / texSize.height();
-		texCoords[0*2+0] = tw;	texCoords[0*2+1] = th;
-		texCoords[1*2+0] = 0;	texCoords[1*2+1] = th;
-		texCoords[3*2+0] = 0;	texCoords[3*2+1] = 0;
-		texCoords[2*2+0] = tw;	texCoords[2*2+1] = 0;
-
-		m_shaderProgram.enableAttributeArray("position");
-		m_shaderProgram.setAttributeArray("position", verts, 2);
-
-		m_shaderProgram.enableAttributeArray("texCoord");
-		m_shaderProgram.setAttributeArray("texCoord", texCoords, 2);
-
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-		m_shaderProgram.disableAttributeArray("position");
-		m_shaderProgram.disableAttributeArray("texCoord");
-		m_shaderProgram.release();
+		float w = area.width() / texSize.width(), h = area.height() / texSize.height();
+		renderFill(texId, { {w, 0}, {0, 0}, {w, -h}, {0, -h} });
 	}
 
 protected:
-	Data<ImageWrapper> texture;
-	Data<Rect> m_area;
-	Data<Shader> m_shader;
-
-	graphics::ShaderProgram m_shaderProgram;
+	Data<ImageWrapper> m_texture;
 };
 
 int RenderFill_MotifClass = RegisterObject<RenderFill_Motif>("Render/Textured/Fill with motif")
