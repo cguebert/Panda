@@ -148,7 +148,7 @@ bool GraphView::isCompatible(const panda::BaseData* data1, const panda::BaseData
 
 ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
 {
-	return m_objectDrawStructs.at(object).get();
+	return panda::helper::valueOrDefault(m_objectDrawStructs, object).get();
 }
 
 std::vector<ObjectDrawStruct*> GraphView::getObjectDrawStructs(const std::vector<panda::PandaObject*>& objects)
@@ -166,7 +166,7 @@ std::vector<ObjectDrawStruct*> GraphView::getObjectDrawStructs(const std::vector
 
 std::shared_ptr<ObjectDrawStruct> GraphView::getSharedObjectDrawStruct(panda::PandaObject* object)
 {
-	return m_objectDrawStructs.at(object);
+	return panda::helper::valueOrDefault(m_objectDrawStructs, object);
 }
 
 void GraphView::setObjectDrawStruct(panda::PandaObject* object, std::shared_ptr<ObjectDrawStruct> drawStruct)
