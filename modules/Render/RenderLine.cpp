@@ -32,7 +32,7 @@ public:
 		: Renderer(parent)
 		, m_inputA(initData("point 1", "Start of the line"))
 		, m_inputB(initData("point 2", "End of the line"))
-		, m_width(initData(1.f, "width", "Width of the line"))
+		, m_width(initData("width", "Width of the line"))
 		, m_color(initData("color", "Color of the line"))
 		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
@@ -43,6 +43,7 @@ public:
 		addInput(m_shader);
 
 		m_color.getAccessor().push_back(Color::black());
+		m_width.getAccessor().push_back(1.f);
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();
@@ -68,11 +69,25 @@ public:
 		m_VAO.release();
 	}
 
+	void extrude(const Point& ptA, const Point& ptB, float width)
+	{
+		Point dir = ptB - ptA;
+		dir.normalize();
+		Point disp = Point(-dir.y, dir.x) * (width / 2);
+		m_verticesBuffer.push_back(ptA + disp); // Duplicated to cut the strip
+		m_verticesBuffer.push_back(ptA + disp);
+		m_verticesBuffer.push_back(ptA - disp);
+		m_verticesBuffer.push_back(ptB + disp);
+		m_verticesBuffer.push_back(ptB - disp);
+		m_verticesBuffer.push_back(ptB - disp); // Duplicated to cut the strip
+	}
+
 	void update()
 	{
 		const std::vector<Point>& valA = m_inputA.getValue();
 		const std::vector<Point>& valB = m_inputB.getValue();
 		const std::vector<Color>& listColor = m_color.getValue();
+		const std::vector<PReal>& listWidth = m_width.getValue();
 
 		m_verticesBuffer.clear();
 		m_colorsBuffer.clear();
@@ -80,50 +95,62 @@ public:
 		int nbA = valA.size(), nbB = valB.size();
 		int nbLines = std::min(valA.size(), valB.size());
 		bool useTwoLists = true;
-		if(nbA && !nbB)
+		if (nbA && !nbB)
 		{
 			useTwoLists = false;
 			nbLines = nbA / 2;
 		}
 
-		if (nbLines && !listColor.empty())
+		if (nbLines && !listColor.empty() && !listWidth.empty())
 		{
 			int nbVertices = nbLines * 2;
+			int nbWidth = listWidth.size();
+			if (nbWidth < nbLines) nbWidth = 1;
+
+			m_verticesBuffer.reserve(nbVertices * 3);
 			if (useTwoLists)
 			{
-				m_verticesBuffer.resize(nbVertices);
 				for (int i = 0; i < nbLines; ++i)
-				{
-					m_verticesBuffer[i * 2] = valA[i];
-					m_verticesBuffer[i * 2 + 1] = valB[i];
-				}
+					extrude(valA[i], valB[i], listWidth[i % nbWidth]);
 			}
 			else
-				m_verticesBuffer = valA;
+			{
+				for (int i = 0; i < nbLines; ++i)
+					extrude(valA[i*2], valA[i*2+1], listWidth[i % nbWidth]);
+			}
 
+			m_colorsBuffer.reserve(nbVertices * 3);
 			int nbColor = listColor.size();
 			if (nbColor < nbLines) // One color
 			{
-				m_colorsBuffer.assign(nbVertices, listColor[0]);
+				m_colorsBuffer.assign(nbVertices * 3, listColor[0]);
 			}
 			else if (nbColor >= nbVertices) // A color per point
 			{
-				m_colorsBuffer = listColor;
+				for (int i = 0; i < nbVertices; ++i)
+				{
+					auto color = listColor[i];
+					for (int j = 0; j < 3; ++j)
+						m_colorsBuffer.push_back(color);
+				}
 			}
 			else // A color per line
 			{
-				m_colorsBuffer.resize(nbVertices);
 				for (int i = 0; i < nbLines; ++i)
-					m_colorsBuffer[i*2] = m_colorsBuffer[i*2+1] = listColor[i % nbColor];
+				{
+					auto color = listColor[i];
+					for (int j = 0; j < 6; ++j)
+						m_colorsBuffer.push_back(color);
+				}
 			}
 		}
 	}
 
 	void render()
 	{
-		if(!m_verticesBuffer.empty() && !m_colorsBuffer.empty())
+		if (!m_verticesBuffer.empty() && !m_colorsBuffer.empty())
 		{
-			if(!m_shader.getValue().apply(m_shaderProgram))
+			if (!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
 			if (!m_VAO)
@@ -138,13 +165,9 @@ public:
 			m_shaderProgram.bind();
 			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			glLineWidth(std::max((PReal)1.0, m_width.getValue()));
-
 			m_VAO.bind();
-			glDrawArrays(GL_LINES, 0, m_verticesBuffer.size());
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, m_verticesBuffer.size());
 			m_VAO.release();
-
-			glLineWidth(0);
 
 			m_shaderProgram.release();
 		}
@@ -152,7 +175,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > m_inputA, m_inputB;
-	Data<PReal> m_width;
+	Data< std::vector<PReal> > m_width;
 	Data< std::vector<Color> > m_color;
 	Data< Shader > m_shader;
 
@@ -186,7 +209,7 @@ public:
 		addInput(m_shader);
 
 		m_color.getAccessor().push_back(Color::black());
-		m_lineWidth.getAccessor().push_back(0.0);
+		m_lineWidth.getAccessor().push_back(1.f);
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();
@@ -207,6 +230,17 @@ public:
 		m_VAO.release();
 	}
 
+	void extrude(const Point& ptA, const Point& ptB, float width)
+	{
+		Point dir = ptB - ptA;
+		dir.normalize();
+		Point disp = Point(-dir.y, dir.x) * (width / 2);
+		m_verticesBuffer.push_back(ptA + disp);
+		m_verticesBuffer.push_back(ptA - disp);
+		m_verticesBuffer.push_back(ptB + disp);
+		m_verticesBuffer.push_back(ptB - disp);
+	}
+
 	void update()
 	{
 		const std::vector<Path>& listPaths = m_input.getValue();
@@ -218,31 +252,44 @@ public:
 		m_firstBuffer.clear();
 		m_countBuffer.clear();
 
-		if(!listPaths.empty() && !listColor.empty() && !listWidth.empty())
+		if (!listPaths.empty() && !listColor.empty() && !listWidth.empty())
 		{
-			for (auto& path : listPaths)
-			{
-				m_firstBuffer.push_back(m_verticesBuffer.size());
-				m_countBuffer.push_back(path.size());
+			int nbPaths = listPaths.size();
+			int nbWidth = listWidth.size();
+			if (nbWidth < nbPaths) nbWidth = 1;
 
-				m_verticesBuffer.insert(m_verticesBuffer.end(), path.begin(), path.end());
+			for (int i = 0; i < nbPaths; ++i)
+			{
+				const auto& path = listPaths[i];
+				PReal width = listWidth[i % nbWidth];
+				m_firstBuffer.push_back(m_verticesBuffer.size());
+
+				int nbPts = path.size();
+				if(nbPts < 2)
+				{
+					m_countBuffer.push_back(0);
+					continue;
+				}
+
+				m_countBuffer.push_back((nbPts - 1) * 4);
+
+				for (int j = 0; j < nbPts - 1; ++j)
+					extrude(path[j], path[j + 1], width);
 			}
 		}
 	}
 
 	void render()
 	{
-		const std::vector<Path>& paths = m_input.getValue();
+		const std::vector<Path>& listPaths = m_input.getValue();
 		const std::vector<Color>& listColor = m_color.getValue();
-		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
 
-		int nbPaths = paths.size();
+		int nbPaths = listPaths.size();
 		int nbColor = listColor.size();
-		int nbWidth = listWidth.size();
 
-		if(nbPaths && nbColor && nbWidth)
+		if (!m_verticesBuffer.empty() && nbColor)
 		{
-			if(!m_shader.getValue().apply(m_shaderProgram))
+			if (!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
 			if (!m_VAO)
@@ -253,34 +300,29 @@ public:
 
 			m_VAO.bind();
 
-			if(nbColor < nbPaths) nbColor = 1;
-			if(nbWidth < nbPaths) nbWidth = 1;
-
 			m_shaderProgram.bind();
 			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
+			if (nbColor < nbPaths) nbColor = 1;
 			int colorLocation = m_shaderProgram.uniformLocation("color");
 
-			if (nbColor == 1 && nbWidth == 1)
+			if (nbColor == 1)
 			{
-				glLineWidth(listWidth[0]);
 				m_shaderProgram.setUniformValueArray(colorLocation, listColor[0].data(), 1, 4);
-
-				glMultiDrawArrays(GL_LINE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
+				glMultiDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
 			}
 			else
 			{
 				for (int i = 0; i < nbPaths; ++i)
 				{
-					glLineWidth(listWidth[i % nbWidth]);
+					if (!m_countBuffer[i])
+						continue;
 
 					m_shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
-
-					glDrawArrays(GL_LINE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
+					glDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
 				}
 			}
 
-			glLineWidth(0);
 			m_shaderProgram.release();
 			m_VAO.release();
 		}
@@ -324,7 +366,7 @@ public:
 		addInput(m_shader);
 
 		m_gradient.getAccessor().push_back(Gradient::defaultGradient());
-		m_lineWidth.getAccessor().push_back(0.0);
+		m_lineWidth.getAccessor().push_back(1.f);
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();
@@ -350,6 +392,17 @@ public:
 		m_VAO.release();
 	}
 
+	void extrude(const Point& ptA, const Point& ptB, float width)
+	{
+		Point dir = ptB - ptA;
+		dir.normalize();
+		Point disp = Point(-dir.y, dir.x) * (width / 2);
+		m_verticesBuffer.push_back(ptA + disp);
+		m_verticesBuffer.push_back(ptA - disp);
+		m_verticesBuffer.push_back(ptB + disp);
+		m_verticesBuffer.push_back(ptB - disp);
+	}
+
 	void update()
 	{
 		const std::vector<Path>& listPaths = m_input.getValue();
@@ -365,45 +418,57 @@ public:
 		m_countBuffer.clear();
 		m_countBuffer.reserve(nbPaths);
 
-		if(!listPaths.empty() && !listGradient.empty() && !listWidth.empty())
+		if (!listPaths.empty() && !listGradient.empty() && !listWidth.empty())
 		{
+			int nbWidth = listWidth.size();
+			if (nbWidth < nbPaths) nbWidth = 1;
+
 			m_pathLengths.clear();
 			m_pathLengths.resize(nbPaths);
 
 			for (int i = 0; i < nbPaths; ++i)
 			{
 				const auto& path = listPaths[i];
+				PReal width = listWidth[i % nbWidth];
 				int start = m_verticesBuffer.size();
+
+				m_pathLengths[i] = 0;
+				m_firstBuffer.push_back(start);
+				m_countBuffer.push_back(0); // Will be modified later
+
 				int nbPts = path.size();
+				if (nbPts < 2)
+					continue;
 				
 				// Compute the texture coordinates
-				std::vector<types::Point> uvList(nbPts);
+				std::vector<types::Point> uvList;
+				uvList.reserve((nbPts - 1) * 4);
+				uvList.push_back(Point(0.f, 0.f));
+				uvList.push_back(Point(0.f, 0.f));
 				
 				PReal length = 0;
 				for (int j = 0; j < nbPts - 1; ++j)
 				{
 					length += (path[j+1] - path[j]).norm();
-					uvList[j+1].x = length;
+					auto pt = Point(length, 0);
+
+					for (int k = 0; k < 4; ++k)
+						uvList.push_back(pt);
 				}
 
 				if (length < 1e-3)
-				{
-					m_pathLengths[i] = 0;
-					m_firstBuffer.push_back(start);
-					m_countBuffer.push_back(0);
-
 					continue; // Ignore this path
-				}
 
 				m_pathLengths[i] = length;
 
 				for(auto& uv : uvList)
 					uv.x /= length;
 
-				m_firstBuffer.push_back(start);
-				m_countBuffer.push_back(nbPts);
+				for (int j = 0; j < nbPts - 1; ++j)
+					extrude(path[j], path[j + 1], width);
 
-				m_verticesBuffer.insert(m_verticesBuffer.end(), path.begin(), path.end());
+				m_countBuffer.back() = (nbPts - 1) * 4;
+
 				m_texCoordsBuffer.insert(m_texCoordsBuffer.end(), uvList.begin(), uvList.end());
 			}
 		}
@@ -412,14 +477,11 @@ public:
 	void render()
 	{
 		const std::vector<Gradient>& listGradient = m_gradient.getValue();
-		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
-
 		int nbGradient = listGradient.size();
-		int nbWidth = listWidth.size();
 
-		if(!m_verticesBuffer.empty() && nbGradient && nbWidth)
+		if (!m_verticesBuffer.empty() && nbGradient)
 		{
-			if(!m_shader.getValue().apply(m_shaderProgram))
+			if (!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
 			if (!m_VAO)
@@ -432,8 +494,7 @@ public:
 			m_texCoordsVBO.write(m_texCoordsBuffer);
 
 			int nbPaths = m_countBuffer.size();
-			if(nbGradient < nbPaths) nbGradient = 1;
-			if(nbWidth < nbPaths) nbWidth = 1;
+			if (nbGradient < nbPaths) nbGradient = 1;
 
 			m_shaderProgram.bind();
 			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
@@ -443,7 +504,7 @@ public:
 			m_VAO.bind();
 
 			// Optimization when we use only one gradient
-			if(nbGradient == 1)
+			if (nbGradient == 1)
 			{
 				PReal maxLength = *std::max_element(m_pathLengths.begin(), m_pathLengths.end());
 				maxLength = helper::bound(64.f, std::ceil(maxLength), 1024.f); // We limit the texture at 1024 pixels
@@ -455,22 +516,7 @@ public:
 				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-				if (nbWidth == 1)
-				{
-					glLineWidth(listWidth[0]);
-
-					glMultiDrawArrays(GL_LINE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
-				}
-
-				for (int i = 0; i < nbPaths; ++i)
-				{
-					if (!m_countBuffer[i])
-						continue;
-
-					glLineWidth(listWidth[i % nbWidth]);
-
-					glDrawArrays(GL_LINE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
-				}
+				glMultiDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
 			}
 			else
 			{
@@ -478,8 +524,6 @@ public:
 				{
 					if (!m_countBuffer[i])
 						continue;
-
-					glLineWidth(listWidth[i % nbWidth]);
 
 					PReal length = helper::bound(64.f, std::ceil(m_pathLengths[i]), 1024.f); // We limit the texture at 1024 pixels
 					GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(length));
@@ -494,7 +538,6 @@ public:
 				}
 			}
 
-			glLineWidth(0);
 			m_shaderProgram.release();
 			m_VAO.release();
 		}
