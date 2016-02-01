@@ -8,8 +8,11 @@
 #include <panda/types/Gradient.h>
 #include <panda/types/Path.h>
 #include <panda/types/Shader.h>
+#include <panda/helper/algorithm.h>
 #include <panda/helper/GradientCache.h>
+#include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
+#include <panda/graphics/VertexArrayObject.h>
 
 namespace panda {
 
@@ -27,31 +30,52 @@ public:
 
 	RenderLine(PandaDocument* parent)
 		: Renderer(parent)
-		, inputA(initData("point 1", "Start of the line"))
-		, inputB(initData("point 2", "End of the line"))
-		, width(initData((PReal)1.0, "width", "Width of the line" ))
-		, color(initData("color", "Color of the line"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_inputA(initData("point 1", "Start of the line"))
+		, m_inputB(initData("point 2", "End of the line"))
+		, m_width(initData(1.f, "width", "Width of the line"))
+		, m_color(initData("color", "Color of the line"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(inputA);
-		addInput(inputB);
-		addInput(width);
-		addInput(color);
-		addInput(shader);
+		addInput(m_inputA);
+		addInput(m_inputB);
+		addInput(m_width);
+		addInput(m_color);
+		addInput(m_shader);
 
-		color.getAccessor().push_back(Color::black());
+		m_color.getAccessor().push_back(Color::black());
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_attColor_noTex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_attColor_noTex.f.glsl");
 	}
 
-	void render()
+	void initGL()
 	{
-		const std::vector<Point>& valA = inputA.getValue();
-		const std::vector<Point>& valB = inputB.getValue();
-		const std::vector<Color>& listColor = color.getValue();
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_colorsVBO.create();
+		m_colorsVBO.bind();
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
+	void update()
+	{
+		const std::vector<Point>& valA = m_inputA.getValue();
+		const std::vector<Point>& valB = m_inputB.getValue();
+		const std::vector<Color>& listColor = m_color.getValue();
+
+		m_verticesBuffer.clear();
+		m_colorsBuffer.clear();
 
 		int nbA = valA.size(), nbB = valB.size();
 		int nbLines = std::min(valA.size(), valB.size());
@@ -62,65 +86,82 @@ public:
 			nbLines = nbA / 2;
 		}
 
-		int nbColor = listColor.size();
-
-		if(nbLines && nbColor)
+		if (nbLines && !listColor.empty())
 		{
-			if(!shader.getValue().apply(shaderProgram))
+			int nbVertices = nbLines * 2;
+			if (useTwoLists)
+			{
+				m_verticesBuffer.resize(nbVertices);
+				for (int i = 0; i < nbLines; ++i)
+				{
+					m_verticesBuffer[i * 2] = valA[i];
+					m_verticesBuffer[i * 2 + 1] = valB[i];
+				}
+			}
+			else
+				m_verticesBuffer = valA;
+
+			int nbColor = listColor.size();
+			if (nbColor < nbLines) // One color
+			{
+				m_colorsBuffer.assign(nbVertices, listColor[0]);
+			}
+			else if (nbColor >= nbVertices) // A color per point
+			{
+				m_colorsBuffer = listColor;
+			}
+			else // A color per line
+			{
+				m_colorsBuffer.resize(nbVertices);
+				for (int i = 0; i < nbLines; ++i)
+					m_colorsBuffer[i*2] = m_colorsBuffer[i*2+1] = listColor[i % nbColor];
+			}
+		}
+	}
+
+	void render()
+	{
+		if(!m_verticesBuffer.empty() && !m_colorsBuffer.empty())
+		{
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
-			if(nbColor < nbLines) nbColor = 1;
-			int nbVertices = nbLines * 2;
+			if (!m_VAO)
+				initGL();
 
-			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_verticesBuffer);
 
-			std::vector<Point> tmpVertices;
-			int vertexLocation = shaderProgram.attributeLocation("vertex");
-			shaderProgram.enableAttributeArray(vertexLocation);
-			if(useTwoLists)
-			{
-				tmpVertices.resize(nbVertices);
-				for(int i=0; i<nbLines; ++i)
-				{
-					tmpVertices[i*2  ] = valA[i];
-					tmpVertices[i*2+1] = valB[i];
-				}
-				shaderProgram.setAttributeArray(vertexLocation, tmpVertices.front().data(), 2);
-			}
-			else
-				shaderProgram.setAttributeArray(vertexLocation, valA.front().data(), 2);
+			m_colorsVBO.bind();
+			m_colorsVBO.write(m_colorsBuffer);
 
-			std::vector<Color> tmpColors;
-			int colorLocation = shaderProgram.attributeLocation("color");
-			shaderProgram.enableAttributeArray(colorLocation);
-			if(nbColor >= nbVertices) // We have one color for each vertex
-				shaderProgram.setAttributeArray(colorLocation, listColor.front().data(), 4);
-			else
-			{
-				tmpColors.resize(nbVertices);
-				for(int i=0; i<nbLines; ++i)
-					tmpColors[i*2] = tmpColors[i*2+1] = listColor[i%nbColor];
-				shaderProgram.setAttributeArray(colorLocation, tmpColors.front().data(), 4);
-			}
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			glLineWidth(std::max((PReal)1.0, width.getValue()));
-			glDrawArrays(GL_LINES, 0, nbVertices);
+			glLineWidth(std::max((PReal)1.0, m_width.getValue()));
+
+			m_VAO.bind();
+			glDrawArrays(GL_LINES, 0, m_verticesBuffer.size());
+			m_VAO.release();
+
 			glLineWidth(0);
 
-			shaderProgram.disableAttributeArray(vertexLocation);
-			shaderProgram.disableAttributeArray(colorLocation);
-			shaderProgram.release();
+			m_shaderProgram.release();
 		}
 	}
 
 protected:
-	Data< std::vector<Point> > inputA, inputB;
-	Data<PReal> width;
-	Data< std::vector<Color> > color;
-	Data< Shader > shader;
+	Data< std::vector<Point> > m_inputA, m_inputB;
+	Data<PReal> m_width;
+	Data< std::vector<Color> > m_color;
+	Data< Shader > m_shader;
 
-	graphics::ShaderProgram shaderProgram;
+	std::vector<types::Point> m_verticesBuffer;
+	std::vector<types::Color> m_colorsBuffer;
+
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_colorsVBO;
 };
 
 int RenderLineClass = RegisterObject<RenderLine>("Render/Line/Line").setDescription("Draw a line between 2 points");
@@ -134,30 +175,66 @@ public:
 
 	RenderPath(PandaDocument* parent)
 		: Renderer(parent)
-		, input(initData("path", "Path to be drawn"))
-		, lineWidth(initData("width", "Width of the line" ))
-		, color(initData("color", "Color of the line"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_input(initData("path", "Path to be drawn"))
+		, m_lineWidth(initData("width", "Width of the line"))
+		, m_color(initData("color", "Color of the line"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(input);
-		addInput(lineWidth);
-		addInput(color);
-		addInput(shader);
+		addInput(m_input);
+		addInput(m_lineWidth);
+		addInput(m_color);
+		addInput(m_shader);
 
-		color.getAccessor().push_back(Color::black());
-		lineWidth.getAccessor().push_back(0.0);
+		m_color.getAccessor().push_back(Color::black());
+		m_lineWidth.getAccessor().push_back(0.0);
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_uniColor_noTex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_uniColor_noTex.f.glsl");
 	}
 
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_VAO.release();
+	}
+
+	void update()
+	{
+		const std::vector<Path>& listPaths = m_input.getValue();
+		const std::vector<Color>& listColor = m_color.getValue();
+		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+
+		m_verticesBuffer.clear();
+
+		m_firstBuffer.clear();
+		m_countBuffer.clear();
+
+		if(!listPaths.empty() && !listColor.empty() && !listWidth.empty())
+		{
+			for (auto& path : listPaths)
+			{
+				m_firstBuffer.push_back(m_verticesBuffer.size());
+				m_countBuffer.push_back(path.size());
+
+				m_verticesBuffer.insert(m_verticesBuffer.end(), path.begin(), path.end());
+			}
+		}
+	}
+
 	void render()
 	{
-		const std::vector<Path>& paths = input.getValue();
-		const std::vector<Color>& listColor = color.getValue();
-		const std::vector<PReal>& listWidth = lineWidth.getValue();
+		const std::vector<Path>& paths = m_input.getValue();
+		const std::vector<Color>& listColor = m_color.getValue();
+		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
 
 		int nbPaths = paths.size();
 		int nbColor = listColor.size();
@@ -165,45 +242,63 @@ public:
 
 		if(nbPaths && nbColor && nbWidth)
 		{
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
+
+			if (!m_VAO)
+				initGL();
+
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_verticesBuffer);
+
+			m_VAO.bind();
 
 			if(nbColor < nbPaths) nbColor = 1;
 			if(nbWidth < nbPaths) nbWidth = 1;
 
-			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			int vertexLocation = shaderProgram.attributeLocation("vertex");
-			shaderProgram.enableAttributeArray(vertexLocation);
+			int colorLocation = m_shaderProgram.uniformLocation("color");
 
-			int colorLocation = shaderProgram.uniformLocation("color");
-
-			for(int i=0; i<nbPaths; ++i)
+			if (nbColor == 1 && nbWidth == 1)
 			{
-				glLineWidth(listWidth[i % nbWidth]);
+				glLineWidth(listWidth[0]);
+				m_shaderProgram.setUniformValueArray(colorLocation, listColor[0].data(), 1, 4);
 
-				shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
+				glMultiDrawArrays(GL_LINE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
+			}
+			else
+			{
+				for (int i = 0; i < nbPaths; ++i)
+				{
+					glLineWidth(listWidth[i % nbWidth]);
 
-				const Path& path = paths[i];
-				shaderProgram.setAttributeArray(vertexLocation, path.front().data(), 2);
+					m_shaderProgram.setUniformValueArray(colorLocation, listColor[i % nbColor].data(), 1, 4);
 
-				glDrawArrays(GL_LINE_STRIP, 0, path.size());
+					glDrawArrays(GL_LINE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
+				}
 			}
 
 			glLineWidth(0);
-			shaderProgram.disableAttributeArray(vertexLocation);
-			shaderProgram.release();
+			m_shaderProgram.release();
+			m_VAO.release();
 		}
 	}
 
 protected:
-	Data< std::vector<Path> > input;
-	Data< std::vector<PReal> > lineWidth;
-	Data< std::vector<Color> > color;
-	Data< Shader > shader;
+	Data< std::vector<Path> > m_input;
+	Data< std::vector<PReal> > m_lineWidth;
+	Data< std::vector<Color> > m_color;
+	Data< Shader > m_shader;
 
-	graphics::ShaderProgram shaderProgram;
+	std::vector<types::Point> m_verticesBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
+
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO;
 };
 
 int RenderPathClass = RegisterObject<RenderPath>("Render/Line/Path").setDescription("Draw a path");
@@ -218,96 +313,141 @@ public:
 
 	RenderGradientPath(PandaDocument* parent)
 		: Renderer(parent)
-		, input(initData("path", "Path to be drawn"))
-		, lineWidth(initData("width", "Width of the line" ))
-		, gradient(initData("gradient", "Gradient applied to the line"))
-		, shader(initData("shader", "Shaders used during the rendering"))
+		, m_input(initData("path", "Path to be drawn"))
+		, m_lineWidth(initData("width", "Width of the line"))
+		, m_gradient(initData("gradient", "Gradient applied to the line"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
 	{
-		addInput(input);
-		addInput(lineWidth);
-		addInput(gradient);
-		addInput(shader);
+		addInput(m_input);
+		addInput(m_lineWidth);
+		addInput(m_gradient);
+		addInput(m_shader);
 
-		gradient.getAccessor().push_back(Gradient::defaultGradient());
-		lineWidth.getAccessor().push_back(0.0);
+		m_gradient.getAccessor().push_back(Gradient::defaultGradient());
+		m_lineWidth.getAccessor().push_back(0.0);
 
-		shader.setWidgetData("Vertex;Fragment");
-		auto shaderAcc = shader.getAccessor();
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 	}
 
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
 	void update()
 	{
-		const std::vector<Path>& paths = input.getValue();
-		int nbPaths = paths.size();
+		const std::vector<Path>& listPaths = m_input.getValue();
+		const std::vector<Gradient>& listGradient = m_gradient.getValue();
+		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+		int nbPaths = listPaths.size();
 
-		texCoordsBuffer.clear();
-		texCoordsBuffer.resize(nbPaths);
+		m_verticesBuffer.clear();
+		m_texCoordsBuffer.clear();
 
-		pathLengths.clear();
-		pathLengths.resize(nbPaths);
+		m_firstBuffer.clear();
+		m_firstBuffer.reserve(nbPaths);
+		m_countBuffer.clear();
+		m_countBuffer.reserve(nbPaths);
 
-		for(int i=0; i<nbPaths; ++i)
+		if(!listPaths.empty() && !listGradient.empty() && !listWidth.empty())
 		{
-			const Path& path = paths[i];
-			int nbPts = path.size();
-			if(!nbPts)
-				continue;
-			texCoordsBuffer[i].resize(nbPts);
-			auto& uvList = texCoordsBuffer[i];
+			m_pathLengths.clear();
+			m_pathLengths.resize(nbPaths);
 
-			PReal length = 0;
-			for(int j=0; j<nbPts-1; ++j)
+			for (int i = 0; i < nbPaths; ++i)
 			{
-				length += (path[j+1] - path[j]).norm();
-				uvList[j+1].x = length;
+				const auto& path = listPaths[i];
+				int start = m_verticesBuffer.size();
+				int nbPts = path.size();
+				
+				// Compute the texture coordinates
+				std::vector<types::Point> uvList(nbPts);
+				
+				PReal length = 0;
+				for (int j = 0; j < nbPts - 1; ++j)
+				{
+					length += (path[j+1] - path[j]).norm();
+					uvList[j+1].x = length;
+				}
+
+				if (length < 1e-3)
+				{
+					m_pathLengths[i] = 0;
+					m_firstBuffer.push_back(start);
+					m_countBuffer.push_back(0);
+
+					continue; // Ignore this path
+				}
+
+				m_pathLengths[i] = length;
+
+				for(auto& uv : uvList)
+					uv.x /= length;
+
+				m_firstBuffer.push_back(start);
+				m_countBuffer.push_back(nbPts);
+
+				m_verticesBuffer.insert(m_verticesBuffer.end(), path.begin(), path.end());
+				m_texCoordsBuffer.insert(m_texCoordsBuffer.end(), uvList.begin(), uvList.end());
 			}
-
-			pathLengths[i] = length;
-
-			if(length < 1e-3)
-				uvList.clear();
-
-			for(auto& uv : uvList)
-				uv.x /= length;
 		}
 	}
 
 	void render()
 	{
-		const std::vector<Path>& paths = input.getValue();
-		const std::vector<Gradient>& listGradient = gradient.getValue();
-		const std::vector<PReal>& listWidth = lineWidth.getValue();
+		const std::vector<Gradient>& listGradient = m_gradient.getValue();
+		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
 
-		int nbPaths = paths.size();
 		int nbGradient = listGradient.size();
 		int nbWidth = listWidth.size();
 
-		if(nbPaths && nbGradient && nbWidth)
+		if(!m_verticesBuffer.empty() && nbGradient && nbWidth)
 		{
-			if(!shader.getValue().apply(shaderProgram))
+			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
 
+			if (!m_VAO)
+				initGL();
+
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_verticesBuffer);
+
+			m_texCoordsVBO.bind();
+			m_texCoordsVBO.write(m_texCoordsBuffer);
+
+			int nbPaths = m_countBuffer.size();
 			if(nbGradient < nbPaths) nbGradient = 1;
 			if(nbWidth < nbPaths) nbWidth = 1;
 
-			shaderProgram.bind();
-			shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			int vertexLocation = shaderProgram.attributeLocation("vertex");
-			shaderProgram.enableAttributeArray(vertexLocation);
+			m_shaderProgram.setUniformValue("tex0", 0);
 
-			int texCoordLocation = shaderProgram.attributeLocation("texCoord");
-			shaderProgram.enableAttributeArray(texCoordLocation);
-
-			shaderProgram.setUniformValue("tex0", 0);
+			m_VAO.bind();
 
 			// Optimization when we use only one gradient
 			if(nbGradient == 1)
 			{
-				PReal maxLength = *std::max_element(pathLengths.begin(), pathLengths.end());
-				GLuint texture = GradientCache::getInstance()->getTexture(listGradient.front(), static_cast<int>(std::ceil(maxLength)));
+				PReal maxLength = *std::max_element(m_pathLengths.begin(), m_pathLengths.end());
+				maxLength = helper::bound(64.f, std::ceil(maxLength), 1024.f); // We limit the texture at 1024 pixels
+				GLuint texture = GradientCache::getInstance()->getTexture(listGradient.front(), static_cast<int>(maxLength));
 
 				glBindTexture(GL_TEXTURE_2D, texture);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -315,63 +455,65 @@ public:
 				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-				for(int i=0; i<nbPaths; ++i)
+				if (nbWidth == 1)
 				{
+					glLineWidth(listWidth[0]);
+
+					glMultiDrawArrays(GL_LINE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
+				}
+
+				for (int i = 0; i < nbPaths; ++i)
+				{
+					if (!m_countBuffer[i])
+						continue;
+
 					glLineWidth(listWidth[i % nbWidth]);
 
-					const Path& path = paths[i];
-					const auto& uvList = texCoordsBuffer[i];
-					if(uvList.empty())
-						continue;
-					shaderProgram.setAttributeArray(texCoordLocation, uvList.front().data(), 2);
-					shaderProgram.setAttributeArray(vertexLocation, path.front().data(), 2);
-
-					glDrawArrays(GL_LINE_STRIP, 0, path.size());
+					glDrawArrays(GL_LINE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
 				}
 			}
 			else
 			{
-				for(int i=0; i<nbPaths; ++i)
+				for (int i = 0; i < nbPaths; ++i)
 				{
+					if (!m_countBuffer[i])
+						continue;
+
 					glLineWidth(listWidth[i % nbWidth]);
 
-					const Path& path = paths[i];
-					const auto& uvList = texCoordsBuffer[i];
-					if(uvList.empty())
-						continue;
-					shaderProgram.setAttributeArray(texCoordLocation, uvList.front().data(), 2);
-					shaderProgram.setAttributeArray(vertexLocation, path.front().data(), 2);
+					PReal length = helper::bound(64.f, std::ceil(m_pathLengths[i]), 1024.f); // We limit the texture at 1024 pixels
+					GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(length));
 
-					GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(std::ceil(pathLengths[i])));
-					if(!texture)
-						continue;
 					glBindTexture(GL_TEXTURE_2D, texture);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-					glDrawArrays(GL_LINE_STRIP, 0, path.size());
+					glDrawArrays(GL_LINE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
 				}
 			}
 
 			glLineWidth(0);
-			shaderProgram.disableAttributeArray(vertexLocation);
-			shaderProgram.disableAttributeArray("texCoord");
-			shaderProgram.release();
+			m_shaderProgram.release();
+			m_VAO.release();
 		}
 	}
 
 protected:
-	Data< std::vector<Path> > input;
-	Data< std::vector<PReal> > lineWidth;
-	Data< std::vector<Gradient> > gradient;
-	Data< Shader > shader;
+	Data< std::vector<Path> > m_input;
+	Data< std::vector<PReal> > m_lineWidth;
+	Data< std::vector<Gradient> > m_gradient;
+	Data< Shader > m_shader;
 
-	std::vector<PReal> pathLengths;
-	std::vector< std::vector<Point> > texCoordsBuffer;
+	std::vector<PReal> m_pathLengths;
+	std::vector<types::Point> m_verticesBuffer, m_texCoordsBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
 
-	graphics::ShaderProgram shaderProgram;
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
 int RenderGradientPathClass = RegisterObject<RenderGradientPath>("Render/Gradient/Path")
