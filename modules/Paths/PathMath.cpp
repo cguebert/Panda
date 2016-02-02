@@ -390,6 +390,118 @@ int PathMath_AreaClass = RegisterObject<PathMath_Area>("Math/Path/Area")
 						 .setName("Area of path")
 						 .setDescription("Compute the area of a closed path");
 
+//****************************************************************************//
+
+class PathMath_RemoveSmallSegments : public PandaObject
+{
+public:
+	PANDA_CLASS(PathMath_RemoveSmallSegments, PandaObject)
+
+	PathMath_RemoveSmallSegments(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("input", "Input path"))
+		, m_output(initData("output", "Output path"))
+		, m_threshold(initData(1, "threshold", "Segments with a length inferior to this are removed"))
+		, m_method(initData(0, "method", "How to replace small segments"))
+	{
+		addInput(m_input);
+		addInput(m_threshold);
+		addInput(m_method);
+
+		m_method.setWidget("enum");
+		m_method.setWidgetData("First;Last;Mean");
+
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const std::vector<Path>& listInput = m_input.getValue();
+		const PReal threshold = m_threshold.getValue();
+		const int method = m_method.getValue();
+		int nbInputs = listInput.size();
+
+		auto outputList = m_output.getAccessor();
+		outputList.clear();
+		outputList.resize(nbInputs);
+		for (int i = 0; i < nbInputs; ++i)
+		{
+			const Path& path = listInput[i];
+
+			if (path.empty())
+				continue;
+
+			auto& outputPath = outputList[i];
+			int nbPts = path.size();
+
+			outputPath.push_back(path[0]);
+			if (nbPts == 1)
+				continue;
+
+			Point pt1 = path[0];
+			for (int j = 1; j < nbPts;)
+			{
+				Point pt2 = path[j];
+				PReal l = (pt2 - pt1).norm();
+				if (l < threshold)
+				{
+					std::vector<Point> tmp;
+					tmp.push_back(pt1);
+					tmp.push_back(pt2);
+
+					// Continue searching for the first point outside of the threshold
+					for (++j; j < nbPts; ++j)
+					{
+						Point pt3 = path[j];
+						l = (pt3 - pt1).norm();
+						if (l > threshold)
+							break;
+
+						tmp.push_back(pt3);
+					}
+
+					switch (method)
+					{
+					case 0: // First
+						pt2 = tmp.front();
+						break;
+					case 1: // Last
+						pt2 = tmp.back();
+						break;
+					case 2: // Mean
+					{
+						pt2 = Point();
+						for (const auto& p : tmp)
+							pt2 += p;
+						pt2 /= static_cast<PReal>(tmp.size());
+						break;
+					}
+					}
+
+					outputPath.back() = pt2;
+				}
+				else
+				{
+					outputPath.push_back(pt2);
+					++j;
+				}
+
+				pt1 = pt2;
+			}
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< std::vector<Path> > m_input, m_output;
+	Data< PReal > m_threshold;
+	Data< int > m_method;
+};
+
+int PathMath_RemoveSmallSegmentsClass = RegisterObject<PathMath_RemoveSmallSegments>("Math/Path/Remove small segments").setDescription("Remove the small segments from a path");
+
+
 } // namespace Panda
 
 
