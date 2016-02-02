@@ -6,6 +6,7 @@
 #include <panda/object/Renderer.h>
 #include <panda/types/Color.h>
 #include <panda/types/Gradient.h>
+#include <panda/types/ImageWrapper.h>
 #include <panda/types/Path.h>
 #include <panda/types/Shader.h>
 #include <panda/helper/algorithm.h>
@@ -18,6 +19,7 @@ namespace panda {
 
 using types::Color;
 using types::Gradient;
+using types::ImageWrapper;
 using types::Point;
 using types::Path;
 using types::Shader;
@@ -560,6 +562,221 @@ protected:
 };
 
 int RenderGradientPathClass = RegisterObject<RenderGradientPath>("Render/Gradient/Path")
-		.setName("Gradient path").setDescription("Draw a path");
+		.setName("Gradient path").setDescription("Draw a path using a gradient");
+
+//****************************************************************************//
+
+class RenderTexturedPath : public Renderer
+{
+public:
+	PANDA_CLASS(RenderTexturedPath, Renderer)
+
+	RenderTexturedPath(PandaDocument* parent)
+		: Renderer(parent)
+		, m_input(initData("path", "Path to be drawn"))
+		, m_lineWidth(initData("width", "Width of the line"))
+		, m_texture(initData("gradient", "Gradient applied to the line"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
+	{
+		addInput(m_input);
+		addInput(m_lineWidth);
+		addInput(m_texture);
+		addInput(m_shader);
+
+		m_lineWidth.getAccessor().push_back(1.f);
+
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+	}
+
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
+	void extrude(const Point& ptA, const Point& ptB, float width)
+	{
+		Point dir = ptB - ptA;
+		dir.normalize();
+		Point disp = Point(-dir.y, dir.x) * (width / 2);
+		m_verticesBuffer.push_back(ptA + disp);
+		m_verticesBuffer.push_back(ptA - disp);
+		m_verticesBuffer.push_back(ptB + disp);
+		m_verticesBuffer.push_back(ptB - disp);
+	}
+
+	void update()
+	{
+		const std::vector<Path>& listPaths = m_input.getValue();
+		const std::vector<ImageWrapper>& listTextures = m_texture.getValue();
+		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+		int nbPaths = listPaths.size();
+
+		m_verticesBuffer.clear();
+		m_texCoordsBuffer.clear();
+
+		m_firstBuffer.clear();
+		m_firstBuffer.reserve(nbPaths);
+		m_countBuffer.clear();
+		m_countBuffer.reserve(nbPaths);
+
+		if (!listPaths.empty() && !listTextures.empty() && !listWidth.empty())
+		{
+			int nbWidth = listWidth.size();
+			if (nbWidth < nbPaths) nbWidth = 1;
+
+			m_pathLengths.clear();
+			m_pathLengths.resize(nbPaths);
+
+			for (int i = 0; i < nbPaths; ++i)
+			{
+				const auto& path = listPaths[i];
+				PReal width = listWidth[i % nbWidth];
+				int start = m_verticesBuffer.size();
+
+				m_pathLengths[i] = 0;
+				m_firstBuffer.push_back(start);
+				m_countBuffer.push_back(0); // Will be modified later
+
+				int nbPts = path.size();
+				if (nbPts < 2)
+					continue;
+				
+				// Compute the texture coordinates
+				std::vector<types::Point> uvList;
+				uvList.reserve((nbPts - 1) * 4);
+				uvList.push_back(Point(0.f, 1.f));
+				uvList.push_back(Point(0.f, 0.f));
+				
+				PReal length = 0;
+				for (int j = 0; j < nbPts - 1; ++j)
+				{
+					length += (path[j+1] - path[j]).norm();
+					auto pt1 = Point(length, 1);
+					auto pt0 = Point(length, 0);
+
+					uvList.push_back(pt1);
+					uvList.push_back(pt0);
+					uvList.push_back(pt1);
+					uvList.push_back(pt0);
+				}
+
+				if (length < 1e-3)
+					continue; // Ignore this path
+
+				m_pathLengths[i] = length;
+
+				for(auto& uv : uvList)
+					uv.x /= length;
+
+				for (int j = 0; j < nbPts - 1; ++j)
+					extrude(path[j], path[j + 1], width);
+
+				m_countBuffer.back() = (nbPts - 1) * 4;
+
+				m_texCoordsBuffer.insert(m_texCoordsBuffer.end(), uvList.begin(), uvList.end());
+			}
+		}
+	}
+
+	void render()
+	{
+		const auto& listTextures = m_texture.getValue();
+		int nbTextures = listTextures.size();
+
+		if (!m_verticesBuffer.empty() && nbTextures)
+		{
+			if (!m_shader.getValue().apply(m_shaderProgram))
+				return;
+
+			if (!m_VAO)
+				initGL();
+
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_verticesBuffer);
+
+			m_texCoordsVBO.bind();
+			m_texCoordsVBO.write(m_texCoordsBuffer);
+
+			int nbPaths = m_countBuffer.size();
+			if (nbTextures < nbPaths) nbTextures = 1;
+
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
+
+			m_shaderProgram.setUniformValue("tex0", 0);
+
+			m_VAO.bind();
+
+			// Optimization when we use only one texture
+			if (nbTextures == 1)
+			{
+				GLuint texture = listTextures.front().getTextureId();
+
+				glBindTexture(GL_TEXTURE_2D, texture);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+				glMultiDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
+			}
+			else
+			{
+				for (int i = 0; i < nbPaths; ++i)
+				{
+					if (!m_countBuffer[i])
+						continue;
+
+					GLuint texture = listTextures[i % nbTextures].getTextureId();
+
+					glBindTexture(GL_TEXTURE_2D, texture);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+					glDrawArrays(GL_LINE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
+				}
+			}
+
+			m_shaderProgram.release();
+			m_VAO.release();
+		}
+	}
+
+protected:
+	Data< std::vector<Path> > m_input;
+	Data< std::vector<PReal> > m_lineWidth;
+	Data< std::vector<ImageWrapper> > m_texture;
+	Data< Shader > m_shader;
+
+	std::vector<PReal> m_pathLengths;
+	std::vector<types::Point> m_verticesBuffer, m_texCoordsBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
+
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
+};
+
+int RenderTexturedPathClass = RegisterObject<RenderTexturedPath>("Render/Textured/Path")
+		.setName("Textured path").setDescription("Draw a textured path");
 
 } // namespace panda
