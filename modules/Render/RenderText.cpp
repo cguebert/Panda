@@ -6,18 +6,19 @@
 #include <panda/object/Renderer.h>
 #include <panda/types/Color.h>
 #include <panda/types/Rect.h>
-#include <panda/graphics/Framebuffer.h>
 #include <panda/helper/algorithm.h>
+#include <panda/helper/system/FileRepository.h>
+#include <panda/graphics/Buffer.h>
+#include <panda/graphics/VertexArrayObject.h>
 
-#include <QOpenGLPaintDevice>
-#include <QOpenGLFunctions>
-#include <QPainter>
-#include <QFont>
+#include <freetype-gl/freetype-gl.h>
 
 namespace panda {
 
 using types::Color;
+using types::Point;
 using types::Rect;
+using types::Shader;
 
 class RenderText : public Renderer
 {
@@ -26,38 +27,189 @@ public:
 
 	RenderText(PandaDocument* parent)
 		: Renderer(parent)
-		, text(initData("text", "Text to be drawn"))
-		, font(initData("font", "Font to use for the text rendering"))
-		, rect(initData("rectangle", "Rectangle in which to draw the text"))
-		, color(initData("color", "Color of the text"))
-		, alignH(initData(2, "align H", "Horizontal alignment of the text"))
-		, alignV(initData(2, "align V", "Vertical alignment of the text"))
+		, m_text(initData("text", "Text to be drawn"))
+		, m_font(initData("font", "Font to use for the text rendering"))
+		, m_rect(initData("rectangle", "Rectangle in which to draw the text"))
+		, m_color(initData("color", "Color of the text"))
+		, m_alignH(initData(0, "align H", "Horizontal alignment of the text"))
+		, m_alignV(initData(3, "align V", "Vertical alignment of the text"))
 	{
-		addInput(text);
-		addInput(font);
-		addInput(rect);
-		addInput(color);
-		addInput(alignH);
-		addInput(alignV);
+		addInput(m_text);
+		addInput(m_font);
+		addInput(m_rect);
+		addInput(m_color);
+		addInput(m_alignH);
+		addInput(m_alignV);
 
-		font.setWidget("font");
-		QFont tmp;
-		font.setValue(tmp.toString().toStdString());
+		m_font.setWidget("font");
+	
+		m_alignH.setWidget("enum");
+		m_alignH.setWidgetData("Left;Right;Center");
 
-		alignH.setWidget("enum");
-		alignH.setWidgetData("Left;Right;Center;Justify");
+		m_alignV.setWidget("enum");
+		m_alignV.setWidgetData("Top;Bottom;Center;Baseline");
 
-		alignV.setWidget("enum");
-		alignV.setWidgetData("Top;Bottom;Center;Baseline");
+		m_color.getAccessor().push_back(Color::black());
 
-		color.getAccessor().push_back(Color::black());
+		m_shader.setSourceFromFile(Shader::ShaderType::Vertex, "shaders/Text.v.glsl");
+		m_shader.setSourceFromFile(Shader::ShaderType::Fragment, "shaders/Text.f.glsl");
+	}
+
+	~RenderText()
+	{
+		freeFont();
+	}
+
+	void freeFont()
+	{
+		if (m_texFont)
+			ftgl::texture_font_delete(m_texFont);
+
+		if (m_atlas)
+			ftgl::texture_atlas_delete(m_atlas);
+	}
+
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_colorsVBO.create();
+		m_colorsVBO.bind();
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(2);
+
+		m_VAO.release();
+
+		changeFont();
+	}
+
+	void changeFont()
+	{
+		auto font = m_font.getValue();
+		m_prevFont = font;
+
+		freeFont();
+
+		m_atlas = ftgl::texture_atlas_new(512, 512, 1);
+		m_texFont = ftgl::texture_font_new_from_file(m_atlas, 24, "c:/windows/fonts/arial.ttf");
+
+		const char* cache = " !\"#$%&'()*+,-./0123456789:;<=>?"
+			"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+			"`abcdefghijklmnopqrstuvwxyz{|}~";
+		ftgl::texture_font_load_glyphs(m_texFont, cache);
+	}
+
+	void addText(const std::string& text, Color color, Rect area)
+	{
+		int startText = m_verticesBuffer.size();
+		PReal width = 0;
+		int height = 0, under = 0;
+
+		Point pos = area.bottomLeft();
+		for (unsigned int i = 0; i < text.size(); ++i)
+		{
+			auto glyph = ftgl::texture_font_get_glyph(m_texFont, &text[i]);
+			if (!glyph)
+				continue;
+
+			float kerning = 0.f;
+			if (i)
+				kerning = texture_glyph_get_kerning(glyph, &text[i - 1]);
+
+			pos.x += kerning;
+			int gw = glyph->width, gh = glyph->height;
+			int gox = glyph->offset_x, goy = glyph->offset_y;
+			int u = gh - goy;
+			
+			if (gh > height) height = gh;
+			if (u > under) under = u;
+			width += kerning + glyph->offset_x + gw;
+
+			PReal x0 = pos.x + gox;
+			PReal y0 = pos.y - goy;
+			PReal x1 = x0 + gw;
+			PReal y1 = y0 + gh;
+
+			int startGlyph = m_verticesBuffer.size();
+			m_verticesBuffer.emplace_back(x0, y0);
+			m_verticesBuffer.emplace_back(x0, y1);
+			m_verticesBuffer.emplace_back(x1, y1);
+			m_verticesBuffer.emplace_back(x1, y0);
+
+			m_texCoordsBuffer.emplace_back(glyph->s0, glyph->t0);
+			m_texCoordsBuffer.emplace_back(glyph->s0, glyph->t1);
+			m_texCoordsBuffer.emplace_back(glyph->s1, glyph->t1);
+			m_texCoordsBuffer.emplace_back(glyph->s1, glyph->t0);
+
+			m_colorsBuffer.emplace_back(color);
+			m_colorsBuffer.emplace_back(color);
+			m_colorsBuffer.emplace_back(color);
+			m_colorsBuffer.emplace_back(color);
+
+			GLuint indices[6] = { 0, 1, 2, 0, 2, 3 };
+			for (int j = 0; j < 6; ++j)
+				m_indicesBuffer.push_back(startGlyph + indices[j]);
+
+			auto adv = glyph->advance_x;
+			pos.x += adv;
+			width += adv - gw - gox;
+		}
+
+		int alignH = m_alignH.getValue(), alignV = m_alignV.getValue();
+		if (alignH != 0 || alignV != 3) // Must move the text
+		{
+			Point delta;
+			switch (alignH)
+			{
+			case 0: // Left
+				break;
+			case 1: // Right
+				delta.x = area.width() - width;
+				break;
+			case 2: // Center
+				delta.x = (area.width() - width) / 2;
+				break;
+			}
+
+			switch (alignV)
+			{
+			case 0: // Top
+				delta.y = height - under - area.height();
+				break;
+			case 1: // Bottom
+				delta.y = static_cast<PReal>(-under);
+				break;
+			case 2: // Center
+				delta.y = -under - (area.height() - height) / 2;
+				break;
+			case 3: // Baseline
+				break;
+			}
+
+			if (delta != Point::zero())
+			{
+				for (int i = startText, nb = m_verticesBuffer.size(); i < nb; ++i)
+					m_verticesBuffer[i] += delta;
+			}
+		}
 	}
 
 	void render()
 	{
-		const auto& listText = text.getValue();
-		const auto& listRect = rect.getValue();
-		const auto& listColor = color.getValue();
+		const auto& listText = m_text.getValue();
+		const auto& listRect = m_rect.getValue();
+		const auto& listColor = m_color.getValue();
 
 		int nbText = listText.size();
 		int nbRect = listRect.size();
@@ -65,106 +217,73 @@ public:
 
 		if(nbText && nbRect && nbColor)
 		{
-			const int alignHVals[] = {Qt::AlignLeft, Qt::AlignRight, Qt::AlignHCenter, Qt::AlignJustify};
-			const int alignVVals[] = {Qt::AlignTop, Qt::AlignBottom, Qt::AlignVCenter, Qt::AlignBaseline};
-			int alignHIndex = helper::bound(0, alignH.getValue(), 3);
-			int alignVIndex = helper::bound(0, alignV.getValue(), 3);
-			int alignment = alignHVals[alignHIndex] | alignVVals[alignVIndex];
+			if (!m_shader.apply(m_shaderProgram))
+				return;
 
-			auto renderSize = m_parentDocument->getRenderSize();
-			if(!renderFrameBuffer || renderFrameBuffer.size() != renderSize)
+			if (!m_VAO)
+				initGL();
+
+			if (m_font.getValue() != m_prevFont)
+				changeFont();
+
+			m_verticesBuffer.clear();
+			m_texCoordsBuffer.clear();
+			m_colorsBuffer.clear();
+			m_indicesBuffer.clear();
+
+			if (nbText < nbRect) nbText = 1;
+			if (nbColor < nbRect) nbColor = 1;
+			for (int i = 0; i < nbRect; ++i)
 			{
-				graphics::FramebufferFormat format;
-				format.samples = 16;
-				format.attachment = graphics::FramebufferFormat::Attachment::DepthAndStencil;
-				renderFrameBuffer = graphics::Framebuffer(renderSize, format);
-				displayFrameBuffer = graphics::Framebuffer(renderSize);
+				const auto& text = listText[i % nbText];
+				const auto& rect = listRect[i];
+				const auto& color = listColor[i % nbColor];
+
+				addText(text, color, rect);
 			}
 
-			QOpenGLFunctions functions(QOpenGLContext::currentContext());
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_verticesBuffer);
 
-			GLint previousFBO;
-			glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &previousFBO);
-			renderFrameBuffer.bind();
+			m_texCoordsVBO.bind();
+			m_texCoordsVBO.write(m_texCoordsBuffer);
 
-			glClearColor(0, 0, 0, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			m_colorsVBO.bind();
+			m_colorsVBO.write(m_colorsBuffer);
 
-			glViewport(0, 0, renderSize.width(), renderSize.height());
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			m_VAO.bind();
 
-			QOpenGLPaintDevice device(renderSize.width(), renderSize.height());
-			QPainter painter;
-			painter.begin(&device);
-			painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
+			m_shaderProgram.bind();
+			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			painter.setBrush(Qt::NoBrush);
-			painter.setPen(Qt::NoPen);
-			QFont theFont;
-			theFont.fromString(QString::fromStdString(font.getValue()));
-			painter.setFont(theFont);
+			glBindTexture(GL_TEXTURE_2D, m_atlas->id);
 
-			if(nbText < nbRect) nbText = 1;
-			if(nbColor < nbRect) nbColor = 1;
+			glDrawElements(GL_TRIANGLES, m_indicesBuffer.size(), GL_UNSIGNED_INT, m_indicesBuffer.data());
 
-			for(int i=0; i<nbRect; ++i)
-			{
-				const Color& c = listColor[i % nbColor];
-				QColor col = QColor::fromRgbF(c.r, c.g, c.b, c.a);
-				painter.setPen(QPen(col));
-				Rect r = listRect[i];
-				QRectF rect = QRectF(r.left(), r.top(), r.width(), r.height());
-				painter.drawText(rect, alignment, QString::fromStdString(listText[i % nbText]));
-			}
-
-			painter.end();
-			glClear(GL_STENCIL_BUFFER_BIT);
-			glDisable(GL_STENCIL_TEST);
-			glDisable(GL_DEPTH_TEST);
-			glDepthMask(GL_FALSE);
-
-			renderFrameBuffer.release();
-			graphics::Framebuffer::blitFramebuffer(displayFrameBuffer, renderFrameBuffer);
-			functions.glBindFramebuffer(GL_FRAMEBUFFER, previousFBO);
-
-			glBindTexture(GL_TEXTURE_2D, displayFrameBuffer.texture());
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glEnableClientState(GL_VERTEX_ARRAY);
-			GLfloat verts[8];
-			glVertexPointer(2, GL_FLOAT, 0, verts);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			GLfloat texCoords[8];
-			glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
-
-			verts[0*2+0] = renderSize.width(); verts[0*2+1] = 0;
-			verts[1*2+0] = 0; verts[1*2+1] = 0;
-			verts[3*2+0] = 0; verts[3*2+1] = renderSize.height();
-			verts[2*2+0] = renderSize.width(); verts[2*2+1] = renderSize.height();
-
-			texCoords[0*2+0] = 1; texCoords[0*2+1] = 1;
-			texCoords[1*2+0] = 0; texCoords[1*2+1] = 1;
-			texCoords[3*2+0] = 0; texCoords[3*2+1] = 0;
-			texCoords[2*2+0] = 1; texCoords[2*2+1] = 0;
-
-			glColor4f(1,1,1,1);
-
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-			glDisable(GL_TEXTURE_2D);
+			m_shaderProgram.release();
+			m_VAO.release();
 		}
 	}
 
 protected:
-	Data< std::vector<std::string> > text;
-	Data< std::string > font;
-	Data< std::vector<Rect> > rect;
-	Data< std::vector<Color> > color;
-	Data< int > alignH, alignV;
+	Data< std::vector<std::string> > m_text;
+	Data< std::string > m_font;
+	Data< std::vector<Rect> > m_rect;
+	Data< std::vector<Color> > m_color;
+	Data< int > m_alignH, m_alignV;
 
-	graphics::Framebuffer renderFrameBuffer, displayFrameBuffer;
+	std::string m_prevFont;
+	std::vector<Point> m_verticesBuffer, m_texCoordsBuffer;
+	std::vector<Color> m_colorsBuffer;
+	std::vector<unsigned int> m_indicesBuffer;
+
+	Shader m_shader;
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO, m_colorsVBO;
+
+	ftgl::texture_atlas_t* m_atlas = nullptr;
+	ftgl::texture_font_t* m_texFont = nullptr;
 };
 
 int RenderTextClass = RegisterObject<RenderText>("Render/Text").setDescription("Draw some text");
