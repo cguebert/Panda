@@ -86,7 +86,7 @@ public:
 
 			m_firstBuffer.resize(nbRect);
 			for (int i = 0; i < nbRect; ++i)
-				m_firstBuffer[i] = i * 4;
+				m_firstBuffer[i] = i * 10;
 
 			m_countBuffer.assign(nbRect, 10);
 
@@ -113,7 +113,7 @@ public:
 			m_colorBuffer.reserve(nbRect * 10);
 			if (nbColor < nbRect)
 			{
-				m_colorBuffer.assign(nbRect * 8, listColor[0]);
+				m_colorBuffer.assign(nbRect * 10, listColor[0]);
 			}
 			else
 			{
