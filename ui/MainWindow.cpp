@@ -64,10 +64,14 @@ MainWindow::MainWindow()
 	});
 
 	// Set the application directories
-	QStringList standardPaths = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
-	for(const QString& path : standardPaths)
-		panda::helper::system::DataRepository.addPath(path.toStdString());
-	panda::helper::system::DataRepository.addPath(QCoreApplication::applicationDirPath().toStdString());
+	auto& dataRepository = panda::helper::system::DataRepository;
+	auto standardPaths = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+	for(const auto& path : standardPaths)
+		dataRepository.addPath(path.toStdString());
+	dataRepository.addPath(QCoreApplication::applicationDirPath().toStdString());
+	auto fontPaths = QStandardPaths::standardLocations(QStandardPaths::FontsLocation);
+	for (const auto& path : fontPaths)
+		dataRepository.addPath(path.toStdString());
 
 	panda::PluginsManager::getInstance()->loadPlugins();
 

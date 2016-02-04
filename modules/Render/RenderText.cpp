@@ -7,6 +7,7 @@
 #include <panda/types/Color.h>
 #include <panda/types/Rect.h>
 #include <panda/helper/algorithm.h>
+#include <panda/helper/Font.h>
 #include <panda/helper/system/FileRepository.h>
 #include <panda/graphics/Buffer.h>
 #include <panda/graphics/VertexArrayObject.h>
@@ -53,6 +54,8 @@ public:
 
 		m_shader.setSourceFromFile(Shader::ShaderType::Vertex, "shaders/Text.v.glsl");
 		m_shader.setSourceFromFile(Shader::ShaderType::Fragment, "shaders/Text.f.glsl");
+
+		m_prevFont = helper::Font().toString();
 	}
 
 	~RenderText()
@@ -64,9 +67,11 @@ public:
 	{
 		if (m_texFont)
 			ftgl::texture_font_delete(m_texFont);
+		m_texFont = nullptr;
 
 		if (m_atlas)
 			ftgl::texture_atlas_delete(m_atlas);
+		m_atlas = nullptr;
 	}
 
 	void initGL()
@@ -90,31 +95,45 @@ public:
 		glEnableVertexAttribArray(2);
 
 		m_VAO.release();
-
-		changeFont();
 	}
 
 	void changeFont()
 	{
-		auto font = m_font.getValue();
-		m_prevFont = font;
+		auto fontTxt = m_font.getValue();
+		helper::Font font(fontTxt);
+		if (font.path.empty())
+			font = helper::Font();
+
+		m_prevFont = fontTxt;
 
 		freeFont();
 
-		m_atlas = ftgl::texture_atlas_new(512, 512, 1);
-		m_texFont = ftgl::texture_font_new_from_file(m_atlas, 24, "c:/windows/fonts/arial.ttf");
+		auto fontPath = helper::system::DataRepository.findFile(font.path);
+		if (fontPath.empty())
+			return;
 
 		const char* cache = " !\"#$%&'()*+,-./0123456789:;<=>?"
 			"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
 			"`abcdefghijklmnopqrstuvwxyz{|}~";
-		ftgl::texture_font_load_glyphs(m_texFont, cache);
+
+		for (int dim = 512; dim <= 4096; dim *= 2)
+		{
+			m_atlas = ftgl::texture_atlas_new(dim, dim, 1);
+			m_texFont = ftgl::texture_font_new_from_file(m_atlas, static_cast<float>(font.pointSize), fontPath.c_str());
+
+			auto missed = ftgl::texture_font_load_glyphs(m_texFont, cache);
+			if (!missed)
+				break;
+
+			freeFont();
+		}
 	}
 
 	void addText(const std::string& text, Color color, Rect area)
 	{
 		int startText = m_verticesBuffer.size();
 		PReal width = 0;
-		int height = 0, under = 0;
+		int maxOffsetY = 0, under = 0;
 
 		Point pos = area.bottomLeft();
 		for (unsigned int i = 0; i < text.size(); ++i)
@@ -132,7 +151,7 @@ public:
 			int gox = glyph->offset_x, goy = glyph->offset_y;
 			int u = gh - goy;
 			
-			if (gh > height) height = gh;
+			if (goy > maxOffsetY) maxOffsetY = goy;
 			if (u > under) under = u;
 			width += kerning + glyph->offset_x + gw;
 
@@ -166,6 +185,7 @@ public:
 			width += adv - gw - gox;
 		}
 
+		int height = maxOffsetY + under;
 		int alignH = m_alignH.getValue(), alignV = m_alignV.getValue();
 		if (alignH != 0 || alignV != 3) // Must move the text
 		{
@@ -185,7 +205,7 @@ public:
 			switch (alignV)
 			{
 			case 0: // Top
-				delta.y = height - under - area.height();
+				delta.y = maxOffsetY - area.height();
 				break;
 			case 1: // Bottom
 				delta.y = static_cast<PReal>(-under);
@@ -225,6 +245,9 @@ public:
 
 			if (m_font.getValue() != m_prevFont)
 				changeFont();
+
+			if (!m_texFont || !m_atlas)
+				return;
 
 			m_verticesBuffer.clear();
 			m_texCoordsBuffer.clear();

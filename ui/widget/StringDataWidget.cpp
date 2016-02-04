@@ -2,8 +2,57 @@
 #include <ui/widget/OpenDialogDataWidget.h>
 #include <ui/widget/ListDataWidgetDialog.h>
 #include <ui/widget/SimpleDataWidget.h>
+#include <panda/helper/Font.h>
 
 #include <QtWidgets>
+
+namespace
+{
+
+using FontPair = std::pair<std::string, int>; // Path & index of the font in the file
+#ifdef Q_OS_WIN32
+using FontsMap = QMap<QString, FontPair>;
+const FontsMap& getFontsMap()
+{
+	static FontsMap fontsMap;
+	if (fontsMap.empty())
+	{
+		QSettings settings("HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", QSettings::NativeFormat);
+		QStringList list = settings.allKeys();
+		for (const auto& key : list)
+		{ 
+			auto faces = key.split(" & ");
+			auto& last = faces.back();
+			last = last.left(last.indexOf(" ("));
+
+			auto text = settings.value(key).toString();
+			for (int i = 0; i < faces.size(); ++i)
+				fontsMap[faces[i]] = std::make_pair(text.toStdString(), i);
+		}
+	}
+
+	return fontsMap;
+}
+#endif
+
+FontPair getFontFilename(QFont font)
+{
+#ifdef Q_OS_WIN32
+	QString family = font.family();
+	QString familyPlus = family + (font.weight() == 75 ? " Bold" : "") + (font.italic() ? " Italic" : "");
+	const auto& fontsMap = getFontsMap();
+	auto fp = fontsMap.value(familyPlus);
+	if (!fp.first.empty())
+		return fp;
+	return fontsMap.value(family);
+#else
+	QFontInfo info(font);
+	QFont realFont(info.family());
+	return std::make_pair(realFont.rawName().toStdString(), 0);
+#endif
+}
+
+}
 
 template<>
 class DataWidgetContainer< std::string >
@@ -141,12 +190,24 @@ public:
 	}
 	void readFromData(const value_type& v)
 	{
-		theFont.fromString(QString::fromStdString(v));
+		theFont = QFont();
+		panda::helper::Font f(v);
+
+		theFont.setFamily(QString::fromStdString(f.name));
+		theFont.setPointSize(f.pointSize);
+		theFont.setWeight(f.weight);
+		theFont.setItalic(f.italic);
 		updatePreview();
 	}
 	void writeToData(value_type& v)
 	{
-		v = theFont.toString().toStdString();
+		panda::helper::Font font;
+		font.name = theFont.family().toStdString();
+		std::tie(font.path, font.faceIndex) = getFontFilename(theFont);
+		font.pointSize = theFont.pointSize();
+		font.italic = theFont.italic();
+		font.weight = theFont.weight();
+		v = font.toString();
 		updatePreview();
 	}
 	virtual void onShowDialog()
