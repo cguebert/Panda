@@ -55,6 +55,7 @@ public:
 	unsigned int texture() const;
 
 	Image toImage() const;
+	void toImage(Image& img) const;
 
 	static void blitFramebuffer(Framebuffer& target, const Framebuffer& source);
 

@@ -28,6 +28,8 @@ public:
 
 		addOutput(outputPoints);
 		addOutput(outputIndices);
+
+		m_updateOnMainThread = true;
 	}
 
 	void update()

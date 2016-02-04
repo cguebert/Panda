@@ -73,7 +73,7 @@ public:
 		const auto& renderers = getRenderers();
 		for(const auto& renderer : renderers)
 		{
-			for(const auto* input : renderer->getInputDatas())
+			for(const auto input : renderer->getInputDatas())
 				input->updateIfDirty();
 			renderer->updateIfDirty();
 		}

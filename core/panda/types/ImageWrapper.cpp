@@ -32,10 +32,7 @@ unsigned int ImageWrapper::getTextureId() const
 	if(m_source == IMAGE && m_image)
 	{
 		if (!m_texture)
-		{
-			auto mirrored = m_image->mirrored();
-			const_cast<ImageWrapper*>(this)->m_texture = std::make_shared<Texture>(mirrored);
-		}
+			const_cast<ImageWrapper*>(this)->m_texture = std::make_shared<Texture>(m_image->mirrored());
 
 		return m_texture->id();
 	}
@@ -44,13 +41,19 @@ unsigned int ImageWrapper::getTextureId() const
 
 const Image& ImageWrapper::getImage() const
 {
-	if(m_source == FBO && m_fbo && !m_image)
-		const_cast<ImageWrapper*>(this)->m_image = std::make_shared<Image>(m_fbo->toImage());
+	auto nonConst = const_cast<ImageWrapper*>(this);
+	if (m_source == FBO && m_fbo)
+	{
+		if (m_image)
+			m_fbo->toImage(*nonConst->m_image);
+		else
+			nonConst->m_image = std::make_shared<Image>(m_fbo->toImage());
+	}
 	else if(m_source == TEXTURE && !m_buffer.empty() && !m_image)
-		const_cast<ImageWrapper*>(this)->createImageFromBuffer();
+		nonConst->createImageFromBuffer();
 
 	if(!m_image)
-		const_cast<ImageWrapper*>(this)->m_image = std::make_shared<Image>();
+		nonConst->m_image = std::make_shared<Image>();
 
 	return *m_image;
 }

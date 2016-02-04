@@ -229,6 +229,33 @@ Image Framebuffer::toImage() const
 	return img.mirrored();
 }
 
+void Framebuffer::toImage(Image& img) const
+{
+	// Cannot read from a multisample FBO
+	if (format().samples)
+	{
+		Framebuffer tmp(size());
+		blitFramebuffer(tmp, *this);
+		tmp.toImage(img);
+	}
+
+	GLint prev = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prev);
+
+	if (prev != id())
+		glBindFramebuffer(GL_FRAMEBUFFER, id());
+
+	const auto size = m_data->size;
+	if (img.size() != size)
+		img = Image(size);
+	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, img.data());
+
+	if (prev != id())
+		glBindFramebuffer(GL_FRAMEBUFFER, prev);
+
+	img.mirror();
+}
+
 void Framebuffer::blitFramebuffer(Framebuffer& target, const Framebuffer& source)
 {
 	RectInt targetRect(0, 0, target.width(), target.height());

@@ -46,7 +46,7 @@ inline PointInt::PointInt()
 : x(0), y(0) {}
 
 inline PointInt::PointInt(int x, int y) 
-: x(x), y(x) {}
+: x(x), y(y) {}
 
 inline PointInt& PointInt::operator+=(const PointInt& p)
 { x += p.x; y += p.y; return *this; }

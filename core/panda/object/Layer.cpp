@@ -23,7 +23,7 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 	//  as getting the image from an ImageWrapper can screw it up
 	for(const auto& renderer : getRenderers())
 	{
-		for(const auto* input : renderer->getInputDatas())
+		for(const auto input : renderer->getInputDatas())
 			input->updateIfDirty();
 		renderer->updateIfDirty();
 	}

@@ -516,7 +516,7 @@ void Scheduler::setDataDirty(BaseData* dirtyData)
 		prepareLaterUpdate(dirtyData);
 
 	const auto& pair = m_laterUpdatesMap[dirtyData];
-	for(auto* node : pair.first)
+	for(auto node : pair.first)
 		node->doSetDirty();
 
 	// For outputs tasks, we still have to do some recursion

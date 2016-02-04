@@ -55,6 +55,8 @@ public:
 	Image clone() const;
 	Image mirrored() const;
 
+	void mirror();
+
 	static void blitImage(Image& target, PointInt targetPos, const Image& source, PointInt sourcePos, Size sourceSize);
 	static void blitImage(Image& target, int tX, int tY, const Image& source, int sX1, int sY1, int sX2, int sY2);
 
@@ -75,7 +77,7 @@ inline Image::Image(int width, int height, const unsigned char* contents)
 	: Image(Size(width, height), contents) { }
 
 inline Image::operator bool() const
-{ return m_data == nullptr; }
+{ return m_data != nullptr; }
 
 inline bool Image::empty() const
 { return m_data == nullptr; }

@@ -82,7 +82,7 @@ ScopedEvent::ScopedEvent(const std::string& text, DataNode* node)
 
 ScopedEvent::~ScopedEvent()
 {
-	auto* logger = UpdateLogger::getInstance();
+	auto logger = UpdateLogger::getInstance();
 	m_event.m_endTime = UpdateLogger::getTime();
 	if(m_event.m_node)
 		m_event.m_dirtyEnd = m_event.m_node->isDirty();
