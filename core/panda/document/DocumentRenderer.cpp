@@ -6,6 +6,7 @@
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Model.h>
 #include <panda/object/Layer.h>
+#include <panda/helper/ShaderCache.h>
 #include <panda/helper/system/FileRepository.h>
 
 #ifdef PANDA_LOG_EVENTS
@@ -28,11 +29,12 @@ void DocumentRenderer::initializeGL()
 	  fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 
 // Shader used to blend one layer on top of the previous one
-	m_mergeLayersShader.addShaderFromMemory(graphics::ShaderType::Vertex,
-		helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
-	m_mergeLayersShader.addShaderFromMemory(graphics::ShaderType::Fragment,
-		helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
-	m_mergeLayersShader.link();
+	auto& repository = panda::helper::system::DataRepository;
+	using ShaderType = panda::graphics::ShaderType;
+	m_mergeLayersShader = panda::helper::ShaderCache::getInstance()->getShaderProgram({
+		{ ShaderType::Vertex, repository.loadFile("shaders/mergeLayers.v.glsl") },
+		{ ShaderType::Fragment, repository.loadFile("shaders/mergeLayers.f.glsl") }
+	});
 	m_mergeLayersShader.bind();
 
 	m_mergeLayersShader.setUniformValue("texS", 0);

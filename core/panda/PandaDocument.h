@@ -117,11 +117,6 @@ public:
 	void onModifiedObject(PandaObject* object);
 	void onChangedDock(DockableObject* dockable); // When the dockable has changed dock
 
-	void initializeGL();
-	bool isGLInitialized() const; // Can the objects use OpenGL yet?
-
-	void resizeGL(int w, int h);
-
 	gui::BaseGUI& getGUI() const;
 	DocumentRenderer* getRenderer() const;
 
@@ -278,9 +273,6 @@ inline UndoCommand* PandaDocument::getCurrentCommand() const
 
 inline UndoStack& PandaDocument::undoStack()
 { return m_undoStack; }
-
-inline bool PandaDocument::isGLInitialized() const
-{ return m_isGLInitialized; }
 
 inline gui::BaseGUI& PandaDocument::getGUI() const
 { return m_gui; }

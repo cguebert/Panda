@@ -16,13 +16,8 @@ void OGLObject::updateIfDirty() const
 	{
 		if(!m_isGLInitialized)
 		{
-			if(m_parentDocument->isGLInitialized())
-			{
-				const_cast<OGLObject*>(this)->initializeGL();
-				const_cast<OGLObject*>(this)->m_isGLInitialized = true;
-			}
-			else
-				return; // Cannot update this object yet as no valid OpenGL Context exists
+			const_cast<OGLObject*>(this)->initializeGL();
+			const_cast<OGLObject*>(this)->m_isGLInitialized = true;
 		}
 
 		PandaObject::updateIfDirty();

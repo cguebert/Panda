@@ -4,7 +4,10 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Mat4x4.h>
+#include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
+#include <panda/graphics/VertexArrayObject.h>
+#include <panda/helper/ShaderCache.h>
 #include <panda/helper/system/FileRepository.h>
 
 #include <GL/glew.h>
@@ -37,20 +40,34 @@ public:
 									  "SourceIn;DestinationIn;SourceOut;DestinationOut;SourceAtop;DestinationAtop;"
 									  "Xor;Plus;Multiply;Screen;Overlay;Darken;Lighten;"
 									  "ColorDodge;ColorBurn;HardLight;SoftLight;Difference;Exclusion");
-
-		m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
-		m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
-		m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
-		m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 	}
 
 	void initializeGL()
 	{
-		m_shaderProgram.addShaderFromMemory(graphics::ShaderType::Vertex,
-			helper::system::DataRepository.loadFile("shaders/mergeLayers.v.glsl"));
-		m_shaderProgram.addShaderFromMemory(graphics::ShaderType::Fragment,
-			helper::system::DataRepository.loadFile("shaders/mergeLayers.f.glsl"));
-		m_shaderProgram.link();
+		auto& repository = panda::helper::system::DataRepository;
+		using ShaderType = panda::graphics::ShaderType;
+		m_shaderProgram = panda::helper::ShaderCache::getInstance()->getShaderProgram({
+			{ ShaderType::Vertex, repository.loadFile("shaders/mergeLayers.v.glsl") },
+			{ ShaderType::Fragment, repository.loadFile("shaders/mergeLayers.f.glsl") }
+		});
+
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		std::vector<GLfloat> texCoords = { 0, 1, 1, 1, 0, 0, 1, 0 };
+		m_texCoordsVBO.write(texCoords);
+
+		m_VAO.release();
 	}
 
 	void update()
@@ -59,31 +76,28 @@ public:
 		const auto& input2Val = m_input2.getValue();
 		GLuint tex1Id = input1Val.getTextureId();
 		GLuint tex2Id = input2Val.getTextureId();
+
 		if(tex1Id && tex2Id && input1Val.size() == input2Val.size())
 		{
 			auto inputSize = input1Val.size();
 			auto outputAcc = m_output.getAccessor();
 			auto outputFbo = outputAcc->getFbo();
+			GLfloat w = static_cast<GLfloat>(inputSize.width()), h = static_cast<GLfloat>(inputSize.height());
 			if(!outputFbo || outputFbo->size() != inputSize)
 			{
 				outputAcc->setFbo(graphics::Framebuffer(inputSize));
 				outputFbo = outputAcc->getFbo();
+
+				std::vector<GLfloat> verts = { 0, 0, w, 0, 0, h, w, h };
+				m_verticesVBO.bind();
+				m_verticesVBO.write(verts);
 			}
-
-			glClearColor(0, 0, 0, 0);
-
-			GLfloat w = static_cast<GLfloat>(inputSize.width()), h = static_cast<GLfloat>(inputSize.height());
-			graphics::Mat4x4 mvp;
-			mvp.ortho(0, w, h, 0, -10, 10);
-
-			GLfloat verts[8];
-			verts[0*2+0] = w;	verts[0*2+1] = 0;
-			verts[1*2+0] = 0;	verts[1*2+1] = 0;
-			verts[3*2+0] = 0;	verts[3*2+1] = h;
-			verts[2*2+0] = w;	verts[2*2+1] = h;
 
 			m_shaderProgram.bind();
 			outputFbo->bind();
+
+			glViewport(0, 0, inputSize.width(), inputSize.height());
+			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			glActiveTexture(GL_TEXTURE0);
@@ -92,25 +106,20 @@ public:
 			glBindTexture(GL_TEXTURE_2D, tex2Id);
 			glActiveTexture(GL_TEXTURE0);
 
+			graphics::Mat4x4 mvp;
+			mvp.ortho(0, w, h, 0, -10, 10);
 			m_shaderProgram.setUniformValueMat4("MVP", mvp.data());
 			m_shaderProgram.setUniformValue("texS", 0);
 			m_shaderProgram.setUniformValue("texD", 1);
 
-			m_shaderProgram.enableAttributeArray("position");
-			m_shaderProgram.setAttributeArray("position", verts, 2);
-
-			m_shaderProgram.enableAttributeArray("texCoord");
-			m_shaderProgram.setAttributeArray("texCoord", m_texCoords, 2);
-
 			m_shaderProgram.setUniformValue("mode", m_compositionMode.getValue());
 			m_shaderProgram.setUniformValue("opacity", 1.0f);
 
+			m_VAO.bind();
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			m_VAO.release();
 
-			m_shaderProgram.disableAttributeArray("position");
-			m_shaderProgram.disableAttributeArray("texCoord");
 			m_shaderProgram.release();
-
 			outputFbo->release();
 		}
 
@@ -122,7 +131,8 @@ protected:
 	Data< int > m_compositionMode;
 
 	graphics::ShaderProgram m_shaderProgram;
-	GLfloat m_texCoords[8];
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
 int ModifierImage_MergeImagesClass = RegisterObject<ModifierImage_MergeImages>("Modifier/Image/Merge images")
