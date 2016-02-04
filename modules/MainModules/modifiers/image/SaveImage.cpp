@@ -1,4 +1,5 @@
 #include <panda/PandaDocument.h>
+#include <panda/SimpleGUI.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
@@ -47,10 +48,15 @@ public:
 	void saveImages()
 	{
 #ifdef PANDA_LOG_EVENTS
-			helper::ScopedEvent log(helper::event_update, this);
+		helper::ScopedEvent log(helper::event_update, this);
 #endif
 		const auto& names = fileName.getValue();
+
+		m_parentDocument->getGUI().contextMakeCurrent();
 		const auto& images = image.getValue();
+
+		if (images.empty())
+			return;
 
 		int nb = std::min(names.size(), images.size());
 		for(int i=0; i<nb; ++i)
@@ -59,9 +65,11 @@ public:
 			{
 				const auto img = images[i].getImage();
 				QImage qtImg(img.data(), img.width(), img.height(), QImage::Format_ARGB32);
-				qtImg.rgbSwapped().save(QString::fromStdString(names[i]));
+				qtImg.mirrored().rgbSwapped().save(QString::fromStdString(names[i]));
 			}
 		}
+
+		m_parentDocument->getGUI().contextDoneCurrent();
 	}
 
 protected:
