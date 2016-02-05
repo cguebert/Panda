@@ -85,13 +85,8 @@ public:
 	{
 		QString tx = lineEditX->text();
 		QString ty = lineEditY->text();
-#ifdef PANDA_DOUBLE
-		float x = tx.toDouble();
-		float y = ty.toDouble();
-#else
 		float x = tx.toFloat();
 		float y = ty.toFloat();
-#endif
 		if(v.x != x || tx.isEmpty())
 			lineEditX->setText(QString::number(v.x));
 		if(v.y != y || ty.isEmpty())
@@ -99,13 +94,8 @@ public:
 	}
 	void writeToData(value_type& v)
 	{
-#ifdef PANDA_DOUBLE
-		float x = lineEditX->text().toDouble();
-		float y = lineEditY->text().toDouble();
-#else
 		float x = lineEditX->text().toFloat();
 		float y = lineEditY->text().toFloat();
-#endif
 		v = Point(x, y);
 	}
 };

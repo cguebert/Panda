@@ -637,13 +637,8 @@ PANDA_CORE_API void DataTrait<Mesh>::readValue(XmlElement& elem, Mesh& v)
 	while(ptNode)
 	{
 		Point pt;
-#ifdef PANDA_DOUBLE
-		pt.x = ptNode.attribute("x").toDouble();
-		pt.y = ptNode.attribute("y").toDouble();
-#else
 		pt.x = ptNode.attribute("x").toFloat();
 		pt.y = ptNode.attribute("y").toFloat();
-#endif
 		tmpMesh.addPoint(pt);
 		ptNode = ptNode.nextSibling("Point");
 	}

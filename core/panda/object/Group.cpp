@@ -176,13 +176,8 @@ void Group::load(XmlElement& elem)
 			object->load(objectNode);
 
 			types::Point pos;
-#ifdef PANDA_DOUBLE
-			pos.x = objectNode.attribute("x").toDouble();
-			pos.y = objectNode.attribute("y").toDouble();
-#else
 			pos.x = objectNode.attribute("x").toFloat();
 			pos.y = objectNode.attribute("y").toFloat();
-#endif
 			m_positions[object.get()] = pos;
 		}
 		else

@@ -70,11 +70,7 @@ public:
 		auto e = elem.firstChild("Value");
 		while(e)
 		{
-#ifdef PANDA_DOUBLE
-			key = e.attribute("key").toDouble();
-#else
 			key = e.attribute("key").toFloat();
-#endif
 			base_trait::readValue(e, val);
 			anim.add(key, val);
 			e = e.nextSibling("Value");

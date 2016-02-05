@@ -308,11 +308,7 @@ void EditGradientDialog::changePosition()
 		return;
 
 	bool ok;
-#ifdef PANDA_DOUBLE
-	float pos = posEdit->text().toDouble(&ok);
-#else
 	float pos = posEdit->text().toFloat(&ok);
-#endif
 	if(ok)
 	{
 		stops[selected].first = pos;

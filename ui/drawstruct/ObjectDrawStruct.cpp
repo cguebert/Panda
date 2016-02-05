@@ -194,13 +194,8 @@ void ObjectDrawStruct::save(panda::XmlElement& elem)
 void ObjectDrawStruct::load(panda::XmlElement& elem)
 {
 	QPointF newPos;
-#ifdef PANDA_DOUBLE
-	newPos.setX(elem.attribute("x").toDouble());
-	newPos.setY(elem.attribute("y").toDouble());
-#else
 	newPos.setX(elem.attribute("x").toFloat());
 	newPos.setY(elem.attribute("y").toFloat());
-#endif
 	move(newPos - m_position);
 }
 

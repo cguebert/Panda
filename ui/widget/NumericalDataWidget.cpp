@@ -263,22 +263,14 @@ public:
 	void readFromData(const value_type& v)
 	{
 		QString t = lineEdit->text();
-#ifdef PANDA_DOUBLE
-		value_type n = t.toDouble();
-#else
 		value_type n = t.toFloat();
-#endif
 		if (v != n || t.isEmpty())
 			lineEdit->setText(QString::number(v));
 	}
 	void writeToData(value_type& v)
 	{
 		bool ok;
-#ifdef PANDA_DOUBLE
-		value_type n = lineEdit->text().toDouble(&ok);
-#else
 		value_type n = lineEdit->text().toFloat(&ok);
-#endif
 		if(ok)
 			v = n;
 	}

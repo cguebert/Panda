@@ -66,13 +66,8 @@ PANDA_CORE_API void DataTrait<Point>::writeValue(XmlElement& elem, const Point& 
 
 template<>
 PANDA_CORE_API void DataTrait<Point>::readValue(XmlElement& elem, Point& v)
-#ifdef PANDA_DOUBLE
-{	v.x = elem.attribute("x").toDouble();
-	v.y = elem.attribute("y").toDouble(); }
-#else
 {	v.x = elem.attribute("x").toFloat();
 	v.y = elem.attribute("y").toFloat(); }
-#endif
 
 template class PANDA_CORE_API std::vector<Point>;
 

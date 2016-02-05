@@ -160,11 +160,7 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			dataWidgets[i]->updateDataValue();
-#ifdef PANDA_DOUBLE
-			float key = lineEdits[i]->text().toDouble();
-#else
 			float key = lineEdits[i]->text().toFloat();
-#endif
 			anim.add(key, valuesCopy[i]);
 		}
 

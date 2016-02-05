@@ -201,11 +201,7 @@ PANDA_CORE_API void DataTrait<Gradient>::readValue(XmlElement& elem, Gradient& g
 	auto stopNode = elem.firstChild("Stop");
 	while(stopNode)
 	{
-#ifdef PANDA_DOUBLE
-		float pos = stopNode.attribute("pos").toDouble();
-#else
 		float pos = stopNode.attribute("pos").toFloat();
-#endif
 		Color color;
 		colorTrait->readValue(stopNode, &color);
 

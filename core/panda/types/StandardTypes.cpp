@@ -41,11 +41,7 @@ PANDA_CORE_API void DataTrait<int>::readValue(XmlElement& elem, int& v)
 
 template<>
 PANDA_CORE_API void DataTrait<float>::readValue(XmlElement& elem, float& v)
-#ifdef PANDA_DOUBLE
-{ v = elem.attribute("real").toDouble(); }
-#else
 { v = elem.attribute("real").toFloat(); }
-#endif
 
 template<>
 PANDA_CORE_API void DataTrait<std::string>::readValue(XmlElement& elem, std::string& v)

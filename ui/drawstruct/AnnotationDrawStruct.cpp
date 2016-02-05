@@ -196,13 +196,8 @@ void AnnotationDrawStruct::save(panda::XmlElement& elem)
 
 void AnnotationDrawStruct::load(panda::XmlElement& elem)
 {
-#ifdef PANDA_DOUBLE
-	m_deltaToEnd.setX(elem.attribute("dx").toDouble());
-	m_deltaToEnd.setY(elem.attribute("dy").toDouble());
-#else
 	m_deltaToEnd.setX(elem.attribute("dx").toFloat());
 	m_deltaToEnd.setY(elem.attribute("dy").toFloat());
-#endif
 
 	ObjectDrawStruct::load(elem);
 }

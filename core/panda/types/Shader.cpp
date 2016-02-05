@@ -178,17 +178,7 @@ template<> void ShaderValue< std::vector<int> >::apply(graphics::ShaderProgram& 
 { program.setUniformValue(m_name.c_str(), m_value); }
 
 template<> void ShaderValue< std::vector<float> >::apply(graphics::ShaderProgram& program) const
-{
-#ifdef PANDA_DOUBLE
-	const int nb = m_value.size();
-	std::vector<float> copy(nb);
-	for(int i++; i<nb; ++i)
-		copy[i] = m_value[i]:
-	program.setUniformValue(m_name.c_str(), copy);
-#else
-	program.setUniformValue(m_name.c_str(), m_value);
-#endif
-}
+{ program.setUniformValue(m_name.c_str(), m_value); }
 
 template<> void ShaderValue< std::vector<Color> >::apply(graphics::ShaderProgram& program) const
 {
