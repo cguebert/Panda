@@ -30,12 +30,13 @@
 
 MainWindow::MainWindow()
 {
-	QSurfaceFormat format;
+	// This is not working with Intel GPUs, needs more testing
+/*	QSurfaceFormat format;
 	format.setDepthBufferSize(24);
 	format.setStencilBufferSize(8);
 	format.setVersion(3, 0);
 	format.setProfile(QSurfaceFormat::CoreProfile);
-	QSurfaceFormat::setDefaultFormat(format);
+	QSurfaceFormat::setDefaultFormat(format);*/
 	
 	m_simpleGUI = new SimpleGUIImpl(this);
 	m_document = new panda::PandaDocument(*m_simpleGUI);
