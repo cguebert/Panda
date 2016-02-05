@@ -57,7 +57,7 @@ public:
 	}
 
 protected:
-	Data<PReal> rotation;
+	Data<float> rotation;
 };
 
 int RenderModifier_RotationClass = RegisterObject<RenderModifier_Rotation>("Render/Modifier/Rotation").setDescription("Add a rotation transformation");

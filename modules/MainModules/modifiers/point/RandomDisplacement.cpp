@@ -18,10 +18,10 @@ public:
 		: PandaObject(doc)
 		, inputPoints(initData("input", "List of points to move"))
 		, outputPoints(initData("output", "List of moved points"))
-		, minAngle(initData((PReal)0.0, "minAngle", "Minimum angle of the direction in which to move the points"))
-		, maxAngle(initData((PReal)360.0, "maxAngle", "Maximum angle of the direction in which to move the points"))
-		, minDist(initData((PReal)0.0, "minDist", "Minimum distance over which to move the points"))
-		, maxDist(initData((PReal)100.0, "maxDist", "Maximum distance over which to move the points"))
+		, minAngle(initData((float)0.0, "minAngle", "Minimum angle of the direction in which to move the points"))
+		, maxAngle(initData((float)360.0, "maxAngle", "Maximum angle of the direction in which to move the points"))
+		, minDist(initData((float)0.0, "minDist", "Minimum distance over which to move the points"))
+		, maxDist(initData((float)100.0, "maxDist", "Maximum distance over which to move the points"))
 		, seed(initData(0, "seed", "Seed for the random number generator"))
 	{
 		addInput(inputPoints);
@@ -45,14 +45,14 @@ public:
 		outPts.resize(nb);
 
 		rnd.seed(seed.getValue());
-		PReal minA = minAngle.getValue(), maxA = maxAngle.getValue();
-		PReal minD = minDist.getValue(), maxD = maxDist.getValue();
+		float minA = minAngle.getValue(), maxA = maxAngle.getValue();
+		float minD = minDist.getValue(), maxD = maxDist.getValue();
 
-		const PReal pi180 = static_cast<PReal>(M_PI) / 180;
+		const float pi180 = static_cast<float>(M_PI) / 180;
 		for(int i=0; i<nb; ++i)
 		{
-			PReal a = rnd.random(minA, maxA) * pi180;
-			PReal d = rnd.random(minD, maxD);
+			float a = rnd.random(minA, maxA) * pi180;
+			float d = rnd.random(minD, maxD);
 			Point disp(cos(a)*d, sin(a)*d);
 			outPts[i] = inPts[i] + disp;
 		}
@@ -63,7 +63,7 @@ public:
 protected:
 	helper::RandomGenerator rnd;
 	Data< std::vector<Point> > inputPoints, outputPoints;
-	Data<PReal> minAngle, maxAngle, minDist, maxDist;
+	Data<float> minAngle, maxAngle, minDist, maxDist;
 	Data<int> seed;
 };
 

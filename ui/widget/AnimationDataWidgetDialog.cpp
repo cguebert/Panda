@@ -4,4 +4,4 @@
 
 using panda::types::Animation;
 
-RegisterWidget<OpenDialogDataWidget<Animation<PReal>, AnimationDataWidgetDialog<Animation<PReal> > > > DWClass_reals_animation("default");
+RegisterWidget<OpenDialogDataWidget<Animation<float>, AnimationDataWidgetDialog<Animation<float> > > > DWClass_reals_animation("default");

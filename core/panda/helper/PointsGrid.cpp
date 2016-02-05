@@ -19,7 +19,7 @@ PointsGrid::PointsGrid()
 {
 }
 
-void PointsGrid::initGrid(Rect newArea, PReal newCellSize)
+void PointsGrid::initGrid(Rect newArea, float newCellSize)
 {
 	m_cells.clear();
 	m_area = newArea;
@@ -58,14 +58,14 @@ bool PointsGrid::hasPoint(const Point& point)
 	return helper::contains(m_cells[cellIndex(point)], point);
 }
 
-bool PointsGrid::testNeighbor(const Point& point, PReal distance)
+bool PointsGrid::testNeighbor(const Point& point, float distance)
 {
-	int minX = static_cast<int>(floor(std::max<PReal>(0, (point.x - distance - m_area.left()) / m_cellSize)));
-	int maxX = static_cast<int>(ceil(std::min<PReal>(m_width - 1.f, (point.x + distance - m_area.left()) / m_cellSize)));
-	int minY = static_cast<int>(floor(std::max<PReal>(0, (point.y - distance - m_area.top()) / m_cellSize)));
-	int maxY = static_cast<int>(ceil(std::min<PReal>(m_height - 1.f, (point.y + distance - m_area.top()) / m_cellSize)));
+	int minX = static_cast<int>(floor(std::max<float>(0, (point.x - distance - m_area.left()) / m_cellSize)));
+	int maxX = static_cast<int>(ceil(std::min<float>(m_width - 1.f, (point.x + distance - m_area.left()) / m_cellSize)));
+	int minY = static_cast<int>(floor(std::max<float>(0, (point.y - distance - m_area.top()) / m_cellSize)));
+	int maxY = static_cast<int>(ceil(std::min<float>(m_height - 1.f, (point.y + distance - m_area.top()) / m_cellSize)));
 
-	PReal dist2 = distance*distance;
+	float dist2 = distance*distance;
 	for(int y=minY; y<=maxY; y++)
 	{
 		for(int x=minX; x<=maxX; x++)
@@ -80,14 +80,14 @@ bool PointsGrid::testNeighbor(const Point& point, PReal distance)
 	return false;
 }
 
-bool PointsGrid::getNearest(const Point& point, PReal maxDist, Point& result)
+bool PointsGrid::getNearest(const Point& point, float maxDist, Point& result)
 {
-	int minX = static_cast<int>(floor(std::max<PReal>(0, (point.x - maxDist - m_area.left()) / m_cellSize)));
-	int maxX = static_cast<int>(ceil(std::min<PReal>(m_width - 1.f, (point.x + maxDist - m_area.left()) / m_cellSize)));
-	int minY = static_cast<int>(floor(std::max<PReal>(0, (point.y - maxDist - m_area.top()) / m_cellSize)));
-	int maxY = static_cast<int>(ceil(std::min<PReal>(m_height - 1.f, (point.y + maxDist - m_area.top()) / m_cellSize)));
+	int minX = static_cast<int>(floor(std::max<float>(0, (point.x - maxDist - m_area.left()) / m_cellSize)));
+	int maxX = static_cast<int>(ceil(std::min<float>(m_width - 1.f, (point.x + maxDist - m_area.left()) / m_cellSize)));
+	int minY = static_cast<int>(floor(std::max<float>(0, (point.y - maxDist - m_area.top()) / m_cellSize)));
+	int maxY = static_cast<int>(ceil(std::min<float>(m_height - 1.f, (point.y + maxDist - m_area.top()) / m_cellSize)));
 
-	PReal minDist = maxDist*maxDist;
+	float minDist = maxDist*maxDist;
 	bool found = false;
 	for(int y=minY; y<=maxY; y++)
 	{
@@ -96,7 +96,7 @@ bool PointsGrid::getNearest(const Point& point, PReal maxDist, Point& result)
 			const Cell& cell = m_cells[y * m_width + x];
 			for(const auto& pt : cell)
 			{
-				PReal d = (pt - point).norm2();
+				float d = (pt - point).norm2();
 				if(d < minDist)
 				{
 					result = pt;
@@ -112,8 +112,8 @@ bool PointsGrid::getNearest(const Point& point, PReal maxDist, Point& result)
 
 int PointsGrid::cellIndex(const Point& point)
 {
-	PReal x = helper::bound(m_area.left(), point.x, m_area.right());
-	PReal y = helper::bound(m_area.top(), point.y, m_area.bottom());
+	float x = helper::bound(m_area.left(), point.x, m_area.right());
+	float y = helper::bound(m_area.top(), point.y, m_area.bottom());
 
 	int gx = static_cast<int>(floor((x - m_area.left()) / m_cellSize));
 	int gy = static_cast<int>(floor((y - m_area.top()) / m_cellSize));

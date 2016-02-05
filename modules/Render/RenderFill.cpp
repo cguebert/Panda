@@ -64,7 +64,7 @@ public:
 		if(area.empty())
 		{
 			auto size = getLayerSize();
-			area = Rect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
+			area = Rect(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
 		}
 
 		return area;
@@ -79,7 +79,7 @@ public:
 		if(area.empty())
 		{
 			auto size = getLayerSize();
-			area = Rect(0, 0, static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
+			area = Rect(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
 		}
 
 		if(!m_shader.getValue().apply(m_shaderProgram))

@@ -98,7 +98,7 @@ public:
 
 protected:
 	Data< std::vector<Mesh> > m_input, m_output;
-	Data< std::vector<PReal> > m_scale;
+	Data< std::vector<float> > m_scale;
 };
 
 int MeshMath_ScaleClass = RegisterObject<MeshMath_Scale>("Math/Mesh/Scale").setName("Scale mesh").setDescription("Scale a mesh");
@@ -149,7 +149,7 @@ public:
 
 			output.resize(nb);
 
-			PReal PI180 = static_cast<PReal>(M_PI) / static_cast<PReal>(180.0);
+			float PI180 = static_cast<float>(M_PI) / 180;
 			for(int i=0; i<nb; ++i)
 				output[i] = types::rotated(input[i%nbP], center[i%nbC], angle[i%nbA] * PI180);
 		}
@@ -160,7 +160,7 @@ public:
 protected:
 	Data< std::vector<Mesh> > m_input, m_output;
 	Data< std::vector<Point> > m_center;
-	Data< std::vector<PReal> > m_angle;
+	Data< std::vector<float> > m_angle;
 };
 
 int MeshMath_RotateClass = RegisterObject<MeshMath_Rotate>("Math/Mesh/Rotate").setName("Rotate mesh").setDescription("Rotate a mesh");

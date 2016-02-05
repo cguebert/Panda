@@ -285,7 +285,7 @@ GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 	, m_layer(nullptr)
 	, m_image(initData("image", "Image created by the renderers connected to this layer"))
 	, m_compositionMode(initData(0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
-	, m_opacity(initData((PReal)1.0, "opacity", "Set the opacity of the layer"))
+	, m_opacity(initData((float)1.0, "opacity", "Set the opacity of the layer"))
 {
 	addInput(m_compositionMode);
 	addInput(m_opacity);

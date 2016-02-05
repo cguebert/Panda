@@ -28,7 +28,7 @@ public:
 	void update()
 	{
 		Gradient grad = gradient.getValue();
-		const std::vector<PReal>& pos = position.getValue();
+		const std::vector<float>& pos = position.getValue();
 		auto colorsList = color.getAccessor();
 
 		int nb = pos.size();
@@ -41,7 +41,7 @@ public:
 
 protected:
 	Data< Gradient > gradient;
-	Data< std::vector<PReal> > position;
+	Data< std::vector<float> > position;
 	Data< std::vector<Color> > color;
 };
 

@@ -19,7 +19,7 @@ public:
 	void seed(unsigned int seed);
 	static unsigned int getRandomSeed(unsigned int limit);
 
-	PReal random();
+	float random();
 	float random(float min, float max);
 	double random(double min, double max);
 

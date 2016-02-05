@@ -50,31 +50,31 @@ public:
 	void setOctaves(uint8_t octaves) { m_octaves = octaves; }
 
 	/// Class Perlin look: fractal Brownian motion by summing 'mOctaves' worth of noise
-	PReal fBm(PReal v) const;
-	PReal fBm(PReal x, PReal y) const;
-	PReal fBm(const types::Point& p) const { return fBm(p.x, p.y); }
-	PReal fBm(PReal x, PReal y, PReal z) const;
+	float fBm(float v) const;
+	float fBm(float x, float y) const;
+	float fBm(const types::Point& p) const { return fBm(p.x, p.y); }
+	float fBm(float x, float y, float z) const;
 
 	/// Derivative of fractal Brownian motion, corresponding with the values returned by fBm()
-	types::Point dfBm(PReal x, PReal y) const;
+	types::Point dfBm(float x, float y) const;
 	types::Point dfBm(const types::Point& p) const { return dfBm(p.x, p.y); }
-	P3D dfBm(PReal x, PReal y, PReal z) const;
+	P3D dfBm(float x, float y, float z) const;
 
 	/// Calculates a single octave of noise
-	PReal noise(PReal x) const;
-	PReal noise(PReal x, PReal y) const;
-	PReal noise(PReal x, PReal y, PReal z) const;
+	float noise(float x) const;
+	float noise(float x, float y) const;
+	float noise(float x, float y, float z) const;
 
 	/// Calculates the derivative of a single octave of noise
-	types::Point dnoise(PReal x, PReal y) const;
-	P3D dnoise(PReal x, PReal y, PReal z) const;
+	types::Point dnoise(float x, float y) const;
+	P3D dnoise(float x, float y, float z) const;
 
 private:
 	void initPermutationTable();
 
-	PReal grad(int32_t hash, PReal x) const;
-	PReal grad(int32_t hash, PReal x, PReal y) const;
-	PReal grad(int32_t hash, PReal x, PReal y, PReal z) const;
+	float grad(int32_t hash, float x) const;
+	float grad(int32_t hash, float x, float y) const;
+	float grad(int32_t hash, float x, float y, float z) const;
 
 	uint8_t m_octaves;
 	int32_t	m_seed;

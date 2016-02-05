@@ -23,7 +23,7 @@ void Animation<T>::clear()
 }
 
 template <class T>
-void Animation<T>::add(PReal position, value_type value)
+void Animation<T>::add(float position, value_type value)
 {
 	// Insert already at the right place
 	for(int i=0, nb=m_stops.size(); i<nb; ++i)
@@ -40,7 +40,7 @@ void Animation<T>::add(PReal position, value_type value)
 }
 
 template <class T>
-typename Animation<T>::value_type Animation<T>::get(PReal position) const
+typename Animation<T>::value_type Animation<T>::get(float position) const
 {
 	int nb = m_stops.size();
 	if(!nb)
@@ -48,9 +48,9 @@ typename Animation<T>::value_type Animation<T>::get(PReal position) const
 	else if(nb == 1)
 		return m_stops.front().second;
 
-	PReal pMin = m_stops.front().first;
-	PReal pMax = m_stops.back().first;
-	PReal pos = 0.5;
+	float pMin = m_stops.front().first;
+	float pMax = m_stops.back().first;
+	float pos = 0.5;
 	if(pMax - pMin > 1e-10) // If the interval is too small, consider pos to be in the middle
 		pos = extendPos(position, pMin, pMax);
 
@@ -120,7 +120,7 @@ int Animation<T>::getExtend() const
 }
 
 template <class T>
-inline bool compareStops(const std::pair<PReal, T> &p1, const std::pair<PReal, T> &p2)
+inline bool compareStops(const std::pair<float, T> &p1, const std::pair<float, T> &p2)
 {
 	return p1.first < p2.first;
 }
@@ -157,7 +157,7 @@ typename Animation<T>::ValuesList Animation<T>::getValues() const
 }
 
 template <class T>
-PReal Animation<T>::extendPos(PReal position, PReal pMin, PReal pMax) const
+float Animation<T>::extendPos(float position, float pMin, float pMax) const
 {
 	switch(m_extend)
 	{
@@ -167,17 +167,17 @@ PReal Animation<T>::extendPos(PReal position, PReal pMin, PReal pMax) const
 
 	case Extend::Repeat:
 	{
-		PReal w = pMax - pMin;
-		PReal p = (position - pMin) / w;
+		float w = pMax - pMin;
+		float p = (position - pMin) / w;
 		p = p - std::floor(p);
 		return pMin + p * w;
 	}
 
 	case Extend::Reflect:
 	{
-		PReal w = pMax - pMin;
-		PReal p = (position - pMin) / w;
-		PReal t = position - std::floor(position);
+		float w = pMax - pMin;
+		float p = (position - pMin) / w;
+		float t = position - std::floor(position);
 		p = ((static_cast<int>(std::floor(p)) % 2) ? 1.f - t : t);
 		return pMin + p * w;
 	}
@@ -185,9 +185,9 @@ PReal Animation<T>::extendPos(PReal position, PReal pMin, PReal pMax) const
 }
 
 template <class T>
-typename Animation<T>::value_type Animation<T>::interpolate(const AnimationStop& s1, const AnimationStop& s2, PReal pos) const
+typename Animation<T>::value_type Animation<T>::interpolate(const AnimationStop& s1, const AnimationStop& s2, float pos) const
 {
-	PReal amt = (pos - s1.first) / (s2.first - s1.first);
+	float amt = (pos - s1.first) / (s2.first - s1.first);
 	amt = m_interpolation.valueForProgress(amt);
 	return types::interpolate(s1.second, s2.second, amt);
 }

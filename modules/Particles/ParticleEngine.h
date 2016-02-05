@@ -29,7 +29,7 @@ protected:
 	std::vector<ParticleEffector*> effectors;
 	std::vector<Particle> particles;
 	Data< std::vector<types::Point> > positions, velocities, accelerations;
-	PReal prevTime;
+	float prevTime;
 };
 
 } // namespace Panda

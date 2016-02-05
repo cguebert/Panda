@@ -47,7 +47,7 @@ public:
 
 		const std::vector<T>& listFrom = inputA.getValue();
 		const std::vector<T>& listTo = inputB.getValue();
-		const std::vector<PReal>& listProg = progress.getValue();
+		const std::vector<float>& listProg = progress.getValue();
 		auto listResult = result.getAccessor();
 		listResult.clear();
 
@@ -68,8 +68,8 @@ public:
 
 			for(int i=0; i<nb; ++i)
 			{
-				PReal prog = helper::bound<PReal>(0.0, listProg[i%nbV], 1.0);
-				PReal amt = easingFunc.valueForProgress(prog);
+				float prog = helper::bound<float>(0.0, listProg[i%nbV], 1.0);
+				float amt = easingFunc.valueForProgress(prog);
 
 				listResult[i] = types::interpolate(listFrom[i%nbP], listTo[i%nbP], amt);
 			}
@@ -80,12 +80,12 @@ public:
 
 protected:
 	Data< std::vector<T> > inputA, inputB;
-	Data< std::vector<PReal> > progress;
+	Data< std::vector<float> > progress;
 	Data< std::vector<T> > result;
 	Data<int> mode;
 };
 
-int AnimationInterpolation_DoubleClass = RegisterObject< AnimationInterpolation<PReal> >("Animation/Interpolation/Reals").setName("Interpolation reals").setDescription("Interpolate between 2 reals");
+int AnimationInterpolation_DoubleClass = RegisterObject< AnimationInterpolation<float> >("Animation/Interpolation/Reals").setName("Interpolation reals").setDescription("Interpolate between 2 reals");
 int AnimationInterpolation_PointsClass = RegisterObject< AnimationInterpolation<Point> >("Animation/Interpolation/Points").setName("Interpolation points").setDescription("Interpolate between 2 points");
 int AnimationInterpolation_ColorClass = RegisterObject< AnimationInterpolation<Color> >("Animation/Interpolation/Colors").setName("Interpolation colors").setDescription("Interpolate between 2 colors");
 

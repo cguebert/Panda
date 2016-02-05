@@ -79,7 +79,7 @@ public:
 				{
 					for(int i=0; i<nbPts; ++i)
 					{
-						PReal radius = (nbR < nbPts) ? radiuses[0] : radiuses[i];
+						float radius = (nbR < nbPts) ? radiuses[0] : radiuses[i];
 						if((action.second - output[i]).norm2() < radius * radius)
 						{
 							m_currentSelection = i;
@@ -111,7 +111,7 @@ public:
 
 protected:
 	Data<std::vector<Point>> m_input, m_output;
-	Data<std::vector<PReal>> m_radiuses;
+	Data<std::vector<float>> m_radiuses;
 
 	std::vector<std::pair<bool, Point>> m_clicsBuffer;
 	Point m_moveStartPos;

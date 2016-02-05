@@ -38,7 +38,7 @@ public:
 		addOutput(result);
 	}
 
-	PReal smoothStep(PReal a, PReal b, PReal x)
+	float smoothStep(float a, float b, float x)
 	{
 		if (x < a)	return 0;
 		if (x >= b)	return 1;
@@ -48,7 +48,7 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal>	&valInA = inputA.getValue(),
+		const std::vector<float>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
 		auto valOut = result.getAccessor();
@@ -76,7 +76,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > inputA, inputB, inputV, result;
+	Data< std::vector<float> > inputA, inputB, inputV, result;
 };
 
 int DoubleMath_SmoothStepClass = RegisterObject<DoubleMath_SmoothStep>("Math/Real/Functions/Smooth Step").setDescription("Compute the smooth step of the input between min and max");
@@ -99,7 +99,7 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal> &valIn = input.getValue();
+		const std::vector<float> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 
 		int size = valIn.size();
@@ -120,7 +120,7 @@ public:
 	{
 		PandaObject::reset();
 
-		const std::vector<PReal> &valIn = input.getValue();
+		const std::vector<float> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 		int size = valIn.size();
 		prevValues.resize(size);
@@ -132,8 +132,8 @@ public:
 	}
 
 protected:
-	std::vector<PReal> prevValues;
-	Data< std::vector<PReal> > input;
+	std::vector<float> prevValues;
+	Data< std::vector<float> > input;
 	Data< std::vector<int> > count;
 };
 
@@ -157,7 +157,7 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal> &valIn = input.getValue();
+		const std::vector<float> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 
 		int size = valIn.size();
@@ -178,7 +178,7 @@ public:
 	{
 		PandaObject::reset();
 
-		const std::vector<PReal> &valIn = input.getValue();
+		const std::vector<float> &valIn = input.getValue();
 		auto valOut = count.getAccessor();
 		int size = valIn.size();
 		prevValues.resize(size);
@@ -190,8 +190,8 @@ public:
 	}
 
 protected:
-	std::vector<PReal> prevValues;
-	Data< std::vector<PReal> > input;
+	std::vector<float> prevValues;
+	Data< std::vector<float> > input;
 	Data< std::vector<int> > count;
 };
 
@@ -218,7 +218,7 @@ public:
 		addOutput(result);
 	}
 
-	PReal constrain(PReal a, PReal b, PReal x)
+	float constrain(float a, float b, float x)
 	{
 		if (x < a)	return a;
 		if (x > b)	return b;
@@ -227,7 +227,7 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal>	&valInA = inputA.getValue(),
+		const std::vector<float>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
 		auto valOut = result.getAccessor();
@@ -255,7 +255,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > inputA, inputB, inputV, result;
+	Data< std::vector<float> > inputA, inputB, inputV, result;
 };
 
 int DoubleMath_ConstrainClass = RegisterObject<DoubleMath_Constrain>("Math/Real/Functions/Constrain").setDescription("Constrain a value between a min and a max");
@@ -281,7 +281,7 @@ public:
 		addOutput(result);
 	}
 
-	int pulse(PReal a, PReal b, PReal x)
+	int pulse(float a, float b, float x)
 	{
 		if (x < a || x > b)	return 0;
 		return 1;
@@ -289,7 +289,7 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal>	&valInA = inputA.getValue(),
+		const std::vector<float>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue(),
 								&valInV = inputV.getValue();
 		auto valOut = result.getAccessor();
@@ -317,7 +317,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > inputA, inputB, inputV;
+	Data< std::vector<float> > inputA, inputB, inputV;
 	Data< std::vector<int> > result;
 };
 
@@ -348,15 +348,15 @@ public:
 		addOutput(result);
 	}
 
-	PReal remap(PReal v, PReal iMin, PReal iMax, PReal oMin, PReal oMax)
+	float remap(float v, float iMin, float iMax, float oMin, float oMax)
 	{
-		PReal p = (v - iMin) / (iMax - iMin);
+		float p = (v - iMin) / (iMax - iMin);
 		return oMin + p * (oMax - oMin);
 	}
 
 	void update()
 	{
-		const std::vector<PReal>	&valInV = inputV.getValue(),
+		const std::vector<float>	&valInV = inputV.getValue(),
 								&valInMin = inputMin.getValue(),
 								&valInMax = inputMax.getValue(),
 								&valOutMin = outputMin.getValue(),
@@ -390,7 +390,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > inputV, inputMin, inputMax, outputMin, outputMax, result;
+	Data< std::vector<float> > inputV, inputMin, inputMax, outputMin, outputMax, result;
 };
 
 int DoubleMath_RemapClass = RegisterObject<DoubleMath_Remap>("Math/Real/Functions/Remap").setDescription("Re-maps a value from one range to another");

@@ -38,8 +38,8 @@ public:
 		auto outMesh = mesh.getAccessor();
 		outMesh->clear();
 
-		PReal dx = (nx > 0 ? dx = bounds.width() / (nx-1) : 0);
-		PReal dy = (ny > 0 ? dy = bounds.height() / (ny-1) : 0);
+		float dx = (nx > 0 ? dx = bounds.width() / (nx-1) : 0);
+		float dy = (ny > 0 ? dy = bounds.height() / (ny-1) : 0);
 
 		for(int y=0; y<ny; ++y)
 			for(int x=0; x<nx; ++x)

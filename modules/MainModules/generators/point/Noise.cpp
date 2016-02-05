@@ -17,7 +17,7 @@ public:
 		: PandaObject(doc)
 		, input(initData("input", "The list of positions at which to compute the noise" ))
 		, seed(initData(0, "seed", "Seed for the random points generator"))
-		, scale(initData((PReal)0.001, "scale", "Input points are scaled by this value before computing the noise"))
+		, scale(initData((float)0.001, "scale", "Input points are scaled by this value before computing the noise"))
 		, output(initData("output", "The values of the noise at the given positions" ))
 	{
 		addInput(input);
@@ -34,7 +34,7 @@ public:
 	{
 		perlin.setSeed(seed.getValue());
 		const auto& valInput = input.getValue();
-		const PReal& valScale = scale.getValue();
+		const float& valScale = scale.getValue();
 		auto valOutput = output.getAccessor();
 		int nb = valInput.size();
 		valOutput.resize(nb);
@@ -49,8 +49,8 @@ protected:
 	helper::Perlin perlin;
 	Data< std::vector<Point> > input;
 	Data<int> seed;
-	Data<PReal> scale;
-	Data< std::vector<PReal> > output;
+	Data<float> scale;
+	Data< std::vector<float> > output;
 };
 
 int GeneratorPoints_Noise2dClass = RegisterObject<GeneratorPoints_Noise2d>("Generator/Point/Noise 2d")

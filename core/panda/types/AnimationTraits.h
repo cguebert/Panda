@@ -66,7 +66,7 @@ public:
 		anim.setInterpolation(elem.attribute("interpolation").toInt());
 		anim.clear();
 		T val = T();
-		PReal key;
+		float key;
 		auto e = elem.firstChild("Value");
 		while(e)
 		{

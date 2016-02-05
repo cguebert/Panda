@@ -23,13 +23,13 @@ public:
 	Path& operator+=(const Point& p);
 	Path& operator-=(const Point& p);
 
-	Path operator*(PReal v) const;
-	Path operator/(PReal v) const;
-	Path& operator*=(PReal v);
-	Path& operator/=(PReal v);
+	Path operator*(float v) const;
+	Path operator/(float v) const;
+	Path& operator*=(float v);
+	Path& operator/=(float v);
 
-	friend Path operator*(PReal v, const Path& p);
-	friend Path operator/(PReal v, const Path& p);
+	friend Path operator*(float v, const Path& p);
+	friend Path operator/(float v, const Path& p);
 
 	Path linearProduct(const Point& p) const;
 	Path linearDivision(const Point& p) const;
@@ -39,10 +39,10 @@ public:
 };
 
 /// Rotate every point of the path around the center, angle is given in radians
-PANDA_CORE_API void rotate(Path& path, const Point& center, PReal angle);
-PANDA_CORE_API Path rotated(const Path& path, const Point& center, PReal angle);
+PANDA_CORE_API void rotate(Path& path, const Point& center, float angle);
+PANDA_CORE_API Path rotated(const Path& path, const Point& center, float angle);
 
-PANDA_CORE_API PReal areaOfPolygon(const Path& poly);
+PANDA_CORE_API float areaOfPolygon(const Path& poly);
 PANDA_CORE_API types::Point centroidOfPolygon(const Path& poly);
 PANDA_CORE_API bool polygonContainsPoint(const Path &poly, types::Point pt);
 PANDA_CORE_API void reorientPolygon(Path& poly);

@@ -59,19 +59,19 @@ protected:
 
 #ifndef PANDA_BUILD_CORE
 extern template class PANDA_CORE_API ShaderValue<int>;
-extern template class PANDA_CORE_API ShaderValue<PReal>;
+extern template class PANDA_CORE_API ShaderValue<float>;
 extern template class PANDA_CORE_API ShaderValue<Color>;
 extern template class PANDA_CORE_API ShaderValue<Point>;
 extern template class PANDA_CORE_API ShaderValue<std::vector<int>>;
-extern template class PANDA_CORE_API ShaderValue<std::vector<PReal>>;
+extern template class PANDA_CORE_API ShaderValue<std::vector<float>>;
 extern template class PANDA_CORE_API ShaderValue<std::vector<Color>>;
 extern template class PANDA_CORE_API ShaderValue<std::vector<Point>>;
 #endif
 
 //****************************************************************************//
 
-typedef std::tuple<int, PReal, Color, Point,
-	std::vector<int>, std::vector<PReal>, std::vector<Color>, std::vector<Point> > shaderValuesTypes;
+typedef std::tuple<int, float, Color, Point,
+	std::vector<int>, std::vector<float>, std::vector<Color>, std::vector<Point> > shaderValuesTypes;
 
 class PANDA_CORE_API Shader
 {

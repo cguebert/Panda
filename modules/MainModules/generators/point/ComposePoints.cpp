@@ -25,7 +25,7 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal>	&xVal = ptX.getValue(),
+		const std::vector<float>	&xVal = ptX.getValue(),
 								&yVal = ptY.getValue();
 		auto pts = point.getAccessor();
 
@@ -46,7 +46,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > ptX, ptY;
+	Data< std::vector<float> > ptX, ptY;
 	Data< std::vector<Point> > point;
 };
 
@@ -91,7 +91,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > ptX, ptY;
+	Data< std::vector<float> > ptX, ptY;
 	Data< std::vector<Point> > point;
 };
 

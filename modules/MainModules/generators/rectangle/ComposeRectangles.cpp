@@ -31,10 +31,10 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal> &l = left.getValue();
-		const std::vector<PReal> &t = top.getValue();
-		const std::vector<PReal> &r = right.getValue();
-		const std::vector<PReal> &b = bottom.getValue();
+		const std::vector<float> &l = left.getValue();
+		const std::vector<float> &t = top.getValue();
+		const std::vector<float> &r = right.getValue();
+		const std::vector<float> &b = bottom.getValue();
 
 		int nb = std::min(l.size(), std::min(t.size(), std::min(r.size(), b.size())));
 
@@ -48,7 +48,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > left, top, right, bottom;
+	Data< std::vector<float> > left, top, right, bottom;
 	Data< std::vector<Rect> > rectangle;
 };
 
@@ -209,7 +209,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > left, top, right, bottom;
+	Data< std::vector<float> > left, top, right, bottom;
 	Data< std::vector<Rect> > rectangle;
 };
 

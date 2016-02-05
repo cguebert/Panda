@@ -34,17 +34,17 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal>& list = input.getValue();
+		const std::vector<float>& list = input.getValue();
 		int nb = list.size();
 		nbElements.setValue(nb);
 
 		if(nb)
 		{
-			PReal tMin = list[0], tMax = list[0];
-			PReal E=0, E2=0;
+			float tMin = list[0], tMax = list[0];
+			float E=0, E2=0;
 			for(int i=0; i<nb; ++i)
 			{
-				PReal v = list[i];
+				float v = list[i];
 				E += v;
 				E2 += v*v;
 				tMin = std::min(tMin, v);
@@ -72,9 +72,9 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > input;
+	Data< std::vector<float> > input;
 	Data<int> nbElements;
-	Data<PReal> sum, mean, stdDev, vMin, vMax;
+	Data<float> sum, mean, stdDev, vMin, vMax;
 };
 
 int DoubleListMath_SumMeanStdDevClass = RegisterObject<DoubleListMath_SumMeanStdDev>("Math/List of reals/Sum, mean and deviation").setName("Sum & mean").setDescription("Compute the sum, mean and standard deviation of a list of reals");
@@ -100,7 +100,7 @@ public:
 
 	void update()
 	{
-		std::vector<PReal> list = input.getValue();
+		std::vector<float> list = input.getValue();
 		int nb = list.size();
 		nbElements.setValue(nb);
 
@@ -118,9 +118,9 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > input;
+	Data< std::vector<float> > input;
 	Data<int> nbElements;
-	Data<PReal> median;
+	Data<float> median;
 };
 
 int DoubleListMath_MedianClass = RegisterObject<DoubleListMath_Median>("Math/List of reals/Median").setDescription("Search the median value of a list of reals");
@@ -160,7 +160,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > m_input, m_output;
+	Data< std::vector<float> > m_input, m_output;
 };
 
 int DoubleListMath_AccumulateClass = RegisterObject<DoubleListMath_Accumulate>("Math/List of reals/Accumulate").setDescription("Compute the accumulated sums of a list of values");

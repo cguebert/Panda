@@ -15,7 +15,7 @@ public:
 		: ParticleEffector(doc)
 		, lines(initData("lines", "The collision lines"))
 		, repulsionForce(initData("force", "Maximum magnitude of the repulsion force"))
-		, influenceDist(initData((PReal)20, "distance", "Threshold distance from the line below which particles are repulsed"))
+		, influenceDist(initData((float)20, "distance", "Threshold distance from the line below which particles are repulsed"))
 		, bothSides(initData(1, "both sides", "If true, apply repulsion forces on both sides of the line"))
 	{
 		addInput(lines);
@@ -29,8 +29,8 @@ public:
 	virtual void accumulateForces(Particles& particles)
 	{
 		const std::vector<Point> pts = lines.getValue();
-		const PReal maxForce = repulsionForce.getValue();
-		PReal maxDist = influenceDist.getValue();
+		const float maxForce = repulsionForce.getValue();
+		float maxDist = influenceDist.getValue();
 		maxDist *= maxDist;
 		bool twoSides = bothSides.getValue() != 0;
 
@@ -40,12 +40,12 @@ public:
 			Point ptA = pts[i], ptB = pts[i+1];
 			Point AB = ptB - ptA;
 			Point normal = Point(AB.y, -AB.x).normalized();
-			PReal ABn2 = AB.norm2();
+			float ABn2 = AB.norm2();
 			for(auto& particle : particles)
 			{
 				const Point& pos = particle.position;
 				Point AP = pos - ptA;
-				PReal r = (AP * AB) / ABn2;
+				float r = (AP * AB) / ABn2;
 				float sign = 1;
 				if(AB.cross(AP) > 0)
 				{
@@ -56,11 +56,11 @@ public:
 				if(r < 0 || r > 1)
 					continue;
 				Point pR = ptA + AB * r;
-				PReal dist = (pos - pR).norm2();
+				float dist = (pos - pR).norm2();
 
 				if(dist < maxDist)
 				{
-					PReal f = 1 - dist / maxDist;
+					float f = 1 - dist / maxDist;
 					particle.force += sign * normal * f * maxForce;
 				}
 			}
@@ -69,7 +69,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > lines;
-	Data< PReal> repulsionForce, influenceDist;
+	Data< float> repulsionForce, influenceDist;
 	Data< int > bothSides;
 };
 

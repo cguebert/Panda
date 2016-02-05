@@ -23,7 +23,7 @@ void Gradient::clear()
 	stops.clear();
 }
 
-void Gradient::add(PReal position, Color color)
+void Gradient::add(float position, Color color)
 {
 	if(position < 0 || position > 1)
 		return; // Ignore invalid insertions
@@ -42,9 +42,9 @@ void Gradient::add(PReal position, Color color)
 	stops.emplace_back(position, color);
 }
 
-Color Gradient::get(PReal position) const
+Color Gradient::get(float position) const
 {
-	PReal pos = extendPos(position);
+	float pos = extendPos(position);
 
 	int nb = stops.size();
 	if(!nb)	// Same rule as Qt's: when empty, do instead a gradient from black to white
@@ -80,7 +80,7 @@ int Gradient::getExtend() const
 	return extend;
 }
 
-inline bool compareStops(const std::pair<PReal, Color> &p1, const std::pair<PReal, Color> &p2)
+inline bool compareStops(const std::pair<float, Color> &p1, const std::pair<float, Color> &p2)
 {
 	return p1.first < p2.first;
 }
@@ -109,42 +109,42 @@ Gradient::GradientStops Gradient::getStopsForEdit() const
 	return stops;
 }
 
-PReal Gradient::extendPos(PReal position) const
+float Gradient::extendPos(float position) const
 {
 	switch(extend)
 	{
 	default:
 	case EXTEND_PAD:
-		return std::max<PReal>(0, std::min<PReal>(position, 1));
+		return std::max<float>(0, std::min<float>(position, 1));
 
 	case EXTEND_REPEAT:
 		return position - std::floor(position);
 
 	case EXTEND_REFLECT:
-		PReal p = position - std::floor(position);
+		float p = position - std::floor(position);
 		return ((static_cast<int>(std::floor(position)) % 2) ? 1 - p : p);
 	}
 }
 
-Color Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, PReal pos)
+Color Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, float pos)
 {
-	PReal amt = (pos - s1.first) / (s2.first - s1.first);
+	float amt = (pos - s1.first) / (s2.first - s1.first);
 	return interpolate(s1.second, s2.second, amt);
 }
 
-Color Gradient::interpolate(const Color& v1, const Color& v2, PReal amt)
+Color Gradient::interpolate(const Color& v1, const Color& v2, float amt)
 {
 	return v1 + (v2 - v1) * amt;
 }
 
-Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, PReal amt)
+Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, float amt)
 {
 	Gradient grad;
 	const auto& stops1 = g1.getStops();
 	const auto& stops2 = g2.getStops();
 
 	// Merging the keys of the 2 gradients, sorting them and making sure they are unique
-	std::vector<PReal> keys;
+	std::vector<float> keys;
 	for (const auto& stop : stops1)
 		keys.push_back(stop.first);
 	for (const auto& stop : stops2)
@@ -202,9 +202,9 @@ PANDA_CORE_API void DataTrait<Gradient>::readValue(XmlElement& elem, Gradient& g
 	while(stopNode)
 	{
 #ifdef PANDA_DOUBLE
-		PReal pos = stopNode.attribute("pos").toDouble();
+		float pos = stopNode.attribute("pos").toDouble();
 #else
-		PReal pos = stopNode.attribute("pos").toFloat();
+		float pos = stopNode.attribute("pos").toFloat();
 #endif
 		Color color;
 		colorTrait->readValue(stopNode, &color);
@@ -223,7 +223,7 @@ int gradientVectorDataClass = RegisterData< std::vector<Gradient> >();
 //****************************************************************************//
 
 template<>
-Gradient interpolate(const Gradient& g1, const Gradient& g2, PReal amt)
+Gradient interpolate(const Gradient& g1, const Gradient& g2, float amt)
 {
 	return Gradient::interpolate(g1, g2, amt);
 }

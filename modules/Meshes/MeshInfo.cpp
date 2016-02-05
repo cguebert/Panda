@@ -72,7 +72,7 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			const auto& mesh = input[i];
-			PReal area = 0;
+			float area = 0;
 			for(int j=0, nbT=mesh.nbTriangles(); j<nbT; ++j)
 				area += mesh.areaOfTriangle(mesh.getTriangle(j));
 			output[i] = fabs(area);
@@ -83,7 +83,7 @@ public:
 
 protected:
 	Data< std::vector<Mesh> > m_input;
-	Data< std::vector<PReal> > m_output;
+	Data< std::vector<float> > m_output;
 };
 
 int MeshMath_AreaClass = RegisterObject<MeshMath_Area>("Math/Mesh/Area")

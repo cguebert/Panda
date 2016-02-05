@@ -100,21 +100,21 @@ public:
 
 		m_coefs.resize(nbSteps+1);
 
-		vec4 first = {1/(PReal)6.0, 4/(PReal)6.0, 1/(PReal)6.0, 0};
+		vec4 first = {1/(float)6.0, 4/(float)6.0, 1/(float)6.0, 0};
 		m_coefs.front() = first;
 
-		PReal fstep = 1.f / nbSteps;
+		float fstep = 1.f / nbSteps;
 		int i=1;
-		for(PReal t=fstep; t<1; t+=fstep)
+		for(float t=fstep; t<1; t+=fstep)
 		{
-			PReal t2=t*t, t3=t2*t;
-			PReal k1=1-3*t+3*t2-t3, k2=4-6*t2+3*t3, k3=1+3*t+3*t2-3*t3;
+			float t2=t*t, t3=t2*t;
+			float k1=1-3*t+3*t2-t3, k2=4-6*t2+3*t3, k3=1+3*t+3*t2-3*t3;
 
-			vec4 tmp = {1/(PReal)6.0 * k1, 1/(PReal)6.0 * k2, 1/(PReal)6.0 * k3, 1/(PReal)6.0 * t3};
+			vec4 tmp = {1/(float)6.0 * k1, 1/(float)6.0 * k2, 1/(float)6.0 * k3, 1/(float)6.0 * t3};
 			m_coefs[i++] = tmp;
 		}
 
-		vec4 last = {0, 1/(PReal)6.0, 4/(PReal)6.0, 1/(PReal)6.0};
+		vec4 last = {0, 1/(float)6.0, 4/(float)6.0, 1/(float)6.0};
 		m_coefs.back() = last;
 	}
 
@@ -122,7 +122,7 @@ protected:
 	Data<std::vector<Path>> m_input, m_output;
 	Data<int> m_steps, m_close;
 
-	typedef std::array<PReal, 4> vec4;
+	typedef std::array<float, 4> vec4;
 	std::vector<vec4> m_coefs;
 };
 

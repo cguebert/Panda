@@ -103,7 +103,7 @@ void ParticleEngine::createNewParticles()
 
 void ParticleEngine::update()
 {
-	PReal time = m_parentDocument->getAnimationTime();
+	float time = m_parentDocument->getAnimationTime();
 	if(prevTime == time)
 		return;
 
@@ -124,7 +124,7 @@ void ParticleEngine::update()
 		effector->postUpdate(particles);
 
 	// move the particles
-	PReal dt = m_parentDocument->getTimeStep();
+	float dt = m_parentDocument->getTimeStep();
 	for(auto& p : particles)
 	{
 		Point oldVel = p.velocity;

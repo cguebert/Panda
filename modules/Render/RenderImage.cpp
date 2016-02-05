@@ -69,8 +69,8 @@ public:
 
 	void createVertices(Point pos, graphics::Size size, bool centered)
 	{
-		PReal w = static_cast<PReal>(size.width()), h = static_cast<PReal>(size.height());
-		PReal l, r, t, b;
+		float w = static_cast<float>(size.width()), h = static_cast<float>(size.height());
+		float l, r, t, b;
 		if (centered)
 		{
 			l = pos.x - w / 2.f;
@@ -92,23 +92,24 @@ public:
 		m_verticesBuffer.emplace_back(l, b);
 	}
 
-	inline Point rotated(Point pt, Point center, PReal ca, PReal sa)
+	inline Point rotated(Point pt, Point center, float ca, float sa)
 	{
 		Point trPt = pt - center;
 		return center + Point(trPt.x * ca - trPt.y * sa, trPt.x * sa + trPt.y * ca);
 	}
 
-	void createVertices(Point pos, graphics::Size size, PReal angle, bool centered)
+	void createVertices(Point pos, graphics::Size size, float angle, bool centered)
 	{
-		PReal w = static_cast<PReal>(size.width()), h = static_cast<PReal>(size.height());
+		float w = static_cast<float>(size.width()), h = static_cast<float>(size.height());
 		Rect rect;
 		if (centered)
 			rect = Rect(pos.x - w / 2.f, pos.y - h / 2.f, pos.x + w / 2.f, pos.y + h / 2.f);
 		else
 			rect = Rect(pos, w, h);
 
-		PReal a = angle * static_cast<PReal>(0.01745329251994329576923690768489);
-		PReal ca = cos(a), sa = sin(a);
+		const float PI180 = static_cast<float>(M_PI) / 180;
+		float a = angle * PI180;
+		float ca = cos(a), sa = sin(a);
 
 		m_verticesBuffer.emplace_back(rotated(rect.topRight(),    pos, ca, sa));
 		m_verticesBuffer.emplace_back(rotated(rect.topLeft(),	  pos, ca, sa));
@@ -120,7 +121,7 @@ public:
 	{
 		const std::vector<ImageWrapper>& listImage = m_image.getValue();
 		const std::vector<Point>& listPosition = m_position.getValue();
-		const std::vector<PReal>& listRotation = m_rotation.getValue();
+		const std::vector<float>& listRotation = m_rotation.getValue();
 
 		m_verticesBuffer.clear();
 		m_texCoordsBuffer.clear();
@@ -170,7 +171,7 @@ public:
 	{
 		const std::vector<ImageWrapper>& listImage = m_image.getValue();
 		const std::vector<Point>& listPosition = m_position.getValue();
-		const std::vector<PReal>& listRotation = m_rotation.getValue();
+		const std::vector<float>& listRotation = m_rotation.getValue();
 
 		bool centered = (m_drawCentered.getValue() != 0);
 
@@ -235,7 +236,7 @@ public:
 protected:
 	Data< std::vector<ImageWrapper> > m_image;
 	Data< std::vector<Point> > m_position;
-	Data< std::vector<PReal> > m_rotation;
+	Data< std::vector<float> > m_rotation;
 	Data< int > m_drawCentered;
 	Data< Shader > m_shader;
 

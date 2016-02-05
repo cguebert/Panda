@@ -36,8 +36,8 @@ public:
 	virtual int getCompositionMode() const = 0;
 	virtual Data<int>& getCompositionModeData() = 0;
 
-	virtual PReal getOpacity() const = 0;
-	virtual Data<PReal>& getOpacityData() = 0;
+	virtual float getOpacity() const = 0;
+	virtual Data<float>& getOpacityData() = 0;
 
 	virtual unsigned int getTextureId() const;
 
@@ -68,8 +68,8 @@ public:
 	int getCompositionMode() const override;
 	Data<int>& getCompositionModeData() override;
 
-	PReal getOpacity() const override;
-	Data<PReal>& getOpacityData() override;
+	float getOpacity() const override;
+	Data<float>& getOpacityData() override;
 
 	Data<types::ImageWrapper>* getImage() override;
 
@@ -83,7 +83,7 @@ protected:
 	Data<std::string> m_layerName;
 	Data<types::ImageWrapper> m_image;
 	Data<int> m_compositionMode;
-	Data<PReal> m_opacity;
+	Data<float> m_opacity;
 	graphics::Mat4x4 m_mvpMatrix;
 };
 
@@ -101,10 +101,10 @@ inline int Layer::getCompositionMode() const
 inline Data<int>& Layer::getCompositionModeData()
 { return m_compositionMode; }
 
-inline PReal Layer::getOpacity() const
+inline float Layer::getOpacity() const
 { return m_opacity.getValue(); }
 
-inline Data<PReal>& Layer::getOpacityData()
+inline Data<float>& Layer::getOpacityData()
 { return m_opacity; }
 
 inline Data<types::ImageWrapper>* Layer::getImage()

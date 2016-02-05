@@ -58,11 +58,11 @@ public:
 		if(coefs.size() != p || coefs[0].size() != c)
 		{
 			coefs.resize(p);
-			PReal s = 1 / static_cast<PReal>(p - 1);
+			float s = 1 / static_cast<float>(p - 1);
 			for(int i=0; i<p; ++i)
 			{
 				coefs[i].resize(c);
-				PReal t = i * s;
+				float t = i * s;
 				for(int j=0; j<c; ++j)
 					coefs[i][j] = bernstein(j, c-1, t);
 			}
@@ -84,7 +84,7 @@ public:
 		}
 	}
 
-	PReal bernstein(int i, int n, PReal t)
+	float bernstein(int i, int n, float t)
 	{
 		return binomials[i] * pow(t, i) * pow(1-t, n-i);
 	}
@@ -93,8 +93,8 @@ protected:
 	Data<Path> input, output;
 	Data<int> steps;
 
-	std::vector<PReal> binomials;
-	std::vector< std::vector<PReal> > coefs;
+	std::vector<float> binomials;
+	std::vector< std::vector<float> > coefs;
 };
 
 int Curve_BezierSplineClass = RegisterObject<Curve_BezierSpline>("Math/Path/Bezier spline").setDescription("Compute a bezier spline using the controls points");

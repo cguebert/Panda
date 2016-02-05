@@ -33,10 +33,10 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal> &r = R.getValue();
-		const std::vector<PReal> &g = G.getValue();
-		const std::vector<PReal> &b = B.getValue();
-		const std::vector<PReal> &a = A.getValue();
+		const std::vector<float> &r = R.getValue();
+		const std::vector<float> &g = G.getValue();
+		const std::vector<float> &b = B.getValue();
+		const std::vector<float> &a = A.getValue();
 		auto c = color.getAccessor();
 
 		int nbR = r.size(), nbG = g.size(), nbB = b.size(), nbA = a.size();
@@ -66,7 +66,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > R, G, B, A;
+	Data< std::vector<float> > R, G, B, A;
 	Data< std::vector<Color> > color;
 };
 
@@ -116,7 +116,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > R, G, B, A;
+	Data< std::vector<float> > R, G, B, A;
 	Data< std::vector<Color> > color;
 };
 
@@ -149,10 +149,10 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal> &h = H.getValue();
-		const std::vector<PReal> &s = S.getValue();
-		const std::vector<PReal> &v = V.getValue();
-		const std::vector<PReal> &a = A.getValue();
+		const std::vector<float> &h = H.getValue();
+		const std::vector<float> &s = S.getValue();
+		const std::vector<float> &v = V.getValue();
+		const std::vector<float> &a = A.getValue();
 		auto c = color.getAccessor();
 
 		int nbH = h.size(), nbS = s.size(), nbV = v.size(), nbA = a.size();
@@ -183,7 +183,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > H, S, V, A;
+	Data< std::vector<float> > H, S, V, A;
 	Data< std::vector<Color> > color;
 };
 
@@ -233,7 +233,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > H, S, V, A;
+	Data< std::vector<float> > H, S, V, A;
 	Data< std::vector<Color> > color;
 };
 

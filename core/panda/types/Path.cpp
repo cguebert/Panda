@@ -49,7 +49,7 @@ Path& Path::operator-=(const Point& p)
 	return *this;
 }
 
-Path Path::operator*(PReal v) const
+Path Path::operator*(float v) const
 {
 	int nb = size();
 	Path tmp;
@@ -59,7 +59,7 @@ Path Path::operator*(PReal v) const
 	return tmp;
 }
 
-Path Path::operator/(PReal v) const
+Path Path::operator/(float v) const
 {
 	int nb = size();
 	Path tmp;
@@ -69,21 +69,21 @@ Path Path::operator/(PReal v) const
 	return tmp;
 }
 
-Path& Path::operator*=(PReal v)
+Path& Path::operator*=(float v)
 {
 	for(auto& pt : *this)
 		pt *= v;
 	return *this;
 }
 
-Path& Path::operator/=(PReal v)
+Path& Path::operator/=(float v)
 {
 	for(auto& pt : *this)
 		pt /= v;
 	return *this;
 }
 
-Path operator*(PReal v, const Path& p)
+Path operator*(float v, const Path& p)
 {
 	int nb = p.size();
 	Path tmp;
@@ -93,7 +93,7 @@ Path operator*(PReal v, const Path& p)
 	return tmp;
 }
 
-Path operator/(PReal v, const Path& p)
+Path operator/(float v, const Path& p)
 {
 	int nb = p.size();
 	Path tmp;
@@ -138,10 +138,10 @@ void Path::reverse()
 	reversed().swap(*this);
 }
 
-void rotate(Path& path, const Point& center, PReal angle)
+void rotate(Path& path, const Point& center, float angle)
 {
 	int nb = path.size();
-	PReal ca = cos(angle), sa = sin(angle);
+	float ca = cos(angle), sa = sin(angle);
 	for(int i=0; i<nb; ++i)
 	{
 		Point pt = path[i] - center;
@@ -149,12 +149,12 @@ void rotate(Path& path, const Point& center, PReal angle)
 	}
 }
 
-Path rotated(const Path& path, const Point& center, PReal angle)
+Path rotated(const Path& path, const Point& center, float angle)
 {
 	int nb = path.size();
 	Path tmp;
 	tmp.resize(nb);
-	PReal ca = cos(angle), sa = sin(angle);
+	float ca = cos(angle), sa = sin(angle);
 	for(int i=0; i<nb; ++i)
 	{
 		Point pt = path[i] - center;
@@ -165,10 +165,10 @@ Path rotated(const Path& path, const Point& center, PReal angle)
 
 //****************************************************************************//
 
-PReal areaOfPolygon(const Path& poly)
+float areaOfPolygon(const Path& poly)
 {
 	int nbPts = poly.size();
-	PReal area = 0;
+	float area = 0;
 	for(int i=0; i<nbPts; ++i)
 	{
 		Point p1 = poly[i], p2 = poly[(i+1)%nbPts];

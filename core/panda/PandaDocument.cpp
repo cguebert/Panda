@@ -362,7 +362,7 @@ void PandaDocument::resetDocument()
 	m_currentIndex = 1;
 	m_animTimeVal = 0.0;
 	m_animTime.setValue(0.0);
-	m_timestep.setValue((PReal)0.01);
+	m_timestep.setValue((float)0.01);
 	m_mouseClickVal = 0;
 	m_mouseClick.setValue(0);
 	m_useTimer.setValue(1);
@@ -457,8 +457,8 @@ void PandaDocument::setRenderSize(graphics::Size size)
 { 
 	m_renderSize.setValue(
 		panda::types::Point(
-			std::max<PReal>(1.f, static_cast<PReal>(size.width())), 
-			std::max<PReal>(1.f, static_cast<PReal>(size.height()))
+			std::max(1.f, static_cast<float>(size.width())), 
+			std::max(1.f, static_cast<float>(size.height()))
 			)
 		); 
 }
@@ -834,7 +834,7 @@ void PandaDocument::step()
 
 	++m_iNbFrames;
 	auto now = currentTime();
-	PReal elapsedDur = static_cast<PReal>(toSeconds(now - m_fpsTime));
+	float elapsedDur = static_cast<float>(toSeconds(now - m_fpsTime));
 	if(m_animPlaying && elapsedDur > 1.0)
 	{
 		m_currentFPS = m_iNbFrames / elapsedDur;

@@ -200,11 +200,11 @@ private:
 
 //****************************************************************************//
 
-typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, std::string, types::ImageWrapper,
+typedef std::tuple<int, float, types::Color, types::Point, types::Rect, std::string, types::ImageWrapper,
 	types::Gradient, types::Shader, types::Mesh, types::Path, types::Polygon> allDataTypes;
-typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect, std::string> allSearchableTypes;
-typedef std::tuple<int, PReal, types::Color, types::Point, types::Rect> allNumericalTypes;
-typedef std::tuple<PReal, types::Color, types::Point, types::Gradient> allAnimationTypes;
+typedef std::tuple<int, float, types::Color, types::Point, types::Rect, std::string> allSearchableTypes;
+typedef std::tuple<int, float, types::Color, types::Point, types::Rect> allNumericalTypes;
+typedef std::tuple<float, types::Color, types::Point, types::Gradient> allAnimationTypes;
 
 } // namespace panda
 

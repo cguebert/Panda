@@ -66,7 +66,7 @@ public:
 	void update()
 	{
 		const std::vector<Point>& listCenter = m_center.getValue();
-		const std::vector<PReal>& listRadius = m_radius.getValue();
+		const std::vector<float>& listRadius = m_radius.getValue();
 		const std::vector<Color>& listColor = m_color.getValue();
 
 		int nbCenter = listCenter.size();
@@ -83,10 +83,10 @@ public:
 			if(nbRadius < nbCenter) nbRadius = 1;
 			if(nbColor < nbCenter) nbColor = 1;
 
-			PReal PI2 = static_cast<PReal>(M_PI) * 2;
+			float PI2 = static_cast<float>(M_PI) * 2;
 			for(int i=0; i<nbCenter; ++i)
 			{
-				PReal valRadius = listRadius[i % nbRadius];
+				float valRadius = listRadius[i % nbRadius];
 				int nbSeg = static_cast<int>(floor(valRadius * PI2));
 				if(nbSeg < 3) continue;
 
@@ -101,8 +101,8 @@ public:
 				const Point& valCenter = listCenter[i];
 				m_vertexBuffer[nbVertices] = valCenter;
 
-				PReal angle = PI2 / nbSeg;
-				PReal ca = cos(angle), sa = sin(angle);
+				float angle = PI2 / nbSeg;
+				float ca = cos(angle), sa = sin(angle);
 				Point dir = Point(valRadius, 0);
 
 				for(int i=0; i<=nbSeg; ++i)
@@ -152,7 +152,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > m_center;
-	Data< std::vector<PReal> > m_radius;
+	Data< std::vector<float> > m_radius;
 	Data< std::vector<Color> > m_color;
 	Data< Shader > m_shader;
 
@@ -218,7 +218,7 @@ public:
 	void update()
 	{
 		const std::vector<Point>& listCenter = m_center.getValue();
-		const std::vector<PReal>& listRadius = m_radius.getValue();
+		const std::vector<float>& listRadius = m_radius.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
@@ -232,10 +232,10 @@ public:
 		{
 			if(nbRadius < nbCenter) nbRadius = 1;
 
-			PReal PI2 = static_cast<PReal>(M_PI) * 2;
+			float PI2 = static_cast<float>(M_PI) * 2;
 			for(int i=0; i<nbCenter; ++i)
 			{
-				PReal valRadius = listRadius[i % nbRadius];
+				float valRadius = listRadius[i % nbRadius];
 				int nbSeg = static_cast<int>(floor(valRadius * PI2));
 				if(nbSeg < 3)
 				{
@@ -255,11 +255,11 @@ public:
 				m_vertexBuffer[nbVertices] = valCenter;
 				m_texCoordsBuffer[nbVertices] = Point(0, 0);
 
-				PReal angle = PI2 / nbSeg;
-				PReal ca = cos(angle), sa = sin(angle);
+				float angle = PI2 / nbSeg;
+				float ca = cos(angle), sa = sin(angle);
 				Point dir = Point(valRadius, 0);
-				PReal step = 1.f / nbSeg;
-				PReal texY = 0;
+				float step = 1.f / nbSeg;
+				float texY = 0;
 
 				for(int i=0; i<=nbSeg; ++i)
 				{
@@ -277,7 +277,7 @@ public:
 
 	void render()
 	{
-		const std::vector<PReal>& listRadius = m_radius.getValue();
+		const std::vector<float>& listRadius = m_radius.getValue();
 		const std::vector<Gradient>& listGradient = m_gradient.getValue();
 
 		int nbRadius = listRadius.size();
@@ -311,7 +311,7 @@ public:
 			// Optimization when we use only one gradient
 			if(nbGradient == 1)
 			{
-				PReal maxRadius = *std::max_element(listRadius.begin(), listRadius.end());
+				float maxRadius = *std::max_element(listRadius.begin(), listRadius.end());
 				GLuint texture = GradientCache::getInstance()->getTexture(listGradient.front(), static_cast<int>(std::ceil(maxRadius)));
 
 				glBindTexture(GL_TEXTURE_2D, texture);
@@ -348,7 +348,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > m_center;
-	Data< std::vector<PReal> > m_radius;
+	Data< std::vector<float> > m_radius;
 	Data< std::vector<Gradient> > m_gradient;
 	Data< Shader > m_shader;
 
@@ -413,7 +413,7 @@ public:
 	void update()
 	{
 		const std::vector<Point>& listCenter = m_center.getValue();
-		const std::vector<PReal>& listRadius = m_radius.getValue();
+		const std::vector<float>& listRadius = m_radius.getValue();
 
 		int nbCenter = listCenter.size();
 		int nbRadius = listRadius.size();
@@ -427,10 +427,10 @@ public:
 		{
 			if(nbRadius < nbCenter) nbRadius = 1;
 
-			PReal PI2 = static_cast<PReal>(M_PI) * 2;
+			float PI2 = static_cast<float>(M_PI) * 2;
 			for(int i=0; i<nbCenter; ++i)
 			{
-				PReal valRadius = listRadius[i % nbRadius];
+				float valRadius = listRadius[i % nbRadius];
 				int nbSeg = static_cast<int>(floor(valRadius * PI2));
 				if(nbSeg < 3)
 				{
@@ -450,8 +450,8 @@ public:
 				m_vertexBuffer[nbVertices] = valCenter;
 				m_texCoordsBuffer[nbVertices] = Point(0.5, 0.5);
 
-				PReal angle = PI2 / nbSeg;
-				PReal ca = cos(angle), sa = sin(angle);
+				float angle = PI2 / nbSeg;
+				float ca = cos(angle), sa = sin(angle);
 				Point dir = Point(1, 0);
 				Point texCenter = Point(0.5, 0.5);
 				Point texScale = Point(0.5, -0.5);
@@ -471,7 +471,7 @@ public:
 
 	void render()
 	{
-		const std::vector<PReal>& listRadius = m_radius.getValue();
+		const std::vector<float>& listRadius = m_radius.getValue();
 		const int texId = m_texture.getValue().getTextureId();
 
 		int nbRadius = listRadius.size();
@@ -514,7 +514,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > m_center;
-	Data< std::vector<PReal> > m_radius;
+	Data< std::vector<float> > m_radius;
 	Data< ImageWrapper > m_texture;
 	Data< Shader > m_shader;
 

@@ -13,7 +13,7 @@ public:
 		: GenericObject(doc)
 		, resetValues(true)
 		, prevControl(-1.0)
-		, control(initData((PReal)0.0, "control", "The buffer will be updated each time this value changes"))
+		, control(initData((float)0.0, "control", "The buffer will be updated each time this value changes"))
 		, resetData(initData(0, "reset", "Set this at 1 to reset the values"))
 		, generic(initData("input", "Connect here the lists to put in the buffer"))
 	{
@@ -59,7 +59,7 @@ public:
 	void update()
 	{
 		resetValues = resetValues || (resetData.getValue() != 0);	// Either from the data, or if the reset function was called
-		PReal newControl = control.getValue();
+		float newControl = control.getValue();
 		if(prevControl != newControl || resetValues)
 		{
 			prevControl = newControl;
@@ -87,8 +87,8 @@ public:
 
 protected:
 	bool resetValues;
-	PReal prevControl;
-	Data<PReal> control;
+	float prevControl;
+	Data<float> control;
 	Data<int> resetData;
 	GenericVectorData generic;
 };

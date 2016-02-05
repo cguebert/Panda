@@ -20,7 +20,7 @@ public:
 		: PandaObject(doc)
 		, m_seed(initData(0, "seed", "Seed for the random points generator"))
 		, m_samples(initData(20, "samples", "Number of samples to test (higher means tighter, but longer generation)"))
-		, minimumDistance(initData((PReal)50.0, "min distance", "Minimum distance between 2 points"))
+		, minimumDistance(initData((float)50.0, "min distance", "Minimum distance between 2 points"))
 		, m_points(initData("points", "The list of points"))
 		, m_nbPoints(initData(10, "# points", "Number of points generated"))
 		, m_area(initData("area", "Where to create the points. If null, the render area is used instead"))
@@ -37,10 +37,10 @@ public:
 		m_seed.setValue(m_rnd.getRandomSeed(10000));
 	}
 
-	Point randomPointAround(const Point& point, PReal minDist, PReal maxDist)
+	Point randomPointAround(const Point& point, float minDist, float maxDist)
 	{
-		PReal a = m_rnd.random() * 2 * M_PI;
-		PReal r = m_rnd.random(minDist, maxDist);
+		float a = m_rnd.random() * 2 * M_PI;
+		float r = m_rnd.random(minDist, maxDist);
 		return point + r * Point(cos(a), sin(a));
 	}
 
@@ -68,8 +68,8 @@ public:
 		m_grid.addPoint(firstPoint);
 
 		int rejectionLimit = m_samples.getValue();
-		PReal minDist = minimumDistance.getValue();
-		PReal maxDist = minDist * 2.0;
+		float minDist = minimumDistance.getValue();
+		float maxDist = minDist * 2.0;
 
 		while(!processList.empty())
 		{
@@ -98,7 +98,7 @@ protected:
 	helper::PointsGrid m_grid;
 
 	Data<int> m_seed, m_samples;
-	Data<PReal> minimumDistance;
+	Data<float> minimumDistance;
 	Data< std::vector<Point> > m_points;
 	Data<int> m_nbPoints;
 	Data<Rect> m_area;

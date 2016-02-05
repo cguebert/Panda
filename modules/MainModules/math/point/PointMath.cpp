@@ -130,7 +130,7 @@ public:
 		res.clear();
 
 		const std::vector<Point>& points = input.getValue();
-		const std::vector<PReal>& reals = factor.getValue();
+		const std::vector<float>& reals = factor.getValue();
 		int nbP = points.size(), nbR = reals.size();
 
 		if(nbP && nbR)
@@ -149,7 +149,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > input, result;
-	Data< std::vector<PReal> > factor;
+	Data< std::vector<float> > factor;
 };
 
 int PointMath_ScaleClass = RegisterObject<PointMath_Scale>("Math/Point/Multiply").setName("Scale point").setDescription("Multiply a point by a real");
@@ -181,7 +181,7 @@ public:
 		res.clear();
 
 		const std::vector<Point>& points = input.getValue();
-		const std::vector<PReal>& reals = factor.getValue();
+		const std::vector<float>& reals = factor.getValue();
 		int nbP = points.size(), nbR = reals.size();
 
 		if(nbP && nbR)
@@ -200,7 +200,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > input, result;
-	Data< std::vector<PReal> > factor;
+	Data< std::vector<float> > factor;
 };
 
 int PointMath_DivisionClass = RegisterObject<PointMath_Division>("Math/Point/Division").setName("Divide point").setDescription("Divide a point by a real");
@@ -249,7 +249,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > inputA, inputB;
-	Data< std::vector<PReal> > result;
+	Data< std::vector<float> > result;
 };
 
 int PointMath_DistanceClass = RegisterObject<PointMath_Distance>("Math/Point/Distance").setDescription("Compute the distance between 2 points");
@@ -282,7 +282,7 @@ public:
 
 		const std::vector<Point>& points = input.getValue();
 		const std::vector<Point>& centers = center.getValue();
-		const std::vector<PReal>& angles = angle.getValue();
+		const std::vector<float>& angles = angle.getValue();
 		int nbP = points.size(), nbC = centers.size(), nbA = angles.size();
 
 		if(nbP && nbC && nbA)
@@ -302,7 +302,7 @@ public:
 
 			res.resize(nb);
 
-			PReal PI180 = static_cast<PReal>(M_PI) / static_cast<PReal>(180.0);
+			float PI180 = static_cast<float>(M_PI) / 180;
 			for(int i=0; i<nb; ++i)
 				res[i] = rotated(points[i%nbP], centers[i%nbC], angles[i%nbA] * PI180);
 		}
@@ -313,7 +313,7 @@ public:
 protected:
 	Data< std::vector<Point> > input, result;
 	Data< std::vector<Point> > center;
-	Data< std::vector<PReal> > angle;
+	Data< std::vector<float> > angle;
 };
 
 int PointMath_RotationClass = RegisterObject<PointMath_Rotation>("Math/Point/Rotation").setDescription("Rotation of a point around a center");
@@ -346,7 +346,7 @@ public:
 		if(nb)
 		{
 			angleList.resize(nb);
-			const PReal pi = static_cast<PReal>(M_PI);
+			const float pi = static_cast<float>(M_PI);
 
 			for(int i=0; i<nb; ++i)
 			{
@@ -363,7 +363,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > vector;
-	Data< std::vector<PReal> > angle;
+	Data< std::vector<float> > angle;
 };
 
 int PointMath_AngleOfVectorClass = RegisterObject<PointMath_AngleOfVector>("Math/Point/Angle of vector").setDescription("Computes the angle of a vector");
@@ -390,17 +390,17 @@ public:
 		auto vecList = vector.getAccessor();
 		vecList.clear();
 
-		const std::vector<PReal>& angleList = angle.getValue();
+		const std::vector<float>& angleList = angle.getValue();
 		int nb = angleList.size();
 
 		if(nb)
 		{
 			vecList.resize(nb);
 
-			const PReal pi180 = static_cast<PReal>(M_PI) / 180;
+			const float pi180 = static_cast<float>(M_PI) / 180;
 			for(int i=0; i<nb; ++i)
 			{
-				PReal a = -angleList[i] * pi180;
+				float a = -angleList[i] * pi180;
 				vecList[i] = Point(cos(a), sin(a));
 			}
 		}
@@ -409,7 +409,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > angle;
+	Data< std::vector<float> > angle;
 	Data< std::vector<Point> > vector;
 };
 
@@ -452,7 +452,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > input;
-	Data< std::vector<PReal> > output;
+	Data< std::vector<float> > output;
 };
 
 int PointMath_NormClass = RegisterObject<PointMath_Norm>("Math/Point/Norm").setDescription("Compute the norm of a point");
@@ -494,7 +494,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > input;
-	Data< std::vector<PReal> > output;
+	Data< std::vector<float> > output;
 };
 
 int PointMath_Norm2Class = RegisterObject<PointMath_Norm2>("Math/Point/Norm2").setDescription("Compute the square of the norm of a point");

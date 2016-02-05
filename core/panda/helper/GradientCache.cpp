@@ -120,8 +120,8 @@ std::vector<types::Color> GradientCache::createBuffer(const panda::types::Gradie
 	int pos = 0;
 	types::Color prevColor = colors[0];
 	buffer[pos++] = prevColor;
-	PReal incr = 1.0f / size;
-	PReal fpos = 1.5f * incr;
+	float incr = 1.0f / size;
+	float fpos = 1.5f * incr;
 
 	while(fpos <= stops.front().first)
 	{
@@ -131,8 +131,8 @@ std::vector<types::Color> GradientCache::createBuffer(const panda::types::Gradie
 
 	for(int i=0; i<nbStops-1; ++i)
 	{
-		PReal prevPos = stops[i].first, nextPos = stops[i+1].first;
-		PReal delta = 1/(nextPos - prevPos);
+		float prevPos = stops[i].first, nextPos = stops[i+1].first;
+		float delta = 1/(nextPos - prevPos);
 		types::Color nextColor = colors[i+1];
 		while(fpos < nextPos && pos < size)
 		{

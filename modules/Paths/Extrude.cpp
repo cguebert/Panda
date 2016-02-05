@@ -18,18 +18,18 @@ class ExtrudeHelper
 {
 public:
 	static void extrudePath(const Path& pts, Mesh& mesh, Path& UV,
-							const Animation<PReal>& widthAnim,
+							const Animation<float>& widthAnim,
 							int capType, int joinType, bool close);
 
 private:
 	ExtrudeHelper(const Path& pts, Mesh& mesh, Path& UV, int capType, int joinType, bool close);
 	void extrude();
-	void prepare(const Animation<PReal>& widthAnim);
+	void prepare(const Animation<float>& widthAnim);
 	void startCap();
 	void lines();
 	std::pair<bool, Point> computeInternalDir(int id);
-	void segment(Mesh::PointID nextPtsId[3], int id, Point dir, PReal side, bool hasInternalPoint);
-	void join(Mesh::PointID nextPtsId[3], int id, Point dir, PReal side);
+	void segment(Mesh::PointID nextPtsId[3], int id, Point dir, float side, bool hasInternalPoint);
+	void join(Mesh::PointID nextPtsId[3], int id, Point dir, float side);
 	void lastSegment();
 	void endCap();
 
@@ -37,7 +37,7 @@ private:
 	Mesh& mesh;
 	Path& UV;
 	std::vector<Point> normals;
-	std::vector<PReal> abscissa, lengths, halfWidths;
+	std::vector<float> abscissa, lengths, halfWidths;
 	int capType, joinType, nbPts;
 	bool closePath;
 	Mesh::PointID prevPtsId[3];
@@ -89,7 +89,7 @@ public:
 		UV.clear();
 		UV.resize(nb);
 
-		const Animation<PReal>& widthAnim = m_width.getValue();
+		const Animation<float>& widthAnim = m_width.getValue();
 		const auto cap = m_capStyle.getValue();
 		const auto join = m_joinStyle.getValue();
 		bool close = m_closePath.getValue() != 0;
@@ -108,7 +108,7 @@ public:
 
 protected:
 	Data< std::vector<Path> > m_input;
-	Data< Animation<PReal> > m_width;
+	Data< Animation<float> > m_width;
 	Data< int > m_capStyle, m_joinStyle, m_closePath;
 	Data< std::vector<Mesh> > m_output;
 	Data< std::vector<Path> > m_coordUV; // Hack: vector of vector of vec2
@@ -125,7 +125,7 @@ ExtrudeHelper::ExtrudeHelper(const Path& pts, Mesh& mesh, Path& UV, int cap, int
 	, closePath(close)
 { }
 
-void ExtrudeHelper::extrudePath(const Path& pts, Mesh& mesh, Path& UV, const Animation<PReal>& widthAnim,int cap, int join, bool close)
+void ExtrudeHelper::extrudePath(const Path& pts, Mesh& mesh, Path& UV, const Animation<float>& widthAnim,int cap, int join, bool close)
 {
 	ExtrudeHelper helper{pts, mesh, UV, cap, join, close};
 	helper.prepare(widthAnim);
@@ -143,7 +143,7 @@ void ExtrudeHelper::extrude()
 	endCap();
 }
 
-void ExtrudeHelper::prepare(const Animation<PReal>& widthAnim)
+void ExtrudeHelper::prepare(const Animation<float>& widthAnim)
 {
 	nbPts = pts.size();
 	normals.resize(nbPts - 1);
@@ -161,9 +161,9 @@ void ExtrudeHelper::prepare(const Animation<PReal>& widthAnim)
 		lengths[i] = (pt2-pt1).norm();
 		abscissa[i+1] = abscissa[i] + lengths[i];
 	}
-	PReal length = abscissa.back();
-	const PReal firstAbs = abscissa[0];
-	const PReal realLength = length - firstAbs;
+	float length = abscissa.back();
+	const float firstAbs = abscissa[0];
+	const float realLength = length - firstAbs;
 
 	for(int i=0; i<nbPts; ++i)
 		halfWidths[i] = widthAnim.get((abscissa[i] - firstAbs) / realLength) / 2;
@@ -194,7 +194,7 @@ void ExtrudeHelper::startCap()
 {
 	Point dir = normals[0] * halfWidths[0];
 	const Point currentPt = pts[0];
-	const PReal currentAbs = abscissa[0];
+	const float currentAbs = abscissa[0];
 	prevPtsId[0] = mesh.addPoint(currentPt + dir);
 	prevPtsId[1] = mesh.addPoint(currentPt);
 	prevPtsId[2] = mesh.addPoint(currentPt - dir);
@@ -209,8 +209,8 @@ void ExtrudeHelper::startCap()
 		case 1:	// Round cap
 		{
 			int nb = static_cast<int>(floor(halfWidths[0] * M_PI));
-			PReal angle = static_cast<PReal>(M_PI) / nb; // We do a half turn
-			PReal ca = cos(angle), sa = sin(angle);
+			float angle = static_cast<float>(M_PI) / nb; // We do a half turn
+			float ca = cos(angle), sa = sin(angle);
 			Point uvPt(0, 1), uvCenter(currentAbs, 0.5), uvMult(-currentAbs, 0.5);
 			Mesh::PointID ptId = prevPtsId[0];
 			for(int i=0; i<nb-1; ++i)
@@ -251,7 +251,7 @@ void ExtrudeHelper::lines()
 	for(int id=1; id<nbPts-1; ++id)
 	{
 		const Point curNor = normals[id], prevNor = normals[id-1];
-		PReal side = prevNor.cross(curNor);
+		float side = prevNor.cross(curNor);
 		if(fabs(side) < 1e-3 && prevNor * curNor > 0)	// Don't create a join (nor points) if these 2 segments are aligned
 			continue;
 
@@ -271,7 +271,7 @@ std::pair<bool, Point> ExtrudeHelper::computeInternalDir(int id)
 	if(prevNor.dot(curNor) < -0.999)
 		return std::make_pair(false, Point());
 
-	const PReal maxLen = std::min(lengths[id % (nbPts-1)], lengths[id-1]);
+	const float maxLen = std::min(lengths[id % (nbPts-1)], lengths[id-1]);
 	Point dir = prevNor + curNor;
 	dir = prevNor / dir.dot(prevNor) + curNor / dir.dot(curNor);
 	dir *= halfWidths[id];
@@ -281,9 +281,9 @@ std::pair<bool, Point> ExtrudeHelper::computeInternalDir(int id)
 	return std::make_pair(true, dir);
 }
 
-void ExtrudeHelper::segment(Mesh::PointID nextPtsId[3], int id, Point dir, PReal side, bool hasInternalPoint)
+void ExtrudeHelper::segment(Mesh::PointID nextPtsId[3], int id, Point dir, float side, bool hasInternalPoint)
 {
-	const PReal halfWidth = halfWidths[id], curAbs = abscissa[id];
+	const float halfWidth = halfWidths[id], curAbs = abscissa[id];
 	const Point curPt = pts[id], curNor = normals[id], prevNor = normals[id-1];
 
 	// Main extrusion (without the exterior of the curvature)
@@ -329,9 +329,9 @@ void ExtrudeHelper::segment(Mesh::PointID nextPtsId[3], int id, Point dir, PReal
 	}
 }
 
-void ExtrudeHelper::join(Mesh::PointID nextPtsId[3], int id, Point dir, PReal side)
+void ExtrudeHelper::join(Mesh::PointID nextPtsId[3], int id, Point dir, float side)
 {
-	const PReal halfWidth = halfWidths[id], curAbs = abscissa[id];
+	const float halfWidth = halfWidths[id], curAbs = abscissa[id];
 	const Point curPt = pts[id], curNor = normals[id], prevNor = normals[id-1];
 
 	// Do a Bevel join instead of a miter join if the angle is too small
@@ -364,7 +364,7 @@ void ExtrudeHelper::join(Mesh::PointID nextPtsId[3], int id, Point dir, PReal si
 		{
 			if(side > 0)
 			{
-				PReal angle = acos(prevNor.dot(curNor));
+				float angle = acos(prevNor.dot(curNor));
 				Mesh::PointID addPtId = mesh.addPoint(curPt + prevNor * halfWidth);
 				nextPtsId[0] = mesh.addPoint(curPt + curNor * halfWidth);
 				UV.push_back(Point(curAbs, 1));
@@ -374,7 +374,7 @@ void ExtrudeHelper::join(Mesh::PointID nextPtsId[3], int id, Point dir, PReal si
 
 				int nb = static_cast<int>(floor(halfWidth * angle));
 				angle /= nb;
-				PReal ca = cos(angle), sa = sin(angle);
+				float ca = cos(angle), sa = sin(angle);
 				Point center = curPt;
 				Point r = curNor * halfWidth;
 				Mesh::PointID ptId = nextPtsId[0];
@@ -392,7 +392,7 @@ void ExtrudeHelper::join(Mesh::PointID nextPtsId[3], int id, Point dir, PReal si
 			}
 			else // side < 0
 			{
-				PReal angle = acos(prevNor.dot(curNor));
+				float angle = acos(prevNor.dot(curNor));
 				nextPtsId[2] = mesh.addPoint(curPt - curNor * halfWidth);
 				Mesh::PointID addPtId = mesh.addPoint(curPt - prevNor * halfWidth);
 				UV.push_back(Point(curAbs, 0));
@@ -402,7 +402,7 @@ void ExtrudeHelper::join(Mesh::PointID nextPtsId[3], int id, Point dir, PReal si
 
 				int nb = static_cast<int>(floor(halfWidth * angle));
 				angle /= nb;
-				PReal ca = cos(angle), sa = sin(angle);
+				float ca = cos(angle), sa = sin(angle);
 				Point center = curPt;
 				Point r = prevNor * halfWidth;
 				Mesh::PointID ptId = addPtId;
@@ -450,13 +450,13 @@ void ExtrudeHelper::join(Mesh::PointID nextPtsId[3], int id, Point dir, PReal si
 void ExtrudeHelper::lastSegment()
 {
 	const int id = nbPts - 1;
-	const PReal halfWidth = halfWidths[id], curAbs = abscissa[id];
+	const float halfWidth = halfWidths[id], curAbs = abscissa[id];
 	const Point curPt = pts[id], curNor = normals[id], prevNor = normals[id - 1];
 	Mesh::PointID nextPtsId[3];
 
 	if(closePath)
 	{
-		PReal side = prevNor.cross(curNor);
+		float side = prevNor.cross(curNor);
 		auto internal = computeInternalDir(id);
 		segment(nextPtsId, id, internal.second, side, internal.first);
 		join(nextPtsId, id, internal.second, side);
@@ -493,15 +493,15 @@ void ExtrudeHelper::endCap()
 			break;
 		case 1:	// Round cap
 		{
-			const PReal halfWidth = halfWidths.back();
+			const float halfWidth = halfWidths.back();
 			int nb = static_cast<int>(floor(halfWidth * M_PI));
-			PReal angle = static_cast<PReal>(M_PI) / nb; // We do a half turn
-			PReal ca = cos(angle), sa = sin(angle);
+			float angle = static_cast<float>(M_PI) / nb; // We do a half turn
+			float ca = cos(angle), sa = sin(angle);
 			Point center = pts[nbPts-1];
 			Point dir = normals[nbPts-2] * halfWidth;
 			dir = -dir;
 			Mesh::PointID ptId = prevPtsId[2];
-			const PReal lastAbs = abscissa[nbPts-1];
+			const float lastAbs = abscissa[nbPts-1];
 			Point uvPt(0, 1), uvCenter(lastAbs, 0.5), uvMult(1-lastAbs, -0.5);
 			for(int i=0; i<nb-1; ++i)
 			{
@@ -518,7 +518,7 @@ void ExtrudeHelper::endCap()
 		}
 		case 2: // Square cap
 		{
-			const PReal w = halfWidths.back();
+			const float w = halfWidths.back();
 			Point dir = normals[nbPts-2] * w;
 			Point dir2 = Point(dir.y, -dir.x);
 			Mesh::PointID addPtsId[3];

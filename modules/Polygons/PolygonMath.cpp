@@ -98,7 +98,7 @@ public:
 
 protected:
 	Data< std::vector<Polygon> > m_input, m_output;
-	Data< std::vector<PReal> > m_scale;
+	Data< std::vector<float> > m_scale;
 };
 
 int PolygonMath_ScaleClass = RegisterObject<PolygonMath_Scale>("Math/Polygon/Scale").setName("Scale polygon").setDescription("Scale a polygon");
@@ -149,7 +149,7 @@ public:
 
 			output.resize(nb);
 
-			PReal PI180 = static_cast<PReal>(M_PI) / static_cast<PReal>(180.0);
+			const float PI180 = static_cast<float>(M_PI) / static_cast<float>(180.0);
 			for(int i=0; i<nb; ++i)
 				output[i] = types::rotated(input[i%nbP], center[i%nbC], angle[i%nbA] * PI180);
 		}
@@ -160,7 +160,7 @@ public:
 protected:
 	Data< std::vector<Polygon> > m_input, m_output;
 	Data< std::vector<Point> > m_center;
-	Data< std::vector<PReal> > m_angle;
+	Data< std::vector<float> > m_angle;
 };
 
 int PolygonMath_RotateClass = RegisterObject<PolygonMath_Rotate>("Math/Polygon/Rotate").setName("Rotate polygon").setDescription("Rotate a polygon");
@@ -192,8 +192,8 @@ public:
 		{
 			const auto& poly = input[i];
 			Point avg;
-			PReal totArea = 0;
-			PReal area = types::areaOfPolygon(poly.contour);
+			float totArea = 0;
+			float area = types::areaOfPolygon(poly.contour);
 			avg = types::centroidOfPolygon(poly.contour) * area;
 			totArea += area;
 			for(const auto& hole : poly.holes)
@@ -243,7 +243,7 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			const auto& poly = input[i];
-			PReal totArea = fabs(types::areaOfPolygon(poly.contour));
+			float totArea = fabs(types::areaOfPolygon(poly.contour));
 			for(const auto& hole : poly.holes)
 				totArea -= fabs(types::areaOfPolygon(hole));
 			output[i] = totArea;
@@ -254,7 +254,7 @@ public:
 
 protected:
 	Data< std::vector<Polygon> > m_input;
-	Data< std::vector<PReal> > m_output;
+	Data< std::vector<float> > m_output;
 };
 
 int PolygonMath_AreaClass = RegisterObject<PolygonMath_Area>("Math/Polygon/Area")

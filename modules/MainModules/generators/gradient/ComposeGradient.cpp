@@ -29,7 +29,7 @@ public:
 											 true, false,
 											 "color",
 											 "Color to add to the gradient"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<PReal>()),
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<float>()),
 											 true, false,
 											 "position",
 											 "Position where to insert the color"));
@@ -50,14 +50,14 @@ public:
 	void updateT(DataList& list)
 	{
 		typedef Data< std::vector<Color> > VecColorData;
-		typedef Data< PReal > VecRealData;
+		typedef Data< float > VecRealData;
 		VecColorData* dataColor = dynamic_cast<VecColorData*>(list[0]);
 		VecRealData* dataPosition = dynamic_cast<VecRealData*>(list[1]);
 
 		assert(dataColor && dataPosition);
 
 		const std::vector<Color>& inColor = dataColor->getValue();
-		const PReal pos = dataPosition->getValue();
+		const float pos = dataPosition->getValue();
 		int nbColors = inColor.size();
 		int nbGrads = tempList.size();
 

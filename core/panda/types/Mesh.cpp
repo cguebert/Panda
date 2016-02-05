@@ -206,7 +206,7 @@ Mesh::PointID Mesh::getOtherPointInEdge(const Edge &edge, PointID point) const
 		return -1;
 }
 
-PReal Mesh::areaOfTriangle(const Triangle& trian) const
+float Mesh::areaOfTriangle(const Triangle& trian) const
 { // Half the cross product of the sides
 	Point p1 = getPoint(trian[0]), p2 = getPoint(trian[1]), p3 = getPoint(trian[2]);
 	Point p12 = p2 - p1, p13 = p3 - p1;
@@ -559,13 +559,13 @@ Mesh translated(const Mesh& mesh, const Point& delta)
 	return tmp;
 }
 
-void scale(Mesh& mesh, PReal scale)
+void scale(Mesh& mesh, float scale)
 {
 	for(int i=0, nb = mesh.nbPoints(); i < nb; ++i)
 		mesh.getPoint(i) *= scale;
 }
 
-Mesh scaled(const Mesh& mesh, PReal scale)
+Mesh scaled(const Mesh& mesh, float scale)
 {
 	Mesh tmp = mesh;
 	for(int i=0, nb = tmp.nbPoints(); i < nb; ++i)
@@ -573,9 +573,9 @@ Mesh scaled(const Mesh& mesh, PReal scale)
 	return tmp;
 }
 
-void rotate(Mesh& mesh, const Point& center, PReal angle)
+void rotate(Mesh& mesh, const Point& center, float angle)
 {
-	PReal ca = cos(angle), sa = sin(angle);
+	float ca = cos(angle), sa = sin(angle);
 	for(int i=0, nb = mesh.nbPoints(); i < nb; ++i)
 	{
 		Point& point = mesh.getPoint(i);
@@ -584,9 +584,9 @@ void rotate(Mesh& mesh, const Point& center, PReal angle)
 	}
 }
 
-Mesh rotated(const Mesh& mesh, const Point& center, PReal angle)
+Mesh rotated(const Mesh& mesh, const Point& center, float angle)
 {
-	PReal ca = cos(angle), sa = sin(angle);
+	float ca = cos(angle), sa = sin(angle);
 	Mesh tmp = mesh;
 	for(int i=0, nb = tmp.nbPoints(); i < nb; ++i)
 	{

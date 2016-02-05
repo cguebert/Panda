@@ -76,7 +76,7 @@ public:
 	void render()
 	{
 		const std::vector<Point>& listPosition = m_position.getValue();
-		const std::vector<PReal>& listSize = m_size.getValue();
+		const std::vector<float>& listSize = m_size.getValue();
 		const std::vector<Color>& listColor = m_color.getValue();
 		GLuint texId = m_texture.getValue().getTextureId();
 
@@ -98,7 +98,7 @@ public:
 			m_sizeVBO.bind();
 			if (nbSize < nbPosition)
 			{
-				 std::vector<PReal> tmpSize(nbPosition, listSize[0]);
+				 std::vector<float> tmpSize(nbPosition, listSize[0]);
 				 m_sizeVBO.write(tmpSize);
 			}
 			else
@@ -140,7 +140,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > m_position;
-	Data< std::vector<PReal> > m_size;
+	Data< std::vector<float> > m_size;
 	Data< std::vector<Color> > m_color;
 	Data< ImageWrapper > m_texture;
 	Data< Shader > m_shader;

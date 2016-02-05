@@ -35,9 +35,9 @@ namespace helper
 
 using types::Point;
 
-static inline PReal fade(PReal t) { return t * t * t * (t * (t * 6 - 15) + 10); }
-static inline PReal dfade(PReal t) { return 30.0f * t * t * (t * (t - 2.0f) + 1.0f); }
-inline PReal nlerp(PReal t, PReal a, PReal b) { return a + t * (b - a); }
+static inline float fade(float t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+static inline float dfade(float t) { return 30.0f * t * t * (t * (t - 2.0f) + 1.0f); }
+inline float nlerp(float t, float a, float b) { return a + t * (b - a); }
 
 Perlin::Perlin(uint8_t octaves)
 	: m_octaves(octaves)
@@ -74,10 +74,10 @@ void Perlin::setSeed(int32_t seed)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // fBm
-PReal Perlin::fBm(PReal v) const
+float Perlin::fBm(float v) const
 {
-	PReal result = 0.0f;
-	PReal amp = 0.5f;
+	float result = 0.0f;
+	float amp = 0.5f;
 
 	for(uint8_t i = 0; i < m_octaves; i++)
 	{
@@ -89,10 +89,10 @@ PReal Perlin::fBm(PReal v) const
 	return result;
 }
 
-PReal Perlin::fBm(PReal x, PReal y) const
+float Perlin::fBm(float x, float y) const
 {
-	PReal result = 0.0f;
-	PReal amp = 0.5f;
+	float result = 0.0f;
+	float amp = 0.5f;
 
 	for(uint8_t i = 0; i < m_octaves; i++)
 	{
@@ -104,10 +104,10 @@ PReal Perlin::fBm(PReal x, PReal y) const
 	return result;
 }
 
-PReal Perlin::fBm(PReal x, PReal y, PReal z) const
+float Perlin::fBm(float x, float y, float z) const
 {
-	PReal result = 0.0f;
-	PReal amp = 0.5f;
+	float result = 0.0f;
+	float amp = 0.5f;
 
 	for(uint8_t i = 0; i < m_octaves; i++)
 	{
@@ -121,10 +121,10 @@ PReal Perlin::fBm(PReal x, PReal y, PReal z) const
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // dfBm
-Point Perlin::dfBm(PReal x, PReal y) const
+Point Perlin::dfBm(float x, float y) const
 {
 	Point result;
-	PReal amp = 0.5f;
+	float amp = 0.5f;
 
 	for(uint8_t i = 0; i < m_octaves; i++)
 	{
@@ -136,10 +136,10 @@ Point Perlin::dfBm(PReal x, PReal y) const
 	return result;
 }
 
-Perlin::P3D Perlin::dfBm(PReal x, PReal y, PReal z) const
+Perlin::P3D Perlin::dfBm(float x, float y, float z) const
 {
 	P3D result;
-	PReal amp = 0.5f;
+	float amp = 0.5f;
 
 	for(uint8_t i = 0; i < m_octaves; i++)
 	{
@@ -156,21 +156,21 @@ Perlin::P3D Perlin::dfBm(PReal x, PReal y, PReal z) const
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // noise
-PReal Perlin::noise(PReal x) const
+float Perlin::noise(float x) const
 {
 	int32_t X = ((int32_t)floorf(x)) & 255;
 	x -= floorf(x);
-	PReal u = fade(x);
+	float u = fade(x);
 	int32_t A = m_perms[X], AA = m_perms[A], B = m_perms[X+1], BA = m_perms[B];
 
 	return nlerp(u, grad(m_perms[AA], x), grad(m_perms[BA], x-1));
 }
 
-PReal Perlin::noise(PReal x, PReal y) const
+float Perlin::noise(float x, float y) const
 {
 	int32_t X = ((int32_t)floorf(x)) & 255, Y = ((int32_t)floorf(y)) & 255;
 	x -= floorf(x); y -= floorf(y);
-	PReal	u = fade(x), v = fade(y);
+	float	u = fade(x), v = fade(y);
 	int32_t A = m_perms[X]+Y, AA = m_perms[A], AB = m_perms[A+1],
 	B = m_perms[X+1]+Y, BA = m_perms[B], BB = m_perms[B+1];
 
@@ -180,23 +180,23 @@ PReal Perlin::noise(PReal x, PReal y) const
 							 grad(m_perms[BB], x-1, y-1)));
 }
 
-PReal Perlin::noise(PReal x, PReal y, PReal z) const
+float Perlin::noise(float x, float y, float z) const
 {
 	// These floors need to remain that due to behavior with negatives.
 	int32_t X = ((int32_t)floorf(x)) & 255, Y = ((int32_t)floorf(y)) & 255, Z = ((int32_t)floorf(z)) & 255;
 	x -= floorf(x); y -= floorf(y); z -= floorf(z);
-	PReal	u = fade(x), v = fade(y), w = fade(z);
+	float	u = fade(x), v = fade(y), w = fade(z);
 	int32_t A = m_perms[X  ]+Y, AA = m_perms[A]+Z, AB = m_perms[A+1]+Z,
 	B = m_perms[X+1]+Y, BA = m_perms[B]+Z, BB = m_perms[B+1]+Z;
 
-	PReal a = grad(m_perms[AA  ], x  , y  , z  );
-	PReal b = grad(m_perms[BA  ], x-1, y  , z  );
-	PReal c = grad(m_perms[AB  ], x  , y-1, z  );
-	PReal d = grad(m_perms[BB  ], x-1, y-1, z  );
-	PReal e = grad(m_perms[AA+1], x  , y  , z-1);
-	PReal f = grad(m_perms[BA+1], x-1, y  , z-1);
-	PReal g = grad(m_perms[AB+1], x  , y-1, z-1);
-	PReal h = grad(m_perms[BB+1], x-1, y-1, z-1);
+	float a = grad(m_perms[AA  ], x  , y  , z  );
+	float b = grad(m_perms[BA  ], x-1, y  , z  );
+	float c = grad(m_perms[AB  ], x  , y-1, z  );
+	float d = grad(m_perms[BB  ], x-1, y-1, z  );
+	float e = grad(m_perms[AA+1], x  , y  , z-1);
+	float f = grad(m_perms[BA+1], x-1, y  , z-1);
+	float g = grad(m_perms[AB+1], x  , y-1, z-1);
+	float h = grad(m_perms[BB+1], x-1, y-1, z-1);
 
 	return	nlerp(w, nlerp(v, nlerp(u, a, b),
 							  nlerp(u, c, d)),
@@ -207,36 +207,36 @@ PReal Perlin::noise(PReal x, PReal y, PReal z) const
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // dnoise
 // Credit for the ideas for analytical Perlin derivatives below are due to Iñigo Quílez
-Point Perlin::dnoise(PReal x, PReal y) const
+Point Perlin::dnoise(float x, float y) const
 {
 	int32_t X = ((int32_t)x) & 255, Y = ((int32_t)y) & 255;
 	x -= floorf(x); y -= floorf(y);
-	PReal u = fade(x), v = fade(y);
-	PReal du = dfade(x), dv = dfade(y);
+	float u = fade(x), v = fade(y);
+	float du = dfade(x), dv = dfade(y);
 	int32_t A = m_perms[X  ]+Y, AA = m_perms[A]+0, AB = m_perms[A+1]+0,
 		B = m_perms[X+1]+Y, BA = m_perms[B]+0, BB = m_perms[B+1]+0;
 
 	if(du < 0.000001f) du = 1.0f;
 	if(dv < 0.000001f) dv = 1.0f;
 
-	PReal a = grad(m_perms[AA], x  , y  );
-	PReal b = grad(m_perms[BA], x-1, y  );
-	PReal c = grad(m_perms[AB], x  , y-1);
-	PReal d = grad(m_perms[BB], x-1, y-1);
+	float a = grad(m_perms[AA], x  , y  );
+	float b = grad(m_perms[BA], x-1, y  );
+	float c = grad(m_perms[AB], x  , y-1);
+	float d = grad(m_perms[BB], x-1, y-1);
 	
-	const PReal k1 =   b - a;
-	const PReal k2 =   c - a;
-	const PReal k4 =   a - b - c + d;
+	const float k1 =   b - a;
+	const float k2 =   c - a;
+	const float k4 =   a - b - c + d;
 
 	return Point(du * (k1 + k4 * v), dv * (k2 + k4 * u));
 }
 
-Perlin::P3D Perlin::dnoise(PReal x, PReal y, PReal z) const
+Perlin::P3D Perlin::dnoise(float x, float y, float z) const
 {
 	int32_t X = ((int32_t)floorf(x)) & 255, Y = ((int32_t)floorf(y)) & 255, Z = ((int32_t)floorf(z)) & 255;
 	x -= floorf(x); y -= floorf(y); z -= floorf(z);
-	PReal u = fade(x), v = fade(y), w = fade(z);
-	PReal du = dfade(x), dv = dfade(y), dw = dfade(z);
+	float u = fade(x), v = fade(y), w = fade(z);
+	float du = dfade(x), dv = dfade(y), dw = dfade(z);
 	int32_t A = m_perms[X  ]+Y, AA = m_perms[A]+Z, AB = m_perms[A+1]+Z,
 		B = m_perms[X+1]+Y, BA = m_perms[B]+Z, BB = m_perms[B+1]+Z;
 
@@ -244,22 +244,22 @@ Perlin::P3D Perlin::dnoise(PReal x, PReal y, PReal z) const
 	if(dv < 0.000001f) dv = 1.0f;
 	if(dw < 0.000001f) dw = 1.0f;
 
-	PReal a = grad(m_perms[AA  ], x  , y  , z  );
-	PReal b = grad(m_perms[BA  ], x-1, y  , z  );
-	PReal c = grad(m_perms[AB  ], x  , y-1, z  );
-	PReal d = grad(m_perms[BB  ], x-1, y-1, z  );
-	PReal e = grad(m_perms[AA+1], x  , y  , z-1);
-	PReal f = grad(m_perms[BA+1], x-1, y  , z-1);
-	PReal g = grad(m_perms[AB+1], x  , y-1, z-1);
-	PReal h = grad(m_perms[BB+1], x-1, y-1, z-1);
+	float a = grad(m_perms[AA  ], x  , y  , z  );
+	float b = grad(m_perms[BA  ], x-1, y  , z  );
+	float c = grad(m_perms[AB  ], x  , y-1, z  );
+	float d = grad(m_perms[BB  ], x-1, y-1, z  );
+	float e = grad(m_perms[AA+1], x  , y  , z-1);
+	float f = grad(m_perms[BA+1], x-1, y  , z-1);
+	float g = grad(m_perms[AB+1], x  , y-1, z-1);
+	float h = grad(m_perms[BB+1], x-1, y-1, z-1);
 
-	const PReal k1 =   b - a;
-	const PReal k2 =   c - a;
-	const PReal k3 =   e - a;
-	const PReal k4 =   a - b - c + d;
-	const PReal k5 =   a - c - e + g;
-	const PReal k6 =   a - b - e + f;
-	const PReal k7 =  -a + b + c - d + e - f - g + h;
+	const float k1 =   b - a;
+	const float k2 =   c - a;
+	const float k3 =   e - a;
+	const float k4 =   a - b - c + d;
+	const float k5 =   a - c - e + g;
+	const float k6 =   a - b - e + f;
+	const float k7 =  -a + b + c - d + e - f - g + h;
 
 	return P3D{ du * (k1 + k4*v + k6*w + k7*v*w),
 		dv * (k2 + k5*w + k4*u + k7*w*u),
@@ -269,26 +269,26 @@ Perlin::P3D Perlin::dnoise(PReal x, PReal y, PReal z) const
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // grad
 
-PReal Perlin::grad(int32_t hash, PReal x) const
+float Perlin::grad(int32_t hash, float x) const
 {
 	int32_t h = hash & 15;                   // CONVERT LO 4 BITS OF HASH CODE
-	PReal	u = h<8 ? x : 0,                 // INTO 12 GRADIENT DIRECTIONS.
+	float	u = h<8 ? x : 0,                 // INTO 12 GRADIENT DIRECTIONS.
 			v = h<4 ? 0 : h==12||h==14 ? x : 0;
 	return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
 }
 
-PReal Perlin::grad(int32_t hash, PReal x, PReal y) const
+float Perlin::grad(int32_t hash, float x, float y) const
 {
 	int32_t h = hash & 15;                   // CONVERT LO 4 BITS OF HASH CODE
-	PReal	u = h<8 ? x : y,                 // INTO 12 GRADIENT DIRECTIONS.
+	float	u = h<8 ? x : y,                 // INTO 12 GRADIENT DIRECTIONS.
 			v = h<4 ? y : h==12||h==14 ? x : 0;
 	return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
 }
 
-PReal Perlin::grad(int32_t hash, PReal x, PReal y, PReal z) const
+float Perlin::grad(int32_t hash, float x, float y, float z) const
 {
 	int32_t h = hash & 15;                 // CONVERT LO 4 BITS OF HASH CODE
-	PReal u = h<8 ? x : y,                 // INTO 12 GRADIENT DIRECTIONS.
+	float u = h<8 ? x : y,                 // INTO 12 GRADIENT DIRECTIONS.
 		 v = h<4 ? y : h==12||h==14 ? x : z;
 	return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
 }

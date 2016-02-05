@@ -69,7 +69,7 @@ public:
 	ModifierPoints_PointsInDisk(PandaDocument *doc)
 		: PandaObject(doc)
 		, center(initData("center", "Center of the disk used to select valid points"))
-		, radius(initData((PReal)50, "radius", "Radius of the disk used to select valid points"))
+		, radius(initData((float)50, "radius", "Radius of the disk used to select valid points"))
 		, inputPoints(initData("input", "List of points to test"))
 		, outputPoints(initData("output", "List of valid points" ))
 		, outputIndices(initData("indices", "Indices of the valid points"))
@@ -85,8 +85,8 @@ public:
 	void update()
 	{
 		const Point& c = center.getValue();
-		PReal r = radius.getValue();
-		PReal r2 = r*r;
+		float r = radius.getValue();
+		float r2 = r*r;
 
 		const std::vector<Point>& inPts = inputPoints.getValue();
 		auto outPts = outputPoints.getAccessor();
@@ -98,7 +98,7 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			Point pt = inPts[i];
-			PReal d2 = (pt - c).norm2();
+			float d2 = (pt - c).norm2();
 			if(d2 < r2)
 			{
 				outPts.push_back(pt);
@@ -111,7 +111,7 @@ public:
 
 protected:
 	Data< Point > center;
-	Data< PReal > radius;
+	Data< float > radius;
 	Data< std::vector<Point> > inputPoints, outputPoints;
 	Data< std::vector<int> > outputIndices;
 };

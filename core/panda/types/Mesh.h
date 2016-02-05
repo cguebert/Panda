@@ -91,7 +91,7 @@ public:
 	TrianglesIndicesList getTrianglesConnectedToTriangle(TriangleID index, bool shareEdge);
 
 	PointID getOtherPointInEdge(const Edge& edge, PointID point) const;
-	PReal areaOfTriangle(const Triangle& poly) const;
+	float areaOfTriangle(const Triangle& poly) const;
 	void reorientTriangle(Triangle& poly);
 	Point centroidOfTriangle(const Triangle& poly) const;
 	bool triangleContainsPoint(const Triangle& poly, Point pt) const;
@@ -145,12 +145,12 @@ protected:
 PANDA_CORE_API void translate(Mesh& mesh, const Point& delta);
 PANDA_CORE_API Mesh translated(const Mesh& mesh, const Point& delta);
 
-PANDA_CORE_API void scale(Mesh& mesh, PReal scale);
-PANDA_CORE_API Mesh scaled(const Mesh& mesh, PReal scale);
+PANDA_CORE_API void scale(Mesh& mesh, float scale);
+PANDA_CORE_API Mesh scaled(const Mesh& mesh, float scale);
 
 /// Rotate every point of the paths around the center, angle is given in radians
-PANDA_CORE_API void rotate(Mesh& mesh, const Point& center, PReal angle);
-PANDA_CORE_API Mesh rotated(const Mesh& mesh, const Point& center, PReal angle);
+PANDA_CORE_API void rotate(Mesh& mesh, const Point& center, float angle);
+PANDA_CORE_API Mesh rotated(const Mesh& mesh, const Point& center, float angle);
 
 //****************************************************************************//
 

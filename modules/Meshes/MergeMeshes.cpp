@@ -31,7 +31,7 @@ public:
 	GeneratorMesh_MergeMeshes(PandaDocument *doc)
 		: PandaObject(doc)
 		, inputs(initData("inputs", "Meshes to merge"))
-		, threshold(initData((PReal)0.1, "threshold", "Distance under which 2 points are considered the same"))
+		, threshold(initData((float)0.1, "threshold", "Distance under which 2 points are considered the same"))
 		, output(initData("output", "Merged mesh"))
 	{
 		addInput(inputs);
@@ -47,7 +47,7 @@ public:
 		Rect area(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
 		grid.initGrid(area, 10);
 
-		PReal thres = threshold.getValue();
+		float thres = threshold.getValue();
 
 		Mesh::SeqPoints newPoints;
 		Mesh::SeqTriangles newTriangles;
@@ -106,7 +106,7 @@ public:
 
 protected:
 	Data< std::vector<Mesh> > inputs;
-	Data< PReal > threshold;
+	Data< float > threshold;
 	Data< Mesh > output;
 };
 

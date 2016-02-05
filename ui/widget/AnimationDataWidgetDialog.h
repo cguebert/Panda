@@ -161,9 +161,9 @@ public:
 		{
 			dataWidgets[i]->updateDataValue();
 #ifdef PANDA_DOUBLE
-			PReal key = lineEdits[i]->text().toDouble();
+			float key = lineEdits[i]->text().toDouble();
 #else
-			PReal key = lineEdits[i]->text().toFloat();
+			float key = lineEdits[i]->text().toFloat();
 #endif
 			anim.add(key, valuesCopy[i]);
 		}

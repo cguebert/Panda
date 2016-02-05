@@ -22,8 +22,8 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal> &valInA = inputA.getValue();
-		const std::vector<PReal> &valInB = inputB.getValue();
+		const std::vector<float> &valInA = inputA.getValue();
+		const std::vector<float> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
 
@@ -47,7 +47,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > inputA, inputB;
+	Data< std::vector<float> > inputA, inputB;
 	Data< std::vector<int> > result;
 };
 
@@ -73,8 +73,8 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal> &valInA = inputA.getValue();
-		const std::vector<PReal> &valInB = inputB.getValue();
+		const std::vector<float> &valInA = inputA.getValue();
+		const std::vector<float> &valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
 
@@ -98,7 +98,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > inputA, inputB;
+	Data< std::vector<float> > inputA, inputB;
 	Data< std::vector<int> > result;
 };
 

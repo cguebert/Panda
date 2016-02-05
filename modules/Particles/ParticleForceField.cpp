@@ -103,7 +103,7 @@ public:
 	{
 		const std::vector<Point>& forces = force.getValue();
 		const std::vector<Point>& centers = center.getValue();
-		const std::vector<PReal>& radiuses = radius.getValue();
+		const std::vector<float>& radiuses = radius.getValue();
 
 		int nbForces = forces.size();
 		int nbCenters = centers.size();
@@ -115,7 +115,7 @@ public:
 			for(int i=0; i<nbCenters; ++i)
 			{
 				const Point& c = centers[i];
-				PReal r = radiuses[i%nbRadiuses];
+				float r = radiuses[i%nbRadiuses];
 				r *= r;
 				const Point& f = forces[i%nbForces];
 				for(auto& p : particles)
@@ -129,7 +129,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > force, center;
-	Data< std::vector<PReal> > radius;
+	Data< std::vector<float> > radius;
 };
 
 int ParticleForceField_ForceInCircleClass = RegisterObject<ParticleForceField_ForceInCircle>("Particles/Forces/Force in circle")
@@ -159,9 +159,9 @@ public:
 
 	void accumulateForces(Particles& particles)
 	{
-		const std::vector<PReal>& forces = force.getValue();
+		const std::vector<float>& forces = force.getValue();
 		const std::vector<Point>& centers = center.getValue();
-		const std::vector<PReal>& radiuses = radius.getValue();
+		const std::vector<float>& radiuses = radius.getValue();
 
 		bool linearLaw = linear.getValue() != 0;
 		int nbForces = forces.size();
@@ -174,16 +174,16 @@ public:
 			for(int i=0; i<nbCenters; ++i)
 			{
 				const Point& c = centers[i];
-				const PReal& r = radiuses[i%nbRadiuses];
-				PReal r2 = r * r;
-				const PReal& f = forces[i%nbForces];
+				const float& r = radiuses[i%nbRadiuses];
+				float r2 = r * r;
+				const float& f = forces[i%nbForces];
 				for(auto& p : particles)
 				{
 					Point n = c - p.position;
-					PReal d2 = n.norm2();
+					float d2 = n.norm2();
 					if(d2 < r2)
 					{
-						PReal d = sqrt(d2);
+						float d = sqrt(d2);
 						n.normalizeWithNorm(d);
 						if(linearLaw)
 							p.force += n * f * (1 - d / r);
@@ -196,9 +196,9 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > force;
+	Data< std::vector<float> > force;
 	Data< std::vector<Point> > center;
-	Data< std::vector<PReal> > radius;
+	Data< std::vector<float> > radius;
 	Data< int > linear;
 };
 

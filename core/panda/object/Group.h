@@ -92,8 +92,8 @@ public:
 	int getCompositionMode() const override;
 	Data<int>& getCompositionModeData() override;
 
-	PReal getOpacity() const override;
-	Data<PReal>& getOpacityData() override;
+	float getOpacity() const override;
+	Data<float>& getOpacityData() override;
 
 	Data<types::ImageWrapper>* getImage() override;
 
@@ -108,7 +108,7 @@ public:
 protected:
 	Data<types::ImageWrapper> m_image;
 	Data<int> m_compositionMode;
-	Data<PReal> m_opacity;
+	Data<float> m_opacity;
 
 	graphics::Mat4x4 m_mvpMatrix;
 
@@ -155,10 +155,10 @@ inline int GroupWithLayer::getCompositionMode() const
 inline Data<int>& GroupWithLayer::getCompositionModeData()
 { if(m_layer) return m_layer->getCompositionModeData(); else return m_compositionMode; }
 
-inline PReal GroupWithLayer::getOpacity() const
+inline float GroupWithLayer::getOpacity() const
 { if(m_layer) return m_layer->getOpacity(); else return m_opacity.getValue(); }
 
-inline Data<PReal>& GroupWithLayer::getOpacityData()
+inline Data<float>& GroupWithLayer::getOpacityData()
 { if(m_layer) return m_layer->getOpacityData(); else return m_opacity; }
 
 inline Data<types::ImageWrapper>* GroupWithLayer::getImage()

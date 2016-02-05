@@ -244,10 +244,10 @@ public:
 //****************************************************************************//
 
 template <>
-class DataWidgetContainer< PReal >
+class DataWidgetContainer< float >
 {
 protected:
-	typedef PReal value_type;
+	typedef float value_type;
 	QLineEdit* lineEdit;
 
 public:
@@ -293,7 +293,7 @@ RegisterWidget<SimpleDataWidget<int, EnumDataWidget> > DWClass_enum("enum");
 RegisterWidget<SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_int("slider");
 RegisterWidget<OpenDialogDataWidget<std::vector<int>, ListDataWidgetDialog<std::vector<int> > > > DWClass_ints_list_generic("generic");
 
-RegisterWidget<SimpleDataWidget<PReal> > DWClass_double("default");
-RegisterWidget<SimpleDataWidget<PReal, SliderDataWidget<PReal> > > DWClass_slider_double("slider");
-RegisterWidget<OpenDialogDataWidget<std::vector<PReal>, ListDataWidgetDialog<std::vector<PReal> > > > DWClass_doubles_list_generic("generic");
+RegisterWidget<SimpleDataWidget<float> > DWClass_double("default");
+RegisterWidget<SimpleDataWidget<float, SliderDataWidget<float> > > DWClass_slider_double("slider");
+RegisterWidget<OpenDialogDataWidget<std::vector<float>, ListDataWidgetDialog<std::vector<float> > > > DWClass_doubles_list_generic("generic");
 

@@ -15,7 +15,7 @@ public:
 		: GenericObject(doc)
 		, m_copyInit(true)
 		, prevControl(-1.0)
-		, m_control(initData((PReal)0.0, "control", "This object will be updated each time this value changes"))
+		, m_control(initData((float)0.0, "control", "This object will be updated each time this value changes"))
 		, m_condition(initData(1, "condition", "Continue while this condition is true (non zero)"))
 		, m_nbIterations(initData(5, "nbIterations", "Maximum number of iterations"))
 		, m_iteration(initData(0, "iteration", "Current iteration"))
@@ -68,7 +68,7 @@ public:
 
 	void update()
 	{
-		PReal newControl = m_control.getValue();
+		float newControl = m_control.getValue();
 		if(prevControl != newControl)
 		{
 			prevControl = newControl;
@@ -102,8 +102,8 @@ public:
 
 protected:
 	bool m_copyInit;
-	PReal prevControl;
-	Data<PReal> m_control;
+	float prevControl;
+	Data<float> m_control;
 	Data<int> m_condition, m_nbIterations, m_iteration;
 	GenericVectorData m_generic;
 };

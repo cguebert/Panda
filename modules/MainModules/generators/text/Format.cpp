@@ -16,7 +16,7 @@ std::string convert(const std::string& value)
 
 namespace panda {
 
-typedef std::tuple<int, PReal, std::string> formatTypes;
+typedef std::tuple<int, float, std::string> formatTypes;
 
 class GeneratorText_Format : public GenericObject
 {

@@ -165,7 +165,7 @@ bool Shader::operator!=(const Shader& shader) const
 template<> void ShaderValue<int>::apply(graphics::ShaderProgram& program) const
 { program.setUniformValue(m_name.c_str(), m_value); }
 
-template<> void ShaderValue<PReal>::apply(graphics::ShaderProgram& program) const
+template<> void ShaderValue<float>::apply(graphics::ShaderProgram& program) const
 { program.setUniformValue(m_name.c_str(), m_value); }
 
 template<> void ShaderValue<Color>::apply(graphics::ShaderProgram& program) const
@@ -177,7 +177,7 @@ template<> void ShaderValue<Point>::apply(graphics::ShaderProgram& program) cons
 template<> void ShaderValue< std::vector<int> >::apply(graphics::ShaderProgram& program) const
 { program.setUniformValue(m_name.c_str(), m_value); }
 
-template<> void ShaderValue< std::vector<PReal> >::apply(graphics::ShaderProgram& program) const
+template<> void ShaderValue< std::vector<float> >::apply(graphics::ShaderProgram& program) const
 {
 #ifdef PANDA_DOUBLE
 	const int nb = m_value.size();
@@ -203,11 +203,11 @@ template<> void ShaderValue< std::vector<Point> >::apply(graphics::ShaderProgram
 }
 
 template class PANDA_CORE_API ShaderValue<int>;
-template class PANDA_CORE_API ShaderValue<PReal>;
+template class PANDA_CORE_API ShaderValue<float>;
 template class PANDA_CORE_API ShaderValue<Color>;
 template class PANDA_CORE_API ShaderValue<Point>;
 template class PANDA_CORE_API ShaderValue<std::vector<int>>;
-template class PANDA_CORE_API ShaderValue<std::vector<PReal>>;
+template class PANDA_CORE_API ShaderValue<std::vector<float>>;
 template class PANDA_CORE_API ShaderValue<std::vector<Color>>;
 template class PANDA_CORE_API ShaderValue<std::vector<Point>>;
 

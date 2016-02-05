@@ -50,7 +50,7 @@ public:
 			return;
 		}
 
-		typedef boost::geometry::model::d2::point_xy<PReal> BGPoint;
+		typedef boost::geometry::model::d2::point_xy<float> BGPoint;
 		typedef boost::geometry::model::polygon<BGPoint> BGPolygon;
 		BGPolygon pA, pB;
 		{
@@ -133,7 +133,7 @@ public:
 			return;
 		}
 
-		typedef boost::geometry::model::d2::point_xy<PReal> BGPoint;
+		typedef boost::geometry::model::d2::point_xy<float> BGPoint;
 		typedef boost::geometry::model::polygon<BGPoint> BGPolygon;
 		BGPolygon pA, pB;
 		{

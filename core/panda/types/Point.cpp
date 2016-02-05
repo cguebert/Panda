@@ -11,16 +11,16 @@ namespace panda
 namespace types
 {
 
-void rotate(Point& point, const Point& center, PReal angle)
+void rotate(Point& point, const Point& center, float angle)
 {
-	PReal ca = cos(angle), sa = sin(angle);
+	float ca = cos(angle), sa = sin(angle);
 	Point pt = point - center;
 	point = center + Point(pt.x*ca-pt.y*sa, pt.x*sa+pt.y*ca);
 }
 
-Point rotated(const Point& point, const Point& center, PReal angle)
+Point rotated(const Point& point, const Point& center, float angle)
 {
-	PReal ca = cos(angle), sa = sin(angle);
+	float ca = cos(angle), sa = sin(angle);
 	Point pt = point - center;
 	return center + Point(pt.x*ca-pt.y*sa, pt.x*sa+pt.y*ca);
 }
@@ -28,23 +28,23 @@ Point rotated(const Point& point, const Point& center, PReal angle)
 // Converts a coordinate from rectangular (Cartesian) coordinates to polar coordinates of the form (radius, theta)
 Point toPolar(Point car)
 {
-	const PReal epsilon = (PReal)0.0000001;
-	PReal theta;
+	const float epsilon = (float)0.0000001;
+	float theta;
 
 	if(abs(car.x) < epsilon)
 	{	// x == 0
 		if(abs(car.y) < epsilon) theta = 0;
-		else if(car.y > 0) theta = (PReal)M_PI / 2;
-		else theta = ((PReal)M_PI * 3) / 2;
+		else if(car.y > 0) theta = (float)M_PI / 2;
+		else theta = ((float)M_PI * 3) / 2;
 	}
 	else if(car.x > 0)
 	{
-		if(car.y < 0) theta = atan(car.y / car.x) + 2 * (PReal)M_PI;
+		if(car.y < 0) theta = atan(car.y / car.x) + 2 * (float)M_PI;
 		else theta = atan(car.y / car.x);
 	}
 	else // car.x < 0
 	{
-		theta = (atan(car.y / car.x) + (PReal)M_PI);
+		theta = (atan(car.y / car.x) + (float)M_PI);
 	}
 
 	return Point(car.norm(), theta);

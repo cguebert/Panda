@@ -43,15 +43,15 @@ public:
 			for(const auto& pt : list)
 				sum += pt;
 
-			sum /= static_cast<PReal>(nb);
+			sum /= static_cast<float>(nb);
 
 			center.setValue(sum);
 
-			PReal E=0, E2=0;
+			float E=0, E2=0;
 			for(int i=0; i<nb; ++i)
 			{
 				Point pt = list[i];
-				PReal d2 = (pt - sum).norm2();
+				float d2 = (pt - sum).norm2();
 				E += sqrt(d2);
 				E2 += d2;
 			}
@@ -75,7 +75,7 @@ protected:
 	Data< std::vector<Point> > input;
 	Data<int> nbElements;
 	Data<Point> center;
-	Data<PReal> mean, stdDev;
+	Data<float> mean, stdDev;
 };
 
 int PointListMath_CenterClass = RegisterObject<PointListMath_Center>("Math/List of points/Mean position").setDescription("Compute the mean position of a list of points");

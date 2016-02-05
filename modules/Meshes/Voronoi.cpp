@@ -61,7 +61,7 @@ public:
 		construct_voronoi(points.begin(), points.end(), segments.begin(), segments.end(), &vd);
 
 		for(VertexIterator it = vd.vertices().begin(); it != vd.vertices().end(); ++it)
-			outMesh->addPoint(Point(static_cast<PReal>(it->x()), static_cast<PReal>(it->y())));
+			outMesh->addPoint(Point(static_cast<float>(it->x()), static_cast<float>(it->y())));
 
 		const Vertex* firstVertex = &vd.vertices().front();
 		for(EdgeIterator it = vd.edges().begin(); it != vd.edges().end(); ++it)

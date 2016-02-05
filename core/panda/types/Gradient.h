@@ -15,7 +15,7 @@ namespace types
 class PANDA_CORE_API Gradient
 {
 public:
-	typedef std::pair<PReal, types::Color> GradientStop;
+	typedef std::pair<float, types::Color> GradientStop;
 	typedef std::vector<GradientStop> GradientStops;
 
 	enum Extend { EXTEND_PAD = 0, EXTEND_REPEAT = 1, EXTEND_REFLECT = 2 };
@@ -24,8 +24,8 @@ public:
 
 	void clear();
 
-	void add(PReal position, types::Color color);
-	types::Color get(PReal position) const;
+	void add(float position, types::Color color);
+	types::Color get(float position) const;
 
 	void setExtend(int method);
 	int getExtend() const;
@@ -39,14 +39,14 @@ public:
 	friend inline bool operator!=(const Gradient& g1, const Gradient& g2)
 	{ return !(g1 == g2); }
 
-	static Gradient interpolate(const Gradient& g1, const Gradient& g2, PReal amt);
-	static types::Color interpolate(const GradientStop& s1, const GradientStop& s2, PReal pos);
-	static types::Color interpolate(const types::Color& v1, const types::Color& v2, PReal amt);
+	static Gradient interpolate(const Gradient& g1, const Gradient& g2, float amt);
+	static types::Color interpolate(const GradientStop& s1, const GradientStop& s2, float pos);
+	static types::Color interpolate(const types::Color& v1, const types::Color& v2, float amt);
 
 	static Gradient defaultGradient();
 
 protected:
-	PReal extendPos(PReal position) const;
+	float extendPos(float position) const;
 
 	GradientStops stops;
 	Extend extend;

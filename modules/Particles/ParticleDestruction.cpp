@@ -17,8 +17,8 @@ public:
 
 	ParticleDestruction_Age(PandaDocument *doc)
 		: ParticleEffector(doc)
-		, maxAge(initData((PReal)1.0, "max age", "Remove particles older than this age"))
-		, variation(initData((PReal)0.0, "variation", "Particles can randomly live longer by this amount"))
+		, maxAge(initData((float)1.0, "max age", "Remove particles older than this age"))
+		, variation(initData((float)0.0, "variation", "Particles can randomly live longer by this amount"))
 	{
 		addInput(maxAge);
 		addInput(variation);
@@ -34,12 +34,12 @@ public:
 
 	virtual void onInitParticles(Particles& particles)
 	{
-		const PReal time = m_parentDocument->getAnimationTime();
+		const float time = m_parentDocument->getAnimationTime();
 		int oldNb = birth.size();
 		int newNb = oldNb + particles.size();
 		birth.resize(newNb);
 
-		std::uniform_real_distribution<PReal> dist(0, variation.getValue());
+		std::uniform_real_distribution<float> dist(0, variation.getValue());
 		for(int i=oldNb; i<newNb; ++i)
 			birth[i] = time - dist(gen);	// Giving them negative age based on the variation value
 	}
@@ -48,9 +48,9 @@ public:
 	{
 		Indices indices;
 
-		const PReal time = m_parentDocument->getAnimationTime();
+		const float time = m_parentDocument->getAnimationTime();
 		int nb = birth.size();
-		PReal age = maxAge.getValue();
+		float age = maxAge.getValue();
 		for(int i=0; i<nb; ++i)
 		{
 			if(time >= birth[i] + age)
@@ -66,8 +66,8 @@ public:
 	}
 
 protected:
-	Data<PReal> maxAge, variation;
-	std::vector<PReal> birth;
+	Data<float> maxAge, variation;
+	std::vector<float> birth;
 	std::mt19937 gen;
 };
 

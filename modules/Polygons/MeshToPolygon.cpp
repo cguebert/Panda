@@ -61,9 +61,9 @@ public:
 		return bestId;
 	}
 
-	PReal angleModulo(PReal angle) // Make sure angle is [0; 2*pi]
+	float angleModulo(float angle) // Make sure angle is [0; 2*pi]
 	{
-		const PReal pi2 = 2 * (PReal)M_PI;
+		const float pi2 = 2 * (float)M_PI;
 		while(angle < 0)
 			angle += pi2;
 		while(angle > pi2)
@@ -82,16 +82,16 @@ public:
 			return candidates.front();
 
 		Point BA = points[prevId] - points[currentId];
-		PReal prevAngle = (prevId != currentId ? -atan2(BA.y, BA.x) : static_cast<PReal>(M_PI));
+		float prevAngle = (prevId != currentId ? -atan2(BA.y, BA.x) : static_cast<float>(M_PI));
 
 		int best = -1;
-		PReal bestAngle = 10; // > 3 * pi
+		float bestAngle = 10; // > 3 * pi
 		for(auto ptId : candidates)
 		{
 			// Compute the angle from the current segment to this one
 			Point BC = points[ptId] - points[currentId];
-			PReal angle = -atan2(BC.y, BC.x);
-			PReal delta = angleModulo(prevAngle - angle);
+			float angle = -atan2(BC.y, BC.x);
+			float delta = angleModulo(prevAngle - angle);
 			if(delta < bestAngle)
 			{
 				bestAngle = delta;
@@ -242,7 +242,7 @@ public:
 			else
 			{	// The path with the biggest area is the contour
 				int contourId = 0;
-				PReal maxArea = 0;
+				float maxArea = 0;
 				for(int i=0, nb=tempPaths.size(); i<nb; ++i)
 				{
 					auto area = fabs(types::areaOfPolygon(tempPaths[i]));

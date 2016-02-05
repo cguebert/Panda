@@ -16,7 +16,7 @@ public:
 
 	ModifierImage_GaussianBlur(PandaDocument* doc)
 		: ShaderEffectsMultiPass(doc, 2)
-		, m_radius(initData((PReal)10, "radius", "Radius of the blur"))
+		, m_radius(initData((float)10, "radius", "Radius of the blur"))
 		, m_currentRadius(-1)
 		, m_halfKernelSize(0)
 	{
@@ -62,8 +62,8 @@ public:
 
 	void updateShaders()
 	{
-		PReal radius = m_radius.getValue();
-		m_currentRadius = std::max(radius, (PReal)0.1);
+		float radius = m_radius.getValue();
+		m_currentRadius = std::max(radius, (float)0.1);
 
 		if (m_fragmentSource.empty())
 			return;
@@ -130,8 +130,8 @@ public:
 	}
 
 protected:
-	Data< PReal > m_radius;
-	PReal m_currentRadius;
+	Data< float > m_radius;
+	float m_currentRadius;
 	int m_halfKernelSize;
 	graphics::Size m_size;
 	std::string m_fragmentSource;

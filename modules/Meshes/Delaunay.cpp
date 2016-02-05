@@ -73,12 +73,12 @@ public:
 			bool bp1 = false, bp2 = false;
 			if(it->vertex0())
 			{
-				Point pt = Point(static_cast<PReal>(it->vertex0()->x()), static_cast<PReal>(it->vertex0()->y()));
+				Point pt = Point(static_cast<float>(it->vertex0()->x()), static_cast<float>(it->vertex0()->y()));
 				bp1 = area.contains(pt);
 			}
 			if(it->vertex1())
 			{
-				Point pt = Point(static_cast<PReal>(it->vertex1()->x()), static_cast<PReal>(it->vertex1()->y()));
+				Point pt = Point(static_cast<float>(it->vertex1()->x()), static_cast<float>(it->vertex1()->y()));
 				bp2 = area.contains(pt);
 			}
 			if(it->twin() && (bp1 || bp2))

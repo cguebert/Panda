@@ -64,8 +64,8 @@ public:
 	void update()
 	{
 		const std::vector<Point>& listCenter = m_center.getValue();
-		const std::vector<PReal>& listRadius = m_radius.getValue();
-		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+		const std::vector<float>& listRadius = m_radius.getValue();
+		const std::vector<float>& listWidth = m_lineWidth.getValue();
 		const std::vector<Color>& listColor = m_color.getValue();
 
 		int nbCenter = listCenter.size();
@@ -84,12 +84,12 @@ public:
 			if(nbColor < nbCenter) nbColor = 1;
 			if(nbWidth < nbCenter) nbWidth = 1;
 
-			PReal PI2 = static_cast<PReal>(M_PI) * 2;
+			float PI2 = static_cast<float>(M_PI) * 2;
 			for(int i = 0; i < nbCenter; ++i)
 			{
-				PReal valRadius = listRadius[i % nbRadius];
-				PReal maxWidth = valRadius - 0.5f;
-				PReal width = helper::bound(1.f, listWidth[i % nbWidth], maxWidth);
+				float valRadius = listRadius[i % nbRadius];
+				float maxWidth = valRadius - 0.5f;
+				float width = helper::bound(1.f, listWidth[i % nbWidth], maxWidth);
 
 				int nbSeg = static_cast<int>(floor((valRadius + width) * PI2));
 				if(nbSeg < 3) continue;
@@ -104,8 +104,8 @@ public:
 				m_vertexBuffer.resize(nbVertices + count);
 
 				const Point& valCenter = listCenter[i];
-				PReal angle = PI2 / nbSeg;
-				PReal ca = cos(angle), sa = sin(angle);
+				float angle = PI2 / nbSeg;
+				float ca = cos(angle), sa = sin(angle);
 				Point inDir = Point(valRadius + width, 0), outDir = Point(valRadius - width, 0);
 
 				for(int i=0; i<=nbSeg; ++i)
@@ -155,7 +155,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > m_center;
-	Data< std::vector<PReal> > m_radius, m_lineWidth;
+	Data< std::vector<float> > m_radius, m_lineWidth;
 	Data< std::vector<Color> > m_color;
 	Data< Shader > m_shader;
 

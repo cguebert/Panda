@@ -20,7 +20,7 @@ public:
 		, MouseEventsReceiver(doc)
 		, m_input(initData("input", "Input rectangles"))
 		, m_output(initData("output", "Output rectangles"))
-		, m_handleRadius(initData((PReal)5, "handle radius", "Radius of the handles"))
+		, m_handleRadius(initData((float)5, "handle radius", "Radius of the handles"))
 		, m_centerHandles(initData("center", "Center handles"))
 		, m_cornerHandles(initData("corner", "Corner handles"))
 		, m_counter(-1), m_currentSelection(-1)
@@ -89,8 +89,8 @@ public:
 		auto output = m_output.getAccessor();
 		auto centerH = m_centerHandles.getAccessor();
 		auto cornerH = m_cornerHandles.getAccessor();
-		PReal radius = m_handleRadius.getValue();
-		PReal radius2 = radius*radius;
+		float radius = m_handleRadius.getValue();
+		float radius2 = radius*radius;
 		int nbR = output.size();
 		if(m_counter != m_input.getCounter())
 		{
@@ -158,7 +158,7 @@ public:
 
 protected:
 	Data<std::vector<Rect>> m_input, m_output;
-	Data<PReal> m_handleRadius;
+	Data<float> m_handleRadius;
 	Data<std::vector<Point>> m_centerHandles, m_cornerHandles;
 
 	std::vector<std::pair<bool, Point>> m_clicsBuffer;

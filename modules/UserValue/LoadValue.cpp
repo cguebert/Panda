@@ -13,7 +13,7 @@
 namespace panda {
 
 int LoadValue_ColorClass = RegisterObject< LoadValue<types::Color> >("File/Color/Load color").setDescription("Load a value from a file");
-int LoadValue_DoubleClass = RegisterObject< LoadValue<PReal> >("File/Real/Load real").setDescription("Load a value from a file");
+int LoadValue_DoubleClass = RegisterObject< LoadValue<float> >("File/Real/Load real").setDescription("Load a value from a file");
 int LoadValue_GradientClass = RegisterObject< LoadValue<types::Gradient> >("File/Gradient/Load gradient").setDescription("Load a value from a file");
 int LoadValue_IntegerClass = RegisterObject< LoadValue<int> >("File/Integer/Load integer").setDescription("Load a value from a file");
 int LoadValue_MeshClass = RegisterObject< LoadValue<types::Mesh> >("File/Mesh/Load mesh").setDescription("Load a value from a file");
@@ -24,7 +24,7 @@ int LoadValue_ShaderClass = RegisterObject< LoadValue<types::Shader> >("File/Sha
 int LoadValue_StringClass = RegisterObject< LoadValue<std::string> >("File/Text/Load text").setDescription("Load a value from a file");
 
 int LoadValue_VectorColorClass = RegisterObject< LoadValue< std::vector<types::Color> > >("File/Color/Load colors list").setDescription("Load a value from a file");
-int LoadValue_VectorDoubleClass = RegisterObject< LoadValue< std::vector<PReal> > >("File/Real/Load reals list").setDescription("Load a value from a file");
+int LoadValue_VectorDoubleClass = RegisterObject< LoadValue< std::vector<float> > >("File/Real/Load reals list").setDescription("Load a value from a file");
 int LoadValue_VectorGradientClass = RegisterObject< LoadValue< std::vector<types::Gradient> > >("File/Gradient/Load gradients list").setDescription("Load a value from a file");
 int LoadValue_VectorIntegerClass = RegisterObject< LoadValue< std::vector<int> > >("File/Integer/Load integers list").setDescription("Load a value from a file");
 int LoadValue_VectorMeshClass = RegisterObject< LoadValue< std::vector<types::Mesh> > >("File/Mesh/Load meshes list").setDescription("Load a value from a file");
@@ -35,7 +35,7 @@ int LoadValue_VectorShaderClass = RegisterObject< LoadValue< std::vector<types::
 int LoadValue_VectorStringClass = RegisterObject< LoadValue< std::vector<std::string> > >("File/Text/Load texts list").setDescription("Load a value from a file");
 
 int LoadValue_AnimationColorClass = RegisterObject< LoadValue< types::Animation<types::Color> > >("File/Color/Load colors animation").setDescription("Load a value from a file");
-int LoadValue_AnimationDoubleClass = RegisterObject< LoadValue< types::Animation<PReal> > >("File/Real/Load reals animation").setDescription("Load a value from a file");
+int LoadValue_AnimationDoubleClass = RegisterObject< LoadValue< types::Animation<float> > >("File/Real/Load reals animation").setDescription("Load a value from a file");
 int LoadValue_AnimationGradientClass = RegisterObject< LoadValue< types::Animation<types::Gradient> > >("File/Gradient/Load gradients animation").setDescription("Load a value from a file");
 int LoadValue_AnimationPointClass = RegisterObject< LoadValue< types::Animation<types::Point> > >("File/Point/Load points animation").setDescription("Load a value from a file");
 

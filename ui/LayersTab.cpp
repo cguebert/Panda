@@ -220,9 +220,9 @@ void LayersTab::opacityChanged(int opacity)
 		auto data = &m_selectedLayer->getOpacityData();
 		auto oldValue = data->getValue();
 		auto owner = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		PReal newValue = opacity / 100.0;
+		float newValue = opacity / 100.0;
 		if (oldValue != newValue)
-			m_document->addCommand(std::make_shared<SetDataValueCommand<PReal>>(data, oldValue, newValue, owner));
+			m_document->addCommand(std::make_shared<SetDataValueCommand<float>>(data, oldValue, newValue, owner));
 	}
 }
 

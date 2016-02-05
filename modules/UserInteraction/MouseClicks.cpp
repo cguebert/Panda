@@ -149,7 +149,7 @@ public:
 protected:
 	Data<std::vector<Point>> m_clics;
 	Data<int> m_accumulate;
-	Data<PReal> m_doubleClickInterval;
+	Data<float> m_doubleClickInterval;
 
 	Point m_currentClic;
 	std::vector<Point> m_clicsBuffer;

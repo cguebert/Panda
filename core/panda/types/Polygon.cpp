@@ -32,14 +32,14 @@ Polygon translated(const Polygon& poly, const Point& delta)
 	return tmp;
 }
 
-void scale(Polygon& poly, PReal scale)
+void scale(Polygon& poly, float scale)
 {
 	poly.contour *= scale;
 	for(auto& hole : poly.holes)
 		hole *= scale;
 }
 
-Polygon scaled(const Polygon& poly, PReal scale)
+Polygon scaled(const Polygon& poly, float scale)
 {
 	Polygon tmp;
 	tmp.contour = poly.contour * scale;
@@ -48,14 +48,14 @@ Polygon scaled(const Polygon& poly, PReal scale)
 	return tmp;
 }
 
-void rotate(Polygon& poly, const Point& center, PReal angle)
+void rotate(Polygon& poly, const Point& center, float angle)
 {
 	rotate(poly.contour, center, angle);
 	for(auto& hole : poly.holes)
 		rotate(hole, center, angle);
 }
 
-Polygon rotated(const Polygon& poly, const Point& center, PReal angle)
+Polygon rotated(const Polygon& poly, const Point& center, float angle)
 {
 	Polygon tmp;
 	tmp.contour = rotated(poly.contour, center, angle);

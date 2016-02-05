@@ -22,7 +22,7 @@ public:
 		, unique(initData(0, "unique", "If true, multiple points can not find the same result"))
 		, notSelf(initData(0, "notSelf", "If true, a point can not return itself as the result"))
 		, found(initData("found", "For each input point, this is 1 if a point was found, 0 otherwise"))
-		, maxDist(initData((PReal)100.0, "maxDist", "Distance maximum for the search"))
+		, maxDist(initData((float)100.0, "maxDist", "Distance maximum for the search"))
 	{
 		addInput(input);
 		addInput(points);
@@ -45,10 +45,10 @@ public:
 
 		if(nb && searchPts.size())
 		{
-			PReal maxD = maxDist.getValue();
+			float maxD = maxDist.getValue();
 			auto size = m_parentDocument->getRenderSize();
-			Rect area = Rect(0, 0, static_cast<PReal>(size.width()-1), static_cast<PReal>(size.height()-1));
-			grid.initGrid(area, std::max<PReal>(maxD, 10.0));
+			Rect area = Rect(0, 0, static_cast<float>(size.width()-1), static_cast<float>(size.height()-1));
+			grid.initGrid(area, std::max<float>(maxD, 10.0));
 			grid.addPoints(searchPts);
 
 			auto outPts = output.getAccessor();
@@ -87,7 +87,7 @@ protected:
 	Data< std::vector<Point> > input, points, output;
 	Data<int> unique, notSelf;
 	Data< std::vector<int> > found;
-	Data<PReal> maxDist;
+	Data<float> maxDist;
 };
 
 int PointListMath_NearestClass = RegisterObject<PointListMath_Nearest>("Math/List of points/Nearest point")

@@ -132,7 +132,7 @@ public:
 	void addText(const std::string& text, Color color, Rect area)
 	{
 		int startText = m_verticesBuffer.size();
-		PReal width = 0;
+		float width = 0;
 		int maxOffsetY = 0, under = 0;
 
 		Point pos = area.bottomLeft();
@@ -155,10 +155,10 @@ public:
 			if (u > under) under = u;
 			width += kerning + glyph->offset_x + gw;
 
-			PReal x0 = pos.x + gox;
-			PReal y0 = pos.y - goy;
-			PReal x1 = x0 + gw;
-			PReal y1 = y0 + gh;
+			float x0 = pos.x + gox;
+			float y0 = pos.y - goy;
+			float x1 = x0 + gw;
+			float y1 = y0 + gh;
 
 			int startGlyph = m_verticesBuffer.size();
 			m_verticesBuffer.emplace_back(x0, y0);
@@ -208,7 +208,7 @@ public:
 				delta.y = maxOffsetY - area.height();
 				break;
 			case 1: // Bottom
-				delta.y = static_cast<PReal>(-under);
+				delta.y = static_cast<float>(-under);
 				break;
 			case 2: // Center
 				delta.y = -under - (area.height() - height) / 2;

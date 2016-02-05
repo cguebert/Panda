@@ -67,7 +67,7 @@ public:
 		: PandaObject(doc)
 		, m_centers(initData("center", "Center of the circle"))
 		, m_radiuses(initData("radius", "Radius of the circle"))
-		, m_precision(initData((PReal)1.0, "precision", "Maximum length of a segment"))
+		, m_precision(initData((float)1.0, "precision", "Maximum length of a segment"))
 		, m_paths(initData("path", "Output path"))
 	{
 		addInput(m_centers);
@@ -79,7 +79,7 @@ public:
 	void update()
 	{
 		const std::vector<Point>& centers = m_centers.getValue();
-		const std::vector<PReal>& radiuses = m_radiuses.getValue();
+		const std::vector<float>& radiuses = m_radiuses.getValue();
 		int nbC = centers.size();
 		int nbR = radiuses.size();
 		auto paths = m_paths.getAccessor();
@@ -92,15 +92,15 @@ public:
 		}
 
 		int nb = std::max(nbC, nbR);
-		PReal precision = std::max((PReal)1e-3, m_precision.getValue());
-		PReal PI2 = static_cast<PReal>(M_PI) * 2;
+		float precision = std::max((float)1e-3, m_precision.getValue());
+		float PI2 = static_cast<float>(M_PI) * 2;
 
 		paths.clear();
 		paths.reserve(nb);
 		for(int i=0; i<nb; ++i)
 		{
 			const Point& center = centers[i%nbC];
-			const PReal radius = radiuses[i%nbR];
+			const float radius = radiuses[i%nbR];
 
 			int nbSeg = static_cast<int>(floor(radius * PI2 / precision));
 			if(nbSeg < 3) continue;
@@ -108,8 +108,8 @@ public:
 			Path path;
 			path.resize(nbSeg + 1);
 
-			PReal angle = PI2 / nbSeg;
-			PReal ca = cos(angle), sa = sin(angle);
+			float angle = PI2 / nbSeg;
+			float ca = cos(angle), sa = sin(angle);
 			Point dir = Point(radius, 0);
 
 			for(int i=0; i<=nbSeg; ++i)
@@ -127,8 +127,8 @@ public:
 
 protected:
 	Data< std::vector<Point> > m_centers;
-	Data< std::vector<PReal> > m_radiuses;
-	Data< PReal > m_precision;
+	Data< std::vector<float> > m_radiuses;
+	Data< float > m_precision;
 	Data< std::vector<Path> > m_paths;
 };
 

@@ -89,7 +89,7 @@ public:
 		const std::vector<Point>& valA = m_inputA.getValue();
 		const std::vector<Point>& valB = m_inputB.getValue();
 		const std::vector<Color>& listColor = m_color.getValue();
-		const std::vector<PReal>& listWidth = m_width.getValue();
+		const std::vector<float>& listWidth = m_width.getValue();
 
 		m_verticesBuffer.clear();
 		m_colorsBuffer.clear();
@@ -177,7 +177,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > m_inputA, m_inputB;
-	Data< std::vector<PReal> > m_width;
+	Data< std::vector<float> > m_width;
 	Data< std::vector<Color> > m_color;
 	Data< Shader > m_shader;
 
@@ -247,7 +247,7 @@ public:
 	{
 		const std::vector<Path>& listPaths = m_input.getValue();
 		const std::vector<Color>& listColor = m_color.getValue();
-		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+		const std::vector<float>& listWidth = m_lineWidth.getValue();
 
 		m_verticesBuffer.clear();
 
@@ -263,7 +263,7 @@ public:
 			for (int i = 0; i < nbPaths; ++i)
 			{
 				const auto& path = listPaths[i];
-				PReal width = listWidth[i % nbWidth];
+				float width = listWidth[i % nbWidth];
 				m_firstBuffer.push_back(m_verticesBuffer.size());
 
 				int nbPts = path.size();
@@ -332,7 +332,7 @@ public:
 
 protected:
 	Data< std::vector<Path> > m_input;
-	Data< std::vector<PReal> > m_lineWidth;
+	Data< std::vector<float> > m_lineWidth;
 	Data< std::vector<Color> > m_color;
 	Data< Shader > m_shader;
 
@@ -409,7 +409,7 @@ public:
 	{
 		const std::vector<Path>& listPaths = m_input.getValue();
 		const std::vector<Gradient>& listGradient = m_gradient.getValue();
-		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+		const std::vector<float>& listWidth = m_lineWidth.getValue();
 		int nbPaths = listPaths.size();
 
 		m_verticesBuffer.clear();
@@ -431,7 +431,7 @@ public:
 			for (int i = 0; i < nbPaths; ++i)
 			{
 				const auto& path = listPaths[i];
-				PReal width = listWidth[i % nbWidth];
+				float width = listWidth[i % nbWidth];
 				int start = m_verticesBuffer.size();
 
 				m_pathLengths[i] = 0;
@@ -448,7 +448,7 @@ public:
 				uvList.push_back(Point(0.f, 0.f));
 				uvList.push_back(Point(0.f, 0.f));
 				
-				PReal length = 0;
+				float length = 0;
 				for (int j = 0; j < nbPts - 1; ++j)
 				{
 					length += (path[j+1] - path[j]).norm();
@@ -508,7 +508,7 @@ public:
 			// Optimization when we use only one gradient
 			if (nbGradient == 1)
 			{
-				PReal maxLength = *std::max_element(m_pathLengths.begin(), m_pathLengths.end());
+				float maxLength = *std::max_element(m_pathLengths.begin(), m_pathLengths.end());
 				maxLength = helper::bound(64.f, std::ceil(maxLength), 1024.f); // We limit the texture at 1024 pixels
 				GLuint texture = GradientCache::getInstance()->getTexture(listGradient.front(), static_cast<int>(maxLength));
 
@@ -527,7 +527,7 @@ public:
 					if (!m_countBuffer[i])
 						continue;
 
-					PReal length = helper::bound(64.f, std::ceil(m_pathLengths[i]), 1024.f); // We limit the texture at 1024 pixels
+					float length = helper::bound(64.f, std::ceil(m_pathLengths[i]), 1024.f); // We limit the texture at 1024 pixels
 					GLuint texture = GradientCache::getInstance()->getTexture(listGradient[i % nbGradient], static_cast<int>(length));
 
 					glBindTexture(GL_TEXTURE_2D, texture);
@@ -547,11 +547,11 @@ public:
 
 protected:
 	Data< std::vector<Path> > m_input;
-	Data< std::vector<PReal> > m_lineWidth;
+	Data< std::vector<float> > m_lineWidth;
 	Data< std::vector<Gradient> > m_gradient;
 	Data< Shader > m_shader;
 
-	std::vector<PReal> m_pathLengths;
+	std::vector<float> m_pathLengths;
 	std::vector<types::Point> m_verticesBuffer, m_texCoordsBuffer;
 	std::vector<GLint> m_firstBuffer;
 	std::vector<GLsizei> m_countBuffer;
@@ -624,7 +624,7 @@ public:
 	{
 		const std::vector<Path>& listPaths = m_input.getValue();
 		const std::vector<ImageWrapper>& listTextures = m_texture.getValue();
-		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+		const std::vector<float>& listWidth = m_lineWidth.getValue();
 		int nbPaths = listPaths.size();
 
 		m_verticesBuffer.clear();
@@ -646,7 +646,7 @@ public:
 			for (int i = 0; i < nbPaths; ++i)
 			{
 				const auto& path = listPaths[i];
-				PReal width = listWidth[i % nbWidth];
+				float width = listWidth[i % nbWidth];
 				int start = m_verticesBuffer.size();
 
 				m_pathLengths[i] = 0;
@@ -663,7 +663,7 @@ public:
 				uvList.push_back(Point(0.f, 1.f));
 				uvList.push_back(Point(0.f, 0.f));
 				
-				PReal length = 0;
+				float length = 0;
 				for (int j = 0; j < nbPts - 1; ++j)
 				{
 					length += (path[j+1] - path[j]).norm();
@@ -762,11 +762,11 @@ public:
 
 protected:
 	Data< std::vector<Path> > m_input;
-	Data< std::vector<PReal> > m_lineWidth;
+	Data< std::vector<float> > m_lineWidth;
 	Data< std::vector<ImageWrapper> > m_texture;
 	Data< Shader > m_shader;
 
-	std::vector<PReal> m_pathLengths;
+	std::vector<float> m_pathLengths;
 	std::vector<types::Point> m_verticesBuffer, m_texCoordsBuffer;
 	std::vector<GLint> m_firstBuffer;
 	std::vector<GLsizei> m_countBuffer;

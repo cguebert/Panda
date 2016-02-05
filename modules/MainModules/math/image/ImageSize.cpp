@@ -36,7 +36,7 @@ public:
 		{
 			const ImageWrapper& imgWrapper = listImage[i];
 			auto size = imgWrapper.size();
-			listSize[i] = Point(static_cast<PReal>(size.width()), static_cast<PReal>(size.height()));
+			listSize[i] = Point(static_cast<float>(size.width()), static_cast<float>(size.height()));
 		}
 
 		cleanDirty();

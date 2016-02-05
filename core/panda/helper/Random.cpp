@@ -19,9 +19,9 @@ unsigned int RandomGenerator::getRandomSeed(unsigned int limit)
 	return dist(rnd);
 }
 
-PReal RandomGenerator::random()
+float RandomGenerator::random()
 {
-	std::uniform_real_distribution<PReal> dist(0, 1);
+	std::uniform_real_distribution<float> dist(0, 1);
 	return dist(gen);
 }
 

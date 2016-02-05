@@ -68,7 +68,7 @@ public:
 	{
 		const std::vector<Rect>& listRect = m_rect.getValue();
 		const std::vector<Color>& listColor = m_color.getValue();
-		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+		const std::vector<float>& listWidth = m_lineWidth.getValue();
 
 		m_verticesBuffer.clear();
 		m_colorBuffer.clear();
@@ -94,9 +94,9 @@ public:
 			for(int i = 0; i < nbRect; ++i)
 			{
 				const auto& rect = listRect[i];
-				PReal maxWidth = std::min(rect.width(), rect.height()) - 0.5f;
-				PReal width = helper::bound(1.f, listWidth[i % nbWidth], maxWidth);
-				PReal w = width / 2;
+				float maxWidth = std::min(rect.width(), rect.height()) - 0.5f;
+				float width = helper::bound(1.f, listWidth[i % nbWidth], maxWidth);
+				float w = width / 2;
 
 				m_verticesBuffer.emplace_back(rect.right() + w, rect.top() - w);
 				m_verticesBuffer.emplace_back(rect.right() - w, rect.top() + w);
@@ -128,7 +128,7 @@ public:
 
 	void render()
 	{
-		const std::vector<PReal>& listWidth = m_lineWidth.getValue();
+		const std::vector<float>& listWidth = m_lineWidth.getValue();
 		int nbWidth = listWidth.size();
 
 		if(!m_verticesBuffer.empty() && !m_colorBuffer.empty() && nbWidth)
@@ -159,7 +159,7 @@ public:
 
 protected:
 	Data< std::vector<Rect> > m_rect;
-	Data< std::vector<PReal> > m_lineWidth;
+	Data< std::vector<float> > m_lineWidth;
 	Data< std::vector<Color> > m_color;
 	Data< Shader > m_shader;
 

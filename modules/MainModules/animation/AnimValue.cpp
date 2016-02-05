@@ -48,7 +48,7 @@ public:
 
 		assert(dataInput && dataOutput);
 
-		const std::vector<PReal>& key = progress.getValue();
+		const std::vector<float>& key = progress.getValue();
 		const Animation<T>& inVal = dataInput->getValue();
 		auto outVal = dataOutput->getAccessor();
 
@@ -59,7 +59,7 @@ public:
 	}
 
 protected:
-	Data< std::vector<PReal> > progress;
+	Data< std::vector<float> > progress;
 	GenericAnimationData generic;
 };
 

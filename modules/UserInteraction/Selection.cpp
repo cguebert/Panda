@@ -68,7 +68,7 @@ public:
 			{
 				for(int i=0; i<nbC; ++i)
 				{
-					PReal radius = (nbR < nbC) ? radiuses[0] : radiuses[i];
+					float radius = (nbR < nbC) ? radiuses[0] : radiuses[i];
 					if( (pt - centers[i]).norm2() < radius * radius)
 					{
 						selection[i] = !selection[i];
@@ -83,7 +83,7 @@ public:
 
 protected:
 	Data<std::vector<Point>> m_centers;
-	Data<std::vector<PReal>> m_radiuses;
+	Data<std::vector<float>> m_radiuses;
 	Data<std::vector<int>> m_selection;
 
 	std::vector<Point> m_clicsBuffer;

@@ -19,7 +19,7 @@ public:
 		: PandaObject(doc)
 		, input(initData("input", "Input mesh"))
 		, output(initData("output", "Output mesh"))
-		, factor(initData((PReal)0.1, "factor", "Portion of each edge added to a point"))
+		, factor(initData((float)0.1, "factor", "Portion of each edge added to a point"))
 		, iterations(initData(1, "iterations", "Number of times to do the relaxation"))
 		, fixBorder(initData(0, "fix border", "If true, the points on the border will not move"))
 	{
@@ -48,7 +48,7 @@ public:
 
 		int nbIter = iterations.getValue();
 		int nbPts = outMesh->nbPoints();
-		PReal fact = factor.getValue();
+		float fact = factor.getValue();
 		for(int i=0; i<nbIter; ++i)
 		{
 			auto ptsCopy = outMesh->getPoints();
@@ -76,7 +76,7 @@ public:
 
 protected:
 	Data< Mesh > input, output;
-	Data< PReal > factor;
+	Data< float > factor;
 	Data< int > iterations, fixBorder;
 };
 

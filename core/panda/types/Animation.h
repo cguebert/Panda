@@ -9,9 +9,9 @@ namespace panda
 namespace types
 {
 
-template<class T> T interpolate(const T& v1, const T& v2, PReal amt);
+template<class T> T interpolate(const T& v1, const T& v2, float amt);
 
-template<class T> T interpolate(const T& v1, const T& v2, PReal amt)
+template<class T> T interpolate(const T& v1, const T& v2, float amt)
 {
 	return v1 + (v2 - v1) * amt;
 }
@@ -23,9 +23,9 @@ public:
 	typedef T value_type;
 	typedef value_type& reference;
 	typedef const value_type& const_reference;
-	typedef std::pair<PReal, value_type> AnimationStop;
+	typedef std::pair<float, value_type> AnimationStop;
 	typedef std::vector<AnimationStop> AnimationStops;
-	typedef std::vector<PReal> KeysList;
+	typedef std::vector<float> KeysList;
 	typedef std::vector<value_type> ValuesList;
 
 	enum class Extend { Pad, Repeat, Reflect };
@@ -33,8 +33,8 @@ public:
 	int size() const;
 	void clear();
 
-	void add(PReal position, value_type value);
-	value_type get(PReal position) const;
+	void add(float position, value_type value);
+	value_type get(float position) const;
 
 	reference getAtIndex(int index);
 	const_reference getAtIndex(int index) const;
@@ -63,8 +63,8 @@ public:
 	}
 
 protected:
-	PReal extendPos(PReal position, PReal pMin, PReal pMax) const;
-	value_type interpolate(const AnimationStop& s1, const AnimationStop& s2, PReal pos) const;
+	float extendPos(float position, float pMin, float pMax) const;
+	value_type interpolate(const AnimationStop& s1, const AnimationStop& s2, float pos) const;
 
 	helper::EasingFunctions m_interpolation;
 	Extend m_extend = Extend::Pad;

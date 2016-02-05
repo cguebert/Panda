@@ -77,9 +77,9 @@ public:
 	graphics::Size getRenderSize() const;
 	void setRenderSize(graphics::Size size);
 
-	PReal getAnimationTime() const;
-	PReal getTimeStep() const;
-	PReal getFPS() const;
+	float getAnimationTime() const;
+	float getTimeStep() const;
+	float getFPS() const;
 	bool animationIsPlaying() const;
 	bool animationIsMultithread() const;
 
@@ -132,13 +132,13 @@ protected:
 	uint32_t m_currentIndex;
 	std::shared_ptr<Layer> m_defaultLayer;
 
-	PReal m_animTimeVal = 0.0;
+	float m_animTimeVal = 0.0;
 	types::Point m_mousePositionVal;
 	int m_mouseClickVal = 0;
 
 	Data<types::Point> m_renderSize;
 	Data<types::Color> m_backgroundColor;
-	Data<PReal> m_animTime, m_timestep;
+	Data<float> m_animTime, m_timestep;
 	Data<int> m_useTimer;
 	Data<types::Point> m_mousePosition;
 	Data<int> m_mouseClick;
@@ -163,7 +163,7 @@ protected:
 
 	int m_iNbFrames = 0;
 	long long m_fpsTime = 0;
-	PReal m_currentFPS = 0;
+	float m_currentFPS = 0;
 
 	gui::BaseGUI& m_gui;
 
@@ -235,13 +235,13 @@ inline types::Color PandaDocument::getBackgroundColor() const
 inline void PandaDocument::setBackgroundColor(types::Color color)
 { m_backgroundColor.setValue(color); }
 
-inline PReal PandaDocument::getAnimationTime() const
+inline float PandaDocument::getAnimationTime() const
 { return m_animTimeVal; }
 
-inline PReal PandaDocument::getTimeStep() const
+inline float PandaDocument::getTimeStep() const
 { return m_timestep.getValue(); }
 
-inline PReal PandaDocument::getFPS() const
+inline float PandaDocument::getFPS() const
 { return m_currentFPS; }
 
 inline bool PandaDocument::animationIsPlaying() const

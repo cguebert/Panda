@@ -223,8 +223,8 @@ void MainWindow::openRecentFile()
 
 void MainWindow::updateStatusBar()
 {
-	PReal time = m_document->getAnimationTime();
-	PReal FPS = m_document->getFPS();
+	float time = m_document->getAnimationTime();
+	float FPS = m_document->getFPS();
 	m_timeLabel->setText(tr("time: %1\tFPS: %2").arg(time).arg(QString::number(FPS, 'f', 1)));
 }
 

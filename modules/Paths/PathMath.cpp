@@ -100,7 +100,7 @@ public:
 
 protected:
 	Data< std::vector<Path> > m_input, m_output;
-	Data< std::vector<PReal> > m_scale;
+	Data< std::vector<float> > m_scale;
 };
 
 int PathMath_ScaleClass = RegisterObject<PathMath_Scale>("Math/Path/Scale").setName("Scale path").setDescription("Scale a path");
@@ -152,7 +152,7 @@ public:
 
 			output.resize(nb);
 
-			PReal PI180 = static_cast<PReal>(M_PI) / static_cast<PReal>(180.0);
+			float PI180 = static_cast<float>(M_PI) / 180;
 			for(int i=0; i<nb; ++i)
 				output[i] = types::rotated(input[i%nbP], center[i%nbC], angle[i%nbA] * PI180);
 		}
@@ -163,7 +163,7 @@ public:
 protected:
 	Data< std::vector<Path> > m_input, m_output;
 	Data< std::vector<Point> > m_center;
-	Data< std::vector<PReal> > m_angle;
+	Data< std::vector<float> > m_angle;
 };
 
 int PathMath_RotateClass = RegisterObject<PathMath_Rotate>("Math/Path/Rotate").setName("Rotate path").setDescription("Rotate a path");
@@ -204,7 +204,7 @@ public:
 			if(nbPts > 1)
 			{
 				Point pt1 = path[0];
-				PReal l = 0.0;
+				float l = 0.0;
 				for(int j=1; j<nbPts; ++j)
 				{
 					const Point& pt2 = path[j];
@@ -223,7 +223,7 @@ public:
 protected:
 	Data< std::vector<Path> > input;
 	Data< std::vector<int> > nbPoints;
-	Data< std::vector<PReal> > length;
+	Data< std::vector<float> > length;
 };
 
 int PathMath_LengthClass = RegisterObject<PathMath_Length>("Math/Path/Curve length").setDescription("Compute the length of a series of segments");
@@ -252,7 +252,7 @@ public:
 	void update()
 	{
 		const Path& curve = input.getValue();
-		const std::vector<PReal>& listAbscissa = abscissa.getValue();
+		const std::vector<float>& listAbscissa = abscissa.getValue();
 		unsigned int nbPts = curve.size();
 		unsigned int nbAbscissa = listAbscissa.size();
 
@@ -265,8 +265,8 @@ public:
 			listRot.resize(nbAbscissa);
 
 			// Some precomputation
-			PReal totalLength = 0.0;
-			std::vector<PReal> lengths, starts, ends;
+			float totalLength = 0.0;
+			std::vector<float> lengths, starts, ends;
 			lengths.resize(nbPts - 1);
 			starts.resize(nbPts - 1);
 			ends.resize(nbPts - 1);
@@ -275,21 +275,21 @@ public:
 			{
 				starts[i] = totalLength;
 				const Point& pt2 = curve[i+1];
-				PReal l = (pt2-pt1).norm();
+				float l = (pt2-pt1).norm();
 				lengths[i] = l;
 				pt1 = pt2;
 				totalLength += l;
 				ends[i] = totalLength;
 			}
 
-			const PReal pi = static_cast<PReal>(M_PI);
+			const float pi = static_cast<float>(M_PI);
 			for(unsigned int i=0; i<nbAbscissa; ++i)
 			{
-				PReal a = helper::bound<PReal>(0.0, listAbscissa[i], totalLength - 1e-3f);
-				std::vector<PReal>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
+				float a = helper::bound<float>(0.0, listAbscissa[i], totalLength - 1e-3f);
+				std::vector<float>::iterator iter = std::upper_bound(ends.begin(), ends.end(), a);
 
 				unsigned int index = iter - ends.begin();
-				PReal p = 0.0;
+				float p = 0.0;
 				if(lengths[index] > 0.1)
 					p = (a - starts[index]) / lengths[index];
 				const Point& pt1 = curve[index];
@@ -309,7 +309,7 @@ public:
 
 protected:
 	Data< Path > input, position;
-	Data< std::vector<PReal> > abscissa, rotation;
+	Data< std::vector<float> > abscissa, rotation;
 };
 
 int PathMath_GetPointClass = RegisterObject<PathMath_GetPoint>("Math/Path/Point on curve").setDescription("Get the position and the rotation of a point on a curve based on his abscissa");
@@ -383,7 +383,7 @@ public:
 
 protected:
 	Data< std::vector<Path> > m_input;
-	Data< std::vector<PReal> > m_output;
+	Data< std::vector<float> > m_output;
 };
 
 int PathMath_AreaClass = RegisterObject<PathMath_Area>("Math/Path/Area")
@@ -417,7 +417,7 @@ public:
 	void update()
 	{
 		const std::vector<Path>& listInput = m_input.getValue();
-		const PReal threshold = m_threshold.getValue();
+		const float threshold = m_threshold.getValue();
 		const int method = m_method.getValue();
 		int nbInputs = listInput.size();
 
@@ -442,7 +442,7 @@ public:
 			for (int j = 1; j < nbPts;)
 			{
 				Point pt2 = path[j];
-				PReal l = (pt2 - pt1).norm();
+				float l = (pt2 - pt1).norm();
 				if (l < threshold)
 				{
 					std::vector<Point> tmp;
@@ -473,7 +473,7 @@ public:
 						pt2 = Point();
 						for (const auto& p : tmp)
 							pt2 += p;
-						pt2 /= static_cast<PReal>(tmp.size());
+						pt2 /= static_cast<float>(tmp.size());
 						break;
 					}
 					}
@@ -495,7 +495,7 @@ public:
 
 protected:
 	Data< std::vector<Path> > m_input, m_output;
-	Data< PReal > m_threshold;
+	Data< float > m_threshold;
 	Data< int > m_method;
 };
 

@@ -22,7 +22,7 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal> &valIn = input.getValue();
+		const std::vector<float> &valIn = input.getValue();
 		auto valOut = result.getAccessor();
 
 		int size = valIn.size();
@@ -34,10 +34,10 @@ public:
 		cleanDirty();
 	}
 
-	virtual PReal compute(const PReal& value) = 0;
+	virtual float compute(const float& value) = 0;
 
 protected:
-	Data< std::vector<PReal> > input, result;
+	Data< std::vector<float> > input, result;
 };
 
 //****************************************************************************//
@@ -61,7 +61,7 @@ public:
 
 	void update()
 	{
-		const std::vector<PReal>	&valInA = inputA.getValue(),
+		const std::vector<float>	&valInA = inputA.getValue(),
 								&valInB = inputB.getValue();
 		auto valOut = result.getAccessor();
 		valOut.clear();
@@ -81,10 +81,10 @@ public:
 		cleanDirty();
 	}
 
-	virtual PReal compute(const PReal& valA, const PReal& valB) = 0;
+	virtual float compute(const float& valA, const float& valB) = 0;
 
 protected:
-	Data< std::vector<PReal> > inputA, inputB, result;
+	Data< std::vector<float> > inputA, inputB, result;
 };
 
 //****************************************************************************//
@@ -97,7 +97,7 @@ public:
 	DoubleMath_Add(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual PReal compute(const PReal& valA, const PReal& valB)
+	virtual float compute(const float& valA, const float& valB)
 	{ return valA + valB; }
 };
 
@@ -113,7 +113,7 @@ public:
 	DoubleMath_Sub(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual PReal compute(const PReal& valA, const PReal& valB)
+	virtual float compute(const float& valA, const float& valB)
 	{ return valA - valB; }
 };
 
@@ -129,7 +129,7 @@ public:
 	DoubleMath_Mult(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual PReal compute(const PReal& valA, const PReal& valB)
+	virtual float compute(const float& valA, const float& valB)
 	{ return valA * valB; }
 };
 
@@ -145,7 +145,7 @@ public:
 	DoubleMath_Div(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual PReal compute(const PReal& valA, const PReal& valB)
+	virtual float compute(const float& valA, const float& valB)
 	{ return valA / valB; }
 };
 
@@ -161,7 +161,7 @@ public:
 	DoubleMath_Mod(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual PReal compute(const PReal& valA, const PReal& valB)
+	virtual float compute(const float& valA, const float& valB)
 	{ return std::fmod(valA, valB); }
 };
 
@@ -177,7 +177,7 @@ public:
 	DoubleMath_Abs(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
+	virtual float compute(const float& val)
 	{ return std::abs(val); }
 };
 
@@ -193,7 +193,7 @@ public:
 	DoubleMath_Floor(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
+	virtual float compute(const float& val)
 	{ return std::floor(val); }
 };
 
@@ -209,7 +209,7 @@ public:
 	DoubleMath_Ceil(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
+	virtual float compute(const float& val)
 	{ return std::ceil(val); }
 };
 
@@ -225,7 +225,7 @@ public:
 	DoubleMath_Round(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
+	virtual float compute(const float& val)
 	{ return std::round(val); }
 };
 
@@ -241,7 +241,7 @@ public:
 	DoubleMath_Power(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual PReal compute(const PReal& valA, const PReal& valB)
+	virtual float compute(const float& valA, const float& valB)
 	{ return std::pow(valA, valB); }
 };
 
@@ -257,7 +257,7 @@ public:
 	DoubleMath_Sqrt(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
+	virtual float compute(const float& val)
 	{ return std::sqrt(val); }
 };
 
@@ -274,7 +274,7 @@ public:
 		: DoubleMath_1Value(doc)
 	{}
 
-	virtual PReal compute(const PReal& val)
+	virtual float compute(const float& val)
 	{ return std::log(val); }
 
 };
@@ -290,16 +290,16 @@ public:
 
 	DoubleMath_LogBase(PandaDocument *doc)
 		: DoubleMath_1Value(doc)
-		, base(initData((PReal)10.0, "base", "Base of the logarithm"))
+		, base(initData((float)10.0, "base", "Base of the logarithm"))
 	{
 		addInput(base);
 	}
 
-	virtual PReal compute(const PReal& val)
+	virtual float compute(const float& val)
 	{ return std::log(val) / std::log(base.getValue()); }
 
 protected:
-	Data<PReal> base;
+	Data<float> base;
 };
 
 int DoubleMath_LogBaseClass = RegisterObject<DoubleMath_LogBase>("Math/Real/Logarithm").setDescription("Logarithm to a chosen base of the value");
@@ -315,7 +315,7 @@ public:
 		: DoubleMath_1Value(doc)
 	{}
 
-	virtual PReal compute(const PReal& val)
+	virtual float compute(const float& val)
 	{ return std::exp(val); }
 
 };
@@ -332,7 +332,7 @@ public:
 	DoubleMath_Min(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual PReal compute(const PReal& valA, const PReal& valB)
+	virtual float compute(const float& valA, const float& valB)
 	{ return std::min(valA, valB); }
 };
 
@@ -348,7 +348,7 @@ public:
 	DoubleMath_Max(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual PReal compute(const PReal& valA, const PReal& valB)
+	virtual float compute(const float& valA, const float& valB)
 	{ return std::max(valA, valB); }
 };
 
@@ -364,7 +364,7 @@ public:
 	DoubleMath_Step(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual PReal compute(const PReal& valA, const PReal& valB)
+	virtual float compute(const float& valA, const float& valB)
 	{ return (valA >= valB); }
 };
 
@@ -380,8 +380,8 @@ public:
 	DoubleMath_Cos(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
-	{ return std::cos(val * static_cast<PReal>(M_PI) / 180); }
+	virtual float compute(const float& val)
+	{ return std::cos(val * static_cast<float>(M_PI) / 180); }
 };
 
 int DoubleMath_CosClass = RegisterObject<DoubleMath_Cos>("Math/Real/Trigonometry/Cosine").setDescription("Cosine of the value (in degrees)");
@@ -396,8 +396,8 @@ public:
 	DoubleMath_Sin(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
-	{ return std::sin(val * static_cast<PReal>(M_PI) / 180); }
+	virtual float compute(const float& val)
+	{ return std::sin(val * static_cast<float>(M_PI) / 180); }
 };
 
 int DoubleMath_SinClass = RegisterObject<DoubleMath_Sin>("Math/Real/Trigonometry/Sine").setDescription("Sine of the value (in degrees)");
@@ -412,8 +412,8 @@ public:
 	DoubleMath_Tan(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
-	{ return std::tan(val * static_cast<PReal>(M_PI) / 180); }
+	virtual float compute(const float& val)
+	{ return std::tan(val * static_cast<float>(M_PI) / 180); }
 };
 
 int DoubleMath_TanClass = RegisterObject<DoubleMath_Tan>("Math/Real/Trigonometry/Tangent").setDescription("Tangent of the value (in degrees)");
@@ -428,8 +428,8 @@ public:
 	DoubleMath_Arccos(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
-	{ return std::acos(val) * 180 / static_cast<PReal>(M_PI); }
+	virtual float compute(const float& val)
+	{ return std::acos(val) * 180 / static_cast<float>(M_PI); }
 };
 
 int DoubleMath_ArccosClass = RegisterObject<DoubleMath_Arccos>("Math/Real/Trigonometry/Arccosine").setDescription("Arc-cosine of the value (result in degrees)");
@@ -444,8 +444,8 @@ public:
 	DoubleMath_Arcsin(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
-	{ return std::asin(val) * 180 / static_cast<PReal>(M_PI); }
+	virtual float compute(const float& val)
+	{ return std::asin(val) * 180 / static_cast<float>(M_PI); }
 };
 
 int DoubleMath_ArcsinClass = RegisterObject<DoubleMath_Arcsin>("Math/Real/Trigonometry/Arcsine").setDescription("Arc-sine of the value (result in degrees)");
@@ -460,8 +460,8 @@ public:
 	DoubleMath_Arctan(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual PReal compute(const PReal& val)
-	{ return std::atan(val) * 180 / static_cast<PReal>(M_PI); }
+	virtual float compute(const float& val)
+	{ return std::atan(val) * 180 / static_cast<float>(M_PI); }
 };
 
 int DoubleMath_ArctanClass = RegisterObject<DoubleMath_Arctan>("Math/Real/Trigonometry/Arctangent").setDescription("Arc-tangent of the value (result in degrees)");

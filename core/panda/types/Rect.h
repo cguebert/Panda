@@ -15,40 +15,40 @@ namespace types
 class PANDA_CORE_API Rect
 {
 public:
-	PReal x1, y1, x2, y2;
+	float x1, y1, x2, y2;
 
 	Rect();
-	Rect(PReal x1, PReal y1, PReal x2, PReal y2);
+	Rect(float x1, float y1, float x2, float y2);
 	Rect(const Rect& r);
 	Rect(const Point& p1, const Point& p2);
-	Rect(const Point& p, PReal w, PReal h);
+	Rect(const Point& p, float w, float h);
 
-	void set(PReal nx1, PReal ny1, PReal nx2, PReal ny2);
+	void set(float nx1, float ny1, float nx2, float ny2);
 
 	void canonicalize();
 	Rect canonicalized() const;
 
-	PReal width() const;
-	PReal height() const;
+	float width() const;
+	float height() const;
 	Point size() const;
-	PReal aspectRatio() const;
-	PReal area() const;
+	float aspectRatio() const;
+	float area() const;
 	bool empty() const;
 
-	void setWidth(PReal w);
-	void setHeight(PReal h);
-	void setSize(PReal w, PReal h);
+	void setWidth(float w);
+	void setHeight(float h);
+	void setSize(float w, float h);
 	void setSize(const Point& s);
 
-	PReal left() const;
-	PReal top() const;
-	PReal right() const;
-	PReal bottom() const;
+	float left() const;
+	float top() const;
+	float right() const;
+	float bottom() const;
 
-	void setLeft(PReal v);
-	void setTop(PReal v);
-	void setRight(PReal v);
-	void setBottom(PReal v);
+	void setLeft(float v);
+	void setTop(float v);
+	void setRight(float v);
+	void setBottom(float v);
 
 	Point topLeft() const;
 	Point bottomRight() const;
@@ -62,17 +62,17 @@ public:
 	void setBottomLeft(const Point& p);
 
 	void translate(const Point& p);
-	void translate(PReal dx, PReal dy);
+	void translate(float dx, float dy);
 	Rect translated(const Point& p) const;
-	Rect translated(PReal dx, PReal dy) const;
+	Rect translated(float dx, float dy) const;
 
 	void moveTo(const Point& p);
-	void moveTo(PReal x, PReal y);
+	void moveTo(float x, float y);
 
-	void moveLeft(PReal v);
-	void moveTop(PReal v);
-	void moveRight(PReal v);
-	void moveBottom(PReal v);
+	void moveLeft(float v);
+	void moveTop(float v);
+	void moveRight(float v);
+	void moveBottom(float v);
 
 	void moveTopLeft(const Point& p);
 	void moveBottomRight(const Point& p);
@@ -81,10 +81,10 @@ public:
 
 	void moveCenter(const Point& p);
 
-	void adjust(PReal dx1, PReal dy1, PReal dx2, PReal dy2);
+	void adjust(float dx1, float dy1, float dx2, float dy2);
 	void adjust(const Rect& r);
 
-	Rect adjusted(PReal dx1, PReal dy1, PReal dx2, PReal dy2) const;
+	Rect adjusted(float dx1, float dy1, float dx2, float dy2) const;
 	Rect adjusted(const Rect& r) const;
 
 	Rect operator|(const Rect &r) const; /// Union
@@ -99,7 +99,7 @@ public:
 
 	bool contains(const Rect& r) const;
 	bool contains(const Point& p) const;
-	bool contains(PReal x, PReal y) const;
+	bool contains(float x, float y) const;
 
 	bool operator==(const Rect& r) const;
 	bool operator!=(const Rect& r) const;
@@ -108,7 +108,7 @@ public:
 inline Rect::Rect()
 : x1(0), y1(0), x2(0), y2(0) { }
 
-inline Rect::Rect(PReal x1, PReal y1, PReal x2, PReal y2)
+inline Rect::Rect(float x1, float y1, float x2, float y2)
 : x1(x1), y1(y1), x2(x2), y2(y2) { }
 
 inline Rect::Rect(const Rect& r)
@@ -117,10 +117,10 @@ inline Rect::Rect(const Rect& r)
 inline Rect::Rect(const Point& p1, const Point& p2)
 : x1(p1.x), y1(p1.y), x2(p2.x), y2(p2.y) { }
 
-inline Rect::Rect(const Point& p, PReal w, PReal h)
+inline Rect::Rect(const Point& p, float w, float h)
 : x1(p.x), y1(p.y), x2(p.x + w), y2(p.y + h) { }
 
-inline void Rect::set(PReal nx1, PReal ny1, PReal nx2, PReal ny2)
+inline void Rect::set(float nx1, float ny1, float nx2, float ny2)
 { x1 = nx1; y1 = ny1; x2 = nx2; y2 = ny2; }
 
 inline void Rect::canonicalize()
@@ -129,58 +129,58 @@ inline void Rect::canonicalize()
 inline Rect Rect::canonicalized() const
 { Rect r(*this); r.canonicalize(); return r; }
 
-inline PReal Rect::width() const
+inline float Rect::width() const
 { return x2 - x1; }
 
-inline PReal Rect::height() const
+inline float Rect::height() const
 { return y2 - y1; }
 
 inline Point Rect::size() const
 { return Point(x2 - x1, y2 - y1); }
 
-inline PReal Rect::aspectRatio() const
+inline float Rect::aspectRatio() const
 { return width() / height(); }
 
-inline PReal Rect::area() const
+inline float Rect::area() const
 { return width() * height(); }
 
 inline bool Rect::empty() const
-{ PReal w = x2 - x1, h = y2 - y1; return w < 0 || h < 0 || pFuzzyIsNull(w) || pFuzzyIsNull(h); }
+{ float w = x2 - x1, h = y2 - y1; return w < 0 || h < 0 || pFuzzyIsNull(w) || pFuzzyIsNull(h); }
 
-inline void Rect::setWidth(PReal w)
+inline void Rect::setWidth(float w)
 { x2 = x1 + w; }
 
-inline void Rect::setHeight(PReal h)
+inline void Rect::setHeight(float h)
 { y2 = y1 + h; }
 
-inline void Rect::setSize(PReal w, PReal h)
+inline void Rect::setSize(float w, float h)
 { x2 = x1 + w; y2 = y1 + h; }
 
 inline void Rect::setSize(const Point& s)
 { x2 = x1 + s.x; y2 = y1 + s.y; }
 
-inline PReal Rect::left() const
+inline float Rect::left() const
 { return x1; }
 
-inline PReal Rect::top() const
+inline float Rect::top() const
 { return y1; }
 
-inline PReal Rect::right() const
+inline float Rect::right() const
 { return x2; }
 
-inline PReal Rect::bottom() const
+inline float Rect::bottom() const
 { return y2; }
 
-inline void Rect::setLeft(PReal v)
+inline void Rect::setLeft(float v)
 { x1 = v; }
 
-inline void Rect::setTop(PReal v)
+inline void Rect::setTop(float v)
 { y1 = v; }
 
-inline void Rect::setRight(PReal v)
+inline void Rect::setRight(float v)
 { x2 = v; }
 
-inline void Rect::setBottom(PReal v)
+inline void Rect::setBottom(float v)
 { y2 = v; }
 
 inline Point Rect::topLeft() const
@@ -213,31 +213,31 @@ inline void Rect::setBottomLeft(const Point& p)
 inline void Rect::translate(const Point& p)
 { x1 += p.x; x2 += p.x; y1 += p.y; y2 += p.y; }
 
-inline void Rect::translate(PReal dx, PReal dy)
+inline void Rect::translate(float dx, float dy)
 { x1 += dx; x2 += dx; y1 += dy; y2 += dy; }
 
 inline Rect Rect::translated(const Point& p) const
 { return Rect(x1 + p.x, y1 + p.y, x2 + p.x, y2 + p.y); }
 
-inline Rect Rect::translated(PReal dx, PReal dy) const
+inline Rect Rect::translated(float dx, float dy) const
 { return Rect(x1 + dx, y1 + dy, x2 + dx, y2 + dy); }
 
 inline void Rect::moveTo(const Point& p)
 { x2 += p.x - x1; y2 += p.y - y1; x1 = p.x; y1 = p.y; }
 
-inline void Rect::moveTo(PReal x, PReal y)
+inline void Rect::moveTo(float x, float y)
 { x2 += x - x1; y2 += y - y1; x1 = x; y1 = y; }
 
-inline void Rect::moveLeft(PReal v)
+inline void Rect::moveLeft(float v)
 { x2 += v - x1; x1 = v; }
 
-inline void Rect::moveTop(PReal v)
+inline void Rect::moveTop(float v)
 { y2 += v - y1; y1 = v; }
 
-inline void Rect::moveRight(PReal v)
+inline void Rect::moveRight(float v)
 { x1 += v - x2; x2 = v; }
 
-inline void Rect::moveBottom(PReal v)
+inline void Rect::moveBottom(float v)
 { y1 += v - y2; y2 = v; }
 
 inline void Rect::moveTopLeft(const Point& p)
@@ -253,15 +253,15 @@ inline void Rect::moveBottomLeft(const Point& p)
 { moveLeft(p.x); moveBottom(p.y); }
 
 inline void Rect::moveCenter(const Point& p)
-{ PReal w = x2 - x1, h = y2 - y1; x1 = p.x - w / 2; y1 = p.y - h / 2; x2 = x1 + w; y2 = y1 + h; }
+{ float w = x2 - x1, h = y2 - y1; x1 = p.x - w / 2; y1 = p.y - h / 2; x2 = x1 + w; y2 = y1 + h; }
 
-inline void Rect::adjust(PReal dx1, PReal dy1, PReal dx2, PReal dy2)
+inline void Rect::adjust(float dx1, float dy1, float dx2, float dy2)
 { x1 += dx1; y1 += dy1; x2 += dx2; y2 += dy2; }
 
 inline void Rect::adjust(const Rect& r)
 { x1 += r.x1; y1 += r.y1; x2 += r.x2; y2 += r.y2; }
 
-inline Rect Rect::adjusted(PReal dx1, PReal dy1, PReal dx2, PReal dy2) const
+inline Rect Rect::adjusted(float dx1, float dy1, float dx2, float dy2) const
 { return Rect(x1 + dx1, y1 + dy1, x2 + dx2, y2 + dy2); }
 
 inline Rect Rect::adjusted(const Rect& r) const
@@ -282,7 +282,7 @@ inline Rect Rect::intersected(const Rect& r) const
 inline bool Rect::contains(const Point& p) const
 { return p.x >= x1 && p.x <= x2 && p.y >= y1 && p.y <= y2; }
 
-inline bool Rect::contains(PReal x, PReal y) const
+inline bool Rect::contains(float x, float y) const
 { return contains(Point(x, y)); }
 
 inline bool Rect::operator==(const Rect& r) const

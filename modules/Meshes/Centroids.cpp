@@ -72,12 +72,12 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			Point avg;
-			PReal totArea = 0;
+			float totArea = 0;
 			const auto& mesh = meshes[i];
 			for(int j=0, nbP = mesh.nbTriangles(); j<nbP; ++j)
 			{
 				const auto tri = mesh.getTriangle(j);
-				PReal area = mesh.areaOfTriangle(tri);
+				float area = mesh.areaOfTriangle(tri);
 				avg += mesh.centroidOfTriangle(tri) * area;
 				totArea += area;
 			}
