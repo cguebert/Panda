@@ -16,6 +16,16 @@ void UndoCommand::undo()
 		(*it)->undo();
 }
 
+int UndoCommand::id() const
+{ 
+	return -1; 
+}
+
+bool UndoCommand::mergeWith(const UndoCommand* other)
+{ 
+	return false; 
+}
+
 //****************************************************************************//
 
 void UndoStack::push(UndoCommand::SPtr command)

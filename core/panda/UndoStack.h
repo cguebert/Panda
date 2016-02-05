@@ -22,8 +22,8 @@ public:
 	std::string text() const;
 	void setText(const std::string& text);
 
-	int id() const; /// If the command supports compression, this must return an integer unique to the command's class. Else return -1;
-	bool mergeWith(const UndoCommand* other); /// Attemps to merge this command with another of the same id.
+	virtual int id() const; /// If the command supports compression, this must return an integer unique to the command's class. Else return -1;
+	virtual bool mergeWith(const UndoCommand* other); /// Attemps to merge this command with another of the same id.
 
 	void push(UndoCommand::SPtr command); /// Append the command to the childs
 
@@ -87,12 +87,6 @@ inline std::string UndoCommand::text() const
 
 inline void UndoCommand::setText(const std::string& text)
 { m_commandText = text; }
-
-inline int UndoCommand::id() const
-{ return -1; }
-
-inline bool UndoCommand::mergeWith(const UndoCommand* other)
-{ return false; }
 
 inline void UndoCommand::push(UndoCommand::SPtr command)
 { m_commandChilds.push_back(command); }
