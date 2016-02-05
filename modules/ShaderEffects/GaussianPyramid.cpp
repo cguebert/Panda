@@ -7,13 +7,13 @@ namespace panda {
 
 using types::ImageWrapper;
 
-class ModifierImage_GaussianPyramid : public OGLObject
+class ModifierImage_GaussianPyramid : public ShaderEffects
 {
 public:
-	PANDA_CLASS(ModifierImage_GaussianPyramid, OGLObject)
+	PANDA_CLASS(ModifierImage_GaussianPyramid, ShaderEffects)
 
 	ModifierImage_GaussianPyramid(PandaDocument* doc)
-		: OGLObject(doc)
+		: ShaderEffects(doc)
 		, m_input(initData("input", "The original image"))
 		, m_gaussian(initData("gaussian", "List of scaled down images"))
 		, m_laplacian(initData("laplacian", "List of substracted images"))
@@ -107,13 +107,13 @@ int ModifierImage_GaussianPyramidClass = RegisterObject<ModifierImage_GaussianPy
 
 //****************************************************************************//
 
-class ModifierImage_CollapsePyramid : public PandaObject
+class ModifierImage_CollapsePyramid : public ShaderEffects
 {
 public:
-	PANDA_CLASS(ModifierImage_CollapsePyramid, PandaObject)
+	PANDA_CLASS(ModifierImage_CollapsePyramid, ShaderEffects)
 
 	ModifierImage_CollapsePyramid(PandaDocument* doc)
-		: PandaObject(doc)
+		: ShaderEffects(doc)
 		, m_gaussian(initData("gaussian", "List of scaled down images"))
 		, m_laplacian(initData("laplacian", "List of substracted images"))
 		, m_output(initData("output", "The reconstructed image"))
@@ -126,6 +126,8 @@ public:
 
 	void initializeGL()
 	{
+		ShaderEffects::initializeGL();
+
 		m_upscaleProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		m_upscaleProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 		m_upscaleProgram.link();

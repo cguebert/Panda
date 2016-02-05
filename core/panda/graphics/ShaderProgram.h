@@ -86,17 +86,6 @@ public:
 
 	int attributeLocation(const char* name) const;
 
-	void enableAttributeArray(int location) const;
-	void disableAttributeArray(int location) const;
-
-	void enableAttributeArray(const char* name) const;
-	void disableAttributeArray(const char* name) const;
-
-	void setAttributeArray(int location, const float* values, int tupleSize, int stride = 0);
-	void setAttributeArray(int location, unsigned int type, const void* values, int tupleSize, int stride = 0);
-	void setAttributeArray(const char* name, const float* values, int tupleSize, int stride = 0);
-	void setAttributeArray(const char* name, unsigned int type, const void* values, int tupleSize, int stride = 0);
-
 protected:
 	using ShaderPair = std::pair<ShaderType, ShaderId::SPtr>;
 	std::vector<ShaderPair> m_shaders;

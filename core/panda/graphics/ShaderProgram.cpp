@@ -213,30 +213,6 @@ void ShaderProgram::setUniformValueMat4(const char* name, const float* value) co
 int ShaderProgram::attributeLocation(const char* name) const
 { return glGetAttribLocation(id(), name); }
 
-void ShaderProgram::enableAttributeArray(int location) const
-{ glEnableVertexAttribArray(location); }
-
-void ShaderProgram::disableAttributeArray(int location) const
-{ glDisableVertexAttribArray(location); }
-
-void ShaderProgram::enableAttributeArray(const char* name) const
-{ enableAttributeArray(attributeLocation(name)); }
-
-void ShaderProgram::disableAttributeArray(const char* name) const
-{ disableAttributeArray(attributeLocation(name)); }
-
-void ShaderProgram::setAttributeArray(int location, const float* values, int tupleSize, int stride)
-{ glVertexAttribPointer(location, tupleSize, GL_FLOAT, GL_FALSE, stride, values); }
-
-void ShaderProgram::setAttributeArray(int location, unsigned int type, const void* values, int tupleSize, int stride)
-{ glVertexAttribPointer(location, tupleSize, type, GL_FALSE, stride, values); }
-
-void ShaderProgram::setAttributeArray(const char* name, const float* values, int tupleSize, int stride)
-{ setAttributeArray(attributeLocation(name), values, tupleSize, stride); }
-
-void ShaderProgram::setAttributeArray(const char* name, unsigned int type, const void* values, int tupleSize, int stride)
-{ setAttributeArray(attributeLocation(name), type, values, tupleSize, stride); }
-
 } // namespace graphics
 
 } // namespace panda

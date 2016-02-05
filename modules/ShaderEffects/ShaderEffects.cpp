@@ -16,22 +16,77 @@ using graphics::Size;
 using types::ImageWrapper;
 using types::Point;
 
-ShaderEffects::ShaderEffects(PandaDocument* doc, int nbPasses)
+ShaderEffects::ShaderEffects(PandaDocument* doc)
 	: OGLObject(doc)
+{ }
+
+void ShaderEffects::initializeGL()
+{
+	m_VAO.create();
+	m_VAO.bind();
+
+	m_verticesVBO.create();
+	m_verticesVBO.bind();
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	m_texCoordsVBO.create();
+	m_texCoordsVBO.bind();
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glEnableVertexAttribArray(1);
+
+	std::vector<GLfloat> texCoords = { 0, 1, 1, 1, 0, 0, 1, 0 };
+	m_texCoordsVBO.write(texCoords);
+
+	m_VAO.release();
+}
+
+void ShaderEffects::renderImage(Framebuffer& fbo, ShaderProgram& program)
+{
+	fbo.bind();
+
+	auto size = fbo.size();
+	GLfloat w = static_cast<float>(size.width()), h = static_cast<float>(size.height());
+	std::vector<GLfloat> verts = { 0, 0, w, 0, 0, h, w, h };
+	m_verticesVBO.bind();
+	m_verticesVBO.write(verts);
+
+	glViewport(0, 0, size.width(), size.height());
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	graphics::Mat4x4 mvp;
+	mvp.ortho(0, w, h, 0, -10.f, 10.f);
+
+	program.bind();
+	program.setUniformValueMat4("MVP", mvp.data());
+
+	m_VAO.bind();
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	m_VAO.release();
+
+	program.release();
+	fbo.release();
+}
+
+//****************************************************************************//
+
+ShaderEffectsMultiPass::ShaderEffectsMultiPass(PandaDocument* doc, int nbPasses)
+	: ShaderEffects(doc)
 	, m_nbPasses(nbPasses)
 	, m_input(initData("input", "The original image"))
 	, m_output(initData("output", "Image created by the operation"))
 {
 	addInput(m_input);
 	addOutput(m_output);
-
-	m_texCoords[0*2+0] = 1; m_texCoords[0*2+1] = 1;
-	m_texCoords[1*2+0] = 0; m_texCoords[1*2+1] = 1;
-	m_texCoords[3*2+0] = 0; m_texCoords[3*2+1] = 0;
-	m_texCoords[2*2+0] = 1; m_texCoords[2*2+1] = 0;
 }
 
-void ShaderEffects::update()
+void ShaderEffectsMultiPass::initializeGL()
+{
+	ShaderEffects::initializeGL();
+}
+
+void ShaderEffectsMultiPass::update()
 {
 	const auto& inputVal = m_input.getValue();
 	GLuint inputTexId = inputVal.getTextureId();
@@ -54,18 +109,16 @@ void ShaderEffects::update()
 			}
 		}
 
+		glViewport(0, 0, inputSize.width(), inputSize.height());
 		glClearColor(0, 0, 0, 0);
 
 		GLfloat w = static_cast<float>(inputSize.width()), h = static_cast<float>(inputSize.height());
+		std::vector<GLfloat> verts = { 0, 0, w, 0, 0, h, w, h };
+		m_verticesVBO.bind();
+		m_verticesVBO.write(verts);
 
 		graphics::Mat4x4 mvp;
 		mvp.ortho(0, w, h, 0, -10.f, 10.f);
-
-		GLfloat verts[8];
-		verts[0*2+0] = w;	verts[0*2+1] = 0;
-		verts[1*2+0] = 0;	verts[1*2+1] = 0;
-		verts[3*2+0] = 0;	verts[3*2+1] = h;
-		verts[2*2+0] = w;	verts[2*2+1] = h;
 
 		prepareUpdate(inputSize);
 
@@ -93,37 +146,20 @@ void ShaderEffects::update()
 			destFbo->bind();
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 			glBindTexture(GL_TEXTURE_2D, texId);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 			program.setUniformValueMat4("MVP", mvp.data());
 			program.setUniformValue("tex0", 0);
 
-			program.enableAttributeArray("position");
-			program.setAttributeArray("position", verts, 2);
-
-			program.enableAttributeArray("texCoord");
-			program.setAttributeArray("texCoord", m_texCoords, 2);
-
+			m_VAO.bind();
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-			program.disableAttributeArray("position");
-			program.disableAttributeArray("texCoord");
+			m_VAO.release();
 			program.release();
-
 			destFbo->release();
 		}
 	}
 }
-
-panda::ModuleHandle shadersEffectsModule = REGISTER_MODULE
-		.setDescription("Object to manipulate images using shaders.")
-		.setLicense("GPL")
-		.setVersion("1.0");
 
 //****************************************************************************//
 
@@ -151,46 +187,6 @@ bool resizeFBO(types::ImageWrapper& img, Size size, const FramebufferFormat& for
 	return false;
 }
 
-void renderImage(Framebuffer& fbo, ShaderProgram& program)
-{
-	fbo.bind();
-
-	auto size = fbo.size();
-
-	GLfloat w = static_cast<float>(size.width()), h = static_cast<float>(size.height());
-
-	graphics::Mat4x4 mvp;
-	mvp.ortho(0, w, h, 0, -10.f, 10.f);
-
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	GLfloat verts[8];
-	verts[0*2+0] = w;	verts[0*2+1] = 0;
-	verts[1*2+0] = 0;	verts[1*2+1] = 0;
-	verts[3*2+0] = 0;	verts[3*2+1] = h;
-	verts[2*2+0] = w;	verts[2*2+1] = h;
-
-	const GLfloat texCoords[8] = {1, 1, 0, 1, 1, 0, 0, 0};
-
-	program.bind();
-	program.setUniformValueMat4("MVP", mvp.data());
-
-	program.enableAttributeArray("position");
-	program.setAttributeArray("position", verts, 2);
-
-	program.enableAttributeArray("texCoord");
-	program.setAttributeArray("texCoord", texCoords, 2);
-
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	program.disableAttributeArray("position");
-	program.disableAttributeArray("texCoord");
-	program.release();
-
-	fbo.release();
-}
-
 bool bindTextures(ShaderProgram& program, const std::vector<GLuint>& texIds)
 {
 	program.bind();
@@ -210,15 +206,18 @@ bool bindTextures(ShaderProgram& program, const std::vector<GLuint>& texIds)
 		program.setUniformValue(loc, i);
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, texIds[i]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
 
 	glActiveTexture(GL_TEXTURE0);
 
 	return true;
 }
+
+//****************************************************************************//
+
+panda::ModuleHandle shadersEffectsModule = REGISTER_MODULE
+		.setDescription("Object to manipulate images using shaders.")
+		.setLicense("GPL")
+		.setVersion("1.0");
 
 } // namespace Panda

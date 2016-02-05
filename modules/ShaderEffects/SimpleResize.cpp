@@ -7,13 +7,13 @@ namespace panda {
 
 using types::ImageWrapper;
 
-class ModifierImage_Downscale : public OGLObject
+class ModifierImage_Downscale : public ShaderEffects
 {
 public:
-	PANDA_CLASS(ModifierImage_Downscale, OGLObject)
+	PANDA_CLASS(ModifierImage_Downscale, ShaderEffects)
 
 	ModifierImage_Downscale(PandaDocument* doc)
-		: OGLObject(doc)
+		: ShaderEffects(doc)
 		, m_input(initData("input", "The original image"))
 		, m_output(initData("output", "Image created by the operation"))
 		, m_nbOfDownscales(initData(1, "downscales", "Number of times the image is to be downscaled"))
@@ -26,6 +26,8 @@ public:
 
 	void initializeGL()
 	{
+		ShaderEffects::initializeGL();
+
 		m_shaderProgram2x.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram2x.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/Downsample2.f.glsl");
 		m_shaderProgram2x.link();
@@ -91,13 +93,13 @@ int ModifierImage_DownscaleClass = RegisterObject<ModifierImage_Downscale>("Modi
 
 //****************************************************************************//
 
-class ModifierImage_Upscale : public OGLObject
+class ModifierImage_Upscale : public ShaderEffects
 {
 public:
-	PANDA_CLASS(ModifierImage_Upscale, OGLObject)
+	PANDA_CLASS(ModifierImage_Upscale, ShaderEffects)
 
 	ModifierImage_Upscale(PandaDocument* doc)
-		: OGLObject(doc)
+		: ShaderEffects(doc)
 		, m_input(initData("input", "The original image"))
 		, m_output(initData("output", "Image created by the operation"))
 		, m_nbOfUpscales(initData(1, "upscales", "Number of times the image is to be upscaled"))
@@ -110,6 +112,8 @@ public:
 
 	void initializeGL()
 	{
+		ShaderEffects::initializeGL();
+
 		m_shaderProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 		m_shaderProgram.link();

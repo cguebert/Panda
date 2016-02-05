@@ -9,13 +9,13 @@ namespace panda {
 using types::ImageWrapper;
 using types::Point;
 
-class TexturesOuterProduct : public OGLObject
+class TexturesOuterProduct : public ShaderEffects
 {
 public:
-	PANDA_CLASS(TexturesOuterProduct, OGLObject)
+	PANDA_CLASS(TexturesOuterProduct, ShaderEffects)
 
 	TexturesOuterProduct(PandaDocument* doc)
-		: OGLObject(doc)
+		: ShaderEffects(doc)
 		, m_inputH(initData("horizontal", "Texture to be used horizontally"))
 		, m_inputV(initData("vertical", "Texture to be used vertically"))
 		, m_output(initData("output", "Texture created by the operation"))
@@ -30,6 +30,8 @@ public:
 
 	void initializeGL()
 	{
+		ShaderEffects::initializeGL();
+
 		m_shaderProgram.addShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		m_shaderProgram.addShaderFromFile(graphics::ShaderType::Fragment, "shaders/TextureOuterProduct.f.glsl");
 		m_shaderProgram.link();

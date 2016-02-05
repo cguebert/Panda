@@ -9,13 +9,13 @@ namespace panda {
 
 using types::ImageWrapper;
 
-class ModifierImage_GaussianBlur : public ShaderEffects
+class ModifierImage_GaussianBlur : public ShaderEffectsMultiPass
 {
 public:
 	PANDA_CLASS(ModifierImage_GaussianBlur, ShaderEffects)
 
 	ModifierImage_GaussianBlur(PandaDocument* doc)
-		: ShaderEffects(doc, 2)
+		: ShaderEffectsMultiPass(doc, 2)
 		, m_radius(initData((PReal)10, "radius", "Radius of the blur"))
 		, m_currentRadius(-1)
 		, m_halfKernelSize(0)
@@ -31,6 +31,8 @@ public:
 
 	void initializeGL() override
 	{
+		ShaderEffectsMultiPass::initializeGL();
+
 		m_vertexShader = helper::ShaderCache::getInstance()->getShader(graphics::ShaderType::Vertex,
 			helper::system::DataRepository.loadFile("shaders/PT_noColor_Tex.v.glsl"));
 
