@@ -175,7 +175,10 @@ void XmlElement::setAttribute(const std::string& name, const std::string& value)
 std::string XmlElement::text() const
 {
 	if (m_element)
-		return m_element->GetText();
+	{
+		auto text = m_element->GetText();
+		return text ? text : "";
+	}
 	return "";
 }
 
