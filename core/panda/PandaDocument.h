@@ -9,16 +9,17 @@
 
 #include <panda/graphics/Size.h>
 
-#include <panda/UndoStack.h>
-
 namespace panda {
 
 class BaseLayer;
 class DockableObject;
 class DocumentRenderer;
+class DocumentSignals;
 class Layer;
 class Scheduler;
 class ScopedMacro;
+class UndoCommand;
+class UndoStack;
 class XmlElement;
 
 namespace graphics
@@ -106,18 +107,20 @@ public:
 	void waitForOtherTasksToFinish(bool mainThread = true) const; // Wait until the tasks we launched finish
 
 	// For undo-redo actions
-	void addCommand(UndoCommand::SPtr command);
+	void addCommand(std::shared_ptr<UndoCommand> command);
 	std::shared_ptr<ScopedMacro> beginCommandMacro(const std::string& text);
 	void clearCommands();
 	bool isInCommandMacro() const;
 	UndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
-	UndoStack& undoStack();
+	UndoStack& undoStack() const;
 
 	void onDirtyObject(PandaObject* object);
 	void onModifiedObject(PandaObject* object);
 	void onChangedDock(DockableObject* dockable); // When the dockable has changed dock
 
 	gui::BaseGUI& getGUI() const;
+	DocumentSignals& getSignals() const;
+
 	DocumentRenderer* getRenderer() const;
 
 protected:
@@ -156,10 +159,10 @@ protected:
 	bool m_stepQueued = false, m_stepCanceled = false;
 	int m_animFunctionIndex = -1;
 
-	std::shared_ptr<Scheduler> m_scheduler;
+	std::unique_ptr<Scheduler> m_scheduler;
 
-	UndoStack m_undoStack;
-	UndoCommand::SPtr m_currentCommand;
+	std::unique_ptr<UndoStack> m_undoStack;
+	std::shared_ptr<UndoCommand> m_currentCommand;
 
 	int m_iNbFrames = 0;
 	long long m_fpsTime = 0;
@@ -168,28 +171,9 @@ protected:
 	gui::BaseGUI& m_gui;
 
 	std::unique_ptr<DocumentRenderer> m_renderer;
+	std::unique_ptr<DocumentSignals> m_signals;
 
 public:
-// Signals
-	msg::Signal<void()> m_modifiedSignal;
-	msg::Signal<void(panda::PandaObject*)> m_modifiedObjectSignal;
-	msg::Signal<void(panda::PandaObject*)> m_dirtyObjectSignal;
-	msg::Signal<void(panda::PandaObject*)> m_addedObjectSignal;
-	msg::Signal<void(panda::PandaObject*)> m_removedObjectSignal;
-	msg::Signal<void(panda::PandaObject*)> m_selectedObjectSignal;
-	msg::Signal<void(panda::PandaObject*)> m_selectedObjectIsDirtySignal;
-	msg::Signal<void(XmlElement&, panda::PandaObject*)> m_savingObjectSignal;
-	msg::Signal<void(XmlElement&, panda::PandaObject*)> m_loadingObjectSignal;
-	msg::Signal<void()> m_selectionChangedSignal;
-	msg::Signal<void()> m_timeChangedSignal;
-	msg::Signal<void()> m_renderSizeChangedSignal;
-	msg::Signal<void()> m_reorderedObjectsSignal;
-	msg::Signal<void()> m_startLoadingSignal;
-	msg::Signal<void()> m_loadingFinishedSignal;
-	msg::Signal<void(panda::DockableObject*)> m_changedDockSignal;
-	msg::Signal<void(panda::types::Point)> m_mousePressedSignal;
-	msg::Signal<void(panda::types::Point)> m_mouseReleasedSignal;
-
 // Slots or called only by the UI
 	void selectionAdd(panda::PandaObject* object);
 	void selectionRemove(panda::PandaObject* object);
@@ -271,11 +255,14 @@ inline bool PandaDocument::isInCommandMacro() const
 inline UndoCommand* PandaDocument::getCurrentCommand() const
 { return m_currentCommand.get(); }
 
-inline UndoStack& PandaDocument::undoStack()
-{ return m_undoStack; }
+inline UndoStack& PandaDocument::undoStack() const
+{ return *m_undoStack; }
 
 inline gui::BaseGUI& PandaDocument::getGUI() const
 { return m_gui; }
+
+inline DocumentSignals& PandaDocument::getSignals() const
+{ return *m_signals; }
 
 inline DocumentRenderer* PandaDocument::getRenderer() const
 { return m_renderer.get(); }

@@ -21,6 +21,7 @@
 #include <ui/graph/alignObjects.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/document/DocumentSignals.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Group.h>
 #include <panda/helper/system/FileRepository.h>
@@ -79,8 +80,8 @@ MainWindow::MainWindow()
 	createActions();
 	createStatusBar();
 
-	m_observer.get(m_document->m_modifiedSignal).connect<MainWindow, &MainWindow::documentModified>(this);
-	m_observer.get(m_document->m_selectedObjectSignal).connect<MainWindow, &MainWindow::selectedObject>(this);
+	m_observer.get(m_document->getSignals().modified).connect<MainWindow, &MainWindow::documentModified>(this);
+	m_observer.get(m_document->getSignals().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
 
 	m_observer.get(m_document->undoStack().m_canUndoChangedSignal).connect<MainWindow, &MainWindow::undoEnabled>(this);
 	m_observer.get(m_document->undoStack().m_canRedoChangedSignal).connect<MainWindow, &MainWindow::redoEnabled>(this);
@@ -778,7 +779,7 @@ void MainWindow::createStatusBar()
 
 	statusBar()->addWidget(m_timeLabel);
 
-	m_observer.get(m_document->m_timeChangedSignal).connect<MainWindow, &MainWindow::updateStatusBar>(this);
+	m_observer.get(m_document->getSignals().timeChanged).connect<MainWindow, &MainWindow::updateStatusBar>(this);
 
 	updateStatusBar();
 }

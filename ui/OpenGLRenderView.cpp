@@ -4,6 +4,7 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/document/DocumentRenderer.h>
+#include <panda/document/DocumentSignals.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Mat4x4.h>
 #include <panda/graphics/ShaderProgram.h>
@@ -29,7 +30,7 @@ OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 
 	resize(convert(doc->getRenderSize()));
 
-	m_observer.get(doc->m_renderSizeChangedSignal).connect<OpenGLRenderView, &OpenGLRenderView::renderSizeChanged>(this);
+	m_observer.get(doc->getSignals().renderSizeChanged).connect<OpenGLRenderView, &OpenGLRenderView::renderSizeChanged>(this);
 }
 
 QSize OpenGLRenderView::minimumSizeHint() const

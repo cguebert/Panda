@@ -4,6 +4,7 @@
 #include <ui/widget/DataWidgetFactory.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/document/DocumentSignals.h>
 
 DatasTable::DatasTable(panda::PandaDocument* doc, QWidget* parent)
 	: QWidget(parent)
@@ -22,9 +23,9 @@ DatasTable::DatasTable(panda::PandaDocument* doc, QWidget* parent)
 
 	queuePopulate(nullptr);
 
-	m_observer.get(doc->m_selectedObjectSignal).connect<DatasTable, &DatasTable::queuePopulate>(this);
-	m_observer.get(doc->m_selectedObjectIsDirtySignal).connect<DatasTable, &DatasTable::queuePopulate>(this);
-	m_observer.get(doc->m_modifiedObjectSignal).connect<DatasTable, &DatasTable::onModifiedObject>(this);
+	m_observer.get(doc->getSignals().selectedObject).connect<DatasTable, &DatasTable::queuePopulate>(this);
+	m_observer.get(doc->getSignals().selectedObjectIsDirty).connect<DatasTable, &DatasTable::queuePopulate>(this);
+	m_observer.get(doc->getSignals().modifiedObject).connect<DatasTable, &DatasTable::onModifiedObject>(this);
 }
 
 void DatasTable::populateTable()

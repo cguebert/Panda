@@ -28,6 +28,7 @@ set(HEADER_FILES
 	panda/data/DataFactory.h
 	panda/data/DataNode.h
 	panda/document/DocumentRenderer.h
+	panda/document/DocumentSignals.h
 	panda/graphics/Buffer.h
 	panda/graphics/Framebuffer.h
 	panda/graphics/Image.h

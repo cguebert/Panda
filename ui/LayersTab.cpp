@@ -5,6 +5,7 @@
 #include <panda/command/MoveLayerCommand.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/document/DocumentSignals.h>
 #include <panda/object/Layer.h>
 
 LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
@@ -84,10 +85,10 @@ LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
 	mainLayout->addLayout(moveButtonsLayout);
 	setLayout(mainLayout);
 
-	m_observer.get(m_document->m_addedObjectSignal).connect<LayersTab, &LayersTab::addedObject>(this);
-	m_observer.get(m_document->m_removedObjectSignal).connect<LayersTab, &LayersTab::removedObject>(this);
-	m_observer.get(m_document->m_dirtyObjectSignal).connect<LayersTab, &LayersTab::dirtyObject>(this);
-	m_observer.get(m_document->m_reorderedObjectsSignal).connect<LayersTab, &LayersTab::reorderObjects>(this);
+	m_observer.get(m_document->getSignals().addedObject).connect<LayersTab, &LayersTab::addedObject>(this);
+	m_observer.get(m_document->getSignals().removedObject).connect<LayersTab, &LayersTab::removedObject>(this);
+	m_observer.get(m_document->getSignals().dirtyObject).connect<LayersTab, &LayersTab::dirtyObject>(this);
+	m_observer.get(m_document->getSignals().reorderedObjects).connect<LayersTab, &LayersTab::reorderObjects>(this);
 
 	connect(m_nameEdit, SIGNAL(editingFinished()), this, SLOT(nameChanged()));
 	connect(m_tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));

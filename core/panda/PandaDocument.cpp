@@ -5,8 +5,10 @@
 #include <panda/Scheduler.h>
 #include <panda/SimpleGUI.h>
 #include <panda/TimedFunctions.h>
+#include <panda/UndoStack.h>
 #include <panda/data/DataFactory.h>
 #include <panda/document/DocumentRenderer.h>
+#include <panda/document/DocumentSignals.h>
 #include <panda/object/Layer.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
@@ -74,6 +76,9 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	, m_mouseClick(initData(0, "mouse click", "1 if the left mouse button is pressed"))
 	, m_useMultithread(initData(0, "use multithread", "Optimize computation for multiple CPU cores"))
 	, m_gui(gui)
+	, m_undoStack(std::make_unique<UndoStack>())
+	, m_renderer(std::make_unique<DocumentRenderer>(*this))
+	, m_signals(std::make_unique<DocumentSignals>())
 {
 	addInput(m_renderSize);
 	addInput(m_backgroundColor);
@@ -100,10 +105,8 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	m_defaultLayer->getLayerNameData().setValue("Default Layer");
 
 	setInternalData("Document", 0);
-
-	m_undoStack.setUndoLimit(25);
-
-	m_renderer = std::make_unique<DocumentRenderer>(*this);
+	
+	m_undoStack->setUndoLimit(25);
 
 	m_parentDocument = this;
 }
@@ -122,7 +125,7 @@ PandaDocument::~PandaDocument()
 	TimedFunctions::instance().shutdown();
 
 	m_objects.clear();
-	m_undoStack.clear();
+	m_undoStack->clear();
 }
 
 bool PandaDocument::writeFile(const std::string& fileName)
@@ -161,8 +164,8 @@ bool PandaDocument::readFile(const std::string& fileName, bool isImport)
 	for(auto object : m_objects)
 		object->reset();
 
-	m_selectionChangedSignal.run();
-	m_selectedObjectSignal.run(getCurrentSelectedObject());
+	m_signals->selectionChanged.run();
+	m_signals->selectedObject.run(getCurrentSelectedObject());
 
 	return true;
 }
@@ -195,8 +198,8 @@ bool PandaDocument::readTextDocument(const std::string& text)
 
 	if(bSelected || !m_selectedObjects.empty())
 	{
-		m_selectionChangedSignal.run();
-		m_selectedObjectSignal.run(getCurrentSelectedObject());
+		m_signals->selectionChanged.run();
+		m_signals->selectedObject.run(getCurrentSelectedObject());
 	}
 
 	return bVal;
@@ -235,7 +238,7 @@ bool PandaDocument::saveDoc(XmlElement& root, const ObjectsSelection& selected)
 				dockedObjects.push_back(std::make_pair(dock->getIndex(), dockable->getIndex()));
 		}
 
-		m_savingObjectSignal.run(elem, object);
+		m_signals->savingObject.run(elem, object);
 	}
 
 	// Saving links
@@ -261,7 +264,7 @@ bool PandaDocument::saveDoc(XmlElement& root, const ObjectsSelection& selected)
 
 bool PandaDocument::loadDoc(XmlElement& root)
 {
-	m_startLoadingSignal.run();
+	m_signals->startLoading.run();
 	std::map<uint32_t, uint32_t> importIndicesMap;
 	auto factory = ObjectFactory::getInstance();
 
@@ -282,7 +285,7 @@ bool PandaDocument::loadDoc(XmlElement& root)
 
 			object->load(elem);
 
-			m_loadingObjectSignal.run(elem, object.get());
+			m_signals->loadingObject.run(elem, object.get());
 		}
 		else
 		{
@@ -339,7 +342,7 @@ bool PandaDocument::loadDoc(XmlElement& root)
 		elem = elem.nextSibling("Dock");
 	}
 
-	m_loadingFinishedSignal.run(); // For example if the view wants to do some computation
+	m_signals->loadingFinished.run(); // For example if the view wants to do some computation
 
 	return true;
 }
@@ -349,12 +352,12 @@ void PandaDocument::resetDocument()
 	m_resetting = true;
 
 	m_selectedObjects.clear();
-	m_selectedObjectSignal.run(nullptr);
-	m_selectionChangedSignal.run();
+	m_signals->selectedObject.run(nullptr);
+	m_signals->selectionChanged.run();
 
 	for(auto object : m_objects)
 	{
-		m_removedObjectSignal.run(object.get());
+		m_signals->removedObject.run(object.get());
 		object->preDestruction();
 	}
 
@@ -376,13 +379,13 @@ void PandaDocument::resetDocument()
 	if(m_scheduler)
 		m_scheduler->stop();
 
-	m_undoStack.clear();
+	m_undoStack->clear();
 
 	helper::GradientCache::getInstance()->clear();
 	helper::ShaderCache::getInstance()->clear();
 
-	m_modifiedSignal.run();
-	m_timeChangedSignal.run();
+	m_signals->modified.run();
+	m_signals->timeChanged.run();
 
 	m_resetting = false;
 }
@@ -427,8 +430,8 @@ void PandaDocument::reinsertObject(PandaObject* object, int pos)
 	m_objects.insert(m_objects.begin() + pos, objectPtr);
 
 	setDirtyValue(this);
-	m_reorderedObjectsSignal.run();
-	m_modifiedSignal.run();
+	m_signals->reorderedObjects.run();
+	m_signals->modified.run();
 }
 
 PandaObject* PandaDocument::getCurrentSelectedObject() const
@@ -443,8 +446,8 @@ void PandaDocument::setCurrentSelectedObject(PandaObject* object)
 {
 	helper::removeAll(m_selectedObjects, object);
 	m_selectedObjects.push_back(object);
-	m_selectedObjectSignal.run(object);
-	m_selectionChangedSignal.run();
+	m_signals->selectedObject.run(object);
+	m_signals->selectionChanged.run();
 }
 
 graphics::Size PandaDocument::getRenderSize() const
@@ -471,9 +474,9 @@ void PandaDocument::setMouseClick(bool clicked, const types::Point& pos)
 		m_mouseClickBuffer = clicked;
 
 	if (clicked)
-		m_mousePressedSignal.run(pos);
+		m_signals->mousePressed.run(pos);
 	else
-		m_mouseReleasedSignal.run(pos);
+		m_signals->mouseReleased.run(pos);
 }
 
 void PandaDocument::selectionAdd(PandaObject* object)
@@ -481,8 +484,8 @@ void PandaDocument::selectionAdd(PandaObject* object)
 	if(!helper::contains(m_selectedObjects, object))
 	{
 		m_selectedObjects.push_back(object);
-		m_selectedObjectSignal.run(object);
-		m_selectionChangedSignal.run();
+		m_signals->selectedObject.run(object);
+		m_signals->selectionChanged.run();
 	}
 }
 
@@ -492,10 +495,10 @@ void PandaDocument::selectionRemove(PandaObject* object)
 	{
 		helper::removeAll(m_selectedObjects, object);
 		if (m_selectedObjects.empty())
-			m_selectedObjectSignal.run(nullptr);
+			m_signals->selectedObject.run(nullptr);
 		else
-			m_selectedObjectSignal.run(m_selectedObjects.back());
-		m_selectionChangedSignal.run();
+			m_signals->selectedObject.run(m_selectedObjects.back());
+		m_signals->selectionChanged.run();
 	}
 }
 
@@ -504,8 +507,8 @@ void PandaDocument::selectAll()
 	m_selectedObjects.clear();
 	for(auto object : m_objects)
 		m_selectedObjects.push_back(object.get());
-	m_selectedObjectSignal.run(m_selectedObjects.back());
-	m_selectionChangedSignal.run();
+	m_signals->selectedObject.run(m_selectedObjects.back());
+	m_signals->selectionChanged.run();
 }
 
 void PandaDocument::selectNone()
@@ -513,8 +516,8 @@ void PandaDocument::selectNone()
 	if(!m_selectedObjects.empty())
 	{
 		m_selectedObjects.clear();
-		m_selectedObjectSignal.run(nullptr);
-		m_selectionChangedSignal.run();
+		m_signals->selectedObject.run(nullptr);
+		m_signals->selectionChanged.run();
 	}
 }
 
@@ -576,7 +579,7 @@ void PandaDocument::selectConnected()
 		auto currentSelected = m_selectedObjects.back();
 		m_selectedObjects.assign(closedList.begin(), closedList.end());
 		setCurrentSelectedObject(currentSelected);
-		m_selectionChangedSignal.run();
+		m_signals->selectionChanged.run();
 	}
 }
 
@@ -584,20 +587,20 @@ void PandaDocument::addObject(ObjectPtr object)
 {
 	m_objects.push_back(object);
 	object->addedToDocument();
-	m_addedObjectSignal.run(object.get());
-	m_modifiedSignal.run();
+	m_signals->addedObject.run(object.get());
+	m_signals->modified.run();
 }
 
 void PandaDocument::removeObject(PandaObject* object)
 {
 	object->removedFromDocument();
-	m_removedObjectSignal.run(object);
+	m_signals->removedObject.run(object);
 	helper::removeIf(m_objects, [object](const ObjectPtr& ptr){
 		return ptr.get() == object;
 	});
 
 	selectionRemove(object);
-	m_modifiedSignal.run();
+	m_signals->modified.run();
 }
 
 void PandaDocument::setDataDirty(BaseData* data) const
@@ -650,10 +653,10 @@ void PandaDocument::onDirtyObject(PandaObject* object)
 	}
 	else
 	{
-		m_dirtyObjectSignal.run(object);
+		m_signals->dirtyObject.run(object);
 		if (object == getCurrentSelectedObject())
-			m_selectedObjectIsDirtySignal.run(object);
-		m_modifiedSignal.run();
+			m_signals->selectedObjectIsDirty.run(object);
+		m_signals->modified.run();
 	}
 }
 
@@ -662,8 +665,8 @@ void PandaDocument::onModifiedObject(PandaObject* object)
 	if(m_resetting)
 		return;
 
-	m_modifiedObjectSignal.run(object);
-	m_modifiedSignal.run();
+	m_signals->modifiedObject.run(object);
+	m_signals->modified.run();
 }
 
 void PandaDocument::onChangedDock(DockableObject* dockable)
@@ -671,7 +674,7 @@ void PandaDocument::onChangedDock(DockableObject* dockable)
 	if(m_resetting)
 		return;
 
-	m_changedDockSignal.run(dockable);
+	m_signals->changedDock.run(dockable);
 }
 
 void PandaDocument::update()
@@ -706,10 +709,10 @@ void PandaDocument::setDirtyValue(const DataNode* caller)
 {
 	PandaObject::setDirtyValue(caller);
 	if(!m_isInStep && !getCurrentSelectedObject())
-		m_selectedObjectIsDirtySignal.run(this);
+		m_signals->selectedObjectIsDirty.run(this);
 
 	if(caller == &m_renderSize)
-		m_renderSizeChangedSignal.run();
+		m_signals->renderSizeChanged.run();
 }
 
 void PandaDocument::play(bool playing)
@@ -721,7 +724,7 @@ void PandaDocument::play(bool playing)
 		if(m_animMultithread)
 		{
 			if(!m_scheduler)
-				m_scheduler = std::make_shared<Scheduler>(this);
+				m_scheduler = std::make_unique<Scheduler>(this);
 			m_scheduler->init();
 		}
 #ifdef PANDA_LOG_EVENTS
@@ -802,18 +805,18 @@ void PandaDocument::step()
 	panda::helper::UpdateLogger::getInstance()->stopLog();
 #endif
 
-	m_timeChangedSignal.run();
+	m_signals->timeChanged.run();
 
 	for (auto obj : m_dirtyObjects)
-		m_dirtyObjectSignal.run(obj);
+		m_signals->dirtyObject.run(obj);
 	m_dirtyObjects.clear();
 
 	const auto obj = getCurrentSelectedObject();
 	if (obj)
-		m_selectedObjectIsDirtySignal.run(obj);
+		m_signals->selectedObjectIsDirty.run(obj);
 	else
-		m_selectedObjectIsDirtySignal.run(this);
-	m_modifiedSignal.run();
+		m_signals->selectedObjectIsDirty.run(this);
+	m_signals->modified.run();
 
 	if (m_animPlaying)	
 	{
@@ -857,7 +860,7 @@ void PandaDocument::rewind()
 	for(auto object : m_objects)
 		object->reset();
 	setDirtyValue(this);
-	m_timeChangedSignal.run();
+	m_signals->timeChanged.run();
 }
 
 void PandaDocument::copyDataToUserValue(const BaseData* data)
@@ -884,20 +887,20 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 	}
 }
 
-void PandaDocument::addCommand(UndoCommand::SPtr command)
+void PandaDocument::addCommand(std::shared_ptr<UndoCommand> command)
 {
 	if(m_resetting)
 		return;
 
 	auto oldCommand = m_currentCommand;
 	m_currentCommand = command;
-	m_undoStack.push(command);
+	m_undoStack->push(command);
 	m_currentCommand = oldCommand;
 }
 
 std::shared_ptr<ScopedMacro> PandaDocument::beginCommandMacro(const std::string& text)
 {
-	m_undoStack.beginMacro(text);
+	m_undoStack->beginMacro(text);
 	++m_inCommandMacro;
 	return std::make_shared<ScopedMacro>(this);
 }
@@ -905,12 +908,12 @@ std::shared_ptr<ScopedMacro> PandaDocument::beginCommandMacro(const std::string&
 void PandaDocument::endCommandMacro()
 {
 	--m_inCommandMacro;
-	m_undoStack.endMacro();
+	m_undoStack->endMacro();
 }
 
 void PandaDocument::clearCommands()
 {
-	m_undoStack.clear();
+	m_undoStack->clear();
 }
 
 } // namespace panda
