@@ -82,6 +82,7 @@ MainWindow::MainWindow()
 
 	m_observer.get(m_document->getSignals().modified).connect<MainWindow, &MainWindow::documentModified>(this);
 	m_observer.get(m_document->getSignals().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
+	m_observer.get(m_document->getSignals().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
 
 	m_observer.get(m_document->undoStack().m_canUndoChangedSignal).connect<MainWindow, &MainWindow::undoEnabled>(this);
 	m_observer.get(m_document->undoStack().m_canRedoChangedSignal).connect<MainWindow, &MainWindow::redoEnabled>(this);
@@ -1188,15 +1189,29 @@ void MainWindow::selectedObject(panda::PandaObject* object)
 void MainWindow::showImageViewport()
 {
 	const panda::BaseData* clickedData = m_graphView->getContextMenuData();
+
+	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [clickedData](const ImageViewportInfo& info) {
+		return info.data == clickedData;
+	});
+	if (it != m_imageViewports.end()) // Do not open another viewport
+		return;
+
 	if(clickedData)
 	{
 		ImageViewport* imageViewport = new ImageViewport(clickedData, this);
 		connect(imageViewport, SIGNAL(closeViewport(ImageViewport*)), this, SLOT(closeViewport(ImageViewport*)));
+		connect(imageViewport, SIGNAL(destroyedViewport(ImageViewport*)), this, SLOT(destroyedViewport(ImageViewport*)));
 		QScrollArea* container = new QScrollArea();
 		container->setFrameStyle(0);
 		container->setAlignment(Qt::AlignCenter);
 		container->setWidget(imageViewport);
-		m_imageViewports[imageViewport] = container;
+
+		ImageViewportInfo info;
+		info.viewport = imageViewport;
+		info.container = container;
+		info.data = clickedData;
+		info.object = clickedData->getOwner();
+		m_imageViewports.push_back(info);
 
 		QString label = QString::fromStdString(clickedData->getOwner()->getName()) + "." + QString::fromStdString(clickedData->getName());
 		m_tabWidget->addTab(container, label, true);
@@ -1216,8 +1231,14 @@ void MainWindow::closeDetachedWindow(DetachedWindow* window)
 
 void MainWindow::closeViewport(ImageViewport* viewport)
 {
-	QWidget* container = m_imageViewports[viewport];
-	m_imageViewports.erase(viewport);
+	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [viewport](const ImageViewportInfo& info) {
+		return info.viewport == viewport;
+	});
+	if (it == m_imageViewports.end())
+		return;
+
+	QWidget* container = it->container;
+	m_imageViewports.erase(it);
 	for(DetachedWindow* window : m_detachedWindows)
 	{
 		if(window->getTabInfo().widget == container)
@@ -1235,6 +1256,25 @@ void MainWindow::closeViewport(ImageViewport* viewport)
 			return;
 		}
 	}
+}
+
+void MainWindow::destroyedViewport(ImageViewport* viewport)
+{
+	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [viewport](const ImageViewportInfo& info) {
+		return info.viewport == viewport;
+	});
+	if (it != m_imageViewports.end())
+		m_imageViewports.erase(it);
+}
+
+void MainWindow::removedObject(panda::PandaObject* object)
+{
+	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [object](const ImageViewportInfo& info) {
+		return info.object == object;
+	});
+
+	if (it != m_imageViewports.end())
+		closeViewport(it->viewport);
 }
 
 void MainWindow::convertSavedDocuments()

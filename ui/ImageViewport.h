@@ -28,7 +28,8 @@ public:
 	void doRemoveInput(panda::DataNode& node) override;
 
 signals:
-	void closeViewport(ImageViewport* viewport);
+	void closeViewport(ImageViewport* viewport); // Ask the main window to close this viewport (and potentially its parent detached window)
+	void destroyedViewport(ImageViewport* viewport); // Tell the main window this viewport is freed (called by the destructor)
 
 protected:
 	void initializeGL() override;

@@ -4,7 +4,7 @@
 #include <QMainWindow>
 
 #include <panda/messaging.h>
-#include <map>
+#include <vector>
 
 class QAction;
 class QDockWidget;
@@ -76,7 +76,9 @@ private slots:
 	void openDetachedWindow(DetachedWindow* window);
 	void closeDetachedWindow(DetachedWindow* window);
 	void closeViewport(ImageViewport* viewport);
+	void destroyedViewport(ImageViewport* viewport);
 	void convertSavedDocuments();
+	void removedObject(panda::PandaObject*);
 
 private:
 	void createActions();
@@ -112,9 +114,17 @@ private:
 	QStringList m_recentFiles;
 	QString m_curFile;
 	bool m_fullScreen = false, m_adjustRenderSizeToView = false, m_undoEnabled = false, m_redoEnabled = false;
-	QList<DetachedWindow*> m_detachedWindows;
-	std::map<ImageViewport*, QWidget*> m_imageViewports;
 	panda::msg::Observer m_observer;
+
+	QList<DetachedWindow*> m_detachedWindows;
+	struct ImageViewportInfo
+	{
+		ImageViewport* viewport = nullptr;
+		QWidget* container = nullptr;
+		const panda::BaseData* data = nullptr;
+		const panda::PandaObject* object = nullptr;
+	};
+	std::vector<ImageViewportInfo> m_imageViewports;
 
 	enum { MaxRecentFiles = 5 };
 	QAction* m_recentFileActions[MaxRecentFiles];

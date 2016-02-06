@@ -164,6 +164,11 @@ void Layer::postCreate()
 
 void Layer::removedFromDocument()
 {
+	// Bugfix: deconnecting the ImageViewport if there is one
+	auto outputs = m_image.getOutputs();
+	for (const auto output : outputs)
+		m_image.removeOutput(*output);
+
 	DockObject::removedFromDocument();
 
 	if(m_parentDocument->isInCommandMacro())
