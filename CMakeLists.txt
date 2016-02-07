@@ -53,3 +53,4 @@ add_subdirectory("modules")
 
 # Application
 add_subdirectory("ui")
+add_subdirectory("viewer")
