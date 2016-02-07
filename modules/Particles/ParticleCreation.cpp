@@ -2,6 +2,8 @@
 
 #include <modules/particles/ParticleEffector.h>
 
+#include <algorithm>
+
 namespace panda {
 
 using types::Point;

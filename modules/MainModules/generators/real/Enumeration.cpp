@@ -2,6 +2,8 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 
+#include <algorithm>
+
 namespace panda {
 
 class GeneratorReals_Enumeration : public PandaObject

@@ -11,6 +11,7 @@
 #include <panda/graphics/Buffer.h>
 #include <panda/graphics/ShaderProgram.h>
 #include <panda/graphics/VertexArrayObject.h>
+#include <panda/helper/algorithm.h>
 
 namespace panda {
 

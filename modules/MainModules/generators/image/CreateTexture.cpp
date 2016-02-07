@@ -16,6 +16,8 @@
 #include <panda/UpdateLogger.h>
 #endif
 
+#include <algorithm>
+
 namespace panda {
 
 using types::Point;

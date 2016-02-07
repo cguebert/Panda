@@ -2,6 +2,7 @@
 #include <ui/OpenGLRenderView.h>
 #include <ui/MainWindow.h>
 #include <QtWidgets>
+#include <cassert>
 
 SimpleGUIImpl::SimpleGUIImpl(MainWindow* mainWindow)
 	: m_mainWindow(mainWindow)

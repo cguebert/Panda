@@ -2,6 +2,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 
+#include <algorithm>
 #include <cmath>
 
 /* Rules when there are many input parameters :

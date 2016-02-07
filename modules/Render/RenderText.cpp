@@ -6,10 +6,12 @@
 #include <panda/object/Renderer.h>
 #include <panda/types/Color.h>
 #include <panda/types/Rect.h>
+#include <panda/types/Shader.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/Font.h>
 #include <panda/helper/system/FileRepository.h>
 #include <panda/graphics/Buffer.h>
+#include <panda/graphics/ShaderProgram.h>
 #include <panda/graphics/VertexArrayObject.h>
 
 #include <freetype-gl/freetype-gl.h>

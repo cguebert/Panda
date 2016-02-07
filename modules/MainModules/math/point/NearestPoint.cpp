@@ -1,8 +1,9 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
-
 #include <panda/helper/PointsGrid.h>
+
+#include <algorithm>
 
 namespace panda {
 

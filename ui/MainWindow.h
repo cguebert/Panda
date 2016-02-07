@@ -24,6 +24,7 @@ class UpdateLoggerDialog;
 
 namespace panda
 {
+class BaseData;
 class PandaDocument;
 class PandaObject;
 }

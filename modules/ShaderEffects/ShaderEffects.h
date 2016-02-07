@@ -4,16 +4,12 @@
 
 #include <panda/graphics/Buffer.h>
 #include <panda/graphics/Framebuffer.h>
+#include <panda/graphics/ShaderProgram.h>
 #include <panda/graphics/VertexArrayObject.h>
 
 #include <GL/glew.h>
 
 namespace panda {
-
-namespace graphics
-{
-class ShaderProgram;
-}
 
 class ShaderEffects : public OGLObject
 {

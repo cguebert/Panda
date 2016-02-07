@@ -3,6 +3,8 @@
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 
+#include <algorithm>
+
 namespace panda {
 
 using types::Point;

@@ -2,6 +2,8 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 
+#include <algorithm>
+
 namespace panda {
 
 class BooleanMath_Greater : public PandaObject

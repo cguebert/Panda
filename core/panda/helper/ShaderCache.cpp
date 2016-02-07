@@ -1,5 +1,6 @@
 #include <panda/helper/ShaderCache.h>
 
+#include <algorithm>
 #include <functional>
 #include <string>
 

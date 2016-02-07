@@ -8,6 +8,7 @@
 
 #include <panda/graphics/Image.h>
 
+#include <algorithm>
 #include <cmath>
 
 namespace panda {

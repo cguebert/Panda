@@ -1,7 +1,10 @@
 #pragma once
 
 #include <panda/core.h>
+
+#include <array>
 #include <memory>
+#include <vector>
 
 namespace panda
 {

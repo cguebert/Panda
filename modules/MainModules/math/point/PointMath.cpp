@@ -3,6 +3,7 @@
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Point.h>
 
+#include <algorithm>
 #include <math.h>
 
 namespace panda {
