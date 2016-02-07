@@ -133,9 +133,11 @@ endif(NOT OPENGL_FOUND)
 
 add_library("QScintilla" SHARED IMPORTED)
 set_target_properties("QScintilla" PROPERTIES 
-	IMPORTED_IMPLIB ${LIBRARIES_LIB_DIR}/qscintilla2.lib)
+	IMPORTED_IMPLIB ${LIBRARIES_LIB_DIR}/qscintilla2.lib
+	IMPORTED_IMPLIB_DEBUG ${LIBRARIES_LIB_DIR}/qscintilla2_d.lib)
 target_link_libraries(${PROJECT_NAME} "QScintilla")
-install(FILES "${LIBRARIES_LIB_DIR}/qscintilla2.dll" DESTINATION "${TARGET_DIR}")
+install(FILES "${LIBRARIES_LIB_DIR}/qscintilla2.dll" CONFIGURATIONS Release RelWithDebInfo DESTINATION "${TARGET_DIR}")
+install(FILES "${LIBRARIES_LIB_DIR}/qscintilla2_d.dll" CONFIGURATIONS Debug DESTINATION "${TARGET_DIR}")
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${TARGET_DIR})
 install(DIRECTORY "../share/shaders" DESTINATION ${TARGET_DIR})
