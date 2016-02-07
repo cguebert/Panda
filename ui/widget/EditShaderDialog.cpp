@@ -3,6 +3,8 @@
 #include <ui/widget/ListDataWidgetDialog.h>
 #include <ui/widget/OpenDialogDataWidget.h>
 
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexerglsl.h>
 #include <QtWidgets>
 
 using panda::types::Shader;
@@ -51,8 +53,16 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 			if(!type.compare(typesNames[i], Qt::CaseInsensitive))
 			{
 				ShaderSourceItem item;
-				item.sourceEdit = new QTextEdit;
-				item.sourceEdit->setEnabled(!readOnly);
+				auto edit = new QsciScintilla;
+				edit->setLexer(new QsciLexerGLSL(edit));
+				edit->setEnabled(!readOnly);
+				edit->setMarginWidth(0, "999");
+				edit->setAutoCompletionSource(QsciScintilla::AcsAll);
+				edit->setFolding(QsciScintilla::PlainFoldStyle);
+				edit->setIndentationWidth(4);
+				edit->setAutoIndent(true);
+				edit->setBackspaceUnindents(true);
+				item.sourceEdit = edit;
 				m_sourceWidgets[typesValues[i]] = item;
 				m_tabWidget->addTab(item.sourceEdit, typesNames[i]);
 				break;
@@ -97,7 +107,7 @@ void EditShaderDialog::readFromData(const Shader& shader)
 	{
 		if(m_sourceWidgets.count(source.type))
 		{
-			m_sourceWidgets.at(source.type).sourceEdit->setPlainText(QString::fromStdString(source.sourceCode));
+			m_sourceWidgets.at(source.type).sourceEdit->setText(QString::fromStdString(source.sourceCode));
 		}
 	}
 
@@ -108,7 +118,7 @@ void EditShaderDialog::readFromData(const Shader& shader)
 void EditShaderDialog::writeToData(Shader& shader)
 {
 	for(const auto& it : m_sourceWidgets)
-		shader.setSource(it.first, it.second.sourceEdit->toPlainText().toStdString());
+		shader.setSource(it.first, it.second.sourceEdit->text().toStdString());
 }
 
 //****************************************************************************//

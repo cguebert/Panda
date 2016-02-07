@@ -10,8 +10,8 @@
 #include <map>
 
 class QTabWidget;
-class QTextEdit;
 class QScrollArea;
+class QsciScintilla;
 
 class EditShaderDialog : public QDialog
 {
@@ -38,7 +38,7 @@ protected:
 	struct ShaderSourceItem
 	{
 	//	QWidget* sourceWidget;
-		QTextEdit* sourceEdit;
+		QsciScintilla* sourceEdit;
 
 	};
 	std::map<panda::types::Shader::ShaderType, ShaderSourceItem> m_sourceWidgets;

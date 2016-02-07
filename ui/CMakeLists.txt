@@ -131,6 +131,12 @@ if(NOT OPENGL_FOUND)
     message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
 
+add_library("QScintilla" SHARED IMPORTED)
+set_target_properties("QScintilla" PROPERTIES 
+	IMPORTED_IMPLIB ${LIBRARIES_LIB_DIR}/qscintilla2.lib)
+target_link_libraries(${PROJECT_NAME} "QScintilla")
+install(FILES "${LIBRARIES_LIB_DIR}/qscintilla2.dll" DESTINATION "${TARGET_DIR}")
+
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${TARGET_DIR})
 install(DIRECTORY "../share/shaders" DESTINATION ${TARGET_DIR})
 install(DIRECTORY "../share/groups" DESTINATION ${TARGET_DIR})
