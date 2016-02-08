@@ -127,7 +127,7 @@ EditMeshDialog::EditMeshDialog(BaseDataWidget* parent, bool readOnly, QString na
 	const void* pts = &m_mesh.getPoints();
 	m_pointsWidget = DataWidgetPtr(DataWidgetFactory::getInstance()
 											 ->create(this, const_cast<void*>(pts),
-													  DataTypeId::getIdOf< QVector<Point> >(),
+													  DataTypeId::getIdOf<std::vector<Point>>(),
 													  "default", "points", "")
 											 );
 
@@ -154,7 +154,8 @@ EditMeshDialog::EditMeshDialog(BaseDataWidget* parent, bool readOnly, QString na
 void EditMeshDialog::readFromData(const Mesh& mesh)
 {
 	m_mesh = mesh;
-	m_pointsWidget->updateWidgetValue();
+	if (m_pointsWidget)
+		m_pointsWidget->updateWidgetValue();
 	m_edgesWidget->updateWidgetValue();
 	m_trianglesWidget->updateWidgetValue();
 }
