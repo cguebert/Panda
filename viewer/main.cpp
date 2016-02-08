@@ -16,6 +16,7 @@ std::shared_ptr<SimpleGUIImpl> gui;
 std::shared_ptr<panda::PandaDocument> document;
 int currentWidth = 800, currentHeight = 600;
 panda::types::Point mousePos;
+bool verticalSync = true;
 
 void error_callback(int error, const char* description)
 {
@@ -30,6 +31,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		{
 		case GLFW_KEY_F:
 			std::cout << "FPS: " << document->getFPS() << std::endl;
+			break;
+		case GLFW_KEY_V:
+			verticalSync = !verticalSync;
+			glfwSwapInterval(verticalSync ? 1 : 0);
+			break;
+		case GLFW_KEY_F5:
+			document->play(!document->animationIsPlaying());
+			break;
+		case GLFW_KEY_F6:
+			if(!document->animationIsPlaying())
+				document->step();
+			break;
+		case GLFW_KEY_F7:
+			document->rewind();
 			break;
 		case GLFW_KEY_ESCAPE:
 			glfwSetWindowShouldClose(window, GL_TRUE);
@@ -65,6 +80,7 @@ void drop_callback(GLFWwindow* window, int count, const char** paths)
 	document->clearCommands();
 	document->selectNone();
 	document->setRenderSize({ currentWidth, currentHeight });
+	document->play(true);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -140,7 +156,10 @@ bool init(const std::string& filePath = "")
 	renderer->initializeGL();
 	
 	if (!filePath.empty())
+	{
 		document->readFile(filePath);
+		document->play(true);
+	}
 
 	document->setRenderSize({ currentWidth, currentHeight }); // Loading the file has changed the render size
 	renderer->resizeGL(currentWidth, currentHeight);
@@ -163,7 +182,6 @@ int main(int argc, char** argv)
 		glfwPollEvents();
 		gui->executeFunctions();
 
-		document->step();
 		document->updateIfDirty();
 		auto fbo = document->getFBO();
 
