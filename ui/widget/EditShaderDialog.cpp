@@ -8,6 +8,40 @@
 #include <QtWidgets>
 
 using panda::types::Shader;
+using panda::graphics::ShaderProgram;
+
+namespace
+{
+
+panda::graphics::ShaderType convert(panda::types::Shader::ShaderType type)
+{
+	return static_cast<panda::graphics::ShaderType>(static_cast<char>(type));
+}
+
+struct ShaderTypesInfo
+{
+	QStringList typesNames;
+	std::vector<Shader::ShaderType> typesValues;
+	int nbTypes = 0;
+};
+
+static const ShaderTypesInfo& getShaderTypesInfo()
+{
+	static ShaderTypesInfo info;
+	if (!info.nbTypes)
+	{
+		info.typesNames << "Vertex" << "Fragment" << "Geometry"
+			<< "TessellationControl" << "TessellationEvaluation" << "Compute";
+		using ShaderType = panda::types::Shader::ShaderType;
+		info.typesValues = { ShaderType::Vertex, ShaderType::Fragment, ShaderType::Geometry, 
+			ShaderType::TessellationControl, ShaderType::TessellationEvaluation, ShaderType::Compute};
+		info.nbTypes = info.typesNames.size();
+	}
+
+	return info;
+}
+
+}
 
 EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QString name)
 	: QDialog(parent)
@@ -17,14 +51,24 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 
 	m_tabWidget = new QTabWidget;
 	m_tabWidget->setMinimumWidth(400);
+	connect(m_tabWidget, &QTabWidget::currentChanged, this, &EditShaderDialog::tabChanged);
 	mainLayout->addWidget(m_tabWidget);
 
+	m_errorLabel = new QLabel;
+	m_errorLabel->setStyleSheet("QLabel { color : red; }");
+	m_errorLabel->hide();
+	mainLayout->addWidget(m_errorLabel);
+
+	QPushButton* compileButton = new QPushButton(tr("Compile"), this);
+	compileButton->setShortcut(tr("Ctrl+S"));
+	connect(compileButton, &QPushButton::clicked, this, &EditShaderDialog::compileShaders);
 	QPushButton* okButton = new QPushButton(tr("Ok"), this);
 	okButton->setDefault(true);
 	connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
 	QPushButton* cancelButton = new QPushButton(tr("Cancel"), this);
 	connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 	QHBoxLayout* buttonsLayout = new QHBoxLayout;
+	buttonsLayout->addWidget(compileButton);
 	buttonsLayout->addStretch();
 	buttonsLayout->addWidget(okButton);
 	buttonsLayout->addWidget(cancelButton);
@@ -35,24 +79,19 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 	setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
 
 	// Parse the widget parameters (which shaders types to accept)
-	const char* typesNames[] = { "Vertex", "Fragment", "Geometry",
-								 "TessellationControl", "TessellationEvaluation", "Compute" };
-	using ShaderType = panda::types::Shader::ShaderType;
-	ShaderType typesValues[] = { ShaderType::Vertex, ShaderType::Fragment, ShaderType::Geometry, 
-		ShaderType::TessellationControl, ShaderType::TessellationEvaluation, ShaderType::Compute};
-	const int nbTypes = sizeof(typesNames) / sizeof(const char*);
-
+	const auto& info = getShaderTypesInfo();
 	QString params = parent->getParameters();
 	if(params.isEmpty())
 		params = "Vertex:Fragment"; // By default, create vertex & fragment shaders
 	QStringList typesList = params.split(";");
-	for(const QString& type : typesList)
+	for (const QString& type : typesList)
 	{
-		for(int i=0; i<nbTypes; ++i)
+		for (int i = 0; i < info.nbTypes; ++i)
 		{
-			if(!type.compare(typesNames[i], Qt::CaseInsensitive))
+			if (!type.compare(info.typesNames[i], Qt::CaseInsensitive))
 			{
 				ShaderSourceItem item;
+				item.shaderTypeIndex = i;
 				auto edit = new QsciScintilla;
 				edit->setLexer(new QsciLexerGLSL(edit));
 				edit->setEnabled(!readOnly);
@@ -63,8 +102,8 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 				edit->setAutoIndent(true);
 				edit->setBackspaceUnindents(true);
 				item.sourceEdit = edit;
-				m_sourceWidgets[typesValues[i]] = item;
-				m_tabWidget->addTab(item.sourceEdit, typesNames[i]);
+				item.tabIndex = m_tabWidget->addTab(item.sourceEdit, info.typesNames[i]);
+				m_sourceWidgets[info.typesValues[i]] = item;
 				break;
 			}
 		}
@@ -119,6 +158,71 @@ void EditShaderDialog::writeToData(Shader& shader)
 {
 	for(const auto& it : m_sourceWidgets)
 		shader.setSource(it.first, it.second.sourceEdit->text().toStdString());
+}
+
+void EditShaderDialog::compileShaders()
+{
+	const auto& info = getShaderTypesInfo();
+	m_testProgram.clear();
+	int currentTab = m_tabWidget->currentIndex();
+	bool error = false;
+	for (auto& it : m_sourceWidgets)
+	{
+		auto type = convert(it.first);
+		ShaderSourceItem& item = it.second;
+		std::string errorText;
+		std::string sourceCode = item.sourceEdit->text().toStdString();
+		auto id = panda::graphics::ShaderProgram::compileShader(type, sourceCode, &errorText);
+		item.errorText = errorText;
+		m_tabWidget->setTabText(item.tabIndex, (id ? "" : "! ") + info.typesNames[item.shaderTypeIndex]);
+		if (!id)
+			error = true;
+		else
+			m_testProgram.addShader(type, id);
+
+		if (item.tabIndex == currentTab)
+		{
+			if(id)
+				m_errorLabel->hide();
+			else
+			{
+				m_errorLabel->setText(QString::fromStdString(errorText));
+				m_errorLabel->show();
+			}
+		}
+	}
+
+	if (error)
+		return;
+
+	std::string errorText;
+	if (!m_testProgram.link(&errorText))
+	{
+		m_errorLabel->setText(QString::fromStdString(errorText));
+		m_errorLabel->show();
+	}
+}
+
+void EditShaderDialog::tabChanged(int index)
+{
+	bool error = false;
+
+	for (const auto& it : m_sourceWidgets)
+	{
+		if (it.second.tabIndex != index)
+			continue;
+
+		if (!it.second.errorText.empty())
+		{
+			m_errorLabel->setText(QString::fromStdString(it.second.errorText));
+			m_errorLabel->show();
+			error = true;
+			break;
+		}
+	}
+
+	if(!error)
+		m_errorLabel->hide();
 }
 
 //****************************************************************************//

@@ -2,6 +2,7 @@
 #define EDITSHADERDIALOG_H
 
 #include <panda/types/Shader.h>
+#include <panda/graphics/ShaderProgram.h>
 
 #include <ui/widget/DataWidget.h>
 
@@ -9,6 +10,7 @@
 
 #include <map>
 
+class QLabel;
 class QTabWidget;
 class QScrollArea;
 class QsciScintilla;
@@ -22,14 +24,14 @@ public:
 	void readFromData(const panda::types::Shader& v);
 	void writeToData(panda::types::Shader& v);
 
-public slots:
-
 protected:
 	void updateValuesTab(const panda::types::Shader::ValuesVector& values);
+	void compileShaders();
+	void tabChanged(int index);
 
 	bool m_readOnly;
+	QLabel* m_errorLabel;
 	QTabWidget* m_tabWidget;
-	panda::types::Shader::ShaderType m_flags;
 	QScrollArea* m_valuesArea;
 
 	typedef std::shared_ptr<BaseDataWidget> DataWidgetPtr;
@@ -37,11 +39,14 @@ protected:
 
 	struct ShaderSourceItem
 	{
-	//	QWidget* sourceWidget;
-		QsciScintilla* sourceEdit;
-
+		QsciScintilla* sourceEdit = nullptr;
+		std::string errorText;
+		int tabIndex = 0;
+		int shaderTypeIndex = 0;
 	};
 	std::map<panda::types::Shader::ShaderType, ShaderSourceItem> m_sourceWidgets;
+
+	panda::graphics::ShaderProgram m_testProgram;
 };
 
 #endif // EDITSHADERDIALOG_H

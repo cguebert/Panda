@@ -17,7 +17,7 @@ out GS_OUT {
 void main(void)
 {
     vec4 pos = gl_in[0].gl_Position;
-    float s = gs_in[0].size;
+    float s = gs_in[0].size / 2.0f;
     gs_out.color = gs_in[0].color;
     
     gs_out.texCoords = vec2(1.0f, 1.0f);

@@ -84,7 +84,7 @@ void ShaderProgram::addShader(ShaderType type, ShaderId::SPtr id)
 		m_shaders.emplace_back(type, id);
 }
 
-ShaderId::SPtr ShaderProgram::compileShader(ShaderType type, const std::string& content)
+ShaderId::SPtr ShaderProgram::compileShader(ShaderType type, const std::string& content, std::string* errorString)
 {
 	GLuint glType = 0;
 	switch (type)
@@ -109,7 +109,10 @@ ShaderId::SPtr ShaderProgram::compileShader(ShaderType type, const std::string& 
 	if (!success)
 	{
 		glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-		std::cout << "Error : Compilation of shader failed\n" << infoLog << std::endl;
+		if (errorString)
+			*errorString = infoLog;
+		else
+			std::cout << "Error : Compilation of shader failed\n" << infoLog << std::endl;
 		glDeleteShader(shader);
 		return nullptr;
 	};
@@ -117,7 +120,7 @@ ShaderId::SPtr ShaderProgram::compileShader(ShaderType type, const std::string& 
 	return std::make_shared<ShaderId>(shader);
 }
 
-bool ShaderProgram::link()
+bool ShaderProgram::link(std::string* errorString)
 {
 	m_programId.reset();
 
@@ -133,7 +136,10 @@ bool ShaderProgram::link()
 	if (!success)
 	{
 		glGetProgramInfoLog(program, 512, nullptr, infoLog);
-		std::cout << "Error : Shader program link failed\n" << infoLog << std::endl;
+		if (errorString)
+			*errorString = infoLog;
+		else
+			std::cout << "Error : Shader program link failed\n" << infoLog << std::endl;
 		glDeleteProgram(program);
 		return false;
 	}

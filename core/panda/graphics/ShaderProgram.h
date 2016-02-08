@@ -55,9 +55,9 @@ public:
 	bool addShaderFromFile(ShaderType type, const std::string& path);
 	void addShader(ShaderType type, ShaderId::SPtr id);
 
-	static ShaderId::SPtr compileShader(ShaderType type, const std::string& content);
+	static ShaderId::SPtr compileShader(ShaderType type, const std::string& content, std::string* errorString = nullptr);
 
-	bool link();
+	bool link(std::string* errorString = nullptr);
 	bool isLinked();
 
 	void clear(); // Remove shaders
