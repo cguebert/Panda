@@ -28,6 +28,7 @@ protected:
 	void updateValuesTab(const panda::types::Shader::ValuesVector& values);
 	void compileShaders();
 	void tabChanged(int index);
+	void onFinished();
 
 	bool m_readOnly;
 	QLabel* m_errorLabel;

@@ -113,6 +113,12 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 	m_valuesArea->setFrameShape(QFrame::NoFrame);
 	m_valuesArea->setWidgetResizable(true);
 	m_tabWidget->addTab(m_valuesArea, "Uniforms");
+
+	connect(this, &QDialog::finished, this, &EditShaderDialog::onFinished);
+
+	QSettings settings("Christophe Guebert", "Panda");
+	QSize s = settings.value("EditShaderDialogSize", QSize(500, 600)).toSize();
+	resize(s);
 }
 
 void EditShaderDialog::updateValuesTab(const Shader::ValuesVector& values)
@@ -223,6 +229,12 @@ void EditShaderDialog::tabChanged(int index)
 
 	if(!error)
 		m_errorLabel->hide();
+}
+
+void EditShaderDialog::onFinished()
+{
+	QSettings settings("Christophe Guebert", "Panda");
+	settings.setValue("EditShaderDialogSize", size());
 }
 
 //****************************************************************************//
