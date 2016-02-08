@@ -24,8 +24,18 @@ void error_callback(int error, const char* description)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_F:
+			std::cout << "FPS: " << document->getFPS() << std::endl;
+			break;
+		case GLFW_KEY_ESCAPE:
+			glfwSetWindowShouldClose(window, GL_TRUE);
+			break;
+		}
+	}
 }
 
 void mouse_pos_callback(GLFWwindow* window, double x, double y)
@@ -54,32 +64,52 @@ void drop_callback(GLFWwindow* window, int count, const char** paths)
 	document->readFile(paths[0]);
 	document->clearCommands();
 	document->selectNone();
+	document->setRenderSize({ currentWidth, currentHeight });
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+	document->setRenderSize({ width, height });
 	document->getRenderer()->resizeGL(width, height);
 	currentWidth = width;
 	currentHeight = height;
 }
 
-bool init()
+bool init(const std::string& filePath = "")
 {
-	const GLuint width = 800, height = 600;
+	if (!glfwInit())
+		exit(EXIT_FAILURE);
 
-	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	theWindow = glfwCreateWindow(width, height, "Panda Viewer", nullptr, nullptr);
+	currentWidth = 800;
+	currentHeight = 600;
+	GLFWmonitor* monitor = nullptr;
+	if (!filePath.empty())
+	{
+		monitor = glfwGetPrimaryMonitor();
+		if (monitor)
+		{
+			const auto videoMode = glfwGetVideoMode(monitor);
+			glfwWindowHint(GLFW_RED_BITS, videoMode->redBits);
+			glfwWindowHint(GLFW_GREEN_BITS, videoMode->greenBits);
+			glfwWindowHint(GLFW_BLUE_BITS, videoMode->blueBits);
+			glfwWindowHint(GLFW_REFRESH_RATE, videoMode->refreshRate);
+			currentWidth = videoMode->width;
+			currentHeight = videoMode->height;
+		}
+	}
+
+	theWindow = glfwCreateWindow(currentWidth, currentHeight, "Panda Viewer", monitor, nullptr);
 	if (!theWindow)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
+		std::cerr << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
-		return false;
+		exit(EXIT_FAILURE);
 	}
 	glfwMakeContextCurrent(theWindow);
 	glfwSetKeyCallback(theWindow, key_callback);
@@ -90,8 +120,9 @@ bool init()
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
 	{
-		std::cout << "Failed to initialize GLEW" << std::endl;
-		return false;
+		std::cerr << "Failed to initialize GLEW" << std::endl;
+		glfwTerminate();
+		exit(EXIT_FAILURE);
 	}
 
 	auto& dataRepository = panda::helper::system::DataRepository;
@@ -107,7 +138,12 @@ bool init()
 	document = std::make_shared<panda::PandaDocument>(*gui);
 	auto renderer = document->getRenderer();
 	renderer->initializeGL();
-	renderer->resizeGL(width, height);
+	
+	if (!filePath.empty())
+		document->readFile(filePath);
+
+	document->setRenderSize({ currentWidth, currentHeight }); // Loading the file has changed the render size
+	renderer->resizeGL(currentWidth, currentHeight);
 	renderer->setRenderingMainView(true);
 
 	return true;
@@ -115,7 +151,11 @@ bool init()
 
 int main(int argc, char** argv)
 {
-	if (!init())
+	std::string filePath;
+	if (argc > 1)
+		filePath = argv[1];
+
+	if (!init(filePath))
 		return -1;
 
 	while (!glfwWindowShouldClose(theWindow))
@@ -134,6 +174,7 @@ int main(int argc, char** argv)
 	}
 
 	document.reset();
+	glfwDestroyWindow(theWindow);
 	glfwTerminate();
 	return 0;
 }
