@@ -22,8 +22,11 @@ class PANDA_CORE_API FileRepository
 public:
 	void addPath(const std::string& path);
 
-	std::string findFile(const std::string& fileName);
-	std::string loadFile(const std::string& fileName);
+	/// Returns the path to the file if it can be found in the repository
+	std::string findFile(const std::string& fileName) const;
+
+	/// Looks for the file in the repository, loads it and returns its contents (empty string if the file cannot be found)
+	std::string loadFile(const std::string& fileName) const;
 
 	/// List the relative paths of files in all the listed directories
 	std::vector<std::string> enumerateFilesInDir(const std::string& dir, const std::string& extension = std::string());

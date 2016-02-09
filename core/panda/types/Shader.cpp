@@ -62,9 +62,10 @@ void Shader::setSource(ShaderType type, const std::string& sourceCode)
 
 void Shader::setSourceFromFile(ShaderType type, const std::string& fileName)
 {
-	auto contents = helper::system::DataRepository.loadFile(fileName);
+	auto realPath = helper::system::DataRepository.findFile(fileName);
+	auto contents = helper::system::DataRepository.loadFile(realPath);
 	if (contents.empty()) {
-		std::cerr << "Shader: Unable to open file" << fileName;
+		std::cerr << "Shader: Unable to open file " << fileName;
 		return;
 	}
 
@@ -88,7 +89,7 @@ bool Shader::apply(graphics::ShaderProgram& program) const
 	for (const auto& source : m_sourcesMap)
 	{
 		auto type = convert(source.second.type);
-		auto id = shaderCache->getShader(type, source.second.sourceCode, source.second.hash);
+		auto id = shaderCache->getShaderFromSource(type, source.second.sourceCode, source.second.hash);
 		if (!id)
 			return false;
 		shadersList.emplace_back(type, source.second.hash);

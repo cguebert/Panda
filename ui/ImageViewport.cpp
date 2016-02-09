@@ -4,7 +4,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/SimpleGUI.h>
 #include <panda/helper/ShaderCache.h>
-#include <panda/helper/system/FileRepository.h>
 #include <panda/graphics/Mat4x4.h>
 #include <panda/object/PandaObject.h>
 #include <panda/types/ImageWrapper.h>
@@ -92,10 +91,9 @@ void ImageViewport::doRemoveInput(DataNode& node)
 void ImageViewport::initializeGL()
 {
 	using ShaderType = panda::graphics::ShaderType;
-	auto& repository = panda::helper::system::DataRepository;
-	m_texturedShader = panda::helper::ShaderCache::getInstance()->getShaderProgram( { 
-		{ ShaderType::Vertex, repository.loadFile("shaders/PT_noColor_Tex.v.glsl") }, 
-		{ ShaderType::Fragment, repository.loadFile("shaders/PT_noColor_Tex.f.glsl")} 
+	m_texturedShader = panda::helper::ShaderCache::getInstance()->getShaderProgramFromFile( { 
+		{ ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl" }, 
+		{ ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl" } 
 	} );
 	m_texturedShader.bind();
 	m_texturedShader.setUniformValue("tex0", 0);

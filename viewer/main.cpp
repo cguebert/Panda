@@ -11,6 +11,27 @@
 #include <iostream>
 #include <boost/filesystem.hpp>
 
+#ifdef WIN32
+#include <windows.h>
+
+std::string getExecutablePath()
+{
+  char result[MAX_PATH];
+  return std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
+}
+#else
+#include <string>
+#include <limits.h>
+#include <unistd.h>
+
+std::string getExecutablePath()
+{
+  char result[PATH_MAX];
+  auto count = readlink("/proc/self/exe", result, PATH_MAX);
+  return std::string(result, (count > 0) ? count : 0);
+}
+#endif
+
 GLFWwindow* theWindow = nullptr;
 std::shared_ptr<SimpleGUIImpl> gui;
 std::shared_ptr<panda::PandaDocument> document;
@@ -143,6 +164,8 @@ bool init(const std::string& filePath = "")
 
 	auto& dataRepository = panda::helper::system::DataRepository;
 	dataRepository.addPath(boost::filesystem::current_path().string());
+	boost::filesystem::path exePath = getExecutablePath();
+	dataRepository.addPath(exePath.parent_path().string());
 
 #ifdef WIN32
 	dataRepository.addPath("C:/Windows/Fonts");

@@ -8,7 +8,6 @@
 #include <panda/graphics/ShaderProgram.h>
 #include <panda/graphics/VertexArrayObject.h>
 #include <panda/helper/ShaderCache.h>
-#include <panda/helper/system/FileRepository.h>
 
 #include <GL/glew.h>
 
@@ -44,11 +43,10 @@ public:
 
 	void initializeGL()
 	{
-		auto& repository = panda::helper::system::DataRepository;
 		using ShaderType = panda::graphics::ShaderType;
-		m_shaderProgram = panda::helper::ShaderCache::getInstance()->getShaderProgram({
-			{ ShaderType::Vertex, repository.loadFile("shaders/mergeLayers.v.glsl") },
-			{ ShaderType::Fragment, repository.loadFile("shaders/mergeLayers.f.glsl") }
+		m_shaderProgram = panda::helper::ShaderCache::getInstance()->getShaderProgramFromFile({
+			{ ShaderType::Vertex, "shaders/mergeLayers.v.glsl" },
+			{ ShaderType::Fragment, "shaders/mergeLayers.f.glsl" }
 		});
 
 		m_VAO.create();

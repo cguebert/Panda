@@ -45,7 +45,9 @@
         <Data name="text">Update on mouse click</Data>
     </Object>
     <Object index="14" type="panda::RenderLine" x="1748.156005859375" y="354">
-        <Data real="1.5" name="width"/>
+        <Data name="width">
+            <Value real="1.5"/>
+        </Data>
         <Data name="color">
             <Value g="0" a="1" r="0" b="0"/>
         </Data>

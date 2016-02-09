@@ -23,15 +23,20 @@ public:
 	void clearUnused();		// Remove shaders not used during the last render
 
 	graphics::ShaderId::SPtr getShader(graphics::ShaderType type,std::size_t hash);
-	graphics::ShaderId::SPtr getShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash = 0);
+	graphics::ShaderId::SPtr getShaderFromSource(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash = 0);
+	graphics::ShaderId::SPtr getShaderFromFile(graphics::ShaderType type, const std::string& filePath);
 
 	using ShaderPair = std::pair<graphics::ShaderType, std::size_t>; // Type and hash
 	using ShadersList = std::vector<ShaderPair>;
 	graphics::ShaderProgram getShaderProgram(const ShadersList& shaders);
 
-	using ShaderSourcePair = std::pair<graphics::ShaderType, std::string>; // Type and source code
+	using ShaderSourcePair = std::pair<graphics::ShaderType, std::string>; // Type code source
 	using ShadersSourceList = std::vector<ShaderSourcePair>;
-	graphics::ShaderProgram getShaderProgram(const ShadersSourceList& shaders);
+	graphics::ShaderProgram getShaderProgramFromSource(const ShadersSourceList& shaders);
+
+	using ShaderFilePair = std::pair<graphics::ShaderType, std::string>; // Type code source
+	using ShadersFileList = std::vector<ShaderFilePair>;
+	graphics::ShaderProgram getShaderProgramFromFile(const ShadersFileList& shaders);
 
 private:
 	graphics::ShaderId::SPtr addShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash);

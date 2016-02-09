@@ -1,4 +1,5 @@
 #include <panda/helper/ShaderCache.h>
+#include <panda/helper/system/FileRepository.h>
 
 #include <algorithm>
 #include <functional>
@@ -67,10 +68,27 @@ graphics::ShaderId::SPtr ShaderCache::getShader(graphics::ShaderType type, std::
 	return nullptr;
 }
 
-graphics::ShaderId::SPtr ShaderCache::getShader(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash)
+graphics::ShaderId::SPtr ShaderCache::getShaderFromSource(graphics::ShaderType type, const std::string& sourceCode, std::size_t hash)
 {
 	if(!hash)
 		hash = std::hash<std::string>()(sourceCode);
+
+	auto shader = getShader(type, hash);
+	if (shader)
+		return shader;
+	
+	return addShader(type, sourceCode, hash);
+}
+
+graphics::ShaderId::SPtr ShaderCache::getShaderFromFile(graphics::ShaderType type, const std::string& filePath)
+{
+	auto& repository = panda::helper::system::DataRepository;
+	auto realPath = repository.findFile(filePath);
+	if(realPath.empty())
+		return nullptr;
+
+	auto sourceCode = repository.loadFile(realPath);
+	auto hash = std::hash<std::string>()(sourceCode);
 
 	auto shader = getShader(type, hash);
 	if (shader)
@@ -105,15 +123,35 @@ graphics::ShaderProgram ShaderCache::getShaderProgram(const ShadersList& shaders
 	return program;
 }
 
-graphics::ShaderProgram ShaderCache::getShaderProgram(const ShadersSourceList& shaders)
+graphics::ShaderProgram ShaderCache::getShaderProgramFromSource(const ShadersSourceList& shaders)
 {
 	helper::ShaderCache::ShadersList shadersList;
-	for (const auto& source : shaders)
+	for (const auto& s : shaders)
 	{
-		auto hash = std::hash<std::string>()(source.second);
-		if(!getShader(source.first, source.second, hash))
+		auto hash = std::hash<std::string>()(s.second);
+		if(!getShaderFromSource(s.first, s.second, hash))
 			return graphics::ShaderProgram();
-		shadersList.emplace_back(source.first, hash);
+		shadersList.emplace_back(s.first, hash);
+	}
+
+	return getShaderProgram(shadersList);
+}
+
+graphics::ShaderProgram ShaderCache::getShaderProgramFromFile(const ShadersFileList& shaders)
+{
+	auto& repository = panda::helper::system::DataRepository;
+	helper::ShaderCache::ShadersList shadersList;
+	for (const auto& s : shaders)
+	{
+		auto path = repository.findFile(s.second);
+		if(path.empty())
+			return graphics::ShaderProgram();
+
+		auto sourceCode = repository.loadFile(path);
+		auto hash = std::hash<std::string>()(sourceCode);
+		if(!getShaderFromSource(s.first, sourceCode, hash))
+			return graphics::ShaderProgram();
+		shadersList.emplace_back(s.first, hash);
 	}
 
 	return getShaderProgram(shadersList);

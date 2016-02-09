@@ -22,7 +22,7 @@ void FileRepository::addPath(const std::string& path)
 		m_paths.push_back(path);
 }
 
-std::string FileRepository::findFile(const std::string& fileName)
+std::string FileRepository::findFile(const std::string& fileName) const
 {
 	fs::path filePath(fileName);
 	if(filePath.is_absolute())
@@ -44,10 +44,10 @@ std::string FileRepository::findFile(const std::string& fileName)
 	return std::string();
 }
 
-std::string FileRepository::loadFile(const std::string& fileName)
+std::string FileRepository::loadFile(const std::string& fileName) const
 {
 	std::string contents;
-	std::ifstream in(fileName, std::ios_base::binary);
+	std::ifstream in(findFile(fileName), std::ios_base::binary);
 	if (in)
 	{
 		in.seekg(0, std::ios::end);

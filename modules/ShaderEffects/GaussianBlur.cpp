@@ -33,8 +33,7 @@ public:
 	{
 		ShaderEffectsMultiPass::initializeGL();
 
-		m_vertexShader = helper::ShaderCache::getInstance()->getShader(graphics::ShaderType::Vertex,
-			helper::system::DataRepository.loadFile("shaders/PT_noColor_Tex.v.glsl"));
+		m_vertexShader = helper::ShaderCache::getInstance()->getShaderFromFile(graphics::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 
 		m_fragmentSource = helper::system::DataRepository.loadFile("shaders/GBlur.f.glsl");
 	}
