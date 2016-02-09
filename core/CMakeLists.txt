@@ -52,6 +52,7 @@ set(HEADER_FILES
 	panda/helper/system/config.h
 	panda/helper/system/FileRepository.h
 	panda/helper/system/pch.h
+	panda/object/Annotation.h
 	panda/object/Dockable.h
 	panda/object/GenericObject.h
 	panda/object/Group.h
@@ -116,6 +117,7 @@ set(SOURCE_FILES
 	panda/helper/Random.cpp
 	panda/helper/ShaderCache.cpp
 	panda/helper/system/FileRepository.cpp
+	panda/object/Annotation.cpp
 	panda/object/Dockable.cpp
 	panda/object/GenericObject.cpp
 	panda/object/Group.cpp

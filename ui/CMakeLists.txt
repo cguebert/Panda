@@ -11,7 +11,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 set(HEADER_FILES
-	Annotation.h
 	ChooseWidgetDialog.h
 	CreateGroup.h
 	DatasTable.h
@@ -58,7 +57,6 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
 	main.cpp
-	Annotation.cpp
 	ChooseWidgetDialog.cpp
 	CreateGroup.cpp
 	DatasTable.cpp

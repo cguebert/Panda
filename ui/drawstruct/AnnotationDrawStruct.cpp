@@ -1,8 +1,8 @@
 #include <ui/GraphView.h>
-#include <ui/Annotation.h>
 #include <ui/drawstruct/AnnotationDrawStruct.h>
 #include <ui/command/ModifyAnnotationCommand.h>
 
+#include <panda/object/Annotation.h>
 #include <panda/PandaDocument.h>
 #include <panda/XmlDocument.h>
 

@@ -1,7 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/ObjectFactory.h>
 
-#include <ui/Annotation.h>
+#include <panda/object/Annotation.h>
 
 namespace panda
 {
