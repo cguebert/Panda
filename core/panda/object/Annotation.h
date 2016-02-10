@@ -2,6 +2,7 @@
 #define ANNOTATION_H
 
 #include <panda/object/PandaObject.h>
+#include <panda/types/Point.h>
 
 namespace panda
 {
@@ -17,6 +18,7 @@ public:
 
 	Data<int> m_type;
 	Data<std::string> m_text, m_font;
+	Data<types::Point> m_deltaToEnd;
 
 	enum AnnotationType { ANNOTATION_TEXT=0, ANNOTATION_ARROW, ANNOTATION_RECTANGLE, ANNOTATION_ELLIPSE };
 };

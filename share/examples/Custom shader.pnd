@@ -1,15 +1,15 @@
 <Panda>
-    <Data name="render size" y="600" x="800"/>
-    <Data name="background color" b="1" g="1" r="1" a="1"/>
-    <Data name="timestep" real="0.01"/>
+    <Data name="render size" x="800" y="600"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
+    <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="0"/>
     <Data name="use multithread" int="0"/>
-    <Object index="1" y="253" type="panda::ModifierShader_SetUniform" x="530">
+    <Object type="panda::ModifierShader_SetUniform" index="1" x="530" y="253">
         <CreatedData type="real"/>
         <Data name="name #1">time</Data>
     </Object>
-    <Object index="2" y="287" type="panda::GeneratorNumber_AnimationTime" x="362"/>
-    <Object index="3" type="panda::GeneratorUser&lt;shader>" x="362" y="227">
+    <Object type="panda::GeneratorNumber_AnimationTime" index="2" x="362" y="287"/>
+    <Object type="panda::GeneratorUser&lt;shader&gt;" index="3" x="362" y="227">
         <Data name="input" widgetData="Vertex;Fragment">
             <Source type="1">#version 330
 
@@ -62,19 +62,22 @@ void main()
 }</Source>
         </Data>
     </Object>
-    <Object index="4" y="184.5" type="panda::GeneratorRect_RenderArea" x="530"/>
-    <Object index="5" y="223" type="panda::RenderFilledRect" x="676.5"/>
-    <Object dy="100" index="6" y="227.75" type="panda::Annotation" x="252.25" dx="200">
+    <Object type="panda::GeneratorRect_RenderArea" index="4" x="530" y="184.5"/>
+    <Object type="panda::RenderFilledRect" index="5" x="676.5" y="223"/>
+    <Object type="panda::Annotation" index="6" x="252.25" y="227.75">
         <Data name="text">Modified the fragment shader to render nice colors.</Data>
+        <Data name="deltaToEnd" x="200" y="100"/>
     </Object>
-    <Object dy="100" index="7" y="367.75" type="panda::Annotation" x="332.25" dx="200">
+    <Object type="panda::Annotation" index="7" x="332.25" y="367.75">
         <Data name="text">Use the time to animate the shader</Data>
+        <Data name="deltaToEnd" x="200" y="100"/>
     </Object>
-    <Object dy="100" index="8" y="216.25" type="panda::Annotation" x="665.75" dx="200">
+    <Object type="panda::Annotation" index="8" x="665.75" y="216.25">
         <Data name="text">Render the whole area with the custom shader</Data>
+        <Data name="deltaToEnd" x="200" y="100"/>
     </Object>
-    <Link data1="input" object1="1" object2="3" data2="value"/>
-    <Link data1="value #1" object1="1" object2="2" data2="time"/>
-    <Link data1="rectangle" object1="5" object2="4" data2="area"/>
-    <Link data1="shader" object1="5" object2="1" data2="output"/>
+    <Link object1="1" data1="input" object2="3" data2="value"/>
+    <Link object1="1" data1="value #1" object2="2" data2="time"/>
+    <Link object1="5" data1="rectangle" object2="4" data2="area"/>
+    <Link object1="5" data1="shader" object2="1" data2="output"/>
 </Panda>

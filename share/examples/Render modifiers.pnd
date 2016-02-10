@@ -1,39 +1,39 @@
 <Panda>
-    <Data x="800" y="600" name="render size"/>
-    <Data g="1" a="1" r="1" b="1" name="background color"/>
-    <Data real="0.01" name="timestep"/>
-    <Data int="1" name="use timer"/>
-    <Data int="0" name="use multithread"/>
-    <Object index="1" type="panda::RenderFilledRect" x="918" y="291">
+    <Data name="render size" x="800" y="600"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
+    <Data name="timestep" real="0.0099999998"/>
+    <Data name="use timer" int="1"/>
+    <Data name="use multithread" int="0"/>
+    <Object type="panda::RenderFilledRect" index="1" x="918" y="291">
         <Data name="color">
-            <Value g="0" a="1" r="0" b="0"/>
+            <Value r="0" g="0" b="0" a="1"/>
         </Data>
     </Object>
-    <Object index="2" type="panda::Layer" x="938" y="231">
+    <Object type="panda::Layer" index="2" x="938" y="231">
         <Data name="name">Layer #1</Data>
     </Object>
-    <Object index="3" type="panda::RenderModifier_Rotation" x="918" y="411"/>
-    <Object index="4" type="panda::RenderModifier_Translation" x="918" y="471"/>
-    <Object index="5" type="panda::GeneratorUser&lt;point>" x="545" y="368">
-        <Data x="400" y="300" name="input"/>
+    <Object type="panda::RenderModifier_Rotation" index="3" x="918" y="411"/>
+    <Object type="panda::RenderModifier_Translation" index="4" x="918" y="471"/>
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="5" x="545" y="368">
+        <Data name="input" x="400" y="300"/>
     </Object>
-    <Object index="6" type="panda::PointMath_Substraction" x="671" y="353">
+    <Object type="panda::PointMath_Substraction" index="6" x="671" y="353">
         <Data name="point 1">
             <Value x="0" y="0"/>
         </Data>
     </Object>
-    <Object index="7" type="panda::RenderModifier_Translation" x="918" y="351"/>
-    <Object index="8" type="panda::GeneratorPoint_MouseInfo" x="279" y="447"/>
-    <Object index="9" type="panda::GeneratorPoints_Decompose" x="411" y="447"/>
-    <Object index="10" type="panda::GeneratorPoint_RenderSize" x="279" y="524"/>
-    <Object index="11" type="panda::GeneratorPoints_Decompose" x="411" y="524"/>
-    <Object index="12" type="panda::DoubleMath_Div" x="545" y="474"/>
-    <Object index="13" type="panda::DoubleMath_Mult" x="671" y="475">
+    <Object type="panda::RenderModifier_Translation" index="7" x="918" y="351"/>
+    <Object type="panda::GeneratorPoint_MouseInfo" index="8" x="279" y="447"/>
+    <Object type="panda::GeneratorPoints_Decompose" index="9" x="411" y="447"/>
+    <Object type="panda::GeneratorPoint_RenderSize" index="10" x="279" y="524"/>
+    <Object type="panda::GeneratorPoints_Decompose" index="11" x="411" y="524"/>
+    <Object type="panda::DoubleMath_Div" index="12" x="545" y="474"/>
+    <Object type="panda::DoubleMath_Mult" index="13" x="671" y="475">
         <Data name="input 2">
             <Value real="180"/>
         </Data>
     </Object>
-    <Object index="14" type="panda::GeneratorUser&lt;shader>" x="797" y="321">
+    <Object type="panda::GeneratorUser&lt;shader&gt;" index="14" x="797" y="321">
         <Data name="input" widgetData="Vertex;Fragment">
             <Source type="1">#version 330
 in vec2 vertex;
@@ -55,43 +55,46 @@ void main(void)
 }</Source>
         </Data>
     </Object>
-    <Object index="15" dy="-165" dx="503" type="panda::Annotation" x="275.5" y="605">
-        <Data int="2" name="type"/>
+    <Object type="panda::Annotation" index="15" x="275.5" y="605">
+        <Data name="type" int="2"/>
         <Data name="text">Compute the rotation based on the x position of the mouse</Data>
+        <Data name="deltaToEnd" x="503" y="-165"/>
     </Object>
-    <Object index="16" type="panda::GeneratorUser&lt;point>" x="279" y="306">
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="16" x="279" y="306">
         <Data name="caption">Rect size</Data>
-        <Data x="400" y="400" name="input"/>
+        <Data name="input" x="400" y="400"/>
     </Object>
-    <Object index="17" type="panda::PointMath_Division" x="411" y="368">
+    <Object type="panda::PointMath_Division" index="17" x="411" y="368">
         <Data name="factor">
             <Value real="2"/>
         </Data>
     </Object>
-    <Object index="18" type="panda::GeneratorRectangles_ComposeCenter" x="545" y="291"/>
-    <Object index="19" dy="49" dx="96" type="panda::Annotation" x="748.75" y="263">
-        <Data int="1" name="type"/>
+    <Object type="panda::GeneratorRectangles_ComposeCenter" index="18" x="545" y="291"/>
+    <Object type="panda::Annotation" index="19" x="748.75" y="263">
+        <Data name="type" int="1"/>
         <Data name="text">Custom shader to modify the colors</Data>
+        <Data name="deltaToEnd" x="96" y="49"/>
     </Object>
-    <Object index="20" dy="139" dx="245" type="panda::Annotation" x="406.75" y="286">
-        <Data int="2" name="type"/>
+    <Object type="panda::Annotation" index="20" x="406.75" y="286">
+        <Data name="type" int="2"/>
         <Data name="text">Rotate the rectangle around its center</Data>
+        <Data name="deltaToEnd" x="245" y="139"/>
     </Object>
-    <Link object1="1" data2="rectangle" data1="rectangle" object2="18"/>
-    <Link object1="1" data2="value" data1="shader" object2="14"/>
-    <Link object1="3" data2="result" data1="rotation" object2="13"/>
-    <Link object1="4" data2="value" data1="translation" object2="5"/>
-    <Link object1="5" data2="result" data1="input" object2="17"/>
-    <Link object1="6" data2="value" data1="point 2" object2="5"/>
-    <Link object1="7" data2="result" data1="translation" object2="6"/>
-    <Link object1="9" data2="position" data1="point" object2="8"/>
-    <Link object1="11" data2="size" data1="point" object2="10"/>
-    <Link object1="12" data2="x" data1="input 1" object2="9"/>
-    <Link object1="12" data2="x" data1="input 2" object2="11"/>
-    <Link object1="13" data2="result" data1="input 1" object2="12"/>
-    <Link object1="17" data2="size" data1="point" object2="10"/>
-    <Link object1="18" data2="result" data1="center" object2="17"/>
-    <Link object1="18" data2="value" data1="size" object2="16"/>
+    <Link object1="1" data1="rectangle" object2="18" data2="rectangle"/>
+    <Link object1="1" data1="shader" object2="14" data2="value"/>
+    <Link object1="3" data1="rotation" object2="13" data2="result"/>
+    <Link object1="4" data1="translation" object2="5" data2="value"/>
+    <Link object1="5" data1="input" object2="17" data2="result"/>
+    <Link object1="6" data1="point 2" object2="5" data2="value"/>
+    <Link object1="7" data1="translation" object2="6" data2="result"/>
+    <Link object1="9" data1="point" object2="8" data2="position"/>
+    <Link object1="11" data1="point" object2="10" data2="size"/>
+    <Link object1="12" data1="input 1" object2="9" data2="x"/>
+    <Link object1="12" data1="input 2" object2="11" data2="x"/>
+    <Link object1="13" data1="input 1" object2="12" data2="result"/>
+    <Link object1="17" data1="point" object2="10" data2="size"/>
+    <Link object1="18" data1="center" object2="17" data2="result"/>
+    <Link object1="18" data1="size" object2="16" data2="value"/>
     <Dock dock="2" docked="1"/>
     <Dock dock="2" docked="7"/>
     <Dock dock="2" docked="3"/>

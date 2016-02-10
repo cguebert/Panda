@@ -1,234 +1,239 @@
 <Panda>
-    <Data x="800" y="600" name="render size"/>
-    <Data g="1" a="1" r="1" b="1" name="background color"/>
-    <Data real="0.01" name="timestep"/>
-    <Data int="1" name="use timer"/>
-    <Data int="0" name="use multithread"/>
-    <Object index="1" type="panda::Group" x="579.9164428710938" y="663.33056640625">
-        <GroupData widget="default" output="0" help="The initial position of the point" type="point" name="Initial point" input="1"/>
-        <GroupData widget="default" output="0" help="The maximum selection distance" type="real" name="Selection dist" input="1"/>
-        <GroupData widget="default" output="1" help="Modified position of the point" type="point" name="Moved point" input="0"/>
-        <GroupData widget="default" output="1" help="Is the point currently selected" type="integer" name="Selected" input="0"/>
+    <Data name="render size" x="800" y="600"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
+    <Data name="timestep" real="0.0099999998"/>
+    <Data name="use timer" int="1"/>
+    <Data name="use multithread" int="0"/>
+    <Object type="panda::Group" index="1" x="579.91644287109375" y="663.33056640625">
+        <GroupData type="point" input="1" output="0" name="Initial point" help="The initial position of the point" widget="default"/>
+        <GroupData type="real" input="1" output="0" name="Selection dist" help="The maximum selection distance" widget="default"/>
+        <GroupData type="point" input="0" output="1" name="Moved point" help="Modified position of the point" widget="default"/>
+        <GroupData type="integer" input="0" output="1" name="Selected" help="Is the point currently selected" widget="default"/>
         <Data name="name">Move Point</Data>
-        <Data real="20" name="Selection dist"/>
-        <Object index="2" type="panda::GeneratorUser&lt;point>" x="-618.25" y="-9.48333740234375">
+        <Data name="Selection dist" real="20"/>
+        <Object type="panda::GeneratorUser&lt;point&gt;" index="2" x="-618.25" y="-9.4833374">
             <Data name="caption">Initial point</Data>
-            <Data x="200" y="200" name="input"/>
+            <Data name="input" x="200" y="200"/>
         </Object>
-        <Object index="3" type="panda::ListBuffer" x="225.75" y="-73.45001220703125">
+        <Object type="panda::ListBuffer" index="3" x="225.75" y="-73.450012">
             <CreatedData type="point"/>
             <CreatedData type="real"/>
-            <Data int="0" name="reset"/>
+            <Data name="reset" int="0"/>
             <Data name="init #2">
                 <Value real="0"/>
             </Data>
         </Object>
-        <Object index="4" type="panda::GeneratorPoint_MouseInfo" x="-475.25" y="-172.4833374023438"/>
-        <Object index="5" type="panda::PointMath_Distance" x="-363.25" y="163.4500122070313"/>
-        <Object index="6" type="panda::BooleanMath_Greater" x="-228.25" y="106.4500122070313"/>
-        <Object index="7" type="panda::GeneratorUser&lt;real>" x="-618.25" y="117.4500122070313">
+        <Object type="panda::GeneratorPoint_MouseInfo" index="4" x="-475.25" y="-172.48334"/>
+        <Object type="panda::PointMath_Distance" index="5" x="-363.25" y="163.45001"/>
+        <Object type="panda::BooleanMath_Greater" index="6" x="-228.25" y="106.45001"/>
+        <Object type="panda::GeneratorUser&lt;real&gt;" index="7" x="-618.25" y="117.45001">
             <Data name="caption">Selection dist</Data>
-            <Data real="20" name="input"/>
+            <Data name="input" real="20"/>
         </Object>
-        <Object index="8" type="panda::ListCondition" x="380.75" y="-114.4833374023438">
+        <Object type="panda::ListCondition" index="8" x="380.75" y="-114.48334">
             <CreatedData type="point"/>
         </Object>
-        <Object index="9" type="panda::GeneratorNumber_AnimationTime" x="-282.7125244140625" y="-139.5499877929688"/>
-        <Object index="10" type="panda::DoubleMath_Mult" x="-148.7125244140625" y="-113.5499877929688"/>
-        <Object index="11" type="panda::DoubleMath_RiseCount" x="-77.7125244140625" y="54.45001220703125"/>
-        <Object index="12" type="panda::ListBuffer" x="71.2874755859375" y="135.4500122070313">
+        <Object type="panda::GeneratorNumber_AnimationTime" index="9" x="-282.71252" y="-139.54999"/>
+        <Object type="panda::DoubleMath_Mult" index="10" x="-148.71252" y="-113.54999"/>
+        <Object type="panda::DoubleMath_RiseCount" index="11" x="-77.712524" y="54.450012"/>
+        <Object type="panda::ListBuffer" index="12" x="71.287476" y="135.45001">
             <CreatedData type="integer"/>
         </Object>
-        <Object index="13" type="panda::BooleanMath_Not" x="-77.7125244140625" y="113.4500122070313"/>
-        <Object index="14" type="panda::GeneratorUser&lt;integer>" x="-155.75" y="190.4833374023438">
-            <Data int="0" name="input"/>
+        <Object type="panda::BooleanMath_Not" index="13" x="-77.712524" y="113.45001"/>
+        <Object type="panda::GeneratorUser&lt;integer&gt;" index="14" x="-155.75" y="190.48334">
+            <Data name="input" int="0"/>
         </Object>
-        <Object index="15" type="panda::GeneratorUser&lt;point>" x="520.25" y="-35.48333740234375">
+        <Object type="panda::GeneratorUser&lt;point&gt;" index="15" x="520.25" y="-35.483337">
             <Data name="caption">Moved point</Data>
-            <Data x="200" y="200" name="input"/>
+            <Data name="input" x="200" y="200"/>
         </Object>
-        <Object index="16" type="panda::GeneratorUser&lt;integer>" x="488.75" y="78.5">
+        <Object type="panda::GeneratorUser&lt;integer&gt;" index="16" x="488.75" y="78.5">
             <Data name="caption">Selected</Data>
-            <Data int="0" name="input"/>
+            <Data name="input" int="0"/>
         </Object>
-        <Link object1="2" data2="Initial point" data1="input" object2="0"/>
-        <Link object1="3" data2="result" data1="control" object2="10"/>
-        <Link object1="3" data2="result #1" data1="input #1" object2="8"/>
-        <Link object1="3" data2="value" data1="init #1" object2="2"/>
-        <Link object1="3" data2="output #1" data1="input #2" object2="12"/>
-        <Link object1="5" data2="position" data1="point 1" object2="4"/>
-        <Link object1="5" data2="output #1" data1="point 2" object2="3"/>
-        <Link object1="6" data2="value" data1="inputA" object2="7"/>
-        <Link object1="6" data2="distance" data1="inputB" object2="5"/>
-        <Link object1="7" data2="Selection dist" data1="input" object2="0"/>
-        <Link object1="8" data2="output #2" data1="control" object2="3"/>
-        <Link object1="8" data2="position" data1="true #1" object2="4"/>
-        <Link object1="8" data2="output #1" data1="false #1" object2="3"/>
-        <Link object1="10" data2="time" data1="input 1" object2="9"/>
-        <Link object1="10" data2="click" data1="input 2" object2="4"/>
-        <Link object1="11" data2="click" data1="input" object2="4"/>
-        <Link object1="12" data2="count" data1="control" object2="11"/>
-        <Link object1="12" data2="result" data1="reset" object2="13"/>
-        <Link object1="12" data2="result" data1="input #1" object2="6"/>
-        <Link object1="12" data2="value" data1="init #1" object2="14"/>
-        <Link object1="13" data2="click" data1="input" object2="4"/>
-        <Link object1="15" data2="output #1" data1="input" object2="3"/>
-        <Link object1="16" data2="output #2" data1="input" object2="3"/>
-        <Link object1="0" data2="value" data1="Moved point" object2="15"/>
-        <Link object1="0" data2="value" data1="Selected" object2="16"/>
+        <Link object1="2" data1="input" object2="0" data2="Initial point"/>
+        <Link object1="3" data1="control" object2="10" data2="result"/>
+        <Link object1="3" data1="input #1" object2="8" data2="result #1"/>
+        <Link object1="3" data1="init #1" object2="2" data2="value"/>
+        <Link object1="3" data1="input #2" object2="12" data2="output #1"/>
+        <Link object1="5" data1="point 1" object2="4" data2="position"/>
+        <Link object1="5" data1="point 2" object2="3" data2="output #1"/>
+        <Link object1="6" data1="inputA" object2="7" data2="value"/>
+        <Link object1="6" data1="inputB" object2="5" data2="distance"/>
+        <Link object1="7" data1="input" object2="0" data2="Selection dist"/>
+        <Link object1="8" data1="control" object2="3" data2="output #2"/>
+        <Link object1="8" data1="true #1" object2="4" data2="position"/>
+        <Link object1="8" data1="false #1" object2="3" data2="output #1"/>
+        <Link object1="10" data1="input 1" object2="9" data2="time"/>
+        <Link object1="10" data1="input 2" object2="4" data2="click"/>
+        <Link object1="11" data1="input" object2="4" data2="click"/>
+        <Link object1="12" data1="control" object2="11" data2="count"/>
+        <Link object1="12" data1="reset" object2="13" data2="result"/>
+        <Link object1="12" data1="input #1" object2="6" data2="result"/>
+        <Link object1="12" data1="init #1" object2="14" data2="value"/>
+        <Link object1="13" data1="input" object2="4" data2="click"/>
+        <Link object1="15" data1="input" object2="3" data2="output #1"/>
+        <Link object1="16" data1="input" object2="3" data2="output #2"/>
+        <Link object1="0" data1="Moved point" object2="15" data2="value"/>
+        <Link object1="0" data1="Selected" object2="16" data2="value"/>
     </Object>
-    <Object index="17" type="panda::Layer" x="2458.7333984375" y="697.8949584960938">
+    <Object type="panda::Layer" index="17" x="2458.7333984375" y="697.89495849609375">
         <Data name="name">Layer #1</Data>
     </Object>
-    <Object index="18" type="panda::RenderDisk" x="2438.7333984375" y="757.0413818359375">
+    <Object type="panda::RenderDisk" index="18" x="2438.7333984375" y="757.0413818359375">
         <Data name="radius">
             <Value real="5"/>
         </Data>
     </Object>
-    <Object index="19" type="panda::RenderDisk" x="2438.7333984375" y="832.0413818359375">
+    <Object type="panda::RenderDisk" index="19" x="2438.7333984375" y="832.0413818359375">
         <Data name="radius">
             <Value real="5"/>
         </Data>
     </Object>
-    <Object index="20" type="panda::GeneratorRectangles_ComposeCenter" x="2111.6650390625" y="907.0413818359375"/>
-    <Object index="21" type="panda::GeneratorUser&lt;point>" x="437.9164428710938" y="668.33056640625">
+    <Object type="panda::GeneratorRectangles_ComposeCenter" index="20" x="2111.6650390625" y="907.0413818359375"/>
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="21" x="437.91644287109375" y="668.33056640625">
         <Data name="caption">Initial center</Data>
-        <Data x="200" y="200" name="input"/>
+        <Data name="input" x="200" y="200"/>
     </Object>
-    <Object index="22" type="panda::GeneratorUser&lt;point>" x="1368.1337890625" y="1119.777709960938">
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="22" x="1368.1337890625" y="1119.7777099609375">
         <Data name="caption">Initial size</Data>
-        <Data x="200" y="150" name="input"/>
+        <Data name="input" x="200" y="150"/>
     </Object>
-    <Object index="23" type="panda::RenderFilledRect" x="2438.7333984375" y="907.0413818359375">
+    <Object type="panda::RenderFilledRect" index="23" x="2438.7333984375" y="907.0413818359375">
         <Data name="color">
-            <Value g="0.780392" a="1" r="0.780392" b="0.780392"/>
+            <Value r="0.78039199" g="0.78039199" b="0.78039199" a="1"/>
         </Data>
     </Object>
-    <Object index="24" type="panda::PointMath_Addition" x="1315.7001953125" y="825.2359619140625"/>
-    <Object index="25" type="panda::ListBuffer" x="1524.535522460938" y="777.488525390625">
+    <Object type="panda::PointMath_Addition" index="24" x="1315.7001953125" y="825.2359619140625"/>
+    <Object type="panda::ListBuffer" index="25" x="1524.5355224609375" y="777.488525390625">
         <CreatedData type="point"/>
         <CreatedData type="real"/>
         <Data name="init #2">
             <Value real="0"/>
         </Data>
     </Object>
-    <Object index="26" type="panda::GeneratorPoint_MouseInfo" x="450.9773864746094" y="830.4111938476563"/>
-    <Object index="27" type="panda::PointMath_Distance" x="664.8009033203125" y="1000.764099121094"/>
-    <Object index="28" type="panda::BooleanMath_Greater" x="793.91845703125" y="985.7640991210938"/>
-    <Object index="29" type="panda::GeneratorUser&lt;real>" x="450.9773864746094" y="985.7640991210938">
+    <Object type="panda::GeneratorPoint_MouseInfo" index="26" x="450.97738647460938" y="830.41119384765625"/>
+    <Object type="panda::PointMath_Distance" index="27" x="664.8009033203125" y="1000.7640991210937"/>
+    <Object type="panda::BooleanMath_Greater" index="28" x="793.91845703125" y="985.76409912109375"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="29" x="450.97738647460938" y="985.76409912109375">
         <Data name="caption">Selection dist</Data>
-        <Data real="20" name="input"/>
+        <Data name="input" real="20"/>
     </Object>
-    <Object index="30" type="panda::ListCondition" x="1732.814575195313" y="843.2359619140625">
+    <Object type="panda::ListCondition" index="30" x="1732.8145751953125" y="843.2359619140625">
         <CreatedData type="point"/>
     </Object>
-    <Object index="31" type="panda::GeneratorNumber_AnimationTime" x="1186.582641601563" y="758.2974243164063"/>
-    <Object index="32" type="panda::DoubleMath_Mult" x="1315.7001953125" y="758.2974243164063"/>
-    <Object index="33" type="panda::DoubleMath_RiseCount" x="793.91845703125" y="860.4111938476563"/>
-    <Object index="34" type="panda::ListBuffer" x="949.926513671875" y="940.2346801757813">
+    <Object type="panda::GeneratorNumber_AnimationTime" index="31" x="1186.5826416015625" y="758.29742431640625"/>
+    <Object type="panda::DoubleMath_Mult" index="32" x="1315.7001953125" y="758.29742431640625"/>
+    <Object type="panda::DoubleMath_RiseCount" index="33" x="793.91845703125" y="860.41119384765625"/>
+    <Object type="panda::ListBuffer" index="34" x="949.926513671875" y="940.23468017578125">
         <CreatedData type="integer"/>
     </Object>
-    <Object index="35" type="panda::BooleanMath_Not" x="793.91845703125" y="921.7640991210938"/>
-    <Object index="36" type="panda::GeneratorUser&lt;integer>" x="793.91845703125" y="1049.3857421875">
-        <Data int="0" name="input"/>
+    <Object type="panda::BooleanMath_Not" index="35" x="793.91845703125" y="921.76409912109375"/>
+    <Object type="panda::GeneratorUser&lt;integer&gt;" index="36" x="793.91845703125" y="1049.3857421875">
+        <Data name="input" int="0"/>
     </Object>
-    <Object index="37" type="panda::ListBuffer" x="1495.38720703125" y="1015.367431640625">
+    <Object type="panda::ListBuffer" index="37" x="1495.38720703125" y="1015.367431640625">
         <CreatedData type="point"/>
     </Object>
-    <Object index="38" type="panda::PointMath_Substraction" x="1239.861328125" y="1057.776611328125"/>
-    <Object index="39" type="panda::PointMath_Scale" x="1368.1337890625" y="1057.776611328125">
+    <Object type="panda::PointMath_Substraction" index="38" x="1239.861328125" y="1057.776611328125"/>
+    <Object type="panda::PointMath_Scale" index="39" x="1368.1337890625" y="1057.776611328125">
         <Data name="factor">
             <Value real="2"/>
         </Data>
     </Object>
-    <Object index="40" dy="64.51612854003906" dx="258.0645141601563" type="panda::Annotation" x="431.9838256835938" y="659.6724853515625">
-        <Data int="2" name="type"/>
+    <Object type="panda::Annotation" index="40" x="431.98382568359375" y="659.6724853515625">
+        <Data name="type" int="2"/>
         <Data name="text">Rectangle center</Data>
+        <Data name="deltaToEnd" x="258.06451" y="64.516129"/>
     </Object>
-    <Object index="41" dy="292.8571472167969" dx="632.1428833007813" type="panda::Annotation" x="440.5843200683594" y="822.1883544921875">
-        <Data int="2" name="type"/>
+    <Object type="panda::Annotation" index="41" x="440.58432006835937" y="822.1883544921875">
+        <Data name="type" int="2"/>
         <Data name="text">Selection of corner handle</Data>
+        <Data name="deltaToEnd" x="632.14288" y="292.85715"/>
     </Object>
-    <Object index="42" dy="198.0769195556641" dx="381.5018310546875" type="panda::Annotation" x="1229.22900390625" y="988.0308227539063">
-        <Data int="2" name="type"/>
+    <Object type="panda::Annotation" index="42" x="1229.22900390625" y="988.03082275390625">
+        <Data name="type" int="2"/>
         <Data name="text">Modification of the rectangle's size</Data>
+        <Data name="deltaToEnd" x="381.50183" y="198.07692"/>
     </Object>
-    <Object index="43" dy="185.7142791748047" dx="660.7142944335938" type="panda::Annotation" x="1181.060546875" y="747.1883544921875">
-        <Data int="2" name="type"/>
+    <Object type="panda::Annotation" index="43" x="1181.060546875" y="747.1883544921875">
+        <Data name="type" int="2"/>
         <Data name="text">Modification of the corner handle</Data>
+        <Data name="deltaToEnd" x="660.71429" y="185.71428"/>
     </Object>
-    <Object index="44" type="panda::PointMath_Scale" x="1194.15576171875" y="840.2359619140625">
+    <Object type="panda::PointMath_Scale" index="44" x="1194.15576171875" y="840.2359619140625">
         <Data name="factor">
             <Value real="0.5"/>
         </Data>
     </Object>
-    <Object index="45" type="panda::GeneratorNumber_AnimationTime" x="1239.861328125" y="993.660888671875"/>
-    <Object index="46" type="panda::DoubleMath_Mult" x="1368.1337890625" y="993.660888671875"/>
-    <Object index="47" type="panda::DoubleMath_Abs" x="1831.830444335938" y="1032.994262695313"/>
-    <Object index="48" type="panda::GeneratorPoints_Decompose" x="1680.54833984375" y="1048.378784179688"/>
-    <Object index="49" type="panda::DoubleMath_Abs" x="1831.830444335938" y="1087.250610351563"/>
-    <Object index="50" type="panda::GeneratorPoints_Compose" x="1977.984252929688" y="1059.917236328125"/>
-    <Object index="51" dy="138.4615325927734" dx="416.6666564941406" type="panda::Annotation" x="1669.009887695313" y="1020.173706054688">
-        <Data int="2" name="type"/>
+    <Object type="panda::GeneratorNumber_AnimationTime" index="45" x="1239.861328125" y="993.660888671875"/>
+    <Object type="panda::DoubleMath_Mult" index="46" x="1368.1337890625" y="993.660888671875"/>
+    <Object type="panda::DoubleMath_Abs" index="47" x="1831.8304443359375" y="1032.9942626953125"/>
+    <Object type="panda::GeneratorPoints_Decompose" index="48" x="1680.54833984375" y="1048.3787841796875"/>
+    <Object type="panda::DoubleMath_Abs" index="49" x="1831.8304443359375" y="1087.2506103515625"/>
+    <Object type="panda::GeneratorPoints_Compose" index="50" x="1977.9842529296875" y="1059.917236328125"/>
+    <Object type="panda::Annotation" index="51" x="1669.0098876953125" y="1020.1737060546875">
+        <Data name="type" int="2"/>
         <Data name="text">Absolute size</Data>
+        <Data name="deltaToEnd" x="416.66666" y="138.46153"/>
     </Object>
-    <Object index="52" type="panda::GeneratorUser&lt;point>" x="2253.417236328125" y="757.0413818359375">
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="52" x="2253.417236328125" y="757.0413818359375">
         <Data name="caption">corner handle</Data>
-        <Data x="300" y="275" name="input"/>
+        <Data name="input" x="300" y="275"/>
     </Object>
-    <Object index="53" type="panda::GeneratorUser&lt;rectangle>" x="2253.417236328125" y="907.0413818359375">
+    <Object type="panda::GeneratorUser&lt;rectangle&gt;" index="53" x="2253.417236328125" y="907.0413818359375">
         <Data name="caption">output</Data>
-        <Data t="125" r="300" b="275" l="100" name="input"/>
+        <Data name="input" l="100" t="125" r="300" b="275"/>
     </Object>
-    <Object index="54" type="panda::GeneratorUser&lt;point>" x="2253.417236328125" y="832.0413818359375">
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="54" x="2253.417236328125" y="832.0413818359375">
         <Data name="caption">center handle</Data>
-        <Data x="200" y="200" name="input"/>
+        <Data name="input" x="200" y="200"/>
     </Object>
-    <Link object1="1" data2="value" data1="Initial point" object2="21"/>
-    <Link object1="18" data2="value" data1="center" object2="52"/>
-    <Link object1="19" data2="value" data1="center" object2="54"/>
-    <Link object1="20" data2="Moved point" data1="center" object2="1"/>
-    <Link object1="20" data2="point" data1="size" object2="50"/>
-    <Link object1="23" data2="value" data1="rectangle" object2="53"/>
-    <Link object1="24" data2="Moved point" data1="point 1" object2="1"/>
-    <Link object1="24" data2="result" data1="point 2" object2="44"/>
-    <Link object1="25" data2="result" data1="control" object2="32"/>
-    <Link object1="25" data2="Selected" data1="reset" object2="1"/>
-    <Link object1="25" data2="result #1" data1="input #1" object2="30"/>
-    <Link object1="25" data2="result" data1="init #1" object2="24"/>
-    <Link object1="25" data2="output #1" data1="input #2" object2="34"/>
-    <Link object1="27" data2="position" data1="point 1" object2="26"/>
-    <Link object1="27" data2="output #1" data1="point 2" object2="25"/>
-    <Link object1="28" data2="value" data1="inputA" object2="29"/>
-    <Link object1="28" data2="distance" data1="inputB" object2="27"/>
-    <Link object1="30" data2="output #2" data1="control" object2="25"/>
-    <Link object1="30" data2="position" data1="true #1" object2="26"/>
-    <Link object1="30" data2="output #1" data1="false #1" object2="25"/>
-    <Link object1="32" data2="time" data1="input 1" object2="31"/>
-    <Link object1="32" data2="click" data1="input 2" object2="26"/>
-    <Link object1="33" data2="click" data1="input" object2="26"/>
-    <Link object1="34" data2="count" data1="control" object2="33"/>
-    <Link object1="34" data2="result" data1="reset" object2="35"/>
-    <Link object1="34" data2="result" data1="input #1" object2="28"/>
-    <Link object1="34" data2="value" data1="init #1" object2="36"/>
-    <Link object1="35" data2="click" data1="input" object2="26"/>
-    <Link object1="37" data2="result" data1="control" object2="46"/>
-    <Link object1="37" data2="result" data1="input #1" object2="39"/>
-    <Link object1="37" data2="value" data1="init #1" object2="22"/>
-    <Link object1="38" data2="result #1" data1="point 1" object2="30"/>
-    <Link object1="38" data2="Moved point" data1="point 2" object2="1"/>
-    <Link object1="39" data2="result" data1="point" object2="38"/>
-    <Link object1="44" data2="output #1" data1="point" object2="37"/>
-    <Link object1="46" data2="time" data1="input 1" object2="45"/>
-    <Link object1="46" data2="output #2" data1="input 2" object2="25"/>
-    <Link object1="47" data2="x" data1="input" object2="48"/>
-    <Link object1="48" data2="output #1" data1="point" object2="37"/>
-    <Link object1="49" data2="y" data1="input" object2="48"/>
-    <Link object1="50" data2="result" data1="x" object2="47"/>
-    <Link object1="50" data2="result" data1="y" object2="49"/>
-    <Link object1="52" data2="result #1" data1="input" object2="30"/>
-    <Link object1="53" data2="rectangle" data1="input" object2="20"/>
-    <Link object1="54" data2="Moved point" data1="input" object2="1"/>
+    <Link object1="1" data1="Initial point" object2="21" data2="value"/>
+    <Link object1="18" data1="center" object2="52" data2="value"/>
+    <Link object1="19" data1="center" object2="54" data2="value"/>
+    <Link object1="20" data1="center" object2="1" data2="Moved point"/>
+    <Link object1="20" data1="size" object2="50" data2="point"/>
+    <Link object1="23" data1="rectangle" object2="53" data2="value"/>
+    <Link object1="24" data1="point 1" object2="1" data2="Moved point"/>
+    <Link object1="24" data1="point 2" object2="44" data2="result"/>
+    <Link object1="25" data1="control" object2="32" data2="result"/>
+    <Link object1="25" data1="reset" object2="1" data2="Selected"/>
+    <Link object1="25" data1="input #1" object2="30" data2="result #1"/>
+    <Link object1="25" data1="init #1" object2="24" data2="result"/>
+    <Link object1="25" data1="input #2" object2="34" data2="output #1"/>
+    <Link object1="27" data1="point 1" object2="26" data2="position"/>
+    <Link object1="27" data1="point 2" object2="25" data2="output #1"/>
+    <Link object1="28" data1="inputA" object2="29" data2="value"/>
+    <Link object1="28" data1="inputB" object2="27" data2="distance"/>
+    <Link object1="30" data1="control" object2="25" data2="output #2"/>
+    <Link object1="30" data1="true #1" object2="26" data2="position"/>
+    <Link object1="30" data1="false #1" object2="25" data2="output #1"/>
+    <Link object1="32" data1="input 1" object2="31" data2="time"/>
+    <Link object1="32" data1="input 2" object2="26" data2="click"/>
+    <Link object1="33" data1="input" object2="26" data2="click"/>
+    <Link object1="34" data1="control" object2="33" data2="count"/>
+    <Link object1="34" data1="reset" object2="35" data2="result"/>
+    <Link object1="34" data1="input #1" object2="28" data2="result"/>
+    <Link object1="34" data1="init #1" object2="36" data2="value"/>
+    <Link object1="35" data1="input" object2="26" data2="click"/>
+    <Link object1="37" data1="control" object2="46" data2="result"/>
+    <Link object1="37" data1="input #1" object2="39" data2="result"/>
+    <Link object1="37" data1="init #1" object2="22" data2="value"/>
+    <Link object1="38" data1="point 1" object2="30" data2="result #1"/>
+    <Link object1="38" data1="point 2" object2="1" data2="Moved point"/>
+    <Link object1="39" data1="point" object2="38" data2="result"/>
+    <Link object1="44" data1="point" object2="37" data2="output #1"/>
+    <Link object1="46" data1="input 1" object2="45" data2="time"/>
+    <Link object1="46" data1="input 2" object2="25" data2="output #2"/>
+    <Link object1="47" data1="input" object2="48" data2="x"/>
+    <Link object1="48" data1="point" object2="37" data2="output #1"/>
+    <Link object1="49" data1="input" object2="48" data2="y"/>
+    <Link object1="50" data1="x" object2="47" data2="result"/>
+    <Link object1="50" data1="y" object2="49" data2="result"/>
+    <Link object1="52" data1="input" object2="30" data2="result #1"/>
+    <Link object1="53" data1="input" object2="20" data2="rectangle"/>
+    <Link object1="54" data1="input" object2="1" data2="Moved point"/>
     <Dock dock="17" docked="18"/>
     <Dock dock="17" docked="19"/>
     <Dock dock="17" docked="23"/>

@@ -1,43 +1,43 @@
 <Panda>
-    <Data name="render size" y="300" x="300"/>
-    <Data name="background color" b="1" g="1" r="1" a="1"/>
+    <Data name="render size" x="300" y="300"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
     <Data name="timestep" real="0.1"/>
     <Data name="use timer" int="1"/>
     <Data name="use multithread" int="0"/>
-    <Object index="1" y="558.4210205078125" type="panda::Layer" x="-15.42105102539063">
+    <Object type="panda::Layer" index="1" x="-15.421051025390625" y="558.4210205078125">
         <Data name="name">Purple Rect</Data>
         <Data name="composition mode" int="0"/>
         <Data name="opacity" real="1"/>
     </Object>
-    <Object index="7" y="364.0526428222656" type="panda::Layer" x="132.5789489746094">
+    <Object type="panda::Layer" index="2" x="132.57894897460937" y="364.05264282226562">
         <Data name="name">Red Disk</Data>
         <Data name="opacity" real="1"/>
     </Object>
-    <Object index="2" y="558.4210205078125" type="panda::Layer" x="132.5789489746094">
+    <Object type="panda::Layer" index="3" x="132.57894897460937" y="558.4210205078125">
         <Data name="name">Blue Rect</Data>
         <Data name="opacity" real="1"/>
     </Object>
-    <Object index="3" y="364.0526428222656" type="panda::Layer" x="-15.42105102539063">
+    <Object type="panda::Layer" index="4" x="-15.421051025390625" y="364.05264282226562">
         <Data name="name">Orange Disk</Data>
         <Data name="opacity" real="1"/>
     </Object>
-    <Object index="4" y="423.5526428222656" type="panda::RenderDisk" x="-35.42105102539063">
+    <Object type="panda::RenderDisk" index="5" x="-35.421051025390625" y="423.55264282226562">
         <Data name="center">
-            <Value y="125" x="125"/>
+            <Value x="125" y="125"/>
         </Data>
         <Data name="radius">
             <Value real="35"/>
         </Data>
         <Data name="color">
-            <Value b="0" g="0.53" r="1" a="1"/>
+            <Value r="1" g="0.52999997" b="0" a="1"/>
         </Data>
     </Object>
-    <Object index="5" y="617.9210205078125" type="panda::RenderFilledRect" x="112.5789489746094">
+    <Object type="panda::RenderFilledRect" index="6" x="112.57894897460937" y="617.9210205078125">
         <Data name="rectangle">
-            <Value l="50" b="150" t="50" r="150"/>
+            <Value l="50" t="50" r="150" b="150"/>
         </Data>
         <Data name="color">
-            <Value b="1" g="0" r="0" a="1"/>
+            <Value r="0" g="0" b="1" a="1"/>
         </Data>
         <Data name="shader">
             <Source type="1">#version 330
@@ -56,12 +56,12 @@ void main(void)
 }</Source>
         </Data>
     </Object>
-    <Object index="6" y="617.9210205078125" type="panda::RenderFilledRect" x="-35.42105102539063">
+    <Object type="panda::RenderFilledRect" index="7" x="-35.421051025390625" y="617.9210205078125">
         <Data name="rectangle">
-            <Value l="125" b="200" t="125" r="200"/>
+            <Value l="125" t="125" r="200" b="200"/>
         </Data>
         <Data name="color">
-            <Value b="1" g="0" r="0.66" a="1"/>
+            <Value r="0.66000003" g="0" b="1" a="1"/>
         </Data>
         <Data name="shader">
             <Source type="1">#version 330
@@ -80,23 +80,24 @@ void main(void)
 }</Source>
         </Data>
     </Object>
-    <Object index="8" y="424.0526428222656" type="panda::RenderDisk" x="112.5789489746094">
+    <Object type="panda::RenderDisk" index="8" x="112.57894897460937" y="424.05264282226562">
         <Data name="center">
-            <Value y="200" x="200"/>
+            <Value x="200" y="200"/>
         </Data>
         <Data name="radius">
             <Value real="35"/>
         </Data>
         <Data name="color">
-            <Value b="0" g="0" r="1" a="1"/>
+            <Value r="1" g="0" b="0" a="1"/>
         </Data>
     </Object>
-    <Object dy="100" index="9" y="326.2368469238281" type="panda::Annotation" x="-22.42105102539063" dx="200">
-        <Data name="text">Layers can be reordered using the "Layers" dock widget.&#xd;
+    <Object type="panda::Annotation" index="9" x="-22.421051025390625" y="326.23684692382812">
+        <Data name="text">Layers can be reordered using the "Layers" dock widget.
 The blend mode and opacity of each can also be changed.</Data>
+        <Data name="deltaToEnd" x="200" y="100"/>
     </Object>
-    <Dock dock="1" docked="6"/>
-    <Dock dock="7" docked="8"/>
-    <Dock dock="2" docked="5"/>
-    <Dock dock="3" docked="4"/>
+    <Dock dock="1" docked="7"/>
+    <Dock dock="2" docked="8"/>
+    <Dock dock="3" docked="6"/>
+    <Dock dock="4" docked="5"/>
 </Panda>

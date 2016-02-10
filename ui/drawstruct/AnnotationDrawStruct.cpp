@@ -10,11 +10,11 @@
 #include <QMouseEvent>
 
 using panda::Annotation;
+using panda::types::Point;
 
 AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* object)
 	: ObjectDrawStruct(view, object)
 	, m_annotation(dynamic_cast<Annotation*>(object))
-	, m_deltaToEnd(200, 100)
 	, m_textCounter(-1)
 	, m_fontCounter(-1)
 	, m_movingAction(MOVING_NONE)
@@ -102,7 +102,7 @@ void AnnotationDrawStruct::moveText(const QPointF& delta)
 
 void AnnotationDrawStruct::moveEnd(const QPointF& delta)
 {
-	m_deltaToEnd += delta;
+	m_annotation->m_deltaToEnd.setValue(m_annotation->m_deltaToEnd.getValue() + Point(delta.x(), delta.y()));
 	m_endPos += delta;
 	update();
 	emit m_parentView->modified();
@@ -130,7 +130,8 @@ void AnnotationDrawStruct::update()
 	QPointF viewDelta = m_parentView->getViewDelta();
 
 	m_startPos = m_position + viewDelta;
-	m_endPos = m_startPos + m_deltaToEnd;
+	auto deltaToEnd = m_annotation->m_deltaToEnd.getValue();
+	m_endPos = m_startPos + QPointF(deltaToEnd.x, deltaToEnd.y);
 
 	m_textArea = QRectF(m_startPos, m_textSize);
 	m_textArea.translate(0, -m_textSize.height());
@@ -184,22 +185,6 @@ void AnnotationDrawStruct::update()
 	m_objectArea = m_textArea;
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT)
 		 m_objectArea |= QRectF(m_startPos, m_endPos).normalized();
-}
-
-void AnnotationDrawStruct::save(panda::XmlElement& elem)
-{
-	ObjectDrawStruct::save(elem);
-
-	elem.setAttribute("dx", m_deltaToEnd.x());
-	elem.setAttribute("dy", m_deltaToEnd.y());
-}
-
-void AnnotationDrawStruct::load(panda::XmlElement& elem)
-{
-	m_deltaToEnd.setX(elem.attribute("dx").toFloat());
-	m_deltaToEnd.setY(elem.attribute("dy").toFloat());
-
-	ObjectDrawStruct::load(elem);
 }
 
 bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)

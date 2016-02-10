@@ -1,138 +1,142 @@
 <Panda>
-    <Data x="800" y="600" name="render size"/>
-    <Data g="1" a="1" r="1" b="1" name="background color"/>
-    <Data real="0.01" name="timestep"/>
-    <Data int="1" name="use timer"/>
-    <Data int="0" name="use multithread"/>
-    <Object index="1" type="panda::RenderDisk" x="1446.5" y="521.75">
+    <Data name="render size" x="800" y="600"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
+    <Data name="timestep" real="0.0099999998"/>
+    <Data name="use timer" int="1"/>
+    <Data name="use multithread" int="0"/>
+    <Object type="panda::RenderDisk" index="1" x="1446.5" y="521.75">
         <Data name="color">
-            <Value g="0" a="1" r="0" b="0"/>
+            <Value r="0" g="0" b="0" a="1"/>
         </Data>
     </Object>
-    <Object index="2" type="panda::Curve_CubicBSpline" x="483.6666564941406" y="474.5"/>
-    <Object index="3" type="panda::Group" x="615.3333129882813" y="469.5">
-        <GroupData widget="default" output="0" help="Curve on which to place points" type="path" name="input" input="1"/>
-        <GroupData widget="default" output="0" help="Number of points to place on the curve" type="integer" name="nb points" input="1"/>
-        <GroupData widget="default" output="1" help="Points regularly placed on the curve" type="path" name="output" input="0"/>
+    <Object type="panda::Curve_CubicBSpline" index="2" x="483.66665649414062" y="474.5"/>
+    <Object type="panda::Group" index="3" x="615.33331298828125" y="469.5">
+        <GroupData type="path" input="1" output="0" name="input" help="Curve on which to place points" widget="default"/>
+        <GroupData type="integer" input="1" output="0" name="nb points" help="Number of points to place on the curve" widget="default"/>
+        <GroupData type="path" input="0" output="1" name="output" help="Points regularly placed on the curve" widget="default"/>
         <Data name="name">Regularly spaced points</Data>
-        <Object index="4" type="panda::PathMath_Length" x="-230.5" y="-48.5"/>
-        <Object index="5" type="panda::GeneratorReals_Enumeration" x="88.5" y="-42.5"/>
-        <Object index="6" type="panda::DoubleMath_Div" x="-70.5" y="0.5"/>
-        <Object index="7" type="panda::PathMath_GetPoint" x="230.5" y="-54.5"/>
-        <Object index="8" type="panda::DoubleMath_Sub" x="-212.5" y="54.5">
+        <Object type="panda::PathMath_Length" index="4" x="-230.5" y="-48.5"/>
+        <Object type="panda::GeneratorReals_Enumeration" index="5" x="88.5" y="-42.5"/>
+        <Object type="panda::DoubleMath_Div" index="6" x="-70.5" y="0.5"/>
+        <Object type="panda::PathMath_GetPoint" index="7" x="230.5" y="-54.5"/>
+        <Object type="panda::DoubleMath_Sub" index="8" x="-212.5" y="54.5">
             <Data name="input 2">
                 <Value real="1"/>
             </Data>
         </Object>
-        <Link object1="4" data2="input" data1="path" object2="0"/>
-        <Link object1="5" data2="nb points" data1="# numbers" object2="0"/>
-        <Link object1="5" data2="result" data1="step" object2="6"/>
-        <Link object1="6" data2="length" data1="input 1" object2="4"/>
-        <Link object1="6" data2="result" data1="input 2" object2="8"/>
-        <Link object1="7" data2="input" data1="path" object2="0"/>
-        <Link object1="7" data2="numbers" data1="abscissa" object2="5"/>
-        <Link object1="8" data2="nb points" data1="input 1" object2="0"/>
-        <Link object1="0" data2="position" data1="output" object2="7"/>
+        <Link object1="4" data1="path" object2="0" data2="input"/>
+        <Link object1="5" data1="# numbers" object2="0" data2="nb points"/>
+        <Link object1="5" data1="step" object2="6" data2="result"/>
+        <Link object1="6" data1="input 1" object2="4" data2="length"/>
+        <Link object1="6" data1="input 2" object2="8" data2="result"/>
+        <Link object1="7" data1="path" object2="0" data2="input"/>
+        <Link object1="7" data1="abscissa" object2="5" data2="numbers"/>
+        <Link object1="8" data1="input 1" object2="0" data2="nb points"/>
+        <Link object1="0" data1="output" object2="7" data2="position"/>
     </Object>
-    <Object index="9" type="panda::Replicator" x="1466.5" y="372.5">
+    <Object type="panda::Replicator" index="9" x="1466.5" y="372.5">
         <Data name="name">Layer #1</Data>
-        <Data real="1" name="opacity"/>
+        <Data name="opacity" real="1"/>
     </Object>
-    <Object index="10" type="panda::RenderDisk" x="1446.5" y="446.75"/>
-    <Object index="11" type="panda::ListItem" x="1076" y="456.5">
+    <Object type="panda::RenderDisk" index="10" x="1446.5" y="446.75"/>
+    <Object type="panda::ListItem" index="11" x="1076" y="456.5">
         <CreatedData type="point"/>
     </Object>
-    <Object index="12" type="panda::GeneratorUser&lt;point_vector>" x="747" y="474.5">
+    <Object type="panda::GeneratorUser&lt;point_vector&gt;" index="12" x="747" y="474.5">
         <Data name="caption">Conversion</Data>
         <Data name="input"/>
     </Object>
-    <Object index="13" type="panda::GeneratorUser&lt;integer>" x="483.5" y="552">
+    <Object type="panda::GeneratorUser&lt;integer&gt;" index="13" x="483.5" y="552">
         <Data name="caption"># of disks</Data>
-        <Data int="10" name="input"/>
+        <Data name="input" int="10"/>
     </Object>
-    <Object index="14" type="panda::GeneratorUser&lt;real_animation>" x="901.5" y="331">
+    <Object type="panda::GeneratorUser&lt;real_animation&gt;" index="14" x="901.5" y="331">
         <Data name="caption">Size of disks</Data>
-        <Data extend="0" name="input" interpolation="19">
-            <Value real="20" key="0"/>
-            <Value real="15" key="5"/>
-            <Value real="20" key="10"/>
+        <Data name="input" extend="0" interpolation="19">
+            <Value key="0" real="20"/>
+            <Value key="5" real="15"/>
+            <Value key="10" real="20"/>
         </Data>
     </Object>
-    <Object index="15" type="panda::AnimValue" x="1087.5" y="313">
+    <Object type="panda::AnimValue" index="15" x="1087.5" y="313">
         <CreatedData type="real"/>
         <CreatedData type="color"/>
     </Object>
-    <Object index="16" type="panda::DoubleMath_Add" x="1260.5" y="331">
+    <Object type="panda::DoubleMath_Add" index="16" x="1260.5" y="331">
         <Data name="input 2">
             <Value real="10"/>
         </Data>
     </Object>
-    <Object index="17" type="panda::GeneratorUser&lt;color_animation>" x="901.5" y="394">
+    <Object type="panda::GeneratorUser&lt;color_animation&gt;" index="17" x="901.5" y="394">
         <Data name="caption">Color of disks</Data>
-        <Data extend="0" name="input" interpolation="0">
-            <Value g="1" a="1" key="0" r="0.33" b="0.5"/>
-            <Value g="0.66" a="1" key="5" r="0.66" b="1"/>
-            <Value g="0.66" a="1" key="10" r="0" b="1"/>
+        <Data name="input" extend="0" interpolation="0">
+            <Value key="0" r="0.33000001" g="1" b="0.5" a="1"/>
+            <Value key="5" r="0.66000003" g="0.66000003" b="1" a="1"/>
+            <Value key="10" r="0" g="0.66000003" b="1" a="1"/>
         </Data>
     </Object>
-    <Object index="18" type="panda::Group" x="352" y="469.5">
-        <GroupData widget="default" output="0" help="Number of points to keep (put in negative)" type="integer" name="nb points" input="1"/>
-        <GroupData widget="default" output="1" help="List of points created with the mouse" type="point_vector" name="points" input="0"/>
+    <Object type="panda::Group" index="18" x="352" y="469.5">
+        <GroupData type="integer" input="1" output="0" name="nb points" help="Number of points to keep (put in negative)" widget="default"/>
+        <GroupData type="point_vector" input="0" output="1" name="points" help="List of points created with the mouse" widget="default"/>
         <Data name="name">Mouse trace</Data>
-        <Data int="-30" name="nb points"/>
-        <Object index="19" type="panda::GeneratorNumber_AnimationTime" x="-240" y="-45.5"/>
-        <Object index="20" type="panda::ListBuffer" x="94" y="9.5">
+        <Data name="nb points" int="-30"/>
+        <Object type="panda::GeneratorNumber_AnimationTime" index="19" x="-240" y="-45.5"/>
+        <Object type="panda::ListBuffer" index="20" x="94" y="9.5">
             <CreatedData type="point"/>
             <Data name="init #1"/>
         </Object>
-        <Object index="21" type="panda::GeneratorPoint_MouseInfo" x="-238" y="45.5"/>
-        <Object index="22" type="panda::ListConcatenation" x="-53" y="39.5">
+        <Object type="panda::GeneratorPoint_MouseInfo" index="21" x="-238" y="45.5"/>
+        <Object type="panda::ListConcatenation" index="22" x="-53" y="39.5">
             <CreatedData type="point"/>
             <CreatedData type="point"/>
         </Object>
-        <Object index="23" type="panda::ExtractTail" x="240" y="20.5">
+        <Object type="panda::ExtractTail" index="23" x="240" y="20.5">
             <CreatedData type="point"/>
         </Object>
-        <Link object1="20" data2="time" data1="control" object2="19"/>
-        <Link object1="20" data2="result #1" data1="input #1" object2="22"/>
-        <Link object1="22" data2="output #1" data1="list #1" object2="23"/>
-        <Link object1="22" data2="position" data1="list #2" object2="21"/>
-        <Link object1="23" data2="nb points" data1="tail" object2="0"/>
-        <Link object1="23" data2="output #1" data1="input #1" object2="20"/>
-        <Link object1="0" data2="output #1" data1="points" object2="23"/>
+        <Link object1="20" data1="control" object2="19" data2="time"/>
+        <Link object1="20" data1="input #1" object2="22" data2="result #1"/>
+        <Link object1="22" data1="list #1" object2="23" data2="output #1"/>
+        <Link object1="22" data1="list #2" object2="21" data2="position"/>
+        <Link object1="23" data1="tail" object2="0" data2="nb points"/>
+        <Link object1="23" data1="input #1" object2="20" data2="output #1"/>
+        <Link object1="0" data1="points" object2="23" data2="output #1"/>
     </Object>
-    <Object index="24" dy="87" dx="126" type="panda::Annotation" x="1410.25" y="272.75">
-        <Data int="1" name="type"/>
+    <Object type="panda::Annotation" index="24" x="1410.25" y="272.75">
+        <Data name="type" int="1"/>
         <Data name="text">The Replicator renders multiple time the objects connected to it.</Data>
+        <Data name="deltaToEnd" x="126" y="87"/>
     </Object>
-    <Object index="25" dy="144" dx="492" type="panda::Annotation" x="892.25" y="304.75">
-        <Data int="2" name="type"/>
+    <Object type="panda::Annotation" index="25" x="892.25" y="304.75">
+        <Data name="type" int="2"/>
         <Data name="text">Modify the size and color of the disks based on their index.</Data>
+        <Data name="deltaToEnd" x="492" y="144"/>
     </Object>
-    <Object index="26" dy="149" dx="511" type="panda::Annotation" x="342.25" y="460.75">
-        <Data int="2" name="type"/>
+    <Object type="panda::Annotation" index="26" x="342.25" y="460.75">
+        <Data name="type" int="2"/>
         <Data name="text">Create a mouse trace and smooth it using a Bezier spline.</Data>
+        <Data name="deltaToEnd" x="511" y="149"/>
     </Object>
-    <Object index="27" dy="-69" dx="130" type="panda::Annotation" x="994.25" y="589.75">
-        <Data int="1" name="type"/>
+    <Object type="panda::Annotation" index="27" x="994.25" y="589.75">
+        <Data name="type" int="1"/>
         <Data name="text">Select the point for each iteration of the Replicator.</Data>
+        <Data name="deltaToEnd" x="130" y="-69"/>
     </Object>
-    <Link object1="1" data2="output #1" data1="center" object2="11"/>
-    <Link object1="1" data2="result" data1="radius" object2="16"/>
-    <Link object1="2" data2="points" data1="input" object2="18"/>
-    <Link object1="3" data2="output" data1="input" object2="2"/>
-    <Link object1="3" data2="value" data1="nb points" object2="13"/>
-    <Link object1="9" data2="value" data1="# iterations" object2="13"/>
-    <Link object1="10" data2="output #1" data1="center" object2="11"/>
-    <Link object1="10" data2="output #1" data1="radius" object2="15"/>
-    <Link object1="10" data2="output #2" data1="color" object2="15"/>
-    <Link object1="11" data2="index" data1="index" object2="9"/>
-    <Link object1="11" data2="value" data1="input #1" object2="12"/>
-    <Link object1="12" data2="output" data1="input" object2="3"/>
-    <Link object1="15" data2="index" data1="progress" object2="9"/>
-    <Link object1="15" data2="value" data1="input #1" object2="14"/>
-    <Link object1="15" data2="value" data1="input #2" object2="17"/>
-    <Link object1="16" data2="output #1" data1="input 1" object2="15"/>
+    <Link object1="1" data1="center" object2="11" data2="output #1"/>
+    <Link object1="1" data1="radius" object2="16" data2="result"/>
+    <Link object1="2" data1="input" object2="18" data2="points"/>
+    <Link object1="3" data1="input" object2="2" data2="output"/>
+    <Link object1="3" data1="nb points" object2="13" data2="value"/>
+    <Link object1="9" data1="# iterations" object2="13" data2="value"/>
+    <Link object1="10" data1="center" object2="11" data2="output #1"/>
+    <Link object1="10" data1="radius" object2="15" data2="output #1"/>
+    <Link object1="10" data1="color" object2="15" data2="output #2"/>
+    <Link object1="11" data1="index" object2="9" data2="index"/>
+    <Link object1="11" data1="input #1" object2="12" data2="value"/>
+    <Link object1="12" data1="input" object2="3" data2="output"/>
+    <Link object1="15" data1="progress" object2="9" data2="index"/>
+    <Link object1="15" data1="input #1" object2="14" data2="value"/>
+    <Link object1="15" data1="input #2" object2="17" data2="value"/>
+    <Link object1="16" data1="input 1" object2="15" data2="output #1"/>
     <Dock dock="9" docked="10"/>
     <Dock dock="9" docked="1"/>
 </Panda>

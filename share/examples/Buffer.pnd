@@ -1,50 +1,55 @@
 <Panda>
-    <Data name="render size" y="600" x="800"/>
-    <Data name="background color" a="1" r="1" b="1" g="1"/>
-    <Data name="timestep" real="0.01"/>
+    <Data name="render size" x="800" y="600"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
+    <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
     <Data name="use multithread" int="0"/>
-    <Object y="373.5" index="1" type="panda::RenderDisk" x="737">
+    <Object type="panda::RenderDisk" index="1" x="737" y="373.5">
         <Data name="radius">
             <Value real="5"/>
         </Data>
         <Data name="color">
-            <Value a="1" r="0" b="0" g="0"/>
+            <Value r="0" g="0" b="0" a="1"/>
         </Data>
     </Object>
-    <Object y="310.5" index="2" type="panda::GeneratorNumber_AnimationTime" x="322.25"/>
-    <Object y="340.5" index="3" type="panda::ListBuffer" x="460.5">
+    <Object type="panda::GeneratorNumber_AnimationTime" index="2" x="322.25" y="310.5"/>
+    <Object type="panda::ListBuffer" index="3" x="460.5" y="340.5">
         <CreatedData type="point"/>
         <Data name="init #1"/>
     </Object>
-    <Object y="391.5" index="4" type="panda::GeneratorPoint_MouseInfo" x="184"/>
-    <Object y="370.5" index="5" type="panda::ListConcatenation" x="322.25">
+    <Object type="panda::GeneratorPoint_MouseInfo" index="4" x="184" y="391.5"/>
+    <Object type="panda::ListConcatenation" index="5" x="322.25" y="370.5">
         <CreatedData type="point"/>
         <CreatedData type="point"/>
     </Object>
-    <Object y="355.5" index="6" type="panda::ExtractTail" x="598.75">
+    <Object type="panda::ExtractTail" index="6" x="598.75" y="355.5">
         <CreatedData type="point"/>
         <Data name="tail" int="-30"/>
     </Object>
-    <Object y="390.5" index="9" type="panda::Annotation" dx="200" dy="100" x="167">
+    <Object type="panda::Annotation" index="7" x="167" y="390.5">
         <Data name="text">Position of the mouse</Data>
+        <Data name="deltaToEnd" x="200" y="100"/>
     </Object>
-    <Object y="278.5" index="10" type="panda::Annotation" dx="110" dy="54" x="400">
+    <Object type="panda::Annotation" index="8" x="400" y="278.5">
         <Data name="type" int="1"/>
         <Data name="text">At each timestep, copy all inputs to outputs.
 Otherwise, do not propagate updates.</Data>
+        <Data name="deltaToEnd" x="110" y="54"/>
     </Object>
-    <Object y="516" index="11" type="panda::Annotation" dx="112" dy="-80" x="261.5">
+    <Object type="panda::Annotation" index="9" x="261.5" y="516">
         <Data name="type" int="1"/>
         <Data name="text">Add the current position to the end of the list</Data>
+        <Data name="deltaToEnd" x="112" y="-80"/>
     </Object>
-    <Object y="352.5" index="12" type="panda::Annotation" dx="74" dy="36" x="581">
+    <Object type="panda::Annotation" index="10" x="581" y="352.5">
         <Data name="type" int="0"/>
         <Data name="text">Keep only the last 30 points</Data>
+        <Data name="deltaToEnd" x="74" y="36"/>
     </Object>
-    <Object y="372.4503116840574" index="13" type="panda::Annotation" dx="74" dy="36" x="733.8322260946726">
+    <Object type="panda::Annotation" index="11" x="733.83221435546875" y="372.4503173828125">
         <Data name="type" int="0"/>
         <Data name="text">Render all points</Data>
+        <Data name="deltaToEnd" x="74" y="36"/>
     </Object>
     <Link object1="1" data1="center" object2="6" data2="output #1"/>
     <Link object1="3" data1="control" object2="2" data2="time"/>

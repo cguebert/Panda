@@ -1,86 +1,90 @@
 <Panda>
-    <Data x="400" y="300" name="render size"/>
-    <Data g="1" a="1" r="1" b="1" name="background color"/>
-    <Data real="0.01" name="timestep"/>
-    <Data int="1" name="use timer"/>
-    <Data int="0" name="use multithread"/>
-    <Object index="1" type="panda::PolygonCreation_Rectangle" x="429.5181884765625" y="219"/>
-    <Object index="2" type="panda::RenderPath" x="932.03857421875" y="145.0929718017578">
+    <Data name="render size" x="400" y="300"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
+    <Data name="timestep" real="0.0099999998"/>
+    <Data name="use timer" int="1"/>
+    <Data name="use multithread" int="0"/>
+    <Object type="panda::PolygonCreation_Rectangle" index="1" x="429.5181884765625" y="219"/>
+    <Object type="panda::RenderPath" index="2" x="932.03857421875" y="145.09297180175781">
         <Data name="width">
             <Value real="1"/>
         </Data>
         <Data name="color">
-            <Value g="0" a="1" r="0" b="0"/>
+            <Value r="0" g="0" b="0" a="1"/>
         </Data>
     </Object>
-    <Object index="3" type="panda::PolygonCreation_Circle" x="429.5181884765625" y="293.1736145019531"/>
-    <Object index="4" type="panda::PolygonOperation_Difference" x="602.345458984375" y="219"/>
-    <Object index="5" type="panda::RenderDisk" x="932.03857421875" y="220.0929718017578">
+    <Object type="panda::PolygonCreation_Circle" index="3" x="429.5181884765625" y="293.17361450195313"/>
+    <Object type="panda::PolygonOperation_Difference" index="4" x="602.345458984375" y="219"/>
+    <Object type="panda::RenderDisk" index="5" x="932.03857421875" y="220.09297180175781">
         <Data name="radius">
             <Value real="3"/>
         </Data>
         <Data name="color">
-            <Value g="0" a="1" r="0" b="0"/>
+            <Value r="0" g="0" b="0" a="1"/>
         </Data>
     </Object>
-    <Object index="6" type="panda::PolygonMath_Centroid" x="779.2113037109375" y="219.0588684082031"/>
-    <Object index="7" type="panda::GeneratorUser&lt;point>" x="288.8507995605469" y="277.6785583496094">
+    <Object type="panda::PolygonMath_Centroid" index="6" x="779.2113037109375" y="219.05886840820312"/>
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="7" x="288.85079956054687" y="277.67855834960937">
         <Data name="caption">Center</Data>
-        <Data x="150" y="150" name="input"/>
+        <Data name="input" x="150" y="150"/>
     </Object>
-    <Object index="8" type="panda::GeneratorUser&lt;real>" x="288.8507995605469" y="336.4437255859375">
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="8" x="288.85079956054687" y="336.4437255859375">
         <Data name="caption">Radius</Data>
-        <Data real="100" name="input"/>
+        <Data name="input" real="100"/>
     </Object>
-    <Object index="9" type="panda::Polygon_DecomposeToPaths" x="779.2113037109375" y="144.2861328125"/>
-    <Object index="10" type="panda::RenderMesh" x="932.03857421875" y="295.0929565429688">
+    <Object type="panda::Polygon_DecomposeToPaths" index="9" x="779.2113037109375" y="144.2861328125"/>
+    <Object type="panda::RenderMesh" index="10" x="932.03857421875" y="295.09295654296875">
         <Data name="color">
-            <Value g="0.792157" a="1" r="0.792157" b="0.792157"/>
+            <Value r="0.79215699" g="0.79215699" b="0.79215699" a="1"/>
         </Data>
     </Object>
-    <Object index="11" type="panda::Polygon_Triangulation" x="779.2113037109375" y="294.6113586425781"/>
-    <Object index="12" type="panda::Layer" x="952.03857421875" y="84.67250061035156">
+    <Object type="panda::Polygon_Triangulation" index="11" x="779.2113037109375" y="294.61135864257812"/>
+    <Object type="panda::Layer" index="12" x="952.03857421875" y="84.672500610351563">
         <Data name="name">Layer</Data>
     </Object>
-    <Object index="13" type="panda::GeneratorUser&lt;rectangle>" x="288.8507995605469" y="219">
+    <Object type="panda::GeneratorUser&lt;rectangle&gt;" index="13" x="288.85079956054687" y="219">
         <Data name="caption">Rectangle</Data>
-        <Data t="62.5" r="337.5" b="237.5" l="62.5" name="input"/>
+        <Data name="input" l="62.5" t="62.5" r="337.5" b="237.5"/>
     </Object>
-    <Object index="14" type="panda::RenderCircle" x="932.03857421875" y="355.0929565429688">
+    <Object type="panda::RenderCircle" index="14" x="932.03857421875" y="355.09295654296875">
         <Data name="color">
-            <Value g="0" a="0.501961" r="0" b="0"/>
+            <Value r="0" g="0" b="0" a="0.50196099"/>
         </Data>
     </Object>
-    <Object index="15" dy="140.3472900390625" dx="117.1317825317383" type="panda::Annotation" x="421.3621520996094" y="210.6178894042969">
-        <Data int="2" name="type"/>
+    <Object type="panda::Annotation" index="15" x="421.36215209960937" y="210.61788940429687">
+        <Data name="type" int="2"/>
         <Data name="text">Create 2 polygons</Data>
+        <Data name="deltaToEnd" x="117.13178" y="140.34729"/>
     </Object>
-    <Object index="16" dy="100" dx="200" type="panda::Annotation" x="577.8734741210938" y="215.7689666748047">
+    <Object type="panda::Annotation" index="16" x="577.87347412109375" y="215.76896667480469">
         <Data name="text">Compute rectangle - circle</Data>
+        <Data name="deltaToEnd" x="200" y="100"/>
     </Object>
-    <Object index="17" dy="-90" dx="112" type="panda::Annotation" x="699.337890625" y="440.513427734375">
-        <Data int="1" name="type"/>
-        <Data name="text">Convert the resulting polygons into meshes.&#xd;
+    <Object type="panda::Annotation" index="17" x="699.337890625" y="440.513427734375">
+        <Data name="type" int="1"/>
+        <Data name="text">Convert the resulting polygons into meshes.
 (can be buggy)</Data>
+        <Data name="deltaToEnd" x="112" y="-90"/>
     </Object>
-    <Object index="18" dy="54" dx="83" type="panda::Annotation" x="743.850830078125" y="84.67250061035156">
-        <Data int="1" name="type"/>
-        <Data name="text">Extract all paths in the polygons&#xd;
+    <Object type="panda::Annotation" index="18" x="743.850830078125" y="84.672500610351563">
+        <Data name="type" int="1"/>
+        <Data name="text">Extract all paths in the polygons
 (contour and holes)</Data>
+        <Data name="deltaToEnd" x="83" y="54"/>
     </Object>
-    <Link object1="1" data2="value" data1="rectangle" object2="13"/>
-    <Link object1="2" data2="paths" data1="path" object2="9"/>
-    <Link object1="3" data2="value" data1="center" object2="7"/>
-    <Link object1="3" data2="value" data1="radius" object2="8"/>
-    <Link object1="4" data2="path" data1="input 1" object2="1"/>
-    <Link object1="4" data2="path" data1="input 2" object2="3"/>
-    <Link object1="5" data2="centroid" data1="center" object2="6"/>
-    <Link object1="6" data2="output" data1="polygon" object2="4"/>
-    <Link object1="9" data2="output" data1="polygon" object2="4"/>
-    <Link object1="10" data2="output" data1="mesh" object2="11"/>
-    <Link object1="11" data2="output" data1="input" object2="4"/>
-    <Link object1="14" data2="value" data1="center" object2="7"/>
-    <Link object1="14" data2="value" data1="radius" object2="8"/>
+    <Link object1="1" data1="rectangle" object2="13" data2="value"/>
+    <Link object1="2" data1="path" object2="9" data2="paths"/>
+    <Link object1="3" data1="center" object2="7" data2="value"/>
+    <Link object1="3" data1="radius" object2="8" data2="value"/>
+    <Link object1="4" data1="input 1" object2="1" data2="path"/>
+    <Link object1="4" data1="input 2" object2="3" data2="path"/>
+    <Link object1="5" data1="center" object2="6" data2="centroid"/>
+    <Link object1="6" data1="polygon" object2="4" data2="output"/>
+    <Link object1="9" data1="polygon" object2="4" data2="output"/>
+    <Link object1="10" data1="mesh" object2="11" data2="output"/>
+    <Link object1="11" data1="input" object2="4" data2="output"/>
+    <Link object1="14" data1="center" object2="7" data2="value"/>
+    <Link object1="14" data1="radius" object2="8" data2="value"/>
     <Dock dock="12" docked="2"/>
     <Dock dock="12" docked="5"/>
     <Dock dock="12" docked="10"/>

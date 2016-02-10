@@ -25,9 +25,6 @@ public:
 	virtual void update();
 	virtual bool contains(const QPointF& point);
 
-	virtual void save(panda::XmlElement& elem);
-	virtual void load(panda::XmlElement& elem);
-
 	virtual bool mousePressEvent(QMouseEvent* event);
 	virtual void mouseMoveEvent(QMouseEvent* event);
 	virtual void mouseReleaseEvent(QMouseEvent* event);
@@ -41,7 +38,7 @@ public:
 
 protected:
 	panda::Annotation* m_annotation;
-	QPointF m_deltaToEnd, m_endPos, m_startPos;
+	QPointF m_endPos, m_startPos;
 	QSizeF m_textSize;
 	QRectF m_textArea;
 	int m_textCounter, m_fontCounter;
