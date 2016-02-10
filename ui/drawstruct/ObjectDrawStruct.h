@@ -47,7 +47,7 @@ public:
 
 	virtual QSize getObjectSize();
 	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr);
-	bool getDataRect(const panda::BaseData *data, QRectF& rect);
+	bool getDataRect(const panda::BaseData* data, QRectF& rect);
 
 	QRectF getObjectArea() const;
 	QPointF getPosition() const;
@@ -60,6 +60,8 @@ public:
 	static const int dataRectMargin = 5;
 
 	virtual int dataStartY();
+
+	virtual QColor getDataColor(const panda::BaseData* data);
 
 protected:
 	GraphView* m_parentView;
@@ -125,7 +127,6 @@ class ObjectDrawStructFactory
 {
 public:
 	static ObjectDrawStructFactory* getInstance();
-	void debug();
 	ObjectDrawStruct* createDrawStruct(GraphView *view, panda::PandaObject *obj);
 
 protected:

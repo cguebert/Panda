@@ -115,7 +115,7 @@ void GenericObjectDrawStruct::drawDatas(QPainter* painter)
 			&& !GraphView::isCompatible(clickedData, dataPair.second))
 			painter->setBrush(m_parentView->palette().dark());
 		else
-			painter->setBrush(m_parentView->palette().button());
+			painter->setBrush(getDataColor(dataPair.second));
 
 		if(dynamic_cast<panda::BaseGenericData*>(dataPair.second))
 			painter->drawRoundedRect(dataPair.first, 3, 3);
@@ -152,6 +152,14 @@ QSize GenericObjectDrawStruct::getObjectSize()
 	objectSize.rheight() = qMax(objectSize.rheight(), 2*dataStartY() + normalDatasH + totalCreatedDatasH);
 
 	return objectSize;
+}
+
+QColor GenericObjectDrawStruct::getDataColor(const panda::BaseData* data)
+{
+	if (dynamic_cast<const panda::BaseGenericData*>(data))
+		return m_parentView->palette().button().color();
+	else
+		return ObjectDrawStruct::getDataColor(data);
 }
 
 int GenericObjectDrawClass = RegisterDrawObject<panda::GenericObject, GenericObjectDrawStruct>();

@@ -6,6 +6,9 @@
 #include <panda/object/PandaObject.h>
 #include <panda/PandaDocument.h>
 #include <panda/XmlDocument.h>
+#include <panda/types/DataTraits.h>
+
+#include <cmath>
 
 ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 	: m_parentView(view), m_object(obj)
@@ -144,7 +147,7 @@ void ObjectDrawStruct::drawDatas(QPainter* painter)
 			&& !GraphView::isCompatible(clickedData, dataPair.second))
 			painter->setBrush(m_parentView->palette().dark());
 		else
-			painter->setBrush(m_parentView->palette().button());
+			painter->setBrush(getDataColor(dataPair.second));
 
 		painter->drawRect(dataPair.first);
 	}
@@ -197,6 +200,15 @@ void ObjectDrawStruct::load(panda::XmlElement& elem)
 	newPos.setX(elem.attribute("x").toFloat());
 	newPos.setY(elem.attribute("y").toFloat());
 	move(newPos - m_position);
+}
+
+QColor ObjectDrawStruct::getDataColor(const panda::BaseData* data)
+{
+	// TODO: generate the list programatically if the number of types is different
+	static QStringList colors = { "#D09A39", "#9A80E2", "#94DAD0", "#8ED33E", "#E25C4F",
+		"#C39784", "#E058B3", "#68D083", "#83A1C7", "#CD8CB3", "#B8C16B", "#719B7A" };
+	int typeId = data->getDataTrait()->valueTypeId();
+	return QColor(colors[typeId % 12]);
 }
 
 //****************************************************************************//

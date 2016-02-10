@@ -17,6 +17,8 @@ public:
 	virtual void drawDatas(QPainter* painter);
 	virtual QSize getObjectSize();
 
+	virtual QColor getDataColor(const panda::BaseData* data);
+
 	static const int createdDataRectMargin = 3;
 
 protected:
