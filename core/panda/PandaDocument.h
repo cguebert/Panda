@@ -145,7 +145,7 @@ protected:
 	Data<int> m_useTimer;
 	Data<types::Point> m_mousePosition;
 	Data<int> m_mouseClick;
-	Data<int> m_useMultithread;
+	Data<int> m_nbThreads;
 
 	types::Point m_mousePositionBuffer;
 	int m_mouseClickBuffer = 0;

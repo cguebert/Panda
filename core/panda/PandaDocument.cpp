@@ -74,7 +74,7 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	, m_useTimer(initData(1, "use timer", "If true, wait before the next timestep. If false, compute the next one as soon as the previous finished."))
 	, m_mousePosition(initData("mouse position", "Current position of the mouse in the render view"))
 	, m_mouseClick(initData(0, "mouse click", "1 if the left mouse button is pressed"))
-	, m_useMultithread(initData(0, "use multithread", "Optimize computation for multiple CPU cores"))
+	, m_nbThreads(initData(0, "nb threads", "Optimize computation for multiple CPU cores (not using the scheduler if < 0)"))
 	, m_gui(gui)
 	, m_undoStack(std::make_unique<UndoStack>())
 	, m_renderer(std::make_unique<DocumentRenderer>(*this))
@@ -84,7 +84,7 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	addInput(m_backgroundColor);
 	addInput(m_timestep);
 	addInput(m_useTimer);
-	addInput(m_useMultithread);
+	addInput(m_nbThreads);
 
 	m_useTimer.setWidget("checkbox");
 
@@ -98,8 +98,6 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	m_mouseClick.setOutput(true);
 	m_mouseClick.setReadOnly(true);
 	m_mouseClick.setWidget("checkbox");
-
-	m_useMultithread.setWidget("checkbox");
 
 	m_defaultLayer = std::make_shared<Layer>(this);
 	m_defaultLayer->getLayerNameData().setValue("Default Layer");
@@ -371,7 +369,7 @@ void PandaDocument::resetDocument()
 	m_useTimer.setValue(1);
 	m_renderSize.setValue(Point(800,600));
 	m_backgroundColor.setValue(Color::white());
-	m_useMultithread.setValue(0);
+	m_nbThreads.setValue(0);
 
 	m_animPlaying = false;
 	m_animMultithread = false;
@@ -720,12 +718,13 @@ void PandaDocument::play(bool playing)
 	m_animPlaying = playing;
 	if(m_animPlaying)
 	{
-		m_animMultithread = m_useMultithread.getValue() != 0;
+		int nbThreads = m_nbThreads.getValue();
+		m_animMultithread = nbThreads != 0;
 		if(m_animMultithread)
 		{
 			if(!m_scheduler)
 				m_scheduler = std::make_unique<Scheduler>(this);
-			m_scheduler->init();
+			m_scheduler->init(nbThreads);
 		}
 #ifdef PANDA_LOG_EVENTS
 		else

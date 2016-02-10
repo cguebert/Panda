@@ -24,7 +24,7 @@ class PANDA_CORE_API Scheduler
 {
 public:
 	Scheduler(PandaDocument* document);
-	void init();
+	void init(int nbThreads = -1); // If -1, use half of hardware concurrency
 	void stop();
 
 	void setDirty();
@@ -38,7 +38,7 @@ protected:
 	void buildDirtyList();
 	void buildUpdateGraph();
 	void computeStartValues();
-	void prepareThreads();
+	void prepareThreads(int nbThreads = -1);
 
 	friend class SchedulerThread;
 	struct SchedulerTask;

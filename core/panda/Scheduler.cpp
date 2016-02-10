@@ -100,12 +100,12 @@ Scheduler::Scheduler(PandaDocument* document)
 {
 }
 
-void Scheduler::init()
+void Scheduler::init(int nbThreads)
 {
 	buildDirtyList();
 	buildUpdateGraph();
 
-	prepareThreads();
+	prepareThreads(nbThreads);
 }
 
 void Scheduler::stop()
@@ -407,9 +407,10 @@ void Scheduler::computeStartValues()
 	}
 }
 
-void Scheduler::prepareThreads()
+void Scheduler::prepareThreads(int nbThreads)
 {
-	int nbThreads = std::max(1u, std::thread::hardware_concurrency() / 2);
+	if(nbThreads < 0)
+		nbThreads = std::max(1u, std::thread::hardware_concurrency() / 2);
 
 	m_updateThreads.push_back(std::make_shared<SchedulerThread>(this, 0));
 	for(int i=1; i<nbThreads; ++i)
