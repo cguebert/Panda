@@ -20,47 +20,49 @@ public:
 	PANDA_CLASS(PandaObject, DataNode)
 	explicit PandaObject(PandaDocument* document);
 
-	const std::string& getName() const;
-	uint32_t getIndex() const;
+	const std::string& getName() const; /// Returns the name of the object (what is shown in the graph view)
+	uint32_t getIndex() const; /// Returns the index of creation of this object (will not change during the life of the document)
 
-	void addData(BaseData* data, int index = -1); // Insert a new Data at the specified index. If index < 0, add at the end
-	void removeData(BaseData* data);
+	void addData(BaseData* data, int index = -1); /// Insert a new Data at the specified index. If index < 0, add at the end
+	void removeData(BaseData* data); /// Remove the data from the list (it will not be shown in the GUI nor serialized)
 
-	void addOutput(BaseData& data);
+	void addOutput(BaseData& data); /// data will be set as read-only before being added
 	using DataNode::addOutput;
 
-	BaseData* getData(const std::string& name) const;
-	const std::vector<BaseData*>& getDatas() const;
-	std::vector<BaseData*> getInputDatas() const;
-	std::vector<BaseData*> getOutputDatas() const;
+	BaseData* getData(const std::string& name) const; /// Returns the Data with the given name, or null
+	const std::vector<BaseData*>& getDatas() const; /// Access to the list of Datas
+	std::vector<BaseData*> getInputDatas() const; /// Get only the Datas registered as input to this object
+	std::vector<BaseData*> getOutputDatas() const; /// Get only the Datas registered as output to this object
 
+	/// Helper function to set the owner of a Data as this object, which will automatically add the Data to the list
 	BaseData::BaseInitData initData(std::string name, std::string help);
 
+	/// Templated version of initData which accepts an initial value (otherwise the value is default constructed)
 	template<class ValueType>
 	typename BaseData::InitData<ValueType> initData(const ValueType& value, std::string name, std::string help)
 	{ return BaseData::InitData<ValueType>(value, name, help, this); }
 
-	virtual void postCreate();
-	virtual void preDestruction();
-	virtual void reset() {}
-	virtual void update();
-	virtual void updateIfDirty() const;
-	virtual void setDirtyValue(const DataNode* caller);
-	virtual void beginStep();
-	virtual void endStep();
+	virtual void postCreate(); /// Called by the factory after the name and index have been set
+	virtual void preDestruction(); /// Called just before this object is freed
+	virtual void reset() {} /// Called when rewinding the document
+	virtual void update() override; /// Do the computations in this method
+	virtual void updateIfDirty() const override; /// This adds logging before calling update
+	virtual void setDirtyValue(const DataNode* caller) override; /// Only adds logging on top of DataNode::setDirtyValue
+	virtual void beginStep(); /// Called at the beginning of each step (update can be called without this being called if outside of animation)
+	virtual void endStep(); /// Called at the end of each step
 
-	virtual void save(XmlElement& elem, const std::vector<PandaObject*> *selected = nullptr);
-	virtual void load(XmlElement& elem);
+	virtual void save(XmlElement& elem, const std::vector<PandaObject*> *selected = nullptr); /// Save the object in XML
+	virtual void load(XmlElement& elem); /// Load the object from XML
 
-	virtual void dataSetParent(BaseData* data, BaseData* parent);
+	virtual void dataSetParent(BaseData* data, BaseData* parent); /// Changed the parent of the data, and emit the modified signal
 
-	void emitModified();
-	void emitDirty();
+	void emitModified(); /// Emit the modified signal (unless special cases, like if the object is being destroyed)
+	void emitDirty(); /// Emit the dirty signal  (unless special cases)
 
-	bool doesLaterUpdate();
-	bool updateOnMainThread();
+	bool doesLaterUpdate(); /// Access to the read-only laterUpdate property
+	bool updateOnMainThread(); /// Access to the read-only updateOnMainThread property
 
-	PandaDocument* getParentDocument();
+	PandaDocument* getParentDocument(); /// Get the parent document of this object (for a document, this is itself)
 
 	virtual void addedToDocument() {}		/// The object is being added
 	virtual void removedFromDocument() {}	/// Ths object is being removed (but not deleted as it can be undone later)
@@ -69,18 +71,21 @@ public:
 	void setInStep(bool inStep); /// The document will force the value of the flag even before calling beginStep
 
 protected:
-	PandaDocument* m_parentDocument;
+	void setInternalData(const std::string& name, uint32_t index); /// Should only be called by the Object Factory, to set the object's name and index
+	friend class ObjectFactory;
+
+	PandaDocument* m_parentDocument = nullptr;
+	std::vector<BaseData*> m_datas;
 	uint32_t m_index = 0;
-	bool m_doEmitModified = true, m_doEmitDirty = true, m_isInStep = false;
+	std::string m_name;
+
+	bool m_doEmitModified = true;
+	bool m_doEmitDirty = true;
+	bool m_isInStep = false;
 	bool m_laterUpdate = false; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
 	bool m_updateOnMainThread = false; // Flag for the scheduler: if true, this object will always be updated on the main thread
-	mutable bool m_isUpdating = false;
+	mutable bool m_isUpdating = false; // Mutable as it will modified in const methods
 	bool m_destructing = false;
-	std::string m_name;
-	std::vector<BaseData*> m_datas;
-
-	void setInternalData(const std::string& name, uint32_t index);
-	friend class ObjectFactory;
 };
 
 //****************************************************************************//
