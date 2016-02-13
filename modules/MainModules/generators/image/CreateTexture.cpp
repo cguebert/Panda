@@ -37,7 +37,7 @@ public:
 
 		addOutput(m_image);
 
-		m_updateOnMainThread = true;
+		setUpdateOnMainThread(true);
 	}
 
 	bool accepts(DockableObject* dockable) const

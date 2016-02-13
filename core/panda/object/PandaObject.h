@@ -59,21 +59,33 @@ public:
 	void emitModified(); /// Emit the modified signal (unless special cases, like if the object is being destroyed)
 	void emitDirty(); /// Emit the dirty signal  (unless special cases)
 
-	bool doesLaterUpdate(); /// Access to the read-only laterUpdate property
-	bool updateOnMainThread(); /// Access to the read-only updateOnMainThread property
+	bool doesLaterUpdate() const; /// Access to the read-only laterUpdate property
+	bool updateOnMainThread() const; /// Access to the read-only updateOnMainThread property
 
-	PandaDocument* getParentDocument(); /// Get the parent document of this object (for a document, this is itself)
+	PandaDocument* parentDocument() const; /// Get the parent document of this object (for a document, this is itself)
 
 	virtual void addedToDocument() {}		/// The object is being added
 	virtual void removedFromDocument() {}	/// Ths object is being removed (but not deleted as it can be undone later)
 
-	bool isUpdating(); /// True during the execution of update()
+	bool isUpdating() const; /// True during the execution of update()
+	bool isDestructing() const; /// True after preDestruction() has been called
+
 	void setInStep(bool inStep); /// The document will force the value of the flag even before calling beginStep
+	bool isInStep() const; /// This is true if update is called while a step is in progress
 
 protected:
 	void setInternalData(const std::string& name, uint32_t index); /// Should only be called by the Object Factory, to set the object's name and index
 	friend class ObjectFactory;
 
+	void setParentDocument(PandaDocument* doc); /// Set the parent document. Will do nothing if a document has already been set as this object's parent.
+
+	void enableModifiedSignal(bool b); /// To (de)activate the execution of the modified signal. Do not forget to put the previous value back when done.
+	void enableDirtySignal(bool b); /// To (de)activate the execution of the dirty signal. Do not forget to put the previous value back when done.
+
+	void setLaterUpdate(bool b); /// Tell the scheduler that this object will be dirty later in the timestep (maybe multiple times)
+	void setUpdateOnMainThread(bool b); /// Tell the scheduler that this object will always be updated on the main thread
+
+private:
 	PandaDocument* m_parentDocument = nullptr;
 	std::vector<BaseData*> m_datas;
 	uint32_t m_index = 0;
@@ -114,20 +126,41 @@ inline const std::vector<BaseData*>& PandaObject::getDatas() const
 inline void PandaObject::setInternalData(const std::string& name, uint32_t index)
 { m_name = name; m_index = index; }
 
-inline bool PandaObject::doesLaterUpdate()
+inline bool PandaObject::doesLaterUpdate() const
 { return m_laterUpdate; }
 
-inline bool PandaObject::updateOnMainThread()
+inline bool PandaObject::updateOnMainThread() const
 { return m_updateOnMainThread; }
 
-inline PandaDocument* PandaObject::getParentDocument()
+inline PandaDocument* PandaObject::parentDocument() const
 { return m_parentDocument; }
 
-inline bool PandaObject::isUpdating()
+inline void PandaObject::setParentDocument(PandaDocument* doc)
+{ if (!m_parentDocument) m_parentDocument = doc; }
+
+inline bool PandaObject::isUpdating() const
 { return m_isUpdating; }
+
+inline bool PandaObject::isDestructing() const
+{ return m_destructing; }
 
 inline void PandaObject::setInStep(bool inStep)
 { m_isInStep = inStep; }
+
+inline bool PandaObject::isInStep() const
+{ return m_isInStep; }
+
+inline void PandaObject::enableModifiedSignal(bool b)
+{ m_doEmitModified = b; }
+
+inline void PandaObject::enableDirtySignal(bool b)
+{ m_doEmitDirty = b; }
+
+inline void PandaObject::setLaterUpdate(bool b)
+{ m_laterUpdate = b; }
+
+inline void PandaObject::setUpdateOnMainThread(bool b)
+{ m_updateOnMainThread = b; }
 
 } // namespace Panda
 

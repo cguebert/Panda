@@ -41,7 +41,7 @@ public:
 	void setDirtyValue(const DataNode* caller)
 	{
 		PandaObject::setDirtyValue(caller);
-		if(!m_isInStep)
+		if(!isInStep())
 			saveImages();
 	}
 
@@ -52,7 +52,7 @@ public:
 #endif
 		const auto& names = fileName.getValue();
 
-		m_parentDocument->getGUI().contextMakeCurrent();
+		parentDocument()->getGUI().contextMakeCurrent();
 		const auto& images = image.getValue();
 
 		if (images.empty())
@@ -69,7 +69,7 @@ public:
 			}
 		}
 
-		m_parentDocument->getGUI().contextDoneCurrent();
+		parentDocument()->getGUI().contextDoneCurrent();
 	}
 
 protected:

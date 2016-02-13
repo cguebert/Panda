@@ -103,8 +103,6 @@ Layer::Layer(PandaDocument* parent)
 	, m_compositionMode(initData(0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
 	, m_opacity(initData(1.0, "opacity", "Set the opacity of the layer"))
 {
-	m_name = "Default layer"; // Any Layer created by the Factory will have its name changed
-
 	addInput(m_layerName);
 	addInput(m_opacity);
 	addInput(m_compositionMode);
@@ -122,12 +120,12 @@ Layer::Layer(PandaDocument* parent)
 	addOutput(*parent);
 	addOutput(m_image);
 
-	m_updateOnMainThread = true;
+	setUpdateOnMainThread(true);
 }
 
 void Layer::update()
 {
-	updateLayer(m_parentDocument);
+	updateLayer(parentDocument());
 	cleanDirty();
 }
 
@@ -153,7 +151,7 @@ void Layer::postCreate()
 {
 	PandaObject::postCreate();
 	int i = 1;
-	for(auto obj : m_parentDocument->getObjects())
+	for(auto obj : parentDocument()->getObjects())
 	{
 		if(dynamic_cast<Layer*>(obj.get()) && obj.get() != this)
 			++i;
@@ -171,13 +169,13 @@ void Layer::removedFromDocument()
 
 	DockObject::removedFromDocument();
 
-	if(m_parentDocument->isInCommandMacro())
-		m_parentDocument->addCommand(std::make_shared<MoveLayerCommand>(m_parentDocument, this, 0));
+	if(parentDocument()->isInCommandMacro())
+		parentDocument()->addCommand(std::make_shared<MoveLayerCommand>(parentDocument(), this, 0));
 }
 
 graphics::Size Layer::getLayerSize() const
 {
-	return m_parentDocument->getRenderSize();
+	return parentDocument()->getRenderSize();
 }
 
 int LayerClass = RegisterObject<Layer>("Layer").setDescription("Organize renderers and change opacity and the composition mode");

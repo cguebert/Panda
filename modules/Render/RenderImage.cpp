@@ -46,7 +46,7 @@ public:
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
 		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
 
-		m_updateOnMainThread = true; // Because we manipulate images that may have to be converted to textures
+		setUpdateOnMainThread(true); // Because we manipulate images that may have to be converted to textures
 	}
 
 	void initGL()

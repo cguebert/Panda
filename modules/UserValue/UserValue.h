@@ -60,7 +60,7 @@ public:
 
 	void save(XmlElement& elem, const std::vector<PandaObject*> *selected) override
 	{	// Compared to PandaObject::save, we want to always save the userValue, because of the customData (widget & widgetData)
-		for(BaseData* data : m_datas)
+		for(BaseData* data : getDatas())
 		{
 			if(data == &m_userValue ||
 					(data->isSet() && data->isPersistent() && !data->isReadOnly()

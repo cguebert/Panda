@@ -26,7 +26,7 @@ public:
 	void update()
 	{
 		cleanDirty();
-		auto tmpSize = m_parentDocument->getRenderSize();
+		auto tmpSize = parentDocument()->getRenderSize();
 		renderSize.setValue(Point(static_cast<float>(tmpSize.width()), static_cast<float>(tmpSize.height())));
 	}
 
@@ -57,7 +57,7 @@ public:
 	void update()
 	{
 		cleanDirty();
-		auto tmpSize = m_parentDocument->getRenderSize();
+		auto tmpSize = parentDocument()->getRenderSize();
 		renderArea.setValue(types::Rect(0, 0, static_cast<float>(tmpSize.width()), static_cast<float>(tmpSize.height())));
 	}
 

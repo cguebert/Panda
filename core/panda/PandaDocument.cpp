@@ -106,7 +106,7 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	
 	m_undoStack->setUndoLimit(25);
 
-	m_parentDocument = this;
+	setParentDocument(this);
 }
 
 PandaDocument::~PandaDocument()
@@ -645,7 +645,7 @@ void PandaDocument::onDirtyObject(PandaObject* object)
 	if(m_resetting)
 		return;
 
-	if (m_isInStep)
+	if (isInStep())
 	{
 		m_dirtyObjects.push_back(object);
 	}
@@ -706,7 +706,7 @@ graphics::Framebuffer& PandaDocument::getFBO()
 void PandaDocument::setDirtyValue(const DataNode* caller)
 {
 	PandaObject::setDirtyValue(caller);
-	if(!m_isInStep && !getCurrentSelectedObject())
+	if(!isInStep() && !getCurrentSelectedObject())
 		m_signals->selectedObjectIsDirty.run(this);
 
 	if(caller == &m_renderSize)
@@ -764,7 +764,7 @@ void PandaDocument::step()
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 #endif
 
-	m_isInStep = true;
+	setInStep(true);
 	// Force the value of isInStep, because some objects will propagate dirtyValue during beginStep
 	for(auto& object : m_objects)
 		object->setInStep(true);
@@ -796,7 +796,7 @@ void PandaDocument::step()
 	setDirtyValue(this);
 	updateIfDirty();
 
-	m_isInStep = false;
+	setInStep(false);
 	for(auto& object : m_objects)
 		object->endStep();
 

@@ -7,12 +7,12 @@ OGLObject::OGLObject(PandaDocument* document)
 	: PandaObject(document)
 	, m_isGLInitialized(false)
 {
-	m_updateOnMainThread = true;
+	setUpdateOnMainThread(true);
 }
 
 void OGLObject::updateIfDirty() const
 {
-	if(isDirty() && !m_isUpdating)
+	if(isDirty() && !isUpdating())
 	{
 		if(!m_isGLInitialized)
 		{

@@ -48,7 +48,7 @@ public:
 		if(!m_xmlRoot)
 			initRoot();
 
-		if (m_singleValue.getValue() || !m_isInStep)
+		if (m_singleValue.getValue() || !isInStep())
 			initRoot();
 
 		auto xmlData = m_xmlRoot.addChild("SavedData");
@@ -62,7 +62,7 @@ public:
 
 		TimedFunctions::instance().cancelRun(m_saveTimerId);
 		m_saveTimerId = TimedFunctions::instance().delayRun(0.5, [this]() { 
-			getParentDocument()->getGUI().executeByUI([this](){
+			parentDocument()->getGUI().executeByUI([this](){
 				saveToFile();
 			});
 		});

@@ -40,7 +40,7 @@ void DockObject::addDockable(DockableObject* dockable, int index)
 		m_dockedObjects.push_back(dockable);
 	else
 		m_dockedObjects.insert(m_dockedObjects.begin() + index, dockable);
-	m_parentDocument->onModifiedObject(this);
+	parentDocument()->onModifiedObject(this);
 }
 
 void DockObject::doRemoveInput(DataNode& node)
@@ -52,7 +52,7 @@ void DockObject::doRemoveInput(DataNode& node)
 	{
 		m_dockedObjects.erase(iter);
 		setDirtyValue(this);
-		m_parentDocument->onModifiedObject(this);
+		parentDocument()->onModifiedObject(this);
 	}
 }
 
@@ -80,23 +80,23 @@ void DockObject::reorderDockable(DockableObject* dockable, int index)
 			m_dockedObjects.insert(m_dockedObjects.begin() + index, dockable);
 
 		setDirtyValue(this);
-		m_parentDocument->onModifiedObject(this);
+		parentDocument()->onModifiedObject(this);
 	}
 }
 
 void DockObject::removedFromDocument()
 {
-	if(m_parentDocument->isInCommandMacro())
+	if(parentDocument()->isInCommandMacro())
 	{
 		auto docked = m_dockedObjects;
 		for(auto it = docked.rbegin(); it != docked.rend(); ++it)
 		{
 			auto dockable = *it;
-			m_parentDocument->addCommand(std::make_shared<DetachDockableCommand>(this, dockable));
+			parentDocument()->addCommand(std::make_shared<DetachDockableCommand>(this, dockable));
 			auto defaultDock = dockable->getDefaultDock();
 			if(defaultDock)
-				m_parentDocument->addCommand(std::make_shared<AttachDockableCommand>(defaultDock, dockable, 0));
-			m_parentDocument->onChangedDock(dockable);
+				parentDocument()->addCommand(std::make_shared<AttachDockableCommand>(defaultDock, dockable, 0));
+			parentDocument()->onChangedDock(dockable);
 		}
 	}
 }
@@ -118,8 +118,8 @@ void DockableObject::postCreate()
 
 void DockableObject::removedFromDocument()
 {
-	if(m_parentDock && m_parentDocument->isInCommandMacro())
-		m_parentDocument->addCommand(std::make_shared<DetachDockableCommand>(m_parentDock, this));
+	if(m_parentDock && parentDocument()->isInCommandMacro())
+		parentDocument()->addCommand(std::make_shared<DetachDockableCommand>(m_parentDock, this));
 }
 
 } // namespace panda

@@ -46,7 +46,7 @@ public:
 
 		setupGenericObject<allDataTypes>(this, m_generic, defList);
 
-		m_laterUpdate = true;
+		setLaterUpdate(true);
 	}
 
 	template <class T>
@@ -58,12 +58,12 @@ public:
 		VecData* dataOutput = dynamic_cast<VecData*>(list[2]);
 		assert(dataInput && dataInit && dataOutput);
 
-		m_parentDocument->setDataDirty(dataOutput);
+		parentDocument()->setDataDirty(dataOutput);
 		if(m_copyInit)
 			dataOutput->getAccessor() = dataInit->getValue();
 		else
 			dataOutput->getAccessor() = dataInput->getValue();
-		m_parentDocument->setDataReady(dataOutput);
+		parentDocument()->setDataReady(dataOutput);
 	}
 
 	void update()
@@ -94,7 +94,7 @@ public:
 		if(caller == &m_condition)
 			return;
 
-		if(m_isUpdating)
+		if(isUpdating())
 			DataNode::setDirtyValue(caller);
 		else if(caller == &m_control || caller == this)
 			PandaObject::setDirtyValue(caller);

@@ -209,5 +209,5 @@ void EditGroupDialog::updateGroup()
 	}
 
 	if(modified)
-		m_group->getParentDocument()->addCommand(std::make_shared<EditGroupCommand>(m_group, groupName, datasList));
+		m_group->parentDocument()->addCommand(std::make_shared<EditGroupCommand>(m_group, groupName, datasList));
 }

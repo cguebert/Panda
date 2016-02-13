@@ -77,8 +77,8 @@ BaseData* GenericObject::createDatas(int type, int index)
 
 	BaseData* firstInputData = nullptr;
 
-	m_doEmitModified = false;
-	m_doEmitDirty = false;
+	enableModifiedSignal(false);
+	enableDirtySignal(false);
 
 	int nbDefs = m_dataDefinitions.size();
 	for(int i=0; i<nbDefs; ++i)
@@ -124,8 +124,8 @@ BaseData* GenericObject::createDatas(int type, int index)
 		addData(m_genericData);
 	}
 
-	m_doEmitModified = true;
-	m_doEmitDirty = true;
+	enableModifiedSignal(true);
+	enableDirtySignal(true);
 	emitModified();
 
 	return firstInputData;
@@ -225,7 +225,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(inputData)
 			inputData->setParent(parent);
 
-		m_parentDocument->onModifiedObject(this);
+		parentDocument()->onModifiedObject(this);
 	}
 	else if (parent || !m_createdDatasMap.count(data))
 	{
@@ -259,7 +259,7 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 			updateDataNames();
 		}
 
-		m_parentDocument->onModifiedObject(this);
+		parentDocument()->onModifiedObject(this);
 	}
 }
 
@@ -307,7 +307,7 @@ void GenericObject::load(XmlElement& elem)
 void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 {
 	// Bugfix: don't do anything if we are currently deleting the object
-	if(m_destructing)
+	if(isDestructing())
 		return;
 
 	// Create commands if links are disconnected from the outputs of this group
@@ -319,13 +319,13 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 			{
 				BaseData* target = dynamic_cast<BaseData*>(output);
 				if(target)
-					m_parentDocument->addCommand(std::make_shared<LinkDatasCommand>(target, nullptr));
+					parentDocument()->addCommand(std::make_shared<LinkDatasCommand>(target, nullptr));
 			}
 		}
 	}
 
 	// Create a command so that we can undo the removal of this group of datas
-	auto currentCommand = m_parentDocument->getCurrentCommand();
+	auto currentCommand = parentDocument()->getCurrentCommand();
 	if(currentCommand)
 	{
 		int index = helper::indexOf(m_createdDatasStructs, createdData);
@@ -390,8 +390,8 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 
 	BaseData* firstInputData = nullptr;
 
-	m_doEmitModified = false;
-	m_doEmitDirty = false;
+	enableModifiedSignal(false);
+	enableDirtySignal(false);
 
 	int nbDefs = m_dataDefinitions.size();
 	for(int i=0; i<nbDefs; ++i)
@@ -444,8 +444,8 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 		addData(m_genericData);
 	}
 
-	m_doEmitModified = true;
-	m_doEmitDirty = true;
+	enableModifiedSignal(true);
+	enableDirtySignal(true);
 	emitModified();
 
 	return firstInputData;
@@ -462,7 +462,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(inputData)
 			inputData->setParent(parent);
 
-		m_parentDocument->onModifiedObject(this);
+		parentDocument()->onModifiedObject(this);
 	}
 	// Changing connection
 	else if(parent || !m_createdDatasMap.count(data))
@@ -524,7 +524,7 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 				setDirtyValue(this);
 		}
 
-		m_parentDocument->onModifiedObject(this);
+		parentDocument()->onModifiedObject(this);
 	}
 }
 

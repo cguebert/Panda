@@ -145,7 +145,7 @@ public:
 
 			if(m_currentSelection != -1)
 			{
-				Point currentPos = m_parentDocument->getMousePosition();
+				Point currentPos = parentDocument()->getMousePosition();
 				editRectangle(output[m_currentSelection], m_selectedHandle,
 							  currentPos - m_moveStartPos,
 							  centerH[m_currentSelection], cornerH[m_currentSelection]);

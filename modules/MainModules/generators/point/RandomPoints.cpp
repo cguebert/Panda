@@ -53,7 +53,7 @@ public:
 		Rect area = m_area.getValue();
 		if(area.empty())
 		{
-			auto size = m_parentDocument->getRenderSize();
+			auto size = parentDocument()->getRenderSize();
 			area = Rect(0, 0, static_cast<float>(size.width()-1), static_cast<float>(size.height()-1));
 		}
 		float w = area.width(), h = area.height();

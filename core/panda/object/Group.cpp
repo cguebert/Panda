@@ -167,7 +167,7 @@ void Group::load(XmlElement& elem)
 	{
 		std::string registryName = objectNode.attribute("type").toString();
 		uint32_t index = objectNode.attribute("index").toUnsigned();
-		auto object = factory->create(registryName, m_parentDocument);
+		auto object = factory->create(registryName, parentDocument());
 		if(object)
 		{
 			importObjectsMap[index] = object.get();
@@ -182,7 +182,7 @@ void Group::load(XmlElement& elem)
 		}
 		else
 		{
-			getParentDocument()->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
+			parentDocument()->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
 			return;
 		}
 
@@ -248,7 +248,7 @@ void Group::load(XmlElement& elem)
 		dockNode = dockNode.nextSibling("Dock");
 	}
 
-	m_parentDocument->onModifiedObject(this);
+	parentDocument()->onModifiedObject(this);
 }
 
 void Group::reset()
@@ -300,15 +300,15 @@ void GroupWithLayer::setLayer(Layer* newLayer)
 	// Reinsert the group where the layer was
 	if(m_layer)
 	{
-		int layerPos = m_parentDocument->getObjectPosition(m_layer);
+		int layerPos = parentDocument()->getObjectPosition(m_layer);
 		if(layerPos != -1)
-			m_parentDocument->reinsertObject(this, layerPos);
+			parentDocument()->reinsertObject(this, layerPos);
 	}
 }
 
 void GroupWithLayer::update()
 {
-	updateLayer(m_parentDocument);
+	updateLayer(parentDocument());
 	cleanDirty();
 }
 
@@ -331,7 +331,7 @@ void GroupWithLayer::addObject(ObjectPtr object)
 		return;
 	}
 
-	Layer* defaultLayer = m_parentDocument->getDefaultLayer();
+	Layer* defaultLayer = parentDocument()->getDefaultLayer();
 	Renderer* renderer = dynamic_cast<Renderer*>(object.get());
 	if(renderer)
 	{
@@ -356,7 +356,7 @@ void GroupWithLayer::removeObject(PandaObject* object)
 
 	Renderer* renderer = dynamic_cast<Renderer*>(object);
 	if(renderer && !renderer->getParentDock())
-		m_parentDocument->getDefaultLayer()->addDockable(renderer);
+		parentDocument()->getDefaultLayer()->addDockable(renderer);
 }
 
 void GroupWithLayer::removedFromDocument()
@@ -366,8 +366,8 @@ void GroupWithLayer::removedFromDocument()
 	// Reinsert the layer where the group was
 	if(m_layer)
 	{
-		int layerPos = m_parentDocument->getObjectPosition(this);
-		m_parentDocument->reinsertObject(m_layer, layerPos);
+		int layerPos = parentDocument()->getObjectPosition(this);
+		parentDocument()->reinsertObject(m_layer, layerPos);
 	}
 }
 
@@ -376,7 +376,7 @@ graphics::Size GroupWithLayer::getLayerSize() const
 	if(m_layer)
 		return m_layer->getLayerSize();
 	else
-		return m_parentDocument->getRenderSize();
+		return parentDocument()->getRenderSize();
 }
 
 int GroupWithLayerClass = RegisterObject<GroupWithLayer>("GroupWithLayer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);

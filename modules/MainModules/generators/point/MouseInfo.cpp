@@ -44,7 +44,7 @@ public:
 
 	void update()
 	{
-		Point oldPos = m_position.getValue(), newPos = m_parentDocument->getMousePosition();
+		Point oldPos = m_position.getValue(), newPos = parentDocument()->getMousePosition();
 
 		Point delta;
 		if(oldPos != newPos)
@@ -57,7 +57,7 @@ public:
 		if(delta != m_movement.getValue())
 			m_movement.setValue(delta);
 
-		m_clickState.setValue(m_parentDocument->getMouseClick());
+		m_clickState.setValue(parentDocument()->getMouseClick());
 
 		m_firstTimestep = false;
 	}

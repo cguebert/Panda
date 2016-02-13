@@ -53,7 +53,7 @@ public:
 		Rect area = m_area.getValue();
 		if(area.empty())
 		{
-			auto size = m_parentDocument->getRenderSize();
+			auto size = parentDocument()->getRenderSize();
 			area = Rect(0, 0, size.width()-1, size.height()-1);
 		}
 

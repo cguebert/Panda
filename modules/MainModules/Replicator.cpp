@@ -25,7 +25,7 @@ public:
 		index.setOutput(true); // But not really connecting
 		index.setReadOnly(true);
 
-		m_laterUpdate = true;
+		setLaterUpdate(true);
 	}
 
 	void iterateRenderers()
@@ -33,10 +33,10 @@ public:
 		int nb = nbIterations.getValue();
 		for(int i=0; i<nb; ++i)
 		{
-			m_parentDocument->setDataDirty(&index); // Preset the outputs as dirty
+			parentDocument()->setDataDirty(&index); // Preset the outputs as dirty
 			index.setValue(i);
-			m_parentDocument->setDataReady(&index); // Launch the computation
-			m_parentDocument->waitForOtherTasksToFinish(); // Wait for the end of the computation
+			parentDocument()->setDataReady(&index); // Launch the computation
+			parentDocument()->waitForOtherTasksToFinish(); // Wait for the end of the computation
 
 			auto& dockables = getDockedObjects();
 			for(auto it=dockables.rbegin(); it!=dockables.rend(); ++it)

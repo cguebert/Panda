@@ -100,7 +100,7 @@ public:
 
 			if(m_currentSelection != -1)
 			{
-				Point currentPos = m_parentDocument->getMousePosition();
+				Point currentPos = parentDocument()->getMousePosition();
 				output[m_currentSelection] += currentPos - m_moveStartPos;
 				m_moveStartPos = currentPos;
 			}
@@ -206,7 +206,7 @@ public:
 
 			if(m_currentSelection != -1)
 			{
-				Point currentPos = m_parentDocument->getMousePosition();
+				Point currentPos = parentDocument()->getMousePosition();
 				output[m_currentSelection].translate(currentPos - m_moveStartPos);
 				m_moveStartPos = currentPos;
 			}

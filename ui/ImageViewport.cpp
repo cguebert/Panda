@@ -49,7 +49,7 @@ QSize ImageViewport::sizeHint() const
 
 void ImageViewport::setDirtyValue(const panda::DataNode* /*caller*/)
 {
-	auto document = m_data->getOwner()->getParentDocument();
+	auto document = m_data->getOwner()->parentDocument();
 	if (!m_data->isDirty() // Just got modified
 		|| !document->animationIsPlaying()) // Or animation not playing
 		updateData();
@@ -57,7 +57,7 @@ void ImageViewport::setDirtyValue(const panda::DataNode* /*caller*/)
 
 void ImageViewport::updateData()
 {
-	auto document = m_data->getOwner()->getParentDocument();
+	auto document = m_data->getOwner()->parentDocument();
 	document->getGUI().executeByUI([this, document]() { // Execute this outside of any rendering
 		if (m_data->isDirty())
 		{

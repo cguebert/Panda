@@ -38,7 +38,7 @@ public:
 
 		setupGenericObject<allDataTypes>(this, generic, defList);
 
-		m_laterUpdate = true;
+		setLaterUpdate(true);
 	}
 
 	template <class T>
@@ -51,9 +51,9 @@ public:
 		assert(dataInput && dataInit && dataOutput);
 
 		const std::vector<T>& value = resetValues ? dataInit->getValue() : dataInput->getValue();
-		m_parentDocument->setDataDirty(dataOutput);
+		parentDocument()->setDataDirty(dataOutput);
 		dataOutput->getAccessor() = value;
-		m_parentDocument->setDataReady(dataOutput);
+		parentDocument()->setDataReady(dataOutput);
 	}
 
 	void update()

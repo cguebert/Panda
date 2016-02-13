@@ -30,7 +30,7 @@ public:
 
 		addOutput(m_output);
 
-		m_updateOnMainThread = true;
+		setUpdateOnMainThread(true);
 	}
 
 	void update()
@@ -75,7 +75,7 @@ public:
 
 		addOutput(m_output);
 
-		m_updateOnMainThread = true;
+		setUpdateOnMainThread(true);
 	}
 
 	void update()

@@ -43,7 +43,7 @@ public:
 	void update()
 	{
 		helper::PointsGrid grid;
-		auto size = m_parentDocument->getRenderSize();
+		auto size = parentDocument()->getRenderSize();
 		Rect area(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
 		grid.initGrid(area, 10);
 

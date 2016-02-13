@@ -138,17 +138,18 @@ void EditGroupCommand::redo()
 	for(std::shared_ptr<panda::BaseData> dataPtr : m_group->m_groupDatas)
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
+	m_group->enableModifiedSignal(false);
 	std::vector< std::shared_ptr<panda::BaseData> > datasList;
 	for(auto info : m_newDatas)
 	{
 		info.data->setName(info.name);
 		info.data->setHelp(info.help);
-		panda::helper::removeAll(m_group->m_datas, info.data);
-		m_group->m_datas.push_back(info.data);
+		m_group->addData(info.data);
 		datasList.push_back(datasPtrMap.at(info.data));
 	}
 
 	m_group->m_groupDatas = datasList;
+	m_group->enableModifiedSignal(true);
 	m_group->emitModified();
 }
 
@@ -160,16 +161,17 @@ void EditGroupCommand::undo()
 	for(std::shared_ptr<panda::BaseData> dataPtr : m_group->m_groupDatas)
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
+	m_group->enableModifiedSignal(false);
 	std::vector< std::shared_ptr<panda::BaseData> > datasList;
 	for(auto info : m_prevDatas)
 	{
 		info.data->setName(info.name);
 		info.data->setHelp(info.help);
-		panda::helper::removeAll(m_group->m_datas, info.data);
-		m_group->m_datas.push_back(info.data);
+		m_group->addData(info.data);
 		datasList.push_back(datasPtrMap.at(info.data));
 	}
 
 	m_group->m_groupDatas = datasList;
+	m_group->enableModifiedSignal(true);
 	m_group->emitModified();
 }
