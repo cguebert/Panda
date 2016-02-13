@@ -69,7 +69,7 @@ bool Image::valid(int x, int y) const
 	if (!m_data)
 		return false;
 	const auto size = m_data->size;
-	return x >= 0 && x < size.width() && y >= 0 && y <= size.height();
+	return x >= 0 && x < size.width() && y >= 0 && y < size.height();
 }
 
 const unsigned char* Image::pixel(int x, int y) const
@@ -158,7 +158,7 @@ void Image::blitImage(Image& target, int tX, int tY, const Image& source, int sX
 	if (!target || !source)
 		return;
 
-	if (tX >= target.width() || tY > target.height())
+	if (tX >= target.width() || tY >= target.height())
 		return;
 
 	int sw = source.width(), sh = source.height();
@@ -169,7 +169,6 @@ void Image::blitImage(Image& target, int tX, int tY, const Image& source, int sX
 	sY2 = std::min(sY2, sh);
 
 	int cw = sX2 - sX1, ch = sY2 - sY1;
-	
 	for (int y = 0; y < ch; ++y)
 	{
 		const auto sD = source.pixel(sX1, sY1 + y);

@@ -16,7 +16,7 @@
         <Data name="caption">output</Data>
         <Data name="input"/>
     </Object>
-    <Object x="-355.3942260742188" type="panda::GeneratorUser&lt;PReal>" y="55" index="7">
+    <Object x="-355.3942260742188" type="panda::GeneratorUser&lt;real>" y="55" index="7">
         <Data name="caption">step</Data>
         <Data name="input" real="20"/>
     </Object>
