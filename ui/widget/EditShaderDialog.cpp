@@ -184,7 +184,7 @@ void EditShaderDialog::compileShaders()
 		if (!id)
 			error = true;
 		else
-			m_testProgram.addShader(type, id);
+			m_testProgram.addShader(id);
 
 		if (item.tabIndex == currentTab)
 		{

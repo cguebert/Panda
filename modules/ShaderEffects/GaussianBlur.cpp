@@ -104,7 +104,7 @@ public:
 		helper::replaceAll<std::string>(source, "~~3~~", offsetsString);
 
 		m_shaderProgram.clear();
-		m_shaderProgram.addShader(graphics::ShaderType::Vertex, m_vertexShader);
+		m_shaderProgram.addShader(m_vertexShader);
 		m_shaderProgram.addShaderFromMemory(graphics::ShaderType::Fragment, source);
 	}
 

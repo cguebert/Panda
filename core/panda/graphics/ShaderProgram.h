@@ -13,18 +13,23 @@ namespace panda
 namespace graphics
 {
 
+enum class ShaderType : char
+{ Vertex = 1, Fragment, Geometry, TessellationControl, TessellationEvaluation, Compute };
+
 // To free the shader only when every copy is destroyed
 class PANDA_CORE_API ShaderId
 {
 public:
 	using SPtr = std::shared_ptr<ShaderId>;
-	ShaderId(unsigned int id = 0);
+	ShaderId(ShaderType type, unsigned int id);
 	~ShaderId();
 
 	unsigned int id() const;
+	ShaderType type() const;
 
 private:
 	unsigned int m_id;
+	ShaderType m_type;
 };
 
 // To free the shader program only when every copy is destroyed
@@ -43,9 +48,6 @@ private:
 
 //****************************************************************************//
 
-enum class ShaderType : char
-{ Vertex = 1, Fragment, Geometry, TessellationControl, TessellationEvaluation, Compute };
-
 class PANDA_CORE_API ShaderProgram
 {
 public:
@@ -53,7 +55,7 @@ public:
 
 	bool addShaderFromMemory(ShaderType type, const std::string& content);
 	bool addShaderFromFile(ShaderType type, const std::string& path);
-	void addShader(ShaderType type, ShaderId::SPtr id);
+	void addShader(ShaderId::SPtr id);
 
 	static ShaderId::SPtr compileShader(ShaderType type, const std::string& content, std::string* errorString = nullptr);
 
@@ -87,10 +89,30 @@ public:
 	int attributeLocation(const char* name) const;
 
 protected:
-	using ShaderPair = std::pair<ShaderType, ShaderId::SPtr>;
-	std::vector<ShaderPair> m_shaders;
+	std::vector<ShaderId::SPtr> m_shaders;
 	ShaderProgramId::SPtr m_programId;
 };
+
+//****************************************************************************//
+
+inline ShaderId::ShaderId(ShaderType type, unsigned int id) 
+	: m_type(type), m_id(id) {}
+
+inline unsigned int ShaderId::id() const
+{ return m_id; }
+
+inline ShaderType ShaderId::type() const
+{ return m_type; }
+
+//****************************************************************************//
+
+inline ShaderProgramId::ShaderProgramId(unsigned int id) 
+	: m_id(id) {}
+
+inline unsigned int ShaderProgramId::id() const
+{ return m_id; }
+
+//****************************************************************************//
 
 inline ShaderProgram::ShaderProgram(ShaderProgramId::SPtr id)
 	: m_programId(id) {}
@@ -100,6 +122,9 @@ inline ShaderProgramId::SPtr ShaderProgram::getProgramId() const
 
 inline bool ShaderProgram::isLinked()
 { return m_programId != nullptr; }
+
+inline unsigned int ShaderProgram::id() const
+{ return m_programId ? m_programId->id() : 0; }
 
 } // namespace graphics
 

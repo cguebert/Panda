@@ -13,29 +13,11 @@ namespace panda
 namespace graphics
 {
 
-using namespace std;
-
-ShaderProgramId::ShaderProgramId(unsigned int id) 
-	: m_id(id) 
-{ }
-
-ShaderProgramId::~ShaderProgramId() 
-{ glDeleteProgram(m_id); }
-
-unsigned int ShaderProgramId::id() const
-{ return m_id; }
-
-//****************************************************************************//
-
-ShaderId::ShaderId(unsigned int id) 
-	: m_id(id) 
-{ }
-
 ShaderId::~ShaderId() 
 { glDeleteShader(m_id); }
 
-unsigned int ShaderId::id() const
-{ return m_id; }
+ShaderProgramId::~ShaderProgramId() 
+{ glDeleteProgram(m_id); }
 
 //****************************************************************************//
 
@@ -43,17 +25,17 @@ bool ShaderProgram::addShaderFromMemory(ShaderType type, const std::string& cont
 {
 	auto id = compileShader(type, content);
 	if (id)
-		addShader(type, id);
+		addShader(id);
 
 	return id != nullptr;
 }
 
 bool ShaderProgram::addShaderFromFile(ShaderType type, const std::string& path)
 {
-	string content;
-	ifstream file;
+	std::string content;
+	std::ifstream file;
 
-	file.exceptions(ifstream::failbit | ifstream::badbit);
+	file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	try
 	{
 		// Open files
@@ -63,25 +45,27 @@ bool ShaderProgram::addShaderFromFile(ShaderType type, const std::string& path)
 		file.close();
 		content = stream.str();
 	}
-	catch (ifstream::failure e)
+	catch (std::ifstream::failure e)
 	{
-		cout << "Error : Cannot load shader file " << path << endl;
+		std::cerr << "Error : Cannot load shader file " << path << std::endl;
 		return false;
 	}
 	
 	return addShaderFromMemory(type, content);
 }
 
-void ShaderProgram::addShader(ShaderType type, ShaderId::SPtr id)
+void ShaderProgram::addShader(ShaderId::SPtr id)
 {
-	auto it = std::find_if(m_shaders.begin(), m_shaders.end(), [type](const ShaderPair& s){
-		return s.first == type;
+	// If there is already one shader of this type in the program, replace it with this one
+	auto type = id->type();
+	auto it = std::find_if(m_shaders.begin(), m_shaders.end(), [type](const ShaderId::SPtr& s){
+		return s->type() == type;
 	});
 
 	if (it != m_shaders.end())
-		it->second = id;
+		*it = id;
 	else
-		m_shaders.emplace_back(type, id);
+		m_shaders.push_back(id);
 }
 
 ShaderId::SPtr ShaderProgram::compileShader(ShaderType type, const std::string& content, std::string* errorString)
@@ -112,12 +96,12 @@ ShaderId::SPtr ShaderProgram::compileShader(ShaderType type, const std::string& 
 		if (errorString)
 			*errorString = infoLog;
 		else
-			std::cout << "Error : Compilation of shader failed\n" << infoLog << std::endl;
+			std::cerr << "Error : Compilation of shader failed\n" << infoLog << std::endl;
 		glDeleteShader(shader);
 		return nullptr;
 	};
 
-	return std::make_shared<ShaderId>(shader);
+	return std::make_shared<ShaderId>(type, shader);
 }
 
 bool ShaderProgram::link(std::string* errorString)
@@ -126,7 +110,7 @@ bool ShaderProgram::link(std::string* errorString)
 
 	unsigned int program = glCreateProgram();
 	for (const auto& shader : m_shaders)
-		glAttachShader(program, shader.second->id());
+		glAttachShader(program, shader->id());
 	glLinkProgram(program);
 
 	// Print linking errors if any
@@ -139,7 +123,7 @@ bool ShaderProgram::link(std::string* errorString)
 		if (errorString)
 			*errorString = infoLog;
 		else
-			std::cout << "Error : Shader program link failed\n" << infoLog << std::endl;
+			std::cerr << "Error : Shader program link failed\n" << infoLog << std::endl;
 		glDeleteProgram(program);
 		return false;
 	}
@@ -154,13 +138,6 @@ void ShaderProgram::clear()
 {
 	m_shaders.clear();
 	m_programId.reset();
-}
-
-unsigned int ShaderProgram::id() const
-{
-	if (m_programId)
-		return m_programId->id();
-	return 0;
 }
 
 void ShaderProgram::bind() const

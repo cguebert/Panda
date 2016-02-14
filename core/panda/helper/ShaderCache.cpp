@@ -113,7 +113,7 @@ graphics::ShaderProgram ShaderCache::getShaderProgram(const ShadersList& shaders
 	for (const auto& shader : shaders)
 	{
 		auto shaderId = getShader(shader.first, shader.second);
-		program.addShader(shader.first, shaderId);
+		program.addShader(shaderId);
 	}
 
 	program.link();
