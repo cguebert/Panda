@@ -884,6 +884,14 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 		inputData->setWidget(data->getWidget());
 		inputData->setWidgetData(data->getWidgetData());
 	}
+
+	BaseData* captionData = object->getData("caption");
+	if (captionData)
+	{
+		auto* captionTextData = dynamic_cast<Data<std::string>*>(captionData);
+		if (captionTextData)
+			captionTextData->setValue(data->getName());
+	}
 }
 
 void PandaDocument::addCommand(std::shared_ptr<UndoCommand> command)
