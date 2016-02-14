@@ -3,7 +3,7 @@
     <Data name="background color" r="0" g="0" b="0" a="1"/>
     <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::GeneratorPoint_MouseInfo" index="1" x="442.25" y="271.83807373046875"/>
     <Object type="panda::GeneratorPoints_Poisson" index="2" x="433.00445556640625" y="435.68142700195312">
         <Data name="seed" int="87"/>
@@ -74,7 +74,8 @@
     </Object>
     <Object type="panda::Annotation" index="16" x="1252.8638916015625" y="540.402099609375">
         <Data name="type" int="0"/>
-        <Data name="text">Change the size of the disks
+        <Data name="text">Change the size of the disks
+
 based on their distance</Data>
         <Data name="deltaToEnd" x="90" y="37"/>
     </Object>

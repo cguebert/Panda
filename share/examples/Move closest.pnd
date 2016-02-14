@@ -3,7 +3,7 @@
     <Data name="background color" r="1" g="1" b="1" a="1"/>
     <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::GeneratorPoint_MouseInfo" index="1" x="549.060302734375" y="318.91482543945312"/>
     <Object type="panda::DoubleMath_RiseCount" index="2" x="672.060302734375" y="348.91482543945313"/>
     <Object type="panda::ListBuffer" index="3" x="1273.93115234375" y="378.37225341796875">
@@ -103,10 +103,14 @@
     </Object>
     <Object type="panda::Annotation" index="26" x="1235.450439453125" y="326.57757568359375">
         <Data name="type" int="1"/>
-        <Data name="text">Every point is always moving and we store:
-Start position
-End position
-Start animation time
+        <Data name="text">Every point is always moving and we store:
+
+Start position
+
+End position
+
+Start animation time
+
 End animatin time</Data>
         <Data name="deltaToEnd" x="105.9635" y="44.658558"/>
     </Object>

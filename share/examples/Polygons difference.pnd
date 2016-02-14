@@ -3,7 +3,7 @@
     <Data name="background color" r="1" g="1" b="1" a="1"/>
     <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::PolygonCreation_Rectangle" index="1" x="429.5181884765625" y="219"/>
     <Object type="panda::RenderPath" index="2" x="932.03857421875" y="145.09297180175781">
         <Data name="width">
@@ -62,13 +62,15 @@
     </Object>
     <Object type="panda::Annotation" index="17" x="699.337890625" y="440.513427734375">
         <Data name="type" int="1"/>
-        <Data name="text">Convert the resulting polygons into meshes.
+        <Data name="text">Convert the resulting polygons into meshes.
+
 (can be buggy)</Data>
         <Data name="deltaToEnd" x="112" y="-90"/>
     </Object>
     <Object type="panda::Annotation" index="18" x="743.850830078125" y="84.672500610351563">
         <Data name="type" int="1"/>
-        <Data name="text">Extract all paths in the polygons
+        <Data name="text">Extract all paths in the polygons
+
 (contour and holes)</Data>
         <Data name="deltaToEnd" x="83" y="54"/>
     </Object>

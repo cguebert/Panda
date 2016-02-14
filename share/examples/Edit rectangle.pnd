@@ -3,7 +3,7 @@
     <Data name="background color" r="1" g="1" b="1" a="1"/>
     <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::Group" index="1" x="579.91644287109375" y="663.33056640625">
         <GroupData type="point" input="1" output="0" name="Initial point" help="The initial position of the point" widget="default"/>
         <GroupData type="real" input="1" output="0" name="Selection dist" help="The maximum selection distance" widget="default"/>
@@ -13,7 +13,6 @@
         <Data name="Selection dist" real="20"/>
         <Object type="panda::GeneratorUser&lt;point&gt;" index="2" x="-618.25" y="-9.4833374">
             <Data name="caption">Initial point</Data>
-            <Data name="input" x="200" y="200"/>
         </Object>
         <Object type="panda::ListBuffer" index="3" x="225.75" y="-73.450012">
             <CreatedData type="point"/>
@@ -28,7 +27,6 @@
         <Object type="panda::BooleanMath_Greater" index="6" x="-228.25" y="106.45001"/>
         <Object type="panda::GeneratorUser&lt;real&gt;" index="7" x="-618.25" y="117.45001">
             <Data name="caption">Selection dist</Data>
-            <Data name="input" real="20"/>
         </Object>
         <Object type="panda::ListCondition" index="8" x="380.75" y="-114.48334">
             <CreatedData type="point"/>
@@ -45,11 +43,9 @@
         </Object>
         <Object type="panda::GeneratorUser&lt;point&gt;" index="15" x="520.25" y="-35.483337">
             <Data name="caption">Moved point</Data>
-            <Data name="input" x="200" y="200"/>
         </Object>
         <Object type="panda::GeneratorUser&lt;integer&gt;" index="16" x="488.75" y="78.5">
             <Data name="caption">Selected</Data>
-            <Data name="input" int="0"/>
         </Object>
         <Link object1="2" data1="input" object2="0" data2="Initial point"/>
         <Link object1="3" data1="control" object2="10" data2="result"/>
@@ -179,15 +175,12 @@
     </Object>
     <Object type="panda::GeneratorUser&lt;point&gt;" index="52" x="2253.417236328125" y="757.0413818359375">
         <Data name="caption">corner handle</Data>
-        <Data name="input" x="300" y="275"/>
     </Object>
     <Object type="panda::GeneratorUser&lt;rectangle&gt;" index="53" x="2253.417236328125" y="907.0413818359375">
         <Data name="caption">output</Data>
-        <Data name="input" l="100" t="125" r="300" b="275"/>
     </Object>
     <Object type="panda::GeneratorUser&lt;point&gt;" index="54" x="2253.417236328125" y="832.0413818359375">
         <Data name="caption">center handle</Data>
-        <Data name="input" x="200" y="200"/>
     </Object>
     <Link object1="1" data1="Initial point" object2="21" data2="value"/>
     <Link object1="18" data1="center" object2="52" data2="value"/>

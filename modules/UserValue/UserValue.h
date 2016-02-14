@@ -6,28 +6,6 @@
 namespace panda {
 
 template <class T>
-class CustomData : public Data<T>
-{
-public:
-	PANDA_CLASS(PANDA_TEMPLATE(CustomData, T), PANDA_TEMPLATE(Data, T))
-
-	CustomData(const std::string& name, const std::string& help, PandaObject* owner)
-		: Data<T>(name, help, owner)
-	{ }
-	
-	void save(XmlElement& elem) const override
-	{
-		Data<T>::save(elem);
-		std::string w = getWidget();
-		if(w != "default")
-			elem.setAttribute("widget", w);
-		std::string d = getWidgetData();
-		if(!d.empty())
-			elem.setAttribute("widgetData", d);
-	}
-};
-
-template <class T>
 class GeneratorUser : public BaseGeneratorUser
 {
 public:
@@ -59,22 +37,43 @@ public:
 	{ return &m_output; }
 
 	void save(XmlElement& elem, const std::vector<PandaObject*> *selected) override
-	{	// Compared to PandaObject::save, we want to always save the userValue, because of the customData (widget & widgetData)
+	{	// Compared to PandaObject::save, we want save the userValue custom parameters (widget & widgetData)
 		for(BaseData* data : getDatas())
 		{
-			if(data == &m_userValue ||
-					(data->isSet() && data->isPersistent() && !data->isReadOnly()
-					&& !(selected && data->getParent() && helper::contains(*selected, data->getParent()->getOwner()))))
+			XmlElement xmlData;
+			if (data == &m_userValue) // Save the custom parameters of the user data, if not default
 			{
-				auto xmlData = elem.addChild("Data");
-				xmlData.setAttribute("name", data->getName());
+				std::string widget = data->getWidget();
+				std::string widgetData = data->getWidgetData();
+				if (widget != "default" || !widgetData.empty())
+				{
+					xmlData = elem.addChild("Data");
+					xmlData.setAttribute("name", data->getName());
+
+					if(widget != "default")
+						xmlData.setAttribute("widget", widget);
+				
+					if(!widgetData.empty())
+						xmlData.setAttribute("widgetData", widgetData);
+				}
+			}
+
+			// Do we save the value ?
+			if(data->isSet() && data->isPersistent() && !data->isReadOnly()
+				&& !(selected && data->getParent() && helper::contains(*selected, data->getParent()->getOwner())))
+			{
+				if (!xmlData)
+				{
+					xmlData = elem.addChild("Data");
+					xmlData.setAttribute("name", data->getName());
+				}
 				data->save(xmlData);
 			}
 		}
 	}
 
 protected:
-	CustomData<T> m_userValue;
+	Data<T> m_userValue;
 	Data<T> m_output;
 };
 

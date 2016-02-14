@@ -3,7 +3,7 @@
     <Data name="background color" r="1" g="1" b="1" a="1"/>
     <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::RenderDisk" index="1" x="737" y="373.5">
         <Data name="radius">
             <Value real="5"/>

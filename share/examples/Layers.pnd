@@ -3,7 +3,7 @@
     <Data name="background color" r="1" g="1" b="1" a="1"/>
     <Data name="timestep" real="0.1"/>
     <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::Layer" index="1" x="-15.421051025390625" y="558.4210205078125">
         <Data name="name">Purple Rect</Data>
         <Data name="composition mode" int="0"/>
@@ -92,7 +92,8 @@ void main(void)
         </Data>
     </Object>
     <Object type="panda::Annotation" index="9" x="-22.421051025390625" y="326.23684692382812">
-        <Data name="text">Layers can be reordered using the "Layers" dock widget.
+        <Data name="text">Layers can be reordered using the "Layers" dock widget.
+
 The blend mode and opacity of each can also be changed.</Data>
         <Data name="deltaToEnd" x="200" y="100"/>
     </Object>

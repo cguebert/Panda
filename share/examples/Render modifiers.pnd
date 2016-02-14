@@ -3,7 +3,7 @@
     <Data name="background color" r="1" g="1" b="1" a="1"/>
     <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::RenderFilledRect" index="1" x="918" y="291">
         <Data name="color">
             <Value r="0" g="0" b="0" a="1"/>
@@ -14,9 +14,7 @@
     </Object>
     <Object type="panda::RenderModifier_Rotation" index="3" x="918" y="411"/>
     <Object type="panda::RenderModifier_Translation" index="4" x="918" y="471"/>
-    <Object type="panda::GeneratorUser&lt;point&gt;" index="5" x="545" y="368">
-        <Data name="input" x="400" y="300"/>
-    </Object>
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="5" x="545" y="368"/>
     <Object type="panda::PointMath_Substraction" index="6" x="671" y="353">
         <Data name="point 1">
             <Value x="0" y="0"/>

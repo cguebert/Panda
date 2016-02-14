@@ -3,7 +3,7 @@
     <Data name="background color" r="1" g="1" b="1" a="1"/>
     <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::RenderDisk" index="1" x="1446.5" y="521.75">
         <Data name="color">
             <Value r="0" g="0" b="0" a="1"/>
@@ -44,7 +44,6 @@
     </Object>
     <Object type="panda::GeneratorUser&lt;point_vector&gt;" index="12" x="747" y="474.5">
         <Data name="caption">Conversion</Data>
-        <Data name="input"/>
     </Object>
     <Object type="panda::GeneratorUser&lt;integer&gt;" index="13" x="483.5" y="552">
         <Data name="caption"># of disks</Data>

@@ -3,7 +3,7 @@
     <Data name="background color" r="1" g="1" b="1" a="1"/>
     <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::GeneratorReals_Enumeration" index="1" x="351" y="485"/>
     <Object type="panda::PathMath_Rotate" index="2" x="797" y="372"/>
     <Object type="panda::PolygonCreation_Rectangle" index="3" x="501" y="312"/>
@@ -38,28 +38,25 @@
         <Data name="Rot center Y" real="-67.699997"/>
         <Object type="panda::GeneratorUser&lt;integer&gt;" index="11" x="76.5" y="139">
             <Data name="caption"># of rects</Data>
-            <Data name="input" int="20"/>
         </Object>
         <Object type="panda::GeneratorUser&lt;point&gt;" index="12" x="76.5" y="71">
             <Data name="caption">Initial position</Data>
-            <Data name="input" x="300" y="300"/>
         </Object>
         <Object type="panda::GeneratorUser&lt;point&gt;" index="13" x="76.5" y="7">
             <Data name="caption">Rect size</Data>
-            <Data name="input" x="200" y="100"/>
         </Object>
         <Object type="panda::GeneratorUser&lt;real&gt;" index="14" x="76.5" y="-139">
             <Data name="caption">Angle</Data>
-            <Data name="input" real="20" widget="slider" widgetData="0 45 0.01"/>
+            <Data name="input" widget="slider" widgetData="0 45 0.01"/>
         </Object>
         <Object type="panda::GeneratorPoints_Compose" index="15" x="76.5" y="-61"/>
         <Object type="panda::GeneratorUser&lt;real&gt;" index="16" x="-76.5" y="-81">
             <Data name="caption">Rot center X</Data>
-            <Data name="input" real="0" widget="slider" widgetData="-100 100 0.1"/>
+            <Data name="input" widget="slider" widgetData="-100 100 0.1"/>
         </Object>
         <Object type="panda::GeneratorUser&lt;real&gt;" index="17" x="-76.5" y="-24">
             <Data name="caption">Rot center Y</Data>
-            <Data name="input" real="-67.699997" widget="slider" widgetData="-100 100 0.1"/>
+            <Data name="input" widget="slider" widgetData="-100 100 0.1"/>
         </Object>
         <Link object1="11" data1="input" object2="0" data2="# of rects"/>
         <Link object1="12" data1="input" object2="0" data2="Initial position"/>
@@ -76,7 +73,8 @@
         <Link object1="0" data1="point" object2="15" data2="point"/>
     </Object>
     <Object type="panda::Annotation" index="18" x="20.75" y="364">
-        <Data name="text">Regrouped all parameters in a group.
+        <Data name="text">Regrouped all parameters in a group.
+
 Easier to modify them while viewing the render.</Data>
         <Data name="deltaToEnd" x="200" y="100"/>
     </Object>

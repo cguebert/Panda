@@ -3,7 +3,7 @@
     <Data name="background color" r="0" g="0" b="0" a="1"/>
     <Data name="timestep" real="0.0049999999"/>
     <Data name="use timer" int="0"/>
-    <Data name="use multithread" int="0"/>
+    <Data name="nb threads" int="0"/>
     <Object type="panda::ParticleEngine" index="1" x="821" y="367"/>
     <Object type="panda::ParticleCreation_FromLists" index="2" x="801" y="426.34375"/>
     <Object type="panda::ParticleDestruction_Age" index="3" x="801" y="486.34375">
