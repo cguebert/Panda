@@ -677,8 +677,11 @@ void PandaDocument::update()
 	helper::GradientCache::getInstance()->resetUsedFlag();
 	helper::ShaderCache::getInstance()->resetUsedFlag();
 
-	if(!m_renderer->renderingMainView()) // If it not already the case, make the OpenGL context current
+	if (!m_renderer->renderingMainView()) // If it not already the case, make the OpenGL context current
+	{
+		helper::ScopedEvent log("context make current");
 		m_gui.contextMakeCurrent();
+	}
 
 	if(m_animMultithread && m_scheduler)
 		m_scheduler->update();
@@ -688,8 +691,11 @@ void PandaDocument::update()
 	helper::GradientCache::getInstance()->clearUnused();
 	helper::ShaderCache::getInstance()->clearUnused();
 
-	if(!m_renderer->renderingMainView()) // Release the context if we made it current ourselves
+	if (!m_renderer->renderingMainView()) // Release the context if we made it current ourselves
+	{
+		helper::ScopedEvent log("context make current");
 		m_gui.contextDoneCurrent();
+	}
 
 	cleanDirty();
 }

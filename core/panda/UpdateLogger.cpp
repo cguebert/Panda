@@ -94,7 +94,7 @@ ScopedEvent::~ScopedEvent()
 	if(m_changeLevel)
 		--logger->logLevel(m_event.m_threadId);
 
-	logger->addEvent(m_event);
+	logger->addEvent(std::move(m_event));
 }
 
 #endif // PANDA_LOG_EVENTS
@@ -122,8 +122,11 @@ void UpdateLogger::startLog(PandaDocument* doc)
 	m_document = doc;
 	if(m_logging)
 		stopLog();
-	m_events.clear();
+
 	m_events.resize(m_nbThreads);
+	for (auto& events : m_events)
+		events.clear();
+	
 	m_logging = true;
 
 	m_logLevelMap.resize(m_nbThreads, -1);
@@ -196,7 +199,7 @@ int UpdateLogger::getThreadId()
 void UpdateLogger::addEvent(EventData event)
 {
 	if(m_logging)
-		m_events[getThreadId()].push_back(event);
+		m_events[getThreadId()].push_back(std::move(event));
 }
 
 unsigned long long UpdateLogger::getTicksPerSec()
