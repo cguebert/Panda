@@ -693,7 +693,7 @@ void PandaDocument::update()
 
 	if (!m_renderer->renderingMainView()) // Release the context if we made it current ourselves
 	{
-		helper::ScopedEvent log("context make current");
+		helper::ScopedEvent log("context done current");
 		m_gui.contextDoneCurrent();
 	}
 

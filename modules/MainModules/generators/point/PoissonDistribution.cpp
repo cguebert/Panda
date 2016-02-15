@@ -4,8 +4,6 @@
 #include <panda/helper/Random.h>
 #include <panda/helper/PointsGrid.h>
 
-#include <QList>
-
 namespace panda {
 
 using types::Point;
@@ -39,7 +37,7 @@ public:
 
 	Point randomPointAround(const Point& point, float minDist, float maxDist)
 	{
-		float a = m_rnd.random() * 2 * M_PI;
+		float a = m_rnd.random() * 2 * static_cast<float>(M_PI);
 		float r = m_rnd.random(minDist, maxDist);
 		return point + r * Point(cos(a), sin(a));
 	}
@@ -54,12 +52,12 @@ public:
 		if(area.empty())
 		{
 			auto size = parentDocument()->getRenderSize();
-			area = Rect(0, 0, size.width()-1, size.height()-1);
+			area = Rect(0, 0, static_cast<float>(size.width()-1), static_cast<float>(size.height()-1));
 		}
 
-		m_grid.initGrid(area, minimumDistance.getValue() / sqrt(2.0));
+		m_grid.initGrid(area, minimumDistance.getValue() / sqrt(2.f));
 
-		QList<Point> processList;
+		std::vector<Point> processList;
 
 		Point firstPoint(m_rnd.random(area.left(), area.right())
 						   , m_rnd.random(area.top(), area.bottom()));
@@ -69,13 +67,13 @@ public:
 
 		int rejectionLimit = m_samples.getValue();
 		float minDist = minimumDistance.getValue();
-		float maxDist = minDist * 2.0;
+		float maxDist = minDist * 2.f;
 
 		while(!processList.empty())
 		{
-			int i = floor(m_rnd.random() * processList.size());
+			int i = floor(m_rnd.random() * static_cast<float>(processList.size()));
 			Point pt = processList.at(i);
-			processList.removeAt(i);
+			processList.erase(processList.begin() + i);
 			for(i=0; i<rejectionLimit; ++i)
 			{
 				Point nPt = randomPointAround(pt, minDist, maxDist);

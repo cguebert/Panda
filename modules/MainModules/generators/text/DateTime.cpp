@@ -1,7 +1,10 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
-#include <QDateTime>
+
+#include <chrono>
+#include <iomanip>
+#include <sstream>
 
 namespace panda {
 
@@ -12,7 +15,7 @@ public:
 
 	GeneratorText_DateTime(PandaDocument *doc)
 		: PandaObject(doc)
-		, format(initData(std::string("hh:mm:ss"), "format", "Format used to create the text"))
+		, format(initData(std::string("%H:%M:%S"), "format", "Format used to create the text"))
 		, text(initData("text", "Text containing the date & time using the format"))
 		, delta(initData("delta", "Delta in milliseconds added to the current time"))
 	{
@@ -30,9 +33,9 @@ public:
 	{
 		if(!m_dirtyValue)
 		{
-			QDateTime date = QDateTime::currentDateTime();
-			date.addMSecs(delta.getValue());
-
+			auto now = std::chrono::system_clock::now();
+			auto nowPlusDelta = now + std::chrono::milliseconds(delta.getValue());
+			auto date = std::chrono::system_clock::to_time_t(nowPlusDelta);
 			if(date != previousDate)
 				PandaObject::setDirtyValue(caller);
 		}
@@ -40,11 +43,17 @@ public:
 
 	void update()
 	{
-		QDateTime date = QDateTime::currentDateTime();
-		date.addMSecs(delta.getValue());
-		previousDate = date;
+		auto now = std::chrono::system_clock::now();
+		auto nowPlusDelta = now + std::chrono::milliseconds(delta.getValue());
+		auto toTime = std::chrono::system_clock::to_time_t(nowPlusDelta);
+		previousDate = toTime;
 
-		text.setValue(date.toString(QString::fromStdString(format.getValue())).toStdString());
+		auto tm = std::localtime(&toTime);
+
+		std::ostringstream ss;
+		ss << std::put_time(tm, format.getValue().c_str());
+		
+		text.setValue(ss.str());
 
 		cleanDirty();
 	}
@@ -52,7 +61,7 @@ public:
 protected:
 	Data<std::string> format, text;
 	Data<int> delta;
-	QDateTime previousDate;
+	std::time_t previousDate = 0;
 };
 
 int GeneratorText_DateTimeClass = RegisterObject<GeneratorText_DateTime>("Generator/Text/Date & time").setDescription("Create a text using the current date");
