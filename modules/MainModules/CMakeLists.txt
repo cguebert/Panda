@@ -22,7 +22,6 @@ set(SOURCE_FILES
 	generators/integer/RandomSeed.cpp
 	generators/image/CreateTexture.cpp
 	generators/image/DocumentImage.cpp
-	generators/image/LoadImage.cpp
 	generators/point/ComposePoints.cpp
 	generators/point/MouseInfo.cpp
 	generators/point/Noise.cpp
@@ -49,7 +48,6 @@ set(SOURCE_FILES
 	modifiers/color/ColorInGradient.cpp
 	modifiers/image/ColorInImage.cpp
 	modifiers/image/ExtractImage.cpp
-	modifiers/image/SaveImage.cpp
 	modifiers/point/PointsInShapes.cpp
 	modifiers/point/PointsUnion.cpp
 	modifiers/point/RandomDisplacement.cpp
