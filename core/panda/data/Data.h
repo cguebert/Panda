@@ -3,10 +3,7 @@
 
 #include <panda/data/BaseData.h>
 #include <panda/data/DataAccessor.h>
-
-#ifdef PANDA_LOG_EVENTS
 #include <panda/UpdateLogger.h>
-#endif
 
 namespace panda
 {
@@ -165,9 +162,7 @@ DataAccessor<typename Data<T>::data_type> Data<T>::getAccessor()
 template<class T>
 typename Data<T>::const_reference Data<T>::getValue() const
 {
-#ifdef PANDA_LOG_EVENTS
 	helper::ScopedEvent log(helper::event_getValue, this);
-#endif
 	updateIfDirty();
 	if(m_parentData)
 		return m_parentData->getValue();

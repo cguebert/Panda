@@ -2,15 +2,12 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/SimpleGUI.h>
+#include <panda/UpdateLogger.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Model.h>
 #include <panda/object/Layer.h>
 #include <panda/helper/ShaderCache.h>
-
-#ifdef PANDA_LOG_EVENTS
-#include <panda/UpdateLogger.h>
-#endif
 
 namespace panda 
 {
@@ -75,52 +72,42 @@ void DocumentRenderer::renderGL()
 			obj->updateIfDirty();
 	}
 
-#ifdef PANDA_LOG_EVENTS
 	{
 		helper::ScopedEvent log1("prepareRender");
-#endif
 
-	types::Color col = m_document.getBackgroundColor();
-	glClearColor(col.r, col.g, col.b, col.a);
+		types::Color col = m_document.getBackgroundColor();
+		glClearColor(col.r, col.g, col.b, col.a);
 
-	auto renderSize = m_document.getRenderSize();
-	glViewport(0, 0, renderSize.width(), renderSize.height());
+		auto renderSize = m_document.getRenderSize();
+		glViewport(0, 0, renderSize.width(), renderSize.height());
 
-	m_secondRenderFBO.bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	m_secondRenderFBO.release();
+		m_secondRenderFBO.bind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		m_secondRenderFBO.release();
 
-	m_renderFBO.bind();
-
-#ifdef PANDA_LOG_EVENTS
+		m_renderFBO.bind();
 	}
-#endif
 
 	m_mergeLayersShader.bind();
 
 	m_mergeLayersShader.setUniformValueMat4("MVP", m_MVP.data());
 
-#ifdef PANDA_LOG_EVENTS
 	{
-	helper::ScopedEvent log("merge default Layer");
-#endif
+		helper::ScopedEvent log("merge default Layer");
 
-	m_mergeLayersShader.setUniformValue("opacity", 1.0f);
-	m_mergeLayersShader.setUniformValue("mode", 0);
+		m_mergeLayersShader.setUniformValue("opacity", 1.0f);
+		m_mergeLayersShader.setUniformValue("mode", 0);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_document.getDefaultLayer()->getTextureId());
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO.texture());
-	glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_document.getDefaultLayer()->getTextureId());
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, m_secondRenderFBO.texture());
+		glActiveTexture(GL_TEXTURE0);
 
-	m_rectModel.render();
+		m_rectModel.render();
 
-	m_renderFBO.release();
-
-#ifdef PANDA_LOG_EVENTS
+		m_renderFBO.release();
 	}
-#endif
 
 	bool inverse = false;
 	for(auto& obj : m_document.getObjects())
@@ -132,9 +119,7 @@ void DocumentRenderer::renderGL()
 			if(!opacity)
 				continue;
 
-#ifdef PANDA_LOG_EVENTS
 			helper::ScopedEvent log2("merge Layer");
-#endif
 
 			m_mergeLayersShader.setUniformValue("opacity", opacity);
 			m_mergeLayersShader.setUniformValue("mode", layer->getCompositionMode());
@@ -170,9 +155,7 @@ void DocumentRenderer::renderGL()
 
 	if(inverse)
 	{
-#ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log3("blit FBO");
-#endif
 		graphics::Framebuffer::blitFramebuffer(m_renderFBO, m_secondRenderFBO);
 	}
 }

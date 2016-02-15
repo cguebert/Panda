@@ -1,20 +1,15 @@
 #include <GL/glew.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/UpdateLogger.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Dockable.h>
 #include <panda/object/Renderer.h>
 #include <panda/object/Layer.h>
-
 #include <panda/types/Rect.h>
 #include <panda/types/ImageWrapper.h>
-
 #include <panda/graphics/Framebuffer.h>
-
-#ifdef PANDA_LOG_EVENTS
-#include <panda/UpdateLogger.h>
-#endif
 
 #include <algorithm>
 
@@ -109,9 +104,7 @@ public:
 		for(auto iter = renderers.rbegin(); iter != renderers.rend(); ++iter)
 		{
 			auto renderer = *iter;
-#ifdef PANDA_LOG_EVENTS
 			helper::ScopedEvent log(helper::event_render, renderer);
-#endif
 			renderer->render();
 			renderer->cleanDirty();
 		}

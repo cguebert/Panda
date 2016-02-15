@@ -3,10 +3,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
-
-#ifdef PANDA_LOG_EVENTS
 #include <panda/UpdateLogger.h>
-#endif
 
 #include <iostream>
 #include <typeindex>
@@ -109,9 +106,7 @@ std::string BaseData::getDescription() const
 
 void BaseData::copyValueFrom(const BaseData* from)
 {
-#ifdef PANDA_LOG_EVENTS
 	helper::ScopedEvent log(helper::event_copyValue, this);
-#endif
 	if(m_dataCopier->copyData(this, from))
 		forceSet();
 }
@@ -180,9 +175,7 @@ void BaseData::setDirtyValue(const DataNode* caller)
 {
 	if(!isDirty())
 	{
-#ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_setDirty, this);
-#endif
 		DataNode::setDirtyValue(caller);
 	}
 }

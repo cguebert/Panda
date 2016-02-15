@@ -1,14 +1,11 @@
 #include <panda/object/PandaObject.h>
 #include <panda/PandaDocument.h>
-#include <panda/object/ObjectFactory.h>
+#include <panda/UpdateLogger.h>
 #include <panda/XmlDocument.h>
 #include <panda/helper/algorithm.h>
+#include <panda/object/ObjectFactory.h>
 
 #include <iostream>
-
-#ifdef PANDA_LOG_EVENTS
-#include <panda/UpdateLogger.h>
-#endif
 
 namespace panda {
 
@@ -60,9 +57,7 @@ void PandaObject::updateIfDirty() const
 {
 	if(isDirty() && !m_isUpdating)
 	{
-#ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_update, this);
-#endif
 		m_isUpdating = true;
 		const_cast<PandaObject*>(this)->update();
 		const_cast<PandaObject*>(this)->cleanDirty();	// Verify if we can remove this call
@@ -74,9 +69,7 @@ void PandaObject::setDirtyValue(const DataNode* caller)
 {
 	if(!isDirty())
 	{
-#ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_setDirty, this);
-#endif
 		DataNode::setDirtyValue(caller);
 	}
 

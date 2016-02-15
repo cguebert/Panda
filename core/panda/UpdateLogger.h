@@ -41,6 +41,8 @@ public:
 	const DataNode* m_node;
 };
 
+#ifdef PANDA_LOG_EVENTS
+
 // To log an event, you only have to use this class
 class PANDA_CORE_API ScopedEvent
 {
@@ -54,6 +56,19 @@ private:
 	EventData m_event;
 	bool m_changeLevel; // Do we have to change the level back in the destructor
 };
+
+#else
+
+// This version does nothing, it should not slow down the code using it
+class PANDA_CORE_API ScopedEvent
+{
+public:
+	ScopedEvent(EventType type, const PandaObject* object) {}
+	ScopedEvent(EventType type, const BaseData* data) {}
+	ScopedEvent(const std::string& text, DataNode* node = nullptr) {}
+};
+
+#endif
 
 // Container for all the events
 class PANDA_CORE_API UpdateLogger

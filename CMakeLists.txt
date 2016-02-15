@@ -38,7 +38,10 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
-add_definitions(-DPANDA_LOG_EVENTS)
+set(PANDA_EVENTS_LOGGING ON CACHE BOOL "Log the time taken by each operation during a step of the animation")
+if(${PANDA_EVENTS_LOGGING})
+	add_definitions(-DPANDA_LOG_EVENTS)
+endif(${PANDA_EVENTS_LOGGING})
 
 if(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)

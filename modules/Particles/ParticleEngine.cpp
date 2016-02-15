@@ -1,6 +1,6 @@
 #include <panda/object/Dockable.h>
-#include <panda/PandaDocument.h>
 #include <panda/object/ObjectFactory.h>
+#include <panda/PandaDocument.h>
 
 #include <modules/particles/ParticleEngine.h>
 #include <modules/particles/ParticleEffector.h>
@@ -9,10 +9,6 @@
 #include <panda/helper/algorithm.h>
 
 #include <cmath>
-
-#ifdef PANDA_LOG_EVENTS
-#include <panda/UpdateLogger.h>
-#endif
 
 namespace panda {
 

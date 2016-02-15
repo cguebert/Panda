@@ -1,12 +1,9 @@
 #include <panda/PandaDocument.h>
+#include <panda/UpdateLogger.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
 #include <panda/object/Layer.h>
-
-#ifdef PANDA_LOG_EVENTS
-#include <panda/UpdateLogger.h>
-#endif
 
 namespace panda {
 
@@ -44,9 +41,7 @@ public:
 				Renderer* renderer = dynamic_cast<Renderer*>(*it);
 				if(renderer)
 				{
-#ifdef PANDA_LOG_EVENTS
 					helper::ScopedEvent log(helper::event_render, renderer);
-#endif
 					renderer->updateIfDirty();
 					renderer->render();
 					renderer->cleanDirty();

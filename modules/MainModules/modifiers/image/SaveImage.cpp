@@ -1,13 +1,10 @@
 #include <panda/PandaDocument.h>
 #include <panda/SimpleGUI.h>
+#include <panda/UpdateLogger.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/graphics/Image.h>
-
-#ifdef PANDA_LOG_EVENTS
-#include <panda/UpdateLogger.h>
-#endif
 
 #include <QImage>
 
@@ -47,9 +44,7 @@ public:
 
 	void saveImages()
 	{
-#ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_update, this);
-#endif
 		const auto& names = fileName.getValue();
 
 		parentDocument()->getGUI().contextMakeCurrent();

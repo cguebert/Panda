@@ -1,14 +1,11 @@
 #include <panda/Scheduler.h>
 #include <panda/PandaDocument.h>
+#include <panda/UpdateLogger.h>
 #include <panda/object/Group.h>
 #include <panda/helper/algorithm.h>
 
 #include <deque>
 #include <thread>
-
-#ifdef PANDA_LOG_EVENTS
-#include <panda/UpdateLogger.h>
-#endif
 
 //#include <iostream>
 
@@ -421,39 +418,30 @@ void Scheduler::prepareThreads(int nbThreads)
 		st->setThread(thread);
 	}
 	
-#ifdef PANDA_LOG_EVENTS
 	helper::UpdateLogger::getInstance()->setNbThreads(nbThreads);
 	helper::UpdateLogger::getInstance()->setupThread(0);
-#endif
 }
 
 void Scheduler::setDirty()
 {
-#ifdef PANDA_LOG_EVENTS
 	{
-	helper::ScopedEvent log("Scheduler/setDirty");
-#endif
-	for(DataNode* node : m_setDirtyList)
-		node->doSetDirty(); // Warning: this bypasses PandaObject::setDirtyValue
+		helper::ScopedEvent log("Scheduler/setDirty");
 
-	for(auto& task : m_updateTasks)
-	{
-		task.nbDirtyInputs = task.nbDirtyAtStart;
-		task.dirty = task.dirtyAtStart;
-	}
+		for(DataNode* node : m_setDirtyList)
+			node->doSetDirty(); // Warning: this bypasses PandaObject::setDirtyValue
 
-#ifdef PANDA_LOG_EVENTS
+		for(auto& task : m_updateTasks)
+		{
+			task.nbDirtyInputs = task.nbDirtyAtStart;
+			task.dirty = task.dirtyAtStart;
+		}
 	}
 	helper::UpdateLogger::getInstance()->updateDirtyStates();
-#endif
 }
 
 void Scheduler::update()
 {
-#ifdef PANDA_LOG_EVENTS
 	helper::ScopedEvent log("Scheduler/update");
-#endif
-
 	m_nbReadyTasks = 0;
 
 	for(auto& task : m_updateTasks)
@@ -509,9 +497,7 @@ void Scheduler::prepareLaterUpdate(BaseData* data)
 
 void Scheduler::setDataDirty(BaseData* dirtyData)
 {
-#ifdef PANDA_LOG_EVENTS
 	helper::ScopedEvent log("Scheduler/setDataDirty");
-#endif
 
 	if (!m_laterUpdatesMap.count(dirtyData))
 		prepareLaterUpdate(dirtyData);
@@ -542,9 +528,7 @@ void Scheduler::setDataDirty(BaseData* dirtyData)
 
 void Scheduler::setDataReady(BaseData* data)
 {
-#ifdef PANDA_LOG_EVENTS
 	helper::ScopedEvent log("Scheduler/setDataReady");
-#endif
 
 	if(!m_laterUpdatesMap.count(data))
 		return;
@@ -616,9 +600,7 @@ SchedulerThread::SchedulerThread(Scheduler* scheduler, int threadId)
 
 void SchedulerThread::run()
 {
-#ifdef PANDA_LOG_EVENTS
 	helper::UpdateLogger::getInstance()->setupThread(m_threadId);
-#endif
 
 	while(!m_closing)
 	{

@@ -5,6 +5,7 @@
 #include <panda/Scheduler.h>
 #include <panda/SimpleGUI.h>
 #include <panda/TimedFunctions.h>
+#include <panda/UpdateLogger.h>
 #include <panda/UndoStack.h>
 #include <panda/data/DataFactory.h>
 #include <panda/document/DocumentRenderer.h>
@@ -19,10 +20,6 @@
 #include <panda/helper/GradientCache.h>
 #include <panda/helper/ShaderCache.h>
 #include <panda/helper/system/FileRepository.h>
-
-#ifdef PANDA_LOG_EVENTS
-#include <panda/UpdateLogger.h>
-#endif
 
 #include <chrono>
 #include <set>
@@ -726,13 +723,11 @@ void PandaDocument::play(bool playing)
 				m_scheduler = std::make_unique<Scheduler>(this);
 			m_scheduler->init(nbThreads);
 		}
-#ifdef PANDA_LOG_EVENTS
 		else
 		{
 			helper::UpdateLogger::getInstance()->setNbThreads(1);
 			helper::UpdateLogger::getInstance()->setupThread(0);
 		}
-#endif
 
 		m_gui.executeByUI([this]() { step(); });
 
@@ -760,9 +755,7 @@ void PandaDocument::step()
 	}
 
 	auto startTime = std::chrono::high_resolution_clock::now();
-#ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
-#endif
 
 	setInStep(true);
 	// Force the value of isInStep, because some objects will propagate dirtyValue during beginStep
@@ -800,9 +793,7 @@ void PandaDocument::step()
 	for(auto& object : m_objects)
 		object->endStep();
 
-#ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->stopLog();
-#endif
 
 	m_signals->timeChanged.run();
 
@@ -847,9 +838,7 @@ void PandaDocument::step()
 
 void PandaDocument::rewind()
 {
-#ifdef PANDA_LOG_EVENTS
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
-#endif
 	m_animTimeVal = 0.0;
 	m_animTime.setValue(0.0);
 	m_mousePositionVal = m_mousePositionBuffer;

@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/UpdateLogger.h>
 #include <panda/object/Layer.h>
 #include <panda/object/Renderer.h>
 #include <panda/object/ObjectFactory.h>
@@ -9,10 +10,6 @@
 #include <panda/graphics/Framebuffer.h>
 
 #include <panda/command/MoveLayerCommand.h>
-
-#ifdef PANDA_LOG_EVENTS
-#include <panda/UpdateLogger.h>
-#endif
 
 namespace panda
 {
@@ -28,36 +25,31 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 		renderer->updateIfDirty();
 	}
 
-#ifdef PANDA_LOG_EVENTS
 	{
 		helper::ScopedEvent log1("prepareLayer");
-#endif
 
-	auto renderSize = doc->getRenderSize();
-	auto output = getImage()->getAccessor(); // At the end of the function, the accessor destructor calls cleanDirty & setDirtyOutputs
-	if(!m_renderFrameBuffer || m_renderFrameBuffer->size() != renderSize)
-	{
-		graphics::FramebufferFormat format;
-		format.samples = 16;
-		m_renderFrameBuffer = std::make_shared<graphics::Framebuffer>(renderSize, format);
-		m_displayFrameBuffer = std::make_shared<graphics::Framebuffer>(renderSize);
+		auto renderSize = doc->getRenderSize();
+		auto output = getImage()->getAccessor(); // At the end of the function, the accessor destructor calls cleanDirty & setDirtyOutputs
+		if(!m_renderFrameBuffer || m_renderFrameBuffer->size() != renderSize)
+		{
+			graphics::FramebufferFormat format;
+			format.samples = 16;
+			m_renderFrameBuffer = std::make_shared<graphics::Framebuffer>(renderSize, format);
+			m_displayFrameBuffer = std::make_shared<graphics::Framebuffer>(renderSize);
 
-		// Setting the image Data to the display Fbo
-		output->setFbo(*m_displayFrameBuffer);
-	}
+			// Setting the image Data to the display Fbo
+			output->setFbo(*m_displayFrameBuffer);
+		}
 
-	glViewport(0, 0, renderSize.width(), renderSize.height());
-	m_renderFrameBuffer->bind();
+		glViewport(0, 0, renderSize.width(), renderSize.height());
+		m_renderFrameBuffer->bind();
 	
-	auto& mvp = getMVPMatrix();
-	mvp.ortho(0, static_cast<float>(renderSize.width()), static_cast<float>(renderSize.height()), 0, -10.f, 10.f);
+		auto& mvp = getMVPMatrix();
+		mvp.ortho(0, static_cast<float>(renderSize.width()), static_cast<float>(renderSize.height()), 0, -10.f, 10.f);
 
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-#ifdef PANDA_LOG_EVENTS
+		glClearColor(0, 0, 0, 0);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
-#endif
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -66,12 +58,9 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 
 	glDisable(GL_BLEND);
 
-#ifdef PANDA_LOG_EVENTS
-	helper::ScopedEvent log2("blitFramebuffer");
-#endif
-
 	m_renderFrameBuffer->release();
 
+	helper::ScopedEvent log2("blitFramebuffer");
 	graphics::Framebuffer::blitFramebuffer(*m_displayFrameBuffer, *m_renderFrameBuffer);
 }
 
@@ -81,9 +70,7 @@ void BaseLayer::iterateRenderers()
 	for(auto iter = renderers.rbegin(); iter != renderers.rend(); ++iter)
 	{
 		auto renderer = *iter;
-#ifdef PANDA_LOG_EVENTS
 		helper::ScopedEvent log(helper::event_render, renderer);
-#endif
 		renderer->render();
 		renderer->cleanDirty();
 	}

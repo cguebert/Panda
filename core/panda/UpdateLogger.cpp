@@ -11,6 +11,8 @@ namespace panda
 namespace helper
 {
 
+#ifdef PANDA_LOG_EVENTS
+
 ScopedEvent::ScopedEvent(EventType type, const PandaObject *object)
 	: m_changeLevel(true)
 {
@@ -94,6 +96,8 @@ ScopedEvent::~ScopedEvent()
 
 	logger->addEvent(m_event);
 }
+
+#endif // PANDA_LOG_EVENTS
 
 //****************************************************************************//
 
