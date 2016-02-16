@@ -65,7 +65,7 @@ struct TextureData
 
 Texture::Texture(const Image& img)
 {
-	GLuint id = createTexture(img.size(), GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, img.data());
+	GLuint id = createTexture(img.size(), GL_RGBA8, GL_BGRA, GL_UNSIGNED_BYTE, img.data());
 
 	if (id)
 	{

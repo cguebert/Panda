@@ -38,6 +38,7 @@ public:
 	int width() const;
 	int height() const;
 
+	// The scanlines are stored upside down (first scan in memory being the bottommost scan in the image)
 	unsigned char* data();
 	const unsigned char* data() const;
 
@@ -62,6 +63,8 @@ public:
 
 	bool operator==(const Image& img) const;
 	bool operator!=(const Image& img) const;
+
+	static int index(const Size& s, int x, int y);
 
 private:
 	std::shared_ptr<ImageData> m_data;
@@ -106,16 +109,19 @@ inline void Image::setPixel(PointInt pt, unsigned int color)
 inline void Image::blitImage(Image& target, PointInt targetPos, const Image& source, PointInt sourcePos, Size sourceSize)
 { blitImage(target, targetPos.x, targetPos.y, source, sourcePos.x, sourcePos.y, sourcePos.x + sourceSize.width(), sourcePos.y + sourceSize.height()); }
 
+inline int Image::index(const Size& s, int x, int y)
+{ return (s.height() - y - 1) * s.width() + x; }
+
 //****************************************************************************//
 
 inline unsigned char red(const unsigned char* px)
-{ return px[0]; }
+{ return px[2]; }
 
 inline unsigned char green(const unsigned char* px)
 { return px[1]; }
 
 inline unsigned char blue(const unsigned char* px)
-{ return px[2]; }
+{ return px[0]; }
 
 inline unsigned char alpha(const unsigned char* px)
 { return px[3]; }

@@ -155,10 +155,10 @@ add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
 add_definitions(-DPANDA_BUILD_CORE)
 
-add_library("TinyXML2" SHARED IMPORTED)
+add_library("TinyXML2" STATIC IMPORTED)
 set_target_properties("TinyXML2" PROPERTIES 
-	IMPORTED_IMPLIB ${LIBRARIES_LIB_DIR}/tinyxml2.lib
-	IMPORTED_IMPLIB_DEBUG ${LIBRARIES_LIB_DIR}/tinyxml2d.lib)
+	IMPORTED_LOCATION ${LIBRARIES_LIB_DIR}/tinyxml2.lib
+	IMPORTED_LOCATION_DEBUG ${LIBRARIES_LIB_DIR}/tinyxml2d.lib)
 target_link_libraries(${PROJECT_NAME} "TinyXML2")
 
 find_package(OpenGL REQUIRED)
@@ -169,11 +169,11 @@ endif(NOT OPENGL_FOUND)
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
 target_link_libraries(${PROJECT_NAME} "${LIBRARIES_LIB_DIR}/glew32.lib")
+install(FILES ${LIBRARIES_LIB_DIR}/glew32.dll DESTINATION ${TARGET_DIR})
 
 find_package(Boost REQUIRED COMPONENTS filesystem system)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 
-install(FILES ${LIBRARIES_LIB_DIR}/glew32.dll DESTINATION ${TARGET_DIR})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${TARGET_DIR})

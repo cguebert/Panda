@@ -71,7 +71,7 @@ public:
 
 		while(!processList.empty())
 		{
-			int i = floor(m_rnd.random() * static_cast<float>(processList.size()));
+			int i = static_cast<int>(floor(m_rnd.random() * static_cast<float>(processList.size())));
 			Point pt = processList.at(i);
 			processList.erase(processList.begin() + i);
 			for(i=0; i<rejectionLimit; ++i)

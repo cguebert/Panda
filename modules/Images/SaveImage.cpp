@@ -6,7 +6,8 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/graphics/Image.h>
 
-#include <QImage>
+#include <algorithm>
+#include <FreeImage.h>
 
 namespace panda {
 
@@ -59,8 +60,23 @@ public:
 			if (!names[i].empty())
 			{
 				const auto img = images[i].getImage();
-				QImage qtImg(img.data(), img.width(), img.height(), QImage::Format_ARGB32);
-				qtImg.mirrored().rgbSwapped().save(QString::fromStdString(names[i]));
+				if (img && !img.size().empty())
+				{
+					auto cpath = names[i].c_str();
+					auto fif = FreeImage_GetFIFFromFilename(cpath);
+					if (fif != FIF_UNKNOWN 
+						&& FreeImage_FIFSupportsWriting(fif) 
+						&& FreeImage_FIFSupportsExportBPP(fif, 32))
+					{
+						int w = img.width(), h = img.height();
+						auto dib = FreeImage_Allocate(w, h, 32);
+						auto data = FreeImage_GetBits(dib);
+
+						std::memcpy(data, img.data(), w * h * 4);
+						FreeImage_Save(fif, dib, cpath, 0);
+						FreeImage_Unload(dib);
+					}
+				}
 			}
 		}
 

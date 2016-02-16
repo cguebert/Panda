@@ -4,7 +4,7 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/graphics/Image.h>
 
-#include <QImage>
+#include <FreeImage.h>
 
 namespace panda {
 
@@ -28,22 +28,50 @@ public:
 
 	void update()
 	{
+		bool loaded = false;
 		std::string fileName = m_fileName.getValue();
 		if(!fileName.empty())
 		{
-			QImage image(QString::fromStdString(fileName));
-			if (!image.isNull())
+			auto cpath = fileName.c_str();
+			auto fif = FreeImage_GetFileType(cpath, 0);
+			if (fif == FIF_UNKNOWN)
+				fif = FreeImage_GetFIFFromFilename(cpath);
+			if (fif != FIF_UNKNOWN && FreeImage_FIFSupportsReading(fif))
 			{
-				image.convertToFormat(QImage::Format_ARGB32);
-				image = image.rgbSwapped();
-				graphics::Size size(image.width(), image.height());
-				graphics::Image newImg(size, image.bits());
-				m_image.getAccessor()->setImage(newImg);
+				int flags = 0;
+				if (fif == FIF_JPEG)
+					flags = JPEG_EXIFROTATE;
+				auto dib = FreeImage_Load(fif, cpath, flags);
+
+				if (dib && FreeImage_HasPixels(dib))
+				{
+					auto type = FreeImage_GetImageType(dib);
+					auto bpp = FreeImage_GetBPP(dib);
+					
+					if (type != FIT_BITMAP || bpp != 32)
+					{
+						auto converted = FreeImage_ConvertTo32Bits(dib);
+						FreeImage_Unload(dib);
+						dib = converted; // Can be null
+					}
+
+					if (dib)
+					{
+						auto width = FreeImage_GetWidth(dib);
+						auto height = FreeImage_GetHeight(dib);
+						auto data = FreeImage_GetBits(dib);
+
+						graphics::Image newImg(width, height, data);
+						m_image.getAccessor()->setImage(newImg);
+
+						loaded = true;
+						FreeImage_Unload(dib);
+					}
+				}
 			}
-			else
-				m_image.getAccessor()->clear();
 		}
-		else
+		
+		if (!loaded)
 			m_image.getAccessor()->clear();
 		cleanDirty();
 	}

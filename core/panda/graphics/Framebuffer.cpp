@@ -221,12 +221,12 @@ Image Framebuffer::toImage() const
 
 	const auto size = m_data->size;
 	Image img(size);
-	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, img.data());
+	glReadPixels(0, 0, size.width(), size.height(), GL_BGRA, GL_UNSIGNED_BYTE, img.data());
 
 	if (prev != id())
 		glBindFramebuffer(GL_FRAMEBUFFER, prev);
 
-	return img.mirrored();
+	return img;
 }
 
 void Framebuffer::toImage(Image& img) const
@@ -252,8 +252,6 @@ void Framebuffer::toImage(Image& img) const
 
 	if (prev != id())
 		glBindFramebuffer(GL_FRAMEBUFFER, prev);
-
-	img.mirror();
 }
 
 void Framebuffer::blitFramebuffer(Framebuffer& target, const Framebuffer& source)

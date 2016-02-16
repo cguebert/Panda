@@ -32,7 +32,7 @@ unsigned int ImageWrapper::getTextureId() const
 	if(m_source == IMAGE && m_image)
 	{
 		if (!m_texture)
-			const_cast<ImageWrapper*>(this)->m_texture = std::make_shared<Texture>(m_image->mirrored());
+			const_cast<ImageWrapper*>(this)->m_texture = std::make_shared<Texture>(*m_image);
 
 		return m_texture->id();
 	}

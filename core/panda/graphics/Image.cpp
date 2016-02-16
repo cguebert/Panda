@@ -76,16 +76,14 @@ const unsigned char* Image::pixel(int x, int y) const
 {
 	if (!m_data)
 		return nullptr;
-	int index = y * m_data->size.width() + x;
-	return &m_data->contents.data()[index * 4];
+	return &m_data->contents.data()[index(m_data->size, x, y) * 4];
 }
 
 unsigned char* Image::pixel(int x, int y)
 {
 	if (!m_data)
 		return nullptr;
-	int index = y * m_data->size.width() + x;
-	return &m_data->contents.data()[index * 4];
+	return &m_data->contents.data()[index(m_data->size, x, y) * 4];
 }
 
 void Image::setPixel(int x, int y, unsigned int color)
@@ -93,8 +91,7 @@ void Image::setPixel(int x, int y, unsigned int color)
 	if (!m_data)
 		return;
 
-	int index = y * m_data->size.width() + x;
-	std::memcpy(&m_data->contents.data()[index * 4], &color, 4);
+	std::memcpy(&m_data->contents.data()[index(m_data->size, x, y) * 4], &color, 4);
 }
 
 Image Image::clone() const
