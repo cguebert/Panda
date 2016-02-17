@@ -110,6 +110,8 @@ public:
 		addInput(m_fileName);
 		m_fileName.setWidget("save file");
 		m_fileName.setWidgetData(getSaveFilterString());
+
+		setUpdateOnMainThread(true);
 	}
 
 	void endStep()
@@ -158,6 +160,8 @@ public:
 		addInput(m_fileName);
 		m_fileName.setWidget("save file");
 		m_fileName.setWidgetData(getSaveFilterString());
+
+		setUpdateOnMainThread(true);
 	}
 
 	void endStep()

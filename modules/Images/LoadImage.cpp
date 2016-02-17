@@ -134,6 +134,8 @@ public:
 		m_fileName.setWidgetData(getOpenFilterString());
 
 		addOutput(m_image);
+
+		setUpdateOnMainThread(true);
 	}
 
 	void update()
@@ -170,6 +172,8 @@ public:
 		m_fileName.setWidgetData(getOpenFilterString());
 
 		addOutput(m_image);
+
+		setUpdateOnMainThread(true);
 	}
 
 	void update()
