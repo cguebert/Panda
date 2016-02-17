@@ -69,6 +69,27 @@ std::string getSaveFilterString()
 	return filter;
 }
 
+void saveImage(const panda::graphics::Image& img, const std::string& fileName)
+{
+	if (img && !img.size().empty() && !fileName.empty())
+	{
+		auto cpath = fileName.c_str();
+		auto fif = FreeImage_GetFIFFromFilename(cpath);
+		if (fif != FIF_UNKNOWN
+			&& FreeImage_FIFSupportsWriting(fif)
+			&& FreeImage_FIFSupportsExportBPP(fif, 32))
+		{
+			int w = img.width(), h = img.height();
+			auto dib = FreeImage_Allocate(w, h, 32);
+			auto data = FreeImage_GetBits(dib);
+
+			std::memcpy(data, img.data(), w * h * 4);
+			FreeImage_Save(fif, dib, cpath, 0);
+			FreeImage_Unload(dib);
+		}
+	}
+}
+
 }
 
 namespace panda {
@@ -82,14 +103,13 @@ public:
 
 	ModifierImage_Save(PandaDocument *doc)
 		: PandaObject(doc)
-		, fileName(initData("fileName", "Path where the image has to be saved"))
-		, image(initData("image", "The image to be saved"))
-		, inStep(false)
+		, m_fileName(initData("fileName", "Path where the image has to be saved"))
+		, m_image(initData("image", "The image to be saved"))
 	{
-		addInput(image);
-		addInput(fileName);
-		fileName.setWidget("save file");
-		fileName.setWidgetData(getSaveFilterString());
+		addInput(m_image);
+		addInput(m_fileName);
+		m_fileName.setWidget("save file");
+		m_fileName.setWidgetData(getSaveFilterString());
 	}
 
 	void endStep()
@@ -109,49 +129,74 @@ public:
 	void saveImages()
 	{
 		helper::ScopedEvent log(helper::event_update, this);
-		const auto& names = fileName.getValue();
 
 		parentDocument()->getGUI().contextMakeCurrent();
-		const auto& images = image.getValue();
+		saveImage(m_image.getValue().getImage(), m_fileName.getValue());
+		parentDocument()->getGUI().contextDoneCurrent();
+	}
+
+protected:
+	Data< std::string > m_fileName;
+	Data< ImageWrapper > m_image;
+};
+
+int ModifierImage_SaveClass = RegisterObject<ModifierImage_Save>("File/Image/Save image").setDescription("Save an image to the disk");
+
+//****************************************************************************//
+
+class ModifierImage_SaveMultiple : public PandaObject
+{
+public:
+	PANDA_CLASS(ModifierImage_SaveMultiple, PandaObject)
+
+	ModifierImage_SaveMultiple(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_fileName(initData("fileName", "Path where the image has to be saved"))
+		, m_image(initData("image", "The image to be saved"))
+	{
+		addInput(m_image);
+		addInput(m_fileName);
+		m_fileName.setWidget("save file");
+		m_fileName.setWidgetData(getSaveFilterString());
+	}
+
+	void endStep()
+	{
+		PandaObject::endStep();
+		if(isDirty())
+			saveImages();
+	}
+
+	void setDirtyValue(const DataNode* caller)
+	{
+		PandaObject::setDirtyValue(caller);
+		if(!isInStep())
+			saveImages();
+	}
+
+	void saveImages()
+	{
+		helper::ScopedEvent log(helper::event_update, this);
+		const auto& names = m_fileName.getValue();
+		const auto& images = m_image.getValue();
 
 		if (images.empty())
 			return;
 
+		parentDocument()->getGUI().contextMakeCurrent();
+
 		int nb = std::min(names.size(), images.size());
 		for(int i=0; i<nb; ++i)
-		{
-			if (!names[i].empty())
-			{
-				const auto img = images[i].getImage();
-				if (img && !img.size().empty())
-				{
-					auto cpath = names[i].c_str();
-					auto fif = FreeImage_GetFIFFromFilename(cpath);
-					if (fif != FIF_UNKNOWN 
-						&& FreeImage_FIFSupportsWriting(fif) 
-						&& FreeImage_FIFSupportsExportBPP(fif, 32))
-					{
-						int w = img.width(), h = img.height();
-						auto dib = FreeImage_Allocate(w, h, 32);
-						auto data = FreeImage_GetBits(dib);
-
-						std::memcpy(data, img.data(), w * h * 4);
-						FreeImage_Save(fif, dib, cpath, 0);
-						FreeImage_Unload(dib);
-					}
-				}
-			}
-		}
+			saveImage(images[i].getImage(), names[i]);
 
 		parentDocument()->getGUI().contextDoneCurrent();
 	}
 
 protected:
-	Data< std::vector<std::string> > fileName;
-	Data< std::vector<ImageWrapper> > image;
-	bool inStep;
+	Data< std::vector<std::string> > m_fileName;
+	Data< std::vector<ImageWrapper> > m_image;
 };
 
-int ModifierImage_SaveClass = RegisterObject<ModifierImage_Save>("File/Image/Save image").setDescription("Save an image to the disk");
+int ModifierImage_SaveMultipleClass = RegisterObject<ModifierImage_SaveMultiple>("File/Image/Save images").setDescription("Save multiple images to the disk");
 
 } // namespace Panda
