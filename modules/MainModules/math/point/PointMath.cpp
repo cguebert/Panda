@@ -637,6 +637,77 @@ protected:
 
 int PointMath_LinearDivisionClass = RegisterObject<PointMath_LinearDivision>("Math/Point/Linear division").setDescription("Compute the linear division of 2 points");
 
+//****************************************************************************//
+
+class PointMath_KeepRatio : public PandaObject
+{
+public:
+	PANDA_CLASS(PointMath_KeepRatio, PandaObject)
+
+	PointMath_KeepRatio(PandaDocument *doc)
+		: PandaObject(doc)
+		, inputA(initData("input", "Point to rescale"))
+		, inputB(initData("size", "Maximum size"))
+		, result(initData("output", "Result of the rescaling"))
+	{
+		addInput(inputA);
+		addInput(inputB);
+
+		addOutput(result);
+	}
+
+	void update()
+	{
+		auto res = result.getAccessor();
+		res.clear();
+
+		const std::vector<Point>& valA = inputA.getValue();
+		const std::vector<Point>& valB = inputB.getValue();
+		int nbA = valA.size(), nbB = valB.size();
+
+		if(nbA && nbB)
+		{
+			if(nbA < nbB && nbA > 1)		nbB = nbA;	// Either equal nb of A & B, or one of them is 1
+			else if(nbB < nbA && nbB > 1)	nbA = nbB;
+			int nb = std::max(nbA, nbB);
+			res.resize(nb);
+
+			for (int i = 0; i < nb; ++i)
+			{
+				const auto& pt = valA[i % nbA];
+				const auto& size = valB[i % nbB];
+
+				if (pt == Point::zero() || size == Point::zero())
+				{
+					res[i].set(0, 0);
+					continue;
+				}
+
+				auto ratio1 = pt.y / pt.x;
+				auto ratio2 = size.y / size.x;
+
+				if (ratio1 >= ratio2)
+				{
+					res[i].y = size.y;
+					res[i].x = size.y / ratio1;
+				}
+				else
+				{
+					res[i].x = size.x;
+					res[i].y = size.x * ratio1;
+				}
+			}
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data< std::vector<Point> > inputA, inputB, result;
+};
+
+int PointMath_KeepRatioClass = RegisterObject<PointMath_KeepRatio>("Math/Point/Keep ratio").setDescription("Rescale a point, keeping its original aspect ratio");
+
 } // namespace Panda
 
 
