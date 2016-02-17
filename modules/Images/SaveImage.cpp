@@ -7,7 +7,69 @@
 #include <panda/graphics/Image.h>
 
 #include <algorithm>
+#include <sstream>
 #include <FreeImage.h>
+
+namespace
+{
+
+std::string convertExtensionList(const std::string& list)
+{
+	std::stringstream ss(list);
+	std::string ret, item;
+	while (std::getline(ss, item, ','))
+		ret += (ret.empty() ? "*." : " *.") + item;
+
+	return ret;
+}
+
+std::string buildSaveFilterString()
+{
+	const int nbFIF = FreeImage_GetFIFCount();
+	std::string filter;
+	// Build a string for 'All image files'
+/*	filter += "All image files (";
+	bool first = true;
+	for (int i = 0; i < nbFIF; ++i)
+	{
+		auto fif = static_cast<FREE_IMAGE_FORMAT>(i);
+		if (FreeImage_FIFSupportsWriting(fif))
+		{
+			if (!first)
+				filter += " ";
+			first = false;
+			filter += convertExtensionList(FreeImage_GetFIFExtensionList(fif));
+		}
+	}
+	filter += ");;";
+	*/
+	// Build a string for 'All files'
+	filter += "All Files (*)";
+
+	// Build a string for each format
+	for (int i = 0; i < nbFIF; ++i)
+	{
+		auto fif = static_cast<FREE_IMAGE_FORMAT>(i);
+		if (FreeImage_FIFSupportsWriting(fif)) 
+		{
+			filter += ";;";
+			filter += FreeImage_GetFIFDescription(fif);
+			filter += " (" + convertExtensionList(FreeImage_GetFIFExtensionList(fif)) + ")";
+		}
+	}
+
+	return filter;
+}
+
+std::string getSaveFilterString()
+{
+	static std::string filter;
+	if (filter.empty())
+		filter = buildSaveFilterString();
+	return filter;
+}
+
+}
 
 namespace panda {
 
@@ -27,6 +89,7 @@ public:
 		addInput(image);
 		addInput(fileName);
 		fileName.setWidget("save file");
+		fileName.setWidgetData(getSaveFilterString());
 	}
 
 	void endStep()

@@ -92,6 +92,7 @@ protected:
 	typedef std::string value_type;
 	QWidget* container;
 	QLineEdit* lineEdit;
+	QString filter;
 
 public:
 	FileDataWidgetContainer() : container(nullptr), lineEdit(nullptr) {}
@@ -117,6 +118,7 @@ public:
 	}
 	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
 	{
+		filter = parent->getParameters();
 		QWidget* parentWidget = dynamic_cast<QWidget*>(parent);
 		QWidget* widget = createWidgets(parentWidget, readOnly);
 		QObject::connect(this, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()) );
@@ -135,10 +137,10 @@ public:
 		const QString& v = lineEdit->text();
 		QDir dir(v);
 		QString r = dir.path();
-		if(openMode)
-			r = QFileDialog::getOpenFileName(container, container->tr("Open file"), v);
+		if (openMode)
+			r = QFileDialog::getOpenFileName(container, container->tr("Open file"), v, filter, nullptr, QFileDialog::HideNameFilterDetails);
 		else
-			r = QFileDialog::getSaveFileName(container, container->tr("Save file"), v);
+			r = QFileDialog::getSaveFileName(container, container->tr("Save file"), v, filter, nullptr, QFileDialog::HideNameFilterDetails);
 		if(!r.isEmpty())
 		{
 			lineEdit->setText(r);

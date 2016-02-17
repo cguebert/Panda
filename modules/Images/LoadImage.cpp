@@ -4,7 +4,72 @@
 #include <panda/types/ImageWrapper.h>
 #include <panda/graphics/Image.h>
 
+#include <sstream>
 #include <FreeImage.h>
+
+namespace
+{
+
+std::string convertExtensionList(const std::string& list)
+{
+	std::stringstream ss(list);
+	std::string ret, item;
+	while (std::getline(ss, item, ','))
+		ret += (ret.empty() ? "*." : " *.") + item;
+
+	return ret;
+}
+
+std::string buildOpenFilterString()
+{
+	const int nbFIF = FreeImage_GetFIFCount();
+	std::string filter;
+	// Build a string for 'All image files'
+/*	filter += "All image files (";
+	bool first = true;
+	for (int i = 0; i < nbFIF; ++i)
+	{
+		auto fif = static_cast<FREE_IMAGE_FORMAT>(i);
+		if (FreeImage_FIFSupportsReading(fif))
+		{
+			if (!first)
+				filter += " ";
+			first = false;
+			filter += convertExtensionList(FreeImage_GetFIFExtensionList(fif));
+		}
+	}
+	filter += ");;";
+	*/
+	// Build a string for 'All files'
+	filter += "All Files (*)";
+
+	// Build a string for each format
+	for (int i = 0; i < nbFIF; ++i)
+	{
+		auto fif = static_cast<FREE_IMAGE_FORMAT>(i);
+		if (fif == FIF_RAW)
+			continue;
+
+		if (FreeImage_FIFSupportsReading(fif)) 
+		{
+			filter += ";;";
+			filter += FreeImage_GetFIFDescription(fif);
+			filter += " (" + convertExtensionList(FreeImage_GetFIFExtensionList(fif)) + ")";
+		}
+	}
+
+	return filter;
+}
+
+std::string getOpenFilterString()
+{
+	static std::string filter;
+	if (filter.empty())
+		filter = buildOpenFilterString();
+	return filter;
+}
+
+}
 
 namespace panda {
 
@@ -22,6 +87,7 @@ public:
 	{
 		addInput(m_fileName);
 		m_fileName.setWidget("open file");
+		m_fileName.setWidgetData(getOpenFilterString());
 
 		addOutput(m_image);
 	}
