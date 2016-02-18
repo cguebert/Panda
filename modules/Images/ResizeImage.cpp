@@ -7,7 +7,7 @@
 #include <panda/types/Point.h>
 #include <panda/graphics/Image.h>
 
-#include <FreeImage.h>
+#include <modules/Images/utils.h>
 
 namespace panda {
 
@@ -45,11 +45,7 @@ public:
 		const auto& input = m_input.getValue().getImage();
 		if (input)
 		{
-			int w = input.width(), h = input.height();
-			auto dib = FreeImage_Allocate(w, h, 32);
-			auto data = FreeImage_GetBits(dib);
-
-			std::memcpy(data, input.data(), w * h * 4);
+			auto dib = convertFromImage(input);
 
 			auto dstSize = m_size.getValue();
 			int dw = static_cast<int>(dstSize.x), dh = static_cast<int>(dstSize.y);
@@ -60,11 +56,7 @@ public:
 
 			if (resized)
 			{
-				auto width = FreeImage_GetWidth(resized);
-				auto height = FreeImage_GetHeight(resized);
-				auto data = FreeImage_GetBits(resized);
-
-				auto img = panda::graphics::Image(width, height, data);
+				auto img = convertToImage(resized);
 				m_output.getAccessor()->setImage(img);
 
 				FreeImage_Unload(resized);

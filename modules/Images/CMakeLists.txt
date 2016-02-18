@@ -4,6 +4,7 @@ set(PROJECT_NAME "Images")
 project(${PROJECT_NAME})
 
 set(HEADER_FILES
+	utils.h
 )
 
 set(SOURCE_FILES
@@ -11,6 +12,7 @@ set(SOURCE_FILES
 	LoadImage.cpp
 	ResizeImage.cpp
 	SaveImage.cpp
+	utils.cpp
 )
 
 EnablePrecompiledHeaders(SOURCE_FILES)
