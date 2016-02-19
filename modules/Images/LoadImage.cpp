@@ -25,8 +25,6 @@ public:
 		m_fileName.setWidgetData(getOpenFilterString());
 
 		addOutput(m_image);
-
-		setUpdateOnMainThread(true);
 	}
 
 	void update()
@@ -63,8 +61,6 @@ public:
 		m_fileName.setWidgetData(getOpenFilterString());
 
 		addOutput(m_image);
-
-		setUpdateOnMainThread(true);
 	}
 
 	void update()
@@ -111,8 +107,6 @@ public:
 		m_fileName.setWidgetData(getThumbnailFilterString());
 
 		addOutput(m_image);
-
-		setUpdateOnMainThread(true);
 	}
 
 	static std::string getThumbnailFilterString()
@@ -151,25 +145,9 @@ public:
 					if (dib)
 					{
 						auto thumbnail = FreeImage_GetThumbnail(dib);
-						if (thumbnail && FreeImage_HasPixels(thumbnail))
-						{
-							auto type = FreeImage_GetImageType(thumbnail);
-							auto bpp = FreeImage_GetBPP(thumbnail);
-
-							if (type != FIT_BITMAP || bpp != 32)
-							{
-								auto converted = FreeImage_ConvertTo32Bits(thumbnail);
-								if (converted)
-								{
-									img = convertToImage(converted);
-									FreeImage_Unload(converted);
-								}
-							}
-							else
-								img = convertToImage(thumbnail);
-						}
-
-						FreeImage_Unload(dib);
+						if(thumbnail)
+							img = convertTo32bitsImage(thumbnail);
+						FreeImage_Unload(dib); // thumbnail is a child of dib, and freed by it
 					}
 				}
 			}
@@ -189,6 +167,114 @@ protected:
 };
 
 int GeneratorImage_LoadThumbnailClass = RegisterObject<GeneratorImage_LoadThumbnails>("File/Image/Load thumbnails")
-	.setDescription("Load the thumbnail from multiple images");
+	.setDescription("Load the thumbnail from multiple images (null output if it does not exist)");
+
+//****************************************************************************//
+
+class GeneratorImage_LoadOrMakeThumbnails : public PandaObject
+{
+public:
+	PANDA_CLASS(GeneratorImage_LoadOrMakeThumbnails, PandaObject)
+
+	GeneratorImage_LoadOrMakeThumbnails(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_fileName(initData("fileName", "Path of the image to load"))
+		, m_image(initData("image", "The image loaded from disk"))
+		, m_size(initData(100, "size", "Maximum size of the created thumbnails"))
+	{
+		addInput(m_fileName);
+		addInput(m_size);
+
+		m_fileName.setWidget("open file");
+		m_fileName.setWidgetData(getOpenFilterString());
+
+		addOutput(m_image);
+
+		setUpdateOnMainThread(true);
+	}
+
+	void update()
+	{
+		const auto& paths = m_fileName.getValue();
+		auto& images = m_image.getAccessor();
+		const int size = m_size.getValue();
+
+		int nb = paths.size();
+		images.resize(nb);
+
+		for (int i = 0; i < nb; ++i)
+		{
+			const auto& path = paths[i];
+			auto& output = images[i];
+			if(path.empty())
+			{
+				output.clear();
+				continue;
+			}
+
+			auto cpath = path.c_str();
+			auto fif = FreeImage_GetFileType(cpath, 0);
+			if (fif == FIF_UNKNOWN)
+				fif = FreeImage_GetFIFFromFilename(cpath);
+			if (fif == FIF_UNKNOWN || !FreeImage_FIFSupportsReading(fif))
+			{
+				output.clear();
+				continue;
+			}
+
+			// First try loading the thumbnail
+			if (FreeImage_FIFSupportsNoPixels(fif))
+			{
+				auto dib = FreeImage_Load(fif, cpath, FIF_LOAD_NOPIXELS);
+				if (dib)
+				{
+					auto thumbnail = FreeImage_GetThumbnail(dib);
+					if (thumbnail)
+					{
+						output.setImage(convertTo32bitsImage(thumbnail));
+						FreeImage_Unload(dib); // thumbnail is a child of dib, and freed by it
+						continue;
+					}
+				}
+			}
+
+			FIBITMAP* dib = nullptr;
+			// Make the thumbnail
+			if (fif == FIF_JPEG)
+			{
+				FITAG* tag = nullptr;
+				// Downsampling while loading
+				dib = FreeImage_Load(fif, cpath, size << 16);
+			}
+			else
+			{
+				int flag = 0;
+				if (fif == FIF_RAW)
+					flag = RAW_PREVIEW;
+				dib = FreeImage_Load(fif, cpath, flag);
+			}
+
+			if (dib)
+			{
+				auto thumbnail = FreeImage_MakeThumbnail(dib, size, TRUE);
+				output.setImage(convertTo32bitsImage(thumbnail));
+				FreeImage_Unload(dib); // thumbnail is a child of dib, and freed by it
+				continue;
+			}
+
+			output.clear();
+		}
+	
+		cleanDirty();
+	}
+
+protected:
+	Data<std::vector<std::string>> m_fileName;
+	Data<std::vector<ImageWrapper>> m_image;
+	Data<int> m_size;
+};
+
+int GeneratorImage_LoadOrMakeThumbnailsClass = RegisterObject<GeneratorImage_LoadOrMakeThumbnails>("File/Image/Load or make thumbnails")
+	.setDescription("Load of make the thumbnail for multiple images");
 
 } // namespace Panda

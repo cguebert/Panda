@@ -145,26 +145,10 @@ graphics::Image loadImage(const std::string& fileName)
 			int flags = 0;
 			if (fif == FIF_JPEG)
 				flags = JPEG_EXIFROTATE;
+
 			auto dib = FreeImage_Load(fif, cpath, flags);
-
-			if (dib && FreeImage_HasPixels(dib))
-			{
-				auto type = FreeImage_GetImageType(dib);
-				auto bpp = FreeImage_GetBPP(dib);
-					
-				if (type != FIT_BITMAP || bpp != 32)
-				{
-					auto converted = FreeImage_ConvertTo32Bits(dib);
-					FreeImage_Unload(dib);
-					dib = converted; // Can be null
-				}
-
-				if (dib)
-				{
-					img = convertToImage(dib);
-					FreeImage_Unload(dib);
-				}
-			}
+			img = convertTo32bitsImage(dib);
+			FreeImage_Unload(dib);
 		}
 	}
 
@@ -198,6 +182,32 @@ graphics::Image convertToImage(FIBITMAP* dib)
 	auto data = FreeImage_GetBits(dib);
 
 	return graphics::Image(width, height, data);
+}
+
+graphics::Image convertTo32bitsImage(FIBITMAP* dib)
+{
+	if (dib && FreeImage_HasPixels(dib))
+	{
+		auto type = FreeImage_GetImageType(dib);
+		auto bpp = FreeImage_GetBPP(dib);
+					
+		if (type != FIT_BITMAP || bpp != 32)
+		{
+			auto converted = FreeImage_ConvertTo32Bits(dib);
+			if (converted)
+			{
+				auto img = convertToImage(converted);
+				FreeImage_Unload(converted);
+				return img;
+			}
+			else
+				return graphics::Image();
+		}
+
+		return convertToImage(dib);
+	}
+
+	return graphics::Image();
 }
 
 FIBITMAP* convertFromImage(const graphics::Image& img)

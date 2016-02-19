@@ -222,7 +222,7 @@ protected:
 
 int ModifierImage_SaveMultipleWithThumbnailsClass = 
 	RegisterObject<ModifierImage_SaveMultipleWithThumbnails>("File/Image/Save with thumbnails")
-	.setDescription("Save multiple images to the disk");
+	.setDescription("Save multiple images and their thumbnails to the disk");
 
 
 } // namespace Panda
