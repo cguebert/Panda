@@ -106,7 +106,7 @@ std::string getFilterString(const std::vector<FREE_IMAGE_FORMAT>& formats)
 	bool first = true;
 	for (const auto& fif : formats)
 	{
-		if(first)
+		if(!first)
 			filter += ";;";
 		first = false;
 		filter += FreeImage_GetFIFDescription(fif);
