@@ -22,6 +22,7 @@ ImageViewport::ImageViewport(const panda::BaseData* data, int imageIndex, QWidge
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	setFocusPolicy(Qt::StrongFocus);
 
 	addInput(*const_cast<panda::BaseData*>(data));
 }
@@ -122,6 +123,10 @@ void ImageViewport::paintGL()
 
 	auto imgSize = img->size();
 	auto renderSize = imgSize * m_zoomFactor;
+
+	if (size() != QSize(renderSize.width(), renderSize.height()))
+		resize(renderSize.width(), renderSize.height());
+
 	glViewport(0, 0, renderSize.width(), renderSize.height());
 	panda::graphics::Mat4x4 mvp;
 	GLfloat fw = static_cast<float>(renderSize.width()), fh = static_cast<float>(renderSize.height());
@@ -172,4 +177,49 @@ const panda::types::ImageWrapper* ImageViewport::getImage() const
 	}
 
 	return nullptr;
+}
+
+void ImageViewport::keyPressEvent(QKeyEvent* event)
+{
+	if (event->modifiers() != Qt::ControlModifier)
+	{
+		QWidget::keyPressEvent(event);
+		return;
+	}
+
+	switch (event->key())
+	{
+	case Qt::Key_PageDown:
+	{
+		const ImageListData* imagesListData = dynamic_cast<const ImageListData*>(m_data);
+		if (imagesListData)
+		{
+			auto& imagesList = imagesListData->getValue();
+			int nb = imagesList.size();
+
+			++m_imageIndex;
+			if (m_imageIndex >= nb)
+				m_imageIndex = nb - 1;
+			updateData();
+		}
+		break;
+	}
+	case Qt::Key_PageUp:
+	{
+		const ImageListData* imagesListData = dynamic_cast<const ImageListData*>(m_data);
+		if (imagesListData)
+		{
+			auto& imagesList = imagesListData->getValue();
+			int nb = imagesList.size();
+
+			--m_imageIndex;
+			if (m_imageIndex < 0)
+				m_imageIndex = 0;
+			updateData();
+		}
+		break;
+	}
+	default:
+		QWidget::keyPressEvent(event);
+	}
 }

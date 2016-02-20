@@ -39,7 +39,8 @@ protected:
 	void initializeGL() override;
 	void paintGL() override;
 
-	virtual void wheelEvent(QWheelEvent* event);
+	void wheelEvent(QWheelEvent* event) override;
+	void keyPressEvent(QKeyEvent* event) override;
 
 	void updateData();
 	const panda::types::ImageWrapper* getImage() const;
