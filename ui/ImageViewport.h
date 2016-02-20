@@ -11,13 +11,17 @@ namespace panda
 {
 class DataNode;
 class BaseData;
+
+namespace types
+{ class ImageWrapper; }
+
 }
 
 class ImageViewport : public QOpenGLWidget, public panda::DataNode
 {
 	Q_OBJECT
 public:
-	explicit ImageViewport(const panda::BaseData* data, QWidget* parent = nullptr);
+	explicit ImageViewport(const panda::BaseData* data, int imageIndex = 0, QWidget* parent = nullptr);
 	~ImageViewport();
 
 	QSize minimumSizeHint() const;
@@ -38,10 +42,11 @@ protected:
 	virtual void wheelEvent(QWheelEvent* event);
 
 	void updateData();
+	const panda::types::ImageWrapper* getImage() const;
 
 	const panda::BaseData* m_data;
-	int m_zoomLevel, m_wheelTicks;
-	float m_zoomFactor;
+	int m_zoomLevel = 0, m_wheelTicks = 0, m_imageIndex = -1;
+	float m_zoomFactor = 1.f;
 
 	panda::graphics::ShaderProgram m_texturedShader;
 	panda::graphics::Model m_rectModel;

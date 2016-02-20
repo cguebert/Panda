@@ -808,7 +808,7 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 				flags |= MENU_LINK;
 
 			const auto trait = m_contextMenuData->getDataTrait();
-			if(trait->isSingleValue() && trait->valueTypeName() == "image")
+			if(trait->valueTypeName() == "image")
 				flags |= MENU_IMAGE;
 		}
 	}

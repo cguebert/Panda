@@ -21,6 +21,7 @@
 #include <ui/graph/alignObjects.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/types/DataTraits.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Group.h>
@@ -1189,33 +1190,47 @@ void MainWindow::selectedObject(panda::PandaObject* object)
 void MainWindow::showImageViewport()
 {
 	const panda::BaseData* clickedData = m_graphView->getContextMenuData();
-
-	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [clickedData](const ImageViewportInfo& info) {
-		return info.data == clickedData;
-	});
-	if (it != m_imageViewports.end()) // Do not open another viewport
+	if (!clickedData)
 		return;
 
-	if(clickedData)
+	auto trait = clickedData->getDataTrait();
+
+	if (trait->isSingleValue())
 	{
-		ImageViewport* imageViewport = new ImageViewport(clickedData, this);
-		connect(imageViewport, SIGNAL(closeViewport(ImageViewport*)), this, SLOT(closeViewport(ImageViewport*)));
-		connect(imageViewport, SIGNAL(destroyedViewport(ImageViewport*)), this, SLOT(destroyedViewport(ImageViewport*)));
-		QScrollArea* container = new QScrollArea();
-		container->setFrameStyle(0);
-		container->setAlignment(Qt::AlignCenter);
-		container->setWidget(imageViewport);
-
-		ImageViewportInfo info;
-		info.viewport = imageViewport;
-		info.container = container;
-		info.data = clickedData;
-		info.object = clickedData->getOwner();
-		m_imageViewports.push_back(info);
-
-		QString label = QString::fromStdString(clickedData->getOwner()->getName()) + "." + QString::fromStdString(clickedData->getName());
-		m_tabWidget->addTab(container, label, true);
+		auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [clickedData](const ImageViewportInfo& info) {
+			return info.data == clickedData;
+		});
+		if (it != m_imageViewports.end()) // Do not open another viewport
+			return;
 	}
+
+	int index = 0;
+	if (trait->isVector())
+	{
+		int nb = trait->size(clickedData->getVoidValue());
+		bool ok = true;
+		index = QInputDialog::getInt(this, "Image index", "Index of the image to show", 0, 0, nb - 1, 1, &ok);
+		if (!ok)
+			return;
+	}
+
+	ImageViewport* imageViewport = new ImageViewport(clickedData, index, this);
+	connect(imageViewport, SIGNAL(closeViewport(ImageViewport*)), this, SLOT(closeViewport(ImageViewport*)));
+	connect(imageViewport, SIGNAL(destroyedViewport(ImageViewport*)), this, SLOT(destroyedViewport(ImageViewport*)));
+	QScrollArea* container = new QScrollArea();
+	container->setFrameStyle(0);
+	container->setAlignment(Qt::AlignCenter);
+	container->setWidget(imageViewport);
+
+	ImageViewportInfo info;
+	info.viewport = imageViewport;
+	info.container = container;
+	info.data = clickedData;
+	info.object = clickedData->getOwner();
+	m_imageViewports.push_back(info);
+
+	QString label = QString::fromStdString(clickedData->getOwner()->getName()) + "." + QString::fromStdString(clickedData->getName());
+	m_tabWidget->addTab(container, label, true);
 }
 
 void MainWindow::openDetachedWindow(DetachedWindow* window)

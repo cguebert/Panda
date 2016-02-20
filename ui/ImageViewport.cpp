@@ -13,13 +13,12 @@
 using panda::Data;
 using panda::types::ImageWrapper;
 using ImageData = Data<ImageWrapper>;
+using ImageListData = Data<std::vector<ImageWrapper>>;
 
-ImageViewport::ImageViewport(const panda::BaseData* data, QWidget* parent)
+ImageViewport::ImageViewport(const panda::BaseData* data, int imageIndex, QWidget* parent)
 	: QOpenGLWidget(parent)
 	, m_data(data)
-	, m_zoomLevel(0)
-	, m_wheelTicks(0)
-	, m_zoomFactor(1.0)
+	, m_imageIndex(imageIndex)
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -70,11 +69,10 @@ void ImageViewport::updateData()
 
 		// Resize the widget
 		QSize s = size();
-		const ImageData* imageData = dynamic_cast<const ImageData*>(m_data);
-		const ImageWrapper& img = imageData->getValue();
-		if(img.isNull())
+		auto img = getImage();
+		if(!img || img->isNull())
 			resize(600, 400);
-		resize(img.width(), img.height());
+		resize(img->width(), img->height());
 
 		// Ask for a redraw
 		QWidget::update();
@@ -110,24 +108,19 @@ void ImageViewport::initializeGL()
 
 void ImageViewport::paintGL()
 {
-	const ImageData* imageData = dynamic_cast<const ImageData*>(m_data);
-	const ImageWrapper& img = imageData->getValue();
-
 	QColor col = palette().window().color();
 	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
 	glDepthMask( GL_TRUE );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if(img.isNull())
-	{
-		resize(QSize(320, 240));
+	auto img = getImage();
+	if(!img || img->isNull())
 		return;
-	}
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	auto imgSize = img.size();
+	auto imgSize = img->size();
 	auto renderSize = imgSize * m_zoomFactor;
 	glViewport(0, 0, renderSize.width(), renderSize.height());
 	panda::graphics::Mat4x4 mvp;
@@ -140,7 +133,7 @@ void ImageViewport::paintGL()
 	m_texturedShader.bind();
 	m_texturedShader.setUniformValueMat4("MVP", mvp.data());
 
-	glBindTexture(GL_TEXTURE_2D, img.getTextureId());
+	glBindTexture(GL_TEXTURE_2D, img->getTextureId());
 
 	m_rectModel.render();
 	m_texturedShader.release();
@@ -160,4 +153,23 @@ void ImageViewport::wheelEvent(QWheelEvent* event)
 		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
 		QWidget::update();
 	}
+}
+
+const panda::types::ImageWrapper* ImageViewport::getImage() const
+{
+	const ImageData* imageData = dynamic_cast<const ImageData*>(m_data);
+	if(imageData)
+		return &imageData->getValue();
+
+	const ImageListData* imagesListData = dynamic_cast<const ImageListData*>(m_data);
+	if (imagesListData)
+	{
+		auto& imagesList = imagesListData->getValue();
+		int nb = imagesList.size();
+		if (m_imageIndex < 0 || m_imageIndex >= nb)
+			return nullptr;
+		return &imagesList[m_imageIndex];
+	}
+
+	return nullptr;
 }
