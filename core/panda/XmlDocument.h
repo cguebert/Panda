@@ -45,8 +45,8 @@ public:
 	std::string name() const;
 	void setName(const std::string& name);
 
-	XmlElement firstChild(const std::string& name = "");
-	XmlElement nextSibling(const std::string& name = "");
+	XmlElement firstChild(const std::string& name = "") const;
+	XmlElement nextSibling(const std::string& name = "") const;
 	XmlElement addChild(const std::string& name);
 	void removeChild(XmlElement& child);
 
