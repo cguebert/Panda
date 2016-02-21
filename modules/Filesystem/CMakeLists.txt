@@ -9,6 +9,8 @@ set(HEADER_FILES
 set(SOURCE_FILES
 	filesystemModule.cpp
 	EnumerateFiles.cpp
+	FileInfo.cpp
+	PathManipulation.cpp
 )
 
 EnablePrecompiledHeaders(SOURCE_FILES)

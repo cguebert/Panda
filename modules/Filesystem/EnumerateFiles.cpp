@@ -31,6 +31,15 @@ public:
 		addOutput(m_files);
 	}
 
+	void addFile(std::vector<std::string>& files, fs::path path, const std::vector<std::string>& extensions)
+	{
+		if (!fs::is_regular_file(path))
+			return;
+
+		if(extensions.empty() || helper::contains(extensions, path.extension().string()))
+			files.push_back(path.string());
+	}
+
 	void update()
 	{
 		fs::path dir(m_directory.getValue());
@@ -41,19 +50,13 @@ public:
 		{
 			if (m_recursive.getValue())
 			{
-				for (auto&& x : fs::recursive_directory_iterator(dir))
-				{
-					if (extensions.empty() || helper::contains(extensions, x.path().extension().string()))
-						files.push_back(x.path().string());
-				}
+				for (auto& x : fs::recursive_directory_iterator(dir))
+					addFile(files.wref(), x.path(), extensions);
 			}
 			else
 			{
-				for (auto&& x : fs::directory_iterator(dir))
-				{
-					if (extensions.empty() || helper::contains(extensions, x.path().extension().string()))
-						files.push_back(x.path().string());
-				}
+				for (auto& x : fs::directory_iterator(dir))
+					addFile(files.wref(), x.path(), extensions);
 			}
 		}
 
@@ -70,5 +73,45 @@ int Filesystem_EnumerateFilesClass = RegisterObject<Filesystem_EnumerateFiles>("
 .setDescription("Enumerate files in a directory");
 
 //****************************************************************************//
+
+class Filesystem_EnumerateDirectories : public PandaObject
+{
+public:
+	PANDA_CLASS(Filesystem_EnumerateDirectories, PandaObject)
+
+		Filesystem_EnumerateDirectories(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_directory(initData("directory", "The directory to analyse"))
+		, m_directories(initData("files", "The files found in the directory"))
+	{
+		addInput(m_directory);
+
+		addOutput(m_directories);
+	}
+
+	void update()
+	{
+		fs::path dir(m_directory.getValue());
+		auto dirs = m_directories.getAccessor();
+		dirs.clear();
+		if (dir.is_absolute() && exists(dir) && is_directory(dir))
+		{
+			for (auto& x : fs::directory_iterator(dir))
+			{
+				if (fs::is_directory(x))
+					dirs.push_back(x.path().string());
+			}
+		}
+
+		cleanDirty();
+	}
+
+protected:
+	Data<std::string> m_directory;
+	Data<std::vector<std::string>> m_directories;
+};
+
+int Filesystem_EnumerateDirectoriesClass = RegisterObject<Filesystem_EnumerateDirectories>("Generator/Text/File/Enumerate directories")
+.setDescription("Enumerate child directories");
 
 } // namespace Panda
