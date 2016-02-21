@@ -292,7 +292,7 @@ void GenericObject::save(XmlElement& elem, const std::vector<PandaObject*>* sele
 	PandaObject::save(elem, selected);
 }
 
-void GenericObject::load(XmlElement& elem)
+bool GenericObject::load(XmlElement& elem)
 {
 	auto e = elem.firstChild("CreatedData");
 	while(e)
@@ -301,7 +301,7 @@ void GenericObject::load(XmlElement& elem)
 		e = e.nextSibling("CreatedData");
 	}
 
-	PandaObject::load(elem);
+	return PandaObject::load(elem);
 }
 
 void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)

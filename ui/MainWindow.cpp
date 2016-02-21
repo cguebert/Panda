@@ -480,11 +480,13 @@ void MainWindow::createActions()
 
 	m_undoAction = new QAction(tr("Undo"), this);
 	m_undoAction->setShortcut(QKeySequence::Undo);
+	m_undoAction->setEnabled(false);
 	connect(m_undoAction, &QAction::triggered, [this]() { m_document->undoStack().undo(); });
 	addAction(m_undoAction);
 
 	m_redoAction = new QAction(tr("Redo"), this);
 	m_redoAction->setShortcut(QKeySequence::Redo);
+	m_redoAction->setEnabled(false);
 	connect(m_redoAction, &QAction::triggered, [this]() { m_document->undoStack().redo(); });
 	addAction(m_redoAction);
 

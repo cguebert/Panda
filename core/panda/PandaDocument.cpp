@@ -150,7 +150,6 @@ bool PandaDocument::readFile(const std::string& fileName, bool isImport)
 		return false;
 	}
 
-	m_selectedObjects.clear();
 	auto root = doc.root();
 	if(!isImport)	// Bugfix: don't read the doc's datas if we are merging 2 documents
 		load(root);		// Only the document's Datas
@@ -183,10 +182,7 @@ bool PandaDocument::readTextDocument(const std::string& text)
 		return false;
 
 	bool bSelected = !m_selectedObjects.empty();
-	m_selectedObjects.clear();
-
-	auto root = doc.root();
-	bool bVal = loadDoc(root);
+	bool bVal = loadDoc(doc.root());
 
 	for(auto object : m_selectedObjects)
 		object->reset();
@@ -259,9 +255,13 @@ bool PandaDocument::saveDoc(XmlElement& root, const ObjectsSelection& selected)
 
 bool PandaDocument::loadDoc(XmlElement& root)
 {
+	m_selectedObjects.clear();
 	m_signals->startLoading.run();
 	std::map<uint32_t, uint32_t> importIndicesMap;
 	auto factory = ObjectFactory::getInstance();
+
+	using ObjectXmlPair = std::pair<std::shared_ptr<PandaObject>, XmlElement>;
+	std::vector<ObjectXmlPair> newObjects;
 
 	// Loading objects
 	auto elem = root.firstChild("Object");
@@ -274,13 +274,12 @@ bool PandaDocument::loadDoc(XmlElement& root)
 		auto object = factory->create(registryName, this);
 		if(object)
 		{
-			addObject(object);
 			importIndicesMap[index] = object->getIndex();
-			m_selectedObjects.push_back(object.get());
 
-			object->load(elem);
+			if (!object->load(elem))
+				return false;
 
-			m_signals->loadingObject.run(elem, object.get());
+			newObjects.emplace_back(object, elem);
 		}
 		else
 		{
@@ -289,6 +288,15 @@ bool PandaDocument::loadDoc(XmlElement& root)
 		}
 
 		elem = elem.nextSibling("Object");
+	}
+
+	// Now that we have created all the objects, we actually add them to the document
+	for (const auto& p : newObjects)
+	{
+		const auto& object = p.first;
+		addObject(object);
+		m_selectedObjects.push_back(object.get());
+		m_signals->loadingObject.run(p.second, object.get());
 	}
 
 	// Create links

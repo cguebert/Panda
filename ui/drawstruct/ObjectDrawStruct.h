@@ -37,7 +37,7 @@ public:
 	virtual bool contains(const QPointF& point);	// Is this point inside of the shape of this object ? (which can be complex)
 
 	virtual void save(panda::XmlElement& elem);
-	virtual void load(panda::XmlElement& elem);
+	virtual void load(const panda::XmlElement& elem);
 
 	virtual bool mousePressEvent(QMouseEvent*) { return false; }	// Return true to capture the mouse for this object
 	virtual void mouseMoveEvent(QMouseEvent*) {}

@@ -126,7 +126,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	}
 }
 
-void Group::load(XmlElement& elem)
+bool Group::load(XmlElement& elem)
 {
 	auto groupDataNode = elem.firstChild("GroupData");
 	while(groupDataNode)
@@ -173,7 +173,8 @@ void Group::load(XmlElement& elem)
 			importObjectsMap[index] = object.get();
 			addObject(object);
 
-			object->load(objectNode);
+			if (!object->load(objectNode))
+				return false;
 
 			types::Point pos;
 			pos.x = objectNode.attribute("x").toFloat();
@@ -183,7 +184,7 @@ void Group::load(XmlElement& elem)
 		else
 		{
 			parentDocument()->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
-			return;
+			return false;
 		}
 
 		objectNode = objectNode.nextSibling("Object");
@@ -249,6 +250,8 @@ void Group::load(XmlElement& elem)
 	}
 
 	parentDocument()->onModifiedObject(this);
+
+	return true;
 }
 
 void Group::reset()

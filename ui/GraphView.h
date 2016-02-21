@@ -126,7 +126,7 @@ public slots:
 	void removeObject(panda::PandaObject* object);
 	void modifiedObject(panda::PandaObject* object);
 	void savingObject(panda::XmlElement&, panda::PandaObject*);
-	void loadingObject(panda::XmlElement&, panda::PandaObject*);
+	void loadingObject(const panda::XmlElement&, panda::PandaObject*);
 	void updateLinkTags(bool reset=false);
 	void removeLink();
 	void hoverDataInfo();

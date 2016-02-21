@@ -111,7 +111,7 @@ public:
 	virtual void dataSetParent(BaseData* data, BaseData* parent);
 
 	virtual void save(XmlElement& elem, const std::vector<PandaObject*>* selected = nullptr);
-	virtual void load(XmlElement& elem);
+	virtual bool load(XmlElement& elem);
 
 	virtual BaseData* createDatas(int type, int index = -1);
 

@@ -136,27 +136,20 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 	if (!doc.loadFromFile(fileName.toStdString()))
 	{
 		QMessageBox::warning(nullptr, tr("Panda"), tr("Xml error"));
-		return false;
+		return nullptr;
 	}
 
 	auto root = doc.root();
 	auto registryName = root.attribute("type").toString();
 
 	auto object = panda::ObjectFactory::getInstance()->create(registryName, document);
-	if(object)
+	if(object && object->load(root))
 	{
-		object->load(root);
 		document->addCommand(std::make_shared<AddObjectCommand>(document, view, object));
+		return object.get();
 	}
 	else
-	{
-		QMessageBox::warning(nullptr, tr("Panda"),
-			tr("Could not create the object %1.\nA plugin must be missing.")
-			.arg(QString::fromStdString(registryName)));
 		return nullptr;
-	}
-
-	return object.get();
 }
 
 const GroupsManager::GroupsMap& GroupsManager::getGroups()

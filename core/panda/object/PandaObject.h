@@ -52,7 +52,7 @@ public:
 	virtual void endStep(); /// Called at the end of each step
 
 	virtual void save(XmlElement& elem, const std::vector<PandaObject*> *selected = nullptr); /// Save the object in XML
-	virtual void load(XmlElement& elem); /// Load the object from XML
+	virtual bool load(XmlElement& elem); /// Load the object from XML
 
 	virtual void dataSetParent(BaseData* data, BaseData* parent); /// Changed the parent of the data, and emit the modified signal
 

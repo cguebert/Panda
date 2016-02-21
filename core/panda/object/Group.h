@@ -21,7 +21,7 @@ public:
 	virtual ~Group();
 
 	void save(XmlElement& elem, const std::vector<PandaObject*>* selected = nullptr) override;
-	void load(XmlElement& elem) override;
+	bool load(XmlElement& elem) override;
 
 	void reset() override;
 

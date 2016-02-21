@@ -51,11 +51,13 @@ public:
 		cleanDirty();
 	}
 
-	void load(XmlElement& elem)
+	bool load(XmlElement& elem) override
 	{
 		PandaObject::load(elem);
 
 		reset();
+
+		return true;
 	}
 
 protected:

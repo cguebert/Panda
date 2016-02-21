@@ -992,7 +992,7 @@ void GraphView::savingObject(panda::XmlElement& elem, panda::PandaObject* object
 	m_objectDrawStructs[object]->save(elem);
 }
 
-void GraphView::loadingObject(panda::XmlElement& elem, panda::PandaObject* object)
+void GraphView::loadingObject(const panda::XmlElement& elem, panda::PandaObject* object)
 {
 	m_objectDrawStructs[object]->load(elem);
 }

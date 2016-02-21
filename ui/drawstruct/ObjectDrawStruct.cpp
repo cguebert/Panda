@@ -194,7 +194,7 @@ void ObjectDrawStruct::save(panda::XmlElement& elem)
 	elem.setAttribute("y", m_position.y());
 }
 
-void ObjectDrawStruct::load(panda::XmlElement& elem)
+void ObjectDrawStruct::load(const panda::XmlElement& elem)
 {
 	QPointF newPos;
 	newPos.setX(elem.attribute("x").toFloat());
