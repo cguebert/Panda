@@ -26,6 +26,7 @@ public:
 		addInput(m_extensions);
 		addInput(m_recursive);
 
+		m_directory.setWidget("directory");
 		m_recursive.setWidget("checkbox");
 
 		addOutput(m_files);
@@ -35,8 +36,11 @@ public:
 	{
 		if (!fs::is_regular_file(path))
 			return;
-
-		if(extensions.empty() || helper::contains(extensions, path.extension().string()))
+		
+		auto ext = path.extension().string();
+		if (!ext.empty())
+			ext = ext.substr(1); // Remove the '.'
+		if(extensions.empty() || helper::contains(extensions, ext))
 			files.push_back(path.string());
 	}
 
@@ -85,8 +89,9 @@ public:
 		, m_directories(initData("files", "The files found in the directory"))
 	{
 		addInput(m_directory);
-
 		addOutput(m_directories);
+
+		m_directory.setWidget("directory");
 	}
 
 	void update()

@@ -154,6 +154,69 @@ public:
 
 //****************************************************************************//
 
+class DirectoryDataWidgetContainer : public BaseOpenDialogObject
+{
+protected:
+	typedef std::string value_type;
+	QWidget* container;
+	QLineEdit* lineEdit;
+
+public:
+	DirectoryDataWidgetContainer() : container(nullptr), lineEdit(nullptr) {}
+
+	QWidget* createWidgets(QWidget* parent, bool readOnly)
+	{
+		container = new QWidget(parent);
+		lineEdit = new QLineEdit();
+
+		QPushButton* pushButton = new QPushButton("...");
+		pushButton->setEnabled(!readOnly);
+		pushButton->setMaximumWidth(40);
+
+		QHBoxLayout* layout = new QHBoxLayout(container);
+		layout->setMargin(0);
+		layout->addWidget(lineEdit, 1);
+		layout->addWidget(pushButton);
+		container->setLayout(layout);
+
+		QObject::connect(lineEdit, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
+		QObject::connect(pushButton, SIGNAL(clicked()), this, SLOT(onShowDialog()));
+		return container;
+	}
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
+	{
+		QWidget* parentWidget = dynamic_cast<QWidget*>(parent);
+		QWidget* widget = createWidgets(parentWidget, readOnly);
+		QObject::connect(this, SIGNAL(editingFinished()), parent, SLOT(setWidgetDirty()));
+		return widget;
+	}
+	void readFromData(const value_type& v)
+	{
+		lineEdit->setText(QString::fromStdString(v));
+	}
+	void writeToData(value_type& v)
+	{
+		v = lineEdit->text().toStdString();
+	}
+	virtual void onShowDialog()
+	{
+		const QString& v = lineEdit->text();
+		QDir dir(v);
+		QString r = dir.path();
+		r = QFileDialog::getExistingDirectory(container, container->tr("Choose directory"), v);
+		if (!r.isEmpty())
+		{
+			lineEdit->setText(r);
+			emit editingFinished();
+		}
+	}
+	void updatePreview()
+	{
+	}
+};
+
+//****************************************************************************//
+
 class FontDataWidgetContainer : public BaseOpenDialogObject, public ObjectWithPreview
 {
 protected:
@@ -345,6 +408,7 @@ public:
 RegisterWidget<SimpleDataWidget<std::string> > DWClass_string("default");
 RegisterWidget<SimpleDataWidget<std::string, FileDataWidgetContainer<true> > > DWClass_file_open("open file");
 RegisterWidget<SimpleDataWidget<std::string, FileDataWidgetContainer<false> > > DWClass_file_save("save file");
+RegisterWidget<SimpleDataWidget<std::string, DirectoryDataWidgetContainer > > DWClass_file_directory("directory");
 RegisterWidget<SimpleDataWidget<std::string, FontDataWidgetContainer> > DWClass_font("font");
 RegisterWidget<SimpleDataWidget<std::string, MultilineDataWidgetContainer> > DWClass_multiline("multiline");
 
