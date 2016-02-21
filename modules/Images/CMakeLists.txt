@@ -9,6 +9,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
 	imagesModule.cpp
+	ImageExtensions.cpp
 	LoadImage.cpp
 	ResizeImage.cpp
 	SaveImage.cpp

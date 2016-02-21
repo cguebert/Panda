@@ -1,8 +1,5 @@
-#include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
-#include <panda/types/ImageWrapper.h>
-#include <panda/graphics/Image.h>
 
 #include <modules/Images/utils.h>
 
@@ -181,10 +178,13 @@ public:
 		, m_fileName(initData("fileName", "Path of the image to load"))
 		, m_image(initData("image", "The image loaded from disk"))
 		, m_size(initData(100, "size", "Maximum size of the created thumbnails"))
+		, m_loadExisting(initData(true, "loadExisting", "If a thumbnail is bundled in the file, use it"))
 	{
 		addInput(m_fileName);
 		addInput(m_size);
+		addInput(m_loadExisting);
 
+		m_loadExisting.setWidget("checkbox");
 		m_fileName.setWidget("open file");
 		m_fileName.setWidgetData(getOpenFilterString());
 
@@ -198,6 +198,7 @@ public:
 		const auto& paths = m_fileName.getValue();
 		auto& images = m_image.getAccessor();
 		const int size = m_size.getValue();
+		bool useExisting = (m_loadExisting.getValue() != 0);
 
 		int nb = paths.size();
 		images.resize(nb);
@@ -223,17 +224,20 @@ public:
 			}
 
 			// First try loading the thumbnail
-			if (FreeImage_FIFSupportsNoPixels(fif))
+			if (useExisting)
 			{
-				auto dib = FreeImage_Load(fif, cpath, FIF_LOAD_NOPIXELS);
-				if (dib)
+				if (FreeImage_FIFSupportsNoPixels(fif))
 				{
-					auto thumbnail = FreeImage_GetThumbnail(dib);
-					if (thumbnail)
+					auto dib = FreeImage_Load(fif, cpath, FIF_LOAD_NOPIXELS);
+					if (dib)
 					{
-						output.setImage(convertTo32bitsImage(thumbnail));
-						FreeImage_Unload(dib); // thumbnail is a child of dib, and freed by it
-						continue;
+						auto thumbnail = FreeImage_GetThumbnail(dib);
+						if (thumbnail)
+						{
+							output.setImage(convertTo32bitsImage(thumbnail));
+							FreeImage_Unload(dib); // thumbnail is a child of dib, and freed by it
+							continue;
+						}
 					}
 				}
 			}
@@ -271,7 +275,7 @@ public:
 protected:
 	Data<std::vector<std::string>> m_fileName;
 	Data<std::vector<ImageWrapper>> m_image;
-	Data<int> m_size;
+	Data<int> m_size, m_loadExisting;
 };
 
 int GeneratorImage_LoadOrMakeThumbnailsClass = RegisterObject<GeneratorImage_LoadOrMakeThumbnails>("File/Image/Load or make thumbnails")

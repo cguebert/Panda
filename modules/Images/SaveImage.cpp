@@ -1,10 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/SimpleGUI.h>
-#include <panda/UpdateLogger.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
-#include <panda/types/ImageWrapper.h>
-#include <panda/graphics/Image.h>
 
 #include <algorithm>
 #include <modules/Images/utils.h>
