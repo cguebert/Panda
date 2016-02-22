@@ -18,7 +18,7 @@ class PANDA_CORE_API PandaObject : public DataNode
 {
 public:
 	PANDA_CLASS(PandaObject, DataNode)
-	explicit PandaObject(PandaDocument* document);
+	explicit PandaObject(PandaDocument* document); /// The document is guaranteed to not change during the life of the object
 
 	const std::string& getName() const; /// Returns the name of the object (what is shown in the graph view)
 	uint32_t getIndex() const; /// Returns the index of creation of this object (will not change during the life of the document)
@@ -27,7 +27,7 @@ public:
 	void removeData(BaseData* data); /// Remove the data from the list (it will not be shown in the GUI nor serialized)
 
 	void addOutput(BaseData& data); /// data will be set as read-only before being added
-	using DataNode::addOutput;
+	using DataNode::addOutput; // Can still use "addOutput(DataNode& node)"
 
 	BaseData* getData(const std::string& name) const; /// Returns the Data with the given name, or null
 	const std::vector<BaseData*>& getDatas() const; /// Access to the list of Datas
@@ -45,7 +45,7 @@ public:
 	virtual void postCreate(); /// Called by the factory after the name and index have been set
 	virtual void preDestruction(); /// Called just before this object is freed
 	virtual void reset() {} /// Called when rewinding the document
-	virtual void update() override; /// Do the computations in this method
+	virtual void update() override; /// Do the computations in this method. The dirty flag is automatically cleaned after this method, unless "setStillDirty(true)" is called.
 	virtual void updateIfDirty() const override; /// This adds logging before calling update
 	virtual void setDirtyValue(const DataNode* caller) override; /// Only adds logging on top of DataNode::setDirtyValue
 	virtual void beginStep(); /// Called at the beginning of each step (update can be called without this being called if outside of animation)
@@ -82,22 +82,22 @@ protected:
 	void enableModifiedSignal(bool b); /// To (de)activate the execution of the modified signal. Do not forget to put the previous value back when done.
 	void enableDirtySignal(bool b); /// To (de)activate the execution of the dirty signal. Do not forget to put the previous value back when done.
 
-	void setLaterUpdate(bool b); /// Tell the scheduler that this object will be dirty later in the timestep (maybe multiple times)
-	void setUpdateOnMainThread(bool b); /// Tell the scheduler that this object will always be updated on the main thread
+	void setLaterUpdate(bool b = true); /// Tell the scheduler that this object will be dirty later in the timestep (maybe multiple times)
+	void setUpdateOnMainThread(bool b = true); /// Tell the scheduler that this object will always be updated on the main thread
 
 private:
-	PandaDocument* m_parentDocument = nullptr;
-	std::vector<BaseData*> m_datas;
-	uint32_t m_index = 0;
-	std::string m_name;
+	PandaDocument* m_parentDocument = nullptr; // Pointer to the parent document
+	std::vector<BaseData*> m_datas; // The list of Datas added to this object (via the use of initData in a Data constructor or with addData)
+	uint32_t m_index = 0; // The unique index of this object. This is set automatically by the factory
+	std::string m_name; // The class name of this object. This is set automatically by the factory
 
-	bool m_doEmitModified = true;
-	bool m_doEmitDirty = true;
-	bool m_isInStep = false;
+	bool m_doEmitModified = true; // If false, prevent the emission of the modified signal
+	bool m_doEmitDirty = true; // If false, prevent the emission of the dirty signal
+	bool m_isInStep = false; // If true, we are in the execution of PandaDocument::step
 	bool m_laterUpdate = false; // Flag for the scheduler: the outputs will be dirty later in the timestep (maybe multiple times)
 	bool m_updateOnMainThread = false; // Flag for the scheduler: if true, this object will always be updated on the main thread
+	bool m_destructing = false; // If true, do not do any computations as the object will be removed from the document
 	mutable bool m_isUpdating = false; // Mutable as it will modified in const methods
-	bool m_destructing = false;
 };
 
 //****************************************************************************//

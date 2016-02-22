@@ -59,8 +59,11 @@ void PandaObject::updateIfDirty() const
 	{
 		helper::ScopedEvent log(helper::event_update, this);
 		m_isUpdating = true;
-		const_cast<PandaObject*>(this)->update();
-		const_cast<PandaObject*>(this)->cleanDirty();	// Verify if we can remove this call
+
+		auto nonConstThis = const_cast<PandaObject*>(this);
+		nonConstThis->update();
+		nonConstThis->cleanDirty(); // We force the dirty flag to be cleaned (otherwise the object will not be refreshed if an input changes)
+
 		m_isUpdating = false;
 	}
 }

@@ -94,7 +94,7 @@ public:
 		for (int i = 0; i < nb; ++i)
 		{
 			fs::path file(paths[i]);
-			size[i] = fs::file_size(file);
+			size[i] = static_cast<int>(fs::file_size(file));
 		}
 
 		cleanDirty();
