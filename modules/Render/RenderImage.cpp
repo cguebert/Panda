@@ -249,6 +249,169 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderImageClass = RegisterObject<RenderImage>("Render/Textured/Image").setDescription("Renders an image");
+int RenderImageClass = RegisterObject<RenderImage>("Render/Textured/Image").setDescription("Renders an image at a position");
+
+//****************************************************************************//
+
+class RenderImage_InRect : public Renderer
+{
+public:
+	PANDA_CLASS(RenderImage_InRect, Renderer)
+
+	RenderImage_InRect(PandaDocument* parent)
+		: Renderer(parent)
+		, m_image(initData("image", "Image to render on screen" ))
+		, m_rectangle(initData("rectangle", "Rectangle defining the position and size of the rendered image"))
+		, m_shader(initData("shader", "Shaders used during the rendering"))
+	{
+		addInput(m_image);
+		addInput(m_rectangle);
+		addInput(m_shader);
+
+		m_shader.setWidgetData("Vertex;Fragment");
+		auto shaderAcc = m_shader.getAccessor();
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Vertex, "shaders/PT_noColor_Tex.v.glsl");
+		shaderAcc->setSourceFromFile(Shader::ShaderType::Fragment, "shaders/PT_noColor_Tex.f.glsl");
+
+		setUpdateOnMainThread(true); // Because we manipulate images that may have to be converted to textures
+	}
+
+	void initGL()
+	{
+		m_VAO.create();
+		m_VAO.bind();
+
+		m_verticesVBO.create();
+		m_verticesVBO.bind();
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		m_texCoordsVBO.create();
+		m_texCoordsVBO.bind();
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+
+		m_VAO.release();
+	}
+
+	void update()
+	{
+		const std::vector<ImageWrapper>& listImage = m_image.getValue();
+		const std::vector<Rect>& listRectangle = m_rectangle.getValue();
+
+		m_verticesBuffer.clear();
+		m_texCoordsBuffer.clear();
+		m_firstBuffer.clear();
+		m_countBuffer.clear();
+
+		if (!listImage.empty() && !listRectangle.empty())
+		{
+			int nbImage = listImage.size();
+			int nbRectangle = listRectangle.size();
+			if(nbImage < nbRectangle) nbImage = 1;
+
+			m_firstBuffer.resize(nbRectangle);
+			for (int i = 0; i < nbRectangle; ++i)
+				m_firstBuffer[i] = i * 4;
+
+			m_countBuffer.assign(nbRectangle, 4);
+
+			m_texCoordsBuffer.reserve(nbRectangle * 4);
+			for (int i = 0; i < nbRectangle; ++i)
+			{
+				m_texCoordsBuffer.emplace_back(1.f, 1.f);
+				m_texCoordsBuffer.emplace_back(0.f, 1.f);
+				m_texCoordsBuffer.emplace_back(1.f, 0.f);
+				m_texCoordsBuffer.emplace_back(0.f, 0.f);
+			}
+
+			m_verticesBuffer.reserve(nbRectangle * 4);
+			for (const auto& rect : listRectangle)
+			{
+				m_verticesBuffer.emplace_back(rect.right(), rect.top());
+				m_verticesBuffer.emplace_back(rect.left(),  rect.top());
+				m_verticesBuffer.emplace_back(rect.right(), rect.bottom());
+				m_verticesBuffer.emplace_back(rect.left(),  rect.bottom());
+			}
+		}
+	}
+
+	void render()
+	{
+		const std::vector<ImageWrapper>& listImage = m_image.getValue();
+		const std::vector<Rect>& listRectangle = m_rectangle.getValue();
+
+		int nbImage = listImage.size();
+		int nbRectangle = listRectangle.size();
+
+		if(nbImage && nbRectangle)
+		{
+			if(nbImage < nbRectangle) nbImage = 1;
+
+			if(!m_shader.getValue().apply(m_shaderProgram))
+				return;
+
+			if (!m_VAO)
+				initGL();
+
+			m_verticesVBO.bind();
+			m_verticesVBO.write(m_verticesBuffer);
+
+			m_texCoordsVBO.bind();
+			m_texCoordsVBO.write(m_texCoordsBuffer);
+			
+			m_VAO.bind();
+
+			m_shaderProgram.bind();
+			const graphics::Mat4x4& MVP = getMVPMatrix();
+			m_shaderProgram.setUniformValueMat4("MVP", MVP.data());
+
+			m_shaderProgram.setUniformValue("tex0", 0);
+
+			if (nbImage == 1)
+			{
+				glBindTexture(GL_TEXTURE_2D, listImage[0].getTextureId());
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+				glMultiDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer.data(), m_countBuffer.data(), m_countBuffer.size());
+			}
+			else
+			{
+				for (int i = 0; i < nbImage; ++i)
+				{
+					glBindTexture(GL_TEXTURE_2D, listImage[i].getTextureId());
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D ,GL_TEXTURE_WRAP_S, GL_REPEAT);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+					glDrawArrays(GL_TRIANGLE_STRIP, m_firstBuffer[i], m_countBuffer[i]);
+				}
+			}
+
+			m_shaderProgram.release();
+			m_VAO.release();
+		}
+	}
+
+protected:
+	Data< std::vector<ImageWrapper> > m_image;
+	Data< std::vector<Rect> > m_rectangle;
+	Data< Shader > m_shader;
+
+	std::vector<types::Point> m_verticesBuffer, m_texCoordsBuffer;
+	std::vector<GLint> m_firstBuffer;
+	std::vector<GLsizei> m_countBuffer;
+
+	graphics::ShaderProgram m_shaderProgram;
+	graphics::VertexArrayObject m_VAO;
+	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
+};
+
+int RenderImage_InRectClass = RegisterObject<RenderImage_InRect>("Render/Textured/Image in rectangle")
+	.setDescription("Renders an image inside a rectangle");
 
 } // namespace panda
