@@ -61,8 +61,6 @@ public:
 
 
 		outMesh->createEdgeList();
-
-		cleanDirty();
 	}
 
 protected:

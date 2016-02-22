@@ -59,8 +59,6 @@ public:
 				}
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

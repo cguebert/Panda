@@ -43,8 +43,6 @@ public:
 		}
 		else
 			m_output.getAccessor()->clear();
-
-		cleanDirty();
 	}
 
 protected:
@@ -96,8 +94,6 @@ public:
 		}
 		else
 			m_output.getAccessor()->clear();
-
-		cleanDirty();
 	}
 
 protected:

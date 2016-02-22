@@ -39,8 +39,6 @@ public:
 		float min = numMin.getValue(), max = numMax.getValue();
 		for(int i=0; i<valNbNumbers; ++i)
 			valNumbers[i] = rnd.random(min, max);
-
-		cleanDirty();
 	}
 
 protected:

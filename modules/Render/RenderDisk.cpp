@@ -113,8 +113,6 @@ public:
 				}
 			}
 		}
-
-		cleanDirty();
 	}
 
 	void render()
@@ -271,8 +269,6 @@ public:
 				}
 			}
 		}
-
-		cleanDirty();
 	}
 
 	void render()
@@ -465,8 +461,6 @@ public:
 				}
 			}
 		}
-
-		cleanDirty();
 	}
 
 	void render()

@@ -45,8 +45,6 @@ public:
 			path.push_back(r.topRight());
 			path.push_back(r.topLeft());
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -87,7 +85,6 @@ public:
 		if(!nbC || !nbR)
 		{
 			paths.clear();
-			cleanDirty();
 			return;
 		}
 
@@ -121,8 +118,6 @@ public:
 
 			paths.push_back(path);
 		}
-
-		cleanDirty();
 	}
 
 protected:

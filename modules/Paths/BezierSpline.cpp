@@ -47,8 +47,6 @@ public:
 		}
 		else
 			outPts->clear();
-
-		cleanDirty();
 	}
 
 	void computeCoefficients(int c, int p)

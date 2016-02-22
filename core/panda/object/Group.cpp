@@ -312,7 +312,6 @@ void GroupWithLayer::setLayer(Layer* newLayer)
 void GroupWithLayer::update()
 {
 	updateLayer(parentDocument());
-	cleanDirty();
 }
 
 BaseLayer::RenderersList GroupWithLayer::getRenderers()

@@ -89,8 +89,6 @@ public:
 								+ ctrlPts[nbCtrlPts-1] * 1/6.0);
 			}
 		}
-
-		cleanDirty();
 	}
 
 	void computeCoefs(int nbSteps)

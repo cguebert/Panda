@@ -45,10 +45,7 @@ public:
 		output.clear();
 
 		if(inputA.contour.empty() || inputB.contour.empty())
-		{
-			cleanDirty();
 			return;
-		}
 
 		typedef boost::geometry::model::d2::point_xy<float> BGPoint;
 		typedef boost::geometry::model::polygon<BGPoint> BGPolygon;
@@ -90,8 +87,6 @@ public:
 
 			output.push_back(poly);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -128,10 +123,7 @@ public:
 		output.clear();
 
 		if(inputA.contour.empty() || inputB.contour.empty())
-		{
-			cleanDirty();
 			return;
-		}
 
 		typedef boost::geometry::model::d2::point_xy<float> BGPoint;
 		typedef boost::geometry::model::polygon<BGPoint> BGPolygon;
@@ -173,8 +165,6 @@ public:
 
 			output.push_back(poly);
 		}
-
-		cleanDirty();
 	}
 
 protected:

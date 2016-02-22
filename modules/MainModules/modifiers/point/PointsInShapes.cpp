@@ -47,8 +47,6 @@ public:
 				outId.push_back(i);
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -105,8 +103,6 @@ public:
 				outId.push_back(i);
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

@@ -102,8 +102,6 @@ public:
 
 			ExtrudeHelper::extrudePath(input[i], output[i], UV[i], widthAnim, cap, join, close);
 		}
-
-		cleanDirty();
 	}
 
 protected:

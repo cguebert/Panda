@@ -56,8 +56,6 @@ public:
 			while (std::getline(ss, item, ','))
 				extensions.push_back(item);
 		}
-
-		cleanDirty();
 	}
 
 protected:

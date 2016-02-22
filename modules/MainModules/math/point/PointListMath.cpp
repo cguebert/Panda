@@ -67,8 +67,6 @@ public:
 			mean.setValue(0);
 			stdDev.setValue(0);
 		}
-
-		cleanDirty();
 	}
 
 protected:

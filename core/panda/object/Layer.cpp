@@ -112,9 +112,7 @@ Layer::Layer(PandaDocument* parent)
 
 void Layer::update()
 {
-	updateLayer(parentDocument());
-	cleanDirty();
-}
+	updateLayer(parentDocument());}
 
 bool Layer::accepts(DockableObject* dockable) const
 {

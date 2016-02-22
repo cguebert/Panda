@@ -69,8 +69,6 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 
 		renderImage(*outputFbo, m_shaderProgram);
-
-		cleanDirty();
 	}
 
 protected:

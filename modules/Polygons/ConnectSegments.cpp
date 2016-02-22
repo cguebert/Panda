@@ -145,10 +145,7 @@ public:
 		output.clear();
 
 		if(input.empty())
-		{
-			cleanDirty();
 			return;
-		}
 
 		prepareSearchData(input);
 
@@ -193,8 +190,6 @@ public:
 				output.push_back(path);
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

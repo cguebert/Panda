@@ -49,8 +49,6 @@ public:
 			else
 				directory[i] = filename[i] = "";
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -101,8 +99,6 @@ public:
 			else
 				stem[i] = extension[i] = "";
 		}
-
-		cleanDirty();
 	}
 
 protected:

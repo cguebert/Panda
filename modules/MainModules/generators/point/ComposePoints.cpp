@@ -43,8 +43,6 @@ public:
 		}
 		else
 			pts.clear();
-
-		cleanDirty();
 	}
 
 protected:
@@ -88,8 +86,6 @@ public:
 			xVal[i] = pt.x;
 			yVal[i] = pt.y;
 		}
-
-		cleanDirty();
 	}
 
 protected:

@@ -27,8 +27,6 @@ public:
 
 	void update()
 	{
-		cleanDirty();
-
 		const auto& inputVal = m_input.getValue();
 		GLuint inputTexId = inputVal.getTextureId();
 		if(inputTexId)

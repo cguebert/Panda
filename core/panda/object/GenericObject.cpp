@@ -211,8 +211,6 @@ void GenericObject::doUpdate(bool updateAllInputs)
 			list.push_back(ptr.get());
 		invokeFunction(created->type, list);
 	}
-
-	cleanDirty();
 }
 
 void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
@@ -365,8 +363,6 @@ void SingleTypeGenericObject::update()
 
 		invokeFunction(created->type, list);
 	}
-
-	cleanDirty();
 }
 
 BaseData* SingleTypeGenericObject::createDatas(int type, int index)

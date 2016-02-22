@@ -34,8 +34,6 @@ public:
 		auto output = m_output.getAccessor();
 		output->contour = m_contour.getValue();
 		output->holes = m_innerPaths.getValue();
-
-		cleanDirty();
 	}
 
 protected:
@@ -69,8 +67,6 @@ public:
 		const auto& input = m_input.getValue();
 		m_contour.getAccessor() = input.contour;
 		m_innerPaths.getAccessor() = input.holes;
-
-		cleanDirty();
 	}
 
 protected:
@@ -108,8 +104,6 @@ public:
 			for(const auto& hole : poly.holes)
 				output.push_back(hole);
 		}
-
-		cleanDirty();
 	}
 
 protected:

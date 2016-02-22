@@ -91,8 +91,6 @@ public:
 		}
 
 		outMesh->createTriangles();
-
-		cleanDirty();
 	}
 
 protected:

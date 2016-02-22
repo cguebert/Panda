@@ -43,7 +43,6 @@ public:
 		if(!nbR || !nbG || !nbB || !nbA)
 		{
 			c.clear();
-			cleanDirty();
 			return;
 		}
 
@@ -61,8 +60,6 @@ public:
 					 helper::bound<float>(0.0f, b[i%nbB], 1.0f),
 					 helper::bound<float>(0.0f, a[i%nbA], 1.0f));
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -111,8 +108,6 @@ public:
 
 		for(int i=0; i<nb; ++i)
 			c[i].get(r[i], g[i], b[i], a[i]);
-
-		cleanDirty();
 	}
 
 protected:
@@ -159,7 +154,6 @@ public:
 		if(!nbH || !nbS || !nbV || !nbA)
 		{
 			c.clear();
-			cleanDirty();
 			return;
 		}
 
@@ -178,8 +172,6 @@ public:
 					helper::bound<float>(0.0f, v[i%nbV], 1.0f),
 					helper::bound<float>(0.0f, a[i%nbA], 1.0f));
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -228,8 +220,6 @@ public:
 
 		for(int i=0; i<nb; ++i)
 			c[i].getHsv(h[i], s[i], v[i], a[i]);
-
-		cleanDirty();
 	}
 
 protected:

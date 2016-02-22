@@ -200,10 +200,7 @@ public:
 		output.clear();
 
 		if(input.empty())
-		{
-			cleanDirty();
 			return;
-		}
 
 		for(Mesh mesh : input) // Take a non-const copy
 		{
@@ -264,8 +261,6 @@ public:
 
 			output.push_back(poly);
 		}
-
-		cleanDirty();
 	}
 
 protected:

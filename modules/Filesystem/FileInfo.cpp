@@ -54,8 +54,6 @@ public:
 			else
 				exists[i] = isDir[i] = isFile[i] = false;
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -96,8 +94,6 @@ public:
 			fs::path file(paths[i]);
 			size[i] = static_cast<int>(fs::file_size(file));
 		}
-
-		cleanDirty();
 	}
 
 protected:

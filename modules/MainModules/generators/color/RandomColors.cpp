@@ -86,8 +86,6 @@ public:
 							rnd.random(minA, maxA));
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

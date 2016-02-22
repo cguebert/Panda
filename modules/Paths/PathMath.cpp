@@ -46,8 +46,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				output[i] = input[i%nbA] + delta[i%nbB];
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -94,8 +92,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				output[i] = input[i%nbA] * scale[i%nbB];
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -156,8 +152,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				output[i] = types::rotated(input[i%nbP], center[i%nbC], angle[i%nbA] * PI180);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -216,8 +210,6 @@ public:
 			else
 				lengthList[i] = 0;
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -303,8 +295,6 @@ public:
 			listPos->clear();
 			listRot.clear();
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -339,8 +329,6 @@ public:
 		output.resize(nb);
 		for(int i=0; i<nb; ++i)
 			output[i] = types::centroidOfPolygon(input[i]);
-
-		cleanDirty();
 	}
 
 protected:
@@ -377,8 +365,6 @@ public:
 		output.resize(nb);
 		for(int i=0; i<nb; ++i)
 			output[i] = fabs(types::areaOfPolygon(input[i]));
-
-		cleanDirty();
 	}
 
 protected:
@@ -489,8 +475,6 @@ public:
 				pt1 = pt2;
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

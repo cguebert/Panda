@@ -53,8 +53,6 @@ public:
 			else
 				colorsList[i] = Color::null();
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -108,8 +106,6 @@ public:
 		}
 
 		result.getAccessor()->setImage(tmp);
-
-		cleanDirty();
 	}
 
 protected:
@@ -178,8 +174,6 @@ public:
 			else
 				col[i] = Color::null();
 		}
-
-		cleanDirty();
 	}
 
 protected:

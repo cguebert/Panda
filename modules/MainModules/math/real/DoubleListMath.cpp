@@ -67,8 +67,6 @@ public:
 			vMin.setValue(0.0);
 			vMax.setValue(0.0);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -113,8 +111,6 @@ public:
 		}
 		else
 			median.setValue(0);
-
-		cleanDirty();
 	}
 
 protected:
@@ -155,8 +151,6 @@ public:
 			for(int i=1; i<nb; ++i)
 				output[i] = output[i-1] + input[i];
 		}
-
-		cleanDirty();
 	}
 
 protected:

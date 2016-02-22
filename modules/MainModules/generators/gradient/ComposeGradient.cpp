@@ -42,8 +42,6 @@ public:
 		tempList.resize(nbGradients.getValue());
 		GenericObject::update();
 		gradients.setValue(tempList);
-
-		cleanDirty();
 	}
 
 	template <class T>

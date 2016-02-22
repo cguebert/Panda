@@ -56,8 +56,6 @@ public:
 			Point disp(cos(a)*d, sin(a)*d);
 			outPts[i] = inPts[i] + disp;
 		}
-
-		cleanDirty();
 	}
 
 protected:

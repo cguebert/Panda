@@ -36,7 +36,6 @@ public:
 	void update()
 	{
 		image.getAccessor()->setFbo(parentDocument()->getFBO());
-		cleanDirty();
 	}
 
 protected:

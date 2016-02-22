@@ -84,8 +84,6 @@ public:
 					break;
 				GenericObject::doUpdate(false); // Do not update the Datas we don't use
 			}
-
-			cleanDirty();
 		}
 	}
 

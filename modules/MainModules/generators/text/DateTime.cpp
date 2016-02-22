@@ -54,8 +54,6 @@ public:
 		ss << std::put_time(tm, format.getValue().c_str());
 		
 		text.setValue(ss.str());
-
-		cleanDirty();
 	}
 
 protected:

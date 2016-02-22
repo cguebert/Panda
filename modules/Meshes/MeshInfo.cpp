@@ -34,8 +34,6 @@ public:
 		nbPoints.setValue(inMesh.nbPoints());
 		nbEdges.setValue(inMesh.nbEdges());
 		nbTriangles.setValue(inMesh.nbTriangles());
-
-		cleanDirty();
 	}
 
 protected:
@@ -77,8 +75,6 @@ public:
 				area += mesh.areaOfTriangle(mesh.getTriangle(j));
 			output[i] = fabs(area);
 		}
-
-		cleanDirty();
 	}
 
 protected:

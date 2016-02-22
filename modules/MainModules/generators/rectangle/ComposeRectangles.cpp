@@ -45,8 +45,6 @@ public:
 
 		for(int i=0; i<nb; ++i)
 			rect[i] = Rect(l[i], t[i], r[i], b[i]);
-
-		cleanDirty();
 	}
 
 protected:
@@ -97,8 +95,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				rect[i] = Rect(c[i%nbC]-s[i%nbS]/2, s[i%nbS].x, s[i%nbS].y);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -149,8 +145,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				rect[i] = Rect(tl[i%nbTL], br[i%nbBR]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -206,8 +200,6 @@ public:
 			r[i] = tr.right();
 			b[i] = tr.bottom();
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -253,8 +245,6 @@ public:
 			c[i] = tr.center();
 			s[i] = Point(tr.width(), tr.height());
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -300,8 +290,6 @@ public:
 			tl[i] = tr.topLeft();
 			br[i] = tr.bottomRight();
 		}
-
-		cleanDirty();
 	}
 
 protected:

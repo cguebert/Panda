@@ -47,8 +47,6 @@ public:
 			prevSeed = seedV;
 		}
 		value.setValue(dist(gen));
-
-		cleanDirty();
 	}
 
 	bool load(XmlElement& elem) override

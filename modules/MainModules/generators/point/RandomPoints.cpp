@@ -61,8 +61,6 @@ public:
 
 		for(int i=0; i<valNbPoints; ++i)
 			valPoints.push_back(origin + Point(m_rnd.random() * w, m_rnd.random() * h));
-
-		cleanDirty();
 	}
 
 protected:
@@ -155,8 +153,6 @@ public:
 				refPts.emplace_back(static_cast<float>(index % m_width), static_cast<float>(index / m_width));
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

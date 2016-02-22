@@ -31,8 +31,6 @@ public:
 
 		for(int i=0; i<size; ++i)
 			valOut[i] = compute(valIn[i]);
-
-		cleanDirty();
 	}
 
 	virtual float compute(const float& value) = 0;
@@ -78,8 +76,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				valOut[i] = compute(valInA[i%nbA], valInB[i%nbB]);
 		}
-
-		cleanDirty();
 	}
 
 	virtual float compute(const float& valA, const float& valB) = 0;

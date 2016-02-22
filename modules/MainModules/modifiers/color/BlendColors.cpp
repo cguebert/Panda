@@ -63,8 +63,6 @@ public:
 				break;
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

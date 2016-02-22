@@ -45,8 +45,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				output[i] = translated(input[i%nbA], delta[i%nbB]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -92,8 +90,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				output[i] = scaled(input[i%nbA], scale[i%nbB]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -153,8 +149,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				output[i] = types::rotated(input[i%nbP], center[i%nbC], angle[i%nbA] * PI180);
 		}
-
-		cleanDirty();
 	}
 
 protected:

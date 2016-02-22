@@ -100,8 +100,6 @@ public:
 		outMesh->clear();
 		outMesh->addPoints(newPoints);
 		outMesh->addTriangles(newTriangles);
-
-		cleanDirty();
 	}
 
 protected:

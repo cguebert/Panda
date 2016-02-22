@@ -120,8 +120,6 @@ public:
 			m_shaderProgram.release();
 			outputFbo->release();
 		}
-
-		cleanDirty();
 	}
 
 protected:

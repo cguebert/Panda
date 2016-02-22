@@ -47,8 +47,6 @@ public:
 		output.clear();
 		for(auto p : outputList)
 			output.push_back(p);
-
-		cleanDirty();
 	}
 
 protected:
@@ -100,8 +98,6 @@ public:
 		output.clear();
 		for(auto p : outputSet)
 			output.push_back(p);
-
-		cleanDirty();
 	}
 
 protected:
@@ -164,8 +160,6 @@ public:
 				output.push_back(newMesh);
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

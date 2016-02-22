@@ -63,8 +63,6 @@ public:
 					addFile(files.wref(), x.path(), extensions);
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -107,8 +105,6 @@ public:
 					dirs.push_back(x.path().string());
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

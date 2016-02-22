@@ -74,8 +74,6 @@ public:
 				listResult[i] = types::interpolate(listFrom[i%nbP], listTo[i%nbP], amt);
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

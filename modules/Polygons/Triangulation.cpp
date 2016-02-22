@@ -53,10 +53,7 @@ public:
 		output.clear();
 
 		if(input.empty())
-		{
-			cleanDirty();
 			return;
-		}
 
 		for(const auto& inputPoly : input)
 		{
@@ -84,7 +81,6 @@ public:
 			mesh.createEdgeList();
 			output.push_back(mesh);
 		}
-		cleanDirty();
 	}
 
 protected:

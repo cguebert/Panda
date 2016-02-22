@@ -72,8 +72,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				valOut[i] = smoothStep(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -113,8 +111,6 @@ public:
 				++valOut[i];
 			prevValues[i] = valIn[i];
 		}
-
-		cleanDirty();
 	}
 
 	void reset()
@@ -171,8 +167,6 @@ public:
 				++valOut[i];
 			prevValues[i] = valIn[i];
 		}
-
-		cleanDirty();
 	}
 
 	void reset()
@@ -251,8 +245,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				valOut[i] = constrain(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -313,8 +305,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				valOut[i] = pulse(valInA[i%nbP], valInB[i%nbP], valInV[i%nbV]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -386,8 +376,6 @@ public:
 								  valInMin[i%nbP], valInMax[i%nbP],
 								  valOutMin[i%nbP], valOutMax[i%nbP]);
 		}
-
-		cleanDirty();
 	}
 
 protected:

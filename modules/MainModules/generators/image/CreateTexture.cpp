@@ -116,8 +116,6 @@ public:
 		auto acc = m_image.getAccessor();
 		graphics::RectInt area(0, 0, renderSize.width(), renderSize.height());
 		graphics::Framebuffer::blitFramebuffer(*acc->getFbo(), area, m_renderFrameBuffer, area);
-
-		cleanDirty();
 	}
 
 protected:

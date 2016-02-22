@@ -34,8 +34,6 @@ public:
 		float valStart = start.getValue(), valStep = step.getValue();
 		for(int i=0; i<valNbNumbers; ++i)
 			valNumbers[i] = valStart + valStep * i;
-
-		cleanDirty();
 	}
 
 protected:

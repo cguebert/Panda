@@ -35,8 +35,6 @@ public:
 		colorsList.resize(nb);
 		for(int i=0; i<nb; ++i)
 			colorsList[i] = grad.get(pos[i]);
-
-		cleanDirty();
 	}
 
 protected:

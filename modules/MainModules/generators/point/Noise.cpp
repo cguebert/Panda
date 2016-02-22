@@ -41,8 +41,6 @@ public:
 
 		for(int i=0; i<nb; ++i)
 			valOutput[i] = perlin.fBm(valInput[i] * valScale);
-
-		cleanDirty();
 	}
 
 protected:

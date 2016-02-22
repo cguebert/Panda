@@ -71,8 +71,6 @@ public:
 		}
 		else
 			outputList.clear();
-
-		cleanDirty();
 	}
 
 protected:
@@ -135,8 +133,6 @@ public:
 		}
 		else
 			outputList.clear();
-
-		cleanDirty();
 	}
 
 protected:

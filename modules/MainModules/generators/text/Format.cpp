@@ -48,8 +48,6 @@ public:
 		tempList.clear();
 		GenericObject::update();
 		text.setValue(tempList);
-
-		cleanDirty();
 	}
 
 	template <class T>

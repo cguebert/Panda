@@ -50,7 +50,6 @@ void PandaObject::preDestruction()
 
 void PandaObject::update()
 {
-	cleanDirty();
 }
 
 void PandaObject::updateIfDirty() const

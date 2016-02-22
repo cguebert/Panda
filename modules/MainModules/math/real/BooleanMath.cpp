@@ -31,10 +31,7 @@ public:
 
 		int nbA = valInA.size(), nbB = valInB.size();
 		if(!nbA || !nbB)
-		{
-			cleanDirty();
 			return;
-		}
 
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
@@ -44,8 +41,6 @@ public:
 
 		for(int i=0; i<size; ++i)
 			valOut[i] = (valInA[i%nbA] > valInB[i%nbB]) ? 1 : 0;
-
-		cleanDirty();
 	}
 
 protected:
@@ -82,10 +77,7 @@ public:
 
 		int nbA = valInA.size(), nbB = valInB.size();
 		if(!nbA || !nbB)
-		{
-			cleanDirty();
 			return;
-		}
 
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
@@ -95,8 +87,6 @@ public:
 
 		for(int i=0; i<size; ++i)
 			valOut[i] = (valInA[i%nbA] == valInB[i%nbB]) ? 1 : 0;
-
-		cleanDirty();
 	}
 
 protected:
@@ -133,10 +123,7 @@ public:
 
 		int nbA = valInA.size(), nbB = valInB.size();
 		if(!nbA || !nbB)
-		{
-			cleanDirty();
 			return;
-		}
 
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
@@ -146,8 +133,6 @@ public:
 
 		for(int i=0; i<size; ++i)
 			valOut[i] = (valInA[i%nbA] || valInB[i%nbB]) ? 1 : 0;
-
-		cleanDirty();
 	}
 
 protected:
@@ -183,10 +168,7 @@ public:
 
 		int nbA = valInA.size(), nbB = valInB.size();
 		if(!nbA || !nbB)
-		{
-			cleanDirty();
 			return;
-		}
 
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
@@ -196,8 +178,6 @@ public:
 
 		for(int i=0; i<size; ++i)
 			valOut[i] = (valInA[i%nbA] && valInB[i%nbB]) ? 1 : 0;
-
-		cleanDirty();
 	}
 
 protected:
@@ -233,10 +213,7 @@ public:
 
 		int nbA = valInA.size(), nbB = valInB.size();
 		if(!nbA || !nbB)
-		{
-			cleanDirty();
 			return;
-		}
 
 		int size = std::max(nbA, nbB);
 		valOut.resize(size);
@@ -246,8 +223,6 @@ public:
 
 		for(int i=0; i<size; ++i)
 			valOut[i] = ((valInA[i%nbA] != 0) ^ (valInB[i%nbB] != 0));
-
-		cleanDirty();
 	}
 
 protected:
@@ -283,8 +258,6 @@ public:
 
 		for(int i=0; i<nb; ++i)
 			valOut[i] = (valIn[i] == 0 ? 1 : 0);
-
-		cleanDirty();
 	}
 
 protected:

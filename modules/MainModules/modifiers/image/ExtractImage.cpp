@@ -78,8 +78,6 @@ public:
 				}
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

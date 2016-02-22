@@ -33,8 +33,6 @@ public:
 		int i=0;
 		for(auto triangle : inMesh.getTriangles())
 			pts[i++] = inMesh.centroidOfTriangle(triangle);
-
-		cleanDirty();
 	}
 
 protected:
@@ -84,8 +82,6 @@ public:
 
 			centroids[i] = avg / totArea;
 		}
-
-		cleanDirty();
 	}
 
 protected:

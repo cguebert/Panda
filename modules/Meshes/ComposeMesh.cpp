@@ -62,8 +62,6 @@ public:
 
 			outMesh[i] = std::move(mesh);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -107,8 +105,6 @@ public:
 			pts.push_back(meshPts[e[0]]);
 			pts.push_back(meshPts[e[1]]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -141,8 +137,6 @@ public:
 
 		auto pts = m_points.getAccessor();
 		pts = inMesh.getPoints();
-
-		cleanDirty();
 	}
 
 protected:
@@ -190,8 +184,6 @@ public:
 		}
 
 		outMesh->removeUnusedPoints();
-
-		cleanDirty();
 	}
 
 protected:
@@ -243,8 +235,6 @@ public:
 		outPoints.wref() = toIntVector(inMesh.getPointsOnBorder());
 		outEdges.wref() = toIntVector(inMesh.getEdgesOnBorder());
 		outTriangles.wref() = toIntVector(inMesh.getTrianglesOnBorder());
-
-		cleanDirty();
 	}
 
 protected:
@@ -296,8 +286,6 @@ public:
 				outPts.push_back(inMesh.getPoint(e[1]));
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -338,8 +326,6 @@ public:
 		int nb = std::min(input.nbPoints(), static_cast<int>(points.size()));
 		for(int i=0; i<nb; ++i)
 			output.wref().getPoint(i) = points[i];
-
-		cleanDirty();
 	}
 
 protected:

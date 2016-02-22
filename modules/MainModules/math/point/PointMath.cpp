@@ -46,8 +46,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = valA[i%nbA] + valB[i%nbB];
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -94,8 +92,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = valA[i%nbA] - valB[i%nbB];
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -144,8 +140,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = points[i%nbP] * reals[i%nbR];
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -195,8 +189,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = points[i%nbP] / reals[i%nbR];
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -244,8 +236,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = (valA[i%nbA] - valB[i%nbB]).norm();
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -307,8 +297,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = rotated(points[i%nbP], centers[i%nbC], angles[i%nbA] * PI180);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -358,8 +346,6 @@ public:
 					angleList[i] = -atan2(pt.y, pt.x) * 180 / pi;
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -405,8 +391,6 @@ public:
 				vecList[i] = Point(cos(a), sin(a));
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -447,8 +431,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = val[i].norm();
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -489,8 +471,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = val[i].norm2();
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -531,8 +511,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = val[i].normalized();
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -579,8 +557,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = valA[i%nbA].linearProduct(valB[i%nbB]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -627,8 +603,6 @@ public:
 			for(int i=0; i<nb; ++i)
 				res[i] = valA[i%nbA].linearDivision(valB[i%nbB]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -698,8 +672,6 @@ public:
 				}
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

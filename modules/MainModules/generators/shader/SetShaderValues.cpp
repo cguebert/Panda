@@ -51,8 +51,6 @@ public:
 	{
 		output.setValue(input.getValue());
 		GenericObject::update();
-
-		cleanDirty();
 	}
 
 	template <class T>

@@ -42,8 +42,6 @@ public:
 			for(int i=0; i<nbR; ++i)
 				res[i] = rects[i].translated(trans[i%nbT]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -90,8 +88,6 @@ public:
 			for(int i=0; i<nbR; ++i)
 				res[i] = rects[i].adjusted(adj[i%nbA]);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -148,8 +144,6 @@ public:
 				res[0] = tmp;
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -206,8 +200,6 @@ public:
 				res[0] = tmp;
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

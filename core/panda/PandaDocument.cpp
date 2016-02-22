@@ -704,8 +704,6 @@ void PandaDocument::update()
 		helper::ScopedEvent log("context done current");
 		m_gui.contextDoneCurrent();
 	}
-
-	cleanDirty();
 }
 
 graphics::Framebuffer& PandaDocument::getFBO()

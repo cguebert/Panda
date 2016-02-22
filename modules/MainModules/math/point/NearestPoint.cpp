@@ -78,8 +78,6 @@ public:
 					grid.addPoint(inPts[i]);
 			}
 		}
-
-		cleanDirty();
 	}
 
 protected:

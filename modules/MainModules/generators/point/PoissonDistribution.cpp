@@ -88,7 +88,6 @@ public:
 
 		m_nbPoints.setValue(valPoints.size());
 		m_grid.clear();
-		cleanDirty();
 	}
 
 protected:

@@ -35,8 +35,6 @@ public:
 			if(stop.first >= 0 && stop.first <= 1)
 				grad->add(stop.first, stop.second);
 		}
-
-		cleanDirty();
 	}
 
 protected:
@@ -68,8 +66,6 @@ public:
 		const Gradient& grad = gradient.getValue();
 		auto acc = anim.getAccessor();
 		acc->setStops(grad.getStops());
-
-		cleanDirty();
 	}
 
 protected:

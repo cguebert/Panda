@@ -38,8 +38,6 @@ public:
 			auto size = imgWrapper.size();
 			listSize[i] = Point(static_cast<float>(size.width()), static_cast<float>(size.height()));
 		}
-
-		cleanDirty();
 	}
 
 protected:
