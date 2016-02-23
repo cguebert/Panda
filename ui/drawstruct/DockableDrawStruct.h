@@ -22,7 +22,7 @@ public:
 
 	static const int dockEmptyRendererHeight = 30;
 	static const int dockHoleWidth = 80;
-	static const int dockHoleMargin = 2;
+	static const int dockHoleMargin = 3;
 	static const int dockRendererMargin = 10;
 protected:
 	panda::DockObject* m_dockObject;
@@ -39,8 +39,10 @@ public:
 	virtual void moveVisual(const QPointF& delta);
 	virtual void update();
 	virtual bool contains(const QPointF& point);
+	virtual QSize getObjectSize();
 
 	static const int dockableCircleWidth = 20;
+	static const int dockableWithOutputAdds = 30;
 protected:
 	QPainterPath m_shapePath;
 };

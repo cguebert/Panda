@@ -74,7 +74,7 @@ QSize ObjectDrawStruct::getObjectSize()
 	nbInputs = m_object->getInputDatas().size();
 	nbOutputs = m_object->getOutputDatas().size();
 	int maxData = qMax(nbInputs, nbOutputs);
-	objectSize.rheight() = qMax(objectSize.rheight(), 2*dataStartY() + (maxData-1)*dataRectMargin + maxData*dataRectSize);
+	objectSize.rheight() = qMax(objectSize.height(), 2*dataStartY() + (maxData-1)*dataRectMargin + maxData*dataRectSize);
 
 	return objectSize;
 }

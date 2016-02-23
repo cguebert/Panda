@@ -7,7 +7,7 @@
 #include <QPainter>
 
 DockObjectDrawStruct::DockObjectDrawStruct(GraphView* view, panda::DockObject* object)
-	: ObjectDrawStruct(view, (panda::PandaObject*)object)
+	: ObjectDrawStruct(view, object)
 	, m_dockObject(object)
 {
 	update();
@@ -85,18 +85,12 @@ void DockObjectDrawStruct::update()
 		m_dockablesY.push_back(objectStruct->getObjectArea().top());
 
 		tx = m_objectArea.left() + dockHoleWidth - DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;
-		int w = DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;
-		int h = objectSize.height() + dockHoleMargin * 2 - 1;
+		int w = DockableObjectDrawStruct::dockableCircleWidth;
+		int h = objectSize.height();
 
-		path.lineTo(m_objectArea.left(), ty - dockHoleMargin - 1);
-		path.lineTo(tx, ty - dockHoleMargin - 1);
-		path.cubicTo(tx+w/2.0, ty-dockHoleMargin - 1,
-					 tx+w, ty+h/4.0,
-					 tx+w, ty+h/2.0);
-		path.cubicTo(tx+w, ty+h*3.0/4.0,
-					 tx+w/2.0, ty+h,
-					 tx, ty+h);
-		path.lineTo(m_objectArea.left(), ty+h);
+		path.lineTo(m_objectArea.left(), ty - dockHoleMargin);
+		path.arcTo(tx - w - dockHoleMargin, ty - dockHoleMargin, w * 2 + dockHoleMargin, h + dockHoleMargin * 2, 90, -180);
+		path.lineTo(m_objectArea.left(), ty + h + dockHoleMargin);
 
 		ty += objectSize.height() + dockRendererMargin;
 	}
@@ -104,15 +98,9 @@ void DockObjectDrawStruct::update()
 	ty = m_objectArea.bottom()-dockEmptyRendererHeight-dockRendererMargin;
 	path.lineTo(m_objectArea.left(), ty);
 	tx = m_objectArea.left()+dockHoleWidth-DockableObjectDrawStruct::dockableCircleWidth;
-	path.lineTo(tx, ty);
-	path.cubicTo(tx+DockableObjectDrawStruct::dockableCircleWidth/2.0, ty,
-				 tx+DockableObjectDrawStruct::dockableCircleWidth, ty+dockEmptyRendererHeight/4.0,
-				 tx+DockableObjectDrawStruct::dockableCircleWidth, ty+dockEmptyRendererHeight/2.0);
-	path.cubicTo(tx+DockableObjectDrawStruct::dockableCircleWidth, ty+dockEmptyRendererHeight*3.0/4.0,
-				 tx+DockableObjectDrawStruct::dockableCircleWidth/2.0, ty+dockEmptyRendererHeight,
-				 tx, ty+dockEmptyRendererHeight);
+	path.arcTo(tx, ty, DockableObjectDrawStruct::dockableCircleWidth, dockEmptyRendererHeight, 90, -180);
 	path.lineTo(m_objectArea.left(), ty+dockEmptyRendererHeight);
-	path.lineTo(m_objectArea.left(), m_objectArea.bottom());
+	path.closeSubpath();
 	path.swap(m_shapePath);
 }
 
@@ -132,7 +120,7 @@ int dockObjectDrawClass = RegisterDrawObject<panda::DockObject, DockObjectDrawSt
 //****************************************************************************//
 
 DockableObjectDrawStruct::DockableObjectDrawStruct(GraphView* view, panda::DockableObject* dockable)
-	: ObjectDrawStruct(view, (panda::PandaObject*)dockable)
+	: ObjectDrawStruct(view, dockable)
 {
 	update();
 }
@@ -153,28 +141,24 @@ bool DockableObjectDrawStruct::contains(const QPointF& point)
 	return m_shapePath.contains(point);
 }
 
+QSize DockableObjectDrawStruct::getObjectSize()
+{
+	auto size = ObjectDrawStruct::getObjectSize();
+	if (!getObject()->getOutputDatas().empty())
+		size.rwidth() += dockableWithOutputAdds;
+	return size;
+}
+
 void DockableObjectDrawStruct::update()
 {
 	ObjectDrawStruct::update();
 
 	QPainterPath path;
 	path.moveTo(m_objectArea.left(), m_objectArea.center().y());
-	path.lineTo(m_objectArea.left(), m_objectArea.top()+5);
-	path.cubicTo(m_objectArea.left(), m_objectArea.top()+2.5,
-				 m_objectArea.left()+2.5, m_objectArea.top(),
-				 m_objectArea.left()+5, m_objectArea.top());
-	path.lineTo(m_objectArea.right()-dockableCircleWidth, m_objectArea.top());
-	path.cubicTo(m_objectArea.right()-dockableCircleWidth/2.0, m_objectArea.top(),
-				 m_objectArea.right(), m_objectArea.top()+m_objectArea.height()/4.0,
-				 m_objectArea.right(), m_objectArea.center().y());
-	path.cubicTo(m_objectArea.right(), m_objectArea.bottom()-m_objectArea.height()/4.0,
-				 m_objectArea.right()-dockableCircleWidth/2.0, m_objectArea.bottom(),
-				 m_objectArea.right()-dockableCircleWidth, m_objectArea.bottom());
-	path.lineTo(m_objectArea.left()+5, m_objectArea.bottom());
-	path.cubicTo(m_objectArea.left()+2.5, m_objectArea.bottom(),
-				 m_objectArea.left(), m_objectArea.bottom()-2.5,
-				 m_objectArea.left(), m_objectArea.bottom()-5);
-	path.lineTo(m_objectArea.left(), m_objectArea.center().y());
+	path.arcTo(m_objectArea.left(), m_objectArea.top(), 10, 10, 180, -90);
+	path.arcTo(m_objectArea.right() - dockableCircleWidth * 2, m_objectArea.top(), dockableCircleWidth * 2, m_objectArea.height(), 90, -180);
+	path.arcTo(m_objectArea.left(), m_objectArea.bottom() - 10, 10, 10, 270, -90);
+	path.closeSubpath();
 	path.swap(m_shapePath);
 }
 
