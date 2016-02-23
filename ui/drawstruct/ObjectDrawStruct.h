@@ -46,6 +46,8 @@ public:
 	virtual bool acceptsMagneticSnap() const; // If this object is used for the magnetic snap when moving objects
 
 	virtual QSize getObjectSize();
+	virtual QRectF getTextArea(); // The area in which we can render text
+
 	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr);
 	bool getDataRect(const panda::BaseData* data, QRectF& rect);
 
@@ -58,6 +60,8 @@ public:
 
 	static const int dataRectSize = 10;
 	static const int dataRectMargin = 5;
+
+	static const int objectCorner = 5;
 
 	virtual int dataStartY();
 

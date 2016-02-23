@@ -18,15 +18,6 @@ void DockObjectDrawStruct::drawShape(QPainter* painter)
 	painter->drawPath(m_shapePath);
 }
 
-void DockObjectDrawStruct::drawText(QPainter* painter)
-{
-	int margin = dataRectSize+dataRectMargin+3;
-	QRectF textArea = m_objectArea;
-	textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
-	textArea.adjust(margin, 0, -margin, 0);
-	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, QString::fromStdString(m_object->getName()));
-}
-
 QSize DockObjectDrawStruct::getObjectSize()
 {
 	QSize temp = ObjectDrawStruct::getObjectSize();
@@ -37,6 +28,15 @@ QSize DockObjectDrawStruct::getObjectSize()
 		temp.rheight() += m_parentView->getObjectDrawStruct(dockable)->getObjectSize().height() + dockRendererMargin;
 
 	return temp;
+}
+
+QRectF DockObjectDrawStruct::getTextArea()
+{
+	int margin = dataRectSize+dataRectMargin+3;
+	QRectF textArea = m_objectArea;
+	textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
+	textArea.adjust(margin, 0, -margin, 0);
+	return textArea;
 }
 
 void DockObjectDrawStruct::move(const QPointF& delta)
@@ -69,6 +69,12 @@ void DockObjectDrawStruct::update()
 	path.lineTo(m_objectArea.right(), m_objectArea.top());
 	path.lineTo(m_objectArea.left(), m_objectArea.top());
 
+	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
+	const int dhm = dockHoleMargin;
+	const int rw = DockableObjectDrawStruct::dockableWithOutputRect;
+	const int aw = DockableObjectDrawStruct::dockableWithOutputArc;
+	const int ah = aw - dockHoleMargin * 2;
+
 	int tx, ty;
 	ty = m_objectArea.top() + ObjectDrawStruct::getObjectSize().height() + dockRendererMargin;
 
@@ -76,23 +82,45 @@ void DockObjectDrawStruct::update()
 	{
 		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
 		QSize objectSize = objectStruct->getObjectSize();
+		bool hasOutputs = !dockable->getOutputDatas().empty();
 		QPointF objectNewPos(m_position.x() + dockHoleWidth - objectSize.width(), m_position.y() + ty - m_objectArea.top());
+		
+		// If the object has outputs, it is drawn larger but must be placed at the same position
+		if (hasOutputs)
+			objectNewPos.rx() += DockableObjectDrawStruct::dockableWithOutputAdds;
 
 		auto doc = m_parentView->getDocument();
 		if(doc->isInCommandMacro())
 			doc->addCommand(std::make_shared<MoveObjectCommand>(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
 
-		m_dockablesY.push_back(objectStruct->getObjectArea().top());
+		QRectF objectArea = objectStruct->getObjectArea();
+		m_dockablesY.push_back(objectArea.top());
 
 		tx = m_objectArea.left() + dockHoleWidth - DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;
 		int w = DockableObjectDrawStruct::dockableCircleWidth;
 		int h = objectSize.height();
 
 		path.lineTo(m_objectArea.left(), ty - dockHoleMargin);
-		path.arcTo(tx - w - dockHoleMargin, ty - dockHoleMargin, w * 2 + dockHoleMargin, h + dockHoleMargin * 2, 90, -180);
+		if (hasOutputs)
+		{
+			const int top = objectArea.top() - dhm, bot = objectArea.bottom() + dhm;
+
+			// Arc at the top
+			path.arcTo(objectArea.right() - rw - aw * 3, top, aw * 2, ah * 2, 90, -90);
+			path.arcTo(objectArea.right() - rw - aw, top, aw * 2, ah * 2, -180, -90);
+
+			path.arcTo(objectArea.right() - cr + dhm, top, cr, cr, 90, -90); // Top right corner
+			path.arcTo(objectArea.right() - cr + dhm, bot - cr, cr, cr, 0, -90); // Bottom right corner
+
+			// Arc at the bottom
+			path.arcTo(objectArea.right() - rw - aw, bot - ah * 2, aw * 2, ah * 2, -90, -90);
+			path.arcTo(objectArea.right() - rw - aw * 3, bot - ah * 2, aw * 2, ah * 2, 0, -90);
+		}
+		else
+			path.arcTo(tx - w - dockHoleMargin, ty - dockHoleMargin, w * 2 + dockHoleMargin, h + dockHoleMargin * 2, 90, -180);
 		path.lineTo(m_objectArea.left(), ty + h + dockHoleMargin);
 
-		ty += objectSize.height() + dockRendererMargin;
+		ty += h + dockRendererMargin;
 	}
 
 	ty = m_objectArea.bottom()-dockEmptyRendererHeight-dockRendererMargin;
@@ -144,22 +172,60 @@ bool DockableObjectDrawStruct::contains(const QPointF& point)
 QSize DockableObjectDrawStruct::getObjectSize()
 {
 	auto size = ObjectDrawStruct::getObjectSize();
-	if (!getObject()->getOutputDatas().empty())
+	if (m_hasOutputs)
 		size.rwidth() += dockableWithOutputAdds;
 	return size;
 }
 
+QRectF DockableObjectDrawStruct::getTextArea()
+{
+	auto area = ObjectDrawStruct::getTextArea();
+	if (m_hasOutputs)
+		area.adjust(0, 0, -dockableWithOutputAdds, 0);
+	return area;
+}
+
 void DockableObjectDrawStruct::update()
 {
+	m_hasOutputs = !getObject()->getOutputDatas().empty();
 	ObjectDrawStruct::update();
 
-	QPainterPath path;
-	path.moveTo(m_objectArea.left(), m_objectArea.center().y());
-	path.arcTo(m_objectArea.left(), m_objectArea.top(), 10, 10, 180, -90);
-	path.arcTo(m_objectArea.right() - dockableCircleWidth * 2, m_objectArea.top(), dockableCircleWidth * 2, m_objectArea.height(), 90, -180);
-	path.arcTo(m_objectArea.left(), m_objectArea.bottom() - 10, 10, 10, 270, -90);
-	path.closeSubpath();
-	path.swap(m_shapePath);
+	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
+	const int rw = dockableWithOutputRect;
+	const int aw = dockableWithOutputArc;
+
+	if (m_hasOutputs)
+	{
+		QPainterPath path;
+		path.moveTo(m_objectArea.left(), m_objectArea.center().y());
+		path.arcTo(m_objectArea.left(), m_objectArea.top(), cr, cr, 180, -90); // Top left corner
+
+		// Arc at the top
+		path.arcTo(m_objectArea.right() - rw - aw * 3, m_objectArea.top(), aw * 2, aw * 2, 90, -90);
+		path.arcTo(m_objectArea.right() - rw - aw, m_objectArea.top(), aw * 2, aw * 2, -180, -90);
+
+		path.arcTo(m_objectArea.right() - cr, m_objectArea.top(), cr, cr, 90, -90); // Top right corner
+		path.arcTo(m_objectArea.right() - cr, m_objectArea.bottom() - cr, cr, cr, 0, -90); // Bottom right corner
+
+		// Arc at the bottom
+		path.arcTo(m_objectArea.right() - rw - aw, m_objectArea.bottom() - aw * 2, aw * 2, aw * 2, -90, -90);
+		path.arcTo(m_objectArea.right() - rw - aw * 3, m_objectArea.bottom() - aw * 2, aw * 2, aw * 2, 0, -90);
+
+		path.arcTo(m_objectArea.left(), m_objectArea.bottom() - cr, cr, cr, 270, -90); // Bottom left corner
+		path.closeSubpath();
+		path.swap(m_shapePath);
+	}
+	else
+	{
+		QPainterPath path;
+		path.moveTo(m_objectArea.left(), m_objectArea.center().y());
+		path.arcTo(m_objectArea.left(), m_objectArea.top(), cr, cr, 180, -90); // Top left corner
+		path.arcTo(m_objectArea.right() - dockableCircleWidth * 2, m_objectArea.top(), 
+			dockableCircleWidth * 2, m_objectArea.height(), 90, -180); // Right side arc
+		path.arcTo(m_objectArea.left(), m_objectArea.bottom() - cr, cr, cr, 270, -90); // Bottom left corner
+		path.closeSubpath();
+		path.swap(m_shapePath);
+	}
 }
 
 int DockableObjectDrawClass = RegisterDrawObject<panda::DockableObject, DockableObjectDrawStruct>();

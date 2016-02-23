@@ -11,8 +11,8 @@ public:
 	DockObjectDrawStruct(GraphView* view, panda::DockObject* m_object);
 
 	virtual void drawShape(QPainter* painter);
-	virtual void drawText(QPainter* painter);
 	virtual QSize getObjectSize();
+	virtual QRectF getTextArea();
 	virtual void move(const QPointF& delta);
 	virtual void moveVisual(const QPointF& delta);
 	virtual void update();
@@ -40,11 +40,17 @@ public:
 	virtual void update();
 	virtual bool contains(const QPointF& point);
 	virtual QSize getObjectSize();
+	virtual QRectF getTextArea();
 
 	static const int dockableCircleWidth = 20;
-	static const int dockableWithOutputAdds = 30;
+
+	static const int dockableWithOutputAdds = 25;
+	static const int dockableWithOutputRect = 15; // How much rectangle area we add
+	static const int dockableWithOutputArc = 15;
+
 protected:
 	QPainterPath m_shapePath;
+	bool m_hasOutputs = false;
 };
 
 #endif

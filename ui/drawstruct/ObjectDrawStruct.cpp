@@ -79,6 +79,12 @@ QSize ObjectDrawStruct::getObjectSize()
 	return objectSize;
 }
 
+QRectF ObjectDrawStruct::getTextArea()
+{
+	int margin = dataRectSize + dataRectMargin + 3;
+	return QRectF(m_objectArea.adjusted(margin, 0, -margin, 0));
+}
+
 panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* center)
 {
 	for(std::vector<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
@@ -133,7 +139,7 @@ void ObjectDrawStruct::draw(QPainter* painter)
 
 void ObjectDrawStruct::drawShape(QPainter* painter)
 {
-	painter->drawRoundedRect(m_objectArea, 5, 5);
+	painter->drawRoundedRect(m_objectArea, objectCorner, objectCorner);
 }
 
 void ObjectDrawStruct::drawDatas(QPainter* painter)
@@ -155,8 +161,7 @@ void ObjectDrawStruct::drawDatas(QPainter* painter)
 
 void ObjectDrawStruct::drawText(QPainter* painter)
 {
-	int margin = dataRectSize+dataRectMargin+3;
-	QRectF textArea = m_objectArea.adjusted(margin, 0, -margin, 0);
+	QRectF textArea = getTextArea();
 	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, QString::fromStdString(m_object->getName()));
 }
 
