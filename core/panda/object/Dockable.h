@@ -53,13 +53,13 @@ public:
 	virtual void removedFromDocument();
 
 protected:
-	DockObject* m_parentDock;
+	DockObject* m_parentDock = nullptr;
 };
 
 //****************************************************************************//
 
 inline void DockObject::removeDockable(DockableObject* dockable)
-{ removeInput(*(DataNode*)dockable); }
+{ removeInput(*(DataNode*)dockable); dockable->setParentDock(nullptr); }
 
 inline const DockObject::DockablesList& DockObject::getDockedObjects() const
 { return m_dockedObjects; }
