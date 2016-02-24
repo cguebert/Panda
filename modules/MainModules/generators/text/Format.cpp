@@ -3,6 +3,8 @@
 #include <panda/object/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
 
+#include <boost/format.hpp>
+
 namespace
 {
 
@@ -25,14 +27,14 @@ public:
 
 	GeneratorText_Format(PandaDocument *doc)
 		: GenericObject(doc)
-		, format(initData("format", "Format used to create the text"))
-		, text(initData("text", "Text obtained by the format operation"))
-		, generic(initData("input", "Connect here the values to use in the format operation"))
+		, m_formatString(initData("format", "Format used to create the text"))
+		, m_text(initData("text", "Text obtained by the format operation"))
+		, m_generic(initData("input", "Connect here the values to use in the format operation"))
 	{
-		addInput(format);
-		addInput(generic);
+		addInput(m_formatString);
+		addInput(m_generic);
 
-		addOutput(text);
+		addOutput(m_text);
 
 		int typeOfValue = types::DataTypeId::getFullTypeOfVector(0);	// Create a copy of the data connected
 		GenericDataDefinitionList defList;
@@ -40,49 +42,65 @@ public:
 											 true, false,
 											 "input",
 											 "Value to use in the format operation"));
-		setupGenericObject<formatTypes>(this, generic, defList);
+		setupGenericObject<formatTypes>(this, m_generic, defList);
 	}
 
 	void update()
 	{
-		tempList.clear();
+		auto output = m_text.getAccessor();
+		output.clear();
+		m_formatters.clear();
+
+		try
+		{
+			auto formatter = boost::format(m_formatString.getValue());
+			formatter.exceptions(boost::io::no_error_bits);
+			m_formatters.push_back(formatter);
+		}
+		catch (...)
+		{
+			return;
+		}
+
 		GenericObject::update();
-		text.setValue(tempList);
+
+		for (const auto& f : m_formatters)
+			output.push_back(f.str());
 	}
 
 	template <class T>
 	void updateT(DataList& list)
 	{
+		if (m_error)
+			return;
+
 		typedef Data< std::vector<T> > ValueData;
 		ValueData* dataInput = dynamic_cast<ValueData*>(list[0]);
 		assert(dataInput);
 
 		const std::vector<T>& inVal = dataInput->getValue();
 		int nb = inVal.size();
-		int prevNb = tempList.size();
+		int prevNb = m_formatters.size();
 
-		if(!prevNb)
-			tempList.resize(nb, format.getValue());
-		else if(prevNb == 1 && nb > 1)
-			tempList.resize(nb, tempList[0]);
-		else if(nb == 1 && prevNb > 1)
+		if(prevNb == 1 && nb > 1) // Expand the list, if there was only one
+			m_formatters.resize(nb, m_formatters[0]);
+		else if(nb == 1 && prevNb > 1) // Use this value for each formatter in the list
 			nb = 1;
-		else
-			tempList.resize(std::min(prevNb, nb));
-		int size = tempList.size();
+		else // Multiple list of various sizes, for now take the minimum size
+			m_formatters.resize(std::min(prevNb, nb));
+		int size = m_formatters.size();
 
 		for (int i = 0; i < size; ++i)
-		{
-			std::string key = "%" + std::to_string(i);
-			helper::replaceAll(tempList[i], key, convert(inVal[i%nb]));
-		}
+			m_formatters[i] % inVal[i % nb];
 	}
 
 protected:
-	Data<std::string> format;
-	Data< std::vector<std::string> > text;
-	std::vector<std::string> tempList;
-	GenericVectorData generic;
+	Data<std::string> m_formatString;
+	Data< std::vector<std::string> > m_text;
+	GenericVectorData m_generic;
+
+	bool m_error = false;
+	std::vector<boost::format> m_formatters;
 };
 
 int GeneratorText_FormatClass = RegisterObject<GeneratorText_Format>("Generator/Text/Format").setDescription("Create a text by replacing markers by input values");
