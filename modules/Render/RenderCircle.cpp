@@ -31,6 +31,7 @@ public:
 		, m_lineWidth(initData("lineWidth", "Width of the line"))
 		, m_color(initData("color", "Color of the circle"))
 		, m_shader(initData("shader", "Shaders used during the rendering"))
+		, m_approximation(initData(1.f, "approximation", "Maximum distance between the approximation and the perfect circle"))
 	{
 		addInput(m_center);
 		addInput(m_radius);
@@ -85,14 +86,18 @@ public:
 			if(nbColor < nbCenter) nbColor = 1;
 			if(nbWidth < nbCenter) nbWidth = 1;
 
+			float maxDist = m_approximation.getValue();
+			maxDist = std::max(0.001f, maxDist);
+
 			float PI2 = static_cast<float>(M_PI) * 2;
 			for(int i = 0; i < nbCenter; ++i)
 			{
 				float valRadius = listRadius[i % nbRadius];
 				float maxWidth = valRadius - 0.5f;
-				float width = helper::bound(1.f, listWidth[i % nbWidth], maxWidth);
+				float width = helper::bound(0.5f, listWidth[i % nbWidth], maxWidth);
 
-				int nbSeg = static_cast<int>(floor((valRadius + width) * PI2));
+				// Compute an ideal number of segments based on the distance between the approximation and the perfect circle
+				int nbSeg = static_cast<int>(PI2 / acosf(1.f - maxDist / (valRadius + width)));
 				if(nbSeg < 3) continue;
 
 				m_colorBuffer.push_back(listColor[i % nbColor]);
@@ -159,6 +164,7 @@ protected:
 	Data< std::vector<float> > m_radius, m_lineWidth;
 	Data< std::vector<Color> > m_color;
 	Data< Shader > m_shader;
+	Data< float > m_approximation;
 
 	std::vector<Point> m_vertexBuffer;
 	std::vector<Color> m_colorBuffer;

@@ -65,7 +65,7 @@ public:
 		: PandaObject(doc)
 		, m_centers(initData("center", "Center of the circle"))
 		, m_radiuses(initData("radius", "Radius of the circle"))
-		, m_precision(initData((float)1.0, "precision", "Maximum length of a segment"))
+		, m_precision(initData(1.f, "precision", "Maximum distance between the approximation and the perfect circle"))
 		, m_paths(initData("path", "Output path"))
 	{
 		addInput(m_centers);
@@ -89,7 +89,8 @@ public:
 		}
 
 		int nb = std::max(nbC, nbR);
-		float precision = std::max((float)1e-3, m_precision.getValue());
+		float maxDist = m_precision.getValue();
+		maxDist = std::max(0.001f, maxDist);
 		float PI2 = static_cast<float>(M_PI) * 2;
 
 		paths.clear();
@@ -99,7 +100,7 @@ public:
 			const Point& center = centers[i%nbC];
 			const float radius = radiuses[i%nbR];
 
-			int nbSeg = static_cast<int>(floor(radius * PI2 / precision));
+			int nbSeg = static_cast<int>(PI2 / acosf(1.f - maxDist / radius));
 			if(nbSeg < 3) continue;
 
 			Path path;
