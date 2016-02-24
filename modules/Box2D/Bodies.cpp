@@ -2,14 +2,18 @@
 
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
+#include <panda/types/Mesh.h>
 #include <panda/types/Path.h>
 
 namespace panda 
 {
 
+using types::Mesh;
 using types::Path;
 using types::Point;
+using MeshsList = std::vector<Mesh>;
 using PathsList = std::vector<Path>;
+using PointsList = std::vector<Point>;
 
 class Box2D_StaticPoly : public Box2DDockable
 {
@@ -44,6 +48,57 @@ protected:
 };
 
 int Box2D_StaticPolyClass = RegisterObject<Box2D_StaticPoly>("Box2D/Static polygon").setDescription("Create a Box2D static object using a polygon");
+
+//****************************************************************************//
+
+class Box2D_StaticMesh : public Box2DDockable
+{
+public:
+	PANDA_CLASS(Box2D_StaticMesh, Box2DDockable)
+
+		Box2D_StaticMesh(PandaDocument *doc)
+		: Box2DDockable(doc)
+		, m_input(initData("input", "Static bodies to add to the simulation"))
+	{
+		addInput(m_input);
+	}
+
+	inline b2PolygonShape convertTriangle(const Mesh::SeqPoints& pts, const Mesh::Triangle& tri, float scaling)
+	{
+		b2PolygonShape shape;
+		b2Vec2 vertices[3];
+		for (int i = 0; i < 3; ++i)
+			vertices[i] = b2Panda::convert(pts[tri[i]] / scaling);
+		shape.Set(vertices, 3);
+		return shape;
+	}
+
+	void initBox2D(WorldData& data) override
+	{
+		const auto& meshes = m_input.getValue();
+		if (meshes.empty())
+			return;
+
+		b2BodyDef bodyDef;
+		const auto scaling = data.scaling();
+		auto body = data.world().CreateBody(&bodyDef);
+
+		for (const auto& mesh : meshes)
+		{
+			const auto& pts = mesh.getPoints();
+			for (const auto& tri : mesh.getTriangles())
+			{
+				auto shape = convertTriangle(pts, tri, scaling);
+				body->CreateFixture(&shape, 0.f);
+			}
+		}
+	}
+
+protected:
+	Data<MeshsList> m_input;
+};
+
+int Box2D_StaticMeshClass = RegisterObject<Box2D_StaticMesh>("Box2D/Static mesh").setDescription("Create a Box2D static object using a mesh");
 
 //****************************************************************************//
 
@@ -188,7 +243,7 @@ public:
 		m_outputCenter.setValue(m_inputCenter.getValue());
 		m_outputRotation.getAccessor().wref().assign(nbC, 0);
 		
-		if (centerList.empty())
+		if (centerList.empty() || radiusList.empty())
 			return;
 
 		int nbR = radiusList.size();
@@ -233,7 +288,7 @@ public:
 	}
 
 protected:
-	Data<std::vector<Point>> m_inputCenter, m_outputCenter;
+	Data<PointsList> m_inputCenter, m_outputCenter;
 	Data<std::vector<float>> m_inputRadius, m_outputRotation;
 
 	std::vector<b2Body*> m_bodies;
