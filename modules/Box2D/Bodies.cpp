@@ -8,14 +8,15 @@ namespace panda
 {
 
 using types::Path;
+using types::Point;
 using PathsList = std::vector<Path>;
 
-class Box2D_Static : public Box2DDockable
+class Box2D_StaticPoly : public Box2DDockable
 {
 public:
-	PANDA_CLASS(Box2D_Static, Box2DDockable)
+	PANDA_CLASS(Box2D_StaticPoly, Box2DDockable)
 
-	Box2D_Static(PandaDocument *doc)
+	Box2D_StaticPoly(PandaDocument *doc)
 		: Box2DDockable(doc)
 		, m_input(initData("input", "Static bodies to add to the simulation"))
 	{
@@ -42,16 +43,16 @@ protected:
 	Data<PathsList> m_input;
 };
 
-int Box2D_StaticClass = RegisterObject<Box2D_Static>("Box2D/Static body").setDescription("Create a Box2D static object");
+int Box2D_StaticPolyClass = RegisterObject<Box2D_StaticPoly>("Box2D/Static polygon").setDescription("Create a Box2D static object using a polygon");
 
 //****************************************************************************//
 
-class Box2D_Dynamic : public Box2DDockable
+class Box2D_DynamicPoly : public Box2DDockable
 {
 public:
-	PANDA_CLASS(Box2D_Dynamic, Box2DDockable)
+	PANDA_CLASS(Box2D_DynamicPoly, Box2DDockable)
 
-	Box2D_Dynamic(PandaDocument *doc)
+	Box2D_DynamicPoly(PandaDocument *doc)
 		: Box2DDockable(doc)
 		, m_input(initData("input", "Dynamic bodies to add to the simulation"))
 		, m_output(initData("output", "Bodies moved by the simulation"))
@@ -117,14 +118,14 @@ public:
 	{
 		auto outputList = m_output.getAccessor();
 		int nb = m_bodies.size();
+		const auto scaling = data.scaling();
 
 		for (int i = 0; i < nb; ++i)
 		{
 			const auto& body = m_bodies[i];
 			const auto bPtr = body.first;
 			auto& output = outputList[i];
-
-			const auto scaling = data.scaling();
+			
 			const auto& path = body.second;
 			int nbPts = path.size();
 			for (int j = 0; j < nbPts; ++j)
@@ -140,6 +141,104 @@ protected:
 	std::vector<DynamicBodyPair> m_bodies;
 };
 
-int Box2D_DynamicClass = RegisterObject<Box2D_Dynamic>("Box2D/Dynamic body").setDescription("Create a Box2D dynamic object");
+int Box2D_DynamicPolyClass = RegisterObject<Box2D_DynamicPoly>("Box2D/Dynamic polygon").setDescription("Create a Box2D dynamic object using a polygon");
+
+//****************************************************************************//
+
+class Box2D_DynamicCircle : public Box2DDockable
+{
+public:
+	PANDA_CLASS(Box2D_DynamicCircle, Box2DDockable)
+
+	Box2D_DynamicCircle(PandaDocument *doc)
+		: Box2DDockable(doc)
+		, m_inputCenter(initData("input center", "Center of the circles to add to the simulation"))
+		, m_inputRadius(initData("input radius", "Radius of the circles to add to the simulation"))
+		, m_outputCenter(initData("output center", "Position of the circles during the simulation"))
+		, m_outputRotation(initData("output rotation", "Rotation of the circles during the simulation"))
+	{
+		addInput(m_inputCenter);
+		addInput(m_inputRadius);
+		addOutput(m_outputCenter);
+		addOutput(m_outputRotation);
+	}
+
+	void reset() override
+	{
+		m_outputCenter.setValue(m_inputCenter.getValue());
+		m_outputRotation.getAccessor().wref().assign(m_inputCenter.getValue().size(), 0);
+	}
+
+	void update() override
+	{
+		if (isInStep())
+			return;
+
+		reset();
+	}
+
+	void initBox2D(WorldData& data) override
+	{
+		const auto& centerList = m_inputCenter.getValue();
+		const auto& radiusList = m_inputRadius.getValue();
+
+		m_bodies.clear();
+
+		int nbC = centerList.size();
+		m_outputCenter.setValue(m_inputCenter.getValue());
+		m_outputRotation.getAccessor().wref().assign(nbC, 0);
+		
+		if (centerList.empty())
+			return;
+
+		int nbR = radiusList.size();
+		if (nbR < nbC) nbR = 1;
+
+		auto& world = data.world();
+		const auto scaling = data.scaling();
+		for (int i = 0; i < nbC; ++i)
+		{
+			const auto& center = centerList[i];
+			b2BodyDef bodyDef;
+			bodyDef.type = b2_dynamicBody;
+
+			bodyDef.position.Set(center.x / scaling, center.y / scaling);
+			b2Body* body = world.CreateBody(&bodyDef);
+
+			b2CircleShape circleShape;
+			circleShape.m_radius = radiusList[i % nbR] / scaling;
+
+			b2FixtureDef fixtureDef;
+			fixtureDef.shape = &circleShape;
+			fixtureDef.density = 1.0f;
+			body->CreateFixture(&fixtureDef);
+
+			m_bodies.push_back(body);
+		}
+	}
+
+	void postStepBox2D(WorldData& data) override
+	{
+		auto centerList = m_outputCenter.getAccessor();
+		auto rotationList = m_outputRotation.getAccessor();
+		int nb = m_bodies.size();
+
+		const auto scaling = data.scaling();
+		for (int i = 0; i < nb; ++i)
+		{
+			const auto& body = m_bodies[i];
+			centerList[i] = b2Panda::convert(body->GetPosition()) * scaling;
+			rotationList[i] = body->GetAngle();
+		}
+	}
+
+protected:
+	Data<std::vector<Point>> m_inputCenter, m_outputCenter;
+	Data<std::vector<float>> m_inputRadius, m_outputRotation;
+
+	std::vector<b2Body*> m_bodies;
+};
+
+int Box2D_DynamicCircleClass = RegisterObject<Box2D_DynamicCircle>("Box2D/Dynamic circle").setDescription("Create a Box2D dynamic object using a circle");
 
 } // namespace Panda
