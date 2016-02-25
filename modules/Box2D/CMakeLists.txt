@@ -9,6 +9,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
 	Bodies.cpp
+	Particles.cpp
 	World.cpp
 )
 
