@@ -134,15 +134,31 @@ public:
 	void addText(const std::string& text, Color color, Rect area)
 	{
 		int startText = m_verticesBuffer.size();
-		float width = 0;
-		int maxOffsetY = 0, under = 0;
+		bool firstChar = true;
 
 		Point pos = area.bottomLeft();
+		Rect textArea(pos, Point());
+		float baselinePos = pos.y;
+
 		for (unsigned int i = 0; i < text.size(); ++i)
 		{
+			if (text[i] == '\n')
+			{
+				pos.x = area.left();
+				pos.y += m_texFont->ascender - m_texFont->descender + m_texFont->linegap;
+				firstChar = true;
+				continue;
+			}
+
 			auto glyph = ftgl::texture_font_get_glyph(m_texFont, &text[i]);
 			if (!glyph)
 				continue;
+
+			if (firstChar)
+			{
+				baselinePos = pos.y;
+				firstChar = false;
+			}
 
 			float kerning = 0.f;
 			if (i)
@@ -151,16 +167,13 @@ public:
 			pos.x += kerning;
 			int gw = glyph->width, gh = glyph->height;
 			int gox = glyph->offset_x, goy = glyph->offset_y;
-			int u = gh - goy;
-			
-			if (goy > maxOffsetY) maxOffsetY = goy;
-			if (u > under) under = u;
-			width += kerning + glyph->offset_x + gw;
 
 			float x0 = pos.x + gox;
 			float y0 = pos.y - goy;
 			float x1 = x0 + gw;
 			float y1 = y0 + gh;
+
+			textArea |= Rect(x0, y0, x1, y1);
 
 			int startGlyph = m_verticesBuffer.size();
 			m_verticesBuffer.emplace_back(x0, y0);
@@ -184,12 +197,10 @@ public:
 
 			auto adv = glyph->advance_x;
 			pos.x += adv;
-			width += adv - gw - gox;
 		}
 
-		int height = maxOffsetY + under;
 		int alignH = m_alignH.getValue(), alignV = m_alignV.getValue();
-		if (alignH != 0 || alignV != 3) // Must move the text
+		if (alignH != 0 || alignV != 3 || pos.y != area.bottom()) // Must move the text
 		{
 			Point delta;
 			switch (alignH)
@@ -197,25 +208,26 @@ public:
 			case 0: // Left
 				break;
 			case 1: // Right
-				delta.x = area.width() - width;
+				delta.x = area.width() - textArea.width();
 				break;
 			case 2: // Center
-				delta.x = (area.width() - width) / 2;
+				delta.x = (area.width() - textArea.width()) / 2;
 				break;
 			}
 
 			switch (alignV)
 			{
 			case 0: // Top
-				delta.y = maxOffsetY - area.height();
+				delta.y = area.top() - textArea.top();
 				break;
 			case 1: // Bottom
-				delta.y = static_cast<float>(-under);
+				delta.y = area.bottom() - textArea.bottom();
 				break;
 			case 2: // Center
-				delta.y = -under - (area.height() - height) / 2;
+				delta.y = area.top() - textArea.top() + (area.height() - textArea.height()) / 2;
 				break;
 			case 3: // Baseline
+				delta.y = area.bottom() - baselinePos;
 				break;
 			}
 
