@@ -253,7 +253,7 @@ public:
 
 		if(nbPts > 1 && nbAbscissa)
 		{
-			listPos->resize(nbAbscissa);
+			listPos.resize(nbAbscissa);
 			listRot.resize(nbAbscissa);
 
 			// Some precomputation
@@ -292,13 +292,14 @@ public:
 		}
 		else
 		{
-			listPos->clear();
+			listPos.clear();
 			listRot.clear();
 		}
 	}
 
 protected:
-	Data< Path > input, position;
+	Data< Path > input;
+	Data< std::vector<Point> > position;
 	Data< std::vector<float> > abscissa, rotation;
 };
 
