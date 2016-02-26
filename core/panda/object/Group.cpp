@@ -256,22 +256,29 @@ bool Group::load(XmlElement& elem)
 
 void Group::reset()
 {
-	for(auto object : m_objects)
+	for(auto& object : m_objects)
 		object->reset();
 }
 
 void Group::beginStep()
 {
 	PandaObject::beginStep();
-	for(auto object : m_objects)
+	for(auto& object : m_objects)
 		object->beginStep();
 }
 
 void Group::endStep()
 {
 	PandaObject::endStep();
-	for(auto object : m_objects)
+	for(auto& object : m_objects)
 		object->endStep();
+}
+
+void Group::preDestruction()
+{
+	PandaObject::preDestruction();
+	for (auto& object : m_objects)
+		object->preDestruction();
 }
 
 int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many object into a single one").setHidden(true);

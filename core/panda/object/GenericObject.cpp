@@ -311,7 +311,7 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 	// Create commands if links are disconnected from the outputs of this group
 	for(BaseDataPtr data : createdData->datas)
 	{
-		if(data->isOutput())
+		if(data && data->isOutput())
 		{
 			for(auto output : data->getOutputs())
 			{
