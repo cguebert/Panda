@@ -85,6 +85,12 @@ public:
 		m_VAO.release();
 	}
 
+	struct LineInfo
+	{
+		int startIndex = 0, endIndex = 0;
+		float right = 0;
+	};
+
 	void addText(const std::string& text, Color color, Rect area)
 	{
 		int startText = m_verticesBuffer.size();
@@ -95,12 +101,14 @@ public:
 		float baselinePos = pos.y;
 		auto texFont = m_texFont->fontPtr();
 
+		std::vector<LineInfo> lines;
+		
 		for (unsigned int i = 0; i < text.size(); ++i)
 		{
 			if (text[i] == '\n')
 			{
 				pos.x = area.left();
-				pos.y += texFont->ascender - texFont->descender + texFont->linegap;
+				pos.y += texFont->height;
 				firstChar = true;
 				continue;
 			}
@@ -109,14 +117,21 @@ public:
 			if (!glyph)
 				continue;
 
+			float kerning = 0.f;
+			int startGlyph = m_verticesBuffer.size();
+
 			if (firstChar)
 			{
+				if (!lines.empty())
+					lines.back().endIndex = startGlyph;
+				lines.push_back(LineInfo());
+				auto& line = lines.back();
+				line.startIndex = startGlyph;
+				line.right = pos.x;
 				baselinePos = pos.y;
 				firstChar = false;
 			}
-
-			float kerning = 0.f;
-			if (i)
+			else
 				kerning = texture_glyph_get_kerning(glyph, &text[i - 1]);
 
 			pos.x += kerning;
@@ -129,8 +144,8 @@ public:
 			float y1 = y0 + gh;
 
 			textArea |= Rect(x0, y0, x1, y1);
+			lines.back().right = x1;
 
-			int startGlyph = m_verticesBuffer.size();
 			m_verticesBuffer.emplace_back(x0, y0);
 			m_verticesBuffer.emplace_back(x0, y1);
 			m_verticesBuffer.emplace_back(x1, y1);
@@ -153,43 +168,61 @@ public:
 			auto adv = glyph->advance_x;
 			pos.x += adv;
 		}
+		
+		if (!lines.empty())
+			lines.back().endIndex = m_verticesBuffer.size();
 
 		int alignH = m_alignH.getValue(), alignV = m_alignV.getValue();
-		if (alignH != 0 || alignV != 3 || pos.y != area.bottom()) // Must move the text
+		if (alignH != 0)
 		{
-			Point delta;
-			switch (alignH)
-			{
-			case 0: // Left
-				break;
-			case 1: // Right
-				delta.x = area.width() - textArea.width();
-				break;
-			case 2: // Center
-				delta.x = (area.width() - textArea.width()) / 2;
-				break;
-			}
+			float delta = 0;
+			auto left = area.left();
 
+			for (const auto& line : lines)
+			{
+				switch (alignH)
+				{
+				case 0: // Left
+					break;
+				case 1: // Right
+					delta = area.width() - (line.right - left);
+					break;
+				case 2: // Center
+					delta = (area.width() - (line.right - left)) / 2;
+					break;
+				}
+
+				if (delta != 0)
+				{
+					for (int i = line.startIndex; i < line.endIndex; ++i)
+						m_verticesBuffer[i].x += delta;
+				}
+			}
+		}
+
+		if (alignV != 3 || pos.y != area.bottom()) // Must move the text
+		{
+			float delta;
 			switch (alignV)
 			{
 			case 0: // Top
-				delta.y = area.top() - textArea.top();
+				delta = area.top() - textArea.top();
 				break;
 			case 1: // Bottom
-				delta.y = area.bottom() - textArea.bottom();
+				delta = area.bottom() - textArea.bottom();
 				break;
 			case 2: // Center
-				delta.y = area.top() - textArea.top() + (area.height() - textArea.height()) / 2;
+				delta = area.top() - textArea.top() + (area.height() - textArea.height()) / 2;
 				break;
 			case 3: // Baseline
-				delta.y = area.bottom() - baselinePos;
+				delta = area.bottom() - baselinePos;
 				break;
 			}
 
-			if (delta != Point::zero())
+			if (delta != 0)
 			{
 				for (int i = startText, nb = m_verticesBuffer.size(); i < nb; ++i)
-					m_verticesBuffer[i] += delta;
+					m_verticesBuffer[i].y += delta;
 			}
 		}
 	}

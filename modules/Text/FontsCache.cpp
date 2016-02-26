@@ -36,7 +36,16 @@ std::shared_ptr<TextureFont> FontsCache::getFont(const std::string& fontString)
 	for (int dim = 512; dim <= 4096; dim *= 2)
 	{
 		auto atlas = ftgl::texture_atlas_new(dim, dim, 1);
+		if (!atlas)
+			return nullptr;
+
 		auto texFont = ftgl::texture_font_new_from_file(atlas, static_cast<float>(font.pointSize), fontPath.c_str());
+
+		if (!texFont)
+		{
+			ftgl::texture_atlas_delete(atlas);
+			return nullptr;
+		}
 
 		auto missed = ftgl::texture_font_load_glyphs(texFont, cache);
 		if (!missed)
