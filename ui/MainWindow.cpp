@@ -41,15 +41,15 @@ MainWindow::MainWindow()
 	QSurfaceFormat::setDefaultFormat(format);*/
 	
 	m_simpleGUI = new SimpleGUIImpl(this);
-	m_document = new panda::PandaDocument(*m_simpleGUI);
+	m_document = std::make_unique<panda::PandaDocument>(*m_simpleGUI);
 
-	m_graphView = new GraphView(m_document);
+	m_graphView = new GraphView(m_document.get());
 	m_graphViewContainer = new ScrollContainer();
 
 	m_graphViewContainer->setFrameStyle(0); // No frame
 	m_graphViewContainer->setView(m_graphView);
 
-	m_openGLRenderView = new OpenGLRenderView(m_document);
+	m_openGLRenderView = new OpenGLRenderView(m_document.get());
 	m_openGLViewContainer = new QScrollArea();
 	m_openGLViewContainer->setFrameStyle(0);
 	m_openGLViewContainer->setAlignment(Qt::AlignCenter);
@@ -100,7 +100,7 @@ MainWindow::MainWindow()
 	setWindowIcon(QIcon(":/share/icons/icon.png"));
 	setCurrentFile("");
 
-	m_datasTable = new DatasTable(m_document, this);
+	m_datasTable = new DatasTable(m_document.get(), this);
 
 	m_datasDock = new QDockWidget(tr("Properties"), this);
 	m_datasDock->setObjectName("PropertiesDock");
@@ -108,7 +108,7 @@ MainWindow::MainWindow()
 	m_datasDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	addDockWidget(Qt::LeftDockWidgetArea, m_datasDock);
 
-	m_layersTab = new LayersTab(m_document, this);
+	m_layersTab = new LayersTab(m_document.get(), this);
 
 	m_layersDock = new QDockWidget(tr("Layers"), this);
 	m_layersDock->setObjectName("LayersDock");
@@ -119,10 +119,7 @@ MainWindow::MainWindow()
 	readSettings();
 }
 
-MainWindow::~MainWindow()
-{
-	delete m_document; // Quick hack until I put the document in a smart pointer
-}
+MainWindow::~MainWindow() = default;
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
@@ -177,7 +174,7 @@ void MainWindow::import()
 
 			auto selection = m_document->getSelection();
 			if(!selection.empty())
-				m_document->addCommand(std::make_shared<AddObjectCommand>(m_document, m_graphView, selection));
+				m_document->addCommand(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, selection));
 		}
 	}
 }
@@ -916,8 +913,8 @@ void MainWindow::createObject()
 	QAction *action = qobject_cast<QAction *>(sender());
 	if(action)
 	{
-		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString().toStdString(), m_document);
-		m_document->addCommand(std::make_shared<AddObjectCommand>(m_document, m_graphView, object));
+		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString().toStdString(), m_document.get());
+		m_document->addCommand(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, object));
 	}
 }
 
@@ -995,7 +992,7 @@ void MainWindow::paste()
 
 	auto selection = m_document->getSelection();
 	if(!selection.empty())
-		m_document->addCommand(std::make_shared<AddObjectCommand>(m_document, m_graphView, selection));
+		m_document->addCommand(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, selection));
 }
 
 void MainWindow::del()
@@ -1004,20 +1001,20 @@ void MainWindow::del()
 	if(!selection.empty())
 	{
 		auto macro = m_document->beginCommandMacro(tr("delete objects").toStdString());
-		m_document->addCommand(std::make_shared<RemoveObjectCommand>(m_document, m_graphView, selection));
+		m_document->addCommand(std::make_shared<RemoveObjectCommand>(m_document.get(), m_graphView, selection));
 	}
 }
 
 void MainWindow::group()
 {
-	bool res = panda::createGroup(m_document, m_graphView);
+	bool res = panda::createGroup(m_document.get(), m_graphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not create a group from the selection"), 2000);
 }
 
 void MainWindow::ungroup()
 {
-	bool res = panda::ungroupSelection(m_document, m_graphView);
+	bool res = panda::ungroupSelection(m_document.get(), m_graphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not ungroup the selection"), 2000);
 }
@@ -1057,7 +1054,7 @@ void MainWindow::createGroupObject()
 	if(action)
 	{
 		QString path = action->data().toString();
-		GroupsManager::getInstance()->createGroupObject(m_document, m_graphView, path);
+		GroupsManager::getInstance()->createGroupObject(m_document.get(), m_graphView, path);
 	}
 }
 
@@ -1147,7 +1144,7 @@ void MainWindow::showLoggerDialog()
 
 void MainWindow::showObjectsAndTypes()
 {
-	QString fileName = "file:///" + createObjectsAndTypesPage(m_document);
+	QString fileName = "file:///" + createObjectsAndTypesPage(m_document.get());
 	QDesktopServices::openUrl(QUrl(fileName));
 }
 

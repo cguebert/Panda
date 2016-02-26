@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include <panda/messaging.h>
+#include <memory>
 #include <vector>
 
 class QAction;
@@ -105,7 +106,7 @@ private:
 	ScrollContainer* m_graphViewContainer = nullptr;
 	OpenGLRenderView* m_openGLRenderView = nullptr;
 	QScrollArea* m_openGLViewContainer = nullptr;
-	panda::PandaDocument* m_document = nullptr;
+	std::unique_ptr<panda::PandaDocument> m_document;
 	DatasTable* m_datasTable = nullptr;
 	QDockWidget* m_datasDock = nullptr;
 	LayersTab* m_layersTab = nullptr;
