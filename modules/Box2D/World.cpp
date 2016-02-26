@@ -154,7 +154,7 @@ WorldData::DynamicShape WorldData::createDynamicShape(const types::Path& path)
 
 //****************************************************************************//
 
-panda::ModuleHandle pathsModule = REGISTER_MODULE
+panda::ModuleHandle box2DModule = REGISTER_MODULE
 		.setDescription("Components to create physical simulations using the Box2D engine")
 		.setLicense("GPL")
 		.setVersion("1.0");

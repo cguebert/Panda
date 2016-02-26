@@ -14,7 +14,8 @@
 #include <panda/graphics/ShaderProgram.h>
 #include <panda/graphics/VertexArrayObject.h>
 
-#include <freetype-gl/freetype-gl.h>
+#include "FontsCache.h"
+
 #include <glm/gtx/matrix_transform_2d.hpp>
 
 namespace panda {
@@ -61,22 +62,6 @@ public:
 		m_prevFont = helper::Font().toString();
 	}
 
-	~RenderText()
-	{
-		freeFont();
-	}
-
-	void freeFont()
-	{
-		if (m_texFont)
-			ftgl::texture_font_delete(m_texFont);
-		m_texFont = nullptr;
-
-		if (m_atlas)
-			ftgl::texture_atlas_delete(m_atlas);
-		m_atlas = nullptr;
-	}
-
 	void initGL()
 	{
 		m_VAO.create();
@@ -100,38 +85,6 @@ public:
 		m_VAO.release();
 	}
 
-	void changeFont()
-	{
-		auto fontTxt = m_font.getValue();
-		helper::Font font(fontTxt);
-		if (font.path.empty())
-			font = helper::Font();
-
-		m_prevFont = fontTxt;
-
-		freeFont();
-
-		auto fontPath = helper::system::DataRepository.findFile(font.path);
-		if (fontPath.empty())
-			return;
-
-		const char* cache = " !\"#$%&'()*+,-./0123456789:;<=>?"
-			"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
-			"`abcdefghijklmnopqrstuvwxyz{|}~";
-
-		for (int dim = 512; dim <= 4096; dim *= 2)
-		{
-			m_atlas = ftgl::texture_atlas_new(dim, dim, 1);
-			m_texFont = ftgl::texture_font_new_from_file(m_atlas, static_cast<float>(font.pointSize), fontPath.c_str());
-
-			auto missed = ftgl::texture_font_load_glyphs(m_texFont, cache);
-			if (!missed)
-				break;
-
-			freeFont();
-		}
-	}
-
 	void addText(const std::string& text, Color color, Rect area)
 	{
 		int startText = m_verticesBuffer.size();
@@ -140,18 +93,19 @@ public:
 		Point pos = area.bottomLeft();
 		Rect textArea(pos, Point());
 		float baselinePos = pos.y;
+		auto texFont = m_texFont->fontPtr();
 
 		for (unsigned int i = 0; i < text.size(); ++i)
 		{
 			if (text[i] == '\n')
 			{
 				pos.x = area.left();
-				pos.y += m_texFont->ascender - m_texFont->descender + m_texFont->linegap;
+				pos.y += texFont->ascender - texFont->descender + texFont->linegap;
 				firstChar = true;
 				continue;
 			}
 
-			auto glyph = ftgl::texture_font_get_glyph(m_texFont, &text[i]);
+			auto glyph = ftgl::texture_font_get_glyph(texFont, &text[i]);
 			if (!glyph)
 				continue;
 
@@ -252,17 +206,21 @@ public:
 
 		if(nbText && nbRect && nbColor)
 		{
+			if (m_font.getValue() != m_prevFont)
+			{
+				auto fontTxt = m_font.getValue();
+				m_texFont = FontsCache::instance().getFont(fontTxt);
+				m_prevFont = fontTxt;
+			}
+
+			if (!m_texFont)
+				return;
+
 			if (!m_shader.apply(m_shaderProgram))
 				return;
 
 			if (!m_VAO)
 				initGL();
-
-			if (m_font.getValue() != m_prevFont)
-				changeFont();
-
-			if (!m_texFont || !m_atlas)
-				return;
 
 			m_verticesBuffer.clear();
 			m_texCoordsBuffer.clear();
@@ -294,7 +252,7 @@ public:
 			m_shaderProgram.bind();
 			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			glBindTexture(GL_TEXTURE_2D, m_atlas->id);
+			glBindTexture(GL_TEXTURE_2D, m_texFont->texId());
 
 			glDrawElements(GL_TRIANGLES, m_indicesBuffer.size(), GL_UNSIGNED_INT, m_indicesBuffer.data());
 
@@ -320,8 +278,7 @@ protected:
 	graphics::VertexArrayObject m_VAO;
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO, m_colorsVBO;
 
-	ftgl::texture_atlas_t* m_atlas = nullptr;
-	ftgl::texture_font_t* m_texFont = nullptr;
+	std::shared_ptr<TextureFont> m_texFont;
 };
 
 int RenderTextClass = RegisterObject<RenderText>("Render/Text").setDescription("Draw some text");
@@ -358,22 +315,6 @@ public:
 		m_prevFont = helper::Font().toString();
 	}
 
-	~RenderText_OnCurve()
-	{
-		freeFont();
-	}
-
-	void freeFont()
-	{
-		if (m_texFont)
-			ftgl::texture_font_delete(m_texFont);
-		m_texFont = nullptr;
-
-		if (m_atlas)
-			ftgl::texture_atlas_delete(m_atlas);
-		m_atlas = nullptr;
-	}
-
 	void initGL()
 	{
 		m_VAO.create();
@@ -395,38 +336,6 @@ public:
 		glEnableVertexAttribArray(2);
 
 		m_VAO.release();
-	}
-
-	void changeFont()
-	{
-		auto fontTxt = m_font.getValue();
-		helper::Font font(fontTxt);
-		if (font.path.empty())
-			font = helper::Font();
-
-		m_prevFont = fontTxt;
-
-		freeFont();
-
-		auto fontPath = helper::system::DataRepository.findFile(font.path);
-		if (fontPath.empty())
-			return;
-
-		const char* cache = " !\"#$%&'()*+,-./0123456789:;<=>?"
-			"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
-			"`abcdefghijklmnopqrstuvwxyz{|}~";
-
-		for (int dim = 512; dim <= 4096; dim *= 2)
-		{
-			m_atlas = ftgl::texture_atlas_new(dim, dim, 1);
-			m_texFont = ftgl::texture_font_new_from_file(m_atlas, static_cast<float>(font.pointSize), fontPath.c_str());
-
-			auto missed = ftgl::texture_font_load_glyphs(m_texFont, cache);
-			if (!missed)
-				break;
-
-			freeFont();
-		}
 	}
 
 	void addGlyph(ftgl::texture_glyph_t* glyph, Point pos, float rot, Color color)
@@ -493,17 +402,21 @@ public:
 
 		if (!text.empty() && !listPos.empty() && !listRot.empty() && !listColor.empty())
 		{
+			if (m_font.getValue() != m_prevFont)
+			{
+				auto fontTxt = m_font.getValue();
+				m_texFont = FontsCache::instance().getFont(fontTxt);
+				m_prevFont = fontTxt;
+			}
+
+			if (!m_texFont)
+				return;
+
 			if (!m_shader.apply(m_shaderProgram))
 				return;
 
 			if (!m_VAO)
 				initGL();
-
-			if (m_font.getValue() != m_prevFont)
-				changeFont();
-
-			if (!m_texFont || !m_atlas)
-				return;
 
 			int nbPos = listPos.size();
 			int nbRot = listRot.size();
@@ -517,9 +430,10 @@ public:
 			if (nbRot < nbPos) nbRot = 1;
 			if (nbColor < nbPos) nbColor = 1;
 			int glyphIt = 0;
+			auto texFont = m_texFont->fontPtr();
 			for (int i = 0, len = text.size(); glyphIt < len && glyphIt < nbPos; ++i)
 			{
-				auto glyph = ftgl::texture_font_get_glyph(m_texFont, &text[i]);
+				auto glyph = ftgl::texture_font_get_glyph(texFont, &text[i]);
 				if (!glyph)
 					continue;
 
@@ -541,7 +455,7 @@ public:
 			m_shaderProgram.bind();
 			m_shaderProgram.setUniformValueMat4("MVP", getMVPMatrix().data());
 
-			glBindTexture(GL_TEXTURE_2D, m_atlas->id);
+			glBindTexture(GL_TEXTURE_2D, m_texFont->texId());
 
 			glDrawElements(GL_TRIANGLES, m_indicesBuffer.size(), GL_UNSIGNED_INT, m_indicesBuffer.data());
 
@@ -566,8 +480,7 @@ protected:
 	graphics::VertexArrayObject m_VAO;
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO, m_colorsVBO;
 
-	ftgl::texture_atlas_t* m_atlas = nullptr;
-	ftgl::texture_font_t* m_texFont = nullptr;
+	std::shared_ptr<TextureFont> m_texFont;
 };
 
 int RenderText_OnCurveClass = RegisterObject<RenderText_OnCurve>("Render/Text on curve").setDescription("Draw some on a curve (each letter its own position)");
