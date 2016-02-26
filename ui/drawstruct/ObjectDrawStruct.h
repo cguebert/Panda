@@ -21,7 +21,7 @@ public:
 	ObjectDrawStruct(GraphView* view, panda::PandaObject* obj);
 
 	virtual void drawBackground(QPainter*) {}	// First called
-	virtual void draw(QPainter* painter);		// "Normal" draw
+	virtual void draw(QPainter* painter, bool selected = false);		// "Normal" draw
 	virtual void drawForeground(QPainter*) {}	// Last called
 
 	// The next 3 functions are here if we want to replace only part of the normal draw

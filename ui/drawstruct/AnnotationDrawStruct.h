@@ -18,18 +18,18 @@ class AnnotationDrawStruct : public ObjectDrawStruct
 public:
 	AnnotationDrawStruct(GraphView* view, panda::PandaObject* m_object);
 
-	virtual void drawBackground(QPainter* painter);
-	virtual void draw(QPainter*) {}	// Don't draw the normal object
-	virtual void drawForeground(QPainter* painter);
-	virtual void moveVisual(const QPointF& delta);
-	virtual void update();
-	virtual bool contains(const QPointF& point);
+	void drawBackground(QPainter* painter) override;
+	void draw(QPainter*, bool) override {}	// Don't draw the normal object
+	void drawForeground(QPainter* painter) override;
+	void moveVisual(const QPointF& delta) override;
+	void update() override;
+	bool contains(const QPointF& point) override;
 
-	virtual bool mousePressEvent(QMouseEvent* event);
-	virtual void mouseMoveEvent(QMouseEvent* event);
-	virtual void mouseReleaseEvent(QMouseEvent* event);
+	bool mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
 
-	virtual bool acceptsMagneticSnap() { return false; }
+	bool acceptsMagneticSnap() const override { return false; }
 
 	virtual QSize getObjectSize();
 

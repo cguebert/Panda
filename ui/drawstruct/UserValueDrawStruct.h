@@ -15,7 +15,7 @@ class UserValueDrawStruct : public ObjectDrawStruct
 public:
 	UserValueDrawStruct(GraphView* view, panda::BaseGeneratorUser* object);
 
-	virtual void drawText(QPainter* painter);
+	void drawText(QPainter* painter) override;
 
 protected:
 	panda::BaseGeneratorUser* m_userValueObject;

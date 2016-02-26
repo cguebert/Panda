@@ -226,7 +226,7 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for(auto object : m_pandaDocument->getSelection())
-		m_objectDrawStructs[object]->draw(&painter);
+		m_objectDrawStructs[object]->draw(&painter, true);
 
 	painter.setBrush(Qt::NoBrush);
 	// Give a possibility to draw in front of normal objects

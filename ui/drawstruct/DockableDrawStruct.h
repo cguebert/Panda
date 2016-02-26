@@ -10,13 +10,13 @@ class DockObjectDrawStruct : public ObjectDrawStruct
 public:
 	DockObjectDrawStruct(GraphView* view, panda::DockObject* m_object);
 
-	virtual void drawShape(QPainter* painter);
-	virtual QSize getObjectSize();
-	virtual QRectF getTextArea();
-	virtual void move(const QPointF& delta);
-	virtual void moveVisual(const QPointF& delta);
-	virtual void update();
-	virtual bool contains(const QPointF& point);
+	void drawShape(QPainter* painter) override;
+	QSize getObjectSize() override;
+	QRectF getTextArea() override;
+	void move(const QPointF& delta) override;
+	void moveVisual(const QPointF& delta) override;
+	void update() override;
+	bool contains(const QPointF& point) override;
 
 	int getDockableIndex(const QRectF& rect);
 
@@ -35,12 +35,12 @@ class DockableObjectDrawStruct : public ObjectDrawStruct
 public:
 	DockableObjectDrawStruct(GraphView* view, panda::DockableObject* m_object);
 
-	virtual void drawShape(QPainter* painter);
-	virtual void moveVisual(const QPointF& delta);
-	virtual void update();
-	virtual bool contains(const QPointF& point);
-	virtual QSize getObjectSize();
-	virtual QRectF getTextArea();
+	void drawShape(QPainter* painter) override;
+	void moveVisual(const QPointF& delta) override;
+	void update() override;
+	bool contains(const QPointF& point) override;
+	QSize getObjectSize() override;
+	QRectF getTextArea() override;
 
 	static const int dockableCircleWidth = 20;
 

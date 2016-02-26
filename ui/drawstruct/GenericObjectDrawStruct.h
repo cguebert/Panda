@@ -13,11 +13,11 @@ class GenericObjectDrawStruct : public ObjectDrawStruct
 public:
 	GenericObjectDrawStruct(GraphView* view, panda::GenericObject* m_object);
 
-	virtual void update();
-	virtual void drawDatas(QPainter* painter);
-	virtual QSize getObjectSize();
+	void update() override;
+	void drawDatas(QPainter* painter) override;
+	QSize getObjectSize() override;
 
-	virtual QColor getDataColor(const panda::BaseData* data);
+	QColor getDataColor(const panda::BaseData* data) override;
 
 	static const int createdDataRectMargin = 3;
 

@@ -15,12 +15,12 @@ class GroupDrawStruct : public ObjectDrawStruct
 public:
 	GroupDrawStruct(GraphView* view, panda::Group* object);
 
-	virtual void drawShape(QPainter* painter);
-	virtual void drawText(QPainter* painter);
-	virtual void moveVisual(const QPointF& delta);
-	virtual void update();
-	virtual bool contains(const QPointF& point);
-	virtual int dataStartY();
+	void drawShape(QPainter* painter) override;
+	void drawText(QPainter* painter) override;
+	void moveVisual(const QPointF& delta) override;
+	void update() override;
+	bool contains(const QPointF& point) override;
+	int dataStartY() override;
 
 protected:
 	QPainterPath m_shapePath;

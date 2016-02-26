@@ -114,7 +114,7 @@ bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect)
 	return false;
 }
 
-void ObjectDrawStruct::draw(QPainter* painter)
+void ObjectDrawStruct::draw(QPainter* painter, bool selected)
 {
 	// Choose the pen and the brush
 	QPen pen(m_parentView->palette().text().color());
@@ -125,9 +125,13 @@ void ObjectDrawStruct::draw(QPainter* painter)
 	}
 	else
 		painter->setBrush(m_parentView->palette().light());
-	auto color = painter->brush().color();
-	color.setAlpha(128);
-	painter->setBrush(color);
+
+	if (!selected)
+	{
+		auto color = painter->brush().color();
+		color.setAlpha(128);
+		painter->setBrush(color);
+	}
 	painter->setPen(pen);
 
 	// Draw the shape around the object
