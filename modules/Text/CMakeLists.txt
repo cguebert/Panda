@@ -12,6 +12,7 @@ set(SOURCE_FILES
 	textModule.cpp
 	FontsCache.cpp
 	RenderText.cpp
+	TextPosition.cpp
 	TextureFont.cpp
 )
 
