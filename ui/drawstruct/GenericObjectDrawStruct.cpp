@@ -113,7 +113,7 @@ void GenericObjectDrawStruct::drawDatas(QPainter* painter)
 		if(clickedData
 			&& clickedData != dataPair.second
 			&& !GraphView::isCompatible(clickedData, dataPair.second))
-			painter->setBrush(m_parentView->palette().dark());
+			painter->setBrush(m_parentView->palette().light());
 		else
 			painter->setBrush(getDataColor(dataPair.second));
 

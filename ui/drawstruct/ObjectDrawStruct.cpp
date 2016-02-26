@@ -125,6 +125,9 @@ void ObjectDrawStruct::draw(QPainter* painter)
 	}
 	else
 		painter->setBrush(m_parentView->palette().light());
+	auto color = painter->brush().color();
+	color.setAlpha(128);
+	painter->setBrush(color);
 	painter->setPen(pen);
 
 	// Draw the shape around the object
@@ -148,10 +151,10 @@ void ObjectDrawStruct::drawDatas(QPainter* painter)
 	const panda::BaseData* clickedData = m_parentView->getClickedData();
 	for(RectDataPair dataPair : m_datas)
 	{
-		if(clickedData
+		if (clickedData
 			&& clickedData != dataPair.second
 			&& !GraphView::isCompatible(clickedData, dataPair.second))
-			painter->setBrush(m_parentView->palette().dark());
+			painter->setBrush(m_parentView->palette().light());
 		else
 			painter->setBrush(getDataColor(dataPair.second));
 

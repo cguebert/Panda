@@ -215,6 +215,11 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	for(auto object : m_pandaDocument->getObjects())
 		m_objectDrawStructs[object.get()]->drawBackground(&painter);
 
+	// Draw links
+	painter.setBrush(Qt::NoBrush);
+	for (auto object : m_pandaDocument->getObjects())
+		m_objectDrawStructs[object.get()]->drawLinks(&painter);
+
 	// Draw the objects
 	for(auto object : m_pandaDocument->getObjects())
 		m_objectDrawStructs[object.get()]->draw(&painter);
@@ -223,11 +228,7 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	for(auto object : m_pandaDocument->getSelection())
 		m_objectDrawStructs[object]->draw(&painter);
 
-	// Draw links
 	painter.setBrush(Qt::NoBrush);
-	for(auto object : m_pandaDocument->getObjects())
-		m_objectDrawStructs[object.get()]->drawLinks(&painter);
-
 	// Give a possibility to draw in front of normal objects
 	for(auto object : m_pandaDocument->getObjects())
 		m_objectDrawStructs[object.get()]->drawForeground(&painter);
@@ -247,6 +248,7 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 		QPen pen(palette().text().color());
 		pen.setStyle(Qt::DashDotLine);
 		painter.setPen(pen);
+		painter.setBrush(Qt::NoBrush);
 		painter.drawRect(selectionRect);
 	}
 
@@ -532,7 +534,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				}
 				m_hoverData = data;
 				if(m_hoverData)
-					m_hoverTimer->start(1000);
+					m_hoverTimer->start(500);
 			}
 
 			if(m_hoverData)
