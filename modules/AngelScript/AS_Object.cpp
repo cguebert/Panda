@@ -1,11 +1,10 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 
-#include <assert.h>
-#include <angelscript.h>
+#include "ScriptEngine.h"
+#include "ObjectWrapper.h"
 
-#define AS_USE_STLNAMES 0
-#include "addons/scriptstdstring/scriptstdstring.h"
+#include <algorithm>
 
 namespace panda
 {
@@ -15,44 +14,11 @@ class AS_ScriptedObject;
 namespace
 {
 
-void MessageCallback(const asSMessageInfo *msg, void *param)
-{
-	const char *type = "ERR ";
-	if (msg->type == asMSGTYPE_WARNING)
-		type = "WARN";
-	else if (msg->type == asMSGTYPE_INFORMATION)
-		type = "INFO";
-
-	printf("%s (%d, %d) : %s : %s\n", msg->section, msg->row, msg->col, type, msg->message);
-}
-
 static panda::AS_ScriptedObject* g_object = nullptr;
 void print(const std::string& str);
 
-void configureEngine(asIScriptEngine* engine)
-{
-	RegisterStdString(engine);
-//	RegisterStdStringUtils(engine);
-
-	// Set the message callback to receive information on errors in human readable form.
-	int r = engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL); assert(r >= 0);
-
-	r = engine->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(print), asCALL_CDECL); assert(r >= 0);
-}
-
-bool compileScript(asIScriptEngine* engine, const std::string& script)
-{
-	auto mod = engine->GetModule(0, asGM_ALWAYS_CREATE);
-	int r = mod->AddScriptSection("script", script.c_str());
-	if (r < 0) return false;
-
-	r = mod->Build();
-	if (r < 0) return false;
-	return true;
-}
-
 static const std::string defaultScript =
-R"~(void setup()
+R"~(void setup(PandaObject@ object)
 {
 
 }
@@ -78,52 +44,90 @@ public:
 		: PandaObject(parent)
 		, m_scriptText(initData(defaultScript, "script", "The script describing this object and its behavior"))
 		, m_output(initData("output", "Debug string"))
-		, m_engine(asCreateScriptEngine())
+		, m_wrapper(this)
 	{
+		m_context = m_engine.engine()->CreateContext();
+
+		m_engine.engine()->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(print), asCALL_CDECL);
+
 		addInput(m_scriptText);
 		addOutput(m_output);
 
 		m_scriptText.setWidget("multiline");
-
-		if (m_engine)
-			configureEngine(m_engine);
-	}
-
-	~AS_ScriptedObject()
-	{
-		m_engine->ShutDownAndRelease();
-	}
-
-	void prepareContext()
-	{
-		if (!m_context)
-			m_context = m_engine->CreateContext();
-
-		m_setupFunc = m_engine->GetModule(0)->GetFunctionByDecl("void setup()");
 	}
 
 	void setDirtyValue(const DataNode* caller) override
 	{
-		if (!m_engine)
-			return;
-
 		if (caller == &m_scriptText)
 		{
-			if (compileScript(m_engine, m_scriptText.getValue()))
+			if (m_engine.compileScript(m_scriptText.getValue()))
 			{
-				prepareContext();
+				m_setupFunc = m_engine.getFunction("void setup(PandaObject@)");
+				m_updateFunc = m_engine.getFunction("void update()");
 
 				g_object = this;
 				if (m_setupFunc)
+				{
 					m_context->Prepare(m_setupFunc);
-				m_context->Execute();
+					m_context->SetArgObject(0, &m_wrapper);
+					
+					if (m_context->Execute() == asEXECUTION_FINISHED)
+						updateDatas();
+				}
 			}
 		}
 	}
 
 	void update()
 	{
-	
+		if (m_updateFunc)
+		{
+			m_context->Prepare(m_updateFunc);
+			m_context->Execute();
+		}
+	}
+
+	void updateDatas()
+	{
+		auto newDatas = m_wrapper.datas();
+		m_wrapper.clear();
+
+		auto oldDatas = m_createdDatas;
+		m_createdDatas.clear();
+
+		for (auto& newData : newDatas)
+		{
+			m_createdDatas.push_back(newData.data);
+
+			if (newData.input)
+				addInput(*newData.data);
+			else
+				addOutput(*newData.data);
+
+			// Look for the same data, if it was already present
+			auto newDataPtr = newData.data.get();
+			auto it = std::find_if(oldDatas.begin(), oldDatas.end(), [&newDataPtr](const std::shared_ptr<BaseData>& data) {
+				return data->getName() == newDataPtr->getName() 
+					&& data->getDataTrait() == newDataPtr->getDataTrait();
+			});
+
+			// Then copy its value and set the parent
+			if (it != oldDatas.end())
+			{
+				auto oldDataPtr = it->get();
+				newDataPtr->copyValueFrom(oldDataPtr);
+
+				auto parent = oldDataPtr->getParent();
+				if (parent)
+					dataSetParent(newDataPtr, parent);
+			}
+		}
+
+		for (auto& oldData : oldDatas)
+			removeData(oldData.get());
+
+		if (!newDatas.empty() || !oldDatas.empty())
+			emitModified();
 	}
 
 	void setDebug(const std::string& str)
@@ -135,9 +139,12 @@ protected:
 	Data<std::string> m_scriptText;
 	Data<std::string> m_output;
 
-	asIScriptEngine* m_engine = nullptr;
+	ScriptEngine m_engine;
+	ObjectWrapper m_wrapper;
 	asIScriptContext* m_context = nullptr;
-	asIScriptFunction* m_setupFunc = nullptr;
+	asIScriptFunction *m_setupFunc = nullptr, *m_updateFunc = nullptr;
+
+	std::vector<std::shared_ptr<BaseData>> m_createdDatas;
 };
 
 int AS_ScriptedObjectClass = RegisterObject<AS_ScriptedObject>("Angelscript").setDescription("Create a scriptable object");

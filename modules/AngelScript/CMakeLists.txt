@@ -4,6 +4,9 @@ set(PROJECT_NAME "AngelScript")
 project(${PROJECT_NAME})
 
 set(HEADER_FILES
+	DataWrapper.h
+	ObjectWrapper.h
+	ScriptEngine.h
 	addons/scriptarray/scriptarray.h
 	addons/scriptstdstring/scriptstdstring.h
 )
@@ -11,6 +14,9 @@ set(HEADER_FILES
 set(SOURCE_FILES
 	angelScriptModule.cpp
 	AS_Object.cpp
+	DataWrapper.cpp
+	ObjectWrapper.cpp
+	ScriptEngine.cpp
 	addons/scriptarray/scriptarray.cpp
 	addons/scriptstdstring/scriptstdstring.cpp
 	addons/scriptstdstring/scriptstdstring_utils.cpp
