@@ -2,12 +2,14 @@
 
 #include <panda/data/Data.h>
 
+class asIScriptEngine;
+
 namespace panda
 {
 
-class BaseDataWrapper
-{
-};
+void registerData(asIScriptEngine* engine);
+
+class BaseDataWrapper {};
 
 template <class T>
 class DataWrapper : public BaseDataWrapper

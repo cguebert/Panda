@@ -55,7 +55,6 @@ public:
 	Point& operator/=(float v);
 
 	friend Point operator*(float v, const Point& p);
-	friend Point operator/(float v, const Point& p);
 
 	// Negation
 	Point operator-() const;
@@ -162,9 +161,6 @@ inline Point& Point::operator/=(float v)
 
 inline Point operator*(float v, const Point& p)
 { return p * v; }
-
-inline Point operator/(float v, const Point& p)
-{ return p / v; }
 
 inline Point Point::operator-() const
 { return Point(-x, -y); }

@@ -316,6 +316,7 @@ public:
 		textEdit = new QTextEdit;
 		textEdit->setPlainText(QString::fromStdString(v));
 		textEdit->setEnabled(!readOnly);
+		textEdit->setTabStopWidth(20);
 		mainLayout->addWidget(textEdit);
 
 		QPushButton* okButton = new QPushButton(tr("Ok"), this);

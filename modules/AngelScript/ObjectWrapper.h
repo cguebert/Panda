@@ -23,14 +23,18 @@ public:
 	// For the scripts
 	BaseDataWrapper* createIntData(bool input, const std::string& name, const std::string& help);
 	BaseDataWrapper* createFloatData(bool input, const std::string& name, const std::string& help);
+	BaseDataWrapper* createPointData(bool input, const std::string& name, const std::string& help);
 
 	// For the AS_Object
 	void clear();
 	const std::vector<DataInfo>& datas();
 
-	static void registerEngine(asIScriptEngine* engine);
+	static void registerObject(asIScriptEngine* engine);
 	
 private:
+	template <class T>
+	BaseDataWrapper* createData(bool input, const std::string& name, const std::string& help);
+
 	PandaObject* m_object = nullptr;
 	std::vector<DataInfo> m_datas;
 };

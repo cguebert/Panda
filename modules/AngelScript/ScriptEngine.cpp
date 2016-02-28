@@ -1,5 +1,6 @@
 #include "ScriptEngine.h"
 #include "ObjectWrapper.h"
+#include "Types.h"
 
 #include <assert.h>
 
@@ -37,7 +38,9 @@ ScriptEngine::ScriptEngine()
 	// Set the message callback to receive information on errors in human readable form.
 	int r = m_engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL); assert(r >= 0);
 
-	ObjectWrapper::registerEngine(m_engine);
+	registerTypes(m_engine);
+	registerData(m_engine);
+	ObjectWrapper::registerObject(m_engine);
 }
 
 ScriptEngine::~ScriptEngine()

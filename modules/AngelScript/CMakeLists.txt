@@ -7,6 +7,7 @@ set(HEADER_FILES
 	DataWrapper.h
 	ObjectWrapper.h
 	ScriptEngine.h
+	Types.h
 	addons/scriptarray/scriptarray.h
 	addons/scriptstdstring/scriptstdstring.h
 )
@@ -17,6 +18,7 @@ set(SOURCE_FILES
 	DataWrapper.cpp
 	ObjectWrapper.cpp
 	ScriptEngine.cpp
+	Types.cpp
 	addons/scriptarray/scriptarray.cpp
 	addons/scriptstdstring/scriptstdstring.cpp
 	addons/scriptstdstring/scriptstdstring_utils.cpp
