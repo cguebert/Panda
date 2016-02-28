@@ -12,6 +12,7 @@ struct DataInfo
 {
 	bool input = true;
 	std::shared_ptr<BaseData> data;
+	std::shared_ptr<BaseDataWrapper> dataWrapper;
 };
 
 class ObjectWrapper
@@ -20,8 +21,8 @@ public:
 	ObjectWrapper(PandaObject* object);
 
 	// For the scripts
-	void createIntData(bool input, const std::string& name, const std::string& help);
-	void createFloatData(bool input, const std::string& name, const std::string& help);
+	BaseDataWrapper* createIntData(bool input, const std::string& name, const std::string& help);
+	BaseDataWrapper* createFloatData(bool input, const std::string& name, const std::string& help);
 
 	// For the AS_Object
 	void clear();

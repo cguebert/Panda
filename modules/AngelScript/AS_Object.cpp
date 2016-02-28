@@ -43,7 +43,7 @@ public:
 	AS_ScriptedObject(PandaDocument* parent)
 		: PandaObject(parent)
 		, m_scriptText(initData(defaultScript, "script", "The script describing this object and its behavior"))
-		, m_output(initData("output", "Debug string"))
+		, m_output(initData("debug", "Debug string"))
 		, m_wrapper(this)
 	{
 		m_context = m_engine.engine()->CreateContext();
@@ -60,22 +60,29 @@ public:
 	{
 		if (caller == &m_scriptText)
 		{
+			m_updateFunc = nullptr;
+
 			if (m_engine.compileScript(m_scriptText.getValue()))
 			{
 				m_setupFunc = m_engine.getFunction("void setup(PandaObject@)");
-				m_updateFunc = m_engine.getFunction("void update()");
 
 				g_object = this;
 				if (m_setupFunc)
 				{
+					m_wrapper.clear();
 					m_context->Prepare(m_setupFunc);
 					m_context->SetArgObject(0, &m_wrapper);
 					
 					if (m_context->Execute() == asEXECUTION_FINISHED)
+					{
 						updateDatas();
+						m_updateFunc = m_engine.getFunction("void update()");
+					}
 				}
 			}
 		}
+
+		PandaObject::setDirtyValue(caller);
 	}
 
 	void update()
@@ -90,8 +97,6 @@ public:
 	void updateDatas()
 	{
 		auto newDatas = m_wrapper.datas();
-		m_wrapper.clear();
-
 		auto oldDatas = m_createdDatas;
 		m_createdDatas.clear();
 

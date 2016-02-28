@@ -5,14 +5,18 @@
 namespace panda
 {
 
+class BaseDataWrapper
+{
+};
+
 template <class T>
-class DataWrapper
+class DataWrapper : public BaseDataWrapper
 {
 public:
 	DataWrapper(Data<T>* data) 
 		: m_data(data) { }
 
-	const T& getValue() const 
+	T getValue() const 
 	{ return m_data->getValue(); }
 	
 	void setValue(const T& value) 
