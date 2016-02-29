@@ -24,6 +24,7 @@ public:
 	BaseDataWrapper* createIntData(bool input, const std::string& name, const std::string& help);
 	BaseDataWrapper* createFloatData(bool input, const std::string& name, const std::string& help);
 	BaseDataWrapper* createPointData(bool input, const std::string& name, const std::string& help);
+	BaseDataWrapper* createRectData(bool input, const std::string& name, const std::string& help);
 
 	// For the AS_Object
 	void clear();
