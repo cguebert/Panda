@@ -31,16 +31,16 @@ namespace
 	{ new(self) panda::types::Point(d); }
 
 // Point wrappers
-	panda::types::Point pointMult(float v, const panda::types::Point& p)
+	panda::types::Point PointMult(float v, const panda::types::Point& p)
 	{ return p * v; }
 
-	float pointGetIndex(int idx, panda::types::Point* self)
+	float PointGetIndex(int idx, panda::types::Point* self)
 	{ if (idx == 0 || idx == 1) return (*self)[idx]; return 0.f; }
 
-	void pointSetIndex(int idx, float value, panda::types::Point* self)
+	void PointSetIndex(int idx, float value, panda::types::Point* self)
 	{ if(idx == 0 || idx == 1) (*self)[idx] = value; }
 
-	int pointOpCmp(const panda::types::Point& p, panda::types::Point* self)
+	int PointOpCmp(const panda::types::Point& p, panda::types::Point* self)
 	{
 		int ret = opCompare(self->x, p.x);
 		if (ret != 0) return ret;
@@ -62,6 +62,26 @@ namespace
 
 	static void RectPointSizeConstructor(const panda::types::Point& p, float w, float h, panda::types::Rect* self)
 	{ new(self) panda::types::Rect(p, w, h); }
+
+// Color constructors
+	static void ColorDefaultConstructor(panda::types::Color* self)
+	{ new(self) panda::types::Color(); }
+
+	static void ColorCopyConstructor(const panda::types::Color& other, panda::types::Color* self)
+	{ new(self) panda::types::Color(other); }
+
+	static void Color4FloatsConstructor(float r, float g, float b, float a, panda::types::Color* self)
+	{ new(self) panda::types::Color(r, g, b, a); }
+
+// Color wrappers
+	panda::types::Color ColorMult(float v, const panda::types::Color& p)
+	{ return p * v; }
+
+	float ColorGetIndex(int idx, panda::types::Color* self)
+	{ if (idx >= 0 || idx < 4) return (*self)[idx]; return 0.f; }
+
+	void ColorSetIndex(int idx, float value, panda::types::Color* self)
+	{ if (idx >= 0 || idx < 4) (*self)[idx] = value; }
 }
 
 namespace panda 
@@ -90,16 +110,16 @@ namespace panda
 		r = engine->RegisterObjectMethod("Point", "Point &opSubAssign(const Point &in)", asMETHODPR(Point, operator-=, (const Point &), Point&), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Point", "Point opMul(const Point &in) const", asMETHODPR(Point, operator*, (const Point&) const, float), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Point", "Point opMul(float) const", asMETHODPR(Point, operator*, (float) const, Point), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Point", "Point opMul_r(float) const", asFUNCTION(pointMult), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Point", "Point opMul_r(float) const", asFUNCTION(PointMult), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Point", "Point &opMulAssign(float)", asMETHODPR(Point, operator*=, (float), Point&), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Point", "Point opDiv(float) const", asMETHODPR(Point, operator/, (float) const, Point), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Point", "Point &opDivAssign(float)", asMETHODPR(Point, operator/=, (float), Point&), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Point", "bool opEquals(const Point &in) const", asMETHODPR(Point, operator==, (const Point &) const, bool), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Point", "Point opNeg() const", asMETHODPR(Point, operator-, () const, Point), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Point", "int opComp(const Point &in) const", asFUNCTION(pointOpCmp), asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Point", "int opComp(const Point &in) const", asFUNCTION(PointOpCmp), asCALL_CDECL_OBJLAST); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod("Point", "float get_opIndex(int) const", asFUNCTION(pointGetIndex), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Point", "void set_opIndex(int, float) const", asFUNCTION(pointSetIndex), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Point", "float get_opIndex(int) const", asFUNCTION(PointGetIndex), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Point", "void set_opIndex(int, float) const", asFUNCTION(PointSetIndex), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 		
 		r = engine->RegisterObjectMethod("Point", "void set(float, float)", asMETHODPR(Point, set, (float, float), void), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Point", "void set(const Point &in)", asMETHODPR(Point, set, (const Point&), void), asCALL_THISCALL); assert( r >= 0 );
@@ -215,7 +235,43 @@ namespace panda
 
 	void registerColor(asIScriptEngine* engine)
 	{
+		int r = 0;
+		r = engine->RegisterObjectType("Color", sizeof(Color), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS  | asGetTypeTraits<Color>()); assert(r >= 0);
+		r = engine->RegisterObjectProperty("Color", "float r", asOFFSET(Color, r)); assert( r >= 0 );
+		r = engine->RegisterObjectProperty("Color", "float g", asOFFSET(Color, g)); assert( r >= 0 );
+		r = engine->RegisterObjectProperty("Color", "float b", asOFFSET(Color, b)); assert( r >= 0 );
+		r = engine->RegisterObjectProperty("Color", "float a", asOFFSET(Color, a)); assert( r >= 0 );
 
+		r = engine->RegisterObjectMethod("Color", "void set(float, float)", asMETHODPR(Color, set, (float, float, float, float), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "void set(const Color &in)", asMETHODPR(Color, set, (const Color&), void), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Color", "void get(float &out, float &out, float &out, float &out)", asMETHOD(Color, get), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Color", "float get_opIndex(int) const", asFUNCTION(ColorGetIndex), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "void set_opIndex(int, float) const", asFUNCTION(ColorSetIndex), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Color", "void getHsv(float &out, float &out, float &out, float &out)", asMETHOD(Color, getHsv), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterGlobalFunction("Color fromHsv(float, float, float, float)", asFUNCTION(Color::fromHsv), asCALL_CDECL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Color", "Color premultiplied() const", asMETHOD(Color, premultiplied), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color bounded() const", asMETHOD(Color, bounded), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Color", "Color opAdd(const Color &in) const", asMETHODPR(Color, operator+, (const Color &) const, Color), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color &opAddAssign(const Color &in)", asMETHODPR(Color, operator+=, (const Color &), Color&), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Color", "Color opSub(const Color &in) const", asMETHODPR(Color, operator-, (const Color &) const, Color), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color &opSubAssign(const Color &in)", asMETHODPR(Color, operator-=, (const Color &), Color&), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Color", "Color opMul(const Color &in) const", asMETHODPR(Color, operator*, (const Color&) const, Color), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color opMul(float) const", asMETHODPR(Color, operator*, (float) const, Color), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color opMul_r(float) const", asFUNCTION(ColorMult), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color &opMulAssign(const Color &in)", asMETHODPR(Color, operator*=, (const Color&), Color&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color &opMulAssign(float)", asMETHODPR(Color, operator*=, (float), Color&), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Color", "Color opDiv(const Color &in) const", asMETHODPR(Color, operator/, (const Color&) const, Color), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color opDiv(float) const", asMETHODPR(Color, operator/, (float) const, Color), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color &opDivAssign(const Color &in)", asMETHODPR(Color, operator/=, (const Color&), Color&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color &opDivAssign(float)", asMETHODPR(Color, operator/=, (float), Color&), asCALL_THISCALL); assert( r >= 0 );
 	}
 
 	void registerGradient(asIScriptEngine* engine)

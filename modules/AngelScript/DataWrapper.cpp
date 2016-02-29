@@ -38,6 +38,7 @@ void registerData(asIScriptEngine* engine)
 	registerDataType<float>(engine, "float");
 	registerDataType<types::Point>(engine, "Point");
 	registerDataType<types::Rect>(engine, "Rect");
+	registerDataType<types::Color>(engine, "Color");
 }
 
 } // namespace panda
