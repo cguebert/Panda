@@ -113,18 +113,33 @@ public:
 			auto newDataPtr = newData.data.get();
 			auto it = std::find_if(oldDatas.begin(), oldDatas.end(), [&newDataPtr](const std::shared_ptr<BaseData>& data) {
 				return data->getName() == newDataPtr->getName() 
-					&& data->getDataTrait() == newDataPtr->getDataTrait();
+					&& data->getDataTrait() == newDataPtr->getDataTrait()
+					&& data->isInput() == newDataPtr->isInput()
+					&& data->isOutput() == newDataPtr->isOutput();
 			});
 
 			// Then copy its value and set the parent
 			if (it != oldDatas.end())
 			{
 				auto oldDataPtr = it->get();
-				newDataPtr->copyValueFrom(oldDataPtr);
+				if (newDataPtr->isInput())
+				{
+					newDataPtr->copyValueFrom(oldDataPtr);
 
-				auto parent = oldDataPtr->getParent();
-				if (parent)
-					dataSetParent(newDataPtr, parent);
+					auto parent = oldDataPtr->getParent();
+					if (parent)
+						dataSetParent(newDataPtr, parent);
+				}
+				else if (newDataPtr->isOutput())
+				{
+					auto outputs = oldDataPtr->getOutputs();
+					for (auto output : outputs)
+					{
+						auto data = dynamic_cast<BaseData*>(output);
+						if (data && data->getOwner())
+							data->getOwner()->dataSetParent(data, newDataPtr);
+					}
+				}
 			}
 		}
 
