@@ -3,6 +3,8 @@
 #include "Types.h"
 
 #include <assert.h>
+#include <sstream>
+#include <iostream>
 
 #define AS_USE_STLNAMES 0
 #include "addons/scriptstdstring/scriptstdstring.h"
@@ -10,7 +12,7 @@
 namespace
 {
 
-void MessageCallback(const asSMessageInfo *msg, void *param)
+void MessageCallback(const asSMessageInfo* msg, void* param)
 {
 	const char *type = "ERR ";
 	if (msg->type == asMSGTYPE_WARNING)
@@ -18,7 +20,20 @@ void MessageCallback(const asSMessageInfo *msg, void *param)
 	else if (msg->type == asMSGTYPE_INFORMATION)
 		type = "INFO";
 
-	printf("%s (%d, %d) : %s : %s\n", msg->section, msg->row, msg->col, type, msg->message);
+	
+	std::stringstream ss;
+	ss << msg->section << " (" << msg->row << ", " << msg->col << ") : " << type << " : " << msg->message;
+	auto str = ss.str();
+
+	if (msg->type == 0)
+		std::cerr << str << std::endl;
+	else
+		std::cout << str << std::endl;
+
+	auto& engineString = *static_cast<std::string*>(param);
+	if (!engineString.empty())
+		engineString += "\n";
+	engineString += str;
 }
 
 }
@@ -36,7 +51,7 @@ ScriptEngine::ScriptEngine()
 	//	RegisterStdStringUtils(engine);
 
 	// Set the message callback to receive information on errors in human readable form.
-	int r = m_engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL); assert(r >= 0);
+	int r = m_engine->SetMessageCallback(asFUNCTION(MessageCallback), &m_errorString, asCALL_CDECL); assert(r >= 0);
 
 	registerTypes(m_engine);
 	registerData(m_engine);

@@ -43,7 +43,7 @@ public:
 	AS_ScriptedObject(PandaDocument* parent)
 		: PandaObject(parent)
 		, m_scriptText(initData(defaultScript, "script", "The script describing this object and its behavior"))
-		, m_output(initData("debug", "Debug string"))
+		, m_debugText(initData("debug", "Debug string"))
 		, m_wrapper(this)
 	{
 		m_context = m_engine.engine()->CreateContext();
@@ -51,9 +51,11 @@ public:
 		m_engine.engine()->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(print), asCALL_CDECL);
 
 		addInput(m_scriptText);
-		addOutput(m_output);
 
 		m_scriptText.setWidget("multiline");
+
+		m_debugText.setWidget("multiline");
+		m_debugText.setReadOnly(true);
 	}
 
 	void setDirtyValue(const DataNode* caller) override
@@ -80,6 +82,8 @@ public:
 					}
 				}
 			}
+
+			m_debugText.setValue(m_engine.errorString());
 		}
 
 		PandaObject::setDirtyValue(caller);
@@ -152,12 +156,12 @@ public:
 
 	void setDebug(const std::string& str)
 	{
-		m_output.setValue(str);
+		m_debugText.setValue(str);
 	}
 
 protected:
 	Data<std::string> m_scriptText;
-	Data<std::string> m_output;
+	Data<std::string> m_debugText;
 
 	ScriptEngine m_engine;
 	ObjectWrapper m_wrapper;
