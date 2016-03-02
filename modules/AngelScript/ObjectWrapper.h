@@ -23,6 +23,7 @@ public:
 	// For the scripts
 	BaseDataWrapper* createIntData(bool input, const std::string& name, const std::string& help);
 	BaseDataWrapper* createFloatData(bool input, const std::string& name, const std::string& help);
+	BaseDataWrapper* createStringData(bool input, const std::string& name, const std::string& help);
 	BaseDataWrapper* createPointData(bool input, const std::string& name, const std::string& help);
 	BaseDataWrapper* createRectData(bool input, const std::string& name, const std::string& help);
 	BaseDataWrapper* createColorData(bool input, const std::string& name, const std::string& help);

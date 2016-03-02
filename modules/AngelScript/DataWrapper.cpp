@@ -36,6 +36,7 @@ void registerData(asIScriptEngine* engine)
 
 	registerDataType<int>(engine, "int");
 	registerDataType<float>(engine, "float");
+	registerDataType<std::string>(engine, "string");
 	registerDataType<types::Point>(engine, "Point");
 	registerDataType<types::Rect>(engine, "Rect");
 	registerDataType<types::Color>(engine, "Color");

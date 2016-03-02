@@ -18,6 +18,8 @@ void ObjectWrapper::registerObject(asIScriptEngine* engine)
 		asMETHOD(ObjectWrapper, createIntData), asCALL_THISCALL); assert(r >= 0);
 	r = engine->RegisterObjectMethod("PandaObject", "Data<float>@ createFloatData(bool, const string &in, const string &in)",
 		asMETHOD(ObjectWrapper, createFloatData), asCALL_THISCALL); assert(r >= 0);
+	r = engine->RegisterObjectMethod("PandaObject", "Data<string>@ createStringData(bool, const string &in, const string &in)",
+		asMETHOD(ObjectWrapper, createStringData), asCALL_THISCALL); assert(r >= 0);
 	r = engine->RegisterObjectMethod("PandaObject", "Data<Point>@ createPointData(bool, const string &in, const string &in)",
 		asMETHOD(ObjectWrapper, createPointData), asCALL_THISCALL); assert(r >= 0);
 	r = engine->RegisterObjectMethod("PandaObject", "Data<Rect>@ createRectData(bool, const string &in, const string &in)",
@@ -46,6 +48,9 @@ BaseDataWrapper* ObjectWrapper::createIntData(bool input, const std::string& nam
 
 BaseDataWrapper* ObjectWrapper::createFloatData(bool input, const std::string& name, const std::string& help)
 { return createData<float>(input, name, help); }
+
+BaseDataWrapper* ObjectWrapper::createStringData(bool input, const std::string& name, const std::string& help)
+{ return createData<std::string>(input, name, help); }
 
 BaseDataWrapper* ObjectWrapper::createPointData(bool input, const std::string& name, const std::string& help)
 { return createData<types::Point>(input, name, help); }
