@@ -339,6 +339,11 @@ public:
 	{
 		return textEdit->toPlainText().toStdString();
 	}
+
+	QSize sizeHint() const
+	{
+		return QSize(500, 400);
+	}
 };
 
 class MultilineDataWidgetContainer : public BaseOpenDialogObject
@@ -361,7 +366,6 @@ public:
 		label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
 		QPushButton* pushButton = new QPushButton("...");
-		pushButton->setEnabled(!readOnly);
 		pushButton->setMaximumWidth(40);
 
 		QHBoxLayout* layout = new QHBoxLayout(container);
