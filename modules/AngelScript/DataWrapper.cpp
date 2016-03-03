@@ -1,5 +1,4 @@
 #include "DataWrapper.h"
-
 #include <panda/types/Gradient.h>
 #include <panda/types/Rect.h>
 
@@ -29,6 +28,19 @@ void registerDataType(asIScriptEngine* engine, const std::string& typeName)
 		asMETHOD(panda::DataWrapper<T>, getCounter), asCALL_THISCALL); assert(r >= 0);
 }
 
+void registerGradientData(asIScriptEngine* engine)
+{
+	using WrapperType = DataWrapper<types::Gradient, GradientWrapper*>;
+	int r = 0;
+	r = engine->RegisterObjectType("Data<Gradient>", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
+	r = engine->RegisterObjectMethod("Data<Gradient>", "Gradient@ getValue()",
+		asMETHOD(WrapperType, getValue), asCALL_THISCALL); assert(r >= 0);
+	r = engine->RegisterObjectMethod("Data<Gradient>", "void setValue(Gradient@)",
+		asMETHOD(WrapperType, setValue), asCALL_THISCALL); assert(r >= 0);
+	r = engine->RegisterObjectMethod("Data<Gradient>", "int getCounter()",
+		asMETHOD(WrapperType, getCounter), asCALL_THISCALL); assert(r >= 0);
+}
+
 void registerData(asIScriptEngine* engine)
 {
 	int r = 0;
@@ -40,6 +52,7 @@ void registerData(asIScriptEngine* engine)
 	registerDataType<types::Point>(engine, "Point");
 	registerDataType<types::Rect>(engine, "Rect");
 	registerDataType<types::Color>(engine, "Color");
+	registerGradientData(engine);
 }
 
 } // namespace panda

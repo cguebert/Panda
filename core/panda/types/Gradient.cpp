@@ -14,15 +14,6 @@ namespace types
 
 using types::Color;
 
-Gradient::Gradient()
-	: extend(EXTEND_PAD)
-{ }
-
-void Gradient::clear()
-{
-	stops.clear();
-}
-
 void Gradient::add(float position, Color color)
 {
 	if(position < 0 || position > 1)
@@ -70,16 +61,6 @@ Color Gradient::get(float position) const
 	}
 }
 
-void Gradient::setExtend(int method)
-{
-	extend = static_cast<Extend>(method);
-}
-
-int Gradient::getExtend() const
-{
-	return extend;
-}
-
 inline bool compareStops(const std::pair<float, Color> &p1, const std::pair<float, Color> &p2)
 {
 	return p1.first < p2.first;
@@ -101,11 +82,6 @@ Gradient::GradientStops Gradient::getStops() const
 		return temp;
 	}
 
-	return stops;
-}
-
-Gradient::GradientStops Gradient::getStopsForEdit() const
-{
 	return stops;
 }
 

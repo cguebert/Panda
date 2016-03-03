@@ -32,7 +32,7 @@ public:
 
 	void setStops(GradientStops stopsPoints);
 	GradientStops getStops() const;
-	GradientStops getStopsForEdit() const; // this one doesn't lie
+	const GradientStops& getStopsForEdit() const; // this one doesn't lie
 
 	friend inline bool operator==(const Gradient& g1, const Gradient& g2)
 	{ return g1.extend == g2.extend && g1.stops == g2.stops; }
@@ -51,6 +51,21 @@ protected:
 	GradientStops stops;
 	Extend extend;
 };
+
+inline Gradient::Gradient()
+	: extend(EXTEND_PAD) { }
+
+inline void Gradient::clear()
+{ stops.clear(); }
+
+inline void Gradient::setExtend(int method)
+{ extend = static_cast<Extend>(method); }
+
+inline int Gradient::getExtend() const
+{ return extend; }
+
+inline const Gradient::GradientStops& Gradient::getStopsForEdit() const
+{ return stops; }
 
 } // namespace types
 

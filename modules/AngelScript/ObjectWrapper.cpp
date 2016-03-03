@@ -26,6 +26,8 @@ void ObjectWrapper::registerObject(asIScriptEngine* engine)
 		asMETHOD(ObjectWrapper, createRectData), asCALL_THISCALL); assert(r >= 0);
 	r = engine->RegisterObjectMethod("PandaObject", "Data<Color>@ createColorData(bool, const string &in, const string &in)",
 		asMETHOD(ObjectWrapper, createColorData), asCALL_THISCALL); assert(r >= 0);
+	r = engine->RegisterObjectMethod("PandaObject", "Data<Gradient>@ createGradientData(bool, const string &in, const string &in)",
+		asMETHOD(ObjectWrapper, createGradientData), asCALL_THISCALL); assert(r >= 0);
 }
 
 template <class T>
@@ -60,5 +62,8 @@ BaseDataWrapper* ObjectWrapper::createRectData(bool input, const std::string& na
 
 BaseDataWrapper* ObjectWrapper::createColorData(bool input, const std::string& name, const std::string& help)
 { return createData<types::Color>(input, name, help); }
+
+BaseDataWrapper* ObjectWrapper::createGradientData(bool input, const std::string& name, const std::string& help)
+{ return createData<types::Gradient>(input, name, help); }
 
 } // namespace panda
