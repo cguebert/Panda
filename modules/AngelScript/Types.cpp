@@ -242,6 +242,10 @@ namespace panda
 		r = engine->RegisterObjectProperty("Color", "float b", asOFFSET(Color, b)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Color", "float a", asOFFSET(Color, a)); assert( r >= 0 );
 
+		r = engine->RegisterObjectBehaviour("Color", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(ColorDefaultConstructor), asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectBehaviour("Color", asBEHAVE_CONSTRUCT, "void f(float, float, float, float)", asFUNCTION(Color4FloatsConstructor), asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectBehaviour("Color", asBEHAVE_CONSTRUCT, "void f(const Color &in)", asFUNCTION(ColorCopyConstructor), asCALL_CDECL_OBJLAST); assert(r >= 0);
+
 		r = engine->RegisterObjectMethod("Color", "void set(float, float)", asMETHODPR(Color, set, (float, float, float, float), void), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Color", "void set(const Color &in)", asMETHODPR(Color, set, (const Color&), void), asCALL_THISCALL); assert( r >= 0 );
 
