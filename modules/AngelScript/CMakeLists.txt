@@ -4,24 +4,26 @@ set(PROJECT_NAME "AngelScript")
 project(${PROJECT_NAME})
 
 set(HEADER_FILES
-	DataWrapper.h
-	ObjectWrapper.h
 	ScriptEngine.h
-	Types.h
 	addons/scriptarray/scriptarray.h
 	addons/scriptstdstring/scriptstdstring.h
+	pandaTypes/DataWrapper.h
+	pandaTypes/ObjectWrapper.h
+	pandaTypes/Types.h
 )
 
 set(SOURCE_FILES
 	angelScriptModule.cpp
 	AS_Object.cpp
-	DataWrapper.cpp
-	ObjectWrapper.cpp
 	ScriptEngine.cpp
-	Types.cpp
 	addons/scriptarray/scriptarray.cpp
 	addons/scriptstdstring/scriptstdstring.cpp
 	addons/scriptstdstring/scriptstdstring_utils.cpp
+	pandaTypes/Color.cpp
+	pandaTypes/Gradient.cpp
+	pandaTypes/Point.cpp
+	pandaTypes/Rect.cpp
+	pandaTypes/Types.cpp
 )
 
 GroupFiles(HEADER_FILES)

@@ -2,7 +2,7 @@
 #include <panda/object/ObjectFactory.h>
 
 #include "ScriptEngine.h"
-#include "ObjectWrapper.h"
+#include "pandaTypes/ObjectWrapper.h"
 
 #include <algorithm>
 

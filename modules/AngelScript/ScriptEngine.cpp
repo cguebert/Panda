@@ -1,6 +1,6 @@
 #include "ScriptEngine.h"
-#include "ObjectWrapper.h"
-#include "Types.h"
+#include "pandaTypes/ObjectWrapper.h"
+#include "pandaTypes/Types.h"
 
 #include <assert.h>
 #include <sstream>
@@ -53,9 +53,10 @@ ScriptEngine::ScriptEngine()
 	// Set the message callback to receive information on errors in human readable form.
 	int r = m_engine->SetMessageCallback(asFUNCTION(MessageCallback), &m_errorString, asCALL_CDECL); assert(r >= 0);
 
-	registerTypes(m_engine);
-	registerData(m_engine);
-	ObjectWrapper::registerObject(m_engine);
+	r = m_engine->RegisterObjectType("Data<class T>", 0, asOBJ_REF | asOBJ_NOCOUNT | asOBJ_TEMPLATE); assert(r >= 0);
+	r = m_engine->RegisterObjectType("PandaObject", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
+
+	registerAllTypes(m_engine);
 }
 
 ScriptEngine::~ScriptEngine()
