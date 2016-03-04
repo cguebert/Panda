@@ -44,7 +44,7 @@ void registerDataType(asIScriptEngine* engine, const std::string& typeName)
 	auto dtn = dataTypeName.c_str();
 	int r = 0;
 	r = engine->RegisterObjectType(dtn, 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-	r = engine->RegisterObjectMethod(dtn, str(typeName + "& getValue()"),
+	r = engine->RegisterObjectMethod(dtn, str("const " + typeName + "& getValue()"),
 		asMETHOD(panda::DataWrapper<T>, getValue), asCALL_THISCALL); assert(r >= 0);
 	r = engine->RegisterObjectMethod(dtn, str("void setValue(const " + typeName + " &in)"),
 		asMETHOD(panda::DataWrapper<T>, setValue), asCALL_THISCALL); assert(r >= 0);

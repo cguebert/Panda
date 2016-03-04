@@ -114,7 +114,7 @@ find_package(Qt5Widgets)
 find_package(Qt5OpenGL)
 
 if(WIN32)
-#	set(GUI_TYPE WIN32)
+	set(GUI_TYPE WIN32)
 endif()
 
 add_executable(${PROJECT_NAME} ${GUI_TYPE} ${HEADER_FILES} ${SOURCE_FILES} ${RESSOURCE_FILES})
