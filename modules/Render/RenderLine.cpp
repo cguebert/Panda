@@ -262,11 +262,11 @@ public:
 
 			for (int i = 0; i < nbPaths; ++i)
 			{
-				const auto& path = listPaths[i];
+				const auto& points = listPaths[i].points;
 				float width = listWidth[i % nbWidth];
 				m_firstBuffer.push_back(m_verticesBuffer.size());
 
-				int nbPts = path.size();
+				int nbPts = points.size();
 				if(nbPts < 2)
 				{
 					m_countBuffer.push_back(0);
@@ -276,7 +276,7 @@ public:
 				m_countBuffer.push_back((nbPts - 1) * 4);
 
 				for (int j = 0; j < nbPts - 1; ++j)
-					extrude(path[j], path[j + 1], width);
+					extrude(points[j], points[j + 1], width);
 			}
 		}
 	}
@@ -430,7 +430,7 @@ public:
 
 			for (int i = 0; i < nbPaths; ++i)
 			{
-				const auto& path = listPaths[i];
+				const auto& points = listPaths[i].points;
 				float width = listWidth[i % nbWidth];
 				int start = m_verticesBuffer.size();
 
@@ -438,7 +438,7 @@ public:
 				m_firstBuffer.push_back(start);
 				m_countBuffer.push_back(0); // Will be modified later
 
-				int nbPts = path.size();
+				int nbPts = points.size();
 				if (nbPts < 2)
 					continue;
 				
@@ -451,7 +451,7 @@ public:
 				float length = 0;
 				for (int j = 0; j < nbPts - 1; ++j)
 				{
-					length += (path[j+1] - path[j]).norm();
+					length += (points[j + 1] - points[j]).norm();
 					auto pt = Point(length, 0);
 
 					for (int k = 0; k < 4; ++k)
@@ -467,7 +467,7 @@ public:
 					uv.x /= length;
 
 				for (int j = 0; j < nbPts - 1; ++j)
-					extrude(path[j], path[j + 1], width);
+					extrude(points[j], points[j + 1], width);
 
 				m_countBuffer.back() = (nbPts - 1) * 4;
 
@@ -645,7 +645,7 @@ public:
 
 			for (int i = 0; i < nbPaths; ++i)
 			{
-				const auto& path = listPaths[i];
+				const auto& points = listPaths[i].points;
 				float width = listWidth[i % nbWidth];
 				int start = m_verticesBuffer.size();
 
@@ -653,7 +653,7 @@ public:
 				m_firstBuffer.push_back(start);
 				m_countBuffer.push_back(0); // Will be modified later
 
-				int nbPts = path.size();
+				int nbPts = points.size();
 				if (nbPts < 2)
 					continue;
 				
@@ -666,7 +666,7 @@ public:
 				float length = 0;
 				for (int j = 0; j < nbPts - 1; ++j)
 				{
-					length += (path[j+1] - path[j]).norm();
+					length += (points[j + 1] - points[j]).norm();
 					auto pt1 = Point(length, 1);
 					auto pt0 = Point(length, 0);
 
@@ -685,7 +685,7 @@ public:
 					uv.x /= length;
 
 				for (int j = 0; j < nbPts - 1; ++j)
-					extrude(path[j], path[j + 1], width);
+					extrude(points[j], points[j + 1], width);
 
 				m_countBuffer.back() = (nbPts - 1) * 4;
 

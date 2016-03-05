@@ -164,7 +164,7 @@ public:
 
 			Path path;
 			for (const auto& pt : dynamicShape.path)
-				path.push_back(b2Panda::convert(pt));
+				path.points.push_back(b2Panda::convert(pt));
 			output.push_back(path); // At the wrong place now, but it will be moved at the end of the timestep anyway
 		}
 	}
@@ -179,7 +179,7 @@ public:
 		{
 			const auto& body = m_bodies[i];
 			const auto bPtr = body.first;
-			auto& output = outputList[i];
+			auto& output = outputList[i].points;
 			
 			const auto& path = body.second;
 			int nbPts = path.size();

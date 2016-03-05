@@ -16,8 +16,8 @@ using types::Polygon;
 std::vector<c2t::Point> convertPath(const Path& path)
 {
 	std::vector<c2t::Point> result;
-	result.reserve(path.size());
-	for(const Point& pt : path)
+	result.reserve(path.points.size());
+	for(const Point& pt : path.points)
 		result.emplace_back(c2t::Point(pt.x, pt.y));
 
 	if(result.front() == result.back())

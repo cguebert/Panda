@@ -139,7 +139,7 @@ public:
 			{
 				Path path;
 				for(auto p : ptsId)
-					path.push_back(points[p]);
+					path.points.push_back(points[p]);
 				paths.push_back(path);
 			}
 		}
@@ -184,7 +184,7 @@ public:
 			{
 				Path path;
 				for(auto p : ptsId)
-					path.push_back(points[p]);
+					path.points.push_back(points[p]);
 				paths.push_back(path);
 			}
 		}

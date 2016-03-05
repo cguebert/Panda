@@ -192,16 +192,16 @@ public:
 		lengthList.resize(nb);
 		for(int i=0; i<nb; ++i)
 		{
-			const Path& path = paths[i];
-			int nbPts = path.size();
+			const auto& points = paths[i].points;
+			int nbPts = points.size();
 			nbPtsList[i] = nbPts;
 			if(nbPts > 1)
 			{
-				Point pt1 = path[0];
+				Point pt1 = points[0];
 				float l = 0.0;
 				for(int j=1; j<nbPts; ++j)
 				{
-					const Point& pt2 = path[j];
+					const Point& pt2 = points[j];
 					l += (pt2-pt1).norm();
 					pt1 = pt2;
 				}
@@ -243,7 +243,7 @@ public:
 
 	void update()
 	{
-		const Path& curve = input.getValue();
+		const auto& curve = input.getValue().points;
 		const std::vector<float>& listAbscissa = abscissa.getValue();
 		unsigned int nbPts = curve.size();
 		unsigned int nbAbscissa = listAbscissa.size();
@@ -413,22 +413,22 @@ public:
 		outputList.resize(nbInputs);
 		for (int i = 0; i < nbInputs; ++i)
 		{
-			const Path& path = listInput[i];
+			const auto& points = listInput[i].points;
 
-			if (path.empty())
+			if (points.empty())
 				continue;
 
-			auto& outputPath = outputList[i];
-			int nbPts = path.size();
+			auto& outputPts = outputList[i].points;
+			int nbPts = points.size();
 
-			outputPath.push_back(path[0]);
+			outputPts.push_back(points[0]);
 			if (nbPts == 1)
 				continue;
 
-			Point pt1 = path[0];
+			Point pt1 = points[0];
 			for (int j = 1; j < nbPts;)
 			{
-				Point pt2 = path[j];
+				Point pt2 = points[j];
 				float l = (pt2 - pt1).norm();
 				if (l < threshold)
 				{
@@ -439,7 +439,7 @@ public:
 					// Continue searching for the first point outside of the threshold
 					for (++j; j < nbPts; ++j)
 					{
-						Point pt3 = path[j];
+						Point pt3 = points[j];
 						l = (pt3 - pt1).norm();
 						if (l > threshold)
 							break;
@@ -465,11 +465,11 @@ public:
 					}
 					}
 
-					outputPath.back() = pt2;
+					outputPts.back() = pt2;
 				}
 				else
 				{
-					outputPath.push_back(pt2);
+					outputPts.push_back(pt2);
 					++j;
 				}
 

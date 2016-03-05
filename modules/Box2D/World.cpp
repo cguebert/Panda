@@ -98,16 +98,16 @@ namespace b2Panda
 	
 	types::Point computeCenterOfMass(const types::Path& path)
 	{
-		if (path.empty())
+		if (path.points.empty())
 			return Point();
 		Point c;
-		for (const auto& pt : path)
+		for (const auto& pt : path.points)
 			c += pt;
 
-		int nb = path.size();
-		if (path.front() == path.back())
+		int nb = path.points.size();
+		if (path.points.front() == path.points.back())
 		{
-			c -= path.back();
+			c -= path.points.back();
 			nb -= 1;
 		}
 		c /= static_cast<float>(nb);
@@ -121,9 +121,9 @@ namespace b2Panda
 b2PolygonShape WorldData::createStaticShape(const types::Path& path)
 {
 	std::vector<b2Vec2> tmp;
-	tmp.reserve(path.size());
+	tmp.reserve(path.points.size());
 
-	for (const auto& pt : path)
+	for (const auto& pt : path.points)
 		tmp.push_back(b2Panda::convert(pt / m_scaling));
 
 	b2PolygonShape shape;
@@ -135,12 +135,12 @@ b2PolygonShape WorldData::createStaticShape(const types::Path& path)
 WorldData::DynamicShape WorldData::createDynamicShape(const types::Path& path)
 {
 	auto center = b2Panda::computeCenterOfMass(path);
-	auto nbPts = path.size();
+	auto nbPts = path.points.size();
 
 	DynamicShape dyn;
 	dyn.path.reserve(nbPts);
 
-	for (const auto& pt : path)
+	for (const auto& pt : path.points)
 		dyn.path.push_back(b2Panda::convert((pt - center) / m_scaling));
 
 	std::vector<b2Vec2> tmp = dyn.path;

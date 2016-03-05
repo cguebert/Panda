@@ -33,9 +33,9 @@ private:
 	void lastSegment();
 	void endCap();
 
-	const Path& pts;
+	const std::vector<Point>& pts;
 	Mesh& mesh;
-	Path& UV;
+	std::vector<Point>& UV;
 	std::vector<Point> normals;
 	std::vector<float> abscissa, lengths, halfWidths;
 	int capType, joinType, nbPts;
@@ -96,7 +96,7 @@ public:
 
 		for(int i=0; i<nb; ++i)
 		{
-			int nbPts = input[i].size();
+			int nbPts = input[i].points.size();
 			if(!nbPts || !widthAnim.size())
 				return;
 
@@ -115,9 +115,9 @@ protected:
 //****************************************************************************//
 
 ExtrudeHelper::ExtrudeHelper(const Path& pts, Mesh& mesh, Path& UV, int cap, int join, bool close)
-	: pts(pts)
+	: pts(pts.points)
 	, mesh(mesh)
-	, UV(UV)
+	, UV(UV.points)
 	, capType(cap)
 	, joinType(join)
 	, closePath(close)

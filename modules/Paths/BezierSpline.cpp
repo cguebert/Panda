@@ -27,26 +27,27 @@ public:
 
 	void update()
 	{
-		const Path& ctrlPts = input.getValue();
-		auto outPts = output.getAccessor();
+		const auto& ctrlPts = input.getValue().points;
+		auto outAcc = output.getAccessor();
+		auto& outPts = outAcc.wref().points;
 		int nbCtrlPts = ctrlPts.size();
 		if(nbCtrlPts > 2)
 		{
 			int nbSteps = steps.getValue();
 			int nbPts = (nbCtrlPts - 1) * nbSteps + 1;
 			computeCoefficients(nbCtrlPts, nbPts);
-			outPts->resize(nbPts);
+			outPts.resize(nbPts);
 
 			for(int i=0; i<nbPts; ++i)
 			{
 				Point pt;
 				for(int j=0; j<nbCtrlPts; ++j)
 					pt += coefs[i][j] * ctrlPts[j];
-				outPts.wref()[i] = pt;
+				outPts[i] = pt;
 			}
 		}
 		else
-			outPts->clear();
+			outPts.clear();
 	}
 
 	void computeCoefficients(int c, int p)

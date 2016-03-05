@@ -41,11 +41,11 @@ public:
 
 		for(int l=0, nb=input.size(); l<nb; ++l)
 		{
-			const auto ctrlPts = input[l];
+			const auto ctrlPts = input[l].points;
 			int nbCtrlPts = ctrlPts.size();
 			if(nbCtrlPts < 4)
 				continue;
-			auto& outPts = output[l];
+			auto& outPts = output[l].points;
 			bool closed = (m_close.getValue() && ctrlPts.front() == ctrlPts.back());
 
 			if(closed)

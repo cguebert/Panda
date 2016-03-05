@@ -38,12 +38,12 @@ public:
 		for(int i=0; i<nb; ++i)
 		{
 			const Rect& r = rects[i];
-			Path& path = paths[i];
-			path.push_back(r.topLeft());
-			path.push_back(r.bottomLeft());
-			path.push_back(r.bottomRight());
-			path.push_back(r.topRight());
-			path.push_back(r.topLeft());
+			auto& points = paths[i].points;
+			points.push_back(r.topLeft());
+			points.push_back(r.bottomLeft());
+			points.push_back(r.bottomRight());
+			points.push_back(r.topRight());
+			points.push_back(r.topLeft());
 		}
 	}
 
@@ -104,7 +104,7 @@ public:
 			if(nbSeg < 3) continue;
 
 			Path path;
-			path.resize(nbSeg + 1);
+			path.points.resize(nbSeg + 1);
 
 			float angle = PI2 / nbSeg;
 			float ca = cos(angle), sa = sin(angle);
@@ -113,7 +113,7 @@ public:
 			for(int i=0; i<=nbSeg; ++i)
 			{
 				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
-				path[i] = center + pt;
+				path.points[i] = center + pt;
 				dir = pt;
 			}
 

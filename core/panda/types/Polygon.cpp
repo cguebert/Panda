@@ -10,7 +10,7 @@ namespace types
 
 void Polygon::clear()
 {
-	contour.clear();
+	contour.points.clear();
 	holes.clear();
 }
 

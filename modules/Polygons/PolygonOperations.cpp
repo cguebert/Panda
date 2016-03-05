@@ -44,7 +44,7 @@ public:
 		auto output = m_output.getAccessor();
 		output.clear();
 
-		if(inputA.contour.empty() || inputB.contour.empty())
+		if (inputA.contour.points.empty() || inputB.contour.points.empty())
 			return;
 
 		typedef boost::geometry::model::d2::point_xy<float> BGPoint;
@@ -52,14 +52,14 @@ public:
 		BGPolygon pA, pB;
 		{
 			std::vector<BGPoint> pts;
-			for(const Point& pt : inputA.contour)
+			for (const Point& pt : inputA.contour.points)
 				pts.emplace_back(pt.x, pt.y);
 			boost::geometry::append(pA, pts);
 		}
 
 		{
 			std::vector<BGPoint> pts;
-			for(const Point& pt : inputB.contour)
+			for (const Point& pt : inputB.contour.points)
 				pts.emplace_back(pt.x, pt.y);
 			boost::geometry::append(pB, pts);
 		}
@@ -71,17 +71,17 @@ public:
 		{
 			Polygon poly;
 			Path path;
-			path.reserve((int)rpoly.outer().size());
+			path.points.reserve((int)rpoly.outer().size());
 			for(const auto& pt : rpoly.outer())
-				path.push_back(Point(pt.x(), pt.y()));
+				path.points.push_back(Point(pt.x(), pt.y()));
 			poly.contour = path;
 
 			for(const auto& inner : rpoly.inners())
 			{
 				Path path;
-				path.reserve((int)inner.size());
+				path.points.reserve((int)inner.size());
 				for(const auto& pt : inner)
-					path.push_back(Point(pt.x(), pt.y()));
+					path.points.push_back(Point(pt.x(), pt.y()));
 				poly.holes.push_back(path);
 			}
 
@@ -122,7 +122,7 @@ public:
 		auto output = m_output.getAccessor();
 		output.clear();
 
-		if(inputA.contour.empty() || inputB.contour.empty())
+		if (inputA.contour.points.empty() || inputB.contour.points.empty())
 			return;
 
 		typedef boost::geometry::model::d2::point_xy<float> BGPoint;
@@ -130,14 +130,14 @@ public:
 		BGPolygon pA, pB;
 		{
 			std::vector<BGPoint> pts;
-			for(const Point& pt : inputA.contour)
+			for (const Point& pt : inputA.contour.points)
 				pts.emplace_back(pt.x, pt.y);
 			boost::geometry::append(pA, pts);
 		}
 
 		{
 			std::vector<BGPoint> pts;
-			for(const Point& pt : inputB.contour)
+			for (const Point& pt : inputB.contour.points)
 				pts.emplace_back(pt.x, pt.y);
 			boost::geometry::append(pB, pts);
 		}
@@ -149,17 +149,17 @@ public:
 		{
 			Polygon poly;
 			Path path;
-			path.reserve((int)rpoly.outer().size());
+			path.points.reserve((int)rpoly.outer().size());
 			for(const auto& pt : rpoly.outer())
-				path.push_back(Point(pt.x(), pt.y()));
+				path.points.push_back(Point(pt.x(), pt.y()));
 			poly.contour = path;
 
 			for(const auto& inner : rpoly.inners())
 			{
 				Path path;
-				path.reserve((int)inner.size());
+				path.points.reserve((int)inner.size());
 				for(const auto& pt : inner)
-					path.push_back(Point(pt.x(), pt.y()));
+					path.points.push_back(Point(pt.x(), pt.y()));
 				poly.holes.push_back(path);
 			}
 

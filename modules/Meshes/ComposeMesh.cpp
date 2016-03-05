@@ -38,12 +38,12 @@ public:
 		for(int i=0; i<nbPaths; ++i)
 		{
 			const Path& path = paths[i];
-			int nbPts = path.size();
+			int nbPts = path.points.size();
 			if(nbPts < 3)
 				continue;
 
 			Mesh mesh;
-			mesh.addPoints(path);
+			mesh.addPoints(path.points);
 
 			if(nbPts == 3)
 			{

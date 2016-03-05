@@ -186,7 +186,7 @@ public:
 			{
 				Path path;
 				for(auto p : resIndices)
-					path.push_back(m_uniquePoints[p]);
+					path.points.push_back(m_uniquePoints[p]);
 				output.push_back(path);
 			}
 		}
