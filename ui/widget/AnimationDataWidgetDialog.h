@@ -132,10 +132,10 @@ public:
 
 	virtual void readFromData(const animation_type& anim)
 	{
-		valuesCopy = anim.getValues();
+		valuesCopy = anim.values();
 		resize(anim.size());
 
-		auto stops = anim.getStops();
+		const auto& stops = anim.stops();
 		int nb = stops.size();
 
 		for(int i=0; i<nb; ++i)
@@ -144,8 +144,8 @@ public:
 			dataWidgets[i]->updateWidgetValue();
 		}
 
-		extendBox->setCurrentIndex(anim.getExtend());
-		interpolationBox->setCurrentIndex(anim.getInterpolation());
+		extendBox->setCurrentIndex(static_cast<int>(anim.extend()));
+		interpolationBox->setCurrentIndex(static_cast<int>(anim.interpolation()));
 
 		if(resizeSpinBox)
 			resizeSpinBox->setValue(dataWidgets.size());
@@ -164,8 +164,8 @@ public:
 			anim.add(key, valuesCopy[i]);
 		}
 
-		anim.setExtend(extendBox->currentIndex());
-		anim.setInterpolation(interpolationBox->currentIndex());
+		anim.setExtendInt(extendBox->currentIndex());
+		anim.setInterpolationInt(interpolationBox->currentIndex());
 	}
 
 	void resize(int nb)

@@ -367,7 +367,7 @@ public:
 		addInput(m_gradient);
 		addInput(m_shader);
 
-		m_gradient.getAccessor().push_back(Gradient::defaultGradient());
+		m_gradient.getAccessor().push_back(Gradient());
 		m_lineWidth.getAccessor().push_back(1.f);
 
 		m_shader.setWidgetData("Vertex;Fragment");

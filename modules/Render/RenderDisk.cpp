@@ -195,7 +195,7 @@ public:
 
 		m_center.getAccessor().push_back(Point(100, 100));
 		m_radius.getAccessor().push_back(5.0);
-		m_gradient.getAccessor().push_back(Gradient::defaultGradient());
+		m_gradient.getAccessor().push_back(Gradient());
 
 		m_shader.setWidgetData("Vertex;Fragment");
 		auto shaderAcc = m_shader.getAccessor();

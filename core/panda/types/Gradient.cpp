@@ -14,89 +14,79 @@ namespace types
 
 using types::Color;
 
+Gradient::Gradient()
+	: m_extend(Extend::Pad) 
+{
+	m_stops.emplace_back(0.f, Color::black());
+	m_stops.emplace_back(1.f, Color::white());
+}
+
 void Gradient::add(float position, Color color)
 {
 	if(position < 0 || position > 1)
 		return; // Ignore invalid insertions
 
 	// Insert already at the right place
-	for(int i=0, nb=stops.size(); i<nb; ++i)
-	{
-		if(position < stops[i].first)
-		{
-			stops.insert(stops.begin() + i, std::make_pair(position, color));
-			return;
-		}
-	}
-
-	// Or if the list is currently empty...
-	stops.emplace_back(position, color);
+	auto it = std::lower_bound(m_stops.begin(), m_stops.end(), position, [](const GradientStop& stop, float pos) {
+		return stop.first < pos;
+	});
+	m_stops.emplace(it, position, color);
 }
 
 Color Gradient::get(float position) const
 {
 	float pos = extendPos(position);
 
-	int nb = stops.size();
+	int nb = m_stops.size();
 	if(!nb)	// Same rule as Qt's: when empty, do instead a gradient from black to white
 		return interpolate(Color::black(), Color::white(), pos);
 	else if(nb == 1)
-		return stops.front().second;
-	else if(pos <= stops.front().first)
-		return stops.front().second;
-	else if(pos >= stops.back().first)
-		return stops.back().second;
+		return m_stops.front().second;
+	else if(pos <= m_stops.front().first)
+		return m_stops.front().second;
+	else if(pos >= m_stops.back().first)
+		return m_stops.back().second;
 	else if(nb == 2)
-		return interpolate(stops.front(), stops.back(), pos);
+		return interpolate(m_stops.front(), m_stops.back(), pos);
 	else
 	{
 		int i;
 		for(i=0; i+2<nb; ++i)
 		{
-			if(stops[i+1].first > pos)
+			if(m_stops[i+1].first > pos)
 				break;
 		}
 
-		return interpolate(stops[i], stops[i+1], pos);
+		return interpolate(m_stops[i], m_stops[i+1], pos);
 	}
 }
 
-inline bool compareStops(const std::pair<float, Color> &p1, const std::pair<float, Color> &p2)
+void Gradient::setExtendInt(int method)
 {
-	return p1.first < p2.first;
+	int val = helper::bound(0, method, static_cast<int>(Extend::Reflect));
+	setExtend(static_cast<Extend>(val));
 }
 
 void Gradient::setStops(GradientStops stopsPoints)
 {
-	stops = stopsPoints;
-	std::stable_sort(stops.begin(), stops.end(), compareStops);
-}
-
-Gradient::GradientStops Gradient::getStops() const
-{
-	if(stops.empty())
-	{	// Same rule as Qt's: when empty, do instead a gradient from black to white
-		GradientStops temp;
-		temp.emplace_back(0.f, Color::black());
-		temp.emplace_back(1.f, Color::white());
-		return temp;
-	}
-
-	return stops;
+	m_stops = stopsPoints;
+	std::stable_sort(m_stops.begin(), m_stops.end(), [](const GradientStop& lhs, const GradientStop& rhs){
+		return lhs.first < rhs.first;
+	});
 }
 
 float Gradient::extendPos(float position) const
 {
-	switch(extend)
+	switch(m_extend)
 	{
 	default:
-	case EXTEND_PAD:
+	case Extend::Pad:
 		return std::max<float>(0, std::min<float>(position, 1));
 
-	case EXTEND_REPEAT:
+	case Extend::Repeat:
 		return position - std::floor(position);
 
-	case EXTEND_REFLECT:
+	case Extend::Reflect:
 		float p = position - std::floor(position);
 		return ((static_cast<int>(std::floor(position)) % 2) ? 1 - p : p);
 	}
@@ -116,8 +106,8 @@ Color Gradient::interpolate(const Color& v1, const Color& v2, float amt)
 Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, float amt)
 {
 	Gradient grad;
-	const auto& stops1 = g1.getStops();
-	const auto& stops2 = g2.getStops();
+	const auto& stops1 = g1.stops();
+	const auto& stops2 = g2.stops();
 
 	// Merging the keys of the 2 gradients, sorting them and making sure they are unique
 	std::vector<float> keys;
@@ -139,14 +129,6 @@ Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, float amt
 	return grad;
 }
 
-Gradient Gradient::defaultGradient()
-{
-	Gradient grad;
-	grad.add(0, Color::black());
-	grad.add(1, Color::white());
-	return grad;
-}
-
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Gradient>::valueTypeName() { return "gradient"; }
@@ -156,9 +138,9 @@ PANDA_CORE_API void DataTrait<Gradient>::writeValue(XmlElement& elem, const Grad
 {
 	auto colorTrait = DataTraitsList::getTraitOf<Color>();
 
-	elem.setAttribute("extend", grad.getExtend());
+	elem.setAttribute("extend", static_cast<int>(grad.extend()));
 
-	for(const auto& s : grad.getStops())
+	for(const auto& s : grad.stops())
 	{
 		auto stopNode = elem.addChild("Stop");
 		stopNode.setAttribute("pos", s.first);
@@ -172,7 +154,7 @@ PANDA_CORE_API void DataTrait<Gradient>::readValue(XmlElement& elem, Gradient& g
 	auto colorTrait = DataTraitsList::getTraitOf<Color>();
 
 	grad.clear();
-	grad.setExtend(elem.attribute("extend").toInt());
+	grad.setExtendInt(elem.attribute("extend").toInt());
 
 	auto stopNode = elem.firstChild("Stop");
 	while(stopNode)
@@ -196,9 +178,7 @@ int gradientVectorDataClass = RegisterData< std::vector<Gradient> >();
 
 template<>
 Gradient interpolate(const Gradient& g1, const Gradient& g2, float amt)
-{
-	return Gradient::interpolate(g1, g2, amt);
-}
+{ return Gradient::interpolate(g1, g2, amt); }
 
 template class Animation<Gradient>;
 template class Data< Animation<Gradient> >;

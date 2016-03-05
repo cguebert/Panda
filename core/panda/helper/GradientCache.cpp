@@ -48,7 +48,7 @@ void GradientCache::clearUnused()
 
 unsigned int GradientCache::getTexture(const types::Gradient& gradient, int size)
 {
-	if(gradient.getStops().empty())
+	if(gradient.stops().empty())
 		return 0;
 	uint64_t hash = computeHash(gradient);
 	GradientTableHash::iterator it = m_cache.find(hash), itEnd = m_cache.end();
@@ -87,7 +87,7 @@ int GradientCache::nextPowerOf2(unsigned int v)
 uint64_t GradientCache::computeHash(const panda::types::Gradient& gradient)
 {
 	uint64_t hash = 0;
-	auto stops = gradient.getStops();
+	auto stops = gradient.stops();
 	for(int i=0, nb=stops.size(); i<nb && i<3; ++i)
 		hash += static_cast<uint64_t>(stops[i].second.toHex() * stops[i].first);
 
@@ -110,7 +110,7 @@ unsigned int GradientCache::addGradient(uint64_t hash, const types::Gradient &gr
 
 std::vector<types::Color> GradientCache::createBuffer(const panda::types::Gradient& gradient, int size)
 {
-	types::Gradient::GradientStops stops = gradient.getStops();
+	const auto& stops = gradient.stops();
 	int nbStops = stops.size();
 	std::vector<types::Color> buffer(size), colors(nbStops);
 

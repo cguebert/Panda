@@ -182,8 +182,8 @@ void EditGradientView::setSelected(int sel)
 
 EditGradientDialog::EditGradientDialog(Gradient grad, QWidget* parent)
 	: QDialog(parent)
-	, stops(grad.getStopsForEdit())
-	, extend(grad.getExtend())
+	, stops(grad.stops())
+	, extend(static_cast<int>(grad.extend()))
 	, selected(0)
 {
 	QVBoxLayout* vLayout = new QVBoxLayout;
@@ -256,7 +256,7 @@ EditGradientDialog::EditGradientDialog(Gradient grad, QWidget* parent)
 Gradient EditGradientDialog::getGradient()
 {
 	Gradient grad;
-	grad.setExtend(extend);
+	grad.setExtendInt(extend);
 	grad.setStops(stops);
 	return grad;
 }
@@ -455,7 +455,7 @@ public:
 		painter.fillRect(0, 0, size.width(), size.height(), QBrush(pm));
 
 		QLinearGradient grad(0, 0, size.width(), 0);
-		for(const auto&s : theGradient.getStops())
+		for(const auto& s : theGradient.stops())
 			grad.setColorAt(s.first, toQColor(s.second));
 		painter.fillRect(0, 0, size.width(), size.height(), QBrush(grad));
 	}

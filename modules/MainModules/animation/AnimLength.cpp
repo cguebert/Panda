@@ -51,7 +51,7 @@ public:
 		assert(dataInput && dataLength && dataSize);
 
 		const Animation<T>& inVal = dataInput->getValue();
-		auto keys = inVal.getKeys();
+		auto keys = inVal.keys();
 		dataSize->setValue(keys.size());
 		if(!keys.empty())
 			dataLength->setValue(keys.back());

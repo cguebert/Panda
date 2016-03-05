@@ -12,9 +12,7 @@ namespace types
 template<class T> T interpolate(const T& v1, const T& v2, float amt);
 
 template<class T> T interpolate(const T& v1, const T& v2, float amt)
-{
-	return v1 + (v2 - v1) * amt;
-}
+{ return v1 + (v2 - v1) * amt; }
 
 template <class T>
 class PANDA_CORE_API Animation
@@ -30,37 +28,46 @@ public:
 
 	enum class Extend { Pad, Repeat, Reflect };
 
-	int size() const;
-	void clear();
+	int size() const
+	{ return m_stops.size(); }
+	void clear()
+	{ m_stops.clear(); }
 
 	void add(float position, value_type value);
 	value_type get(float position) const;
 
-	reference getAtIndex(int index);
-	const_reference getAtIndex(int index) const;
+	reference valueAtIndex(int index) // Not bounds checked
+	{ return m_stops[index].second; }
+	const_reference valueAtIndex(int index) const // Not bounds checked
+	{ return m_stops[index].second; }
 
-	void setInterpolation(int method);
-	int getInterpolation() const;
+	void setInterpolation(helper::EasingFunctions::Type method)
+	{ m_interpolation.setType(method); }
+	void setInterpolationInt(int method);
+	helper::EasingFunctions::Type interpolation() const
+	{ return m_interpolation.type(); }
 
-	void setExtend(int method);
-	int getExtend() const;
+	void setExtend(Extend method)
+	{ m_extend = method; }
+	void setExtendInt(int method);
+	Extend extend() const
+	{ return m_extend; }
 
 	void setStops(AnimationStops stopsPoints);
-	AnimationStops getStops() const;
-	KeysList getKeys() const;
-	ValuesList getValues() const;
+	const AnimationStops& stops() const
+	{ return m_stops; }
 
-	inline bool operator==(const Animation& rhs)
+	KeysList keys() const;
+	ValuesList values() const;
+
+	bool operator==(const Animation& rhs)
 	{
 		return m_interpolation.type() == rhs.m_interpolation.type()
-				&& m_extend == rhs.m_extend
-				&& m_stops == rhs.m_stops;
+			&& m_extend == rhs.m_extend 
+			&& m_stops == rhs.m_stops;
 	}
-
-	inline bool operator!=(const Animation& rhs)
-	{
-		return !(*this == rhs);
-	}
+	bool operator!=(const Animation& rhs)
+	{ return !(*this == rhs); }
 
 protected:
 	float extendPos(float position, float pMin, float pMax) const;

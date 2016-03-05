@@ -64,8 +64,8 @@ public:
 		const std::vector<T>& inVal = dataInput->getValue();
 		auto outVal = dataOutput->getAccessor();
 
-		outVal->setExtend(extend.getValue());
-		outVal->setInterpolation(interpolation.getValue());
+		outVal->setExtendInt(extend.getValue());
+		outVal->setInterpolationInt(interpolation.getValue());
 
 		const std::vector<float>& keysList = keys.getValue();
 
@@ -128,8 +128,8 @@ public:
 		assert(dataInput && dataKeys && dataValues);
 
 		const auto& anim = dataInput->getValue();
-		dataKeys->getAccessor() = anim.getKeys();
-		dataValues->getAccessor() = anim.getValues();
+		dataKeys->getAccessor() = anim.keys();
+		dataValues->getAccessor() = anim.values();
 	}
 
 protected:

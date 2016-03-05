@@ -2,7 +2,7 @@
 #define ANIMATION_INL
 
 #include <panda/types/Animation.h>
-#include <algorithm>
+#include <panda/helper/algorithm.h>
 
 namespace panda
 {
@@ -11,32 +11,13 @@ namespace types
 {
 
 template <class T>
-int Animation<T>::size() const
-{
-	return m_stops.size();
-}
-
-template <class T>
-void Animation<T>::clear()
-{
-	m_stops.clear();
-}
-
-template <class T>
 void Animation<T>::add(float position, value_type value)
 {
 	// Insert already at the right place
-	for(int i=0, nb=m_stops.size(); i<nb; ++i)
-	{
-		if(position < m_stops[i].first)
-		{
-			m_stops.insert(m_stops.begin() + i, std::make_pair(position, value));
-			return;
-		}
-	}
-
-	// Or if the list is currently empty...
-	m_stops.push_back(std::make_pair(position, value));
+	auto it = std::lower_bound(m_stops.begin(), m_stops.end(), position, [](const AnimationStop& stop, float pos) {
+		return stop.first < pos;
+	});
+	m_stops.emplace(it, position, value);
 }
 
 template <class T>
@@ -74,72 +55,30 @@ typename Animation<T>::value_type Animation<T>::get(float position) const
 }
 
 template <class T>
-typename Animation<T>::reference Animation<T>::getAtIndex(int index)
+void Animation<T>::setInterpolationInt(int method)
 {
-	if(index < 0 || index >= static_cast<int>(m_stops.size()))
-	{
-		static value_type tmp = value_type();
-		return tmp;
-	}
-	return m_stops[index].second;
+	int val = helper::bound(0, method, static_cast<int>(helper::EasingFunctions::Type::OutInBack));
+	setInterpolation(static_cast<helper::EasingFunctions::Type>(val));
 }
 
 template <class T>
-typename Animation<T>::const_reference Animation<T>::getAtIndex(int index) const
+void Animation<T>::setExtendInt(int method)
 {
-	if(index < 0 || index >= static_cast<int>(m_stops.size()))
-	{
-		static value_type tmp = value_type();
-		return tmp;
-	}
-	return m_stops[index].second;
+	int val = helper::bound(0, method, static_cast<int>(Extend::Reflect));
+	setExtend(static_cast<Extend>(val));
 }
 
 template <class T>
-void Animation<T>::setInterpolation(int method)
-{
-	m_interpolation.setType(static_cast<helper::EasingFunctions::Type>(method));
-}
-
-template <class T>
-int Animation<T>::getInterpolation() const
-{
-	return static_cast<int>(m_interpolation.type());
-}
-
-template <class T>
-void Animation<T>::setExtend(int method)
-{
-	m_extend = static_cast<Extend>(method);
-}
-
-template <class T>
-int Animation<T>::getExtend() const
-{
-	return static_cast<int>(m_extend);
-}
-
-template <class T>
-inline bool compareStops(const std::pair<float, T> &p1, const std::pair<float, T> &p2)
-{
-	return p1.first < p2.first;
-}
-
-template <class T>
-void Animation<T>::setStops(typename Animation<T>::AnimationStops stopsPoints)
+void Animation<T>::setStops(AnimationStops stopsPoints)
 {
 	m_stops = stopsPoints;
-	std::stable_sort(m_stops.begin(), m_stops.end(), compareStops<T>);
+	std::stable_sort(m_stops.begin(), m_stops.end(), [](const AnimationStop& lhs, const AnimationStop& rhs){
+		return lhs.first < rhs.first;
+	});
 }
 
 template <class T>
-typename Animation<T>::AnimationStops Animation<T>::getStops() const
-{
-	return m_stops;
-}
-
-template <class T>
-typename Animation<T>::KeysList Animation<T>::getKeys() const
+typename Animation<T>::KeysList Animation<T>::keys() const
 {
 	KeysList tmp;
 	for(const auto& stop : m_stops)
@@ -148,7 +87,7 @@ typename Animation<T>::KeysList Animation<T>::getKeys() const
 }
 
 template <class T>
-typename Animation<T>::ValuesList Animation<T>::getValues() const
+typename Animation<T>::ValuesList Animation<T>::values() const
 {
 	ValuesList tmp;
 	for(const auto& stop : m_stops)

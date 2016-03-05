@@ -33,7 +33,7 @@ public:
 	void update()
 	{
 		auto grad = gradient.getAccessor();
-		grad->setExtend(extend.getValue());
+		grad->setExtendInt(extend.getValue());
 		grad->clear();
 		grad->add(0.0, colorA.getValue());
 		grad->add(1.0, colorB.getValue());

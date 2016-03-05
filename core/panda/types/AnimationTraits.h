@@ -33,27 +33,24 @@ public:
 	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
 	static int fullTypeId() { return DataTypeId::getFullTypeOfAnimation(valueTypeId()); }
 	static int size(const animation_type& a) { return a.size(); }
-	static void clear(animation_type& a, int /*size*/, bool /*init*/)
-	{
-		a.clear();
-	}
+	static void clear(animation_type& a, int /*size*/, bool /*init*/) { a.clear(); }
 	static const void* getVoidValue(const animation_type& anim, int index)
 	{
 		if(index < 0 || index >= anim.size())
 			return nullptr;
-		return &anim.getAtIndex(index);
+		return &anim.valueAtIndex(index);
 	}
 	static void* getVoidValue(animation_type& anim, int index)
 	{
 		if(index < 0 || index >= anim.size())
 			return nullptr;
-		return &anim.getAtIndex(index);
+		return &anim.valueAtIndex(index);
 	}
 	static void writeValue(XmlElement& elem, const animation_type& anim)
 	{
-		elem.setAttribute("extend", anim.getExtend());
-		elem.setAttribute("interpolation", anim.getInterpolation());
-		for(auto stop : anim.getStops())
+		elem.setAttribute("extend", static_cast<int>(anim.extend()));
+		elem.setAttribute("interpolation", static_cast<int>(anim.interpolation()));
+		for(const auto& stop : anim.stops())
 		{
 			auto node = elem.addChild("Value");
 			node.setAttribute("key", stop.first);
@@ -62,8 +59,8 @@ public:
 	}
 	static void readValue(XmlElement& elem, animation_type& anim)
 	{
-		anim.setExtend(elem.attribute("extend").toInt());
-		anim.setInterpolation(elem.attribute("interpolation").toInt());
+		anim.setExtendInt(elem.attribute("extend").toInt());
+		anim.setInterpolationInt(elem.attribute("interpolation").toInt());
 		anim.clear();
 		T val = T();
 		float key;

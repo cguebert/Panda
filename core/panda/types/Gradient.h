@@ -18,54 +18,57 @@ public:
 	typedef std::pair<float, types::Color> GradientStop;
 	typedef std::vector<GradientStop> GradientStops;
 
-	enum Extend { EXTEND_PAD = 0, EXTEND_REPEAT = 1, EXTEND_REFLECT = 2 };
+	enum class Extend { Pad, Repeat, Reflect };
 
 	Gradient();
 
+	int size() const;
 	void clear();
 
 	void add(float position, types::Color color);
 	types::Color get(float position) const;
 
-	void setExtend(int method);
-	int getExtend() const;
+	void setExtend(Extend method);
+	void setExtendInt(int method);
+	Extend extend() const;
 
 	void setStops(GradientStops stopsPoints);
-	GradientStops getStops() const;
-	const GradientStops& getStopsForEdit() const; // this one doesn't lie
+	const GradientStops& stops() const;
 
-	friend inline bool operator==(const Gradient& g1, const Gradient& g2)
-	{ return g1.extend == g2.extend && g1.stops == g2.stops; }
-	friend inline bool operator!=(const Gradient& g1, const Gradient& g2)
-	{ return !(g1 == g2); }
+	friend bool operator==(const Gradient& g1, const Gradient& g2);
+	friend bool operator!=(const Gradient& g1, const Gradient& g2);
 
 	static Gradient interpolate(const Gradient& g1, const Gradient& g2, float amt);
 	static types::Color interpolate(const GradientStop& s1, const GradientStop& s2, float pos);
 	static types::Color interpolate(const types::Color& v1, const types::Color& v2, float amt);
 
-	static Gradient defaultGradient();
-
 protected:
 	float extendPos(float position) const;
 
-	GradientStops stops;
-	Extend extend;
+	GradientStops m_stops;
+	Extend m_extend;
 };
 
-inline Gradient::Gradient()
-	: extend(EXTEND_PAD) { }
+inline int Gradient::size() const
+{ return m_stops.size(); }
 
 inline void Gradient::clear()
-{ stops.clear(); }
+{ m_stops.clear(); }
 
-inline void Gradient::setExtend(int method)
-{ extend = static_cast<Extend>(method); }
+inline void Gradient::setExtend(Extend method)
+{ m_extend = method; }
 
-inline int Gradient::getExtend() const
-{ return extend; }
+inline Gradient::Extend Gradient::extend() const
+{ return m_extend; }
 
-inline const Gradient::GradientStops& Gradient::getStopsForEdit() const
-{ return stops; }
+inline const Gradient::GradientStops& Gradient::stops() const
+{ return m_stops; }
+
+inline bool operator==(const Gradient& g1, const Gradient& g2)
+{ return g1.extend() == g2.extend() && g1.stops() == g2.stops(); }
+
+inline bool operator!=(const Gradient& g1, const Gradient& g2)
+{ return !(g1 == g2); }
 
 } // namespace types
 
