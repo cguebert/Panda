@@ -6,8 +6,10 @@
 #include <sstream>
 #include <iostream>
 
-#define AS_USE_STLNAMES 0
+#define AS_USE_STLNAMES 1
 #include "addons/scriptstdstring/scriptstdstring.h"
+
+#include "addons/scriptmath/scriptmath.h"
 
 namespace
 {
@@ -49,6 +51,7 @@ ScriptEngine::ScriptEngine()
 
 	RegisterStdString(m_engine);
 	//	RegisterStdStringUtils(engine);
+	RegisterScriptMath(m_engine);
 
 	// Set the message callback to receive information on errors in human readable form.
 	int r = m_engine->SetMessageCallback(asFUNCTION(MessageCallback), &m_errorString, asCALL_CDECL); assert(r >= 0);

@@ -6,6 +6,7 @@ project(${PROJECT_NAME})
 set(HEADER_FILES
 	ScriptEngine.h
 	addons/scriptarray/scriptarray.h
+	addons/scriptmath/scriptmath.h
 	addons/scriptstdstring/scriptstdstring.h
 	pandaTypes/DataWrapper.h
 	pandaTypes/ObjectWrapper.h
@@ -17,6 +18,7 @@ set(SOURCE_FILES
 	AS_Object.cpp
 	ScriptEngine.cpp
 	addons/scriptarray/scriptarray.cpp
+	addons/scriptmath/scriptmath.cpp
 	addons/scriptstdstring/scriptstdstring.cpp
 	addons/scriptstdstring/scriptstdstring_utils.cpp
 	pandaTypes/Color.cpp
