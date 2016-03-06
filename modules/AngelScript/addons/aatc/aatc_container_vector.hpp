@@ -179,7 +179,7 @@ namespace aatc {
 				}
 				static void Register(asIScriptEngine* engine, const char* n_content) {
 					common::RegistrationState rs(engine);
-					Register(rs, c_content);
+					Register(rs, n_content);
 				}
 			};
 

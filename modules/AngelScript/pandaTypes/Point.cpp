@@ -53,10 +53,25 @@ namespace
 	BaseDataWrapper* createPointData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
 	{ return wrapper->createData<Point>(input, name, help); }
 
+	BaseDataWrapper* createPointVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Point>>(input, name, help); }
+
 }
 
 namespace panda 
 {
+
+	namespace types
+	{
+
+		bool operator<(const Point& lhs, const Point& rhs)
+		{
+			if (lhs.x == rhs.x)
+				return lhs.y < rhs.y;
+			return lhs.x < rhs.x;
+		}
+
+	}
 
 	void registerPointType(asIScriptEngine* engine)
 	{
@@ -107,8 +122,14 @@ namespace panda
 	{
 		registerPointType(engine);
 		registerDataType<Point>(engine, "Point");
+
+		aatc::container::tempspec::vector<Point>::Register(engine, "Point");
+		registerVectorDataType<Point>(engine, "Point");
+
 		int r = engine->RegisterObjectMethod("PandaObject", "Data<Point>@ createPointData(bool, const string &in, const string &in)",
 			asFUNCTION(createPointData), asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectMethod("PandaObject", "Data<vector<Point>>@ createPointVectorData(bool, const string &in, const string &in)",
+			asFUNCTION(createPointVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
 } // namespace panda

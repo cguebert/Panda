@@ -38,10 +38,29 @@ namespace
 	BaseDataWrapper* createColorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
 	{ return wrapper->createData<Color>(input, name, help); }
 
+	BaseDataWrapper* createColorVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Color>>(input, name, help); }
+
 }
 
 namespace panda 
 {
+	namespace types
+	{
+
+		bool operator<(const Color& lhs, const Color& rhs)
+		{
+			if (lhs.r < rhs.r) return true;
+			if (lhs.r > rhs.r) return false;
+			if (lhs.g < rhs.g) return true;
+			if (lhs.g > rhs.g) return false;
+			if (lhs.b < rhs.b) return true;
+			if (lhs.b > rhs.b) return false;
+			if (lhs.a < rhs.a) return true;
+			return false;
+		}
+
+	}
 
 	void registerColorType(asIScriptEngine* engine)
 	{
@@ -92,8 +111,13 @@ namespace panda
 	{
 		registerColorType(engine);
 		registerDataType<Color>(engine, "Color");
+
+		aatc::container::tempspec::vector<Color>::Register(engine, "Color");
+		registerVectorDataType<Color>(engine, "Color");
 		int r = engine->RegisterObjectMethod("PandaObject", "Data<Color>@ createColorData(bool, const string &in, const string &in)",
 			asFUNCTION(createColorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectMethod("PandaObject", "Data<vector<Color>>@ createColorVectorData(bool, const string &in, const string &in)",
+			asFUNCTION(createColorVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
 } // namespace panda
