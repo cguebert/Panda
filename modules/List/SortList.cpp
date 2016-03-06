@@ -4,52 +4,6 @@
 
 #include <algorithm>
 
-using panda::types::Color;
-using panda::types::Point;
-using panda::types::Rect;
-
-bool operator<(const Color& lhs, const Color& rhs)
-{
-	return lhs.toHex() < rhs.toHex();
-}
-
-bool operator<(const Point& p1, const Point& p2)
-{
-	return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
-}
-
-bool operator<(const Rect& lhs, const Rect& rhs)
-{
-	if(lhs.left() < rhs.left()) return true;
-	if(rhs.left() < lhs.left()) return false;
-
-	if(lhs.top() < rhs.top()) return true;
-	if(rhs.top() < lhs.top()) return false;
-
-	if(lhs.right() < rhs.right()) return true;
-	if(rhs.right() < lhs.right()) return false;
-
-	if(lhs.bottom() < rhs.bottom()) return true;
-	if(rhs.bottom() < lhs.bottom()) return false;
-
-	return false;
-}
-
-namespace
-{
-
-template <class T>
-struct Comparator
-{
-	using pair_type = std::pair<T, int>;
-	bool operator()(const pair_type& lhs, const pair_type& rhs)
-	{
-		return lhs.first < rhs.first;
-	}
-};
-
-}
-
 namespace panda {
 
 using types::DataTypeId;
@@ -101,7 +55,7 @@ public:
 		for(int i=0; i<nb; ++i)
 			tmpList.emplace_back(valIn[i], i);
 
-		std::sort(tmpList.begin(), tmpList.end(), Comparator<T>());
+		std::sort(tmpList.begin(), tmpList.end());
 
 		auto outValAcc = dataOutput->getAccessor();
 		auto outIndAcc = dataIndices->getAccessor();

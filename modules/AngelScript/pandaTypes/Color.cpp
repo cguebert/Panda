@@ -45,22 +45,6 @@ namespace
 
 namespace panda 
 {
-	namespace types
-	{
-
-		bool operator<(const Color& lhs, const Color& rhs)
-		{
-			if (lhs.r < rhs.r) return true;
-			if (lhs.r > rhs.r) return false;
-			if (lhs.g < rhs.g) return true;
-			if (lhs.g > rhs.g) return false;
-			if (lhs.b < rhs.b) return true;
-			if (lhs.b > rhs.b) return false;
-			if (lhs.a < rhs.a) return true;
-			return false;
-		}
-
-	}
 
 	void registerColorType(asIScriptEngine* engine)
 	{

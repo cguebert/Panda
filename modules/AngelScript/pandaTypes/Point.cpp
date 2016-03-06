@@ -61,18 +61,6 @@ namespace
 namespace panda 
 {
 
-	namespace types
-	{
-
-		bool operator<(const Point& lhs, const Point& rhs)
-		{
-			if (lhs.x == rhs.x)
-				return lhs.y < rhs.y;
-			return lhs.x < rhs.x;
-		}
-
-	}
-
 	void registerPointType(asIScriptEngine* engine)
 	{
 		int r = 0;

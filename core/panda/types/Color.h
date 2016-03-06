@@ -186,6 +186,14 @@ inline Color Color::black()
 inline Color Color::white()
 { return Color(1, 1, 1, 1); }
 
+inline bool operator<(const Color& lhs, const Color& rhs)
+{
+	if (lhs.r < rhs.r) return true;	if (lhs.r > rhs.r) return false;
+	if (lhs.g < rhs.g) return true; if (lhs.g > rhs.g) return false;
+	if (lhs.b < rhs.b) return true; if (lhs.b > rhs.b) return false;
+	if (lhs.a < rhs.a) return true; return false;
+}
+
 #ifndef PANDA_BUILD_CORE
 extern template class PANDA_CORE_API Data<Color>;
 extern template class PANDA_CORE_API Data< std::vector<Color> >;

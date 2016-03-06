@@ -234,6 +234,13 @@ inline Point Point::xAxis()
 inline Point Point::yAxis()
 { return Point(0, 1); }
 
+inline bool operator<(const Point& lhs, const Point& rhs)
+{
+	if (lhs.x == rhs.x)
+		return lhs.y < rhs.y;
+	return lhs.x < rhs.x;
+}
+
 /// Rotate a point around the center, angle is given in radians
 PANDA_CORE_API void rotate(Point& point, const Point& center, float angle);
 PANDA_CORE_API Point rotated(const Point& point, const Point& center, float angle);

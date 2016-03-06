@@ -35,6 +35,9 @@ namespace
 	BaseDataWrapper* createRectData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
 	{ return wrapper->createData<Rect>(input, name, help); }
 
+	BaseDataWrapper* createRectVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Rect>>(input, name, help); }
+
 }
 
 namespace panda 
@@ -140,8 +143,14 @@ namespace panda
 	{
 		registerRectType(engine);
 		registerDataType<Rect>(engine, "Rect");
+
+		aatc::container::tempspec::vector<Rect>::Register(engine, "Rect");
+		registerVectorDataType<Rect>(engine, "Rect");
+
 		int r = engine->RegisterObjectMethod("PandaObject", "Data<Rect>@ createRectData(bool, const string &in, const string &in)",
 			asFUNCTION(createRectData), asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectMethod("PandaObject", "Data<vector<Rect>>@ createRectVectorData(bool, const string &in, const string &in)",
+			asFUNCTION(createRectVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
 } // namespace panda

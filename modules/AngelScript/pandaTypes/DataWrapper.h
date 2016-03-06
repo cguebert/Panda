@@ -3,9 +3,13 @@
 #include <panda/data/Data.h>
 
 #include <angelscript.h>
-#include <modules/AngelScript/addons/aatc/aatc_container_vector.hpp>
 #include <cassert>
 #include <vector>
+
+#pragma warning ( push )
+#pragma warning ( disable: 4018 )
+#include <modules/AngelScript/addons/aatc/aatc_container_vector.hpp>
+#pragma warning ( pop )
 
 class asIScriptEngine;
 

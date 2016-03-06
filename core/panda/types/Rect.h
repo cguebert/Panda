@@ -291,6 +291,14 @@ inline bool Rect::operator==(const Rect& r) const
 inline bool Rect::operator!=(const Rect& r) const
 { return !pFuzzyIsNull(x1 - r.x1) || !pFuzzyIsNull(y1 - r.y1) || !pFuzzyIsNull(x2 - r.x2) || !pFuzzyIsNull(y2 - r.y2); }
 
+inline bool operator<(const Rect& lhs, const Rect& rhs)
+{
+	if (lhs.x1 < rhs.x1) return true; if (lhs.x1 > rhs.x1) return false;
+	if (lhs.y1 < rhs.y1) return true; if (lhs.y1 > rhs.y1) return false;
+	if (lhs.x2 < rhs.x2) return true; if (lhs.x2 > rhs.x2) return false;
+	if (lhs.y2 < rhs.y2) return true; return false;
+}
+
 } // namespace types
 
 } // namespace panda
