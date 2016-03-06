@@ -10,6 +10,7 @@
 #include "addons/scriptstdstring/scriptstdstring.h"
 
 #include "addons/scriptmath/scriptmath.h"
+#include "addons/aatc/aatc.hpp"
 
 namespace
 {
@@ -49,13 +50,14 @@ ScriptEngine::ScriptEngine()
 	if (!m_engine)
 		return;
 
-	RegisterStdString(m_engine);
-	//	RegisterStdStringUtils(engine);
-	RegisterScriptMath(m_engine);
-
 	// Set the message callback to receive information on errors in human readable form.
 	int r = m_engine->SetMessageCallback(asFUNCTION(MessageCallback), &m_errorString, asCALL_CDECL); assert(r >= 0);
 
+	RegisterStdString(m_engine);
+	//	RegisterStdStringUtils(engine);
+	RegisterScriptMath(m_engine);
+	aatc::RegisterAllContainers(m_engine);
+	
 	r = m_engine->RegisterObjectType("Data<class T>", 0, asOBJ_REF | asOBJ_NOCOUNT | asOBJ_TEMPLATE); assert(r >= 0);
 	r = m_engine->RegisterObjectType("PandaObject", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 
