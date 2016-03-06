@@ -497,16 +497,16 @@ void PandaDocument::selectionRemove(PandaObject* object)
 	if(helper::contains(m_selectedObjects, object))
 	{
 		helper::removeAll(m_selectedObjects, object);
-		if (m_selectedObjects.empty())
-			m_signals->selectedObject.run(nullptr);
-		else
-			m_signals->selectedObject.run(m_selectedObjects.back());
+		m_signals->selectedObject.run(m_selectedObjects.empty() ? nullptr : m_selectedObjects.back());
 		m_signals->selectionChanged.run();
 	}
 }
 
 void PandaDocument::selectAll()
 {
+	if (m_objects.empty())
+		return;
+
 	m_selectedObjects.clear();
 	for(auto object : m_objects)
 		m_selectedObjects.push_back(object.get());
