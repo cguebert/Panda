@@ -30,7 +30,7 @@ template <class T, class Ref = const T&>
 class DataWrapper : public BaseDataWrapper
 {
 public:
-	DataWrapper(Data<T>* data) 
+	DataWrapper(Data<T>* data, asIScriptEngine* /*engine*/) 
 		: m_data(data) { }
 
 	Ref getValue() const 
@@ -54,7 +54,7 @@ public:
 	using data_type = Data<value_type>;
 	using script_vector = aatc::container::tempspec::vector<T>;
 
-	VectorDataWrapper(data_type* data)
+	VectorDataWrapper(data_type* data, asIScriptEngine* /*engine*/)
 		: m_data(data) { }
 
 	script_vector* getValue() const

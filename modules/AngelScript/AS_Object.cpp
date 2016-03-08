@@ -44,7 +44,7 @@ public:
 		: PandaObject(parent)
 		, m_scriptText(initData(defaultScript, "script", "The script describing this object and its behavior"))
 		, m_debugText(initData("debug", "Debug string"))
-		, m_wrapper(this)
+		, m_wrapper(this, m_engine.engine())
 	{
 		m_context = m_engine.engine()->CreateContext();
 

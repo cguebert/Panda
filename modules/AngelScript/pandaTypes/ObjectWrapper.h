@@ -18,14 +18,14 @@ struct DataInfo
 class ObjectWrapper
 {
 public:
-	ObjectWrapper(PandaObject* object);
+	ObjectWrapper(PandaObject* object, asIScriptEngine* engine);
 
 	// For the scripts
-	template <class T>
+	template <class T, class Wrapper = DataWrapper<T>>
 	BaseDataWrapper* createData(bool input, const std::string& name, const std::string& help)
 	{
 		auto data = std::make_shared<Data<T>>(name, help, m_object);
-		auto dataWrapper = std::make_shared<DataWrapper<T>>(data.get());
+		auto dataWrapper = std::make_shared<Wrapper>(data.get(), m_engine);
 
 		DataInfo info;
 		info.input = input;
@@ -42,11 +42,12 @@ public:
 	
 private:
 	PandaObject* m_object = nullptr;
+	asIScriptEngine* m_engine = nullptr;
 	std::vector<DataInfo> m_datas;
 };
 
-inline ObjectWrapper::ObjectWrapper(PandaObject* object)
-	: m_object(object)
+inline ObjectWrapper::ObjectWrapper(PandaObject* object, asIScriptEngine* engine)
+	: m_object(object), m_engine(engine)
 { }
 
 inline void ObjectWrapper::clear()
