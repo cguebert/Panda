@@ -114,9 +114,9 @@ namespace panda
 		aatc::container::tempspec::vector<Point>::Register(engine, "Point");
 		registerVectorDataType<Point>(engine, "Point");
 
-		int r = engine->RegisterObjectMethod("PandaObject", "Data<Point>@ createPointData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "PointData@ createPointData(bool, const string &in, const string &in)",
 			asFUNCTION(createPointData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "Data<vector<Point>>@ createPointVectorData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "PointVectorData@ createPointVectorData(bool, const string &in, const string &in)",
 			asFUNCTION(createPointVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

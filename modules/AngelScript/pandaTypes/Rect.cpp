@@ -147,9 +147,9 @@ namespace panda
 		aatc::container::tempspec::vector<Rect>::Register(engine, "Rect");
 		registerVectorDataType<Rect>(engine, "Rect");
 
-		int r = engine->RegisterObjectMethod("PandaObject", "Data<Rect>@ createRectData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "RectData@ createRectData(bool, const string &in, const string &in)",
 			asFUNCTION(createRectData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "Data<vector<Rect>>@ createRectVectorData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "RectVectorData@ createRectVectorData(bool, const string &in, const string &in)",
 			asFUNCTION(createRectVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

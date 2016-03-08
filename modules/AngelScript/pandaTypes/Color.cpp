@@ -98,9 +98,9 @@ namespace panda
 
 		aatc::container::tempspec::vector<Color>::Register(engine, "Color");
 		registerVectorDataType<Color>(engine, "Color");
-		int r = engine->RegisterObjectMethod("PandaObject", "Data<Color>@ createColorData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "ColorData@ createColorData(bool, const string &in, const string &in)",
 			asFUNCTION(createColorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "Data<vector<Color>>@ createColorVectorData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "ColorVectorData@ createColorVectorData(bool, const string &in, const string &in)",
 			asFUNCTION(createColorVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

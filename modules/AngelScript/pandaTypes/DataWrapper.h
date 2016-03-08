@@ -78,7 +78,9 @@ private:
 template <class T>
 void registerDataType(asIScriptEngine* engine, const std::string& typeName)
 {
-	const std::string dataTypeName = "Data<" + typeName + ">";
+	std::string capitalizedTypeName = typeName;
+	capitalizedTypeName[0] = toupper(capitalizedTypeName[0]);
+	const std::string dataTypeName = capitalizedTypeName + "Data";
 	auto dtn = dataTypeName.c_str();
 	int r = 0;
 	r = engine->RegisterObjectType(dtn, 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
@@ -93,7 +95,9 @@ void registerDataType(asIScriptEngine* engine, const std::string& typeName)
 template <class T>
 void registerVectorDataType(asIScriptEngine* engine, const std::string& typeName)
 {
-	const std::string dataTypeName = "Data<vector<" + typeName + ">>";
+	std::string capitalizedTypeName = typeName;
+	capitalizedTypeName[0] = toupper(capitalizedTypeName[0]);
+	const std::string dataTypeName = capitalizedTypeName + "VectorData";
 	auto dtn = dataTypeName.c_str();
 	int r = 0;
 	r = engine->RegisterObjectType(dtn, 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);

@@ -58,7 +58,6 @@ ScriptEngine::ScriptEngine()
 	RegisterScriptMath(m_engine);
 	aatc::RegisterAllContainers(m_engine);
 	
-	r = m_engine->RegisterObjectType("Data<class T>", 0, asOBJ_REF | asOBJ_NOCOUNT | asOBJ_TEMPLATE); assert(r >= 0);
 	r = m_engine->RegisterObjectType("PandaObject", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 
 	registerAllTypes(m_engine);
