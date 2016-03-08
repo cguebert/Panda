@@ -42,11 +42,17 @@ namespace panda
 		const panda::types::Gradient& gradient() const { return m_gradient; }
 
 		void addRef() { m_refCount++; }
-		void release() { if (--m_refCount == 0) delete this; }
+		void release() { 
+			if (--m_refCount == 0) 
+				delete this; 
+		}
 
 		void clear() { m_gradient.clear(); }
 		void add(float pos, panda::types::Color col) { m_gradient.add(pos, col); }
 		panda::types::Color get(float pos) { return m_gradient.get(pos); }
+
+		bool operator==(const GradientWrapper& wrapper) const
+		{ return m_gradient == wrapper.m_gradient; }
 
 		static GradientWrapper& Assign(GradientWrapper* other, GradientWrapper* self)
 		{ return *self = *other; }
@@ -66,7 +72,7 @@ namespace panda
 		{ return GradientWrapper::create(m_data->getValue()); }
 
 		void setValue(GradientWrapper* wrapper)
-		{ m_data->setValue(wrapper->gradient()); }
+		{ m_data->setValue(wrapper->gradient()); wrapper->release(); }
 
 		int getCounter() const
 		{ return m_data->getCounter(); }
@@ -101,6 +107,7 @@ namespace panda
 			acc.reserve(vec->container.size());
 			for (const auto& wrapper : vec->container)
 				acc.push_back(wrapper->gradient());
+			vec->refcount_Release();
 		}
 
 		int getCounter() const 
