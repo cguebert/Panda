@@ -70,6 +70,7 @@ namespace panda
 		registerPoint(engine);
 		registerRect(engine);
 		registerString(engine);
+		registerPath(engine);
 	}
 
 } // namespace panda

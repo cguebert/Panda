@@ -54,7 +54,7 @@ namespace
 	{ return wrapper->createData<Point>(input, name, help); }
 
 	BaseDataWrapper* createPointVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Point>>(input, name, help); }
+	{ return wrapper->createData<std::vector<Point>, panda::VectorDataWrapper<Point>>(input, name, help); }
 
 }
 

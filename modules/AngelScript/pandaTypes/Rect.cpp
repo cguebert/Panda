@@ -36,7 +36,7 @@ namespace
 	{ return wrapper->createData<Rect>(input, name, help); }
 
 	BaseDataWrapper* createRectVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Rect>>(input, name, help); }
+	{ return wrapper->createData<std::vector<Rect>, panda::VectorDataWrapper<Rect>>(input, name, help); }
 
 }
 

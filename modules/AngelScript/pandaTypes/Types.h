@@ -11,6 +11,7 @@ namespace panda
 	void registerInt(asIScriptEngine* engine);
 	void registerFloat(asIScriptEngine* engine);
 	void registerGradient(asIScriptEngine* engine);
+	void registerPath(asIScriptEngine* engine);
 	void registerPoint(asIScriptEngine* engine);
 	void registerRect(asIScriptEngine* engine);
 	void registerString(asIScriptEngine* engine);

@@ -39,7 +39,7 @@ namespace
 	{ return wrapper->createData<Color>(input, name, help); }
 
 	BaseDataWrapper* createColorVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Color>>(input, name, help); }
+	{ return wrapper->createData<std::vector<Color>, panda::VectorDataWrapper<Color>>(input, name, help); }
 
 }
 
