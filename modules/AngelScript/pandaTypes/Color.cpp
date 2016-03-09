@@ -1,11 +1,9 @@
-#include "Types.h"
 #include "DataWrapper.h"
 #include "ObjectWrapper.h"
+#include "Types.h"
 
 #include <panda/types/Color.h>
 
-#include <angelscript.h>
-#include <cassert>
 #include <new>
 
 using panda::types::Color;

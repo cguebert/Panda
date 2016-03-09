@@ -1,12 +1,9 @@
-#include "Types.h"
 #include "DataWrapper.h"
 #include "ObjectWrapper.h"
+#include "Types.h"
 
 #include <panda/types/Gradient.h>
-#include <panda/types/Rect.h>
 
-#include <angelscript.h>
-#include <cassert>
 #include <new>
 
 using panda::types::Gradient;

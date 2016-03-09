@@ -1,6 +1,6 @@
-#include "Types.h"
 #include "DataWrapper.h"
 #include "ObjectWrapper.h"
+#include "Types.h"
 
 #include <panda/types/Point.h>
 

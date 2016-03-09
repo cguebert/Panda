@@ -21,6 +21,7 @@ public:
 	Path(const std::vector<Point>& v);
 
 	Path& operator=(const std::vector<Point>& v);
+	Path& operator=(const Path& v);
 
 	// Operation on all points
 	Path operator+(const Point& p) const;
@@ -64,6 +65,9 @@ inline Path::Path(const std::vector<Point>& v)
 
 inline Path& Path::operator=(const std::vector<Point> &v)
 { points = v; return *this; }
+
+inline Path& Path::operator=(const Path &v)
+{ points = v.points; return *this; }
 
 inline Path& Path::operator+=(const Point& p)
 { for (auto& pt : points) pt += p; return *this; }

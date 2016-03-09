@@ -71,6 +71,7 @@ namespace panda
 		registerRect(engine);
 		registerString(engine);
 		registerPath(engine);
+		registerPolygon(engine);
 	}
 
 } // namespace panda

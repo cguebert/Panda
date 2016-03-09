@@ -32,6 +32,7 @@ set(HEADER_FILES
 	addons/aatc/aatc_templatemagic.hpp
 	pandaTypes/DataWrapper.h
 	pandaTypes/ObjectWrapper.h
+	pandaTypes/Path.h
 	pandaTypes/Types.h
 )
 
@@ -60,6 +61,7 @@ set(SOURCE_FILES
 	pandaTypes/Gradient.cpp
 	pandaTypes/Path.cpp
 	pandaTypes/Point.cpp
+	pandaTypes/Polygon.cpp
 	pandaTypes/Rect.cpp
 	pandaTypes/Types.cpp
 )

@@ -1,6 +1,7 @@
-#include "Types.h"
 #include "DataWrapper.h"
 #include "ObjectWrapper.h"
+#include "Path.h"
+#include "Types.h"
 
 #include <panda/types/Path.h>
 
@@ -65,8 +66,8 @@ namespace panda
 		void setPoints(script_point_vector* vec)
 		{ m_path.points = vec->container; }
 
-		bool operator==(const PathWrapper& wrapper) const
-		{ return m_path == wrapper.m_path; }
+		bool operator==(const PathWrapper* wrapper) const
+		{ return m_path == wrapper->m_path; }
 
 		static PathWrapper& Assign(PathWrapper* other, PathWrapper* self)
 		{ return *self = *other; }
@@ -114,6 +115,12 @@ namespace panda
 		int m_refCount = 1;
 		panda::types::Path m_path;
 	};
+
+	PathWrapper* createPathWrapper(const panda::types::Path& path)
+	{ return PathWrapper::create(path); }
+
+	const panda::types::Path& getPath(PathWrapper* wrapper)
+	{ return wrapper->path(); }
 
 	class PathDataWrapper : public BaseDataWrapper
 	{
@@ -219,6 +226,7 @@ namespace panda
 		r = engine->RegisterObjectMethod("Path", "void opMulAssign(float)", asMETHODPR(PathWrapper, operator*=, (float), void), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Path", "Path@ opDiv(float) const", asMETHODPR(PathWrapper, operator/, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Path", "void opDivAssign(float)", asMETHODPR(PathWrapper, operator/=, (float), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "bool opEquals(const Path@) const", asMETHODPR(PathWrapper, operator==, (const PathWrapper*) const, bool), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Path", "Path@ linearProduct(const Point &in) const", asMETHOD(PathWrapper, linearProduct), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Path", "Path@ linearDivision(const Point &in) const", asMETHOD(PathWrapper, linearDivision), asCALL_THISCALL); assert(r >= 0);
