@@ -39,7 +39,7 @@ EditPolygonDialog::EditPolygonDialog(BaseDataWidget* parent, bool readOnly, QStr
 											 );
 	m_holesWidget = DataWidgetPtr(DataWidgetFactory::getInstance()
 											 ->create(this, &m_polygon.holes,
-													  DataTypeId::getIdOf< QVector<Path> >(),
+													  DataTypeId::getIdOf< std::vector<Path> >(),
 													  "default", "holes", "")
 											 );
 
