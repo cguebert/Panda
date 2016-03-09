@@ -889,7 +889,7 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 	BaseData* captionData = object->getData("caption");
 	if (captionData)
 	{
-		auto* captionTextData = dynamic_cast<Data<std::string>*>(captionData);
+		auto captionTextData = dynamic_cast<Data<std::string>*>(captionData);
 		if (captionTextData)
 			captionTextData->setValue(data->getName());
 	}

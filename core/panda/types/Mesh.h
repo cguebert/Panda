@@ -157,10 +157,10 @@ PANDA_CORE_API Mesh rotated(const Mesh& mesh, const Point& center, float angle);
 inline Mesh::Mesh() { }
 
 inline Mesh::Edge Mesh::makeEdge(PointID p1, PointID p2)
-{ Edge tmp = { { p1, p2 } }; return tmp; }
+{ return { { p1, p2 } }; }
 
 inline Mesh::Triangle Mesh::makeTriangle(PointID p1, PointID p2, PointID p3)
-{ Triangle tmp = { { p1, p2, p3 } }; return tmp; }
+{ return { { p1, p2, p3 } }; }
 
 inline Mesh::PointID Mesh::addPoint(const Point& point)
 { m_points.push_back(point); return m_points.size() - 1; }

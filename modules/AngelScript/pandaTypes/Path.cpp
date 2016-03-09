@@ -58,7 +58,7 @@ namespace panda
 		
 		script_point_vector* getPoints() const
 		{
-			auto* vec = new script_point_vector();
+			auto vec = new script_point_vector();
 			vec->container = m_path.points;
 			return vec;
 		}
@@ -154,7 +154,7 @@ namespace panda
 
 		script_vector* getValue() const
 		{
-			auto* vec = new script_vector(m_engine->GetTypeInfoByName("Path"));
+			auto vec = new script_vector(m_engine->GetTypeInfoByName("Path"));
 			const auto& paths = m_data->getValue();
 			for (const auto& path : paths)
 				vec->container.push_back(PathWrapper::create(path));

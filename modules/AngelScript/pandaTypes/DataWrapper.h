@@ -59,7 +59,7 @@ public:
 
 	script_vector* getValue() const
 	{
-		auto* vec = new script_vector();
+		auto vec = new script_vector();
 		vec->container = m_data->getValue();
 		return vec;
 	}

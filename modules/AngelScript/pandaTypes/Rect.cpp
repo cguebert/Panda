@@ -15,19 +15,19 @@ namespace
 {
 
 // Rect constructors
-	static void RectDefaultConstructor(Rect* self)
+	void RectDefaultConstructor(Rect* self)
 	{ new(self) Rect(); }
 
-	static void RectCopyConstructor(const Rect& other, Rect* self)
+	void RectCopyConstructor(const Rect& other, Rect* self)
 	{ new(self) Rect(other); }
 
-	static void Rect4FloatsConstructor(float x1, float y1, float x2, float y2, Rect* self)
+	void Rect4FloatsConstructor(float x1, float y1, float x2, float y2, Rect* self)
 	{ new(self) Rect(x1, y1, x2, y2); }
 
-	static void Rect2PointsConstructor(const Point& p1, const Point& p2, Rect* self)
+	void Rect2PointsConstructor(const Point& p1, const Point& p2, Rect* self)
 	{ new(self) Rect(p1, p2); }
 
-	static void RectPointSizeConstructor(const Point& p, float w, float h, Rect* self)
+	void RectPointSizeConstructor(const Point& p, float w, float h, Rect* self)
 	{ new(self) Rect(p, w, h); }
 
 	BaseDataWrapper* createRectData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)

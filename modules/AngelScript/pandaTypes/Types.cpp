@@ -70,8 +70,9 @@ namespace panda
 		registerPoint(engine);
 		registerRect(engine);
 		registerString(engine);
-		registerPath(engine);
-		registerPolygon(engine);
+		registerMesh(engine); // After Point
+		registerPath(engine); // After Point
+		registerPolygon(engine); // After Path
 	}
 
 } // namespace panda

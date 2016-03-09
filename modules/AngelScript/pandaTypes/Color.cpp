@@ -14,13 +14,13 @@ namespace
 {
 
 // Color constructors
-	static void ColorDefaultConstructor(Color* self)
+	void ColorDefaultConstructor(Color* self)
 	{ new(self) Color(); }
 
-	static void ColorCopyConstructor(const Color& other, Color* self)
+	void ColorCopyConstructor(const Color& other, Color* self)
 	{ new(self) Color(other); }
 
-	static void Color4FloatsConstructor(float r, float g, float b, float a, Color* self)
+	void Color4FloatsConstructor(float r, float g, float b, float a, Color* self)
 	{ new(self) Color(r, g, b, a); }
 
 // Color wrappers

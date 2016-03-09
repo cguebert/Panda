@@ -65,7 +65,7 @@ namespace panda
 
 		script_vector* getHoles() const
 		{
-			auto* vec = new script_vector(m_engine->GetTypeInfoByName("Path"));
+			auto vec = new script_vector(m_engine->GetTypeInfoByName("Path"));
 			for (const auto& path : m_polygon.holes)
 				vec->container.push_back(createPathWrapper(path));
 			return vec;
@@ -138,7 +138,7 @@ namespace panda
 
 		script_vector* getValue() const
 		{
-			auto* vec = new script_vector(m_engine->GetTypeInfoByName("Polygon"));
+			auto vec = new script_vector(m_engine->GetTypeInfoByName("Polygon"));
 			const auto& paths = m_data->getValue();
 			for (const auto& path : paths)
 				vec->container.push_back(PolygonWrapper::create(path, m_engine));

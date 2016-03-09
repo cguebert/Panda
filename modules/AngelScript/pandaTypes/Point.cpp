@@ -21,16 +21,16 @@ namespace
 	}
 
 // Point constructors
-	static void PointDefaultConstructor(Point* self)
+	void PointDefaultConstructor(Point* self)
 	{ new(self) Point(); }
 
-	static void PointCopyConstructor(const Point& other, Point* self)
+	void PointCopyConstructor(const Point& other, Point* self)
 	{ new(self) Point(other); }
 
-	static void PointInitConstructor(float x, float y, Point* self)
+	void PointInitConstructor(float x, float y, Point* self)
 	{ new(self) Point(x, y); }
 
-	static void PointListConstructor(float* d, Point* self)
+	void PointListConstructor(float* d, Point* self)
 	{ new(self) Point(d); }
 
 // Point wrappers
@@ -64,7 +64,7 @@ namespace panda
 	void registerPointType(asIScriptEngine* engine)
 	{
 		int r = 0;
-		r = engine->RegisterObjectType("Point", sizeof(Point), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS  | asGetTypeTraits<Point>()); assert(r >= 0);
+		r = engine->RegisterObjectType("Point", sizeof(Point), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<Point>()); assert(r >= 0);
 		r = engine->RegisterObjectProperty("Point", "float x", asOFFSET(Point, x)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Point", "float y", asOFFSET(Point, y)); assert( r >= 0 );
 
