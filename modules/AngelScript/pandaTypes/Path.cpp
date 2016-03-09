@@ -71,6 +71,45 @@ namespace panda
 		static PathWrapper& Assign(PathWrapper* other, PathWrapper* self)
 		{ return *self = *other; }
 
+		PathWrapper* operator+(const Point& p) const
+		{ return create(m_path + p); }
+		PathWrapper* operator-(const Point& p) const
+		{ return create(m_path - p); }
+		void operator+=(const Point& p)
+		{ m_path += p; }
+		void operator-=(const Point& p)
+		{ m_path -= p;  }
+
+		PathWrapper* operator*(float v) const
+		{ return create(m_path * v); }
+		PathWrapper* operator/(float v) const
+		{ return create(m_path / v); }
+		void operator*=(float v)
+		{ m_path *= v; }
+		void operator/=(float v)
+		{ m_path /= v; }
+
+		PathWrapper* linearProduct(const Point& p) const
+		{ return create(m_path.linearProduct(p)); }
+		PathWrapper* linearDivision(const Point& p) const
+		{ return create(m_path.linearDivision(p)); }
+
+		PathWrapper* reversed() const
+		{ return create(m_path.reversed()); }
+		void reverse()
+		{ m_path.reverse(); }
+
+		PathWrapper* rotatedPath(const Point& center, float angle) const
+		{ return create(rotated(m_path, center, angle)); }
+		void rotatePath(const Point& center, float angle)
+		{ rotate(m_path, center, angle); }
+
+		float area()
+		{ return areaOfPolygon(m_path); }
+
+		Point centroid()
+		{ return centroidOfPolygon(m_path); }
+
 	private:
 		int m_refCount = 1;
 		panda::types::Path m_path;
@@ -170,6 +209,28 @@ namespace panda
 
 		r = engine->RegisterObjectMethod("Path", "vector<Point>@ getPoints()", asMETHOD(PathWrapper, getPoints), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Path", "void setPoints(vector<Point>@)", asMETHOD(PathWrapper, setPoints), asCALL_THISCALL); assert(r >= 0);
+
+		r = engine->RegisterObjectMethod("Path", "Path@ opAdd(const Point &in) const", asMETHODPR(PathWrapper, operator+, (const Point &) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "void opAddAssign(const Point &in)", asMETHODPR(PathWrapper, operator+=, (const Point &), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path@ opSub(const Point &in) const", asMETHODPR(PathWrapper, operator-, (const Point &) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "void opSubAssign(const Point &in)", asMETHODPR(PathWrapper, operator-=, (const Point &), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path@ opMul(float) const", asMETHODPR(PathWrapper, operator*, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path@ opMul_r(float) const",asMETHODPR(PathWrapper, operator*, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "void opMulAssign(float)", asMETHODPR(PathWrapper, operator*=, (float), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path@ opDiv(float) const", asMETHODPR(PathWrapper, operator/, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "void opDivAssign(float)", asMETHODPR(PathWrapper, operator/=, (float), void), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Path", "Path@ linearProduct(const Point &in) const", asMETHOD(PathWrapper, linearProduct), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "Path@ linearDivision(const Point &in) const", asMETHOD(PathWrapper, linearDivision), asCALL_THISCALL); assert(r >= 0);
+
+		r = engine->RegisterObjectMethod("Path", "Path@ reversed() const", asMETHOD(PathWrapper, reversed), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "void reverse()", asMETHOD(PathWrapper, reverse), asCALL_THISCALL); assert(r >= 0);
+		
+		r = engine->RegisterObjectMethod("Path", "Path@ rotated(const Point &in, float) const", asMETHOD(PathWrapper, rotatedPath), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "void rotate(const Point &in, float)", asMETHOD(PathWrapper, rotatePath), asCALL_THISCALL); assert(r >= 0);
+
+		r = engine->RegisterObjectMethod("Path", "float area() const", asMETHOD(PathWrapper, area), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "Point centroid()", asMETHOD(PathWrapper, centroid), asCALL_THISCALL); assert(r >= 0);
 	}
 
 	void registerPath(asIScriptEngine* engine)
