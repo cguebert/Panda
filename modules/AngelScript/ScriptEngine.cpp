@@ -3,6 +3,7 @@
 #include "pandaTypes/Types.h"
 
 #include <assert.h>
+#include <fstream>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -79,6 +80,8 @@ ScriptEngine::ScriptEngine()
 	r = m_engine->RegisterObjectType("PandaObject", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 
 	registerAllTypes(m_engine);
+	
+	generateReference();
 }
 
 ScriptEngine::~ScriptEngine()
@@ -98,6 +101,85 @@ void ScriptEngine::print(const std::string& str)
 		m_errorString += "\n";
 
 	m_errorString += str;
+}
+
+void ScriptEngine::generateReference()
+{
+	if (!m_engine)
+		return;
+
+	std::ofstream out("AngelScript reference.txt");
+
+	out << "*** Globals ***" << std::endl << std::endl;
+	int nb = m_engine->GetGlobalFunctionCount();
+	for (int i = 0; i < nb; ++i)
+	{
+		auto func = m_engine->GetGlobalFunctionByIndex(i);
+		out << "\t" << func->GetDeclaration(true, false, true) << std::endl;
+	}
+
+	out << std::endl << "*** Types ***" << std::endl << std::endl;
+	nb = m_engine->GetObjectTypeCount();
+	for (int i = 0; i < nb; ++i)
+	{
+		auto info = m_engine->GetObjectTypeByIndex(i);
+		out << " * " << info->GetName() << std::endl;
+
+		int nb2 = info->GetPropertyCount();
+		for (int j = 0; j < nb2; ++j)
+		{
+			const char* name;
+			int typeId;
+			bool isPrivate, isProtected, isReference;
+			auto prop = info->GetProperty(j, &name, &typeId, &isPrivate, &isProtected, nullptr, &isReference);
+			out << "\t";
+
+			if (isProtected)
+				out << "protected ";
+			if (isPrivate)
+				out << "private ";
+			out << m_engine->GetTypeDeclaration(typeId);
+			if (isReference)
+				out << "&";
+			out << " ";
+			out << name << std::endl;
+		}
+		if (nb2 != 0)
+			out << std::endl;
+
+		nb2 = info->GetBehaviourCount();
+		bool hasBehaviour = false;
+		for (int j = 0; j < nb2; ++j)
+		{
+			asEBehaviours behaviour;
+			auto func = info->GetBehaviourByIndex(j, &behaviour);
+			if (behaviour == asBEHAVE_CONSTRUCT || behaviour == asBEHAVE_DESTRUCT)
+			{
+				hasBehaviour = true;
+				out << "\t" << func->GetDeclaration(false, false, true) << std::endl;
+			}
+		}
+		if (hasBehaviour)
+			out << std::endl;
+
+		nb2 = info->GetFactoryCount();
+		for (int j = 0; j < nb2; ++j)
+		{
+			auto func = info->GetFactoryByIndex(j);
+			out << "\t" << func->GetDeclaration(false, false, true) << std::endl;
+		}
+		if (nb2 != 0)
+			out << std::endl;
+
+		nb2 = info->GetMethodCount();
+		for (int j = 0; j < nb2; ++j)
+		{
+			auto func = info->GetMethodByIndex(j);
+			out << "\t" << func->GetDeclaration(false, false, true) << std::endl;
+		}
+
+		out << std::endl;
+	}
 }
 
 //****************************************************************************//

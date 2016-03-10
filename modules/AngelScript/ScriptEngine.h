@@ -24,6 +24,8 @@ public:
 	void print(const std::string& str); // Can be used by the script (to show debug information, for example)
 	std::string errorString(); // Return a copy of the error string and clears it
 
+	void generateReference();
+
 private:
 	ScriptEngine();
 
