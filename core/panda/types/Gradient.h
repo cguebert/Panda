@@ -17,6 +17,8 @@ class PANDA_CORE_API Gradient
 public:
 	typedef std::pair<float, types::Color> GradientStop;
 	typedef std::vector<GradientStop> GradientStops;
+	typedef std::vector<float> KeysList;
+	typedef std::vector<types::Color> ColorsList;
 
 	enum class Extend { Pad, Repeat, Reflect };
 
@@ -28,12 +30,20 @@ public:
 	void add(float position, types::Color color);
 	types::Color get(float position) const;
 
+	types::Color& colorAtIndex(int index); // Not bounds checked
+	const types::Color& colorAtIndex(int index) const; // Not bounds checked
+
+	void removeAtIndex(int index); // Not bounds checked
+
 	void setExtend(Extend method);
 	void setExtendInt(int method);
 	Extend extend() const;
 
 	void setStops(GradientStops stopsPoints);
 	const GradientStops& stops() const;
+
+	KeysList keys() const;
+	ColorsList colors() const;
 
 	friend bool operator==(const Gradient& g1, const Gradient& g2);
 	friend bool operator!=(const Gradient& g1, const Gradient& g2);
@@ -54,6 +64,15 @@ inline int Gradient::size() const
 
 inline void Gradient::clear()
 { m_stops.clear(); }
+
+inline types::Color& Gradient::colorAtIndex(int index) 
+{ return m_stops[index].second; }
+	
+inline const types::Color& Gradient::colorAtIndex(int index) const
+{ return m_stops[index].second; }
+
+inline void Gradient::removeAtIndex(int index)
+{ m_stops.erase(m_stops.begin() + index); }
 
 inline void Gradient::setExtend(Extend method)
 { m_extend = method; }

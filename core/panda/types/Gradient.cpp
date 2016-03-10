@@ -92,6 +92,22 @@ float Gradient::extendPos(float position) const
 	}
 }
 
+Gradient::KeysList Gradient::keys() const
+{
+	KeysList tmp;
+	for(const auto& stop : m_stops)
+		tmp.push_back(stop.first);
+	return tmp;
+}
+
+Gradient::ColorsList Gradient::colors() const
+{
+	ColorsList tmp;
+	for(const auto& stop : m_stops)
+		tmp.push_back(stop.second);
+	return tmp;
+}
+
 Color Gradient::interpolate(const GradientStop& s1, const GradientStop& s2, float pos)
 {
 	float amt = (pos - s1.first) / (s2.first - s1.first);

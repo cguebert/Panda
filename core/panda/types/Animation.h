@@ -41,6 +41,9 @@ public:
 	const_reference valueAtIndex(int index) const // Not bounds checked
 	{ return m_stops[index].second; }
 
+	void removeAtIndex(int index) // Not bounds checked
+	{ m_stops.erase(m_stops.begin() + index); }
+
 	void setInterpolation(helper::EasingFunctions::Type method)
 	{ m_interpolation.setType(method); }
 	void setInterpolationInt(int method);
@@ -60,13 +63,13 @@ public:
 	KeysList keys() const;
 	ValuesList values() const;
 
-	bool operator==(const Animation& rhs)
+	bool operator==(const Animation& rhs) const
 	{
 		return m_interpolation.type() == rhs.m_interpolation.type()
 			&& m_extend == rhs.m_extend 
 			&& m_stops == rhs.m_stops;
 	}
-	bool operator!=(const Animation& rhs)
+	bool operator!=(const Animation& rhs) const
 	{ return !(*this == rhs); }
 
 protected:

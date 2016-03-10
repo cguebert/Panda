@@ -86,6 +86,9 @@ namespace panda
 		void setAtIndex(int index, value_type val)
 		{ m_anim.valueAtIndex(index) = val; }
 
+		void removeAtIndex(int index)
+		{ m_anim.removeAtIndex(index); }
+
 		void setInterpolation(int method)
 		{ m_anim.setInterpolationInt(method); }
 		int interpolation() const
@@ -186,6 +189,8 @@ namespace panda
 
 		r = engine->RegisterObjectMethod(atn, str(typeName + " getAtIndex(int) const"), asMETHOD(AnimWrapper, getAtIndex), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod(atn, str("void setAtIndex(int, " + typeName + ")"), asMETHOD(AnimWrapper, setAtIndex), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod(atn, "void removeAtIndex(int)", asMETHOD(AnimWrapper, removeAtIndex), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod(atn, "int interpolation() const", asMETHOD(AnimWrapper, interpolation), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod(atn, "void setInterpolation(int)", asMETHOD(AnimWrapper, setInterpolation), asCALL_THISCALL); assert( r >= 0 );
