@@ -72,21 +72,21 @@ namespace panda
 		r = engine->RegisterObjectMethod("Color", "Color bounded() const", asMETHOD(Color, bounded), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Color", "Color opAdd(const Color &in) const", asMETHODPR(Color, operator+, (const Color &) const, Color), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Color", "Color &opAddAssign(const Color &in)", asMETHODPR(Color, operator+=, (const Color &), Color&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color& opAddAssign(const Color &in)", asMETHODPR(Color, operator+=, (const Color &), Color&), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Color", "Color opSub(const Color &in) const", asMETHODPR(Color, operator-, (const Color &) const, Color), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Color", "Color &opSubAssign(const Color &in)", asMETHODPR(Color, operator-=, (const Color &), Color&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color& opSubAssign(const Color &in)", asMETHODPR(Color, operator-=, (const Color &), Color&), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Color", "Color opMul(const Color &in) const", asMETHODPR(Color, operator*, (const Color&) const, Color), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Color", "Color opMul(float) const", asMETHODPR(Color, operator*, (float) const, Color), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Color", "Color opMul_r(float) const", asFUNCTION(ColorMult), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Color", "Color &opMulAssign(const Color &in)", asMETHODPR(Color, operator*=, (const Color&), Color&), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Color", "Color &opMulAssign(float)", asMETHODPR(Color, operator*=, (float), Color&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color& opMulAssign(const Color &in)", asMETHODPR(Color, operator*=, (const Color&), Color&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color& opMulAssign(float)", asMETHODPR(Color, operator*=, (float), Color&), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Color", "Color opDiv(const Color &in) const", asMETHODPR(Color, operator/, (const Color&) const, Color), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Color", "Color opDiv(float) const", asMETHODPR(Color, operator/, (float) const, Color), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Color", "Color &opDivAssign(const Color &in)", asMETHODPR(Color, operator/=, (const Color&), Color&), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Color", "Color &opDivAssign(float)", asMETHODPR(Color, operator/=, (float), Color&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color& opDivAssign(const Color &in)", asMETHODPR(Color, operator/=, (const Color&), Color&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Color", "Color& opDivAssign(float)", asMETHODPR(Color, operator/=, (float), Color&), asCALL_THISCALL); assert( r >= 0 );
 	}
 
 	void registerColor(asIScriptEngine* engine)

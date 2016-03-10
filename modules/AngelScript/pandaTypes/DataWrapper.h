@@ -64,7 +64,7 @@ public:
 		return vec;
 	}
 	
-	void setValue(script_vector* vec)
+	void setValue(const script_vector* vec)
 	{ m_data->setValue(vec->container); }
 
 	int getCounter() const 
@@ -84,7 +84,7 @@ void registerDataType(asIScriptEngine* engine, const std::string& typeName)
 	auto dtn = dataTypeName.c_str();
 	int r = 0;
 	r = engine->RegisterObjectType(dtn, 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-	r = engine->RegisterObjectMethod(dtn, str("const " + typeName + "& getValue()"),
+	r = engine->RegisterObjectMethod(dtn, str("const " + typeName + "& getValue() const"),
 		asMETHOD(panda::DataWrapper<T>, getValue), asCALL_THISCALL); assert(r >= 0);
 	r = engine->RegisterObjectMethod(dtn, str("void setValue(const " + typeName + " &in)"),
 		asMETHOD(panda::DataWrapper<T>, setValue), asCALL_THISCALL); assert(r >= 0);
@@ -101,9 +101,9 @@ void registerVectorDataType(asIScriptEngine* engine, const std::string& typeName
 	auto dtn = dataTypeName.c_str();
 	int r = 0;
 	r = engine->RegisterObjectType(dtn, 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-	r = engine->RegisterObjectMethod(dtn, str("vector< " + typeName + ">@ getValue()"),
+	r = engine->RegisterObjectMethod(dtn, str("vector< " + typeName + ">@ getValue() const"),
 		asMETHOD(panda::VectorDataWrapper<T>, getValue), asCALL_THISCALL); assert(r >= 0);
-	r = engine->RegisterObjectMethod(dtn, str("void setValue(vector<" + typeName + ">@)"),
+	r = engine->RegisterObjectMethod(dtn, str("void setValue(const vector<" + typeName + "> &in)"),
 		asMETHOD(panda::VectorDataWrapper<T>, setValue), asCALL_THISCALL); assert(r >= 0);
 	r = engine->RegisterObjectMethod(dtn, "int getCounter()",
 		asMETHOD(panda::VectorDataWrapper<T>, getCounter), asCALL_THISCALL); assert(r >= 0);

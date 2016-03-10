@@ -63,32 +63,32 @@ namespace panda
 			return vec;
 		}
 	
-		void setPoints(script_point_vector* vec)
+		void setPoints(const script_point_vector* vec)
 		{ m_path.points = vec->container; }
 
 		bool operator==(const PathWrapper* wrapper) const
 		{ return m_path == wrapper->m_path; }
 
-		static PathWrapper& Assign(PathWrapper* other, PathWrapper* self)
-		{ return *self = *other; }
+		PathWrapper& assign(const PathWrapper* other)
+		{ m_path = other->m_path; return *this; }
 
 		PathWrapper* operator+(const Point& p) const
 		{ return create(m_path + p); }
 		PathWrapper* operator-(const Point& p) const
 		{ return create(m_path - p); }
-		void operator+=(const Point& p)
-		{ m_path += p; }
-		void operator-=(const Point& p)
-		{ m_path -= p;  }
+		PathWrapper& operator+=(const Point& p)
+		{ m_path += p; return *this; }
+		PathWrapper& operator-=(const Point& p)
+		{ m_path -= p; return *this; }
 
 		PathWrapper* operator*(float v) const
 		{ return create(m_path * v); }
 		PathWrapper* operator/(float v) const
 		{ return create(m_path / v); }
-		void operator*=(float v)
-		{ m_path *= v; }
-		void operator/=(float v)
-		{ m_path /= v; }
+		PathWrapper& operator*=(float v)
+		{ m_path *= v; return *this; }
+		PathWrapper& operator/=(float v)
+		{ m_path /= v; return *this; }
 
 		PathWrapper* linearProduct(const Point& p) const
 		{ return create(m_path.linearProduct(p)); }
@@ -119,7 +119,7 @@ namespace panda
 	PathWrapper* createPathWrapper(const panda::types::Path& path)
 	{ return PathWrapper::create(path); }
 
-	const panda::types::Path& getPath(PathWrapper* wrapper)
+	const panda::types::Path& getPath(const PathWrapper* wrapper)
 	{ return wrapper->path(); }
 
 	class PathDataWrapper : public BaseDataWrapper
@@ -131,8 +131,8 @@ namespace panda
 		PathWrapper* getValue() const
 		{ return PathWrapper::create(m_data->getValue()); }
 
-		void setValue(PathWrapper* wrapper)
-		{ m_data->setValue(wrapper->path()); wrapper->release(); }
+		void setValue(const PathWrapper* wrapper)
+		{ m_data->setValue(wrapper->path()); }
 
 		int getCounter() const
 		{ return m_data->getCounter(); }
@@ -161,14 +161,13 @@ namespace panda
 			return vec;
 		}
 	
-		void setValue(script_vector* vec)
+		void setValue(const script_vector* vec)
 		{
 			auto acc = m_data->getAccessor();
 			acc.clear();
 			acc.reserve(vec->container.size());
 			for (const auto& ptr : vec->container)
 				acc.push_back(static_cast<PathWrapper*>(ptr)->path());
-			vec->refcount_Release();
 		}
 
 		int getCounter() const 
@@ -184,9 +183,9 @@ namespace panda
 	{
 		int r = 0;
 		r = engine->RegisterObjectType("PathData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PathData", "Path@ getValue()",
+		r = engine->RegisterObjectMethod("PathData", "Path@ getValue() const",
 			asMETHOD(PathDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PathData", "void setValue(Path@)",
+		r = engine->RegisterObjectMethod("PathData", "void setValue(const Path &in)",
 			asMETHOD(PathDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PathData", "int getCounter()",
 			asMETHOD(PathDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
@@ -196,9 +195,9 @@ namespace panda
 	{
 		int r = 0;
 		r = engine->RegisterObjectType("PathVectorData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PathVectorData", str("vector<Path@>@ getValue()"),
+		r = engine->RegisterObjectMethod("PathVectorData", str("vector<Path@>@ getValue() const"),
 			asMETHOD(PathVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PathVectorData", str("void setValue(vector<Path@>@)"),
+		r = engine->RegisterObjectMethod("PathVectorData", str("void setValue(const vector<Path@> &in)"),
 			asMETHOD(PathVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PathVectorData", "int getCounter()",
 			asMETHOD(PathVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
@@ -212,21 +211,21 @@ namespace panda
 
 		r = engine->RegisterObjectBehaviour("Path", asBEHAVE_ADDREF, "void f()", asMETHOD(PathWrapper, addRef), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Path", asBEHAVE_RELEASE, "void f()", asMETHOD(PathWrapper, release), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path& opAssign(Path &in)", asFUNCTION(PathWrapper::Assign), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opAssign(const Path &in)", asMETHOD(PathWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Path", "vector<Point>@ getPoints()", asMETHOD(PathWrapper, getPoints), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Path", "void setPoints(vector<Point>@)", asMETHOD(PathWrapper, setPoints), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "void setPoints(const vector<Point>&in)", asMETHOD(PathWrapper, setPoints), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod("Path", "Path@ opAdd(const Point &in) const", asMETHODPR(PathWrapper, operator+, (const Point &) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "void opAddAssign(const Point &in)", asMETHODPR(PathWrapper, operator+=, (const Point &), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opAddAssign(const Point &in)", asMETHODPR(PathWrapper, operator+=, (const Point &), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Path", "Path@ opSub(const Point &in) const", asMETHODPR(PathWrapper, operator-, (const Point &) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "void opSubAssign(const Point &in)", asMETHODPR(PathWrapper, operator-=, (const Point &), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opSubAssign(const Point &in)", asMETHODPR(PathWrapper, operator-=, (const Point &), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Path", "Path@ opMul(float) const", asMETHODPR(PathWrapper, operator*, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Path", "Path@ opMul_r(float) const",asMETHODPR(PathWrapper, operator*, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "void opMulAssign(float)", asMETHODPR(PathWrapper, operator*=, (float), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opMulAssign(float)", asMETHODPR(PathWrapper, operator*=, (float), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Path", "Path@ opDiv(float) const", asMETHODPR(PathWrapper, operator/, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "void opDivAssign(float)", asMETHODPR(PathWrapper, operator/=, (float), void), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "bool opEquals(const Path@) const", asMETHODPR(PathWrapper, operator==, (const PathWrapper*) const, bool), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opDivAssign(float)", asMETHODPR(PathWrapper, operator/=, (float), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "bool opEquals(const Path &in) const", asMETHODPR(PathWrapper, operator==, (const PathWrapper*) const, bool), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Path", "Path@ linearProduct(const Point &in) const", asMETHOD(PathWrapper, linearProduct), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Path", "Path@ linearDivision(const Point &in) const", asMETHOD(PathWrapper, linearDivision), asCALL_THISCALL); assert(r >= 0);

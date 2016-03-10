@@ -116,8 +116,8 @@ namespace panda
 		bool operator==(const MeshWrapper* wrapper) const
 		{ return m_mesh == wrapper->m_mesh; }
 
-		static MeshWrapper& Assign(MeshWrapper* other, MeshWrapper* self)
-		{ return *self = *other; }
+		MeshWrapper& assign(const MeshWrapper* other)
+		{ m_mesh = other->m_mesh; return *this; }
 
 		MeshWrapper* translatedMesh(const Point& center) const
 		{ return create(translated(m_mesh, center)); }
@@ -283,8 +283,8 @@ namespace panda
 		MeshWrapper* getValue() const
 		{ return MeshWrapper::create(m_data->getValue()); }
 
-		void setValue(MeshWrapper* wrapper)
-		{ m_data->setValue(wrapper->mesh()); wrapper->release(); }
+		void setValue(const MeshWrapper* wrapper)
+		{ m_data->setValue(wrapper->mesh()); }
 
 		int getCounter() const
 		{ return m_data->getCounter(); }
@@ -314,14 +314,13 @@ namespace panda
 			return vec;
 		}
 	
-		void setValue(script_vector* vec)
+		void setValue(const script_vector* vec)
 		{
 			auto acc = m_data->getAccessor();
 			acc.clear();
 			acc.reserve(vec->container.size());
 			for (const auto& ptr : vec->container)
 				acc.push_back(static_cast<MeshWrapper*>(ptr)->mesh());
-			vec->refcount_Release();
 		}
 
 		int getCounter() const 
@@ -337,9 +336,9 @@ namespace panda
 	{
 		int r = 0;
 		r = engine->RegisterObjectType("MeshData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-		r = engine->RegisterObjectMethod("MeshData", "Mesh@ getValue()",
+		r = engine->RegisterObjectMethod("MeshData", "Mesh@ getValue() const",
 			asMETHOD(MeshDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("MeshData", "void setValue(Mesh@)",
+		r = engine->RegisterObjectMethod("MeshData", "void setValue(const Mesh&)",
 			asMETHOD(MeshDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("MeshData", "int getCounter()",
 			asMETHOD(MeshDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
@@ -349,9 +348,9 @@ namespace panda
 	{
 		int r = 0;
 		r = engine->RegisterObjectType("MeshVectorData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-		r = engine->RegisterObjectMethod("MeshVectorData", str("vector<Mesh@>@ getValue()"),
+		r = engine->RegisterObjectMethod("MeshVectorData", str("vector<Mesh@>@ getValue() const"),
 			asMETHOD(MeshVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("MeshVectorData", str("void setValue(vector<Mesh@>@)"),
+		r = engine->RegisterObjectMethod("MeshVectorData", str("void setValue(const vector<Mesh@>&)"),
 			asMETHOD(MeshVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("MeshVectorData", "int getCounter()",
 			asMETHOD(MeshVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
@@ -387,17 +386,17 @@ namespace panda
 
 		r = engine->RegisterObjectBehaviour("Mesh", asBEHAVE_ADDREF, "void f()", asMETHOD(MeshWrapper, addRef), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Mesh", asBEHAVE_RELEASE, "void f()", asMETHOD(MeshWrapper, release), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Mesh", "Mesh& opAssign(Mesh &in)", asFUNCTION(MeshWrapper::Assign), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Mesh", "bool opEquals(const Mesh@) const", asMETHOD(MeshWrapper, operator==), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Mesh", "Mesh& opAssign(const Mesh &in)", asMETHOD(MeshWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Mesh", "bool opEquals(const Mesh&in) const", asMETHOD(MeshWrapper, operator==), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Mesh", "vector<Point>@ getPoints()", asMETHOD(MeshWrapper, getPoints), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Mesh", "void setPoints(vector<Point>@)", asMETHOD(MeshWrapper, setPoints), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Mesh", "void setPoints(const vector<Point>&in)", asMETHOD(MeshWrapper, setPoints), asCALL_THISCALL); assert(r >= 0);
 	
 		r = engine->RegisterObjectMethod("Mesh", "vector<Edge>@ getEdges()", asMETHOD(MeshWrapper, getEdges), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Mesh", "void setEdges(vector<Edge>@)", asMETHOD(MeshWrapper, setEdges), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Mesh", "void setEdges(const vector<Edge>&in)", asMETHOD(MeshWrapper, setEdges), asCALL_THISCALL); assert(r >= 0);
 	
 		r = engine->RegisterObjectMethod("Mesh", "vector<Triangle>@ getTriangles()", asMETHOD(MeshWrapper, getTriangles), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Mesh", "void setTriangles(vector<Triangle>@)", asMETHOD(MeshWrapper, setTriangles), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Mesh", "void setTriangles(const vector<Triangle>&in)", asMETHOD(MeshWrapper, setTriangles), asCALL_THISCALL); assert(r >= 0);
 	
 		r = engine->RegisterObjectMethod("Mesh", "Mesh@ translated(const Point &in) const", asMETHOD(MeshWrapper, translatedMesh), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Mesh", "void translate(const Point &in)", asMETHOD(MeshWrapper, translateMesh), asCALL_THISCALL); assert(r >= 0);
@@ -409,15 +408,15 @@ namespace panda
 		r = engine->RegisterObjectMethod("Mesh", "void scale(float)", asMETHOD(MeshWrapper, scaleMesh), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod("Mesh", "uint addPoint(const Point &in)", asMETHOD(MeshWrapper, addPoint), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Mesh", "uint addPoints(vector<Point>@)", asMETHOD(MeshWrapper, addPoints), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Mesh", "uint addPoints(const vector<Point>&in)", asMETHOD(MeshWrapper, addPoints), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod("Mesh", "uint addEdge(const Edge &in)", asMETHODPR(MeshWrapper, addEdge, (const Mesh::Edge&), unsigned int), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Mesh", "uint addEdge(uint, uint)", asMETHODPR(MeshWrapper, addEdge, (unsigned int, unsigned int), unsigned int), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Mesh", "uint addEdges(vector<Edge>@)", asMETHOD(MeshWrapper, addEdges), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Mesh", "uint addEdges(const vector<Edge>&in)", asMETHOD(MeshWrapper, addEdges), asCALL_THISCALL); assert(r >= 0);
 		
 		r = engine->RegisterObjectMethod("Mesh", "uint addTriangle(const Triangle &in)", asMETHODPR(MeshWrapper, addTriangle, (const Mesh::Triangle&), unsigned int), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Mesh", "uint addTriangle(uint, uint)", asMETHODPR(MeshWrapper, addTriangle, (unsigned int, unsigned int, unsigned int), unsigned int), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Mesh", "uint addTriangles(vector<Triangle>@)", asMETHOD(MeshWrapper, addTriangles), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Mesh", "uint addTriangles(const vector<Triangle>&in)", asMETHOD(MeshWrapper, addTriangles), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod("Mesh", "int nbPoints()", asMETHOD(MeshWrapper, nbPoints), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Mesh", "int nbEdges()", asMETHOD(MeshWrapper, nbEdges), asCALL_THISCALL); assert(r >= 0);
@@ -442,7 +441,7 @@ namespace panda
 		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getTrianglesOnBorder()", asMETHOD(MeshWrapper, getTrianglesOnBorder), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getTrianglesAroundTriangle(uint, bool)", asMETHOD(MeshWrapper, getTrianglesAroundTriangle), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getTrianglesAroundTriangles(vector<uint>@, bool)", asMETHOD(MeshWrapper, getTrianglesAroundTriangles), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getTrianglesAroundTriangles(const vector<uint>&, bool)", asMETHOD(MeshWrapper, getTrianglesAroundTriangles), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getTrianglesConnectedToTriangle(uint, bool)", asMETHOD(MeshWrapper, getTrianglesConnectedToTriangle), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod("Mesh", "uint getOtherPointInEdge(const Edge &in, uint)", asMETHOD(MeshWrapper, getOtherPointInEdge), asCALL_THISCALL); assert(r >= 0);

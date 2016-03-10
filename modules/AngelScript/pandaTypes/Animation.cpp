@@ -68,8 +68,8 @@ namespace panda
 		bool operator==(const AnimationWrapper* wrapper) const
 		{ return m_anim == wrapper->m_anim; }
 
-		AnimationWrapper* assign(AnimationWrapper* other)
-		{ m_anim = other->m_anim; addRef(); other->release(); return this; }
+		AnimationWrapper& assign(const AnimationWrapper* other)
+		{ m_anim = other->m_anim; return *this; }
 
 		int size() const
 		{ return m_anim.size(); }
@@ -130,8 +130,8 @@ namespace panda
 		AnimWrapper* getValue() const
 		{ return AnimWrapper::create(m_data->getValue()); }
 
-		void setValue(AnimWrapper* wrapper)
-		{ m_data->setValue(wrapper->animation()); wrapper->release(); }
+		void setValue(const AnimWrapper* wrapper)
+		{ m_data->setValue(wrapper->animation()); }
 
 		int getCounter() const
 		{ return m_data->getCounter(); }
@@ -153,9 +153,9 @@ namespace panda
 
 		int r = 0;
 		r = engine->RegisterObjectType(dtn, 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-		r = engine->RegisterObjectMethod(dtn, str(animTypeName + "@ getValue()"),
+		r = engine->RegisterObjectMethod(dtn, str(animTypeName + "@ getValue() const"),
 			asMETHOD(AnimWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(dtn, str("void setValue(" + animTypeName + "@)"),
+		r = engine->RegisterObjectMethod(dtn, str("void setValue(const " + animTypeName + " &in)"),
 			asMETHOD(AnimWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(dtn, "int getCounter()",
 			asMETHOD(AnimWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
@@ -178,8 +178,8 @@ namespace panda
 
 		r = engine->RegisterObjectBehaviour(atn, asBEHAVE_ADDREF, "void f()", asMETHOD(AnimWrapper, addRef), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour(atn, asBEHAVE_RELEASE, "void f()", asMETHOD(AnimWrapper, release), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod(atn, str(animTypeName + "@ opAssign(" + atn + "@)"), asMETHOD(AnimWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod(atn, str("bool opEquals(const " + animTypeName + "@) const"), asMETHODPR(AnimWrapper, operator==, (const AnimWrapper*) const, bool), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, str(animTypeName + "& opAssign(const " + atn + "&in)"), asMETHOD(AnimWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, str("bool opEquals(const " + animTypeName + " &in) const"), asMETHODPR(AnimWrapper, operator==, (const AnimWrapper*) const, bool), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod(atn, "int size() const", asMETHOD(AnimWrapper, size), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod(atn, "void clear()", asMETHOD(AnimWrapper, clear), asCALL_THISCALL); assert( r >= 0 );

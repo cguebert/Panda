@@ -85,8 +85,8 @@ namespace panda
 		bool operator==(const GradientWrapper& wrapper) const
 		{ return m_gradient == wrapper.m_gradient; }
 
-		GradientWrapper* assign(GradientWrapper* other)
-		{ m_gradient = other->m_gradient; addRef(); other->release(); return this; }
+		GradientWrapper& assign(const GradientWrapper* other)
+		{ m_gradient = other->m_gradient; return *this; }
 
 		position_vector* keys() const
 		{
@@ -115,8 +115,8 @@ namespace panda
 		GradientWrapper* getValue() const
 		{ return GradientWrapper::create(m_data->getValue()); }
 
-		void setValue(GradientWrapper* wrapper)
-		{ m_data->setValue(wrapper->gradient()); wrapper->release(); }
+		void setValue(const GradientWrapper* wrapper)
+		{ m_data->setValue(wrapper->gradient()); }
 
 		int getCounter() const
 		{ return m_data->getCounter(); }
@@ -145,14 +145,13 @@ namespace panda
 			return vec;
 		}
 	
-		void setValue(script_vector* vec)
+		void setValue(const script_vector* vec)
 		{
 			auto acc = m_data->getAccessor();
 			acc.clear();
 			acc.reserve(vec->container.size());
 			for (const auto& ptr : vec->container)
 				acc.push_back(static_cast<GradientWrapper*>(ptr)->gradient());
-			vec->refcount_Release();
 		}
 
 		int getCounter() const 
@@ -168,9 +167,9 @@ namespace panda
 	{
 		int r = 0;
 		r = engine->RegisterObjectType("GradientData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-		r = engine->RegisterObjectMethod("GradientData", "Gradient@ getValue()",
+		r = engine->RegisterObjectMethod("GradientData", "Gradient@ getValue() const",
 			asMETHOD(GradientDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("GradientData", "void setValue(Gradient@)",
+		r = engine->RegisterObjectMethod("GradientData", "void setValue(const Gradient &in)",
 			asMETHOD(GradientDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("GradientData", "int getCounter()",
 			asMETHOD(GradientDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
@@ -180,9 +179,9 @@ namespace panda
 	{
 		int r = 0;
 		r = engine->RegisterObjectType("GradientVectorData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
-		r = engine->RegisterObjectMethod("GradientVectorData", str("vector<Gradient@>@ getValue()"),
+		r = engine->RegisterObjectMethod("GradientVectorData", str("vector<Gradient@>@ getValue() const"),
 			asMETHOD(GradientVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("GradientVectorData", str("void setValue(vector<Gradient@>@)"),
+		r = engine->RegisterObjectMethod("GradientVectorData", str("void setValue(const vector<Gradient@> &in)"),
 			asMETHOD(GradientVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("GradientVectorData", "int getCounter()",
 			asMETHOD(GradientVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
@@ -196,7 +195,7 @@ namespace panda
 
 		r = engine->RegisterObjectBehaviour("Gradient", asBEHAVE_ADDREF, "void f()", asMETHOD(GradientWrapper, addRef), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Gradient", asBEHAVE_RELEASE, "void f()", asMETHOD(GradientWrapper, release), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Gradient", "Gradient@ opAssign(Gradient@)", asMETHOD(GradientWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Gradient", "Gradient& opAssign(const Gradient &in)", asMETHOD(GradientWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Gradient", "void clear()", asMETHOD(GradientWrapper, clear), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Gradient", "void add(float, Color)", asMETHOD(GradientWrapper, add), asCALL_THISCALL); assert( r >= 0 );
