@@ -17,5 +17,6 @@ namespace panda
 	void registerPolygon(asIScriptEngine* engine);
 	void registerRect(asIScriptEngine* engine);
 	void registerString(asIScriptEngine* engine);
+	void registerAnimation(asIScriptEngine* engine);
 
 } // namespace panda

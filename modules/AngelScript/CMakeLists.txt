@@ -57,6 +57,7 @@ set(SOURCE_FILES
 	addons/aatc/aatc_hash.cpp
 	addons/aatc/aatc_registration.cpp
 	addons/aatc/aatc_serializer.cpp
+	pandaTypes/Animation.cpp
 	pandaTypes/Color.cpp
 	pandaTypes/Gradient.cpp
 	pandaTypes/Mesh.cpp

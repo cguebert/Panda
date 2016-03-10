@@ -73,6 +73,8 @@ namespace panda
 		registerMesh(engine); // After Point
 		registerPath(engine); // After Point
 		registerPolygon(engine); // After Path
+
+		registerAnimation(engine);
 	}
 
 } // namespace panda
