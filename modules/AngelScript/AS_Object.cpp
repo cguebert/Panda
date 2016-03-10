@@ -6,16 +6,8 @@
 
 #include <algorithm>
 
-namespace panda
-{
-class AS_ScriptedObject;
-}
-
 namespace
 {
-
-static panda::AS_ScriptedObject* g_object = nullptr;
-void print(const std::string& str);
 
 static const std::string defaultScript =
 R"~(void setup(PandaObject@ object)
@@ -44,11 +36,11 @@ public:
 		: PandaObject(parent)
 		, m_scriptText(initData(defaultScript, "script", "The script describing this object and its behavior"))
 		, m_debugText(initData("debug", "Debug string"))
-		, m_wrapper(this, m_engine.engine())
+		, m_engine(ScriptEngine::instance())
+		, m_wrapper(this, m_engine->engine())
 	{
-		m_context = m_engine.engine()->CreateContext();
-
-		m_engine.engine()->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(print), asCALL_CDECL);
+		m_module = m_engine->newModule();
+		m_context = m_engine->engine()->CreateContext();
 
 		addInput(m_scriptText);
 
@@ -64,11 +56,10 @@ public:
 		{
 			m_updateFunc = nullptr;
 
-			if (m_engine.compileScript(m_scriptText.getValue()))
+			if (m_module->compileScript(m_scriptText.getValue()))
 			{
-				m_setupFunc = m_engine.getFunction("void setup(PandaObject@)");
+				m_setupFunc = m_module->getFunction("void setup(PandaObject@)");
 
-				g_object = this;
 				if (m_setupFunc)
 				{
 					m_wrapper.clear();
@@ -78,12 +69,12 @@ public:
 					if (m_context->Execute() == asEXECUTION_FINISHED)
 					{
 						updateDatas();
-						m_updateFunc = m_engine.getFunction("void update()");
+						m_updateFunc = m_module->getFunction("void update()");
 					}
 				}
 			}
 
-			m_debugText.setValue(m_engine.errorString());
+			m_debugText.setValue(m_engine->errorString());
 		}
 
 		PandaObject::setDirtyValue(caller);
@@ -95,6 +86,8 @@ public:
 		{
 			m_context->Prepare(m_updateFunc);
 			m_context->Execute();
+
+			m_debugText.setValue(m_engine->errorString());
 		}
 	}
 
@@ -163,7 +156,8 @@ protected:
 	Data<std::string> m_scriptText;
 	Data<std::string> m_debugText;
 
-	ScriptEngine m_engine;
+	std::shared_ptr<ScriptEngine> m_engine;
+	std::shared_ptr<ScriptModuleHandle> m_module;
 	ObjectWrapper m_wrapper;
 	asIScriptContext* m_context = nullptr;
 	asIScriptFunction *m_setupFunc = nullptr, *m_updateFunc = nullptr;
@@ -173,17 +167,4 @@ protected:
 
 int AS_ScriptedObjectClass = RegisterObject<AS_ScriptedObject>("Angelscript").setDescription("Create a scriptable object");
 
-//****************************************************************************//
-
 } // namespace panda
-
-namespace
-{
-
-void print(const std::string& str)
-{
-	if (g_object)
-		g_object->setDebug(str);
-}
-
-}

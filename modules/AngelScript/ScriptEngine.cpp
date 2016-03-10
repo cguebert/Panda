@@ -3,6 +3,7 @@
 #include "pandaTypes/Types.h"
 
 #include <assert.h>
+#include <string>
 #include <sstream>
 #include <iostream>
 
@@ -44,6 +45,19 @@ void MessageCallback(const asSMessageInfo* msg, void* param)
 namespace panda 
 {
 
+std::shared_ptr<ScriptEngine> ScriptEngine::instance()
+{
+	static std::weak_ptr<ScriptEngine> ptr;
+	if (ptr.expired())
+	{
+		auto engine = std::shared_ptr<ScriptEngine>(new ScriptEngine());
+		ptr = engine;
+		return engine;
+	}
+	else
+		return ptr.lock();
+}
+
 ScriptEngine::ScriptEngine()
 	: m_engine(asCreateScriptEngine())
 {
@@ -55,6 +69,10 @@ ScriptEngine::ScriptEngine()
 
 	RegisterStdString(m_engine);
 	//	RegisterStdStringUtils(engine);
+
+	// The scripts can directly print text
+	r = m_engine->RegisterGlobalFunction("void print(const string &in)", asMETHOD(ScriptEngine, print), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
+
 	RegisterScriptMath(m_engine);
 	aatc::RegisterAllContainers(m_engine);
 	
@@ -69,25 +87,53 @@ ScriptEngine::~ScriptEngine()
 		m_engine->ShutDownAndRelease();
 }
 
-bool ScriptEngine::compileScript(const std::string& script)
+std::shared_ptr<ScriptModuleHandle> ScriptEngine::newModule()
 {
-	if (!m_engine)
+	return std::make_shared<ScriptModuleHandle>(instance(), m_nextModuleId++);
+}
+
+void ScriptEngine::print(const std::string& str)
+{
+	if (!m_errorString.empty())
+		m_errorString += "\n";
+
+	m_errorString += str;
+}
+
+//****************************************************************************//
+
+ScriptModuleHandle::ScriptModuleHandle(std::shared_ptr<ScriptEngine> engine, int moduleId)
+	: m_engine(engine)
+{
+	m_moduleName = "module" + std::to_string(moduleId);
+}
+
+ScriptModuleHandle::~ScriptModuleHandle()
+{
+	if (m_module)
+		m_module->Discard();
+}
+
+bool ScriptModuleHandle::compileScript(const std::string& script)
+{
+	auto engine = m_engine->engine();
+	if (!engine)
 		return false;
 
-	auto mod = m_engine->GetModule(0, asGM_ALWAYS_CREATE);
-	int r = mod->AddScriptSection("script", script.c_str());
+	m_module = engine->GetModule(m_moduleName.c_str(), asGM_ALWAYS_CREATE);
+	int r = m_module->AddScriptSection("script", script.c_str());
 	if (r < 0) return false;
 
-	r = mod->Build();
+	r = m_module->Build();
 	if (r < 0) return false;
 	return true;
 }
 
-asIScriptFunction* ScriptEngine::getFunction(const std::string& signature)
+asIScriptFunction* ScriptModuleHandle::getFunction(const std::string& signature)
 {
-	if (!m_engine)
+	if (!m_module)
 		return nullptr;
-	return m_engine->GetModule(0)->GetFunctionByDecl(signature.c_str());
+	return m_module->GetFunctionByDecl(signature.c_str());
 }
 
 } // namespace panda
