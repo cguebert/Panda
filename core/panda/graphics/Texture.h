@@ -20,8 +20,10 @@ class Image;
 class PANDA_CORE_API Texture
 {
 public:
+	Texture() {}
 	Texture(const Image& img);
 	Texture(Size size, const float* data); // data is in GL_RGBA32F format
+	Texture(Size size, const unsigned char* data); // data is in GL_RGBA format
 
 	explicit operator bool() const; // Returns true if an OpenGL texture has been created for this object
 

@@ -76,9 +76,20 @@ Texture::Texture(const Image& img)
 }
 
 Texture::Texture(Size size, const float* data)
-	: m_data(std::make_shared<TextureData>())
 {
 	GLuint id = createTexture(size, GL_RGBA32F, GL_RGBA, GL_FLOAT, data);
+
+	if (id)
+	{
+		m_data = std::make_shared<TextureData>();
+		m_data->id = id;
+		m_data->size = size;
+	}
+}
+
+Texture::Texture(Size size, const unsigned char* data)
+{
+	GLuint id = createTexture(size, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	if (id)
 	{
