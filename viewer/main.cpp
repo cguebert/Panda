@@ -4,6 +4,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/PluginsManager.h>
 #include <panda/document/DocumentRenderer.h>
+#include <panda/document/DocumentSignals.h>
 #include <panda/helper/system/FileRepository.h>
 
 #include "SimpleGUIImpl.h"
@@ -210,6 +211,8 @@ int main(int argc, char** argv)
 
 		panda::graphics::RectInt rect(0, 0, currentWidth, currentHeight);
 		panda::graphics::Framebuffer::blitFramebuffer(0, rect, fbo.id(), rect);
+
+		document->getSignals().postRender.run(currentWidth, currentHeight, 0);
 
 		glfwSwapBuffers(theWindow);
 	}

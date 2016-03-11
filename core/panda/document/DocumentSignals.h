@@ -32,6 +32,7 @@ public:
 	msg::Signal<void(panda::DockableObject*)> changedDock;
 	msg::Signal<void(panda::types::Point)> mousePressed;
 	msg::Signal<void(panda::types::Point)> mouseReleased;
+	msg::Signal<void(int, int, int)> postRender; // width, height, fbo id
 };
 
 } // namespace panda

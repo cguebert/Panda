@@ -254,21 +254,21 @@ void Framebuffer::toImage(Image& img) const
 		glBindFramebuffer(GL_FRAMEBUFFER, prev);
 }
 
-void Framebuffer::blitFramebuffer(Framebuffer& target, const Framebuffer& source)
+void Framebuffer::blitFramebuffer(Framebuffer& target, const Framebuffer& source, unsigned int filter)
 {
 	RectInt targetRect(0, 0, target.width(), target.height());
 	RectInt sourceRect(0, 0, source.width(), source.height());
-	blitFramebuffer(target, targetRect, source, sourceRect);
+	blitFramebuffer(target, targetRect, source, sourceRect, filter);
 }
 
 void Framebuffer::blitFramebuffer(Framebuffer& target, const RectInt& targetRect,
-	const Framebuffer& source, const RectInt& sourceRect)
+	const Framebuffer& source, const RectInt& sourceRect, unsigned int filter)
 {
-	blitFramebuffer(target.id(), targetRect, source.id(), sourceRect);
+	blitFramebuffer(target.id(), targetRect, source.id(), sourceRect, filter);
 }
 
 void Framebuffer::blitFramebuffer(unsigned int targetId, const RectInt& tr,
-	unsigned int sourceId, const RectInt& sr)
+	unsigned int sourceId, const RectInt& sr, unsigned int filter)
 {
 	if (!GLEW_EXT_framebuffer_blit)
 		return;
@@ -278,7 +278,7 @@ void Framebuffer::blitFramebuffer(unsigned int targetId, const RectInt& tr,
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, sourceId);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, targetId);
-	glBlitFramebuffer(sr.x1, sr.y1, sr.x2, sr.y2, tr.x1, tr.y1, tr.x2, tr.y2, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBlitFramebuffer(sr.x1, sr.y1, sr.x2, sr.y2, tr.x1, tr.y1, tr.x2, tr.y2, GL_COLOR_BUFFER_BIT, filter);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, prev);
 }

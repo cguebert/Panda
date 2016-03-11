@@ -57,13 +57,13 @@ public:
 	Image toImage() const;
 	void toImage(Image& img) const;
 
-	static void blitFramebuffer(Framebuffer& target, const Framebuffer& source);
+	static void blitFramebuffer(Framebuffer& target, const Framebuffer& source, unsigned int filter = 0x2600); // default filter = GL_NEAREST
 
 	static void blitFramebuffer(Framebuffer& target, const RectInt& targetRect,
-		const Framebuffer& source, const RectInt& sourceRect);
+		const Framebuffer& source, const RectInt& sourceRect, unsigned int filter = 0x2600); // default filter = GL_NEAREST
 
 	static void blitFramebuffer(unsigned int targetId, const RectInt& targetRect,
-		unsigned int sourceId, const RectInt& sourceRect);
+		unsigned int sourceId, const RectInt& sourceRect, unsigned int filter = 0x2600); // default filter = GL_NEAREST
 
 private:
 	std::shared_ptr<FramebufferData> m_data;
