@@ -83,21 +83,41 @@ void OpenGLRenderView::paintGL()
 	m_document->getSignals().postRender.run(viewRect.width(), viewRect.height(), defaultFramebufferObject());
 }
 
-void OpenGLRenderView::mousePressEvent(QMouseEvent* event)
-{
-	if(event->button() == Qt::LeftButton)
-		m_document->setMouseClick(true, panda::types::Point(event->localPos().x(), event->localPos().y()));
-}
-
 void OpenGLRenderView::mouseMoveEvent(QMouseEvent* event)
 {
-	m_document->setMousePosition(panda::types::Point(event->localPos().x(), event->localPos().y()));
+	m_document->mouseMoveEvent(panda::types::Point(event->localPos().x(), event->localPos().y()));
+}
+
+void OpenGLRenderView::mousePressEvent(QMouseEvent* event)
+{
+	panda::types::Point pos(event->localPos().x(), event->localPos().y());
+	switch (event->button())
+	{
+	case Qt::LeftButton:	m_document->mouseButtonEvent(0, true, pos); break;
+	case Qt::RightButton:	m_document->mouseButtonEvent(1, true, pos); break;
+	case Qt::MiddleButton:	m_document->mouseButtonEvent(2, true, pos); break;
+	}
 }
 
 void OpenGLRenderView::mouseReleaseEvent(QMouseEvent* event)
 {
-	if(event->button() == Qt::LeftButton)
-		m_document->setMouseClick(false, panda::types::Point(event->localPos().x(), event->localPos().y()));
+	panda::types::Point pos(event->localPos().x(), event->localPos().y());
+	switch (event->button())
+	{
+	case Qt::LeftButton:	m_document->mouseButtonEvent(0, false, pos); break;
+	case Qt::RightButton:	m_document->mouseButtonEvent(1, false, pos); break;
+	case Qt::MiddleButton:	m_document->mouseButtonEvent(2, false, pos); break;
+	}
+}
+
+void OpenGLRenderView::keyPressEvent(QKeyEvent* event)
+{
+	m_document->keyEvent(event->key(), true);
+}
+
+void OpenGLRenderView::keyReleaseEvent(QKeyEvent* event)
+{
+	m_document->keyEvent(event->key(), false);
 }
 
 void OpenGLRenderView::resizeEvent(QResizeEvent* event)

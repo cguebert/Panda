@@ -85,10 +85,12 @@ public:
 	bool animationIsMultithread() const;
 
 	types::Point getMousePosition() const;
-	void setMousePosition(const types::Point& pos);
+	void mouseMoveEvent(types::Point pos);
 
-	int getMouseClick() const;
-	void setMouseClick(bool clicked, const types::Point& pos);
+	int getMouseClick() const; // Only gives the status of the left button
+	void mouseButtonEvent(int button, bool isPressed, types::Point pos);
+
+	void keyEvent(int key, bool isPressed);
 
 	uint32_t getNextIndex();
 	PandaObject* findObject(uint32_t objectIndex);
@@ -236,9 +238,6 @@ inline bool PandaDocument::animationIsMultithread() const
 
 inline types::Point PandaDocument::getMousePosition() const
 { return m_mousePositionVal; }
-
-inline void PandaDocument::setMousePosition(const types::Point& pos)
-{ m_mousePositionBuffer = pos; }
 
 inline int PandaDocument::getMouseClick() const
 { return m_mouseClickVal; }

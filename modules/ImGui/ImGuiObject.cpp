@@ -1,4 +1,5 @@
 #include <panda/PandaDocument.h>
+#include <panda/SimpleGUI.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Dockable.h>
@@ -29,6 +30,8 @@ public:
 		: DockObject(doc)
 	{
 		m_observer.get(doc->getSignals().postRender).connect<ImGui_Object, &ImGui_Object::render>(this);
+		m_observer.get(doc->getSignals().mouseMoveEvent).connect<ImGui_Object, &ImGui_Object::onMouseMove>(this);
+		m_observer.get(doc->getSignals().mouseButtonEvent).connect<ImGui_Object, &ImGui_Object::onMouseButton>(this);
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.KeyMap[ImGuiKey_Tab] = 258;
@@ -62,18 +65,18 @@ public:
 		return false;
 	}
 
-	void onMousePressed(panda::types::Point pt)
+	void onMouseMove(panda::types::Point pt)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.MousePos = { pt.x, pt.y };
-		io.MouseDown[0] = true;
 	}
 
-	void onMouseReleased(panda::types::Point pt)
+	void onMouseButton(int button, bool isPressed, panda::types::Point pt)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.MousePos = { pt.x, pt.y };
-		io.MouseDown[0] = false;
+		if(button >= 0 && button < 3)
+			io.MouseDown[button] = isPressed;
 	}
 
 	void reset() override
@@ -243,6 +246,8 @@ public:
 		ImGui::Render();
 
 		renderGui(ImGui::GetDrawData());
+
+		parentDocument()->getGUI().updateView();
 	}
 
 protected:

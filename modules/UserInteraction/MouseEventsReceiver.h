@@ -18,8 +18,7 @@ private:
 	msg::Observer m_observer;
 	PandaDocument* m_document;
 
-	void onMousePressed(panda::types::Point);
-	void onMouseReleased(panda::types::Point);
+	void onMouseButtonEvent(int buttonId, bool isPressed, panda::types::Point position);
 };
 
 } // namespace Panda

@@ -469,17 +469,28 @@ void PandaDocument::setRenderSize(graphics::Size size)
 		); 
 }
 
-void PandaDocument::setMouseClick(bool clicked, const types::Point& pos)
-{
-	if(m_mouseClickBuffer && !clicked) // Pressed & released in 1 timestep, we will send 2 events
-		m_mouseClickBuffer = -1;
-	else
-		m_mouseClickBuffer = clicked;
+void PandaDocument::mouseMoveEvent(types::Point pos)
+{ 
+	m_mousePositionBuffer = pos;
+	m_signals->mouseMoveEvent.run(pos);
+}
 
-	if (clicked)
-		m_signals->mousePressed.run(pos);
-	else
-		m_signals->mouseReleased.run(pos);
+void PandaDocument::mouseButtonEvent(int button, bool isPressed, types::Point pos)
+{
+	if (button == 0)
+	{
+		if (m_mouseClickBuffer && !isPressed) // Pressed & released in 1 timestep, we will send 2 events
+			m_mouseClickBuffer = -1;
+		else
+			m_mouseClickBuffer = isPressed;
+	}
+
+	m_signals->mouseButtonEvent.run(button, isPressed, pos);
+}
+
+void PandaDocument::keyEvent(int key, bool isPressed)
+{
+	m_signals->keyEvent.run(key, isPressed);
 }
 
 void PandaDocument::selectionAdd(PandaObject* object)

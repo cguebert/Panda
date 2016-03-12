@@ -78,18 +78,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_pos_callback(GLFWwindow* window, double x, double y)
 {
 	mousePos = panda::types::Point(static_cast<float>(x), static_cast<float>(y));
-	document->setMousePosition(mousePos);
+	document->mouseMoveEvent(mousePos);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT)
-	{
-		if(action == GLFW_PRESS)
-			document->setMouseClick(true, mousePos);
-		else if(action == GLFW_RELEASE)
-			document->setMouseClick(false, mousePos);
-	}
+	if(action == GLFW_PRESS)
+		document->mouseButtonEvent(button, true, mousePos);
+	else if(action == GLFW_RELEASE)
+		document->mouseButtonEvent(button, false, mousePos);
 }
 
 void drop_callback(GLFWwindow* window, int count, const char** paths)
