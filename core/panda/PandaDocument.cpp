@@ -493,6 +493,11 @@ void PandaDocument::keyEvent(int key, bool isPressed)
 	m_signals->keyEvent.run(key, isPressed);
 }
 
+void PandaDocument::textEvent(const std::string& text)
+{
+	m_signals->textEvent.run(text);
+}
+
 void PandaDocument::selectionAdd(PandaObject* object)
 {
 	if(!helper::contains(m_selectedObjects, object))

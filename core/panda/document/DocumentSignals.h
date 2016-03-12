@@ -33,6 +33,7 @@ public:
 	msg::Signal<void(int buttonId, bool isPressed, panda::types::Point position)> mouseButtonEvent;
 	msg::Signal<void(panda::types::Point position)> mouseMoveEvent;
 	msg::Signal<void(int key, bool isPressed)> keyEvent;
+	msg::Signal<void(const std::string& text)> textEvent;
 	msg::Signal<void(int w, int h, int fbo)> postRender;
 };
 

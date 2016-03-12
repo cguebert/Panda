@@ -91,6 +91,7 @@ public:
 	void mouseButtonEvent(int button, bool isPressed, types::Point pos);
 
 	void keyEvent(int key, bool isPressed);
+	void textEvent(const std::string& text); // Unicode inputs
 
 	uint32_t getNextIndex();
 	PandaObject* findObject(uint32_t objectIndex);

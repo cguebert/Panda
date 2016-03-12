@@ -30,9 +30,12 @@ public:
 	ImGui_Object(PandaDocument* doc)
 		: DockObject(doc)
 	{
-		m_observer.get(doc->getSignals().postRender).connect<ImGui_Object, &ImGui_Object::render>(this);
-		m_observer.get(doc->getSignals().mouseMoveEvent).connect<ImGui_Object, &ImGui_Object::onMouseMove>(this);
-		m_observer.get(doc->getSignals().mouseButtonEvent).connect<ImGui_Object, &ImGui_Object::onMouseButton>(this);
+		auto& signals = doc->getSignals();
+		m_observer.get(signals.postRender).connect<ImGui_Object, &ImGui_Object::render>(this);
+		m_observer.get(signals.mouseMoveEvent).connect<ImGui_Object, &ImGui_Object::onMouseMove>(this);
+		m_observer.get(signals.mouseButtonEvent).connect<ImGui_Object, &ImGui_Object::onMouseButton>(this);
+		m_observer.get(signals.keyEvent).connect<ImGui_Object, &ImGui_Object::onKeyEvent>(this);
+		m_observer.get(signals.textEvent).connect<ImGui_Object, &ImGui_Object::onTextEvent>(this);
 
 		m_mouseButtons[0] = m_mouseButtons[1] = m_mouseButtons[2] = 0;
 
@@ -85,6 +88,23 @@ public:
 				io.MouseDown[button] = true;
 			m_mouseButtons[button] = isPressed;
 		}
+	}
+
+	void onKeyEvent(int key, bool isPressed)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		if (key >= 0 && key < 512)
+			io.KeysDown[key] = isPressed;
+
+		io.KeyShift = io.KeysDown[340] || io.KeysDown[344];
+		io.KeyCtrl = io.KeysDown[341] || io.KeysDown[345];
+		io.KeyAlt = io.KeysDown[342] || io.KeysDown[346];
+	}
+
+	void onTextEvent(const std::string& text)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.AddInputCharactersUTF8(text.c_str());
 	}
 
 	void reset() override

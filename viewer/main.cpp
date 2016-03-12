@@ -73,6 +73,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 		}
 	}
+
+	if (action == GLFW_PRESS)
+		document->keyEvent(key, true);
+	else if (action == GLFW_RELEASE)
+		document->keyEvent(key, false);
+}
+
+void char_callback(GLFWwindow* window, unsigned int c)
+{
+	if (c > 0 && c < 0x10000)
+	{
+		char tmp[5];
+		tmp[4] = 0;
+		memcpy(tmp, &c, 4);
+		document->textEvent(tmp);
+	}
 }
 
 void mouse_pos_callback(GLFWwindow* window, double x, double y)
@@ -148,6 +164,7 @@ bool init(const std::string& filePath = "")
 	}
 	glfwMakeContextCurrent(theWindow);
 	glfwSetKeyCallback(theWindow, key_callback);
+	glfwSetCharCallback(theWindow, char_callback);
 	glfwSetCursorPosCallback(theWindow, mouse_pos_callback);
 	glfwSetMouseButtonCallback(theWindow, mouse_button_callback);
 	glfwSetDropCallback(theWindow, drop_callback);

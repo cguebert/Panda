@@ -16,6 +16,34 @@ namespace
 
 	panda::graphics::Size convert(QSize size)
 	{ return panda::graphics::Size(size.width(), size.height()); }
+
+	int convertKey(int key)
+	{
+		if (key > 0 && key < 0xff)
+			return key;
+
+		// Convert to the glfw values
+		switch (key)
+		{
+		case Qt::Key_Tab: return 258;
+		case Qt::Key_Left: return 263;
+		case Qt::Key_Right: return 262;
+		case Qt::Key_Up: return 265;
+		case Qt::Key_Down: return 264;
+		case Qt::Key_PageUp: return 266;
+		case Qt::Key_PageDown: return 267;
+		case Qt::Key_Home: return 268;
+		case Qt::Key_End: return 269;
+		case Qt::Key_Delete: return 261;
+		case Qt::Key_Backspace: return 259;
+		case Qt::Key_Enter: return 257;
+		case Qt::Key_Escape: return 256;
+		case Qt::Key_Shift: return 340;
+		case Qt::Key_Control: return 341;
+		case Qt::Key_Alt: return 342;
+		default: return -1;
+		}
+	}
 }
 
 OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
@@ -26,6 +54,7 @@ OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
 	setMouseTracking(true);
 
 	resize(convert(doc->getRenderSize()));
@@ -112,12 +141,27 @@ void OpenGLRenderView::mouseReleaseEvent(QMouseEvent* event)
 
 void OpenGLRenderView::keyPressEvent(QKeyEvent* event)
 {
-	m_document->keyEvent(event->key(), true);
+	int key = convertKey(event->key());
+	if (key != -1)
+		m_document->keyEvent(key, true);
+
+	auto text = event->text();
+	if (!text.isEmpty())
+		m_document->textEvent(text.toStdString());
 }
 
 void OpenGLRenderView::keyReleaseEvent(QKeyEvent* event)
 {
-	m_document->keyEvent(event->key(), false);
+	int key = event->key();
+	auto mods = event->modifiers();
+	if (key == Qt::Key_Control && mods & Qt::ControlModifier)
+		return; // The other key is still pressed
+	if (key == Qt::Key_Alt && mods & Qt::AltModifier)
+		return; // The other key is still pressed
+
+	key = convertKey(key);
+	if (key != -1)
+		m_document->keyEvent(key, false);
 }
 
 void OpenGLRenderView::resizeEvent(QResizeEvent* event)
