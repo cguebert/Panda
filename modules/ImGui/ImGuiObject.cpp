@@ -1,5 +1,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/SimpleGUI.h>
+#include <panda/TimedFunctions.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Dockable.h>
@@ -32,6 +33,8 @@ public:
 		m_observer.get(doc->getSignals().postRender).connect<ImGui_Object, &ImGui_Object::render>(this);
 		m_observer.get(doc->getSignals().mouseMoveEvent).connect<ImGui_Object, &ImGui_Object::onMouseMove>(this);
 		m_observer.get(doc->getSignals().mouseButtonEvent).connect<ImGui_Object, &ImGui_Object::onMouseButton>(this);
+
+		m_mouseButtons[0] = m_mouseButtons[1] = m_mouseButtons[2] = 0;
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.KeyMap[ImGuiKey_Tab] = 258;
@@ -75,8 +78,13 @@ public:
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.MousePos = { pt.x, pt.y };
-		if(button >= 0 && button < 3)
-			io.MouseDown[button] = isPressed;
+		
+		if (button >= 0 && button < 3)
+		{
+			if (isPressed)
+				io.MouseDown[button] = true;
+			m_mouseButtons[button] = isPressed;
+		}
 	}
 
 	void reset() override
@@ -150,6 +158,8 @@ public:
 		m_EBO.bind();
 
 		m_VAO.release();
+
+		m_lastTime = high_resolution_clock::now();
 	}
 
 	void renderGui(ImDrawData* draw_data)
@@ -219,10 +229,19 @@ public:
 	{
 		static float f = 0.0f;
 		static ImVec4 clear_color = ImColor(114, 144, 154);
+		static bool show_test_window = true;
+
         ImGui::Text("Hello, world!");
         ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
         ImGui::ColorEdit3("clear color", (float*)&clear_color);
+		if (ImGui::Button("Test Window")) show_test_window ^= 1;
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+		if (show_test_window)
+		{
+			ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+			ImGui::ShowTestWindow(&show_test_window);
+		}
 	}
 
 	void render(int width, int height, int dstFbo)
@@ -234,7 +253,7 @@ public:
 		io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
 
 		auto now = high_resolution_clock::now();
-		duration<double> delta = m_lastTime - now;
+		duration<double> delta = now - m_lastTime;
 		m_lastTime = now;
 		auto dt = delta.count();
 		io.DeltaTime = dt > 0 ? static_cast<float>(dt) : 1 / 60.f;
@@ -242,17 +261,29 @@ public:
 		ImGui::NewFrame();
 
 		testGui();
+		ImGui::Text("Delta time %.3f", dt);
 
 		ImGui::Render();
 
 		renderGui(ImGui::GetDrawData());
 
-		parentDocument()->getGUI().updateView();
+		auto doc = parentDocument();
+		if (!doc->animationIsPlaying())
+		{
+			auto& gui = doc->getGUI();
+			TimedFunctions::instance().delayRun(1 / 60.0, [&gui]() {
+				gui.updateView();
+			});
+		}
+
+		for (int i = 0; i < 3; ++i)
+			io.MouseDown[i] = m_mouseButtons[i];
 	}
 
 protected:
 	msg::Observer m_observer;
 
+	bool m_mouseButtons[3];
 	high_resolution_clock::time_point m_lastTime;
 
 	graphics::Texture m_fontTexture;
