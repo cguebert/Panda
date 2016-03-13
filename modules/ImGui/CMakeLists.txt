@@ -15,6 +15,7 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
+	ImGuiData.cpp
 	ImGuiWindow.cpp
 	ImGuiWrapper.cpp
 	imgui/imgui.cpp
