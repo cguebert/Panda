@@ -122,6 +122,7 @@ Color Gradient::interpolate(const Color& v1, const Color& v2, float amt)
 Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, float amt)
 {
 	Gradient grad;
+	grad.clear();
 	const auto& stops1 = g1.stops();
 	const auto& stops2 = g2.stops();
 
