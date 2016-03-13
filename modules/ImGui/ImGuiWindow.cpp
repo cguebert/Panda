@@ -17,7 +17,11 @@ public:
 	ImGui_Window(PandaDocument* doc)
 		: DockObject(doc)
 		, m_wrapper(ImGui_Wrapper::instance(doc))
+		, m_title(initData(std::string("Panda"), "title", "Title of the ImGui window"))
+		, m_position(initData(types::Point(100, 100), "position", "Position of the ImGui window"))
+		, m_size(initData(types::Point(0, 0), "size", "Size of the ImGui window. Set to (0,0) for auto fit"))
 	{
+		addInput(m_title);
 	}
 
 	bool accepts(DockableObject* dockable) const override
@@ -27,16 +31,32 @@ public:
 
 	void fillGui() override
 	{
+		types::Point pos = m_position.getValue(), size = m_size.getValue();
+		ImGui::SetNextWindowPos({ pos.x, pos.y });
+		ImGui::SetNextWindowSize({ size.x, size.y });
+		ImGui::Begin(m_title.getValue().c_str());
+
 		for (auto object : getDockedObjects())
 		{
 			auto dockable = dynamic_cast<BaseImGuiObject*>(object);
 			if (dockable)
 				dockable->fillGui();
 		}
+
+		ImVec2 nPos = ImGui::GetWindowPos(), nSize = ImGui::GetWindowSize();
+		ImGui::End();
+
+		if (pos.x != nPos.x || pos.y != nPos.y)
+			m_position.setValue({ nPos.x, nPos.y });
+		if (size != types::Point::zero() && (size.x != nSize.x || size.y != nSize.y))
+			m_size.setValue({ nSize.x, nSize.y });
 	}
 
 protected:
 	std::shared_ptr<ImGui_Wrapper> m_wrapper;
+
+	Data<std::string> m_title;
+	Data<types::Point> m_position, m_size;
 };
 
 int ImGui_WindowClass = RegisterObject<ImGui_Window>("ImGui/ImGui window").setDescription("Create an ImGui window");

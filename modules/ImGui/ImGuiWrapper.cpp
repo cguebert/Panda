@@ -30,9 +30,9 @@ std::shared_ptr<ImGui_Wrapper> ImGui_Wrapper::instance(PandaDocument* doc)
 	static std::weak_ptr<ImGui_Wrapper> ptr;
 	if (ptr.expired())
 	{
-		auto engine = std::shared_ptr<ImGui_Wrapper>(new ImGui_Wrapper(doc));
-		ptr = engine;
-		return engine;
+		auto wrapper = std::shared_ptr<ImGui_Wrapper>(new ImGui_Wrapper(doc));
+		ptr = wrapper;
+		return wrapper;
 	}
 	else
 		return ptr.lock();
@@ -70,6 +70,8 @@ ImGui_Wrapper::ImGui_Wrapper(PandaDocument* doc)
 	io.KeyMap[ImGuiKey_X] = 0x58;
 	io.KeyMap[ImGuiKey_Y] = 0x59;
 	io.KeyMap[ImGuiKey_Z] = 0x5a;
+
+	io.IniFilename = nullptr;
 }
 
 ImGui_Wrapper::~ImGui_Wrapper()
