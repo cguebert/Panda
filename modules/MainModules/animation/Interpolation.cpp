@@ -3,10 +3,12 @@
 #include <panda/object/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/EasingFunctions.h>
+#include <panda/types/Gradient.h>
 
 namespace panda {
 
 using types::Color;
+using types::Gradient;
 using types::Point;
 
 template<class T>
@@ -86,6 +88,6 @@ protected:
 int AnimationInterpolation_DoubleClass = RegisterObject< AnimationInterpolation<float> >("Animation/Interpolation/Reals").setName("Interpolation reals").setDescription("Interpolate between 2 reals");
 int AnimationInterpolation_PointsClass = RegisterObject< AnimationInterpolation<Point> >("Animation/Interpolation/Points").setName("Interpolation points").setDescription("Interpolate between 2 points");
 int AnimationInterpolation_ColorClass = RegisterObject< AnimationInterpolation<Color> >("Animation/Interpolation/Colors").setName("Interpolation colors").setDescription("Interpolate between 2 colors");
-
+int AnimationInterpolation_GradientClass = RegisterObject< AnimationInterpolation<Gradient> >("Animation/Interpolation/Gradients").setName("Interpolation gradients").setDescription("Interpolate between 2 gradients");
 
 } // namespace Panda

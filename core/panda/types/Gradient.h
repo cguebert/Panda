@@ -59,6 +59,9 @@ protected:
 	Extend m_extend;
 };
 
+inline Gradient interpolate(const Gradient& g1, const Gradient& g2, float amt)
+{ return Gradient::interpolate(g1, g2, amt); }
+
 inline int Gradient::size() const
 { return m_stops.size(); }
 
