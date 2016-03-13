@@ -24,6 +24,15 @@ public:
 	Rect(const Point& p, float w, float h);
 
 	void set(float nx1, float ny1, float nx2, float ny2);
+	void set(const Rect& p);
+
+	Rect& operator=(const Rect& p);
+
+	float& operator[](int n);
+	const float& operator[](int n) const;
+
+	float* data();
+	const float* data() const;
 
 	void canonicalize();
 	Rect canonicalized() const;
@@ -122,6 +131,24 @@ inline Rect::Rect(const Point& p, float w, float h)
 
 inline void Rect::set(float nx1, float ny1, float nx2, float ny2)
 { x1 = nx1; y1 = ny1; x2 = nx2; y2 = ny2; }
+
+inline void Rect::set(const Rect& p)
+{ x1 = p.x1; y1 = p.y1; x2 = p.x2; y2 = p.y2; }
+
+inline Rect& Rect::operator=(const Rect& p)
+{ x1 = p.x1; y1 = p.y1; x2 = p.x2; y2 = p.y2; return *this; }
+
+inline float& Rect::operator[](int n)
+{ assert(n >= 0 && n <= 3); return (&x1)[n]; }
+
+inline const float& Rect::operator[](int n) const
+{ assert(n >= 0 && n <= 3); return (&x1)[n]; }
+
+inline float* Rect::data()
+{ return &x1; }
+
+inline const float* Rect::data() const
+{ return &x1; }
 
 inline void Rect::canonicalize()
 { if(x1 > x2) std::swap(x1, x2); if(y1 > y2) std::swap(y1, y2); }
