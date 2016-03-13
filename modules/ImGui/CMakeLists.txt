@@ -4,6 +4,8 @@ set(PROJECT_NAME "ImGui")
 project(${PROJECT_NAME})
 
 set(HEADER_FILES
+	ImGuiBase.h
+	ImGuiWrapper.h
 	imgui/imconfig.h
 	imgui/imgui.h
 	imgui/imgui_internal.h
@@ -13,7 +15,8 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
-	ImGuiObject.cpp
+	ImGuiWindow.cpp
+	ImGuiWrapper.cpp
 	imgui/imgui.cpp
 	imgui/imgui_demo.cpp
 	imgui/imgui_draw.cpp
