@@ -34,8 +34,22 @@ public:
 		types::Point pos = m_position.getValue(), size = m_size.getValue();
 		ImGui::SetNextWindowPos({ pos.x, pos.y });
 		ImGui::SetNextWindowSize({ size.x, size.y });
-		ImGui::Begin(m_title.getValue().c_str());
 
+		ImGui::Begin(m_title.getValue().c_str());
+		
+		// Save the window position
+		ImVec2 nPos = ImGui::GetWindowPos();
+		if (pos.x != nPos.x || pos.y != nPos.y)
+			m_position.setValue({ nPos.x, nPos.y });
+
+		// If the window is collapsed, we can stop here
+		if (ImGui::IsWindowCollapsed())
+		{
+			ImGui::End();
+			return;
+		}
+
+		// Draw the widgets
 		for (auto object : getDockedObjects())
 		{
 			auto dockable = dynamic_cast<BaseImGuiObject*>(object);
@@ -43,13 +57,12 @@ public:
 				dockable->fillGui();
 		}
 
-		ImVec2 nPos = ImGui::GetWindowPos(), nSize = ImGui::GetWindowSize();
-		ImGui::End();
-
-		if (pos.x != nPos.x || pos.y != nPos.y)
-			m_position.setValue({ nPos.x, nPos.y });
+		// Save the window size
+		ImVec2 nSize = ImGui::GetWindowSize();
 		if (size != types::Point::zero() && (size.x != nSize.x || size.y != nSize.y))
 			m_size.setValue({ nSize.x, nSize.y });
+
+		ImGui::End();
 	}
 
 protected:
