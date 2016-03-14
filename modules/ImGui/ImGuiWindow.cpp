@@ -3,6 +3,7 @@
 
 #include <panda/object/Dockable.h>
 #include <panda/object/ObjectFactory.h>
+#include <panda/helper/algorithm.h>
 
 #include "imgui/imgui.h"
 
@@ -19,7 +20,7 @@ public:
 		, m_wrapper(ImGui_Wrapper::instance(doc))
 		, m_title(initData(std::string("Panda"), "title", "Title of the ImGui window"))
 		, m_position(initData(types::Point(100, 100), "position", "Position of the ImGui window"))
-		, m_size(initData(types::Point(0, 0), "size", "Size of the ImGui window. Set to (0,0) for auto fit"))
+		, m_size(initData(types::Point(300, 200), "size", "Size of the ImGui window. Set to (0,0) for auto fit"))
 	{
 		addInput(m_title);
 	}
@@ -27,6 +28,34 @@ public:
 	bool accepts(DockableObject* dockable) const override
 	{
 		return dynamic_cast<BaseImGuiObject*>(dockable) != nullptr;
+	}
+
+	void verifyFieldNames()
+	{
+		std::vector<std::string> names;
+		for (auto object : getDockedObjects())
+		{
+			auto dockable = dynamic_cast<BaseImGuiObject*>(object);
+			if (!dockable)
+				continue;
+			
+			std::string& name = dockable->fieldName();
+			if (helper::contains(names, name)) // It would be a duplicate
+			{
+				// We want to add a number behind the name
+				for (int i = 2; i < 20; ++i)
+				{
+					std::string tmp = name + " " + std::to_string(i);
+					if (!helper::contains(names, tmp))
+					{
+						name = tmp;
+						break;
+					}
+				}
+			}
+
+			names.push_back(name);
+		}
 	}
 
 	void fillGui() override
@@ -48,6 +77,8 @@ public:
 			ImGui::End();
 			return;
 		}
+
+		verifyFieldNames();
 
 		// Draw the widgets
 		for (auto object : getDockedObjects())

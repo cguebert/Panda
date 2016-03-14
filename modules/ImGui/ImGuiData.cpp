@@ -21,11 +21,11 @@ public:
 
 	ImGui_Data(PandaDocument* doc)
 		: DockableObject(doc)
-		, m_fieldName(initData(getAutoFieldName(), "name", "The name of the field"))
+		, m_fieldNameData(initData(getAutoFieldName(), "name", "The name of the field"))
 		, m_initValue(initData("init", "The initial value"))
 		, m_outputValue(initData("value", "The value, potentially modified using ImGui"))
 	{
-		addInput(m_fieldName);
+		addInput(m_fieldNameData);
 		addInput(m_initValue);
 		
 		addOutput(m_outputValue);
@@ -36,6 +36,12 @@ public:
 		m_outputValue.setValue(m_initValue.getValue());
 	}
 
+	std::string& fieldName() override
+	{
+		m_fieldName = m_fieldNameData.getValue();
+		return m_fieldName;
+	}
+
 protected:
 	std::string getAutoFieldName()
 	{
@@ -44,8 +50,9 @@ protected:
 		return trait->valueTypeName();
 	}
 
-	Data<std::string> m_fieldName;
+	Data<std::string> m_fieldNameData;
 	Data<T> m_initValue, m_outputValue;
+	std::string m_fieldName;
 };
 
 //****************************************************************************//
@@ -66,7 +73,7 @@ public:
 	{
 		int step = m_step.getValue();
 		int value = m_outputValue.getValue();
-		if (ImGui::InputInt(m_fieldName.getValue().c_str(), &value, step, step * 10))
+		if (ImGui::InputInt(m_fieldName.c_str(), &value, step, step * 10))
 			m_outputValue.setValue(value);
 	}
 
@@ -95,7 +102,7 @@ public:
 	{
 		int minV = m_min.getValue(), maxV = m_max.getValue();
 		int value = m_outputValue.getValue();
-		if (ImGui::SliderInt(m_fieldName.getValue().c_str(), &value, minV, maxV))
+		if (ImGui::SliderInt(m_fieldName.c_str(), &value, minV, maxV))
 			m_outputValue.setValue(value);
 	}
 
@@ -122,7 +129,7 @@ public:
 	{
 		float step = m_step.getValue();
 		float value = m_outputValue.getValue();
-		if (ImGui::InputFloat(m_fieldName.getValue().c_str(), &value, step, step * 10))
+		if (ImGui::InputFloat(m_fieldName.c_str(), &value, step, step * 10))
 			m_outputValue.setValue(value);
 	}
 
@@ -151,7 +158,7 @@ public:
 	{
 		float minV = m_min.getValue(), maxV = m_max.getValue();
 		float value = m_outputValue.getValue();
-		if (ImGui::SliderFloat(m_fieldName.getValue().c_str(), &value, minV, maxV))
+		if (ImGui::SliderFloat(m_fieldName.c_str(), &value, minV, maxV))
 			m_outputValue.setValue(value);
 	}
 
@@ -173,7 +180,7 @@ public:
 	void fillGui() override
 	{
 		types::Point value = m_outputValue.getValue();
-		if (ImGui::InputFloat2(m_fieldName.getValue().c_str(), value.data()))
+		if (ImGui::InputFloat2(m_fieldName.c_str(), value.data()))
 			m_outputValue.setValue(value);
 	}
 };
@@ -200,7 +207,7 @@ public:
 	{
 		float minV = m_min.getValue(), maxV = m_max.getValue();
 		types::Point value = m_outputValue.getValue();
-		if (ImGui::SliderFloat2(m_fieldName.getValue().c_str(), value.data(), minV, maxV))
+		if (ImGui::SliderFloat2(m_fieldName.c_str(), value.data(), minV, maxV))
 			m_outputValue.setValue(value);
 	}
 
@@ -222,7 +229,7 @@ public:
 	void fillGui() override
 	{
 		types::Rect value = m_outputValue.getValue();
-		if (ImGui::InputFloat4(m_fieldName.getValue().c_str(), value.data()))
+		if (ImGui::InputFloat4(m_fieldName.c_str(), value.data()))
 			m_outputValue.setValue(value);
 	}
 };
@@ -249,7 +256,7 @@ public:
 	{
 		float minV = m_min.getValue(), maxV = m_max.getValue();
 		types::Rect value = m_outputValue.getValue();
-		if (ImGui::SliderFloat4(m_fieldName.getValue().c_str(), value.data(), minV, maxV))
+		if (ImGui::SliderFloat4(m_fieldName.c_str(), value.data(), minV, maxV))
 			m_outputValue.setValue(value);
 	}
 
@@ -271,7 +278,7 @@ public:
 	void fillGui() override
 	{
 		types::Color value = m_outputValue.getValue();
-		if (ImGui::ColorEdit4(m_fieldName.getValue().c_str(), value.data()))
+		if (ImGui::ColorEdit4(m_fieldName.c_str(), value.data()))
 			m_outputValue.setValue(value);
 	}
 };
