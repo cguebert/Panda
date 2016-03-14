@@ -56,20 +56,11 @@ OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
 
 	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
 	setMouseTracking(true);
-
-	resize(convert(doc->getRenderSize()));
-
-	m_observer.get(doc->getSignals().renderSizeChanged).connect<OpenGLRenderView, &OpenGLRenderView::renderSizeChanged>(this);
 }
 
 QSize OpenGLRenderView::minimumSizeHint() const
 {
 	return QSize(300, 200);
-}
-
-QSize OpenGLRenderView::sizeHint() const
-{
-	return convert(m_document->getRenderSize());
 }
 
 void OpenGLRenderView::setAdjustRenderSize(bool adjust)
@@ -82,12 +73,6 @@ void OpenGLRenderView::setAdjustRenderSize(bool adjust)
 	}
 }
 
-void OpenGLRenderView::renderSizeChanged()
-{
-	if(!m_adjustRenderSize)
-		resize(convert(m_document->getRenderSize()));
-}
-
 void OpenGLRenderView::initializeGL()
 {
 	m_document->getRenderer()->initializeGL();
@@ -95,7 +80,8 @@ void OpenGLRenderView::initializeGL()
 
 void OpenGLRenderView::resizeGL(int w, int h)
 {
-	m_document->getRenderer()->resizeGL(w, h);
+	if (m_adjustRenderSize)
+		m_document->setRenderSize({ w, h });
 }
 
 void OpenGLRenderView::paintGL()
@@ -106,20 +92,32 @@ void OpenGLRenderView::paintGL()
 	auto fbo = m_document->getFBO();
 
 	QRect viewRect = contentsRect();
-	panda::graphics::RectInt rect(0, 0, viewRect.width(), viewRect.height());
-	panda::graphics::Framebuffer::blitFramebuffer(defaultFramebufferObject(), rect, fbo.id(), rect);
+	auto col = palette().background().color();
+	glViewport(0, 0, viewRect.width(), viewRect.height());
+	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	auto docSize = fbo.size();
+	int w = docSize.width(), h = docSize.height();
+	panda::graphics::RectInt srcRect(0, 0, w, h);
+
+	m_deltaPos = { (viewRect.width() - w) / 2, (viewRect.height() - h) / 2 };
+	panda::graphics::RectInt dstRect(m_deltaPos.x, m_deltaPos.y, m_deltaPos.x + w, m_deltaPos.y + h);
+	panda::graphics::Framebuffer::blitFramebuffer(defaultFramebufferObject(), dstRect, fbo.id(), srcRect);
 
 	m_document->getSignals().postRender.run(viewRect.width(), viewRect.height(), defaultFramebufferObject());
 }
 
 void OpenGLRenderView::mouseMoveEvent(QMouseEvent* event)
 {
-	m_document->mouseMoveEvent(panda::types::Point(event->localPos().x(), event->localPos().y()));
+	panda::types::Point globalPos(event->localPos().x(), event->localPos().y());
+	panda::types::Point localPos(globalPos.x - m_deltaPos.x, globalPos.y - m_deltaPos.y);
+	m_document->mouseMoveEvent(localPos, globalPos);
 }
 
 void OpenGLRenderView::mousePressEvent(QMouseEvent* event)
 {
-	panda::types::Point pos(event->localPos().x(), event->localPos().y());
+	panda::types::Point pos(event->localPos().x() - m_deltaPos.x, event->localPos().y() - m_deltaPos.y);
 	switch (event->button())
 	{
 	case Qt::LeftButton:	m_document->mouseButtonEvent(0, true, pos); break;
@@ -130,7 +128,7 @@ void OpenGLRenderView::mousePressEvent(QMouseEvent* event)
 
 void OpenGLRenderView::mouseReleaseEvent(QMouseEvent* event)
 {
-	panda::types::Point pos(event->localPos().x(), event->localPos().y());
+	panda::types::Point pos(event->localPos().x() - m_deltaPos.x, event->localPos().y() - m_deltaPos.y);
 	switch (event->button())
 	{
 	case Qt::LeftButton:	m_document->mouseButtonEvent(0, false, pos); break;

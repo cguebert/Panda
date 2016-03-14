@@ -85,7 +85,7 @@ public:
 	bool animationIsMultithread() const;
 
 	types::Point getMousePosition() const;
-	void mouseMoveEvent(types::Point pos);
+	void mouseMoveEvent(types::Point localPos, types::Point globalPos);
 
 	int getMouseClick() const; // Only gives the status of the left button
 	void mouseButtonEvent(int button, bool isPressed, types::Point pos);

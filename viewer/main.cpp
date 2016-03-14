@@ -94,7 +94,7 @@ void char_callback(GLFWwindow* window, unsigned int c)
 void mouse_pos_callback(GLFWwindow* window, double x, double y)
 {
 	mousePos = panda::types::Point(static_cast<float>(x), static_cast<float>(y));
-	document->mouseMoveEvent(mousePos);
+	document->mouseMoveEvent(mousePos, mousePos);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -121,7 +121,6 @@ void drop_callback(GLFWwindow* window, int count, const char** paths)
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	document->setRenderSize({ width, height });
-	document->getRenderer()->resizeGL(width, height);
 	currentWidth = width;
 	currentHeight = height;
 }
@@ -200,7 +199,6 @@ bool init(const std::string& filePath = "")
 	}
 
 	document->setRenderSize({ currentWidth, currentHeight }); // Loading the file has changed the render size
-	renderer->resizeGL(currentWidth, currentHeight);
 	renderer->setRenderingMainView(true);
 
 	return true;

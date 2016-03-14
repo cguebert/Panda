@@ -25,13 +25,12 @@ public:
 	msg::Signal<void(const XmlElement&, panda::PandaObject*)> loadingObject;
 	msg::Signal<void()> selectionChanged;
 	msg::Signal<void()> timeChanged;
-	msg::Signal<void()> renderSizeChanged;
 	msg::Signal<void()> reorderedObjects;
 	msg::Signal<void()> startLoading;
 	msg::Signal<void()> loadingFinished;
 	msg::Signal<void(panda::DockableObject*)> changedDock;
-	msg::Signal<void(int buttonId, bool isPressed, panda::types::Point position)> mouseButtonEvent;
-	msg::Signal<void(panda::types::Point position)> mouseMoveEvent;
+	msg::Signal<void(int buttonId, bool isPressed, panda::types::Point localPos)> mouseButtonEvent;
+	msg::Signal<void(panda::types::Point localPos, panda::types::Point globalPos)> mouseMoveEvent;
 	msg::Signal<void(int key, bool isPressed)> keyEvent;
 	msg::Signal<void(const std::string& text)> textEvent;
 	msg::Signal<void(int w, int h, int fbo)> postRender;

@@ -79,16 +79,15 @@ ImGui_Wrapper::~ImGui_Wrapper()
 	ImGui::Shutdown();
 }
 
-void ImGui_Wrapper::onMouseMove(panda::types::Point pt)
+void ImGui_Wrapper::onMouseMove(panda::types::Point /*localPt*/, panda::types::Point globalPt)
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = { pt.x, pt.y };
+	io.MousePos = { globalPt.x, globalPt.y };
 }
 
-void ImGui_Wrapper::onMouseButton(int button, bool isPressed, panda::types::Point pt)
+void ImGui_Wrapper::onMouseButton(int button, bool isPressed, panda::types::Point /*pt*/)
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = { pt.x, pt.y };
 		
 	if (button >= 0 && button < 3)
 	{

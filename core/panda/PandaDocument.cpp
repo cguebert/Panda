@@ -372,9 +372,10 @@ void PandaDocument::resetDocument()
 	m_mouseClickVal = 0;
 	m_mouseClick.setValue(0);
 	m_useTimer.setValue(1);
-	m_renderSize.setValue(Point(800,600));
 	m_backgroundColor.setValue(Color::white());
 	m_nbThreads.setValue(0);
+
+	setRenderSize({ 800, 600 });
 
 	m_animPlaying = false;
 	m_animMultithread = false;
@@ -469,10 +470,10 @@ void PandaDocument::setRenderSize(graphics::Size size)
 		); 
 }
 
-void PandaDocument::mouseMoveEvent(types::Point pos)
+void PandaDocument::mouseMoveEvent(types::Point localPos, types::Point globalPos)
 { 
-	m_mousePositionBuffer = pos;
-	m_signals->mouseMoveEvent.run(pos);
+	m_mousePositionBuffer = localPos;
+	m_signals->mouseMoveEvent.run(localPos, globalPos);
 }
 
 void PandaDocument::mouseButtonEvent(int button, bool isPressed, types::Point pos)
@@ -733,9 +734,6 @@ void PandaDocument::setDirtyValue(const DataNode* caller)
 	PandaObject::setDirtyValue(caller);
 	if(!isInStep() && !getCurrentSelectedObject())
 		m_signals->selectedObjectIsDirty.run(this);
-
-	if(caller == &m_renderSize)
-		m_signals->renderSizeChanged.run();
 }
 
 void PandaDocument::play(bool playing)

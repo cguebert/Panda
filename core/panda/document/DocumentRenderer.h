@@ -15,7 +15,7 @@ public:
 	DocumentRenderer(PandaDocument& document);
 
 	void initializeGL();
-	void resizeGL(int w, int h);
+	void resizeGL();
 	void renderGL();
 
 	bool renderingMainView() const;

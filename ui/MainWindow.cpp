@@ -54,6 +54,7 @@ MainWindow::MainWindow()
 	m_openGLViewContainer->setFrameStyle(0);
 	m_openGLViewContainer->setAlignment(Qt::AlignCenter);
 	m_openGLViewContainer->setWidget(m_openGLRenderView);
+	m_openGLViewContainer->setWidgetResizable(true);
 
 	m_tabWidget = new DetachableTabWidget;
 	m_tabWidget->addTab(m_graphViewContainer, tr("Graph"));

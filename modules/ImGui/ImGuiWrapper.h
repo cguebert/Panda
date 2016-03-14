@@ -32,7 +32,7 @@ private:
 	void update(int width, int height, int dstFbo);
 	void updateObjects();
 
-	void onMouseMove(panda::types::Point pt);
+	void onMouseMove(panda::types::Point localPt, panda::types::Point globalPt);
 	void onMouseButton(int button, bool isPressed, panda::types::Point pt);
 	void onKeyEvent(int key, bool isPressed);
 	void onTextEvent(const std::string& text);

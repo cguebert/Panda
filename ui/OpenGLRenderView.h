@@ -4,6 +4,7 @@
 #include <QOpenGLWidget>
 
 #include <panda/messaging.h>
+#include <panda/graphics/PointInt.h>
 
 namespace panda
 {
@@ -19,12 +20,8 @@ public:
 	OpenGLRenderView(panda::PandaDocument* doc, QWidget* parent = nullptr);
 
 	QSize minimumSizeHint() const;
-	QSize sizeHint() const;
 
 	void setAdjustRenderSize(bool adjust);
-
-public slots:
-	void renderSizeChanged();
 
 protected:
 	void initializeGL() override;
@@ -43,6 +40,8 @@ protected:
 	bool m_adjustRenderSize;
 
 	panda::msg::Observer m_observer;
+
+	panda::graphics::PointInt m_deltaPos;
 };
 
 #endif // OPENGLRENDERVIEW_H

@@ -43,27 +43,31 @@ void DocumentRenderer::initializeGL()
 	m_rectModel.setVertices(verts);
 	m_rectModel.setTexCoords(texCoords);
 	m_rectModel.create();
+
+	resizeGL();
 }
 
-void DocumentRenderer::resizeGL(int w, int h)
+void DocumentRenderer::resizeGL()
 {
-	auto renderSize = graphics::Size(w, h);
+	auto renderSize = m_document.getRenderSize();
 	if (!m_renderFBO || m_renderFBO.size() != renderSize)
 	{
 		m_renderFBO = graphics::Framebuffer(renderSize);
 		m_secondRenderFBO = graphics::Framebuffer(renderSize);
 
+		int w = renderSize.width(), h = renderSize.height();
 		GLfloat fw = static_cast<float>(w), fh = static_cast<float>(h);
 		std::vector<GLfloat> verts = { 0, 0, fw, 0, 0, fh, fw, fh };
 		m_rectModel.setVertices(verts);
 
-		glViewport(0, 0, w, h);
 		m_MVP.ortho(0, fw, fh, 0, -10, 10);
 	}
 }
 
 void DocumentRenderer::renderGL()
 {
+	resizeGL();
+
 	m_document.getDefaultLayer()->updateIfDirty();
 
 	for(auto& obj : m_document.getObjects())
