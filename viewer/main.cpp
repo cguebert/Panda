@@ -45,16 +45,30 @@ void error_callback(int error, const char* description)
     std::cerr << "GLFW Error: " << description << std::endl;
 }
 
+int convertKey(int key)
+{
+	if (key == GLFW_KEY_KP_ENTER)
+		return GLFW_KEY_ENTER;
+	auto name = glfwGetKeyName(key, -1);
+	if (name != nullptr)
+	{
+		int tr = name[0];
+		if (tr >= GLFW_KEY_A && tr <= GLFW_KEY_Z)
+			return tr;
+	}
+	return key;
+}
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if (action == GLFW_PRESS)
 	{
 		switch (key)
 		{
-		case GLFW_KEY_F:
+		case GLFW_KEY_F1:
 			std::cout << "FPS: " << document->getFPS() << std::endl;
 			break;
-		case GLFW_KEY_V:
+		case GLFW_KEY_F2:
 			verticalSync = !verticalSync;
 			glfwSwapInterval(verticalSync ? 1 : 0);
 			break;
@@ -68,12 +82,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		case GLFW_KEY_F7:
 			document->rewind();
 			break;
-		case GLFW_KEY_ESCAPE:
+		case GLFW_KEY_F12:
 			glfwSetWindowShouldClose(window, GL_TRUE);
-			break;
+			return;
 		}
 	}
 
+	key = convertKey(key);
 	if (action == GLFW_PRESS)
 		document->keyEvent(key, true);
 	else if (action == GLFW_RELEASE)
