@@ -8,6 +8,7 @@
 
 namespace panda {
 
+class DockableObject;
 class PandaObject;
 class XmlElement;
 
