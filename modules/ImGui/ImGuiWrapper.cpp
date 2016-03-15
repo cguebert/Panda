@@ -279,6 +279,7 @@ void ImGui_Wrapper::update(int width, int height, int dstFbo)
 
 	ImGui::Render();
 
+	glBindFramebuffer(GL_FRAMEBUFFER, dstFbo); 
 	renderGui();
 
 	if (!m_document->animationIsPlaying())
