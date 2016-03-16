@@ -47,14 +47,10 @@ protected:
 	void readyTask(const SchedulerTask* task); // Add the task to the ready queue
 	void testForEnd();
 
-	std::vector<PandaObject*> expandObjectsList(std::vector<PandaObject*> objects);
 	std::vector<DataNode*> computeConnected(const std::vector<DataNode*>& nodes) const; // Get the outputs of the nodes, sorted by distance
 	std::vector<DataNode*> computeConnected(DataNode* node) const;
 	std::vector<int> getTasks(const std::vector<DataNode*>& nodes) const;
 	void prepareLaterUpdate(BaseData* data);
-
-	typedef std::function<void(PandaObject* object)> ObjectFunctor;
-	void forEachObjectOutput(PandaObject* object, ObjectFunctor func);
 
 	struct SchedulerTask
 	{

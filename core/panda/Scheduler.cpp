@@ -1,31 +1,11 @@
 #include <panda/Scheduler.h>
 #include <panda/PandaDocument.h>
 #include <panda/UpdateLogger.h>
-#include <panda/object/Group.h>
+#include <panda/document/GraphUtils.h>
 #include <panda/helper/algorithm.h>
 
 #include <deque>
 #include <thread>
-
-//#include <iostream>
-
-namespace
-{
-
-// For debug purposes
-std::string getName(panda::DataNode* node)
-{
-	auto data = dynamic_cast<panda::BaseData*>(node);
-	if(data)
-		return data->getOwner()->getName() + "/" + data->getName();
-	auto object = dynamic_cast<panda::PandaObject*>(node);
-	if(object)
-		return object->getName();
-
-	return "";
-}
-
-}
 
 namespace panda
 {
@@ -259,72 +239,13 @@ void Scheduler::buildDirtyList()
 	m_setDirtyList = computeConnected(nodes);
 }
 
-std::vector<PandaObject*> Scheduler::expandObjectsList(std::vector<PandaObject*> objects)
-{
-	unsigned int i=0;
-	while(i < objects.size())
-	{
-		Group* group = dynamic_cast<Group*>(objects[i]);
-		if(group)
-		{
-			helper::removeAt(objects, i);
-			for(auto object : group->getObjects())
-				objects.push_back(object.get());
-		}
-		else
-			++i;
-	}
-	return objects;
-}
-
-void Scheduler::forEachObjectOutput(PandaObject* startObject, Scheduler::ObjectFunctor func)
-{
-	for(auto output : startObject->getOutputs())
-	{
-		PandaObject* object = dynamic_cast<PandaObject*>(output);
-		BaseData* data = dynamic_cast<BaseData*>(output);
-		if(object) // Some objects can be directly connected to others objects (Docks and Dockable for example)
-		{
-			func(object);
-		}
-		else if(data)
-		{
-			for(auto node : data->getOutputs())
-			{
-				PandaObject* object2 = dynamic_cast<PandaObject*>(node);
-				BaseData* data2 = dynamic_cast<BaseData*>(node);
-				if(object2)
-				{ // Output data directly connected to another object
-					func(object2);
-				}
-				else if(data2)
-				{
-					if(data2->getOwner() && !dynamic_cast<Group*>(data2->getOwner()))
-					{ // Most objects' data are connected to another object's data
-						func(data2->getOwner());
-					}
-					else
-					{ // Groups can have inside object's data connected to the group's data, connected to outside object's data.
-						for(auto node2 : data2->getOutputs())
-						{
-							BaseData* data3 = dynamic_cast<BaseData*>(node2);
-							if(data3 && data3->getOwner())
-								func(data3->getOwner());
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
 void Scheduler::buildUpdateGraph()
 {
 	// Initialize the tasks list
 	std::vector<PandaObject*> objects;
 	for(auto object : m_document->getObjects())
 		objects.push_back(object.get());
-	objects = expandObjectsList(objects);
+	objects = graph::expandObjectsList(objects);
 	int nb = objects.size();
 	m_updateTasks.clear();
 	m_updateTasks.resize(nb);
@@ -340,7 +261,7 @@ void Scheduler::buildUpdateGraph()
 	// Compute outputs of each object
 	for(auto& task : m_updateTasks)
 	{
-		forEachObjectOutput(task.object, [this, &task](PandaObject* object){
+		graph::forEachObjectOutput(task.object, [this, &task](PandaObject* object){
 			if(m_objectsIndexMap.count(object))
 				task.outputs.push_back(m_objectsIndexMap[object]);
 		});
@@ -360,18 +281,6 @@ void Scheduler::buildUpdateGraph()
 				prepareLaterUpdate(data);
 		}
 	}
-/*
-	// Debug
-	for(int i=0; i<nb; ++i)
-	{
-		const auto& task = m_updateTasks[i];
-		std::cout << i << " " << task.object->getName().toStdString() << std::endl;
-		std::cout << "  DirtyInputs: " << task.nbDirtyAtStart << "\t" << (task.dirtyAtStart?"dirtyAtStart":"") << std::endl;
-		std::cout << "  Outputs: ";
-		for(auto output : task.outputs)
-			std::cout << output << " ";
-		std::cout << std::endl;
-	}*/
 }
 
 void Scheduler::computeStartValues()
@@ -391,7 +300,7 @@ void Scheduler::computeStartValues()
 
 		m_updateTasks[m_objectsIndexMap[object]].dirtyAtStart = true;
 
-		forEachObjectOutput(object, [this](PandaObject* object){
+		graph::forEachObjectOutput(object, [this](PandaObject* object){
 			if (m_objectsIndexMap.count(object))
 				++m_updateTasks[m_objectsIndexMap[object]].nbDirtyAtStart;
 		});

@@ -10,6 +10,7 @@
 #include <panda/data/DataFactory.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/GraphUtils.h>
 #include <panda/object/Layer.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
@@ -369,8 +370,6 @@ void PandaDocument::resetDocument()
 	m_animTimeVal = 0.0;
 	m_animTime.setValue(0.0);
 	m_timestep.setValue((float)0.01);
-	m_mouseClickVal = 0;
-	m_mouseClick.setValue(0);
 	m_useTimer.setValue(1);
 	m_backgroundColor.setValue(Color::white());
 	m_nbThreads.setValue(0);
@@ -543,64 +542,13 @@ void PandaDocument::selectNone()
 
 void PandaDocument::selectConnected()
 {
-	if(!m_selectedObjects.empty())
-	{
-		std::set<PandaObject*> closedList, openList;
-		openList.insert(m_selectedObjects.begin(), m_selectedObjects.end());
-		while(!openList.empty())
-		{
-			PandaObject* object = *openList.begin();
-			openList.erase(object);
-			closedList.insert(object);
+	if (m_selectedObjects.empty())
+		return;
 
-			for(BaseData* data : object->getInputDatas())
-			{
-				if(data->getParent())
-				{
-					PandaObject* connected = data->getParent()->getOwner();
-					if(!closedList.count(connected))
-						openList.insert(connected);
-				}
-			}
-
-			for(BaseData* data : object->getOutputDatas())
-			{
-				for(DataNode* otherNode : data->getOutputs())
-				{
-					BaseData* otherData = dynamic_cast<BaseData*>(otherNode);
-					if(otherData)
-					{
-						PandaObject* connected = otherData->getOwner();
-						if (!closedList.count(connected))
-							openList.insert(connected);
-					}
-				}
-			}
-
-			DockableObject* dockable = dynamic_cast<DockableObject*>(object);
-			if(dockable)
-			{
-				PandaObject* dock = dockable->getParentDock();
-				if (dock != m_defaultLayer.get() && !closedList.count(dock))
-					openList.insert(dock);
-			}
-
-			DockObject* dock = dynamic_cast<DockObject*>(object);
-			if(dock)
-			{
-				for(auto dockable : dock->getDockedObjects())
-				{
-					if (!closedList.count(dockable))
-						openList.insert(dockable);
-				}
-			}
-		}
-
-		auto currentSelected = m_selectedObjects.back();
-		m_selectedObjects.assign(closedList.begin(), closedList.end());
-		setCurrentSelectedObject(currentSelected);
-		m_signals->selectionChanged.run();
-	}
+	auto currentSelected = m_selectedObjects.back();
+	m_selectedObjects = graph::computeConnectedObjects(m_selectedObjects);
+	setCurrentSelectedObject(currentSelected);
+	m_signals->selectionChanged.run();
 }
 
 void PandaDocument::addObject(ObjectPtr object)

@@ -29,6 +29,7 @@ set(HEADER_FILES
 	panda/data/DataNode.h
 	panda/document/DocumentRenderer.h
 	panda/document/DocumentSignals.h
+	panda/document/GraphUtils.h
 	panda/graphics/Buffer.h
 	panda/graphics/Framebuffer.h
 	panda/graphics/Image.h
@@ -100,6 +101,7 @@ set(SOURCE_FILES
 	panda/data/DataFactory.cpp
 	panda/data/DataNode.cpp
 	panda/document/DocumentRenderer.cpp
+	panda/document/GraphUtils.cpp
 	panda/graphics/Buffer.cpp
 	panda/graphics/Framebuffer.cpp
 	panda/graphics/Image.cpp
