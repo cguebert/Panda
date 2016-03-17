@@ -45,15 +45,6 @@ public:
 	explicit PandaDocument(gui::BaseGUI& gui);
 	~PandaDocument();
 
-	bool writeFile(const std::string& fileName);
-	bool readFile(const std::string& fileName, bool isImport=false);
-
-	std::string writeTextDocument();
-	bool readTextDocument(const std::string& text);
-
-	bool saveDoc(XmlElement& root, const ObjectsSelection& selected);
-	bool loadDoc(XmlElement& root);
-
 	void resetDocument();
 
 	void addObject(ObjectPtr object);
@@ -69,8 +60,8 @@ public:
 	PandaObject* getCurrentSelectedObject() const;
 	void setCurrentSelectedObject(PandaObject* object);
 	bool isSelected(PandaObject* object) const;
-	int getNbSelected() const;
 	const ObjectsSelection& getSelection() const;
+	void setSelection(const ObjectsSelection& selection);
 
 	types::Color getBackgroundColor() const;
 	void setBackgroundColor(types::Color color);
@@ -209,9 +200,6 @@ inline const PandaDocument::ObjectsList& PandaDocument::getObjects() const
 
 inline bool PandaDocument::isSelected(PandaObject* object) const
 { return std::find(m_selectedObjects.begin(), m_selectedObjects.end(), object) != m_selectedObjects.end(); }
-
-inline int PandaDocument::getNbSelected() const
-{ return m_selectedObjects.size(); }
 
 inline const PandaDocument::ObjectsSelection& PandaDocument::getSelection() const
 { return m_selectedObjects; }

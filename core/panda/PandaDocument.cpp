@@ -12,7 +12,6 @@
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
 #include <panda/object/Layer.h>
-#include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
 #include <panda/graphics/Framebuffer.h>
@@ -122,233 +121,6 @@ PandaDocument::~PandaDocument()
 
 	m_objects.clear();
 	m_undoStack->clear();
-}
-
-bool PandaDocument::writeFile(const std::string& fileName)
-{
-	XmlDocument doc;
-	auto root = doc.root();
-	root.setName("Panda");
-	save(root);	// The document's Datas
-	ObjectsSelection allObjects;
-	for(auto object : m_objects)
-		allObjects.push_back(object.get());
-	saveDoc(root, allObjects);	// The document and all of its objects
-
-	bool result = doc.saveToFile(fileName);
-	if (!result)
-		m_gui.messageBox(gui::MessageBoxType::warning, "Panda", "Cannot write file " + fileName);
-
-	return result;
-}
-
-bool PandaDocument::readFile(const std::string& fileName, bool isImport)
-{
-	XmlDocument doc;
-	if (!doc.loadFromFile(fileName))
-	{
-		m_gui.messageBox(gui::MessageBoxType::warning, "Panda", "Cannot parse xml file  " + fileName + ".");
-		return false;
-	}
-
-	auto root = doc.root();
-	if(!isImport)	// Bugfix: don't read the doc's datas if we are merging 2 documents
-		load(root);		// Only the document's Datas
-	loadDoc(root);	// All the document's objects
-
-	for(auto object : m_objects)
-		object->reset();
-
-	m_signals->selectionChanged.run();
-	m_signals->selectedObject.run(getCurrentSelectedObject());
-
-	return true;
-}
-
-std::string PandaDocument::writeTextDocument()
-{
-	XmlDocument doc;
-	auto root = doc.root();
-	root.setName("Panda");
-
-	saveDoc(root, m_selectedObjects);
-
-	return doc.saveToMemory();
-}
-
-bool PandaDocument::readTextDocument(const std::string& text)
-{
-	XmlDocument doc;
-	if (!doc.loadFromMemory(text))
-		return false;
-
-	bool bSelected = !m_selectedObjects.empty();
-	bool bVal = loadDoc(doc.root());
-
-	for(auto object : m_selectedObjects)
-		object->reset();
-
-	if(bSelected || !m_selectedObjects.empty())
-	{
-		m_signals->selectionChanged.run();
-		m_signals->selectedObject.run(getCurrentSelectedObject());
-	}
-
-	return bVal;
-}
-
-bool PandaDocument::saveDoc(XmlElement& root, const ObjectsSelection& selected)
-{
-	typedef std::pair<BaseData*, BaseData*> DataPair;
-	std::vector<DataPair> links;
-
-	typedef std::pair<uint32_t, uint32_t> IntPair;
-	std::vector<IntPair> dockedObjects;
-
-	// Saving objects
-	for(auto object : selected)
-	{
-		auto elem = root.addChild("Object");
-		elem.setAttribute("type", ObjectFactory::getRegistryName(object));
-		elem.setAttribute("index", object->getIndex());
-
-		object->save(elem, &selected);
-
-		// Preparing links
-		for(BaseData* data : object->getInputDatas())
-		{
-			BaseData* parent = data->getParent();
-			if(parent && helper::contains(selected, parent->getOwner()))
-				links.push_back(std::make_pair(data, parent));
-		}
-
-		// Preparing dockables list for docks
-		DockObject* dock = dynamic_cast<DockObject*>(object);
-		if(dock)
-		{
-			for(auto dockable : dock->getDockedObjects())
-				dockedObjects.push_back(std::make_pair(dock->getIndex(), dockable->getIndex()));
-		}
-
-		m_signals->savingObject.run(elem, object);
-	}
-
-	// Saving links
-	for(const auto& link : links)
-	{
-		auto elem = root.addChild("Link");
-		elem.setAttribute("object1", link.first->getOwner()->getIndex());
-		elem.setAttribute("data1", link.first->getName());
-		elem.setAttribute("object2", link.second->getOwner()->getIndex());
-		elem.setAttribute("data2", link.second->getName());
-	}
-
-	// Saving docked objects list
-	for(const auto& dockable : dockedObjects)
-	{
-		auto elem = root.addChild("Dock");
-		elem.setAttribute("dock", dockable.first);
-		elem.setAttribute("docked", dockable.second);
-	}
-
-	return true;
-}
-
-bool PandaDocument::loadDoc(XmlElement& root)
-{
-	m_selectedObjects.clear();
-	m_signals->startLoading.run();
-	std::map<uint32_t, uint32_t> importIndicesMap;
-	auto factory = ObjectFactory::getInstance();
-
-	using ObjectXmlPair = std::pair<std::shared_ptr<PandaObject>, XmlElement>;
-	std::vector<ObjectXmlPair> newObjects;
-
-	// Loading objects
-	auto elem = root.firstChild("Object");
-	while(elem)
-	{
-		std::string registryName = elem.attribute("type").toString();
-		if(registryName.empty())
-			return false;
-		uint32_t index = elem.attribute("index").toUnsigned();
-		auto object = factory->create(registryName, this);
-		if(object)
-		{
-			importIndicesMap[index] = object->getIndex();
-
-			if (!object->load(elem))
-				return false;
-
-			newObjects.emplace_back(object, elem);
-		}
-		else
-		{
-			m_gui.messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
-			return false;
-		}
-
-		elem = elem.nextSibling("Object");
-	}
-
-	// Now that we have created all the objects, we actually add them to the document
-	for (const auto& p : newObjects)
-	{
-		const auto& object = p.first;
-		addObject(object);
-		m_selectedObjects.push_back(object.get());
-		m_signals->loadingObject.run(p.second, object.get());
-	}
-
-	// Create links
-	elem = root.firstChild("Link");
-	while(elem)
-	{
-		uint32_t index1, index2;
-		std::string name1, name2;
-		index1 = elem.attribute("object1").toUnsigned();
-		index2 = elem.attribute("object2").toUnsigned();
-		index1 = importIndicesMap[index1];
-		index2 = importIndicesMap[index2];
-
-		name1 = elem.attribute("data1").toString();
-		name2 = elem.attribute("data2").toString();
-
-		BaseData *data1, *data2;
-		data1 = findData(index1, name1);
-		data2 = findData(index2, name2);
-		if(data1 && data2)
-			data1->setParent(data2);
-
-		elem = elem.nextSibling("Link");
-	}
-
-	// Put dockables in their docks
-	elem = root.firstChild("Dock");
-	while(elem)
-	{
-		uint32_t dockIndex, dockableIndex;
-		dockIndex = elem.attribute("dock").toUnsigned();
-		dockableIndex = elem.attribute("docked").toUnsigned();
-		dockIndex = importIndicesMap[dockIndex];
-		dockableIndex = importIndicesMap[dockableIndex];
-
-		DockObject* dock = dynamic_cast<DockObject*>(findObject(dockIndex));
-		DockableObject* dockable = dynamic_cast<DockableObject*>(findObject(dockableIndex));
-		if(dock && dockable)
-		{
-			DockObject* defaultDock = dockable->getDefaultDock();
-			if(defaultDock)
-				defaultDock->removeDockable(dockable);
-			dock->addDockable(dockable);
-		}
-
-		elem = elem.nextSibling("Dock");
-	}
-
-	m_signals->loadingFinished.run(); // For example if the view wants to do some computation
-
-	return true;
 }
 
 void PandaDocument::resetDocument()
@@ -496,6 +268,13 @@ void PandaDocument::keyEvent(int key, bool isPressed)
 void PandaDocument::textEvent(const std::string& text)
 {
 	m_signals->textEvent.run(text);
+}
+
+void PandaDocument::setSelection(const ObjectsSelection& selection)
+{
+	m_selectedObjects = selection;
+	m_signals->selectedObject.run(m_selectedObjects.empty() ? nullptr : m_selectedObjects.back());
+	m_signals->selectionChanged.run();
 }
 
 void PandaDocument::selectionAdd(PandaObject* object)

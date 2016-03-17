@@ -903,7 +903,7 @@ void GraphView::showAll()
 
 void GraphView::showAllSelected()
 {
-	if(m_pandaDocument->getNbSelected())
+	if(!m_pandaDocument->getSelection().empty())
 	{
 		QRectF totalView;
 		for(auto object : m_pandaDocument->getSelection())
@@ -924,7 +924,7 @@ void GraphView::showAllSelected()
 
 void GraphView::moveSelectedToCenter()
 {
-	if(m_pandaDocument->getNbSelected())
+	if(!m_pandaDocument->getSelection().empty())
 	{
 		QRectF totalView;
 		for(auto object : m_pandaDocument->getSelection())

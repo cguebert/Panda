@@ -5,6 +5,7 @@
 #include <panda/PluginsManager.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/Serialization.h>
 #include <panda/helper/system/FileRepository.h>
 
 #include "SimpleGUIImpl.h"
@@ -126,7 +127,7 @@ void drop_callback(GLFWwindow* window, int count, const char** paths)
 		return;
 
 	document->resetDocument();
-	document->readFile(paths[0]);
+	panda::serialization::readFile(document.get(), paths[0]);
 	document->clearCommands();
 	document->selectNone();
 	document->setRenderSize({ currentWidth, currentHeight });
@@ -209,7 +210,7 @@ bool init(const std::string& filePath = "")
 	
 	if (!filePath.empty())
 	{
-		document->readFile(filePath);
+		panda::serialization::readFile(document.get(), filePath);
 		document->play(true);
 	}
 

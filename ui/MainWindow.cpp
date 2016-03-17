@@ -23,6 +23,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/types/DataTraits.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/Serialization.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Group.h>
 #include <panda/helper/system/FileRepository.h>
@@ -829,7 +830,7 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile(const QString &fileName, bool import)
 {
-	if (!m_document->readFile(fileName.toStdString(), import))
+	if (!panda::serialization::readFile(m_document.get(), fileName.toStdString(), import))
 	{
 		statusBar()->showMessage(tr("Loading failed"), 2000);
 		return false;
@@ -850,7 +851,7 @@ bool MainWindow::loadFile(const QString &fileName, bool import)
 
 bool MainWindow::saveFile(const QString &fileName)
 {
-	if (!m_document->writeFile(fileName.toStdString()))
+	if (!panda::serialization::writeFile(m_document.get(), fileName.toStdString()))
 	{
 		statusBar()->showMessage(tr("Saving failed"), 2000);
 		return false;
@@ -971,7 +972,7 @@ void MainWindow::copy()
 	if (m_document->getSelection().empty())
 		return;
 
-	QApplication::clipboard()->setText(QString::fromStdString(m_document->writeTextDocument()));
+	QApplication::clipboard()->setText(QString::fromStdString(panda::serialization::writeTextDocument(m_document.get())));
 }
 
 void MainWindow::cut()
@@ -986,7 +987,7 @@ void MainWindow::paste()
 	if (!mimeData->hasText())
 		return;
 	
-	m_document->readTextDocument(mimeData->text().toStdString());
+	panda::serialization::readTextDocument(m_document.get(), mimeData->text().toStdString());
 
 	m_graphView->moveSelectedToCenter();
 	m_graphView->updateLinkTags();
@@ -1177,7 +1178,7 @@ void MainWindow::play(bool playing)
 
 void MainWindow::selectedObject(panda::PandaObject* object)
 {
-	int nbSelected = m_document->getNbSelected();
+	int nbSelected = m_document->getSelection().size();
 	bool isGroup = (nbSelected == 1) && dynamic_cast<panda::Group*>(object);
 
 	m_ungroupAction->setEnabled(isGroup);
@@ -1305,9 +1306,9 @@ void MainWindow::convertSavedDocuments()
 	{
 		auto path = entry.absoluteFilePath();
 		m_document->resetDocument();
-		if (m_document->readFile(path.toStdString()))
+		if (panda::serialization::readFile(m_document.get(), path.toStdString()))
 		{
-			m_document->writeFile(path.toStdString());
+			panda::serialization::writeFile(m_document.get(), path.toStdString());
 			++nb;
 		}
 		else

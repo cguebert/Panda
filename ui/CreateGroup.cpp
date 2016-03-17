@@ -85,7 +85,7 @@ BaseData* duplicateData(Group* group, BaseData* data)
 
 bool createGroup(PandaDocument* doc, GraphView* view)
 {
-	if(doc->getNbSelected() < 2)
+	if(doc->getSelection().size() < 2)
 		return false;
 
 	auto selection = doc->getSelection();
@@ -303,7 +303,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 
 bool ungroupSelection(PandaDocument* doc, GraphView* view)
 {
-	if(doc->getNbSelected() < 1)
+	if(doc->getSelection().empty())
 		return false;
 
 	QList<Group*> groups;
