@@ -70,6 +70,21 @@ inline int SchedulerThread::threadId() const
 
 //****************************************************************************//
 
+// It is not used currently as we build the vector all in one go
+//  but we must at least define this constructor as we have an atomic member (non copyable, non movable)
+Scheduler::SchedulerTask::SchedulerTask(const SchedulerTask& rhs)
+{
+	nbDirtyInputs.store(rhs.nbDirtyInputs);
+	nbDirtyAtStart = rhs.nbDirtyAtStart;
+	dirty = rhs.dirty;
+	dirtyAtStart = rhs.dirtyAtStart;
+	restrictToMainThread = rhs.restrictToMainThread;
+	object = rhs.object;
+	outputs = rhs.outputs;
+}
+
+//****************************************************************************//
+
 Scheduler::Scheduler(PandaDocument* document)
 	: m_document(document)
 	, m_readyTasks(256)

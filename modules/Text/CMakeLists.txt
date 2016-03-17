@@ -35,6 +35,8 @@ set_target_properties("freetype-gl" PROPERTIES
 	IMPORTED_IMPLIB_DEBUG ${LIBRARIES_LIB_DIR}/freetype-gl_d.lib)
 target_link_libraries(${PROJECT_NAME} "freetype-gl")
 
+target_link_libraries(${PROJECT_NAME} "legacy_stdio_definitions.lib")
+
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${MODULES_DIR})
 
 add_definitions(-DTARGET="${PROJECT_NAME}")

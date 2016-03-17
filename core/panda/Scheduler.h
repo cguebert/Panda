@@ -54,13 +54,14 @@ protected:
 
 	struct SchedulerTask
 	{
-		SchedulerTask() : restrictToMainThread(false), object(nullptr) { nbDirtyInputs = 0; }
+		SchedulerTask() { nbDirtyInputs = 0; }
+		SchedulerTask(const SchedulerTask&);
 		std::atomic_int nbDirtyInputs; // When this equal 0 (and is dirty), we can update the object
-		int nbDirtyAtStart; // Value of nbDirtyInputs at the start of the timestep
-		bool dirty; // First this has to become true to update the object
-		bool dirtyAtStart; // Value of dirty at the start of the timestep
-		bool restrictToMainThread; // For Objects that use OpenGL, update them only on the main thread
-		PandaObject* object; // Object concerned by this task
+		int nbDirtyAtStart = 0; // Value of nbDirtyInputs at the start of the timestep
+		bool dirty = false; // First this has to become true to update the object
+		bool dirtyAtStart = false; // Value of dirty at the start of the timestep
+		bool restrictToMainThread = false; // For Objects that use OpenGL, update them only on the main thread
+		PandaObject* object = nullptr; // Object concerned by this task
 		std::vector<int> outputs; // Indices of other SchedulerTasks	
 	};
 

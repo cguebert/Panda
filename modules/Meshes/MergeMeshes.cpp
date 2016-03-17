@@ -9,7 +9,7 @@ namespace
 
 struct PointCompare
 {
-	bool operator()(const panda::types::Point& p1, const panda::types::Point& p2)
+	bool operator()(const panda::types::Point& p1, const panda::types::Point& p2) const
 	{
 		return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);
 	}

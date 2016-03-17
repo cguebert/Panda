@@ -22,7 +22,7 @@ GLuint createTexture(panda::graphics::Size size, GLenum internalFormat, GLenum f
 	glBindTexture(GL_TEXTURE_2D, id);
 
 	int nbLevels = 1 + static_cast<int>(std::floor(std::log2(std::max(w, h))));
-	if (GLEW_ARB_texture_storage || GLEW_VERSION_4_2)
+	if ((GLEW_ARB_texture_storage || GLEW_VERSION_4_2) && glTextureStorage2D)
 		glTextureStorage2D(id, nbLevels, internalFormat, w, h);
 	else
 	{
