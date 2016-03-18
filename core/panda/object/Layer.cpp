@@ -136,7 +136,7 @@ void Layer::postCreate()
 {
 	PandaObject::postCreate();
 	int i = 1;
-	for(auto obj : parentDocument()->getObjects())
+	for(auto& obj : parentDocument()->getObjects())
 	{
 		if(dynamic_cast<Layer*>(obj.get()) && obj.get() != this)
 			++i;

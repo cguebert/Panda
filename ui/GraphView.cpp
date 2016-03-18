@@ -115,7 +115,7 @@ const panda::BaseData* GraphView::getContextMenuData() const
 
 panda::PandaObject* GraphView::getObjectAtPos(const QPointF& pt)
 {
-	auto objects = m_pandaDocument->getObjects();
+	const auto& objects = m_pandaDocument->getObjects();
 	for(int i=objects.size()-1; i>=0; --i)
 	{
 		auto object = objects[i];
@@ -212,37 +212,37 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	painter.scale(m_zoomFactor, m_zoomFactor);
 
 	// Give a possibility to draw behind normal objects
-	for(auto object : m_pandaDocument->getObjects())
+	for (auto& object : m_pandaDocument->getObjects())
 		m_objectDrawStructs[object.get()]->drawBackground(&painter);
 
 	// Draw links
 	painter.setBrush(Qt::NoBrush);
-	for (auto object : m_pandaDocument->getObjects())
+	for (auto& object : m_pandaDocument->getObjects())
 		m_objectDrawStructs[object.get()]->drawLinks(&painter);
 
 	// Draw the objects
-	for(auto object : m_pandaDocument->getObjects())
+	for (auto& object : m_pandaDocument->getObjects())
 		m_objectDrawStructs[object.get()]->draw(&painter);
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
-	for(auto object : m_pandaDocument->getSelection())
+	for (auto& object : m_pandaDocument->getSelection())
 		m_objectDrawStructs[object]->draw(&painter, true);
 
 	painter.setBrush(Qt::NoBrush);
 	// Give a possibility to draw in front of normal objects
-	for(auto object : m_pandaDocument->getObjects())
+	for (auto& object : m_pandaDocument->getObjects())
 		m_objectDrawStructs[object.get()]->drawForeground(&painter);
 
 	// Draw links tags
-	for(auto& tag : m_linkTags)
+	for (auto& tag : m_linkTags)
 		tag.second->draw(&painter);
 
 	// Highlight connected Datas
-	if(m_highlightConnectedDatas)
+	if (m_highlightConnectedDatas)
 		drawConnectedDatas(&painter, m_hoverData);
 
 	// Selection rubber band
-	if(m_movingAction == MOVING_SELECTION)
+	if (m_movingAction == MOVING_SELECTION)
 	{
 		QRectF selectionRect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor);
 		QPen pen(palette().text().color());
@@ -253,7 +253,7 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	}
 
 	// Link in creation
-	if(m_movingAction == MOVING_LINK)
+	if (m_movingAction == MOVING_LINK)
 	{
 		QPen pen(palette().text().color());
 		pen.setStyle(Qt::DotLine);
@@ -597,7 +597,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		for(auto object : m_pandaDocument->getSelection())
 			positions[object] = m_objectDrawStructs[object]->getPosition();
 
-		for(auto object : m_pandaDocument->getSelection())
+		for(auto& object : m_pandaDocument->getSelection())
 		{
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 			if(dockable)
@@ -609,7 +609,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				panda::DockObject* defaultDock = dockable->getDefaultDock();
 				panda::DockObject* newDock = defaultDock;
 				int newIndex = -1;
-				for(auto object : m_pandaDocument->getObjects())
+				for(auto& object : m_pandaDocument->getObjects())
 				{
 					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.get());
 					if(dock)
@@ -668,7 +668,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		m_pandaDocument->selectNone();
 
 		QRectF selectionRect = QRectF(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).normalized();
-		for(auto object : m_pandaDocument->getObjects())
+		for(auto& object : m_pandaDocument->getObjects())
 		{
 			QRectF objectArea = m_objectDrawStructs[object.get()]->getObjectArea();
 			if(selectionRect.contains(objectArea) || selectionRect.intersects(objectArea))
@@ -868,7 +868,7 @@ void GraphView::centerView()
 	if(m_pandaDocument->getNbObjects())
 	{
 		QRectF totalView;
-		for(auto object : m_pandaDocument->getObjects())
+		for(auto& object : m_pandaDocument->getObjects())
 		{
 			QRectF objectArea = m_objectDrawStructs[object.get()]->getObjectArea();
 			totalView = totalView.united(objectArea);
@@ -885,7 +885,7 @@ void GraphView::showAll()
 	if(m_pandaDocument->getNbObjects())
 	{
 		QRectF totalView;
-		for(auto object : m_pandaDocument->getObjects())
+		for(auto& object : m_pandaDocument->getObjects())
 		{
 			QRectF objectArea = m_objectDrawStructs[object.get()]->getObjectArea();
 			totalView = totalView.united(objectArea);
@@ -1053,9 +1053,9 @@ void GraphView::updateLinkTags(bool reset)
 	if(reset)
 		m_linkTags.clear();
 
-	for(auto object : m_pandaDocument->getObjects())
+	for(auto& object : m_pandaDocument->getObjects())
 	{
-		for(auto data : object->getInputDatas())
+		for(auto& data : object->getInputDatas())
 		{
 			panda::BaseData* parentData = data->getParent();
 			if(parentData)
@@ -1336,7 +1336,7 @@ void GraphView::sortDockablesInDock(panda::DockObject* dock)
 
 void GraphView::sortAllDockables()
 {
-	for(const auto object : m_pandaDocument->getObjects())
+	for(const auto& object : m_pandaDocument->getObjects())
 	{
 		const auto dockable = dynamic_cast<panda::DockableObject*>(object.get());
 		if(!dockable)

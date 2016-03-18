@@ -173,7 +173,7 @@ namespace panda
 			template <typename Delegate, typename... Uref>
 			void onEach(Uref&&... args) const
 			{
-				for (auto p : m_list)
+				for (auto& p : m_list)
 					// Perfect forward and emit
 					Delegate(p.first)(std::forward<Uref>(args)...);
 			}
@@ -181,7 +181,7 @@ namespace panda
 			template <typename Delegate, typename Accumulate, typename... Uref>
 			void onEach_Accumulate(Accumulate&& accumulate, Uref&&... args) const
 			{
-				for (auto p : m_list)
+				for (auto& p : m_list)
 					// Perfect forward, emit, and accumulate the return value
 					accumulate(Delegate(p.first)(std::forward<Uref>(args)...));
 			}

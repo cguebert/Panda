@@ -326,7 +326,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 
 		// Putting the objects back into the document
 		panda::Group::ObjectsList docks;
-		for(auto object : group->getObjects())
+		for(auto& object : group->getObjects())
 		{
 			panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.get());
 			if(dock)
@@ -345,7 +345,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		}
 
 		// We extract docks last (their docked objects must be out first)
-		for(auto object : docks)
+		for(auto& object : docks)
 		{
 			doc->addCommand(std::make_shared<AddObjectCommand>(doc, view, object));
 			doc->addCommand(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
@@ -358,7 +358,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		}
 
 		// Reconnecting datas
-		for(auto data : group->getGroupDatas())
+		for(auto& data : group->getGroupDatas())
 		{
 			auto parent = data->getParent();
 			auto outputs = data->getOutputs();

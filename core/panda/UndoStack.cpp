@@ -12,7 +12,7 @@ void UndoCommand::redo()
 void UndoCommand::undo()
 {
 	// Calling undo on childs, in reverse order
-	for (auto it = m_commandChilds.rbegin(), itEnd = m_commandChilds.rend(); it != itEnd; ++it)
+	for (auto& it = m_commandChilds.rbegin(), itEnd = m_commandChilds.rend(); it != itEnd; ++it)
 		(*it)->undo();
 }
 

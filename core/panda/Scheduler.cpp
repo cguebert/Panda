@@ -258,7 +258,7 @@ void Scheduler::buildUpdateGraph()
 {
 	// Initialize the tasks list
 	std::vector<PandaObject*> objects;
-	for(auto object : m_document->getObjects())
+	for(auto& object : m_document->getObjects())
 		objects.push_back(object.get());
 	objects = graph::expandObjectsList(objects);
 	int nb = objects.size();

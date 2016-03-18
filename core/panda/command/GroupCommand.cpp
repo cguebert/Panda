@@ -16,7 +16,7 @@ SelectGroupCommand::SelectGroupCommand(panda::PandaDocument* document,
 void SelectGroupCommand::redo()
 {
 	// If at least one of the object inside the group was selected, select the group
-	for(auto object : m_group->getObjects())
+	for(auto& object : m_group->getObjects())
 	{
 		if(m_document->isSelected(object.get()))
 		{
@@ -31,7 +31,7 @@ void SelectGroupCommand::undo()
 	// If the group was selected, select all objects inside it
 	if(m_document->isSelected(m_group))
 	{
-		for(auto object : m_group->getObjects())
+		for(auto& object : m_group->getObjects())
 			m_document->selectionAdd(object.get());
 	}
 }
@@ -51,7 +51,7 @@ void SelectObjectsInGroupCommand::redo()
 	// If the group was selected, select all objects inside it
 	if(m_document->isSelected(m_group))
 	{
-		for(auto object : m_group->getObjects())
+		for(auto& object : m_group->getObjects())
 			m_document->selectionAdd(object.get());
 	}
 }
@@ -59,7 +59,7 @@ void SelectObjectsInGroupCommand::redo()
 void SelectObjectsInGroupCommand::undo()
 {
 	// If at least one of the object inside the group was selected, select the group
-	for(auto object : m_group->getObjects())
+	for(auto& object : m_group->getObjects())
 	{
 		if(m_document->isSelected(object.get()))
 		{

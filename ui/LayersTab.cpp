@@ -272,8 +272,7 @@ void LayersTab::nameChanged()
 void LayersTab::reorderObjects()
 {
 	QList<panda::BaseLayer*> newList;
-	auto objects = m_document->getObjects();
-	for(auto object : objects)
+	for(auto& object : m_document->getObjects())
 	{
 		auto layer = dynamic_cast<panda::BaseLayer*>(object.get());
 		if(layer)

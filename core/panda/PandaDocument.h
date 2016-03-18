@@ -147,8 +147,6 @@ protected:
 	int m_inCommandMacro = 0;
 	bool m_resetting = false;
 
-	bool m_isGLInitialized = false;
-
 	bool m_animPlaying = false, m_animMultithread = false;
 	bool m_stepQueued = false, m_stepCanceled = false;
 	int m_animFunctionIndex = -1;

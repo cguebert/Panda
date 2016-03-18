@@ -76,7 +76,7 @@ public:
 			const auto& triangles = inMesh.getTriangles();
 
 			m_verticesBuffer.reserve(nbTri * 3);
-			for (auto tri : triangles)
+			for (const auto& tri : triangles)
 			{
 				m_verticesBuffer.push_back(points[tri[0]]);
 				m_verticesBuffer.push_back(points[tri[1]]);

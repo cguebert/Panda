@@ -251,7 +251,7 @@ void ImGui_Wrapper::renderGui()
 
 void ImGui_Wrapper::updateObjects()
 {
-	for (auto object : m_document->getObjects())
+	for (auto& object : m_document->getObjects())
 	{
 		auto dockable = dynamic_cast<BaseImGuiContainer*>(object.get());
 		if (dockable)
