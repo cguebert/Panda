@@ -83,7 +83,7 @@ void AddObjectCommand::undo()
 bool AddObjectCommand::mergeWith(const UndoCommand *other)
 {
 	// Only merge if creating a macro of multiple commands (not in case of multiple users actions)
-	if(!m_document->isInCommandMacro())
+	if(!m_document->getUndoStack().isInCommandMacro())
 		return false;
 
 	const AddObjectCommand* command = dynamic_cast<const AddObjectCommand*>(other);

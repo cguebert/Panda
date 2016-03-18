@@ -90,8 +90,8 @@ void DockObjectDrawStruct::update()
 			objectNewPos.rx() += DockableObjectDrawStruct::dockableWithOutputAdds;
 
 		auto doc = m_parentView->getDocument();
-		if(doc->isInCommandMacro())
-			doc->addCommand(std::make_shared<MoveObjectCommand>(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
+		if(doc->getUndoStack().isInCommandMacro())
+			doc->getUndoStack().push(std::make_shared<MoveObjectCommand>(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
 
 		QRectF objectArea = objectStruct->getObjectArea();
 		m_dockablesY.push_back(objectArea.top());

@@ -17,8 +17,6 @@ class DocumentRenderer;
 class DocumentSignals;
 class Layer;
 class Scheduler;
-class ScopedMacro;
-class UndoCommand;
 class UndoStack;
 class XmlElement;
 
@@ -100,28 +98,17 @@ public:
 	void setDataReady(BaseData* data) const; // Launch the tasks connected to this node
 	void waitForOtherTasksToFinish(bool mainThread = true) const; // Wait until the tasks we launched finish
 
-	// For undo-redo actions
-	void addCommand(std::shared_ptr<UndoCommand> command);
-	std::shared_ptr<ScopedMacro> beginCommandMacro(const std::string& text);
-	void clearCommands();
-	bool isInCommandMacro() const;
-	UndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
-	UndoStack& undoStack() const;
-
 	void onDirtyObject(PandaObject* object);
 	void onModifiedObject(PandaObject* object);
 	void onChangedDock(DockableObject* dockable); // When the dockable has changed dock
 
-	gui::BaseGUI& getGUI() const;
-	DocumentSignals& getSignals() const;
-
-	DocumentRenderer* getRenderer() const;
+	gui::BaseGUI& getGUI() const; // Access to the GUI thread, update the view, show message boxes
+	DocumentSignals& getSignals() const; // Connect and run signals for when the document is modified
+	DocumentRenderer* getRenderer() const; // What takes care of rendering the document in OpenGL
+	UndoStack& getUndoStack() const; // Undo/redo capabilities
 
 protected:
-	friend class ScopedMacro;
-
 	void render();
-	void endCommandMacro();
 
 	ObjectsList m_objects;
 	ObjectsSelection m_selectedObjects;
@@ -144,26 +131,21 @@ protected:
 	types::Point m_mousePositionBuffer;
 	int m_mouseClickBuffer = 0;
 
-	int m_inCommandMacro = 0;
 	bool m_resetting = false;
 
 	bool m_animPlaying = false, m_animMultithread = false;
 	bool m_stepQueued = false, m_stepCanceled = false;
 	int m_animFunctionIndex = -1;
 
-	std::unique_ptr<Scheduler> m_scheduler;
-
-	std::unique_ptr<UndoStack> m_undoStack;
-	std::shared_ptr<UndoCommand> m_currentCommand;
-
 	int m_iNbFrames = 0;
 	long long m_fpsTime = 0;
 	float m_currentFPS = 0;
 
 	gui::BaseGUI& m_gui;
-
 	std::unique_ptr<DocumentRenderer> m_renderer;
 	std::unique_ptr<DocumentSignals> m_signals;
+	std::unique_ptr<Scheduler> m_scheduler;
+	std::unique_ptr<UndoStack> m_undoStack;
 
 public:
 // Slots or called only by the UI
@@ -176,16 +158,6 @@ public:
 	void step();
 	void rewind();
 	void copyDataToUserValue(const panda::BaseData* data);
-};
-
-class ScopedMacro
-{
-public:
-	ScopedMacro(PandaDocument* doc) : m_document(doc) {}
-	~ScopedMacro() { m_document->endCommandMacro(); }
-
-protected:
-	PandaDocument* m_document;
 };
 
 //****************************************************************************//
@@ -235,13 +207,7 @@ inline uint32_t PandaDocument::getNextIndex()
 inline Layer* PandaDocument::getDefaultLayer() const
 { return m_defaultLayer.get(); }
 
-inline bool PandaDocument::isInCommandMacro() const
-{ return m_inCommandMacro > 0; }
-
-inline UndoCommand* PandaDocument::getCurrentCommand() const
-{ return m_currentCommand.get(); }
-
-inline UndoStack& PandaDocument::undoStack() const
+inline UndoStack& PandaDocument::getUndoStack() const
 { return *m_undoStack; }
 
 inline gui::BaseGUI& PandaDocument::getGUI() const

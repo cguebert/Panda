@@ -154,8 +154,9 @@ void Layer::removedFromDocument()
 
 	DockObject::removedFromDocument();
 
-	if(parentDocument()->isInCommandMacro())
-		parentDocument()->addCommand(std::make_shared<MoveLayerCommand>(parentDocument(), this, 0));
+	auto& undoStack = parentDocument()->getUndoStack();
+	if(undoStack.isInCommandMacro())
+		undoStack.push(std::make_shared<MoveLayerCommand>(parentDocument(), this, 0));
 }
 
 graphics::Size Layer::getLayerSize() const

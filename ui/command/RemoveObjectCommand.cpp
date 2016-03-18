@@ -50,7 +50,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 				{
 					auto data2 = dynamic_cast<panda::BaseData*>(output);
 					if(data2 && data2->getOwner())
-						m_document->addCommand(std::make_shared<LinkDatasCommand>(data2, nullptr));
+						m_document->getUndoStack().push(std::make_shared<LinkDatasCommand>(data2, nullptr));
 				}
 			}
 
@@ -59,7 +59,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 			for(auto data : objectPtr->getInputDatas())
 			{
 				if(data->getParent())
-					m_document->addCommand(std::make_shared<LinkDatasCommand>(data, nullptr));
+					m_document->getUndoStack().push(std::make_shared<LinkDatasCommand>(data, nullptr));
 			}
 		}
 	}
@@ -88,7 +88,7 @@ void RemoveObjectCommand::undo()
 bool RemoveObjectCommand::mergeWith(const panda::UndoCommand *other)
 {
 	// Only merge if creating a macro of multiple commands (not in case of multiple users actions)
-	if(!m_document->isInCommandMacro())
+	if(!m_document->getUndoStack().isInCommandMacro())
 		return false;
 
 	const RemoveObjectCommand* command = dynamic_cast<const RemoveObjectCommand*>(other);

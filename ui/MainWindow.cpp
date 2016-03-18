@@ -87,10 +87,10 @@ MainWindow::MainWindow()
 	m_observer.get(m_document->getSignals().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
 	m_observer.get(m_document->getSignals().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
 
-	m_observer.get(m_document->undoStack().m_canUndoChangedSignal).connect<MainWindow, &MainWindow::undoEnabled>(this);
-	m_observer.get(m_document->undoStack().m_canRedoChangedSignal).connect<MainWindow, &MainWindow::redoEnabled>(this);
-	m_observer.get(m_document->undoStack().m_undoTextChangedSignal).connect<MainWindow, &MainWindow::undoTextChanged>(this);
-	m_observer.get(m_document->undoStack().m_redoTextChangedSignal).connect<MainWindow, &MainWindow::redoTextChanged>(this);
+	m_observer.get(m_document->getUndoStack().m_canUndoChangedSignal).connect<MainWindow, &MainWindow::undoEnabled>(this);
+	m_observer.get(m_document->getUndoStack().m_canRedoChangedSignal).connect<MainWindow, &MainWindow::redoEnabled>(this);
+	m_observer.get(m_document->getUndoStack().m_undoTextChangedSignal).connect<MainWindow, &MainWindow::undoTextChanged>(this);
+	m_observer.get(m_document->getUndoStack().m_redoTextChangedSignal).connect<MainWindow, &MainWindow::redoTextChanged>(this);
 
 	connect(m_graphView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(m_graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
@@ -176,7 +176,7 @@ void MainWindow::import()
 
 			auto selection = m_document->getSelection();
 			if(!selection.empty())
-				m_document->addCommand(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, selection));
+				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, selection));
 		}
 	}
 }
@@ -480,13 +480,13 @@ void MainWindow::createActions()
 	m_undoAction = new QAction(tr("Undo"), this);
 	m_undoAction->setShortcut(QKeySequence::Undo);
 	m_undoAction->setEnabled(false);
-	connect(m_undoAction, &QAction::triggered, [this]() { m_document->undoStack().undo(); });
+	connect(m_undoAction, &QAction::triggered, [this]() { m_document->getUndoStack().undo(); });
 	addAction(m_undoAction);
 
 	m_redoAction = new QAction(tr("Redo"), this);
 	m_redoAction->setShortcut(QKeySequence::Redo);
 	m_redoAction->setEnabled(false);
-	connect(m_redoAction, &QAction::triggered, [this]() { m_document->undoStack().redo(); });
+	connect(m_redoAction, &QAction::triggered, [this]() { m_document->getUndoStack().redo(); });
 	addAction(m_redoAction);
 
 	auto convertDocumentsAction = new QAction(tr("Convert documents"), this);
@@ -838,7 +838,7 @@ bool MainWindow::loadFile(const QString &fileName, bool import)
 
 	if(!import)
 	{
-		m_document->clearCommands();
+		m_document->getUndoStack().clear();
 		m_document->selectNone();
 		setCurrentFile(fileName);
 		statusBar()->showMessage(tr("File loaded"), 2000);
@@ -916,7 +916,7 @@ void MainWindow::createObject()
 	if(action)
 	{
 		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString().toStdString(), m_document.get());
-		m_document->addCommand(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, object));
+		m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, object));
 	}
 }
 
@@ -994,7 +994,7 @@ void MainWindow::paste()
 
 	auto selection = m_document->getSelection();
 	if(!selection.empty())
-		m_document->addCommand(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, selection));
+		m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, selection));
 }
 
 void MainWindow::del()
@@ -1002,8 +1002,8 @@ void MainWindow::del()
 	auto selection = m_document->getSelection();
 	if(!selection.empty())
 	{
-		auto macro = m_document->beginCommandMacro(tr("delete objects").toStdString());
-		m_document->addCommand(std::make_shared<RemoveObjectCommand>(m_document.get(), m_graphView, selection));
+		auto macro = m_document->getUndoStack().beginMacro(tr("delete objects").toStdString());
+		m_document->getUndoStack().push(std::make_shared<RemoveObjectCommand>(m_document.get(), m_graphView, selection));
 	}
 }
 

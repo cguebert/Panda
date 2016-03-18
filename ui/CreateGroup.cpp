@@ -114,7 +114,8 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		}
 	}
 
-	auto macro = doc->beginCommandMacro("create Group");
+	auto& undoStack = doc->getUndoStack();
+	auto macro = undoStack.beginMacro("create Group");
 
 	if(layer == doc->getDefaultLayer())	// Won't be added in the group!
 		layer = nullptr;
@@ -124,14 +125,14 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	if(hasRenderer)
 	{
 		auto object = factory->create(ObjectFactory::getRegistryName<GroupWithLayer>(), doc);
-		doc->addCommand(std::make_shared<AddObjectCommand>(doc, view, object));
+		undoStack.push(std::make_shared<AddObjectCommand>(doc, view, object));
 		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(object.get());
 		group = groupWithLayer;
 	}
 	else
 	{
 		auto object = factory->create(ObjectFactory::getRegistryName<Group>(), doc);
-		doc->addCommand(std::make_shared<AddObjectCommand>(doc, view, object));
+		undoStack.push(std::make_shared<AddObjectCommand>(doc, view, object));
 		group = dynamic_cast<Group*>(object.get());
 	}
 	if(!group)
@@ -164,7 +165,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		auto objectPtr = doc->getSharedPointer(object);
 		if(!objectPtr)
 			continue;
-		doc->addCommand(std::make_shared<AddObjectToGroupCommand>(group, objectPtr));
+		undoStack.push(std::make_shared<AddObjectToGroupCommand>(group, objectPtr));
 
 		// Storing the position of this object in respect to the group object
 		QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
@@ -185,7 +186,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 						createdData = duplicateData(group, data);
 						createdData->copyValueFrom(otherData);
 						group->addInput(*createdData);
-						doc->addCommand(std::make_shared<LinkDatasCommand>(createdData, otherData));
+						undoStack.push(std::make_shared<LinkDatasCommand>(createdData, otherData));
 						connectedInputDatas.emplace(otherData, createdData);
 						createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, otherData)));
 					}
@@ -201,7 +202,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 					}
 
 					if(createdData)
-						doc->addCommand(std::make_shared<LinkDatasCommand>(data, createdData));
+						undoStack.push(std::make_shared<LinkDatasCommand>(data, createdData));
 				}
 			}
 		}
@@ -229,7 +230,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 							createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, data)));
 						}
 
-						doc->addCommand(std::make_shared<LinkDatasCommand>(otherData, createdData));
+						undoStack.push(std::make_shared<LinkDatasCommand>(otherData, createdData));
 					}
 				}
 			}
@@ -254,7 +255,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				createdData->copyValueFrom(inputData);
 				createdData->setName(findAvailableDataName(group, caption, createdData));
 				group->addInput(*createdData);
-				doc->addCommand(std::make_shared<LinkDatasCommand>(inputData, createdData));
+				undoStack.push(std::make_shared<LinkDatasCommand>(inputData, createdData));
 				createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, inputData)));
 			}
 
@@ -293,10 +294,10 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	}
 
 	// Select the group
-	doc->addCommand(std::make_shared<SelectGroupCommand>(doc, group));
+	undoStack.push(std::make_shared<SelectGroupCommand>(doc, group));
 
 	// Removing the objects from the document, but don't unlink datas
-	doc->addCommand(std::make_shared<RemoveObjectCommand>(doc, view, selection, false));
+	undoStack.push(std::make_shared<RemoveObjectCommand>(doc, view, selection, false));
 
 	return true;
 }
@@ -317,7 +318,8 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 	if(groups.isEmpty())
 		return false;
 
-	auto macro = doc->beginCommandMacro("ungroup selection");
+	auto& undoStack = doc->getUndoStack();
+	auto macro = undoStack.beginMacro("ungroup selection");
 
 	// For each group in the selection
 	for(auto group : groups)
@@ -333,28 +335,28 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 				docks.push_back(object);
 			else
 			{
-				doc->addCommand(std::make_shared<AddObjectCommand>(doc, view, object));
-				doc->addCommand(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
+				undoStack.push(std::make_shared<AddObjectCommand>(doc, view, object));
+				undoStack.push(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
 
 				// Placing the object in the view
 				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
 				QPointF delta = groupPos + convert(group->getPosition(object.get())) - ods->getPosition();
 				if(!delta.isNull())
-					doc->addCommand(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
+					undoStack.push(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
 			}
 		}
 
 		// We extract docks last (their docked objects must be out first)
 		for(auto& object : docks)
 		{
-			doc->addCommand(std::make_shared<AddObjectCommand>(doc, view, object));
-			doc->addCommand(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
+			undoStack.push(std::make_shared<AddObjectCommand>(doc, view, object));
+			undoStack.push(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
 
 			// Placing the object in the view
 			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
 			QPointF delta = groupPos + convert(group->getPosition(object.get())) - ods->getPosition();
 			if(!delta.isNull())
-				doc->addCommand(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
+				undoStack.push(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
 		}
 
 		// Reconnecting datas
@@ -366,12 +368,12 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 			{
 				auto outData = dynamic_cast<panda::BaseData*>(node);
 				if(outData)
-					doc->addCommand(std::make_shared<LinkDatasCommand>(outData, parent));
+					undoStack.push(std::make_shared<LinkDatasCommand>(outData, parent));
 			}
 		}
 
-		doc->addCommand(std::make_shared<SelectObjectsInGroupCommand>(doc, group)); // Select all the object that were in the group
-		doc->addCommand(std::make_shared<RemoveObjectCommand>(doc, view, group));
+		undoStack.push(std::make_shared<SelectObjectsInGroupCommand>(doc, group)); // Select all the object that were in the group
+		undoStack.push(std::make_shared<RemoveObjectCommand>(doc, view, group));
 	}
 
 	view->sortAllDockables();

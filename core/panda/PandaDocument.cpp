@@ -112,6 +112,7 @@ PandaDocument::~PandaDocument()
 		m_scheduler->stop();
 
 	m_resetting = true;
+	m_undoStack->setEnabled(false);
 
 	// Just to be sure everything goes smoothly
 	for(auto object : m_objects)
@@ -126,6 +127,7 @@ PandaDocument::~PandaDocument()
 void PandaDocument::resetDocument()
 {
 	m_resetting = true;
+	m_undoStack->setEnabled(false);
 
 	m_selectedObjects.clear();
 	m_signals->selectedObject.run(nullptr);
@@ -163,6 +165,7 @@ void PandaDocument::resetDocument()
 	m_signals->timeChanged.run();
 
 	m_resetting = false;
+	m_undoStack->setEnabled(true);
 }
 
 PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object) const
@@ -634,35 +637,6 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 		if (captionTextData)
 			captionTextData->setValue(data->getName());
 	}
-}
-
-void PandaDocument::addCommand(std::shared_ptr<UndoCommand> command)
-{
-	if(m_resetting)
-		return;
-
-	auto oldCommand = m_currentCommand;
-	m_currentCommand = command;
-	m_undoStack->push(command);
-	m_currentCommand = oldCommand;
-}
-
-std::shared_ptr<ScopedMacro> PandaDocument::beginCommandMacro(const std::string& text)
-{
-	m_undoStack->beginMacro(text);
-	++m_inCommandMacro;
-	return std::make_shared<ScopedMacro>(this);
-}
-
-void PandaDocument::endCommandMacro()
-{
-	--m_inCommandMacro;
-	m_undoStack->endMacro();
-}
-
-void PandaDocument::clearCommands()
-{
-	m_undoStack->clear();
 }
 
 } // namespace panda

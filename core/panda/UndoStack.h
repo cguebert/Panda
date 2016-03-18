@@ -34,11 +34,15 @@ private:
 	std::vector<UndoCommand::SPtr> m_commandChilds;
 };
 
+class ScopedMacro;
+
 class PANDA_CORE_API UndoStack
 {
 public:
-	void push(UndoCommand::SPtr command);
+	void push(std::shared_ptr<UndoCommand> command);
 	void clear();
+
+	void setEnabled(bool enabled); // While set to false, no new commands can be added
 
 	void undo();
 	void redo();
@@ -56,8 +60,10 @@ public:
 	void setUndoLimit(int limit); /// When the number of commands on the stack is higher than the limit, commands are remooved from the bottom.
 	int undoLimit() const;
 
-	void beginMacro(const std::string& text); /// Any following commands until a call to endMacro() will be treated as one single command 
-	void endMacro();
+	std::shared_ptr<ScopedMacro> beginMacro(const std::string& text); /// Any following commands until a call to endMacro() will be treated as one single command 
+
+	bool isInCommandMacro() const;
+	UndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
 
 	int count() const;
 	int index() const;
@@ -73,11 +79,28 @@ public:
 	msg::Signal<void(const std::string&)> m_redoTextChangedSignal;
 
 private:
+	friend class ScopedMacro;
+
+	void endMacro();
+
 	void checkStackLimit();
 	void changeIndex(int index, bool clean = false);
 
 	int m_index = 0, m_cleanIndex = 0, m_undoLimit = 0;
+	int m_inCommandMacro = 0;
+	bool m_enabled = true;
 	std::deque<UndoCommand::SPtr> m_commands, m_macros;
+	std::shared_ptr<UndoCommand> m_currentCommand;
+};
+
+class PANDA_CORE_API ScopedMacro
+{
+public:
+	ScopedMacro(UndoStack* stack) : m_stack(stack) {}
+	~ScopedMacro() { m_stack->endMacro(); }
+
+protected:
+	UndoStack* m_stack;
 };
 
 //****************************************************************************//
@@ -94,6 +117,9 @@ inline void UndoCommand::push(UndoCommand::SPtr command)
 inline int UndoStack::undoLimit() const
 { return m_undoLimit; }
 
+inline void UndoStack::setEnabled(bool enabled)
+{ m_enabled = enabled; }
+
 inline int UndoStack::count() const
 { return m_commands.size(); }
 
@@ -102,6 +128,12 @@ inline int UndoStack::index() const
 
 inline int UndoStack::cleanIndex() const
 { return m_cleanIndex; }
+
+inline bool UndoStack::isInCommandMacro() const
+{ return m_inCommandMacro > 0; }
+
+inline UndoCommand* UndoStack::getCurrentCommand() const
+{ return m_currentCommand.get(); }
 
 } // namespace panda
 

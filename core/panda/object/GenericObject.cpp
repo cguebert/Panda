@@ -309,6 +309,7 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 		return;
 
 	// Create commands if links are disconnected from the outputs of this group
+	auto& undoStack = parentDocument()->getUndoStack();
 	for(BaseDataPtr data : createdData->datas)
 	{
 		if(data && data->isOutput())
@@ -317,13 +318,13 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 			{
 				BaseData* target = dynamic_cast<BaseData*>(output);
 				if(target)
-					parentDocument()->addCommand(std::make_shared<LinkDatasCommand>(target, nullptr));
+					undoStack.push(std::make_shared<LinkDatasCommand>(target, nullptr));
 			}
 		}
 	}
 
 	// Create a command so that we can undo the removal of this group of datas
-	auto currentCommand = parentDocument()->getCurrentCommand();
+	auto currentCommand = undoStack.getCurrentCommand();
 	if(currentCommand)
 	{
 		int index = helper::indexOf(m_createdDatasStructs, createdData);

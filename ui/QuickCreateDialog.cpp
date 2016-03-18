@@ -206,7 +206,7 @@ void QuickCreateDialog::createObject()
 			if(getFactoryEntry(selectedItemText.toStdString(), entry))
 			{
 				auto object = ObjectFactory::getInstance()->create(entry.className, m_document);
-				m_document->addCommand(std::make_shared<AddObjectCommand>(m_document, m_view, object));
+				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document, m_view, object));
 			}
 		}
 	}

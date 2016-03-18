@@ -30,6 +30,14 @@ bool UndoCommand::mergeWith(const UndoCommand* other)
 
 void UndoStack::push(UndoCommand::SPtr command)
 {
+	if (!m_enabled)
+		return;
+
+	// We push the commands we are adding recursively in this variable
+	auto oldCommand = m_currentCommand;
+	m_currentCommand = command;
+
+	// Activate the command
 	command->redo();
 
 	bool inMacro = !m_macros.empty();
@@ -78,6 +86,8 @@ void UndoStack::push(UndoCommand::SPtr command)
 			changeIndex(m_index + 1);
 		}
 	}
+
+	m_currentCommand = oldCommand; // Get back to nullptr
 }
 
 void UndoStack::clear()
@@ -187,7 +197,7 @@ void UndoStack::setUndoLimit(int limit)
 	checkStackLimit();
 }
 
-void UndoStack::beginMacro(const std::string& text)
+std::shared_ptr<ScopedMacro> UndoStack::beginMacro(const std::string& text)
 {
 	auto cmd = std::make_shared<UndoCommand>();
 	cmd->setText(text);
@@ -212,10 +222,14 @@ void UndoStack::beginMacro(const std::string& text)
 		m_canRedoChangedSignal.run(false);
 		m_redoTextChangedSignal.run("");
 	}
+
+	++m_inCommandMacro;
+	return std::make_shared<ScopedMacro>(this);
 }
 
 void UndoStack::endMacro()
 {
+	--m_inCommandMacro;
 	m_macros.pop_back();
 	if (m_macros.empty())
 	{

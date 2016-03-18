@@ -449,10 +449,10 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				m_customSelection.push_back(object);
 			}
 
-			m_moveObjectsMacro = m_pandaDocument->beginCommandMacro(tr("move objects").toStdString());
+			m_moveObjectsMacro = m_pandaDocument->getUndoStack().beginMacro(tr("move objects").toStdString());
 
 			if(!delta.isNull())
-				m_pandaDocument->addCommand(std::make_shared<MoveObjectCommand>(this, m_customSelection, delta));
+				m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(this, m_customSelection, delta));
 
 			m_previousMousePos = mousePos;
 		}
@@ -471,7 +471,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		}
 
 		if(!m_customSelection.empty() && !delta.isNull())
-			m_pandaDocument->addCommand(std::make_shared<MoveObjectCommand>(this, m_customSelection, delta));
+			m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(this, m_customSelection, delta));
 
 		m_previousMousePos = mousePos;
 	}
@@ -603,7 +603,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 			if(dockable)
 			{
 				QPointF delta = positions[object] - m_objectDrawStructs[dockable]->getPosition();
-				m_pandaDocument->addCommand(std::make_shared<MoveObjectCommand>(this, dockable, delta));
+				m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(this, dockable, delta));
 
 				QRectF dockableArea = m_objectDrawStructs[dockable]->getObjectArea();
 				panda::DockObject* defaultDock = dockable->getDefaultDock();
@@ -627,10 +627,10 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				if(newDock != prevDock) // Changing dock
 				{
 					if(prevDock)
-						m_pandaDocument->addCommand(std::make_shared<DetachDockableCommand>(prevDock, dockable));
+						m_pandaDocument->getUndoStack().push(std::make_shared<DetachDockableCommand>(prevDock, dockable));
 					if(newDock)
 					{
-						m_pandaDocument->addCommand(std::make_shared<AttachDockableCommand>(newDock, dockable, newIndex));
+						m_pandaDocument->getUndoStack().push(std::make_shared<AttachDockableCommand>(newDock, dockable, newIndex));
 						m_pandaDocument->onChangedDock(dockable);
 					}
 				}
@@ -642,7 +642,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 						if(newIndex > prevIndex)
 							--newIndex;
 
-						m_pandaDocument->addCommand(std::make_shared<ReorderDockableCommand>(prevDock, dockable, newIndex));
+						m_pandaDocument->getUndoStack().push(std::make_shared<ReorderDockableCommand>(prevDock, dockable, newIndex));
 					}
 					modifiedObject(prevDock);	// Always update
 				}
@@ -1290,8 +1290,8 @@ void GraphView::moveObjects(std::vector<panda::PandaObject*> objects, QPointF de
 
 void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)
 {
-	auto macro = m_pandaDocument->beginCommandMacro(tr("change link").toStdString());
-	m_pandaDocument->addCommand(std::make_shared<LinkDatasCommand>(target, parent));
+	auto macro = m_pandaDocument->getUndoStack().beginMacro(tr("change link").toStdString());
+	m_pandaDocument->getUndoStack().push(std::make_shared<LinkDatasCommand>(target, parent));
 }
 
 void GraphView::setRecomputeTags()
@@ -1319,7 +1319,7 @@ void GraphView::sortDockable(panda::DockableObject* dockable, panda::DockObject*
 		if(newIndex == prevIndex)
 			return;
 
-		m_pandaDocument->addCommand(std::make_shared<ReorderDockableCommand>(defaultDock, dockable, newIndex));
+		m_pandaDocument->getUndoStack().push(std::make_shared<ReorderDockableCommand>(defaultDock, dockable, newIndex));
 	}
 }
 

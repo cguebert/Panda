@@ -86,16 +86,17 @@ void DockObject::reorderDockable(DockableObject* dockable, int index)
 
 void DockObject::removedFromDocument()
 {
-	if(parentDocument()->isInCommandMacro())
+	auto& undoStack = parentDocument()->getUndoStack();
+	if(undoStack.isInCommandMacro())
 	{
 		auto docked = m_dockedObjects;
 		for(auto it = docked.rbegin(); it != docked.rend(); ++it)
 		{
 			auto dockable = *it;
-			parentDocument()->addCommand(std::make_shared<DetachDockableCommand>(this, dockable));
+			undoStack.push(std::make_shared<DetachDockableCommand>(this, dockable));
 			auto defaultDock = dockable->getDefaultDock();
 			if(defaultDock)
-				parentDocument()->addCommand(std::make_shared<AttachDockableCommand>(defaultDock, dockable, 0));
+				undoStack.push(std::make_shared<AttachDockableCommand>(defaultDock, dockable, 0));
 			parentDocument()->onChangedDock(dockable);
 		}
 	}
@@ -118,8 +119,9 @@ void DockableObject::postCreate()
 
 void DockableObject::removedFromDocument()
 {
-	if(m_parentDock && parentDocument()->isInCommandMacro())
-		parentDocument()->addCommand(std::make_shared<DetachDockableCommand>(m_parentDock, this));
+	auto& undoStack = parentDocument()->getUndoStack();
+	if(m_parentDock && undoStack.isInCommandMacro())
+		undoStack.push(std::make_shared<DetachDockableCommand>(m_parentDock, this));
 }
 
 } // namespace panda
