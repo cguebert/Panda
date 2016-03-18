@@ -129,9 +129,7 @@ void PandaDocument::resetDocument()
 	m_resetting = true;
 	m_undoStack->setEnabled(false);
 
-	m_selectedObjects.clear();
-	m_signals->selectedObject.run(nullptr);
-	m_signals->selectionChanged.run();
+	m_signals->clearDocument.run();
 
 	for(auto object : m_objects)
 	{
@@ -212,22 +210,6 @@ void PandaDocument::reinsertObject(PandaObject* object, int pos)
 	m_signals->modified.run();
 }
 
-PandaObject* PandaDocument::getCurrentSelectedObject() const
-{
-	if(m_selectedObjects.empty())
-		return nullptr;
-	else
-		return m_selectedObjects.back();
-}
-
-void PandaDocument::setCurrentSelectedObject(PandaObject* object)
-{
-	helper::removeAll(m_selectedObjects, object);
-	m_selectedObjects.push_back(object);
-	m_signals->selectedObject.run(object);
-	m_signals->selectionChanged.run();
-}
-
 graphics::Size PandaDocument::getRenderSize() const
 {
 	Point pt = m_renderSize.getValue();
@@ -273,66 +255,6 @@ void PandaDocument::textEvent(const std::string& text)
 	m_signals->textEvent.run(text);
 }
 
-void PandaDocument::setSelection(const ObjectsSelection& selection)
-{
-	m_selectedObjects = selection;
-	m_signals->selectedObject.run(m_selectedObjects.empty() ? nullptr : m_selectedObjects.back());
-	m_signals->selectionChanged.run();
-}
-
-void PandaDocument::selectionAdd(PandaObject* object)
-{
-	if(!helper::contains(m_selectedObjects, object))
-	{
-		m_selectedObjects.push_back(object);
-		m_signals->selectedObject.run(object);
-		m_signals->selectionChanged.run();
-	}
-}
-
-void PandaDocument::selectionRemove(PandaObject* object)
-{
-	if(helper::contains(m_selectedObjects, object))
-	{
-		helper::removeAll(m_selectedObjects, object);
-		m_signals->selectedObject.run(m_selectedObjects.empty() ? nullptr : m_selectedObjects.back());
-		m_signals->selectionChanged.run();
-	}
-}
-
-void PandaDocument::selectAll()
-{
-	if (m_objects.empty())
-		return;
-
-	m_selectedObjects.clear();
-	for(auto object : m_objects)
-		m_selectedObjects.push_back(object.get());
-	m_signals->selectedObject.run(m_selectedObjects.back());
-	m_signals->selectionChanged.run();
-}
-
-void PandaDocument::selectNone()
-{
-	if(!m_selectedObjects.empty())
-	{
-		m_selectedObjects.clear();
-		m_signals->selectedObject.run(nullptr);
-		m_signals->selectionChanged.run();
-	}
-}
-
-void PandaDocument::selectConnected()
-{
-	if (m_selectedObjects.empty())
-		return;
-
-	auto currentSelected = m_selectedObjects.back();
-	m_selectedObjects = graph::computeConnectedObjects(m_selectedObjects);
-	setCurrentSelectedObject(currentSelected);
-	m_signals->selectionChanged.run();
-}
-
 void PandaDocument::addObject(ObjectPtr object)
 {
 	m_objects.push_back(object);
@@ -349,7 +271,6 @@ void PandaDocument::removeObject(PandaObject* object)
 		return ptr.get() == object;
 	});
 
-	selectionRemove(object);
 	m_signals->modified.run();
 }
 
@@ -404,8 +325,6 @@ void PandaDocument::onDirtyObject(PandaObject* object)
 	else
 	{
 		m_signals->dirtyObject.run(object);
-		if (object == getCurrentSelectedObject())
-			m_signals->selectedObjectIsDirty.run(object);
 		m_signals->modified.run();
 	}
 }
@@ -457,13 +376,6 @@ graphics::Framebuffer& PandaDocument::getFBO()
 {
 	updateIfDirty();
 	return m_renderer->getFBO();
-}
-
-void PandaDocument::setDirtyValue(const DataNode* caller)
-{
-	PandaObject::setDirtyValue(caller);
-	if(!isInStep() && !getCurrentSelectedObject())
-		m_signals->selectedObjectIsDirty.run(this);
 }
 
 void PandaDocument::play(bool playing)
@@ -557,11 +469,6 @@ void PandaDocument::step()
 		m_signals->dirtyObject.run(obj);
 	m_dirtyObjects.clear();
 
-	const auto obj = getCurrentSelectedObject();
-	if (obj)
-		m_signals->selectedObjectIsDirty.run(obj);
-	else
-		m_signals->selectedObjectIsDirty.run(this);
 	m_signals->modified.run();
 
 	if (m_animPlaying)	

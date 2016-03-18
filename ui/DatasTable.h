@@ -9,6 +9,7 @@
 #include <ui/widget/DataWidget.h>
 #include <panda/messaging.h>
 
+class GraphView;
 class QStackedLayout;
 class QLabel;
 
@@ -23,11 +24,16 @@ class DatasTable : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit DatasTable(panda::PandaDocument* m_document, QWidget* parent = nullptr);
+	explicit DatasTable(GraphView* view, QWidget* parent = nullptr);
 
 	typedef std::shared_ptr<BaseDataWidget> DataWidgetPtr;
 
-protected:
+private:
+	void updateCurrentObject();
+	void queuePopulate(panda::PandaObject*);
+	void onDirtyObject(panda::PandaObject*);
+	void onModifiedObject(panda::PandaObject*);
+
 	QStackedLayout* m_stackedLayout;
 	QLabel* m_nameLabel;
 	panda::PandaDocument* m_document;
@@ -38,9 +44,7 @@ protected:
 	std::vector<DataWidgetPtr> m_dataWidgets;
 	
 public slots:
-	void queuePopulate(panda::PandaObject*);
 	void populateTable();
-	void onModifiedObject(panda::PandaObject*);
 };
 
 #endif // DATASTABLE_H

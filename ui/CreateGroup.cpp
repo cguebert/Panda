@@ -1,11 +1,12 @@
 #include <ui/CreateGroup.h>
 #include <ui/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
+#include <ui/graph/ObjectsSelection.h>
 
 #include <ui/command/AddObjectCommand.h>
+#include <ui/command/GroupSelectionCommand.h>
 #include <ui/command/RemoveObjectCommand.h>
 #include <ui/command/MoveObjectCommand.h>
-
 
 #include <panda/PandaDocument.h>
 #include <panda/data/DataFactory.h>
@@ -85,10 +86,12 @@ BaseData* duplicateData(Group* group, BaseData* data)
 
 bool createGroup(PandaDocument* doc, GraphView* view)
 {
-	if(doc->getSelection().size() < 2)
+	const auto& objectsSelection = view->selection();
+	const auto& selection = objectsSelection.get();
+
+	if(selection.size() < 2)
 		return false;
 
-	auto selection = doc->getSelection();
 	bool hasRenderer = false;
 	// Verify that all selected renderers are in the same layer
 	Layer* layer = nullptr;
@@ -106,7 +109,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				return false;
 			}
 
-			if(layer && layer != doc->getDefaultLayer() && !doc->isSelected(layer))
+			if(layer && layer != doc->getDefaultLayer() && !objectsSelection.isSelected(layer))
 			{
 				QMessageBox::warning(nullptr, "Panda", "Renderers must be grouped with their layers");
 				return false;
@@ -178,7 +181,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 			if(otherData)
 			{
 				PandaObject* owner = otherData->getOwner();
-				if(owner && !doc->isSelected(owner) && owner!=doc)
+				if(owner && !objectsSelection.isSelected(owner) && owner!=doc)
 				{
 					BaseData* createdData = nullptr;
 					if(!connectedInputDatas.count(otherData))
@@ -218,7 +221,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				if(otherData)
 				{
 					PandaObject* connected = otherData->getOwner();
-					if(connected && !doc->isSelected(connected) && connected!=doc)
+					if(connected && !objectsSelection.isSelected(connected) && connected!=doc)
 					{
 						if(!createdData)
 						{
@@ -294,7 +297,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	}
 
 	// Select the group
-	undoStack.push(std::make_shared<SelectGroupCommand>(doc, group));
+	undoStack.push(std::make_shared<SelectGroupCommand>(view, group));
 
 	// Removing the objects from the document, but don't unlink datas
 	undoStack.push(std::make_shared<RemoveObjectCommand>(doc, view, selection, false));
@@ -304,11 +307,12 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 
 bool ungroupSelection(PandaDocument* doc, GraphView* view)
 {
-	if(doc->getSelection().empty())
+	const auto& selection = view->selection().get();
+	if(selection.empty())
 		return false;
 
 	QList<Group*> groups;
-	for(auto object : doc->getSelection())
+	for(auto object : selection)
 	{
 		Group* group = dynamic_cast<Group*>(object);
 		if(group)
@@ -372,7 +376,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 			}
 		}
 
-		undoStack.push(std::make_shared<SelectObjectsInGroupCommand>(doc, group)); // Select all the object that were in the group
+		undoStack.push(std::make_shared<SelectObjectsInGroupCommand>(view, group)); // Select all the object that were in the group
 		undoStack.push(std::make_shared<RemoveObjectCommand>(doc, view, group));
 	}
 

@@ -1,6 +1,7 @@
 #include <ui/GraphView.h>
 #include <ui/drawstruct/AnnotationDrawStruct.h>
 #include <ui/command/ModifyAnnotationCommand.h>
+#include <ui/graph/ObjectsSelection.h>
 
 #include <panda/object/Annotation.h>
 #include <panda/PandaDocument.h>
@@ -73,8 +74,8 @@ void AnnotationDrawStruct::drawForeground(QPainter* painter)
 	// Draw the handle
 	const panda::PandaDocument* doc = m_parentView->getDocument();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
-			&& doc->getSelection().size() == 1
-			&& doc->isSelected(m_annotation))	// The annotation is the only selected object
+			&& m_parentView->selection().get().size() == 1
+			&& m_parentView->selection().isSelected(m_annotation))	// The annotation is the only selected object
 	{
 		painter->setBrush(m_parentView->palette().midlight());
 		painter->drawEllipse(m_endPos, 5, 5);
@@ -113,8 +114,8 @@ bool AnnotationDrawStruct::contains(const QPointF& point)
 {
 	const panda::PandaDocument* doc = m_parentView->getDocument();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
-			&& doc->getSelection().size() == 1
-			&& doc->isSelected(m_annotation))	// The annotation is the only selected object
+			&& m_parentView->selection().get().size() == 1
+			&& m_parentView->selection().isSelected(m_annotation))	// The annotation is the only selected object
 	{
 		if((point - m_endPos).manhattanLength() < 10)
 			return true;

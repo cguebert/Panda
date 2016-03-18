@@ -2,6 +2,7 @@
 
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/GraphView.h>
+#include <ui/graph/ObjectsSelection.h>
 
 #include <panda/object/PandaObject.h>
 #include <panda/PandaDocument.h>
@@ -118,7 +119,7 @@ void ObjectDrawStruct::draw(QPainter* painter, bool selected)
 {
 	// Choose the pen and the brush
 	QPen pen(m_parentView->palette().text().color());
-	if(m_parentView->getDocument()->isSelected(m_object))
+	if(m_parentView->selection().isSelected(m_object))
 	{
 		pen.setWidthF(3);
 		painter->setBrush(m_parentView->palette().midlight());

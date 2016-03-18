@@ -12,20 +12,21 @@
 
 namespace panda
 {
+class BaseData;
+class DockableObject;
+class DockObject;
 class PandaDocument;
 class PandaObject;
-class BaseData;
 class Layer;
 class Renderer;
 class ScopedMacro;
-class DockableObject;
-class DockObject;
 class XmlElement;
 }
 
 class LinkTag;
-class QStylePainter;
 class ObjectDrawStruct;
+class ObjectsSelection;
+class QStylePainter;
 
 class GraphView : public QWidget, public ScrollableView
 {
@@ -33,6 +34,7 @@ class GraphView : public QWidget, public ScrollableView
 
 public:
 	explicit GraphView(panda::PandaDocument* doc, QWidget* parent = nullptr);
+	~GraphView();
 
 	QSize minimumSizeHint() const;
 	QSize sizeHint() const;
@@ -73,10 +75,12 @@ public:
 	void sortDockablesInDock(panda::DockObject* dock);
 	void sortAllDockables();
 
+	ObjectsSelection& selection() const;
+
 	// From ScrollableView
-	virtual QSize viewSize();
-	virtual QPoint viewPosition();
-	virtual void scrollView(QPoint position);
+	virtual QSize viewSize() override;
+	virtual QPoint viewPosition() override;
+	virtual void scrollView(QPoint position) override;
 
 protected:
 	void paintEvent(QPaintEvent* event);
@@ -170,6 +174,11 @@ private:
 	bool m_isLoading; /// We don't update the view while loading (unnecessary events)
 
 	panda::msg::Observer m_observer; /// Used to connect to signals (and disconnect automatically on destruction)
+
+	std::unique_ptr<ObjectsSelection> m_objectsSelection; /// Contains the selected objects and the corresponding signals
 };
+
+inline ObjectsSelection& GraphView::selection() const
+{ return *m_objectsSelection; }
 
 #endif

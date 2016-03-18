@@ -57,7 +57,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	typedef std::pair<uint32_t, uint32_t> IntPair;
 	std::vector<IntPair> dockedObjects;
 
-	PandaDocument::ObjectsSelection allObjects;
+	PandaDocument::ObjectsRawList allObjects;
 	for(auto object : m_objects)
 		allObjects.push_back(object.get());
 	allObjects.push_back(this);

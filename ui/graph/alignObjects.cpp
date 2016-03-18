@@ -1,5 +1,6 @@
 #include <ui/graph/alignObjects.h>
 #include <ui/GraphView.h>
+#include <ui/graph/ObjectsSelection.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/command/MoveObjectCommand.h>
 
@@ -8,8 +9,7 @@
 void alignHorizontallyCenter(GraphView* view)
 {
 	qreal sum = 0;
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
 		QPointF pos = ods->getPosition();
@@ -19,7 +19,8 @@ void alignHorizontallyCenter(GraphView* view)
 
 	qreal center = sum / odsList.size();
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("center on vertical axis").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("center on vertical axis").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -27,36 +28,35 @@ void alignHorizontallyCenter(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(center - pos.x() - area.width() / 2, 0);
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void alignHorizontallyLeft(GraphView* view)
 {
 	qreal left = std::numeric_limits<qreal>::max();
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
 		QPointF pos = ods->getPosition();
 		left = std::min(pos.x(), left);
 	}
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("align left edges").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("align left edges").toStdString());
 
 	for(auto ods : odsList)
 	{
 		QPointF delta = QPointF(left - ods->getPosition().x(), 0);
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void alignHorizontallyRight(GraphView* view)
 {
 	qreal right = std::numeric_limits<qreal>::lowest();
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
 		QPointF pos = ods->getPosition();
@@ -64,7 +64,8 @@ void alignHorizontallyRight(GraphView* view)
 		right = std::max(pos.x() + area.width(), right);
 	}
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("align right edges").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("align right edges").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -72,15 +73,14 @@ void alignHorizontallyRight(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(right - pos.x() - area.width(), 0);
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void alignVerticallyCenter(GraphView* view)
 {
 	qreal sum = 0;
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
 		QPointF pos = ods->getPosition();
@@ -90,7 +90,8 @@ void alignVerticallyCenter(GraphView* view)
 
 	qreal center = sum / odsList.size();
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("center on horizontal axis").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("center on horizontal axis").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -98,36 +99,35 @@ void alignVerticallyCenter(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, center - pos.y() - area.height() / 2);
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void alignVerticallyTop(GraphView* view)
 {
 	qreal top = std::numeric_limits<qreal>::max();
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
 		QPointF pos = ods->getPosition();
 		top = std::min(pos.y(), top);
 	}
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("align top edges").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("align top edges").toStdString());
 
 	for(auto ods : odsList)
 	{
 		QPointF delta = QPointF(0, top - ods->getPosition().y());
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void alignVerticallyBottom(GraphView* view)
 {
 	qreal bottom = std::numeric_limits<qreal>::lowest();
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
 		QPointF pos = ods->getPosition();
@@ -135,7 +135,8 @@ void alignVerticallyBottom(GraphView* view)
 		bottom = std::max(pos.y() + area.height(), bottom);
 	}
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("align bottom edges").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("align bottom edges").toStdString());
 
 	for(auto ods : odsList)
 	{
@@ -143,14 +144,13 @@ void alignVerticallyBottom(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, bottom - pos.y() - area.height());
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void distributeHorizontallyCenter(GraphView* view)
 {
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
@@ -170,7 +170,8 @@ void distributeHorizontallyCenter(GraphView* view)
 	qreal right = positions.back().first;
 	qreal step = (right - left) / (nb - 1);
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("distribute centers horizontally").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("distribute centers horizontally").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -181,14 +182,13 @@ void distributeHorizontallyCenter(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(left - pos.x() - area.width() / 2, 0);
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void distributeHorizontallyGaps(GraphView* view)
 {
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
@@ -214,7 +214,8 @@ void distributeHorizontallyGaps(GraphView* view)
 
 	qreal step = (right - left - width) / (nb - 1);
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("distribute gaps horizontally").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("distribute gaps horizontally").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -225,7 +226,7 @@ void distributeHorizontallyGaps(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(left - pos.x(), 0);
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 
 		left += area.width();
 	}
@@ -233,8 +234,7 @@ void distributeHorizontallyGaps(GraphView* view)
 
 void distributeHorizontallyLeft(GraphView* view)
 {
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
@@ -254,7 +254,8 @@ void distributeHorizontallyLeft(GraphView* view)
 	qreal right = positions.back().first;
 	qreal step = (right - left) / (nb - 1);
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("distribute left edges").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("distribute left edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -265,14 +266,13 @@ void distributeHorizontallyLeft(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(left - pos.x(), 0);
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void distributeHorizontallyRight(GraphView* view)
 {
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
@@ -292,7 +292,8 @@ void distributeHorizontallyRight(GraphView* view)
 	qreal right = positions.back().first;
 	qreal step = (right - left) / (nb - 1);
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("distribute right edges").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("distribute right edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -303,14 +304,13 @@ void distributeHorizontallyRight(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(left - pos.x() - area.width(), 0);
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void distributeVerticallyCenter(GraphView* view)
 {
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
@@ -330,7 +330,8 @@ void distributeVerticallyCenter(GraphView* view)
 	qreal bottom = positions.back().first;
 	qreal step = (bottom - top) / (nb - 1);
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("distribute centers vertically").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("distribute centers vertically").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -341,14 +342,13 @@ void distributeVerticallyCenter(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, top - pos.y() - area.height() / 2);
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void distributeVerticallyGaps(GraphView* view)
 {
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
@@ -374,7 +374,8 @@ void distributeVerticallyGaps(GraphView* view)
 
 	qreal step = (bottom - top - height) / (nb - 1);
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("distribute gaps vertically").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("distribute gaps vertically").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -385,7 +386,7 @@ void distributeVerticallyGaps(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, top - pos.y());
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 
 		top += area.height();
 	}
@@ -393,8 +394,7 @@ void distributeVerticallyGaps(GraphView* view)
 
 void distributeVerticallyTop(GraphView* view)
 {
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
@@ -414,7 +414,8 @@ void distributeVerticallyTop(GraphView* view)
 	qreal bottom = positions.back().first;
 	qreal step = (bottom - top) / (nb - 1);
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("distribute top edges").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("distribute top edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -425,14 +426,13 @@ void distributeVerticallyTop(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, top - pos.y());
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }
 
 void distributeVerticallyBottom(GraphView* view)
 {
-	auto document = view->getDocument();
-	auto odsList = view->getObjectDrawStructs(document->getSelection());
+	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
@@ -452,7 +452,8 @@ void distributeVerticallyBottom(GraphView* view)
 	qreal bottom = positions.back().first;
 	qreal step = (bottom - top) / (nb - 1);
 
-	auto moveMacro = document->getUndoStack().beginMacro(view->tr("distribute bottom edges").toStdString());
+	auto& undoStack = view->getDocument()->getUndoStack();
+	auto moveMacro = undoStack.beginMacro(view->tr("distribute bottom edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
 	{
@@ -463,6 +464,6 @@ void distributeVerticallyBottom(GraphView* view)
 		QRectF area = ods->getObjectArea();
 		QPointF delta = QPointF(0, top - pos.y() - area.height());
 		if(!delta.isNull())
-			document->getUndoStack().push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
 }

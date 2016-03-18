@@ -17,36 +17,6 @@ class PandaDocument;
 class BaseData;
 }
 
-class PANDA_CORE_API SelectGroupCommand : public panda::UndoCommand
-{
-public:
-	SelectGroupCommand(panda::PandaDocument* document, panda::Group* group);
-
-	virtual void redo();
-	virtual void undo();
-
-protected:
-	panda::PandaDocument* m_document;
-	panda::Group* m_group;
-};
-
-//****************************************************************************//
-
-class PANDA_CORE_API SelectObjectsInGroupCommand : public panda::UndoCommand
-{
-public:
-	SelectObjectsInGroupCommand(panda::PandaDocument* document, panda::Group* group);
-
-	virtual void redo();
-	virtual void undo();
-
-protected:
-	panda::PandaDocument* m_document;
-	panda::Group* m_group;
-};
-
-//****************************************************************************//
-
 class PANDA_CORE_API AddObjectToGroupCommand : public panda::UndoCommand
 {
 public:

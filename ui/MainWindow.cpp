@@ -19,6 +19,7 @@
 #include <ui/command/RemoveObjectCommand.h>
 
 #include <ui/graph/alignObjects.h>
+#include <ui/graph/ObjectsSelection.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/types/DataTraits.h>
@@ -84,7 +85,7 @@ MainWindow::MainWindow()
 	createStatusBar();
 
 	m_observer.get(m_document->getSignals().modified).connect<MainWindow, &MainWindow::documentModified>(this);
-	m_observer.get(m_document->getSignals().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
+	m_observer.get(m_graphView->selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
 	m_observer.get(m_document->getSignals().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
 
 	m_observer.get(m_document->getUndoStack().m_canUndoChangedSignal).connect<MainWindow, &MainWindow::undoEnabled>(this);
@@ -102,7 +103,7 @@ MainWindow::MainWindow()
 	setWindowIcon(QIcon(":/share/icons/icon.png"));
 	setCurrentFile("");
 
-	m_datasTable = new DatasTable(m_document.get(), this);
+	m_datasTable = new DatasTable(m_graphView, this);
 
 	m_datasDock = new QDockWidget(tr("Properties"), this);
 	m_datasDock->setObjectName("PropertiesDock");
@@ -174,7 +175,7 @@ void MainWindow::import()
 		{
 			m_graphView->updateLinkTags();
 
-			auto selection = m_document->getSelection();
+			auto selection = m_graphView->selection().get();
 			if(!selection.empty())
 				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, selection));
 		}
@@ -311,19 +312,19 @@ void MainWindow::createActions()
 	auto selectAllAction = new QAction(tr("Select &all"), this);
 	selectAllAction->setShortcut(tr("Ctrl+A"));
 	selectAllAction->setStatusTip(tr("Select all objects"));
-	connect(selectAllAction, &QAction::triggered, [this]() { m_document->selectAll(); });
+	connect(selectAllAction, &QAction::triggered, [this]() { m_graphView->selection().selectAll(); });
 	addAction(selectAllAction);
 
 	auto selectNoneAction = new QAction(tr("Select &none"), this);
 	selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
 	selectNoneAction->setStatusTip(tr("Deselect all objets"));
-	connect(selectNoneAction, &QAction::triggered, [this]() { m_document->selectNone(); });
+	connect(selectNoneAction, &QAction::triggered, [this]() { m_graphView->selection().selectNone(); });
 	addAction(selectNoneAction);
 
 	auto selectConnectedAction = new QAction(tr("Select &connected"), this);
 	selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
 	selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
-	connect(selectConnectedAction, &QAction::triggered, [this]() { m_document->selectConnected(); });
+	connect(selectConnectedAction, &QAction::triggered, [this]() { m_graphView->selection().selectConnected(); });
 	addAction(selectConnectedAction);
 
 	m_groupAction = new QAction(tr("&Group selected"), this);
@@ -830,16 +831,20 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile(const QString &fileName, bool import)
 {
-	if (!panda::serialization::readFile(m_document.get(), fileName.toStdString(), import))
+	auto result = panda::serialization::readFile(m_document.get(), fileName.toStdString(), import);
+
+	if(!result.first)
 	{
 		statusBar()->showMessage(tr("Loading failed"), 2000);
 		return false;
 	}
 
+	m_graphView->selection().set(result.second);
+
 	if(!import)
 	{
 		m_document->getUndoStack().clear();
-		m_document->selectNone();
+		m_graphView->selection().selectNone();
 		setCurrentFile(fileName);
 		statusBar()->showMessage(tr("File loaded"), 2000);
 	}
@@ -969,10 +974,11 @@ void MainWindow::showStatusBarMessage(QString text)
 
 void MainWindow::copy()
 {
-	if (m_document->getSelection().empty())
+	if (m_graphView->selection().get().empty())
 		return;
 
-	QApplication::clipboard()->setText(QString::fromStdString(panda::serialization::writeTextDocument(m_document.get())));
+	auto objects = m_graphView->selection().get();
+	QApplication::clipboard()->setText(QString::fromStdString(panda::serialization::writeTextDocument(m_document.get(), objects)));
 }
 
 void MainWindow::cut()
@@ -987,19 +993,21 @@ void MainWindow::paste()
 	if (!mimeData->hasText())
 		return;
 	
-	panda::serialization::readTextDocument(m_document.get(), mimeData->text().toStdString());
+	auto result = panda::serialization::readTextDocument(m_document.get(), mimeData->text().toStdString());
+	if (!result.first || result.second.empty())
+		return;
+
+	m_graphView->selection().set(result.second);
 
 	m_graphView->moveSelectedToCenter();
 	m_graphView->updateLinkTags();
 
-	auto selection = m_document->getSelection();
-	if(!selection.empty())
-		m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, selection));
+	m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, result.second));
 }
 
 void MainWindow::del()
 {
-	auto selection = m_document->getSelection();
+	auto selection = m_graphView->selection().get();
 	if(!selection.empty())
 	{
 		auto macro = m_document->getUndoStack().beginMacro(tr("delete objects").toStdString());
@@ -1023,7 +1031,7 @@ void MainWindow::ungroup()
 
 void MainWindow::editGroup()
 {
-	panda::Group* group = dynamic_cast<panda::Group*>(m_document->getCurrentSelectedObject());
+	panda::Group* group = dynamic_cast<panda::Group*>(m_graphView->selection().lastSelectedObject());
 	if(group)
 	{
 		EditGroupDialog dlg(group, this);
@@ -1035,7 +1043,7 @@ void MainWindow::editGroup()
 
 void MainWindow::saveGroup()
 {
-	panda::PandaObject* object = m_document->getCurrentSelectedObject();
+	panda::PandaObject* object = m_graphView->selection().lastSelectedObject();
 	panda::Group* group = dynamic_cast<panda::Group*>(object);
 	if(group)
 	{
@@ -1052,7 +1060,7 @@ void MainWindow::saveGroup()
 
 void MainWindow::createGroupObject()
 {
-	QAction *action = qobject_cast<QAction *>(sender());
+	QAction *action = qobject_cast<QAction*>(sender());
 	if(action)
 	{
 		QString path = action->data().toString();
@@ -1064,7 +1072,7 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 {
 	QMenu menu(this);
 
-	panda::PandaObject* obj = m_document->getCurrentSelectedObject();
+	panda::PandaObject* obj = m_graphView->selection().lastSelectedObject();
 	if(obj)
 	{
 		menu.addAction(m_cutAction);
@@ -1092,7 +1100,7 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 	if(flags & GraphView::MENU_IMAGE)
 		menu.addAction(m_showImageViewport);
 
-	int nbSelected = m_document->getSelection().size();
+	int nbSelected = m_graphView->selection().get().size();
 	if(nbSelected == 1 && dynamic_cast<panda::Group*>(obj))
 	{
 		menu.addAction(m_ungroupAction);
@@ -1178,7 +1186,7 @@ void MainWindow::play(bool playing)
 
 void MainWindow::selectedObject(panda::PandaObject* object)
 {
-	int nbSelected = m_document->getSelection().size();
+	int nbSelected = m_graphView->selection().get().size();
 	bool isGroup = (nbSelected == 1) && dynamic_cast<panda::Group*>(object);
 
 	m_ungroupAction->setEnabled(isGroup);
@@ -1306,7 +1314,7 @@ void MainWindow::convertSavedDocuments()
 	{
 		auto path = entry.absoluteFilePath();
 		m_document->resetDocument();
-		if (panda::serialization::readFile(m_document.get(), path.toStdString()))
+		if (panda::serialization::readFile(m_document.get(), path.toStdString()).first)
 		{
 			panda::serialization::writeFile(m_document.get(), path.toStdString());
 			++nb;

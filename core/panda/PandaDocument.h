@@ -38,7 +38,7 @@ public:
 
 	typedef std::shared_ptr<PandaObject> ObjectPtr;
 	typedef std::vector<ObjectPtr> ObjectsList;
-	typedef std::vector<PandaObject*> ObjectsSelection;
+	typedef std::vector<PandaObject*> ObjectsRawList;
 
 	explicit PandaDocument(gui::BaseGUI& gui);
 	~PandaDocument();
@@ -54,12 +54,6 @@ public:
 
 	int getObjectPosition(PandaObject* object) const; /// Get the object's position in the objects list
 	void reinsertObject(PandaObject* object, int pos); /// Reorder the object so it is inserted at the index pos in the objects list
-
-	PandaObject* getCurrentSelectedObject() const;
-	void setCurrentSelectedObject(PandaObject* object);
-	bool isSelected(PandaObject* object) const;
-	const ObjectsSelection& getSelection() const;
-	void setSelection(const ObjectsSelection& selection);
 
 	types::Color getBackgroundColor() const;
 	void setBackgroundColor(types::Color color);
@@ -86,8 +80,7 @@ public:
 	PandaObject* findObject(uint32_t objectIndex);
 	BaseData* findData(uint32_t objectIndex, const std::string& dataName);
 
-	virtual void update();
-	virtual void setDirtyValue(const DataNode* caller);
+	void update() override;
 
 	graphics::Framebuffer& getFBO();
 
@@ -107,12 +100,17 @@ public:
 	DocumentRenderer* getRenderer() const; // What takes care of rendering the document in OpenGL
 	UndoStack& getUndoStack() const; // Undo/redo capabilities
 
+	// Slots or called only by the UI
+	void play(bool playing);
+	void step();
+	void rewind();
+	void copyDataToUserValue(const panda::BaseData* data);
+
 protected:
 	void render();
 
 	ObjectsList m_objects;
-	ObjectsSelection m_selectedObjects;
-	ObjectsSelection m_dirtyObjects; // All the objects that were dirty during the current step
+	ObjectsRawList m_dirtyObjects; // All the objects that were dirty during the current step
 	uint32_t m_currentIndex;
 	std::shared_ptr<Layer> m_defaultLayer;
 
@@ -146,18 +144,6 @@ protected:
 	std::unique_ptr<DocumentSignals> m_signals;
 	std::unique_ptr<Scheduler> m_scheduler;
 	std::unique_ptr<UndoStack> m_undoStack;
-
-public:
-// Slots or called only by the UI
-	void selectionAdd(panda::PandaObject* object);
-	void selectionRemove(panda::PandaObject* object);
-	void selectAll();
-	void selectNone();
-	void selectConnected();
-	void play(bool playing);
-	void step();
-	void rewind();
-	void copyDataToUserValue(const panda::BaseData* data);
 };
 
 //****************************************************************************//
@@ -167,12 +153,6 @@ inline int PandaDocument::getNbObjects() const
 
 inline const PandaDocument::ObjectsList& PandaDocument::getObjects() const
 { return m_objects; }
-
-inline bool PandaDocument::isSelected(PandaObject* object) const
-{ return std::find(m_selectedObjects.begin(), m_selectedObjects.end(), object) != m_selectedObjects.end(); }
-
-inline const PandaDocument::ObjectsSelection& PandaDocument::getSelection() const
-{ return m_selectedObjects; }
 
 inline types::Color PandaDocument::getBackgroundColor() const
 { return m_backgroundColor.getValue(); }

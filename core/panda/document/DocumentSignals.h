@@ -16,15 +16,13 @@ class PANDA_CORE_API DocumentSignals
 {
 public:
 	msg::Signal<void()> modified;
+	msg::Signal<void()> clearDocument;
 	msg::Signal<void(panda::PandaObject*)> modifiedObject;
 	msg::Signal<void(panda::PandaObject*)> dirtyObject;
 	msg::Signal<void(panda::PandaObject*)> addedObject;
 	msg::Signal<void(panda::PandaObject*)> removedObject;
-	msg::Signal<void(panda::PandaObject*)> selectedObject;
-	msg::Signal<void(panda::PandaObject*)> selectedObjectIsDirty;
 	msg::Signal<void(XmlElement&, panda::PandaObject*)> savingObject;
 	msg::Signal<void(const XmlElement&, panda::PandaObject*)> loadingObject;
-	msg::Signal<void()> selectionChanged;
 	msg::Signal<void()> timeChanged;
 	msg::Signal<void()> reorderedObjects;
 	msg::Signal<void()> startLoading;

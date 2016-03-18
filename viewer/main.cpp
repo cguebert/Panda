@@ -128,7 +128,6 @@ void drop_callback(GLFWwindow* window, int count, const char** paths)
 
 	document->resetDocument();
 	panda::serialization::readFile(document.get(), paths[0]);
-	document->selectNone();
 	document->setRenderSize({ currentWidth, currentHeight });
 	document->play(true);
 }

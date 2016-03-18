@@ -21,7 +21,7 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 	root.setName("Panda");
 	document->save(root);	// The document's Datas
 	auto& objects = document->getObjects();
-	std::vector<PandaObject*> allObjects;
+	ObjectsList allObjects;
 	for(auto object : objects)
 		allObjects.push_back(object.get());
 	saveDoc(document, root, allObjects);	// The document and all of its objects
@@ -33,62 +33,43 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 	return result;
 }
 
-bool readFile(PandaDocument* document, const std::string& fileName, bool isImport)
+LoadResult readFile(PandaDocument* document, const std::string& fileName, bool isImport)
 {
 	XmlDocument doc;
 	if (!doc.loadFromFile(fileName))
 	{
 		document->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Cannot parse xml file  " + fileName + ".");
-		return false;
+		return { false, {} };
 	}
 
 	auto root = doc.root();
 	if(!isImport)	// Bugfix: don't read the doc's datas if we are merging 2 documents
 		document->load(root);		// Only the document's Datas
-	loadDoc(document, root);	// All the document's objects
-
-	for(auto& object : document->getObjects())
-		object->reset();
-
-	document->getSignals().selectionChanged.run();
-	document->getSignals().selectedObject.run(document->getCurrentSelectedObject());
-
-	return true;
+	return loadDoc(document, root);	// All the document's objects
 }
 
-std::string writeTextDocument(PandaDocument* document)
+std::string writeTextDocument(PandaDocument* document, const ObjectsList& objects)
 {
 	XmlDocument doc;
 	auto root = doc.root();
 	root.setName("Panda");
 
-	saveDoc(document, root, document->getSelection());
+	// Here we do not save the document's Data, only the objects from the list
+	saveDoc(document, root, objects);
 
 	return doc.saveToMemory();
 }
 
-bool readTextDocument(PandaDocument* document, const std::string& text)
+LoadResult readTextDocument(PandaDocument* document, const std::string& text)
 {
 	XmlDocument doc;
 	if (!doc.loadFromMemory(text))
-		return false;
+		return { false, {} };
 
-	bool bSelected = !document->getSelection().empty();
-	bool bVal = loadDoc(document, doc.root());
-
-	for(auto object : document->getSelection())
-		object->reset();
-
-	if(bSelected || !document->getSelection().empty())
-	{
-		document->getSignals().selectionChanged.run();
-		document->getSignals().selectedObject.run(document->getCurrentSelectedObject());
-	}
-
-	return bVal;
+	return loadDoc(document, doc.root());
 }
 
-bool saveDoc(PandaDocument* document, XmlElement& root, const std::vector<PandaObject*>& selected)
+bool saveDoc(PandaDocument* document, XmlElement& root, const ObjectsList& objects)
 {
 	typedef std::pair<BaseData*, BaseData*> DataPair;
 	std::vector<DataPair> links;
@@ -97,19 +78,19 @@ bool saveDoc(PandaDocument* document, XmlElement& root, const std::vector<PandaO
 	std::vector<IntPair> dockedObjects;
 
 	// Saving objects
-	for(auto object : selected)
+	for(auto object : objects)
 	{
 		auto elem = root.addChild("Object");
 		elem.setAttribute("type", ObjectFactory::getRegistryName(object));
 		elem.setAttribute("index", object->getIndex());
 
-		object->save(elem, &selected);
+		object->save(elem, &objects);
 
 		// Preparing links
 		for(BaseData* data : object->getInputDatas())
 		{
 			BaseData* parent = data->getParent();
-			if(parent && helper::contains(selected, parent->getOwner()))
+			if(parent && helper::contains(objects, parent->getOwner()))
 				links.push_back(std::make_pair(data, parent));
 		}
 
@@ -145,9 +126,8 @@ bool saveDoc(PandaDocument* document, XmlElement& root, const std::vector<PandaO
 	return true;
 }
 
-bool loadDoc(PandaDocument* document, XmlElement& root)
+LoadResult loadDoc(PandaDocument* document, XmlElement& root)
 {
-	std::vector<PandaObject*> selectedObjects;
 	document->getSignals().startLoading.run();
 	std::map<uint32_t, uint32_t> importIndicesMap;
 	auto factory = ObjectFactory::getInstance();
@@ -161,7 +141,7 @@ bool loadDoc(PandaDocument* document, XmlElement& root)
 	{
 		std::string registryName = elem.attribute("type").toString();
 		if(registryName.empty())
-			return false;
+			return { false, {} };
 		uint32_t index = elem.attribute("index").toUnsigned();
 		auto object = factory->create(registryName, document);
 		if(object)
@@ -169,29 +149,28 @@ bool loadDoc(PandaDocument* document, XmlElement& root)
 			importIndicesMap[index] = object->getIndex();
 
 			if (!object->load(elem))
-				return false;
+				return { false, {} };
 
 			newObjects.emplace_back(object, elem);
 		}
 		else
 		{
 			document->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
-			return false;
+			return { false, {} };
 		}
 
 		elem = elem.nextSibling("Object");
 	}
 
 	// Now that we have created all the objects, we actually add them to the document
+	ObjectsList objects;
 	for (const auto& p : newObjects)
 	{
 		const auto& object = p.first;
 		document->addObject(object);
-		selectedObjects.push_back(object.get());
+		objects.push_back(object.get());
 		document->getSignals().loadingObject.run(p.second, object.get());
 	}
-
-	document->setSelection(selectedObjects);
 
 	// Create links
 	elem = root.firstChild("Link");
@@ -239,9 +218,13 @@ bool loadDoc(PandaDocument* document, XmlElement& root)
 		elem = elem.nextSibling("Dock");
 	}
 
+	// Reset all the objects we loaded
+	for(auto object : objects)
+		object->reset();
+
 	document->getSignals().loadingFinished.run(); // For example if the view wants to do some computation
 
-	return true;
+	return { true, objects };
 }
 
 } // namespace serialization

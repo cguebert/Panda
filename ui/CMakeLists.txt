@@ -29,6 +29,7 @@ set(HEADER_FILES
 	SimpleGUIImpl.h
 	UpdateLoggerDialog.h
 	command/AddObjectCommand.h
+	command/GroupSelectionCommand.h
 	command/ModifyAnnotationCommand.h
 	command/MoveObjectCommand.h
 	command/RemoveObjectCommand.h
@@ -41,6 +42,7 @@ set(HEADER_FILES
 	drawstruct/ObjectDrawStruct.h
 	drawstruct/UserValueDrawStruct.h
 	graph/alignObjects.h
+	graph/ObjectsSelection.h
 	widget/AnimationDataWidgetDialog.h
 	widget/DataWidget.h
 	widget/DataWidgetFactory.h
@@ -75,6 +77,7 @@ set(SOURCE_FILES
 	SimpleGUIImpl.cpp
 	UpdateLoggerDialog.cpp
 	command/AddObjectCommand.cpp
+	command/GroupSelectionCommand.cpp
 	command/ModifyAnnotationCommand.cpp
 	command/MoveObjectCommand.cpp
 	command/RemoveObjectCommand.cpp
@@ -86,6 +89,7 @@ set(SOURCE_FILES
 	drawstruct/ObjectDrawStruct.cpp
 	drawstruct/UserValueDrawStruct.cpp
 	graph/alignObjects.cpp
+	graph/ObjectsSelection.cpp
 	widget/AnimationDataWidgetDialog.cpp
 	widget/ColorDataWidget.cpp
 	widget/EditGradientDialog.cpp

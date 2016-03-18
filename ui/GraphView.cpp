@@ -8,6 +8,7 @@
 #include <ui/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/graph/ObjectsSelection.h>
 
 #include <panda/helper/algorithm.h>
 #include <panda/types/DataTraits.h>
@@ -38,13 +39,14 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	, m_highlightConnectedDatas(false)
 	, m_useMagneticSnap(true)
 	, m_isLoading(false)
+	, m_objectsSelection(std::make_unique<ObjectsSelection>(doc))
 {
 	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setFocusPolicy(Qt::StrongFocus);
 
 	m_observer.get(m_pandaDocument->getSignals().modified).connect<QWidget, &QWidget::update>(this);
-	m_observer.get(m_pandaDocument->getSignals().selectionChanged).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(m_objectsSelection->selectionChanged).connect<QWidget, &QWidget::update>(this);
 	m_observer.get(m_pandaDocument->getSignals().addedObject).connect<GraphView, &GraphView::addedObject>(this);
 	m_observer.get(m_pandaDocument->getSignals().removedObject).connect<GraphView, &GraphView::removeObject>(this);
 	m_observer.get(m_pandaDocument->getSignals().modifiedObject).connect<GraphView, &GraphView::modifiedObject>(this);
@@ -60,6 +62,8 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 
 	setMouseTracking(true);
 }
+
+GraphView::~GraphView() = default;
 
 void GraphView::resetView()
 {
@@ -225,7 +229,7 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 		m_objectDrawStructs[object.get()]->draw(&painter);
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
-	for (auto& object : m_pandaDocument->getSelection())
+	for (auto& object : m_objectsSelection->get())
 		m_objectDrawStructs[object]->draw(&painter, true);
 
 	painter.setBrush(Qt::NoBrush);
@@ -354,7 +358,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 						m_movingAction = MOVING_LINK;
 						m_previousMousePos = m_currentMousePos = linkStart;
 
-						m_pandaDocument->selectNone();
+						m_objectsSelection->selectNone();
 					}
 				}
 			}
@@ -363,17 +367,17 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 				// Add the object to the selection
 				if(event->modifiers() == Qt::ControlModifier)
 				{
-					if(m_pandaDocument->isSelected(object))
-						m_pandaDocument->selectionRemove(object);
+					if(m_objectsSelection->isSelected(object))
+						m_objectsSelection->remove(object);
 					else
-						m_pandaDocument->selectionAdd(object);
+						m_objectsSelection->add(object);
 				}
 				else	// Moving the object (or selecting only this one if we release the mouse without moving)
 				{
-					if(!m_pandaDocument->isSelected(object))
-						m_pandaDocument->selectNone();
+					if(!m_objectsSelection->isSelected(object))
+						m_objectsSelection->selectNone();
 
-					m_pandaDocument->setCurrentSelectedObject(object);
+					m_objectsSelection->setLastSelectedObject(object);
 					m_movingAction = MOVING_START;
 					m_previousMousePos = zoomedMouse;
 				}
@@ -390,7 +394,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 		{
 			// Clicked where there is nothing
 			// Starting a rubber band to select in a zone
-			m_pandaDocument->selectNone();
+			m_objectsSelection->selectNone();
 			m_movingAction = MOVING_SELECTION;
 			m_previousMousePos = m_currentMousePos = event->localPos();
 			QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
@@ -427,7 +431,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			m_movingAction = MOVING_OBJECT;
 			if(m_useMagneticSnap)
 			{
-				auto selected = m_pandaDocument->getCurrentSelectedObject();
+				auto selected = m_objectsSelection->lastSelectedObject();
 				auto ods = m_objectDrawStructs[selected];
 				if(ods->acceptsMagneticSnap())
 				{
@@ -441,10 +445,10 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 			// Remove docked objects from the selection
 			m_customSelection.clear();
-			for(auto object : m_pandaDocument->getSelection())
+			for(auto object : m_objectsSelection->get())
 			{
 				panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
-				if(dockable && m_pandaDocument->isSelected(dockable->getParentDock()))
+				if(dockable && m_objectsSelection->isSelected(dockable->getParentDock()))
 					continue; // don't move a dockable object if their parent dock is selected, it will move them
 				m_customSelection.push_back(object);
 			}
@@ -464,7 +468,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		if(m_useMagneticSnap)
 		{
 			QPointF oldSnapDelta = m_snapDelta;
-			auto selected = m_pandaDocument->getCurrentSelectedObject();
+			auto selected = m_objectsSelection->lastSelectedObject();
 			auto possiblePosition = m_objectDrawStructs[selected]->getPosition() + delta - m_snapDelta;
 			computeSnapDelta(possiblePosition);
 			delta = delta - oldSnapDelta + m_snapDelta;
@@ -584,20 +588,20 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 {
 	if(m_movingAction == MOVING_START)
 	{
-		panda::PandaObject* object = m_pandaDocument->getCurrentSelectedObject();
+		panda::PandaObject* object = m_objectsSelection->lastSelectedObject();
 		if(object)
 		{
-			m_pandaDocument->selectNone();
-			m_pandaDocument->selectionAdd(object);
+			m_objectsSelection->selectNone();
+			m_objectsSelection->add(object);
 		}
 	}
 	else if(m_movingAction == MOVING_OBJECT)
 	{
 		QMap<panda::PandaObject*, QPointF> positions;
-		for(auto object : m_pandaDocument->getSelection())
+		for(auto object : m_objectsSelection->get())
 			positions[object] = m_objectDrawStructs[object]->getPosition();
 
-		for(auto& object : m_pandaDocument->getSelection())
+		for(auto& object : m_objectsSelection->get())
 		{
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 			if(dockable)
@@ -665,14 +669,14 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == MOVING_SELECTION)
 	{
-		m_pandaDocument->selectNone();
+		m_objectsSelection->selectNone();
 
 		QRectF selectionRect = QRectF(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).normalized();
 		for(auto& object : m_pandaDocument->getObjects())
 		{
 			QRectF objectArea = m_objectDrawStructs[object.get()]->getObjectArea();
 			if(selectionRect.contains(objectArea) || selectionRect.intersects(objectArea))
-				m_pandaDocument->selectionAdd(object.get());
+				m_objectsSelection->add(object.get());
 		}
 
 		update();
@@ -903,10 +907,10 @@ void GraphView::showAll()
 
 void GraphView::showAllSelected()
 {
-	if(!m_pandaDocument->getSelection().empty())
+	if(!m_objectsSelection->get().empty())
 	{
 		QRectF totalView;
-		for(auto object : m_pandaDocument->getSelection())
+		for(auto object : m_objectsSelection->get())
 		{
 			QRectF objectArea = m_objectDrawStructs[object]->getObjectArea();
 			totalView = totalView.united(objectArea);
@@ -924,10 +928,10 @@ void GraphView::showAllSelected()
 
 void GraphView::moveSelectedToCenter()
 {
-	if(!m_pandaDocument->getSelection().empty())
+	if(!m_objectsSelection->get().empty())
 	{
 		QRectF totalView;
-		for(auto object : m_pandaDocument->getSelection())
+		for(auto object : m_objectsSelection->get())
 		{
 			QRectF objectArea = m_objectDrawStructs[object]->getObjectArea();
 			totalView = totalView.united(objectArea);
@@ -935,11 +939,11 @@ void GraphView::moveSelectedToCenter()
 
 		QPointF delta = contentsRect().center() / m_zoomFactor - totalView.center();
 
-		for(auto object : m_pandaDocument->getSelection())
+		for(auto object : m_objectsSelection->get())
 		{
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 			// Do not move (docked) dockable objects, their parent dock move them already
-			if(!dockable || !m_pandaDocument->isSelected(dockable->getParentDock()))
+			if(!dockable || !m_objectsSelection->isSelected(dockable->getParentDock()))
 				m_objectDrawStructs[object]->move(delta);
 		}
 
@@ -1411,7 +1415,7 @@ void GraphView::showChooseWidgetDialog()
 		ChooseWidgetDialog(m_contextMenuData, this).exec();
 	else
 	{
-		auto obj = m_pandaDocument->getCurrentSelectedObject();
+		auto obj = m_objectsSelection->lastSelectedObject();
 		if(obj && obj->getClass()->getClassName() == "GeneratorUser" && obj->getClass()->getNamespaceName() == "panda")
 		{
 			auto data = obj->getData("input");

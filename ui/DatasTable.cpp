@@ -1,14 +1,16 @@
 #include <QtWidgets>
 
 #include <ui/DatasTable.h>
+#include <ui/GraphView.h>
+#include <ui/graph/ObjectsSelection.h>
 #include <ui/widget/DataWidgetFactory.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/document/DocumentSignals.h>
 
-DatasTable::DatasTable(panda::PandaDocument* doc, QWidget* parent)
+DatasTable::DatasTable(GraphView* view, QWidget* parent)
 	: QWidget(parent)
-	, m_document(doc)
+	, m_document(view->getDocument())
 	, m_currentObject(nullptr)
 	, m_nextObject(nullptr)
 	, m_waitingPopulate(false)
@@ -23,9 +25,10 @@ DatasTable::DatasTable(panda::PandaDocument* doc, QWidget* parent)
 
 	queuePopulate(nullptr);
 
-	m_observer.get(doc->getSignals().selectedObject).connect<DatasTable, &DatasTable::queuePopulate>(this);
-	m_observer.get(doc->getSignals().selectedObjectIsDirty).connect<DatasTable, &DatasTable::queuePopulate>(this);
-	m_observer.get(doc->getSignals().modifiedObject).connect<DatasTable, &DatasTable::onModifiedObject>(this);
+	m_observer.get(view->selection().selectedObject).connect<DatasTable, &DatasTable::queuePopulate>(this);
+	m_observer.get(m_document->getSignals().dirtyObject).connect<DatasTable, &DatasTable::onDirtyObject>(this);
+	m_observer.get(m_document->getSignals().modifiedObject).connect<DatasTable, &DatasTable::onModifiedObject>(this);
+	m_observer.get(m_document->getSignals().timeChanged).connect<DatasTable, &DatasTable::updateCurrentObject>(this);
 }
 
 void DatasTable::populateTable()
@@ -104,6 +107,11 @@ void DatasTable::populateTable()
 	}
 }
 
+void DatasTable::updateCurrentObject()
+{
+	queuePopulate(m_currentObject);
+}
+
 void DatasTable::queuePopulate(panda::PandaObject* object)
 {
 	if(!m_waitingPopulate)
@@ -121,6 +129,12 @@ void DatasTable::queuePopulate(panda::PandaObject* object)
 		m_currentObject = nullptr;
 }
 
+void DatasTable::onDirtyObject(panda::PandaObject* object)
+{
+	if(m_currentObject == object)
+		queuePopulate(object);
+}
+
 void DatasTable::onModifiedObject(panda::PandaObject* object)
 {
 	if(m_currentObject == object)
@@ -130,4 +144,3 @@ void DatasTable::onModifiedObject(panda::PandaObject* object)
 		queuePopulate(object);
 	}
 }
-
