@@ -35,7 +35,8 @@ public:
 			m_pathsToLoad.clear();
 		}
 
-		m_thread->join();
+		if(m_thread)
+			m_thread->join();
 	}
 
 	bool isWorking()
