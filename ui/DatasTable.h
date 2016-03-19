@@ -10,6 +10,7 @@
 #include <panda/messaging.h>
 
 class GraphView;
+class ObjectWatcher;
 class QStackedLayout;
 class QLabel;
 
@@ -25,11 +26,14 @@ class DatasTable : public QWidget
 	Q_OBJECT
 public:
 	explicit DatasTable(GraphView* view, QWidget* parent = nullptr);
+	~DatasTable();
 
-	typedef std::shared_ptr<BaseDataWidget> DataWidgetPtr;
+	void updateCurrentObject();
+
+public slots:
+	void populateTable();
 
 private:
-	void updateCurrentObject();
 	void queuePopulate(panda::PandaObject*);
 	void onDirtyObject(panda::PandaObject*);
 	void onModifiedObject(panda::PandaObject*);
@@ -37,14 +41,14 @@ private:
 	QStackedLayout* m_stackedLayout;
 	QLabel* m_nameLabel;
 	panda::PandaDocument* m_document;
-	panda::PandaObject *m_currentObject, *m_nextObject;
-	bool m_waitingPopulate;
+	panda::PandaObject *m_currentObject = nullptr, *m_nextObject = nullptr;
+	bool m_waitingPopulate = false;
 	panda::msg::Observer m_observer;
 
+	using DataWidgetPtr = std::shared_ptr<BaseDataWidget>;
 	std::vector<DataWidgetPtr> m_dataWidgets;
-	
-public slots:
-	void populateTable();
+
+	std::unique_ptr<ObjectWatcher> m_objectWatcher;
 };
 
 #endif // DATASTABLE_H

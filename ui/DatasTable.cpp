@@ -8,12 +8,45 @@
 #include <panda/PandaDocument.h>
 #include <panda/document/DocumentSignals.h>
 
+// A small class to be notified when the outputs of an object change
+class ObjectWatcher : public panda::DataNode
+{
+public:
+	ObjectWatcher(DatasTable& table)
+		: m_table(table) {}
+
+	void connect(panda::PandaObject* object)
+	{
+		disconnect();
+
+		for (auto data : object->getDatas())
+			addInput(*data);
+	}
+
+	void disconnect()
+	{
+		auto inputs = getInputs();
+		for (auto input : inputs)
+			removeInput(*input);
+	}
+
+	void update() override { cleanDirty(); }
+
+	void setDirtyValue(const DataNode* /*caller*/) override
+	{
+		m_table.updateCurrentObject();
+	}
+
+private:
+	DatasTable& m_table;
+};
+
+//****************************************************************************//
+
 DatasTable::DatasTable(GraphView* view, QWidget* parent)
 	: QWidget(parent)
 	, m_document(view->getDocument())
-	, m_currentObject(nullptr)
-	, m_nextObject(nullptr)
-	, m_waitingPopulate(false)
+	, m_objectWatcher(std::make_unique<ObjectWatcher>(*this))
 {
 	m_nameLabel = new QLabel("Document");
 	m_stackedLayout =  new QStackedLayout();
@@ -31,6 +64,8 @@ DatasTable::DatasTable(GraphView* view, QWidget* parent)
 	m_observer.get(m_document->getSignals().timeChanged).connect<DatasTable, &DatasTable::updateCurrentObject>(this);
 }
 
+DatasTable::~DatasTable() = default;
+
 void DatasTable::populateTable()
 {
 	m_waitingPopulate = false;
@@ -39,13 +74,15 @@ void DatasTable::populateTable()
 
 	if(m_currentObject == m_nextObject)
 	{	// Only update widgets
+		m_currentObject->updateIfDirty(); // Force the update of the object, as we want the new values
 		// TODO : verify if there are no new datas
-		for(DataWidgetPtr dataWidget : m_dataWidgets)
+		for(DataWidgetPtr& dataWidget : m_dataWidgets)
 			dataWidget->updateWidgetValue();
 		return;
 	}
 
 	m_currentObject = m_nextObject;
+	m_objectWatcher->connect(m_currentObject);
 
 	QScrollArea* scrollArea = new QScrollArea(this);
 	scrollArea->setFrameShape(QFrame::NoFrame);
@@ -123,6 +160,9 @@ void DatasTable::queuePopulate(panda::PandaObject* object)
 
 	m_nextObject = object;
 
+	if (m_nextObject != m_currentObject)
+		m_objectWatcher->disconnect();
+
 	// Bugfix : this is the case where we deselect the object, make sure to refresh later
 	//  the bug was that 2 objects (in different documents) were given the same pointer
 	if(m_currentObject && !object)
@@ -131,8 +171,10 @@ void DatasTable::queuePopulate(panda::PandaObject* object)
 
 void DatasTable::onDirtyObject(panda::PandaObject* object)
 {
-	if(m_currentObject == object)
+	if (m_currentObject == object)
+	{
 		queuePopulate(object);
+	}
 }
 
 void DatasTable::onModifiedObject(panda::PandaObject* object)
