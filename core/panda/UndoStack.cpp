@@ -28,7 +28,7 @@ bool UndoCommand::mergeWith(const UndoCommand* other)
 
 //****************************************************************************//
 
-void UndoStack::push(UndoCommand::SPtr command)
+void UndoStack::push(const UndoCommand::SPtr& command)
 {
 	if (!m_enabled)
 		return;

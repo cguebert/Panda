@@ -39,7 +39,7 @@ class ScopedMacro;
 class PANDA_CORE_API UndoStack
 {
 public:
-	void push(std::shared_ptr<UndoCommand> command);
+	void push(const UndoCommand::SPtr& command);
 	void clear();
 
 	void setEnabled(bool enabled); // While set to false, no new commands can be added

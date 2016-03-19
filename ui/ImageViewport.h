@@ -17,6 +17,8 @@ namespace types
 
 }
 
+class DetachableWidgetInfo;
+
 class ImageViewport : public QOpenGLWidget, public panda::DataNode
 {
 	Q_OBJECT
@@ -31,6 +33,8 @@ public:
 	void setDirtyValue(const panda::DataNode* caller) override;
 	void doRemoveInput(panda::DataNode& node) override;
 
+	DetachableWidgetInfo* getDetachableWidgetInfo();
+
 signals:
 	void closeViewport(ImageViewport* viewport); // Ask the main window to close this viewport (and potentially its parent detached window)
 	void destroyedViewport(ImageViewport* viewport); // Tell the main window this viewport is freed (called by the destructor)
@@ -44,6 +48,7 @@ protected:
 
 	void updateData();
 	const panda::types::ImageWrapper* getImage() const;
+	void setImageTitle();
 
 	const panda::BaseData* m_data;
 	int m_zoomLevel = 0, m_wheelTicks = 0, m_imageIndex = -1;
@@ -51,6 +56,11 @@ protected:
 
 	panda::graphics::ShaderProgram m_texturedShader;
 	panda::graphics::Model m_rectModel;
+
+	DetachableWidgetInfo* m_detachableWidgetInfo;
 };
+
+inline DetachableWidgetInfo* ImageViewport::getDetachableWidgetInfo()
+{ return m_detachableWidgetInfo; }
 
 #endif // IMAGEVIEWPORT_H

@@ -1,5 +1,6 @@
 #include <QtWidgets>
 #include <ui/ImageViewport.h>
+#include <ui/DetachableTabWidget.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/SimpleGUI.h>
@@ -25,6 +26,8 @@ ImageViewport::ImageViewport(const panda::BaseData* data, int imageIndex, QWidge
 	setFocusPolicy(Qt::StrongFocus);
 
 	addInput(*const_cast<panda::BaseData*>(data));
+
+	m_detachableWidgetInfo = new DetachableWidgetInfo(this);
 }
 
 ImageViewport::~ImageViewport()
@@ -179,6 +182,22 @@ const panda::types::ImageWrapper* ImageViewport::getImage() const
 	return nullptr;
 }
 
+void ImageViewport::setImageTitle()
+{
+	QString label = QString::fromStdString(m_data->getOwner()->getName()) + "." + QString::fromStdString(m_data->getName());
+
+	const ImageListData* imagesListData = dynamic_cast<const ImageListData*>(m_data);
+	if (imagesListData)
+	{
+		auto& imagesList = imagesListData->getValue();
+		int nb = imagesList.size();
+		if (m_imageIndex >= 0 || m_imageIndex < nb)
+			label += QString(" [%1/%2]").arg(m_imageIndex + 1).arg(nb);
+	}
+
+	m_detachableWidgetInfo->changeTitle(label);
+}
+
 void ImageViewport::keyPressEvent(QKeyEvent* event)
 {
 	if (event->modifiers() != Qt::ControlModifier)
@@ -201,6 +220,7 @@ void ImageViewport::keyPressEvent(QKeyEvent* event)
 			if (m_imageIndex >= nb)
 				m_imageIndex = nb - 1;
 			updateData();
+			setImageTitle();
 		}
 		break;
 	}
@@ -216,6 +236,7 @@ void ImageViewport::keyPressEvent(QKeyEvent* event)
 			if (m_imageIndex < 0)
 				m_imageIndex = 0;
 			updateData();
+			setImageTitle();
 		}
 		break;
 	}

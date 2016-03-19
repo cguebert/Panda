@@ -1213,6 +1213,8 @@ void MainWindow::showImageViewport()
 			return;
 	}
 
+	QString label = QString::fromStdString(clickedData->getOwner()->getName()) + "." + QString::fromStdString(clickedData->getName());
+
 	int index = 0;
 	if (trait->isVector())
 	{
@@ -1221,6 +1223,8 @@ void MainWindow::showImageViewport()
 		index = QInputDialog::getInt(this, "Image index", "Index of the image to show", 0, 0, nb - 1, 1, &ok);
 		if (!ok)
 			return;
+
+		label += QString(" [%1/%2]").arg(index + 1).arg(nb);
 	}
 
 	ImageViewport* imageViewport = new ImageViewport(clickedData, index, this);
@@ -1230,6 +1234,7 @@ void MainWindow::showImageViewport()
 	container->setFrameStyle(0);
 	container->setAlignment(Qt::AlignCenter);
 	container->setWidget(imageViewport);
+	container->setFocusProxy(imageViewport);
 
 	ImageViewportInfo info;
 	info.viewport = imageViewport;
@@ -1238,8 +1243,7 @@ void MainWindow::showImageViewport()
 	info.object = clickedData->getOwner();
 	m_imageViewports.push_back(info);
 
-	QString label = QString::fromStdString(clickedData->getOwner()->getName()) + "." + QString::fromStdString(clickedData->getName());
-	m_tabWidget->addTab(container, label, true);
+	m_tabWidget->addTab(container, label, imageViewport->getDetachableWidgetInfo());
 }
 
 void MainWindow::openDetachedWindow(DetachedWindow* window)

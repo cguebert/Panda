@@ -2,12 +2,27 @@
 #define DETACHABLETABWIDGET_H
 
 #include <QDialog>
+#include <QMap>
 #include <QTabBar>
 #include <QTabWidget>
-#include <QMap>
 
 class QVBoxLayout;
 class DetachedWindow;
+
+class DetachableWidgetInfo : public QObject
+{
+	Q_OBJECT
+public:
+	explicit DetachableWidgetInfo(QWidget* parent = nullptr)
+		: QObject(parent) {}
+
+	void changeTitle(QString title);
+
+signals:
+	void changedTitle(DetachableWidgetInfo* thisObject, QString title);
+};
+
+//****************************************************************************//
 
 class DetachableTabBar : public QTabBar
 {
@@ -39,16 +54,17 @@ class DetachableTabWidget : public QTabWidget
 public:
 	explicit DetachableTabWidget(QWidget* parent = nullptr);
 
-	int addTab(QWidget* widget, const QString& label, bool closable = false); // Replacing QTabWidget::addTab functions
+	int addTab(QWidget* widget, const QString& label, DetachableWidgetInfo* info = nullptr); // Replacing QTabWidget::addTab functions
 
 	struct TabInfo
 	{
-		TabInfo() : widget(nullptr), closable(false) {}
-		TabInfo(QWidget* w, const QString& t, bool c)
-			: widget(w), title(t), closable(c) {}
-		QWidget* widget;
+		TabInfo() = default;
+		TabInfo(QWidget* w, const QString& t, DetachableWidgetInfo* i)
+			: widget(w), title(t), info(i) {}
+		QWidget* widget = nullptr;
+		DetachableWidgetInfo* info = nullptr;
 		QString title;
-		bool closable;
+		bool closable = false;
 	};
 
 signals:
@@ -59,6 +75,7 @@ public slots:
 	void detachTab(int id);
 	void attachTab(DetachableTabWidget::TabInfo tabInfo);
 	void closeTab(int id);
+	void renameTab(DetachableWidgetInfo* info, QString title);
 
 protected:
 	DetachableTabBar* m_tabBar;
@@ -84,6 +101,7 @@ signals:
 
 protected:
 	void closeEvent(QCloseEvent* event);
+	void changeTitle(DetachableWidgetInfo*, QString title);
 
 	QVBoxLayout* m_mainLayout;
 	DetachableTabWidget::TabInfo m_tabContent;

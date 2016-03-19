@@ -4,6 +4,13 @@
 
 #include <iostream>
 
+void DetachableWidgetInfo::changeTitle(QString title)
+{
+	emit changedTitle(this, title);
+}
+
+//****************************************************************************//
+
 DetachableTabBar::DetachableTabBar(QWidget* parent)
 	: QTabBar(parent)
 {
@@ -114,18 +121,20 @@ DetachableTabWidget::DetachableTabWidget(QWidget* parent)
 	connect(m_tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 }
 
-int DetachableTabWidget::addTab(QWidget* widget, const QString& label, bool closable)
+int DetachableTabWidget::addTab(QWidget* widget, const QString& label, DetachableWidgetInfo* info)
 {
 	int id = QTabWidget::addTab(widget, label);
 
-	if(!closable)
+	if(info)
+		connect(info, &DetachableWidgetInfo::changedTitle, this, &DetachableTabWidget::renameTab);
+	else
 	{	// Remove close button
 		m_tabBar->setTabButton(id, QTabBar::RightSide, nullptr);
 		m_tabBar->setTabButton(id, QTabBar::LeftSide, nullptr);
-	}
+	}		
 
-	m_tabsInfo[widget] = TabInfo(widget, label, closable);
-
+	m_tabsInfo[widget] = TabInfo(widget, label, info);
+	
 	return id;
 }
 
@@ -146,6 +155,7 @@ void DetachableTabWidget::detachTab(int id)
 	connect(detachedWindow, SIGNAL(detachTab(DetachableTabWidget::TabInfo)), this, SLOT(attachTab(DetachableTabWidget::TabInfo)));
 
 	QWidget* w = widget(id);
+	w->disconnect(this);
 	detachedWindow->attachTab(m_tabsInfo[w]); // The setParent inside will remove the tab
 	w->show(); // Have to call it manually
 	detachedWindow->resize(w->sizeHint().expandedTo(QSize(640, 480)));
@@ -159,7 +169,7 @@ void DetachableTabWidget::detachTab(int id)
 void DetachableTabWidget::attachTab(TabInfo tabInfo)
 {
 	tabInfo.widget->setParent(this);
-	addTab(tabInfo.widget, tabInfo.title, tabInfo.closable);
+	addTab(tabInfo.widget, tabInfo.title, tabInfo.info);
 }
 
 void DetachableTabWidget::closeTab(int id)
@@ -168,6 +178,28 @@ void DetachableTabWidget::closeTab(int id)
 	removeTab(id);
 	w->deleteLater();
 	m_tabsInfo.remove(w);
+}
+
+void DetachableTabWidget::renameTab(DetachableWidgetInfo* info, QString title)
+{
+	QWidget* wi = nullptr;
+	TabInfo* tabInfo = nullptr;
+	for (auto& ti : m_tabsInfo)
+	{
+		if (ti.info == info)
+		{
+			tabInfo = &ti;
+			break;
+		}
+	}
+
+	if (!tabInfo)
+		return;
+
+	tabInfo->title = title;
+	int index = indexOf(tabInfo->widget);
+	if(index != -1)
+		setTabText(index, title);
 }
 
 //****************************************************************************//
@@ -187,6 +219,9 @@ void DetachedWindow::attachTab(DetachableTabWidget::TabInfo tabInfo)
 	tabInfo.widget->setParent(this);
 	m_mainLayout->addWidget(tabInfo.widget);
 	m_tabContent = tabInfo;
+
+	if(tabInfo.info)
+		connect(tabInfo.info, &DetachableWidgetInfo::changedTitle, this, &DetachedWindow::changeTitle);
 }
 
 void DetachedWindow::closeTab()
@@ -206,4 +241,10 @@ void DetachedWindow::closeEvent(QCloseEvent* /*event*/)
 	if(m_tabContent.widget)
 		emit detachTab(m_tabContent);
 	emit closeDetachedWindow(this);
+}
+
+void DetachedWindow::changeTitle(DetachableWidgetInfo*, QString title)
+{
+	setWindowTitle(title);
+	m_tabContent.title = title;
 }
