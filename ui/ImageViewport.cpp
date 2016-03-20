@@ -76,7 +76,8 @@ void ImageViewport::updateData()
 		auto img = getImage();
 		if(!img || img->isNull())
 			resize(600, 400);
-		resize(img->width(), img->height());
+		else
+			resize(img->width(), img->height());
 
 		// Ask for a redraw
 		QWidget::update();
@@ -160,6 +161,7 @@ void ImageViewport::wheelEvent(QWheelEvent* event)
 		m_zoomLevel = newZoom;
 		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
 		QWidget::update();
+		setImageTitle();
 	}
 }
 
@@ -194,6 +196,9 @@ void ImageViewport::setImageTitle()
 		if (m_imageIndex >= 0 || m_imageIndex < nb)
 			label += QString(" [%1/%2]").arg(m_imageIndex + 1).arg(nb);
 	}
+
+	if (m_zoomFactor < 1)
+		label += QString(" %1%").arg(lround(m_zoomFactor * 100));
 
 	m_detachableWidgetInfo->changeTitle(label);
 }
