@@ -1220,11 +1220,12 @@ void MainWindow::showImageViewport()
 	{
 		int nb = trait->size(clickedData->getVoidValue());
 		bool ok = true;
-		index = QInputDialog::getInt(this, "Image index", "Index of the image to show", 0, 0, nb - 1, 1, &ok);
+		index = QInputDialog::getInt(this, "Image index", "Index of the image to show", 1, 1, nb, 1, &ok); // One based for the GUI
 		if (!ok)
 			return;
 
-		label += QString(" [%1/%2]").arg(index + 1).arg(nb);
+		label += QString(" [%1/%2]").arg(index).arg(nb);
+		--index; // Zero based for the viewport
 	}
 
 	ImageViewport* imageViewport = new ImageViewport(clickedData, index, this);
