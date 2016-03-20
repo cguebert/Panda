@@ -266,6 +266,7 @@ void MainWindow::createActions()
 	connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
 
 	auto saveAsAction = new QAction(tr("Save &As..."), this);
+	saveAsAction->setShortcut(QKeySequence::SaveAs);
 	saveAsAction->setStatusTip(tr("Save the document under a new "
 								  "name"));
 	connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
@@ -310,7 +311,7 @@ void MainWindow::createActions()
 	addAction(m_deleteAction);
 
 	auto selectAllAction = new QAction(tr("Select &all"), this);
-	selectAllAction->setShortcut(tr("Ctrl+A"));
+	selectAllAction->setShortcut(QKeySequence::SelectAll);
 	selectAllAction->setStatusTip(tr("Select all objects"));
 	connect(selectAllAction, &QAction::triggered, [this]() { m_graphView->selection().selectAll(); });
 	addAction(selectAllAction);
@@ -358,38 +359,44 @@ void MainWindow::createActions()
 	auto zoomResetAction = new QAction(tr("Reset &zoom"), this);
 	zoomResetAction->setShortcut(tr("Ctrl+0"));
 	zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
+	zoomResetAction->setShortcutContext(Qt::WidgetShortcut);
 	connect(zoomResetAction, SIGNAL(triggered()), m_graphView, SLOT(zoomReset()));
-	addAction(zoomResetAction);
+	m_graphView->addAction(zoomResetAction);
 
-	auto zoomInAction = new QAction(tr("Zoom &in"), this);
-	zoomInAction->setShortcut(tr("Ctrl++"));
+	auto zoomInAction = new QAction(tr("Zoom &in"), m_graphView);
+	zoomInAction->setShortcut(QKeySequence::ZoomIn);
 	zoomInAction->setStatusTip(tr("Zoom in"));
+	zoomInAction->setShortcutContext(Qt::WidgetShortcut);
 	connect(zoomInAction, SIGNAL(triggered()), m_graphView, SLOT(zoomIn()));
-	addAction(zoomInAction);
+	m_graphView->addAction(zoomInAction);
 
-	auto zoomOutAction = new QAction(tr("Zoom &out"), this);
-	zoomOutAction->setShortcut(tr("Ctrl+-"));
+	auto zoomOutAction = new QAction(tr("Zoom &out"), m_graphView);
+	zoomOutAction->setShortcut(QKeySequence::ZoomOut);
 	zoomOutAction->setStatusTip(tr("Zoom out"));
+	zoomOutAction->setShortcutContext(Qt::WidgetShortcut);
 	connect(zoomOutAction, SIGNAL(triggered()), m_graphView, SLOT(zoomOut()));
-	addAction(zoomOutAction);
+	m_graphView->addAction(zoomOutAction);
 
 	auto centerViewAction = new QAction(tr("&Center view"), this);
 	centerViewAction->setShortcut(tr("Ctrl+5"));
 	centerViewAction->setStatusTip(tr("Center the view"));
+	centerViewAction->setShortcutContext(Qt::WidgetShortcut);
 	connect(centerViewAction, SIGNAL(triggered()), m_graphView, SLOT(centerView()));
-	addAction(centerViewAction);
+	m_graphView->addAction(centerViewAction);
 
 	auto showAllAction = new QAction(tr("Show &all"), this);
 	showAllAction->setShortcut(tr("Ctrl+f"));
 	showAllAction->setStatusTip(tr("Center and zoom the view so that all objects are visible"));
+	showAllAction->setShortcutContext(Qt::WidgetShortcut);
 	connect(showAllAction, SIGNAL(triggered()), m_graphView, SLOT(showAll()));
-	addAction(showAllAction);
+	m_graphView->addAction(showAllAction);
 
 	auto showAllSelectedAction = new QAction(tr("Show all &selected"), this);
 	showAllSelectedAction->setShortcut(tr("Ctrl+d"));
 	showAllSelectedAction->setStatusTip(tr("Center and zoom the view so that all selected objects are visible"));
+	showAllSelectedAction->setShortcutContext(Qt::WidgetShortcut);
 	connect(showAllSelectedAction, SIGNAL(triggered()), m_graphView, SLOT(showAllSelected()));
-	addAction(showAllSelectedAction);
+	m_graphView->addAction(showAllSelectedAction);
 
 	auto showGraphViewAction = new QAction(tr("Show &graph view"), this);
 	showGraphViewAction->setShortcut(tr("Ctrl+1"));

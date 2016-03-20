@@ -33,6 +33,21 @@ ImageViewport::ImageViewport(const panda::BaseData* data, int imageIndex, QWidge
 	m_detachableWidgetInfo = new DetachableWidgetInfo(this);
 
 	m_observer.get(m_document->getSignals().modifiedObject).connect<ImageViewport, &ImageViewport::onModifiedObject>(this);
+
+	auto zoomInAction = new QAction(this);
+	zoomInAction->setShortcut(QKeySequence::ZoomIn);
+	connect(zoomInAction, &QAction::triggered, this, &ImageViewport::zoomIn);
+	addAction(zoomInAction);
+
+	auto zoomOutAction = new QAction(this);
+	zoomOutAction->setShortcut(QKeySequence::ZoomOut);
+	connect(zoomOutAction, &QAction::triggered, this, &ImageViewport::zoomOut);
+	addAction(zoomOutAction);
+
+	auto resetZoomAction = new QAction(this);
+	resetZoomAction->setShortcut(tr("Ctrl+0"));
+	connect(resetZoomAction, &QAction::triggered, this, &ImageViewport::resetZoom);
+	addAction(resetZoomAction);
 }
 
 ImageViewport::~ImageViewport()
@@ -273,5 +288,40 @@ void ImageViewport::onModifiedObject(panda::PandaObject* object)
 	{
 		m_data = nullptr;
 		emit closeViewport(this);
+	}
+}
+
+void ImageViewport::zoomIn()
+{
+	int newZoom = qBound(0, m_zoomLevel - 5, 90);
+	if (m_zoomLevel != newZoom)
+	{
+		m_zoomLevel = newZoom;
+		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
+		QWidget::update();
+		setImageTitle();
+	}
+}
+
+void ImageViewport::zoomOut()
+{
+	int newZoom = qBound(0, m_zoomLevel + 5, 90);
+	if (m_zoomLevel != newZoom)
+	{
+		m_zoomLevel = newZoom;
+		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
+		QWidget::update();
+		setImageTitle();
+	}
+}
+
+void ImageViewport::resetZoom()
+{
+	if (m_zoomLevel != 0)
+	{
+		m_zoomLevel = 0;
+		m_zoomFactor = 1.f;
+		QWidget::update();
+		setImageTitle();
 	}
 }

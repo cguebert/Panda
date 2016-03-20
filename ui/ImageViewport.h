@@ -50,6 +50,10 @@ protected:
 	void wheelEvent(QWheelEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
 
+	void zoomIn();
+	void zoomOut();
+	void resetZoom();
+
 	void updateData();
 	const panda::types::ImageWrapper* getImage() const;
 	void setImageTitle();
