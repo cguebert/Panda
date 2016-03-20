@@ -133,17 +133,19 @@ public:
 			int nbImage = listImage.size();
 			int nbPosition = listPosition.size();
 			int nbRotation = listRotation.size();
-			if(nbImage < nbPosition) nbImage = 1;
-			if(nbRotation && nbRotation < nbPosition) nbRotation = 1;
+			int nb = std::max(nbImage, nbPosition);
+			if(nbImage < nb) nbImage = 1;
+			if(nbPosition < nb) nbPosition = 1;
+			if(nbRotation && nbRotation < nb) nbRotation = 1;
 
-			m_firstBuffer.resize(nbPosition);
-			for (int i = 0; i < nbPosition; ++i)
+			m_firstBuffer.resize(nb);
+			for (int i = 0; i < nb; ++i)
 				m_firstBuffer[i] = i * 4;
 
-			m_countBuffer.assign(nbPosition, 4);
+			m_countBuffer.assign(nb, 4);
 
-			m_texCoordsBuffer.reserve(nbPosition * 4);
-			for (int i = 0; i < nbPosition; ++i)
+			m_texCoordsBuffer.reserve(nb * 4);
+			for (int i = 0; i < nb; ++i)
 			{
 				m_texCoordsBuffer.emplace_back(1.f, 1.f);
 				m_texCoordsBuffer.emplace_back(0.f, 1.f);
@@ -152,17 +154,16 @@ public:
 			}
 
 			bool centered = (m_drawCentered.getValue() != 0);
-			m_verticesBuffer.reserve(nbPosition * 4);
+			m_verticesBuffer.reserve(nb * 4);
 			if (nbRotation)
 			{
-				for (int i = 0; i < nbPosition; ++i)
+				for (int i = 0; i < nb; ++i)
 					createVertices(listPosition[i], listImage[i % nbImage].size(), listRotation[i % nbRotation], centered);
 			}
 			else
 			{
-				for (int i = 0; i < nbPosition; ++i)
-					for (int i = 0; i < nbPosition; ++i)
-					createVertices(listPosition[i], listImage[i % nbImage].size(), centered);
+				for (int i = 0; i < nb; ++i)
+					createVertices(listPosition[i % nbPosition], listImage[i % nbImage].size(), centered);
 			}
 		}
 	}
@@ -171,18 +172,16 @@ public:
 	{
 		const std::vector<ImageWrapper>& listImage = m_image.getValue();
 		const std::vector<Point>& listPosition = m_position.getValue();
-		const std::vector<float>& listRotation = m_rotation.getValue();
 
 		bool centered = (m_drawCentered.getValue() != 0);
 
 		int nbImage = listImage.size();
 		int nbPosition = listPosition.size();
-		int nbRotation = listRotation.size();
 
 		if(nbImage && nbPosition)
 		{
 			if(nbImage < nbPosition) nbImage = 1;
-			if(nbRotation && nbRotation < nbPosition) nbRotation = 1;
+			if(nbPosition < nbImage) nbPosition = 1;
 
 			if(!m_shader.getValue().apply(m_shaderProgram))
 				return;
