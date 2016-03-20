@@ -25,7 +25,7 @@ public:
 
 	virtual int id() const
 	{
-		return getCommandId<SetDataValueCommand<T>>();
+		return panda::getCommandId<SetDataValueCommand<T>>();
 	}
 
 	virtual void redo()

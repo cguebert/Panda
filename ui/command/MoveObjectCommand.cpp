@@ -24,7 +24,7 @@ MoveObjectCommand::MoveObjectCommand(GraphView* view,
 
 int MoveObjectCommand::id() const
 {
-	return getCommandId<MoveObjectCommand>();
+	return panda::getCommandId<MoveObjectCommand>();
 }
 
 void MoveObjectCommand::redo()

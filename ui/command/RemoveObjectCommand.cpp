@@ -50,7 +50,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 				{
 					auto data2 = dynamic_cast<panda::BaseData*>(output);
 					if(data2 && data2->getOwner())
-						m_document->getUndoStack().push(std::make_shared<LinkDatasCommand>(data2, nullptr));
+						m_document->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(data2, nullptr));
 				}
 			}
 
@@ -59,7 +59,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 			for(auto data : objectPtr->getInputDatas())
 			{
 				if(data->getParent())
-					m_document->getUndoStack().push(std::make_shared<LinkDatasCommand>(data, nullptr));
+					m_document->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(data, nullptr));
 			}
 		}
 	}
@@ -67,7 +67,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 
 int RemoveObjectCommand::id() const
 {
-	return getCommandId<RemoveObjectCommand>();
+	return panda::getCommandId<RemoveObjectCommand>();
 }
 
 void RemoveObjectCommand::redo()

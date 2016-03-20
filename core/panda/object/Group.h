@@ -5,15 +5,14 @@
 #include <panda/object/Layer.h>
 #include <panda/types/Point.h>
 
-class EditGroupCommand;
 namespace panda
 {
 
+class EditGroupCommand;
 class PandaDocument;
 
 class PANDA_CORE_API Group : public PandaObject
 {
-	friend class EditGroupCommand;
 public:
 	PANDA_CLASS(Group, PandaObject)
 
@@ -48,6 +47,8 @@ public:
 	types::Point getPosition(PandaObject* object) const;
 
 protected:
+	friend class panda::EditGroupCommand;
+
 	Data<std::string> m_groupName;
 
 	ObjectsList m_objects;

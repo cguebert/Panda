@@ -5,8 +5,11 @@
 
 #include <panda/helper/algorithm.h>
 
-AddObjectToGroupCommand::AddObjectToGroupCommand(panda::Group* group,
-											 std::shared_ptr<panda::PandaObject> object)
+namespace panda
+{
+
+AddObjectToGroupCommand::AddObjectToGroupCommand(Group* group,
+											 std::shared_ptr<PandaObject> object)
 	: m_group(group)
 	, m_object(object)
 {
@@ -25,8 +28,8 @@ void AddObjectToGroupCommand::undo()
 
 //****************************************************************************//
 
-RemoveObjectFromGroupCommand::RemoveObjectFromGroupCommand(panda::Group* group,
-											 std::shared_ptr<panda::PandaObject> object)
+RemoveObjectFromGroupCommand::RemoveObjectFromGroupCommand(Group* group,
+											 std::shared_ptr<PandaObject> object)
 	: m_group(group)
 	, m_object(object)
 {
@@ -45,7 +48,7 @@ void RemoveObjectFromGroupCommand::undo()
 
 //****************************************************************************//
 
-EditGroupCommand::EditGroupCommand(panda::Group* group,
+EditGroupCommand::EditGroupCommand(Group* group,
 								   std::string newName,
 								   std::vector<DataInfo> newDatas)
 	: m_group(group)
@@ -68,12 +71,12 @@ void EditGroupCommand::redo()
 {
 	m_group->m_groupName.setValue(m_newName);
 
-	std::map< panda::BaseData*, std::shared_ptr<panda::BaseData> > datasPtrMap;
-	for(std::shared_ptr<panda::BaseData> dataPtr : m_group->m_groupDatas)
+	std::map< BaseData*, std::shared_ptr<BaseData> > datasPtrMap;
+	for(std::shared_ptr<BaseData> dataPtr : m_group->m_groupDatas)
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
 	m_group->enableModifiedSignal(false);
-	std::vector< std::shared_ptr<panda::BaseData> > datasList;
+	std::vector< std::shared_ptr<BaseData> > datasList;
 	for(auto info : m_newDatas)
 	{
 		info.data->setName(info.name);
@@ -91,12 +94,12 @@ void EditGroupCommand::undo()
 {
 	m_group->m_groupName.setValue(m_prevName);
 
-	std::map< panda::BaseData*, std::shared_ptr<panda::BaseData> > datasPtrMap;
-	for(std::shared_ptr<panda::BaseData> dataPtr : m_group->m_groupDatas)
+	std::map< BaseData*, std::shared_ptr<BaseData> > datasPtrMap;
+	for(std::shared_ptr<BaseData> dataPtr : m_group->m_groupDatas)
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
 	m_group->enableModifiedSignal(false);
-	std::vector< std::shared_ptr<panda::BaseData> > datasList;
+	std::vector< std::shared_ptr<BaseData> > datasList;
 	for(auto info : m_prevDatas)
 	{
 		info.data->setName(info.name);
@@ -109,3 +112,5 @@ void EditGroupCommand::undo()
 	m_group->enableModifiedSignal(true);
 	m_group->emitModified();
 }
+
+} // namespace panda

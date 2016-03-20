@@ -2,8 +2,11 @@
 #include <panda/object/Layer.h>
 #include <panda/command/MoveLayerCommand.h>
 
-MoveLayerCommand::MoveLayerCommand(panda::PandaDocument* document,
-								   panda::PandaObject* layer,
+namespace panda
+{
+
+MoveLayerCommand::MoveLayerCommand(PandaDocument* document,
+								   PandaObject* layer,
 								   int pos)
 	: m_document(document)
 	, m_layer(layer)
@@ -20,7 +23,7 @@ MoveLayerCommand::MoveLayerCommand(panda::PandaDocument* document,
 		for(int i=0, nb=objects.size(); i<nb; ++i)
 		{
 			auto object = objects[i].get();
-			if(object != layer && dynamic_cast<panda::BaseLayer*>(object))
+			if(object != layer && dynamic_cast<BaseLayer*>(object))
 			{
 				++nbLayer;
 				if(nbLayer == pos)
@@ -47,3 +50,5 @@ void MoveLayerCommand::undo()
 {
 	m_document->reinsertObject(m_layer, m_prevPos);
 }
+
+} // namespace panda

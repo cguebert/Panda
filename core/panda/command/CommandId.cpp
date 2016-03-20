@@ -3,7 +3,10 @@
 #include <map>
 #include <typeindex>
 
-typedef std::map<std::type_index, int> CommandIdMap;
+namespace panda
+{
+
+using CommandIdMap = std::map<std::type_index, int>;
 
 static CommandIdMap& getCommandIdMap()
 {
@@ -25,3 +28,5 @@ int getCommandId(const std::type_info& type)
 		return i-1;
 	}
 }
+
+} // namespace panda

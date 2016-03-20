@@ -6,22 +6,24 @@
 
 namespace panda
 {
+
 class PandaDocument;
 class PandaObject;
-}
 
-class PANDA_CORE_API MoveLayerCommand : public panda::UndoCommand
+class PANDA_CORE_API MoveLayerCommand : public UndoCommand
 {
 public:
-	MoveLayerCommand(panda::PandaDocument* document, panda::PandaObject* layer, int pos);
+	MoveLayerCommand(PandaDocument* document, PandaObject* layer, int pos);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
-	panda::PandaDocument* m_document;
-	panda::PandaObject* m_layer;
+	PandaDocument* m_document;
+	PandaObject* m_layer;
 	int m_prevPos, m_newPos;
 };
+
+} // namespace panda
 
 #endif

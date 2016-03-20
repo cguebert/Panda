@@ -2,8 +2,11 @@
 #include <panda/command/CommandId.h>
 #include <panda/command/LinkDatasCommand.h>
 
-LinkDatasCommand::LinkDatasCommand(panda::BaseData* targetData,
-								   panda::BaseData* parentData)
+namespace panda
+{
+
+LinkDatasCommand::LinkDatasCommand(BaseData* targetData,
+								   BaseData* parentData)
 {
 	LinkStruct link;
 	link.m_targetObject = targetData->getOwner();
@@ -39,10 +42,10 @@ void LinkDatasCommand::redo()
 {
 	for(auto link : m_links)
 	{
-		panda::BaseData* target = link.m_targetObject->getData(link.m_targetDataName);
+		BaseData* target = link.m_targetObject->getData(link.m_targetDataName);
 		if(!target)
 			continue;
-		panda::BaseData* parent = nullptr;
+		BaseData* parent = nullptr;
 		if(link.m_newParentObject)
 			parent = link.m_newParentObject->getData(link.m_newParentDataName);
 		target->getOwner()->dataSetParent(target, parent);
@@ -59,17 +62,17 @@ void LinkDatasCommand::undo()
 
 	for(auto link : m_links)
 	{
-		panda::BaseData* target = link.m_targetObject->getData(link.m_targetDataName);
+		BaseData* target = link.m_targetObject->getData(link.m_targetDataName);
 		if(!target)
 			continue;
-		panda::BaseData* parent = nullptr;
+		BaseData* parent = nullptr;
 		if(link.m_initialParentObject)
 			parent = link.m_initialParentObject->getData(link.m_initialParentDataName);
 		target->getOwner()->dataSetParent(target, parent);
 	}
 }
 /*
-bool LinkDatasCommand::mergeWith(const panda::UndoCommand* other)
+bool LinkDatasCommand::mergeWith(const UndoCommand* other)
 {
 	const LinkDatasCommand* command = dynamic_cast<const LinkDatasCommand*>(other);
 	if(!command)
@@ -79,3 +82,4 @@ bool LinkDatasCommand::mergeWith(const panda::UndoCommand* other)
 	return true;
 }
 */
+} // namespace panda

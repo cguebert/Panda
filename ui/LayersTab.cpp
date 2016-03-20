@@ -237,7 +237,7 @@ void LayersTab::moveLayerUp()
 		m_moveDownButton->setEnabled(index > 0);
 
 		auto object = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		m_document->getUndoStack().push(std::make_shared<MoveLayerCommand>(m_document, object, index));
+		m_document->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(m_document, object, index));
 	}
 }
 
@@ -250,7 +250,7 @@ void LayersTab::moveLayerDown()
 		m_moveDownButton->setEnabled(index > 0);
 
 		auto object = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		m_document->getUndoStack().push(std::make_shared<MoveLayerCommand>(m_document, object, index));
+		m_document->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(m_document, object, index));
 	}
 }
 

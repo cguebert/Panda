@@ -176,8 +176,8 @@ void EditGroupDialog::updateGroup()
 	if(m_editGroupName->text().size())
 		groupName = m_editGroupName->text().toStdString();
 
-	EditGroupCommand::DataInfo tempInfo;
-	std::vector<EditGroupCommand::DataInfo> datasList;
+	panda::EditGroupCommand::DataInfo tempInfo;
+	std::vector<panda::EditGroupCommand::DataInfo> datasList;
 	for(int i=0, nb=m_tableWidget->rowCount(); i<nb; ++i)
 	{
 		panda::BaseData* data = (panda::BaseData*)m_tableWidget->item(i,0)->data(Qt::UserRole).value<void*>();
@@ -209,5 +209,5 @@ void EditGroupDialog::updateGroup()
 	}
 
 	if(modified)
-		m_group->parentDocument()->getUndoStack().push(std::make_shared<EditGroupCommand>(m_group, groupName, datasList));
+		m_group->parentDocument()->getUndoStack().push(std::make_shared<panda::EditGroupCommand>(m_group, groupName, datasList));
 }

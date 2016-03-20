@@ -6,20 +6,22 @@
 
 namespace panda
 {
-class GenericObject;
-}
 
-class PANDA_CORE_API RemoveGenericDataCommand : public panda::UndoCommand
+class GenericObject;
+
+class PANDA_CORE_API RemoveGenericDataCommand : public UndoCommand
 {
 public:
-	RemoveGenericDataCommand(panda::GenericObject* object, int type, int index);
+	RemoveGenericDataCommand(GenericObject* object, int type, int index);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
-	panda::GenericObject* m_object;
+	GenericObject* m_object;
 	int m_type, m_index;
 };
+
+} // namespace panda
 
 #endif

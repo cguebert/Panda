@@ -8,26 +8,26 @@
 
 namespace panda
 {
-class PandaObject;
-class BaseData;
-}
 
-class PANDA_CORE_API LinkDatasCommand : public panda::UndoCommand
+class BaseData;
+class PandaObject;
+
+class PANDA_CORE_API LinkDatasCommand : public UndoCommand
 {
 public:
-	LinkDatasCommand(panda::BaseData* targetData, panda::BaseData* parentData);
+	LinkDatasCommand(BaseData* targetData, BaseData* parentData);
 
 	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();
 
-//	virtual bool mergeWith(const panda::UndoCommand* other);
+//	virtual bool mergeWith(const UndoCommand* other);
 
 protected:
 	struct LinkStruct
 	{
-		panda::PandaObject	*m_targetObject,
+		PandaObject	*m_targetObject,
 							*m_initialParentObject,
 							*m_newParentObject;
 		std::string m_targetDataName,
@@ -37,5 +37,7 @@ protected:
 
 	std::vector<LinkStruct> m_links;
 };
+
+} // namespace panda
 
 #endif

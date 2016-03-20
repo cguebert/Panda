@@ -11,60 +11,62 @@
 
 namespace panda
 {
+
+class BaseData;
 class Group;
 class PandaObject;
 class PandaDocument;
-class BaseData;
-}
 
-class PANDA_CORE_API AddObjectToGroupCommand : public panda::UndoCommand
+class PANDA_CORE_API AddObjectToGroupCommand : public UndoCommand
 {
 public:
-	AddObjectToGroupCommand(panda::Group* group, std::shared_ptr<panda::PandaObject> object);
+	AddObjectToGroupCommand(Group* group, std::shared_ptr<PandaObject> object);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
-	panda::Group* m_group;
-	std::shared_ptr<panda::PandaObject> m_object;
+	Group* m_group;
+	std::shared_ptr<PandaObject> m_object;
 };
 
 //****************************************************************************//
 
-class PANDA_CORE_API RemoveObjectFromGroupCommand : public panda::UndoCommand
+class PANDA_CORE_API RemoveObjectFromGroupCommand : public UndoCommand
 {
 public:
-	RemoveObjectFromGroupCommand(panda::Group* group, std::shared_ptr<panda::PandaObject> object);
+	RemoveObjectFromGroupCommand(Group* group, std::shared_ptr<PandaObject> object);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
-	panda::Group* m_group;
-	std::shared_ptr<panda::PandaObject> m_object;
+	Group* m_group;
+	std::shared_ptr<PandaObject> m_object;
 };
 
 //****************************************************************************//
 
-class PANDA_CORE_API EditGroupCommand : public panda::UndoCommand
+class PANDA_CORE_API EditGroupCommand : public UndoCommand
 {
 public:
 	struct DataInfo
 	{
-		panda::BaseData* data;
+		BaseData* data;
 		std::string name, help;
 	};
 
-	EditGroupCommand(panda::Group* group, std::string newName, std::vector<DataInfo> newDatas);
+	EditGroupCommand(Group* group, std::string newName, std::vector<DataInfo> newDatas);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
-	panda::Group* m_group;
+	Group* m_group;
 	std::string m_prevName, m_newName;
 	std::vector<DataInfo> m_prevDatas, m_newDatas;
 };
+
+} // namespace panda
 
 #endif

@@ -12,7 +12,7 @@ MoveAnnotationTextCommand::MoveAnnotationTextCommand(AnnotationDrawStruct* drawS
 
 int MoveAnnotationTextCommand::id() const
 {
-	return getCommandId<MoveAnnotationTextCommand>();
+	return panda::getCommandId<MoveAnnotationTextCommand>();
 }
 
 void MoveAnnotationTextCommand::redo()
@@ -51,7 +51,7 @@ MoveAnnotationEndCommand::MoveAnnotationEndCommand(AnnotationDrawStruct* drawStr
 
 int MoveAnnotationEndCommand::id() const
 {
-	return getCommandId<MoveAnnotationEndCommand>();
+	return panda::getCommandId<MoveAnnotationEndCommand>();
 }
 
 void MoveAnnotationEndCommand::redo()

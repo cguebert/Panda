@@ -46,7 +46,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 
 int AddObjectCommand::id() const
 {
-	return getCommandId<AddObjectCommand>();
+	return panda::getCommandId<AddObjectCommand>();
 }
 
 void AddObjectCommand::redo()

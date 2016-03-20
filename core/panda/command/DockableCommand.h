@@ -8,52 +8,53 @@ namespace panda
 {
 class DockObject;
 class DockableObject;
-}
 
-class PANDA_CORE_API DetachDockableCommand : public panda::UndoCommand
+class PANDA_CORE_API DetachDockableCommand : public UndoCommand
 {
 public:
-	DetachDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable);
+	DetachDockableCommand(DockObject* dock, DockableObject* dockable);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
-	panda::DockObject* m_dock;
-	panda::DockableObject* m_dockable;
+	DockObject* m_dock;
+	DockableObject* m_dockable;
 	int m_index;
 };
 
 //****************************************************************************//
 
-class PANDA_CORE_API AttachDockableCommand : public panda::UndoCommand
+class PANDA_CORE_API AttachDockableCommand : public UndoCommand
 {
 public:
-	AttachDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, int index);
+	AttachDockableCommand(DockObject* dock, DockableObject* dockable, int index);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
-	panda::DockObject* m_dock;
-	panda::DockableObject* m_dockable;
+	DockObject* m_dock;
+	DockableObject* m_dockable;
 	int m_index;
 };
 
 //****************************************************************************//
 
-class PANDA_CORE_API ReorderDockableCommand : public panda::UndoCommand
+class PANDA_CORE_API ReorderDockableCommand : public UndoCommand
 {
 public:
-	ReorderDockableCommand(panda::DockObject* dock, panda::DockableObject* dockable, int index);
+	ReorderDockableCommand(DockObject* dock, DockableObject* dockable, int index);
 
 	virtual void redo();
 	virtual void undo();
 
 protected:
-	panda::DockObject* m_dock;
-	panda::DockableObject* m_dockable;
+	DockObject* m_dock;
+	DockableObject* m_dockable;
 	int m_oldIndex, m_newIndex;
 };
+
+} // namespace panda
 
 #endif

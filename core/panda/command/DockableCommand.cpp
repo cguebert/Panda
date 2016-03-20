@@ -1,8 +1,11 @@
 #include <panda/object/Dockable.h>
 #include <panda/command/DockableCommand.h>
 
-DetachDockableCommand::DetachDockableCommand(panda::DockObject* dock,
-											 panda::DockableObject* dockable)
+namespace panda
+{
+
+DetachDockableCommand::DetachDockableCommand(DockObject* dock,
+											 DockableObject* dockable)
 	: m_dock(dock)
 	, m_dockable(dockable)
 {
@@ -22,8 +25,8 @@ void DetachDockableCommand::undo()
 
 //****************************************************************************//
 
-AttachDockableCommand::AttachDockableCommand(panda::DockObject* dock,
-											 panda::DockableObject* dockable,
+AttachDockableCommand::AttachDockableCommand(DockObject* dock,
+											 DockableObject* dockable,
 											 int index)
 	: m_dock(dock)
 	, m_dockable(dockable)
@@ -44,8 +47,8 @@ void AttachDockableCommand::undo()
 
 //****************************************************************************//
 
-ReorderDockableCommand::ReorderDockableCommand(panda::DockObject* dock,
-											 panda::DockableObject* dockable,
+ReorderDockableCommand::ReorderDockableCommand(DockObject* dock,
+											 DockableObject* dockable,
 											 int index)
 	: m_dock(dock)
 	, m_dockable(dockable)
@@ -64,3 +67,5 @@ void ReorderDockableCommand::undo()
 {
 	m_dock->reorderDockable(m_dockable, m_oldIndex);
 }
+
+} // namespace panda

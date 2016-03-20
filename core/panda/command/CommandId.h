@@ -4,11 +4,14 @@
 #include <panda/core.h>
 #include <typeinfo>
 
-template<class T> class RegisterWidget;
+namespace panda
+{
 
 PANDA_CORE_API int getCommandId(const std::type_info& type);
 
 template <class T>
 int getCommandId() { return getCommandId(typeid(T)); }
+
+} // namespace panda
 
 #endif

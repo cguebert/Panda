@@ -1,7 +1,10 @@
 #include <panda/object/GenericObject.h>
 #include <panda/command/RemoveGenericDataCommand.h>
 
-RemoveGenericDataCommand::RemoveGenericDataCommand(panda::GenericObject* object,
+namespace panda
+{
+
+RemoveGenericDataCommand::RemoveGenericDataCommand(GenericObject* object,
 												   int type,
 												   int index)
 	: m_object(object)
@@ -20,3 +23,5 @@ void RemoveGenericDataCommand::undo()
 {
 	m_object->createDatas(m_type, m_index);
 }
+
+} // namespace panda
