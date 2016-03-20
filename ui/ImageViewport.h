@@ -4,13 +4,17 @@
 #include <panda/data/DataNode.h>
 #include <panda/graphics/Model.h>
 #include <panda/graphics/ShaderProgram.h>
+#include <panda/messaging.h>
 
 #include <QOpenGLWidget>
 
 namespace panda
 {
-class DataNode;
+
 class BaseData;
+class DataNode;
+class PandaDocument;
+class PandaObject;
 
 namespace types
 { class ImageWrapper; }
@@ -50,7 +54,12 @@ protected:
 	const panda::types::ImageWrapper* getImage() const;
 	void setImageTitle();
 
-	const panda::BaseData* m_data;
+	void onModifiedObject(panda::PandaObject* object);
+
+	const panda::BaseData* m_data = nullptr;
+	panda::PandaObject* m_owner = nullptr;
+	panda::PandaDocument* m_document = nullptr;
+
 	int m_zoomLevel = 0, m_wheelTicks = 0, m_imageIndex = -1;
 	float m_zoomFactor = 1.f;
 
@@ -58,6 +67,8 @@ protected:
 	panda::graphics::Model m_rectModel;
 
 	DetachableWidgetInfo* m_detachableWidgetInfo;
+
+	panda::msg::Observer m_observer;
 };
 
 inline DetachableWidgetInfo* ImageViewport::getDetachableWidgetInfo()

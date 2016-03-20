@@ -8,6 +8,7 @@
 #include <panda/graphics/Mat4x4.h>
 #include <panda/object/PandaObject.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/document/DocumentSignals.h>
 
 #include <iostream>
 
@@ -19,6 +20,8 @@ using ImageListData = Data<std::vector<ImageWrapper>>;
 ImageViewport::ImageViewport(const panda::BaseData* data, int imageIndex, QWidget* parent)
 	: QOpenGLWidget(parent)
 	, m_data(data)
+	, m_owner(data->getOwner())
+	, m_document(m_owner->parentDocument())
 	, m_imageIndex(imageIndex)
 {
 	setAutoFillBackground(true);
@@ -28,6 +31,8 @@ ImageViewport::ImageViewport(const panda::BaseData* data, int imageIndex, QWidge
 	addInput(*const_cast<panda::BaseData*>(data));
 
 	m_detachableWidgetInfo = new DetachableWidgetInfo(this);
+
+	m_observer.get(m_document->getSignals().modifiedObject).connect<ImageViewport, &ImageViewport::onModifiedObject>(this);
 }
 
 ImageViewport::~ImageViewport()
@@ -62,6 +67,9 @@ void ImageViewport::updateData()
 {
 	auto document = m_data->getOwner()->parentDocument();
 	document->getGUI().executeByUI([this, document]() { // Execute this outside of any rendering
+		if (!m_data)
+			return;
+
 		if (m_data->isDirty())
 		{
 			// Update the data
@@ -88,7 +96,10 @@ void ImageViewport::doRemoveInput(DataNode& node)
 {
 	DataNode::doRemoveInput(node);
 	if(&node == m_data)
+	{
+		m_data = nullptr;
 		emit closeViewport(this);
+	}
 }
 
 void ImageViewport::initializeGL()
@@ -167,6 +178,9 @@ void ImageViewport::wheelEvent(QWheelEvent* event)
 
 const panda::types::ImageWrapper* ImageViewport::getImage() const
 {
+	if (!m_data)
+		return nullptr;
+
 	const ImageData* imageData = dynamic_cast<const ImageData*>(m_data);
 	if(imageData)
 		return &imageData->getValue();
@@ -247,5 +261,17 @@ void ImageViewport::keyPressEvent(QKeyEvent* event)
 	}
 	default:
 		QWidget::keyPressEvent(event);
+	}
+}
+
+void ImageViewport::onModifiedObject(panda::PandaObject* object)
+{
+	if (!m_data || object != m_owner)
+		return;
+
+	if (m_data->isInput() && !m_data->getParent())
+	{
+		m_data = nullptr;
+		emit closeViewport(this);
 	}
 }
