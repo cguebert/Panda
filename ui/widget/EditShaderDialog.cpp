@@ -78,6 +78,8 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
 
+	auto lexer = new QsciLexerGLSL();
+
 	// Parse the widget parameters (which shaders types to accept)
 	const auto& info = getShaderTypesInfo();
 	QString params = parent->getParameters();
@@ -92,8 +94,8 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 			{
 				ShaderSourceItem item;
 				item.shaderTypeIndex = i;
-				auto edit = new QsciScintilla;
-				edit->setLexer(new QsciLexerGLSL(edit));
+				auto edit = new QsciScintilla(this);
+				edit->setLexer(lexer);
 				edit->setEnabled(!readOnly);
 				edit->setMarginWidth(0, "999");
 				edit->setAutoCompletionSource(QsciScintilla::AcsAll);

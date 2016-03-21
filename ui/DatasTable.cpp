@@ -19,26 +19,32 @@ public:
 	{
 		disconnect();
 
+		m_changingConnections = true;
 		for (auto data : object->getDatas())
 			addInput(*data);
+		m_changingConnections = false;
 	}
 
 	void disconnect()
 	{
+		m_changingConnections = true;
 		auto inputs = getInputs();
 		for (auto input : inputs)
 			removeInput(*input);
+		m_changingConnections = false;
 	}
 
 	void update() override { cleanDirty(); }
 
 	void setDirtyValue(const DataNode* /*caller*/) override
 	{
-		m_table.updateCurrentObject();
+		if(!m_changingConnections)
+			m_table.updateCurrentObject();
 	}
 
 private:
 	DatasTable& m_table;
+	bool m_changingConnections = false;
 };
 
 //****************************************************************************//
