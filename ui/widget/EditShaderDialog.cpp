@@ -41,6 +41,18 @@ static const ShaderTypesInfo& getShaderTypesInfo()
 	return info;
 }
 
+int getShaderIndex(panda::types::Shader::ShaderType type)
+{
+	const auto& info = getShaderTypesInfo();
+	for (int i = 0; i < info.nbTypes; ++i)
+	{
+		if (info.typesValues[i] == type)
+			return i;
+	}
+
+	return 0;
+}
+
 }
 
 EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QString name)
@@ -58,19 +70,29 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 	m_errorLabel->setStyleSheet("QLabel { color : red; }");
 	m_errorLabel->hide();
 	mainLayout->addWidget(m_errorLabel);
+	
+	QHBoxLayout* buttonsLayout = new QHBoxLayout;
+	if (!m_readOnly)
+	{
+		QPushButton* compileButton = new QPushButton(tr("Compile"), this);
+		compileButton->setShortcut(tr("Ctrl+S"));
+		connect(compileButton, &QPushButton::clicked, this, &EditShaderDialog::compileShaders);
+		buttonsLayout->addWidget(compileButton);
+		buttonsLayout->addStretch();
 
-	QPushButton* compileButton = new QPushButton(tr("Compile"), this);
-	compileButton->setShortcut(tr("Ctrl+S"));
-	connect(compileButton, &QPushButton::clicked, this, &EditShaderDialog::compileShaders);
+		QPushButton* addShaderButton = new QPushButton(tr("Add shader"), this);
+		connect(addShaderButton, &QPushButton::clicked, this, &EditShaderDialog::addShader);
+		buttonsLayout->addWidget(addShaderButton);
+		buttonsLayout->addStretch();
+	}
+
 	QPushButton* okButton = new QPushButton(tr("Ok"), this);
 	okButton->setDefault(true);
 	connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+	buttonsLayout->addWidget(okButton);
+
 	QPushButton* cancelButton = new QPushButton(tr("Cancel"), this);
 	connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
-	QHBoxLayout* buttonsLayout = new QHBoxLayout;
-	buttonsLayout->addWidget(compileButton);
-	buttonsLayout->addStretch();
-	buttonsLayout->addWidget(okButton);
 	buttonsLayout->addWidget(cancelButton);
 	mainLayout->addLayout(buttonsLayout);
 
@@ -78,7 +100,7 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
 
-	auto lexer = new QsciLexerGLSL();
+	m_lexer = new QsciLexerGLSL(this);
 
 	// Parse the widget parameters (which shaders types to accept)
 	const auto& info = getShaderTypesInfo();
@@ -92,20 +114,7 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 		{
 			if (!type.compare(info.typesNames[i], Qt::CaseInsensitive))
 			{
-				ShaderSourceItem item;
-				item.shaderTypeIndex = i;
-				auto edit = new QsciScintilla(this);
-				edit->setLexer(lexer);
-				edit->setEnabled(!readOnly);
-				edit->setMarginWidth(0, "999");
-				edit->setAutoCompletionSource(QsciScintilla::AcsAll);
-				edit->setFolding(QsciScintilla::PlainFoldStyle);
-				edit->setIndentationWidth(4);
-				edit->setAutoIndent(true);
-				edit->setBackspaceUnindents(true);
-				item.sourceEdit = edit;
-				item.tabIndex = m_tabWidget->addTab(item.sourceEdit, info.typesNames[i]);
-				m_sourceWidgets[info.typesValues[i]] = item;
+				createTab(i);
 				break;
 			}
 		}
@@ -149,13 +158,13 @@ void EditShaderDialog::updateValuesTab(const Shader::ValuesVector& values)
 
 void EditShaderDialog::readFromData(const Shader& shader)
 {
-	auto sources = shader.getSources();
-	for(auto source : sources)
+	const auto& sources = shader.getSources();
+	for(const auto& source : sources)
 	{
-		if(m_sourceWidgets.count(source.type))
-		{
-			m_sourceWidgets.at(source.type).sourceEdit->setText(QString::fromStdString(source.sourceCode));
-		}
+		if (!m_sourceWidgets.count(source.type))
+			createTab(getShaderIndex(source.type));
+
+		m_sourceWidgets.at(source.type).sourceEdit->setText(QString::fromStdString(source.sourceCode));
 	}
 
 	auto values = shader.getValues();
@@ -237,6 +246,72 @@ void EditShaderDialog::onFinished()
 {
 	QSettings settings("Christophe Guebert", "Panda");
 	settings.setValue("EditShaderDialogSize", size());
+}
+
+void EditShaderDialog::addShader()
+{
+	const auto& info = getShaderTypesInfo();
+	QStringList availableTypes;
+	for (int i = 0; i < info.nbTypes; ++i)
+	{
+		if (!m_sourceWidgets.count(info.typesValues[i]))
+			availableTypes.push_back(info.typesNames[i]);
+	}
+
+	if (availableTypes.empty())
+		return;
+
+	bool ok = false;
+	auto selected = QInputDialog::getItem(this, "Add shader", "Shader type:", availableTypes, 0, false, &ok);
+
+	if (!ok)
+		return;
+
+	for (int i = 0; i < info.nbTypes; ++i)
+	{
+		if (info.typesNames[i] == selected)
+		{
+			createTab(i);
+			break;
+		}
+	}
+}
+
+void EditShaderDialog::createTab(int typeIndex)
+{
+	const auto& info = getShaderTypesInfo();
+
+	ShaderSourceItem item;
+	item.shaderTypeIndex = typeIndex;
+	auto edit = new QsciScintilla(this);
+	edit->setLexer(m_lexer);
+	edit->setEnabled(!m_readOnly);
+	edit->setMarginWidth(0, "999");
+	edit->setAutoCompletionSource(QsciScintilla::AcsAll);
+	edit->setFolding(QsciScintilla::PlainFoldStyle);
+	edit->setIndentationWidth(4);
+	edit->setAutoIndent(true);
+	edit->setBackspaceUnindents(true);
+	item.sourceEdit = edit;
+
+	// Find where to put this tab
+	int tabIndex = 0;
+	for (int i = 0; i < typeIndex; ++i)
+	{
+		if (m_sourceWidgets.count(info.typesValues[i]))
+			++tabIndex;
+	}
+
+	item.tabIndex = m_tabWidget->insertTab(tabIndex, item.sourceEdit, info.typesNames[typeIndex]);
+	m_sourceWidgets[info.typesValues[typeIndex]] = item;
+
+	// Update the tab index of the other shaders
+	for (int i = typeIndex + 1; i < info.nbTypes; ++i)
+	{
+		auto t = info.typesValues[i];
+		if (m_sourceWidgets.count(t))
+			++m_sourceWidgets[t].tabIndex;
+	}
 }
 
 //****************************************************************************//

@@ -14,6 +14,7 @@ class QLabel;
 class QTabWidget;
 class QScrollArea;
 class QsciScintilla;
+class QsciLexerGLSL;
 
 class EditShaderDialog : public QDialog
 {
@@ -29,11 +30,15 @@ protected:
 	void compileShaders();
 	void tabChanged(int index);
 	void onFinished();
+	void addShader();
+
+	void createTab(int type);
 
 	bool m_readOnly;
 	QLabel* m_errorLabel;
 	QTabWidget* m_tabWidget;
 	QScrollArea* m_valuesArea;
+	QsciLexerGLSL* m_lexer;
 
 	typedef std::shared_ptr<BaseDataWidget> DataWidgetPtr;
 	std::vector<DataWidgetPtr> m_dataWidgets;
