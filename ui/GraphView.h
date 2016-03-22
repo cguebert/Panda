@@ -105,7 +105,7 @@ protected:
 	void drawConnectedDatas(QStylePainter* painter, panda::BaseData* sourceData);
 
 	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
-	void computeSnapDelta(QPointF position);
+	void computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, QPointF position);
 
 	void changeLink(panda::BaseData* target, panda::BaseData* parent);
 
@@ -162,7 +162,7 @@ private:
 	bool m_highlightConnectedDatas;
 
 	bool m_useMagneticSnap; /// Do we help align objects when moving them with the mouse?
-	std::set<qreal> m_snapTargetsX, m_snapTargetsY;
+	std::set<qreal> m_snapTargetsY;
 	QPointF m_snapDelta;
 
 	std::vector<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied

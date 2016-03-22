@@ -1,6 +1,7 @@
 #include <QtWidgets>
 #include <cmath>
 #include <functional>
+#include <limits>
 
 #include <ui/ChooseWidgetDialog.h>
 #include <ui/GraphView.h>
@@ -437,7 +438,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				{
 					prepareSnapTargets(ods.get());
 					auto possiblePosition = ods->getPosition() + delta;
-					computeSnapDelta(possiblePosition);
+					computeSnapDelta(ods.get(), possiblePosition);
 					delta = delta + m_snapDelta;
 				}
 			}
@@ -469,8 +470,9 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		{
 			QPointF oldSnapDelta = m_snapDelta;
 			auto selected = m_objectsSelection->lastSelectedObject();
+			auto ods = m_objectDrawStructs[selected];
 			auto possiblePosition = m_objectDrawStructs[selected]->getPosition() + delta - m_snapDelta;
-			computeSnapDelta(possiblePosition);
+			computeSnapDelta(ods.get(), possiblePosition);
 			delta = delta - oldSnapDelta + m_snapDelta;
 		}
 
@@ -1180,24 +1182,7 @@ void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sour
 
 void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 {
-	m_snapTargetsX.clear();
 	m_snapTargetsY.clear();
-
-	auto viewRect = QRectF(contentsRect());
-
-	// Use x position of every visible object
-	for(const auto& odsPair : m_objectDrawStructs)
-	{
-		const auto& ods = odsPair.second;
-		if(ods.get() == selectedDrawStruct || !ods->acceptsMagneticSnap())
-			continue;
-
-		if(viewRect.intersects(ods->getObjectArea()))
-		{
-			auto pos = ods->getPosition();
-			m_snapTargetsX.insert(pos.x());
-		}
-	}
 
 	qreal y = selectedDrawStruct->getPosition().y();
 	// For y, try to make the data links horizontal
@@ -1250,20 +1235,88 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 	}
 }
 
-void GraphView::computeSnapDelta(QPointF position)
+void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, QPointF position)
 {
 	m_snapDelta = QPointF();
 	const qreal snapMaxDist = 5;
 
-	// Give me c++14 lambdas !
-	auto comparator = [](qreal pos) -> std::function<bool(const qreal& lhs, const qreal& rhs)>	{
+	auto comparator = [](qreal pos) {
 		return [pos](const qreal& lhs, const qreal& rhs) {
 			return qAbs(pos - lhs) < qAbs(pos - rhs);
 		};
 	};
 
-	auto minIter = std::min_element(m_snapTargetsX.begin(), m_snapTargetsX.end(), comparator(position.x()));
-	if(minIter != m_snapTargetsX.end())
+	// We look for the closest object above and the closest below
+	const qreal filterRatio = 0.66f, filterDist = 50;
+	auto selectedHeight = selectedDrawStruct->getObjectSize().height();
+	auto viewRect = QRectF(contentsRect());
+	auto m1 = std::numeric_limits<qreal>::lowest(), m2 = std::numeric_limits<qreal>::max();
+	QPointF abovePos(m1, m1), belowPos(m2, m2);
+	qreal aboveDist{ m2 }, belowDist{ m2 };
+	bool hasInsideObject = false;
+	std::set<qreal> snapTargetsX;
+	for (const auto& odsPair : m_objectDrawStructs)
+	{
+		const auto& ods = odsPair.second;
+		if (ods.get() == selectedDrawStruct || !ods->acceptsMagneticSnap())
+			continue;
+
+		auto area = ods->getObjectArea();
+		if (viewRect.intersects(area)) // Only if visible in the current viewport
+		{
+			auto pos = ods->getPosition();
+			if (pos.y() + area.height() < position.y())
+			{
+				// Distance from the bottom left corner of this one and the top left of the selected
+				auto dist = QPointF(pos.x() - position.x(), pos.y() + area.height() - position.y()).manhattanLength();
+				if (dist < aboveDist)
+				{
+					aboveDist = dist;
+					abovePos = QPointF(pos.x() , pos.y() + area.height());
+				}
+			}
+			else if(pos.y() > position.y() + selectedHeight)
+			{
+				// Distance from the top left corner of this one and the bottom left of the selected
+				auto dist = QPointF(pos.x() - position.x(), pos.y() - (position.y() + selectedHeight)).manhattanLength();
+				if (dist < belowDist)
+				{
+					belowDist = dist;
+					belowPos = QPointF(pos.x() , pos.y() - selectedHeight);
+				}
+			}
+			else if(qAbs(pos.x() - position.x()) < filterDist) // The selected one intersects the y axis of this one, and is close enough on the x axis
+			{
+				snapTargetsX.insert(pos.x());
+				hasInsideObject = true;
+			}
+		}
+	}
+	
+	if (hasInsideObject)
+	{
+		// Only take the other ones if their are close
+		if(qAbs(abovePos.y() - position.y()) < filterDist)
+			snapTargetsX.insert(abovePos.x());
+		if (qAbs(belowPos.y() - position.y()) < filterDist)
+			snapTargetsX.insert(belowPos.x());
+	}
+	else
+	{
+		// We only take the closest if the other one is at least 50% further
+		if (aboveDist < belowDist * filterRatio && belowDist > filterDist)
+			snapTargetsX.insert(abovePos.x());
+		else if (belowDist < aboveDist * filterRatio && aboveDist > filterDist)
+			snapTargetsX.insert(belowPos.x());
+		else
+		{
+			snapTargetsX.insert(abovePos.x());
+			snapTargetsX.insert(belowPos.x());
+		}
+	}
+
+	auto minIter = std::min_element(snapTargetsX.begin(), snapTargetsX.end(), comparator(position.x()));
+	if(minIter != snapTargetsX.end())
 	{
 		qreal x = *minIter;
 		if(qAbs(x - position.x()) < snapMaxDist)
