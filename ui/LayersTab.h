@@ -27,6 +27,8 @@ public:
 	explicit LayersTab(panda::PandaDocument* document, QWidget* parent = nullptr);
 
 protected:
+	void updateWidgets(panda::BaseLayer* layer, int row = 0);
+
 	QLineEdit* m_nameEdit;
 	QComboBox* m_compositionBox;
 	QSlider* m_opacitySlider;
@@ -44,6 +46,7 @@ public slots:
 	void addedObject(panda::PandaObject*);
 	void removedObject(panda::PandaObject*);
 	void dirtyObject(panda::PandaObject*);
+	void modifiedObject(panda::PandaObject*);
 	void itemClicked(QTableWidgetItem*);
 	void nameChanged();
 	void compositionModeChanged(int);

@@ -8,6 +8,12 @@
 #include <panda/document/DocumentSignals.h>
 #include <panda/object/Layer.h>
 
+namespace
+{
+	bool isReadOnly(const panda::BaseData& data)
+	{ return data.isReadOnly() || data.getParent() != nullptr; }
+}
+
 LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
 	: QWidget(parent)
 	, m_document(document)
@@ -88,6 +94,7 @@ LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
 	m_observer.get(m_document->getSignals().addedObject).connect<LayersTab, &LayersTab::addedObject>(this);
 	m_observer.get(m_document->getSignals().removedObject).connect<LayersTab, &LayersTab::removedObject>(this);
 	m_observer.get(m_document->getSignals().dirtyObject).connect<LayersTab, &LayersTab::dirtyObject>(this);
+	m_observer.get(m_document->getSignals().modifiedObject).connect<LayersTab, &LayersTab::modifiedObject>(this);
 	m_observer.get(m_document->getSignals().reorderedObjects).connect<LayersTab, &LayersTab::reorderObjects>(this);
 
 	connect(m_nameEdit, SIGNAL(editingFinished()), this, SLOT(nameChanged()));
@@ -116,8 +123,11 @@ void LayersTab::updateTable()
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 		item->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(layer)));
 		m_tableWidget->setItem(rowIndex, 0, item);
-		if(m_selectedLayer == layer)
+		if (m_selectedLayer == layer)
+		{
 			m_tableWidget->selectRow(rowIndex);
+			updateWidgets(layer, rowIndex);
+		}
 		--rowIndex;
 	}
 }
@@ -130,14 +140,7 @@ void LayersTab::addedObject(panda::PandaObject* object)
 		if(m_layers.empty())
 		{
 			m_selectedLayer = layer;
-			m_nameEdit->setEnabled(true);
-			m_nameEdit->setText(QString::fromStdString(m_selectedLayer->getLayerName()));
-			m_compositionBox->setEnabled(true);
-			m_compositionBox->setCurrentIndex(m_selectedLayer->getCompositionMode());
-			m_opacitySlider->setEnabled(true);
-			m_opacitySlider->setValue(m_selectedLayer->getOpacity() * 100);
-			m_moveUpButton->setEnabled(false);
-			m_moveDownButton->setEnabled(false);
+			updateWidgets(layer);
 		}
 		m_layers.push_back(layer);
 		updateTable();
@@ -152,14 +155,7 @@ void LayersTab::removedObject(panda::PandaObject* object)
 		if(m_selectedLayer == layer)
 		{
 			m_selectedLayer = nullptr;
-			m_nameEdit->setText("");
-			m_nameEdit->setEnabled(false);
-			m_compositionBox->setCurrentIndex(0);
-			m_compositionBox->setEnabled(false);
-			m_opacitySlider->setValue(100);
-			m_opacitySlider->setEnabled(false);
-			m_moveUpButton->setEnabled(false);
-			m_moveDownButton->setEnabled(false);
+			updateWidgets(nullptr);
 		}
 
 		m_layers.removeAll(layer);
@@ -169,38 +165,20 @@ void LayersTab::removedObject(panda::PandaObject* object)
 
 void LayersTab::dirtyObject(panda::PandaObject* object)
 {
-	if(m_selectedLayer && m_selectedLayer == dynamic_cast<panda::BaseLayer*>(object))
-	{
-		m_nameEdit->setText(QString::fromStdString(m_selectedLayer->getLayerName()));
-		m_compositionBox->setCurrentIndex(m_selectedLayer->getCompositionMode());
-		m_opacitySlider->setValue(m_selectedLayer->getOpacity() * 100);
+	if(dynamic_cast<panda::BaseLayer*>(object))
 		updateTable();
-	}
+}
+
+void LayersTab::modifiedObject(panda::PandaObject* object)
+{
+	if (dynamic_cast<panda::BaseLayer*>(object))
+		updateTable();
 }
 
 void LayersTab::itemClicked(QTableWidgetItem* item)
 {
 	m_selectedLayer = (panda::BaseLayer*)item->data(Qt::UserRole).value<void*>();
-	int row = item->row();
-	if(m_selectedLayer)
-	{
-		m_nameEdit->setEnabled(true);
-		m_nameEdit->setText(QString::fromStdString(m_selectedLayer->getLayerName()));
-		m_compositionBox->setEnabled(true);
-		m_compositionBox->setCurrentIndex(m_selectedLayer->getCompositionMode());
-		m_opacitySlider->setEnabled(true);
-		m_opacitySlider->setValue(m_selectedLayer->getOpacity() * 100);
-		m_moveUpButton->setEnabled(row > 0);
-		m_moveDownButton->setEnabled(row < m_layers.size() - 1);
-	}
-	else
-	{
-		m_nameEdit->setEnabled(false);
-		m_compositionBox->setEnabled(false);
-		m_opacitySlider->setEnabled(false);
-		m_moveUpButton->setEnabled(false);
-		m_moveDownButton->setEnabled(false);
-	}
+	updateWidgets(m_selectedLayer, item->row());
 }
 
 void LayersTab::compositionModeChanged(int mode)
@@ -284,5 +262,31 @@ void LayersTab::reorderObjects()
 	{
 		m_layers.swap(newList);
 		updateTable();
+	}
+}
+
+void LayersTab::updateWidgets(panda::BaseLayer* layer, int row)
+{
+	if (layer)
+	{
+		m_nameEdit->setEnabled(!isReadOnly(layer->getLayerNameData()));
+		m_nameEdit->setText(QString::fromStdString(layer->getLayerName()));
+		m_compositionBox->setEnabled(!isReadOnly(layer->getCompositionModeData()));
+		m_compositionBox->setCurrentIndex(layer->getCompositionMode());
+		m_opacitySlider->setEnabled(!isReadOnly(layer->getOpacityData()));
+		m_opacitySlider->setValue(layer->getOpacity() * 100);
+		m_moveUpButton->setEnabled(row > 0);
+		m_moveDownButton->setEnabled(row < m_layers.size() - 1);
+	}
+	else
+	{
+		m_nameEdit->setText("");
+		m_nameEdit->setEnabled(false);
+		m_compositionBox->setCurrentIndex(0);
+		m_compositionBox->setEnabled(false);
+		m_opacitySlider->setValue(100);
+		m_opacitySlider->setEnabled(false);
+		m_moveUpButton->setEnabled(false);
+		m_moveDownButton->setEnabled(false);
 	}
 }

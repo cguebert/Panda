@@ -50,6 +50,7 @@ public:
 	const BaseDataWidgetCreator* getCreator(int fullType, QString widgetName) const;
 	std::vector<QString> getWidgetNames(int fullType) const;
 
+	// This factory return raw pointers because these objects use the memory model of Qt (their parent free them automatically)
 	BaseDataWidget* create(QWidget* parent, panda::BaseData* data) const;
 	BaseDataWidget* create(QWidget* parent, void* pValue, int fullType,
 						   QString widget, QString displayName, QString parameters) const;
