@@ -44,7 +44,7 @@ public:
 
 		addInput(m_scriptText);
 
-		m_scriptText.setWidget("multiline");
+		m_scriptText.setWidget("code");
 
 		m_debugText.setWidget("multiline");
 		m_debugText.setReadOnly(true);

@@ -290,8 +290,11 @@ void EditShaderDialog::createTab(int typeIndex)
 	edit->setAutoCompletionSource(QsciScintilla::AcsAll);
 	edit->setFolding(QsciScintilla::PlainFoldStyle);
 	edit->setIndentationWidth(4);
+	edit->setTabWidth(4);
+	edit->setIndentationsUseTabs(true);
 	edit->setAutoIndent(true);
 	edit->setBackspaceUnindents(true);
+	edit->setBraceMatching(QsciScintilla::StrictBraceMatch);
 	item.sourceEdit = edit;
 
 	// Find where to put this tab

@@ -100,6 +100,7 @@ set(SOURCE_FILES
 	widget/NumericalDataWidget.cpp
 	widget/PointDataWidget.cpp
 	widget/RectDataWidget.cpp
+	widget/SourceCodeDataWidget.cpp
 	widget/StringDataWidget.cpp
 	widget/TableDataWidgetDialog.cpp
 )
