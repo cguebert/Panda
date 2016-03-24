@@ -3,8 +3,6 @@
 #include "Path.h"
 #include "Types.h"
 
-#include <panda/types/Path.h>
-
 #include <angelscript.h>
 #include <cassert>
 

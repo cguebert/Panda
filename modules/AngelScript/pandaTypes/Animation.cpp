@@ -1,6 +1,7 @@
 #include "DataWrapper.h"
 #include "ObjectWrapper.h"
 #include "Types.h"
+#include "Gradient.h"
 
 #include <panda/types/Animation.h>
 #include <panda/types/Color.h>
@@ -11,6 +12,7 @@
 
 using panda::types::Animation;
 using panda::types::Color;
+using panda::types::Gradient;
 using panda::types::Point;
 using panda::BaseDataWrapper;
 using panda::ObjectWrapper;
@@ -31,30 +33,67 @@ namespace
 
 	BaseDataWrapper* createColorAnimationData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
 	{ return wrapper->createData<Animation<Color>, panda::AnimationDataWrapper<Color>>(input, name, help); }
+
+	BaseDataWrapper* createGradientAnimationData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Animation<Gradient>, panda::AnimationDataWrapper<Gradient>>(input, name, help); }
+
 }
 
 namespace panda 
 {
+	template <class T>
+	class ValueTraits
+	{
+	public:
+		using value_type = T;
+		using value_vector = aatc::container::tempspec::vector<value_type>;
 
-	// Animaion wrapper class
+		static value_type fromValue(const T& val) { return val; }
+		static T toValue(value_type val) { return val; }
+		static value_vector* fromValues(const std::vector<T>& values, asIScriptEngine*)
+		{ auto vec = new value_vector(); vec->container = values; return vec; }
+
+		static std::string getReadTypeName(const std::string& typeName) { return typeName; }
+		static std::string getWriteTypeName(const std::string& typeName) { return typeName; }
+	};
+
+	template <>
+	class ValueTraits<Gradient>
+	{
+	public:
+		using value_type = panda::GradientWrapper*;
+		using value_vector = aatc::container::templated::vector;
+
+		static value_type fromValue(const panda::types::Gradient& val) { return createGradientWrapper(val); }
+		static panda::types::Gradient toValue(value_type val) { return getGradient(val); }
+		static value_vector* fromValues(const std::vector<panda::types::Gradient>& values, asIScriptEngine* engine)
+		{ return createGradientVectorWrapper(values, engine); }
+
+		static std::string getReadTypeName(const std::string&) { return "Gradient@"; }
+		static std::string getWriteTypeName(const std::string&) { return "const Gradient &in"; }
+	};
+
+	// Animation wrapper class
 	template <class T>
 	class AnimationWrapper
 	{
 	public:
-		using value_type = T;
-		using AnimType = panda::types::Animation<value_type>;
+		using traits = ValueTraits<T>;
+		using value_type = typename traits::value_type;
+
+		using AnimType = panda::types::Animation<T>;
 		using position_vector = aatc::container::tempspec::vector<float>;
-		using value_vector = aatc::container::tempspec::vector<value_type>;
+		using value_vector = typename traits::value_vector;
 
-		static AnimationWrapper* factory()
-		{ return new AnimationWrapper(); }
+		static void factory(asIScriptGeneric* gen)
+		{ *static_cast<AnimationWrapper**>(gen->GetAddressOfReturnLocation()) = new AnimationWrapper(gen->GetEngine()); }
 
-		static AnimationWrapper* create(const AnimType& animation)
-		{ return new AnimationWrapper(animation); }
+		static AnimationWrapper* create(const AnimType& animation, asIScriptEngine* engine)
+		{ return new AnimationWrapper(animation, engine); }
 
-		AnimationWrapper() {}
-		AnimationWrapper(const AnimType& animation)
-			: m_anim(animation) {}
+		AnimationWrapper(asIScriptEngine* engine) : m_engine(engine) {}
+		AnimationWrapper(const AnimType& animation, asIScriptEngine* engine)
+			: m_anim(animation), m_engine(engine) {}
 
 		const AnimType& animation() const 
 		{ return m_anim; }
@@ -77,14 +116,14 @@ namespace panda
 		{ m_anim.clear(); }
 
 		void add(float position, value_type value)
-		{ m_anim.add(position, value); }
+		{ m_anim.add(position, traits::toValue(value)); }
 		value_type get(float position) const
-		{ return m_anim.get(position); }
+		{ return traits::fromValue(m_anim.get(position)); }
 
 		value_type getAtIndex(int index) const
-		{ return m_anim.valueAtIndex(index); }
+		{ return traits::fromValue(m_anim.valueAtIndex(index)); }
 		void setAtIndex(int index, value_type val)
-		{ m_anim.valueAtIndex(index) = val; }
+		{ m_anim.valueAtIndex(index) = traits::toValue(val); }
 
 		void removeAtIndex(int index)
 		{ m_anim.removeAtIndex(index); }
@@ -106,15 +145,12 @@ namespace panda
 			return vec;
 		}
 		value_vector* values() const
-		{
-			auto vec = new value_vector();
-			vec->container = m_anim.values();
-			return vec;
-		}
+		{ return traits::fromValues(m_anim.values(), m_engine); }
 
 	private:
 		int m_refCount = 1;
 		AnimType m_anim;
+		asIScriptEngine* m_engine = nullptr;
 	};
 
 	template <class T>
@@ -124,11 +160,11 @@ namespace panda
 		using AnimWrapper = AnimationWrapper<T>;
 		using AnimData = Data<types::Animation<T>>;
 
-		AnimationDataWrapper(AnimData* data, asIScriptEngine*)
-			: m_data(data) { }
+		AnimationDataWrapper(AnimData* data, asIScriptEngine* engine)
+			: m_data(data), m_engine(engine) { }
 
 		AnimWrapper* getValue() const
-		{ return AnimWrapper::create(m_data->getValue()); }
+		{ return AnimWrapper::create(m_data->getValue(), m_engine); }
 
 		void setValue(const AnimWrapper* wrapper)
 		{ m_data->setValue(wrapper->animation()); }
@@ -138,6 +174,7 @@ namespace panda
 
 	private:
 		AnimData* m_data = nullptr;
+		asIScriptEngine* m_engine = nullptr;
 	};
 
 	template <class T>
@@ -169,12 +206,16 @@ namespace panda
 		const std::string animTypeName = capitalizedTypeName + "Animation";
 		auto atn = animTypeName.c_str();
 
+		using traits = ValueTraits<T>;
+		std::string readTypeName = traits::getReadTypeName(typeName);
+		std::string writeTypeName = traits::getWriteTypeName(typeName);
+
 		using AnimWrapper = AnimationWrapper<T>;
 
 		int r = 0;
 
 		r = engine->RegisterObjectType(atn, 0, asOBJ_REF); assert( r >= 0 );
-		r = engine->RegisterObjectBehaviour(atn, asBEHAVE_FACTORY, str(animTypeName + "@ f()"), asFUNCTION(AnimWrapper::factory), asCALL_CDECL); assert( r >= 0 );
+		r = engine->RegisterObjectBehaviour(atn, asBEHAVE_FACTORY, str(animTypeName + "@ f()"), asFUNCTION(AnimWrapper::factory), asCALL_GENERIC); assert( r >= 0 );
 
 		r = engine->RegisterObjectBehaviour(atn, asBEHAVE_ADDREF, "void f()", asMETHOD(AnimWrapper, addRef), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour(atn, asBEHAVE_RELEASE, "void f()", asMETHOD(AnimWrapper, release), asCALL_THISCALL); assert( r >= 0 );
@@ -184,11 +225,11 @@ namespace panda
 		r = engine->RegisterObjectMethod(atn, "int size() const", asMETHOD(AnimWrapper, size), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod(atn, "void clear()", asMETHOD(AnimWrapper, clear), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod(atn, str("void add(float, " + typeName + ")"), asMETHOD(AnimWrapper, add), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod(atn, str(typeName + " get(float) const"), asMETHOD(AnimWrapper, get), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, str("void add(float, " + writeTypeName + ")"), asMETHOD(AnimWrapper, add), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, str(readTypeName + " get(float) const"), asMETHOD(AnimWrapper, get), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod(atn, str(typeName + " getAtIndex(int) const"), asMETHOD(AnimWrapper, getAtIndex), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod(atn, str("void setAtIndex(int, " + typeName + ")"), asMETHOD(AnimWrapper, setAtIndex), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, str(readTypeName + " getAtIndex(int) const"), asMETHOD(AnimWrapper, getAtIndex), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, str("void setAtIndex(int, " + writeTypeName + ")"), asMETHOD(AnimWrapper, setAtIndex), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod(atn, "void removeAtIndex(int)", asMETHOD(AnimWrapper, removeAtIndex), asCALL_THISCALL); assert( r >= 0 );
 
@@ -214,6 +255,7 @@ namespace panda
 		registerAnimationT<float>(engine, "float");
 		registerAnimationT<Point>(engine, "Point");
 		registerAnimationT<Color>(engine, "Color");
+		registerAnimationT<Gradient>(engine, "Gradient");
 
 		int r = engine->RegisterObjectMethod("PandaObject", "FloatAnimationData@ createFloatAnimationData(bool, const string &in, const string &in)",
 			asFUNCTION(createFloatAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
@@ -221,6 +263,8 @@ namespace panda
 			asFUNCTION(createPointAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PandaObject", "ColorAnimationData@ createColorAnimationData(bool, const string &in, const string &in)",
 			asFUNCTION(createColorAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectMethod("PandaObject", "GradientAnimationData@ createGradientAnimationData(bool, const string &in, const string &in)",
+			asFUNCTION(createGradientAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
 } // namespace panda

@@ -31,6 +31,7 @@ set(HEADER_FILES
 	addons/aatc/aatc_serializer.hpp
 	addons/aatc/aatc_templatemagic.hpp
 	pandaTypes/DataWrapper.h
+	pandaTypes/Gradient.h
 	pandaTypes/ObjectWrapper.h
 	pandaTypes/Path.h
 	pandaTypes/Types.h

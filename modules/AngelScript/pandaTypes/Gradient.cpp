@@ -1,8 +1,7 @@
 #include "DataWrapper.h"
 #include "ObjectWrapper.h"
+#include "Gradient.h"
 #include "Types.h"
-
-#include <panda/types/Gradient.h>
 
 #include <new>
 
@@ -106,6 +105,29 @@ namespace panda
 		int m_refCount = 1;
 	};
 
+	GradientWrapper* createGradientWrapper(const panda::types::Gradient& gradient)
+	{ return GradientWrapper::create(gradient); }
+
+	const panda::types::Gradient& getGradient(const GradientWrapper* wrapper)
+	{ return wrapper->gradient(); }
+
+	aatc::container::templated::vector* createGradientVectorWrapper(const std::vector<panda::types::Gradient>& gradients, asIScriptEngine* engine)
+	{
+		auto* vec = new aatc::container::templated::vector(engine->GetTypeInfoByName("Gradient"));
+		for (const auto& gradient : gradients)
+			vec->container.push_back(GradientWrapper::create(gradient));
+		return vec;
+	}
+
+	std::vector<panda::types::Gradient> getGradients(const aatc::container::templated::vector* vec)
+	{
+		std::vector<panda::types::Gradient> gradients;
+		gradients.reserve(vec->container.size());
+		for (const auto& ptr : vec->container)
+			gradients.push_back(static_cast<GradientWrapper*>(ptr)->gradient());
+		return gradients;
+	}
+
 	class GradientDataWrapper : public BaseDataWrapper
 	{
 	public:
@@ -137,13 +159,7 @@ namespace panda
 		{ }
 
 		script_vector* getValue() const
-		{
-			auto* vec = new script_vector(m_engine->GetTypeInfoByName("Gradient"));
-			const auto& gradients = m_data->getValue();
-			for (const auto& gradient : gradients)
-				vec->container.push_back(GradientWrapper::create(gradient));
-			return vec;
-		}
+		{ return createGradientVectorWrapper(m_data->getValue(), m_engine); }
 	
 		void setValue(const script_vector* vec)
 		{
