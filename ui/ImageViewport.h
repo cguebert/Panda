@@ -42,6 +42,7 @@ public:
 signals:
 	void closeViewport(ImageViewport* viewport); // Ask the main window to close this viewport (and potentially its parent detached window)
 	void destroyedViewport(ImageViewport* viewport); // Tell the main window this viewport is freed (called by the destructor)
+	void lostFocus(QWidget*);
 
 protected:
 	void initializeGL() override;
@@ -49,6 +50,7 @@ protected:
 
 	void wheelEvent(QWheelEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
+	void focusOutEvent(QFocusEvent*) override;
 
 	void zoomIn();
 	void zoomOut();

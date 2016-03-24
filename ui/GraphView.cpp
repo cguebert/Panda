@@ -1477,3 +1477,8 @@ void GraphView::showChooseWidgetDialog()
 		}
 	}
 }
+
+void GraphView::focusOutEvent(QFocusEvent*)
+{
+	emit lostFocus(this);
+}

@@ -47,7 +47,6 @@ MainWindow::MainWindow()
 
 	m_graphView = new GraphView(m_document.get());
 	m_graphViewContainer = new ScrollContainer();
-
 	m_graphViewContainer->setFrameStyle(0); // No frame
 	m_graphViewContainer->setView(m_graphView);
 
@@ -97,6 +96,9 @@ MainWindow::MainWindow()
 	connect(m_graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(m_graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
 	connect(m_tabWidget, SIGNAL(openDetachedWindow(DetachedWindow*)), this, SLOT(openDetachedWindow(DetachedWindow*)));
+
+	connect(m_graphView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
+	connect(m_openGLRenderView, &OpenGLRenderView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 
 	createGroupRegistryMenu();
 
@@ -423,8 +425,14 @@ void MainWindow::createActions()
 	m_fullScreenAction->setStatusTip(tr("Put the application in full screen mode"));
 	m_fullScreenAction->setCheckable(true);
 	m_fullScreenAction->setChecked(false);
-	connect(m_fullScreenAction, SIGNAL(triggered()), this, SLOT(switchFullScreen()));
+	connect(m_fullScreenAction, &QAction::triggered, this, &MainWindow::toggleFullScreen);
 	addAction(m_fullScreenAction);
+
+	auto exitFullscreenOnFocusLossAction = new QAction(tr("Automatically exit fullscreen"), this);
+	exitFullscreenOnFocusLossAction->setStatusTip(tr("Exit the fullscreen mode if the window lose the focus"));
+	exitFullscreenOnFocusLossAction->setCheckable(true);
+	exitFullscreenOnFocusLossAction->setChecked(true);
+	connect(exitFullscreenOnFocusLossAction, &QAction::triggered, [this]() { m_exitFullscreenOnFocusLoss = !m_exitFullscreenOnFocusLoss; });
 
 	auto aboutAction = new QAction(tr("&About"), this);
 	aboutAction->setStatusTip(tr("Show the application's About box"));
@@ -660,6 +668,7 @@ void MainWindow::createActions()
 	m_viewMenu->addAction(showOpenGLViewAction);
 	m_viewMenu->addAction(adjustRenderSizeToViewAction);
 	m_viewMenu->addAction(m_fullScreenAction);
+	m_viewMenu->addAction(exitFullscreenOnFocusLossAction);
 #ifdef PANDA_LOG_EVENTS
 	m_viewMenu->addSeparator();
 	m_viewMenu->addAction(showLoggerDialogAction);
@@ -942,13 +951,21 @@ void MainWindow::switchToOpenGLView()
 	m_tabWidget->setCurrentWidget(m_openGLViewContainer);
 }
 
-void MainWindow::switchFullScreen()
+void MainWindow::toggleFullScreen(bool fullscreen)
 {
-	m_fullScreen = !m_fullScreen;
+	if (m_fullScreen == fullscreen)
+		return;
+
+	m_fullScreen = fullscreen;
 	m_fullScreenAction->setChecked(m_fullScreen);
 
-	if(m_fullScreen)
+	if (m_fullScreen)
+	{
 		showFullScreen();
+		auto w = selectedTabWidget();
+		if (w)
+			w->setFocus();
+	}
 	else
 		showNormal();
 
@@ -1238,6 +1255,7 @@ void MainWindow::showImageViewport()
 	ImageViewport* imageViewport = new ImageViewport(clickedData, index, this);
 	connect(imageViewport, SIGNAL(closeViewport(ImageViewport*)), this, SLOT(closeViewport(ImageViewport*)));
 	connect(imageViewport, SIGNAL(destroyedViewport(ImageViewport*)), this, SLOT(destroyedViewport(ImageViewport*)));
+	connect(imageViewport, &ImageViewport::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	QScrollArea* container = new QScrollArea();
 	container->setFrameStyle(0);
 	container->setAlignment(Qt::AlignCenter);
@@ -1370,4 +1388,41 @@ void MainWindow::redoTextChanged(const std::string& text)
 		m_redoAction->setText(tr("Redo"));
 	else
 		m_redoAction->setText(tr("Redo %1").arg(QString::fromStdString(text)));
+}
+
+void MainWindow::onTabWidgetFocusLoss(QWidget* w)
+{
+	if (m_fullScreen && m_exitFullscreenOnFocusLoss && w == selectedTabWidget()) 
+		toggleFullScreen(false);
+}
+
+namespace
+{
+	bool hasParent(const QWidget* w, const QWidget* parent)
+	{
+		auto p = w->parentWidget();
+		if (!p)
+			return false;
+		if (p == parent)
+			return true;
+		return hasParent(p, parent);
+	}
+}
+
+QWidget* MainWindow::selectedTabWidget() const
+{
+	auto currentTabWidget = m_tabWidget->currentWidget();
+	if (hasParent(m_openGLRenderView, currentTabWidget))
+		return m_openGLRenderView;
+
+	if (hasParent(m_graphView, currentTabWidget))
+		return m_graphView;
+
+	for (const auto& imageViewport : m_imageViewports)
+	{
+		if (hasParent(imageViewport.viewport, currentTabWidget))
+			return imageViewport.viewport;
+	}
+
+	return nullptr;
 }

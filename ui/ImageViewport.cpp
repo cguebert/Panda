@@ -325,3 +325,8 @@ void ImageViewport::resetZoom()
 		setImageTitle();
 	}
 }
+
+void ImageViewport::focusOutEvent(QFocusEvent*)
+{
+	emit lostFocus(this);
+}

@@ -91,6 +91,7 @@ protected:
 	void wheelEvent(QWheelEvent* event);
 	void keyPressEvent(QKeyEvent* event);
 	void contextMenuEvent(QContextMenuEvent* event);
+	void focusOutEvent(QFocusEvent*) override;
 
 #ifdef PANDA_LOG_EVENTS
 	void paintLogDebug(QPainter* painter);
@@ -117,6 +118,7 @@ signals:
 	void showStatusBarMessage(QString);
 	void showContextMenu(QPoint pos, int reason);
 	void viewModified();
+	void lostFocus(QWidget*);
 
 public slots:
 	void zoomIn();

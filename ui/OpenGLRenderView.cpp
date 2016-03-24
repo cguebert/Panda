@@ -171,3 +171,8 @@ void OpenGLRenderView::resizeEvent(QResizeEvent* event)
 		m_document->setRenderSize(convert(viewRect.size()));
 	}
 }
+
+void OpenGLRenderView::focusOutEvent(QFocusEvent*)
+{
+	emit lostFocus(this);
+}

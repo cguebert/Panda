@@ -56,7 +56,7 @@ private slots:
 	void createObject();
 	void switchToGraphView();
 	void switchToOpenGLView();
-	void switchFullScreen();
+	void toggleFullScreen(bool);
 	void showStatusBarMessage(QString);
 	void copy();
 	void cut();
@@ -81,6 +81,7 @@ private slots:
 	void destroyedViewport(ImageViewport* viewport);
 	void convertSavedDocuments();
 	void removedObject(panda::PandaObject*);
+	void onTabWidgetFocusLoss(QWidget*);
 
 private:
 	void createActions();
@@ -101,6 +102,8 @@ private:
 	void undoTextChanged(const std::string& text);
 	void redoTextChanged(const std::string& text);
 
+	QWidget* selectedTabWidget() const; // Return either the render view, the graph view or one image viewport
+
 	DetachableTabWidget* m_tabWidget = nullptr;
 	GraphView* m_graphView = nullptr;
 	ScrollContainer* m_graphViewContainer = nullptr;
@@ -113,9 +116,16 @@ private:
 	QDockWidget* m_layersDock = nullptr;
 	UpdateLoggerDialog* m_loggerDialog = nullptr;
 	SimpleGUIImpl* m_simpleGUI = nullptr;
+
 	QStringList m_recentFiles;
 	QString m_curFile;
-	bool m_fullScreen = false, m_adjustRenderSizeToView = false, m_undoEnabled = false, m_redoEnabled = false;
+
+	bool m_fullScreen = false;
+	bool m_exitFullscreenOnFocusLoss = true;
+	bool m_adjustRenderSizeToView = false;
+	bool m_undoEnabled = false;
+	bool m_redoEnabled = false;
+
 	panda::msg::Observer m_observer;
 
 	QList<DetachedWindow*> m_detachedWindows;

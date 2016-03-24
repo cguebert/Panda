@@ -23,6 +23,9 @@ public:
 
 	void setAdjustRenderSize(bool adjust);
 
+signals:
+	void lostFocus(QWidget*);
+
 protected:
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
@@ -35,6 +38,7 @@ protected:
 	void keyReleaseEvent(QKeyEvent* event) override;
 
 	void resizeEvent(QResizeEvent* event) override;
+	void focusOutEvent(QFocusEvent*) override;
 
 	panda::PandaDocument* m_document;
 	bool m_adjustRenderSize;
