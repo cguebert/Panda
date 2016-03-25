@@ -30,6 +30,7 @@ public:
 		m_edit->setAutoIndent(true);
 		m_edit->setBackspaceUnindents(true);
 		m_edit->setBraceMatching(QsciScintilla::StrictBraceMatch);
+		m_edit->setEolMode(QsciScintilla::EolUnix);
 		m_edit->setText(QString::fromStdString(text));
 		mainLayout->addWidget(m_edit);
 

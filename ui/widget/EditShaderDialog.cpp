@@ -294,6 +294,7 @@ void EditShaderDialog::createTab(int typeIndex)
 	edit->setIndentationsUseTabs(true);
 	edit->setAutoIndent(true);
 	edit->setBackspaceUnindents(true);
+	edit->setEolMode(QsciScintilla::EolUnix);
 	edit->setBraceMatching(QsciScintilla::StrictBraceMatch);
 	item.sourceEdit = edit;
 
