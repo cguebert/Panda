@@ -50,6 +50,7 @@ std::shared_ptr<TextureFont> FontsCache::getFont(const std::string& fontString)
 		auto missed = ftgl::texture_font_load_glyphs(texFont, cache);
 		if (!missed)
 		{
+			texture_atlas_upload(atlas);
 			auto ptr = std::make_shared<TextureFont>(atlas, texFont);
 			m_textureFontsCache.emplace(fontString, ptr);
 			return ptr;
