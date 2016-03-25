@@ -83,12 +83,12 @@ EditShaderDialog::EditShaderDialog(BaseDataWidget* parent, bool readOnly, QStrin
 		QPushButton* addShaderButton = new QPushButton(tr("Add shader"), this);
 		connect(addShaderButton, &QPushButton::clicked, this, &EditShaderDialog::addShader);
 		buttonsLayout->addWidget(addShaderButton);
-		buttonsLayout->addStretch();
 	}
 
 	QPushButton* okButton = new QPushButton(tr("Ok"), this);
 	okButton->setDefault(true);
 	connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+	buttonsLayout->addStretch();
 	buttonsLayout->addWidget(okButton);
 
 	QPushButton* cancelButton = new QPushButton(tr("Cancel"), this);

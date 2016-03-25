@@ -47,6 +47,18 @@ public:
 		setLayout(mainLayout);
 
 		setWindowTitle(tr("Source code edit") + (readOnly ? tr(" (read-only)") : ""));
+
+		connect(this, &QDialog::finished, this, &SourceCodeDataWidgetDialog::onFinished);
+
+		QSettings settings("Christophe Guebert", "Panda");
+		QSize s = settings.value("SourceCodeDataWidgetDialogSize", QSize(500, 600)).toSize();
+		resize(s);
+	}
+
+	void onFinished()
+	{
+		QSettings settings("Christophe Guebert", "Panda");
+		settings.setValue("SourceCodeDataWidgetDialogSize", size());
 	}
 
 	std::string getText()
