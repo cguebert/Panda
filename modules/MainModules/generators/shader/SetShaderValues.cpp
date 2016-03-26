@@ -39,7 +39,7 @@ public:
 											 true, false,
 											 "value",
 											 "Value to set in the shader"));
-		// Create a single int value
+		// Create a single string value
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<std::string>()),
 											 true, false,
 											 "name",

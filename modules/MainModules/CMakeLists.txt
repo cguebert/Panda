@@ -4,6 +4,7 @@ set(PROJECT_NAME "MainModules")
 project(${PROJECT_NAME})
 
 set(HEADER_FILES
+	math/real/TinyExpr/tinyexpr.h
 )
 
 set(SOURCE_FILES
@@ -43,7 +44,9 @@ set(SOURCE_FILES
 	math/real/DoubleComputation.cpp
 	math/real/DoubleListMath.cpp
 	math/real/DoubleMath.cpp
+	math/real/EvalExpression.cpp
 	math/rect/RectangleMath.cpp
+	math/real/TinyExpr/tinyexpr.c
 	modifiers/color/BlendColors.cpp
 	modifiers/color/ColorInGradient.cpp
 	modifiers/image/ColorInImage.cpp
