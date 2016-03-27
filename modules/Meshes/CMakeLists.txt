@@ -12,11 +12,13 @@ set(SOURCE_FILES
 	Delaunay.cpp
 	FindTriangle.cpp
 	Grid.cpp
+	MarchingSquares.cpp
 	MergeMeshes.cpp
 	meshesModule.cpp
 	MeshInfo.cpp
 	MeshMath.cpp
 	Neighbors.cpp
+	par_msquares.h
 	Relaxation.cpp
 	Voronoi.cpp
 )
