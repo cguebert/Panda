@@ -21,6 +21,7 @@ set(SOURCE_FILES
 	generators/gradient/GradientTexture.cpp
 	generators/gradient/SimpleGradients.cpp
 	generators/integer/RandomSeed.cpp
+	generators/image/ConvertToImage.cpp
 	generators/image/CreateTexture.cpp
 	generators/image/DocumentImage.cpp
 	generators/point/ComposePoints.cpp
