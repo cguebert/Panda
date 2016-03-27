@@ -54,13 +54,17 @@ public:
 		, m_image(initData("image", "Input image"))
 		, m_cellSize(initData(5, "cellSize", "Size of the cell for the marching cube"))
 		, m_threshold(initData(128, "threshold", "Keep points whose value is bigger than this threshold"))
+		, m_inverse(initData(0, "inverse", "Inverse the selection"))
 		, m_meshes(initData("mesh", "Mesh created from the marching squares"))
 	{
 		addInput(m_image);
 		addInput(m_cellSize);
 		addInput(m_threshold);
+		addInput(m_inverse);
 
 		addOutput(m_meshes);
+
+		m_inverse.setWidget("checkbox");
 	}
 
 	void update()
@@ -77,12 +81,10 @@ public:
 				return;
 		}
 
+		// Do the marching squares
 		auto size = image.size();
 		auto w = size.width(), h = size.height();
-		int nb = w * h;
-		auto data = image.data();
 
-		// Do the marching squares
 		marching_context context;
 		context.width = w;
 		context.height = h;
@@ -90,6 +92,8 @@ public:
 		context.data = image.data();
 		context.threshold = m_threshold.getValue();
 		int flags = PAR_MSQUARES_SIMPLIFY;
+		if (m_inverse.getValue() != 0)
+			flags |= PAR_MSQUARES_INVERT;
 		auto mlist = par_msquares_function(w, h, m_cellSize.getValue(), flags, &context, isInside, value);
 
 		// Convert to panda meshes
@@ -122,11 +126,11 @@ public:
 
 protected:
 	Data<ImageWrapper> m_image;
-	Data<int> m_cellSize, m_threshold;
+	Data<int> m_cellSize, m_threshold, m_inverse;
 	Data<std::vector<Mesh>> m_meshes;
 };
 
-int GeneratorMesh_MarchingSquaresClass = RegisterObject<GeneratorMesh_MarchingSquares>("Generator/Mesh/Marching squares")
+int GeneratorMesh_MarchingSquaresClass = RegisterObject<GeneratorMesh_MarchingSquares>("Generator/Mesh/Marching squares mesh")
 		.setDescription("Create a mesh by extracting a region of an image");
 
 //****************************************************************************//
