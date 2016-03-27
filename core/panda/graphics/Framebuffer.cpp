@@ -1,5 +1,6 @@
 #include <panda/graphics/Framebuffer.h>
 #include <panda/types/Rect.h>
+#include <panda/UpdateLogger.h>
 
 #include <GL/glew.h>
 #include <algorithm>
@@ -221,7 +222,10 @@ Image Framebuffer::toImage() const
 
 	const auto size = m_data->size;
 	Image img(size);
-	glReadPixels(0, 0, size.width(), size.height(), GL_BGRA, GL_UNSIGNED_BYTE, img.data());
+	{
+		helper::ScopedEvent log("glReadPixels");
+		glReadPixels(0, 0, size.width(), size.height(), GL_BGRA, GL_UNSIGNED_BYTE, img.data());
+	}
 
 	if (prev != id())
 		glBindFramebuffer(GL_FRAMEBUFFER, prev);
@@ -248,7 +252,10 @@ void Framebuffer::toImage(Image& img) const
 	const auto size = m_data->size;
 	if (img.size() != size)
 		img = Image(size);
-	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, img.data());
+	{
+		helper::ScopedEvent log("glReadPixels");
+		glReadPixels(0, 0, size.width(), size.height(), GL_BGRA, GL_UNSIGNED_BYTE, img.data());
+	}
 
 	if (prev != id())
 		glBindFramebuffer(GL_FRAMEBUFFER, prev);
