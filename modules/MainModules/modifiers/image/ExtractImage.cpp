@@ -66,12 +66,13 @@ public:
 						w = static_cast<int>(rect.width()), h = static_cast<int>(rect.height());
 
 					graphics::Size size(w, h);
-					if(!size.empty())
+					if(size.empty())
 						continue;
 
 					auto newFbo = graphics::Framebuffer(size);
 					auto sourceSize = fbo->size();
-					graphics::RectInt sourceRect(l, sourceSize.height() - t - h, w, h);
+					int st = sourceSize.height() - t - h;
+					graphics::RectInt sourceRect(l, st, l + w, st + h);
 					graphics::RectInt targetRect(0, 0, size.width(), size.height());
 					graphics::Framebuffer::blitFramebuffer(newFbo, targetRect, *fbo, sourceRect);
 					resList[i].setFbo(newFbo);
