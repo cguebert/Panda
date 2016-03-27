@@ -8,6 +8,36 @@
 #define PAR_MSQUARES_IMPLEMENTATION
 #include "par_msquares.h"
 
+namespace
+{
+
+	struct marching_context
+	{
+		int width = 0, height = 0, nb = 0;
+		int threshold = 128;
+		unsigned char* data;
+	};
+
+	int isInside(int location, void* ptr)
+	{
+		marching_context* context = static_cast<marching_context*>(ptr);
+		if (location < 0 || location > context->nb)
+			return 0;
+		auto data = &context->data[location * 4];
+		auto val = (panda::graphics::gray(data) * panda::graphics::alpha(data)) >> 8;
+		return val  > context->threshold;
+	}
+
+	float value(float x, float y, void* ptr)
+	{
+		marching_context* context = static_cast<marching_context*>(ptr);
+		int i = PAR_CLAMP(context->width * x, 0, context->width - 1);
+		int j = PAR_CLAMP(context->height * y, 0, context->height - 1);
+		auto data = &context->data[(i + j * context->width) * 4];
+		return (panda::graphics::gray(data) * panda::graphics::alpha(data)) >> 8;
+	}
+}
+
 namespace panda {
 
 using types::ImageWrapper;
@@ -42,7 +72,7 @@ public:
 		panda::graphics::Image image;
 		{
 			helper::ScopedEvent log("Get image", this);
-			image = m_image.getValue().getImage().mirrored();
+			image = m_image.getValue().getImage();
 			if (!image)
 				return;
 		}
@@ -52,21 +82,15 @@ public:
 		int nb = w * h;
 		auto data = image.data();
 
-		// Convert to greyscale float
-		std::vector<float> greyData(nb, 0);
-		{
-			helper::ScopedEvent log("Convert to grey", this);
-			for (int i = 0; i < nb; ++i)
-			{
-				greyData[i] = graphics::gray(data) * graphics::alpha(data) / 255.f;
-				data += 4;
-			}
-		}
-
 		// Do the marching squares
+		marching_context context;
+		context.width = w;
+		context.height = h;
+		context.nb = w * h;
+		context.data = image.data();
+		context.threshold = m_threshold.getValue();
 		int flags = PAR_MSQUARES_SIMPLIFY;
-		auto mlist = par_msquares_grayscale(greyData.data(), w, h,
-			m_cellSize.getValue(), m_threshold.getValue(), flags);
+		auto mlist = par_msquares_function(w, h, m_cellSize.getValue(), flags, &context, isInside, value);
 
 		// Convert to panda meshes
 		float m = std::max(w, h);
@@ -79,7 +103,7 @@ public:
 			auto pointsPtr = mesh->points;
 			for (int j = 0; j < mesh->npoints; ++j)
 			{
-				outMesh.addPoint(Point(pointsPtr[0] * m, pointsPtr[1] * m));
+				outMesh.addPoint(Point(pointsPtr[0] * m, h - 1 - pointsPtr[1] * m));
 				pointsPtr += mesh->dim;
 			}
 
@@ -98,8 +122,7 @@ public:
 
 protected:
 	Data<ImageWrapper> m_image;
-	Data<int> m_cellSize;
-	Data<float> m_threshold;
+	Data<int> m_cellSize, m_threshold;
 	Data<std::vector<Mesh>> m_meshes;
 };
 
