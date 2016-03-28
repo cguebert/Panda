@@ -209,8 +209,13 @@ public:
 					outPoly.contour = std::move(path);
 					outPolygons.push_back(std::move(outPoly));
 				}
-				else if(!outPolygons.empty())
-					holes.push_back(std::move(path));
+				else if (!path.points.empty())
+				{
+					if (!outPolygons.empty() && polygonContainsPoint(outPolygons.back().contour, path.points[0]))
+						outPolygons.back().holes.push_back(std::move(path));
+					else
+						holes.push_back(std::move(path));
+				}
 			}
 		}
 
@@ -218,11 +223,10 @@ public:
 		std::vector<Path> orphans;
 		for (auto& hole : holes)
 		{
-			auto centroid = centroidOfPolygon(hole);
 			bool found = false;
 			for (auto& poly : outPolygons)
 			{
-				if (polygonContainsPoint(poly.contour, centroid))
+				if (polygonContainsPoint(poly.contour, hole.points[0]))
 				{
 					poly.holes.push_back(std::move(hole));
 					found = true;
