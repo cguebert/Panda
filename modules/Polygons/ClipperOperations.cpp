@@ -166,11 +166,53 @@ protected:
 	Data< int > m_fillType;
 };
 
-int ClipperOperation_SimplifyeClass = RegisterObject<ClipperOperation_Simplify>("Math/Polygon/Simplify")
+int ClipperOperation_SimplifyClass = RegisterObject<ClipperOperation_Simplify>("Math/Polygon/Simplify")
+	.setName("Simplify polygon")
 	.setDescription("Removes self-intersections from the input polygon");
 
 //****************************************************************************//
 
-} // namespace Panda
+class ClipperOperation_Clean : public PandaObject
+{
+public:
+	PANDA_CLASS(ClipperOperation_Clean, PandaObject)
+
+	ClipperOperation_Clean(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("input", "Input polygon"))
+		, m_output(initData("output", "Cleaned polygon"))
+		, m_distance(initData(1.415, "distance", "Distance below which adjacents vertices are removed"))
+	{
+		addInput(m_input);
+		addInput(m_distance);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto acc = m_output.getAccessor();
+		acc.clear();
+		auto& outPolys = acc.wref();
+
+		auto dist = m_distance.getValue() * pandaToClipperFactor;
+
+		for (const auto& poly : input)
+		{
+			auto cPaths = polyToClipperPaths(poly);
+			ClipperLib::CleanPolygons(cPaths, dist);
+			auto polys = clipperPathsToPolys(cPaths);
+			outPolys.insert(outPolys.end(), polys.begin(), polys.end());
+		}
+	}
+
+protected:
+	Data< std::vector<Polygon> > m_input, m_output;
+	Data< float > m_distance;
+};
+
+int ClipperOperation_CleanClass = RegisterObject<ClipperOperation_Clean>("Math/Polygon/Clean")
+	.setName("Clean polygon")
+	.setDescription("Removes duplicate vertices and colinear edges from the input polygon");} // namespace Panda
 
 
