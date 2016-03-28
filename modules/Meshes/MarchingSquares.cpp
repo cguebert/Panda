@@ -4,6 +4,7 @@
 #include <panda/graphics/Image.h>
 #include <panda/types/ImageWrapper.h>
 #include <panda/types/Mesh.h>
+#include <panda/types/Polygon.h>
 
 #define PAR_MSQUARES_IMPLEMENTATION
 #include "par_msquares.h"
@@ -42,6 +43,8 @@ namespace panda {
 
 using types::ImageWrapper;
 using types::Mesh;
+using types::Path;
+using types::Polygon;
 using types::Point;
 
 class GeneratorMesh_MarchingSquares : public PandaObject
@@ -130,10 +133,125 @@ protected:
 	Data<std::vector<Mesh>> m_meshes;
 };
 
-int GeneratorMesh_MarchingSquaresClass = RegisterObject<GeneratorMesh_MarchingSquares>("Generator/Mesh/Marching squares mesh")
+int GeneratorMesh_MarchingSquaresClass = RegisterObject<GeneratorMesh_MarchingSquares>("Generator/Mesh/Marching squares")
+		.setName("Marching squares mesh")
 		.setDescription("Create a mesh by extracting a region of an image");
 
 //****************************************************************************//
 
+class GeneratorPolygon_MarchingSquares : public PandaObject
+{
+public:
+	PANDA_CLASS(GeneratorPolygon_MarchingSquares, PandaObject)
 
+	GeneratorPolygon_MarchingSquares(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_image(initData("image", "Input image"))
+		, m_cellSize(initData(5, "cellSize", "Size of the cell for the marching cube"))
+		, m_threshold(initData(128, "threshold", "Keep points whose value is bigger than this threshold"))
+		, m_polygons(initData("polygon", "Polygon created from the marching squares"))
+	{
+		addInput(m_image);
+		addInput(m_cellSize);
+		addInput(m_threshold);
+
+		addOutput(m_polygons);
+	}
+
+	void update()
+	{
+		auto acc = m_polygons.getAccessor();
+		auto& outPolygons = acc.wref();
+		outPolygons.clear();
+
+		// Get the image
+		panda::graphics::Image image;
+		{
+			helper::ScopedEvent log("Get image", this);
+			image = m_image.getValue().getImage();
+			if (!image)
+				return;
+		}
+
+		// Do the marching squares
+		auto size = image.size();
+		auto w = size.width(), h = size.height();
+
+		marching_context context;
+		context.width = w;
+		context.height = h;
+		context.nb = w * h;
+		context.data = image.data();
+		context.threshold = m_threshold.getValue();
+		int flags = 0;
+		auto mlist = par_msquares_function(w, h, m_cellSize.getValue(), flags, &context, isInside, value);
+
+		// Convert to panda polygons
+		std::vector<Path> holes;
+		float m = std::max(w, h);
+		int nbMeshes = par_msquares_get_count(mlist);
+		for (int i = 0; i < nbMeshes; ++i)
+		{
+			auto mesh = par_msquares_get_mesh(mlist, i);
+			auto poly = par_msquares_extract_boundary(mesh);
+			
+			for (int j = 0; j < poly->nchains; ++j)
+			{
+				auto pts = poly->chains[j];
+				Path path;
+				for (int k = 0; k < poly->lengths[j]; ++k)
+					path.points.push_back(Point(pts[k * 2] * m, h - 1 - pts[k * 2 + 1] * m));
+
+				if (areaOfPolygon(path) < 0)
+				{
+					reorientPolygon(path);
+					Polygon outPoly;
+					outPoly.contour = std::move(path);
+					outPolygons.push_back(std::move(outPoly));
+				}
+				else if(!outPolygons.empty())
+					holes.push_back(std::move(path));
+			}
+		}
+
+		// Find the correct polygon to put holes in
+		std::vector<Path> orphans;
+		for (auto& hole : holes)
+		{
+			auto centroid = centroidOfPolygon(hole);
+			bool found = false;
+			for (auto& poly : outPolygons)
+			{
+				if (polygonContainsPoint(poly.contour, centroid))
+				{
+					poly.holes.push_back(std::move(hole));
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+				orphans.push_back(std::move(hole));
+		}
+
+		// If we really didn't find where to place that path, we create a new polygon for it
+		for (auto& orphan : orphans)
+		{
+			Polygon poly;
+			poly.contour = std::move(orphan);
+			outPolygons.push_back(std::move(poly));
+		}
+
+		par_msquares_free(mlist);
+	}
+
+protected:
+	Data<ImageWrapper> m_image;
+	Data<int> m_cellSize, m_threshold;
+	Data<std::vector<Polygon>> m_polygons;
+};
+
+int GeneratorPolygon_MarchingSquaresClass = RegisterObject<GeneratorPolygon_MarchingSquares>("Generator/Polygon/Marching squares")
+		.setName("Marching squares polygon")
+		.setDescription("Create a polygon by extracting a region of an image");
 } // namespace Panda
