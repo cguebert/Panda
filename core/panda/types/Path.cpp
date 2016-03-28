@@ -206,13 +206,6 @@ void reorientPolygon(Path& poly)
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Path>::valueTypeName() { return "path"; }
-template<> PANDA_CORE_API int DataTrait<Path>::size(const Path& v) { return v.points.size(); }
-template<> PANDA_CORE_API void DataTrait<Path>::clear(Path& v, int size, bool init)
-{
-	if(init)
-		v.points.clear();
-	v.points.resize(size);
-}
 
 template<>
 PANDA_CORE_API void DataTrait<Path>::writeValue(XmlElement& elem, const Path& path)
