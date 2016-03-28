@@ -149,8 +149,14 @@ public:
 
 		ClipperLib::PolyFillType fillType = ClipperLib::pftEvenOdd;
 		auto fillVal = m_fillType.getValue();
-		if (fillVal == 1)
-			fillType = ClipperLib::pftNonZero;
+		switch (fillVal)
+		{
+		default:
+		case 0: fillType = ClipperLib::pftEvenOdd; break;
+		case 1: fillType = ClipperLib::pftNonZero; break;
+		case 2: fillType = ClipperLib::pftPositive; break;
+		case 3: fillType = ClipperLib::pftNegative; break;
+		}
 
 		for (const auto& poly : input)
 		{
