@@ -16,6 +16,7 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
+	ClipperOperations.cpp
 	ComposePolygon.cpp
 	ConnectSegments.cpp
 	MeshToPolygon.cpp
