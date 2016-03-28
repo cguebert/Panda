@@ -3,6 +3,58 @@
 
 #include <panda/data/DataFactory.h>
 
+namespace 
+{
+	
+using panda::types::Point;
+
+// Copyright 2000 softSurfer, 2012 Dan Sunday
+// This code may be freely used and modified for any purpose
+// providing that this copyright notice is included with it.
+// SoftSurfer makes no warranty for this code, and cannot be held
+// liable for any real or imagined damage resulting from its use.
+// Users of this code must verify correctness for their application.
+
+// http://geomalgorithms.com/a03-_inclusion.html
+
+// isLeft(): tests if a point is Left|On|Right of an infinite line.
+//    Input:  three points P0, P1, and P2
+//    Return: >0 for P2 left of the line through P0 and P1
+//            =0 for P2  on the line
+//            <0 for P2  right of the line
+//    See: Algorithm 1 "Area of Triangles and Polygons"
+inline float isLeft( Point P0, Point P1, Point P2 )
+{
+	return ( (P1.x - P0.x) * (P2.y - P0.y)
+			- (P2.x -  P0.x) * (P1.y - P0.y) );
+}
+
+// wn_PnPoly(): winding number test for a point in a polygon
+//      Input:   P = a point,
+//               V[] = vertex points of a polygon V[n+1] with V[n]=V[0]
+//      Return:  wn = the winding number (=0 only when P is outside)
+int wn_PnPoly( Point P, const Point* V, int n )
+{
+	int    wn = 0;    // the  winding number counter
+
+	// loop through all edges of the polygon
+	for (int i=0; i<n; i++) {   // edge from V[i] to  V[i+1]
+		if (V[i].y <= P.y) {          // start y <= P.y
+			if (V[i+1].y  > P.y)      // an upward crossing
+				 if (isLeft( V[i], V[i+1], P) > 0)  // P left of  edge
+					 ++wn;            // have  a valid up intersect
+		}
+		else {                        // start y > P.y (no test needed)
+			if (V[i+1].y  <= P.y)     // a downward crossing
+				 if (isLeft( V[i], V[i+1], P) < 0)  // P right of  edge
+					 --wn;            // have  a valid down intersect
+		}
+	}
+	return wn;
+}
+
+}
+
 namespace panda
 {
 
@@ -142,18 +194,7 @@ types::Point centroidOfPolygon(const Path& poly)
 
 bool polygonContainsPoint(const Path &poly, types::Point pt)
 {
-	const auto& points = poly.points;
-	int nb = points.size();
-	for(int i1=0, i0=nb-1; i1<nb; i0=i1++)
-	{
-		const Point &p0 = points[i0], &p1 = points[i1];
-		Point n = Point(p1.y - p0.y, p0.x - p1.x);
-		Point d = pt - p0;
-
-		if(n.dot(d) > 0)
-			return false;
-	}
-	return true;
+	return wn_PnPoly(pt, poly.points.data(), poly.points.size() - 1) != 0;
 }
 
 void reorientPolygon(Path& poly)
