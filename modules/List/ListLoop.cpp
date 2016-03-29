@@ -98,6 +98,12 @@ public:
 			PandaObject::setDirtyValue(caller);
 	}
 
+	void reset() override
+	{
+		PandaObject::setDirtyValue(this);
+		prevControl = FLT_MAX;
+	}
+
 protected:
 	bool m_copyInit;
 	float prevControl;
