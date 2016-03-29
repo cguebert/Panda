@@ -6,52 +6,35 @@
  * Originally from the bitfighter source code
  */
 
+// Modified by Christophe Guébert to also sanitize the enclosing polygon
+
 #include "clip2tri.h"
 #include "../poly2tri/poly2tri.h"
 
 #include <cstdio>
+#include <limits>
 
-
+using namespace std;
 using namespace p2t;
+using namespace ClipperLib;
 
 namespace c2t
 {
 
-
 static const F32 CLIPPER_SCALE_FACT = 1000.0f;
 static const F32 CLIPPER_SCALE_FACT_INVERSE = 0.001f;
-
-
-/////////////////////////////////
-
-Point::Point()
-{
-   x = 0;
-   y = 0;
-}
-
-Point::Point(const Point& pt)
-{
-   x = pt.x;
-   y = pt.y;
-}
-
-
-/////////////////////////////////
 
 Path upscaleClipperPoints(const vector<Point> &inputPolygon)
 {
    Path outputPolygon;
    outputPolygon.reserve(inputPolygon.size());
 
-   IntPoint prevPt;
-   bool first = true;
+   auto maxVal = std::numeric_limits<ClipperLib::cInt>::max();
+   IntPoint prevPt(maxVal, maxVal);
    for (const auto& pt : inputPolygon)
    {
-	   IntPoint newPt(S64(pt.x * CLIPPER_SCALE_FACT), S64(pt.y * CLIPPER_SCALE_FACT));
-		if (first)
-			first = false;
-		else if (newPt == prevPt)
+		IntPoint newPt(S64(pt.x * CLIPPER_SCALE_FACT), S64(pt.y * CLIPPER_SCALE_FACT));
+		if (newPt == prevPt)
 			continue;
 		outputPolygon.push_back(newPt);
 		prevPt = newPt;
@@ -67,29 +50,9 @@ Path upscaleClipperPoints(const vector<Point> &inputPolygon)
 Paths upscaleClipperPoints(const vector<vector<Point> > &inputPolygons)
 {
    Paths outputPolygons;
-
-   outputPolygons.resize(inputPolygons.size());
-
-   for (U32 i = 0; i < inputPolygons.size(); i++)
-	   outputPolygons[i] = upscaleClipperPoints(inputPolygons[i]);
-
-   return outputPolygons;
-}
-
-
-vector<vector<Point> > downscaleClipperPoints(const Paths &inputPolygons)
-{
-   vector<vector<Point> > outputPolygons;
-
-   outputPolygons.resize(inputPolygons.size());
-
-   for(U32 i = 0; i < inputPolygons.size(); i++)
-   {
-      outputPolygons[i].resize(inputPolygons[i].size());
-
-      for(U32 j = 0; j < inputPolygons[i].size(); j++)
-         outputPolygons[i][j] = Point(F32(inputPolygons[i][j].X) * CLIPPER_SCALE_FACT_INVERSE, F32(inputPolygons[i][j].Y) * CLIPPER_SCALE_FACT_INVERSE);
-   }
+   outputPolygons.reserve(inputPolygons.size());
+   for (const auto& input : inputPolygons)
+	   outputPolygons.push_back(upscaleClipperPoints(input));
 
    return outputPolygons;
 }
@@ -118,17 +81,6 @@ bool mergePolysToPolyTree(const vector<vector<Point> > &inputPolygons, PolyTree 
 
    return clipper.Execute(ctUnion, solution, pftNonZero, pftNonZero);
 }
-
-
-// Delete all poly2tri points from a vector and clear the vector
-static void deleteAndClear(vector<p2t::Point*> &vec)
-{
-   for(U32 i = 0; i < vec.size(); i++)
-      delete vec[i];
-
-   vec.clear();
-}
-
 
 // Shrink large polygons by reducing each coordinate by 1 in the
 // general direction of the last point as we wind around
@@ -165,47 +117,28 @@ static void edgeShrink(Path &path)
 // For assistance with a special case crash, see this utility:
 //    http://javascript.poly2tri.googlecode.com/hg/index.html
 //
-// FIXME: what is ignoreFills and ignoreHoles for?  kaen?
-bool triangulateComplex(vector<Point> &outputTriangles, const Path &outline,
-	  const PolyTree &polyTree, bool ignoreFills = true, bool ignoreHoles = false)
-{
-   // Keep track of memory for all the poly2tri objects we create
-   vector<p2t::CDT*> cdtRegistry;
-   vector<vector<p2t::Point*> > holesRegistry;
-   vector<vector<p2t::Point*> > polylinesRegistry;
+vector<Point> triangulateComplex(const PolyTree &polyTree)
+{ 
+   vector<Point> outputTriangles;
 
-
-   // Let's be tricky and add our outline to the root node (it should have none), it'll be
-   // our first Clipper hole
-   PolyNode *rootNode = NULL;
-
-   PolyNode tempNode;
-   if(polyTree.Total() == 0)  // Polytree is empty with no root node, e.g. on an empty level
-      rootNode = &tempNode;
-   else
-      rootNode = polyTree.GetFirst()->Parent;
-
-   rootNode->Contour = outline;
-
-   // Now traverse our polyline nodes and triangulate them with only their children holes
-   PolyNode *currentNode = rootNode;
+   // Traverse our polyline nodes and triangulate them with only their children holes
+   PolyNode *currentNode = polyTree.GetFirst();
    while(currentNode != NULL)
    {
-      // A Clipper hole is actually what we want to build zones for; they become our bounding
-      // polylines.  poly2tri holes are therefore the inverse
-      if((!ignoreHoles && currentNode->IsHole()) ||
-         (!ignoreFills && !currentNode->IsHole()))
+      if(!currentNode->IsHole())
       {
-         // Build up this polyline in poly2tri's format (downscale Clipper points)
+		 // Keep track of memory for all the poly2tri objects we create
+		 vector<vector<p2t::Point*> > linesRegistry;
+
+		 // Build up this polyline in poly2tri's format
          vector<p2t::Point*> polyline;
          for(U32 j = 0; j < currentNode->Contour.size(); j++)
             polyline.push_back(new p2t::Point(F64(currentNode->Contour[j].X), F64(currentNode->Contour[j].Y)));
 
-         polylinesRegistry.push_back(polyline);  // Memory
+         linesRegistry.push_back(polyline);  // Memory
 
          // Set our polyline in poly2tri
-         p2t::CDT* cdt = new p2t::CDT(polyline);
-         cdtRegistry.push_back(cdt);
+         p2t::CDT cdt(polyline);
 
          for(U32 j = 0; j < currentNode->Childs.size(); j++)
          {
@@ -218,18 +151,18 @@ bool triangulateComplex(vector<Point> &outputTriangles, const Path &outline,
             for(U32 k = 0; k < childNode->Contour.size(); k++)
                hole.push_back(new p2t::Point(F64(childNode->Contour[k].X), F64(childNode->Contour[k].Y)));
 
-            holesRegistry.push_back(hole);  // Memory
+            linesRegistry.push_back(hole);  // Memory
 
             // Add the holes for this polyline
-            cdt->AddHole(hole);
+            cdt.AddHole(hole);
          }
 
-         cdt->Triangulate();
+         cdt.Triangulate();
 
          // Add current output triangles to our total
-         vector<p2t::Triangle*> currentOutput = cdt->GetTriangles();
+         vector<p2t::Triangle*> currentOutput = cdt.GetTriangles();
 
-         // Copy our data to TNL::Point and to our output Vector
+         // Downscale Clipper points, copy our data to TNL::Point and to our output Vector
          p2t::Triangle *currentTriangle;
          for(U32 j = 0; j < currentOutput.size(); j++)
          {
@@ -238,50 +171,31 @@ bool triangulateComplex(vector<Point> &outputTriangles, const Path &outline,
             outputTriangles.push_back(Point(currentTriangle->GetPoint(1)->x * CLIPPER_SCALE_FACT_INVERSE, currentTriangle->GetPoint(1)->y * CLIPPER_SCALE_FACT_INVERSE));
             outputTriangles.push_back(Point(currentTriangle->GetPoint(2)->x * CLIPPER_SCALE_FACT_INVERSE, currentTriangle->GetPoint(2)->y * CLIPPER_SCALE_FACT_INVERSE));
          }
+
+		 // Clean up memory used with poly2tri
+		 // Free the polylines and holes
+		 for (auto& line : linesRegistry)
+		 {
+			 for(auto pt : line)
+				 delete pt;
+			 line.clear();
+		 }
       }
 
       currentNode = currentNode->GetNext();
    }
 
-
-   // Clean up memory used with poly2tri
-   //
-   // Clean-up workers
-   for(U32 i = 0; i < cdtRegistry.size(); i++)
-      delete cdtRegistry[i];
-
-   // Free the polylines
-   for(U32 i = 0; i < polylinesRegistry.size(); i++)
-   {
-      vector<p2t::Point*> polyline = polylinesRegistry[i];
-      deleteAndClear(polyline);
-   }
-
-   // Free the holes
-   for(U32 i = 0; i < holesRegistry.size(); i++)
-   {
-      vector<p2t::Point*> hole = holesRegistry[i];
-      deleteAndClear(hole);
-   }
-
-   // Make sure we have output data
-   if(outputTriangles.size() == 0)
-      return false;
-
-   return true;
+   return outputTriangles;
 }
 
-void triangulate(const vector<vector<Point> > inputPolygons, const vector<Point> boundingPolygon, vector<Point> &outputTriangles)
+vector<Point> triangulate(const vector<vector<Point>>& inputPolygons)
 {
    // Use clipper to clean.  This upscales the floating point input
-   PolyTree solution;
-   if(!inputPolygons.empty())
-	   mergePolysToPolyTree(inputPolygons, solution);
-
-   Path bounds = upscaleClipperPoints(boundingPolygon);
+   PolyTree polyTree;
+   mergePolysToPolyTree(inputPolygons, polyTree);
 
    // This will downscale the Clipper output and use poly2tri to triangulate
-   triangulateComplex(outputTriangles, bounds, solution);
+   return triangulateComplex(polyTree);
 }
 
 } /* namespace c2t */

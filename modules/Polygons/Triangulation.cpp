@@ -18,7 +18,7 @@ std::vector<c2t::Point> convertPath(const Path& path)
 	std::vector<c2t::Point> result;
 	result.reserve(path.points.size());
 	for(const Point& pt : path.points)
-		result.emplace_back(c2t::Point(pt.x, pt.y));
+		result.emplace_back(pt.x, pt.y);
 
 	if(result.front() == result.back())
 		result.pop_back();
@@ -26,7 +26,7 @@ std::vector<c2t::Point> convertPath(const Path& path)
 	return result;
 }
 
-Point convertPoint(const c2t::Point& pt)
+inline Point convertPoint(const c2t::Point& pt)
 {
 	return Point(pt.x, pt.y);
 }
@@ -59,16 +59,15 @@ public:
 		{
 			typedef std::vector<c2t::Point> c2tPoly;
 			typedef std::vector<c2tPoly> c2tPolyList;
-			c2tPolyList holes;
-			c2tPoly contour, triangulated;
+			c2tPolyList lines;
 
-			contour = convertPath(inputPoly.contour);
+			lines.push_back(convertPath(inputPoly.contour));
 			for(const auto& hole : inputPoly.holes)
-				holes.push_back(convertPath(hole));
+				lines.push_back(convertPath(hole));
 
-			c2t::triangulate(holes, contour, triangulated);
+			auto triangulated = c2t::triangulate(lines);
+			
 			Mesh mesh;
-
 			size_t nbTri = triangulated.size() / 3;
 			for(size_t i=0; i<nbTri; ++i)
 			{
@@ -78,7 +77,7 @@ public:
 				mesh.addTriangle(ptId1, ptId2, ptId3);
 			}
 
-			mesh.createEdgeList();
+		//	mesh.createEdgeList();
 			output.push_back(mesh);
 		}
 	}

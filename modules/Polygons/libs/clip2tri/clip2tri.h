@@ -13,9 +13,6 @@
 
 #include "../clipper/clipper.hpp"
 
-using namespace std;
-using namespace ClipperLib;
-
 namespace c2t
 {
 
@@ -25,29 +22,26 @@ typedef unsigned int     U32;
 typedef float            F32;
 typedef double           F64;
 
-
 struct Point
 {
-   F32 x;
-   F32 y;
+	F32 x = 0, y = 0;
 
-   Point();
-   Point(const Point &pt);
+	Point() = default;
+	Point(const Point &pt)
+		: x(pt.x), y(pt.y) {}
 
-   template<class T, class U>
-   Point(T in_x, U in_y) { x = static_cast<F32>(in_x); y = static_cast<F32>(in_y); }
+	template<class T, class U>
+	Point(T in_x, U in_y) 
+		: x(static_cast<F32>(in_x)), y(static_cast<F32>(in_y)) {}
 
-   friend inline bool operator== (const Point& a, const Point& b)
-   {
-	 return a.x == b.x && a.y == b.y;
-   }
-   friend inline bool operator!= (const Point& a, const Point& b)
-   {
-	 return !(a==b);
-   }
+	friend inline bool operator== (const Point& a, const Point& b)
+	{ return a.x == b.x && a.y == b.y; }
+
+	friend inline bool operator!= (const Point& a, const Point& b)
+	{ return !(a==b); }
 };
 
-void triangulate(const vector<vector<Point> > inputPolygons, const vector<Point> boundingPolygon, vector<Point> &outputTriangles);
+std::vector<Point> triangulate(const std::vector<std::vector<Point>>& inputPolygons);
 
 } /* namespace c2t */
 
