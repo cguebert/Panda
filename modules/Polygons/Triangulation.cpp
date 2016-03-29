@@ -18,10 +18,10 @@ using types::Path;
 using types::Point;
 using types::Polygon;
 
-inline Point convert(const p2t::Point* pt)
+inline Point convert(const p2t::Point pt)
 {
-	return Point(static_cast<float>(pt->x) * clipperToPandaFactor
-		, static_cast<float>(pt->y) * clipperToPandaFactor); 
+	return Point(static_cast<float>(pt.x) * clipperToPandaFactor
+		, static_cast<float>(pt.y) * clipperToPandaFactor); 
 }
 
 class Polygon_Triangulation : public PandaObject
@@ -91,56 +91,72 @@ public:
 				currentNode = currentNode->GetNext();
 				continue;
 			}
-				
-			// Keep track of memory for all the poly2tri objects we create
-			std::vector<std::vector<p2t::Point*>> linesRegistry;
 
-			// Build up this polyline in poly2tri's format
-			std::vector<p2t::Point*> polyline;
+			// Convert to poly2tri's format
+			std::vector<p2t::Point> allPoints;
+			std::vector<size_t> linesSizes;
+
+			// Contour
 			for (const auto& pt : currentNode->Contour)
-				polyline.push_back(new p2t::Point(static_cast<double>(pt.X), static_cast<double>(pt.Y)));
-			linesRegistry.push_back(polyline);  // Memory
+				allPoints.emplace_back(static_cast<double>(pt.X), static_cast<double>(pt.Y));
+			linesSizes.push_back(allPoints.size());
 
-			// Set our polyline in poly2tri
-			p2t::CDT cdt(polyline);
-
+			// Holes
 			for(const auto childNode : currentNode->Childs)
 			{
 				// Slightly modify the polygon to guarantee no duplicate points
 				edgeShrink(childNode->Contour);
 
-				std::vector<p2t::Point*> hole;
 				for (const auto& pt : childNode->Contour)
-					hole.push_back(new p2t::Point(static_cast<double>(pt.X), static_cast<double>(pt.Y)));
-				linesRegistry.push_back(hole);  // Memory
-
-				// Add the holes for this polyline
-				cdt.AddHole(hole);
+					allPoints.emplace_back(static_cast<double>(pt.X), static_cast<double>(pt.Y));
+				linesSizes.push_back(allPoints.size());
 			}
+
+			// Poly2Tri uses pointers to points
+			std::vector<p2t::Point*> contourLine;
+			std::vector<std::vector<p2t::Point*>> holes;
+
+			auto nbLines = linesSizes.size();
+			size_t start = 0;
+			for (size_t i = 0; i < nbLines; ++i)
+			{
+				size_t end = linesSizes[i];
+				std::vector<p2t::Point*> line;
+				line.reserve(end - start);
+				for (size_t j = start; j < end; ++j)
+					line.push_back(&allPoints[j]);
+				start = end;
+
+				if (!i) contourLine = std::move(line);
+				else	holes.push_back(std::move(line));
+			}
+
+			// Set the contour in poly2tri
+			p2t::CDT cdt(contourLine);
+
+			// Add the holes
+			for(auto& hole : holes)
+				cdt.AddHole(hole);
 
 			// Do the actual triangulation
 			cdt.Triangulate();
 
-			// Downscale Clipper points and add them to the mesh
+			// Downscale the points and add them to the mesh
 			Mesh mesh;
+			for (const auto pt : allPoints)
+				mesh.addPoint(convert(pt));
+
+			// Convert the triangles
 			auto triangles = cdt.GetTriangles();
+			auto firstPt = allPoints.data();
 			for (const auto triangle : triangles)
 			{
-				int ptId1 = mesh.addPoint(convert(triangle->GetPoint(0)));
-				int ptId2 = mesh.addPoint(convert(triangle->GetPoint(1)));
-				int ptId3 = mesh.addPoint(convert(triangle->GetPoint(2)));
+				int ptId1 = std::distance(firstPt, triangle->GetPoint(0));
+				int ptId2 = std::distance(firstPt, triangle->GetPoint(1));
+				int ptId3 = std::distance(firstPt, triangle->GetPoint(2));
 				mesh.addTriangle(ptId1, ptId2, ptId3);
 			}
 			outputMeshes.push_back(mesh);
-
-			// Clean up memory used with poly2tri
-			// Free the polylines and holes
-			for (auto& line : linesRegistry)
-			{
-				for(auto pt : line)
-					delete pt;
-				line.clear();
-			}
 
 			currentNode = currentNode->GetNext();
 		}

@@ -50,26 +50,12 @@ SweepContext::SweepContext(std::vector<Point*> polyline) :
   InitEdges(points_);
 }
 
-void SweepContext::AddHole(std::vector<Point*> polyline)
+void SweepContext::AddHole(const std::vector<Point*>& polyline)
 {
   InitEdges(polyline);
   for(unsigned int i = 0; i < polyline.size(); i++) {
     points_.push_back(polyline[i]);
   }
-}
-
-void SweepContext::AddPoint(Point* point) {
-  points_.push_back(point);
-}
-
-std::vector<Triangle*> SweepContext::GetTriangles()
-{
-  return triangles_;
-}
-
-std::list<Triangle*> SweepContext::GetMap()
-{
-  return map_;
 }
 
 void SweepContext::InitTriangulation()
@@ -109,16 +95,6 @@ void SweepContext::InitEdges(std::vector<Point*> polyline)
   }
 }
 
-Point* SweepContext::GetPoint(const int& index)
-{
-  return points_[index];
-}
-
-void SweepContext::AddToMap(Triangle* triangle)
-{
-  map_.push_back(triangle);
-}
-
 Node& SweepContext::LocateNode(Point& point)
 {
   // TODO implement search tree
@@ -147,11 +123,6 @@ void SweepContext::CreateAdvancingFront(std::vector<Node*> nodes)
   af_tail_->prev = af_middle_;
 }
 
-void SweepContext::RemoveNode(Node* node)
-{
-  delete node;
-}
-
 void SweepContext::MapTriangleToNodes(Triangle& t)
 {
   for (int i = 0; i < 3; i++) {
@@ -161,11 +132,6 @@ void SweepContext::MapTriangleToNodes(Triangle& t)
         n->triangle = &t;
     }
   }
-}
-
-void SweepContext::RemoveFromMap(Triangle* triangle)
-{
-  map_.remove(triangle);
 }
 
 void SweepContext::MeshClean(Triangle& triangle)

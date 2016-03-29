@@ -53,19 +53,14 @@ public:
    * 
    * @param polyline
    */
-  CDT(std::vector<Point*> polyline);
-  
-   /**
-   * Destructor - clean up memory
-   */
-  ~CDT();
+  CDT(const std::vector<Point*>& polyline);
   
   /**
    * Add a hole
    * 
    * @param polyline
    */
-  void AddHole(std::vector<Point*> polyline);
+  void AddHole(const std::vector<Point*>& polyline);
   
   /**
    * Add a steiner point
@@ -82,12 +77,12 @@ public:
   /**
    * Get CDT triangles
    */
-  std::vector<Triangle*> GetTriangles();
+  const std::vector<Triangle*>& GetTriangles();
   
   /**
    * Get triangle map
    */
-  std::list<Triangle*> GetMap();
+  const std::list<Triangle*>& GetMap();
 
   private:
 
@@ -95,8 +90,8 @@ public:
    * Internals
    */
    
-  SweepContext* sweep_context_;
-  Sweep* sweep_;
+  SweepContext sweep_context_;
+  Sweep sweep_;
 
 };
 

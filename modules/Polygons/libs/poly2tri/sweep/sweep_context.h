@@ -48,139 +48,132 @@ struct Node;
 struct Edge;
 class AdvancingFront;
 
-class SweepContext {
+class SweepContext 
+{
 public:
+	SweepContext(std::vector<Point*> polyline);
+	~SweepContext();
 
-/// Constructor
-SweepContext(std::vector<Point*> polyline);
-/// Destructor
-~SweepContext();
+	void set_head(Point* p1);
+	Point* head();
 
-void set_head(Point* p1);
+	void set_tail(Point* p1);
+	Point* tail();
 
-Point* head();
+	int point_count();
 
-void set_tail(Point* p1);
+	Node& LocateNode(Point& point);
 
-Point* tail();
+	void CreateAdvancingFront(std::vector<Node*> nodes);
 
-int point_count();
+	/// Try to map a node to all sides of this triangle that don't have a neighbor
+	void MapTriangleToNodes(Triangle& t);
 
-Node& LocateNode(Point& point);
+	void AddToMap(Triangle* triangle);
 
-void RemoveNode(Node* node);
+	Point* GetPoint(const int& index);
+	const std::vector<Point*>& GetPoints();
 
-void CreateAdvancingFront(std::vector<Node*> nodes);
+	void RemoveFromMap(Triangle* triangle);
 
-/// Try to map a node to all sides of this triangle that don't have a neighbor
-void MapTriangleToNodes(Triangle& t);
+	void AddHole(const std::vector<Point*>& polyline);
+	void AddPoint(Point* point);
 
-void AddToMap(Triangle* triangle);
+	AdvancingFront* front();
 
-Point* GetPoint(const int& index);
+	void MeshClean(Triangle& triangle);
 
-Point* GetPoints();
+	const std::vector<Triangle*>& GetTriangles();
+	const std::list<Triangle*>& GetMap();
 
-void RemoveFromMap(Triangle* triangle);
+	std::vector<Edge*> edge_list;
 
-void AddHole(std::vector<Point*> polyline);
+	struct Basin 
+	{
+		Node* left_node = nullptr;
+		Node* bottom_node = nullptr;
+		Node* right_node = nullptr;
+		double width = 0.0;
+		bool left_highest = false;
 
-void AddPoint(Point* point);
+		void Clear()
+		{
+			left_node = NULL;
+			bottom_node = NULL;
+			right_node = NULL;
+			width = 0.0;
+			left_highest = false;
+		}
+	};
 
-AdvancingFront* front();
+	struct EdgeEvent
+	{
+		Edge* constrained_edge = nullptr;
+		bool right = false;
+	};
 
-void MeshClean(Triangle& triangle);
-
-std::vector<Triangle*> GetTriangles();
-std::list<Triangle*> GetMap();
-
-std::vector<Edge*> edge_list;
-
-struct Basin {
-  Node* left_node;
-  Node* bottom_node;
-  Node* right_node;
-  double width;
-  bool left_highest;
-
-  Basin() : left_node(NULL), bottom_node(NULL), right_node(NULL), width(0.0), left_highest(false)
-  {
-  }
-
-  void Clear()
-  {
-    left_node = NULL;
-    bottom_node = NULL;
-    right_node = NULL;
-    width = 0.0;
-    left_highest = false;
-  }
-};
-
-struct EdgeEvent {
-  Edge* constrained_edge;
-  bool right;
-
-  EdgeEvent() : constrained_edge(NULL), right(false)
-  {
-  }
-};
-
-Basin basin;
-EdgeEvent edge_event;
+	Basin basin;
+	EdgeEvent edge_event;
 
 private:
+	friend class Sweep;
 
-friend class Sweep;
+	std::vector<Triangle*> triangles_;
+	std::list<Triangle*> map_;
+	std::vector<Point*> points_;
 
-std::vector<Triangle*> triangles_;
-std::list<Triangle*> map_;
-std::vector<Point*> points_;
+	// Advancing front
+	AdvancingFront* front_;
+	// head point used with advancing front
+	Point* head_;
+	// tail point used with advancing front
+	Point* tail_;
 
-// Advancing front
-AdvancingFront* front_;
-// head point used with advancing front
-Point* head_;
-// tail point used with advancing front
-Point* tail_;
+	Node *af_head_, *af_middle_, *af_tail_;
 
-Node *af_head_, *af_middle_, *af_tail_;
-
-void InitTriangulation();
-void InitEdges(std::vector<Point*> polyline);
-
+	void InitTriangulation();
+	void InitEdges(std::vector<Point*> polyline);
 };
 
 inline AdvancingFront* SweepContext::front()
-{
-  return front_;
-}
+{ return front_; }
 
 inline int SweepContext::point_count()
-{
-  return (int)points_.size();
-}
+{ return (int)points_.size(); }
 
 inline void SweepContext::set_head(Point* p1)
-{
-  head_ = p1;
-}
+{ head_ = p1; }
 
 inline Point* SweepContext::head()
-{
-  return head_;
-}
+{ return head_; }
 
 inline void SweepContext::set_tail(Point* p1)
-{
-  tail_ = p1;
-}
+{ tail_ = p1; }
 
 inline Point* SweepContext::tail()
-{
-  return tail_;
-}
+{ return tail_; }
 
-}
+inline void SweepContext::RemoveFromMap(Triangle* triangle)
+{ map_.remove(triangle); }
+
+inline void SweepContext::AddPoint(Point* point) 
+{ points_.push_back(point); }
+
+inline const std::vector<Triangle*>& SweepContext::GetTriangles()
+{ return triangles_; }
+
+inline const std::list<Triangle*>& SweepContext::GetMap()
+{ return map_; }
+
+inline void SweepContext::AddToMap(Triangle* triangle)
+{ map_.push_back(triangle); }
+
+inline Point* SweepContext::GetPoint(const int& index)
+{ return points_[index]; }
+
+inline const std::vector<Point*>& SweepContext::GetPoints()
+{ return points_; }
+
+} // namespace p2t
 
 #endif
