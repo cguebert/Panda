@@ -1,9 +1,6 @@
 #ifndef HELPER_RANDOM_H
 #define HELPER_RANDOM_H
 
-#pragma warning( push )
-#pragma warning( disable : 4521 )
-
 #include <panda/core.h>
 #include <random>
 
@@ -32,7 +29,5 @@ private:
 } // namespace helper
 
 } // namespace panda
-
-#pragma warning( pop )
 
 #endif // HELPER_RANDOM_H

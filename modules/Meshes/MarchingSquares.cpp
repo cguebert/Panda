@@ -6,8 +6,17 @@
 #include <panda/types/Mesh.h>
 #include <panda/types/Polygon.h>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4244) /* conversion from 'type1' to 'type2', possible loss of data */
+#endif
+
 #define PAR_MSQUARES_IMPLEMENTATION
 #include "par_msquares.h"
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 namespace
 {
@@ -32,10 +41,11 @@ namespace
 	float value(float x, float y, void* ptr)
 	{
 		marching_context* context = static_cast<marching_context*>(ptr);
-		int i = PAR_CLAMP(context->width * x, 0, context->width - 1);
-		int j = PAR_CLAMP(context->height * y, 0, context->height - 1);
+		int i = PAR_CLAMP(static_cast<int>(context->width * x), 0, context->width - 1);
+		int j = PAR_CLAMP(static_cast<int>(context->height * y), 0, context->height - 1);
 		auto data = &context->data[(i + j * context->width) * 4];
-		return (panda::graphics::gray(data) * panda::graphics::alpha(data)) >> 8;
+		auto val = (panda::graphics::gray(data) * panda::graphics::alpha(data)) >> 8;
+		return static_cast<float>(val);
 	}
 }
 
@@ -100,7 +110,7 @@ public:
 		auto mlist = par_msquares_function(w, h, m_cellSize.getValue(), flags, &context, isInside, value);
 
 		// Convert to panda meshes
-		float m = std::max(w, h);
+		int m = std::max(w, h);
 		int nbMeshes = par_msquares_get_count(mlist);
 		for (int i = 0; i < nbMeshes; ++i)
 		{
@@ -188,7 +198,7 @@ public:
 
 		// Convert to panda polygons
 		std::vector<Path> holes;
-		float m = std::max(w, h);
+		int m = std::max(w, h);
 		int nbMeshes = par_msquares_get_count(mlist);
 		for (int i = 0; i < nbMeshes; ++i)
 		{
