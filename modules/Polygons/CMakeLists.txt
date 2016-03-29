@@ -5,7 +5,6 @@ project(${PROJECT_NAME})
 
 set(HEADER_FILES
 	Clipperutils.h
-	libs/clip2tri/clip2tri.h
 	libs/clipper/clipper.hpp
 	libs/poly2tri/poly2tri.h
 	libs/poly2tri/common/shapes.h
@@ -27,7 +26,6 @@ set(SOURCE_FILES
 	polygonsModule.cpp
 	SimplePolygons.cpp
 	Triangulation.cpp
-	libs/clip2tri/clip2tri.cpp
 	libs/clipper/clipper.cpp
 	libs/poly2tri/common/shapes.cc
 	libs/poly2tri/sweep/advancing_front.cc

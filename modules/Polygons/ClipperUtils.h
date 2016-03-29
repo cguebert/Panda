@@ -6,7 +6,7 @@
 
 namespace panda
 {
-	const float pandaToClipperFactor = 100.f;
+	const float pandaToClipperFactor = 1000.f;
 	const float clipperToPandaFactor = 1.f / pandaToClipperFactor;
 
 	inline ClipperLib::IntPoint convert(const panda::types::Point& pt)

@@ -38,14 +38,13 @@ namespace panda
 	{
 		ClipperLib::Paths paths;
 		auto contour = pathToClipperPath(poly.contour);
-		paths.push_back(contour);
 		if (!Orientation(contour)) // We want the orientation to be CW
 			ReversePath(contour);
+		paths.push_back(contour);
 
 		for (const auto& hole : poly.holes)
 		{
 			auto path = pathToClipperPath(hole);
-
 			// The orientation of holes must be opposite that of outer polygons.
 			if (Orientation(path))
 				ReversePath(path);
