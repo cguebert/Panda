@@ -45,6 +45,9 @@ namespace panda
 		for (const auto& hole : poly.holes)
 		{
 			auto path = pathToClipperPath(hole);
+			if (path.size() < 3)
+				continue;
+
 			// The orientation of holes must be opposite that of outer polygons.
 			if (Orientation(path))
 				ReversePath(path);
