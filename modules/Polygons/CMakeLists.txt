@@ -4,6 +4,7 @@ set(PROJECT_NAME "Polygons")
 project(${PROJECT_NAME})
 
 set(HEADER_FILES
+	Clipperutils.h
 	libs/clip2tri/clip2tri.h
 	libs/clipper/clipper.hpp
 	libs/poly2tri/poly2tri.h
@@ -17,6 +18,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
 	ClipperOperations.cpp
+	ClipperUtils.cpp
 	ComposePolygon.cpp
 	ConnectSegments.cpp
 	MeshToPolygon.cpp
