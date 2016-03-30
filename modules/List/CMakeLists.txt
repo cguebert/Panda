@@ -26,6 +26,7 @@ set(SOURCE_FILES
 	ReplaceItem.cpp
 	RemoveDuplicates.cpp
 	SortList.cpp
+	Switch.cpp
 )
 
 EnablePrecompiledHeaders(SOURCE_FILES)
