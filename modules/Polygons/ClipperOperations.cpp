@@ -212,4 +212,66 @@ protected:
 int ClipperOperation_OffsetPolygonClass = RegisterObject<ClipperOperation_OffsetPolygon>("Math/Polygon/Offset polygon")
 	.setDescription("Offset (inflate or deflate) polygons");
 
+//****************************************************************************//
+
+class ClipperOperation_MinkowskiSum : public PandaObject
+{
+public:
+	PANDA_CLASS(ClipperOperation_MinkowskiSum, PandaObject)
+
+		ClipperOperation_MinkowskiSum(PandaDocument* doc)
+		: PandaObject(doc)
+		, m_output(initData("output", "Extruded polygon"))
+		, m_input(initData("input", "Input polygon"))
+		, m_path(initData("path", "Path along which to extrude the polygon"))
+	{
+		addInput(m_input);
+		addInput(m_path);
+
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		const auto& paths = m_path.getValue();
+		auto acc = m_output.getAccessor();
+		acc.clear();
+		auto& outPolys = acc.wref();
+
+		int nbPolys = input.size();
+		int nbPaths = paths.size();
+
+		if (nbPolys && nbPaths)
+		{
+			if (nbPolys > 1 && nbPaths > 1 && nbPolys != nbPaths)
+				nbPolys = nbPaths = 1;
+			int nb = std::max(nbPolys, nbPaths);
+
+			for (int i = 0; i < nb; ++i)
+			{
+				const auto& pattern = input[i % nbPolys];
+				const auto& path = paths[i % nbPaths];
+				bool closed = false;
+				if (path.points.size() > 1 && path.points.front() == path.points.back())
+					closed = true;
+				auto cPattern = pathToClipperPath(pattern);
+				auto cPath = pathToClipperPath(path);
+				ClipperLib::Paths result;
+				ClipperLib::MinkowskiSum(cPattern, cPath, result, closed);
+
+				auto polys = clipperPathsToPolys(result);
+				outPolys.insert(outPolys.end(), polys.begin(), polys.end());
+			}
+		}
+	}
+
+protected:
+	Data< std::vector<Polygon> > m_output;
+	Data< std::vector<Path> > m_input, m_path;
+};
+
+int ClipperOperation_MinkowskiSumClass = RegisterObject<ClipperOperation_MinkowskiSum>("Math/Polygon/Extrude polygon")
+	.setDescription("Extrude a polygon along a path");
+
 } // namespace Panda
