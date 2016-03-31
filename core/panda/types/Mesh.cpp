@@ -112,10 +112,10 @@ Mesh::PointsIndicesList Mesh::getPointsAroundPoints(const PointsIndicesList& lis
 		ptsSet.insert(list.begin(), list.end());
 	}
 
-	for (auto index : listID)
-		ptsSet.erase(index);
-
-	return PointsIndicesList(ptsSet.begin(), ptsSet.end());
+	PointsIndicesList sortedInput = listID, result;
+	std::sort(sortedInput.begin(), sortedInput.end());
+	std::set_difference(ptsSet.begin(), ptsSet.end(), sortedInput.begin(), sortedInput.end(), std::back_inserter(result));
+	return result;
 }
 
 Mesh::TrianglesIndicesList Mesh::getTrianglesAroundTriangle(TriangleID index, bool shareEdge)
@@ -171,10 +171,10 @@ Mesh::TrianglesIndicesList Mesh::getTrianglesAroundTriangles(const TrianglesIndi
 		trianSet.insert(list.begin(), list.end());
 	}
 
-	for(auto index : listID)
-		trianSet.erase(index);
-
-	return TrianglesIndicesList(trianSet.begin(), trianSet.end());
+	TrianglesIndicesList sortedInput = listID, result;
+	std::sort(sortedInput.begin(), sortedInput.end());
+	std::set_difference(trianSet.begin(), trianSet.end(), sortedInput.begin(), sortedInput.end(), std::back_inserter(result));
+	return result;
 }
 
 Mesh::TrianglesIndicesList Mesh::getTrianglesConnectedToTriangle(TriangleID index, bool shareEdge)

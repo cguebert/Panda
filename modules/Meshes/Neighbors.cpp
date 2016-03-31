@@ -36,9 +36,10 @@ public:
 		const std::vector<int>& polyIDs = m_triangles.getValue();
 
 		Mesh::TrianglesIndicesList inputList;
+		int nbTriangles = inMesh.nbTriangles();
 		for(auto p : polyIDs)
 		{
-			if(p != Mesh::InvalidID)
+			if(p != Mesh::InvalidID && p >= 0 && p < nbTriangles)
 				inputList.push_back(p);
 		}
 		Mesh::TrianglesIndicesList outputList = inMesh.getTrianglesAroundTriangles(inputList, m_testEdges.getValue() != 0);
@@ -55,7 +56,54 @@ protected:
 	Data< std::vector<int> > m_triangles, m_neighbors;
 };
 
-int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Find neighbors").setDescription("Find neighboring triangles to the input list");
+int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Neighbor triangles").setDescription("Find neighboring triangles to the input list");
+
+//****************************************************************************//
+
+class ModifierMesh_FindNeighborPoints : public PandaObject
+{
+public:
+	PANDA_CLASS(ModifierMesh_FindNeighborPoints, PandaObject)
+
+		ModifierMesh_FindNeighborPoints(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_mesh(initData("mesh", "Mesh in which to search"))
+		, m_points(initData("input", "Points indices to test"))
+		, m_neighbors(initData("neighbors", "Indices of the points, neighbors of the input"))
+	{
+		addInput(m_mesh);
+		addInput(m_points);
+
+		addOutput(m_neighbors);
+	}
+
+	void update()
+	{
+		Mesh inMesh = m_mesh.getValue();
+
+		const std::vector<int>& ptsIDs = m_points.getValue();
+
+		Mesh::PointsIndicesList inputList;
+		int nbPoints = inMesh.nbPoints();
+		for (auto p : ptsIDs)
+		{
+			if (p != Mesh::InvalidID && p >= 0 && p < nbPoints)
+				inputList.push_back(p);
+		}
+		Mesh::PointsIndicesList outputList = inMesh.getPointsAroundPoints(inputList);
+
+		auto output = m_neighbors.getAccessor();
+		output.clear();
+		for (auto p : outputList)
+			output.push_back(p);
+	}
+
+protected:
+	Data< Mesh > m_mesh;
+	Data< std::vector<int> > m_points, m_neighbors;
+};
+
+int ModifierMesh_FindNeighborPointsClass = RegisterObject<ModifierMesh_FindNeighborPoints>("Modifier/Mesh/Neighbor points").setDescription("Find points sharing an edge with the inputs");
 
 //****************************************************************************//
 
