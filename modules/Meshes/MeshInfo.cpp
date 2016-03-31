@@ -8,6 +8,66 @@ namespace panda {
 
 using types::Mesh;
 
+class MeshMath_PrepareTopology : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshMath_PrepareTopology, PandaObject)
+
+		MeshMath_PrepareTopology(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("input", "Mesh to analyse"))
+		, m_output(initData("output", "Prepared mesh"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& inputs = m_input.getValue();
+		auto acc = m_output.getAccessor();
+		acc.clear();
+		auto& outMeshes = acc.wref();
+
+		for (auto mesh : inputs)
+		{
+			if (!mesh.hasPoints())
+			{
+				outMeshes.push_back(mesh);
+				continue;
+			}
+
+			if (!mesh.hasEdges() && mesh.hasTriangles())
+				mesh.createEdgeList();
+			else if (mesh.hasEdges() && !mesh.hasTriangles())
+				mesh.createTriangles();
+
+			if (!mesh.hasEdgesInTriangle())
+				mesh.createEdgesInTriangleList();
+			if (!mesh.hasEdgesAroundPoint())
+				mesh.createEdgesAroundPointList();
+
+			if (!mesh.hasTrianglesAroundPoint())
+				mesh.createTrianglesAroundPointList();
+			if (!mesh.hasTrianglesAroundEdge())
+				mesh.createTrianglesAroundEdgeList();
+
+			if (!mesh.hasBorderElementsLists())
+				mesh.createElementsOnBorder();
+
+			outMeshes.push_back(std::move(mesh));
+		}
+	}
+
+protected:
+	Data<std::vector<Mesh>> m_input, m_output;
+};
+
+int MeshMath_PrepareTopologyClass = RegisterObject<MeshMath_PrepareTopology>("Math/Mesh/Prepare Topology")
+	.setDescription("Compute the topology information for the input mesh, so that it is only done once");
+
+//****************************************************************************//
+
 class MeshMath_NumberOfPrimitives : public PandaObject
 {
 public:
@@ -15,30 +75,45 @@ public:
 
 	MeshMath_NumberOfPrimitives(PandaDocument *doc)
 		: PandaObject(doc)
-		, mesh(initData("mesh", "Mesh to analyse"))
-		, nbPoints(initData("nb points", "Number of points in the mesh"))
-		, nbEdges(initData("nb edges", "Number of edges in the mesh"))
-		, nbTriangles(initData("nb triangles", "Number of triangles in the mesh"))
+		, m_mesh(initData("mesh", "Mesh to analyse"))
+		, m_nbPoints(initData("nb points", "Number of points in the mesh"))
+		, m_nbEdges(initData("nb edges", "Number of edges in the mesh"))
+		, m_nbTriangles(initData("nb triangles", "Number of triangles in the mesh"))
 	{
-		addInput(mesh);
+		addInput(m_mesh);
 
-		addOutput(nbPoints);
-		addOutput(nbEdges);
-		addOutput(nbTriangles);
+		addOutput(m_nbPoints);
+		addOutput(m_nbEdges);
+		addOutput(m_nbTriangles);
 	}
 
 	void update()
 	{
-		const Mesh& inMesh = mesh.getValue();
+		const auto& inputs = m_mesh.getValue();
 
-		nbPoints.setValue(inMesh.nbPoints());
-		nbEdges.setValue(inMesh.nbEdges());
-		nbTriangles.setValue(inMesh.nbTriangles());
+		auto accPoints = m_nbPoints.getAccessor();
+		auto accEdges = m_nbEdges.getAccessor();
+		auto accTriangles = m_nbTriangles.getAccessor();
+
+		auto& outPoints = accPoints.wref();		
+		auto& outEdges = accEdges.wref();
+		auto& outTriangles = accTriangles.wref();
+
+		outPoints.clear();
+		outEdges.clear();
+		outTriangles.clear();
+
+		for (const auto& mesh : inputs)
+		{
+			outPoints.push_back(mesh.nbPoints());
+			outEdges.push_back(mesh.nbEdges());
+			outTriangles.push_back(mesh.nbTriangles());
+		}
 	}
 
 protected:
-	Data<Mesh> mesh;
-	Data<int> nbPoints, nbEdges, nbTriangles;
+	Data<std::vector<Mesh>> m_mesh;
+	Data<std::vector<int>> m_nbPoints, m_nbEdges, m_nbTriangles;
 };
 
 int MeshMath_NumberOfPrimitivesClass = RegisterObject<MeshMath_NumberOfPrimitives>("Math/Mesh/Number of primitives")
