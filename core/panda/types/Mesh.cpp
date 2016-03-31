@@ -91,6 +91,33 @@ const std::vector<Mesh::TriangleID>& Mesh::getTrianglesOnBorder()
 	return m_trianglesOnBorder;
 }
 
+Mesh::PointsIndicesList Mesh::getPointsAroundPoint(PointID index)
+{
+	if (!hasEdgesAroundPoint())
+		createEdgesAroundPointList();
+
+	PointsIndicesList pts;
+	for (auto edgeId : m_edgesAroundPoint[index])
+		pts.push_back(getOtherPointInEdge(getEdge(edgeId), index));
+
+	return pts;
+}
+
+Mesh::PointsIndicesList Mesh::getPointsAroundPoints(const PointsIndicesList& listID)
+{
+	std::set<PointID> ptsSet;
+	for (auto index : listID)
+	{
+		const auto list = getPointsAroundPoint(index);
+		ptsSet.insert(list.begin(), list.end());
+	}
+
+	for (auto index : listID)
+		ptsSet.erase(index);
+
+	return PointsIndicesList(ptsSet.begin(), ptsSet.end());
+}
+
 Mesh::TrianglesIndicesList Mesh::getTrianglesAroundTriangle(TriangleID index, bool shareEdge)
 {
 	if(shareEdge)
@@ -132,12 +159,7 @@ Mesh::TrianglesIndicesList Mesh::getTrianglesAroundTriangle(TriangleID index, bo
 		}
 	}
 
-	TrianglesIndicesList trianList;
-	trianList.reserve((int)trianSet.size());
-	for(auto t : trianSet)
-		trianList.push_back(t);
-
-	return trianList;
+	return TrianglesIndicesList(trianSet.begin(), trianSet.end());
 }
 
 Mesh::TrianglesIndicesList Mesh::getTrianglesAroundTriangles(const TrianglesIndicesList& listID, bool shareEdge)
@@ -152,11 +174,7 @@ Mesh::TrianglesIndicesList Mesh::getTrianglesAroundTriangles(const TrianglesIndi
 	for(auto index : listID)
 		trianSet.erase(index);
 
-	TrianglesIndicesList trianList;
-	for(auto trianId : trianSet)
-		trianList.push_back(trianId);
-
-	return trianList;
+	return TrianglesIndicesList(trianSet.begin(), trianSet.end());
 }
 
 Mesh::TrianglesIndicesList Mesh::getTrianglesConnectedToTriangle(TriangleID index, bool shareEdge)

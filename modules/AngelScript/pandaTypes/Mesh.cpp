@@ -197,6 +197,11 @@ namespace panda
 		id_vector* getTrianglesOnBorder()
 		{ return createIdVector(m_mesh.getTrianglesOnBorder()); }
 
+		id_vector* getPointsAroundPoint(unsigned int index)
+		{ return createIdVector(m_mesh.getPointsAroundPoint(index)); }
+		id_vector* getPointsAroundPoints(const id_vector* listID)
+		{ return createIdVector(m_mesh.getPointsAroundPoints(listID->container)); }
+
 		id_vector* getTrianglesAroundTriangle(unsigned int index, bool shareEdge)
 		{ return createIdVector(m_mesh.getTrianglesAroundTriangle(index, shareEdge)); }
 		id_vector* getTrianglesAroundTriangles(const id_vector* listID, bool shareEdge)
@@ -439,6 +444,9 @@ namespace panda
 		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getPointsOnBorder()", asMETHOD(MeshWrapper, getPointsOnBorder), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getEdgesOnBorder()", asMETHOD(MeshWrapper, getEdgesOnBorder), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getTrianglesOnBorder()", asMETHOD(MeshWrapper, getTrianglesOnBorder), asCALL_THISCALL); assert(r >= 0);
+
+		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getPointsAroundPoint(uint)", asMETHOD(MeshWrapper, getPointsAroundPoint), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getPointsAroundPoints(const vector<uint>&)", asMETHOD(MeshWrapper, getPointsAroundPoints), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getTrianglesAroundTriangle(uint, bool)", asMETHOD(MeshWrapper, getTrianglesAroundTriangle), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Mesh", "vector<uint>@ getTrianglesAroundTriangles(const vector<uint>&, bool)", asMETHOD(MeshWrapper, getTrianglesAroundTriangles), asCALL_THISCALL); assert(r >= 0);

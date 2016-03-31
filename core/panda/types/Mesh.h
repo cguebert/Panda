@@ -86,6 +86,9 @@ public:
 	const std::vector<EdgeID>& getEdgesOnBorder();
 	const std::vector<TriangleID>& getTrianglesOnBorder();
 
+	PointsIndicesList getPointsAroundPoint(PointID index);
+	PointsIndicesList getPointsAroundPoints(const PointsIndicesList& listID);
+
 	TrianglesIndicesList getTrianglesAroundTriangle(TriangleID index, bool shareEdge);
 	TrianglesIndicesList getTrianglesAroundTriangles(const TrianglesIndicesList& listID, bool shareEdge);
 	TrianglesIndicesList getTrianglesConnectedToTriangle(TriangleID index, bool shareEdge);
