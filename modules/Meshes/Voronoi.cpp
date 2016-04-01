@@ -42,6 +42,8 @@ private:
 		: m_points(points), m_boundingBox(boundingBox)
 	{
 		m_paths.resize(m_points.size());
+
+		m_maxSide = std::max(m_boundingBox.width(), m_boundingBox.height());
 	}
 
 	void createDiagram(Diagram& vd)
@@ -58,6 +60,28 @@ private:
 	template <class PT>
 	inline Point convert(PT* v)
 	{ return Point(static_cast<float>(v->x()), static_cast<float>(v->y())); }
+
+	void clipInfiniteEdge(const Edge& edge, std::vector<Point>& points)
+	{
+		const Cell& cell1 = *edge.cell();
+		const Cell& cell2 = *edge.twin()->cell();
+
+		Point p1 = m_points[cell1.source_index()];
+		Point p2 = m_points[cell2.source_index()];
+		Point origin = (p1 + p2) / 2;
+		Point dir(p1.y - p2.y, p2.x - p1.x);
+	
+		float coef = m_maxSide / std::max(fabs(dir.x), fabs(dir.y));
+		if (edge.vertex0()) 
+			points.push_back(convert(edge.vertex0()));
+		else
+			points.push_back(origin - dir * coef);
+
+		if (edge.vertex1())
+			points.push_back(convert(edge.vertex1()));
+		else
+			points.push_back(origin + dir * coef);
+	}
 
 	void doVoronoi()
 	{
@@ -78,6 +102,8 @@ private:
 						path.points.push_back(convert(edge->vertex0()));
 						path.points.push_back(convert(edge->vertex1()));
 					}
+					else
+						clipInfiniteEdge(*edge, path.points);
 				}
 
 				edge = edge->next();
@@ -91,6 +117,7 @@ private:
 	std::vector<Point> m_points;
 	std::vector<Path> m_paths;
 	Rect m_boundingBox;
+	float m_maxSide = 0;
 };
 
 class GeneratorMesh_Voronoi : public PandaObject
