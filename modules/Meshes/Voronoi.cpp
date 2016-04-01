@@ -1,11 +1,8 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
-
-#include <panda/types/Mesh.h>
-
-#include <vector>
-using std::vector;
+#include <panda/types/Path.h>
+#include <panda/types/Rect.h>
 
 #pragma warning ( disable: 4267 )
 
@@ -15,67 +12,122 @@ using namespace boost::polygon;
 
 namespace panda {
 
-using types::Mesh;
+using types::Path;
 using types::Point;
+using types::Rect;
+
+class VoronoiHelper
+{
+public:
+	static std::vector<Path> computeVoronoi(const std::vector<Point>& points, const Rect& boundingBox)
+	{
+		VoronoiHelper helper(points, boundingBox);
+		helper.doVoronoi();
+		return helper.m_paths;
+	}
+
+private:
+	using IPoint = point_data<int>;
+	using Segment = segment_data<int>;
+	using Diagram = voronoi_diagram<double>;
+
+	using Cell = Diagram::cell_type;
+	using Edge = Diagram::edge_type;
+	using Vertex = Diagram::vertex_type;
+	using CellIterator = Diagram::const_cell_iterator;
+	using VertexIterator = Diagram::const_vertex_iterator;
+	using EdgeIterator = Diagram::const_edge_iterator;
+
+	VoronoiHelper(const std::vector<Point>& points, const Rect& boundingBox)
+		: m_points(points), m_boundingBox(boundingBox)
+	{
+		m_paths.resize(m_points.size());
+	}
+
+	void createDiagram(Diagram& vd)
+	{
+		std::vector<IPoint> points;
+		for (Point p : m_points)
+			points.push_back(IPoint(static_cast<int>(p.x), static_cast<int>(p.y)));
+
+		std::vector<Segment> segments;
+
+		construct_voronoi(points.begin(), points.end(), segments.begin(), segments.end(), &vd);
+	}
+
+	template <class PT>
+	inline Point convert(PT* v)
+	{ return Point(static_cast<float>(v->x()), static_cast<float>(v->y())); }
+
+	void doVoronoi()
+	{
+		Diagram vd;
+		createDiagram(vd);
+
+		for (const auto& cell : vd.cells())
+		{
+			const auto firstEdge = cell.incident_edge();
+			auto edge = firstEdge;
+			Path path;
+
+			do {
+				if (edge->is_primary() && edge->is_linear())
+				{
+					if (edge->is_finite())
+					{
+						path.points.push_back(convert(edge->vertex0()));
+						path.points.push_back(convert(edge->vertex1()));
+					}
+				}
+
+				edge = edge->next();
+			} while (edge != firstEdge);
+
+			if (!path.points.empty())
+				m_paths[cell.source_index()] = std::move(path);
+		}
+	}
+
+	std::vector<Point> m_points;
+	std::vector<Path> m_paths;
+	Rect m_boundingBox;
+};
 
 class GeneratorMesh_Voronoi : public PandaObject
 {
 public:
 	PANDA_CLASS(GeneratorMesh_Voronoi, PandaObject)
 
-	typedef point_data<int> IPoint;
-	typedef segment_data<int> Segment;
-	typedef voronoi_diagram<double> Diagram;
-
-	typedef Diagram::cell_type Cell;
-	typedef Diagram::edge_type Edge;
-	typedef Diagram::vertex_type Vertex;
-	typedef Diagram::const_cell_iterator CellIterator;
-	typedef Diagram::const_vertex_iterator VertexIterator;
-	typedef Diagram::const_edge_iterator EdgeIterator;
-
 	GeneratorMesh_Voronoi(PandaDocument *doc)
 		: PandaObject(doc)
-		, sites(initData("sites", "Sites of the Voronoi tessellation"))
-		, mesh(initData("mesh", "Mesh created from the Voronoi tessellation"))
+		, m_sites(initData("sites", "Sites of the Voronoi tessellation"))
+		, m_boundingBox(initData("bounding box", "The polygon will be clipped to this rectangle. If null, will use the render area."))
+		, m_paths(initData("polygons", "Polygons created from the Voronoi tessellation"))
 	{
-		addInput(sites);
-
-		addOutput(mesh);
+		addInput(m_sites);
+		addInput(m_boundingBox);
+		addOutput(m_paths);
 	}
 
 	void update()
 	{
-		const std::vector<Point>& pts = sites.getValue();
-		auto outMesh = mesh.getAccessor();
-
-		outMesh->clear();
-
-		vector<IPoint> points;
-		for(Point p : pts)
-			points.push_back(IPoint(static_cast<int>(p.x), static_cast<int>(p.y)));
-
-		vector<Segment> segments;
-
-		Diagram vd;
-		construct_voronoi(points.begin(), points.end(), segments.begin(), segments.end(), &vd);
-
-		for(VertexIterator it = vd.vertices().begin(); it != vd.vertices().end(); ++it)
-			outMesh->addPoint(Point(static_cast<float>(it->x()), static_cast<float>(it->y())));
-
-		const Vertex* firstVertex = &vd.vertices().front();
-		for(EdgeIterator it = vd.edges().begin(); it != vd.edges().end(); ++it)
+		
+		auto boundingBox = m_boundingBox.getValue();
+		if (boundingBox.empty())
 		{
-			if(!it->is_primary() || !it->is_linear() || !it->is_finite())
-				continue;
-
-			outMesh->addEdge(it->vertex0() - firstVertex, it->vertex1() - firstVertex);
+			auto size = parentDocument()->getRenderSize();
+			boundingBox.set(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
 		}
+
+		const std::vector<Point>& pts = m_sites.getValue();
+		auto acc = m_paths.getAccessor();
+		acc.wref() = VoronoiHelper::computeVoronoi(pts, boundingBox);
 	}
 
 protected:
-	Data< std::vector<Point> > sites;
-	Data<Mesh> mesh;
+	Data< std::vector<Point> > m_sites;
+	Data< Rect > m_boundingBox;
+	Data< std::vector<Path> > m_paths;
 };
 
 int GeneratorMesh_VoronoiClass = RegisterObject<GeneratorMesh_Voronoi>("Generator/Mesh/Voronoi")
