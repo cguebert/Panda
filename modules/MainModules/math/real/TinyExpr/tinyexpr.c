@@ -234,7 +234,7 @@ static te_expr *base(state *s) {
         default:
             ret = new_expr(0, 0);
             s->type = TOK_ERROR;
-            ret->value = HUGE_VAL;
+            ret->value = NAN;
             break;
     }
 
@@ -382,7 +382,7 @@ double te_interp(const char *expression, int *error) {
         ret = te_eval(n);
         te_free(n);
     } else {
-        ret = HUGE_VAL;
+        ret = NAN;
     }
     return ret;
 }
