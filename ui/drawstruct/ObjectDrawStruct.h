@@ -102,7 +102,7 @@ class BaseObjectDrawCreator
 public:
 	virtual ~BaseObjectDrawCreator() {}
 	virtual const panda::BaseClass* getClass() const = 0;
-	virtual ObjectDrawStruct* create(GraphView* view, panda::PandaObject* obj) const = 0;
+	virtual std::shared_ptr<ObjectDrawStruct> create(GraphView* view, panda::PandaObject* obj) const = 0;
 };
 
 template<class O, class D>
@@ -113,15 +113,11 @@ public:
 		: theClass(O::GetClass())
 	{ }
 
-	virtual const panda::BaseClass* getClass() const
-	{
-		return theClass;
-	}
+	const panda::BaseClass* getClass() const override
+	{ return theClass; }
 
-	virtual ObjectDrawStruct* create(GraphView* view, panda::PandaObject* obj) const
-	{
-		return new D(view, dynamic_cast<O*>(obj));
-	}
+	std::shared_ptr<ObjectDrawStruct> create(GraphView* view, panda::PandaObject* obj) const override
+	{ return std::make_shared<D>(view, dynamic_cast<O*>(obj)); }
 
 protected:
 	const panda::BaseClass* theClass;
@@ -131,7 +127,7 @@ class ObjectDrawStructFactory
 {
 public:
 	static ObjectDrawStructFactory* getInstance();
-	ObjectDrawStruct* createDrawStruct(GraphView *view, panda::PandaObject *obj);
+	std::shared_ptr<ObjectDrawStruct> createDrawStruct(GraphView *view, panda::PandaObject *obj);
 
 protected:
 	void addCreator(BaseObjectDrawCreator* creator);

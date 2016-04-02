@@ -959,10 +959,7 @@ void GraphView::addedObject(panda::PandaObject* object)
 	// Creating a DrawStruct depending on the class of the object been added
 	// When undoing a delete command, the DrawStruct has already been reinserted
 	if(!m_objectDrawStructs.count(object))
-	{
-		ObjectDrawStruct* ods = ObjectDrawStructFactory::getInstance()->createDrawStruct(this, object);
-		m_objectDrawStructs.emplace(object, std::shared_ptr<ObjectDrawStruct>(ods));
-	}
+		m_objectDrawStructs.emplace(object, ObjectDrawStructFactory::getInstance()->createDrawStruct(this, object));
 
 	update();
 	updateViewRect();

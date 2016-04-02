@@ -88,13 +88,13 @@ QRectF ObjectDrawStruct::getTextArea()
 
 panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* center)
 {
-	for(std::vector<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
+	for(const auto& iter : m_datas)
 	{
-		if(iter->first.contains(pt))
+		if(iter.first.contains(pt))
 		{
 			if(center)
-				*center = iter->first.center();
-			return iter->second;
+				*center = iter.first.center();
+			return iter.second;
 		}
 	}
 
@@ -103,11 +103,11 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* cent
 
 bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect)
 {
-	for(std::vector<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
+	for(const auto& iter : m_datas)
 	{
-		if(iter->second == data)
+		if(iter.second == data)
 		{
-			rect = iter->first;
+			rect = iter.first;
 			return true;
 		}
 	}
@@ -154,7 +154,7 @@ void ObjectDrawStruct::drawDatas(QPainter* painter)
 {
 	painter->setPen(QPen(m_parentView->palette().text().color()));
 	const panda::BaseData* clickedData = m_parentView->getClickedData();
-	for(RectDataPair dataPair : m_datas)
+	for(const auto& dataPair : m_datas)
 	{
 		if (clickedData
 			&& clickedData != dataPair.second
@@ -232,7 +232,7 @@ ObjectDrawStructFactory* ObjectDrawStructFactory::getInstance()
 	return &factory;
 }
 
-ObjectDrawStruct* ObjectDrawStructFactory::createDrawStruct(GraphView* view, panda::PandaObject* obj)
+std::shared_ptr<ObjectDrawStruct> ObjectDrawStructFactory::createDrawStruct(GraphView* view, panda::PandaObject* obj)
 {
 	for(const auto& creator : creators)
 	{
@@ -240,7 +240,7 @@ ObjectDrawStruct* ObjectDrawStructFactory::createDrawStruct(GraphView* view, pan
 			return creator->create(view, obj);
 	}
 
-	return new ObjectDrawStruct(view, obj);
+	return std::make_shared<ObjectDrawStruct>(view, obj);
 }
 
 void ObjectDrawStructFactory::addCreator(BaseObjectDrawCreator* creator)
