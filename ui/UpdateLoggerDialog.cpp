@@ -7,7 +7,7 @@
 UpdateLoggerDialog* UpdateLoggerDialog::m_instance = nullptr;
 
 UpdateLoggerDialog::UpdateLoggerDialog(QWidget* parent) :
-    QDialog(parent)
+	QDialog(parent)
 {
 	m_view = new UpdateLoggerView(this);
 
@@ -15,24 +15,24 @@ UpdateLoggerDialog::UpdateLoggerDialog(QWidget* parent) :
 	QPushButton* nextEventButton = new QPushButton("Next");
 	QPushButton* resetZoomButton = new QPushButton("Reset zoom");
 	QPushButton* updateButton = new QPushButton("Update");
-    QPushButton* okButton = new QPushButton("Ok");
-    QHBoxLayout* buttonsLayout = new QHBoxLayout;
+	QPushButton* okButton = new QPushButton("Ok");
+	QHBoxLayout* buttonsLayout = new QHBoxLayout;
 
 	buttonsLayout->addWidget(prevEventButton);
 	buttonsLayout->addWidget(nextEventButton);
-    buttonsLayout->addStretch();
+	buttonsLayout->addStretch();
 	buttonsLayout->addWidget(resetZoomButton);
 	buttonsLayout->addWidget(updateButton);
-    buttonsLayout->addWidget(okButton);
+	buttonsLayout->addWidget(okButton);
 
 	m_label = new QLabel(this);
 
-    QVBoxLayout* mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(m_view);
+	QVBoxLayout* mainLayout = new QVBoxLayout;
+	mainLayout->addWidget(m_view);
 	mainLayout->addWidget(m_label);
-    mainLayout->addItem(buttonsLayout);
+	mainLayout->addItem(buttonsLayout);
 
-    setLayout(mainLayout);
+	setLayout(mainLayout);
 
 	connect(m_view, SIGNAL(setEventText(QString)), this, SLOT(setEventText(QString)));
 	connect(prevEventButton, SIGNAL(clicked()), m_view, SLOT(prevEvent()));
@@ -43,7 +43,7 @@ UpdateLoggerDialog::UpdateLoggerDialog(QWidget* parent) :
 
 	connect(m_view, SIGNAL(changedSelectedEvent()), this, SIGNAL(changedSelectedEvent()));
 
-    m_view->setFocus();
+	m_view->setFocus();
 }
 
 void UpdateLoggerDialog::updateEvents()
@@ -72,7 +72,7 @@ const panda::helper::EventData* UpdateLoggerDialog::getSelectedEvent() const
 	return m_view->getSelectedEvent();
 }
 
-const panda::helper::UpdateLogger::NodeStates UpdateLoggerDialog::getNodeStates() const
+const panda::helper::UpdateLogger::NodeStates& UpdateLoggerDialog::getNodeStates() const
 {
 	return m_view->getNodeStates();
 }
@@ -80,22 +80,22 @@ const panda::helper::UpdateLogger::NodeStates UpdateLoggerDialog::getNodeStates(
 //****************************************************************************//
 
 UpdateLoggerView::UpdateLoggerView(QWidget* parent)
-    : QWidget(parent)
-    , m_valid(false)
-    , m_zoomLevel(0)
-    , m_zoomFactor(1.0)
-    , m_viewDelta(0.0)
+	: QWidget(parent)
+	, m_valid(false)
+	, m_zoomLevel(0)
+	, m_zoomFactor(1.0)
+	, m_viewDelta(0.0)
 	, m_maxEventLevel(1)
 	, m_requiredHeight(0)
 	, m_selectedTime(0)
 	, m_selectedIndex(-1)
 {
-    setAutoFillBackground(true);
-    setBackgroundRole(QPalette::Light);
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setFocusPolicy(Qt::StrongFocus);
+	setAutoFillBackground(true);
+	setBackgroundRole(QPalette::Light);
+	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	setFocusPolicy(Qt::StrongFocus);
 
-    setMouseTracking(true);
+	setMouseTracking(true);
 
 	m_tps = 1000.0 / panda::helper::UpdateLogger::getTicksPerSec();
 }
@@ -154,16 +154,16 @@ void UpdateLoggerView::updateEvents()
 
 QSize UpdateLoggerView::minimumSizeHint() const
 {
-    qreal y = view_margin * 2
+	qreal y = view_margin * 2
 		+ (m_requiredHeight + 1) * update_height
 		+ m_requiredHeight * event_margin;
-    y = qMax(static_cast<qreal>(100.0), y);
-    return QSize(300, y);
+	y = qMax(static_cast<qreal>(100.0), y);
+	return QSize(300, y);
 }
 
 QSize UpdateLoggerView::sizeHint() const
 {
-    return QSize(600, 100);
+	return QSize(600, 100);
 }
 
 const panda::helper::EventData* UpdateLoggerView::getSelectedEvent() const
@@ -172,11 +172,6 @@ const panda::helper::EventData* UpdateLoggerView::getSelectedEvent() const
 		return nullptr;
 
 	return &m_events[m_sortedEvents[m_selectedIndex]];
-}
-
-const panda::helper::UpdateLogger::NodeStates UpdateLoggerView::getNodeStates() const
-{
-	return m_currentStates;
 }
 
 void UpdateLoggerView::resetZoom()
@@ -189,16 +184,16 @@ void UpdateLoggerView::resetZoom()
 
 void UpdateLoggerView::paintEvent(QPaintEvent*)
 {
-    if(!m_valid)
-        return;
+	if(!m_valid)
+		return;
 
 	int width = contentsRect().width();
 
-    QStylePainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::TextAntialiasing, true);
+	QStylePainter painter(this);
+	painter.setRenderHint(QPainter::Antialiasing, true);
+	painter.setRenderHint(QPainter::TextAntialiasing, true);
 
-    m_eventRects.clear();
+	m_eventRects.clear();
 
 	for(int i=m_events.size()-1; i>=0; --i)
 	{
@@ -305,13 +300,13 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 
 void UpdateLoggerView::resizeEvent(QResizeEvent*)
 {
-    update();
+	update();
 }
 
 void UpdateLoggerView::mousePressEvent(QMouseEvent* event)
 {
-    if(event->button() == Qt::LeftButton)
-    {
+	if(event->button() == Qt::LeftButton)
+	{
 		if (event->modifiers() == Qt::ControlModifier)
 		{
 			m_previousMousePos = event->pos();
@@ -322,7 +317,7 @@ void UpdateLoggerView::mousePressEvent(QMouseEvent* event)
 			m_previousMousePos = m_currentMousePos = event->pos();
 			m_mouseAction = Action_MovingStart;
 		}
-    }
+	}
 }
 
 QString getReadableTime(double time)
@@ -353,23 +348,23 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 		}
 	}
 	else if(m_mouseAction == Action_MovingView)
-    {
+	{
 		QPointF delta = (event->pos() - m_previousMousePos) / m_zoomFactor;
-        m_viewDelta += delta.x();
+		m_viewDelta += delta.x();
 		m_previousMousePos = event->pos();
-        update();
-    }
+		update();
+	}
 	else if (m_mouseAction == Action_Zooming)
 	{
 		m_currentMousePos = event->pos();
 		update();
 	}
-    else if(m_mouseAction == Action_None)
-    {
-        QRectF rect;
+	else if(m_mouseAction == Action_None)
+	{
+		QRectF rect;
 		const EventData* pEvent = nullptr;
 		if(getEventAtPos(event->localPos(), rect, pEvent))
-        {
+		{
 			qreal start = (pEvent->m_startTime - m_minTime) * m_tps;
 			qreal end = (pEvent->m_endTime - m_minTime) * m_tps;
 			QString times = QString("\n%1ms - %2ms\n(%3 / %4)")
@@ -381,7 +376,7 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 			if(!display.isEmpty())
 				QToolTip::showText(event->globalPos(), display + times, this, rect.toRect());
 		}
-    }
+	}
 }
 
 void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
@@ -431,25 +426,25 @@ void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
 		}
 	}
 
-    m_mouseAction = Action_None;
+	m_mouseAction = Action_None;
 }
 
 void UpdateLoggerView::wheelEvent(QWheelEvent* event)
 {
 	int ticks = event->delta() / 15;
 	int newZoom = qMax(0, m_zoomLevel+ticks);
-    if(m_zoomLevel != newZoom)
-    {
-        qreal mouseX = event->pos().x();
-        qreal oldX = mouseX / m_zoomFactor;
-        m_zoomLevel = newZoom;
+	if(m_zoomLevel != newZoom)
+	{
+		qreal mouseX = event->pos().x();
+		qreal oldX = mouseX / m_zoomFactor;
+		m_zoomLevel = newZoom;
 		m_zoomFactor = pow( 1.2, m_zoomLevel / 10.0 );  // Note: if changing the value 1.2, also change it in the function above
-        if(!m_zoomLevel)
-            m_viewDelta = 0.0;
-        else
-            m_viewDelta += mouseX / m_zoomFactor - oldX;
-        update();
-    }
+		if(!m_zoomLevel)
+			m_viewDelta = 0.0;
+		else
+			m_viewDelta += mouseX / m_zoomFactor - oldX;
+		update();
+	}
 }
 
 void UpdateLoggerView::keyPressEvent(QKeyEvent* event)
@@ -474,7 +469,7 @@ QString UpdateLoggerView::eventDescription(const EventData& event)
 
 qreal UpdateLoggerView::posOfTime(unsigned long long time)
 {
-    qreal w = width() - 2 * view_margin;
+	qreal w = width() - 2 * view_margin;
 	qreal a = time - m_minTime;
 	qreal b = m_maxTime - m_minTime;
 	return view_margin + (m_viewDelta + a / b * w) * m_zoomFactor;
@@ -493,7 +488,7 @@ QColor UpdateLoggerView::getColorForStatus(unsigned int index, qreal s, qreal v)
 {
 	qreal h = index * 0.13; // randomly chosen so that we have a palette of possible colors
 	h = h - floor(h);
-    return QColor::fromHsvF(h, s, v);
+	return QColor::fromHsvF(h, s, v);
 }
 
 bool UpdateLoggerView::getEventAtPos(QPointF pos, QRectF& rect, const EventData*& pEvent)
@@ -501,14 +496,14 @@ bool UpdateLoggerView::getEventAtPos(QPointF pos, QRectF& rect, const EventData*
 	for(int i=m_eventRects.size()-1; i>=0; --i)
 	{
 		const auto& er = m_eventRects[i];
-        if(er.rect.contains(pos))
-        {
+		if(er.rect.contains(pos))
+		{
 			pEvent = er.event;
-            rect = er.rect;
-            return true;
-        }
-    }
-    return false;
+			rect = er.rect;
+			return true;
+		}
+	}
+	return false;
 }
 
 void UpdateLoggerView::sortEvents()
