@@ -35,7 +35,6 @@ public slots:
 
 private:
 	void queuePopulate(panda::PandaObject*);
-	void onDirtyObject(panda::PandaObject*);
 	void onModifiedObject(panda::PandaObject*);
 
 	QStackedLayout* m_stackedLayout;

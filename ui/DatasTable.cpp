@@ -65,7 +65,6 @@ DatasTable::DatasTable(GraphView* view, QWidget* parent)
 	queuePopulate(nullptr);
 
 	m_observer.get(view->selection().selectedObject).connect<DatasTable, &DatasTable::queuePopulate>(this);
-	m_observer.get(m_document->getSignals().dirtyObject).connect<DatasTable, &DatasTable::onDirtyObject>(this);
 	m_observer.get(m_document->getSignals().modifiedObject).connect<DatasTable, &DatasTable::onModifiedObject>(this);
 	m_observer.get(m_document->getSignals().timeChanged).connect<DatasTable, &DatasTable::updateCurrentObject>(this);
 }
@@ -171,14 +170,6 @@ void DatasTable::queuePopulate(panda::PandaObject* object)
 	//  the bug was that 2 objects (in different documents) were given the same pointer
 	if(m_currentObject && !object)
 		m_currentObject = nullptr;
-}
-
-void DatasTable::onDirtyObject(panda::PandaObject* object)
-{
-	if (m_currentObject == object)
-	{
-		queuePopulate(object);
-	}
 }
 
 void DatasTable::onModifiedObject(panda::PandaObject* object)
