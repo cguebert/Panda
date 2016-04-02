@@ -89,6 +89,8 @@ public:
 
 	void setDirtyValue(const DataNode* caller)
 	{
+		if (isDestructing())
+			return;
 		if(caller == &m_condition)
 			return;
 
