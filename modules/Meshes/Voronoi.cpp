@@ -191,6 +191,8 @@ private:
 	bool m_mustClipPolygon = false;
 };
 
+//****************************************************************************//
+
 class GeneratorMesh_Voronoi : public PandaObject
 {
 public:
@@ -209,7 +211,6 @@ public:
 
 	void update()
 	{
-		
 		auto boundingBox = m_boundingBox.getValue();
 		if (boundingBox.empty())
 		{
@@ -230,8 +231,5 @@ protected:
 
 int GeneratorMesh_VoronoiClass = RegisterObject<GeneratorMesh_Voronoi>("Generator/Mesh/Voronoi")
 		.setDescription("Create a mesh from a Voronoi tessellation");
-
-//****************************************************************************//
-
 
 } // namespace Panda

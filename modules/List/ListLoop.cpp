@@ -100,12 +100,15 @@ public:
 
 	void reset() override
 	{
-		PandaObject::setDirtyValue(this);
+		m_copyInit = true;
+		GenericObject::doUpdate(false);
+		m_copyInit = false;
+
 		prevControl = FLT_MAX;
 	}
 
 protected:
-	bool m_copyInit;
+	bool m_copyInit = false;
 	float prevControl;
 	Data<float> m_control;
 	Data<int> m_condition, m_nbIterations, m_iteration;
