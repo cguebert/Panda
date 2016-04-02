@@ -3,7 +3,16 @@
 
 #include <panda/core.h>
 
+#ifdef _MSC_VER
+#define _ENABLE_ATOMIC_ALIGNMENT_FIX
+#endif
+
 #include <atomic>
+
+#ifdef _MSC_VER
+#undef _ENABLE_ATOMIC_ALIGNMENT_FIX
+#endif
+
 #include <functional>
 #include <memory>
 #include <map>
