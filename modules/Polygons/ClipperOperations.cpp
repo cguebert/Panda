@@ -151,7 +151,9 @@ public:
 		const auto& input = m_input.getValue();
 		auto acc = m_output.getAccessor();
 		acc.clear();
-		auto& outPolys = acc.wref();
+
+		if (input.empty())
+			return;
 
 		auto dist = m_distance.getValue() * pandaToClipperFactor;
 		float arcTolerance = m_arcTolerance.getValue() * pandaToClipperFactor;
@@ -175,6 +177,7 @@ public:
 		case 4: endType = ClipperLib::etOpenRound; break;
 		}
 
+		auto& outPolys = acc.wref();
 		if (m_together.getValue() != 0)
 		{
 			ClipperLib::ClipperOffset co(2.0, arcTolerance);
