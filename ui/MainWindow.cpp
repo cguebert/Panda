@@ -66,6 +66,7 @@ MainWindow::MainWindow()
 	// Go back to the graph view asap
 	QTimer::singleShot(0, [this](){
 		m_tabWidget->setCurrentWidget(m_graphViewContainer);
+		m_graphView->setFocus();
 	});
 
 	// Set the application directories
@@ -1336,7 +1337,7 @@ void MainWindow::convertSavedDocuments()
 	QString dirPath = QFileDialog::getExistingDirectory(this, tr("Directory containing documents to convert"));
 	QDir dir(dirPath);
 	QStringList filters;
-    filters << "*.pnd";
+	filters << "*.pnd";
 	auto entries = dir.entryInfoList(filters, QDir::Files);
 
 	int nb = 0;
