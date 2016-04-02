@@ -43,6 +43,7 @@ private:
 	panda::PandaDocument* m_document;
 	panda::PandaObject *m_currentObject = nullptr, *m_nextObject = nullptr;
 	bool m_waitingPopulate = false;
+	bool m_objectIsModified = false;
 	panda::msg::Observer m_observer;
 
 	using DataWidgetPtr = std::shared_ptr<BaseDataWidget>;

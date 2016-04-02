@@ -78,7 +78,7 @@ void DatasTable::populateTable()
 	if (!m_nextObject)
 		m_nextObject = m_document;
 
-	if(m_currentObject == m_nextObject)
+	if(!m_objectIsModified && m_currentObject == m_nextObject)
 	{	// Only update widgets
 		m_currentObject->updateIfDirty(); // Force the update of the object, as we want the new values
 		// TODO : verify if there are no new datas
@@ -89,6 +89,7 @@ void DatasTable::populateTable()
 
 	m_currentObject = m_nextObject;
 	m_objectWatcher->connect(m_currentObject);
+	m_objectIsModified = false;
 
 	QScrollArea* scrollArea = new QScrollArea(this);
 	scrollArea->setFrameShape(QFrame::NoFrame);
@@ -166,9 +167,6 @@ void DatasTable::queuePopulate(panda::PandaObject* object)
 
 	m_nextObject = object;
 
-	if (m_nextObject != m_currentObject)
-		m_objectWatcher->disconnect();
-
 	// Bugfix : this is the case where we deselect the object, make sure to refresh later
 	//  the bug was that 2 objects (in different documents) were given the same pointer
 	if(m_currentObject && !object)
@@ -188,7 +186,7 @@ void DatasTable::onModifiedObject(panda::PandaObject* object)
 	if(m_currentObject == object)
 	{
 		// Force the reconstruction of the table
-		m_currentObject = nullptr;
+		m_objectIsModified = true;
 		queuePopulate(object);
 	}
 }
