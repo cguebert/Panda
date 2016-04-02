@@ -39,6 +39,8 @@ public:
 	}
 
 private:
+	const float toGTLFactor = 100;
+	const float toPandaFactor = 1.f / toGTLFactor;
 	using IntPoint = gtl::point_data<int>;
 	using IntPointsList = std::vector<IntPoint>;
 	using Segment = gtl::segment_data<int>;
@@ -75,13 +77,13 @@ private:
 	{
 		IntPointsList points;
 		for (const auto p : input)
-			points.emplace_back(static_cast<int>(p.x), static_cast<int>(p.y));
+			points.emplace_back(static_cast<int>(p.x * toGTLFactor), static_cast<int>(p.y * toGTLFactor));
 		return points;
 	}
 
 	template <class PT>
 	inline Point convert(PT* v)
-	{ return Point(static_cast<float>(v->x()), static_cast<float>(v->y())); }
+	{ return Point(static_cast<float>(v->x() * toPandaFactor), static_cast<float>(v->y() * toPandaFactor)); }
 
 	void createDiagram(Diagram& vd)
 	{
