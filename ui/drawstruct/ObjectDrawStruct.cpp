@@ -182,7 +182,8 @@ void ObjectDrawStruct::drawLinks(QPainter* painter)
 		if(parent && !data->isOutput())
 		{
 			QRectF dataRect;
-			if(m_parentView->getObjectDrawStruct(parent->getOwner())->getDataRect(parent, dataRect))
+			auto ods = m_parentView->getObjectDrawStruct(parent->getOwner());
+			if(ods && ods->getDataRect(parent, dataRect))
 			{
 				QPen pen(m_parentView->palette().text().color());
 				pen.setWidth(1);

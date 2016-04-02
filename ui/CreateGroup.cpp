@@ -87,7 +87,7 @@ BaseData* duplicateData(Group* group, BaseData* data)
 bool createGroup(PandaDocument* doc, GraphView* view)
 {
 	const auto& objectsSelection = view->selection();
-	const auto& selection = objectsSelection.get();
+	const auto selection = objectsSelection.get(); // Taking a copy
 
 	if(selection.size() < 2)
 		return false;
@@ -159,8 +159,8 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	std::map<BaseData*, BaseData*> connectedInputDatas;
 
 	// To sort the created datas by the height of their parents
-	typedef QPair<BaseData*, qreal> DataHeightPair;
-	QVector<DataHeightPair> createdDatasHeights;
+	using DataHeightPair = std::pair<BaseData*, qreal>;
+	std::vector<DataHeightPair> createdDatasHeights;
 
 	// Adding the objects
 	for(auto object : selection)
@@ -191,7 +191,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 						group->addInput(*createdData);
 						undoStack.push(std::make_shared<LinkDatasCommand>(createdData, otherData));
 						connectedInputDatas.emplace(otherData, createdData);
-						createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, otherData)));
+						createdDatasHeights.emplace_back(createdData, getDataHeight(view, otherData));
 					}
 					else
 					{
@@ -230,7 +230,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 							createdData->setOutput(true);
 							group->dataSetParent(createdData, data);
 							group->addOutput(*createdData);
-							createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, data)));
+							createdDatasHeights.emplace_back(createdData, getDataHeight(view, data));
 						}
 
 						undoStack.push(std::make_shared<LinkDatasCommand>(otherData, createdData));
@@ -259,7 +259,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				createdData->setName(findAvailableDataName(group, caption, createdData));
 				group->addInput(*createdData);
 				undoStack.push(std::make_shared<LinkDatasCommand>(inputData, createdData));
-				createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, inputData)));
+				createdDatasHeights.emplace_back(createdData, getDataHeight(view, inputData));
 			}
 
 			if(userValue->hasConnectedOutput())
@@ -281,7 +281,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				createdData->setOutput(true);
 				group->dataSetParent(createdData, outputData);
 				group->addOutput(*createdData);
-				createdDatasHeights.push_back(qMakePair(createdData, getDataHeight(view, outputData)));
+				createdDatasHeights.emplace_back(createdData, getDataHeight(view, outputData));
 			}
 		}
 	}
