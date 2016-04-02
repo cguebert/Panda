@@ -417,7 +417,6 @@ void MainWindow::createActions()
 	adjustRenderSizeToViewAction->setShortcut(tr("F10"));
 	adjustRenderSizeToViewAction->setStatusTip(tr("Adjust the render size to the view"));
 	adjustRenderSizeToViewAction->setCheckable(true);
-	adjustRenderSizeToViewAction->setChecked(false);
 	connect(adjustRenderSizeToViewAction, SIGNAL(triggered()), this, SLOT(adjustRenderSizeToView()));
 	addAction(adjustRenderSizeToViewAction);
 
@@ -425,14 +424,12 @@ void MainWindow::createActions()
 	m_fullScreenAction->setShortcut(tr("F11"));
 	m_fullScreenAction->setStatusTip(tr("Put the application in full screen mode"));
 	m_fullScreenAction->setCheckable(true);
-	m_fullScreenAction->setChecked(false);
 	connect(m_fullScreenAction, &QAction::triggered, this, &MainWindow::toggleFullScreen);
 	addAction(m_fullScreenAction);
 
 	auto exitFullscreenOnFocusLossAction = new QAction(tr("Automatically exit fullscreen"), this);
 	exitFullscreenOnFocusLossAction->setStatusTip(tr("Exit the fullscreen mode if the window lose the focus"));
 	exitFullscreenOnFocusLossAction->setCheckable(true);
-	exitFullscreenOnFocusLossAction->setChecked(true);
 	connect(exitFullscreenOnFocusLossAction, &QAction::triggered, [this]() { m_exitFullscreenOnFocusLoss = !m_exitFullscreenOnFocusLoss; });
 
 	auto aboutAction = new QAction(tr("&About"), this);
@@ -479,6 +476,11 @@ void MainWindow::createActions()
 	auto showLoggerDialogAction = new QAction(tr("Show &log"), this);
 	showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
 	connect(showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
+
+	auto showDirtyInfoAction = new QAction(tr("Debug dirty state"), this);
+	showDirtyInfoAction->setCheckable(true);
+	showDirtyInfoAction->setStatusTip(tr("Show the dirty status of each object and data"));
+	connect(showDirtyInfoAction, &QAction::triggered, m_graphView, &GraphView::debugDirtyState);
 
 	auto showObjectsAndTypesAction = new QAction(tr("List types and objects"), this);
 	showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
@@ -673,6 +675,7 @@ void MainWindow::createActions()
 #ifdef PANDA_LOG_EVENTS
 	m_viewMenu->addSeparator();
 	m_viewMenu->addAction(showLoggerDialogAction);
+	m_viewMenu->addAction(showDirtyInfoAction);
 #endif
 
 	menuBar()->addSeparator();

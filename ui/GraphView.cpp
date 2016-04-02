@@ -266,6 +266,9 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 		painter.drawLine(m_previousMousePos, m_currentMousePos);
 	}
 
+	if (m_debugDirtyState)
+		paintDirtyState(&painter);
+
 #ifdef PANDA_LOG_EVENTS
 	paintLogDebug(&painter);
 #endif
@@ -326,6 +329,32 @@ void GraphView::paintLogDebug(QPainter* painter)
 	}
 }
 #endif
+
+void GraphView::paintDirtyState(QPainter* painter)
+{
+	for(auto& object : m_pandaDocument->getObjects())
+	{
+		auto ods = m_objectDrawStructs[object.get()];
+		if(object->isDirty())
+			painter->setBrush(QColor(255,0,0,64));
+		else
+			painter->setBrush(QColor(0,255,0,64));
+		painter->drawRect(ods->getObjectArea());
+
+		for(panda::BaseData* data : object->getDatas())
+		{
+			QRectF area;
+			if(ods->getDataRect(data, area))
+			{
+				if(data->isDirty())
+					painter->setBrush(QColor(255,0,0,128));
+				else
+					painter->setBrush(QColor(0,255,0,128));
+				painter->drawRect(area);
+			}
+		}
+	}
+}
 
 void GraphView::resizeEvent(QResizeEvent*)
 {

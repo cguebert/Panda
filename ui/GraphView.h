@@ -96,6 +96,7 @@ protected:
 #ifdef PANDA_LOG_EVENTS
 	void paintLogDebug(QPainter* painter);
 #endif
+	void paintDirtyState(QPainter* painter);
 
 	panda::PandaObject* getObjectAtPos(const QPointF& pt);
 	void moveView(const QPointF& delta);
@@ -140,6 +141,7 @@ public slots:
 	void loadingFinished();
 	void changedDock(panda::DockableObject* dockable);
 	void showChooseWidgetDialog();
+	void debugDirtyState(bool show = true);
 
 private:
 	panda::PandaDocument* m_pandaDocument;
@@ -178,9 +180,14 @@ private:
 	panda::msg::Observer m_observer; /// Used to connect to signals (and disconnect automatically on destruction)
 
 	std::unique_ptr<ObjectsSelection> m_objectsSelection; /// Contains the selected objects and the corresponding signals
+
+	bool m_debugDirtyState = false;
 };
 
 inline ObjectsSelection& GraphView::selection() const
 { return *m_objectsSelection; }
+
+inline void GraphView::debugDirtyState(bool show)
+{ m_debugDirtyState = show; }
 
 #endif
