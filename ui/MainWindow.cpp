@@ -2,18 +2,19 @@
 
 #include <ui/CreateGroup.h>
 #include <ui/DatasTable.h>
-#include <ui/DetachableTabWidget.h>
 #include <ui/GroupsManager.h>
 #include <ui/ImageViewport.h>
 #include <ui/OpenGLRenderView.h>
 #include <ui/LayersTab.h>
 #include <ui/ListObjectsAndTypes.h>
 #include <ui/MainWindow.h>
-#include <ui/ScrollContainer.h>
 #include <ui/SimpleGUIImpl.h>
 
 #include <ui/command/AddObjectCommand.h>
 #include <ui/command/RemoveObjectCommand.h>
+
+#include <ui/custom/DetachableTabWidget.h>
+#include <ui/custom/ScrollContainer.h>
 
 #include <ui/dialog/EditGroupDialog.h>
 #include <ui/dialog/UpdateLoggerDialog.h>

@@ -7,7 +7,7 @@
 #include <memory>
 #include <set>
 
-#include <ui/ScrollContainer.h>
+#include <ui/custom/ScrollContainer.h>
 #include <panda/messaging.h>
 
 namespace panda

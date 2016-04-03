@@ -1,6 +1,6 @@
 #include <QtWidgets>
 #include <ui/ImageViewport.h>
-#include <ui/DetachableTabWidget.h>
+#include <ui/custom/DetachableTabWidget.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/SimpleGUI.h>

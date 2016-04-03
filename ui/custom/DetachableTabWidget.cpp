@@ -1,4 +1,4 @@
-#include <ui/DetachableTabWidget.h>
+#include <ui/custom/DetachableTabWidget.h>
 
 #include <QtWidgets>
 

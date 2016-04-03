@@ -13,14 +13,12 @@ set(CMAKE_AUTORCC ON)
 set(HEADER_FILES
 	CreateGroup.h
 	DatasTable.h
-	DetachableTabWidget.h
 	GroupsManager.h
 	ImageViewport.h
 	LayersTab.h
 	ListObjectsAndTypes.h
 	MainWindow.h
 	OpenGLRenderView.h
-	ScrollContainer.h
 	SimpleGUIImpl.h
 	command/AddObjectCommand.h
 	command/GroupSelectionCommand.h
@@ -28,6 +26,8 @@ set(HEADER_FILES
 	command/MoveObjectCommand.h
 	command/RemoveObjectCommand.h
 	command/SetDataValueCommand.h
+	custom/DetachableTabWidget.h
+	custom/ScrollContainer.h
 	dialog/ChooseWidgetDialog.h
 	dialog/EditGroupDialog.h
 	dialog/QuickCreateDialog.h
@@ -61,20 +61,20 @@ set(SOURCE_FILES
 	main.cpp
 	CreateGroup.cpp
 	DatasTable.cpp
-	DetachableTabWidget.cpp
 	GroupsManager.cpp
 	ImageViewport.cpp
 	LayersTab.cpp
 	ListObjectsAndTypes.cpp
 	MainWindow.cpp
 	OpenGLRenderView.cpp
-	ScrollContainer.cpp
 	SimpleGUIImpl.cpp
 	command/AddObjectCommand.cpp
 	command/GroupSelectionCommand.cpp
 	command/ModifyAnnotationCommand.cpp
 	command/MoveObjectCommand.cpp
 	command/RemoveObjectCommand.cpp
+	custom/DetachableTabWidget.cpp
+	custom/ScrollContainer.cpp
 	dialog/ChooseWidgetDialog.cpp
 	dialog/EditGroupDialog.cpp
 	dialog/QuickCreateDialog.cpp
