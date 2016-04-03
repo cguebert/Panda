@@ -54,9 +54,11 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 				}
 			}
 
-			// And then the inputs (getInputDatas gives a copy,
-			//  so no problem when some objects remove datas during this operation)
-			for(auto data : objectPtr->getInputDatas())
+			// And then the inputs
+			// We have to reverse the order as the generic objects can remove following datas when unlinking one
+			auto inputDatas = objectPtr->getInputDatas();
+			std::reverse(inputDatas.begin(), inputDatas.end());
+			for(auto data : inputDatas)
 			{
 				if(data->getParent())
 					m_document->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(data, nullptr));
