@@ -2,6 +2,7 @@
 #include <ui/widget/OpenDialogDataWidget.h>
 #include <ui/widget/ListDataWidgetDialog.h>
 #include <ui/widget/SimpleDataWidget.h>
+#include <ui/custom/qxt/QxtCheckComboBox.h>
 
 #include <panda/helper/Random.h>
 
@@ -243,6 +244,58 @@ public:
 
 //****************************************************************************//
 
+class FlagsDataWidget
+{
+protected:
+	typedef int value_type;
+	QxtCheckComboBox* comboBox;
+	int nbFlags = 0;
+
+public:
+	FlagsDataWidget() : comboBox(nullptr) {}
+
+	QWidget* createWidgets(BaseDataWidget* parent, bool readOnly)
+	{
+		comboBox = new QxtCheckComboBox(parent);
+		comboBox->setDefaultText("No selection");
+		comboBox->setDisplayMultipleSelection(false);
+		comboBox->setMultipleSelectionText("%1 selected");
+		comboBox->setEnabled(!readOnly);
+
+		QString wd = parent->getParameters();
+		QStringList list = wd.split(";", QString::SkipEmptyParts);
+		nbFlags = list.size();
+		for(auto v : list)
+			comboBox->addItem(v);
+
+		QObject::connect(comboBox, SIGNAL(checkedItemsChanged(QStringList)), parent, SLOT(setWidgetDirty()));
+		return comboBox;
+	}
+	void readFromData(const value_type& v)
+	{
+		comboBox->blockSignals(true);
+		for (int i = 0; i < nbFlags; ++i)
+			comboBox->setItemCheckState(i, (v & (1 << i)) ? Qt::Checked : Qt::Unchecked);
+		comboBox->blockSignals(false);
+	}
+	void writeToData(value_type& v)
+	{
+		int val = 0;
+		for (int i = 0; i < nbFlags; ++i)
+		{
+			if (comboBox->itemCheckState(i) == Qt::Checked)
+				val += 1 << i;
+		}
+		v = val;
+	}
+	static QString GetParametersFormat()
+	{
+		return "val1;val2;val3;...";
+	}
+};
+
+//****************************************************************************//
+
 template <>
 class DataWidgetContainer< float >
 {
@@ -282,6 +335,7 @@ RegisterWidget<SimpleDataWidget<int> > DWClass_int("default");
 RegisterWidget<SimpleDataWidget<int, CheckboxDataWidget> > DWClass_checkbox("checkbox");
 RegisterWidget<SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed");
 RegisterWidget<SimpleDataWidget<int, EnumDataWidget> > DWClass_enum("enum");
+RegisterWidget<SimpleDataWidget<int, FlagsDataWidget> > DWClass_flags("flags");
 RegisterWidget<SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_int("slider");
 RegisterWidget<OpenDialogDataWidget<std::vector<int>, ListDataWidgetDialog<std::vector<int> > > > DWClass_ints_list_generic("generic");
 

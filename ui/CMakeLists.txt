@@ -28,6 +28,7 @@ set(HEADER_FILES
 	command/SetDataValueCommand.h
 	custom/DetachableTabWidget.h
 	custom/ScrollContainer.h
+	custom/qxt/QxtCheckComboBox.h
 	dialog/ChooseWidgetDialog.h
 	dialog/EditGroupDialog.h
 	dialog/QuickCreateDialog.h
@@ -75,6 +76,7 @@ set(SOURCE_FILES
 	command/RemoveObjectCommand.cpp
 	custom/DetachableTabWidget.cpp
 	custom/ScrollContainer.cpp
+	custom/qxt/QxtCheckComboBox.cpp
 	dialog/ChooseWidgetDialog.cpp
 	dialog/EditGroupDialog.cpp
 	dialog/QuickCreateDialog.cpp
