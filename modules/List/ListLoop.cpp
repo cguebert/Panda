@@ -89,24 +89,20 @@ public:
 
 	void setDirtyValue(const DataNode* caller)
 	{
-		if (isDestructing())
-			return;
-		if(caller == &m_condition)
+		if (isDestructing() || caller == &m_condition)
 			return;
 
-		if(isUpdating())
-			DataNode::setDirtyValue(caller);
-		else if(caller == &m_control || caller == this)
-			PandaObject::setDirtyValue(caller);
+		if(!isDirty())
+		{
+			if(caller == &m_control || caller == this)
+				PandaObject::setDirtyValue(caller);
+		}
 	}
 
 	void reset() override
 	{
-		m_copyInit = true;
-		GenericObject::doUpdate(false);
-		m_copyInit = false;
-
 		prevControl = FLT_MAX;
+		update();
 	}
 
 protected:
