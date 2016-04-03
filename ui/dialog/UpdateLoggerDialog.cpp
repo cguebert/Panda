@@ -4,6 +4,23 @@
 #include <vector>
 #include <algorithm>
 
+namespace
+{
+
+QString getReadableTime(long long time)
+{
+	if(time > 1e9)
+		return QString("%1s").arg(QString::number(time / 1e9, 'f', 2));
+	else if(time > 1e6)
+		return QString("%1ms").arg(QString::number(time / 1e6, 'f', 2));
+	else if(time > 1e3)
+		return QString("%1µs").arg(QString::number(time / 1e3, 'f', 2));
+	else
+		return QString("%1ns").arg(QString::number(time));
+}
+
+}
+
 UpdateLoggerDialog* UpdateLoggerDialog::m_instance = nullptr;
 
 UpdateLoggerDialog::UpdateLoggerDialog(QWidget* parent) :
@@ -96,8 +113,6 @@ UpdateLoggerView::UpdateLoggerView(QWidget* parent)
 	setFocusPolicy(Qt::StrongFocus);
 
 	setMouseTracking(true);
-
-	m_tps = 1000.0 / panda::helper::UpdateLogger::getTicksPerSec();
 }
 
 void UpdateLoggerView::updateEvents()
@@ -154,7 +169,7 @@ void UpdateLoggerView::updateEvents()
 
 QSize UpdateLoggerView::minimumSizeHint() const
 {
-	qreal y = view_margin * 2
+	qreal y = timeline_height + view_margin * 2
 		+ (m_requiredHeight + 1) * update_height
 		+ m_requiredHeight * event_margin;
 	y = qMax(static_cast<qreal>(100.0), y);
@@ -193,6 +208,8 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 	painter.setRenderHint(QPainter::Antialiasing, true);
 	painter.setRenderHint(QPainter::TextAntialiasing, true);
 
+	drawTimeline(painter);
+
 	m_eventRects.clear();
 
 	for(int i=m_events.size()-1; i>=0; --i)
@@ -204,7 +221,7 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 		if(x2 < 0 || x1 > width)
 			continue;
 
-		qreal y = view_margin + (event.m_level + m_startingLevel[event.m_threadId]) * (update_height + event_margin);
+		qreal y = timeline_height + view_margin + (event.m_level + m_startingLevel[event.m_threadId]) * (update_height + event_margin);
 
 		switch (event.m_type)
 		{
@@ -298,6 +315,15 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 	}
 }
 
+void UpdateLoggerView::drawTimeline(QStylePainter& painter)
+{
+	QRect viewRect = contentsRect();
+
+	painter.setPen(QPen(Qt::black, 2));
+	int y = timeline_height - view_margin;
+	painter.drawLine(0, y, viewRect.width(), y);
+}
+
 void UpdateLoggerView::resizeEvent(QResizeEvent*)
 {
 	update();
@@ -318,20 +344,6 @@ void UpdateLoggerView::mousePressEvent(QMouseEvent* event)
 			m_mouseAction = Action_MovingStart;
 		}
 	}
-}
-
-QString getReadableTime(double time)
-{
-	if(time > 1e3)
-		return QString("%1s").arg(QString::number(time / 1e3, 'f', 2));
-	else if(time > 1)
-		return QString("%1ms").arg(QString::number(time, 'f', 2));
-	else if(time > 1e-3)
-		return QString("%1µs").arg(QString::number(time * 1e3, 'f', 2));
-	else if(time > 1e-6)
-		return QString("%1ns").arg(QString::number(time * 1e6, 'f', 2));
-
-	return QString("0ms");
 }
 
 void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
@@ -365,10 +377,10 @@ void UpdateLoggerView::mouseMoveEvent(QMouseEvent* event)
 		const EventData* pEvent = nullptr;
 		if(getEventAtPos(event->localPos(), rect, pEvent))
 		{
-			qreal start = (pEvent->m_startTime - m_minTime) * m_tps;
-			qreal end = (pEvent->m_endTime - m_minTime) * m_tps;
+			long long start = pEvent->m_startTime - m_minTime;
+			long long end = pEvent->m_endTime - m_minTime;
 			QString times = QString("\n%1ms - %2ms\n(%3 / %4)")
-					.arg(start).arg(end)
+					.arg(start / 1e6).arg(end / 1e6)
 					.arg(getReadableTime(getComputeDuration(*pEvent)))
 					.arg(getReadableTime(end-start));
 			QString display = eventDescription(*pEvent);
@@ -398,7 +410,7 @@ void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
 	{
 		if(!m_events.empty())
 		{
-			unsigned long long time = timeOfPos(event->x());
+			long long time = timeOfPos(event->x());
 			int nb = m_sortedEvents.size();
 			int prevSelection = m_selectedIndex;
 			m_selectedIndex = 0;
@@ -467,7 +479,7 @@ QString UpdateLoggerView::eventDescription(const EventData& event)
 	}
 }
 
-qreal UpdateLoggerView::posOfTime(unsigned long long time)
+qreal UpdateLoggerView::posOfTime(long long time)
 {
 	qreal w = width() - 2 * view_margin;
 	qreal a = time - m_minTime;
@@ -475,7 +487,7 @@ qreal UpdateLoggerView::posOfTime(unsigned long long time)
 	return view_margin + (m_viewDelta + a / b * w) * m_zoomFactor;
 }
 
-unsigned long long UpdateLoggerView::timeOfPos(int x)
+long long UpdateLoggerView::timeOfPos(int x)
 {
 	qreal w = width() - 2 * view_margin;
 	qreal a = (x - view_margin) / m_zoomFactor - m_viewDelta;
@@ -590,12 +602,12 @@ void UpdateLoggerView::nextEvent()
 	}
 }
 
-void UpdateLoggerView::updateStates(int prevSelection, unsigned long long time)
+void UpdateLoggerView::updateStates(int prevSelection, long long time)
 {
 	if(prevSelection < 0)
 		prevSelection = 0;
 
-	unsigned long long prevTime = m_events[m_sortedEvents[prevSelection]].m_startTime;
+	long long prevTime = m_events[m_sortedEvents[prevSelection]].m_startTime;
 
 	if(time > prevTime)
 	{
@@ -609,7 +621,7 @@ void UpdateLoggerView::updateStates(int prevSelection, unsigned long long time)
 	}
 }
 
-qreal UpdateLoggerView::getComputeDuration(const EventData& event)
+long long UpdateLoggerView::getComputeDuration(const EventData& event)
 {
 	for(int index = (&event - &m_events[0]) - 1; index > 0; --index)
 	{
@@ -618,9 +630,9 @@ qreal UpdateLoggerView::getComputeDuration(const EventData& event)
 		{
 			if(other.m_endTime > event.m_endTime)
 				break;
-			return (event.m_endTime - other.m_endTime) * m_tps;
+			return (event.m_endTime - other.m_endTime);
 		}
 	}
 
-	return (event.m_endTime - event.m_startTime) * m_tps;
+	return (event.m_endTime - event.m_startTime);
 }

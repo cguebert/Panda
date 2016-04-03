@@ -2,8 +2,18 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
 
-#include <windows.h>
+#include <chrono>
 #include <thread>
+
+namespace
+{
+
+// Returns a time in nanoseconds (1e-9 seconds)
+inline long long getTime()
+{ return std::chrono::high_resolution_clock::now().time_since_epoch().count(); }
+
+}
+
 
 namespace panda
 {
@@ -23,7 +33,7 @@ ScopedEvent::ScopedEvent(EventType type, const PandaObject *object)
 	m_event.m_threadId = UpdateLogger::getThreadId();
 	m_event.m_level = ++UpdateLogger::getInstance()->logLevel(m_event.m_threadId);
 
-	m_event.m_startTime = UpdateLogger::getTime();
+	m_event.m_startTime = getTime();
 	m_event.m_dirtyStart = object->isDirty();
 }
 
@@ -45,8 +55,10 @@ ScopedEvent::ScopedEvent(EventType type, const BaseData* data)
 	}
 	m_event.m_threadId = UpdateLogger::getThreadId();
 	m_event.m_level = UpdateLogger::getInstance()->logLevel(m_event.m_threadId);
+	if (m_event.m_level < 0)
+		m_event.m_level = 0;
 
-	m_event.m_startTime = UpdateLogger::getTime();
+	m_event.m_startTime = getTime();
 	m_event.m_dirtyStart = data->isDirty();
 }
 
@@ -78,14 +90,14 @@ ScopedEvent::ScopedEvent(const std::string& text, DataNode* node)
 	else
 		m_event.m_objectIndex = -1;
 
-	m_event.m_startTime = UpdateLogger::getTime();
+	m_event.m_startTime = getTime();
 	m_event.m_dirtyStart = true;
 }
 
 ScopedEvent::~ScopedEvent()
 {
 	auto logger = UpdateLogger::getInstance();
-	m_event.m_endTime = UpdateLogger::getTime();
+	m_event.m_endTime = getTime();
 	if(m_event.m_node)
 		m_event.m_dirtyEnd = m_event.m_node->isDirty();
 	else
@@ -200,20 +212,6 @@ void UpdateLogger::addEvent(EventData event)
 {
 	if(m_logging)
 		m_events[getThreadId()].push_back(std::move(event));
-}
-
-unsigned long long UpdateLogger::getTicksPerSec()
-{
-	LARGE_INTEGER b;
-	QueryPerformanceFrequency(&b);
-	return(b.QuadPart);
-}
-
-unsigned long long UpdateLogger::getTime()
-{
-	LARGE_INTEGER a;
-	QueryPerformanceCounter(&a);
-	return(a.QuadPart);
 }
 
 } // namespace helper

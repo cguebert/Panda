@@ -422,6 +422,7 @@ void PandaDocument::step()
 		return;
 	}
 
+	auto timeStepval = m_timestep.getValue();
 	auto startTime = std::chrono::high_resolution_clock::now();
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 
@@ -432,7 +433,7 @@ void PandaDocument::step()
 
 	// First update the value of the document (without modifying the corresponding Data)
 	// This is so an object reacting on the time having changed can get the correct value of the mouse position (and not the one from the previous step)
-	m_animTimeVal += m_timestep.getValue();
+	m_animTimeVal += timeStepval;
 	m_mousePositionVal = m_mousePositionBuffer;
 	if(m_mouseClickBuffer < 0)
 	{

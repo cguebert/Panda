@@ -34,7 +34,7 @@ struct EventData
 {
 public:
 	EventType m_type;
-	unsigned long long m_startTime, m_endTime;
+	long long m_startTime, m_endTime;
 	std::string m_text;
 	int m_objectIndex, m_level, m_threadId;
 	bool m_dirtyStart, m_dirtyEnd;
@@ -90,9 +90,6 @@ public:
 
 	const UpdateEvents getEvents(int id) const;
 	const NodeStates getInitialNodeStates() const;
-
-	static unsigned long long getTicksPerSec();
-	static unsigned long long getTime();
 
 protected:
 	UpdateLogger();

@@ -53,7 +53,8 @@ protected:
 		view_margin = 2,
 		update_height = 20,
 		value_height = 10,
-		event_margin = 4
+		event_margin = 4,
+		timeline_height = 30
 	};
 
 	void paintEvent(QPaintEvent* event);
@@ -67,16 +68,18 @@ protected:
 	typedef panda::helper::EventData EventData;
 	QString eventDescription(const EventData &event);
 
-	inline qreal posOfTime(unsigned long long time);
-	inline unsigned long long timeOfPos(int x);
+	inline qreal posOfTime(long long time);
+	inline long long timeOfPos(int x);
 	QColor getColorForStatus(unsigned int index, qreal s=1.0, qreal v=1.0);
 
 	bool getEventAtPos(QPointF pos, QRectF& rect, const EventData*& pEvent);
 
 	void sortEvents();
-	void updateStates(int prevSelection, unsigned long long time);
+	void updateStates(int prevSelection, long long time);
 
-	qreal getComputeDuration(const EventData& event);
+	long long getComputeDuration(const EventData& event);
+
+	void drawTimeline(QStylePainter& painter);
 
 	enum MouseAction
 	{
@@ -102,8 +105,7 @@ protected:
 	int m_nbThreads;
 	QVector<int> m_maxEventLevel, m_startingLevel;
 	int m_requiredHeight; // In number of events in the vertical dimension
-	qreal m_tps;	// Ticks per second
-	unsigned long long m_minTime, m_maxTime, m_selectedTime;
+	long long m_minTime, m_maxTime, m_selectedTime;
 	int m_selectedIndex;
 
 	struct EventRect
