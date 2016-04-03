@@ -267,11 +267,15 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	}
 
 	if (m_debugDirtyState)
-		paintDirtyState(&painter);
-
+	{
 #ifdef PANDA_LOG_EVENTS
-	paintLogDebug(&painter);
+		UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
+		if(logDlg && logDlg->isVisible())
+			paintLogDebug(&painter);
+		else
 #endif
+			paintDirtyState(&painter);
+	}
 }
 
 #ifdef PANDA_LOG_EVENTS

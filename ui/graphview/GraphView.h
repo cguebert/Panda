@@ -188,6 +188,6 @@ inline ObjectsSelection& GraphView::selection() const
 { return *m_objectsSelection; }
 
 inline void GraphView::debugDirtyState(bool show)
-{ m_debugDirtyState = show; }
+{ m_debugDirtyState = show; update(); }
 
 #endif

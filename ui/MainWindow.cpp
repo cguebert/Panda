@@ -675,10 +675,10 @@ void MainWindow::createActions()
 	m_viewMenu->addAction(adjustRenderSizeToViewAction);
 	m_viewMenu->addAction(m_fullScreenAction);
 	m_viewMenu->addAction(exitFullscreenOnFocusLossAction);
-#ifdef PANDA_LOG_EVENTS
 	m_viewMenu->addSeparator();
-	m_viewMenu->addAction(showLoggerDialogAction);
 	m_viewMenu->addAction(showDirtyInfoAction);
+#ifdef PANDA_LOG_EVENTS
+	m_viewMenu->addAction(showLoggerDialogAction);
 #endif
 
 	menuBar()->addSeparator();
