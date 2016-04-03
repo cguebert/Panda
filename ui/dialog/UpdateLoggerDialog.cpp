@@ -2,21 +2,55 @@
 
 #include <panda/helper/algorithm.h>
 #include <vector>
-#include <algorithm>
 
 namespace
 {
 
 QString getReadableTime(long long time)
 {
-	if(time > 1e9)
+	auto absTime = abs(time);
+	if(absTime >= 1e9)
 		return QString("%1s").arg(QString::number(time / 1e9, 'f', 2));
-	else if(time > 1e6)
+	else if(absTime >= 1e6)
 		return QString("%1ms").arg(QString::number(time / 1e6, 'f', 2));
-	else if(time > 1e3)
+	else if(absTime >= 1e3)
 		return QString("%1µs").arg(QString::number(time / 1e3, 'f', 2));
 	else
 		return QString("%1ns").arg(QString::number(time));
+}
+
+QString getLegendText(long long time)
+{
+	if (!time)
+		return "0";
+
+	auto absTime = abs(time);
+	if(absTime >= 1e8)
+		return QString("%1s").arg(QString::number(time / 1e9));
+	else if(absTime >= 1e5)
+		return QString("%1ms").arg(QString::number(time / 1e6));
+	else if(absTime >= 1e2)
+		return QString("%1µs").arg(QString::number(time / 1e3));
+	else
+		return QString("%1ns").arg(QString::number(time));
+}
+
+double nextSmallerFactor(double factor)
+{
+	int mag = static_cast<int>(floor(log10(factor)));
+	int mul = static_cast<int>(factor / pow(10, mag));
+
+	if (mul == 5)
+		mul = 2;
+	else if (mul == 2)
+		mul = 1;
+	else if (mul == 1)
+	{
+		mag -= 1;
+		mul = 5;
+	}
+
+	return mul * pow(10, mag);
 }
 
 }
@@ -318,10 +352,70 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 void UpdateLoggerView::drawTimeline(QStylePainter& painter)
 {
 	QRect viewRect = contentsRect();
+	int w = viewRect.width(), h = viewRect.height();
 
 	painter.setPen(QPen(Qt::black, 2));
 	int y = timeline_height - view_margin;
-	painter.drawLine(0, y, viewRect.width(), y);
+	painter.drawLine(0, y, w, y);
+
+	auto startTime = timeOfPos(0), endTime = timeOfPos(w - 2 * view_margin);
+	auto duration = endTime - startTime;
+	if (!duration)
+		return;
+
+	auto mag = log10(duration);
+
+	// Start with power of ten ticks
+	auto tick = pow(10, floor(mag));
+	auto len = lengthOfDuration(tick);
+
+	// We want ticks with text approximately every 125-300 px
+	double factor = 1;
+	if (len > 600)		factor = 0.2;
+	else if (len > 250) factor = 0.5;
+	else if (len < 125) factor = 2;
+
+	// Draw these ticks black and with text
+	painter.setPen(QPen(Qt::black, 1, Qt::PenStyle::DashLine));
+	auto ft = factor * tick;
+	endTime = std::min<double>(endTime, m_minTime + ceil((m_maxTime - m_minTime) / ft) * ft);
+	auto start = m_minTime + ceil((startTime - m_minTime) / ft) * ft;
+	for (auto time = start; time <= endTime; time += ft)
+	{
+		if (time < m_minTime)
+			continue;
+
+		auto x = posOfTime(time);
+		painter.drawLine(x, timeline_height - 10, x, h);
+
+		auto textArea = QRect(x - 50, 0, 100, timeline_height - 10 - 2);
+		painter.drawText(textArea, Qt::AlignHCenter | Qt::AlignBottom, getLegendText(time - m_minTime));
+	}
+
+	// Find smaller ticks (at most every 30 px)
+	while (true)
+	{
+		factor = nextSmallerFactor(factor);
+		auto tmp = factor * tick;
+		len = lengthOfDuration(tmp);
+
+		if (len < 30)
+			break;
+
+		ft = tmp;
+	}
+
+	// Draw these smaller ticks in gray
+	painter.setPen(QPen(Qt::gray, 1, Qt::PenStyle::DotLine));
+	start = m_minTime + ceil((startTime - m_minTime) / ft) * ft;
+	for (auto time = start; time < endTime; time += ft)
+	{
+		if (time < m_minTime)
+			continue;
+
+		auto x = posOfTime(time);
+		painter.drawLine(x, timeline_height - 10, x, h);
+	}
 }
 
 void UpdateLoggerView::resizeEvent(QResizeEvent*)
@@ -481,10 +575,17 @@ QString UpdateLoggerView::eventDescription(const EventData& event)
 
 qreal UpdateLoggerView::posOfTime(long long time)
 {
-	qreal w = width() - 2 * view_margin;
+	auto w = width() - 2 * view_margin;
 	qreal a = time - m_minTime;
 	qreal b = m_maxTime - m_minTime;
 	return view_margin + (m_viewDelta + a / b * w) * m_zoomFactor;
+}
+
+qreal UpdateLoggerView::lengthOfDuration(long long duration)
+{
+	auto w = width() - 2 * view_margin;
+	qreal r = m_maxTime - m_minTime;
+	return duration * w * m_zoomFactor / r;
 }
 
 long long UpdateLoggerView::timeOfPos(int x)

@@ -54,7 +54,7 @@ protected:
 		update_height = 20,
 		value_height = 10,
 		event_margin = 4,
-		timeline_height = 30
+		timeline_height = 25
 	};
 
 	void paintEvent(QPaintEvent* event);
@@ -68,8 +68,10 @@ protected:
 	typedef panda::helper::EventData EventData;
 	QString eventDescription(const EventData &event);
 
-	inline qreal posOfTime(long long time);
-	inline long long timeOfPos(int x);
+	qreal posOfTime(long long time);
+	qreal lengthOfDuration(long long duration);
+	long long timeOfPos(int x);
+
 	QColor getColorForStatus(unsigned int index, qreal s=1.0, qreal v=1.0);
 
 	bool getEventAtPos(QPointF pos, QRectF& rect, const EventData*& pEvent);
