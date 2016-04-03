@@ -4,6 +4,20 @@
 
 #include <panda/types/Mesh.h>
 
+namespace flags
+{
+	enum
+	{
+		Edges = 1,
+		Triangles = 1 << 1,
+		EdgesInTriangle = 1 << 2,
+		EdgesAroundPoint = 1 << 3,
+		TrianglesAroundPoint = 1 << 4,
+		TrianglesAroundEdge = 1 << 5,
+		BorderElements = 1 << 6
+	};
+}
+
 namespace panda {
 
 using types::Mesh;
@@ -17,9 +31,14 @@ public:
 		: PandaObject(doc)
 		, m_input(initData("input", "Mesh to analyse"))
 		, m_output(initData("output", "Prepared mesh"))
+		, m_flags(initData(127, "flags", "Choose what to compute"))
 	{
 		addInput(m_input);
+		addInput(m_flags);
 		addOutput(m_output);
+
+		m_flags.setWidget("flags");
+		m_flags.setWidgetData("Edges;Triangles;Edges in triangle;Edges around point;Triangles around point;Triangles around edge;Border elements");
 	}
 
 	void update()
@@ -29,7 +48,16 @@ public:
 		acc.clear();
 		auto& outMeshes = acc.wref();
 
-		for (auto mesh : inputs)
+		int flagsVal = m_flags.getValue();
+		bool computeEdges = (flagsVal & flags::Edges) != 0;
+		bool computeTriangles = (flagsVal & flags::Triangles) != 0;
+		bool computeEdgesInTriangle = (flagsVal & flags::EdgesInTriangle) != 0;
+		bool computeEdgesAroundPoint = (flagsVal & flags::EdgesAroundPoint) != 0;
+		bool computeTrianglesAroundPoint = (flagsVal & flags::TrianglesAroundPoint) != 0;
+		bool computeTrianglesAroundEdge = (flagsVal & flags::TrianglesAroundEdge) != 0;
+		bool computeBorderElements = (flagsVal & flags::BorderElements) != 0;
+
+		for (auto mesh : inputs) // We want a copy as we will modify it eventually
 		{
 			if (!mesh.hasPoints())
 			{
@@ -37,22 +65,22 @@ public:
 				continue;
 			}
 
-			if (!mesh.hasEdges() && mesh.hasTriangles())
+			if (computeEdges && !mesh.hasEdges() && mesh.hasTriangles())
 				mesh.createEdgeList();
-			else if (mesh.hasEdges() && !mesh.hasTriangles())
+			else if (computeTriangles && mesh.hasEdges() && !mesh.hasTriangles())
 				mesh.createTriangles();
 
-			if (!mesh.hasEdgesInTriangle())
+			if (computeEdgesInTriangle && !mesh.hasEdgesInTriangle())
 				mesh.createEdgesInTriangleList();
-			if (!mesh.hasEdgesAroundPoint())
+			if (computeEdgesAroundPoint && !mesh.hasEdgesAroundPoint())
 				mesh.createEdgesAroundPointList();
 
-			if (!mesh.hasTrianglesAroundPoint())
+			if (computeTrianglesAroundPoint && !mesh.hasTrianglesAroundPoint())
 				mesh.createTrianglesAroundPointList();
-			if (!mesh.hasTrianglesAroundEdge())
+			if (computeTrianglesAroundEdge && !mesh.hasTrianglesAroundEdge())
 				mesh.createTrianglesAroundEdgeList();
 
-			if (!mesh.hasBorderElementsLists())
+			if (computeBorderElements && mesh.hasBorderElementsLists())
 				mesh.createElementsOnBorder();
 
 			outMeshes.push_back(std::move(mesh));
@@ -61,6 +89,7 @@ public:
 
 protected:
 	Data<std::vector<Mesh>> m_input, m_output;
+	Data<int> m_flags;
 };
 
 int MeshMath_PrepareTopologyClass = RegisterObject<MeshMath_PrepareTopology>("Math/Mesh/Prepare Topology")

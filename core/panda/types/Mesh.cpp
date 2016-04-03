@@ -263,9 +263,9 @@ void Mesh::removeUnusedPoints()
 	std::map<PointID, PointID> pointsMap;
 	SeqPoints newPoints;
 	int nbPoints = 0;
-	for(Triangle& t : m_triangles)
+	for(Triangle t : m_triangles)
 	{
-		for(auto& id : t)
+		for(auto id : t)
 		{
 			if(!pointsMap.count(id))
 			{
