@@ -95,4 +95,5 @@ void ChooseWidgetDialog::changeData()
 	else
 		m_data->setWidgetData(m_parameters->toPlainText().toStdString());
 	m_data->forceSet();
+	m_data->getOwner()->emitModified();
 }
