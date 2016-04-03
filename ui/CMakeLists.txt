@@ -41,8 +41,8 @@ set(HEADER_FILES
 	drawstruct/LayerDrawStruct.h
 	drawstruct/ObjectDrawStruct.h
 	drawstruct/UserValueDrawStruct.h
-	graph/alignObjects.h
-	graph/ObjectsSelection.h
+	graphview/alignObjects.h
+	graphview/ObjectsSelection.h
 	widget/AnimationDataWidgetDialog.h
 	widget/DataWidget.h
 	widget/DataWidgetFactory.h
@@ -88,8 +88,8 @@ set(SOURCE_FILES
 	drawstruct/LayerDrawStruct.cpp
 	drawstruct/ObjectDrawStruct.cpp
 	drawstruct/UserValueDrawStruct.cpp
-	graph/alignObjects.cpp
-	graph/ObjectsSelection.cpp
+	graphview/alignObjects.cpp
+	graphview/ObjectsSelection.cpp
 	widget/AnimationDataWidgetDialog.cpp
 	widget/ColorDataWidget.cpp
 	widget/EditGradientDialog.cpp
@@ -131,7 +131,7 @@ target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL)
 
 find_package(OpenGL REQUIRED)
 if(NOT OPENGL_FOUND)
-    message(ERROR " OPENGL not found!")
+	message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
 
 add_library("QScintilla" SHARED IMPORTED)

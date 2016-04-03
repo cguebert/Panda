@@ -1,7 +1,7 @@
 #include <ui/CreateGroup.h>
 #include <ui/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
-#include <ui/graph/ObjectsSelection.h>
+#include <ui/graphview/ObjectsSelection.h>
 
 #include <ui/command/AddObjectCommand.h>
 #include <ui/command/GroupSelectionCommand.h>

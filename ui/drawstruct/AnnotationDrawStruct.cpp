@@ -1,7 +1,7 @@
 #include <ui/GraphView.h>
 #include <ui/drawstruct/AnnotationDrawStruct.h>
 #include <ui/command/ModifyAnnotationCommand.h>
-#include <ui/graph/ObjectsSelection.h>
+#include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/object/Annotation.h>
 #include <panda/PandaDocument.h>

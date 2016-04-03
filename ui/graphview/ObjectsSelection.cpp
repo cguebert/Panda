@@ -1,4 +1,4 @@
-#include <ui/graph/ObjectsSelection.h>
+#include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/document/DocumentSignals.h>

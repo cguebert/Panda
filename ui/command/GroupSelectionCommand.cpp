@@ -1,6 +1,6 @@
 #include <ui/command/GroupSelectionCommand.h>
 #include <ui/GraphView.h>
-#include <ui/graph/ObjectsSelection.h>
+#include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/object/Group.h>
 

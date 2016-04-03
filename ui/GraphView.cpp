@@ -9,7 +9,7 @@
 #include <ui/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
-#include <ui/graph/ObjectsSelection.h>
+#include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/helper/algorithm.h>
 #include <panda/types/DataTraits.h>

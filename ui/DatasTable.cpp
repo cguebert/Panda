@@ -2,7 +2,7 @@
 
 #include <ui/DatasTable.h>
 #include <ui/GraphView.h>
-#include <ui/graph/ObjectsSelection.h>
+#include <ui/graphview/ObjectsSelection.h>
 #include <ui/widget/DataWidgetFactory.h>
 
 #include <panda/PandaDocument.h>

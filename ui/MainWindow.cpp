@@ -18,8 +18,8 @@
 #include <ui/command/AddObjectCommand.h>
 #include <ui/command/RemoveObjectCommand.h>
 
-#include <ui/graph/alignObjects.h>
-#include <ui/graph/ObjectsSelection.h>
+#include <ui/graphview/alignObjects.h>
+#include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/types/DataTraits.h>
@@ -430,6 +430,7 @@ void MainWindow::createActions()
 	auto exitFullscreenOnFocusLossAction = new QAction(tr("Automatically exit fullscreen"), this);
 	exitFullscreenOnFocusLossAction->setStatusTip(tr("Exit the fullscreen mode if the window lose the focus"));
 	exitFullscreenOnFocusLossAction->setCheckable(true);
+	exitFullscreenOnFocusLossAction->setChecked(true);
 	connect(exitFullscreenOnFocusLossAction, &QAction::triggered, [this]() { m_exitFullscreenOnFocusLoss = !m_exitFullscreenOnFocusLoss; });
 
 	auto aboutAction = new QAction(tr("&About"), this);

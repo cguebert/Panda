@@ -2,7 +2,7 @@
 
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/GraphView.h>
-#include <ui/graph/ObjectsSelection.h>
+#include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/object/PandaObject.h>
 #include <panda/PandaDocument.h>
