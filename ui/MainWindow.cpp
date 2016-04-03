@@ -3,7 +3,6 @@
 #include <ui/CreateGroup.h>
 #include <ui/DatasTable.h>
 #include <ui/DetachableTabWidget.h>
-#include <ui/EditGroupDialog.h>
 #include <ui/GroupsManager.h>
 #include <ui/ImageViewport.h>
 #include <ui/OpenGLRenderView.h>
@@ -12,10 +11,12 @@
 #include <ui/MainWindow.h>
 #include <ui/ScrollContainer.h>
 #include <ui/SimpleGUIImpl.h>
-#include <ui/UpdateLoggerDialog.h>
 
 #include <ui/command/AddObjectCommand.h>
 #include <ui/command/RemoveObjectCommand.h>
+
+#include <ui/dialog/EditGroupDialog.h>
+#include <ui/dialog/UpdateLoggerDialog.h>
 
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/alignObjects.h>

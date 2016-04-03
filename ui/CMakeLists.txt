@@ -11,27 +11,27 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 set(HEADER_FILES
-	ChooseWidgetDialog.h
 	CreateGroup.h
 	DatasTable.h
 	DetachableTabWidget.h
-	EditGroupDialog.h
 	GroupsManager.h
 	ImageViewport.h
 	LayersTab.h
 	ListObjectsAndTypes.h
 	MainWindow.h
 	OpenGLRenderView.h
-	QuickCreateDialog.h
 	ScrollContainer.h
 	SimpleGUIImpl.h
-	UpdateLoggerDialog.h
 	command/AddObjectCommand.h
 	command/GroupSelectionCommand.h
 	command/ModifyAnnotationCommand.h
 	command/MoveObjectCommand.h
 	command/RemoveObjectCommand.h
 	command/SetDataValueCommand.h
+	dialog/ChooseWidgetDialog.h
+	dialog/EditGroupDialog.h
+	dialog/QuickCreateDialog.h
+	dialog/UpdateLoggerDialog.h
 	drawstruct/AnnotationDrawStruct.h
 	drawstruct/DockableDrawStruct.h
 	drawstruct/GenericObjectDrawStruct.h
@@ -59,26 +59,26 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
 	main.cpp
-	ChooseWidgetDialog.cpp
 	CreateGroup.cpp
 	DatasTable.cpp
 	DetachableTabWidget.cpp
-	EditGroupDialog.cpp
 	GroupsManager.cpp
 	ImageViewport.cpp
 	LayersTab.cpp
 	ListObjectsAndTypes.cpp
 	MainWindow.cpp
 	OpenGLRenderView.cpp
-	QuickCreateDialog.cpp
 	ScrollContainer.cpp
 	SimpleGUIImpl.cpp
-	UpdateLoggerDialog.cpp
 	command/AddObjectCommand.cpp
 	command/GroupSelectionCommand.cpp
 	command/ModifyAnnotationCommand.cpp
 	command/MoveObjectCommand.cpp
 	command/RemoveObjectCommand.cpp
+	dialog/ChooseWidgetDialog.cpp
+	dialog/EditGroupDialog.cpp
+	dialog/QuickCreateDialog.cpp
+	dialog/UpdateLoggerDialog.cpp
 	drawstruct/AnnotationDrawStruct.cpp
 	drawstruct/DockableDrawStruct.cpp
 	drawstruct/GenericObjectDrawStruct.cpp

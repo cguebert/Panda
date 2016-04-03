@@ -1,6 +1,6 @@
 #include <QtWidgets>
 
-#include <ui/ChooseWidgetDialog.h>
+#include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/widget/DataWidgetFactory.h>
 
 #include <panda/PandaDocument.h>

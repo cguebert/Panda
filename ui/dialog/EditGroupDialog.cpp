@@ -1,6 +1,6 @@
 #include <QtWidgets>
 
-#include <ui/EditGroupDialog.h>
+#include <ui/dialog/EditGroupDialog.h>
 #include <panda/command/GroupCommand.h>
 
 #include <panda/object/Group.h>

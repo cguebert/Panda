@@ -1,4 +1,4 @@
-#include <ui/UpdateLoggerDialog.h>
+#include <ui/dialog/UpdateLoggerDialog.h>
 
 #include <panda/helper/algorithm.h>
 #include <vector>

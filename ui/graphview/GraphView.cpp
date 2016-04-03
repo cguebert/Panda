@@ -3,8 +3,8 @@
 #include <functional>
 #include <limits>
 
-#include <ui/ChooseWidgetDialog.h>
-#include <ui/QuickCreateDialog.h>
+#include <ui/dialog/ChooseWidgetDialog.h>
+#include <ui/dialog/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
 #include <ui/graphview/GraphView.h>
@@ -18,7 +18,7 @@
 #include <ui/command/MoveObjectCommand.h>
 
 #ifdef PANDA_LOG_EVENTS
-#include <ui/UpdateLoggerDialog.h>
+#include <ui/dialog/UpdateLoggerDialog.h>
 #endif
 
 #include <panda/PandaDocument.h>
