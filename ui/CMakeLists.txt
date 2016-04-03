@@ -16,11 +16,9 @@ set(HEADER_FILES
 	DatasTable.h
 	DetachableTabWidget.h
 	EditGroupDialog.h
-	GraphView.h
 	GroupsManager.h
 	ImageViewport.h
 	LayersTab.h
-	LinkTag.h
 	ListObjectsAndTypes.h
 	MainWindow.h
 	OpenGLRenderView.h
@@ -42,6 +40,8 @@ set(HEADER_FILES
 	drawstruct/ObjectDrawStruct.h
 	drawstruct/UserValueDrawStruct.h
 	graphview/alignObjects.h
+	graphview/GraphView.h
+	graphview/LinkTag.h
 	graphview/ObjectsSelection.h
 	widget/AnimationDataWidgetDialog.h
 	widget/DataWidget.h
@@ -64,11 +64,9 @@ set(SOURCE_FILES
 	DatasTable.cpp
 	DetachableTabWidget.cpp
 	EditGroupDialog.cpp
-	GraphView.cpp
 	GroupsManager.cpp
 	ImageViewport.cpp
 	LayersTab.cpp
-	LinkTag.cpp
 	ListObjectsAndTypes.cpp
 	MainWindow.cpp
 	OpenGLRenderView.cpp
@@ -89,6 +87,8 @@ set(SOURCE_FILES
 	drawstruct/ObjectDrawStruct.cpp
 	drawstruct/UserValueDrawStruct.cpp
 	graphview/alignObjects.cpp
+	graphview/GraphView.cpp
+	graphview/LinkTag.cpp
 	graphview/ObjectsSelection.cpp
 	widget/AnimationDataWidgetDialog.cpp
 	widget/ColorDataWidget.cpp

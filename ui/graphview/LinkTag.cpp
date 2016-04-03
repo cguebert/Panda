@@ -1,7 +1,7 @@
 #include <QPainter>
 
-#include <ui/GraphView.h>
-#include <ui/LinkTag.h>
+#include <ui/graphview/GraphView.h>
+#include <ui/graphview/LinkTag.h>
 
 LinkTag::LinkTag(GraphView* view, panda::BaseData* input, panda::BaseData* output)
 	: index(0)

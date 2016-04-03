@@ -1,6 +1,6 @@
 #include <QtWidgets>
 
-#include <ui/GraphView.h>
+#include <ui/graphview/GraphView.h>
 #include <ui/GroupsManager.h>
 #include <ui/QuickCreateDialog.h>
 #include <ui/command/AddObjectCommand.h>

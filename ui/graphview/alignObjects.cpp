@@ -1,5 +1,5 @@
 #include <ui/graphview/alignObjects.h>
-#include <ui/GraphView.h>
+#include <ui/graphview/GraphView.h>
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/command/MoveObjectCommand.h>

@@ -4,11 +4,11 @@
 #include <limits>
 
 #include <ui/ChooseWidgetDialog.h>
-#include <ui/GraphView.h>
-#include <ui/LinkTag.h>
 #include <ui/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/graphview/GraphView.h>
+#include <ui/graphview/LinkTag.h>
 #include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/helper/algorithm.h>

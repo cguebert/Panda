@@ -1,4 +1,4 @@
-#include <ui/GraphView.h>
+#include <ui/graphview/GraphView.h>
 #include <ui/drawstruct/AnnotationDrawStruct.h>
 #include <ui/command/ModifyAnnotationCommand.h>
 #include <ui/graphview/ObjectsSelection.h>

@@ -1,6 +1,6 @@
 #include <panda/PandaDocument.h>
 
-#include <ui/GraphView.h>
+#include <ui/graphview/GraphView.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
 #include <ui/command/MoveObjectCommand.h>
 

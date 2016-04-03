@@ -1,5 +1,5 @@
 #include <ui/drawstruct/LayerDrawStruct.h>
-#include <ui/GraphView.h>
+#include <ui/graphview/GraphView.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/object/Layer.h>

@@ -2,7 +2,7 @@
 #include <panda/command/CommandId.h>
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/helper/algorithm.h>
-#include <ui/GraphView.h>
+#include <ui/graphview/GraphView.h>
 #include <ui/command/RemoveObjectCommand.h>
 
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,

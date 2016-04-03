@@ -1,5 +1,5 @@
 #include <ui/CreateGroup.h>
-#include <ui/GraphView.h>
+#include <ui/graphview/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/graphview/ObjectsSelection.h>
 

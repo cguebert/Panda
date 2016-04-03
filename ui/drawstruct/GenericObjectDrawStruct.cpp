@@ -1,5 +1,5 @@
 #include <ui/drawstruct/GenericObjectDrawStruct.h>
-#include <ui/GraphView.h>
+#include <ui/graphview/GraphView.h>
 
 #include <panda/object/GenericObject.h>
 

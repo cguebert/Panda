@@ -4,7 +4,6 @@
 #include <ui/DatasTable.h>
 #include <ui/DetachableTabWidget.h>
 #include <ui/EditGroupDialog.h>
-#include <ui/GraphView.h>
 #include <ui/GroupsManager.h>
 #include <ui/ImageViewport.h>
 #include <ui/OpenGLRenderView.h>
@@ -18,6 +17,7 @@
 #include <ui/command/AddObjectCommand.h>
 #include <ui/command/RemoveObjectCommand.h>
 
+#include <ui/graphview/GraphView.h>
 #include <ui/graphview/alignObjects.h>
 #include <ui/graphview/ObjectsSelection.h>
 

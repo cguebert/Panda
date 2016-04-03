@@ -1,4 +1,4 @@
-#include <ui/GraphView.h>
+#include <ui/graphview/GraphView.h>
 #include <panda/command/CommandId.h>
 #include <ui/command/MoveObjectCommand.h>
 
