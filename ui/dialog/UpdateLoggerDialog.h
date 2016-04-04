@@ -47,6 +47,8 @@ public:
 	const panda::helper::EventData* getSelectedEvent() const;
 	const panda::helper::UpdateLogger::NodeStates& getNodeStates() const;
 
+	Q_PROPERTY(qreal viewDelta READ getViewDelta WRITE setViewDelta)
+
 protected:
 	enum
 	{
@@ -86,6 +88,9 @@ protected:
 	void drawTimeline(QStylePainter& painter);
 
 	void centerViewOnSelection();
+
+	qreal getViewDelta() const;
+	void setViewDelta(qreal delta);
 
 	enum MouseAction
 	{
@@ -139,5 +144,11 @@ public slots:
 
 inline const panda::helper::UpdateLogger::NodeStates& UpdateLoggerView::getNodeStates() const
 { return m_currentStates; }
+
+inline qreal UpdateLoggerView::getViewDelta() const
+{ return m_viewDelta; }
+
+inline void UpdateLoggerView::setViewDelta(qreal delta)
+{ m_viewDelta = delta; update(); }
 
 #endif // UPDATELOGGERDIALOG_H

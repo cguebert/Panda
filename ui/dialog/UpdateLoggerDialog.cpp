@@ -324,7 +324,7 @@ void UpdateLoggerView::paintEvent(QPaintEvent*)
 	for(int i=1; i<m_nbThreads; ++i)
 	{
 		int eventHeight = (update_height + event_margin);
-		int y = (m_startingLevel[i] - 1) * eventHeight + eventHeight/2 - 2;
+		int y = timeline_height + (m_startingLevel[i] - 1) * eventHeight + eventHeight/2 - 2;
 		painter.drawLine(0, y, viewRect.width(), y);
 	}
 
@@ -711,6 +711,13 @@ void UpdateLoggerView::centerViewOnSelection()
 	{
 		qreal a = m_selectedTime - m_minTime;
 		qreal b = m_maxTime - m_minTime;
-		m_viewDelta = 0.5 * w / m_zoomFactor - a / b * width_factor;
+		qreal newDelta = 0.5 * w / m_zoomFactor - a / b * width_factor;
+
+		// Animate the movement of the view (easier to understand for the user)
+		auto anim = new QPropertyAnimation(this, "viewDelta");
+		anim->setDuration(300);
+		anim->setEndValue(newDelta);
+		anim->setEasingCurve(QEasingCurve::InOutQuad);
+		anim->start(QAbstractAnimation::DeleteWhenStopped);
 	}
 }
