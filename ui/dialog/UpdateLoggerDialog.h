@@ -54,7 +54,8 @@ protected:
 		update_height = 20,
 		value_height = 10,
 		event_margin = 4,
-		timeline_height = 25
+		timeline_height = 25,
+		width_factor = 500
 	};
 
 	void paintEvent(QPaintEvent* event);
@@ -83,6 +84,8 @@ protected:
 	long long getComputeDuration(const EventData& event);
 
 	void drawTimeline(QStylePainter& painter);
+
+	void centerViewOnSelection();
 
 	enum MouseAction
 	{

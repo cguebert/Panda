@@ -491,10 +491,8 @@ void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
 		qreal w = x2 - x1;
 		if (w > 5)
 		{
-			qreal wc = width() - 2 * view_margin;
-
 			m_viewDelta -= x1 / m_zoomFactor; // (using old zoom)
-			m_zoomFactor *= wc / w;
+			m_zoomFactor = m_zoomFactor * width_factor / w;
 			m_zoomLevel = static_cast<int>(log(m_zoomFactor) / log(1.2) * 10);  // Inverse of "zf = 1.2 ^ (zl / 10)"
 		}
 
@@ -517,8 +515,11 @@ void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
 					break;
 			}
 
-			if(m_selectedIndex != prevSelection)
+			if (m_selectedIndex != prevSelection)
+			{
 				setSelectedEvent(prevSelection, m_selectedIndex);
+				centerViewOnSelection(); // Move the view if the select line goes too far
+			}
 		}
 	}
 
@@ -565,26 +566,23 @@ QString UpdateLoggerView::eventDescription(const EventData& event)
 
 qreal UpdateLoggerView::posOfTime(long long time)
 {
-	auto w = width() - 2 * view_margin;
 	qreal a = time - m_minTime;
 	qreal b = m_maxTime - m_minTime;
-	return view_margin + (m_viewDelta + a / b * w) * m_zoomFactor;
+	return view_margin + (m_viewDelta + a / b * width_factor) * m_zoomFactor;
 }
 
 qreal UpdateLoggerView::lengthOfDuration(long long duration)
 {
-	auto w = width() - 2 * view_margin;
 	qreal r = m_maxTime - m_minTime;
-	return duration * w * m_zoomFactor / r;
+	return duration * width_factor * m_zoomFactor / r;
 }
 
 long long UpdateLoggerView::timeOfPos(int x)
 {
-	qreal w = width() - 2 * view_margin;
 	qreal a = (x - view_margin) / m_zoomFactor - m_viewDelta;
 	qreal b = m_maxTime - m_minTime;
 
-	return m_minTime + a * b / w;
+	return m_minTime + a * b / width_factor;
 }
 
 QColor UpdateLoggerView::getColorForStatus(unsigned int index, qreal s, qreal v)
@@ -636,17 +634,7 @@ void UpdateLoggerView::prevEvent()
 	if(m_selectedIndex != prevSelection)
 	{
 		setSelectedEvent(prevSelection, m_selectedIndex);
-
-		// Move the view if the select line goes too far
-		int x = posOfTime(m_selectedTime);
-		int w = width();
-		if(x < 0.1 * w || x > w - view_margin)
-		{
-			qreal a = m_selectedTime - m_minTime;
-			qreal b = m_maxTime - m_minTime;
-			qreal c = w - 2 * view_margin;
-			m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
-		}
+		centerViewOnSelection(); // Move the view if the select line goes too far
 	}
 }
 
@@ -661,17 +649,7 @@ void UpdateLoggerView::nextEvent()
 	if(m_selectedIndex != prevSelection)
 	{
 		setSelectedEvent(prevSelection, m_selectedIndex);
-
-		// Move the view if the select line goes too far
-		int x = posOfTime(m_selectedTime);
-		int w = width();
-		if(x > 0.9 * w || x < view_margin)
-		{
-			qreal a = m_selectedTime - m_minTime;
-			qreal b = m_maxTime - m_minTime;
-			qreal c = w - 2 * view_margin;
-			m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
-		}
+		centerViewOnSelection(); // Move the view if the select line goes too far
 	}
 }
 
@@ -723,4 +701,16 @@ void UpdateLoggerView::setSelectedEvent(int previous, int current)
 	emit changedSelectedEvent();
 
 	update();
+}
+
+void UpdateLoggerView::centerViewOnSelection()
+{
+	int x = posOfTime(m_selectedTime);
+	int w = width();
+	if (x < 0.1 * w || x > 0.9 * w)
+	{
+		qreal a = m_selectedTime - m_minTime;
+		qreal b = m_maxTime - m_minTime;
+		m_viewDelta = 0.5 * w / m_zoomFactor - a / b * width_factor;
+	}
 }
