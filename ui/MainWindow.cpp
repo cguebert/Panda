@@ -477,6 +477,7 @@ void MainWindow::createActions()
 	addAction(m_copyDataAction);
 
 	auto showLoggerDialogAction = new QAction(tr("Show &log"), this);
+	showLoggerDialogAction->setShortcut(tr("F2"));
 	showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
 	connect(showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
 

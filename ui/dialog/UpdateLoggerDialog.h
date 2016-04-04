@@ -78,6 +78,7 @@ protected:
 
 	void sortEvents();
 	void updateStates(int prevSelection, long long time);
+	void setSelectedEvent(int previous, int current);
 
 	long long getComputeDuration(const EventData& event);
 

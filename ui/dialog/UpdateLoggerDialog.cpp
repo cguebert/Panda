@@ -191,13 +191,10 @@ void UpdateLoggerView::updateEvents()
 
 	sortEvents();
 
-	const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
-	QString display = eventDescription(event);
-	emit setEventText(display);
+	setSelectedEvent(0, 0);
 
 	m_currentStates = m_initialStates = logger->getInitialNodeStates();
 
-	update();
 	updateGeometry();
 }
 
@@ -429,7 +426,7 @@ void UpdateLoggerView::mousePressEvent(QMouseEvent* event)
 	{
 		if (event->modifiers() == Qt::ControlModifier)
 		{
-			m_previousMousePos = event->pos();
+			m_previousMousePos = m_currentMousePos = event->pos();
 			m_mouseAction = Action_Zooming;
 		}
 		else
@@ -492,11 +489,14 @@ void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
 		int x1 = std::min(m_previousMousePos.x(), m_currentMousePos.x());
 		int x2 = std::max(m_previousMousePos.x(), m_currentMousePos.x());
 		qreal w = x2 - x1;
-		qreal wc = width() - 2 * view_margin;
+		if (w > 5)
+		{
+			qreal wc = width() - 2 * view_margin;
 
-		m_viewDelta -= x1 / m_zoomFactor; // (using old zoom)
-		m_zoomFactor *= wc / w;
-		m_zoomLevel = static_cast<int>(log(m_zoomFactor) / log(1.2) * 10);  // Inverse of "zf = 1.2 ^ (zl / 10)"
+			m_viewDelta -= x1 / m_zoomFactor; // (using old zoom)
+			m_zoomFactor *= wc / w;
+			m_zoomLevel = static_cast<int>(log(m_zoomFactor) / log(1.2) * 10);  // Inverse of "zf = 1.2 ^ (zl / 10)"
+		}
 
 		update();
 	}
@@ -518,17 +518,7 @@ void UpdateLoggerView::mouseReleaseEvent(QMouseEvent* event)
 			}
 
 			if(m_selectedIndex != prevSelection)
-			{
-				const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
-				m_selectedTime = event.m_startTime;
-				updateStates(prevSelection, m_selectedTime);
-
-				QString display = eventDescription(event);
-				emit setEventText(display);
-				emit changedSelectedEvent();
-			}
-
-			update();
+				setSelectedEvent(prevSelection, m_selectedIndex);
 		}
 	}
 
@@ -645,10 +635,7 @@ void UpdateLoggerView::prevEvent()
 
 	if(m_selectedIndex != prevSelection)
 	{
-		const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
-		m_selectedTime = event.m_startTime;
-
-		updateStates(prevSelection, m_selectedTime);
+		setSelectedEvent(prevSelection, m_selectedIndex);
 
 		// Move the view if the select line goes too far
 		int x = posOfTime(m_selectedTime);
@@ -660,12 +647,6 @@ void UpdateLoggerView::prevEvent()
 			qreal c = w - 2 * view_margin;
 			m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
 		}
-
-		QString display = eventDescription(event);
-		emit setEventText(display);
-		emit changedSelectedEvent();
-
-		update();
 	}
 }
 
@@ -679,10 +660,7 @@ void UpdateLoggerView::nextEvent()
 
 	if(m_selectedIndex != prevSelection)
 	{
-		const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
-		m_selectedTime = event.m_startTime;
-
-		updateStates(prevSelection, m_selectedTime);
+		setSelectedEvent(prevSelection, m_selectedIndex);
 
 		// Move the view if the select line goes too far
 		int x = posOfTime(m_selectedTime);
@@ -694,12 +672,6 @@ void UpdateLoggerView::nextEvent()
 			qreal c = w - 2 * view_margin;
 			m_viewDelta = 0.5 * w / m_zoomFactor - a / b * c;
 		}
-
-		QString display = eventDescription(event);
-		emit setEventText(display);
-		emit changedSelectedEvent();
-
-		update();
 	}
 }
 
@@ -736,4 +708,19 @@ long long UpdateLoggerView::getComputeDuration(const EventData& event)
 	}
 
 	return (event.m_endTime - event.m_startTime);
+}
+
+void UpdateLoggerView::setSelectedEvent(int previous, int current)
+{
+	const EventData& event = m_events[m_sortedEvents[m_selectedIndex]];
+	m_selectedTime = event.m_startTime;
+	updateStates(previous, m_selectedTime);
+
+	QString display = QString("%1 %2")
+		.arg(getReadableTime(m_selectedTime - m_minTime), -10)
+		.arg(eventDescription(event));
+	emit setEventText(display);
+	emit changedSelectedEvent();
+
+	update();
 }
