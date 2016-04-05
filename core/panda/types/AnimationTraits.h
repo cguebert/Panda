@@ -32,6 +32,7 @@ public:
 	static const std::type_info& typeInfo() { return typeid(animation_type); }
 	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }
 	static int fullTypeId() { return DataTypeId::getFullTypeOfAnimation(valueTypeId()); }
+	static unsigned int typeColor() { return base_trait::typeColor(); }
 	static int size(const animation_type& a) { return a.size(); }
 	static void clear(animation_type& a, int /*size*/, bool /*init*/) { a.clear(); }
 	static const void* getVoidValue(const animation_type& anim, int index)

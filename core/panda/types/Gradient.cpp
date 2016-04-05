@@ -150,6 +150,8 @@ Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, float amt
 
 template<> PANDA_CORE_API std::string DataTrait<Gradient>::valueTypeName() { return "gradient"; }
 
+template<> PANDA_CORE_API unsigned int DataTrait<Gradient>::typeColor() { return 0x94DAD0; }
+
 template<>
 PANDA_CORE_API void DataTrait<Gradient>::writeValue(XmlElement& elem, const Gradient& grad)
 {

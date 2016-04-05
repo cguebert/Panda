@@ -18,6 +18,13 @@ template<> PANDA_CORE_API std::string DataTrait<float>::valueTypeName() { return
 template<> PANDA_CORE_API std::string DataTrait<std::string>::valueTypeName() { return "text"; }
 
 //****************************************************************************//
+// Overrides for typeColor
+
+template<> PANDA_CORE_API unsigned int DataTrait<int>::typeColor() { return 0xB8C16B; }
+template<> PANDA_CORE_API unsigned int DataTrait<float>::typeColor() { return 0x719B7A; }
+template<> PANDA_CORE_API unsigned int DataTrait<std::string>::typeColor() { return 0xD09A39; }
+
+//****************************************************************************//
 // Overrides for writeValue xml
 
 template<>

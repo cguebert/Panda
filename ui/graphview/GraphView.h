@@ -190,4 +190,16 @@ inline ObjectsSelection& GraphView::selection() const
 inline void GraphView::debugDirtyState(bool show)
 { m_debugDirtyState = show; update(); }
 
+inline QPointF GraphView::getViewDelta() const
+{ return m_viewDelta; }
+
+inline panda::PandaDocument* GraphView::getDocument() const
+{ return m_pandaDocument; }
+
+inline const panda::BaseData* GraphView::getClickedData() const
+{ return m_clickedData; }
+
+inline const panda::BaseData* GraphView::getContextMenuData() const
+{ return m_contextMenuData; }
+
 #endif

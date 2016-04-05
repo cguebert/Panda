@@ -59,6 +59,7 @@ Point fromPolar(Point pol)
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Point>::valueTypeName() { return "point"; }
+template<> PANDA_CORE_API unsigned int DataTrait<Point>::typeColor() { return 0xE058B3; }
 
 template<>
 PANDA_CORE_API void DataTrait<Point>::writeValue(XmlElement& elem, const Point& v)

@@ -17,8 +17,6 @@ public:
 	void drawDatas(QPainter* painter) override;
 	QSize getObjectSize() override;
 
-	QColor getDataColor(const panda::BaseData* data) override;
-
 	static const int createdDataRectMargin = 3;
 
 protected:

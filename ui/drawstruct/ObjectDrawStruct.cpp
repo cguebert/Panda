@@ -152,19 +152,22 @@ void ObjectDrawStruct::drawShape(QPainter* painter)
 
 void ObjectDrawStruct::drawDatas(QPainter* painter)
 {
+	for(const auto& dataPair : m_datas)
+		drawData(painter, dataPair.second, dataPair.first);
+}
+
+void ObjectDrawStruct::drawData(QPainter* painter, const panda::BaseData* data, const QRectF& area)
+{
 	painter->setPen(QPen(m_parentView->palette().text().color()));
 	const panda::BaseData* clickedData = m_parentView->getClickedData();
-	for(const auto& dataPair : m_datas)
-	{
-		if (clickedData
-			&& clickedData != dataPair.second
-			&& !GraphView::isCompatible(clickedData, dataPair.second))
-			painter->setBrush(m_parentView->palette().light());
-		else
-			painter->setBrush(getDataColor(dataPair.second));
 
-		painter->drawRect(dataPair.first);
-	}
+	if (clickedData && clickedData != data
+		&& !GraphView::isCompatible(clickedData, data))
+		painter->setBrush(m_parentView->palette().light());
+	else
+		painter->setBrush(QColor(data->getDataTrait()->typeColor()));
+
+	painter->drawRect(area);
 }
 
 void ObjectDrawStruct::drawText(QPainter* painter)
@@ -214,15 +217,6 @@ void ObjectDrawStruct::load(const panda::XmlElement& elem)
 	newPos.setX(elem.attribute("x").toFloat());
 	newPos.setY(elem.attribute("y").toFloat());
 	move(newPos - m_position);
-}
-
-QColor ObjectDrawStruct::getDataColor(const panda::BaseData* data)
-{
-	// TODO: generate the list programatically if the number of types is different
-	static QStringList colors = { "#D09A39", "#9A80E2", "#94DAD0", "#8ED33E", "#E25C4F",
-		"#C39784", "#E058B3", "#68D083", "#83A1C7", "#CD8CB3", "#B8C16B", "#719B7A" };
-	int typeId = data->getDataTrait()->valueTypeId();
-	return QColor(colors[typeId % 12]);
 }
 
 //****************************************************************************//

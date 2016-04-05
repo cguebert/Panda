@@ -65,9 +65,9 @@ public:
 
 	virtual int dataStartY();
 
-	virtual QColor getDataColor(const panda::BaseData* data);
-
 protected:
+	void drawData(QPainter* painter, const panda::BaseData* data, const QRectF& area);
+
 	GraphView* m_parentView;
 	panda::PandaObject* m_object;
 	QPointF m_position;

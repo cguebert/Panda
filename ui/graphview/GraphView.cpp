@@ -98,26 +98,6 @@ QSize GraphView::sizeHint() const
 	return QSize(600, 400);
 }
 
-QPointF GraphView::getViewDelta() const
-{
-	return m_viewDelta;
-}
-
-panda::PandaDocument* GraphView::getDocument() const
-{
-	return m_pandaDocument;
-}
-
-const panda::BaseData* GraphView::getClickedData() const
-{
-	return m_clickedData;
-}
-
-const panda::BaseData* GraphView::getContextMenuData() const
-{
-	return m_contextMenuData;
-}
-
 panda::PandaObject* GraphView::getObjectAtPos(const QPointF& pt)
 {
 	const auto& objects = m_pandaDocument->getObjects();

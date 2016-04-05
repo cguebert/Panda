@@ -56,6 +56,7 @@ bool Rect::contains(const Rect& r) const
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Rect>::valueTypeName() { return "rectangle"; }
+template<> PANDA_CORE_API unsigned int DataTrait<Rect>::typeColor() { return 0x83A1C7; }
 
 template<>
 PANDA_CORE_API void DataTrait<Rect>::writeValue(XmlElement& elem, const Rect& v)

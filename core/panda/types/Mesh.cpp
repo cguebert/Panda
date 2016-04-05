@@ -619,6 +619,7 @@ Mesh rotated(const Mesh& mesh, const Point& center, float angle)
 
 template<> PANDA_CORE_API std::string DataTrait<Mesh>::valueTypeName() { return "mesh"; }
 template<> PANDA_CORE_API std::string DataTrait<Mesh>::valueTypeNamePlural() { return "meshes"; }
+template<> PANDA_CORE_API unsigned int DataTrait<Mesh>::typeColor() { return 0xE25C4F; }
 
 template<>
 PANDA_CORE_API void DataTrait<Mesh>::writeValue(XmlElement& elem, const Mesh& v)

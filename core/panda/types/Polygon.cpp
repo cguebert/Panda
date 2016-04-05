@@ -67,6 +67,7 @@ Polygon rotated(const Polygon& poly, const Point& center, float angle)
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Polygon>::valueTypeName() { return "polygon"; }
+template<> PANDA_CORE_API unsigned int DataTrait<Polygon>::typeColor() { return 0x68D083; }
 
 template<>
 PANDA_CORE_API void DataTrait<Polygon>::writeValue(XmlElement& elem, const Polygon& poly)

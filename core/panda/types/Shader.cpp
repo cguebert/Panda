@@ -205,6 +205,7 @@ template class PANDA_CORE_API ShaderValue<std::vector<Point>>;
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Shader>::valueTypeName() { return "shader"; }
+template<> PANDA_CORE_API unsigned int DataTrait<Shader>::typeColor() { return 0xCD8CB3; }
 
 template<>
 PANDA_CORE_API void DataTrait<Shader>::writeValue(XmlElement& elem, const Shader& v)

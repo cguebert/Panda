@@ -166,6 +166,7 @@ bool ImageWrapper::operator!=(const ImageWrapper& img) const
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<ImageWrapper>::valueTypeName() { return "image"; }
+template<> PANDA_CORE_API unsigned int DataTrait<ImageWrapper>::typeColor() { return 0x8ED33E; }
 
 template<> PANDA_CORE_API void DataTrait<ImageWrapper>::writeValue(XmlElement&, const ImageWrapper&) {}
 template<> PANDA_CORE_API void DataTrait<ImageWrapper>::readValue(XmlElement&, ImageWrapper&) {}

@@ -126,6 +126,7 @@ Color Color::fromByte(const unsigned char* px)
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Color>::valueTypeName() { return "color"; }
+template<> PANDA_CORE_API unsigned int DataTrait<Color>::typeColor() { return 0x9A80E2; }
 
 template<>
 PANDA_CORE_API void DataTrait<Color>::writeValue(XmlElement& elem, const Color& v)
