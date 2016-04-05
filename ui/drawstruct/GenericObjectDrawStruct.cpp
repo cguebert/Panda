@@ -106,13 +106,17 @@ void GenericObjectDrawStruct::update()
 
 void GenericObjectDrawStruct::drawDatas(QPainter* painter)
 {
-	painter->setPen(QPen(m_parentView->palette().text().color()));
-	const panda::BaseData* clickedData = m_parentView->getClickedData();
 	for(RectDataPair dataPair : m_datas)
 	{
 		if (dynamic_cast<panda::BaseGenericData*>(dataPair.second))
 		{
-			painter->setBrush(m_parentView->palette().button().color());
+			auto data = dataPair.second;
+			painter->setPen(QPen(m_parentView->palette().text().color()));
+			const panda::BaseData* clickedData = m_parentView->getClickedData();
+			if (clickedData && clickedData != data && GraphView::isCompatible(clickedData, data))
+				painter->setBrush(QColor(clickedData->getDataTrait()->typeColor()));
+			else
+				painter->setBrush(m_parentView->palette().button().color());
 			painter->drawRoundedRect(dataPair.first, 3, 3);
 		}
 		else
