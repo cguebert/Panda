@@ -47,7 +47,7 @@ protected:
 	{
 		int type = panda::types::DataTypeId::getIdOf<T>();
 		auto trait = panda::types::DataTraitsList::getTrait(type);
-		return trait->valueTypeName();
+		return trait->typeDescription();
 	}
 
 	Data<std::string> m_fieldNameData;

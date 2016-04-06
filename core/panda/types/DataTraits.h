@@ -147,7 +147,7 @@ public:
 
 	static std::string valueTypeName() { return base_trait::valueTypeName(); }
 	static std::string valueTypeNamePlural() { return base_trait::valueTypeNamePlural(); }
-	static std::string typeName() { return valueTypeName() + "_vector"; }
+	static std::string typeName() { return base_trait::typeName() + "_vector"; }
 	static std::string typeDescription() { return "vector of " + valueTypeNamePlural(); }
 	static const std::type_info& typeInfo() { return typeid(vector_type); }
 	static int valueTypeId() { return DataTypeId::getIdOf<value_type>(); }

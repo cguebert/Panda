@@ -67,8 +67,10 @@ namespace types
 
 	//****************************************************************************//
 
-	template<> PANDA_CORE_API std::string DataTrait<IntVector>::valueTypeName() { return "vector of integers"; }
-	template<> PANDA_CORE_API std::string DataTrait<IntVector>::valueTypeNamePlural() { return "vectors of integers"; }
+	template<> PANDA_CORE_API std::string DataTrait<IntVector>::valueTypeName() { return "integers vector"; }
+	template<> PANDA_CORE_API std::string DataTrait<IntVector>::typeName() { return "intvector"; }
+	template<> PANDA_CORE_API std::string DataTrait<IntVector>::typeDescription() { return "vector of integers"; }
+	template<> PANDA_CORE_API std::string DataTrait<std::vector<IntVector>>::typeDescription() { return "vector of vectors of integers"; }
 	template<> PANDA_CORE_API unsigned int DataTrait<IntVector>::typeColor() { return 0x707020; }
 
 	template<>

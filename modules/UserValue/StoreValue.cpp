@@ -1,49 +1,71 @@
 #include <panda/object/ObjectFactory.h>
 
+#include <panda/helper/typeList.h>
 #include <panda/types/Animation.h>
-#include <panda/types/Color.h>
-#include <panda/types/FloatVector.h>
-#include <panda/types/Gradient.h>
-#include <panda/types/IntVector.h>
-#include <panda/types/Mesh.h>
-#include <panda/types/Path.h>
-#include <panda/types/Rect.h>
-#include <panda/types/Shader.h>
+#include <panda/types/DataTraits.h>
+#include <panda/types/typesLists.h>
 
 #include "StoreValue.h"
 
-namespace panda {
+namespace
+{
+	inline std::string capitalized(const std::string& s)
+	{
+		auto ret = s;
+		ret[0] = toupper(ret[0]);
+		return ret;
+	}
 
-int StoreValue_ColorClass = RegisterObject< StoreValue<types::Color> >("File/Color/Save color").setDescription("Save a value in a file for later use");
-int StoreValue_FloatClass = RegisterObject< StoreValue<float> >("File/Real/Save real").setDescription("Save a value in a file for later use");
-int StoreValue_FloatVectorClass = RegisterObject< StoreValue<types::FloatVector> >("File/Reals vector/Save reals vector").setDescription("Save a value in a file for later use");
-int StoreValue_GradientClass = RegisterObject< StoreValue<types::Gradient> >("File/Gradient/Save gradient").setDescription("Save a value in a file for later use");
-int StoreValue_IntegerClass = RegisterObject< StoreValue<int> >("File/Integer/Save integer").setDescription("Save a value in a file for later use");
-int StoreValue_IntVectorClass = RegisterObject< StoreValue<types::IntVector> >("File/Integers vector/Save integers vector").setDescription("Save a value in a file for later use");
-int StoreValue_MeshClass = RegisterObject< StoreValue<types::Mesh> >("File/Mesh/Save mesh").setDescription("Save a value in a file for later use");
-int StoreValue_PathClass = RegisterObject< StoreValue<types::Path> >("File/Path/Save path").setDescription("Save a value in a file for later use");
-int StoreValue_PointClass = RegisterObject< StoreValue<types::Point> >("File/Point/Save point").setDescription("Save a value in a file for later use");
-int StoreValue_RectClass = RegisterObject< StoreValue<types::Rect> >("File/Rectangle/Save rectangle").setDescription("Save a value in a file for later use");
-int StoreValue_ShaderClass = RegisterObject< StoreValue<types::Shader> >("File/Shader/Save shader").setDescription("Save a value in a file for later use");
-int StoreValue_StringClass = RegisterObject< StoreValue<std::string> >("File/Text/Save text").setDescription("Save a value in a file for later use");
+	struct RegisterSingleValue
+	{
+		template <class T> void operator()(T)
+		{
+			auto trait = panda::types::DataTraitsList::getTraitOf<T>();
+			auto typeName = trait->valueTypeName();
+			auto cap = capitalized(typeName);
+			auto menuName = "File/" + cap + "/Save " + typeName;
 
-int StoreValue_VectorColorClass = RegisterObject< StoreValue< std::vector<types::Color> > >("File/Color/Save colors list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorFloatClass = RegisterObject< StoreValue< std::vector<float> > >("File/Real/Save reals list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorFloatVectorClass = RegisterObject< StoreValue< std::vector<types::FloatVector> > >("File/Reals vector/Save reals vector list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorGradientClass = RegisterObject< StoreValue< std::vector<types::Gradient> > >("File/Gradient/Save gradients list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorIntegerClass = RegisterObject< StoreValue< std::vector<int> > >("File/Integer/Save integers list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorIntVectorClass = RegisterObject< StoreValue< std::vector<types::IntVector> > >("File/Integers vector/Save integers vector list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorMeshClass = RegisterObject< StoreValue< std::vector<types::Mesh> > >("File/Mesh/Save meshes list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorPathClass = RegisterObject< StoreValue< std::vector<types::Path> > >("File/Path/Save paths list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorPointClass = RegisterObject< StoreValue< std::vector<types::Point> > >("File/Point/Save points list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorRectClass = RegisterObject< StoreValue< std::vector<types::Rect> > >("File/Rectangle/Save rectangles list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorShaderClass = RegisterObject< StoreValue< std::vector<types::Shader> > >("File/Shader/Save shaders list").setDescription("Save a value in a file for later use");
-int StoreValue_VectorStringClass = RegisterObject< StoreValue< std::vector<std::string> > >("File/Text/Save texts list").setDescription("Save a value in a file for later use");
+			int r = panda::RegisterObject<panda::StoreValue<T>>(menuName)
+				.setDescription("Save a value in a file for later use");
+		}
+	};
 
-int StoreValue_AnimationColorClass = RegisterObject< StoreValue< types::Animation<types::Color> > >("File/Color/Save colors animation").setDescription("Save a value in a file for later use");
-int StoreValue_AnimationDoubleClass = RegisterObject< StoreValue< types::Animation<float> > >("File/Real/Save reals animation").setDescription("Save a value in a file for later use");
-int StoreValue_AnimationGradientClass = RegisterObject< StoreValue< types::Animation<types::Gradient> > >("File/Gradient/Save gradients animation").setDescription("Save a value in a file for later use");
-int StoreValue_AnimationPointClass = RegisterObject< StoreValue< types::Animation<types::Point> > >("File/Point/Save points animation").setDescription("Save a value in a file for later use");
+	struct RegisterVectors
+	{
+		template <class T> void operator()(T)
+		{
+			auto trait = panda::types::DataTraitsList::getTraitOf<T>();
+			auto menuName = "File/" + capitalized(trait->valueTypeName()) + "/Save " + trait->valueTypeNamePlural() + " list";
 
+			int r = panda::RegisterObject<panda::StoreValue<std::vector<T>>>(menuName)
+				.setDescription("Save a value in a file for later use");
+		}
+	};
+
+	struct RegisterAnimations
+	{
+		template <class T> void operator()(T)
+		{
+			auto trait = panda::types::DataTraitsList::getTraitOf<T>();
+			auto menuName = "File/" + capitalized(trait->valueTypeName()) + "/Save " + trait->valueTypeNamePlural() + " animation";
+
+			int r = panda::RegisterObject<panda::StoreValue<panda::types::Animation<T>>>(menuName)
+				.setDescription("Save a value in a file for later use");
+		}
+	};
+}
+
+namespace panda 
+{
+
+	int RegisterStoreValueObjects()
+	{
+		helper::for_each_type<allDataTypes>(RegisterSingleValue());
+		helper::for_each_type<allDataTypes>(RegisterVectors());
+		helper::for_each_type<allAnimationTypes>(RegisterAnimations());
+		return 1;
+	}
+
+	int GeneratorStoreValue_Classes = RegisterStoreValueObjects();
 
 } // namespace Panda

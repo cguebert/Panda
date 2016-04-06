@@ -68,8 +68,10 @@ namespace types
 
 	//****************************************************************************//
 
-	template<> PANDA_CORE_API std::string DataTrait<FloatVector>::valueTypeName() { return "vector of floats"; }
-	template<> PANDA_CORE_API std::string DataTrait<FloatVector>::valueTypeNamePlural() { return "vectors of floats"; }
+	template<> PANDA_CORE_API std::string DataTrait<FloatVector>::valueTypeName() { return "reals vector"; }
+	template<> PANDA_CORE_API std::string DataTrait<FloatVector>::typeName() { return "realvector"; }
+	template<> PANDA_CORE_API std::string DataTrait<FloatVector>::typeDescription() { return "vector of reals"; }
+	template<> PANDA_CORE_API std::string DataTrait<std::vector<FloatVector>>::typeDescription() { return "vector of vectors of reals"; }
 	template<> PANDA_CORE_API unsigned int DataTrait<FloatVector>::typeColor() { return 0x719B7A; }
 
 	template<>

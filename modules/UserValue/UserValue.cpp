@@ -1,51 +1,82 @@
 #include <panda/object/ObjectFactory.h>
 
+#include <panda/helper/typeList.h>
 #include <panda/types/Animation.h>
-#include <panda/types/Color.h>
-#include <panda/types/FloatVector.h>
-#include <panda/types/Gradient.h>
-#include <panda/types/IntVector.h>
-#include <panda/types/Mesh.h>
-#include <panda/types/Polygon.h>
-#include <panda/types/Rect.h>
-#include <panda/types/Shader.h>
+#include <panda/types/DataTraits.h>
+#include <panda/types/typesLists.h>
 
 #include "UserValue.h"
 
-namespace panda {
+#include <ctype.h>
 
-int GeneratorUser_ColorClass = RegisterObject< GeneratorUser<types::Color> >("Generator/Color/Color user value").setName("Color value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_FloatClass = RegisterObject< GeneratorUser<float> >("Generator/Real/Real user value").setName("Real value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_FloatsVectorClass = RegisterObject< GeneratorUser<types::FloatVector> >("Generator/Reals vector/Reals vector user value").setName("Reals vector value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_GradientClass = RegisterObject< GeneratorUser<types::Gradient> >("Generator/Gradient/Gradient user value").setName("Gradient value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_IntegerClass = RegisterObject< GeneratorUser<int> >("Generator/Integer/Integer user value").setName("Integer value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_IntVectorClass = RegisterObject< GeneratorUser<types::IntVector> >("Generator/Integers vector/Integers vector user value").setName("Integers vector value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_MeshClass = RegisterObject< GeneratorUser<types::Mesh> >("Generator/Mesh/Mesh user value").setName("Mesh value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_PathClass = RegisterObject< GeneratorUser<types::Path> >("Generator/Path/Path user value").setName("Path value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_PointClass = RegisterObject< GeneratorUser<types::Point> >("Generator/Point/Point user value").setName("Point value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_PolygonClass = RegisterObject< GeneratorUser<types::Polygon> >("Generator/Polygon/Polygon user value").setName("Polygon value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_RectClass = RegisterObject< GeneratorUser<types::Rect> >("Generator/Rectangle/Rectangle user value").setName("Rectangle value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_ShaderClass = RegisterObject< GeneratorUser<types::Shader> >("Generator/Shader/Shader user value").setName("Shader value").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_StringClass = RegisterObject< GeneratorUser<std::string> >("Generator/Text/Text user value").setName("Text value").setDescription("Lets you store a value for use in other objects");
+namespace
+{
+	inline std::string capitalized(const std::string& s)
+	{
+		auto ret = s;
+		ret[0] = toupper(ret[0]);
+		return ret;
+	}
 
-int GeneratorUser_VectorColorClass = RegisterObject< GeneratorUser< std::vector<types::Color> > >("Generator/Color/Colors list user value").setName("Colors list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorFloatClass = RegisterObject< GeneratorUser< std::vector<float> > >("Generator/Real/Reals list user value").setName("Reals list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorFloatsVectorClass = RegisterObject< GeneratorUser< std::vector<types::FloatVector> > >("Generator/Reals vector/Reals vector list user value").setName("Reals vector list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorGradientClass = RegisterObject< GeneratorUser< std::vector<types::Gradient> > >("Generator/Gradient/Gradients list user value").setName("Gradients list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorIntegerClass = RegisterObject< GeneratorUser< std::vector<int> > >("Generator/Integer/Integers list user value").setName("Integers list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorIntVectorClass = RegisterObject< GeneratorUser< std::vector<types::IntVector> > >("Generator/Integers vector/Integers vector list user value").setName("Integers vector list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorMeshClass = RegisterObject< GeneratorUser< std::vector<types::Mesh> > >("Generator/Mesh/Meshes list user value").setName("Meshes list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorPathClass = RegisterObject< GeneratorUser< std::vector<types::Path> > >("Generator/Path/Paths list user value").setName("Paths list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorPointClass = RegisterObject< GeneratorUser< std::vector<types::Point> > >("Generator/Point/Points list user value").setName("Points list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorPolygonlass = RegisterObject< GeneratorUser< std::vector<types::Polygon> > >("Generator/Polygon/Polygons list user value").setName("Polygons list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorRectClass = RegisterObject< GeneratorUser< std::vector<types::Rect> > >("Generator/Rectangle/Rectangles list user value").setName("Rectangles list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorShaderClass = RegisterObject< GeneratorUser< std::vector<types::Shader> > >("Generator/Shader/Shaders list user value").setName("Shaders list").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_VectorStringClass = RegisterObject< GeneratorUser< std::vector<std::string> > >("Generator/Text/Texts list user value").setName("Texts list").setDescription("Lets you store a value for use in other objects");
+	struct RegisterSingleValue
+	{
+		template <class T> void operator()(T)
+		{
+			auto typeName = capitalized(panda::types::DataTraitsList::getTraitOf<T>()->valueTypeName());
+			auto menuName = "Generator/" + typeName + "/" + typeName + " user value";
+			auto name = typeName + " value";
 
-int GeneratorUser_AnimationColorClass = RegisterObject< GeneratorUser< types::Animation<types::Color> > >("Generator/Color/Colors animation user value").setName("Colors animation").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_AnimationFloatClass = RegisterObject< GeneratorUser< types::Animation<float> > >("Generator/Real/Reals animation user value").setName("Reals animation").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_AnimationGradientClass = RegisterObject< GeneratorUser< types::Animation<types::Gradient> > >("Generator/Gradient/Gradients animation user value").setName("Gradients animation").setDescription("Lets you store a value for use in other objects");
-int GeneratorUser_AnimationPointClass = RegisterObject< GeneratorUser< types::Animation<types::Point> > >("Generator/Point/Points animation user value").setName("Points animation").setDescription("Lets you store a value for use in other objects");
+			int r = panda::RegisterObject<panda::GeneratorUser<T>>(menuName)
+				.setName(name)
+				.setDescription("Lets you store a value for use in other objects");
+		}
+	};
+
+	struct RegisterVectors
+	{
+		template <class T> void operator()(T)
+		{
+			auto trait = panda::types::DataTraitsList::getTraitOf<T>();
+			auto typeName = capitalized(trait->valueTypeName());
+			auto plural = capitalized(trait->valueTypeNamePlural());
+			auto menuName = "Generator/" + typeName + "/" + plural + " list user value";
+			auto name = typeName + " list";
+
+			int r = panda::RegisterObject<panda::GeneratorUser<std::vector<T>>>(menuName)
+				.setName(name)
+				.setDescription("Lets you store a value for use in other objects");
+		}
+	};
+
+	struct RegisterAnimations
+	{
+		template <class T> void operator()(T)
+		{
+			auto trait = panda::types::DataTraitsList::getTraitOf<T>();
+			auto typeName = capitalized(trait->valueTypeName());
+			auto plural = capitalized(trait->valueTypeNamePlural());
+			auto menuName = "Generator/" + typeName + "/" + plural + " animation user value";
+			auto name = typeName + " animation";
+
+			int r = panda::RegisterObject<panda::GeneratorUser<panda::types::Animation<T>>>(menuName)
+				.setName(name)
+				.setDescription("Lets you store a value for use in other objects");
+		}
+	};
+}
+
+namespace panda 
+{
+
+	int RegisterUserValueObjects()
+	{
+		helper::for_each_type<allDataTypes>(RegisterSingleValue());
+		helper::for_each_type<allDataTypes>(RegisterVectors());
+		helper::for_each_type<allAnimationTypes>(RegisterAnimations());
+		return 1;
+	}
+	
+	int GeneratorUserValue_Classes = RegisterUserValueObjects();
 
 } // namespace Panda
 
