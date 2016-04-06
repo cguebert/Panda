@@ -2,6 +2,8 @@
 #include <ui/graphview/GraphView.h>
 
 #include <panda/object/GenericObject.h>
+#include <panda/data/BaseData.h>
+#include <panda/types/DataTraits.h>
 
 #include <QPainter>
 

@@ -80,6 +80,7 @@ set(HEADER_FILES
 	panda/types/Shader.h
 	panda/types/StandardTypes.h
 	panda/types/TypeConverter.h
+	panda/types/typesLists.h
 )
 
 set(SOURCE_FILES

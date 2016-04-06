@@ -1,6 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/GenericObject.h>
+#include <panda/types/typesLists.h>
 
 #include <algorithm>
 
@@ -33,7 +34,7 @@ public:
 											 false, true,
 											 "indices",
 											 "Indices corresponding to the sorted list"));
-		setupGenericObject<allSearchableTypes>(this, generic, defList);
+		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
 
 	template <class T>

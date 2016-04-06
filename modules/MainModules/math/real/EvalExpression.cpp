@@ -1,6 +1,8 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/GenericObject.h>
+
+#include <algorithm>
 #include "TinyExpr/tinyexpr.h"
 
 namespace panda {

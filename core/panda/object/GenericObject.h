@@ -3,13 +3,6 @@
 
 #include <panda/object/PandaObject.h>
 #include <panda/types/DataTypeId.h>
-#include <panda/types/Color.h>
-#include <panda/types/Gradient.h>
-#include <panda/types/ImageWrapper.h>
-#include <panda/types/Polygon.h>
-#include <panda/types/Mesh.h>
-#include <panda/types/Rect.h>
-#include <panda/types/Shader.h>
 #include <panda/helper/typeList.h>
 
 #include <functional>
@@ -197,14 +190,6 @@ protected:
 private:
 	int m_connectedType;
 };
-
-//****************************************************************************//
-
-typedef std::tuple<int, float, types::Color, types::Point, types::Rect, std::string, types::ImageWrapper,
-	types::Gradient, types::Shader, types::Mesh, types::Path, types::Polygon> allDataTypes;
-typedef std::tuple<int, float, types::Color, types::Point, types::Rect, std::string> allSearchableTypes;
-typedef std::tuple<int, float, types::Color, types::Point, types::Rect> allNumericalTypes;
-typedef std::tuple<float, types::Color, types::Point, types::Gradient> allAnimationTypes;
 
 } // namespace panda
 

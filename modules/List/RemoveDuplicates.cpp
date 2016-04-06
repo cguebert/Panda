@@ -1,6 +1,8 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/GenericObject.h>
 #include <panda/object/ObjectFactory.h>
+#include <panda/types/typesLists.h>
+
 #include <set>
 
 using panda::types::Color;
@@ -75,7 +77,7 @@ public:
 											 false, true,
 											 "output",
 											 "Output list"));
-		setupGenericObject<allSearchableTypes>(this, generic, defList);
+		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
 
 	template <class T>

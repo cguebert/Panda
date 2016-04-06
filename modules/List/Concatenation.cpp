@@ -2,6 +2,7 @@
 #include <panda/object/GenericObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
+#include <panda/types/typesLists.h>
 
 namespace panda {
 
