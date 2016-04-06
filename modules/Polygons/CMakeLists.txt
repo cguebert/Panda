@@ -16,6 +16,7 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
+	polygonsModule.cpp
 	ClipperOperations.cpp
 	ClipperUtils.cpp
 	ComposePolygon.cpp
@@ -23,7 +24,8 @@ set(SOURCE_FILES
 	MeshToPolygon.cpp
 	PolygonMath.cpp
 	PolygonOperations.cpp
-	polygonsModule.cpp
+	PolygonsToIndices.cpp
+	PolygonsTopology.cpp
 	SimplePolygons.cpp
 	Triangulation.cpp
 	Voronoi.cpp
