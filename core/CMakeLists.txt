@@ -68,8 +68,10 @@ set(HEADER_FILES
 	panda/types/Color.h
 	panda/types/DataTraits.h
 	panda/types/DataTypeId.h
+	panda/types/FloatVector.h
 	panda/types/Gradient.h
 	panda/types/ImageWrapper.h
+	panda/types/IntVector.h
 	panda/types/Mesh.h
 	panda/types/Path.h
 	panda/types/Point.h
@@ -134,8 +136,10 @@ set(SOURCE_FILES
 	panda/types/Color.cpp
 	panda/types/DataTraits.cpp
 	panda/types/DataTypeId.cpp
+	panda/types/FloatVector.cpp
 	panda/types/Gradient.cpp
 	panda/types/ImageWrapper.cpp
+	panda/types/IntVector.cpp
 	panda/types/Mesh.cpp
 	panda/types/Path.cpp
 	panda/types/Point.cpp
