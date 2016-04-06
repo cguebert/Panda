@@ -209,8 +209,8 @@ bool MainWindow::saveAs()
 void MainWindow::about()
 {
 	QMessageBox::about(this, tr("About Panda"),
-			tr("<h2>Panda 0.4</h2>"
-			   "<p>Copyright &copy; 2015 Christophe Guébert"
+			tr("<h2>Panda 0.5</h2>"
+			   "<p>Copyright &copy; 2016 Christophe Guébert"
 			   "<p>Panda is a framework for procedural drawing and animation."));
 }
 
