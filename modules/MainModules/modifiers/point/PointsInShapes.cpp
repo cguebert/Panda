@@ -19,12 +19,16 @@ public:
 		, inputPoints(initData("input", "List of points to test"))
 		, outputPoints(initData("output", "List of valid points" ))
 		, outputIndices(initData("indices", "Indices of the valid points"))
+		, outside(initData(0, "outside", "Select instead the points outside of the rectangle"))
 	{
 		addInput(rectangle);
 		addInput(inputPoints);
+		addInput(outside);
 
 		addOutput(outputPoints);
 		addOutput(outputIndices);
+
+		outside.setWidget("checkbox");
 	}
 
 	void update()
@@ -38,13 +42,28 @@ public:
 		outPts.clear();
 		outId.clear();
 
-		for(int i=0; i<nb; ++i)
+		if (outside.getValue() != 0)
 		{
-			Point pt = inPts[i];
-			if(rect.contains(pt))
+			for (int i = 0; i < nb; ++i)
 			{
-				outPts.push_back(pt);
-				outId.push_back(i);
+				Point pt = inPts[i];
+				if (!rect.contains(pt))
+				{
+					outPts.push_back(pt);
+					outId.push_back(i);
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < nb; ++i)
+			{
+				Point pt = inPts[i];
+				if (rect.contains(pt))
+				{
+					outPts.push_back(pt);
+					outId.push_back(i);
+				}
 			}
 		}
 	}
@@ -53,6 +72,7 @@ protected:
 	Data< Rect > rectangle;
 	Data< std::vector<Point> > inputPoints, outputPoints;
 	Data< std::vector<int> > outputIndices;
+	Data< int > outside;
 };
 
 int ModifierPoints_PointsInRectClass = RegisterObject<ModifierPoints_PointsInRect>("Modifier/Point/Points in rectangle").setDescription("Select points that are inside a rectangle");
@@ -71,13 +91,17 @@ public:
 		, inputPoints(initData("input", "List of points to test"))
 		, outputPoints(initData("output", "List of valid points" ))
 		, outputIndices(initData("indices", "Indices of the valid points"))
+		, outside(initData(0, "outside", "Select instead the points outside of the disk"))
 	{
 		addInput(center);
 		addInput(radius);
 		addInput(inputPoints);
+		addInput(outside);
 
 		addOutput(outputPoints);
 		addOutput(outputIndices);
+
+		outside.setWidget("checkbox");
 	}
 
 	void update()
@@ -93,14 +117,30 @@ public:
 		outPts.clear();
 		outId.clear();
 
-		for(int i=0; i<nb; ++i)
+		if (outside.getValue() != 0)
 		{
-			Point pt = inPts[i];
-			float d2 = (pt - c).norm2();
-			if(d2 < r2)
+			for (int i = 0; i < nb; ++i)
 			{
-				outPts.push_back(pt);
-				outId.push_back(i);
+				Point pt = inPts[i];
+				float d2 = (pt - c).norm2();
+				if (d2 > r2)
+				{
+					outPts.push_back(pt);
+					outId.push_back(i);
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < nb; ++i)
+			{
+				Point pt = inPts[i];
+				float d2 = (pt - c).norm2();
+				if (d2 <= r2)
+				{
+					outPts.push_back(pt);
+					outId.push_back(i);
+				}
 			}
 		}
 	}
@@ -110,6 +150,7 @@ protected:
 	Data< float > radius;
 	Data< std::vector<Point> > inputPoints, outputPoints;
 	Data< std::vector<int> > outputIndices;
+	Data< int > outside;
 };
 
 int ModifierPoints_PointsInDiskClass = RegisterObject<ModifierPoints_PointsInDisk>("Modifier/Point/Points in disk").setDescription("Select points that are inside a disk");
