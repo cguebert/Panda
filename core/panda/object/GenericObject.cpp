@@ -548,7 +548,7 @@ std::string BaseGenericData::getTypesName(bool useFullDescription) const
 			if(useFullDescription)
 				sortedTypeNames.push_back(trait->typeDescription());
 			else
-				sortedTypeNames.push_back(trait->typeName());
+				sortedTypeNames.push_back(trait->valueTypeName());
 		}
 	}
 	std::sort(sortedTypeNames.begin(), sortedTypeNames.end());
