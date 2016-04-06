@@ -166,7 +166,7 @@ bool ImageWrapper::operator!=(const ImageWrapper& img) const
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<ImageWrapper>::valueTypeName() { return "image"; }
-template<> PANDA_CORE_API unsigned int DataTrait<ImageWrapper>::typeColor() { return 0x8ED33E; }
+template<> PANDA_CORE_API unsigned int DataTrait<ImageWrapper>::typeColor() { return 0x94DAD0; }
 
 template<> PANDA_CORE_API void DataTrait<ImageWrapper>::writeValue(XmlElement&, const ImageWrapper&) {}
 template<> PANDA_CORE_API void DataTrait<ImageWrapper>::readValue(XmlElement&, ImageWrapper&) {}
@@ -174,8 +174,8 @@ template<> PANDA_CORE_API void DataTrait<ImageWrapper>::readValue(XmlElement&, I
 template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isDisplayed() { return false; }
 template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isPersistent() { return false; }
 
-template class Data< ImageWrapper >;
-template class Data< std::vector<ImageWrapper> >;
+template class PANDA_CORE_API Data< ImageWrapper >;
+template class PANDA_CORE_API Data< std::vector<ImageWrapper> >;
 
 int imageDataClass = RegisterData< ImageWrapper >();
 int imageVectorDataClass = RegisterData< std::vector<ImageWrapper> >();

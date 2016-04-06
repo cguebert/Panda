@@ -39,8 +39,8 @@ inline bool Polygon::operator!=(const Polygon& p) const
 { return contour != p.contour || holes != p.holes; }
 
 #ifndef PANDA_BUILD_CORE
-extern template class PANDA_CORE_API Data< Polygon >;
-extern template class PANDA_CORE_API Data< std::vector<Polygon> >;
+extern template class PANDA_CORE_API Data<Polygon>;
+extern template class PANDA_CORE_API Data<std::vector<Polygon>>;
 #endif
 
 } // namespace types

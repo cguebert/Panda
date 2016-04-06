@@ -67,6 +67,11 @@ private:
 	std::vector<types::Color> m_buffer;
 };
 
+#ifndef PANDA_BUILD_CORE
+extern template class PANDA_CORE_API Data<ImageWrapper>;
+extern template class PANDA_CORE_API Data<std::vector<ImageWrapper>>;
+#endif
+
 inline graphics::Size ImageWrapper::size() const
 { return m_size; }
 

@@ -56,7 +56,7 @@ bool Rect::contains(const Rect& r) const
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Rect>::valueTypeName() { return "rectangle"; }
-template<> PANDA_CORE_API unsigned int DataTrait<Rect>::typeColor() { return 0x83A1C7; }
+template<> PANDA_CORE_API unsigned int DataTrait<Rect>::typeColor() { return 0xD09A39; }
 
 template<>
 PANDA_CORE_API void DataTrait<Rect>::writeValue(XmlElement& elem, const Rect& v)
@@ -74,8 +74,8 @@ PANDA_CORE_API void DataTrait<Rect>::readValue(XmlElement& elem, Rect& v)
 	v.setBottom(elem.attribute("b").toFloat());
 }
 
-template class Data< Rect >;
-template class Data< std::vector<Rect> >;
+template class PANDA_CORE_API Data< Rect >;
+template class PANDA_CORE_API Data< std::vector<Rect> >;
 
 int rectDataClass = RegisterData< Rect >();
 int rectVectorDataClass = RegisterData< std::vector<Rect> >();

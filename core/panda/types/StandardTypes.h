@@ -1,8 +1,12 @@
+#pragma once
+
+#ifndef PANDA_BUILD_CORE
 #include <panda/core.h>
 #include <panda/data/Data.h>
 
 #include <string>
 #include <vector>
+#endif
 
 namespace panda
 {
@@ -19,7 +23,6 @@ extern template class PANDA_CORE_API Data< std::vector<int> >;
 extern template class PANDA_CORE_API Data< std::vector<float> >;
 extern template class PANDA_CORE_API Data< std::vector<std::string> >;
 #endif
-
 
 } // namespace types
 

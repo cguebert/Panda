@@ -206,7 +206,7 @@ void reorientPolygon(Path& poly)
 //****************************************************************************//
 
 template<> PANDA_CORE_API std::string DataTrait<Path>::valueTypeName() { return "path"; }
-template<> PANDA_CORE_API unsigned int DataTrait<Path>::typeColor() { return 0xC39784; }
+template<> PANDA_CORE_API unsigned int DataTrait<Path>::typeColor() { return 0xCD8CB3; }
 
 template<>
 PANDA_CORE_API void DataTrait<Path>::writeValue(XmlElement& elem, const Path& path)

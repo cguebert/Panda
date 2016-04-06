@@ -252,11 +252,10 @@ PANDA_CORE_API Point toPolar(Point car);
 PANDA_CORE_API Point fromPolar(Point pol);
 
 #ifndef PANDA_BUILD_CORE
-extern template class PANDA_CORE_API std::vector<Point>;
-extern template class PANDA_CORE_API Data< Point >;
-extern template class PANDA_CORE_API Data< std::vector<Point> >;
+extern template class PANDA_CORE_API Data<Point>;
+extern template class PANDA_CORE_API Data<std::vector<Point>>;
 extern template class PANDA_CORE_API Animation<Point>;
-extern template class PANDA_CORE_API Data< Animation<Point> >;
+extern template class PANDA_CORE_API Data<Animation<Point>>;
 #endif
 
 } // namespace types

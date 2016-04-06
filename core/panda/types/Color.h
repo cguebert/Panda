@@ -196,9 +196,9 @@ inline bool operator<(const Color& lhs, const Color& rhs)
 
 #ifndef PANDA_BUILD_CORE
 extern template class PANDA_CORE_API Data<Color>;
-extern template class PANDA_CORE_API Data< std::vector<Color> >;
+extern template class PANDA_CORE_API Data<std::vector<Color>>;
 extern template class PANDA_CORE_API Animation<Color>;
-extern template class PANDA_CORE_API Data< Animation<Color> >;
+extern template class PANDA_CORE_API Data<Animation<Color>>;
 #endif
 
 } // namespace types

@@ -150,7 +150,7 @@ Gradient Gradient::interpolate(const Gradient& g1, const Gradient& g2, float amt
 
 template<> PANDA_CORE_API std::string DataTrait<Gradient>::valueTypeName() { return "gradient"; }
 
-template<> PANDA_CORE_API unsigned int DataTrait<Gradient>::typeColor() { return 0x94DAD0; }
+template<> PANDA_CORE_API unsigned int DataTrait<Gradient>::typeColor() { return 0x83A1C7; }
 
 template<>
 PANDA_CORE_API void DataTrait<Gradient>::writeValue(XmlElement& elem, const Gradient& grad)
@@ -187,8 +187,8 @@ PANDA_CORE_API void DataTrait<Gradient>::readValue(XmlElement& elem, Gradient& g
 	}
 }
 
-template class Data< Gradient >;
-template class Data< std::vector<Gradient> >;
+template class PANDA_CORE_API Data< Gradient >;
+template class PANDA_CORE_API Data< std::vector<Gradient> >;
 
 int gradientDataClass = RegisterData< Gradient >();
 int gradientVectorDataClass = RegisterData< std::vector<Gradient> >();
@@ -199,8 +199,8 @@ template<>
 Gradient interpolate(const Gradient& g1, const Gradient& g2, float amt)
 { return Gradient::interpolate(g1, g2, amt); }
 
-template class Animation<Gradient>;
-template class Data< Animation<Gradient> >;
+template class PANDA_CORE_API Animation<Gradient>;
+template class PANDA_CORE_API Data< Animation<Gradient> >;
 int gradientAnimationDataClass = RegisterData< Animation<Gradient> >();
 
 } // namespace types

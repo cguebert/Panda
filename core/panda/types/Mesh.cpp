@@ -686,8 +686,8 @@ PANDA_CORE_API void DataTrait<Mesh>::readValue(XmlElement& elem, Mesh& v)
 	v = std::move(tmpMesh);
 }
 
-template class Data< Mesh >;
-template class Data< std::vector<Mesh> >;
+template class PANDA_CORE_API Data< Mesh >;
+template class PANDA_CORE_API Data< std::vector<Mesh> >;
 
 int meshDataClass = RegisterData< Mesh >();
 int meshVectorDataClass = RegisterData< std::vector<Mesh> >();

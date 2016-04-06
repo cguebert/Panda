@@ -59,6 +59,13 @@ protected:
 	Extend m_extend;
 };
 
+#ifndef PANDA_BUILD_CORE
+extern template class PANDA_CORE_API Data<Gradient>;
+extern template class PANDA_CORE_API Data<std::vector<Gradient>>;
+extern template class PANDA_CORE_API Animation<Gradient>;
+extern template class PANDA_CORE_API Data<Animation<Gradient>>;
+#endif
+
 inline Gradient interpolate(const Gradient& g1, const Gradient& g2, float amt)
 { return Gradient::interpolate(g1, g2, amt); }
 

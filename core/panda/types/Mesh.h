@@ -145,6 +145,11 @@ protected:
 	TrianglesIndicesList m_trianglesOnBorder;
 };
 
+#ifndef PANDA_BUILD_CORE
+extern template class PANDA_CORE_API Data<Mesh>;
+extern template class PANDA_CORE_API Data<std::vector<Mesh>>;
+#endif
+
 PANDA_CORE_API void translate(Mesh& mesh, const Point& delta);
 PANDA_CORE_API Mesh translated(const Mesh& mesh, const Point& delta);
 

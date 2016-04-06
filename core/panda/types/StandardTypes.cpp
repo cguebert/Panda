@@ -21,8 +21,8 @@ template<> PANDA_CORE_API std::string DataTrait<std::string>::valueTypeName() { 
 // Overrides for typeColor
 
 template<> PANDA_CORE_API unsigned int DataTrait<int>::typeColor() { return 0xB8C16B; }
-template<> PANDA_CORE_API unsigned int DataTrait<float>::typeColor() { return 0x719B7A; }
-template<> PANDA_CORE_API unsigned int DataTrait<std::string>::typeColor() { return 0xD09A39; }
+template<> PANDA_CORE_API unsigned int DataTrait<float>::typeColor() { return 0x68D083; }
+template<> PANDA_CORE_API unsigned int DataTrait<std::string>::typeColor() { return 0x8ED33E; }
 
 //****************************************************************************//
 // Overrides for writeValue xml
@@ -56,13 +56,13 @@ PANDA_CORE_API void DataTrait<std::string>::readValue(XmlElement& elem, std::str
 
 //****************************************************************************//
 
-template class Data<int>;
-template class Data<float>;
-template class Data<std::string>;
+template class PANDA_CORE_API Data<int>;
+template class PANDA_CORE_API Data<float>;
+template class PANDA_CORE_API Data<std::string>;
 
-template class Data< std::vector<int> >;
-template class Data< std::vector<float> >;
-template class Data< std::vector<std::string> >;
+template class PANDA_CORE_API Data< std::vector<int> >;
+template class PANDA_CORE_API Data< std::vector<float> >;
+template class PANDA_CORE_API Data< std::vector<std::string> >;
 
 int intDataClass = RegisterData< int >();
 int doubleDataClass = RegisterData< float >();
@@ -72,8 +72,8 @@ int intVectorDataClass = RegisterData< std::vector<int> >();
 int doubleVectorDataClass = RegisterData< std::vector<float> >();
 int stringVectorDataClass = RegisterData< std::vector<std::string> >();
 
-template class Animation<float>;
-template class Data< Animation<float> >;
+template class PANDA_CORE_API Animation<float>;
+template class PANDA_CORE_API Data< Animation<float> >;
 int realAnimationDataClass = RegisterData< Animation<float> >();
 
 } // namespace types

@@ -162,6 +162,11 @@ protected:
 	std::vector<std::pair<std::string, unsigned int>> m_customTextures;
 };
 
+#ifndef PANDA_BUILD_CORE
+extern template class PANDA_CORE_API Data<Shader>;
+extern template class PANDA_CORE_API Data<std::vector<Shader>>;
+#endif
+
 } // namespace types
 
 } // namespace panda

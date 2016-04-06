@@ -56,8 +56,8 @@ PANDA_CORE_API bool polygonContainsPoint(const Path &poly, types::Point pt);
 PANDA_CORE_API void reorientPolygon(Path& poly);
 
 #ifndef PANDA_BUILD_CORE
-extern template class PANDA_CORE_API Data< Path >;
-extern template class PANDA_CORE_API Data< std::vector<Path> >;
+extern template class PANDA_CORE_API Data<Path>;
+extern template class PANDA_CORE_API Data<std::vector<Path>>;
 #endif
 
 inline Path::Path(const std::vector<Point>& v)
