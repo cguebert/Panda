@@ -17,18 +17,12 @@ public:
 		: PandaObject(doc)
 		, rectangle(initData("rectangle", "Rectangle used to select valid points"))
 		, inputPoints(initData("input", "List of points to test"))
-		, outputPoints(initData("output", "List of valid points" ))
-		, outputIndices(initData("indices", "Indices of the valid points"))
-		, outside(initData(0, "outside", "Select instead the points outside of the rectangle"))
+		, output(initData("isInside", "For each input points, 1 if it is inside the rectangle, 0 otherwise"))
 	{
 		addInput(rectangle);
 		addInput(inputPoints);
-		addInput(outside);
 
-		addOutput(outputPoints);
-		addOutput(outputIndices);
-
-		outside.setWidget("checkbox");
+		addOutput(output);
 	}
 
 	void update()
@@ -36,43 +30,18 @@ public:
 		const Rect& rect = rectangle.getValue();
 
 		const std::vector<Point>& inPts = inputPoints.getValue();
-		auto outPts = outputPoints.getAccessor();
-		auto outId = outputIndices.getAccessor();
+		auto outVal = output.getAccessor();
 		int nb = inPts.size();
-		outPts.clear();
-		outId.clear();
+		outVal.resize(nb);
 
-		if (outside.getValue() != 0)
-		{
-			for (int i = 0; i < nb; ++i)
-			{
-				Point pt = inPts[i];
-				if (!rect.contains(pt))
-				{
-					outPts.push_back(pt);
-					outId.push_back(i);
-				}
-			}
-		}
-		else
-		{
-			for (int i = 0; i < nb; ++i)
-			{
-				Point pt = inPts[i];
-				if (rect.contains(pt))
-				{
-					outPts.push_back(pt);
-					outId.push_back(i);
-				}
-			}
-		}
+		for (int i = 0; i < nb; ++i)
+			outVal[i] = rect.contains(inPts[i]) ? 1 : 0;
 	}
 
 protected:
 	Data< Rect > rectangle;
-	Data< std::vector<Point> > inputPoints, outputPoints;
-	Data< std::vector<int> > outputIndices;
-	Data< int > outside;
+	Data< std::vector<Point> > inputPoints;
+	Data< std::vector<int> > output;
 };
 
 int ModifierPoints_PointsInRectClass = RegisterObject<ModifierPoints_PointsInRect>("Modifier/Point/Points in rectangle").setDescription("Select points that are inside a rectangle");
@@ -89,19 +58,13 @@ public:
 		, center(initData("center", "Center of the disk used to select valid points"))
 		, radius(initData((float)50, "radius", "Radius of the disk used to select valid points"))
 		, inputPoints(initData("input", "List of points to test"))
-		, outputPoints(initData("output", "List of valid points" ))
-		, outputIndices(initData("indices", "Indices of the valid points"))
-		, outside(initData(0, "outside", "Select instead the points outside of the disk"))
+		, output(initData("isInside", "For each input points, 1 if it is inside the rectangle, 0 otherwise"))
 	{
 		addInput(center);
 		addInput(radius);
 		addInput(inputPoints);
-		addInput(outside);
 
-		addOutput(outputPoints);
-		addOutput(outputIndices);
-
-		outside.setWidget("checkbox");
+		addOutput(output);
 	}
 
 	void update()
@@ -111,49 +74,26 @@ public:
 		float r2 = r*r;
 
 		const std::vector<Point>& inPts = inputPoints.getValue();
-		auto outPts = outputPoints.getAccessor();
-		auto outId = outputIndices.getAccessor();
+		auto outVal = output.getAccessor();
 		int nb = inPts.size();
-		outPts.clear();
-		outId.clear();
+		outVal.clear();
+		outVal.resize(nb);
 
-		if (outside.getValue() != 0)
+		for (int i = 0; i < nb; ++i)
 		{
-			for (int i = 0; i < nb; ++i)
-			{
-				Point pt = inPts[i];
-				float d2 = (pt - c).norm2();
-				if (d2 > r2)
-				{
-					outPts.push_back(pt);
-					outId.push_back(i);
-				}
-			}
-		}
-		else
-		{
-			for (int i = 0; i < nb; ++i)
-			{
-				Point pt = inPts[i];
-				float d2 = (pt - c).norm2();
-				if (d2 <= r2)
-				{
-					outPts.push_back(pt);
-					outId.push_back(i);
-				}
-			}
+			Point pt = inPts[i];
+			float d2 = (pt - c).norm2();
+			outVal[i] = (d2 <= r2) ? 1 : 0;
 		}
 	}
 
 protected:
 	Data< Point > center;
 	Data< float > radius;
-	Data< std::vector<Point> > inputPoints, outputPoints;
-	Data< std::vector<int> > outputIndices;
-	Data< int > outside;
+	Data< std::vector<Point> > inputPoints;
+	Data< std::vector<int> > output;
 };
 
 int ModifierPoints_PointsInDiskClass = RegisterObject<ModifierPoints_PointsInDisk>("Modifier/Point/Points in disk").setDescription("Select points that are inside a disk");
-
 
 } // namespace Panda
