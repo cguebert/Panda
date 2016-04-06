@@ -53,7 +53,7 @@ public:
 		ensureTypesAreRegistered();
 		int fromType = DataTypeId::getIdOf<From>();
 		int toType = DataTypeId::getIdOf<To>();
-		auto functor = std::make_shared<TypeConverterGlobal<From, To>>(function);
+		auto functor = std::make_shared<TypeConverterFunctor<From, To>>(function);
 
 		TypeConverter::registerFunctor(fromType, toType, functor);
 	}

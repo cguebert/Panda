@@ -1,6 +1,7 @@
 #include <panda/data/DataFactory.h>
 
 #include <panda/types/FloatVector.h>
+#include <panda/types/IntVector.h>
 
 namespace panda
 {
@@ -109,10 +110,36 @@ namespace types
 
 } // namespace panda
 
-void convertType(const panda::types::FloatVector& from, std::vector<float>& to)
+using panda::types::FloatVector;
+using panda::types::IntVector;
+
+void convertType(const FloatVector& from, std::vector<float>& to)
 { to = from.values; }
-void convertType(const std::vector<float>& from, panda::types::FloatVector& to)
+void convertType(const std::vector<float>& from, FloatVector& to)
 { to.values = from; }
 
-panda::types::RegisterTypeConverter<panda::types::FloatVector, std::vector<float> > FloatsToVectorConverter;
-panda::types::RegisterTypeConverter<std::vector<float>, panda::types::FloatVector> VectorToFloatsConverter;
+void convertType(const IntVector& from, FloatVector& to)
+{
+	const auto& fromValues = from.values;
+	auto& toValues = to.values;
+	size_t nb = fromValues.size();
+	toValues.resize(nb);
+	for (size_t i = 0; i < nb; ++i)
+		toValues[i] = static_cast<float>(fromValues[i]);
+}
+
+void convertType(const FloatVector& from, IntVector& to)
+{
+	const auto& fromValues = from.values;
+	auto& toValues = to.values;
+	size_t nb = fromValues.size();
+	toValues.resize(nb);
+	for (size_t i = 0; i < nb; ++i)
+		toValues[i] = static_cast<int>(fromValues[i]);
+}
+
+panda::types::RegisterTypeConverter<FloatVector, std::vector<float> > FloatsToVectorConverter;
+panda::types::RegisterTypeConverter<std::vector<float>, FloatVector> VectorToFloatsConverter;
+
+panda::types::RegisterTypeConverter<IntVector, FloatVector> IntsToFloatsConverter;
+panda::types::RegisterTypeConverter<FloatVector, IntVector> FloatsToIntsConverter;
