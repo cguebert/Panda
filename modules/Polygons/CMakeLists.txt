@@ -26,6 +26,7 @@ set(SOURCE_FILES
 	polygonsModule.cpp
 	SimplePolygons.cpp
 	Triangulation.cpp
+	Voronoi.cpp
 	libs/clipper/clipper.cpp
 	libs/poly2tri/common/shapes.cc
 	libs/poly2tri/sweep/advancing_front.cc

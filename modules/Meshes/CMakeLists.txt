@@ -20,7 +20,6 @@ set(SOURCE_FILES
 	Neighbors.cpp
 	par_msquares.h
 	Relaxation.cpp
-	Voronoi.cpp
 )
 
 EnablePrecompiledHeaders(SOURCE_FILES)
