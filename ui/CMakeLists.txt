@@ -52,6 +52,7 @@ set(HEADER_FILES
 	widget/EditPolygonDialog.h
 	widget/EditShaderDialog.h
 	widget/ListDataWidgetDialog.h
+	widget/NumericalDataWidget.h
 	widget/OpenDialogDataWidget.h
 	widget/SimpleDataWidget.h
 	widget/StructTraits.h
@@ -94,12 +95,13 @@ set(SOURCE_FILES
 	graphview/ObjectsSelection.cpp
 	widget/AnimationDataWidgetDialog.cpp
 	widget/ColorDataWidget.cpp
+	widget/DataWidgetFactory.cpp
 	widget/EditGradientDialog.cpp
 	widget/EditMeshDialog.cpp
 	widget/EditPolygonDialog.cpp
 	widget/EditShaderDialog.cpp
-	widget/DataWidgetFactory.cpp
-	widget/NumericalDataWidget.cpp
+	widget/FloatDataWidget.cpp
+	widget/IntegerDataWidget.cpp
 	widget/PointDataWidget.cpp
 	widget/RectDataWidget.cpp
 	widget/SourceCodeDataWidget.cpp

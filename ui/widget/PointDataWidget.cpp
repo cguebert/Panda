@@ -119,17 +119,17 @@ public:
 	enum { is_single = 0 };
 	static int size(const vector_type& v) { return v.points.size(); }
 	static QStringList header(const vector_type&) { return QStringList(); }
-	static const row_type* get(const vector_type& v, int i=0)
-	{
-		return (i<size(v)) ? &(v.points[i]) : nullptr;
+	static const row_type* get(const vector_type& v, int i = 0)
+	{ 
+		return (i < size(v)) ? &(v.points[i]) : nullptr;
 	}
-	static row_type* get(vector_type& v, int i=0)
+	static row_type* get(vector_type& v, int i = 0)
 	{
-		return (i<size(v)) ? &(v.points[i]) : nullptr;
+		return (i < size(v)) ? &(v.points[i]) : nullptr;
 	}
-	static void set(vector_type& v, const row_type& r, int i=0)
+	static void set(vector_type& v, const row_type& r, int i = 0)
 	{
-		if(i < size(v))
+		if (i < size(v))
 			v.points[i] = r;
 	}
 	static void resize(vector_type& v, int s)
