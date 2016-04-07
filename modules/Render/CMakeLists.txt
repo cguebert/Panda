@@ -9,6 +9,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
 	renderModule.cpp
 	RenderCircle.cpp
+	RenderConvexPolygon.cpp
 	RenderDisk.cpp
 	RenderImage.cpp
 	RenderFill.cpp
