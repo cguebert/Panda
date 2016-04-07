@@ -48,17 +48,18 @@ public:
 		assert(dataInTrue && dataInFalse && dataOutput);
 
 		const auto& c = control.getValue();
-		int nbC = c.size();
-		auto outVal = dataOutput->getAccessor();
-		if(!nbC)
-		{
-			outVal.clear();
-			return;
-		}
-
 		const auto& inT = dataInTrue->getValue();
 		const auto& inF = dataInFalse->getValue();
+
+		int nbC = c.size();
 		int nbT = inT.size(), nbF = inF.size();
+
+		auto outVal = dataOutput->getAccessor();
+		outVal.clear();
+
+		if(!nbC || !nbT || !nbF)
+			return;
+
 		int nb = std::max(nbT, nbF);
 		if(nbC == 1 || nbC < nb)
 			outVal = c[0] ? inT : inF;
