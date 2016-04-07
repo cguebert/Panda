@@ -93,9 +93,6 @@ public:
 	static Point yAxis();
 };
 
-inline bool pFuzzyIsNull(double d)
-{ return abs(d) <= 0.000000000001; }
-
 inline bool pFuzzyIsNull(float f)
 { return abs(f) <= 0.00001f; }
 

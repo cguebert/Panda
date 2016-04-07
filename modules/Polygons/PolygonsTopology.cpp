@@ -51,9 +51,17 @@ public:
 		int nbPoly = indices.size();
 		for (int i = 0; i < nbPoly; ++i)
 		{
-			const auto& poly = indices[i];
-			for (const auto& id : poly.values)
+			const auto& poly = indices[i].values;
+			int nb = poly.size();
+			for (int j = 0; j < nb - 1; ++j)
+			{
+				const auto id = poly[j];
 				neighbors[id].values.push_back(i);
+			}
+
+			// The last point is often a copy of the first one
+			if (nb && poly.back() != poly.front())
+				neighbors[poly.back()].values.push_back(i);
 		}
 	}
 

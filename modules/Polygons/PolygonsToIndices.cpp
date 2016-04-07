@@ -4,6 +4,29 @@
 #include <panda/types/Path.h>
 
 #include <algorithm>
+#include <tuple>
+
+namespace
+{
+
+	struct SimplifiedPoint
+	{
+		SimplifiedPoint() = default;
+		SimplifiedPoint(const panda::types::Point& pt)
+			: intPoint{static_cast<int>(round(pt.x)), static_cast<int>(round(pt.y))}
+			, originalPoint(pt)
+		{ }
+
+		std::tuple<int, int> intPoint;
+		panda::types::Point originalPoint;
+	};
+
+	bool simplifiedCompare(const SimplifiedPoint& lhs, const SimplifiedPoint& rhs)
+	{ return lhs.intPoint == rhs.intPoint; }
+
+	bool simplifiedLesser(const SimplifiedPoint& lhs, const SimplifiedPoint& rhs)
+	{ return lhs.intPoint < rhs.intPoint; }
+}
 
 namespace panda {
 
@@ -35,6 +58,10 @@ public:
 		auto& output = outputAcc.wref();
 
 		output.clear();
+
+		if (points.empty())
+			return;
+
 		for (const auto& list : indices)
 		{
 			Path path;
@@ -82,26 +109,32 @@ public:
 		points.clear();
 		indices.clear();
 
+		std::vector<SimplifiedPoint> simplifiedPoints;
 		// Get all points
+
 		for (const auto& path : paths)
 		{
 			for (const auto& pt : path.points)
-				points.push_back(pt);
+				simplifiedPoints.emplace_back(pt);
 		}
 
 		// Sort the points and remove duplicates
-		std::sort(points.begin(), points.end());
-		auto last = std::unique(points.begin(), points.end());
-		points.erase(last, points.end());
+		std::sort(simplifiedPoints.begin(), simplifiedPoints.end(), simplifiedLesser);
+		auto last = std::unique(simplifiedPoints.begin(), simplifiedPoints.end(), simplifiedCompare);
+		simplifiedPoints.erase(last, simplifiedPoints.end());
 
-		auto ptsBegin = points.begin(), ptsEnd = points.end();
+		// Copy to the outputs points
+		for (const auto& pt : simplifiedPoints)
+			points.push_back(pt.originalPoint);
+
+		const auto ptsBegin = simplifiedPoints.begin(), ptsEnd = simplifiedPoints.end();
 		// For each point in a polygon, find the corresponding index by doing a binary search
 		for (const auto& path : paths)
 		{
 			IntVector list;
 			for (const auto& pt : path.points)
 			{
-				auto it = std::lower_bound(ptsBegin, ptsEnd, pt);
+				auto it = std::lower_bound(ptsBegin, ptsEnd, SimplifiedPoint(pt), simplifiedLesser);
 				list.values.push_back(std::distance(ptsBegin, it));
 			}
 			indices.push_back(list);
