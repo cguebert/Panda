@@ -16,6 +16,7 @@ set(SOURCE_FILES
 	FillList.cpp
 	FilterItems.cpp
 	FindItem.cpp
+	IndicesOperations.cpp
 	InterleaveSequence.cpp
 	ListBuffer.cpp
 	ListItem.cpp
