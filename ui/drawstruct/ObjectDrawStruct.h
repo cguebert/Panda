@@ -18,6 +18,8 @@ namespace panda
 class ObjectDrawStruct
 {
 public:
+	using RectDataPair = std::pair<QRectF, panda::BaseData*>;
+
 	ObjectDrawStruct(GraphView* view, panda::PandaObject* obj);
 
 	virtual void drawBackground(QPainter*) {}	// First called
@@ -28,8 +30,6 @@ public:
 	virtual void drawShape(QPainter* painter);
 	virtual void drawDatas(QPainter* painter);
 	virtual void drawText(QPainter* painter);
-
-	virtual void drawLinks(QPainter* painter);		// It is the job of the DrawStruct to draw the links coming to this object
 
 	virtual void update();							// Recompute the information about this object
 	virtual void move(const QPointF& delta);		// Move the position of the object in the view
@@ -48,8 +48,9 @@ public:
 	virtual QSize getObjectSize();
 	virtual QRectF getTextArea(); // The area in which we can render text
 
-	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr);
-	bool getDataRect(const panda::BaseData* data, QRectF& rect);
+	const std::vector<RectDataPair>& getDataRects() const;
+	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr) const;
+	bool getDataRect(const panda::BaseData* data, QRectF& rect) const;
 
 	QRectF getObjectArea() const;
 	QPointF getPosition() const;
@@ -73,7 +74,6 @@ protected:
 	QPointF m_position;
 	QRectF m_objectArea;
 
-	typedef QPair<QRectF, panda::BaseData*> RectDataPair;
 	std::vector<RectDataPair> m_datas;
 };
 
@@ -94,6 +94,9 @@ inline panda::PandaObject* const ObjectDrawStruct::getObject() const
 
 inline int ObjectDrawStruct::dataStartY()
 { return dataRectMargin; }
+
+inline const std::vector<ObjectDrawStruct::RectDataPair>& ObjectDrawStruct::getDataRects() const
+{ return m_datas; }
 
 //****************************************************************************//
 

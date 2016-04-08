@@ -189,9 +189,7 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 		m_objectDrawStructs[object.get()]->drawBackground(&painter);
 
 	// Draw links
-	painter.setBrush(Qt::NoBrush);
-	for (auto& object : m_pandaDocument->getObjects())
-		m_objectDrawStructs[object.get()]->drawLinks(&painter);
+	drawLinks(painter);
 
 	// Draw the objects
 	for (auto& object : m_pandaDocument->getObjects())
@@ -575,10 +573,10 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				for(auto& tagPair : m_linkTags)
 				{
 					auto& tag = tagPair.second;
-					bool hover = tag->isHovering(zoomedMouse);
-					if(hover != tag->hovering)
+					bool hover = tag->containsPoint(zoomedMouse);
+					if(hover != tag->isHovering())
 					{
-						tag->hovering = hover;
+						tag->setHovering(hover);
 						update();
 					}
 				}
@@ -1006,13 +1004,13 @@ void GraphView::loadingObject(const panda::XmlElement& elem, panda::PandaObject*
 int GraphView::getAvailableLinkTagIndex()
 {
 	int nb = m_linkTags.size();
-	QVector<bool> indices(nb, true);
+	std::vector<bool> indices(nb, true);
 
-	for(auto& tagPair : m_linkTags)
+	for(const auto& tagPair : m_linkTags)
 	{
-		auto& tag = tagPair.second;
-		if(tag->index < nb)
-			indices[tag->index] = false;
+		int id = tagPair.second->index();
+		if(id < nb)
+			indices[id] = false;
 	}
 
 	for(int i=0; i<nb; ++i)
@@ -1029,11 +1027,7 @@ void GraphView::addLinkTag(panda::BaseData* input, panda::BaseData* output)
 	if(m_linkTags.count(input))
 		m_linkTags[input]->addOutput(output);
 	else
-	{
-		std::shared_ptr<LinkTag> tag(new LinkTag(this, input, output));
-		tag->index = getAvailableLinkTagIndex();
-		m_linkTags[input] = tag;
-	}
+		m_linkTags[input] = std::make_shared<LinkTag>(this, input, output, getAvailableLinkTagIndex());
 }
 
 void GraphView::removeLinkTag(panda::BaseData* input, panda::BaseData* output)
@@ -1061,7 +1055,7 @@ void GraphView::updateLinkTags(bool reset)
 			{
 				qreal ox = getDataRect(data).center().x();
 				qreal ix = getDataRect(parentData).center().x();
-				if(ix >= ox)
+				if(LinkTag::needLinkTag(ix, ox))
 					addLinkTag(parentData, data);
 			}
 		}
@@ -1075,6 +1069,16 @@ void GraphView::updateLinkTags(bool reset)
 			it = m_linkTags.erase(it);
 		else
 			++it;
+	}
+
+	// Updating the connections list
+	m_linkTagsDatas.clear();
+	for (const auto& it : m_linkTags)
+	{
+		const auto& linkTag = it.second;
+		const auto input = linkTag->getInputData();
+		for (const auto output : linkTag->getOutputDatas())
+			m_linkTagsDatas.emplace(input, output);
 	}
 }
 
@@ -1098,10 +1102,43 @@ void GraphView::hoverDataInfo()
 	}
 }
 
+void GraphView::drawLinks(QStylePainter& painter)
+{
+	QPen pen(palette().text().color(), 1);
+	painter.setPen(pen);
+	painter.setBrush(Qt::NoBrush);
+
+	for (auto& object : m_pandaDocument->getObjects())
+	{
+		const auto& ods = m_objectDrawStructs[object.get()];
+
+		for (const auto& toDataRect : ods->getDataRects())
+		{
+			panda::BaseData* data = toDataRect.second;
+			panda::BaseData* parent = data->getParent();
+			if (parent && !data->isOutput())
+			{
+				QRectF fromDataRect;
+				auto ods = getObjectDrawStruct(parent->getOwner());
+				if (ods && ods->getDataRect(parent, fromDataRect) 
+					&& !hasLinkTag(parent, data)) // We don't draw the link if there is a LinkTag
+				{
+					QPointF d1 = fromDataRect.center(), d2 = toDataRect.first.center();
+					double w = (d2.x() - d1.x()) / 2;
+					QPainterPath path;
+					path.moveTo(d1);
+					path.cubicTo(d1 + QPointF(w, 0), d2 - QPointF(w, 0), d2);
+					painter.drawPath(path);
+				}
+			}
+		}
+	}
+}
+
 void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sourceData)
 {
-	QVector<QRectF> highlightRects;
-	QVector< QPair<QPointF, QPointF> > highlightLinks;
+	std::vector<QRectF> highlightRects;
+	std::vector< std::pair<QPointF, QPointF> > highlightLinks;
 
 	QRectF sourceRect;
 	if(m_objectDrawStructs[sourceData->getOwner()]->getDataRect(sourceData, sourceRect))
@@ -1124,7 +1161,7 @@ void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sour
 					if(m_objectDrawStructs[object]->getDataRect(data, rect))
 					{
 						highlightRects.push_back(rect);
-						highlightLinks.push_back(qMakePair(rect.center(), sourceRect.center()));
+						highlightLinks.emplace_back(rect.center(), sourceRect.center());
 					}
 				}
 			}
@@ -1143,7 +1180,7 @@ void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sour
 				if(m_objectDrawStructs[object]->getDataRect(data, rect))
 				{
 					highlightRects.push_back(rect);
-					highlightLinks.push_back(qMakePair(sourceRect.center(), rect.center()));
+					highlightLinks.emplace_back(sourceRect.center(), rect.center());
 				}
 			}
 		}
@@ -1162,14 +1199,11 @@ void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sour
 	painter->setBrush(Qt::NoBrush);
 	for(const auto& link : highlightLinks)
 	{
-		if(link.first.x()-link.second.x() > 0) // We don't draw a link if it goes from right to left (see the LinkTag class)
-		{
-			double w = (link.second.x()-link.first.x()) / 2;
-			QPainterPath path;
-			path.moveTo(link.first);
-			path.cubicTo(link.first+QPointF(w,0), link.second-QPointF(w,0), link.second);
-			painter->drawPath(path);
-		}
+		double w = (link.second.x() - link.first.x()) / 2;
+		QPainterPath path;
+		path.moveTo(link.first);
+		path.cubicTo(link.first + QPointF(w, 0), link.second - QPointF(w, 0), link.second);
+		painter->drawPath(path);
 	}
 }
 

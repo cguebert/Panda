@@ -153,7 +153,7 @@ public:
 				if (text.isEmpty())
 					text = container->tr("<i>1 element</i>").arg(size);
 				else
-					text = container->tr("<i>1 element : </i>&nbsp;&nbsp;%1").arg(text);
+					text = container->tr("<i>1 element: </i>&nbsp;&nbsp;%1").arg(text);
 			}
 			else
 				text = container->tr("<i>%1 elements</i>").arg(size);

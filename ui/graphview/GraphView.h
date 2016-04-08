@@ -103,7 +103,9 @@ protected:
 
 	void addLinkTag(panda::BaseData* input, panda::BaseData* output);
 	void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
+	bool hasLinkTag(panda::BaseData* input, panda::BaseData* output);
 
+	void drawLinks(QStylePainter& painter);
 	void drawConnectedDatas(QStylePainter* painter, panda::BaseData* sourceData);
 
 	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
@@ -112,7 +114,6 @@ protected:
 	void changeLink(panda::BaseData* target, panda::BaseData* parent);
 
 	void updateViewRect();
-	void emitViewModified();
 
 signals:
 	void modified();
@@ -160,6 +161,7 @@ private:
 	ObjectDrawStruct* m_capturedDrawStruct = nullptr; /// Clicked ObjectDrawStruct that want to intercept mouse events
 
 	std::map<panda::BaseData*, std::shared_ptr<LinkTag> > m_linkTags;
+	std::set<std::pair<panda::BaseData*, panda::BaseData*>> m_linkTagsDatas; /// A copy of the link tags connections
 	bool m_recomputeTags = false; /// Should we recompute the linkTags next PaintEvent?
 
 	QTimer* m_hoverTimer; /// Counting how long the mouse is staying over a Data
@@ -207,5 +209,8 @@ inline qreal GraphView::getZoom()
 
 inline void GraphView::setRecomputeTags()
 { m_recomputeTags = true; }
+
+inline bool GraphView::hasLinkTag(panda::BaseData* input, panda::BaseData* output)
+{ return m_linkTagsDatas.count(std::make_pair(input, output)) != 0; }
 
 #endif

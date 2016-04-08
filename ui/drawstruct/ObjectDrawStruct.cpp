@@ -36,7 +36,7 @@ void ObjectDrawStruct::update()
 		QRectF dataArea(m_objectArea.x() + dataRectMargin,
 						m_objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
 						dataRectSize, dataRectSize);
-		m_datas.push_back(qMakePair(dataArea, inputDatas[i]));
+		m_datas.emplace_back(dataArea, inputDatas[i]);
 	}
 
 	for(int i=0; i<nbOutputs; ++i)
@@ -44,7 +44,7 @@ void ObjectDrawStruct::update()
 		QRectF dataArea(m_objectArea.right() - dataRectMargin - dataRectSize,
 						m_objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
 						dataRectSize, dataRectSize);
-		m_datas.push_back(qMakePair(dataArea, outputDatas[i]));
+		m_datas.emplace_back(dataArea, outputDatas[i]);
 	}
 }
 
@@ -86,7 +86,7 @@ QRectF ObjectDrawStruct::getTextArea()
 	return QRectF(m_objectArea.adjusted(margin, 0, -margin, 0));
 }
 
-panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* center)
+panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* center) const
 {
 	for(const auto& iter : m_datas)
 	{
@@ -101,7 +101,7 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* cent
 	return nullptr;
 }
 
-bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect)
+bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect) const
 {
 	for(const auto& iter : m_datas)
 	{
@@ -174,35 +174,6 @@ void ObjectDrawStruct::drawText(QPainter* painter)
 {
 	QRectF textArea = getTextArea();
 	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, QString::fromStdString(m_object->getName()));
-}
-
-void ObjectDrawStruct::drawLinks(QPainter* painter)
-{
-	for(const auto& rectData : m_datas)
-	{
-		panda::BaseData* data = rectData.second;
-		panda::BaseData* parent = data->getParent();
-		if(parent && !data->isOutput())
-		{
-			QRectF dataRect;
-			auto ods = m_parentView->getObjectDrawStruct(parent->getOwner());
-			if(ods && ods->getDataRect(parent, dataRect))
-			{
-				QPen pen(m_parentView->palette().text().color());
-				pen.setWidth(1);
-				painter->setPen(pen);
-				QPointF d1 = dataRect.center(), d2 = rectData.first.center();
-				if(d2.x()-d1.x() > 0) // We don't draw a link if it goes from right to left (see the LinkTag class)
-				{
-					double w = (d2.x()-d1.x()) / 2;
-					QPainterPath path;
-					path.moveTo(d1);
-					path.cubicTo(d1+QPointF(w,0), d2-QPointF(w,0), d2);
-					painter->drawPath(path);
-				}
-			}
-		}
-	}
 }
 
 void ObjectDrawStruct::save(panda::XmlElement& elem)
