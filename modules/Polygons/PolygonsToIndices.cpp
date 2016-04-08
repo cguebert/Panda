@@ -150,6 +150,90 @@ protected:
 int Polygon_ToIndicesClass = RegisterObject<Polygon_ToIndices>("Generator/Polygon/Polygons to indices")
 	.setDescription("Convert a polygon to a list of points and a list of indices");
 
+//****************************************************************************//
+
+class Polygon_IndicesCloseLoop : public PandaObject
+{
+public:
+	PANDA_CLASS(Polygon_IndicesCloseLoop, PandaObject)
+
+	Polygon_IndicesCloseLoop(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("input", "Input indices"))
+		, m_output(initData("output", "Output indices"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto outputAcc = m_output.getAccessor();
+		auto& output = outputAcc.wref();
+
+		output = input;
+
+		if (input.empty())
+			return;
+
+		for (auto& list : output)
+		{
+			auto& values = list.values;
+			if (values.size() > 1 && values.front() != values.back())
+				values.push_back(values.front());
+		}
+	}
+
+protected:
+	Data< std::vector<IntVector> > m_input, m_output;
+};
+
+int Polygon_IndicesCloseLoopClass = RegisterObject<Polygon_IndicesCloseLoop>("Generator/Polygon/Close loop")
+	.setDescription("Ensure the last index of a list is the same as the first");
+
+//****************************************************************************//
+
+class Polygon_IndicesOpenLoop : public PandaObject
+{
+public:
+	PANDA_CLASS(Polygon_IndicesOpenLoop, PandaObject)
+
+	Polygon_IndicesOpenLoop(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("input", "Input indices"))
+		, m_output(initData("output", "Output indices"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto outputAcc = m_output.getAccessor();
+		auto& output = outputAcc.wref();
+
+		output = input;
+
+		if (input.empty())
+			return;
+
+		for (auto& list : output)
+		{
+			auto& values = list.values;
+			if (values.size() > 1 && values.front() == values.back())
+				values.pop_back();
+		}
+	}
+
+protected:
+	Data< std::vector<IntVector> > m_input, m_output;
+};
+
+int Polygon_IndicesOpenLoopClass = RegisterObject<Polygon_IndicesOpenLoop>("Generator/Polygon/Open loop")
+	.setDescription("Remove the last index of a list if it is the same as the first");
+
 } // namespace Panda
 
 
