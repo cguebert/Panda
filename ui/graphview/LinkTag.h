@@ -32,7 +32,7 @@ public:
 	bool isHovering() const;
 	void setHovering(bool h);
 
-	static bool needLinkTag(float inputX, float outputX);
+	static bool needLinkTag(float inputX, float outputX, GraphView* view);
 
 private:
 	static const int tagW = 20;
@@ -43,9 +43,12 @@ private:
 	bool m_hovering = false;
 
 	GraphView* m_parentView = nullptr;
+
 	panda::BaseData* m_inputData = nullptr;
-	QRectF m_inputDataRect;
-	std::map<panda::BaseData*, QRectF> m_outputDatas;
+
+	using DataRects = std::pair<QRectF, QRectF>; // Tag rect, Data rect
+	DataRects m_inputDataRects;
+	std::map<panda::BaseData*, DataRects> m_outputDatas;
 };
 
 inline panda::BaseData* LinkTag::getInputData() const

@@ -8,13 +8,13 @@ LinkTag::LinkTag(GraphView* view, panda::BaseData* input, panda::BaseData* outpu
 	, m_parentView(view)
 	, m_inputData(input)
 {
-	m_outputDatas.emplace(output, QRectF());
+	m_outputDatas.emplace(output, std::make_pair(QRectF(),QRectF()));
 }
 
 void LinkTag::addOutput(panda::BaseData* output)
 {
 	if(!m_outputDatas.count(output))
-		m_outputDatas.emplace(output, QRectF());
+		m_outputDatas.emplace(output, std::make_pair(QRectF(),QRectF()));
 }
 
 void LinkTag::removeOutput(panda::BaseData* output)
@@ -25,9 +25,10 @@ void LinkTag::removeOutput(panda::BaseData* output)
 void LinkTag::update()
 {
 	QRectF dataRect = m_parentView->getDataRect(m_inputData);
-	m_inputDataRect = QRectF(dataRect.right() + tagMargin,
+	m_inputDataRects.first = QRectF(dataRect.right() + tagMargin,
 						   dataRect.center().y() - tagH / 2.0,
 						   tagW, tagH);
+	m_inputDataRects.second = dataRect;
 
 	qreal ix = dataRect.center().x();
 
@@ -35,14 +36,15 @@ void LinkTag::update()
 	{
 		dataRect = m_parentView->getDataRect(it->first);
 		qreal ox = dataRect.center().x();
-		if (!needLinkTag(ix, ox))
+		if (!needLinkTag(ix, ox, m_parentView))
 			it = m_outputDatas.erase(it);
 		else
 		{
 			QRectF tagRect(dataRect.left() - tagW - tagMargin,
 				dataRect.center().y() - tagH / 2.0,
 				tagW, tagH);
-			it->second = tagRect;
+			it->second.first = tagRect;
+			it->second.second = dataRect;
 			++it;
 		}
 	}
@@ -55,11 +57,11 @@ bool LinkTag::isEmpty()
 
 bool LinkTag::containsPoint(const QPointF& point)
 {
-	if(m_inputDataRect.contains(point))
+	if(m_inputDataRects.first.contains(point))
 		return true;
 
 	for(auto rect : m_outputDatas)
-		if(rect.second.contains(point))
+		if(rect.second.first.contains(point))
 			return true;
 
 	return false;
@@ -67,9 +69,13 @@ bool LinkTag::containsPoint(const QPointF& point)
 
 void LinkTag::moveView(const QPointF& delta)
 {
-	m_inputDataRect.translate(delta);
-	for(auto& rect : m_outputDatas)
-		rect.second.translate(delta);
+	m_inputDataRects.first.translate(delta);
+	m_inputDataRects.second.translate(delta);
+	for (auto& rect : m_outputDatas)
+	{
+		rect.second.first.translate(delta);
+		rect.second.second.translate(delta);
+	}
 }
 
 void LinkTag::draw(QPainter* painter)
@@ -77,16 +83,30 @@ void LinkTag::draw(QPainter* painter)
 	painter->save();
 	if(m_hovering)
 	{
-		painter->setBrush(m_parentView->palette().highlight().color());
-		QPen pen(m_parentView->palette().text().color());
-		pen.setStyle(Qt::DotLine);
-		painter->setPen(pen);
+		painter->setPen(QPen(m_parentView->palette().highlight(), 3));
+		painter->setBrush(Qt::NoBrush);
 
-		for(auto tagRect : m_outputDatas)
-			painter->drawLine(m_inputDataRect.center(), tagRect.second.center());
+		// Draw as links
+		auto inputCenter = m_inputDataRects.second.center();
+		for(const auto& tagRect : m_outputDatas)
+		{
+			auto outputCenter = tagRect.second.second.center();
+			double w = (outputCenter.x() - inputCenter.x()) / 2;
+			QPainterPath path;
+			path.moveTo(inputCenter);
+			path.cubicTo(inputCenter + QPointF(w, 0), outputCenter - QPointF(w, 0), outputCenter);
+			painter->drawPath(path);
+		}
+
+		// Draw the data rectangles
+		painter->setBrush(m_parentView->palette().highlight().color());
+		painter->setPen(m_parentView->palette().text().color());
+		painter->drawRect(m_inputDataRects.second);
+		for(const auto& tagRect : m_outputDatas)
+			painter->drawRect(tagRect.second.second);
 	}
-	else
-		painter->setBrush(m_parentView->palette().light());
+	
+	painter->setBrush(m_parentView->palette().light());
 	painter->setPen(QPen(m_parentView->palette().text().color()));
 
 	QFont font;
@@ -96,16 +116,17 @@ void LinkTag::draw(QPainter* painter)
 	auto indexText = QString::number(m_index + 1);
 
 	// input
-	qreal x = m_inputDataRect.left();
-	qreal cy = m_inputDataRect.center().y();
+	auto inputRect = m_inputDataRects.first;
+	qreal x = inputRect.left();
+	qreal cy = inputRect.center().y();
 	painter->drawLine(x - tagMargin, cy, x, cy);
-	painter->drawRect(m_inputDataRect);
-	painter->drawText(m_inputDataRect, Qt::AlignCenter, indexText);
+	painter->drawRect(inputRect);
+	painter->drawText(inputRect, Qt::AlignCenter, indexText);
 
 	// outputs
 	for(const auto& tagRectPair : m_outputDatas)
 	{
-		const auto& tagRect = tagRectPair.second;
+		const auto& tagRect = tagRectPair.second.first;
 		x = tagRect.right();
 		cy = tagRect.center().y();
 		painter->drawLine(x, cy, x + tagMargin, cy);
@@ -116,9 +137,9 @@ void LinkTag::draw(QPainter* painter)
 	painter->restore();
 }
 
-bool LinkTag::needLinkTag(float inputX, float outputX)
+bool LinkTag::needLinkTag(float inputX, float outputX, GraphView* view)
 {
-	return outputX <= inputX;
+	return outputX <= inputX || outputX > inputX + view->width() * 2 / 3;
 }
 
 std::vector<panda::BaseData*> LinkTag::getOutputDatas() const

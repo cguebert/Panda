@@ -1055,7 +1055,7 @@ void GraphView::updateLinkTags(bool reset)
 			{
 				qreal ox = getDataRect(data).center().x();
 				qreal ix = getDataRect(parentData).center().x();
-				if(LinkTag::needLinkTag(ix, ox))
+				if(LinkTag::needLinkTag(ix, ox, this))
 					addLinkTag(parentData, data);
 			}
 		}
