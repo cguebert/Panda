@@ -35,7 +35,7 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	setFocusPolicy(Qt::StrongFocus);
 
 	m_observer.get(m_pandaDocument->getSignals().modified).connect<QWidget, &QWidget::update>(this);
-	m_observer.get(m_objectsSelection->selectionChanged).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(m_objectsSelection->selectionChanged).connect<GraphView, &GraphView::selectionChanged>(this);
 	m_observer.get(m_pandaDocument->getSignals().addedObject).connect<GraphView, &GraphView::addedObject>(this);
 	m_observer.get(m_pandaDocument->getSignals().removedObject).connect<GraphView, &GraphView::removeObject>(this);
 	m_observer.get(m_pandaDocument->getSignals().modifiedObject).connect<GraphView, &GraphView::modifiedObject>(this);
@@ -185,24 +185,24 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 	painter.scale(m_zoomFactor, m_zoomFactor);
 
 	// Give a possibility to draw behind normal objects
-	for (auto& object : m_pandaDocument->getObjects())
-		m_objectDrawStructs[object.get()]->drawBackground(&painter);
+	for (auto& ods : m_objectDrawStructs)
+		ods.second->drawBackground(&painter);
 
 	// Draw links
 	drawLinks(painter);
 
 	// Draw the objects
-	for (auto& object : m_pandaDocument->getObjects())
-		m_objectDrawStructs[object.get()]->draw(&painter);
+	for (auto& ods : m_objectDrawStructs)
+		ods.second->draw(&painter);
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
-	for (auto& object : m_objectsSelection->get())
-		m_objectDrawStructs[object]->draw(&painter, true);
+	for (auto& ods : m_selectedObjectsDrawStructs)
+		ods->draw(&painter, true);
 
 	painter.setBrush(Qt::NoBrush);
 	// Give a possibility to draw in front of normal objects
-	for (auto& object : m_pandaDocument->getObjects())
-		m_objectDrawStructs[object.get()]->drawForeground(&painter);
+	for (auto& ods : m_objectDrawStructs)
+		ods.second->drawForeground(&painter);
 
 	// Draw links tags
 	for (auto& tag : m_linkTags)
@@ -1104,8 +1104,7 @@ void GraphView::hoverDataInfo()
 
 void GraphView::drawLinks(QStylePainter& painter)
 {
-	QPen pen(palette().text().color(), 1);
-	painter.setPen(pen);
+	painter.setPen(QPen(palette().text().color(), 1));
 	painter.setBrush(Qt::NoBrush);
 
 	for (auto& object : m_pandaDocument->getObjects())
@@ -1503,4 +1502,14 @@ void GraphView::showChooseWidgetDialog()
 void GraphView::focusOutEvent(QFocusEvent*)
 {
 	emit lostFocus(this);
+}
+
+void GraphView::selectionChanged()
+{
+	m_selectedObjectsDrawStructs.clear();
+
+	for (auto object : m_objectsSelection->get())
+		m_selectedObjectsDrawStructs.push_back(m_objectDrawStructs[object]);
+
+	update();
 }

@@ -115,6 +115,8 @@ protected:
 
 	void updateViewRect();
 
+	void selectionChanged();
+
 signals:
 	void modified();
 	void showStatusBarMessage(QString);
@@ -182,6 +184,7 @@ private:
 	panda::msg::Observer m_observer; /// Used to connect to signals (and disconnect automatically on destruction)
 
 	std::unique_ptr<ObjectsSelection> m_objectsSelection; /// Contains the selected objects and the corresponding signals
+	std::vector<std::shared_ptr<ObjectDrawStruct>> m_selectedObjectsDrawStructs; /// The renderers for the selected objects
 
 	bool m_debugDirtyState = false;
 };
