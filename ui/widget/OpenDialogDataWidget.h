@@ -126,16 +126,41 @@ public:
 			emit editingFinished();
 	}
 
+	QString itemToString(const value_type& v, int index)
+	{
+		using vector_trait = VectorDataTrait<value_type>;
+		const vector_trait::row_type* row = vector_trait::get(v, index);
+		if (row)
+		{
+			typedef FlatDataTrait<vector_trait::row_type> item_trait;
+			return item_trait::toString(*row);
+		}
+
+		return "";
+	}
+
 	void updatePreview()
 	{
 		const value_type& v = getValue();
 		typedef VectorDataTrait<value_type> vector_trait;
 		if(vector_trait::is_vector)
 		{
-			QString text = QString(container->tr("<i>%1 elements</i>")).arg(vector_trait::size(v));
+			int size = vector_trait::size(v);
+			QString text;
+			if (size == 1)
+			{
+				text = itemToString(v, 0).trimmed();
+				if (text.isEmpty())
+					text = container->tr("<i>1 element</i>").arg(size);
+				else
+					text = container->tr("<i>1 element : </i>&nbsp;&nbsp;%1").arg(text);
+			}
+			else
+				text = container->tr("<i>%1 elements</i>").arg(size);
 			label->setText(text);
+
 			if(isReadOnly)
-				pushButton->setEnabled(vector_trait::size(v) != 0);
+				pushButton->setEnabled(size != 0);
 			else
 				pushButton->setEnabled(true);
 		}

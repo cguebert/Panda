@@ -223,6 +223,10 @@ public:
 //****************************************************************************//
 
 template<>
+static QString FlatDataTrait<int>::toString(const value_type& d)
+{ return QString::number(d); }
+
+template<>
 class VectorDataTrait<IntVector>
 {
 public:

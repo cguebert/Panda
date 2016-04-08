@@ -45,6 +45,10 @@ public:
 //****************************************************************************//
 
 template<>
+static QString FlatDataTrait<float>::toString(const value_type& d)
+{ return QString::number(d); }
+
+template<>
 class VectorDataTrait<FloatVector>
 {
 public:
