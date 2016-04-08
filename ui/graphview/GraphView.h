@@ -146,26 +146,26 @@ public slots:
 private:
 	panda::PandaDocument* m_pandaDocument;
 
-	int m_zoomLevel, m_wheelTicks;
-	qreal m_zoomFactor;
+	int m_zoomLevel = 0, m_wheelTicks = 0;
+	qreal m_zoomFactor = 1.0;
 	QPointF m_viewDelta;
 	QPointF m_previousMousePos, m_currentMousePos;
 
 	enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK, MOVING_ZOOM, MOVING_CUSTOM };
-	MovingAction m_movingAction;
+	MovingAction m_movingAction = MOVING_NONE;
 
-	panda::BaseData *m_clickedData, *m_hoverData, *m_contextMenuData;
+	panda::BaseData *m_clickedData = nullptr, *m_hoverData = nullptr, *m_contextMenuData = nullptr;
 
 	std::map<panda::PandaObject*, std::shared_ptr<ObjectDrawStruct> > m_objectDrawStructs;
-	ObjectDrawStruct* m_capturedDrawStruct; /// Clicked ObjectDrawStruct that want to intercept mouse events
+	ObjectDrawStruct* m_capturedDrawStruct = nullptr; /// Clicked ObjectDrawStruct that want to intercept mouse events
 
 	std::map<panda::BaseData*, std::shared_ptr<LinkTag> > m_linkTags;
-	bool m_recomputeTags; /// Should we recompute the linkTags next PaintEvent?
+	bool m_recomputeTags = false; /// Should we recompute the linkTags next PaintEvent?
 
 	QTimer* m_hoverTimer; /// Counting how long the mouse is staying over a Data
-	bool m_highlightConnectedDatas;
+	bool m_highlightConnectedDatas = false;
 
-	bool m_useMagneticSnap; /// Do we help align objects when moving them with the mouse?
+	bool m_useMagneticSnap = true; /// Do we help align objects when moving them with the mouse?
 	std::set<qreal> m_snapTargetsY;
 	QPointF m_snapDelta;
 
@@ -175,7 +175,7 @@ private:
 
 	QRectF m_viewRect; /// Area taken by the objects on the screen
 
-	bool m_isLoading; /// We don't update the view while loading (unnecessary events)
+	bool m_isLoading = false; /// We don't update the view while loading (unnecessary events)
 
 	panda::msg::Observer m_observer; /// Used to connect to signals (and disconnect automatically on destruction)
 
@@ -201,5 +201,11 @@ inline const panda::BaseData* GraphView::getClickedData() const
 
 inline const panda::BaseData* GraphView::getContextMenuData() const
 { return m_contextMenuData; }
+
+inline qreal GraphView::getZoom()
+{ return m_zoomFactor; }
+
+inline void GraphView::setRecomputeTags()
+{ m_recomputeTags = true; }
 
 #endif

@@ -27,19 +27,7 @@
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	: QWidget(parent)
 	, m_pandaDocument(doc)
-	, m_zoomLevel(0)
-	, m_wheelTicks(0)
-	, m_zoomFactor(1.0)
-	, m_movingAction(MOVING_NONE)
-	, m_clickedData(nullptr)
-	, m_hoverData(nullptr)
-	, m_contextMenuData(nullptr)
-	, m_capturedDrawStruct(nullptr)
-	, m_recomputeTags(false)
 	, m_hoverTimer(new QTimer(this))
-	, m_highlightConnectedDatas(false)
-	, m_useMagneticSnap(true)
-	, m_isLoading(false)
 	, m_objectsSelection(std::make_unique<ObjectsSelection>(doc))
 {
 	setAutoFillBackground(true);
@@ -1036,11 +1024,6 @@ int GraphView::getAvailableLinkTagIndex()
 	return nb;
 }
 
-qreal GraphView::getZoom()
-{
-	return m_zoomFactor;
-}
-
 void GraphView::addLinkTag(panda::BaseData* input, panda::BaseData* output)
 {
 	if(m_linkTags.count(input))
@@ -1359,11 +1342,6 @@ void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)
 {
 	auto macro = m_pandaDocument->getUndoStack().beginMacro(tr("change link").toStdString());
 	m_pandaDocument->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(target, parent));
-}
-
-void GraphView::setRecomputeTags()
-{
-	m_recomputeTags = true;
 }
 
 void GraphView::sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock)
