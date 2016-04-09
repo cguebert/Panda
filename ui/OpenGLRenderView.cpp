@@ -5,6 +5,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/NodeUpdater.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Mat4x4.h>
 #include <panda/graphics/ShaderProgram.h>
@@ -87,7 +88,7 @@ void OpenGLRenderView::resizeGL(int w, int h)
 void OpenGLRenderView::paintGL()
 {
 	m_document->getRenderer().setRenderingMainView(true);
-	m_document->updateIfDirty();
+	m_document->getNodeUpdater().updateObject(*m_document);
 	m_document->getRenderer().setRenderingMainView(false);
 	auto fbo = m_document->getFBO();
 

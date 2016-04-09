@@ -16,6 +16,7 @@ class DockableObject;
 class DocumentRenderer;
 class DocumentSignals;
 class Layer;
+class NodeUpdater;
 class Scheduler;
 class UndoStack;
 class XmlElement;
@@ -98,6 +99,7 @@ public:
 	gui::BaseGUI& getGUI() const; // Access to the GUI thread, update the view, show message boxes
 	DocumentSignals& getSignals() const; // Connect and run signals for when the document is modified
 	DocumentRenderer& getRenderer() const; // What takes care of rendering the document in OpenGL
+	NodeUpdater& getNodeUpdater() const; // Optimized node update (instead of recursive)
 	UndoStack& getUndoStack() const; // Undo/redo capabilities
 
 	// Slots or called only by the UI
@@ -142,6 +144,7 @@ protected:
 	gui::BaseGUI& m_gui;
 	std::unique_ptr<DocumentRenderer> m_renderer;
 	std::unique_ptr<DocumentSignals> m_signals;
+	std::unique_ptr<NodeUpdater> m_nodeUpdater;
 	std::unique_ptr<Scheduler> m_scheduler;
 	std::unique_ptr<UndoStack> m_undoStack;
 };
@@ -195,6 +198,9 @@ inline DocumentRenderer& PandaDocument::getRenderer() const
 
 inline DocumentSignals& PandaDocument::getSignals() const
 { return *m_signals; }
+
+inline NodeUpdater& PandaDocument::getNodeUpdater() const
+{ return *m_nodeUpdater; }
 
 inline UndoStack& PandaDocument::getUndoStack() const
 { return *m_undoStack; }

@@ -2,6 +2,7 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/command/MoveLayerCommand.h>
+#include <panda/document/NodeUpdater.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/UpdateLogger.h>
@@ -16,12 +17,9 @@ void BaseLayer::updateLayer(PandaDocument* doc)
 {
 	// Bugfix : we update the input Datas of the renderers before setting the viewport
 	//  as getting the image from an ImageWrapper can screw it up
+	auto& nodeUpdater = doc->getNodeUpdater();
 	for(const auto& renderer : getRenderers())
-	{
-		for(const auto input : renderer->getInputDatas())
-			input->updateIfDirty();
-		renderer->updateIfDirty();
-	}
+		nodeUpdater.updateObject(*renderer);
 
 	{
 		helper::ScopedEvent log1("prepareLayer");

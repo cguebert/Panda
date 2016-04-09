@@ -7,6 +7,7 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/NodeUpdater.h>
 
 // A small class to be notified when the outputs of an object change
 class ObjectWatcher : public panda::DataNode
@@ -80,7 +81,7 @@ void DatasTable::populateTable()
 	// If possible, only update widgets
 	if(!m_objectIsModified && m_currentObject == m_nextObject)
 	{
-		m_currentObject->updateIfDirty(); // Force the update of the object, as we want the new values
+		m_document->getNodeUpdater().updateObject(*m_currentObject); // Force the update of the object, as we want the new values
 		// TODO : verify if there are no new datas
 		for(DataWidgetPtr& dataWidget : m_dataWidgets)
 			dataWidget->updateWidgetValue();

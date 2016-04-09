@@ -9,6 +9,7 @@
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
+#include <panda/document/NodeUpdater.h>
 #include <panda/document/Scheduler.h>
 #include <panda/object/Layer.h>
 #include <panda/object/ObjectFactory.h>
@@ -76,6 +77,7 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	, m_renderer(std::make_unique<DocumentRenderer>(*this))
 	, m_signals(std::make_unique<DocumentSignals>())
 	, m_undoStack(std::make_unique<UndoStack>())
+	, m_nodeUpdater(std::make_unique<NodeUpdater>(*this))
 {
 	addInput(m_renderSize);
 	addInput(m_backgroundColor);
