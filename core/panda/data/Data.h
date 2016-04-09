@@ -3,7 +3,7 @@
 
 #include <panda/data/BaseData.h>
 #include <panda/data/DataAccessor.h>
-#include <panda/UpdateLogger.h>
+#include <panda/helper/UpdateLogger.h>
 
 namespace panda
 {

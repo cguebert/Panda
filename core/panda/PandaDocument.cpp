@@ -2,15 +2,14 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/Messaging.h>
-#include <panda/Scheduler.h>
 #include <panda/SimpleGUI.h>
 #include <panda/TimedFunctions.h>
-#include <panda/UpdateLogger.h>
 #include <panda/UndoStack.h>
 #include <panda/data/DataFactory.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
+#include <panda/document/Scheduler.h>
 #include <panda/object/Layer.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
@@ -19,6 +18,7 @@
 #include <panda/helper/algorithm.h>
 #include <panda/helper/GradientCache.h>
 #include <panda/helper/ShaderCache.h>
+#include <panda/helper/UpdateLogger.h>
 #include <panda/helper/system/FileRepository.h>
 
 #include <chrono>

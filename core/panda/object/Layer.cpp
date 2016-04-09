@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 
 #include <panda/PandaDocument.h>
-#include <panda/UpdateLogger.h>
+#include <panda/helper/UpdateLogger.h>
 #include <panda/object/Layer.h>
 #include <panda/object/Renderer.h>
 #include <panda/object/ObjectFactory.h>

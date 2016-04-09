@@ -3,7 +3,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
-#include <panda/UpdateLogger.h>
+#include <panda/helper/UpdateLogger.h>
 
 #include <iostream>
 #include <typeindex>

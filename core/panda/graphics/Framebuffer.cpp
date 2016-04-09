@@ -1,6 +1,6 @@
 #include <panda/graphics/Framebuffer.h>
 #include <panda/types/Rect.h>
-#include <panda/UpdateLogger.h>
+#include <panda/helper/UpdateLogger.h>
 
 #include <GL/glew.h>
 #include <algorithm>

@@ -1,5 +1,5 @@
 #include <panda/PandaDocument.h>
-#include <panda/UpdateLogger.h>
+#include <panda/helper/UpdateLogger.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
 

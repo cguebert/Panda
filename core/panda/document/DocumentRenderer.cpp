@@ -2,7 +2,7 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/SimpleGUI.h>
-#include <panda/UpdateLogger.h>
+#include <panda/helper/UpdateLogger.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Model.h>

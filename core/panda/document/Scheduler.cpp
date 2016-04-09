@@ -1,7 +1,7 @@
-#include <panda/Scheduler.h>
 #include <panda/PandaDocument.h>
-#include <panda/UpdateLogger.h>
+#include <panda/helper/UpdateLogger.h>
 #include <panda/document/GraphUtils.h>
+#include <panda/document/Scheduler.h>
 #include <panda/helper/algorithm.h>
 
 #include <deque>

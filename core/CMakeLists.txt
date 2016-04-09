@@ -8,10 +8,8 @@ set(HEADER_FILES
 	panda/messaging.h
 	panda/PandaDocument.h
 	panda/PluginsManager.h
-	panda/Scheduler.h
 	panda/SimpleGUI.h
 	panda/TimedFunctions.h
-	panda/UpdateLogger.h
 	panda/UndoStack.h
 	panda/XmlDocument.h
 	panda/command/CommandId.h
@@ -30,6 +28,7 @@ set(HEADER_FILES
 	panda/document/DocumentRenderer.h
 	panda/document/DocumentSignals.h
 	panda/document/GraphUtils.h
+	panda/document/Scheduler.h
 	panda/document/Serialization.h
 	panda/graphics/Buffer.h
 	panda/graphics/Framebuffer.h
@@ -51,6 +50,7 @@ set(HEADER_FILES
 	panda/helper/Random.h
 	panda/helper/typeList.h
 	panda/helper/ShaderCache.h
+	panda/helper/UpdateLogger.h
 	panda/helper/system/config.h
 	panda/helper/system/FileRepository.h
 	panda/helper/system/pch.h
@@ -87,10 +87,8 @@ set(SOURCE_FILES
 	panda/core.cpp
 	panda/PandaDocument.cpp
 	panda/PluginsManager.cpp
-	panda/Scheduler.cpp
 	panda/SimpleGUI.cpp
 	panda/TimedFunctions.cpp
-	panda/UpdateLogger.cpp
 	panda/UndoStack.cpp
 	panda/XmlDocument.cpp
 	panda/command/CommandId.cpp
@@ -106,6 +104,7 @@ set(SOURCE_FILES
 	panda/data/DataNode.cpp
 	panda/document/DocumentRenderer.cpp
 	panda/document/GraphUtils.cpp
+	panda/document/Scheduler.cpp
 	panda/document/Serialization.cpp
 	panda/graphics/Buffer.cpp
 	panda/graphics/Framebuffer.cpp
@@ -123,6 +122,7 @@ set(SOURCE_FILES
 	panda/helper/PointsGrid.cpp
 	panda/helper/Random.cpp
 	panda/helper/ShaderCache.cpp
+	panda/helper/UpdateLogger.cpp
 	panda/helper/system/FileRepository.cpp
 	panda/object/Annotation.cpp
 	panda/object/Dockable.cpp
@@ -172,7 +172,7 @@ target_link_libraries(${PROJECT_NAME} "TinyXML2")
 
 find_package(OpenGL REQUIRED)
 if(NOT OPENGL_FOUND)
-    message(ERROR " OPENGL not found!")
+	message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
  
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
