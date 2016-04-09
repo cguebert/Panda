@@ -314,7 +314,8 @@ void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
 	{
 		if(data && data->isOutput())
 		{
-			for(auto output : data->getOutputs())
+			const auto outputs = data->getOutputs();
+			for(auto output : outputs)
 			{
 				BaseData* target = dynamic_cast<BaseData*>(output);
 				if(target)
