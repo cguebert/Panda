@@ -3,6 +3,7 @@
 #include <panda/messaging.h>
 
 #include <map>
+#include <set>
 #include <vector>
 
 namespace panda
@@ -22,10 +23,11 @@ public:
 
 private:
 	using ObjectsList = std::vector<PandaObject*>;
+	using ObjectsSet = std::set<PandaObject*>;
 	using UpdateMap = std::map<PandaObject*, ObjectsList>;
 
 	void clear(PandaObject*);
-	ObjectsList buildUpdateList(PandaObject& object);
+	const ObjectsList& getUpdateList(PandaObject& object);
 
 	PandaDocument& m_document;
 	UpdateMap m_updateMap;

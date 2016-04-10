@@ -5,7 +5,25 @@
 #include <panda/helper/algorithm.h>
 
 #include <deque>
-#include <set>
+
+namespace
+{
+
+void merge(std::vector<panda::PandaObject*>& mainList, 
+	const std::vector<panda::PandaObject*>& addList, 
+	std::set<panda::PandaObject*>& closedSet)
+{
+	for (auto obj : addList)
+	{
+		if (closedSet.count(obj))
+			continue;
+
+		mainList.push_back(obj);
+		closedSet.insert(obj);
+	}
+}
+
+}
 
 namespace panda
 {
@@ -25,11 +43,7 @@ void NodeUpdater::updateObject(PandaObject& object)
 	if (!object.isDirty())
 		return;
 
-	auto& updateList = m_updateMap[&object];
-	if (updateList.empty())
-		updateList = buildUpdateList(object);
-
-	for (auto obj : updateList)
+	for (auto obj : getUpdateList(object))
 		obj->updateIfDirty();
 }
 
@@ -38,44 +52,20 @@ void NodeUpdater::clear(PandaObject*)
 	m_updateMap.clear();
 }
 
-NodeUpdater::ObjectsList NodeUpdater::buildUpdateList(PandaObject& object)
+const NodeUpdater::ObjectsList& NodeUpdater::getUpdateList(PandaObject& object)
 {
-	std::set<PandaObject*> closedSet;
-	std::deque<PandaObject*> openSet;
-	std::vector<PandaObject*> updateList;
-
-	auto func = [&closedSet, &openSet, &updateList](PandaObject* in) {
-		if (closedSet.count(in)) // Move this object to the end, as it needs to be updated sooner than we first thought
-		{
-			if (updateList.back() != in)
-			{
-				auto it = std::find(updateList.begin(), updateList.end(), in);
-				if (it != updateList.end())
-					std::rotate(it, std::next(it), updateList.end());
-			}
-		}
-		else
-		{
-			openSet.push_back(in);
-			updateList.push_back(in);
-			closedSet.insert(in);
-		}
-	};
-
 	auto objectPtr = &object;
+	auto& updateList = m_updateMap[objectPtr];
+	if (!updateList.empty())
+		return updateList;
+	
+	ObjectsSet closed;
+	closed.insert(objectPtr);
+	graph::forEachObjectInput(objectPtr, [this, &updateList, &closed](PandaObject* obj) {
+		merge(updateList, getUpdateList(*obj), closed);
+	});
+
 	updateList.push_back(objectPtr);
-	closedSet.insert(objectPtr);
-	graph::forEachObjectInput(objectPtr, func);
-
-	while (!openSet.empty())
-	{
-		auto obj = openSet.front();
-		openSet.pop_front();
-
-		graph::forEachObjectInput(obj, func);
-	}
-
-	std::reverse(updateList.begin(), updateList.end());
 	return updateList;
 }
 
