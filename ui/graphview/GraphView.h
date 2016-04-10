@@ -1,7 +1,7 @@
 #ifndef GRAPHVIEW_H
 #define GRAPHVIEW_H
 
-#include <QWidget>
+#include <QOpenGLWidget>
 
 #include <map>
 #include <memory>
@@ -28,7 +28,7 @@ class ObjectDrawStruct;
 class ObjectsSelection;
 class QStylePainter;
 
-class GraphView : public QWidget, public ScrollableView
+class GraphView : public QOpenGLWidget, public ScrollableView
 {
 	Q_OBJECT
 
@@ -85,8 +85,10 @@ public:
 	virtual void scrollView(QPoint position) override;
 
 protected:
-	void paintEvent(QPaintEvent* event);
-	void resizeEvent(QResizeEvent* event);
+	void initializeGL() override;
+	void resizeGL(int w, int h) override;
+	void paintGL() override;
+
 	void mousePressEvent(QMouseEvent* event);
 	void mouseMoveEvent(QMouseEvent* event);
 	void mouseReleaseEvent(QMouseEvent* event);
@@ -96,9 +98,9 @@ protected:
 	void focusOutEvent(QFocusEvent*) override;
 
 #ifdef PANDA_LOG_EVENTS
-	void paintLogDebug(QPainter* painter);
+	void paintLogDebug(QPainter& painter);
 #endif
-	void paintDirtyState(QPainter* painter);
+	void paintDirtyState(QPainter& painter);
 
 	ObjectDrawStruct* getObjectDrawStructAtPos(const QPointF& pt);
 	void moveView(const QPointF& delta);
@@ -107,8 +109,8 @@ protected:
 	void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
 	bool hasLinkTag(panda::BaseData* input, panda::BaseData* output);
 
-	void drawLinks(QStylePainter& painter);
-	void drawConnectedDatas(QStylePainter* painter, panda::BaseData* sourceData);
+	void drawLinks(QPainter& painter);
+	void drawConnectedDatas(QPainter& painter, panda::BaseData* sourceData);
 
 	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
 	void computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, QPointF position);

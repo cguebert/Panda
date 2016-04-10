@@ -49,12 +49,12 @@ namespace
 }
 
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
-	: QWidget(parent)
+	: QOpenGLWidget(parent)
 	, m_pandaDocument(doc)
 	, m_hoverTimer(new QTimer(this))
 	, m_objectsSelection(std::make_unique<ObjectsSelection>(doc))
 {
-	setAutoFillBackground(true);
+//	setAutoFillBackground(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setFocusPolicy(Qt::StrongFocus);
 
@@ -181,7 +181,17 @@ void GraphView::moveView(const QPointF& delta)
 	}
 }
 
-void GraphView::paintEvent(QPaintEvent* /* event */)
+void GraphView::initializeGL()
+{
+}
+
+void GraphView::resizeGL(int w, int h)
+{
+	glViewport(0, 0, w, h);
+	update();
+}
+
+void GraphView::paintGL()
 {
 	updateDirtyDrawStructs();
 
@@ -191,9 +201,17 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 		m_recomputeTags = false;
 	}
 
-	QStylePainter painter(this);
+	QPainter painter(this);
+
+	painter.beginNativePainting();
+	auto col = palette().background().color();
+	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	painter.endNativePainting();
+
 	painter.setRenderHint(QPainter::Antialiasing, true);
 	painter.setRenderHint(QPainter::TextAntialiasing, true);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
 	// Zoom
 	painter.scale(m_zoomFactor, m_zoomFactor);
@@ -224,7 +242,7 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 
 	// Highlight connected Datas
 	if (m_highlightConnectedDatas)
-		drawConnectedDatas(&painter, m_hoverData);
+		drawConnectedDatas(painter, m_hoverData);
 
 	// Selection rubber band
 	if (m_movingAction == MOVING_SELECTION)
@@ -251,15 +269,15 @@ void GraphView::paintEvent(QPaintEvent* /* event */)
 #ifdef PANDA_LOG_EVENTS
 		UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
 		if(logDlg && logDlg->isVisible())
-			paintLogDebug(&painter);
+			paintLogDebug(painter);
 		else
 #endif
-			paintDirtyState(&painter);
+			paintDirtyState(painter);
 	}
 }
 
 #ifdef PANDA_LOG_EVENTS
-void GraphView::paintLogDebug(QPainter* painter)
+void GraphView::paintLogDebug(QPainter& painter)
 {
 	UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
 	if(logDlg && logDlg->isVisible())
@@ -269,23 +287,23 @@ void GraphView::paintLogDebug(QPainter* painter)
 		{
 			const auto object = ods->getObject();
 			if(panda::helper::valueOrDefault(states, object, nullptr))
-				painter->setBrush(QColor(255,0,0,32));
+				painter.setBrush(QColor(255,0,0,32));
 			else
-				painter->setBrush(QColor(0,255,0,32));
+				painter.setBrush(QColor(0,255,0,32));
 
 			QRectF area = ods->getObjectArea();
-			painter->drawRect(area);
+			painter.drawRect(area);
 
 			for(panda::BaseData* data : object->getDatas())
 			{
 				if(ods->getDataRect(data, area))
 				{
 					if(panda::helper::valueOrDefault(states, data, nullptr))
-						painter->setBrush(QColor(255,0,0,64));
+						painter.setBrush(QColor(255,0,0,64));
 					else
-						painter->setBrush(QColor(0,255,0,64));
+						painter.setBrush(QColor(0,255,0,64));
 
-					painter->drawRect(area);
+					painter.drawRect(area);
 				}
 			}
 		}
@@ -297,7 +315,7 @@ void GraphView::paintLogDebug(QPainter* painter)
 			if(object)
 			{
 				auto ods = getObjectDrawStruct(object);
-				painter->setBrush(QColor(128, 128, 255, 128));
+				painter.setBrush(QColor(128, 128, 255, 128));
 				QRectF area;
 
 				bool drawData = false;
@@ -307,23 +325,23 @@ void GraphView::paintLogDebug(QPainter* painter)
 				if(!drawData)
 					area = ods->getObjectArea();
 
-				painter->drawRect(area);
+				painter.drawRect(area);
 			}
 		}
 	}
 }
 #endif
 
-void GraphView::paintDirtyState(QPainter* painter)
+void GraphView::paintDirtyState(QPainter& painter)
 {
 	for(const auto& ods : m_orderedObjectDrawStructs)
 	{
 		const auto object = ods->getObject();
 		if(object->isDirty())
-			painter->setBrush(QColor(255,0,0,64));
+			painter.setBrush(QColor(255,0,0,64));
 		else
-			painter->setBrush(QColor(0,255,0,64));
-		painter->drawRect(ods->getObjectArea());
+			painter.setBrush(QColor(0,255,0,64));
+		painter.drawRect(ods->getObjectArea());
 
 		for(panda::BaseData* data : object->getDatas())
 		{
@@ -331,18 +349,13 @@ void GraphView::paintDirtyState(QPainter* painter)
 			if(ods->getDataRect(data, area))
 			{
 				if(data->isDirty())
-					painter->setBrush(QColor(255,0,0,128));
+					painter.setBrush(QColor(255,0,0,128));
 				else
-					painter->setBrush(QColor(0,255,0,128));
-				painter->drawRect(area);
+					painter.setBrush(QColor(0,255,0,128));
+				painter.drawRect(area);
 			}
 		}
 	}
-}
-
-void GraphView::resizeEvent(QResizeEvent*)
-{
-	update();
 }
 
 void GraphView::mousePressEvent(QMouseEvent* event)
@@ -1139,7 +1152,7 @@ void GraphView::hoverDataInfo()
 	}
 }
 
-void GraphView::drawLinks(QStylePainter& painter)
+void GraphView::drawLinks(QPainter& painter)
 {
 	painter.setPen(QPen(palette().text().color(), 1));
 	painter.setBrush(Qt::NoBrush);
@@ -1169,7 +1182,7 @@ void GraphView::drawLinks(QStylePainter& painter)
 	}
 }
 
-void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sourceData)
+void GraphView::drawConnectedDatas(QPainter& painter, panda::BaseData* sourceData)
 {
 	std::vector<QRectF> highlightRects;
 	std::vector< std::pair<QPointF, QPointF> > highlightLinks;
@@ -1226,20 +1239,20 @@ void GraphView::drawConnectedDatas(QStylePainter* painter, panda::BaseData* sour
 		return;
 
 	// Now draw everything
-	painter->setBrush(palette().highlight().color());
-	painter->setPen(palette().text().color());
+	painter.setBrush(palette().highlight().color());
+	painter.setPen(palette().text().color());
 	for(const auto& rect : highlightRects)
-		painter->drawRect(rect);
+		painter.drawRect(rect);
 
-	painter->setPen(QPen(palette().highlight(), 3));
-	painter->setBrush(Qt::NoBrush);
+	painter.setPen(QPen(palette().highlight(), 3));
+	painter.setBrush(Qt::NoBrush);
 	for(const auto& link : highlightLinks)
 	{
 		double w = (link.second.x() - link.first.x()) / 2;
 		QPainterPath path;
 		path.moveTo(link.first);
 		path.cubicTo(link.first + QPointF(w, 0), link.second - QPointF(w, 0), link.second);
-		painter->drawPath(path);
+		painter.drawPath(path);
 	}
 }
 
