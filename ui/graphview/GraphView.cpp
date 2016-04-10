@@ -34,16 +34,18 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setFocusPolicy(Qt::StrongFocus);
 
-	m_observer.get(m_pandaDocument->getSignals().modified).connect<QWidget, &QWidget::update>(this);
 	m_observer.get(m_objectsSelection->selectionChanged).connect<GraphView, &GraphView::selectionChanged>(this);
-	m_observer.get(m_pandaDocument->getSignals().addedObject).connect<GraphView, &GraphView::addedObject>(this);
-	m_observer.get(m_pandaDocument->getSignals().removedObject).connect<GraphView, &GraphView::removeObject>(this);
-	m_observer.get(m_pandaDocument->getSignals().modifiedObject).connect<GraphView, &GraphView::modifiedObject>(this);
-	m_observer.get(m_pandaDocument->getSignals().savingObject).connect<GraphView, &GraphView::savingObject>(this);
-	m_observer.get(m_pandaDocument->getSignals().loadingObject).connect<GraphView, &GraphView::loadingObject>(this);
-	m_observer.get(m_pandaDocument->getSignals().startLoading).connect<GraphView, &GraphView::startLoading>(this);
-	m_observer.get(m_pandaDocument->getSignals().loadingFinished).connect<GraphView, &GraphView::loadingFinished>(this);
-	m_observer.get(m_pandaDocument->getSignals().changedDock).connect<GraphView, &GraphView::changedDock>(this);
+
+	auto& docSignals = m_pandaDocument->getSignals();
+	m_observer.get(docSignals.modified).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(docSignals.addedObject).connect<GraphView, &GraphView::addedObject>(this);
+	m_observer.get(docSignals.removedObject).connect<GraphView, &GraphView::removeObject>(this);
+	m_observer.get(docSignals.modifiedObject).connect<GraphView, &GraphView::modifiedObject>(this);
+	m_observer.get(docSignals.savingObject).connect<GraphView, &GraphView::savingObject>(this);
+	m_observer.get(docSignals.loadingObject).connect<GraphView, &GraphView::loadingObject>(this);
+	m_observer.get(docSignals.startLoading).connect<GraphView, &GraphView::startLoading>(this);
+	m_observer.get(docSignals.loadingFinished).connect<GraphView, &GraphView::loadingFinished>(this);
+	m_observer.get(docSignals.changedDock).connect<GraphView, &GraphView::changedDock>(this);
 
 	connect(m_hoverTimer, SIGNAL(timeout()), this, SLOT(hoverDataInfo()));
 

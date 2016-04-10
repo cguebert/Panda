@@ -97,7 +97,7 @@ public:
 
 	gui::BaseGUI& getGUI() const; // Access to the GUI thread, update the view, show message boxes
 	DocumentSignals& getSignals() const; // Connect and run signals for when the document is modified
-	DocumentRenderer* getRenderer() const; // What takes care of rendering the document in OpenGL
+	DocumentRenderer& getRenderer() const; // What takes care of rendering the document in OpenGL
 	UndoStack& getUndoStack() const; // Undo/redo capabilities
 
 	// Slots or called only by the UI
@@ -187,17 +187,17 @@ inline uint32_t PandaDocument::getNextIndex()
 inline Layer* PandaDocument::getDefaultLayer() const
 { return m_defaultLayer.get(); }
 
-inline UndoStack& PandaDocument::getUndoStack() const
-{ return *m_undoStack; }
-
 inline gui::BaseGUI& PandaDocument::getGUI() const
 { return m_gui; }
+
+inline DocumentRenderer& PandaDocument::getRenderer() const
+{ return *m_renderer; }
 
 inline DocumentSignals& PandaDocument::getSignals() const
 { return *m_signals; }
 
-inline DocumentRenderer* PandaDocument::getRenderer() const
-{ return m_renderer.get(); }
+inline UndoStack& PandaDocument::getUndoStack() const
+{ return *m_undoStack; }
 
 } // namespace panda
 

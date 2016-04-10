@@ -75,7 +75,7 @@ void OpenGLRenderView::setAdjustRenderSize(bool adjust)
 
 void OpenGLRenderView::initializeGL()
 {
-	m_document->getRenderer()->initializeGL();
+	m_document->getRenderer().initializeGL();
 }
 
 void OpenGLRenderView::resizeGL(int w, int h)
@@ -86,9 +86,9 @@ void OpenGLRenderView::resizeGL(int w, int h)
 
 void OpenGLRenderView::paintGL()
 {
-	m_document->getRenderer()->setRenderingMainView(true);
+	m_document->getRenderer().setRenderingMainView(true);
 	m_document->updateIfDirty();
-	m_document->getRenderer()->setRenderingMainView(false);
+	m_document->getRenderer().setRenderingMainView(false);
 	auto fbo = m_document->getFBO();
 
 	QRect viewRect = contentsRect();

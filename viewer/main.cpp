@@ -43,7 +43,7 @@ bool verticalSync = true;
 
 void error_callback(int error, const char* description)
 {
-    std::cerr << "GLFW Error: " << description << std::endl;
+	std::cerr << "GLFW Error: " << description << std::endl;
 }
 
 int convertKey(int key)
@@ -203,8 +203,8 @@ bool init(const std::string& filePath = "")
 
 	gui = std::make_shared<SimpleGUIImpl>();
 	document = std::make_shared<panda::PandaDocument>(*gui);
-	auto renderer = document->getRenderer();
-	renderer->initializeGL();
+	auto& renderer = document->getRenderer();
+	renderer.initializeGL();
 	
 	if (!filePath.empty())
 	{
@@ -213,7 +213,7 @@ bool init(const std::string& filePath = "")
 	}
 
 	document->setRenderSize({ currentWidth, currentHeight }); // Loading the file has changed the render size
-	renderer->setRenderingMainView(true);
+	renderer.setRenderingMainView(true);
 
 	return true;
 }

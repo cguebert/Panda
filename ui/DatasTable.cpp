@@ -77,8 +77,9 @@ void DatasTable::populateTable()
 	if (!m_nextObject)
 		m_nextObject = m_document;
 
+	// If possible, only update widgets
 	if(!m_objectIsModified && m_currentObject == m_nextObject)
-	{	// Only update widgets
+	{
 		m_currentObject->updateIfDirty(); // Force the update of the object, as we want the new values
 		// TODO : verify if there are no new datas
 		for(DataWidgetPtr& dataWidget : m_dataWidgets)

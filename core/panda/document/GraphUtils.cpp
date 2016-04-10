@@ -126,6 +126,47 @@ void forEachObjectOutput(PandaObject* startObject, ObjectFunctor func)
 	}
 }
 
+void forEachObjectInput(PandaObject* startObject, ObjectFunctor func)
+{
+	for(auto output : startObject->getInputs())
+	{
+		PandaObject* object = dynamic_cast<PandaObject*>(output);
+		BaseData* data = dynamic_cast<BaseData*>(output);
+		if(object) // Some objects can be directly connected to others objects (Docks and Dockable for example)
+		{
+			func(object);
+		}
+		else if(data)
+		{
+			for(auto node : data->getInputs())
+			{
+				PandaObject* object2 = dynamic_cast<PandaObject*>(node);
+				BaseData* data2 = dynamic_cast<BaseData*>(node);
+				if(object2)
+				{ // Output data directly connected to another object
+					func(object2);
+				}
+				else if(data2)
+				{
+					if(data2->getOwner() && !dynamic_cast<Group*>(data2->getOwner()))
+					{ // Most objects' data are connected to another object's data
+						func(data2->getOwner());
+					}
+					else
+					{ // Groups can have inside object's data connected to the group's data, connected to outside object's data.
+						for(auto node2 : data2->getInputs())
+						{
+							BaseData* data3 = dynamic_cast<BaseData*>(node2);
+							if(data3 && data3->getOwner())
+								func(data3->getOwner());
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 
 } // namespace graph
 

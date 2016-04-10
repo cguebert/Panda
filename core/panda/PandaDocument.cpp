@@ -73,9 +73,9 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	, m_mouseClick(initData(0, "mouse click", "1 if the left mouse button is pressed"))
 	, m_nbThreads(initData(0, "nb threads", "Optimize computation for multiple CPU cores (not using the scheduler if < 0)"))
 	, m_gui(gui)
-	, m_undoStack(std::make_unique<UndoStack>())
 	, m_renderer(std::make_unique<DocumentRenderer>(*this))
 	, m_signals(std::make_unique<DocumentSignals>())
+	, m_undoStack(std::make_unique<UndoStack>())
 {
 	addInput(m_renderSize);
 	addInput(m_backgroundColor);
