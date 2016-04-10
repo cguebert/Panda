@@ -44,6 +44,7 @@ set(HEADER_FILES
 	graphview/GraphView.h
 	graphview/LinkTag.h
 	graphview/ObjectsSelection.h
+	graphview/ViewRenderer.h
 	widget/AnimationDataWidgetDialog.h
 	widget/DataWidget.h
 	widget/DataWidgetFactory.h
@@ -93,6 +94,7 @@ set(SOURCE_FILES
 	graphview/GraphView.cpp
 	graphview/LinkTag.cpp
 	graphview/ObjectsSelection.cpp
+	graphview/ViewRenderer.cpp
 	widget/ColorDataWidget.cpp
 	widget/DataWidgetFactory.cpp
 	widget/EditGradientDialog.cpp
@@ -130,11 +132,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Applications")
 
 target_link_libraries(${PROJECT_NAME} "PandaCore")
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL)
-
-find_package(OpenGL REQUIRED)
-if(NOT OPENGL_FOUND)
-	message(ERROR " OPENGL not found!")
-endif(NOT OPENGL_FOUND)
 
 add_library("QScintilla" SHARED IMPORTED)
 set_target_properties("QScintilla" PROPERTIES 

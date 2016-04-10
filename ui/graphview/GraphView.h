@@ -26,7 +26,7 @@ class XmlElement;
 class LinkTag;
 class ObjectDrawStruct;
 class ObjectsSelection;
-class QStylePainter;
+class ViewRenderer;
 
 class GraphView : public QOpenGLWidget, public ScrollableView
 {
@@ -78,6 +78,7 @@ public:
 	void sortAllDockables();
 
 	ObjectsSelection& selection() const;
+	ViewRenderer& renderer() const;
 
 	// From ScrollableView
 	virtual QSize viewSize() override;
@@ -202,10 +203,17 @@ private:
 
 	std::vector<ObjectDrawStruct*> m_dirtyDrawStructs; /// The list of draw structs that need to be updated (we update them in the order we enter them in the list)
 	std::set<ObjectDrawStruct*> m_dirtyDrawStructsSet; /// To ensure we do not update multiple times the same object
+
+	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
 };
+
+//****************************************************************************//
 
 inline ObjectsSelection& GraphView::selection() const
 { return *m_objectsSelection; }
+
+inline ViewRenderer& GraphView::renderer() const
+{ return *m_viewRenderer; }
 
 inline void GraphView::debugDirtyState(bool show)
 { m_debugDirtyState = show; update(); }

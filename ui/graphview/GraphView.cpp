@@ -11,6 +11,7 @@
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/ObjectsSelection.h>
+#include <ui/graphview/ViewRenderer.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/helper/algorithm.h>
@@ -48,13 +49,20 @@ namespace
 	}
 }
 
+static inline panda::types::Point convert(const QPointF& pt)
+{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
+
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	: QOpenGLWidget(parent)
 	, m_pandaDocument(doc)
 	, m_hoverTimer(new QTimer(this))
 	, m_objectsSelection(std::make_unique<ObjectsSelection>(doc))
+	, m_viewRenderer(std::make_unique<ViewRenderer>())
 {
-//	setAutoFillBackground(true);
+	QSurfaceFormat fmt;
+	fmt.setSamples(8);
+	setFormat(fmt);
+
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setFocusPolicy(Qt::StrongFocus);
 
@@ -183,11 +191,13 @@ void GraphView::moveView(const QPointF& delta)
 
 void GraphView::initializeGL()
 {
+	m_viewRenderer->initialize();
 }
 
 void GraphView::resizeGL(int w, int h)
 {
 	glViewport(0, 0, w, h);
+	m_viewRenderer->resize(w, h);
 	update();
 }
 
@@ -200,6 +210,9 @@ void GraphView::paintGL()
 		updateLinkTags();
 		m_recomputeTags = false;
 	}
+
+	m_viewRenderer->newFrame();
+	DrawList drawList;
 
 	QPainter painter(this);
 
@@ -253,6 +266,9 @@ void GraphView::paintGL()
 		painter.setPen(pen);
 		painter.setBrush(Qt::NoBrush);
 		painter.drawRect(selectionRect);
+
+//		drawList.addRectFilled(convert(selectionRect.topLeft()), convert(selectionRect.bottomRight()),
+//			palette().text().color().rgb());
 	}
 
 	// Link in creation
@@ -263,6 +279,11 @@ void GraphView::paintGL()
 		painter.setPen(pen);
 		painter.drawLine(m_previousMousePos, m_currentMousePos);
 	}
+
+	painter.beginNativePainting();
+	m_viewRenderer->addDrawList(&drawList);
+	m_viewRenderer->render();
+	painter.endNativePainting();
 
 	if (m_debugDirtyState)
 	{
