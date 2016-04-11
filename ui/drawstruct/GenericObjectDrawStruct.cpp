@@ -115,7 +115,7 @@ void GenericObjectDrawStruct::drawDatas(QPainter* painter)
 			auto data = dataPair.second;
 			painter->setPen(QPen(m_parentView->palette().text().color()));
 			const panda::BaseData* clickedData = m_parentView->getClickedData();
-			if (clickedData && clickedData != data && GraphView::isCompatible(clickedData, data))
+			if (clickedData && clickedData != data && m_parentView->canLinkWith(data))
 				painter->setBrush(QColor(clickedData->getDataTrait()->typeColor()));
 			else
 				painter->setBrush(m_parentView->palette().button().color());

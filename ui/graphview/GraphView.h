@@ -45,6 +45,7 @@ public:
 	const panda::BaseData* getContextMenuData() const;
 
 	static bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2);
+	bool canLinkWith(const panda::BaseData* data) const; /// Is it possible to link this data and the clicked data
 
 	void resetView();
 
@@ -117,6 +118,8 @@ protected:
 
 	void selectionChanged();
 
+	void computeCompatibleDatas(panda::BaseData* data);
+
 signals:
 	void modified();
 	void showStatusBarMessage(QString);
@@ -187,6 +190,8 @@ private:
 	std::vector<std::shared_ptr<ObjectDrawStruct>> m_selectedObjectsDrawStructs; /// The renderers for the selected objects
 
 	bool m_debugDirtyState = false;
+
+	std::set<const panda::BaseData*> m_possibleLinks; /// When creating a new link, this contains all possible destinations
 };
 
 inline ObjectsSelection& GraphView::selection() const
@@ -215,5 +220,8 @@ inline void GraphView::setRecomputeTags()
 
 inline bool GraphView::hasLinkTag(panda::BaseData* input, panda::BaseData* output)
 { return m_linkTagsDatas.count(std::make_pair(input, output)) != 0; }
+
+inline bool GraphView::canLinkWith(const panda::BaseData* data) const
+{ return m_possibleLinks.count(data) != 0; }
 
 #endif

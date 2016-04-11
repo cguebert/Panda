@@ -357,6 +357,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 					else	// Creating a new Link
 					{
 						m_clickedData = data;
+						computeCompatibleDatas(data);
 						m_movingAction = MOVING_LINK;
 						m_previousMousePos = m_currentMousePos = linkStart;
 
@@ -513,7 +514,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		{
 			QPointF linkStart;
 			panda::BaseData* data = m_objectDrawStructs[object]->getDataAtPos(m_currentMousePos, &linkStart);
-			if(data && isCompatible(m_clickedData, data))
+			if(data && canLinkWith(data))
 				m_currentMousePos = linkStart;
 		}
 		update();
@@ -690,7 +691,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		if(obj)
 		{
 			panda::BaseData* secondData = m_objectDrawStructs[obj]->getDataAtPos(m_currentMousePos);
-			if(secondData && isCompatible(m_clickedData, secondData))
+			if(secondData && canLinkWith(secondData))
 			{
 				if(m_clickedData->isInput() && secondData->isOutput())
 					changeLink(m_clickedData, secondData);
@@ -1514,4 +1515,17 @@ void GraphView::selectionChanged()
 		m_selectedObjectsDrawStructs.push_back(m_objectDrawStructs[object]);
 
 	update();
+}
+
+void GraphView::computeCompatibleDatas(panda::BaseData* data)
+{
+	m_possibleLinks.clear();
+	for (const auto& object : m_pandaDocument->getObjects())
+	{
+		for (const auto linkData : object->getDatas())
+		{
+			if (isCompatible(data, linkData))
+				m_possibleLinks.insert(linkData);
+		}
+	}
 }

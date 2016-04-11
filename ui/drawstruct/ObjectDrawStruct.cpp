@@ -161,8 +161,7 @@ void ObjectDrawStruct::drawData(QPainter* painter, const panda::BaseData* data, 
 	painter->setPen(QPen(m_parentView->palette().text().color()));
 	const panda::BaseData* clickedData = m_parentView->getClickedData();
 
-	if (clickedData && clickedData != data
-		&& !GraphView::isCompatible(clickedData, data))
+	if (clickedData && clickedData != data && !m_parentView->canLinkWith(data))
 		painter->setBrush(m_parentView->palette().light());
 	else
 		painter->setBrush(QColor(data->getDataTrait()->typeColor()));
