@@ -13,9 +13,57 @@ using panda::types::Point;
 
 static ViewRenderer* g_viewRenderer = nullptr;
 
+namespace
+{
+	class OpenGLStateSaver
+	{
+	public:
+		OpenGLStateSaver(QOpenGLFunctions* functions)
+			: m_functions(functions)
+		{
+			glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
+			glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
+			glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &last_element_array_buffer);
+			glGetIntegerv(GL_BLEND_SRC, &last_blend_src);
+			glGetIntegerv(GL_BLEND_DST, &last_blend_dst);
+			glGetIntegerv(GL_BLEND_EQUATION_RGB, &last_blend_equation_rgb);
+			glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &last_blend_equation_alpha);
+			glGetIntegerv(GL_VIEWPORT, last_viewport);
+			last_enable_blend = glIsEnabled(GL_BLEND);
+			last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
+			last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
+			last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
+		}
+
+		~OpenGLStateSaver()
+		{
+			m_functions->glUseProgram(last_program);
+			glBindTexture(GL_TEXTURE_2D, last_texture);
+			m_functions->glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
+			m_functions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, last_element_array_buffer);
+			m_functions->glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
+			glBlendFunc(last_blend_src, last_blend_dst);
+			if (last_enable_blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
+			if (last_enable_cull_face) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
+			if (last_enable_depth_test) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
+			if (last_enable_scissor_test) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
+			glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
+		}
+
+	private:
+		QOpenGLFunctions* m_functions;
+		GLint last_program, last_texture, last_array_buffer, last_element_array_buffer, last_blend_src,
+			last_blend_dst, last_blend_equation_rgb, last_blend_equation_alpha, last_viewport[4];
+		GLboolean last_enable_blend, last_enable_cull_face, last_enable_depth_test, last_enable_scissor_test;
+	};
+}
+
 ViewRenderer::ViewRenderer()
 {
 	g_viewRenderer = this;
+	for(int i = 0; i < 4; ++i)
+		m_viewBounds[i] = 0;
 }
 
 ViewRenderer::~ViewRenderer()
@@ -26,6 +74,7 @@ ViewRenderer::~ViewRenderer()
 void ViewRenderer::initialize()
 {
 	QOpenGLFunctions* f = QOpenGLContext::currentContext()->functions();
+
 	// For now, empty texture (white)
 	std::vector<unsigned char> pixels(4, 0xFF);
 	QImage img(pixels.data(), 1, 1, QImage::Format::Format_ARGB32);
@@ -98,6 +147,14 @@ void ViewRenderer::resize(int w, int h)
 	m_height = h;
 }
 
+void ViewRenderer::setView(float left, float top, float right, float bottom)
+{
+	m_viewBounds[0] = left;
+	m_viewBounds[1] = top;
+	m_viewBounds[2] = right;
+	m_viewBounds[3] = bottom;
+}
+
 void ViewRenderer::newFrame()
 {
 	m_drawLists.clear();
@@ -106,6 +163,7 @@ void ViewRenderer::newFrame()
 void ViewRenderer::render()
 {
 	QOpenGLFunctions* f = QOpenGLContext::currentContext()->functions();
+	OpenGLStateSaver state(f);
 
 	f->glEnable(GL_BLEND);
 	f->glBlendEquation(GL_FUNC_ADD);
@@ -114,48 +172,52 @@ void ViewRenderer::render()
 	f->glDisable(GL_DEPTH_TEST);
 	f->glActiveTexture(GL_TEXTURE0);
 
-	f->glViewport(0, 0, m_width, m_height);
-	const float ortho_projection[4][4] =
-	{
-		{ 2.0f/m_width, 0.0f,            0.0f, 0.0f },
-		{ 0.0f,         2.0f/-m_height,  0.0f, 0.0f },
-		{ 0.0f,         0.0f,           -1.0f, 0.0f },
-		{-1.0f,         1.0f,            0.0f, 1.0f },
-	};
+	glViewport(0, 0, m_width, m_height);
+	QMatrix4x4 ortho;
+	ortho.ortho(m_viewBounds[0], m_viewBounds[2], m_viewBounds[3], m_viewBounds[1], -1, 1);
 
 	m_shader->bind();
 	m_shader->setUniformValue(m_locationTex, 0);
-	m_shader->setUniformValue(m_locationProjMtx, ortho_projection);
+	m_shader->setUniformValue(m_locationProjMtx, ortho);
 
 	m_VAO->bind();
 
+	int vboSize = 0, eboSize = 0;
 	for (const DrawList* cmd_list : m_drawLists)
 	{
-		if (cmd_list->vtxBuffer().empty())
+		if (cmd_list->vtxBuffer().empty() || cmd_list->idxBuffer().empty())
 			continue;
 
 		const DrawIdx* idx_buffer_offset = nullptr;
 
 		m_VBO->bind();
-		m_VBO->write(0, &cmd_list->vtxBuffer().front(), cmd_list->vtxBuffer().size() * sizeof(DrawVert));
+		int vtxSize = cmd_list->vtxBuffer().size() * sizeof(DrawVert);
+		if (vtxSize > vboSize)
+		{
+			m_VBO->allocate(vtxSize);
+			vboSize = vtxSize;
+		}
+		m_VBO->write(0, &cmd_list->vtxBuffer().front(), vtxSize);
 
 		m_EBO->bind();
-		m_EBO->write(0, &cmd_list->idxBuffer().front(), cmd_list->idxBuffer().size() * sizeof(DrawIdx));
+		int idxSize = cmd_list->idxBuffer().size() * sizeof(DrawIdx);
+		if (idxSize > eboSize)
+		{
+			m_EBO->allocate(idxSize);
+			eboSize = idxSize;
+		}
+		m_EBO->write(0, &cmd_list->idxBuffer().front(), idxSize);
 
 		for (const DrawCmd& pcmd : cmd_list->cmdBuffer())
 		{
-			f->glBindTexture(GL_TEXTURE_2D, pcmd.textureId);
-			f->glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd.elemCount), GL_UNSIGNED_INT, idx_buffer_offset);
+			glBindTexture(GL_TEXTURE_2D, pcmd.textureId);
+			glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd.elemCount), GL_UNSIGNED_INT, idx_buffer_offset);
 			idx_buffer_offset += pcmd.elemCount;
 		}
 	}
 
 	m_shader->release();
 	m_VAO->release();
-
-	f->glDisable(GL_BLEND);
-	f->glDisable(GL_CULL_FACE);
-	f->glDisable(GL_DEPTH_TEST);
 }
 
 unsigned int ViewRenderer::textureId() const
@@ -211,6 +273,24 @@ void DrawList::popTextureID()
 	assert(!m_textureIdStack.empty());
 	m_textureIdStack.pop_back();
 	updateTextureID();
+}
+
+void DrawList::addLine(const Point& a, const Point& b, unsigned int col, float thickness)
+{
+	if ((col >> 24) == 0)
+		return;
+	pathLineTo(a + Point(0.5f,0.5f));
+	pathLineTo(b + Point(0.5f,0.5f));
+	pathStroke(col, false, thickness);
+}
+
+// a: upper-left, b: lower-right. we don't render 1 px sized rectangles properly.
+void DrawList::addRect(const Point& a, const Point& b, unsigned int col, float rounding, int rounding_corners)
+{
+	if ((col >> 24) == 0)
+		return;
+	pathRect(a + Point(0.5f,0.5f), b - Point(0.5f,0.5f), rounding, rounding_corners);
+	pathStroke(col, true);
 }
 
 void DrawList::addRectFilled(const Point& a, const Point& b, unsigned int col, float rounding, int rounding_corners)

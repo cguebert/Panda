@@ -20,6 +20,7 @@ public:
 	void initialize();
 	void resize(int w, int h);
 
+	void setView(float left, float top, float right, float bottom);
 	void newFrame();
 	void addDrawList(DrawList* dl);
 	void render();
@@ -34,6 +35,7 @@ private:
 
 	int m_locationTex = -1, m_locationProjMtx = -1;
 	int m_width = 0, m_height = 0;
+	float m_viewBounds[4];
 
 	std::vector<DrawList*> m_drawLists;
 };
@@ -67,8 +69,8 @@ public:
 	void popTextureID();
 
 	// Primitives
-//	void addLine(const panda::types::Point& a, const panda::types::Point& b, unsigned int col, float thickness = 1.0f);
-//	void addRect(const panda::types::Point& a, const panda::types::Point& b, unsigned int col, float rounding = 0.0f, int rounding_corners = 0x0F);        // a: upper-left, b: lower-right
+	void addLine(const panda::types::Point& a, const panda::types::Point& b, unsigned int col, float thickness = 1.0f);
+	void addRect(const panda::types::Point& a, const panda::types::Point& b, unsigned int col, float rounding = 0.0f, int rounding_corners = 0x0F);        // a: upper-left, b: lower-right
 	void addRectFilled(const panda::types::Point& a, const panda::types::Point& b, unsigned int col, float rounding = 0.0f, int rounding_corners = 0x0F);  // a: upper-left, b: lower-right
 //	void addRectFilledMultiColor(const panda::types::Point& a, const panda::types::Point& b, unsigned int col_upr_left, unsigned int col_upr_right, unsigned int col_bot_right, unsigned int col_bot_left);
 //	void addTriangleFilled(const panda::types::Point& a, const panda::types::Point& b, const panda::types::Point& c, unsigned int col);
@@ -106,9 +108,9 @@ private:
 	std::vector<DrawIdx> m_idxBuffer; // Index buffer. Each command consume DrawCmd::ElemCount of those
 	std::vector<DrawVert> m_vtxBuffer; // Vertex buffer.
 
-	DrawIdx m_vtxCurrentIdx; // VtxBuffer.Size
-	DrawVert* m_vtxWritePtr; // Point within VtxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
-	DrawIdx* m_idxWritePtr; // Point within IdxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
+	DrawIdx m_vtxCurrentIdx = 0; // VtxBuffer.Size
+	DrawVert* m_vtxWritePtr = nullptr; // Point within m_vtxBuffer after each add command (to avoid using the vector operators too much)
+	DrawIdx* m_idxWritePtr = nullptr; // Index within m_idxBuffer after each add command (to avoid using the vector operators too much)
 	std::vector<unsigned int> m_textureIdStack;
 	std::vector<panda::types::Point> m_path;
 };

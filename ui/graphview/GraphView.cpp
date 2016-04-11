@@ -211,6 +211,7 @@ void GraphView::paintGL()
 		m_recomputeTags = false;
 	}
 
+	m_viewRenderer->setView(0, 0, width() / m_zoomFactor, height() / m_zoomFactor);
 	m_viewRenderer->newFrame();
 	DrawList drawList;
 
@@ -261,14 +262,17 @@ void GraphView::paintGL()
 	if (m_movingAction == MOVING_SELECTION)
 	{
 		QRectF selectionRect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor);
-		QPen pen(palette().text().color());
+	/*	QPen pen(palette().text().color());
 		pen.setStyle(Qt::DashDotLine);
 		painter.setPen(pen);
 		painter.setBrush(Qt::NoBrush);
 		painter.drawRect(selectionRect);
-
-//		drawList.addRectFilled(convert(selectionRect.topLeft()), convert(selectionRect.bottomRight()),
-//			palette().text().color().rgb());
+		*/
+		auto highlight = palette().highlightedText().color();
+		highlight.setAlpha(64);
+		drawList.addRectFilled(convert(selectionRect.topLeft()), convert(selectionRect.bottomRight()), 0x30ff0000);
+		drawList.addRect(convert(selectionRect.topLeft()), convert(selectionRect.bottomRight()),
+			palette().text().color().rgb());
 	}
 
 	// Link in creation
@@ -280,11 +284,6 @@ void GraphView::paintGL()
 		painter.drawLine(m_previousMousePos, m_currentMousePos);
 	}
 
-	painter.beginNativePainting();
-	m_viewRenderer->addDrawList(&drawList);
-	m_viewRenderer->render();
-	painter.endNativePainting();
-
 	if (m_debugDirtyState)
 	{
 #ifdef PANDA_LOG_EVENTS
@@ -295,6 +294,11 @@ void GraphView::paintGL()
 #endif
 			paintDirtyState(painter);
 	}
+
+	painter.end();
+
+	m_viewRenderer->addDrawList(&drawList);
+	m_viewRenderer->render();
 }
 
 #ifdef PANDA_LOG_EVENTS
