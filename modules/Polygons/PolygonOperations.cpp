@@ -51,19 +51,22 @@ namespace
 		return path;
 	}
 
-	std::vector<panda::types::Polygon> convert(const BGPolygonList& inputPolys)
+	inline panda::types::Polygon convert(const BGPolygon& inputPoly)
+	{
+		panda::types::Polygon poly;
+		poly.contour = convert(inputPoly.outer());
+
+		for(const auto& inner : inputPoly.inners())
+			poly.holes.push_back(convert(inner));
+
+		return poly;
+	}
+
+	inline std::vector<panda::types::Polygon> convert(const BGPolygonList& inputPolys)
 	{
 		std::vector<panda::types::Polygon> output;
 		for(const BGPolygon& inPoly : inputPolys)
-		{
-			panda::types::Polygon poly;
-			poly.contour = convert(inPoly.outer());
-
-			for(const auto& inner : inPoly.inners())
-				poly.holes.push_back(convert(inner));
-
-			output.push_back(std::move(poly));
-		}
+			output.push_back(convert(inPoly));
 
 		return output;
 	}
@@ -244,6 +247,49 @@ protected:
 
 int PolygonOperation_XorClass = RegisterObject<PolygonOperation_Xor>("Math/Polygon/Xor")
 	.setName("Polygons Xor").setDescription("Compute the symmetric difference of two polygons");
+
+//****************************************************************************//
+
+class PolygonOperation_ConvexHull : public PandaObject
+{
+public:
+	PANDA_CLASS(PolygonOperation_ConvexHull, PandaObject)
+
+	PolygonOperation_ConvexHull(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("input", "Input polygon"))
+		, m_output(initData("output", "Convex hull of the polygon"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+		output.clear();
+
+		for (const auto& inPoly : input)
+		{
+			Polygon outPoly;
+			if (!inPoly.contour.points.empty())
+			{
+				BGPolygon bgIn = convert(inPoly);
+				BGPolygon bgOut;
+				boost::geometry::convex_hull(bgIn, bgOut);
+				outPoly = convert(bgOut);
+			}
+			output.push_back(outPoly);
+		}
+	}
+
+protected:
+	Data< std::vector<Polygon> > m_input, m_output;
+};
+
+int PolygonOperation_ConvexHullClass = RegisterObject<PolygonOperation_ConvexHull>("Math/Polygon/Convex hull")
+	.setDescription("Compute the onvex hull of a polygon");
 
 } // namespace Panda
 
