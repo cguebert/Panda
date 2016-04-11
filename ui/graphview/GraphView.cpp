@@ -3,6 +3,7 @@
 #include <functional>
 #include <limits>
 
+#include <ui/command/MoveObjectCommand.h>
 #include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/dialog/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
@@ -11,18 +12,41 @@
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/ObjectsSelection.h>
 
+#include <panda/PandaDocument.h>
 #include <panda/helper/algorithm.h>
 #include <panda/types/DataTraits.h>
 #include <panda/command/DockableCommand.h>
 #include <panda/command/LinkDatasCommand.h>
-#include <ui/command/MoveObjectCommand.h>
+#include <panda/document/DocumentSignals.h>
+#include <panda/document/GraphUtils.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <ui/dialog/UpdateLoggerDialog.h>
 #endif
 
-#include <panda/PandaDocument.h>
-#include <panda/document/DocumentSignals.h>
+namespace
+{
+	bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2)
+	{
+		if(data1->getOwner() == data2->getOwner())
+			return false;
+
+		if(data1->isInput())
+		{
+			if(!data2->isOutput())
+				return false;
+			return data1->validParent(data2);
+		}
+		else if(data2->isInput())
+		{
+			if(!data1->isOutput())
+				return false;
+			return data2->validParent(data1);
+		}
+
+		return false;
+	}
+}
 
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	: QWidget(parent)
@@ -98,27 +122,6 @@ panda::PandaObject* GraphView::getObjectAtPos(const QPointF& pt)
 			return object.get();
 	}
 	return nullptr;
-}
-
-bool GraphView::isCompatible(const panda::BaseData* data1, const panda::BaseData* data2)
-{
-	if(data1->getOwner() == data2->getOwner())
-		return false;
-
-	if(data1->isInput())
-	{
-		if(!data2->isOutput())
-			return false;
-		return data1->validParent(data2);
-	}
-	else if(data2->isInput())
-	{
-		if(!data1->isOutput())
-			return false;
-		return data2->validParent(data1);
-	}
-
-	return false;
 }
 
 ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
@@ -1519,12 +1522,20 @@ void GraphView::selectionChanged()
 
 void GraphView::computeCompatibleDatas(panda::BaseData* data)
 {
+	std::vector<panda::BaseData*> forbiddenList;
+	if (data->isInput())
+		forbiddenList = panda::graph::extractDatas(panda::graph::computeConnectedOutputNodes(data, false));
+	else if(data->isOutput())
+		forbiddenList = panda::graph::extractDatas(panda::graph::computeConnectedInputNodes(data, false));
+	std::sort(forbiddenList.begin(), forbiddenList.end());
+
 	m_possibleLinks.clear();
 	for (const auto& object : m_pandaDocument->getObjects())
 	{
 		for (const auto linkData : object->getDatas())
 		{
-			if (isCompatible(data, linkData))
+			if (isCompatible(data, linkData) 
+				&& !std::binary_search(forbiddenList.begin(), forbiddenList.end(), linkData))
 				m_possibleLinks.insert(linkData);
 		}
 	}

@@ -2,6 +2,7 @@
 #include <panda/object/Group.h>
 #include <panda/helper/algorithm.h>
 
+#include <deque>
 #include <set>
 
 namespace panda 
@@ -31,12 +32,13 @@ std::vector<PandaObject*> expandObjectsList(std::vector<PandaObject*> objects)
 
 std::vector<PandaObject*> computeConnectedObjects(const std::vector<PandaObject*>& objects)
 {
-	std::set<PandaObject*> closedList, openList;
-	openList.insert(objects.begin(), objects.end());
+	std::set<PandaObject*> closedList;
+	std::deque<PandaObject*> openList;
+	openList.assign(objects.begin(), objects.end());
 	while(!openList.empty())
 	{
-		PandaObject* object = *openList.begin();
-		openList.erase(object);
+		PandaObject* object = openList.front();
+		openList.pop_front();
 		closedList.insert(object);
 
 		for(BaseData* data : object->getInputDatas())
@@ -45,7 +47,7 @@ std::vector<PandaObject*> computeConnectedObjects(const std::vector<PandaObject*
 			{
 				PandaObject* connected = data->getParent()->getOwner();
 				if(!closedList.count(connected))
-					openList.insert(connected);
+					openList.push_back(connected);
 			}
 		}
 
@@ -58,7 +60,7 @@ std::vector<PandaObject*> computeConnectedObjects(const std::vector<PandaObject*
 				{
 					PandaObject* connected = otherData->getOwner();
 					if (!closedList.count(connected))
-						openList.insert(connected);
+						openList.push_back(connected);
 				}
 			}
 		}
@@ -68,7 +70,7 @@ std::vector<PandaObject*> computeConnectedObjects(const std::vector<PandaObject*
 		{
 			PandaObject* dock = dockable->getParentDock();
 			if (dock != dockable->getDefaultDock() && !closedList.count(dock))
-				openList.insert(dock);
+				openList.push_back(dock);
 		}
 
 		DockObject* dock = dynamic_cast<DockObject*>(object);
@@ -77,7 +79,7 @@ std::vector<PandaObject*> computeConnectedObjects(const std::vector<PandaObject*
 			for(auto dockable : dock->getDockedObjects())
 			{
 				if (!closedList.count(dockable))
-					openList.insert(dockable);
+					openList.push_back(dockable);
 			}
 		}
 	}
@@ -167,6 +169,75 @@ void forEachObjectInput(PandaObject* startObject, ObjectFunctor func)
 	}
 }
 
+std::vector<DataNode*> computeConnectedInputNodes(DataNode* originNode, bool keepRecursive)
+{
+	std::set<DataNode*> closedList;
+	std::deque<DataNode*> openList;
+	openList.push_back(originNode);
+	while(!openList.empty())
+	{
+		auto* currentNode = openList.front();
+		openList.pop_front();
+		closedList.insert(currentNode);
+
+		auto inputs = currentNode->getInputs();
+		for(auto node : inputs)
+		{
+			if(!closedList.count(node))
+				openList.push_back(node);
+		}
+	}
+
+	return std::vector<DataNode*>(closedList.begin(), closedList.end());
+}
+
+std::vector<DataNode*> computeConnectedOutputNodes(DataNode* originNode, bool keepRecursive)
+{
+	std::set<DataNode*> closedList;
+	std::deque<DataNode*> openList;
+	openList.push_back(originNode);
+	while(!openList.empty())
+	{
+		auto* currentNode = openList.front();
+		openList.pop_front();
+		closedList.insert(currentNode);
+
+		auto inputs = currentNode->getOutputs();
+		for(auto node : inputs)
+		{
+			if(!closedList.count(node))
+				openList.push_back(node);
+		}
+	}
+
+	return std::vector<DataNode*>(closedList.begin(), closedList.end());
+}
+
+std::vector<BaseData*> extractDatas(const std::vector<DataNode*>& nodes)
+{
+	std::vector<BaseData*> datas;
+	for (const auto node : nodes)
+	{
+		auto data = dynamic_cast<BaseData*>(node);
+		if (data)
+			datas.push_back(data);
+	}
+
+	return datas;
+}
+
+std::vector<PandaObject*> extractObjects(const std::vector<DataNode*>& nodes)
+{
+	std::vector<PandaObject*> objects;
+	for (const auto node : nodes)
+	{
+		auto object = dynamic_cast<PandaObject*>(node);
+		if (object)
+			objects.push_back(object);
+	}
+
+	return objects;
+}
 
 } // namespace graph
 

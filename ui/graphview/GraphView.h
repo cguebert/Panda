@@ -44,7 +44,6 @@ public:
 	const panda::BaseData* getClickedData() const;
 	const panda::BaseData* getContextMenuData() const;
 
-	static bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2);
 	bool canLinkWith(const panda::BaseData* data) const; /// Is it possible to link this data and the clicked data
 
 	void resetView();
