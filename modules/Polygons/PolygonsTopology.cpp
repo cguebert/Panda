@@ -132,10 +132,7 @@ public:
 			const auto& poly = indices[i].values;
 			int nb = poly.size();
 			for (int j = 0; j < nb - 1; ++j)
-			{
-				const auto id = poly[j];
-				output[id].values.push_back(i);
-			}
+				output[poly[j]].values.push_back(i);
 
 			// The last point is often a copy of the first one
 			if (nb && poly.back() != poly.front())
@@ -205,64 +202,6 @@ protected:
 
 int Polygon_PointsAroundPointsClass = RegisterObject<Polygon_PointsAroundPoints>("Math/Polygon/Topology/Points around points")
 	.setDescription("Compute the list of points around each point in polygons");
-
-//****************************************************************************//
-
-class Polygon_EdgesAroundPoints : public PandaObject
-{
-public:
-	PANDA_CLASS(Polygon_EdgesAroundPoints, PandaObject)
-
-	Polygon_EdgesAroundPoints(PandaDocument *doc)
-		: PandaObject(doc)
-		, m_indices(initData("edges", "Indices of points forming the polygons"))
-		, m_output(initData("output", "Indices of points around each point"))
-	{
-		addInput(m_indices);
-		addOutput(m_output);
-	}
-
-	void update()
-	{
-		const auto& indices = m_indices.getValue();
-		auto acc = m_output.getAccessor();
-		auto& output = acc.wref();
-		output.clear();
-
-		// First pass, get the number of points
-		int maxId = -1;
-		for (const auto& list : indices)
-		{
-			for (const auto& id : list.values)
-			{
-				if (id > maxId)
-					maxId = id;
-			}
-		}
-
-		if (maxId < 0)
-			return;
-
-		// Compute the list of edges
-		auto edges = computeEdges(indices);
-
-		// Second pass, add the index of each edge to every of its points
-		output.resize(maxId + 1);
-		int nb = edges.size();
-		for(int i = 0; i < nb; ++i)
-		{
-			const auto& edge = edges[i];
-			output[edge[0]].values.push_back(i);
-			output[edge[1]].values.push_back(i);
-		}
-	}
-
-protected:
-	Data< std::vector<IntVector> > m_indices, m_output;	
-};
-
-int Polygon_EdgesAroundPointsClass = RegisterObject<Polygon_EdgesAroundPoints>("Math/Polygon/Topology/Edges around points")
-	.setDescription("Compute the list of edges around each point in polygons");
 
 //****************************************************************************//
 

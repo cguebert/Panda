@@ -245,6 +245,45 @@ int MeshInfo_TrianglesAroundEdgesClass = RegisterObject<MeshInfo_TrianglesAround
 
 //****************************************************************************//
 
+class MeshInfo_PointsAroundPoints : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshInfo_PointsAroundPoints, PandaObject)
+
+	MeshInfo_PointsAroundPoints(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_mesh(initData("mesh", "Mesh to analyse"))
+		, m_output(initData("output", "Indices of points around each point"))
+	{
+		addInput(m_mesh);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const Mesh& inMesh = m_mesh.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+		output.resize(inMesh.nbPoints());
+		for (const auto& edge : inMesh.getEdges())
+		{
+			output[edge[0]].values.push_back(edge[1]);
+			output[edge[1]].values.push_back(edge[0]);
+		}
+	}
+
+protected:
+	Data< Mesh > m_mesh;
+	Data< std::vector<IntVector> > m_output;
+};
+
+int MeshInfo_PointsAroundPointsClass = RegisterObject<MeshInfo_PointsAroundPoints>("Math/Mesh/Topology/Points around points")
+	.setDescription("Get the list of points around each point of a mesh");
+
+
+//****************************************************************************//
+
 class ModifierMesh_FindNeighbors : public PandaObject
 {
 public:
