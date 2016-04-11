@@ -14,6 +14,61 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 
+namespace
+{
+	using BGPoint = boost::geometry::model::d2::point_xy<float>;
+	using BGPolygon = boost::geometry::model::polygon<BGPoint>;
+	using BGRing = typename BGPolygon::ring_type;
+	using BGPolygonList = std::vector<BGPolygon>;
+
+	inline std::vector<BGPoint> convert(const panda::types::Path& path)
+	{
+		std::vector<BGPoint> pts;
+		for (const auto& pt : path.points)
+			pts.emplace_back(pt.x, pt.y);
+		return pts;
+	}
+
+	inline BGPolygon convert(const panda::types::Polygon& inputPoly)
+	{
+		BGPolygon poly;
+		boost::geometry::append(poly, convert(inputPoly.contour));
+
+		int nbHoles = inputPoly.holes.size();
+		poly.inners().resize(nbHoles);
+		for (int i = 0; i < nbHoles; ++i)
+			boost::geometry::append(poly.inners()[0], convert(inputPoly.holes[i]));
+		 boost::geometry::correct(poly);
+		return poly;
+	}
+
+	inline panda::types::Path convert(const BGRing& ring)
+	{
+		panda::types::Path path;
+		path.points.reserve((int)ring.size());
+		for(const auto& pt : ring)
+			path.points.emplace_back(pt.x(), pt.y());
+		return path;
+	}
+
+	std::vector<panda::types::Polygon> convert(const BGPolygonList& inputPolys)
+	{
+		std::vector<panda::types::Polygon> output;
+		for(const BGPolygon& inPoly : inputPolys)
+		{
+			panda::types::Polygon poly;
+			poly.contour = convert(inPoly.outer());
+
+			for(const auto& inner : inPoly.inners())
+				poly.holes.push_back(convert(inner));
+
+			output.push_back(std::move(poly));
+		}
+
+		return output;
+	}
+}
+
 namespace panda {
 
 using types::Point;
@@ -39,54 +94,18 @@ public:
 
 	void update()
 	{
-		const Polygon& inputA = m_inputA.getValue();
-		const Polygon& inputB = m_inputB.getValue();
+		const auto& inputA = m_inputA.getValue();
+		const auto& inputB = m_inputB.getValue();
 		auto output = m_output.getAccessor();
 		output.clear();
 
 		if (inputA.contour.points.empty() || inputB.contour.points.empty())
 			return;
 
-		typedef boost::geometry::model::d2::point_xy<float> BGPoint;
-		typedef boost::geometry::model::polygon<BGPoint> BGPolygon;
-		BGPolygon pA, pB;
-		{
-			std::vector<BGPoint> pts;
-			for (const Point& pt : inputA.contour.points)
-				pts.emplace_back(pt.x, pt.y);
-			boost::geometry::append(pA, pts);
-		}
-
-		{
-			std::vector<BGPoint> pts;
-			for (const Point& pt : inputB.contour.points)
-				pts.emplace_back(pt.x, pt.y);
-			boost::geometry::append(pB, pts);
-		}
-
-		std::vector<BGPolygon> result;
+		BGPolygon pA = convert(inputA), pB = convert(inputB);
+		BGPolygonList result;
 		boost::geometry::difference(pA, pB, result);
-
-		for(const BGPolygon& rpoly : result)
-		{
-			Polygon poly;
-			Path path;
-			path.points.reserve((int)rpoly.outer().size());
-			for(const auto& pt : rpoly.outer())
-				path.points.push_back(Point(pt.x(), pt.y()));
-			poly.contour = path;
-
-			for(const auto& inner : rpoly.inners())
-			{
-				Path path;
-				path.points.reserve((int)inner.size());
-				for(const auto& pt : inner)
-					path.points.push_back(Point(pt.x(), pt.y()));
-				poly.holes.push_back(path);
-			}
-
-			output.push_back(poly);
-		}
+		output = convert(result);
 	}
 
 protected:
@@ -94,7 +113,8 @@ protected:
 	Data< std::vector<Polygon> > m_output;
 };
 
-int PolygonOperation_DifferenceClass = RegisterObject<PolygonOperation_Difference>("Math/Polygon/Difference").setDescription("Compute the difference of two polygons");
+int PolygonOperation_DifferenceClass = RegisterObject<PolygonOperation_Difference>("Math/Polygon/Difference")
+	.setName("Polygons difference").setDescription("Compute the difference of two polygons");
 
 //****************************************************************************//
 
@@ -117,54 +137,18 @@ public:
 
 	void update()
 	{
-		const Polygon& inputA = m_inputA.getValue();
-		const Polygon& inputB = m_inputB.getValue();
+		const auto& inputA = m_inputA.getValue();
+		const auto& inputB = m_inputB.getValue();
 		auto output = m_output.getAccessor();
 		output.clear();
 
 		if (inputA.contour.points.empty() || inputB.contour.points.empty())
 			return;
 
-		typedef boost::geometry::model::d2::point_xy<float> BGPoint;
-		typedef boost::geometry::model::polygon<BGPoint> BGPolygon;
-		BGPolygon pA, pB;
-		{
-			std::vector<BGPoint> pts;
-			for (const Point& pt : inputA.contour.points)
-				pts.emplace_back(pt.x, pt.y);
-			boost::geometry::append(pA, pts);
-		}
-
-		{
-			std::vector<BGPoint> pts;
-			for (const Point& pt : inputB.contour.points)
-				pts.emplace_back(pt.x, pt.y);
-			boost::geometry::append(pB, pts);
-		}
-
-		std::vector<BGPolygon> result;
+		BGPolygon pA = convert(inputA), pB = convert(inputB);
+		BGPolygonList result;
 		boost::geometry::union_(pA, pB, result);
-
-		for(const BGPolygon& rpoly : result)
-		{
-			Polygon poly;
-			Path path;
-			path.points.reserve((int)rpoly.outer().size());
-			for(const auto& pt : rpoly.outer())
-				path.points.push_back(Point(pt.x(), pt.y()));
-			poly.contour = path;
-
-			for(const auto& inner : rpoly.inners())
-			{
-				Path path;
-				path.points.reserve((int)inner.size());
-				for(const auto& pt : inner)
-					path.points.push_back(Point(pt.x(), pt.y()));
-				poly.holes.push_back(path);
-			}
-
-			output.push_back(poly);
-		}
+		output = convert(result);
 	}
 
 protected:
@@ -172,7 +156,94 @@ protected:
 	Data< std::vector<Polygon> > m_output;
 };
 
-int PolygonOperation_UnionClass = RegisterObject<PolygonOperation_Union>("Math/Polygon/Union").setDescription("Compute the union of two polygons");
+int PolygonOperation_UnionClass = RegisterObject<PolygonOperation_Union>("Math/Polygon/Union")
+	.setName("Polygons union").setDescription("Compute the union of two polygons");
+
+//****************************************************************************//
+
+class PolygonOperation_Intersection : public PandaObject
+{
+public:
+	PANDA_CLASS(PolygonOperation_Intersection, PandaObject)
+
+	PolygonOperation_Intersection(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_inputA(initData("input 1", "First polygon"))
+		, m_inputB(initData("input 2", "Second polygon"))
+		, m_output(initData("output", "Result of the operation"))
+	{
+		addInput(m_inputA);
+		addInput(m_inputB);
+
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& inputA = m_inputA.getValue();
+		const auto& inputB = m_inputB.getValue();
+		auto output = m_output.getAccessor();
+		output.clear();
+
+		if (inputA.contour.points.empty() || inputB.contour.points.empty())
+			return;
+
+		BGPolygon pA = convert(inputA), pB = convert(inputB);
+		BGPolygonList result;
+		boost::geometry::intersection(pA, pB, result);
+		output = convert(result);
+	}
+
+protected:
+	Data< Polygon > m_inputA, m_inputB;
+	Data< std::vector<Polygon> > m_output;
+};
+
+int PolygonOperation_IntersectionClass = RegisterObject<PolygonOperation_Intersection>("Math/Polygon/Intersection")
+	.setName("Polygons intersection").setDescription("Compute the intersection of two polygons");
+
+//****************************************************************************//
+
+class PolygonOperation_Xor : public PandaObject
+{
+public:
+	PANDA_CLASS(PolygonOperation_Xor, PandaObject)
+
+	PolygonOperation_Xor(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_inputA(initData("input 1", "First polygon"))
+		, m_inputB(initData("input 2", "Second polygon"))
+		, m_output(initData("output", "Result of the operation"))
+	{
+		addInput(m_inputA);
+		addInput(m_inputB);
+
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& inputA = m_inputA.getValue();
+		const auto& inputB = m_inputB.getValue();
+		auto output = m_output.getAccessor();
+		output.clear();
+
+		if (inputA.contour.points.empty() || inputB.contour.points.empty())
+			return;
+
+		BGPolygon pA = convert(inputA), pB = convert(inputB);
+		BGPolygonList result;
+		boost::geometry::sym_difference(pA, pB, result);
+		output = convert(result);
+	}
+
+protected:
+	Data< Polygon > m_inputA, m_inputB;
+	Data< std::vector<Polygon> > m_output;
+};
+
+int PolygonOperation_XorClass = RegisterObject<PolygonOperation_Xor>("Math/Polygon/Xor")
+	.setName("Polygons Xor").setDescription("Compute the symmetric difference of two polygons");
 
 } // namespace Panda
 
