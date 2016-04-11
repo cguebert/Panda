@@ -486,7 +486,101 @@ protected:
 
 int PathMath_RemoveSmallSegmentsClass = RegisterObject<PathMath_RemoveSmallSegments>("Math/Path/Remove small segments").setDescription("Remove the small segments from a path");
 
+//****************************************************************************//
+
+class PathMath_IsClosed : public PandaObject
+{
+public:
+	PANDA_CLASS(PathMath_IsClosed, PandaObject)
+
+	PathMath_IsClosed(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("path", "Path to analyse"))
+		, m_output(initData("is closed", "1 if the path is closed, 0 if it is open"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+
+		int nb = input.size();
+		output.resize(nb);
+		for (int i = 0; i < nb; ++i)
+		{
+			const auto& pts = input[i].points;
+			output[i] = (pts.size() > 2 && pts.front() == pts.back());
+		}
+	}
+
+protected:
+	Data< std::vector<Path> > m_input;
+	Data< std::vector<int> > m_output;
+};
+
+int PathMath_IsClosedClass = RegisterObject<PathMath_IsClosed>("Math/Path/Is closed")
+						 .setName("Is path closed")
+						 .setDescription("Detect if the path is closed or open");
+
+//****************************************************************************//
+
+class PathMath_IsConvex : public PandaObject
+{
+public:
+	PANDA_CLASS(PathMath_IsConvex, PandaObject)
+
+	PathMath_IsConvex(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("path", "Path to analyse"))
+		, m_output(initData("is convex", "1 if the path is convex, 0 otherwise"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+
+		int nb = input.size();
+		output.resize(nb);
+		for (int i = 0; i < nb; ++i)
+		{
+			const auto& pts = input[i].points;
+			const int nb = pts.size();
+			if (nb < 3)
+				output[i] = false;
+
+			output[i] = true;
+			float prevCross = 0;
+			for (int j = 0; j < nb; ++j)
+			{
+				auto s1 = pts[(j + 2) % nb] - pts[(j + 1) % nb];
+				auto s2 = pts[j % nb] - pts[(j + 1) % nb];
+				auto c = s1.cross(s2);
+
+				if (prevCross == 0)
+					prevCross = c;
+				else if(prevCross * c < 0)
+				{
+					output[i] = false;
+					break;
+				}
+			}
+		}
+	}
+
+protected:
+	Data< std::vector<Path> > m_input;
+	Data< std::vector<int> > m_output;
+};
+
+int PathMath_IsConvexClass = RegisterObject<PathMath_IsConvex>("Math/Path/Is convex")
+						 .setName("Is path convex")
+						 .setDescription("Detect if the path is convex");
 
 } // namespace Panda
-
-

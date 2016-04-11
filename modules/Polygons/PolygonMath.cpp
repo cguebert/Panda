@@ -18,9 +18,9 @@ public:
 
 	PolygonMath_Translation(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input(initData("input", "Mesh to translate"))
+		, m_input(initData("input", "Polygon to translate"))
 		, m_delta(initData("translation", "Value of the translation"))
-		, m_output(initData("output", "Translated mesh"))
+		, m_output(initData("output", "Translated polygon"))
 	{
 		addInput(m_input);
 		addInput(m_delta);
@@ -63,9 +63,9 @@ public:
 
 	PolygonMath_Scale(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input(initData("input", "Mesh to scale"))
+		, m_input(initData("input", "Polygon to scale"))
 		, m_scale(initData("scale", "Value of the scale"))
-		, m_output(initData("output", "Scaled mesh"))
+		, m_output(initData("output", "Scaled polygon"))
 	{
 		addInput(m_input);
 		addInput(m_scale);
@@ -108,10 +108,10 @@ public:
 
 	PolygonMath_Rotate(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_input(initData("input", "Path to rotate"))
+		, m_input(initData("input", "Polygon to rotate"))
 		, m_center(initData("center", "Center of the rotation"))
 		, m_angle(initData("angle", "Angle of the rotation"))
-		, m_output(initData("output", "Rotated path"))
+		, m_output(initData("output", "Rotated polygon"))
 	{
 		addInput(m_input);
 		addInput(m_center);

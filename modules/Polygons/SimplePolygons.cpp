@@ -110,12 +110,13 @@ public:
 			float ca = cos(angle), sa = sin(angle);
 			Point dir = Point(radius, 0);
 
-			for(int i=0; i<=nbSeg; ++i)
+			for(int i=0; i<nbSeg; ++i)
 			{
 				Point pt = Point(dir.x*ca+dir.y*sa, dir.y*ca-dir.x*sa);
 				path.points[i] = center + pt;
 				dir = pt;
 			}
+			path.points.back() = path.points.front();
 
 			paths.push_back(path);
 		}
