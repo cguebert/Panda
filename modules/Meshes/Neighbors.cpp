@@ -1,13 +1,249 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
+#include <panda/types/IntVector.h>
 #include <panda/types/Mesh.h>
 
 #include <set>
 
 namespace panda {
 
+using types::IntVector;
 using types::Mesh;
+
+class MeshInfo_PointsInEdges : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshInfo_PointsInEdges, PandaObject)
+
+	MeshInfo_PointsInEdges(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_mesh(initData("mesh", "Mesh to analyse"))
+		, m_output(initData("output", "Indices of points in each edge"))
+	{
+		addInput(m_mesh);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const Mesh& inMesh = m_mesh.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+		for (const auto& list : inMesh.getEdges())
+		{
+			IntVector vec;
+			for (auto id : list)
+				vec.values.push_back(id);
+			output.push_back(vec);
+		}
+	}
+
+protected:
+	Data< Mesh > m_mesh;
+	Data< std::vector<IntVector> > m_output;
+};
+
+int MeshInfo_PointsInEdgesClass = RegisterObject<MeshInfo_PointsInEdges>("Math/Mesh/Points in edges")
+	.setDescription("Get the list of points in each edge of a mesh");
+
+//****************************************************************************//
+
+class MeshInfo_PointsInTriangles : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshInfo_PointsInTriangles, PandaObject)
+
+	MeshInfo_PointsInTriangles(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_mesh(initData("mesh", "Mesh to analyse"))
+		, m_output(initData("output", "Indices of points in each triangle"))
+	{
+		addInput(m_mesh);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const Mesh& inMesh = m_mesh.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+		for (const auto& list : inMesh.getTriangles())
+		{
+			IntVector vec;
+			for (auto id : list)
+				vec.values.push_back(id);
+			output.push_back(vec);
+		}
+	}
+
+protected:
+	Data< Mesh > m_mesh;
+	Data< std::vector<IntVector> > m_output;
+};
+
+int MeshInfo_PointsInTrianglesClass = RegisterObject<MeshInfo_PointsInTriangles>("Math/Mesh/Points in triangles")
+	.setDescription("Get the list of points in each triangle of a mesh");
+
+//****************************************************************************//
+
+class MeshInfo_EdgesInTriangles : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshInfo_EdgesInTriangles, PandaObject)
+
+	MeshInfo_EdgesInTriangles(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_mesh(initData("mesh", "Mesh to analyse"))
+		, m_output(initData("output", "Indices of edges in each triangle"))
+	{
+		addInput(m_mesh);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const Mesh& inMesh = m_mesh.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+		for (const auto& list : inMesh.getEdgesInTriangleList())
+		{
+			IntVector vec;
+			for (auto id : list)
+				vec.values.push_back(id);
+			output.push_back(vec);
+		}
+	}
+
+protected:
+	Data< Mesh > m_mesh;
+	Data< std::vector<IntVector> > m_output;
+};
+
+int MeshInfo_EdgesInTrianglesClass = RegisterObject<MeshInfo_EdgesInTriangles>("Math/Mesh/Edges in triangles")
+	.setDescription("Get the list of edges in each triangle of a mesh");
+
+//****************************************************************************//
+
+class MeshInfo_EdgesAroundPoints : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshInfo_EdgesAroundPoints, PandaObject)
+
+	MeshInfo_EdgesAroundPoints(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_mesh(initData("mesh", "Mesh to analyse"))
+		, m_output(initData("output", "Indices of edges around each point"))
+	{
+		addInput(m_mesh);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const Mesh& inMesh = m_mesh.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+		for (const auto& list : inMesh.getEdgesAroundPointList())
+		{
+			IntVector vec;
+			for (auto id : list)
+				vec.values.push_back(id);
+			output.push_back(vec);
+		}
+	}
+
+protected:
+	Data< Mesh > m_mesh;
+	Data< std::vector<IntVector> > m_output;
+};
+
+int MeshInfo_EdgesAroundPointsClass = RegisterObject<MeshInfo_EdgesAroundPoints>("Math/Mesh/Edges around points")
+	.setDescription("Get the list of edges around each point of a mesh");
+
+//****************************************************************************//
+
+class MeshInfo_TrianglesAroundPoints : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshInfo_TrianglesAroundPoints, PandaObject)
+
+	MeshInfo_TrianglesAroundPoints(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_mesh(initData("mesh", "Mesh to analyse"))
+		, m_output(initData("output", "Indices of triangles around each point"))
+	{
+		addInput(m_mesh);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const Mesh& inMesh = m_mesh.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+		for (const auto& list : inMesh.getTrianglesAroundPointList())
+		{
+			IntVector vec;
+			for (auto id : list)
+				vec.values.push_back(id);
+			output.push_back(vec);
+		}
+	}
+
+protected:
+	Data< Mesh > m_mesh;
+	Data< std::vector<IntVector> > m_output;
+};
+
+int MeshInfo_TrianglesAroundPointsClass = RegisterObject<MeshInfo_TrianglesAroundPoints>("Math/Mesh/Triangles around points")
+	.setDescription("Get the list of triangles around each point of a mesh");
+
+//****************************************************************************//
+
+class MeshInfo_TrianglesAroundEdges : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshInfo_TrianglesAroundEdges, PandaObject)
+
+	MeshInfo_TrianglesAroundEdges(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_mesh(initData("mesh", "Mesh to analyse"))
+		, m_output(initData("output", "Indices of triangles around each edge"))
+	{
+		addInput(m_mesh);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const Mesh& inMesh = m_mesh.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+		for (const auto& list : inMesh.getTrianglesAroundEdgeList())
+		{
+			IntVector vec;
+			for (auto id : list)
+				vec.values.push_back(id);
+			output.push_back(vec);
+		}
+	}
+
+protected:
+	Data< Mesh > m_mesh;
+	Data< std::vector<IntVector> > m_output;
+};
+
+int MeshInfo_TrianglesAroundEdgesClass = RegisterObject<MeshInfo_TrianglesAroundEdges>("Math/Mesh/Triangles around edges")
+	.setDescription("Get the list of triangles around each edge of a mesh");
+
+//****************************************************************************//
 
 class ModifierMesh_FindNeighbors : public PandaObject
 {
@@ -56,7 +292,8 @@ protected:
 	Data< std::vector<int> > m_triangles, m_neighbors;
 };
 
-int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Neighbor triangles").setDescription("Find neighboring triangles to the input list");
+int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Neighbor triangles")
+	.setDescription("Find neighboring triangles to the input triangles");
 
 //****************************************************************************//
 
@@ -103,7 +340,8 @@ protected:
 	Data< std::vector<int> > m_points, m_neighbors;
 };
 
-int ModifierMesh_FindNeighborPointsClass = RegisterObject<ModifierMesh_FindNeighborPoints>("Modifier/Mesh/Neighbor points").setDescription("Find points sharing an edge with the inputs");
+int ModifierMesh_FindNeighborPointsClass = RegisterObject<ModifierMesh_FindNeighborPoints>("Modifier/Mesh/Neighbor points")
+	.setDescription("Find points sharing an edge with the input points");
 
 //****************************************************************************//
 
