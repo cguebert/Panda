@@ -73,6 +73,9 @@ public:
 	void setInStep(bool inStep); /// The document will force the value of the flag even before calling beginStep
 	bool isInStep() const; /// This is true if update is called while a step is in progress
 
+	virtual NodesList getNonRecursiveInputs() const; /// Get input nodes, without those that can create loops in the graph (see ListLoop and ListBuffer objects)
+	virtual NodesList getNonRecursiveOutputs() const; /// Get output nodes, without those that can create loops in the graph
+
 protected:
 	void setInternalData(const std::string& name, uint32_t index); /// Should only be called by the Object Factory, to set the object's name and index
 	friend class ObjectFactory;
@@ -161,6 +164,12 @@ inline void PandaObject::setLaterUpdate(bool b)
 
 inline void PandaObject::setUpdateOnMainThread(bool b)
 { m_updateOnMainThread = b; }
+
+inline DataNode::NodesList PandaObject::getNonRecursiveInputs() const
+{ return getInputs(); }
+
+inline DataNode::NodesList PandaObject::getNonRecursiveOutputs() const
+{ return getOutputs(); }
 
 } // namespace Panda
 

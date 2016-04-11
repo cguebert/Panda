@@ -180,7 +180,18 @@ std::vector<DataNode*> computeConnectedInputNodes(DataNode* originNode, bool kee
 		openList.pop_front();
 		closedList.insert(currentNode);
 
-		auto inputs = currentNode->getInputs();
+		std::vector<DataNode*> inputs;
+		if(keepRecursive)
+			inputs = currentNode->getInputs();
+		else
+		{
+			auto object = dynamic_cast<PandaObject*>(currentNode);
+			if (object)
+				inputs = object->getNonRecursiveInputs();
+			else
+				inputs = currentNode->getInputs();
+		}
+		
 		for(auto node : inputs)
 		{
 			if(!closedList.count(node))
@@ -202,8 +213,19 @@ std::vector<DataNode*> computeConnectedOutputNodes(DataNode* originNode, bool ke
 		openList.pop_front();
 		closedList.insert(currentNode);
 
-		auto inputs = currentNode->getOutputs();
-		for(auto node : inputs)
+		std::vector<DataNode*> outputs;
+		if(keepRecursive)
+			outputs = currentNode->getOutputs();
+		else
+		{
+			auto object = dynamic_cast<PandaObject*>(currentNode);
+			if (object)
+				outputs = object->getNonRecursiveOutputs();
+			else
+				outputs = currentNode->getOutputs();
+		}
+		
+		for(auto node : outputs)
 		{
 			if(!closedList.count(node))
 				openList.push_back(node);

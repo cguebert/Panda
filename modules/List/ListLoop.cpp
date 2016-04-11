@@ -50,6 +50,17 @@ public:
 		setLaterUpdate(true);
 	}
 
+	NodesList getNonRecursiveInputs() const override
+	{
+		// Convert from const Data* to DataNode*
+		return { (DataNode*)&m_control, (DataNode*)&m_condition, (DataNode*)&m_nbIterations };
+	}
+
+	NodesList getNonRecursiveOutputs() const override
+	{
+		return { (DataNode*)&m_iteration };
+	}
+
 	template <class T>
 	void updateT(DataList& list)
 	{
