@@ -45,7 +45,7 @@ protected:
 	Data< std::vector<IntVector> > m_output;
 };
 
-int MeshInfo_PointsInEdgesClass = RegisterObject<MeshInfo_PointsInEdges>("Math/Mesh/Points in edges")
+int MeshInfo_PointsInEdgesClass = RegisterObject<MeshInfo_PointsInEdges>("Math/Mesh/Topology/Points in edges")
 	.setDescription("Get the list of points in each edge of a mesh");
 
 //****************************************************************************//
@@ -84,7 +84,7 @@ protected:
 	Data< std::vector<IntVector> > m_output;
 };
 
-int MeshInfo_PointsInTrianglesClass = RegisterObject<MeshInfo_PointsInTriangles>("Math/Mesh/Points in triangles")
+int MeshInfo_PointsInTrianglesClass = RegisterObject<MeshInfo_PointsInTriangles>("Math/Mesh/Topology/Points in triangles")
 	.setDescription("Get the list of points in each triangle of a mesh");
 
 //****************************************************************************//
@@ -123,7 +123,7 @@ protected:
 	Data< std::vector<IntVector> > m_output;
 };
 
-int MeshInfo_EdgesInTrianglesClass = RegisterObject<MeshInfo_EdgesInTriangles>("Math/Mesh/Edges in triangles")
+int MeshInfo_EdgesInTrianglesClass = RegisterObject<MeshInfo_EdgesInTriangles>("Math/Mesh/Topology/Edges in triangles")
 	.setDescription("Get the list of edges in each triangle of a mesh");
 
 //****************************************************************************//
@@ -162,7 +162,7 @@ protected:
 	Data< std::vector<IntVector> > m_output;
 };
 
-int MeshInfo_EdgesAroundPointsClass = RegisterObject<MeshInfo_EdgesAroundPoints>("Math/Mesh/Edges around points")
+int MeshInfo_EdgesAroundPointsClass = RegisterObject<MeshInfo_EdgesAroundPoints>("Math/Mesh/Topology/Edges around points")
 	.setDescription("Get the list of edges around each point of a mesh");
 
 //****************************************************************************//
@@ -201,7 +201,7 @@ protected:
 	Data< std::vector<IntVector> > m_output;
 };
 
-int MeshInfo_TrianglesAroundPointsClass = RegisterObject<MeshInfo_TrianglesAroundPoints>("Math/Mesh/Triangles around points")
+int MeshInfo_TrianglesAroundPointsClass = RegisterObject<MeshInfo_TrianglesAroundPoints>("Math/Mesh/Topology/Triangles around points")
 	.setDescription("Get the list of triangles around each point of a mesh");
 
 //****************************************************************************//
@@ -240,7 +240,7 @@ protected:
 	Data< std::vector<IntVector> > m_output;
 };
 
-int MeshInfo_TrianglesAroundEdgesClass = RegisterObject<MeshInfo_TrianglesAroundEdges>("Math/Mesh/Triangles around edges")
+int MeshInfo_TrianglesAroundEdgesClass = RegisterObject<MeshInfo_TrianglesAroundEdges>("Math/Mesh/Topology/Triangles around edges")
 	.setDescription("Get the list of triangles around each edge of a mesh");
 
 //****************************************************************************//
@@ -292,7 +292,7 @@ protected:
 	Data< std::vector<int> > m_triangles, m_neighbors;
 };
 
-int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Neighbor triangles")
+int ModifierMesh_FindNeighborsClass = RegisterObject<ModifierMesh_FindNeighbors>("Modifier/Mesh/Topology/Neighbor triangles")
 	.setDescription("Find neighboring triangles to the input triangles");
 
 //****************************************************************************//
@@ -340,7 +340,7 @@ protected:
 	Data< std::vector<int> > m_points, m_neighbors;
 };
 
-int ModifierMesh_FindNeighborPointsClass = RegisterObject<ModifierMesh_FindNeighborPoints>("Modifier/Mesh/Neighbor points")
+int ModifierMesh_FindNeighborPointsClass = RegisterObject<ModifierMesh_FindNeighborPoints>("Modifier/Mesh/Topology/Neighbor points")
 	.setDescription("Find points sharing an edge with the input points");
 
 //****************************************************************************//
@@ -392,7 +392,7 @@ protected:
 	Data< std::vector<int> > m_triangles, m_connected;
 };
 
-int ModifierMesh_GetConnectedClass = RegisterObject<ModifierMesh_GetConnected>("Modifier/Mesh/Get connected").setDescription("Get connected triangles to the input list");
+int ModifierMesh_GetConnectedClass = RegisterObject<ModifierMesh_GetConnected>("Modifier/Mesh/Topology/Get connected").setDescription("Get connected triangles to the input list");
 
 //****************************************************************************//
 
@@ -454,7 +454,7 @@ protected:
 	Data< std::vector<Mesh> > m_output;
 };
 
-int ModifierMesh_SeparateDisconnectedClass = RegisterObject<ModifierMesh_SeparateDisconnected>("Modifier/Mesh/Separate disconnected")
+int ModifierMesh_SeparateDisconnectedClass = RegisterObject<ModifierMesh_SeparateDisconnected>("Modifier/Mesh/Topology/Separate disconnected")
 		.setDescription("Separate the disconnected parts of a mesh into many meshes");
 
 

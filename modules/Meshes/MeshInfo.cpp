@@ -92,7 +92,7 @@ protected:
 	Data<int> m_flags;
 };
 
-int MeshMath_PrepareTopologyClass = RegisterObject<MeshMath_PrepareTopology>("Math/Mesh/Prepare Topology")
+int MeshMath_PrepareTopologyClass = RegisterObject<MeshMath_PrepareTopology>("Math/Mesh/Topology/Prepare Topology")
 	.setDescription("Compute the topology information for the input mesh, so that it is only done once");
 
 //****************************************************************************//
