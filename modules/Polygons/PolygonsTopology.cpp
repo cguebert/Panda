@@ -41,6 +41,21 @@ namespace
 		return edges;
 	}
 
+	int getMaxValue(const std::vector<panda::types::IntVector>& indices)
+	{
+		int maxId = -1;
+		for (const auto& list : indices)
+		{
+			for (const auto& id : list.values)
+			{
+				if (id > maxId)
+					maxId = id;
+			}
+		}
+
+		return maxId;
+	}
+
 }
 
 namespace panda {
@@ -96,8 +111,8 @@ public:
 
 	Polygon_FacesAroundPoints(PandaDocument *doc)
 		: PandaObject(doc)
-		, m_indices(initData("indices", "Indices of points forming the polygons"))
-		, m_output(initData("ouput", "Indices of polygons around each point"))
+		, m_indices(initData("indices", "Lists of indices"))
+		, m_output(initData("ouput", "Indices of the lists containing each value"))
 	{
 		addInput(m_indices);
 		addOutput(m_output);
@@ -111,16 +126,7 @@ public:
 		output.clear();
 
 		// First pass, get the number of points
-		int maxId = -1;
-		for (const auto& list : indices)
-		{
-			for (const auto& id : list.values)
-			{
-				if (id > maxId)
-					maxId = id;
-			}
-		}
-
+		int maxId = getMaxValue(indices);
 		if (maxId < 0)
 			return;
 
@@ -144,8 +150,8 @@ protected:
 	Data< std::vector<IntVector> > m_indices, m_output;	
 };
 
-int Polygon_FacesAroundPointsClass = RegisterObject<Polygon_FacesAroundPoints>("Math/Polygon/Topology/Polygons around point")
-	.setDescription("Compute the list of polygons around each point");
+int Polygon_FacesAroundPointsClass = RegisterObject<Polygon_FacesAroundPoints>("Math/Polygon/Topology/Lists around index")
+	.setDescription("Compute the indices of the lists containing each index");
 
 //****************************************************************************//
 
@@ -171,16 +177,7 @@ public:
 		output.clear();
 
 		// First pass, get the number of points
-		int maxId = -1;
-		for (const auto& list : indices)
-		{
-			for (const auto& id : list.values)
-			{
-				if (id > maxId)
-					maxId = id;
-			}
-		}
-
+		int maxId = getMaxValue(indices);
 		if (maxId < 0)
 			return;
 
@@ -202,6 +199,84 @@ protected:
 
 int Polygon_PointsAroundPointsClass = RegisterObject<Polygon_PointsAroundPoints>("Math/Polygon/Topology/Points around points")
 	.setDescription("Compute the list of points around each point in polygons");
+
+//****************************************************************************//
+
+class Polygon_EdgesInPolygons : public PandaObject
+{
+public:
+	PANDA_CLASS(Polygon_EdgesInPolygons, PandaObject)
+
+	Polygon_EdgesInPolygons(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_polygons(initData("polygons", "Indices of points forming the polygons"))
+		, m_edges(initData("edges", "Indices of points forming the edges"))
+		, m_output(initData("output", "Indices of edges in each polygon"))
+	{
+		addInput(m_polygons);
+		addInput(m_edges);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& polygons = m_polygons.getValue();
+		const auto& edges = m_edges.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+
+		// First pass, get the number of points
+		int maxId = getMaxValue(edges);
+		if (maxId < 0)
+			return;
+
+		// Compute the list of edges around each point
+		std::vector<IntVector> edgesAroundPoints;
+		edgesAroundPoints.resize(maxId + 1);
+		int nbEdges = edges.size();
+		for (int i = 0; i < nbEdges; ++i)
+		{
+			const auto& edge = edges[i];
+			const auto& pts = edge.values;
+			if (pts.size() == 2)
+			{
+				edgesAroundPoints[pts[0]].values.push_back(i);
+				edgesAroundPoints[pts[1]].values.push_back(i);
+			}
+		}
+
+		// Second pass, find the edges in each polygon
+		for (const auto& poly : polygons)
+		{
+			IntVector vec;
+			const auto& pts = poly.values;
+			int nbPts = pts.size();
+			for (int i = 0; i < nbPts; ++i)
+			{
+				int a = pts[i], b = pts[(i + 1) % nbPts];
+				if (a == b)
+					continue;
+				for (auto edgeId : edgesAroundPoints[a].values)
+				{
+					const auto& edgePts = edges[edgeId].values;
+					if ((edgePts[0] == a && edgePts[1] == b) || (edgePts[0] == b && edgePts[1] == a))
+					{
+						vec.values.push_back(edgeId);
+						break;
+					}
+				}
+			}
+			output.push_back(vec);
+		}
+	}
+
+protected:
+	Data< std::vector<IntVector> > m_polygons, m_edges, m_output;	
+};
+
+int Polygon_EdgesInPolygonsClass = RegisterObject<Polygon_EdgesInPolygons>("Math/Polygon/Topology/Edges in polygons")
+	.setDescription("Compute the indices of edges in each polygon");
 
 //****************************************************************************//
 
