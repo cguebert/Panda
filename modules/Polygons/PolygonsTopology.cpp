@@ -116,8 +116,7 @@ namespace
 		int nbEdges = edges.size();
 		for (int i = 0; i < nbEdges; ++i)
 		{
-			const auto& edge = edges[i];
-			const auto& pts = edge.values;
+			const auto& pts = edges[i].values;
 			if (pts.size() == 2)
 			{
 				edgesAroundPoints[pts[0]].values.push_back(i);
@@ -464,7 +463,119 @@ protected:
 };
 
 int Polygon_PropagateClass = RegisterObject<Polygon_Propagate>("Math/Polygon/Topology/Propagate")
-	.setDescription("Propagate a value to neighbors");
+	.setDescription("Propagate a boolean property to neighbors");
+
+//****************************************************************************//
+
+class Polygon_PropagateAndAccumulate : public PandaObject
+{
+public:
+	PANDA_CLASS(Polygon_PropagateAndAccumulate, PandaObject)
+
+	Polygon_PropagateAndAccumulate(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_edges(initData("edges", "Indices of points forming the edges"))
+		, m_start(initData("start", "The propagation start for non zero values in this list"))
+		, m_init(initData("init", "Initial values for each point"))
+		, m_edgeWeight(initData("edge weight", "Going through an edge adds the value from this list"))
+		, m_output(initData("output", "Values after propagation and accumulation"))
+//		, m_method(initData(1, "method", "How to decide if the propagation goes to a neighbor"))
+	{
+		addInput(m_edges);
+		addInput(m_start);
+		addInput(m_init);
+		addInput(m_edgeWeight);
+//		addInput(m_method);
+
+		addOutput(m_output);
+
+//		m_method.setWidget("enum");
+//		m_method.setWidgetData("greater;lesser");
+	}
+
+	void update()
+	{
+		const auto& edges = m_edges.getValue();
+		const auto& start = m_start.getValue();
+		const auto& initValues = m_init.getValue();
+		const auto& edgeWeight = m_edgeWeight.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+
+		int nbEdges = edges.size();
+		if (edgeWeight.size() != nbEdges)
+			return;
+
+		// First pass, get the number of points
+		int maxId = getMaxValue(edges);
+		if (maxId < 0)
+			return;
+
+		int nbPts = maxId + 1;
+		if (start.size() != nbPts || initValues.size() != nbPts)
+			return;
+
+		output = initValues;
+
+		// Create the "edges around points" list
+		IntVectorList edgesAroundPoints;
+		edgesAroundPoints.resize(nbPts);
+		for (int i = 0; i < nbEdges; ++i)
+		{
+			for (auto id : edges[i].values)
+				edgesAroundPoints[id].values.push_back(i);
+		}
+
+		// Find the starting positions
+		std::deque<int> openList;
+		for (int i = 0; i < nbPts; ++i)
+		{
+			if (start[i] != 0)
+				openList.push_back(i);
+		}
+
+//		bool keepLesser = (m_method.getValue() != 0);
+		while (!openList.empty())
+		{
+			int id = openList.front();
+			openList.pop_front();
+
+			for (auto edgeId : edgesAroundPoints[id].values)
+			{
+				for (auto n : edges[edgeId].values)
+				{
+					if (n == id)
+						continue;
+
+					auto val = output[id] + edgeWeight[edgeId];
+//					if ((keepLesser && val < output[n]) || (!keepLesser && val > output[n]))
+					if (val < output[n])
+					{
+						output[n] = val;
+						openList.push_back(n);
+					}
+				}
+			}
+
+			// Failsafe if the method has been wrongly chosen and we started a complete recursion
+			if ((int)openList.size() >= nbPts)
+			{
+				output.clear();
+				return;
+			}
+		}
+	}
+
+protected:
+	Data< std::vector<IntVector> > m_edges;
+	Data< std::vector<int> > m_start;
+	Data< std::vector<float> > m_init, m_edgeWeight, m_output;
+//	Data< int > m_method;
+};
+
+int Polygon_PropagateAndAccumulateClass = RegisterObject<Polygon_PropagateAndAccumulate>("Math/Polygon/Topology/Propagate and accumulate")
+	.setDescription("Propagate an increasing value to neighbors");
 
 } // namespace Panda
 
