@@ -38,6 +38,7 @@ set(SOURCE_FILES
 	generators/text/Format.cpp
 	generators/shader/SetShaderValues.cpp
 	math/image/ImageSize.cpp
+	math/integer/IntegerMath.cpp
 	math/point/NearestPoint.cpp
 	math/point/PointListMath.cpp
 	math/point/PointMath.cpp
