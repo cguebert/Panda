@@ -10,10 +10,13 @@
 namespace
 {
 
+	using IntVectorList = std::vector<panda::types::IntVector>;
 	using Edge = std::array<int, 2>;
-	std::vector<Edge> computeEdges(const std::vector<panda::types::IntVector>& polygons)
+	using EdgeList = std::vector<Edge>;
+
+	EdgeList computeEdges(const IntVectorList& polygons)
 	{
-		std::vector<Edge> edges;
+		EdgeList edges;
 
 		std::set<Edge> edgeSet;
 		for(const auto& poly : polygons)
@@ -41,7 +44,21 @@ namespace
 		return edges;
 	}
 
-	int getMaxValue(const std::vector<panda::types::IntVector>& indices)
+	IntVectorList toIntVectorList(const EdgeList& edges)
+	{
+		IntVectorList output;
+		for (const auto& edge : edges)
+		{
+			panda::types::IntVector vec;
+			for (auto id : edge)
+				vec.values.push_back(id);
+			output.push_back(vec);
+		}
+
+		return output;
+	}
+
+	int getMaxValue(const IntVectorList& indices)
 	{
 		int maxId = -1;
 		for (const auto& list : indices)
@@ -54,6 +71,84 @@ namespace
 		}
 
 		return maxId;
+	}
+
+	IntVectorList computeListsAroundIndices(const IntVectorList& indices)
+	{
+		IntVectorList result;
+
+		// First pass, get the maximum index value
+		int maxId = getMaxValue(indices);
+		if (maxId < 0)
+			return result;
+
+		// Second pass, add the index of each list to every of its indices
+		result.resize(maxId + 1);
+		int nbLists = indices.size();
+		for (int i = 0; i < nbLists; ++i)
+		{
+			const auto& list = indices[i].values;
+			int nb = list.size();
+			for (int j = 0; j < nb - 1; ++j)
+				result[list[j]].values.push_back(i);
+
+			// The last point is often a copy of the first one
+			if (nb && list.back() != list.front())
+				result[list.back()].values.push_back(i);
+		}
+
+		return result;
+	}
+
+	IntVectorList computeEdgesInPolygons(const IntVectorList& polygons, const IntVectorList& edges)
+	{
+		IntVectorList output;
+
+		// First pass, get the number of points
+		int maxId = getMaxValue(edges);
+		if (maxId < 0)
+			return output;
+
+		// Compute the list of edges around each point
+		IntVectorList edgesAroundPoints;
+		edgesAroundPoints.resize(maxId + 1);
+		int nbEdges = edges.size();
+		for (int i = 0; i < nbEdges; ++i)
+		{
+			const auto& edge = edges[i];
+			const auto& pts = edge.values;
+			if (pts.size() == 2)
+			{
+				edgesAroundPoints[pts[0]].values.push_back(i);
+				edgesAroundPoints[pts[1]].values.push_back(i);
+			}
+		}
+
+		// Second pass, find the edges in each polygon
+		for (const auto& poly : polygons)
+		{
+			panda::types::IntVector vec;
+			const auto& pts = poly.values;
+			int nbPts = pts.size();
+			for (int i = 0; i < nbPts; ++i)
+			{
+				int a = pts[i], b = pts[(i + 1) % nbPts];
+				if (a == b)
+					continue;
+				for (auto edgeId : edgesAroundPoints[a].values)
+				{
+					const auto& edgePts = edges[edgeId].values;
+					if ((edgePts[0] == a && edgePts[1] == b) || (edgePts[0] == b && edgePts[1] == a))
+					{
+						vec.values.push_back(edgeId);
+						break;
+					}
+				}
+			}
+			output.push_back(vec);
+		}
+
+		return output;
 	}
 
 }
@@ -120,30 +215,7 @@ public:
 
 	void update()
 	{
-		const auto& indices = m_indices.getValue();
-		auto acc = m_output.getAccessor();
-		auto& output = acc.wref();
-		output.clear();
-
-		// First pass, get the number of points
-		int maxId = getMaxValue(indices);
-		if (maxId < 0)
-			return;
-
-		// Second pass, add the index of each polygon to every of its points
-		output.resize(maxId + 1);
-		int nbPoly = indices.size();
-		for (int i = 0; i < nbPoly; ++i)
-		{
-			const auto& poly = indices[i].values;
-			int nb = poly.size();
-			for (int j = 0; j < nb - 1; ++j)
-				output[poly[j]].values.push_back(i);
-
-			// The last point is often a copy of the first one
-			if (nb && poly.back() != poly.front())
-				output[poly.back()].values.push_back(i);
-		}
+		m_output.setValue(computeListsAroundIndices(m_indices.getValue()));
 	}
 
 protected:
@@ -222,53 +294,7 @@ public:
 	{
 		const auto& polygons = m_polygons.getValue();
 		const auto& edges = m_edges.getValue();
-		auto acc = m_output.getAccessor();
-		auto& output = acc.wref();
-		output.clear();
-
-		// First pass, get the number of points
-		int maxId = getMaxValue(edges);
-		if (maxId < 0)
-			return;
-
-		// Compute the list of edges around each point
-		std::vector<IntVector> edgesAroundPoints;
-		edgesAroundPoints.resize(maxId + 1);
-		int nbEdges = edges.size();
-		for (int i = 0; i < nbEdges; ++i)
-		{
-			const auto& edge = edges[i];
-			const auto& pts = edge.values;
-			if (pts.size() == 2)
-			{
-				edgesAroundPoints[pts[0]].values.push_back(i);
-				edgesAroundPoints[pts[1]].values.push_back(i);
-			}
-		}
-
-		// Second pass, find the edges in each polygon
-		for (const auto& poly : polygons)
-		{
-			IntVector vec;
-			const auto& pts = poly.values;
-			int nbPts = pts.size();
-			for (int i = 0; i < nbPts; ++i)
-			{
-				int a = pts[i], b = pts[(i + 1) % nbPts];
-				if (a == b)
-					continue;
-				for (auto edgeId : edgesAroundPoints[a].values)
-				{
-					const auto& edgePts = edges[edgeId].values;
-					if ((edgePts[0] == a && edgePts[1] == b) || (edgePts[0] == b && edgePts[1] == a))
-					{
-						vec.values.push_back(edgeId);
-						break;
-					}
-				}
-			}
-			output.push_back(vec);
-		}
+		m_output.setValue(computeEdgesInPolygons(polygons, edges));
 	}
 
 protected:
@@ -279,6 +305,88 @@ int Polygon_EdgesInPolygonsClass = RegisterObject<Polygon_EdgesInPolygons>("Math
 	.setDescription("Compute the indices of edges in each polygon");
 
 //****************************************************************************//
+
+class Polygon_FacesAroundFaces : public PandaObject
+{
+public:
+	PANDA_CLASS(Polygon_FacesAroundFaces, PandaObject)
+
+	Polygon_FacesAroundFaces(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_polygons(initData("polygons", "Indices of points forming the polygons"))
+		, m_output(initData("output", "Indices of the polygons around each polygon"))
+		, m_shareEdge(initData(0, "share edge", "If true, two polygons must share an edge, else sharing a point is enough"))
+	{
+		addInput(m_polygons);
+		addInput(m_shareEdge);
+		addOutput(m_output);
+
+		m_shareEdge.setWidget("checkbox");
+	}
+
+	void update()
+	{
+		const auto& polygons = m_polygons.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+
+		if (polygons.empty())
+			return;
+		int nbPoly = polygons.size();
+
+		if (m_shareEdge.getValue() != 0)
+		{
+			auto edges = computeEdges(polygons);
+			auto edgesInPolygons = computeEdgesInPolygons(polygons, toIntVectorList(edges));
+			auto polysAroundEdges = computeListsAroundIndices(edgesInPolygons);
+
+			for (int i = 0; i < nbPoly; ++i)
+			{
+				std::set<int> ids;
+				for (auto edge : edgesInPolygons[i].values)
+				{
+					const auto& pae = polysAroundEdges[edge];
+					for (auto id : pae.values)
+					{
+						if (id != i)
+							ids.insert(id);
+					}
+				}
+
+				std::vector<int> vec(ids.begin(), ids.end());
+				output.emplace_back(vec);
+			}
+		}
+		else
+		{
+			auto polysAroundPt = computeListsAroundIndices(polygons);
+			for (int i = 0; i < nbPoly; ++i)
+			{
+				std::set<int> ids;
+				for (auto pt : polygons[i].values)
+				{
+					for (auto id : polysAroundPt[pt].values)
+					{
+						if (id != i)
+							ids.insert(id);
+					}
+				}
+
+				std::vector<int> vec(ids.begin(), ids.end());
+				output.emplace_back(vec);
+			}
+		}
+	}
+
+protected:
+	Data< std::vector<IntVector> > m_polygons, m_output;
+	Data< int > m_shareEdge;
+};
+
+int Polygon_FacesAroundFacesClass = RegisterObject<Polygon_FacesAroundFaces>("Math/Polygon/Topology/Faces around faces")
+	.setDescription("Compute the indices of the polygons around each polygon");
+
 
 } // namespace Panda
 
