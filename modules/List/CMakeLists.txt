@@ -28,6 +28,7 @@ set(SOURCE_FILES
 	RemoveDuplicates.cpp
 	SortList.cpp
 	Switch.cpp
+	VectorsListTranspose.cpp
 )
 
 EnablePrecompiledHeaders(SOURCE_FILES)
