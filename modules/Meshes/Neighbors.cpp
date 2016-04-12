@@ -245,6 +245,99 @@ int MeshInfo_TrianglesAroundEdgesClass = RegisterObject<MeshInfo_TrianglesAround
 
 //****************************************************************************//
 
+class MeshInfo_TrianglesAroundTriangles : public PandaObject
+{
+public:
+	PANDA_CLASS(MeshInfo_TrianglesAroundTriangles, PandaObject)
+
+	MeshInfo_TrianglesAroundTriangles(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_mesh(initData("mesh", "Mesh to analyse"))
+		, m_output(initData("output", "Indices of points around each point"))
+		, m_shareEdge(initData(0, "share edge", "If true, two triangles must share an edge, else sharing a point is enough"))
+	{
+		addInput(m_mesh);
+		addInput(m_shareEdge);
+		addOutput(m_output);
+
+		m_shareEdge.setWidget("checkbox");
+	}
+
+	void update()
+	{
+		const Mesh& inMesh = m_mesh.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+
+		if (inMesh.getTriangles().empty())
+			return;
+
+		output.reserve(inMesh.nbTriangles());
+		if (m_shareEdge.getValue() != 0)
+		{
+			const auto& edgesInTriangles = inMesh.getEdgesInTriangleList();
+			const auto& trianglesAroundEdges = inMesh.getTrianglesAroundEdgeList();
+
+			if (!inMesh.hasEdges()
+				|| edgesInTriangles.size() != inMesh.nbTriangles()
+				|| trianglesAroundEdges.size() != inMesh.nbEdges())
+				return;
+
+			int nbTriangles = inMesh.nbTriangles();
+			for (int i = 0; i < nbTriangles; ++i)
+			{
+				std::set<int> ids;
+				for (auto edge : edgesInTriangles[i])
+				{
+					for (auto id : trianglesAroundEdges[edge])
+					{
+						if (id != i)
+							ids.insert(id);
+					}
+				}
+
+				std::vector<int> vec(ids.begin(), ids.end());
+				output.emplace_back(vec);
+			}
+		}
+		else
+		{
+			const auto& trianglesAroundPoint = inMesh.getTrianglesAroundPointList();
+			if (trianglesAroundPoint.size() != inMesh.nbPoints())
+				return;
+
+			const auto& triangles = inMesh.getTriangles();
+			int nbTriangles = inMesh.nbTriangles();
+			for (int i = 0; i < nbTriangles; ++i)
+			{
+				std::set<int> ids;
+				for (auto pt : triangles[i])
+				{
+					for (auto id : trianglesAroundPoint[pt])
+					{
+						if (id != i)
+							ids.insert(id);
+					}
+				}
+
+				std::vector<int> vec(ids.begin(), ids.end());
+				output.emplace_back(vec);
+			}
+		}
+	}
+
+protected:
+	Data< Mesh > m_mesh;
+	Data< std::vector<IntVector> > m_output;
+	Data< int > m_shareEdge;
+};
+
+int MeshInfo_TrianglesAroundTrianglesClass = RegisterObject<MeshInfo_TrianglesAroundTriangles>("Math/Mesh/Topology/Triangles around triangles")
+	.setDescription("Get the list of triangles around each triangle of a mesh");
+
+//****************************************************************************//
+
 class MeshInfo_PointsAroundPoints : public PandaObject
 {
 public:

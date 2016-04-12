@@ -346,8 +346,7 @@ public:
 				std::set<int> ids;
 				for (auto edge : edgesInPolygons[i].values)
 				{
-					const auto& pae = polysAroundEdges[edge];
-					for (auto id : pae.values)
+					for (auto id : polysAroundEdges[edge].values)
 					{
 						if (id != i)
 							ids.insert(id);
