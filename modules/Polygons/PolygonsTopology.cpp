@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <array>
+#include <deque>
 #include <set>
 
 namespace
@@ -386,6 +387,84 @@ protected:
 int Polygon_FacesAroundFacesClass = RegisterObject<Polygon_FacesAroundFaces>("Math/Polygon/Topology/Faces around faces")
 	.setDescription("Compute the indices of the polygons around each polygon");
 
+//****************************************************************************//
+
+class Polygon_Propagate : public PandaObject
+{
+public:
+	PANDA_CLASS(Polygon_Propagate, PandaObject)
+
+	Polygon_Propagate(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_neighbors(initData("neighbors", "Indices of neighbors for each value"))
+		, m_init(initData("init", "Initial values (we propagate from non zero values)"))
+		, m_canPropagate(initData("can propagate", "For each value, non zero if we can propagate here"))
+		, m_output(initData("output", "Values after propagation"))
+	{
+		addInput(m_neighbors);
+		addInput(m_init);
+		addInput(m_canPropagate);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& neighbors = m_neighbors.getValue();
+		const auto& initValues = m_init.getValue();
+		const auto& canPropagateVal = m_canPropagate.getValue();
+		auto acc = m_output.getAccessor();
+		auto& output = acc.wref();
+		output.clear();
+
+		int maxValue = getMaxValue(neighbors);
+		if (maxValue < 0)
+			return;
+		int nb = maxValue + 1;
+		if (initValues.size() != nb || canPropagateVal.size() != nb)
+			return;
+
+		std::vector<bool> closedList(nb, false), canPropagate(nb, false);
+		std::deque<int> openList;
+		output.assign(nb, 0);
+
+		for (int i = 0; i < nb; ++i)
+		{
+			if (initValues[i] != 0)
+			{
+				closedList[i] = true;
+				openList.push_back(i);
+				output[i] = 1;
+			}
+			if (canPropagateVal[i] != 0)
+				canPropagate[i] = true;
+			else
+				closedList[i] = true; // Do not process these points 
+		}
+
+		while (!openList.empty())
+		{
+			int id = openList.front();
+			openList.pop_front();
+
+			for (auto n : neighbors[id].values)
+			{
+				if (!closedList[n] && canPropagate[n])
+				{
+					closedList[n] = true;
+					openList.push_back(n);
+					output[n] = 1;
+				}
+			}
+		}
+	}
+
+protected:
+	Data< std::vector<IntVector> > m_neighbors;
+	Data< std::vector<int> > m_init, m_canPropagate, m_output;
+};
+
+int Polygon_PropagateClass = RegisterObject<Polygon_Propagate>("Math/Polygon/Topology/Propagate")
+	.setDescription("Propagate a value to neighbors");
 
 } // namespace Panda
 
