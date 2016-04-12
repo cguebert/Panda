@@ -33,7 +33,7 @@ public:
 			valOut[i] = compute(valIn[i]);
 	}
 
-	virtual float compute(const float& value) = 0;
+	virtual float compute(float value) = 0;
 
 protected:
 	Data< std::vector<float> > input, result;
@@ -44,7 +44,7 @@ protected:
 class DoubleMath_2Values : public PandaObject
 {
 public:
-	PANDA_ABSTRACT_CLASS(DoubleMath_1Value, PandaObject)
+	PANDA_ABSTRACT_CLASS(DoubleMath_2Values, PandaObject)
 
 	DoubleMath_2Values(PandaDocument *doc)
 		: PandaObject(doc)
@@ -78,7 +78,7 @@ public:
 		}
 	}
 
-	virtual float compute(const float& valA, const float& valB) = 0;
+	virtual float compute(float valA, float valB) = 0;
 
 protected:
 	Data< std::vector<float> > inputA, inputB, result;
@@ -94,7 +94,7 @@ public:
 	DoubleMath_Add(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual float compute(const float& valA, const float& valB)
+	virtual float compute(float valA, float valB)
 	{ return valA + valB; }
 };
 
@@ -110,7 +110,7 @@ public:
 	DoubleMath_Sub(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual float compute(const float& valA, const float& valB)
+	virtual float compute(float valA, float valB)
 	{ return valA - valB; }
 };
 
@@ -126,7 +126,7 @@ public:
 	DoubleMath_Mult(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual float compute(const float& valA, const float& valB)
+	virtual float compute(float valA, float valB)
 	{ return valA * valB; }
 };
 
@@ -142,7 +142,7 @@ public:
 	DoubleMath_Div(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual float compute(const float& valA, const float& valB)
+	virtual float compute(float valA, float valB)
 	{ return valA / valB; }
 };
 
@@ -158,7 +158,7 @@ public:
 	DoubleMath_Mod(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual float compute(const float& valA, const float& valB)
+	virtual float compute(float valA, float valB)
 	{ return std::fmod(valA, valB); }
 };
 
@@ -174,7 +174,7 @@ public:
 	DoubleMath_Abs(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::abs(val); }
 };
 
@@ -190,7 +190,7 @@ public:
 	DoubleMath_Floor(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::floor(val); }
 };
 
@@ -206,7 +206,7 @@ public:
 	DoubleMath_Ceil(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::ceil(val); }
 };
 
@@ -222,7 +222,7 @@ public:
 	DoubleMath_Round(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::round(val); }
 };
 
@@ -238,7 +238,7 @@ public:
 	DoubleMath_Power(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual float compute(const float& valA, const float& valB)
+	virtual float compute(float valA, float valB)
 	{ return std::pow(valA, valB); }
 };
 
@@ -254,7 +254,7 @@ public:
 	DoubleMath_Sqrt(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::sqrt(val); }
 };
 
@@ -271,7 +271,7 @@ public:
 		: DoubleMath_1Value(doc)
 	{}
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::log(val); }
 
 };
@@ -292,7 +292,7 @@ public:
 		addInput(base);
 	}
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::log(val) / std::log(base.getValue()); }
 
 protected:
@@ -312,7 +312,7 @@ public:
 		: DoubleMath_1Value(doc)
 	{}
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::exp(val); }
 
 };
@@ -329,7 +329,7 @@ public:
 	DoubleMath_Min(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual float compute(const float& valA, const float& valB)
+	virtual float compute(float valA, float valB)
 	{ return std::min(valA, valB); }
 };
 
@@ -345,27 +345,11 @@ public:
 	DoubleMath_Max(PandaDocument *doc)
 		: DoubleMath_2Values(doc) { }
 
-	virtual float compute(const float& valA, const float& valB)
+	virtual float compute(float valA, float valB)
 	{ return std::max(valA, valB); }
 };
 
 int DoubleMath_MaxClass = RegisterObject<DoubleMath_Max>("Math/Real/Functions/Maximum").setDescription("Returns the highest value of the 2 inputs");
-
-//****************************************************************************//
-
-class DoubleMath_Step : public DoubleMath_2Values
-{
-public:
-	PANDA_CLASS(DoubleMath_Step, DoubleMath_2Values)
-
-	DoubleMath_Step(PandaDocument *doc)
-		: DoubleMath_2Values(doc) { }
-
-	virtual float compute(const float& valA, const float& valB)
-	{ return (valA >= valB); }
-};
-
-int DoubleMath_StepClass = RegisterObject<DoubleMath_Step>("Math/Real/Functions/Step").setDescription("Returns 0 if input1 < input2, 1 otherwise");
 
 //****************************************************************************//
 
@@ -377,7 +361,7 @@ public:
 	DoubleMath_Cos(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::cos(val * static_cast<float>(M_PI) / 180); }
 };
 
@@ -393,7 +377,7 @@ public:
 	DoubleMath_Sin(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::sin(val * static_cast<float>(M_PI) / 180); }
 };
 
@@ -409,7 +393,7 @@ public:
 	DoubleMath_Tan(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::tan(val * static_cast<float>(M_PI) / 180); }
 };
 
@@ -425,7 +409,7 @@ public:
 	DoubleMath_Arccos(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::acos(val) * 180 / static_cast<float>(M_PI); }
 };
 
@@ -441,7 +425,7 @@ public:
 	DoubleMath_Arcsin(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::asin(val) * 180 / static_cast<float>(M_PI); }
 };
 
@@ -457,7 +441,7 @@ public:
 	DoubleMath_Arctan(PandaDocument *doc)
 		: DoubleMath_1Value(doc) { }
 
-	virtual float compute(const float& val)
+	virtual float compute(float val)
 	{ return std::atan(val) * 180 / static_cast<float>(M_PI); }
 };
 
