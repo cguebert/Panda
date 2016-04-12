@@ -2,6 +2,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Polygon.h>
+#include <panda/types/Rect.h>
 
 #include <cmath>
 #include <algorithm>
@@ -77,6 +78,7 @@ namespace panda {
 using types::Point;
 using types::Path;
 using types::Polygon;
+using types::Rect;
 
 class PolygonOperation_Difference : public PandaObject
 {
@@ -289,7 +291,53 @@ protected:
 };
 
 int PolygonOperation_ConvexHullClass = RegisterObject<PolygonOperation_ConvexHull>("Math/Polygon/Convex hull")
-	.setDescription("Compute the onvex hull of a polygon");
+	.setDescription("Compute the convex hull of a polygon");
+
+//****************************************************************************//
+
+class PolygonOperation_Envelope : public PandaObject
+{
+public:
+	PANDA_CLASS(PolygonOperation_Envelope, PandaObject)
+
+	PolygonOperation_Envelope(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_input(initData("input", "Input polygon"))
+		, m_output(initData("output", "Axis aligned bounding box of the polygon"))
+	{
+		addInput(m_input);
+		addOutput(m_output);
+	}
+
+	void update()
+	{
+		const auto& input = m_input.getValue();
+		auto output = m_output.getAccessor();
+		output.clear();
+
+		for (const auto& inPoly : input)
+		{
+			Rect outRect;
+			if (!inPoly.contour.points.empty())
+			{
+				BGPolygon bgIn = convert(inPoly);
+				boost::geometry::model::box<BGPoint> box;
+				boost::geometry::envelope(bgIn, box);
+				outRect = Rect(box.min_corner().x(), box.min_corner().y(),
+					box.max_corner().x(), box.max_corner().y());
+			}
+			output.push_back(outRect);
+		}
+	}
+
+protected:
+	Data< std::vector<Polygon> > m_input;
+	Data< std::vector<Rect> > m_output;
+};
+
+int PolygonOperation_EnvelopeClass = RegisterObject<PolygonOperation_Envelope>("Math/Polygon/Axis aligned bounding box")
+	.setName("Polygon AABB")
+	.setDescription("Compute the envelope of a polygon");
 
 } // namespace Panda
 
