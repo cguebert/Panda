@@ -60,7 +60,8 @@ protected:
 	GenericVectorData m_generic;
 };
 
-int VectorListTransposeClass = RegisterObject<VectorListTranspose>("List/Vectors list transpose")
+int VectorListTransposeClass = RegisterObject<VectorListTranspose>("List/Vectors list/Transpose lists")
+	.setName("Vectors list transpose")
 	.setDescription("Takes a number of lists and returns a list of corresponding size tuples (similar to a matrix transpose)");
 
 } // namespace Panda

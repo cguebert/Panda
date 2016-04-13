@@ -164,6 +164,8 @@ protected:
 	GenericVectorData generic;
 };
 
-int SortVectorsListClass = RegisterObject<SortVectorsList>("List/Sort vectors list").setDescription("Sort each list in a vector of lists");
+int SortVectorsListClass = RegisterObject<SortVectorsList>("List/Vectors list/Sort lists")
+	.setName("Sort vectors list")
+	.setDescription("Sort each list in a vector of lists");
 
 } // namespace Panda

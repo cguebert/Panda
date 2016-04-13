@@ -237,7 +237,9 @@ protected:
 	GenericVectorData generic;
 };
 
-int VectorListFindMinClass = RegisterObject<VectorListFindMin>("List/Minimum in vectors list").setDescription("Find the minimum value and its index in each list");
+int VectorListFindMinClass = RegisterObject<VectorListFindMin>("List/Vectors list/Minimum in lists")
+	.setName("Minimum in vectors list")
+	.setDescription("Find the minimum value and its index in each list");
 
 //****************************************************************************//
 
@@ -323,7 +325,9 @@ protected:
 	GenericVectorData generic;
 };
 
-int VectorListFindMaxClass = RegisterObject<VectorListFindMax>("List/Maximum in vectors list").setDescription("Find the maximum value and its index in each list");
+int VectorListFindMaxClass = RegisterObject<VectorListFindMax>("List/Vectors list/Maximum in lists")
+	.setName("Maximum in vectors list")
+	.setDescription("Find the maximum value and its index in each list");
 
 
 } // namespace Panda

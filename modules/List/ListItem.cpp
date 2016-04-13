@@ -121,6 +121,8 @@ protected:
 	GenericVectorData generic;
 };
 
-int VectorListItemClass = RegisterObject<VectorListItem>("List/Vectors list item").setDescription("Extract a vector from a list of vectors");
+int VectorListItemClass = RegisterObject<VectorListItem>("List/Vectors list/Lists item")
+	.setName("Vectors list item")
+	.setDescription("Extract a vector from a list of vectors");
 
 } // namespace Panda
