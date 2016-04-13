@@ -91,7 +91,7 @@ public:
 												"output",
 												"Vector extracted from the list"));
 
-		setupGenericObject<std::tuple<types::FloatVector, types::IntVector>>(this, generic, defList);
+		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}
 
 	template <class T>

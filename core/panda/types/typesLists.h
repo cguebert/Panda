@@ -15,10 +15,11 @@
 namespace panda
 {
 
-typedef std::tuple<int, float, types::Color, types::Point, types::Rect, std::string, types::ImageWrapper,
-	types::Gradient, types::Shader, types::Mesh, types::Path, types::Polygon, types::FloatVector, types::IntVector> allDataTypes;
-typedef std::tuple<int, float, types::Color, types::Point, types::Rect, std::string, types::FloatVector, types::IntVector> allSearchableTypes;
-typedef std::tuple<int, float, types::Color, types::Point, types::Rect, std::string> allSortableTypes;
-typedef std::tuple<float, types::Color, types::Point, types::Gradient> allAnimationTypes;
+using allDataTypes = std::tuple<int, float, types::Color, types::Point, types::Rect, std::string, types::ImageWrapper,
+	types::Gradient, types::Shader, types::Mesh, types::Path, types::Polygon, types::FloatVector, types::IntVector>;
+using allSearchableTypes = std::tuple<int, float, types::Color, types::Point, types::Rect, std::string, types::FloatVector, types::IntVector>;
+using allSortableTypes = std::tuple<int, float, types::Color, types::Point, types::Rect, std::string>;
+using allAnimationTypes = std::tuple<float, types::Color, types::Point, types::Gradient>;
+using allListsVectorTypes = std::tuple<types::FloatVector, types::IntVector>;
 
 } // namespace panda

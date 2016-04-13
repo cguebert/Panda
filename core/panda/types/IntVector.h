@@ -18,6 +18,8 @@ namespace types
 class PANDA_CORE_API IntVector
 {
 public:
+	using value_type = int;
+
 	std::vector<int> values;
 
 	IntVector() = default;

@@ -18,6 +18,8 @@ namespace types
 class PANDA_CORE_API FloatVector
 {
 public:
+	using value_type = float;
+
 	std::vector<float> values;
 
 	FloatVector() = default;

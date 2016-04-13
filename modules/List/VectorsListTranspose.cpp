@@ -27,7 +27,7 @@ public:
 												"output",
 												"Output list"));
 
-		setupGenericObject<std::tuple<types::FloatVector, types::IntVector>>(this, m_generic, defList);
+		setupGenericObject<allListsVectorTypes>(this, m_generic, defList);
 	}
 
 	template <class T>

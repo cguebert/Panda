@@ -76,7 +76,7 @@ public:
 												false, true,
 												"size",
 												"Number of values in each vector"));
-		setupGenericObject<std::tuple<types::FloatVector, types::IntVector>>(this, generic, defList);
+		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}
 
 	template <class T>
