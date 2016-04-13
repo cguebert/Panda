@@ -100,7 +100,7 @@ protected:
 #endif
 	void paintDirtyState(QPainter* painter);
 
-	panda::PandaObject* getObjectAtPos(const QPointF& pt);
+	ObjectDrawStruct* getObjectDrawStructAtPos(const QPointF& pt);
 	void moveView(const QPointF& delta);
 
 	void addLinkTag(panda::BaseData* input, panda::BaseData* output);
