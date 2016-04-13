@@ -37,6 +37,19 @@ enum {
 
 } // namespace buttons
 
+enum class Color
+{
+	Window,
+	Base,
+	Text,
+	Button,
+	Light,
+	Midlight,
+	Dark,
+	Highlight,
+	HighlightedText
+};
+
 enum class MessageBoxType { about, critical, information, question, warning };
 
 using CallbackFunc = std::function<void()>;
@@ -56,6 +69,8 @@ public:
 	virtual void contextDoneCurrent() = 0; // Release the context
 
 	virtual void executeByUI(CallbackFunc func) = 0; // Put the function on a queue that will be executed on the UI thread
+
+	virtual unsigned int getColor(Color color) = 0; // Get a gui color
 };
 
 } // namespace gui

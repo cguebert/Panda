@@ -50,3 +50,8 @@ void SimpleGUIImpl::executeFunctions()
 	for (auto& func : functions)
 		func();
 }
+
+unsigned int SimpleGUIImpl::getColor(panda::gui::Color color)
+{
+	return 0;
+}

@@ -92,7 +92,7 @@ void OpenGLRenderView::paintGL()
 	auto fbo = m_document->getFBO();
 
 	QRect viewRect = contentsRect();
-	auto col = palette().background().color();
+	auto col = palette().window().color();
 	glViewport(0, 0, viewRect.width(), viewRect.height());
 	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

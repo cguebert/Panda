@@ -13,6 +13,7 @@ public:
 	void contextMakeCurrent() override;
 	void contextDoneCurrent() override;
 	void executeByUI(panda::gui::CallbackFunc func) override;
+	unsigned int getColor(panda::gui::Color color) override;
 
 	void executeFunctions();
 
