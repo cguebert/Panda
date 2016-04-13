@@ -33,6 +33,8 @@ class GraphView : public QWidget, public ScrollableView
 	Q_OBJECT
 
 public:
+	using ObjectDrawStructPtr = std::shared_ptr<ObjectDrawStruct>;
+
 	explicit GraphView(panda::PandaDocument* doc, QWidget* parent = nullptr);
 	~GraphView();
 
@@ -48,10 +50,10 @@ public:
 
 	void resetView();
 
+	ObjectDrawStructPtr getSharedObjectDrawStruct(panda::PandaObject* object);
 	ObjectDrawStruct* getObjectDrawStruct(panda::PandaObject* object);
 	std::vector<ObjectDrawStruct*> getObjectDrawStructs(const std::vector<panda::PandaObject*>& objects);
-	std::shared_ptr<ObjectDrawStruct> getSharedObjectDrawStruct(panda::PandaObject* object);
-	void setObjectDrawStruct(panda::PandaObject* object, std::shared_ptr<ObjectDrawStruct> drawStruct);
+	void setObjectDrawStruct(panda::PandaObject* object, const ObjectDrawStructPtr& drawStruct);
 
 	QRectF getDataRect(panda::BaseData* data);
 
@@ -117,6 +119,7 @@ protected:
 	void updateViewRect();
 
 	void selectionChanged();
+	void objectsReordered();
 
 	void computeCompatibleDatas(panda::BaseData* data);
 
@@ -162,7 +165,9 @@ private:
 
 	panda::BaseData *m_clickedData = nullptr, *m_hoverData = nullptr, *m_contextMenuData = nullptr;
 
-	std::map<panda::PandaObject*, std::shared_ptr<ObjectDrawStruct> > m_objectDrawStructs;
+	std::map<panda::PandaObject*, ObjectDrawStructPtr> m_objectDrawStructs; /// The map of draw structs
+	std::vector<ObjectDrawStruct*> m_orderedObjectDrawStructs; /// In the same order as the document
+
 	ObjectDrawStruct* m_capturedDrawStruct = nullptr; /// Clicked ObjectDrawStruct that want to intercept mouse events
 
 	std::map<panda::BaseData*, std::shared_ptr<LinkTag> > m_linkTags;
@@ -187,13 +192,14 @@ private:
 	panda::msg::Observer m_observer; /// Used to connect to signals (and disconnect automatically on destruction)
 
 	std::unique_ptr<ObjectsSelection> m_objectsSelection; /// Contains the selected objects and the corresponding signals
-	std::vector<std::shared_ptr<ObjectDrawStruct>> m_selectedObjectsDrawStructs; /// The renderers for the selected objects
+	std::vector<ObjectDrawStruct*> m_selectedObjectsDrawStructs; /// The renderers for the selected objects
 
 	bool m_debugDirtyState = false;
 
 	std::set<const panda::BaseData*> m_possibleLinks; /// When creating a new link, this contains all possible destinations
 
-	std::set<ObjectDrawStruct*> m_dirtyDrawStructs; /// The list of draw structs that need to be updated
+	std::vector<ObjectDrawStruct*> m_dirtyDrawStructs; /// The list of draw structs that need to be updated (we update them in the order we enter them in the list)
+	std::set<ObjectDrawStruct*> m_dirtyDrawStructsSet; /// To ensure we do not update multiple times the same object
 };
 
 inline ObjectsSelection& GraphView::selection() const
