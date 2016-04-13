@@ -113,6 +113,7 @@ protected:
 
 	void changeLink(panda::BaseData* target, panda::BaseData* parent);
 
+	void updateDirtyDrawStructs();
 	void updateViewRect();
 
 	void selectionChanged();
@@ -191,6 +192,8 @@ private:
 	bool m_debugDirtyState = false;
 
 	std::set<const panda::BaseData*> m_possibleLinks; /// When creating a new link, this contains all possible destinations
+
+	std::set<ObjectDrawStruct*> m_dirtyDrawStructs; /// The list of draw structs that need to be updated
 };
 
 inline ObjectsSelection& GraphView::selection() const

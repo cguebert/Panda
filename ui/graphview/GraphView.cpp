@@ -176,6 +176,8 @@ void GraphView::moveView(const QPointF& delta)
 
 void GraphView::paintEvent(QPaintEvent* /* event */)
 {
+	updateDirtyDrawStructs();
+
 	if(m_recomputeTags)
 	{
 		updateLinkTags();
@@ -966,8 +968,8 @@ void GraphView::addedObject(panda::PandaObject* object)
 	if(!m_objectDrawStructs.count(object))
 		m_objectDrawStructs.emplace(object, ObjectDrawStructFactory::getInstance()->createDrawStruct(this, object));
 
+	m_dirtyDrawStructs.insert(m_objectDrawStructs.at(object).get());
 	update();
-	updateViewRect();
 }
 
 void GraphView::removeObject(panda::PandaObject* object)
@@ -986,14 +988,8 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 {
 	if(m_objectDrawStructs.count(object))	// Can be called before the object is fully created
 	{
-		m_objectDrawStructs[object]->update();
-		m_linkTags.clear();
-		m_recomputeTags = true;
-		m_highlightConnectedDatas = false;
-		m_hoverData = nullptr;
-		m_hoverTimer->stop();
+		m_dirtyDrawStructs.insert(m_objectDrawStructs.at(object).get());
 		update();
-		updateViewRect(); // The size of the object can have changed
 	}
 }
 
@@ -1439,9 +1435,9 @@ void GraphView::startLoading()
 
 void GraphView::loadingFinished()
 {
-	sortAllDockables();
 	m_isLoading = false;
-	updateViewRect();
+	sortAllDockables();
+	updateDirtyDrawStructs();
 }
 
 void GraphView::changedDock(panda::DockableObject* dockable)
@@ -1539,4 +1535,21 @@ void GraphView::computeCompatibleDatas(panda::BaseData* data)
 				m_possibleLinks.insert(linkData);
 		}
 	}
+}
+
+void GraphView::updateDirtyDrawStructs()
+{
+	if (m_dirtyDrawStructs.empty())
+		return;
+
+	for (auto ods : m_dirtyDrawStructs)
+		ods->update();
+	m_dirtyDrawStructs.clear();
+
+	m_linkTags.clear();
+	m_recomputeTags = true;
+	m_highlightConnectedDatas = false;
+	m_hoverData = nullptr;
+	m_hoverTimer->stop();
+	updateViewRect();
 }
