@@ -69,7 +69,7 @@ protected:
 	GenericVectorData m_generic;
 };
 
-int ListSumFromIndicesClass = RegisterObject<ListSumFromIndices>("List/Sum from indices").setDescription("Compute a sum for each vector of indices");
+int ListSumFromIndicesClass = RegisterObject<ListSumFromIndices>("List/Sum using indices").setDescription("Compute a sum for each vector of indices");
 
 //****************************************************************************//
 
@@ -139,6 +139,6 @@ protected:
 	GenericVectorData m_generic;
 };
 
-int ListMeanFromIndicesClass = RegisterObject<ListMeanFromIndices>("List/Mean from indices").setDescription("Compute the mean for each vector of indices");
+int ListMeanFromIndicesClass = RegisterObject<ListMeanFromIndices>("List/Mean using indices").setDescription("Compute the mean for each vector of indices");
 
 } // namespace Panda

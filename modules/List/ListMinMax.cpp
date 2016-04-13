@@ -8,6 +8,7 @@
 namespace panda {
 
 using types::DataTypeId;
+using types::IntVector;
 
 class ListFindMin : public GenericObject
 {
@@ -31,7 +32,7 @@ public:
 											 "Minimum value"));
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
 											 false, true,
-											 "indices",
+											 "index",
 											 "Index corresponding to the minimum value"));
 		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
@@ -78,7 +79,7 @@ protected:
 	GenericVectorData generic;
 };
 
-int ListFindMinClass = RegisterObject<ListFindMin>("List/Find minimum").setDescription("Find the minimum value in a list and its index");
+int ListFindMinClass = RegisterObject<ListFindMin>("List/Find minimum").setDescription("Find the minimum value and its index in a list");
 
 //****************************************************************************//
 
@@ -104,7 +105,7 @@ public:
 												"Maximum value"));
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
 												false, true,
-												"indices",
+												"index",
 												"Index corresponding to the maximum value"));
 		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
@@ -151,7 +152,7 @@ protected:
 	GenericVectorData generic;
 };
 
-int ListFindMaxClass = RegisterObject<ListFindMax>("List/Find maximum").setDescription("Find the maximum value in a list and its index");
+int ListFindMaxClass = RegisterObject<ListFindMax>("List/Find maximum").setDescription("Find the maximum value and its index in a list");
 
 //****************************************************************************//
 
@@ -170,15 +171,15 @@ public:
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
 												true, false,
 												"input",
-												"List in which to look for the minimum value"));
+												"Lists in which to look for the minimum value"));
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(0),
 												false, true,
 												"minimum",
-												"Minimum value"));
+												"Minimum values"));
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
 												false, true,
 												"indices",
-												"Index corresponding to the minimum value"));
+												"Indices corresponding to the minimum values"));
 		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}
 
@@ -189,11 +190,11 @@ public:
 		using ValVec = std::vector<T>;
 		using ValVecData = Data<ValVec>;
 		using ValData = Data<T>;
-		using IntVec = std::vector<int>;
-		using IntVecData = Data<IntVec>;
+		using VecInt = std::vector<int>;
+		using VecIntData = Data<VecInt>;
 		auto dataInput = dynamic_cast<ValVecData*>(list[0]);
 		auto dataOutputValue = dynamic_cast<ValData*>(list[1]);
-		auto dataOutputIndex = dynamic_cast<IntVecData*>(list[2]);
+		auto dataOutputIndex = dynamic_cast<VecIntData*>(list[2]);
 
 		assert(dataInput && dataOutputValue && dataOutputIndex);
 
@@ -212,7 +213,7 @@ public:
 			{
 				outputVal.push_back(ValType());
 				outputInd.push_back(-1);
-				return;
+				continue;
 			}
 
 			auto minVal = values.front();
@@ -258,15 +259,15 @@ public:
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
 												true, false,
 												"input",
-												"List in which to look for the maximum value"));
+												"Lists in which to look for the maximum value"));
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(0),
 												false, true,
 												"maximum",
-												"Maximum value"));
+												"Maximum values"));
 		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
 												false, true,
 												"indices",
-												"Index corresponding to the maximum value"));
+												"Indices corresponding to the maximum values"));
 		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}
 
@@ -277,11 +278,11 @@ public:
 		using ValVec = std::vector<T>;
 		using ValVecData = Data<ValVec>;
 		using ValData = Data<T>;
-		using IntVec = std::vector<int>;
-		using IntVecData = Data<IntVec>;
+		using VecInt = std::vector<int>;
+		using VecIntData = Data<VecInt>;
 		auto dataInput = dynamic_cast<ValVecData*>(list[0]);
 		auto dataOutputValue = dynamic_cast<ValData*>(list[1]);
-		auto dataOutputIndex = dynamic_cast<IntVecData*>(list[2]);
+		auto dataOutputIndex = dynamic_cast<VecIntData*>(list[2]);
 
 		assert(dataInput && dataOutputValue && dataOutputIndex);
 
@@ -300,7 +301,7 @@ public:
 			{
 				outputVal.push_back(ValType());
 				outputInd.push_back(-1);
-				return;
+				continue;
 			}
 
 			auto maxVal = values.front();
@@ -329,5 +330,212 @@ int VectorListFindMaxClass = RegisterObject<VectorListFindMax>("List/Vectors lis
 	.setName("Maximum in vectors list")
 	.setDescription("Find the maximum value and its index in each list");
 
+//****************************************************************************//
+
+class VectorListIndicesMin : public GenericObject
+{
+public:
+	PANDA_CLASS(VectorListIndicesMin, GenericObject)
+
+	VectorListIndicesMin(PandaDocument *doc)
+		: GenericObject(doc)
+		, m_indices(initData("indices", "Indices to create the lists"))
+		, generic(initData("input", "Connect here the lists to get the items from"))
+	{
+		addInput(m_indices);
+		addInput(generic);
+
+		GenericDataDefinitionList defList;
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
+												true, false,
+												"input",
+												"List in which to look for the minimum value"));
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
+												false, true,
+												"minimum",
+												"Minimum values"));
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+												false, true,
+												"indices",
+												"Indices in the input of the minimum values"));
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+												false, true,
+												"position",
+												"Position of the minimum value in each list "));
+		setupGenericObject<allSortableTypes>(this, generic, defList);
+	}
+
+	template <class T>
+	void updateT(DataList& list)
+	{
+		using ValVec = std::vector<T>;
+		using ValVecData = Data<ValVec>;
+		using VecInt = std::vector<int>;
+		using VecIntData = Data<VecInt>;
+		auto dataInput = dynamic_cast<ValVecData*>(list[0]);
+		auto dataOutputValue = dynamic_cast<ValVecData*>(list[1]);
+		auto dataOutputIndex = dynamic_cast<VecIntData*>(list[2]);
+		auto dataOutputPosition = dynamic_cast<VecIntData*>(list[3]);
+
+		assert(dataInput && dataOutputValue && dataOutputIndex && dataOutputPosition);
+
+		const auto& input = dataInput->getValue();
+		auto outputValAcc = dataOutputValue->getAccessor();
+		auto outputIndAcc = dataOutputIndex->getAccessor();
+		auto outputPosAcc = dataOutputPosition->getAccessor();
+		auto& outputVal = outputValAcc.wref();
+		auto& outputInd = outputIndAcc.wref();
+		auto& outputPos = outputPosAcc.wref();
+		outputVal.clear();
+		outputInd.clear();
+		outputPos.clear();
+
+		const int nbValues = input.size();
+		const auto& indicesLists = m_indices.getValue();
+		for (const auto& indicesList : indicesLists)
+		{
+			const auto& indices = indicesList.values;
+			if (indices.empty())
+			{
+				outputVal.push_back(T());
+				outputInd.push_back(-1);
+				outputPos.push_back(-1);
+				continue;
+			}
+
+			int id = helper::bound(0, indices.front(), nbValues - 1);
+			auto minVal = input[id];
+			int minPos = 0, minId = id;
+			int nb = indices.size();
+			for (int i = 1; i < nb; ++i)
+			{
+				id = helper::bound(0, indices[i], nbValues - 1);
+				const auto& val = input[id];
+				if (val < minVal)
+				{
+					minVal = val;
+					minId = id;
+					minPos = i;
+				}
+			}
+
+			outputVal.push_back(minVal);
+			outputInd.push_back(minId);
+			outputPos.push_back(minPos);
+		}
+	}
+
+protected:
+	Data<std::vector<IntVector>> m_indices;
+	GenericVectorData generic;
+};
+
+int VectorListIndicesMainClass = RegisterObject<VectorListIndicesMin>("List/Vectors list/Minimum using indices")
+	.setName("Minimum in lists with indices")
+	.setDescription("Find the minimum value and its index in each list created using given indices");
+
+//****************************************************************************//
+
+class VectorListIndicesMax : public GenericObject
+{
+public:
+	PANDA_CLASS(VectorListIndicesMax, GenericObject)
+
+	VectorListIndicesMax(PandaDocument *doc)
+		: GenericObject(doc)
+		, m_indices(initData("indices", "Indices to create the vectors lists"))
+		, generic(initData("input", "Connect here the lists to get the items from"))
+	{
+		addInput(m_indices);
+		addInput(generic);
+
+		GenericDataDefinitionList defList;
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
+												true, false,
+												"input",
+												"List in which to look for the maximum value"));
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
+												false, true,
+												"maximum",
+												"Maximum values"));
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+												false, true,
+												"indices",
+												"Indices in the input of the maximum values"));
+		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+												false, true,
+												"position",
+												"Position of the maximum value in each list "));
+		setupGenericObject<allSortableTypes>(this, generic, defList);
+	}
+
+	template <class T>
+	void updateT(DataList& list)
+	{
+		using ValVec = std::vector<T>;
+		using ValVecData = Data<ValVec>;
+		using VecInt = std::vector<int>;
+		using VecIntData = Data<VecInt>;
+		auto dataInput = dynamic_cast<ValVecData*>(list[0]);
+		auto dataOutputValue = dynamic_cast<ValVecData*>(list[1]);
+		auto dataOutputIndex = dynamic_cast<VecIntData*>(list[2]);
+		auto dataOutputPosition = dynamic_cast<VecIntData*>(list[3]);
+
+		assert(dataInput && dataOutputValue && dataOutputIndex && dataOutputPosition);
+
+		const auto& input = dataInput->getValue();
+		auto outputValAcc = dataOutputValue->getAccessor();
+		auto outputIndAcc = dataOutputIndex->getAccessor();
+		auto outputPosAcc = dataOutputPosition->getAccessor();
+		auto& outputVal = outputValAcc.wref();
+		auto& outputInd = outputIndAcc.wref();
+		auto& outputPos = outputPosAcc.wref();
+		outputVal.clear();
+		outputInd.clear();
+		outputPos.clear();
+
+		const int nbValues = input.size();
+		const auto& indicesLists = m_indices.getValue();
+		for (const auto& indicesList : indicesLists)
+		{
+			const auto& indices = indicesList.values;
+			if (indices.empty())
+			{
+				outputVal.push_back(T());
+				outputInd.push_back(-1);
+				outputPos.push_back(-1);
+				continue;
+			}
+
+			int id = helper::bound(0, indices.front(), nbValues - 1);
+			auto maxVal = input[id];
+			int maxPos = 0, maxId = id;
+			int nb = indices.size();
+			for (int i = 1; i < nb; ++i)
+			{
+				id = helper::bound(0, indices[i], nbValues - 1);
+				const auto& val = input[id];
+				if (maxVal < val)
+				{
+					maxVal = val;
+					maxId = id;
+					maxPos = i;
+				}
+			}
+
+			outputVal.push_back(maxVal);
+			outputInd.push_back(maxId);
+			outputPos.push_back(maxPos);
+		}
+	}
+
+protected:
+	Data<std::vector<IntVector>> m_indices;
+	GenericVectorData generic;
+};
+
+int VectorListIndicesMaxClass = RegisterObject<VectorListIndicesMax>("List/Vectors list/Maximum using indices")
+	.setName("Maximum in lists with indices")
+	.setDescription("Find the maximum value and its index in each list");
 
 } // namespace Panda
