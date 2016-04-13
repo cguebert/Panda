@@ -657,7 +657,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 
 						m_pandaDocument->getUndoStack().push(std::make_shared<panda::ReorderDockableCommand>(prevDock, dockable, newIndex));
 					}
-					modifiedObject(prevDock);	// Always update
+					modifiedObject(prevDock); // Always update
 				}
 				else if(defaultDock) // (maybe) Changing place in the default dock
 					sortDockable(dockable, defaultDock);
@@ -988,7 +988,15 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 {
 	if(m_objectDrawStructs.count(object))	// Can be called before the object is fully created
 	{
-		m_dirtyDrawStructs.insert(m_objectDrawStructs.at(object).get());
+		auto* ods = m_objectDrawStructs.at(object).get();
+		panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object);
+		if (dock)
+		{
+			auto dods = dynamic_cast<DockObjectDrawStruct*>(ods);
+			if (dods)
+				dods->placeDockableObjects();
+		}
+		m_dirtyDrawStructs.insert(ods);
 		update();
 	}
 }

@@ -10,6 +10,8 @@ class DockObjectDrawStruct : public ObjectDrawStruct
 public:
 	DockObjectDrawStruct(GraphView* view, panda::DockObject* m_object);
 
+	void placeDockableObjects();
+
 	void drawShape(QPainter* painter) override;
 	QSize getObjectSize() override;
 	QRectF getTextArea() override;

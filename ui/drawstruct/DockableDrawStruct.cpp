@@ -57,11 +57,47 @@ bool DockObjectDrawStruct::contains(const QPointF& point)
 	return m_shapePath.contains(point);
 }
 
+void DockObjectDrawStruct::placeDockableObjects()
+{
+	m_dockablesY.clear();
+
+	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
+	const int dhm = dockHoleMargin;
+	const int rw = DockableObjectDrawStruct::dockableWithOutputRect;
+	const int aw = DockableObjectDrawStruct::dockableWithOutputArc;
+	const int ah = aw - dockHoleMargin * 2;
+
+	int ty;
+	ty = m_objectArea.top() + ObjectDrawStruct::getObjectSize().height() + dockRendererMargin;
+
+	auto doc = m_parentView->getDocument();
+	auto& undoStack = doc->getUndoStack();
+	bool canMoveObjects = doc->getUndoStack().isInCommandMacro();
+
+	for (auto dockable : m_dockObject->getDockedObjects())
+	{
+		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
+		QSize objectSize = objectStruct->getObjectSize();
+		bool hasOutputs = !dockable->getOutputDatas().empty();
+		QPointF objectNewPos(m_position.x() + dockHoleWidth - objectSize.width(), m_position.y() + ty - m_objectArea.top());
+
+		// If the object has outputs, it is drawn larger but must be placed at the same position
+		if (hasOutputs)
+			objectNewPos.rx() += DockableObjectDrawStruct::dockableWithOutputAdds;
+
+		if (canMoveObjects && objectNewPos != objectStruct->getPosition())
+			undoStack.push(std::make_shared<MoveObjectCommand>(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
+
+		QRectF objectArea = objectStruct->getObjectArea();
+		m_dockablesY.push_back(objectArea.top());
+
+		ty += objectSize.height() + dockRendererMargin;
+	}
+}
+
 void DockObjectDrawStruct::update()
 {
 	ObjectDrawStruct::update();
-
-	m_dockablesY.clear();
 
 	QPainterPath path;
 	path.moveTo(m_objectArea.left(), m_objectArea.bottom());
@@ -83,23 +119,12 @@ void DockObjectDrawStruct::update()
 		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
 		QSize objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
-		QPointF objectNewPos(m_position.x() + dockHoleWidth - objectSize.width(), m_position.y() + ty - m_objectArea.top());
-		
-		// If the object has outputs, it is drawn larger but must be placed at the same position
-		if (hasOutputs)
-			objectNewPos.rx() += DockableObjectDrawStruct::dockableWithOutputAdds;
-
-		auto doc = m_parentView->getDocument();
-		if(doc->getUndoStack().isInCommandMacro())
-			doc->getUndoStack().push(std::make_shared<MoveObjectCommand>(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
-
-		QRectF objectArea = objectStruct->getObjectArea();
-		m_dockablesY.push_back(objectArea.top());
 
 		tx = m_objectArea.left() + dockHoleWidth - DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;
 		int w = DockableObjectDrawStruct::dockableCircleWidth;
 		int h = objectSize.height();
 
+		QRectF objectArea = objectStruct->getObjectArea();
 		path.lineTo(m_objectArea.left(), ty - dockHoleMargin);
 		if (hasOutputs)
 		{
