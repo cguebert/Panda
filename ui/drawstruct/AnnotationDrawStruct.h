@@ -41,10 +41,10 @@ protected:
 	QPointF m_endPos, m_startPos;
 	QSizeF m_textSize;
 	QRectF m_textArea;
-	int m_textCounter, m_fontCounter;
+	int m_textCounter = -1, m_colorCounter = -1;
 	QPainterPath m_shapePath;
 	enum MovingAction { MOVING_NONE=0, MOVING_TEXT, MOVING_POINT };
-	MovingAction m_movingAction;
+	MovingAction m_movingAction = MOVING_NONE;
 	QPointF m_previousMousePos;
 };
 

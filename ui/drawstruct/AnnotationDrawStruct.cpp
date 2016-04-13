@@ -16,9 +16,6 @@ using panda::types::Point;
 AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* object)
 	: ObjectDrawStruct(view, object)
 	, m_annotation(dynamic_cast<Annotation*>(object))
-	, m_textCounter(-1)
-	, m_fontCounter(-1)
-	, m_movingAction(MOVING_NONE)
 {
 	update();
 }
@@ -31,23 +28,20 @@ void AnnotationDrawStruct::drawBackground(QPainter* painter)
 	// Compute the bounding box of the text, if it changed
 	const QString& text = QString::fromStdString(m_annotation->m_text.getValue());
 	int textCounter = m_annotation->m_text.getCounter();
-	int fontCounter = m_annotation->m_font.getCounter();
-	if(m_textSize.isEmpty() || m_textCounter != textCounter || m_fontCounter != fontCounter)
+	int colorCounter = m_annotation->m_color.getCounter();
+	if(m_textSize.isEmpty() || m_textCounter != textCounter || m_colorCounter != colorCounter)
 	{
-		QFont theFont;
-		theFont.fromString(QString::fromStdString(m_annotation->m_font.getValue()));
-		painter->setFont(theFont);
-
 		QRectF tempArea = QRectF(m_startPos, QSizeF(1000, 1000));
 		tempArea = painter->boundingRect(tempArea, Qt::AlignLeft | Qt::AlignTop, text);
 		m_textSize = tempArea.size();
 		m_textCounter = textCounter;
-		m_fontCounter = fontCounter;
+		m_colorCounter = colorCounter;
 		update();
 	}
 
 	// Draw the shape of the annotation
-	painter->setBrush(m_parentView->palette().light());
+	auto color = m_annotation->m_color.getValue().toHex();
+	painter->setBrush(QColor::fromRgba(color));
 	painter->drawPath(m_shapePath);
 
 	painter->restore();
@@ -57,9 +51,6 @@ void AnnotationDrawStruct::drawForeground(QPainter* painter)
 {
 	painter->save();
 	painter->setBrush(Qt::NoBrush);
-	QFont theFont;
-	theFont.fromString(QString::fromStdString(m_annotation->m_font.getValue()));
-	painter->setFont(theFont);
 
 	// Draw the box behind the text
 	painter->save();
