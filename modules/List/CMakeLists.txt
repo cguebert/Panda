@@ -21,6 +21,7 @@ set(SOURCE_FILES
 	ListBuffer.cpp
 	ListItem.cpp
 	ListLoop.cpp
+	ListMinMax.cpp
 	listModule.cpp
 	ListReverse.cpp
 	ListSize.cpp
