@@ -12,7 +12,7 @@ class FlatDataTrait<Rect>
 {
 public:
 	typedef Rect value_type;
-	typedef qreal item_type;
+	typedef float item_type;
 
 	static int size() { return 4; }
 	static QStringList header()

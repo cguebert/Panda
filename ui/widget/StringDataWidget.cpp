@@ -410,6 +410,12 @@ public:
 
 //****************************************************************************//
 
+template<>
+static QString FlatDataTrait<QString>::toString(const value_type& d)
+{ return d; }
+
+//****************************************************************************//
+
 RegisterWidget<SimpleDataWidget<std::string> > DWClass_string("default");
 RegisterWidget<SimpleDataWidget<std::string, FileDataWidgetContainer<true> > > DWClass_file_open("open file");
 RegisterWidget<SimpleDataWidget<std::string, FileDataWidgetContainer<false> > > DWClass_file_save("save file");
@@ -417,4 +423,5 @@ RegisterWidget<SimpleDataWidget<std::string, DirectoryDataWidgetContainer > > DW
 RegisterWidget<SimpleDataWidget<std::string, FontDataWidgetContainer> > DWClass_font("font");
 RegisterWidget<SimpleDataWidget<std::string, MultilineDataWidgetContainer> > DWClass_multiline("multiline");
 
+//RegisterWidget<OpenDialogDataWidget<std::vector<QString>, TableDataWidgetDialog<std::vector<QString> > > > DWClass_strings_list("default");
 RegisterWidget<OpenDialogDataWidget<std::vector<std::string>, ListDataWidgetDialog<std::vector<std::string> > > > DWClass_strings_list_generic("generic");

@@ -39,7 +39,7 @@ public:
 		if (role != Qt::DisplayRole && role != Qt::EditRole)
 			return QVariant();
 
-		return QVariant(item_trait::get(*row_trait::get(m_value, index.row()), index.column()));
+		return QVariant(item_trait::get(row_trait::get(m_value, index.row()), index.column()));
 	}
 
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const
@@ -65,7 +65,7 @@ public:
 		if(role != Qt::EditRole)
 			return false;
 
-		item_trait::set(*row_trait::get(m_value, index.row()), value.value<item_type>(), index.column());
+		item_trait::set(row_trait::get(m_value, index.row()), value.value<item_type>(), index.column());
 		return true;
 	}
 

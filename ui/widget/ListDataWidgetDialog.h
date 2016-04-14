@@ -136,7 +136,7 @@ public:
 		// Update value pointers if they changed
 		int updateNb = qMin(nb, oldSize);
 		for(int i=0; i<updateNb; ++i)
-			dataWidgets[i]->changeValuePointer(row_trait::get(valueCopy, i));
+			dataWidgets[i]->changeValuePointer(&row_trait::get(valueCopy, i));
 
 		if(oldSize == nb)
 			return;
@@ -167,7 +167,7 @@ public:
 			for(int i=oldSize; i<nb; ++i)
 			{
 				QString displayName = parentName + " / " + QString::number(i);
-				row_type* pValue = row_trait::get(valueCopy, i);
+				row_type* pValue = &row_trait::get(valueCopy, i);
 				BaseDataWidget* baseDataWidget = dataWidgetCreator->create(this, pValue, widget, displayName, parameters);
 				ChildDataWidget* dataWidget = dynamic_cast<ChildDataWidget*>(baseDataWidget);
 				if(dataWidget)

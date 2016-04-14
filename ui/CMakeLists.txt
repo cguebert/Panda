@@ -93,7 +93,6 @@ set(SOURCE_FILES
 	graphview/GraphView.cpp
 	graphview/LinkTag.cpp
 	graphview/ObjectsSelection.cpp
-	widget/AnimationDataWidgetDialog.cpp
 	widget/ColorDataWidget.cpp
 	widget/DataWidgetFactory.cpp
 	widget/EditGradientDialog.cpp
@@ -106,7 +105,6 @@ set(SOURCE_FILES
 	widget/RectDataWidget.cpp
 	widget/SourceCodeDataWidget.cpp
 	widget/StringDataWidget.cpp
-	widget/TableDataWidgetDialog.cpp
 )
 
 GroupFiles(HEADER_FILES)

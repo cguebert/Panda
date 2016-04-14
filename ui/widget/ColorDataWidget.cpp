@@ -108,6 +108,12 @@ public:
 
 //****************************************************************************//
 
+template<>
+static QString FlatDataTrait<Color>::toString(const value_type& d)
+{ return QColor::fromRgba(d.toHex()).name(QColor::HexArgb).toUpper(); }
+
+//****************************************************************************//
+
 RegisterWidget<SimpleDataWidget<Color> > DWClass_color("default");
 RegisterWidget<OpenDialogDataWidget<std::vector<Color>, ListDataWidgetDialog<std::vector<Color> > > > DWClass_colors_list_generic("generic");
 RegisterWidget<OpenDialogDataWidget<Animation<Color>, AnimationDataWidgetDialog<Animation<Color> > > > DWClass_colors_animation("default");

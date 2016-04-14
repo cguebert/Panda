@@ -177,7 +177,7 @@ public:
 		// Update value pointers if they changed
 		int updateNb = qMin(nb, oldSize);
 		for(int i=0; i<updateNb; ++i)
-			dataWidgets[i]->changeValuePointer(values_list_trait::get(valuesCopy, i));
+			dataWidgets[i]->changeValuePointer(&values_list_trait::get(valuesCopy, i));
 
 		if(oldSize == nb)
 			return;
@@ -206,7 +206,7 @@ public:
 			for(int i=oldSize; i<nb; ++i)
 			{
 				QString displayName = parentName + " / " + QString::number(i);
-				value_type* pValue = values_list_trait::get(valuesCopy, i);
+				value_type* pValue = &values_list_trait::get(valuesCopy, i);
 				BaseDataWidget* baseDataWidget = dataWidgetCreator->create(this, pValue, widget, displayName, parameters);
 				ChildDataWidget* dataWidget = dynamic_cast<ChildDataWidget*>(baseDataWidget);
 				if(dataWidget)
@@ -250,9 +250,9 @@ public:
 	enum { is_single = 0 };
 	static int size(const animation_type& a) { return a.size(); }
 	static QStringList header(const animation_type&) { return QStringList{}; }
-	static const row_type* get(const animation_type&, int) { return nullptr; }
-	static row_type* get(animation_type&, int) { return nullptr; }
-	static void set(animation_type&, const row_type&, int) { }
+	static const row_type& get(const animation_type& a, int nb) { return a.valueAtIndex(nb); }
+	static row_type& get(animation_type& a, int nb) { return a.valueAtIndex(nb); }
+	static void set(animation_type& a, const row_type& r, int nb) { a.valueAtIndex(nb) = r; }
 	static void resize(animation_type&, int) { }
 };
 

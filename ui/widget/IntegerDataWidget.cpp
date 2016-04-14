@@ -237,23 +237,10 @@ public:
 	enum { is_single = 0 };
 	static int size(const vector_type& v) { return v.values.size(); }
 	static QStringList header(const vector_type&) { return QStringList(); }
-	static const row_type* get(const vector_type& v, int i = 0)
-	{
-		return (i < size(v)) ? &(v.values[i]) : nullptr;
-	}
-	static row_type* get(vector_type& v, int i = 0)
-	{
-		return (i < size(v)) ? &(v.values[i]) : nullptr;
-	}
-	static void set(vector_type& v, const row_type& r, int i = 0)
-	{
-		if (i < size(v))
-			v.values[i] = r;
-	}
-	static void resize(vector_type& v, int s)
-	{
-		v.values.resize(s);
-	}
+	static const row_type& get(const vector_type& v, int i = 0) { return v.values[i]; }
+	static row_type& get(vector_type& v, int i = 0) { return v.values[i]; }
+	static void set(vector_type& v, const row_type& r, int i = 0) { v.values[i] = r; }
+	static void resize(vector_type& v, int s) { v.values.resize(s); }
 };
 
 //****************************************************************************//
@@ -264,6 +251,8 @@ RegisterWidget<SimpleDataWidget<int, SeedDataWidget> > DWClass_seed("seed");
 RegisterWidget<SimpleDataWidget<int, EnumDataWidget> > DWClass_enum("enum");
 RegisterWidget<SimpleDataWidget<int, FlagsDataWidget> > DWClass_flags("flags");
 RegisterWidget<SimpleDataWidget<int, SliderDataWidget<int> > > DWClass_slider_int("slider");
+
+RegisterWidget<OpenDialogDataWidget<std::vector<int>, TableDataWidgetDialog<std::vector<int> > > > DWClass_ints_list("default");
 RegisterWidget<OpenDialogDataWidget<std::vector<int>, ListDataWidgetDialog<std::vector<int> > > > DWClass_ints_list_generic("generic");
 
 RegisterWidget<OpenDialogDataWidget<IntVector, TableDataWidgetDialog<IntVector> > > DWClass_strings_list("default");

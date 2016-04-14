@@ -1,3 +1,4 @@
+#include <ui/widget/AnimationDataWidgetDialog.h>
 #include <ui/widget/DataWidgetFactory.h>
 #include <ui/widget/OpenDialogDataWidget.h>
 #include <ui/widget/ListDataWidgetDialog.h>
@@ -7,6 +8,8 @@
 #include <QtWidgets>
 
 #include <panda/types/FloatVector.h>
+
+using panda::types::Animation;
 using panda::types::FloatVector;
 
 template <>
@@ -59,30 +62,21 @@ public:
 	enum { is_single = 0 };
 	static int size(const vector_type& v) { return v.values.size(); }
 	static QStringList header(const vector_type&) { return QStringList(); }
-	static const row_type* get(const vector_type& v, int i = 0)
-	{
-		return (i < size(v)) ? &(v.values[i]) : nullptr;
-	}
-	static row_type* get(vector_type& v, int i = 0)
-	{
-		return (i < size(v)) ? &(v.values[i]) : nullptr;
-	}
-	static void set(vector_type& v, const row_type& r, int i = 0)
-	{
-		if (i < size(v))
-			v.values[i] = r;
-	}
-	static void resize(vector_type& v, int s)
-	{
-		v.values.resize(s);
-	}
+	static const row_type& get(const vector_type& v, int i = 0) { return v.values[i]; }
+	static row_type& get(vector_type& v, int i = 0) { return v.values[i]; }
+	static void set(vector_type& v, const row_type& r, int i = 0) { v.values[i] = r; }
+	static void resize(vector_type& v, int s) { v.values.resize(s); }
 };
 
 //****************************************************************************//
 
 RegisterWidget<SimpleDataWidget<float> > DWClass_double("default");
 RegisterWidget<SimpleDataWidget<float, SliderDataWidget<float> > > DWClass_slider_double("slider");
+
+RegisterWidget<OpenDialogDataWidget<std::vector<float>, TableDataWidgetDialog<std::vector<float> > > > DWClass_doubles_list("default");
 RegisterWidget<OpenDialogDataWidget<std::vector<float>, ListDataWidgetDialog<std::vector<float> > > > DWClass_doubles_list_generic("generic");
+
+RegisterWidget<OpenDialogDataWidget<Animation<float>, AnimationDataWidgetDialog<Animation<float> > > > DWClass_reals_animation("default");
 
 RegisterWidget<OpenDialogDataWidget<FloatVector, TableDataWidgetDialog<FloatVector> > > DWClass_strings_list("default");
 RegisterWidget<OpenDialogDataWidget<std::vector<FloatVector>, ListDataWidgetDialog<std::vector<FloatVector> > > > DWClass_paths_list_generic("generic");

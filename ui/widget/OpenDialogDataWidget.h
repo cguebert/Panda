@@ -129,20 +129,14 @@ public:
 	QString itemToString(const value_type& v, int index)
 	{
 		using vector_trait = VectorDataTrait<value_type>;
-		const vector_trait::row_type* row = vector_trait::get(v, index);
-		if (row)
-		{
-			typedef FlatDataTrait<vector_trait::row_type> item_trait;
-			return item_trait::toString(*row);
-		}
-
-		return "";
+		using item_trait = FlatDataTrait<typename vector_trait::row_type>;
+		return item_trait::toString(vector_trait::get(v, index));
 	}
 
 	void updatePreview()
 	{
 		const value_type& v = getValue();
-		typedef VectorDataTrait<value_type> vector_trait;
+		using vector_trait = VectorDataTrait<value_type>;
 		if(vector_trait::is_vector)
 		{
 			int size = vector_trait::size(v);
@@ -166,12 +160,8 @@ public:
 		}
 		else
 		{
-			const vector_trait::row_type* row = vector_trait::get(v, 0);
-			if(row)
-			{
-				typedef FlatDataTrait<vector_trait::row_type> item_trait;
-				label->setText(item_trait::toString(*row));
-			}
+			
+			label->setText(itemToString(v, 0));
 		}
 	}
 
