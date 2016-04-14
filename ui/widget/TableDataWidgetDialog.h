@@ -7,67 +7,150 @@
 
 #include <QtWidgets>
 
-class BaseTableDataWidgetDialog : public QDialog
+// Table model for property widgets for lists of values
+template <class T>
+class TablePropertyModel : public QAbstractTableModel
 {
-	Q_OBJECT
 public:
-	BaseTableDataWidgetDialog(QWidget* parent)
-		: QDialog(parent)
-	{}
+	using value_type = T;
+	using row_trait = VectorDataTrait<value_type>;
+	using row_type = typename row_trait::row_type;
+	using item_trait = FlatDataTrait<row_type>;
+	using item_type = typename item_trait::item_type;
 
-signals:
+	TablePropertyModel(QObject* parent, bool readOnly)
+		: QAbstractTableModel(parent), m_readOnly(readOnly) { }
 
-public slots:
-	virtual void resizeValue() {}
+	const value_type& value() const { return m_value; }
+	void setValue(const value_type& value) { beginResetModel(); m_value = value;  endResetModel(); }
+
+	int rowCount() const { return row_trait::size(m_value); }
+	int columnCount() const { return item_trait::size(); }
+	bool isFixed() const { return row_trait::is_single; }
+
+	int rowCount(const QModelIndex&) const override { return rowCount(); }
+	int columnCount(const QModelIndex&) const override { return columnCount(); }
+
+	QVariant data(const QModelIndex& index, int role) const
+	{
+		if (!index.isValid())
+			return QVariant();
+
+		if (role != Qt::DisplayRole && role != Qt::EditRole)
+			return QVariant();
+
+		return QVariant(item_trait::get(*row_trait::get(m_value, index.row()), index.column()));
+	}
+
+	QVariant headerData(int section, Qt::Orientation orientation, int role) const
+	{
+		if(role != Qt::DisplayRole)
+			return QVariant();
+
+		if(orientation == Qt::Vertical)
+			return QString::number(section);
+		else
+		{
+			auto list = item_trait::header();
+			if (list.empty()) return QString();
+			return list[section];
+		}
+	}
+
+	Qt::ItemFlags flags(const QModelIndex& index) const
+	{ return m_readOnly ? 0 : Qt::ItemIsEditable | Qt::ItemIsEnabled; }
+
+	bool setData(const QModelIndex& index, const QVariant& value, int role) override
+	{
+		if(role != Qt::EditRole)
+			return false;
+
+		item_trait::set(*row_trait::get(m_value, index.row()), value.value<item_type>(), index.column());
+		return true;
+	}
+
+	void resizeValue(int nb)
+	{
+		int prevNb = rowCount();
+		if(nb == prevNb)
+			return;
+
+		if (nb > prevNb)
+		{ beginInsertRows(QModelIndex(), prevNb, nb - 1); row_trait::resize(m_value, nb); endInsertRows(); }
+		else
+		{ beginRemoveRows(QModelIndex(), nb, prevNb - 1); row_trait::resize(m_value, nb); endRemoveRows(); }
+	}
+
+protected:
+	bool m_readOnly;
+	value_type m_value;
 };
 
+/*****************************************************************************/
+
 template<class T>
-class TableDataWidgetDialog : public BaseTableDataWidgetDialog
+class TableDataWidgetDialog : public QDialog
 {
 protected:
-	typedef T value_type;
-	typedef panda::Data<value_type> data_type;
-	typedef VectorDataTrait<value_type> row_trait;
-	typedef typename row_trait::row_type row_type;
-	typedef FlatDataTrait<row_type> item_trait;
-	typedef typename item_trait::item_type item_type;
+	using value_type = T;
 
-	bool readOnly;
-	QTableWidget* tableWidget;
-	QWidget* resizeWidget;
-	QSpinBox* resizeSpinBox;
+	bool m_readOnly;
+	QTableView* m_view = nullptr;
+	TablePropertyModel<value_type>* m_model = nullptr;
+	QSpinBox* m_resizeSpinBox = nullptr;
+	QPushButton* m_toggleButton = nullptr;
 
 public:
 	TableDataWidgetDialog(QWidget* parent, bool readOnly, QString name)
-		: BaseTableDataWidgetDialog(parent)
-		, readOnly(readOnly)
-		, tableWidget(nullptr)
-		, resizeWidget(nullptr)
-		, resizeSpinBox(nullptr)
+		: QDialog(parent)
+		, m_readOnly(readOnly)
 	{
+		m_view = new QTableView(parent);
+		m_model = new TablePropertyModel<value_type>(m_view, m_readOnly);
+		m_view->setModel(m_model);
+
 		QVBoxLayout* mainLayout = new QVBoxLayout(this);
 
-		if(!readOnly && row_trait::is_vector)
+		if(m_model->isFixed())
 		{
-			resizeWidget = new QWidget(this);
+			// Hide headers
+			m_view->verticalHeader()->hide();
+			m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+			// Set height
+			auto height = m_view->rowHeight(0) * m_model->rowCount() + m_view->horizontalHeader()->height() + 2;
+			m_view->setMinimumHeight(height);
+			m_view->setMaximumHeight(height);
+		}
+		else if(!m_readOnly)
+		{
+			auto resizeWidget = new QWidget(this);
 			QLabel* resizeLabel = new QLabel(tr("Size"));
-			resizeSpinBox = new QSpinBox();
-			resizeSpinBox->setMinimum(0);
-			resizeSpinBox->setMaximum(65535);
+			m_resizeSpinBox = new QSpinBox();
+			m_resizeSpinBox->setMinimum(0);
+			m_resizeSpinBox->setMaximum(65535);
 			QPushButton* resizeButton = new QPushButton(tr("Resize"));
 			QHBoxLayout* resizeLayout = new QHBoxLayout;
 			resizeLayout->setMargin(0);
 			resizeLayout->addWidget(resizeLabel);
-			resizeLayout->addWidget(resizeSpinBox, 1);
+			resizeLayout->addWidget(m_resizeSpinBox, 1);
 			resizeLayout->addWidget(resizeButton);
 			resizeWidget->setLayout(resizeLayout);
 			mainLayout->addWidget(resizeWidget);
 
-			connect(resizeButton, SIGNAL(clicked()), this, SLOT(resizeValue()));
+			QObject::connect(resizeButton, &QPushButton::clicked, [this]() { resizeValue(); });
 		}
 
-		tableWidget = new QTableWidget(this);
-		mainLayout->addWidget(tableWidget);
+		// Set min width
+		int width = 0;
+		for(int i = 0, nb = m_model->columnCount(); i < nb; ++i)
+			width += m_view->columnWidth(i);
+		m_view->setMinimumWidth(width + 25);
+
+		if(m_model->columnCount() < 2)
+			m_view->horizontalHeader()->hide();
+
+		mainLayout->addWidget(m_view);
 
 		QPushButton* okButton = new QPushButton(tr("Ok"), this);
 		okButton->setDefault(true);
@@ -86,134 +169,23 @@ public:
 		setWindowTitle(name + (readOnly ? tr(" (read-only)") : ""));
 	}
 
-	void updateTable(const value_type& v)
-	{
-		Qt::ItemFlags itemFlags = Qt::ItemIsEnabled;
-		if(!readOnly)
-			itemFlags |= Qt::ItemIsEditable;
-
-		int nbRows = row_trait::size(v);
-		int nbCols = item_trait::size();
-
-		tableWidget->setColumnCount(nbCols);
-		if(nbCols > 1)
-			tableWidget->setHorizontalHeaderLabels(item_trait::header());
-		else
-			tableWidget->horizontalHeader()->hide();
-
-		tableWidget->setRowCount(nbRows);
-
-		for(int i = 0; i<nbRows; ++i)
-		{
-			const row_type* row = row_trait::get(v, i);
-			if(row)
-			{
-				for(int j=0; j<nbCols; ++j)
-				{
-					QString text = QString("%1").arg(item_trait::get(*row, j));
-					QTableWidgetItem *item = new QTableWidgetItem(text);
-					item->setFlags(itemFlags);
-					tableWidget->setItem(i, j, item);
-				}
-			}
-		}
-	}
-
-	value_type readFromTable()
-	{
-		int nbRows = tableWidget->rowCount();
-		int nbCols = item_trait::size();
-
-		value_type v;
-		row_trait::resize(v, nbRows);
-
-		for(int i = 0; i<nbRows; ++i)
-		{
-			const row_type* row = row_trait::get(v, i);
-			if(row)
-			{
-				row_type rowVal = *row;
-				for(int j=0; j<nbCols; ++j)
-				{
-					QTableWidgetItem *item = tableWidget->item(i, j);
-					if(item)
-					{
-						QString text = item->text();
-						QTextStream stream(&text);
-						item_type val;
-						stream >> val;
-						item_trait::set(rowVal, val, j);
-					}
-				}
-
-				row_trait::set(v, rowVal, i);
-			}
-		}
-
-		return v;
-	}
-
 	virtual void readFromData(const value_type& v)
 	{
-		updateTable(v);
+		m_model->setValue(v);
 
-		// Resize the view
-		int w = tableWidget->verticalHeader()->width() + 20;
-		for(int i=0, nb=tableWidget->columnCount(); i<nb; ++i)
-			w += tableWidget->columnWidth(i);
-
-		if(row_trait::is_single)
-		{
-			tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-			tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-			int h = tableWidget->horizontalHeader()->height() + 4 + tableWidget->rowHeight(0);
-			tableWidget->setMinimumSize(w, h);
-			tableWidget->setMaximumSize(w, h);
-			layout()->setSizeConstraint(QLayout::SetFixedSize);
-		}
-		else
-		{
-			tableWidget->setMinimumWidth(w);
-		}
-
-		if(resizeSpinBox)
-			resizeSpinBox->setValue(tableWidget->rowCount());
+		if(m_resizeSpinBox)
+			m_resizeSpinBox->setValue(m_model->rowCount());
 	}
 
 	virtual void writeToData(value_type& v)
 	{
-		v = readFromTable();
+		v = m_model->value();
 	}
 
-	virtual void resizeValue()
+	void resizeValue()
 	{
-		int oldSize = tableWidget->rowCount();
-		int size = resizeSpinBox->value();
-		int nbCols = tableWidget->columnCount();
-
-		tableWidget->setRowCount(size);
-
-		if(oldSize < size)
-		{
-			item_trait::item_type val = item_trait::item_type();
-			QString text;
-			QTextStream stream(&text, QIODevice::WriteOnly);
-			stream << val;
-
-			Qt::ItemFlags itemFlags = Qt::ItemIsEnabled;
-			if(!readOnly)
-				itemFlags |= Qt::ItemIsEditable;
-
-			for(int i=oldSize; i<size; ++i)
-			{
-				for(int j=0; j<nbCols; ++j)
-				{
-					QTableWidgetItem *item = new QTableWidgetItem(text);
-					item->setFlags(itemFlags);
-					tableWidget->setItem(i, j, item);
-				}
-			}
-		}
+		int nb = m_resizeSpinBox->value();
+		m_model->resizeValue(nb);
 	}
 };
 
