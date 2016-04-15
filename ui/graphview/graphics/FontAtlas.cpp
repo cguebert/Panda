@@ -128,7 +128,7 @@ void FontAtlas::getTexDataAsRGBA32(unsigned char** out_pixels, int* out_width, i
 
 Font* FontAtlas::addFont(const FontConfig& font_cfg)
 {
-    assert(!font_cfg.FontData.empty() && font_cfg.FontDataSize > 0);
+    assert(!font_cfg.FontData.empty());
     assert(font_cfg.SizePixels > 0.0f);
 
     // Create new font
@@ -208,7 +208,7 @@ Font* FontAtlas::addFontFromMemoryCompressedTTF(const MemBuffer& compressed_ttf,
 	stb_decompress(buf_decompressed.data(), (unsigned char*)compressed_ttf.data(), compressed_ttf.size());
 
     FontConfig font_cfg = font_cfg_template;
-    assert(font_cfg.FontData == NULL);
+    assert(font_cfg.FontData.empty());
     font_cfg.FontDataOwnedByAtlas = true;
     return addFontFromMemoryTTF(buf_decompressed, size_pixels, font_cfg, glyph_ranges);
 }
@@ -231,14 +231,14 @@ bool FontAtlas::build()
 	m_texUvWhitePixel = { 0, 0 };
     clearTexData();
 
-    struct ImFontTempBuildData
+    struct FontTempBuildData
     {
         stbtt_fontinfo      FontInfo;
         stbrp_rect*         Rects;
         stbtt_pack_range*   Ranges;
         int                 RangesCount;
     };
-    ImFontTempBuildData* tmp_array = (ImFontTempBuildData*)malloc((size_t)m_configData.size() * sizeof(ImFontTempBuildData));
+    FontTempBuildData* tmp_array = (FontTempBuildData*)malloc((size_t)m_configData.size() * sizeof(FontTempBuildData));
 
     // Initialize font information early (so we can error without any cleanup) + count glyphs
     int total_glyph_count = 0;
@@ -246,9 +246,9 @@ bool FontAtlas::build()
     for (size_t input_i = 0; input_i < m_configData.size(); ++input_i)
     {
         FontConfig& cfg = m_configData[input_i];
-        ImFontTempBuildData& tmp = tmp_array[input_i];
+        FontTempBuildData& tmp = tmp_array[input_i];
 
-        assert(cfg.DstFont && (!cfg.DstFont->IsLoaded() || cfg.DstFont->ContainerAtlas == this));
+        assert(cfg.DstFont && (!cfg.DstFont->isLoaded() || cfg.DstFont->m_containerAtlas == this));
         const int font_offset = stbtt_GetFontOffsetForIndex(cfg.FontData.data(), cfg.FontNo);
         assert(font_offset >= 0);
         if (!stbtt_InitFont(&tmp.FontInfo, cfg.FontData.data(), font_offset))
@@ -294,7 +294,7 @@ bool FontAtlas::build()
     for (size_t input_i = 0; input_i < m_configData.size(); input_i++)
     {
         FontConfig& cfg = m_configData[input_i];
-        ImFontTempBuildData& tmp = tmp_array[input_i];
+        FontTempBuildData& tmp = tmp_array[input_i];
 
         // Setup ranges
         int glyph_count = 0;
@@ -342,7 +342,7 @@ bool FontAtlas::build()
     for (size_t input_i = 0; input_i < m_configData.size(); input_i++)
     {
         FontConfig& cfg = m_configData[input_i];
-        ImFontTempBuildData& tmp = tmp_array[input_i];
+        FontTempBuildData& tmp = tmp_array[input_i];
         stbtt_PackSetOversampling(&spc, cfg.OversampleH, cfg.OversampleV);
         stbtt_PackFontRangesRenderIntoRects(&spc, &tmp.FontInfo, tmp.Ranges, tmp.RangesCount, tmp.Rects);
         tmp.Rects = NULL;
@@ -357,7 +357,7 @@ bool FontAtlas::build()
     for (size_t input_i = 0; input_i < m_configData.size(); input_i++)
     {
         FontConfig& cfg = m_configData[input_i];
-        ImFontTempBuildData& tmp = tmp_array[input_i];
+        FontTempBuildData& tmp = tmp_array[input_i];
         Font* dst_font = cfg.DstFont;
 
         float font_scale = stbtt_ScaleForPixelHeight(&tmp.FontInfo, cfg.SizePixels);

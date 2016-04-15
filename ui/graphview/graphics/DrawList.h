@@ -1,15 +1,17 @@
 #pragma once
 
-#include <panda/types/Point.h>
+#include <panda/types/Rect.h>
 
 #include <vector>
 
 class QColor;
+class Font;
 
 struct DrawCmd
 {
-	int elemCount = 0;
-	unsigned int textureId = 0;
+	int elemCount = 0; // Number of indices (multiple of 3) to be rendered as triangles.
+	unsigned int textureId = 0; // User-provided texture ID
+	panda::types::Rect clipRect; // Clipping rectangle (x1, y1, x2, y2)
 };
 
 using DrawIdx = unsigned int;
@@ -35,16 +37,17 @@ public:
 	void addLine(const panda::types::Point& a, const panda::types::Point& b, unsigned int col, float thickness = 1.0f);
 	void addRect(const panda::types::Point& a, const panda::types::Point& b, unsigned int col, float rounding = 0.0f, int rounding_corners = 0x0F);        // a: upper-left, b: lower-right
 	void addRectFilled(const panda::types::Point& a, const panda::types::Point& b, unsigned int col, float rounding = 0.0f, int rounding_corners = 0x0F);  // a: upper-left, b: lower-right
-//	void addRectFilledMultiColor(const panda::types::Point& a, const panda::types::Point& b, unsigned int col_upr_left, unsigned int col_upr_right, unsigned int col_bot_right, unsigned int col_bot_left);
-//	void addTriangleFilled(const panda::types::Point& a, const panda::types::Point& b, const panda::types::Point& c, unsigned int col);
-//	void addCircle(const panda::types::Point& centre, float radius, unsigned int col, int num_segments = 12);
-//	void addCircleFilled(const panda::types::Point& centre, float radius, unsigned int col, int num_segments = 12);
-//	void addText(const panda::types::Point& pos, unsigned int col, const char* text_begin, const char* text_end = NULL);
-//	void addText(const ImFont* font, float font_size, const panda::types::Point& pos, unsigned int col, const char* text_begin, const char* text_end = NULL, float wrap_width = 0.0f, const ImVec4* cpu_fine_clip_rect = NULL);
-//	void addImage(unsigned int texture_id, const panda::types::Point& a, const panda::types::Point& b, const panda::types::Point& uv0 = panda::types::Point(0,0), const panda::types::Point& uv1 = panda::types::Point(1,1), unsigned int col = 0xFFFFFFFF);
+	void addRectFilledMultiColor(const panda::types::Point& a, const panda::types::Point& b, unsigned int col_upr_left, unsigned int col_upr_right, unsigned int col_bot_right, unsigned int col_bot_left);
+	void addTriangle(const panda::types::Point& a, const panda::types::Point& b, const panda::types::Point& c, unsigned int col, float thickness);
+	void addTriangleFilled(const panda::types::Point& a, const panda::types::Point& b, const panda::types::Point& c, unsigned int col);
+	void addCircle(const panda::types::Point& centre, float radius, unsigned int col, int num_segments = 12, float thickness = 1.0f);
+	void addCircleFilled(const panda::types::Point& centre, float radius, unsigned int col, int num_segments = 12);
+	void addBezierCurve(const panda::types::Point& pos0, const panda::types::Point& cp0, const panda::types::Point& cp1, const panda::types::Point& pos1, unsigned int col, float thickness, int num_segments = 0);
+	void addText(const panda::types::Point& pos, unsigned int col, const char* text_begin, const char* text_end = NULL);
+	void addText(const Font& font, float font_scale, const panda::types::Point& pos, unsigned int col, const char* text_begin, const char* text_end = NULL, float wrap_width = 0.0f, const panda::types::Rect* cpu_fine_clip_rect = NULL);
+	void addImage(unsigned int texture_id, const panda::types::Point& a, const panda::types::Point& b, const panda::types::Point& uv0 = panda::types::Point(0,0), const panda::types::Point& uv1 = panda::types::Point(1,1), unsigned int col = 0xFFFFFFFF);
 	void addPolyline(const std::vector<panda::types::Point>& points, unsigned int col, bool closed, float thickness, bool anti_aliased);
 	void addConvexPolyFilled(const std::vector<panda::types::Point>& points, unsigned int col, bool anti_aliased);
-//	void addBezierCurve(const panda::types::Point& pos0, const panda::types::Point& cp0, const panda::types::Point& cp1, const panda::types::Point& pos1, unsigned int col, float thickness, int num_segments = 0);
 
 	// Stateful path API, add points then finish with PathFill() or PathStroke()
 	inline void pathClear() { m_path.clear(); }
@@ -72,8 +75,15 @@ public:
 private:  
 	void primReserve(int idx_count, int vtx_count);
 	void primRect(const panda::types::Point& a, const panda::types::Point& b, unsigned int col);      // Axis aligned rectangle (composed of two triangles)
+	void primRectUV(const panda::types::Point& a, const panda::types::Point& b, const panda::types::Point& uv_a, const panda::types::Point& uv_b, unsigned int col);
+	inline void primVtx(const panda::types::Point& pos, const panda::types::Point& uv, unsigned int col)
+	{ primWriteIdx(m_vtxCurrentIdx); primWriteVtx(pos, uv, col); }
+    inline void primWriteVtx(const panda::types::Point& pos, const panda::types::Point& uv, unsigned int col)
+	{ m_vtxWritePtr->pos = pos; m_vtxWritePtr->uv = uv; m_vtxWritePtr->col = col; m_vtxWritePtr++; m_vtxCurrentIdx++; }
+    inline void primWriteIdx(DrawIdx idx) { *m_idxWritePtr = idx; m_idxWritePtr++; }
 
 	void updateTextureID();
+	void updateClipRect();
 	
 	std::vector<DrawCmd> m_cmdBuffer; // Commands. Typically 1 command = 1 gpu draw call.
 	std::vector<DrawIdx> m_idxBuffer; // Index buffer. Each command consume DrawCmd::ElemCount of those
@@ -84,4 +94,5 @@ private:
 	DrawIdx* m_idxWritePtr = nullptr; // Index within m_idxBuffer after each add command (to avoid using the vector operators too much)
 	std::vector<unsigned int> m_textureIdStack;
 	std::vector<panda::types::Point> m_path;
+	std::vector<panda::types::Rect> m_clipRectStack;
 };

@@ -1,5 +1,6 @@
 #include <ui/graphview/ViewRenderer.h>
 #include <ui/graphview/graphics/DrawList.h>
+#include <ui/graphview/graphics/FontAtlas.h>
 
 #include <QOpenGLBuffer>
 #include <QOpenGLContext>
@@ -11,6 +12,7 @@
 #include <cassert>
 
 using panda::types::Point;
+using panda::types::Rect;
 
 static ViewRenderer* g_viewRenderer = nullptr;
 
@@ -61,6 +63,7 @@ namespace
 }
 
 ViewRenderer::ViewRenderer()
+	: m_atlas(std::make_unique<FontAtlas>())
 {
 	g_viewRenderer = this;
 	for(int i = 0; i < 4; ++i)
@@ -76,10 +79,12 @@ void ViewRenderer::initialize()
 {
 	QOpenGLFunctions* f = QOpenGLContext::currentContext()->functions();
 
-	// For now, empty texture (white)
-	std::vector<unsigned char> pixels(4, 0xFF);
-	QImage img(pixels.data(), 1, 1, QImage::Format::Format_ARGB32);
+	unsigned char* pixels;
+	int width, height;
+	m_atlas->getTexDataAsRGBA32(&pixels, &width, &height);
+	QImage img(pixels, width, height, QImage::Format::Format_ARGB32);
 	m_fontTexture = std::make_unique<QOpenGLTexture>(img);
+	m_atlas->setTexID(m_fontTexture->textureId());
 
 	const GLchar* vertex_shader =
 		"#version 330\n"
@@ -148,12 +153,9 @@ void ViewRenderer::resize(int w, int h)
 	m_height = h;
 }
 
-void ViewRenderer::setView(float left, float top, float right, float bottom)
+void ViewRenderer::setView(const panda::types::Rect& bounds)
 {
-	m_viewBounds[0] = left;
-	m_viewBounds[1] = top;
-	m_viewBounds[2] = right;
-	m_viewBounds[3] = bottom;
+	m_viewBounds = bounds;
 }
 
 void ViewRenderer::newFrame()
@@ -226,4 +228,18 @@ unsigned int ViewRenderer::defaultTextureId()
 	if (g_viewRenderer && g_viewRenderer->m_fontTexture)
 		return g_viewRenderer->m_fontTexture->textureId();
 	return 0;
+}
+
+Rect ViewRenderer::defaultClipRect()
+{
+	if (g_viewRenderer && g_viewRenderer->m_fontTexture)
+		return g_viewRenderer->m_viewBounds;
+	return Rect(-8192.f, -8192.f, 8192.f, 8192.f);
+}
+
+Font* ViewRenderer::defaultFont()
+{
+	if (g_viewRenderer && g_viewRenderer->m_fontTexture && !g_viewRenderer->m_atlas->fonts().empty())
+		return g_viewRenderer->m_atlas->fonts().front();
+	return nullptr;
 }

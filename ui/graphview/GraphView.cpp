@@ -212,7 +212,7 @@ void GraphView::paintGL()
 		m_recomputeTags = false;
 	}
 
-	m_viewRenderer->setView(0, 0, width() / m_zoomFactor, height() / m_zoomFactor);
+	m_viewRenderer->setView({ 0, 0, width() / static_cast<float>(m_zoomFactor), height() / static_cast<float>(m_zoomFactor) });
 	m_viewRenderer->newFrame();
 	DrawList drawList;
 

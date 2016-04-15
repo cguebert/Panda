@@ -463,7 +463,7 @@ pPoint Font::calcTextSizeA(float size, float max_width, float wrap_width, const 
     return text_size;
 }
 
-void Font::renderText(float size, pPoint pos, unsigned int col, const pRect& clip_rect,
+void Font::renderText(float scale, pPoint pos, unsigned int col, const pRect& clip_rect,
 					  const char* text_begin, const char* text_end, DrawList* draw_list,
 					  float wrap_width, bool cpu_fine_clip) const
 {
@@ -478,7 +478,6 @@ void Font::renderText(float size, pPoint pos, unsigned int col, const pRect& cli
     if (y > clip_rect.bottom())
         return;
 
-    const float scale = size / m_fontSize;
     const float line_height = m_fontSize * scale;
     const bool word_wrap_enabled = (wrap_width > 0.0f);
     const char* word_wrap_eol = NULL;
