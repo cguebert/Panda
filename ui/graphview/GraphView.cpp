@@ -12,6 +12,7 @@
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/ViewRenderer.h>
+#include <ui/graphview/graphics/DrawList.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/helper/algorithm.h>

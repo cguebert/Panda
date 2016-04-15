@@ -45,6 +45,7 @@ set(HEADER_FILES
 	graphview/LinkTag.h
 	graphview/ObjectsSelection.h
 	graphview/ViewRenderer.h
+	graphview/graphics/DrawList.h
 	widget/AnimationDataWidgetDialog.h
 	widget/DataWidget.h
 	widget/DataWidgetFactory.h
@@ -95,6 +96,7 @@ set(SOURCE_FILES
 	graphview/LinkTag.cpp
 	graphview/ObjectsSelection.cpp
 	graphview/ViewRenderer.cpp
+	graphview/graphics/DrawList.cpp
 	widget/ColorDataWidget.cpp
 	widget/DataWidgetFactory.cpp
 	widget/EditGradientDialog.cpp
