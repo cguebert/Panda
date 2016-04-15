@@ -19,6 +19,7 @@ set(SOURCE_FILES
 	IndicesOperations.cpp
 	InterleaveSequence.cpp
 	ListBuffer.cpp
+	ListEqual.cpp
 	ListItem.cpp
 	ListLoop.cpp
 	ListMinMax.cpp
