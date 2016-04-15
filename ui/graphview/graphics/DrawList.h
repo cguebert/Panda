@@ -4,6 +4,8 @@
 
 #include <vector>
 
+class QColor;
+
 struct DrawCmd
 {
 	int elemCount = 0;
@@ -22,6 +24,8 @@ class DrawList
 {
 public:
 	DrawList();
+
+	static unsigned int convert(const QColor& col);
 
 	void addDrawCmd(); // This is useful if you need to forcefully create a new draw call (to allow for dependent rendering / blending). Otherwise primitives are merged into the same draw-call as much as possible
 	void pushTextureID(unsigned int texture_id);

@@ -262,27 +262,18 @@ void GraphView::paintGL()
 	// Selection rubber band
 	if (m_movingAction == MOVING_SELECTION)
 	{
-		QRectF selectionRect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor);
-	/*	QPen pen(palette().text().color());
-		pen.setStyle(Qt::DashDotLine);
-		painter.setPen(pen);
-		painter.setBrush(Qt::NoBrush);
-		painter.drawRect(selectionRect);
-		*/
-		auto highlight = palette().highlightedText().color();
+		QRectF r = QRectF(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).normalized();
+		auto highlight = palette().highlight().color();
 		highlight.setAlpha(64);
-		drawList.addRectFilled(convert(selectionRect.topLeft()), convert(selectionRect.bottomRight()), 0x30ff0000);
-		drawList.addRect(convert(selectionRect.topLeft()), convert(selectionRect.bottomRight()),
-			palette().text().color().rgb());
+		drawList.addRectFilled(convert(r.topLeft()), convert(r.bottomRight()), DrawList::convert(highlight));
+		drawList.addRect(convert(r.topLeft()), convert(r.bottomRight()), DrawList::convert(palette().text().color()));
 	}
 
 	// Link in creation
 	if (m_movingAction == MOVING_LINK)
 	{
-		QPen pen(palette().text().color());
-		pen.setStyle(Qt::DotLine);
-		painter.setPen(pen);
-		painter.drawLine(m_previousMousePos, m_currentMousePos);
+		drawList.addLine(convert(m_previousMousePos), convert(m_currentMousePos),
+						 DrawList::convert(palette().text().color()), 1.5);
 	}
 
 	if (m_debugDirtyState)

@@ -1,10 +1,22 @@
 #include <ui/graphview/graphics/DrawList.h>
 #include <ui/graphview/ViewRenderer.h>
 
+#include <QColor>
+
 #include <algorithm>
 #include <cassert>
 
 using panda::types::Point;
+
+unsigned int DrawList::convert(const QColor& col)
+{
+	unsigned int out;
+	out = col.red() & 0xFF;
+	out |= (col.green() & 0xFF) << 8;
+	out |= (col.blue() & 0xFF) << 16;
+	out |= (col.alpha() & 0xFF) << 24;
+    return out;
+}
 
 DrawList::DrawList()
 {
