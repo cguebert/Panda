@@ -61,7 +61,15 @@ public:
 	inline const std::vector<DrawIdx>& idxBuffer() const { return m_idxBuffer; }
 	inline const std::vector<DrawVert>& vtxBuffer() const { return m_vtxBuffer; }
 
-private:
+	inline DrawIdx vtxCurrentIdx() const { return m_vtxCurrentIdx; }
+	inline DrawVert* vtxWritePtr() const { return m_vtxWritePtr; }
+	inline DrawIdx* idxWritePtr() const { return m_idxWritePtr; } 
+
+	inline void setVtxCurrentIdx(DrawIdx idx) { m_vtxCurrentIdx = idx; }
+	inline void setVtxWritePtr(DrawVert* ptr) { m_vtxWritePtr = ptr; }
+	inline void setIdxWritePtr(DrawIdx* ptr) { m_idxWritePtr = ptr; }
+
+private:  
 	void primReserve(int idx_count, int vtx_count);
 	void primRect(const panda::types::Point& a, const panda::types::Point& b, unsigned int col);      // Axis aligned rectangle (composed of two triangles)
 
