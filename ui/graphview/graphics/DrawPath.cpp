@@ -8,29 +8,23 @@ using panda::types::Point;
 namespace
 {
 
-	static void pathBezierToCasteljau(std::vector<Point>& path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)
+	static void pathBezierToCasteljau(std::vector<Point>& path, Point p1, Point p2, Point p3, Point p4, float tess_tol, int level)
 	{
-		float dx = x4 - x1;
-		float dy = y4 - y1;
-		float d2 = ((x2 - x4) * dy - (y2 - y4) * dx); 
-		float d3 = ((x3 - x4) * dy - (y3 - y4) * dx); 
-		d2 = (d2 >= 0) ? d2 : -d2;
-		d3 = (d3 >= 0) ? d3 : -d3;
-		if ((d2+d3) * (d2+d3) < tess_tol * (dx*dx + dy*dy)) 
+		auto p14 = p4 - p1, p42 = p2 - p4, p43 = p3 - p4;
+		float d2 = fabs(p42.cross(p14));
+		float d3 = fabs(p43.cross(p14));
+		if ((d2+d3) * (d2+d3) < tess_tol * p14.norm2()) 
 		{
-			path.push_back(Point(x4, y4));
+			path.push_back(p4);
 		}
 		else if (level < 10)
 		{
-			float x12 = (x1+x2)*0.5f,       y12 = (y1+y2)*0.5f;
-			float x23 = (x2+x3)*0.5f,       y23 = (y2+y3)*0.5f;
-			float x34 = (x3+x4)*0.5f,       y34 = (y3+y4)*0.5f;
-			float x123 = (x12+x23)*0.5f,    y123 = (y12+y23)*0.5f;
-			float x234 = (x23+x34)*0.5f,    y234 = (y23+y34)*0.5f;
-			float x1234 = (x123+x234)*0.5f, y1234 = (y123+y234)*0.5f;
+			auto p12 = (p1 + p2)*0.5f, p23 = (p2 + p3)*0.5f, p34 = (p3 + p4)*0.5f;
+			auto p123 = (p12 + p23)*0.5f, p234 = (p23 + p34)*0.5f;
+			auto p1234 = (p123 + p234)*0.5f;
 
-			pathBezierToCasteljau(path, x1,y1,        x12,y12,    x123,y123,  x1234,y1234, tess_tol, level+1); 
-			pathBezierToCasteljau(path, x1234,y1234,  x234,y234,  x34,y34,    x4,y4,       tess_tol, level+1); 
+			pathBezierToCasteljau(path, p1, p12,p123, p1234, tess_tol, level+1); 
+			pathBezierToCasteljau(path, p1234, p234, p34, p4, tess_tol, level+1); 
 		}
 	}
 
@@ -88,7 +82,7 @@ void DrawPath::bezierCurveTo(const Point& p2, const Point& p3, const Point& p4, 
 	{
 		// Auto-tessellated
 		const float curveTessellationTol = 1.25f;
-		pathBezierToCasteljau(m_points, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y, curveTessellationTol, 0);
+		pathBezierToCasteljau(m_points, p1, p2, p3, p4, curveTessellationTol, 0);
 	}
 	else
 	{
@@ -97,11 +91,7 @@ void DrawPath::bezierCurveTo(const Point& p2, const Point& p3, const Point& p4, 
 		{
 			float t = t_step * i_step;
 			float u = 1.0f - t;
-			float w1 = u*u*u;
-			float w2 = 3*u*u*t;
-			float w3 = 3*u*t*t;
-			float w4 = t*t*t;
-			m_points.push_back(Point(w1*p1.x + w2*p2.x + w3*p3.x + w4*p4.x, w1*p1.y + w2*p2.y + w3*p3.y + w4*p4.y));
+			m_points.push_back(u*u*u*p1 + 3*u*u*t*p2 + 3*u*t*t*p3 + t*t*t*p4);
 		}
 	}
 }
