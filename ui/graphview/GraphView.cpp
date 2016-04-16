@@ -26,6 +26,8 @@
 #include <ui/dialog/UpdateLoggerDialog.h>
 #endif
 
+using pPoint = panda::types::Point;
+
 namespace
 {
 	bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2)
@@ -193,6 +195,9 @@ void GraphView::moveView(const QPointF& delta)
 void GraphView::initializeGL()
 {
 	m_viewRenderer->initialize();
+	m_linksDrawList = DrawList();
+	m_connectedDrawList = DrawList();
+	m_selectedObjectsDrawList = DrawList();
 }
 
 void GraphView::resizeGL(int w, int h)
@@ -236,7 +241,7 @@ void GraphView::paintGL()
 		ods->drawBackground(&painter);
 
 	// Draw links
-	drawLinks(painter);
+	drawLinks();
 
 	// Draw the objects
 	for (auto& ods : m_orderedObjectDrawStructs)
@@ -256,8 +261,7 @@ void GraphView::paintGL()
 		tag.second->draw(&painter);
 
 	// Highlight connected Datas
-	if (m_highlightConnectedDatas)
-		drawConnectedDatas(painter, m_hoverData);
+	drawConnectedDatas(m_hoverData);
 
 	// Selection rubber band
 	if (m_movingAction == MOVING_SELECTION)
@@ -290,6 +294,8 @@ void GraphView::paintGL()
 	painter.end();
 
 	m_viewRenderer->addDrawList(&drawList);
+	m_viewRenderer->addDrawList(&m_linksDrawList);
+	m_viewRenderer->addDrawList(&m_connectedDrawList);
 	m_viewRenderer->render();
 }
 
@@ -1169,10 +1175,11 @@ void GraphView::hoverDataInfo()
 	}
 }
 
-void GraphView::drawLinks(QPainter& painter)
+void GraphView::drawLinks()
 {
-	painter.setPen(QPen(palette().text().color(), 1));
-	painter.setBrush(Qt::NoBrush);
+	m_linksDrawList.clear();
+
+	auto col = DrawList::convert(palette().text().color());
 
 	for(const auto ods : m_orderedObjectDrawStructs)
 	{
@@ -1187,20 +1194,21 @@ void GraphView::drawLinks(QPainter& painter)
 				if (ods && ods->getDataRect(parent, fromDataRect) 
 					&& !hasLinkTag(parent, data)) // We don't draw the link if there is a LinkTag
 				{
-					QPointF d1 = fromDataRect.center(), d2 = toDataRect.first.center();
-					double w = (d2.x() - d1.x()) / 2;
-					QPainterPath path;
-					path.moveTo(d1);
-					path.cubicTo(d1 + QPointF(w, 0), d2 - QPointF(w, 0), d2);
-					painter.drawPath(path);
+					auto d1 = convert(fromDataRect.center()), d2 = convert(toDataRect.first.center());
+					pPoint w = { (d2.x - d1.x) / 2, 0 };
+					m_linksDrawList.addBezierCurve(d1, d1 + w, d2 - w, d2, col, 1);
 				}
 			}
 		}
 	}
 }
 
-void GraphView::drawConnectedDatas(QPainter& painter, panda::BaseData* sourceData)
+void GraphView::drawConnectedDatas(panda::BaseData* sourceData)
 {
+	m_connectedDrawList.clear();
+	if (!m_highlightConnectedDatas)
+		return;
+
 	std::vector<QRectF> highlightRects;
 	std::vector< std::pair<QPointF, QPointF> > highlightLinks;
 
@@ -1256,20 +1264,21 @@ void GraphView::drawConnectedDatas(QPainter& painter, panda::BaseData* sourceDat
 		return;
 
 	// Now draw everything
-	painter.setBrush(palette().highlight().color());
-	painter.setPen(palette().text().color());
-	for(const auto& rect : highlightRects)
-		painter.drawRect(rect);
+	auto highlightCol = DrawList::convert(palette().highlight().color());
+	auto penCol = DrawList::convert(palette().text().color());
 
-	painter.setPen(QPen(palette().highlight(), 3));
-	painter.setBrush(Qt::NoBrush);
+	for (const auto& rect : highlightRects)
+	{
+		auto tl = convert(rect.topLeft()), br = convert(rect.bottomRight());
+		m_connectedDrawList.addRectFilled(tl, br, highlightCol);
+		m_connectedDrawList.addRect(tl, br, penCol, 1.f);
+	}
+
 	for(const auto& link : highlightLinks)
 	{
 		double w = (link.second.x() - link.first.x()) / 2;
-		QPainterPath path;
-		path.moveTo(link.first);
-		path.cubicTo(link.first + QPointF(w, 0), link.second - QPointF(w, 0), link.second);
-		painter.drawPath(path);
+		auto p1 = convert(link.first), p2 = convert(link.second), d = pPoint(w, 0);
+		m_connectedDrawList.addBezierCurve(p1, p1 + d, p2 - d, p2, highlightCol, 3);
 	}
 }
 

@@ -111,8 +111,8 @@ protected:
 	void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
 	bool hasLinkTag(panda::BaseData* input, panda::BaseData* output);
 
-	void drawLinks(QPainter& painter);
-	void drawConnectedDatas(QPainter& painter, panda::BaseData* sourceData);
+	void drawLinks();
+	void drawConnectedDatas(panda::BaseData* sourceData);
 
 	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
 	void computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, QPointF position);
@@ -206,6 +206,7 @@ private:
 	std::set<ObjectDrawStruct*> m_dirtyDrawStructsSet; /// To ensure we do not update multiple times the same object
 
 	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
+	DrawList m_linksDrawList, m_connectedDrawList, m_selectedObjectsDrawList;
 };
 
 //****************************************************************************//

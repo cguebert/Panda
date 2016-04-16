@@ -17,13 +17,28 @@ unsigned int DrawList::convert(const QColor& col)
 	out |= (col.green() & 0xFF) << 8;
 	out |= (col.blue() & 0xFF) << 16;
 	out |= (col.alpha() & 0xFF) << 24;
-    return out;
+	return out;
 }
 
 DrawList::DrawList()
 {
-	m_textureIdStack.push_back(ViewRenderer::defaultTextureId());
-	m_clipRectStack.push_back(ViewRenderer::defaultClipRect());
+	if (ViewRenderer::initialized())
+	{
+		m_textureIdStack.push_back(ViewRenderer::defaultTextureId());
+		m_clipRectStack.push_back(ViewRenderer::defaultClipRect());
+	}
+	addDrawCmd();
+}
+
+void DrawList::clear()
+{
+	m_cmdBuffer.clear();
+	m_vtxBuffer.clear();
+	m_idxBuffer.clear();
+	m_vtxCurrentIdx = 0;
+	m_vtxWritePtr = nullptr;
+	m_idxWritePtr = nullptr;
+
 	addDrawCmd();
 }
 
@@ -38,21 +53,21 @@ void DrawList::addDrawCmd()
 
 void DrawList::updateClipRect()
 {
-    // If current command is used with different settings we need to add a new command
-    const Rect curr_clip_rect = m_clipRectStack.empty() ? ViewRenderer::defaultClipRect() : m_clipRectStack.back();
-    DrawCmd* curr_cmd = m_cmdBuffer.empty() ? nullptr : &m_cmdBuffer.back();
-    if (!curr_cmd || (curr_cmd->elemCount != 0 && curr_cmd->clipRect != curr_clip_rect))
-    {
-        addDrawCmd();
-        return;
-    }
+	// If current command is used with different settings we need to add a new command
+	const Rect curr_clip_rect = m_clipRectStack.empty() ? ViewRenderer::defaultClipRect() : m_clipRectStack.back();
+	DrawCmd* curr_cmd = m_cmdBuffer.empty() ? nullptr : &m_cmdBuffer.back();
+	if (!curr_cmd || (curr_cmd->elemCount != 0 && curr_cmd->clipRect != curr_clip_rect))
+	{
+		addDrawCmd();
+		return;
+	}
 
-    // Try to merge with previous command if it matches, else use current command
-    DrawCmd* prev_cmd = m_cmdBuffer.size() > 1 ? curr_cmd - 1 : nullptr;
-    if (prev_cmd && curr_cmd->clipRect == curr_clip_rect)
-        m_cmdBuffer.pop_back();
-    else
-        curr_cmd->clipRect = curr_clip_rect;
+	// Try to merge with previous command if it matches, else use current command
+	DrawCmd* prev_cmd = m_cmdBuffer.size() > 1 ? curr_cmd - 1 : nullptr;
+	if (prev_cmd && curr_cmd->clipRect == curr_clip_rect)
+		m_cmdBuffer.pop_back();
+	else
+		curr_cmd->clipRect = curr_clip_rect;
 }
 
 void DrawList::updateTextureID()
@@ -87,6 +102,19 @@ void DrawList::popTextureID()
 	updateTextureID();
 }
 
+void DrawList::pushClipRect(const pRect& clip_rect)
+{
+	m_clipRectStack.push_back(clip_rect);
+	updateClipRect();
+}
+
+void DrawList::popClipRect()
+{
+	assert(!m_clipRectStack.empty());
+	m_clipRectStack.pop_back();
+	updateClipRect();
+}
+
 void DrawList::addLine(const Point& a, const Point& b, unsigned int col, float thickness)
 {
 	if ((col >> 24) == 0)
@@ -97,12 +125,12 @@ void DrawList::addLine(const Point& a, const Point& b, unsigned int col, float t
 }
 
 // a: upper-left, b: lower-right. we don't render 1 px sized rectangles properly.
-void DrawList::addRect(const Point& a, const Point& b, unsigned int col, float rounding, int rounding_corners)
+void DrawList::addRect(const Point& a, const Point& b, unsigned int col, float thickness, float rounding, int rounding_corners)
 {
 	if ((col >> 24) == 0)
 		return;
 	pathRect(a + Point(0.5f,0.5f), b - Point(0.5f,0.5f), rounding, rounding_corners);
-	pathStroke(col, true);
+	pathStroke(col, true, thickness);
 }
 
 void DrawList::addRectFilled(const Point& a, const Point& b, unsigned int col, float rounding, int rounding_corners)
@@ -123,112 +151,112 @@ void DrawList::addRectFilled(const Point& a, const Point& b, unsigned int col, f
 
 void DrawList::addRectFilledMultiColor(const Point& a, const Point& c, unsigned int col_upr_left, unsigned int col_upr_right, unsigned int col_bot_right, unsigned int col_bot_left)
 {
-    if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) >> 24) == 0)
-        return;
+	if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) >> 24) == 0)
+		return;
 
-    const Point uv(0, 0);
-    primReserve(6, 4);
-    primWriteIdx(m_vtxCurrentIdx); primWriteIdx(m_vtxCurrentIdx+1); primWriteIdx(m_vtxCurrentIdx+2);
-    primWriteIdx(m_vtxCurrentIdx); primWriteIdx(m_vtxCurrentIdx+2); primWriteIdx(m_vtxCurrentIdx+3);
-    primWriteVtx(a, uv, col_upr_left);
-    primWriteVtx(Point(c.x, a.y), uv, col_upr_right);
-    primWriteVtx(c, uv, col_bot_right);
-    primWriteVtx(Point(a.x, c.y), uv, col_bot_left);
+	const Point uv(0, 0);
+	primReserve(6, 4);
+	primWriteIdx(m_vtxCurrentIdx); primWriteIdx(m_vtxCurrentIdx+1); primWriteIdx(m_vtxCurrentIdx+2);
+	primWriteIdx(m_vtxCurrentIdx); primWriteIdx(m_vtxCurrentIdx+2); primWriteIdx(m_vtxCurrentIdx+3);
+	primWriteVtx(a, uv, col_upr_left);
+	primWriteVtx(Point(c.x, a.y), uv, col_upr_right);
+	primWriteVtx(c, uv, col_bot_right);
+	primWriteVtx(Point(a.x, c.y), uv, col_bot_left);
 }
 
 void DrawList::addTriangle(const Point& a, const Point& b, const Point& c, unsigned int col, float thickness)
 {
-    if ((col >> 24) == 0)
-        return;
+	if ((col >> 24) == 0)
+		return;
 
-    pathLineTo(a);
-    pathLineTo(b);
-    pathLineTo(c);
-    pathStroke(col, true, thickness);
+	pathLineTo(a);
+	pathLineTo(b);
+	pathLineTo(c);
+	pathStroke(col, true, thickness);
 }
 
 void DrawList::addTriangleFilled(const Point& a, const Point& b, const Point& c, unsigned int col)
 {
-    if ((col >> 24) == 0)
-        return;
+	if ((col >> 24) == 0)
+		return;
 
-    pathLineTo(a);
-    pathLineTo(b);
-    pathLineTo(c);
-    pathFill(col);
+	pathLineTo(a);
+	pathLineTo(b);
+	pathLineTo(c);
+	pathFill(col);
 }
 
 void DrawList::addCircle(const Point& centre, float radius, unsigned int col, int num_segments, float thickness)
 {
-    if ((col >> 24) == 0)
-        return;
+	if ((col >> 24) == 0)
+		return;
 
-    const float a_max = M_PI*2.0f * ((float)num_segments - 1.0f) / (float)num_segments;
-    pathArcTo(centre, radius-0.5f, 0.0f, a_max, num_segments);
-    pathStroke(col, true, thickness);
+	const float a_max = M_PI*2.0f * ((float)num_segments - 1.0f) / (float)num_segments;
+	pathArcTo(centre, radius-0.5f, 0.0f, a_max, num_segments);
+	pathStroke(col, true, thickness);
 }
 
 void DrawList::addCircleFilled(const Point& centre, float radius, unsigned int col, int num_segments)
 {
-    if ((col >> 24) == 0)
-        return;
+	if ((col >> 24) == 0)
+		return;
 
-    const float a_max = M_PI*2.0f * ((float)num_segments - 1.0f) / (float)num_segments;
-    pathArcTo(centre, radius, 0.0f, a_max, num_segments);
-    pathFill(col);
+	const float a_max = M_PI*2.0f * ((float)num_segments - 1.0f) / (float)num_segments;
+	pathArcTo(centre, radius, 0.0f, a_max, num_segments);
+	pathFill(col);
 }
 
 void DrawList::addBezierCurve(const Point& pos0, const Point& cp0, const Point& cp1, const Point& pos1, unsigned int col, float thickness, int num_segments)
 {
-    if ((col >> 24) == 0)
-        return;
+	if ((col >> 24) == 0)
+		return;
 
-    pathLineTo(pos0);
-    pathBezierCurveTo(cp0, cp1, pos1, num_segments);
-    pathStroke(col, false, thickness);
+	pathLineTo(pos0);
+	pathBezierCurveTo(cp0, cp1, pos1, num_segments);
+	pathStroke(col, false, thickness);
 }
 
 
 void DrawList::addText(const Font& font, float font_scale, const Point& pos, unsigned int col, const char* text_begin, const char* text_end, float wrap_width, const Rect* cpu_fine_clip_rect)
 {
-    if ((col >> 24) == 0)
-        return;
+	if ((col >> 24) == 0)
+		return;
 
-    if (text_end == NULL)
-        text_end = text_begin + strlen(text_begin);
-    if (text_begin == text_end)
-        return;
+	if (text_end == NULL)
+		text_end = text_begin + strlen(text_begin);
+	if (text_begin == text_end)
+		return;
 
-    assert(font.atlas()->texID() == m_textureIdStack.back());  // Use high-level ImGui::PushFont() or low-level DrawList::PushTextureId() to change font.
+	assert(font.atlas()->texID() == m_textureIdStack.back());  // Use high-level ImGui::PushFont() or low-level DrawList::PushTextureId() to change font.
 
-    // reserve vertices for worse case (over-reserving is useful and easily amortized)
-    const int char_count = (int)(text_end - text_begin);
-    const int vtx_count_max = char_count * 4;
-    const int idx_count_max = char_count * 6;
-    const int vtx_begin = m_vtxBuffer.size();
-    const int idx_begin = m_idxBuffer.size();
-    primReserve(idx_count_max, vtx_count_max);
+	// reserve vertices for worse case (over-reserving is useful and easily amortized)
+	const int char_count = (int)(text_end - text_begin);
+	const int vtx_count_max = char_count * 4;
+	const int idx_count_max = char_count * 6;
+	const int vtx_begin = m_vtxBuffer.size();
+	const int idx_begin = m_idxBuffer.size();
+	primReserve(idx_count_max, vtx_count_max);
 
-    Rect clip_rect = m_clipRectStack.back();
-    if (cpu_fine_clip_rect)
-    {
-        clip_rect.setLeft(std::max(clip_rect.left(), cpu_fine_clip_rect->left()));
-        clip_rect.setTop(std::max(clip_rect.top(), cpu_fine_clip_rect->top()));
-        clip_rect.setRight(std::max(clip_rect.right(), cpu_fine_clip_rect->right()));
-        clip_rect.setBottom(std::max(clip_rect.bottom(), cpu_fine_clip_rect->bottom()));
-    }
-    font.renderText(font_scale, pos, col, clip_rect, text_begin, text_end, this, wrap_width, cpu_fine_clip_rect != NULL);
+	Rect clip_rect = m_clipRectStack.back();
+	if (cpu_fine_clip_rect)
+	{
+		clip_rect.setLeft(std::max(clip_rect.left(), cpu_fine_clip_rect->left()));
+		clip_rect.setTop(std::max(clip_rect.top(), cpu_fine_clip_rect->top()));
+		clip_rect.setRight(std::max(clip_rect.right(), cpu_fine_clip_rect->right()));
+		clip_rect.setBottom(std::max(clip_rect.bottom(), cpu_fine_clip_rect->bottom()));
+	}
+	font.renderText(font_scale, pos, col, clip_rect, text_begin, text_end, this, wrap_width, cpu_fine_clip_rect != NULL);
 
-    // give back unused vertices
-    // FIXME-OPT: clean this up
-    m_vtxBuffer.resize((int)(m_vtxWritePtr - m_vtxBuffer.data()));
-    m_idxBuffer.resize((int)(m_idxWritePtr - m_idxBuffer.data()));
-    int vtx_unused = vtx_count_max - (m_vtxBuffer.size() - vtx_begin);
-    int idx_unused = idx_count_max - (m_idxBuffer.size() - idx_begin);
-    m_cmdBuffer.back().elemCount -= idx_unused;
-    m_vtxWritePtr -= vtx_unused;
-    m_idxWritePtr -= idx_unused;
-    m_vtxCurrentIdx = m_vtxBuffer.size();
+	// give back unused vertices
+	// FIXME-OPT: clean this up
+	m_vtxBuffer.resize((int)(m_vtxWritePtr - m_vtxBuffer.data()));
+	m_idxBuffer.resize((int)(m_idxWritePtr - m_idxBuffer.data()));
+	int vtx_unused = vtx_count_max - (m_vtxBuffer.size() - vtx_begin);
+	int idx_unused = idx_count_max - (m_idxBuffer.size() - idx_begin);
+	m_cmdBuffer.back().elemCount -= idx_unused;
+	m_vtxWritePtr -= vtx_unused;
+	m_idxWritePtr -= idx_unused;
+	m_vtxCurrentIdx = m_vtxBuffer.size();
 }
 
 void DrawList::addText(const Point& pos, unsigned int col, const char* text_begin, const char* text_end)
@@ -238,19 +266,19 @@ void DrawList::addText(const Point& pos, unsigned int col, const char* text_begi
 
 void DrawList::addImage(unsigned int user_texture_id, const Point& a, const Point& b, const Point& uv0, const Point& uv1, unsigned int col)
 {
-    if ((col >> 24) == 0)
-        return;
+	if ((col >> 24) == 0)
+		return;
 
-    // FIXME-OPT: This is wasting draw calls.
-    const bool push_texture_id = m_textureIdStack.empty() || user_texture_id != m_textureIdStack.back();
-    if (push_texture_id)
-        pushTextureID(user_texture_id);
+	// FIXME-OPT: This is wasting draw calls.
+	const bool push_texture_id = m_textureIdStack.empty() || user_texture_id != m_textureIdStack.back();
+	if (push_texture_id)
+		pushTextureID(user_texture_id);
 
-    primReserve(6, 4);
-    primRectUV(a, b, uv0, uv1, col);
+	primReserve(6, 4);
+	primRectUV(a, b, uv0, uv1, col);
 
-    if (push_texture_id)
-        popTextureID();
+	if (push_texture_id)
+		popTextureID();
 }
 
 void DrawList::addPolyline(const std::vector<Point>& points, unsigned int col, bool closed, float thickness, bool anti_aliased)
@@ -670,15 +698,15 @@ void DrawList::primRect(const Point& a, const Point& c, unsigned int col)
 
 void DrawList::primRectUV(const Point& a, const Point& c, const Point& uv_a, const Point& uv_c, unsigned int col)
 {
-    Point b(c.x, a.y), d(a.x, c.y), uv_b(uv_c.x, uv_a.y), uv_d(uv_a.x, uv_c.y);
-    DrawIdx idx = m_vtxCurrentIdx;
-    m_idxWritePtr[0] = idx; m_idxWritePtr[1] = idx+1; m_idxWritePtr[2] = idx+2;
-    m_idxWritePtr[3] = idx; m_idxWritePtr[4] = idx+2; m_idxWritePtr[5] = idx+3;
-    m_vtxWritePtr[0].pos = a; m_vtxWritePtr[0].uv = uv_a; m_vtxWritePtr[0].col = col;
-    m_vtxWritePtr[1].pos = b; m_vtxWritePtr[1].uv = uv_b; m_vtxWritePtr[1].col = col;
-    m_vtxWritePtr[2].pos = c; m_vtxWritePtr[2].uv = uv_c; m_vtxWritePtr[2].col = col;
-    m_vtxWritePtr[3].pos = d; m_vtxWritePtr[3].uv = uv_d; m_vtxWritePtr[3].col = col;
-    m_vtxWritePtr += 4;
-    m_vtxCurrentIdx += 4;
-    m_idxWritePtr += 6;
+	Point b(c.x, a.y), d(a.x, c.y), uv_b(uv_c.x, uv_a.y), uv_d(uv_a.x, uv_c.y);
+	DrawIdx idx = m_vtxCurrentIdx;
+	m_idxWritePtr[0] = idx; m_idxWritePtr[1] = idx+1; m_idxWritePtr[2] = idx+2;
+	m_idxWritePtr[3] = idx; m_idxWritePtr[4] = idx+2; m_idxWritePtr[5] = idx+3;
+	m_vtxWritePtr[0].pos = a; m_vtxWritePtr[0].uv = uv_a; m_vtxWritePtr[0].col = col;
+	m_vtxWritePtr[1].pos = b; m_vtxWritePtr[1].uv = uv_b; m_vtxWritePtr[1].col = col;
+	m_vtxWritePtr[2].pos = c; m_vtxWritePtr[2].uv = uv_c; m_vtxWritePtr[2].col = col;
+	m_vtxWritePtr[3].pos = d; m_vtxWritePtr[3].uv = uv_d; m_vtxWritePtr[3].col = col;
+	m_vtxWritePtr += 4;
+	m_vtxCurrentIdx += 4;
+	m_idxWritePtr += 6;
 }

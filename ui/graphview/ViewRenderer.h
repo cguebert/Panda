@@ -27,6 +27,7 @@ public:
 	void addDrawList(DrawList* dl);
 	void render();
 
+	static bool initialized();
 	static unsigned int defaultTextureId();
 	static panda::types::Rect defaultClipRect();
 	static Font* defaultFont();

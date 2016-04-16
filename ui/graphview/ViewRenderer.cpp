@@ -214,6 +214,11 @@ void ViewRenderer::render()
 		for (const DrawList::DrawCmd& pcmd : cmd_list->cmdBuffer())
 		{
 			glBindTexture(GL_TEXTURE_2D, pcmd.textureId);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 			glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd.elemCount), GL_UNSIGNED_INT, idx_buffer_offset);
 			idx_buffer_offset += pcmd.elemCount;
 		}
@@ -221,6 +226,11 @@ void ViewRenderer::render()
 
 	m_shader->release();
 	m_VAO->release();
+}
+
+bool ViewRenderer::initialized()
+{
+	return g_viewRenderer && g_viewRenderer->m_fontTexture;
 }
 
 unsigned int ViewRenderer::defaultTextureId()
