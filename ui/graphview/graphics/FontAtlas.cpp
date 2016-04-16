@@ -58,21 +58,14 @@ void FontAtlas::clearInputData()
 
 void FontAtlas::clearTexData()
 {
-	if (m_texPixelsAlpha8)
-		free(m_texPixelsAlpha8);
-	if (m_texPixelsRGBA32)
-		free(m_texPixelsRGBA32);
-	m_texPixelsAlpha8 = NULL;
-	m_texPixelsRGBA32 = NULL;
+	m_texPixelsAlpha8.clear();
+	m_texPixelsAlpha8.shrink_to_fit();
+	m_texPixelsRGBA32.clear();
+	m_texPixelsRGBA32.shrink_to_fit();
 }
 
 void FontAtlas::clearFonts()
 {
-	for (size_t i = 0; i < m_fonts.size(); i++)
-	{
-		m_fonts[i]->~Font();
-		free(m_fonts[i]);
-	}
 	m_fonts.clear();
 }
 
@@ -86,7 +79,7 @@ void FontAtlas::clear()
 void FontAtlas::getTexDataAsAlpha8(unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel)
 {
 	// build atlas on demand
-	if (m_texPixelsAlpha8 == NULL)
+	if (m_texPixelsAlpha8.empty())
 	{
 		if (m_configData.empty())
 		{
@@ -99,7 +92,7 @@ void FontAtlas::getTexDataAsAlpha8(unsigned char** out_pixels, int* out_width, i
 		build();
 	}
 
-	*out_pixels = m_texPixelsAlpha8;
+	if (out_pixels) *out_pixels = m_texPixelsAlpha8.data();
 	if (out_width) *out_width = m_texWidth;
 	if (out_height) *out_height = m_texHeight;
 	if (out_bytes_per_pixel) *out_bytes_per_pixel = 1;
@@ -109,34 +102,28 @@ void FontAtlas::getTexDataAsRGBA32(unsigned char** out_pixels, int* out_width, i
 {
 	// Convert to RGBA32 format on demand
 	// Although it is likely to be the most commonly used format, our font rendering is 1 channel / 8 bpp
-	if (!m_texPixelsRGBA32)
+	if (m_texPixelsRGBA32.empty())
 	{
-		unsigned char* pixels;
-		getTexDataAsAlpha8(&pixels, NULL, NULL);
-		m_texPixelsRGBA32 = (unsigned int*)malloc((size_t)(m_texWidth * m_texHeight * 4));
-		const unsigned char* src = pixels;
-		unsigned int* dst = m_texPixelsRGBA32;
-		for (int n = m_texWidth * m_texHeight; n > 0; n--)
-			*dst++ = ((unsigned int)(*src++) << 24) | 0x00FFFFFF;
+		getTexDataAsAlpha8(NULL, NULL, NULL);
+		m_texPixelsRGBA32.resize(m_texWidth * m_texHeight);
+		for (int i = 0, n = m_texWidth * m_texHeight; i < n; ++i)
+			m_texPixelsRGBA32[i] = (static_cast<unsigned int>(m_texPixelsAlpha8[i]) << 24) | 0x00FFFFFF;
 	}
 
-	*out_pixels = (unsigned char*)m_texPixelsRGBA32;
+	*out_pixels = (unsigned char*)m_texPixelsRGBA32.data();
 	if (out_width) *out_width = m_texWidth;
 	if (out_height) *out_height = m_texHeight;
 	if (out_bytes_per_pixel) *out_bytes_per_pixel = 4;
 }
 
-Font* FontAtlas::addFont(const FontConfig& font_cfg)
+FontAtlas::FontPtr FontAtlas::addFont(const FontConfig& font_cfg)
 {
 	assert(!font_cfg.FontData.empty());
 	assert(font_cfg.SizePixels > 0.0f);
 
 	// Create new font
 	if (!font_cfg.MergeMode)
-	{
-		auto font = new Font();
-		m_fonts.push_back(font);
-	}
+		m_fonts.emplace_back(std::make_shared<Font>());
 
 	m_configData.push_back(font_cfg);
 	FontConfig& new_font_cfg = m_configData.back();
@@ -166,13 +153,13 @@ static void         Decode85(const unsigned char* src, unsigned char* dst)
 }
 
 // Load embedded ProggyClean.ttf at size 13, disable oversampling
-Font* FontAtlas::addFontDefault(const FontConfig& font_cfg)
+FontAtlas::FontPtr FontAtlas::addFontDefault(const FontConfig& font_cfg)
 {
 	const char* ttf_compressed_base85 = GetDefaultCompressedFontDataTTFBase85();
 	return addFontFromMemoryCompressedBase85TTF(ttf_compressed_base85, 13.0f, font_cfg, getGlyphRangesDefault());
 }
 
-Font* FontAtlas::addFontFromFileTTF(const char* filename, float size_pixels, const FontConfig& font_cfg_template, const GlyphRangeList& glyph_ranges)
+FontAtlas::FontPtr FontAtlas::addFontFromFileTTF(const char* filename, float size_pixels, const FontConfig& font_cfg_template, const GlyphRangeList& glyph_ranges)
 {
 	MemBuffer data = LoadFileToMemory(filename);
 	if (data.empty())
@@ -192,7 +179,7 @@ Font* FontAtlas::addFontFromFileTTF(const char* filename, float size_pixels, con
 }
 
 // NBM Transfer ownership of 'ttf_data' to FontAtlas, unless font_cfg_template->FontDataOwnedByAtlas == false. Owned TTF buffer will be deleted after build().
-Font* FontAtlas::addFontFromMemoryTTF(const MemBuffer& ttf_data, float size_pixels, const FontConfig& font_cfg_template, const GlyphRangeList& glyph_ranges)
+FontAtlas::FontPtr FontAtlas::addFontFromMemoryTTF(const MemBuffer& ttf_data, float size_pixels, const FontConfig& font_cfg_template, const GlyphRangeList& glyph_ranges)
 {
 	FontConfig font_cfg = font_cfg_template;
 	assert(font_cfg.FontData.empty());
@@ -202,7 +189,7 @@ Font* FontAtlas::addFontFromMemoryTTF(const MemBuffer& ttf_data, float size_pixe
 	return addFont(font_cfg);
 }
 
-Font* FontAtlas::addFontFromMemoryCompressedTTF(const MemBuffer& compressed_ttf, float size_pixels, const FontConfig& font_cfg_template, const GlyphRangeList& glyph_ranges)
+FontAtlas::FontPtr FontAtlas::addFontFromMemoryCompressedTTF(const MemBuffer& compressed_ttf, float size_pixels, const FontConfig& font_cfg_template, const GlyphRangeList& glyph_ranges)
 {
 	MemBuffer buf_decompressed(stb_decompress_length(compressed_ttf.data()));
 	stb_decompress(buf_decompressed.data(), (unsigned char*)compressed_ttf.data(), compressed_ttf.size());
@@ -213,13 +200,12 @@ Font* FontAtlas::addFontFromMemoryCompressedTTF(const MemBuffer& compressed_ttf,
 	return addFontFromMemoryTTF(buf_decompressed, size_pixels, font_cfg, glyph_ranges);
 }
 
-Font* FontAtlas::addFontFromMemoryCompressedBase85TTF(const char* compressed_ttf_data_base85, float size_pixels, const FontConfig& font_cfg, const GlyphRangeList& glyph_ranges)
+FontAtlas::FontPtr FontAtlas::addFontFromMemoryCompressedBase85TTF(const char* compressed_ttf_data_base85, float size_pixels, const FontConfig& font_cfg, const GlyphRangeList& glyph_ranges)
 {
 	int compressed_ttf_size = (((int)strlen(compressed_ttf_data_base85) + 4) / 5) * 4;
 	MemBuffer buf(compressed_ttf_size);
 	Decode85((const unsigned char*)compressed_ttf_data_base85, buf.data());
-	Font* font = addFontFromMemoryCompressedTTF(buf, size_pixels, font_cfg, glyph_ranges);
-	return font;
+	return addFontFromMemoryCompressedTTF(buf, size_pixels, font_cfg, glyph_ranges);
 }
 
 bool FontAtlas::build()
@@ -238,7 +224,7 @@ bool FontAtlas::build()
 		stbtt_pack_range*   Ranges;
 		int                 RangesCount;
 	};
-	FontTempBuildData* tmp_array = (FontTempBuildData*)malloc((size_t)m_configData.size() * sizeof(FontTempBuildData));
+	std::vector<FontTempBuildData> tmp_array(m_configData.size());
 
 	// Initialize font information early (so we can error without any cleanup) + count glyphs
 	int total_glyph_count = 0;
@@ -283,9 +269,15 @@ bool FontAtlas::build()
 
 	// Allocate packing character data and flag packed characters buffer as non-packed (x0=y0=x1=y1=0)
 	int buf_packedchars_n = 0, buf_rects_n = 0, buf_ranges_n = 0;
-	stbtt_packedchar* buf_packedchars = (stbtt_packedchar*)malloc(total_glyph_count * sizeof(stbtt_packedchar));
-	stbrp_rect* buf_rects = (stbrp_rect*)malloc(total_glyph_count * sizeof(stbrp_rect));
-	stbtt_pack_range* buf_ranges = (stbtt_pack_range*)malloc(total_glyph_range_count * sizeof(stbtt_pack_range));
+	std::vector<stbtt_packedchar> packedchars;
+	std::vector<stbrp_rect> rects;
+	std::vector<stbtt_pack_range> ranges;
+	packedchars.reserve(total_glyph_count);
+	rects.reserve(total_glyph_count);
+	ranges.reserve(total_glyph_range_count);
+	auto buf_packedchars = packedchars.data();
+	auto buf_rects = rects.data();
+	auto buf_ranges = ranges.data();
 	memset(buf_packedchars, 0, total_glyph_count * sizeof(stbtt_packedchar));
 	memset(buf_rects, 0, total_glyph_count * sizeof(stbrp_rect));              // Unnecessary but let's clear this for the sake of sanity.
 	memset(buf_ranges, 0, total_glyph_range_count * sizeof(stbtt_pack_range));
@@ -333,9 +325,8 @@ bool FontAtlas::build()
 
 	// Create texture
 	m_texHeight = UpperPowerOfTwo(m_texHeight);
-	m_texPixelsAlpha8 = (unsigned char*)malloc(m_texWidth * m_texHeight);
-	memset(m_texPixelsAlpha8, 0, m_texWidth * m_texHeight);
-	spc.pixels = m_texPixelsAlpha8;
+	m_texPixelsAlpha8.assign(m_texWidth * m_texHeight, 0);
+	spc.pixels = m_texPixelsAlpha8.data();
 	spc.height = m_texHeight;
 
 	// Second pass: render characters
@@ -350,15 +341,13 @@ bool FontAtlas::build()
 
 	// End packing
 	stbtt_PackEnd(&spc);
-	free(buf_rects);
-	buf_rects = NULL;
 
 	// Third pass: setup Font and glyphs for runtime
 	for (size_t input_i = 0; input_i < m_configData.size(); input_i++)
 	{
 		FontConfig& cfg = m_configData[input_i];
 		FontTempBuildData& tmp = tmp_array[input_i];
-		Font* dst_font = cfg.DstFont;
+		Font* dst_font = cfg.DstFont.get();
 
 		float font_scale = stbtt_ScaleForPixelHeight(&tmp.FontInfo, cfg.SizePixels);
 		int unscaled_ascent, unscaled_descent, unscaled_line_gap;
@@ -411,11 +400,6 @@ bool FontAtlas::build()
 		}
 		cfg.DstFont->buildLookupTable();
 	}
-
-	// Cleanup temporaries
-	free(buf_packedchars);
-	free(buf_ranges);
-	free(tmp_array);
 
 	// Render into our custom data block
 	renderCustomTexData(1, &extra_rects);

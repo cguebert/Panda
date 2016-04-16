@@ -272,7 +272,8 @@ void DrawList::addText(const Rect& rect, unsigned int col, const std::string& te
 		return;
 
     // Perform CPU side clipping for single clipped element to avoid using scissor state
-    const Point text_size = font->calcTextSize(font->fontSize(), FLT_MAX, rect.width(), text.data());
+	float wrap_width = rect.width();
+    const Point text_size = font->calcTextSize(font->fontSize(), FLT_MAX, wrap_width, text.data());
 
 	bool need_clipping = (rect.left() + text_size.x >= rect.right()) || (rect.top() + text_size.y >= rect.bottom());
 
@@ -284,9 +285,9 @@ void DrawList::addText(const Rect& rect, unsigned int col, const std::string& te
 
     // Render
     if (need_clipping)
-        addText(*font, 1.0f, pos, col, text, 0.0f, &rect);
+        addText(*font, 1.0f, pos, col, text, wrap_width, &rect);
     else
-        addText(*font, 1.0f, pos, col, text, 0.0f, nullptr);
+        addText(*font, 1.0f, pos, col, text, wrap_width, nullptr);
 }
 
 void DrawList::addImage(unsigned int user_texture_id, const Point& a, const Point& b, const Point& uv0, const Point& uv1, unsigned int col)

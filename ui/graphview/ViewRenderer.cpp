@@ -256,6 +256,6 @@ Rect ViewRenderer::defaultClipRect()
 Font* ViewRenderer::currentFont()
 {
 	if (g_viewRenderer && g_viewRenderer->m_fontTexture && !g_viewRenderer->m_atlas->fonts().empty())
-		return g_viewRenderer->m_atlas->fonts().back();
+		return g_viewRenderer->m_atlas->fonts().back().get();
 	return nullptr;
 }

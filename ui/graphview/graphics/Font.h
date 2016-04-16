@@ -2,6 +2,7 @@
 
 #include <panda/types/Rect.h>
 
+#include <memory>
 #include <vector>
 #include <string>
 #include <utility>
@@ -32,7 +33,7 @@ struct FontConfig
 
 	// [Internal]
 	std::string Name; // Name (strictly for debugging)
-	Font* DstFont = nullptr;
+	std::shared_ptr<Font> DstFont;
 };
 
 // Font runtime data and rendering
