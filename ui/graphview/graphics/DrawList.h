@@ -1,11 +1,13 @@
 #pragma once
 
+#include <ui/graphview/graphics/DrawPath.h>
+
 #include <panda/types/Rect.h>
 
 #include <vector>
 
-class QColor;
 class Font;
+class QColor;
 
 using pPoint = panda::types::Point;
 using pRect = panda::types::Rect;
@@ -54,19 +56,8 @@ public:
 	void addText(const pPoint& pos, unsigned int col, const char* text_begin, const char* text_end = NULL);
 	void addText(const Font& font, float font_scale, const pPoint& pos, unsigned int col, const char* text_begin, const char* text_end = NULL, float wrap_width = 0.0f, const panda::types::Rect* cpu_fine_clip_rect = NULL);
 	void addImage(unsigned int texture_id, const pPoint& a, const pPoint& b, const pPoint& uv0 = panda::types::Point(0,0), const pPoint& uv1 = panda::types::Point(1,1), unsigned int col = 0xFFFFFFFF);
-	void addPolyline(const std::vector<panda::types::Point>& points, unsigned int col, bool closed, float thickness, bool anti_aliased);
-	void addConvexPolyFilled(const std::vector<panda::types::Point>& points, unsigned int col, bool anti_aliased);
-
-	// Stateful path API, add points then finish with PathFill() or PathStroke()
-	inline void pathClear() { m_path.clear(); }
-	inline void pathLineTo(const pPoint& pos){ m_path.push_back(pos); }
-	inline void pathLineToMergeDuplicate(const pPoint& pos) { if (m_path.empty() || m_path.back().x != pos.x || m_path.back().y != pos.y) m_path.push_back(pos); }
-	inline void pathFill(unsigned int col) { addConvexPolyFilled(m_path, col, true); pathClear(); }
-	inline void pathStroke(unsigned int col, bool closed, float thickness = 1.0f) { addPolyline(m_path, col, closed, thickness, true); pathClear(); }
-	void pathArcTo(const pPoint& centre, float radius, float a_min, float a_max, int num_segments = 10);
-	void pathArcToFast(const pPoint& centre, float radius, int a_min_of_12, int a_max_of_12);                 // Use precomputed angles for a 12 steps circle
-	void pathBezierCurveTo(const pPoint& p1, const pPoint& p2, const pPoint& p3, int num_segments = 0);
-	void pathRect(const pPoint& rect_min, const pPoint& rect_max, float rounding = 0.0f, int rounding_corners = 0x0F);
+	void addPolyline(const DrawPath& path, unsigned int col, bool closed, float thickness, bool anti_aliased);
+	void addConvexPolyFilled(const DrawPath& path, unsigned int col, bool anti_aliased);
 
 	inline const std::vector<DrawCmd>& cmdBuffer() const { return m_cmdBuffer; }
 	inline const std::vector<DrawIdx>& idxBuffer() const { return m_idxBuffer; }
@@ -90,6 +81,9 @@ private:
 	{ m_vtxWritePtr->pos = pos; m_vtxWritePtr->uv = uv; m_vtxWritePtr->col = col; m_vtxWritePtr++; m_vtxCurrentIdx++; }
 	inline void primWriteIdx(DrawIdx idx) { *m_idxWritePtr = idx; m_idxWritePtr++; }
 
+	inline void pathFill(unsigned int col) { addConvexPolyFilled(m_path, col, true); m_path.clear(); }
+	inline void pathStroke(unsigned int col, bool closed, float thickness = 1.0f) { addPolyline(m_path, col, closed, thickness, true); m_path.clear(); }
+
 	void updateTextureID();
 	void updateClipRect();
 	
@@ -101,6 +95,7 @@ private:
 	DrawVert* m_vtxWritePtr = nullptr; // Point within m_vtxBuffer after each add command (to avoid using the vector operators too much)
 	DrawIdx* m_idxWritePtr = nullptr; // Index within m_idxBuffer after each add command (to avoid using the vector operators too much)
 	std::vector<unsigned int> m_textureIdStack;
-	std::vector<panda::types::Point> m_path;
 	std::vector<panda::types::Rect> m_clipRectStack;
+
+	DrawPath m_path;
 };

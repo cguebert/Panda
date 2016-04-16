@@ -47,6 +47,7 @@ set(HEADER_FILES
 	graphview/ViewRenderer.h
 	graphview/graphics/DefaultFont.h
 	graphview/graphics/DrawList.h
+	graphview/graphics/DrawPath.h
 	graphview/graphics/Font.h
 	graphview/graphics/FontAtlas.h
 	widget/AnimationDataWidgetDialog.h
@@ -101,6 +102,7 @@ set(SOURCE_FILES
 	graphview/ViewRenderer.cpp
 	graphview/graphics/DefaultFont.cpp
 	graphview/graphics/DrawList.cpp
+	graphview/graphics/DrawPath.cpp
 	graphview/graphics/Font.cpp
 	graphview/graphics/FontAtlas.cpp
 	widget/ColorDataWidget.cpp
