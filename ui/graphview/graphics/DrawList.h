@@ -7,24 +7,26 @@
 class QColor;
 class Font;
 
-struct DrawCmd
-{
-	int elemCount = 0; // Number of indices (multiple of 3) to be rendered as triangles.
-	unsigned int textureId = 0; // User-provided texture ID
-	panda::types::Rect clipRect; // Clipping rectangle (x1, y1, x2, y2)
-};
 
-using DrawIdx = unsigned int;
-
-struct DrawVert
-{
-	panda::types::Point pos, uv;
-	unsigned int col;
-};
 
 class DrawList
 {
 public:
+	using DrawIdx = unsigned int;
+
+	struct DrawCmd
+	{
+		int elemCount = 0; // Number of indices (multiple of 3) to be rendered as triangles.
+		unsigned int textureId = 0; // User-provided texture ID
+		panda::types::Rect clipRect; // Clipping rectangle (x1, y1, x2, y2)
+	};
+
+	struct DrawVert
+	{
+		panda::types::Point pos, uv;
+		unsigned int col;
+	};
+
 	DrawList();
 
 	static unsigned int convert(const QColor& col);
@@ -78,9 +80,9 @@ private:
 	void primRectUV(const panda::types::Point& a, const panda::types::Point& b, const panda::types::Point& uv_a, const panda::types::Point& uv_b, unsigned int col);
 	inline void primVtx(const panda::types::Point& pos, const panda::types::Point& uv, unsigned int col)
 	{ primWriteIdx(m_vtxCurrentIdx); primWriteVtx(pos, uv, col); }
-    inline void primWriteVtx(const panda::types::Point& pos, const panda::types::Point& uv, unsigned int col)
+	inline void primWriteVtx(const panda::types::Point& pos, const panda::types::Point& uv, unsigned int col)
 	{ m_vtxWritePtr->pos = pos; m_vtxWritePtr->uv = uv; m_vtxWritePtr->col = col; m_vtxWritePtr++; m_vtxCurrentIdx++; }
-    inline void primWriteIdx(DrawIdx idx) { *m_idxWritePtr = idx; m_idxWritePtr++; }
+	inline void primWriteIdx(DrawIdx idx) { *m_idxWritePtr = idx; m_idxWritePtr++; }
 
 	void updateTextureID();
 	void updateClipRect();

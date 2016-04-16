@@ -8,6 +8,7 @@
 #include <set>
 
 #include <ui/custom/ScrollContainer.h>
+#include <ui/graphview/graphics/DrawList.h>
 #include <panda/messaging.h>
 
 namespace panda

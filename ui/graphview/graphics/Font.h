@@ -42,10 +42,10 @@ class Font
 public:
 	struct Glyph
 	{
-	    WChar Codepoint;
-	    float XAdvance;
-	    float X0, Y0, X1, Y1;
-	    float U0, V0, U1, V1;     // Texture coordinates
+		WChar Codepoint;
+		float XAdvance;
+		float X0, Y0, X1, Y1;
+		float U0, V0, U1, V1;     // Texture coordinates
 	};
 
 	 // Methods
@@ -83,7 +83,7 @@ private:
 	std::vector<Glyph> m_glyphs;
 	const Glyph* m_fallbackGlyph = nullptr;
 	float m_fallbackXAdvance = 0.f;
-    std::vector<float> m_indexXAdvance; // Sparse. Glyphs->XAdvance directly indexable (more cache-friendly that reading from Glyphs, for CalcTextSize functions which are often bottleneck in large UI)
+	std::vector<float> m_indexXAdvance; // Sparse. Glyphs->XAdvance directly indexable (more cache-friendly that reading from Glyphs, for CalcTextSize functions which are often bottleneck in large UI)
 	std::vector<int> m_indexLookup; // Sparse. Index glyphs by Unicode code-point.
 };
 

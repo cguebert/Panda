@@ -129,13 +129,13 @@ void ViewRenderer::initialize()
 	m_VBO->setUsagePattern(QOpenGLBuffer::StreamDraw);
 	m_VBO->bind();
 	
-	f->glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(DrawVert), (GLvoid*)offsetof(DrawVert, pos));
+	f->glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(DrawList::DrawVert), (GLvoid*)offsetof(DrawList::DrawVert, pos));
 	f->glEnableVertexAttribArray(0);
 
-	f->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(DrawVert), (GLvoid*)offsetof(DrawVert, uv));
+	f->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(DrawList::DrawVert), (GLvoid*)offsetof(DrawList::DrawVert, uv));
 	f->glEnableVertexAttribArray(1);
 
-	f->glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(DrawVert), (GLvoid*)offsetof(DrawVert, col));
+	f->glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(DrawList::DrawVert), (GLvoid*)offsetof(DrawList::DrawVert, col));
 	f->glEnableVertexAttribArray(2);
 	
 	m_VBO->release();
@@ -191,10 +191,10 @@ void ViewRenderer::render()
 		if (cmd_list->vtxBuffer().empty() || cmd_list->idxBuffer().empty())
 			continue;
 
-		const DrawIdx* idx_buffer_offset = nullptr;
+		const DrawList::DrawIdx* idx_buffer_offset = nullptr;
 
 		m_VBO->bind();
-		int vtxSize = cmd_list->vtxBuffer().size() * sizeof(DrawVert);
+		int vtxSize = cmd_list->vtxBuffer().size() * sizeof(DrawList::DrawVert);
 		if (vtxSize > vboSize)
 		{
 			m_VBO->allocate(vtxSize);
@@ -203,7 +203,7 @@ void ViewRenderer::render()
 		m_VBO->write(0, &cmd_list->vtxBuffer().front(), vtxSize);
 
 		m_EBO->bind();
-		int idxSize = cmd_list->idxBuffer().size() * sizeof(DrawIdx);
+		int idxSize = cmd_list->idxBuffer().size() * sizeof(DrawList::DrawIdx);
 		if (idxSize > eboSize)
 		{
 			m_EBO->allocate(idxSize);
@@ -211,7 +211,7 @@ void ViewRenderer::render()
 		}
 		m_EBO->write(0, &cmd_list->idxBuffer().front(), idxSize);
 
-		for (const DrawCmd& pcmd : cmd_list->cmdBuffer())
+		for (const DrawList::DrawCmd& pcmd : cmd_list->cmdBuffer())
 		{
 			glBindTexture(GL_TEXTURE_2D, pcmd.textureId);
 			glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd.elemCount), GL_UNSIGNED_INT, idx_buffer_offset);
