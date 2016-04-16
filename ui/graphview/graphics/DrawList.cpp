@@ -259,7 +259,7 @@ void DrawList::addText(const Font& font, float font_scale, const Point& pos, uns
 
 void DrawList::addText(const Point& pos, unsigned int col, const std::string& text)
 {
-	addText(*ViewRenderer::defaultFont(), 1.0, pos, col, text);
+	addText(*ViewRenderer::currentFont(), 1.0, pos, col, text);
 }
 
 void DrawList::addText(const Rect& rect, unsigned int col, const std::string& text, int align, bool clip)
@@ -267,7 +267,7 @@ void DrawList::addText(const Rect& rect, unsigned int col, const std::string& te
     if (text.empty())
         return;
 
-	auto font = ViewRenderer::defaultFont();
+	auto font = ViewRenderer::currentFont();
 	if (!font)
 		return;
 

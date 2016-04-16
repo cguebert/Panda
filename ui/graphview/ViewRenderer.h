@@ -30,7 +30,7 @@ public:
 	static bool initialized();
 	static unsigned int defaultTextureId();
 	static panda::types::Rect defaultClipRect();
-	static Font* defaultFont();
+	static Font* currentFont();
 
 private:
 	std::unique_ptr<QOpenGLTexture> m_fontTexture;

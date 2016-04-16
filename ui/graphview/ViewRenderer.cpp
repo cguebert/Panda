@@ -68,6 +68,12 @@ ViewRenderer::ViewRenderer()
 	g_viewRenderer = this;
 	for(int i = 0; i < 4; ++i)
 		m_viewBounds[i] = 0;
+
+#ifdef WIN32
+	FontConfig cfg;
+	cfg.Name = "Tahoma";
+	m_atlas->addFontFromFileTTF("C:/Windows/Fonts/tahoma.ttf", 13, cfg, m_atlas->getGlyphRangesDefault());
+#endif
 }
 
 ViewRenderer::~ViewRenderer()
@@ -247,9 +253,9 @@ Rect ViewRenderer::defaultClipRect()
 	return Rect(-8192.f, -8192.f, 8192.f, 8192.f);
 }
 
-Font* ViewRenderer::defaultFont()
+Font* ViewRenderer::currentFont()
 {
 	if (g_viewRenderer && g_viewRenderer->m_fontTexture && !g_viewRenderer->m_atlas->fonts().empty())
-		return g_viewRenderer->m_atlas->fonts().front();
+		return g_viewRenderer->m_atlas->fonts().back();
 	return nullptr;
 }
