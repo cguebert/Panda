@@ -264,7 +264,7 @@ void DrawList::addText(const Point& pos, unsigned int col, const std::string& te
 
 void DrawList::addText(const Rect& rect, unsigned int col, const std::string& text, int align, bool clip)
 {
-    if (text.empty())
+    if (text.empty() || rect.empty())
         return;
 
 	auto font = ViewRenderer::currentFont();
@@ -273,10 +273,16 @@ void DrawList::addText(const Rect& rect, unsigned int col, const std::string& te
 
     // Perform CPU side clipping for single clipped element to avoid using scissor state
 	float wrap_width = rect.width();
-    const Point text_size = font->calcTextSize(font->fontSize(), FLT_MAX, wrap_width, text.data());
+    Point text_size = font->calcTextSize(1.0f, wrap_width, text, false); // Do not cut words
 
-	bool need_clipping = (rect.left() + text_size.x >= rect.right()) || (rect.top() + text_size.y >= rect.bottom());
-
+	// If the text is too big to fit, we scale down the font
+	float scale = 1.0f;
+	if (text_size.x > wrap_width)
+	{
+		scale = wrap_width / (text_size.x + 1.f);
+		text_size *= scale;
+	}
+	
     // Align
 	Point pos = rect.topLeft();
     if (align & Align_Center) pos.x = std::max(pos.x, (pos.x + rect.right() - text_size.x) * 0.5f);
@@ -284,10 +290,11 @@ void DrawList::addText(const Rect& rect, unsigned int col, const std::string& te
     if (align & Align_VCenter) pos.y = std::max(pos.y, (pos.y + rect.bottom() - text_size.y) * 0.5f);
 
     // Render
+	bool need_clipping = (rect.left() + text_size.x >= rect.right()) || (rect.top() + text_size.y >= rect.bottom());
     if (need_clipping)
-        addText(*font, 1.0f, pos, col, text, wrap_width, &rect);
+        addText(*font, scale, pos, col, text, wrap_width, &rect);
     else
-        addText(*font, 1.0f, pos, col, text, wrap_width, nullptr);
+        addText(*font, scale, pos, col, text, wrap_width, nullptr);
 }
 
 void DrawList::addImage(unsigned int user_texture_id, const Point& a, const Point& b, const Point& uv0, const Point& uv1, unsigned int col)

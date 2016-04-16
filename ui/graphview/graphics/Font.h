@@ -64,8 +64,8 @@ public:
 
 	// 'max_width' stops rendering after a certain width (could be turned into a 2d size). FLT_MAX to disable.
 	// 'wrap_width' enable automatic word-wrapping across multiple lines to fit into given width. 0.0f to disable.
-	pPoint calcTextSize(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end = NULL, const char** remaining = NULL) const; // utf8
-	const char* calcWordWrapPosition(float scale, const char* text, const char* text_end, float wrap_width) const;
+	pPoint calcTextSize(float scale, float wrap_width, const std::string& text, bool cutWords = true) const; // utf8
+	const char* calcWordWrapPosition(float scale, const char* text, const char* text_end, float wrap_width, bool cutWords = true) const;
 	void renderText(float scale, pPoint pos, unsigned int col, const pRect& clip_rect, const std::string& text, DrawList* draw_list, float wrap_width = 0.0f, bool cpu_fine_clip = false) const;
 
 private:
