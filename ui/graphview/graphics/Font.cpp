@@ -272,7 +272,7 @@ const Font::Glyph* Font::findGlyph(unsigned short c) const
 	return m_fallbackGlyph;
 }
 
-const char* Font::calcWordWrapPositionA(float scale, const char* text, const char* text_end, float wrap_width) const
+const char* Font::calcWordWrapPosition(float scale, const char* text, const char* text_end, float wrap_width) const
 {
 	// Simple word-wrapping for English, not full-featured. Please submit failing cases!
 	// FIXME: Much possible improvements (don't cut things like "word !", "word!!!" but cut within "word,,,,", more sensible support for punctuations, support for Unicode punctuations, etc.)
@@ -369,7 +369,7 @@ const char* Font::calcWordWrapPositionA(float scale, const char* text, const cha
 	return s;
 }
 
-pPoint Font::calcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end, const char** remaining) const
+pPoint Font::calcTextSize(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end, const char** remaining) const
 {
 	if (!text_end)
 		text_end = text_begin + strlen(text_begin); // FIXME-OPT: Need to avoid this.
@@ -391,7 +391,7 @@ pPoint Font::calcTextSizeA(float size, float max_width, float wrap_width, const 
 			// Calculate how far we can render. Requires two passes on the string data but keeps the code simple and not intrusive for what's essentially an uncommon feature.
 			if (!word_wrap_eol)
 			{
-				word_wrap_eol = calcWordWrapPositionA(scale, s, text_end, wrap_width - line_width);
+				word_wrap_eol = calcWordWrapPosition(scale, s, text_end, wrap_width - line_width);
 				if (word_wrap_eol == s) // Wrap_width is too small to fit anything. Force displaying 1 character to minimize the height discontinuity.
 					word_wrap_eol++;    // +1 may not be a character start point in UTF-8 but it's ok because we use s >= word_wrap_eol below
 			}
@@ -464,11 +464,11 @@ pPoint Font::calcTextSizeA(float size, float max_width, float wrap_width, const 
 }
 
 void Font::renderText(float scale, pPoint pos, unsigned int col, const pRect& clip_rect,
-					  const char* text_begin, const char* text_end, DrawList* draw_list,
+					  const std::string& text, DrawList* draw_list,
 					  float wrap_width, bool cpu_fine_clip) const
 {
-	if (!text_end)
-		text_end = text_begin + strlen(text_begin);
+	const char* text_begin = text.data();
+	const char* text_end = text_begin + text.size();
 
 	// Align to be pixel perfect
 	pos.x = (float)(int)pos.x + m_displayOffset.x;
@@ -497,7 +497,7 @@ void Font::renderText(float scale, pPoint pos, unsigned int col, const pRect& cl
 			// Calculate how far we can render. Requires two passes on the string data but keeps the code simple and not intrusive for what's essentially an uncommon feature.
 			if (!word_wrap_eol)
 			{
-				word_wrap_eol = calcWordWrapPositionA(scale, s, text_end, wrap_width - (x - pos.x));
+				word_wrap_eol = calcWordWrapPosition(scale, s, text_end, wrap_width - (x - pos.x));
 				if (word_wrap_eol == s) // Wrap_width is too small to fit anything. Force displaying 1 character to minimize the height discontinuity.
 					word_wrap_eol++;    // +1 may not be a character start point in UTF-8 but it's ok because we use s >= word_wrap_eol below
 			}

@@ -244,8 +244,9 @@ void GraphView::paintGL()
 	drawLinks();
 
 	// Draw the objects
-	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->draw(&painter);
+//	for (auto& ods : m_orderedObjectDrawStructs)
+//		ods->fillDrawList(drawList);
+	//	ods->draw(&painter);
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for (auto& ods : m_selectedObjectsDrawStructs)
@@ -293,8 +294,11 @@ void GraphView::paintGL()
 
 	painter.end();
 
-	m_viewRenderer->addDrawList(&drawList);
+	for (auto& ods : m_orderedObjectDrawStructs)
+		ods->fillDrawList(drawList);
+
 	m_viewRenderer->addDrawList(&m_linksDrawList);
+	m_viewRenderer->addDrawList(&drawList);
 	m_viewRenderer->addDrawList(&m_connectedDrawList);
 	m_viewRenderer->render();
 }

@@ -59,19 +59,19 @@ public:
 
 	bool isLoaded() const { return m_containerAtlas != NULL; }
 	FontAtlas* atlas() const { return m_containerAtlas; }
+	float fontSize() const { return m_fontSize; }
 
 	// 'max_width' stops rendering after a certain width (could be turned into a 2d size). FLT_MAX to disable.
 	// 'wrap_width' enable automatic word-wrapping across multiple lines to fit into given width. 0.0f to disable.
-	pPoint calcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end = NULL, const char** remaining = NULL) const; // utf8
-	const char* calcWordWrapPositionA(float scale, const char* text, const char* text_end, float wrap_width) const;
-	void renderText(float scale, pPoint pos, unsigned int col, const pRect& clip_rect, const char* text_begin, const char* text_end, DrawList* draw_list, float wrap_width = 0.0f, bool cpu_fine_clip = false) const;
+	pPoint calcTextSize(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end = NULL, const char** remaining = NULL) const; // utf8
+	const char* calcWordWrapPosition(float scale, const char* text, const char* text_end, float wrap_width) const;
+	void renderText(float scale, pPoint pos, unsigned int col, const pRect& clip_rect, const std::string& text, DrawList* draw_list, float wrap_width = 0.0f, bool cpu_fine_clip = false) const;
 
 private:
 	friend FontAtlas;
 
 	// Members: Settings
 	float m_fontSize = 0.f;				// Height of characters, set during loading (don't change after loading)
-	float m_scale = 1.f;				// Font scale
 	pPoint m_displayOffset = { 0, 1 };	// Offset font rendering by xx pixels
 	WChar m_fallbackChar = '?';			// Replacement glyph if one isn't found. Only set via SetFallbackChar()
 	FontConfig* m_configData = nullptr; // Pointer within FontAtlas->ConfigData

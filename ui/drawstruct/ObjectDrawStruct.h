@@ -1,8 +1,9 @@
 #ifndef OBJECTDRAWSTRUCT_H
 #define OBJECTDRAWSTRUCT_H
 
-#include <QWidget>
+#include <ui/graphview/graphics/DrawList.h>
 
+#include <QtWidgets>
 #include <memory>
 
 class GraphView;
@@ -30,6 +31,8 @@ public:
 	virtual void drawShape(QPainter* painter);
 	virtual void drawDatas(QPainter* painter);
 	virtual void drawText(QPainter* painter);
+
+	virtual void fillDrawList(DrawList& list, bool selected = false);
 
 	virtual void update();							// Recompute the information about this object
 	virtual void move(const QPointF& delta);		// Move the position of the object in the view
@@ -75,6 +78,9 @@ protected:
 	QRectF m_objectArea;
 
 	std::vector<RectDataPair> m_datas;
+
+	DrawList m_normalDrawList;
+	DrawPath m_outline;
 };
 
 inline bool ObjectDrawStruct::acceptsMagneticSnap() const

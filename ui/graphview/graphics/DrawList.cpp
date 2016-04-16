@@ -217,20 +217,18 @@ void DrawList::addBezierCurve(const Point& pos0, const Point& cp0, const Point& 
 }
 
 
-void DrawList::addText(const Font& font, float font_scale, const Point& pos, unsigned int col, const char* text_begin, const char* text_end, float wrap_width, const Rect* cpu_fine_clip_rect)
+void DrawList::addText(const Font& font, float font_scale, const Point& pos, unsigned int col, const std::string& text, float wrap_width, const Rect* cpu_fine_clip_rect)
 {
 	if ((col >> 24) == 0)
 		return;
 
-	if (text_end == NULL)
-		text_end = text_begin + strlen(text_begin);
-	if (text_begin == text_end)
+	if (text.empty())
 		return;
 
 	assert(font.atlas()->texID() == m_textureIdStack.back());  // Use high-level ImGui::PushFont() or low-level DrawList::PushTextureId() to change font.
 
 	// reserve vertices for worse case (over-reserving is useful and easily amortized)
-	const int char_count = (int)(text_end - text_begin);
+	const int char_count = text.size();
 	const int vtx_count_max = char_count * 4;
 	const int idx_count_max = char_count * 6;
 	const int vtx_begin = m_vtxBuffer.size();
@@ -245,7 +243,7 @@ void DrawList::addText(const Font& font, float font_scale, const Point& pos, uns
 		clip_rect.setRight(std::max(clip_rect.right(), cpu_fine_clip_rect->right()));
 		clip_rect.setBottom(std::max(clip_rect.bottom(), cpu_fine_clip_rect->bottom()));
 	}
-	font.renderText(font_scale, pos, col, clip_rect, text_begin, text_end, this, wrap_width, cpu_fine_clip_rect != NULL);
+	font.renderText(font_scale, pos, col, clip_rect, text, this, wrap_width, cpu_fine_clip_rect != NULL);
 
 	// give back unused vertices
 	// FIXME-OPT: clean this up
@@ -259,9 +257,36 @@ void DrawList::addText(const Font& font, float font_scale, const Point& pos, uns
 	m_vtxCurrentIdx = m_vtxBuffer.size();
 }
 
-void DrawList::addText(const Point& pos, unsigned int col, const char* text_begin, const char* text_end)
+void DrawList::addText(const Point& pos, unsigned int col, const std::string& text)
 {
-	addText(*ViewRenderer::defaultFont(), 1.0, pos, col, text_begin, text_end);
+	addText(*ViewRenderer::defaultFont(), 1.0, pos, col, text);
+}
+
+void DrawList::addText(const Rect& rect, unsigned int col, const std::string& text, int align, bool clip)
+{
+    if (text.empty())
+        return;
+
+	auto font = ViewRenderer::defaultFont();
+	if (!font)
+		return;
+
+    // Perform CPU side clipping for single clipped element to avoid using scissor state
+    const Point text_size = font->calcTextSize(font->fontSize(), FLT_MAX, rect.width(), text.data());
+
+	bool need_clipping = (rect.left() + text_size.x >= rect.right()) || (rect.top() + text_size.y >= rect.bottom());
+
+    // Align
+	Point pos = rect.topLeft();
+    if (align & Align_Center) pos.x = std::max(pos.x, (pos.x + rect.right() - text_size.x) * 0.5f);
+    else if (align & Align_Right) pos.x = std::max(pos.x, rect.right() - text_size.x);
+    if (align & Align_VCenter) pos.y = std::max(pos.y, (pos.y + rect.bottom() - text_size.y) * 0.5f);
+
+    // Render
+    if (need_clipping)
+        addText(*font, 1.0f, pos, col, text, 0.0f, &rect);
+    else
+        addText(*font, 1.0f, pos, col, text, 0.0f, nullptr);
 }
 
 void DrawList::addImage(unsigned int user_texture_id, const Point& a, const Point& b, const Point& uv0, const Point& uv1, unsigned int col)

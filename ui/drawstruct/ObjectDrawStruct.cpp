@@ -115,24 +115,60 @@ bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect) co
 	return false;
 }
 
+void ObjectDrawStruct::fillDrawList(DrawList& list, bool selected)
+{
+	const auto& palette = m_parentView->palette();
+	unsigned int penCol = DrawList::convert(palette.text().color());
+	unsigned int midCol = DrawList::convert(palette.midlight().color());
+	unsigned int lightCol = DrawList::convert(palette.light().color());
+	float penWidth = selected ? 3.f : 1.f;
+	unsigned int fillCol = selected ? midCol : DrawList::setAlpha(lightCol, 128);
+
+	// Draw the shape around the object
+	pPoint tl = pPoint(m_objectArea.left(), m_objectArea.top()), br = pPoint(m_objectArea.right(), m_objectArea.bottom());
+	list.addRectFilled(tl, br, fillCol, objectCorner);
+	list.addRect(tl, br, penCol, penWidth, objectCorner);
+
+	// The Datas
+	const panda::BaseData* clickedData = m_parentView->getClickedData();
+	for (const auto& dataPair : m_datas)
+	{
+		const auto data = dataPair.second;
+		const auto area = dataPair.first;
+		unsigned int dataCol = 0;
+		if (clickedData && clickedData != data && !m_parentView->canLinkWith(data))
+			dataCol = lightCol;
+		else
+			dataCol = DrawList::setAlpha(DrawList::convert(data->getDataTrait()->typeColor()), 255);
+
+		pPoint dtl = pPoint(area.left(), area.top()), dbr = pPoint(area.right(), area.bottom());
+		list.addRectFilled(dtl, dbr, dataCol);
+		list.addRect(dtl, dbr, penCol);
+	}
+	
+	// The Text
+	QRectF textArea = getTextArea();
+	pRect pArea(textArea.left(), textArea.top(), textArea.right(), textArea.bottom());
+	list.addText(pArea, penCol, m_object->getName(), DrawList::Align_Center | DrawList::Align_VCenter);
+}
+
 void ObjectDrawStruct::draw(QPainter* painter, bool selected)
 {
 	// Choose the pen and the brush
-	QPen pen(m_parentView->palette().text().color());
-	if(m_parentView->selection().isSelected(m_object))
+	const auto& palette = m_parentView->palette();
+	QPen pen(palette.text().color());
+	if(selected)
 	{
 		pen.setWidthF(3);
-		painter->setBrush(m_parentView->palette().midlight());
+		painter->setBrush(palette.midlight());
 	}
 	else
-		painter->setBrush(m_parentView->palette().light());
-
-	if (!selected)
 	{
-		auto color = painter->brush().color();
+		auto color = palette.light().color();
 		color.setAlpha(128);
 		painter->setBrush(color);
 	}
+
 	painter->setPen(pen);
 
 	// Draw the shape around the object
