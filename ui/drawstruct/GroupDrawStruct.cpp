@@ -13,32 +13,33 @@ GroupDrawStruct::GroupDrawStruct(GraphView* view, panda::Group* object)
 	update();
 }
 
-void GroupDrawStruct::drawShape(QPainter* painter)
+void GroupDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 {
-	painter->drawPath(m_shapePath);
+	list.addConvexPolyFilled(m_shapePath, colors.fillColor, false);
+	list.addPolyline(m_shapePath, colors.penColor, false, colors.penWidth, true);
 }
 
-void GroupDrawStruct::drawText(QPainter* painter)
+std::string GroupDrawStruct::getLabel() const
 {
-	if(m_group && !m_group->getGroupName().empty())
+	if (m_group)
 	{
-		int margin = dataRectSize+dataRectMargin+3;
-		QRectF textArea = m_objectArea.adjusted(margin, 0, -margin, 0);
-		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, QString::fromStdString(m_group->getGroupName()));
+		const auto& name = m_group->getGroupName();
+		if (!name.empty())
+			return name;
 	}
-	else
-		ObjectDrawStruct::drawText(painter);
+	
+	return ObjectDrawStruct::getLabel();
 }
 
 void GroupDrawStruct::moveVisual(const QPointF& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	m_shapePath.translate(delta);
+	m_shapePath.translate(pPoint(delta.x(), delta.y()));
 }
 
 bool GroupDrawStruct::contains(const QPointF& point)
 {
-	return m_shapePath.contains(point);
+	return m_shapePath.contains(pPoint(point.x(), point.y()));
 }
 
 void GroupDrawStruct::update()
@@ -46,17 +47,16 @@ void GroupDrawStruct::update()
 	const int w = 9, h = 9;
 	ObjectDrawStruct::update();
 
-	QPainterPath path;
-	path.moveTo(m_objectArea.left()+w, m_objectArea.top());
-	path.lineTo(m_objectArea.right()-w, m_objectArea.top());
-	path.lineTo(m_objectArea.right(), m_objectArea.top()+h);
-	path.lineTo(m_objectArea.right(), m_objectArea.bottom()-h);
-	path.lineTo(m_objectArea.right()-w, m_objectArea.bottom());
-	path.lineTo(m_objectArea.left()+w, m_objectArea.bottom());
-	path.lineTo(m_objectArea.left(), m_objectArea.bottom()-h);
-	path.lineTo(m_objectArea.left(), m_objectArea.top()+h);
-	path.lineTo(m_objectArea.left()+w, m_objectArea.top());
-	path.swap(m_shapePath);
+	m_shapePath.clear();
+	m_shapePath.moveTo(pPoint(m_objectArea.left()+w, m_objectArea.top()));
+	m_shapePath.lineTo(pPoint(m_objectArea.right()-w, m_objectArea.top()));
+	m_shapePath.lineTo(pPoint(m_objectArea.right(), m_objectArea.top()+h));
+	m_shapePath.lineTo(pPoint(m_objectArea.right(), m_objectArea.bottom()-h));
+	m_shapePath.lineTo(pPoint(m_objectArea.right()-w, m_objectArea.bottom()));
+	m_shapePath.lineTo(pPoint(m_objectArea.left()+w, m_objectArea.bottom()));
+	m_shapePath.lineTo(pPoint(m_objectArea.left(), m_objectArea.bottom()-h));
+	m_shapePath.lineTo(pPoint(m_objectArea.left(), m_objectArea.top()+h));
+	m_shapePath.lineTo(pPoint(m_objectArea.left()+w, m_objectArea.top()));
 }
 
 int GroupDrawStruct::dataStartY()

@@ -88,6 +88,12 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	m_hoverTimer->setSingleShot(true);
 
 	setMouseTracking(true);
+
+	const auto& pal = palette();
+	m_drawColors.penColor = DrawList::convert(pal.text().color());
+	m_drawColors.midLightColor = DrawList::convert(pal.midlight().color());
+	m_drawColors.lightColor = DrawList::convert(pal.light().color());
+	m_drawColors.highlightColor = DrawList::convert(pal.highlight().color());
 }
 
 GraphView::~GraphView() = default;
@@ -235,7 +241,7 @@ void GraphView::paintGL()
 
 	// Zoom
 	painter.scale(m_zoomFactor, m_zoomFactor);
-
+/*
 	// Give a possibility to draw behind normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
 		ods->drawBackground(&painter);
@@ -244,9 +250,8 @@ void GraphView::paintGL()
 	drawLinks();
 
 	// Draw the objects
-//	for (auto& ods : m_orderedObjectDrawStructs)
-//		ods->fillDrawList(drawList);
-	//	ods->draw(&painter);
+	for (auto& ods : m_orderedObjectDrawStructs)
+		ods->draw(&painter);
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for (auto& ods : m_selectedObjectsDrawStructs)
@@ -256,7 +261,7 @@ void GraphView::paintGL()
 	// Give a possibility to draw in front of normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
 		ods->drawForeground(&painter);
-
+*/
 	// Draw links tags
 	for (auto& tag : m_linkTags)
 		tag.second->draw(&painter);
@@ -294,8 +299,24 @@ void GraphView::paintGL()
 
 	painter.end();
 
+	// Give a possibility to draw behind normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->fillDrawList(drawList);
+		ods->drawBackground(drawList, m_drawColors);
+
+	// Draw links
+	drawLinks();
+
+	// Draw the objects
+	for (auto& ods : m_orderedObjectDrawStructs)
+		ods->draw(drawList, m_drawColors);
+
+	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
+	for (auto& ods : m_selectedObjectsDrawStructs)
+		ods->draw(drawList, m_drawColors, true);
+
+	// Give a possibility to draw in front of normal objects
+	for (auto& ods : m_orderedObjectDrawStructs)
+		ods->drawForeground(drawList, m_drawColors);
 
 	m_viewRenderer->addDrawList(&m_linksDrawList);
 	m_viewRenderer->addDrawList(&drawList);

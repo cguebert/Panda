@@ -115,41 +115,19 @@ bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect) co
 	return false;
 }
 
-void ObjectDrawStruct::fillDrawList(DrawList& list, bool selected)
+void ObjectDrawStruct::draw(DrawList& list, DrawColors& colors, bool selected)
 {
-	const auto& palette = m_parentView->palette();
-	unsigned int penCol = DrawList::convert(palette.text().color());
-	unsigned int midCol = DrawList::convert(palette.midlight().color());
-	unsigned int lightCol = DrawList::convert(palette.light().color());
-	float penWidth = selected ? 3.f : 1.f;
-	unsigned int fillCol = selected ? midCol : DrawList::setAlpha(lightCol, 128);
+	colors.penWidth = selected ? 3.f : 1.f;
+	colors.fillColor = selected ? colors.midLightColor : DrawList::setAlpha(colors.lightColor, 128);
 
 	// Draw the shape around the object
-	pPoint tl = pPoint(m_objectArea.left(), m_objectArea.top()), br = pPoint(m_objectArea.right(), m_objectArea.bottom());
-	list.addRectFilled(tl, br, fillCol, objectCorner);
-	list.addRect(tl, br, penCol, penWidth, objectCorner);
+	drawShape(list, colors);
 
 	// The Datas
-	const panda::BaseData* clickedData = m_parentView->getClickedData();
-	for (const auto& dataPair : m_datas)
-	{
-		const auto data = dataPair.second;
-		const auto area = dataPair.first;
-		unsigned int dataCol = 0;
-		if (clickedData && clickedData != data && !m_parentView->canLinkWith(data))
-			dataCol = lightCol;
-		else
-			dataCol = DrawList::setAlpha(DrawList::convert(data->getDataTrait()->typeColor()), 255);
+	drawDatas(list, colors);
 
-		pPoint dtl = pPoint(area.left(), area.top()), dbr = pPoint(area.right(), area.bottom());
-		list.addRectFilled(dtl, dbr, dataCol);
-		list.addRect(dtl, dbr, penCol);
-	}
-	
 	// The Text
-	QRectF textArea = getTextArea();
-	pRect pArea(textArea.left(), textArea.top(), textArea.right(), textArea.bottom());
-	list.addText(pArea, penCol, m_object->getName(), DrawList::Align_Center | DrawList::Align_VCenter);
+	drawText(list, colors);
 }
 
 void ObjectDrawStruct::draw(QPainter* painter, bool selected)
@@ -181,6 +159,14 @@ void ObjectDrawStruct::draw(QPainter* painter, bool selected)
 	drawText(painter);
 }
 
+void ObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
+{
+	// Draw the shape around the object
+	pPoint tl = pPoint(m_objectArea.left(), m_objectArea.top()), br = pPoint(m_objectArea.right(), m_objectArea.bottom());
+	list.addRectFilled(tl, br, colors.fillColor, objectCorner);
+	list.addRect(tl, br, colors.penColor, colors.penWidth, objectCorner);
+}
+
 void ObjectDrawStruct::drawShape(QPainter* painter)
 {
 	painter->drawRoundedRect(m_objectArea, objectCorner, objectCorner);
@@ -190,6 +176,26 @@ void ObjectDrawStruct::drawDatas(QPainter* painter)
 {
 	for(const auto& dataPair : m_datas)
 		drawData(painter, dataPair.second, dataPair.first);
+}
+
+void ObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
+{
+	for(const auto& dataPair : m_datas)
+		drawData(list, colors, dataPair.second, dataPair.first);
+}
+
+void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const QRectF& area)
+{
+	unsigned int dataCol = 0;
+	const panda::BaseData* clickedData = m_parentView->getClickedData();
+	if (clickedData && clickedData != data && !m_parentView->canLinkWith(data))
+		dataCol = colors.lightColor;
+	else
+		dataCol = DrawList::convert(data->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
+
+	pPoint dtl = pPoint(area.left(), area.top()), dbr = pPoint(area.right(), area.bottom());
+	list.addRectFilled(dtl, dbr, dataCol);
+	list.addRect(dtl, dbr, colors.penColor);
 }
 
 void ObjectDrawStruct::drawData(QPainter* painter, const panda::BaseData* data, const QRectF& area)
@@ -211,6 +217,14 @@ void ObjectDrawStruct::drawText(QPainter* painter)
 	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, QString::fromStdString(m_object->getName()));
 }
 
+void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)
+{
+	QRectF textArea = getTextArea();
+	pRect pArea(textArea.left(), textArea.top(), textArea.right(), textArea.bottom());
+	unsigned int penCol = DrawList::convert(m_parentView->palette().text().color());
+	list.addText(pArea, penCol, getLabel(), DrawList::Align_Center | DrawList::Align_VCenter);
+}
+
 void ObjectDrawStruct::save(panda::XmlElement& elem)
 {
 	elem.setAttribute("x", m_position.x());
@@ -223,6 +237,11 @@ void ObjectDrawStruct::load(const panda::XmlElement& elem)
 	newPos.setX(elem.attribute("x").toFloat());
 	newPos.setY(elem.attribute("y").toFloat());
 	move(newPos - m_position);
+}
+
+std::string ObjectDrawStruct::getLabel() const
+{
+	return m_object->getName();
 }
 
 //****************************************************************************//

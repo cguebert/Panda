@@ -6,6 +6,7 @@
 #include <QtWidgets>
 #include <memory>
 
+struct DrawColors;
 class GraphView;
 
 namespace panda
@@ -27,12 +28,13 @@ public:
 	virtual void draw(QPainter* painter, bool selected = false);		// "Normal" draw
 	virtual void drawForeground(QPainter*) {}	// Last called
 
-	// The next 3 functions are here if we want to replace only part of the normal draw
+	virtual void drawBackground(DrawList& list, DrawColors& colors) {}	// Called first
+	virtual void draw(DrawList& list, DrawColors& colors, bool selected = false); // "Normal" draw
+	virtual void drawForeground(DrawList& list, DrawColors& colors) {}	// Called last
+
 	virtual void drawShape(QPainter* painter);
 	virtual void drawDatas(QPainter* painter);
 	virtual void drawText(QPainter* painter);
-
-	virtual void fillDrawList(DrawList& list, bool selected = false);
 
 	virtual void update();							// Recompute the information about this object
 	virtual void move(const QPointF& delta);		// Move the position of the object in the view
@@ -70,6 +72,14 @@ public:
 	virtual int dataStartY();
 
 protected:
+	// The next 3 functions are here if we want to replace only part of the normal draw
+	virtual void drawShape(DrawList& list, DrawColors& colors);
+	virtual void drawDatas(DrawList& list, DrawColors& colors);
+	virtual void drawText(DrawList& list, DrawColors& colors);
+
+	virtual std::string getLabel() const;
+
+	void drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const QRectF& area);
 	void drawData(QPainter* painter, const panda::BaseData* data, const QRectF& area);
 
 	GraphView* m_parentView;

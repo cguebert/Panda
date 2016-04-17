@@ -29,6 +29,19 @@ class ObjectDrawStruct;
 class ObjectsSelection;
 class ViewRenderer;
 
+struct DrawColors
+{
+// Can be modified to pass current object info
+	unsigned int penColor = 0;
+	unsigned int fillColor = 0;
+	float penWidth = 1.0f;
+	
+// Other colors
+	unsigned int midLightColor = 0;
+	unsigned int lightColor = 0;
+	unsigned int highlightColor = 0;
+};
+
 class GraphView : public QOpenGLWidget, public ScrollableView
 {
 	Q_OBJECT
@@ -207,6 +220,7 @@ private:
 
 	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
 	DrawList m_linksDrawList, m_connectedDrawList, m_selectedObjectsDrawList;
+	DrawColors m_drawColors; /// So that we aquire Qt colors only once
 };
 
 //****************************************************************************//

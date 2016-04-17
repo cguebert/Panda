@@ -13,19 +13,25 @@ LayerDrawStruct::LayerDrawStruct(GraphView* view, panda::Layer* object)
 	update();
 }
 
-void LayerDrawStruct::drawText(QPainter* painter)
+QRectF LayerDrawStruct::getTextArea()
 {
-	if(m_layer && !m_layer->getLayerName().empty())
+	QRectF textArea = m_objectArea;
+	textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
+	int margin = dataRectSize+dataRectMargin+3;
+	textArea.adjust(margin, 0, -margin, 0);
+	return textArea;
+}
+
+std::string LayerDrawStruct::getLabel() const
+{
+	if (m_layer)
 	{
-		int margin = dataRectSize+dataRectMargin+3;
-		QRectF textArea = m_objectArea;
-		textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
-		textArea.adjust(margin, 0, -margin, 0);
-		QString text = QString::fromStdString(m_layer->getLayerName()) + "\n(" + QString::fromStdString(m_layer->getName()) + ")";
-		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, text);
+		const auto& name = m_layer->getLayerName();
+		if (!name.empty())
+			return name + "\n(" + m_layer->getName() + ")";
 	}
-	else
-		DockObjectDrawStruct::drawText(painter);
+	
+	return ObjectDrawStruct::getLabel();
 }
 
 int LayerDrawClass = RegisterDrawObject<panda::Layer, LayerDrawStruct>();

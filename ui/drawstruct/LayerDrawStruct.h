@@ -15,7 +15,8 @@ class LayerDrawStruct : public DockObjectDrawStruct
 public:
 	LayerDrawStruct(GraphView* view, panda::Layer* object);
 
-	void drawText(QPainter* painter) override;
+	QRectF getTextArea() override;
+	std::string getLabel() const override;
 
 protected:
 	panda::Layer* m_layer;
