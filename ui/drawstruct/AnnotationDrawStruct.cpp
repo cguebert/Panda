@@ -20,47 +20,35 @@ AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* 
 	update();
 }
 
-void AnnotationDrawStruct::drawBackground(QPainter* painter)
+void AnnotationDrawStruct::drawBackground(DrawList& list, DrawColors& colors)
 {
-	painter->save();
-	painter->setBrush(Qt::NoBrush);
-
 	// Compute the bounding box of the text, if it changed
-	const QString& text = QString::fromStdString(m_annotation->m_text.getValue());
 	int textCounter = m_annotation->m_text.getCounter();
 	int colorCounter = m_annotation->m_color.getCounter();
 	if(m_textSize.isEmpty() || m_textCounter != textCounter || m_colorCounter != colorCounter)
 	{
-		QRectF tempArea = QRectF(m_startPos, QSizeF(1000, 1000));
-		tempArea = painter->boundingRect(tempArea, Qt::AlignLeft | Qt::AlignTop, text);
-		m_textSize = tempArea.size();
+		auto tempSize = list.calcTextSize(1.0f, m_annotation->m_text.getValue());
+		m_textSize = QSizeF(tempSize.x + 1, tempSize.y);
 		m_textCounter = textCounter;
 		m_colorCounter = colorCounter;
 		update();
 	}
 
 	// Draw the shape of the annotation
-	auto color = m_annotation->m_color.getValue().toHex();
-	painter->setBrush(QColor::fromRgba(color));
-	painter->drawPath(m_shapePath);
-
-	painter->restore();
+	list.addConvexPolyFilled(m_shapePath, DrawList::convert(m_annotation->m_color.getValue().toHex()));
+	list.addPolyline(m_shapePath, colors.penColor, false);
 }
 
-void AnnotationDrawStruct::drawForeground(QPainter* painter)
+void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
 {
-	painter->save();
-	painter->setBrush(Qt::NoBrush);
+	auto textArea = pRect(m_textArea.left(), m_textArea.top(), m_textArea.right(), m_textArea.bottom());
 
 	// Draw the box behind the text
-	painter->save();
-	painter->setPen(Qt::NoPen);
-	painter->setBrush(m_parentView->palette().midlight());
-	painter->drawRect(m_textArea);
-	painter->restore();
+	list.addRectFilled(textArea.topLeft(), textArea.bottomRight(), colors.midLightColor);
 
 	// Draw the text
-	painter->drawText(m_textArea.adjusted(5, 5, -5, -5), Qt::AlignLeft | Qt::AlignTop, QString::fromStdString(m_annotation->m_text.getValue()));
+	textArea.adjust(5, 5, -5, -5);
+	list.addText(textArea, colors.penColor, m_annotation->m_text.getValue());
 
 	// Draw the handle
 	const panda::PandaDocument* doc = m_parentView->getDocument();
@@ -68,11 +56,10 @@ void AnnotationDrawStruct::drawForeground(QPainter* painter)
 			&& m_parentView->selection().get().size() == 1
 			&& m_parentView->selection().isSelected(m_annotation))	// The annotation is the only selected object
 	{
-		painter->setBrush(m_parentView->palette().midlight());
-		painter->drawEllipse(m_endPos, 5, 5);
+		auto center = pPoint(m_endPos.x(), m_endPos.y());
+		list.addCircleFilled(center, 5, colors.midLightColor);
+		list.addCircle(center, 5, colors.penColor);
 	}
-
-	painter->restore();
 }
 
 void AnnotationDrawStruct::moveVisual(const QPointF& delta)
@@ -80,7 +67,7 @@ void AnnotationDrawStruct::moveVisual(const QPointF& delta)
 	ObjectDrawStruct::moveVisual(delta);
 
 	m_textArea.translate(delta);
-	m_shapePath.translate(delta);
+	m_shapePath.translate(pPoint(delta.x(), delta.y()));
 	m_startPos += delta;
 	m_endPos += delta;
 }
@@ -129,14 +116,14 @@ void AnnotationDrawStruct::update()
 	m_textArea.translate(0, -m_textSize.height());
 	m_textArea.adjust(3, -13, 13, -3);
 
-	m_shapePath = QPainterPath();
+	m_shapePath.clear();
 	switch(m_annotation->m_type.getValue())
 	{
 		case Annotation::ANNOTATION_TEXT:
 			break;
 		case Annotation::ANNOTATION_ARROW:
 		{
-			QPointF start = m_textArea.center();
+	/*		QPointF start = m_textArea.center();
 			QPointF dir = m_endPos - start;
 			const qreal w = 2.5;
 			qreal length = sqrt(dir.x()*dir.x() + dir.y()*dir.y());
@@ -157,18 +144,18 @@ void AnnotationDrawStruct::update()
 			m_shapePath.lineTo(m_endPos - dir2 - 10*dir);
 			m_shapePath.lineTo(m_endPos - 5*dir2 - 15*dir);
 			m_shapePath.lineTo(m_endPos);
-			break;
+	*/		break;
 		}
 		case Annotation::ANNOTATION_RECTANGLE:
 		{
-			QRectF rect = QRectF(m_startPos, m_endPos);
-			m_shapePath.addRect(rect);
+			m_shapePath.rect(pPoint(m_startPos.x(), m_startPos.y()), pPoint(m_endPos.x(), m_endPos.y()));
+			m_shapePath.close();
 			break;
 		}
 		case Annotation::ANNOTATION_ELLIPSE:
 		{
-			QRectF rect = QRectF(m_startPos, m_endPos);
-			m_shapePath.addEllipse(rect);
+	//		QRectF rect = QRectF(m_startPos, m_endPos);
+	//		m_shapePath.addEllipse(rect);
 			break;
 		}
 	}

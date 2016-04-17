@@ -52,6 +52,7 @@ public:
 	{ return (alpha << 24) | (col & 0x00FFFFFF); }
 
 	void addDrawCmd(); // This is useful if you need to forcefully create a new draw call (to allow for dependent rendering / blending). Otherwise primitives are merged into the same draw-call as much as possible
+	void merge(DrawList& list, bool ignoreClip = true); // Add the list to this one, merging it in the last draw command if possible
 
 	void pushTextureID(unsigned int texture_id);
 	void popTextureID();
@@ -73,7 +74,7 @@ public:
 	void addText(const pRect& rect, unsigned int col, const std::string& text, TextAlign align = Align_Default, bool fit = false); // fit: if true, will decrease the scale so that the text can fit in the rectangle
 	void addText(const Font& font, float font_scale, const pPoint& pos, unsigned int col, const std::string& text, float wrap_width = 0.0f, const panda::types::Rect* cpu_fine_clip_rect = NULL);
 	void addImage(unsigned int texture_id, const pPoint& a, const pPoint& b, const pPoint& uv0 = panda::types::Point(0,0), const pPoint& uv1 = panda::types::Point(1,1), unsigned int col = 0xFFFFFFFF);
-	void addPolyline(const DrawPath& path, unsigned int col, bool closed = true, float thickness = 1.0f, bool anti_aliased = true);
+	void addPolyline(const DrawPath& path, unsigned int col, bool close = true, float thickness = 1.0f, bool anti_aliased = true);
 	void addConvexPolyFilled(const DrawPath& path, unsigned int col, bool anti_aliased = true);
 
 	pPoint calcTextSize(float scale, const std::string& text, float wrap_width = 0.0f, bool cutWords = false);
@@ -101,7 +102,7 @@ private:
 	inline void primWriteIdx(DrawIdx idx) { *m_idxWritePtr = idx; m_idxWritePtr++; }
 
 	inline void pathFill(unsigned int col) { addConvexPolyFilled(m_path, col, true); m_path.clear(); }
-	inline void pathStroke(unsigned int col, bool closed, float thickness = 1.0f) { addPolyline(m_path, col, closed, thickness, true); m_path.clear(); }
+	inline void pathStroke(unsigned int col, bool close, float thickness = 1.0f) { addPolyline(m_path, col, close, thickness, true); m_path.clear(); }
 
 	void updateTextureID();
 	void updateClipRect();
@@ -110,7 +111,7 @@ private:
 	std::vector<DrawIdx> m_idxBuffer; // Index buffer. Each command consume DrawCmd::ElemCount of those
 	std::vector<DrawVert> m_vtxBuffer; // Vertex buffer.
 
-	DrawIdx m_vtxCurrentIdx = 0; // VtxBuffer.Size
+	DrawIdx m_vtxCurrentIdx = 0; // VtxBuffer.size()
 	DrawVert* m_vtxWritePtr = nullptr; // Point within m_vtxBuffer after each add command (to avoid using the vector operators too much)
 	DrawIdx* m_idxWritePtr = nullptr; // Index within m_idxBuffer after each add command (to avoid using the vector operators too much)
 	std::vector<unsigned int> m_textureIdStack;

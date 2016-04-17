@@ -51,6 +51,34 @@ void DrawList::addDrawCmd()
 	m_cmdBuffer.push_back(draw_cmd);
 }
 
+void DrawList::merge(DrawList& list, bool ignoreClip)
+{
+	if (list.m_cmdBuffer.empty() || list.m_idxBuffer.empty())
+		return;
+
+	const auto& listFront = list.m_cmdBuffer.front();
+	const auto& thisBack = m_cmdBuffer.back();
+	if (m_cmdBuffer.empty()
+		|| (!ignoreClip && (listFront.clipRect != thisBack.clipRect))
+		|| listFront.textureId != thisBack.textureId)
+		addDrawCmd();
+
+	auto lastIdx = m_idxBuffer.size();
+	auto lastVtx = m_vtxBuffer.size();
+	m_idxBuffer.insert(m_idxBuffer.end(), list.m_idxBuffer.begin(), list.m_idxBuffer.end());
+	m_vtxBuffer.insert(m_vtxBuffer.end(), list.m_vtxBuffer.begin(), list.m_vtxBuffer.end());
+
+	// Update the indices we inserted
+	std::for_each(m_idxBuffer.begin() + lastIdx, m_idxBuffer.end(), [lastVtx](auto& v) { v += lastVtx; });
+
+	// Insert the commands
+	m_cmdBuffer.back().elemCount += list.m_cmdBuffer.front().elemCount;
+	for (int i = 1, nb = list.m_cmdBuffer.size(); i < nb; ++i)
+		m_cmdBuffer.push_back(list.m_cmdBuffer[i]);
+
+	m_vtxCurrentIdx = m_vtxBuffer.size();
+}
+
 void DrawList::updateClipRect()
 {
 	// If current command is used with different settings we need to add a new command
@@ -314,7 +342,7 @@ void DrawList::addImage(unsigned int user_texture_id, const Point& a, const Poin
 		popTextureID();
 }
 
-void DrawList::addPolyline(const DrawPath& path, unsigned int col, bool closed, float thickness, bool anti_aliased)
+void DrawList::addPolyline(const DrawPath& path, unsigned int col, bool close, float thickness, bool anti_aliased)
 {
 	const auto& points = path.points();
 	if (points.size() < 2)
@@ -324,7 +352,7 @@ void DrawList::addPolyline(const DrawPath& path, unsigned int col, bool closed, 
 
 	int points_count = points.size();
 	int count = points_count;
-	if (!closed)
+	if (!close)
 		count = points_count - 1;
 
 	const bool thick_line = thickness > 1.0f;
@@ -350,12 +378,12 @@ void DrawList::addPolyline(const DrawPath& path, unsigned int col, bool closed, 
 			temp_normals[i1].x = diff.y;
 			temp_normals[i1].y = -diff.x;
 		}
-		if (!closed)
+		if (!close)
 			temp_normals[points_count-1] = temp_normals[points_count-2];
 
 		if (!thick_line)
 		{
-			if (!closed)
+			if (!close)
 			{
 				temp_points[0] = points[0] + temp_normals[0] * AA_SIZE;
 				temp_points[1] = points[0] - temp_normals[0] * AA_SIZE;
@@ -405,7 +433,7 @@ void DrawList::addPolyline(const DrawPath& path, unsigned int col, bool closed, 
 		else
 		{
 			const float half_inner_thickness = (thickness - AA_SIZE) * 0.5f;
-			if (!closed)
+			if (!close)
 			{
 				temp_points[0] = points[0] + temp_normals[0] * (half_inner_thickness + AA_SIZE);
 				temp_points[1] = points[0] + temp_normals[0] * (half_inner_thickness);

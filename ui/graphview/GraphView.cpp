@@ -210,6 +210,9 @@ void GraphView::resizeGL(int w, int h)
 {
 	glViewport(0, 0, w, h);
 	m_viewRenderer->resize(w, h);
+	m_linksDrawList = DrawList();
+	m_connectedDrawList = DrawList();
+	m_selectedObjectsDrawList = DrawList();
 	update();
 }
 
@@ -227,44 +230,33 @@ void GraphView::paintGL()
 	m_viewRenderer->newFrame();
 	DrawList drawList;
 
-	QPainter painter(this);
-
-	painter.beginNativePainting();
 	auto col = palette().background().color();
 	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	painter.endNativePainting();
 
-	painter.setRenderHint(QPainter::Antialiasing, true);
-	painter.setRenderHint(QPainter::TextAntialiasing, true);
-	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
-
-	// Zoom
-	painter.scale(m_zoomFactor, m_zoomFactor);
-/*
 	// Give a possibility to draw behind normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->drawBackground(&painter);
+		ods->drawBackground(drawList, m_drawColors);
 
 	// Draw links
 	drawLinks();
+	drawList.merge(m_linksDrawList);
 
 	// Draw the objects
 	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->draw(&painter);
+		ods->draw(drawList, m_drawColors);
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for (auto& ods : m_selectedObjectsDrawStructs)
-		ods->draw(&painter, true);
+		ods->draw(drawList, m_drawColors, true);
 
-	painter.setBrush(Qt::NoBrush);
 	// Give a possibility to draw in front of normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->drawForeground(&painter);
-*/
+		ods->drawForeground(drawList, m_drawColors);
+
 	// Draw links tags
-	for (auto& tag : m_linkTags)
-		tag.second->draw(&painter);
+//	for (auto& tag : m_linkTags)
+//		tag.second->draw(&painter);
 
 	// Highlight connected Datas
 	drawConnectedDatas(m_hoverData);
@@ -285,7 +277,7 @@ void GraphView::paintGL()
 		drawList.addLine(convert(m_previousMousePos), convert(m_currentMousePos),
 						 DrawList::convert(palette().text().color()), 1.5);
 	}
-
+/*
 	if (m_debugDirtyState)
 	{
 #ifdef PANDA_LOG_EVENTS
@@ -296,29 +288,7 @@ void GraphView::paintGL()
 #endif
 			paintDirtyState(painter);
 	}
-
-	painter.end();
-
-	// Give a possibility to draw behind normal objects
-	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->drawBackground(drawList, m_drawColors);
-
-	// Draw links
-	drawLinks();
-
-	// Draw the objects
-	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->draw(drawList, m_drawColors);
-
-	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
-	for (auto& ods : m_selectedObjectsDrawStructs)
-		ods->draw(drawList, m_drawColors, true);
-
-	// Give a possibility to draw in front of normal objects
-	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->drawForeground(drawList, m_drawColors);
-
-	m_viewRenderer->addDrawList(&m_linksDrawList);
+	*/
 	m_viewRenderer->addDrawList(&drawList);
 	m_viewRenderer->addDrawList(&m_connectedDrawList);
 	m_viewRenderer->render();
