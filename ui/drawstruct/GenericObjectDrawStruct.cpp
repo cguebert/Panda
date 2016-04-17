@@ -106,23 +106,28 @@ void GenericObjectDrawStruct::update()
 	m_datas.emplace_back(dataArea, (panda::BaseData*)m_genericObject->m_genericData);
 }
 
-void GenericObjectDrawStruct::drawDatas(QPainter* painter)
+void GenericObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
 {
+	const panda::BaseData* clickedData = m_parentView->getClickedData();
+
 	for(RectDataPair dataPair : m_datas)
 	{
 		if (dynamic_cast<panda::BaseGenericData*>(dataPair.second))
 		{
+			unsigned int dataCol = 0;
 			auto data = dataPair.second;
-			painter->setPen(QPen(m_parentView->palette().text().color()));
-			const panda::BaseData* clickedData = m_parentView->getClickedData();
 			if (clickedData && clickedData != data && m_parentView->canLinkWith(data))
-				painter->setBrush(QColor(clickedData->getDataTrait()->typeColor()));
+				dataCol = DrawList::convert(clickedData->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
 			else
-				painter->setBrush(m_parentView->palette().button().color());
-			painter->drawRoundedRect(dataPair.first, 3, 3);
+				dataCol = colors.lightColor;
+
+			const auto& area = dataPair.first;
+			pPoint dtl = pPoint(area.left(), area.top()), dbr = pPoint(area.right(), area.bottom());
+			list.addRectFilled(dtl, dbr, dataCol, 3.0f);
+			list.addRect(dtl, dbr, colors.penColor, 1.0f, 3.0f);
 		}
 		else
-			drawData(painter, dataPair.second, dataPair.first);
+			drawData(list, colors, dataPair.second, dataPair.first);
 	}
 }
 

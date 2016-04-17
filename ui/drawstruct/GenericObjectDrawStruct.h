@@ -14,7 +14,7 @@ public:
 	GenericObjectDrawStruct(GraphView* view, panda::GenericObject* m_object);
 
 	void update() override;
-	void drawDatas(QPainter* painter) override;
+	void drawDatas(DrawList& list, DrawColors& colors) override;
 	QSize getObjectSize() override;
 
 	static const int createdDataRectMargin = 3;

@@ -51,8 +51,7 @@ public:
 	virtual bool acceptsMagneticSnap() const; // If this object is used for the magnetic snap when moving objects
 
 	virtual QSize getObjectSize();
-	virtual QRectF getTextArea(); // The area in which we can render text
-
+	
 	const std::vector<RectDataPair>& getDataRects() const;
 	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr) const;
 	bool getDataRect(const panda::BaseData* data, QRectF& rect) const;
@@ -77,7 +76,8 @@ protected:
 	virtual void drawDatas(DrawList& list, DrawColors& colors);
 	virtual void drawText(DrawList& list, DrawColors& colors);
 
-	virtual std::string getLabel() const;
+	virtual QRectF getTextArea(); // The area in which we can render text
+	virtual std::string getLabel() const; // The text to draw
 
 	void drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const QRectF& area);
 	void drawData(QPainter* painter, const panda::BaseData* data, const QRectF& area);

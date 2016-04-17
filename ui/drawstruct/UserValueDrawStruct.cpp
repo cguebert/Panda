@@ -13,17 +13,16 @@ UserValueDrawStruct::UserValueDrawStruct(GraphView* view, panda::BaseGeneratorUs
 	update();
 }
 
-void UserValueDrawStruct::drawText(QPainter* painter)
+std::string UserValueDrawStruct::getLabel() const
 {
-	if(m_userValueObject && !m_userValueObject->getCaption().empty())
+	if (m_userValueObject)
 	{
-		int margin = dataRectSize+dataRectMargin+3;
-		QRectF textArea = m_objectArea.adjusted(margin, 0, -margin, 0);
-		QString text = QString::fromStdString(m_userValueObject->getCaption()) + "\n(" + QString::fromStdString(m_userValueObject->getName()) + ")";
-		painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, text);
+		const auto& name = m_userValueObject->getCaption();
+		if (!name.empty())
+			return name + "\n(" + m_userValueObject->getName() + ")";
 	}
-	else
-		ObjectDrawStruct::drawText(painter);
+	
+	return ObjectDrawStruct::getLabel();
 }
 
 int UserValueDrawClass = RegisterDrawObject<panda::BaseGeneratorUser, UserValueDrawStruct>();
