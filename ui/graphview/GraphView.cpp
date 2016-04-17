@@ -246,13 +246,13 @@ void GraphView::paintGL()
 	for (auto& ods : m_orderedObjectDrawStructs)
 		ods->draw(drawList, m_drawColors);
 
-	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
-	for (auto& ods : m_selectedObjectsDrawStructs)
-		ods->draw(drawList, m_drawColors, true);
-
 	// Give a possibility to draw in front of normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
 		ods->drawForeground(drawList, m_drawColors);
+
+	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
+	for (auto& ods : m_selectedObjectsDrawStructs)
+		ods->draw(drawList, m_drawColors, true);
 
 	// Draw links tags
 	for (auto& tag : m_linkTags)

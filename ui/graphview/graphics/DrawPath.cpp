@@ -122,6 +122,28 @@ void DrawPath::arcTo(const Point& centre, float radius, float amin, float amax, 
 	}
 }
 
+void DrawPath::arcTo(const pRect& rect, float start, float arc_angle, float precision)
+{
+	float radW = fabs(rect.width() / 2.0f), radH = fabs(rect.height() / 2.0f);
+	float maxRadius = std::max(radW, radH);
+	int num_segments = static_cast<int>(fabs(arc_angle) / acosf(1.f - precision / maxRadius));
+	num_segments = std::max(3, num_segments);
+
+	const auto& center = rect.center();
+	m_points.reserve(m_points.size() + (num_segments + 1));
+	for (int i = 0; i <= num_segments; i++)
+	{
+		const float a = start + ((float)i / (float)num_segments) * arc_angle;
+		m_points.push_back(Point(center.x + cosf(a) * radW, center.y + sinf(a) * radH));
+	}
+}
+
+void DrawPath::arcToDegrees(const pRect& rect, float start, float arc_angle, float precision)
+{
+	const float pi180 = static_cast<float>(M_PI) / 180.0f;
+	arcTo(rect, start * pi180, arc_angle * pi180, precision);
+}
+
 void DrawPath::bezierCurveTo(const Point& p2, const Point& p3, const Point& p4, int num_segments)
 {
 	Point p1 = m_points.back();

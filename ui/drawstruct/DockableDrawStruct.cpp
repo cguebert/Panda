@@ -178,20 +178,21 @@ DockableObjectDrawStruct::DockableObjectDrawStruct(GraphView* view, panda::Docka
 	update();
 }
 
-void DockableObjectDrawStruct::drawShape(QPainter* painter)
+void DockableObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 {
-	painter->drawPath(m_shapePath);
+	list.addConvexPolyFilled(m_shapePath, colors.fillColor);
+	list.addPolyline(m_shapePath, colors.penColor, false, colors.penWidth);
 }
 
 void DockableObjectDrawStruct::moveVisual(const QPointF& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	m_shapePath.translate(delta);
+	m_shapePath.translate(pPoint(delta.x(), delta.y()));
 }
 
 bool DockableObjectDrawStruct::contains(const QPointF& point)
 {
-	return m_shapePath.contains(point);
+	return m_shapePath.contains(pPoint(point.x(), point.y()));
 }
 
 QSize DockableObjectDrawStruct::getObjectSize()
@@ -210,6 +211,16 @@ QRectF DockableObjectDrawStruct::getTextArea()
 	return area;
 }
 
+pRect convert(const QRectF& rect)
+{
+	return pRect(rect.left(), rect.top(), rect.right(), rect.bottom());
+}
+
+pRect convert(qreal left, qreal top, qreal w, qreal h)
+{
+	return pRect(left, top, left + w, top + h);
+}
+
 void DockableObjectDrawStruct::update()
 {
 	m_hasOutputs = !getObject()->getOutputDatas().empty();
@@ -221,35 +232,33 @@ void DockableObjectDrawStruct::update()
 
 	if (m_hasOutputs)
 	{
-		QPainterPath path;
-		path.moveTo(m_objectArea.left(), m_objectArea.center().y());
-		path.arcTo(m_objectArea.left(), m_objectArea.top(), cr, cr, 180, -90); // Top left corner
+		m_shapePath.clear();
+		m_shapePath.moveTo(pPoint(m_objectArea.left(), m_objectArea.center().y()));
+		m_shapePath.arcToDegrees(convert(m_objectArea.left(), m_objectArea.top(), cr, cr), 180, 90); // Top left corner
 
 		// Arc at the top
-		path.arcTo(m_objectArea.right() - rw - aw * 3, m_objectArea.top(), aw * 2, aw * 2, 90, -90);
-		path.arcTo(m_objectArea.right() - rw - aw, m_objectArea.top(), aw * 2, aw * 2, -180, -90);
+		m_shapePath.arcToDegrees(convert(m_objectArea.right() - rw - aw * 3, m_objectArea.top(), aw * 2, aw * 2), -90, 90);
+		m_shapePath.arcToDegrees(convert(m_objectArea.right() - rw - aw, m_objectArea.top(), aw * 2, aw * 2), 180, 90);
 
-		path.arcTo(m_objectArea.right() - cr, m_objectArea.top(), cr, cr, 90, -90); // Top right corner
-		path.arcTo(m_objectArea.right() - cr, m_objectArea.bottom() - cr, cr, cr, 0, -90); // Bottom right corner
+		m_shapePath.arcToDegrees(convert(m_objectArea.right() - cr, m_objectArea.top(), cr, cr), -90, 90); // Top right corner
+		m_shapePath.arcToDegrees(convert(m_objectArea.right() - cr, m_objectArea.bottom() - cr, cr, cr), 0, 90); // Bottom right corner
 
 		// Arc at the bottom
-		path.arcTo(m_objectArea.right() - rw - aw, m_objectArea.bottom() - aw * 2, aw * 2, aw * 2, -90, -90);
-		path.arcTo(m_objectArea.right() - rw - aw * 3, m_objectArea.bottom() - aw * 2, aw * 2, aw * 2, 0, -90);
+		m_shapePath.arcToDegrees(convert(m_objectArea.right() - rw - aw, m_objectArea.bottom() - aw * 2, aw * 2, aw * 2), 90, 90);
+		m_shapePath.arcToDegrees(convert(m_objectArea.right() - rw - aw * 3, m_objectArea.bottom() - aw * 2, aw * 2, aw * 2), 0, 90);
 
-		path.arcTo(m_objectArea.left(), m_objectArea.bottom() - cr, cr, cr, 270, -90); // Bottom left corner
-		path.closeSubpath();
-		path.swap(m_shapePath);
+		m_shapePath.arcToDegrees(convert(m_objectArea.left(), m_objectArea.bottom() - cr, cr, cr), 90, 90); // Bottom left corner
+		m_shapePath.close();
 	}
 	else
 	{
-		QPainterPath path;
-		path.moveTo(m_objectArea.left(), m_objectArea.center().y());
-		path.arcTo(m_objectArea.left(), m_objectArea.top(), cr, cr, 180, -90); // Top left corner
-		path.arcTo(m_objectArea.right() - dockableCircleWidth * 2, m_objectArea.top(), 
-			dockableCircleWidth * 2, m_objectArea.height(), 90, -180); // Right side arc
-		path.arcTo(m_objectArea.left(), m_objectArea.bottom() - cr, cr, cr, 270, -90); // Bottom left corner
-		path.closeSubpath();
-		path.swap(m_shapePath);
+		m_shapePath.clear();
+		m_shapePath.moveTo(pPoint(m_objectArea.left(), m_objectArea.center().y()));
+		m_shapePath.arcToDegrees(convert(m_objectArea.left(), m_objectArea.top(), cr, cr), 180, 90); // Top left corner
+		m_shapePath.arcToDegrees(convert(m_objectArea.right() - dockableCircleWidth * 2, m_objectArea.top(), 
+			dockableCircleWidth * 2, m_objectArea.height()), -90, 180); // Right side arc
+		m_shapePath.arcToDegrees(convert(m_objectArea.left(), m_objectArea.bottom() - cr, cr, cr), 90, 90); // Bottom left corner
+		m_shapePath.close();
 	}
 }
 

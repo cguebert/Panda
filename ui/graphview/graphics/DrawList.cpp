@@ -527,6 +527,9 @@ void DrawList::addPolyline(const DrawPath& path, unsigned int col, bool close, f
 void DrawList::addConvexPolyFilled(const DrawPath& path, unsigned int col, bool anti_aliased)
 {
 	const auto& points = path.points();
+	if (points.size() < 2)
+		return;
+
 	int points_count = points.size();
 	const Point uv(0, 0);
 

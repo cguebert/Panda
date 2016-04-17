@@ -37,7 +37,7 @@ class DockableObjectDrawStruct : public ObjectDrawStruct
 public:
 	DockableObjectDrawStruct(GraphView* view, panda::DockableObject* m_object);
 
-	void drawShape(QPainter* painter) override;
+	void drawShape(DrawList& list, DrawColors& colors) override;
 	void moveVisual(const QPointF& delta) override;
 	void update() override;
 	bool contains(const QPointF& point) override;
@@ -51,7 +51,7 @@ public:
 	static const int dockableWithOutputArc = 15;
 
 protected:
-	QPainterPath m_shapePath;
+	DrawPath m_shapePath;
 	bool m_hasOutputs = false;
 };
 
