@@ -48,7 +48,7 @@ void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
 
 	// Draw the text
 	textArea.adjust(5, 5, -5, -5);
-	list.addText(textArea, colors.penColor, m_annotation->m_text.getValue());
+	list.addText(textArea, m_annotation->m_text.getValue(), colors.penColor);
 
 	// Draw the handle
 	const panda::PandaDocument* doc = m_parentView->getDocument();

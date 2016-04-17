@@ -78,63 +78,56 @@ void LinkTag::moveView(const QPointF& delta)
 	}
 }
 
-void LinkTag::draw(QPainter* painter)
+void LinkTag::draw(DrawList& list, DrawColors& colors)
 {
-	painter->save();
 	if(m_hovering)
 	{
-		painter->setPen(QPen(m_parentView->palette().highlight(), 3));
-		painter->setBrush(Qt::NoBrush);
-
 		// Draw as links
-		auto inputCenter = m_inputDataRects.second.center();
+		auto inputCenter = pPoint(m_inputDataRects.second.center().x(), m_inputDataRects.second.center().y());
 		for(const auto& tagRect : m_outputDatas)
 		{
-			auto outputCenter = tagRect.second.second.center();
-			double w = (outputCenter.x() - inputCenter.x()) / 2;
-			QPainterPath path;
-			path.moveTo(inputCenter);
-			path.cubicTo(inputCenter + QPointF(w, 0), outputCenter - QPointF(w, 0), outputCenter);
-			painter->drawPath(path);
+			auto outputCenter = pPoint(tagRect.second.second.center().x(), tagRect.second.second.center().y());
+			auto w = pPoint((outputCenter.x - inputCenter.x) / 2, 0);
+			list.addBezierCurve(inputCenter, inputCenter + w, outputCenter - w, outputCenter, colors.highlightColor, 3.0f);
 		}
 
 		// Draw the data rectangles
-		painter->setBrush(m_parentView->palette().highlight().color());
-		painter->setPen(m_parentView->palette().text().color());
-		painter->drawRect(m_inputDataRects.second);
-		for(const auto& tagRect : m_outputDatas)
-			painter->drawRect(tagRect.second.second);
+		auto rect = pRect(m_inputDataRects.second.left(), m_inputDataRects.second.top(), m_inputDataRects.second.right(), m_inputDataRects.second.bottom());
+		list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.highlightColor);
+		list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
+		for (const auto& tagRect : m_outputDatas)
+		{
+			rect = pRect(tagRect.second.second.left(), tagRect.second.second.top(), tagRect.second.second.right(), tagRect.second.second.bottom());
+			list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.highlightColor);
+			list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
+		}
 	}
-	
-	painter->setBrush(m_parentView->palette().light());
-	painter->setPen(QPen(m_parentView->palette().text().color()));
 
-	QFont font;
-	font.setPointSize(7);
-	painter->setFont(font);
-
-	auto indexText = QString::number(m_index + 1);
+	auto indexText = std::to_string(m_index + 1);
+	const float fontScale = 0.85f;
 
 	// input
 	auto inputRect = m_inputDataRects.first;
+	auto rect = pRect(inputRect.left(), inputRect.top(), inputRect.right(), inputRect.bottom());
 	qreal x = inputRect.left();
 	qreal cy = inputRect.center().y();
-	painter->drawLine(x - tagMargin, cy, x, cy);
-	painter->drawRect(inputRect);
-	painter->drawText(inputRect, Qt::AlignCenter, indexText);
+	list.addLine(pPoint(x - tagMargin, cy), pPoint(x, cy), colors.penColor);
+	list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.lightColor);
+	list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
+	list.addText(rect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
 
 	// outputs
 	for(const auto& tagRectPair : m_outputDatas)
 	{
 		const auto& tagRect = tagRectPair.second.first;
+		rect = pRect(tagRect.left(), tagRect.top(), tagRect.right(), tagRect.bottom());
 		x = tagRect.right();
 		cy = tagRect.center().y();
-		painter->drawLine(x, cy, x + tagMargin, cy);
-		painter->drawRect(tagRect);
-		painter->drawText(tagRect, Qt::AlignCenter, indexText);
+		list.addLine(pPoint(x, cy), pPoint(x + tagMargin, cy), colors.penColor);
+		list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.lightColor);
+		list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
+		list.addText(rect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
 	}
-
-	painter->restore();
 }
 
 bool LinkTag::needLinkTag(float inputX, float outputX, GraphView* view)

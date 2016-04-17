@@ -255,8 +255,8 @@ void GraphView::paintGL()
 		ods->drawForeground(drawList, m_drawColors);
 
 	// Draw links tags
-//	for (auto& tag : m_linkTags)
-//		tag.second->draw(&painter);
+	for (auto& tag : m_linkTags)
+		tag.second->draw(drawList, m_drawColors);
 
 	// Highlight connected Datas
 	drawConnectedDatas(m_hoverData);

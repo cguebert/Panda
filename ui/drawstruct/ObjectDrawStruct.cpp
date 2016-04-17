@@ -222,7 +222,7 @@ void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)
 	QRectF textArea = getTextArea();
 	pRect pArea(textArea.left(), textArea.top(), textArea.right(), textArea.bottom());
 	unsigned int penCol = DrawList::convert(m_parentView->palette().text().color());
-	list.addText(pArea, penCol, getLabel(), DrawList::Align_Center | DrawList::Align_VCenter);
+	list.addText(pArea, getLabel(), penCol, DrawList::Align_Center);
 }
 
 void ObjectDrawStruct::save(panda::XmlElement& elem)

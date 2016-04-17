@@ -33,12 +33,16 @@ public:
 
 	enum Align
 	{
-		Align_Left     = 1 << 0,
-		Align_Center   = 1 << 1,
-		Align_Right    = 1 << 2,
-		Align_Top      = 1 << 3,
-		Align_VCenter  = 1 << 4,
-		Align_Default  = Align_Left | Align_Top
+		Align_Left		= 1 << 0,
+		Align_HCenter	= 1 << 1,
+		Align_Right		= 1 << 2,
+
+		Align_Top		= 1 << 3,
+		Align_VCenter	= 1 << 4,
+		Align_Bottom	= 1 << 5,
+
+		Align_Default  = Align_Left | Align_Top,
+		Align_Center  = Align_HCenter | Align_VCenter
 	};
 	using TextAlign = int;
 
@@ -70,9 +74,9 @@ public:
 	void addCircle(const pPoint& centre, float radius, unsigned int col, int num_segments = 12, float thickness = 1.0f);
 	void addCircleFilled(const pPoint& centre, float radius, unsigned int col, int num_segments = 12);
 	void addBezierCurve(const pPoint& pos0, const pPoint& cp0, const pPoint& cp1, const pPoint& pos1, unsigned int col, float thickness, int num_segments = 0);
-	void addText(const pPoint& pos, unsigned int col, const std::string& text);
-	void addText(const pRect& rect, unsigned int col, const std::string& text, TextAlign align = Align_Default, bool fit = false); // fit: if true, will decrease the scale so that the text can fit in the rectangle
-	void addText(const Font& font, float font_scale, const pPoint& pos, unsigned int col, const std::string& text, float wrap_width = 0.0f, const panda::types::Rect* cpu_fine_clip_rect = NULL);
+	void addText(const pPoint& pos, const std::string& text, unsigned int col);
+	void addText(const pRect& rect, const std::string& text, unsigned int col, TextAlign align = Align_Default, float scale = 1.0f, bool wrap = true, bool fit = false); // fit: if true, will decrease the scale so that the text can fit in the rectangle
+	void addText(const Font& font, const pPoint& pos, const std::string& text, unsigned int col, float font_scale = 1.0f, float wrap_width = 0.0f, const panda::types::Rect* cpu_fine_clip_rect = NULL);
 	void addImage(unsigned int texture_id, const pPoint& a, const pPoint& b, const pPoint& uv0 = panda::types::Point(0,0), const pPoint& uv1 = panda::types::Point(1,1), unsigned int col = 0xFFFFFFFF);
 	void addPolyline(const DrawPath& path, unsigned int col, bool close = true, float thickness = 1.0f, bool anti_aliased = true);
 	void addConvexPolyFilled(const DrawPath& path, unsigned int col, bool anti_aliased = true);

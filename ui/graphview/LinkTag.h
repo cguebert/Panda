@@ -23,7 +23,7 @@ public:
 	bool containsPoint(const QPointF& point);
 
 	void moveView(const QPointF& delta);
-	void draw(QPainter* painter);
+	void draw(DrawList& list, DrawColors& colors);
 
 	panda::BaseData* getInputData() const;
 	std::vector<panda::BaseData*> getOutputDatas() const;
@@ -36,7 +36,7 @@ public:
 
 private:
 	static const int tagW = 20;
-	static const int tagH = 11;
+	static const int tagH = 13;
 	static const int tagMargin = 10;
 
 	const int m_index = 0;
