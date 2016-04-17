@@ -80,6 +80,7 @@ public:
 	void addImage(unsigned int texture_id, const pPoint& a, const pPoint& b, const pPoint& uv0 = panda::types::Point(0,0), const pPoint& uv1 = panda::types::Point(1,1), unsigned int col = 0xFFFFFFFF);
 	void addPolyline(const DrawPath& path, unsigned int col, bool close = true, float thickness = 1.0f, bool anti_aliased = true);
 	void addConvexPolyFilled(const DrawPath& path, unsigned int col, bool anti_aliased = true);
+	void addMesh(const DrawMesh& mesh, unsigned int col);
 
 	pPoint calcTextSize(float scale, const std::string& text, float wrap_width = 0.0f, bool cutWords = false);
 

@@ -180,14 +180,16 @@ DockableObjectDrawStruct::DockableObjectDrawStruct(GraphView* view, panda::Docka
 
 void DockableObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 {
-	list.addConvexPolyFilled(m_shapePath, colors.fillColor);
+	list.addMesh(m_shapeMesh, colors.fillColor);
 	list.addPolyline(m_shapePath, colors.penColor, false, colors.penWidth);
 }
 
 void DockableObjectDrawStruct::moveVisual(const QPointF& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	m_shapePath.translate(pPoint(delta.x(), delta.y()));
+	auto pDelta = pPoint(delta.x(), delta.y());
+	m_shapePath.translate(pDelta);
+	m_shapeMesh.translate(pDelta);
 }
 
 bool DockableObjectDrawStruct::contains(const QPointF& point)
@@ -260,6 +262,8 @@ void DockableObjectDrawStruct::update()
 		m_shapePath.arcToDegrees(convert(m_objectArea.left(), m_objectArea.bottom() - cr, cr, cr), 90, 90); // Bottom left corner
 		m_shapePath.close();
 	}
+
+	m_shapeMesh = m_shapePath.triangulate();
 }
 
 int DockableObjectDrawClass = RegisterDrawObject<panda::DockableObject, DockableObjectDrawStruct>();

@@ -52,6 +52,7 @@ public:
 
 protected:
 	DrawPath m_shapePath;
+	DrawMesh m_shapeMesh;
 	bool m_hasOutputs = false;
 };
 

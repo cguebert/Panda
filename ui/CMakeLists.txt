@@ -50,6 +50,13 @@ set(HEADER_FILES
 	graphview/graphics/DrawPath.h
 	graphview/graphics/Font.h
 	graphview/graphics/FontAtlas.h
+	graphview/graphics/poly2tri/poly2tri.h
+	graphview/graphics/poly2tri/common/shapes.h
+	graphview/graphics/poly2tri/common/utils.h
+	graphview/graphics/poly2tri/sweep/advancing_front.h
+	graphview/graphics/poly2tri/sweep/cdt.h
+	graphview/graphics/poly2tri/sweep/sweep.h
+	graphview/graphics/poly2tri/sweep/sweep_context.h
 	widget/AnimationDataWidgetDialog.h
 	widget/DataWidget.h
 	widget/DataWidgetFactory.h
@@ -105,6 +112,11 @@ set(SOURCE_FILES
 	graphview/graphics/DrawPath.cpp
 	graphview/graphics/Font.cpp
 	graphview/graphics/FontAtlas.cpp
+	graphview/graphics/poly2tri/common/shapes.cc
+	graphview/graphics/poly2tri/sweep/advancing_front.cc
+	graphview/graphics/poly2tri/sweep/cdt.cc
+	graphview/graphics/poly2tri/sweep/sweep.cc
+	graphview/graphics/poly2tri/sweep/sweep_context.cc
 	widget/ColorDataWidget.cpp
 	widget/DataWidgetFactory.cpp
 	widget/EditGradientDialog.cpp

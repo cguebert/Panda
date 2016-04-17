@@ -1,4 +1,5 @@
 #include <ui/graphview/graphics/DrawPath.h>
+#include <ui/graphview/graphics/poly2tri/poly2tri.h>
 
 #include <algorithm>
 #include <cassert>
@@ -191,7 +192,62 @@ void DrawPath::rect(const Point& a, const Point& b, float rounding, int rounding
 	}
 }
 
+void DrawPath::removeDuplicates()
+{
+	auto last = std::unique(m_points.begin(), m_points.end(), [](const Point& lhs, const Point& rhs) {
+		return (rhs - lhs).norm2() < 0.001f;
+	});
+	m_points.erase(last, m_points.end());
+}
+
 bool DrawPath::contains(const Point& pos)
 {
 	return wn_PnPoly(pos, m_points.data(), m_points.size() - 1) != 0;
+}
+
+DrawMesh DrawPath::triangulate() const
+{
+	if (m_points.size() < 3)
+		return DrawMesh();
+
+	auto inputPoints = m_points;
+	auto last = std::unique(inputPoints.begin(), inputPoints.end(), [](const Point& lhs, const Point& rhs) {
+		return (rhs - lhs).norm2() < 0.001f;
+	});
+	inputPoints.erase(last, inputPoints.end());
+
+	std::vector<p2t::Point> p2tPoints;
+	for (const auto& pt : inputPoints)
+		p2tPoints.emplace_back(pt.x, pt.y);
+	if (p2tPoints.front() == p2tPoints.back())
+		p2tPoints.pop_back();
+	
+	// Poly2Tri uses pointers to points
+	std::vector<p2t::Point*> contour;
+	contour.reserve(p2tPoints.size());
+	for (auto& pt : p2tPoints)
+		contour.push_back(&pt);
+	
+	// Set the contour in poly2tri
+	p2t::CDT cdt(contour);
+
+	// Do the actual triangulation
+	cdt.Triangulate();
+
+	// Create the mesh
+	DrawMesh mesh;
+	mesh.points = inputPoints;
+
+	// Convert the triangles
+	auto triangles = cdt.GetTriangles();
+	mesh.indices.reserve(triangles.size() * 3);
+	auto firstPt = p2tPoints.data();
+	for (const auto triangle : triangles)
+	{
+		mesh.indices.push_back(std::distance(firstPt, triangle->GetPoint(0)));
+		mesh.indices.push_back(std::distance(firstPt, triangle->GetPoint(1)));
+		mesh.indices.push_back(std::distance(firstPt, triangle->GetPoint(2)));
+	}
+	
+	return mesh;
 }

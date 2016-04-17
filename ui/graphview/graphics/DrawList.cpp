@@ -292,16 +292,16 @@ void DrawList::addText(const Point& pos, const std::string& text, unsigned int c
 
 void DrawList::addText(const Rect& rect, const std::string& text, unsigned int col, int align, float scale, bool wrap, bool fit)
 {
-    if (text.empty() || rect.empty())
-        return;
+	if (text.empty() || rect.empty())
+		return;
 
 	auto font = ViewRenderer::currentFont();
 	if (!font)
 		return;
 
-    // Perform CPU side clipping for single clipped element to avoid using scissor state
+	// Perform CPU side clipping for single clipped element to avoid using scissor state
 	float wrap_width = wrap ? rect.width() : 0.0f;
-    Point text_size = font->calcTextSize(scale, wrap_width, text, false); // Do not cut words
+	Point text_size = font->calcTextSize(scale, wrap_width, text, false); // Do not cut words
 
 	// If the text is too big to fit, we scale down the font
 	if (fit && text_size.x > rect.width())
@@ -310,20 +310,20 @@ void DrawList::addText(const Rect& rect, const std::string& text, unsigned int c
 		text_size *= scale;
 	}
 	
-    // Align
+	// Align
 	Point pos = rect.topLeft();
-    if (align & Align_HCenter) pos.x = std::max(pos.x, (pos.x + rect.right() - text_size.x) * 0.5f);
-    else if (align & Align_Right) pos.x = std::max(pos.x, rect.right() - text_size.x);
+	if (align & Align_HCenter) pos.x = std::max(pos.x, (pos.x + rect.right() - text_size.x) * 0.5f);
+	else if (align & Align_Right) pos.x = std::max(pos.x, rect.right() - text_size.x);
 
-    if (align & Align_VCenter) pos.y = std::max(pos.y, (pos.y + rect.bottom() - text_size.y) * 0.5f);
+	if (align & Align_VCenter) pos.y = std::max(pos.y, (pos.y + rect.bottom() - text_size.y) * 0.5f);
 	else if(align & Align_Bottom) pos.y = std::max(pos.y, rect.bottom() - text_size.y);
 
-    // Render
+	// Render
 	bool need_clipping = (rect.left() + text_size.x >= rect.right()) || (rect.top() + text_size.y >= rect.bottom());
-    if (need_clipping)
-        addText(*font, pos, text, col, scale, wrap_width, &rect);
-    else
-        addText(*font, pos, text, col, scale, wrap_width, nullptr);
+	if (need_clipping)
+		addText(*font, pos, text, col, scale, wrap_width, &rect);
+	else
+		addText(*font, pos, text, col, scale, wrap_width, nullptr);
 }
 
 void DrawList::addImage(unsigned int user_texture_id, const Point& a, const Point& b, const Point& uv0, const Point& uv1, unsigned int col)
@@ -346,12 +346,11 @@ void DrawList::addImage(unsigned int user_texture_id, const Point& a, const Poin
 void DrawList::addPolyline(const DrawPath& path, unsigned int col, bool close, float thickness, bool anti_aliased)
 {
 	const auto& points = path.points();
-	if (points.size() < 2)
+	int points_count = points.size();
+	if (points_count < 2)
 		return;
 
 	const Point uv(0, 0);
-
-	int points_count = points.size();
 	int count = points_count;
 	if (!close)
 		count = points_count - 1;
@@ -527,10 +526,10 @@ void DrawList::addPolyline(const DrawPath& path, unsigned int col, bool close, f
 void DrawList::addConvexPolyFilled(const DrawPath& path, unsigned int col, bool anti_aliased)
 {
 	const auto& points = path.points();
-	if (points.size() < 2)
+	int points_count = points.size();
+	if (points_count < 2)
 		return;
 
-	int points_count = points.size();
 	const Point uv(0, 0);
 
 	if (anti_aliased)
@@ -610,13 +609,37 @@ void DrawList::addConvexPolyFilled(const DrawPath& path, unsigned int col, bool 
 	}
 }
 
+void DrawList::addMesh(const DrawMesh& mesh, unsigned int col)
+{
+	const auto& points = mesh.points;
+	int points_count = points.size();
+	if (points_count < 2)
+		return;
+
+	const Point uv(0, 0);
+
+	// Non Anti-aliased Fill
+	const int idx_count = mesh.indices.size();
+	const int vtx_count = points_count;
+	primReserve(idx_count, vtx_count);
+	for (int i = 0; i < vtx_count; i++)
+	{
+		m_vtxWritePtr->pos = points[i]; m_vtxWritePtr->uv = uv; m_vtxWritePtr->col = col;
+		m_vtxWritePtr++;
+	}
+	
+	std::memcpy(m_idxWritePtr, mesh.indices.data(), idx_count * sizeof(unsigned int));
+	m_idxWritePtr += idx_count;
+	m_vtxCurrentIdx += vtx_count;
+}
+
 Point DrawList::calcTextSize(float scale, const std::string& text, float wrap_width, bool cutWords)
 {
 	auto font = ViewRenderer::currentFont();
 	if (!font)
 		Point();
 
-    return font->calcTextSize(scale, wrap_width, text, cutWords); // Do not cut words
+	return font->calcTextSize(scale, wrap_width, text, cutWords); // Do not cut words
 }
 
 // NB: this can be called with negative count for removing primitives (as long as the result does not underflow)

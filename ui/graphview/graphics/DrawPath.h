@@ -7,6 +7,14 @@
 using pPoint = panda::types::Point;
 using pRect = panda::types::Rect;
 
+struct DrawMesh
+{
+	std::vector<pPoint> points;
+	std::vector<unsigned int> indices;
+
+	inline void translate(const pPoint& delta) { for (auto& pt : points) pt += delta; }
+};
+
 class DrawPath
 {
 public:
@@ -24,7 +32,10 @@ public:
 	inline const std::vector<pPoint>& points() const { return m_points; }
 
 	inline void translate(const pPoint& delta) { for (auto& pt : m_points) pt += delta; }
+	void removeDuplicates();
 	bool contains(const pPoint& pos);
+
+	DrawMesh triangulate() const;
 
 private:  
 	std::vector<pPoint> m_points;
