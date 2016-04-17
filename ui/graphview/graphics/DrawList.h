@@ -73,8 +73,10 @@ public:
 	void addText(const pRect& rect, unsigned int col, const std::string& text, TextAlign align = Align_Default, bool fit = false); // fit: if true, will decrease the scale so that the text can fit in the rectangle
 	void addText(const Font& font, float font_scale, const pPoint& pos, unsigned int col, const std::string& text, float wrap_width = 0.0f, const panda::types::Rect* cpu_fine_clip_rect = NULL);
 	void addImage(unsigned int texture_id, const pPoint& a, const pPoint& b, const pPoint& uv0 = panda::types::Point(0,0), const pPoint& uv1 = panda::types::Point(1,1), unsigned int col = 0xFFFFFFFF);
-	void addPolyline(const DrawPath& path, unsigned int col, bool closed, float thickness, bool anti_aliased);
-	void addConvexPolyFilled(const DrawPath& path, unsigned int col, bool anti_aliased);
+	void addPolyline(const DrawPath& path, unsigned int col, bool closed = true, float thickness = 1.0f, bool anti_aliased = true);
+	void addConvexPolyFilled(const DrawPath& path, unsigned int col, bool anti_aliased = true);
+
+	pPoint calcTextSize(float scale, const std::string& text, float wrap_width = 0.0f, bool cutWords = false);
 
 	inline const std::vector<DrawCmd>& cmdBuffer() const { return m_cmdBuffer; }
 	inline const std::vector<DrawIdx>& idxBuffer() const { return m_idxBuffer; }

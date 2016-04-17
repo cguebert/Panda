@@ -578,6 +578,15 @@ void DrawList::addConvexPolyFilled(const DrawPath& path, unsigned int col, bool 
 	}
 }
 
+Point DrawList::calcTextSize(float scale, const std::string& text, float wrap_width, bool cutWords)
+{
+	auto font = ViewRenderer::currentFont();
+	if (!font)
+		Point();
+
+    return font->calcTextSize(scale, wrap_width, text, cutWords); // Do not cut words
+}
+
 // NB: this can be called with negative count for removing primitives (as long as the result does not underflow)
 void DrawList::primReserve(int idx_count, int vtx_count)
 {
