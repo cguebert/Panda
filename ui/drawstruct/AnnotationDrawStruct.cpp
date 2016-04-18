@@ -7,7 +7,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/XmlDocument.h>
 
-#include <QPainter>
 #include <QMouseEvent>
 
 using panda::Annotation;

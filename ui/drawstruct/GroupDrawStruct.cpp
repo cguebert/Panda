@@ -4,8 +4,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/Group.h>
 
-#include <QPainter>
-
 GroupDrawStruct::GroupDrawStruct(GraphView* view, panda::Group* object)
 	: ObjectDrawStruct(view, object)
 	, m_group(object)

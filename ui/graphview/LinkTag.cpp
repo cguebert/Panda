@@ -1,5 +1,3 @@
-#include <QPainter>
-
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/LinkTag.h>
 

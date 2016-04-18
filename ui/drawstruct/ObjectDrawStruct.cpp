@@ -1,5 +1,3 @@
-#include <QtWidgets>
-
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/ObjectsSelection.h>
@@ -130,52 +128,12 @@ void ObjectDrawStruct::draw(DrawList& list, DrawColors& colors, bool selected)
 	drawText(list, colors);
 }
 
-void ObjectDrawStruct::draw(QPainter* painter, bool selected)
-{
-	// Choose the pen and the brush
-	const auto& palette = m_parentView->palette();
-	QPen pen(palette.text().color());
-	if(selected)
-	{
-		pen.setWidthF(3);
-		painter->setBrush(palette.midlight());
-	}
-	else
-	{
-		auto color = palette.light().color();
-		color.setAlpha(128);
-		painter->setBrush(color);
-	}
-
-	painter->setPen(pen);
-
-	// Draw the shape around the object
-	drawShape(painter);
-
-	// The Datas
-	drawDatas(painter);
-
-	// The Text
-	drawText(painter);
-}
-
 void ObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 {
 	// Draw the shape around the object
 	pPoint tl = pPoint(m_objectArea.left(), m_objectArea.top()), br = pPoint(m_objectArea.right(), m_objectArea.bottom());
 	list.addRectFilled(tl, br, colors.fillColor, objectCorner);
 	list.addRect(tl, br, colors.penColor, colors.penWidth, objectCorner);
-}
-
-void ObjectDrawStruct::drawShape(QPainter* painter)
-{
-	painter->drawRoundedRect(m_objectArea, objectCorner, objectCorner);
-}
-
-void ObjectDrawStruct::drawDatas(QPainter* painter)
-{
-	for(const auto& dataPair : m_datas)
-		drawData(painter, dataPair.second, dataPair.first);
 }
 
 void ObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
@@ -196,25 +154,6 @@ void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda:
 	pPoint dtl = pPoint(area.left(), area.top()), dbr = pPoint(area.right(), area.bottom());
 	list.addRectFilled(dtl, dbr, dataCol);
 	list.addRect(dtl, dbr, colors.penColor);
-}
-
-void ObjectDrawStruct::drawData(QPainter* painter, const panda::BaseData* data, const QRectF& area)
-{
-	painter->setPen(QPen(m_parentView->palette().text().color()));
-	const panda::BaseData* clickedData = m_parentView->getClickedData();
-
-	if (clickedData && clickedData != data && !m_parentView->canLinkWith(data))
-		painter->setBrush(m_parentView->palette().light());
-	else
-		painter->setBrush(QColor(data->getDataTrait()->typeColor()));
-
-	painter->drawRect(area);
-}
-
-void ObjectDrawStruct::drawText(QPainter* painter)
-{
-	QRectF textArea = getTextArea();
-	painter->drawText(textArea, Qt::AlignCenter|Qt::TextWordWrap, QString::fromStdString(m_object->getName()));
 }
 
 void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)

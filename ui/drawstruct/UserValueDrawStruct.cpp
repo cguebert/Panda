@@ -4,8 +4,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/Group.h>
 
-#include <QPainter>
-
 UserValueDrawStruct::UserValueDrawStruct(GraphView* view, panda::BaseGeneratorUser* object)
 	: ObjectDrawStruct(view, object)
 	, m_userValueObject(object)

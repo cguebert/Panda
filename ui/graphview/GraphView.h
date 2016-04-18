@@ -113,9 +113,9 @@ protected:
 	void focusOutEvent(QFocusEvent*) override;
 
 #ifdef PANDA_LOG_EVENTS
-	void paintLogDebug(QPainter& painter);
+	void paintLogDebug(DrawList& list, DrawColors& colors);
 #endif
-	void paintDirtyState(QPainter& painter);
+	void paintDirtyState(DrawList& list, DrawColors& colors);
 
 	ObjectDrawStruct* getObjectDrawStructAtPos(const QPointF& pt);
 	void moveView(const QPointF& delta);

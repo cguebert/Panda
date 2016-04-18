@@ -24,17 +24,9 @@ public:
 
 	ObjectDrawStruct(GraphView* view, panda::PandaObject* obj);
 
-	virtual void drawBackground(QPainter*) {}	// First called
-	virtual void draw(QPainter* painter, bool selected = false);		// "Normal" draw
-	virtual void drawForeground(QPainter*) {}	// Last called
-
 	virtual void drawBackground(DrawList& list, DrawColors& colors) {}	// Called first
 	virtual void draw(DrawList& list, DrawColors& colors, bool selected = false); // "Normal" draw
 	virtual void drawForeground(DrawList& list, DrawColors& colors) {}	// Called last
-
-	virtual void drawShape(QPainter* painter);
-	virtual void drawDatas(QPainter* painter);
-	virtual void drawText(QPainter* painter);
 
 	virtual void update();							// Recompute the information about this object
 	virtual void move(const QPointF& delta);		// Move the position of the object in the view
@@ -80,7 +72,6 @@ protected:
 	virtual std::string getLabel() const; // The text to draw
 
 	void drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const QRectF& area);
-	void drawData(QPainter* painter, const panda::BaseData* data, const QRectF& area);
 
 	GraphView* m_parentView;
 	panda::PandaObject* m_object;

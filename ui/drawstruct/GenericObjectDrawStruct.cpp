@@ -5,8 +5,6 @@
 #include <panda/data/BaseData.h>
 #include <panda/types/DataTraits.h>
 
-#include <QPainter>
-
 using panda::GenericObject;
 
 GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::GenericObject* object)

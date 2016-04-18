@@ -4,8 +4,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/Layer.h>
 
-#include <QPainter>
-
 LayerDrawStruct::LayerDrawStruct(GraphView* view, panda::Layer* object)
 	: DockObjectDrawStruct(view, object)
 	, m_layer(object)

@@ -4,8 +4,6 @@
 #include <ui/drawstruct/DockableDrawStruct.h>
 #include <ui/command/MoveObjectCommand.h>
 
-#include <QPainter>
-
 namespace
 {
 	inline pRect convert(const QRectF& rect)

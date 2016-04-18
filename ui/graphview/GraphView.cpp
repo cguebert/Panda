@@ -277,25 +277,25 @@ void GraphView::paintGL()
 		drawList.addLine(convert(m_previousMousePos), convert(m_currentMousePos),
 						 DrawList::convert(palette().text().color()), 1.5);
 	}
-/*
+
 	if (m_debugDirtyState)
 	{
 #ifdef PANDA_LOG_EVENTS
 		UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
 		if(logDlg && logDlg->isVisible())
-			paintLogDebug(painter);
+			paintLogDebug(drawList, m_drawColors);
 		else
 #endif
-			paintDirtyState(painter);
+			paintDirtyState(drawList, m_drawColors);
 	}
-	*/
+
 	m_viewRenderer->addDrawList(&drawList);
 	m_viewRenderer->addDrawList(&m_connectedDrawList);
 	m_viewRenderer->render();
 }
 
 #ifdef PANDA_LOG_EVENTS
-void GraphView::paintLogDebug(QPainter& painter)
+void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 {
 	UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
 	if(logDlg && logDlg->isVisible())
@@ -304,24 +304,17 @@ void GraphView::paintLogDebug(QPainter& painter)
 		for(const auto ods : m_orderedObjectDrawStructs)
 		{
 			const auto object = ods->getObject();
-			if(panda::helper::valueOrDefault(states, object, nullptr))
-				painter.setBrush(QColor(255,0,0,32));
-			else
-				painter.setBrush(QColor(0,255,0,32));
-
+			unsigned int fillCol = panda::helper::valueOrDefault(states, object, nullptr) ? 0x200000FF : 0x2000FF00;
+	
 			QRectF area = ods->getObjectArea();
-			painter.drawRect(area);
+			list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), fillCol);
 
 			for(panda::BaseData* data : object->getDatas())
 			{
 				if(ods->getDataRect(data, area))
 				{
-					if(panda::helper::valueOrDefault(states, data, nullptr))
-						painter.setBrush(QColor(255,0,0,64));
-					else
-						painter.setBrush(QColor(0,255,0,64));
-
-					painter.drawRect(area);
+					fillCol = panda::helper::valueOrDefault(states, data, nullptr) ? 0x400000FF : 0x4000FF00;
+					list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), fillCol);
 				}
 			}
 		}
@@ -333,7 +326,6 @@ void GraphView::paintLogDebug(QPainter& painter)
 			if(object)
 			{
 				auto ods = getObjectDrawStruct(object);
-				painter.setBrush(QColor(128, 128, 255, 128));
 				QRectF area;
 
 				bool drawData = false;
@@ -343,34 +335,30 @@ void GraphView::paintLogDebug(QPainter& painter)
 				if(!drawData)
 					area = ods->getObjectArea();
 
-				painter.drawRect(area);
+				list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), 0x80FF8080);
 			}
 		}
 	}
 }
 #endif
 
-void GraphView::paintDirtyState(QPainter& painter)
+void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
 {
 	for(const auto& ods : m_orderedObjectDrawStructs)
 	{
 		const auto object = ods->getObject();
-		if(object->isDirty())
-			painter.setBrush(QColor(255,0,0,64));
-		else
-			painter.setBrush(QColor(0,255,0,64));
-		painter.drawRect(ods->getObjectArea());
+		unsigned int fillCol = object->isDirty() ? 0x400000FF : 0x4000FF00;
+
+		auto area = ods->getObjectArea();
+		list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), fillCol);
 
 		for(panda::BaseData* data : object->getDatas())
 		{
 			QRectF area;
 			if(ods->getDataRect(data, area))
 			{
-				if(data->isDirty())
-					painter.setBrush(QColor(255,0,0,128));
-				else
-					painter.setBrush(QColor(0,255,0,128));
-				painter.drawRect(area);
+				fillCol = data->isDirty() ? 0x400000FF : 0x4000FF00;
+				list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), fillCol);
 			}
 		}
 	}
