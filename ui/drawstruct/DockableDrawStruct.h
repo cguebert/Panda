@@ -12,7 +12,7 @@ public:
 
 	void placeDockableObjects();
 
-	void drawShape(QPainter* painter) override;
+	void drawShape(DrawList& list, DrawColors& colors) override;
 	QSize getObjectSize() override;
 	QRectF getTextArea() override;
 	void move(const QPointF& delta) override;
@@ -28,7 +28,8 @@ public:
 	static const int dockRendererMargin = 10;
 protected:
 	panda::DockObject* m_dockObject;
-	QPainterPath m_shapePath;
+	DrawPath m_shapePath;
+	DrawMesh m_shapeMesh;
 	QList<int> m_dockablesY;	// Used only in "getDockableIndex"
 };
 
