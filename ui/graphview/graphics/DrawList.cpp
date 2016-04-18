@@ -627,9 +627,10 @@ void DrawList::addMesh(const DrawMesh& mesh, unsigned int col)
 		m_vtxWritePtr->pos = points[i]; m_vtxWritePtr->uv = uv; m_vtxWritePtr->col = col;
 		m_vtxWritePtr++;
 	}
+
+	for (int i = 0; i < idx_count; i++)
+		*m_idxWritePtr++ = mesh.indices[i] + m_vtxCurrentIdx;
 	
-	std::memcpy(m_idxWritePtr, mesh.indices.data(), idx_count * sizeof(unsigned int));
-	m_idxWritePtr += idx_count;
 	m_vtxCurrentIdx += vtx_count;
 }
 
