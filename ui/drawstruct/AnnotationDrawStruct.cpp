@@ -13,6 +13,14 @@
 using panda::Annotation;
 using panda::types::Point;
 
+namespace
+{
+	inline pPoint convert(const QPointF& pt)
+	{
+		return pPoint(pt.x(), pt.y());
+	}
+}
+
 AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* object)
 	: ObjectDrawStruct(view, object)
 	, m_annotation(dynamic_cast<Annotation*>(object))
@@ -65,26 +73,32 @@ void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
 void AnnotationDrawStruct::moveVisual(const QPointF& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
+	auto pDelta = pPoint(delta.x(), delta.y());
+	m_shapePath.translate(pDelta);
+	m_shapeMesh.translate(pDelta);
 
 	m_textArea.translate(delta);
-	m_shapePath.translate(pPoint(delta.x(), delta.y()));
 	m_startPos += delta;
 	m_endPos += delta;
 }
 
-void AnnotationDrawStruct::moveText(const QPointF& delta)
+void AnnotationDrawStruct::moveText(const QPointF& delta, bool emitModified)
 {
 	move(delta);
-	emit m_parentView->modified();
+	if (emitModified)
+		emit m_parentView->modified();
 	m_parentView->update();
 }
 
-void AnnotationDrawStruct::moveEnd(const QPointF& delta)
+void AnnotationDrawStruct::moveEnd(const QPointF& delta, bool emitModified)
 {
-	m_annotation->m_deltaToEnd.setValue(m_annotation->m_deltaToEnd.getValue() + Point(delta.x(), delta.y()));
 	m_endPos += delta;
 	update();
-	emit m_parentView->modified();
+	if (emitModified)
+	{
+		m_annotation->m_deltaToEnd.setValue(m_annotation->m_deltaToEnd.getValue() + Point(delta.x(), delta.y()));
+		emit m_parentView->modified();
+	}
 	m_parentView->update();
 }
 
@@ -110,7 +124,8 @@ void AnnotationDrawStruct::update()
 
 	m_startPos = m_position + viewDelta;
 	auto deltaToEnd = m_annotation->m_deltaToEnd.getValue();
-	m_endPos = m_startPos + QPointF(deltaToEnd.x, deltaToEnd.y);
+	if(m_movingAction == MOVING_NONE)
+		m_endPos = m_startPos + QPointF(deltaToEnd.x, deltaToEnd.y);
 
 	m_textArea = QRectF(m_startPos, m_textSize);
 	m_textArea.translate(0, -m_textSize.height());
@@ -123,7 +138,7 @@ void AnnotationDrawStruct::update()
 			break;
 		case Annotation::ANNOTATION_ARROW:
 		{
-	/*		QPointF start = m_textArea.center();
+			QPointF start = m_textArea.center();
 			QPointF dir = m_endPos - start;
 			const qreal w = 2.5;
 			qreal length = sqrt(dir.x()*dir.x() + dir.y()*dir.y());
@@ -136,15 +151,15 @@ void AnnotationDrawStruct::update()
 			dir *= w;
 			dir2 *= w;
 
-			m_shapePath.moveTo(m_endPos);
-			m_shapePath.lineTo(m_endPos + 5*dir2 - 15*dir);
-			m_shapePath.lineTo(m_endPos + dir2 - 10*dir);
-			m_shapePath.lineTo(start + dir2);
-			m_shapePath.lineTo(start - dir2);
-			m_shapePath.lineTo(m_endPos - dir2 - 10*dir);
-			m_shapePath.lineTo(m_endPos - 5*dir2 - 15*dir);
-			m_shapePath.lineTo(m_endPos);
-	*/		break;
+			m_shapePath.moveTo(convert(m_endPos));
+			m_shapePath.lineTo(convert(m_endPos + 5*dir2 - 15*dir));
+			m_shapePath.lineTo(convert(m_endPos + dir2 - 10*dir));
+			m_shapePath.lineTo(convert(start + dir2));
+			m_shapePath.lineTo(convert(start - dir2));
+			m_shapePath.lineTo(convert(m_endPos - dir2 - 10*dir));
+			m_shapePath.lineTo(convert(m_endPos - 5*dir2 - 15*dir));
+			m_shapePath.lineTo(convert(m_endPos));
+			break;
 		}
 		case Annotation::ANNOTATION_RECTANGLE:
 		{
@@ -154,11 +169,12 @@ void AnnotationDrawStruct::update()
 		}
 		case Annotation::ANNOTATION_ELLIPSE:
 		{
-	//		QRectF rect = QRectF(m_startPos, m_endPos);
-	//		m_shapePath.addEllipse(rect);
+			m_shapePath.arcToDegrees(pRect(m_startPos.x(), m_startPos.y(), m_endPos.x(), m_endPos.y()), 0, 360);
 			break;
 		}
 	}
+
+	m_shapeMesh = m_shapePath.triangulate();
 
 	m_annotation->cleanDirty();
 	m_objectArea = m_textArea;
@@ -173,14 +189,14 @@ bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 	if(m_textArea.contains(zoomedMouse))
 	{
 		m_movingAction = MOVING_TEXT;
-		m_previousMousePos = zoomedMouse;
+		m_startMousePos = m_previousMousePos = zoomedMouse;
 		return true;
 	}
 
 	if((zoomedMouse - m_endPos).manhattanLength() < 10)
 	{
 		m_movingAction = MOVING_POINT;
-		m_previousMousePos = zoomedMouse;
+		m_startMousePos = m_previousMousePos = zoomedMouse;
 		return true;
 	}
 
@@ -195,14 +211,29 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 	if(delta.isNull())
 		return;
 
-	if(m_movingAction == MOVING_TEXT)
-		m_parentView->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationTextCommand>(this, delta));
-	else if(m_movingAction == MOVING_POINT)
-		m_parentView->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationEndCommand>(this, delta));
+	if (m_movingAction == MOVING_TEXT)
+		moveText(delta, false);
+	else if (m_movingAction == MOVING_POINT)
+		moveEnd(delta, false);
 }
 
-void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent*)
+void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
 {
+	QPointF zoomedMouse = event->localPos() / m_parentView->getZoom();
+	QPointF deltaStart = m_startMousePos - m_previousMousePos;
+	QPointF delta = zoomedMouse - m_startMousePos;
+
+	if (m_movingAction == MOVING_TEXT)
+	{
+		moveText(deltaStart, false);
+		m_parentView->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationTextCommand>(this, delta));
+	}
+	else if (m_movingAction == MOVING_POINT)
+	{
+		moveEnd(deltaStart, false);
+		m_parentView->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationEndCommand>(this, delta));
+	}
+		
 	m_movingAction = MOVING_NONE;
 }
 

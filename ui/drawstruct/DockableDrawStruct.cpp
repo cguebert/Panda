@@ -8,12 +8,12 @@
 
 namespace
 {
-	pRect convert(const QRectF& rect)
+	inline pRect convert(const QRectF& rect)
 	{
 		return pRect(rect.left(), rect.top(), rect.right(), rect.bottom());
 	}
 
-	pRect convert(qreal left, qreal top, qreal w, qreal h)
+	inline pRect convert(qreal left, qreal top, qreal w, qreal h)
 	{
 		return pRect(left, top, left + w, top + h);
 	}

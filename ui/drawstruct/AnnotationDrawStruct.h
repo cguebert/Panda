@@ -30,8 +30,8 @@ public:
 
 	virtual QSize getObjectSize();
 
-	void moveText(const QPointF& delta);
-	void moveEnd(const QPointF& delta);
+	void moveText(const QPointF& delta, bool emitModified = true);
+	void moveEnd(const QPointF& delta, bool emitModified = true);
 
 protected:
 	void drawBackground(DrawList& list, DrawColors& colors) override;
@@ -44,9 +44,10 @@ protected:
 	QRectF m_textArea;
 	int m_textCounter = -1, m_colorCounter = -1;
 	DrawPath m_shapePath;
+	DrawMesh m_shapeMesh;
 	enum MovingAction { MOVING_NONE=0, MOVING_TEXT, MOVING_POINT };
 	MovingAction m_movingAction = MOVING_NONE;
-	QPointF m_previousMousePos;
+	QPointF m_previousMousePos, m_startMousePos;
 };
 
 #endif // ANNOTATIONDRAWSTRUCT_H
