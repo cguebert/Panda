@@ -155,7 +155,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	// Put the new object there
 	ObjectDrawStruct* ods = view->getObjectDrawStruct(group);
 	Point objSize = ods->getObjectSize() / 2;
-	ods->move(totalView.center() - view->getViewDelta() - ods->getPosition() - objSize);
+	ods->move(totalView.center() - ods->getPosition() - objSize);
 	Point groupPos = ods->getPosition();
 
 	// If multiple outside datas are connected to the same data, merge them

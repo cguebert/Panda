@@ -69,14 +69,13 @@ void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
 	}
 }
 
-void AnnotationDrawStruct::moveVisual(const Point& delta)
+void AnnotationDrawStruct::move(const Point& delta)
 {
-	ObjectDrawStruct::moveVisual(delta);
+	ObjectDrawStruct::move(delta);
 	m_shapePath.translate(delta);
 	m_shapeMesh.translate(delta);
 
 	m_textArea.translate(delta);
-	m_startPos += delta;
 	m_endPos += delta;
 }
 
@@ -118,13 +117,10 @@ void AnnotationDrawStruct::update()
 {
 //	ObjectDrawStruct::update();	// No need to call it
 
-	auto viewDelta = m_parentView->getViewDelta();
-
-	m_startPos = m_position + viewDelta;
 	if(m_movingAction == MOVING_NONE)
-		m_endPos = m_startPos + m_annotation->m_deltaToEnd.getValue();
+		m_endPos = m_position + m_annotation->m_deltaToEnd.getValue();
 
-	m_textArea = Rect::fromSize(m_startPos, m_textSize);
+	m_textArea = Rect::fromSize(m_position, m_textSize);
 	m_textArea.translate(0, -m_textSize.y);
 	m_textArea.adjust(3, -13, 13, -3);
 
@@ -160,13 +156,13 @@ void AnnotationDrawStruct::update()
 		}
 		case Annotation::ANNOTATION_RECTANGLE:
 		{
-			m_shapePath.rect(Rect(m_startPos, m_endPos));
+			m_shapePath.rect(Rect(m_position, m_endPos));
 			m_shapePath.close();
 			break;
 		}
 		case Annotation::ANNOTATION_ELLIPSE:
 		{
-			m_shapePath.arcToDegrees(Rect(m_startPos, m_endPos), 0, 360);
+			m_shapePath.arcToDegrees(Rect(m_position, m_endPos), 0, 360);
 			break;
 		}
 	}
@@ -176,12 +172,12 @@ void AnnotationDrawStruct::update()
 	m_annotation->cleanDirty();
 	m_objectArea = m_textArea;
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT)
-		 m_objectArea |= Rect(m_startPos, m_endPos).canonicalized();
+		 m_objectArea |= Rect(m_position, m_endPos).canonicalized();
 }
 
 bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 {
-	Point zoomedMouse = convert(event->localPos() )/ m_parentView->getZoom();
+	Point zoomedMouse = m_parentView->getViewDelta() + convert(event->localPos() )/ m_parentView->getZoom();
 
 	if(m_textArea.contains(zoomedMouse))
 	{
@@ -202,7 +198,7 @@ bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 
 void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 {
-	Point zoomedMouse = convert(event->localPos()) / m_parentView->getZoom();
+	Point zoomedMouse = m_parentView->getViewDelta() + convert(event->localPos()) / m_parentView->getZoom();
 	Point delta = zoomedMouse - m_previousMousePos;
 	m_previousMousePos = zoomedMouse;
 	if(delta.isNull())
@@ -216,7 +212,7 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 
 void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
 {
-	Point zoomedMouse = convert(event->localPos()) / m_parentView->getZoom();
+	Point zoomedMouse = m_parentView->getViewDelta() + convert(event->localPos()) / m_parentView->getZoom();
 	Point deltaStart = m_startMousePos - m_previousMousePos;
 	Point delta = zoomedMouse - m_startMousePos;
 

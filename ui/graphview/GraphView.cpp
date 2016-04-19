@@ -189,19 +189,6 @@ Rect GraphView::getDataRect(panda::BaseData* data)
 	return rect;
 }
 
-void GraphView::moveView(const Point& delta)
-{
-	if(!delta.isNull())
-	{
-		m_viewDelta += delta;
-		for(auto& drawStruct : m_orderedObjectDrawStructs)
-			drawStruct->moveVisual(delta);
-
-		for(auto& tag : m_linkTags)
-			tag.second->moveView(delta);
-	}
-}
-
 void GraphView::initializeGL()
 {
 	m_viewRenderer->initialize();
@@ -230,7 +217,7 @@ void GraphView::paintGL()
 		m_recomputeTags = false;
 	}
 
-	m_viewRenderer->setView({ 0, 0, width() / static_cast<float>(m_zoomFactor), height() / static_cast<float>(m_zoomFactor) });
+	m_viewRenderer->setView(Rect(m_viewDelta, width() / m_zoomFactor, height() / m_zoomFactor));
 	m_viewRenderer->newFrame();
 	DrawList drawList;
 
@@ -268,11 +255,11 @@ void GraphView::paintGL()
 	// Selection rubber band
 	if (m_movingAction == MOVING_SELECTION)
 	{
-		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).canonicalized();
+		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
 		auto highlight = palette().highlight().color();
 		highlight.setAlpha(64);
 		drawList.addRectFilled(r, DrawList::convert(highlight));
-		drawList.addRect(r, DrawList::convert(palette().text().color()));
+		drawList.addRect(r, DrawList::convert(palette().text().color()), 0.75f / m_zoomFactor);
 	}
 
 	// Link in creation
@@ -371,7 +358,7 @@ void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
 void GraphView::mousePressEvent(QMouseEvent* event)
 {
 	Point localPos = convert(event->localPos());
-	Point zoomedMouse = localPos / m_zoomFactor;
+	Point zoomedMouse = m_viewDelta + localPos / m_zoomFactor;
 	if(event->button() == Qt::LeftButton)
 	{
 		const auto ods = getObjectDrawStructAtPos(zoomedMouse);
@@ -467,9 +454,9 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 	if(m_movingAction == MOVING_START)
 	{
-		Point mousePos = localPos / m_zoomFactor;
+		Point mousePos = m_viewDelta + localPos / m_zoomFactor;
 		Point delta = mousePos - m_previousMousePos;
-		if((delta *  m_zoomFactor).norm() > 5)
+		if((delta * m_zoomFactor).norm() > 5)
 		{
 			m_movingAction = MOVING_OBJECT;
 			if(m_useMagneticSnap && !m_selectedObjectsDrawStructs.empty())
@@ -505,7 +492,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == MOVING_OBJECT)
 	{
-		Point mousePos = localPos / m_zoomFactor;
+		Point mousePos = m_viewDelta + localPos / m_zoomFactor;
 		Point delta = mousePos - m_previousMousePos;
 		if(m_useMagneticSnap && !m_selectedObjectsDrawStructs.empty())
 		{
@@ -545,7 +532,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == MOVING_LINK)
 	{
-		m_currentMousePos = localPos / m_zoomFactor;
+		m_currentMousePos = m_viewDelta + localPos / m_zoomFactor;
 
 		const auto ods = getObjectDrawStructAtPos(m_currentMousePos);
 		if(ods)
@@ -565,7 +552,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 	if(m_movingAction == MOVING_NONE || m_movingAction == MOVING_LINK)
 	{
-		Point zoomedMouse = localPos / m_zoomFactor;
+		Point zoomedMouse = m_viewDelta + localPos / m_zoomFactor;
 		const auto ods = getObjectDrawStructAtPos(zoomedMouse);
 		if(ods)
 		{
@@ -715,7 +702,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	{
 		m_objectsSelection->selectNone();
 
-		Rect selectionRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).canonicalized();
+		Rect selectionRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
 		for(const auto ods : m_orderedObjectDrawStructs)
 		{
 			Rect objectArea = ods->getObjectArea();

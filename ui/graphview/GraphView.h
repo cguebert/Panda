@@ -250,6 +250,9 @@ inline const panda::BaseData* GraphView::getContextMenuData() const
 inline float GraphView::getZoom()
 { return m_zoomFactor; }
 
+inline void GraphView::moveView(const panda::types::Point& delta)
+{ m_viewDelta -= delta; }
+
 inline void GraphView::setRecomputeTags()
 { m_recomputeTags = true; }
 

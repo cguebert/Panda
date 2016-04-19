@@ -17,14 +17,14 @@ ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 {
 	Point objSize = getObjectSize();
 	Point center = view->getNewObjectPosition();
-	m_position = (center - objSize/2) - view->getViewDelta();
+	m_position = (center - objSize/2);
 
 	update();
 }
 
 void ObjectDrawStruct::update()
 {
-	m_objectArea = Rect::fromSize(m_position + m_parentView->getViewDelta(), getObjectSize());
+	m_objectArea = Rect::fromSize(m_position, getObjectSize());
 
 	m_datas.clear();
 	std::vector<panda::BaseData*> inputDatas, outputDatas;
@@ -54,17 +54,9 @@ void ObjectDrawStruct::move(const Point& delta)
 	if(!delta.isNull())
 	{
 		m_position += delta;
-		moveVisual(delta);
-	}
-}
-
-void ObjectDrawStruct::moveVisual(const Point& delta)
-{
-	if(!delta.isNull())
-	{
 		m_objectArea.translate(delta);
-		for(std::vector<DataRectPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
-			iter->second.translate(delta);
+		for (auto& it : m_datas)
+			it.second.translate(delta);
 	}
 }
 

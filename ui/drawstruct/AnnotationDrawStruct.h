@@ -18,8 +18,8 @@ class AnnotationDrawStruct : public ObjectDrawStruct
 public:
 	AnnotationDrawStruct(GraphView* view, panda::PandaObject* m_object);
 
-	void moveVisual(const panda::types::Point& delta) override;
 	void update() override;
+	void move(const panda::types::Point& delta) override;
 	bool contains(const panda::types::Point& point) override;
 
 	bool mousePressEvent(QMouseEvent* event) override;
@@ -39,8 +39,7 @@ protected:
 	void drawForeground(DrawList& list, DrawColors& colors) override;
 
 	panda::Annotation* m_annotation;
-	panda::types::Point m_endPos, m_startPos;
-	panda::types::Point m_textSize;
+	panda::types::Point m_endPos, m_textSize;
 	panda::types::Rect m_textArea;
 	int m_textCounter = -1, m_colorCounter = -1;
 	DrawPath m_shapePath;

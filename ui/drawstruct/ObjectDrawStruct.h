@@ -28,9 +28,8 @@ public:
 	virtual void draw(DrawList& list, DrawColors& colors, bool selected = false); // "Normal" draw
 	virtual void drawForeground(DrawList& list, DrawColors& colors) {}	// Called last
 
-	virtual void update();							// Recompute the information about this object
+	virtual void update();										// Recompute the information about this object
 	virtual void move(const panda::types::Point& delta);		// Move the position of the object in the view
-	virtual void moveVisual(const panda::types::Point& delta);	// The view is moving (not the position of the object)
 	virtual bool contains(const panda::types::Point& point);	// Is this point inside of the shape of this object ? (which can be complex)
 
 	virtual void save(panda::XmlElement& elem);

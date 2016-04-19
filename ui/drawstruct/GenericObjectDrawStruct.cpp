@@ -28,7 +28,7 @@ GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::Generic
 
 void GenericObjectDrawStruct::update()
 {
-	m_objectArea = Rect::fromSize(m_position + m_parentView->getViewDelta(), getObjectSize());
+	m_objectArea = Rect::fromSize(m_position, getObjectSize());
 
 	m_datas.clear();
 	std::vector<panda::BaseData*> inputDatas, outputDatas;

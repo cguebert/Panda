@@ -48,13 +48,6 @@ void DockObjectDrawStruct::move(const Point& delta)
 		m_parentView->getObjectDrawStruct(dockable)->move(delta);
 }
 
-void DockObjectDrawStruct::moveVisual(const Point& delta)
-{
-	ObjectDrawStruct::moveVisual(delta);
-	m_shapePath.translate(delta);
-	m_shapeMesh.translate(delta);
-}
-
 bool DockObjectDrawStruct::contains(const Point& point)
 {
 	return m_shapePath.contains(point);
@@ -188,13 +181,6 @@ void DockableObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 {
 	list.addMesh(m_shapeMesh, colors.fillColor);
 	list.addPolyline(m_shapePath, colors.penColor, false, colors.penWidth);
-}
-
-void DockableObjectDrawStruct::moveVisual(const Point& delta)
-{
-	ObjectDrawStruct::moveVisual(delta);
-	m_shapePath.translate(delta);
-	m_shapeMesh.translate(delta);
 }
 
 bool DockableObjectDrawStruct::contains(const Point& point)

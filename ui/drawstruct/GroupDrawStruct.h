@@ -18,7 +18,6 @@ public:
 	void drawShape(DrawList& list, DrawColors& colors) override;
 	std::string getLabel() const override;
 
-	void moveVisual(const panda::types::Point& delta) override;
 	void update() override;
 	bool contains(const panda::types::Point& point) override;
 	int dataStartY() override;

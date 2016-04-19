@@ -29,12 +29,6 @@ std::string GroupDrawStruct::getLabel() const
 	return ObjectDrawStruct::getLabel();
 }
 
-void GroupDrawStruct::moveVisual(const panda::types::Point& delta)
-{
-	ObjectDrawStruct::moveVisual(delta);
-	m_shapePath.translate(delta);
-}
-
 bool GroupDrawStruct::contains(const panda::types::Point& point)
 {
 	return m_shapePath.contains(point);

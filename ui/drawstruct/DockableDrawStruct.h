@@ -16,7 +16,6 @@ public:
 	panda::types::Point getObjectSize() override;
 	panda::types::Rect getTextArea() override;
 	void move(const panda::types::Point& delta) override;
-	void moveVisual(const panda::types::Point& delta) override;
 	void update() override;
 	bool contains(const panda::types::Point& point) override;
 
@@ -39,7 +38,6 @@ public:
 	DockableObjectDrawStruct(GraphView* view, panda::DockableObject* m_object);
 
 	void drawShape(DrawList& list, DrawColors& colors) override;
-	void moveVisual(const panda::types::Point& delta) override;
 	void update() override;
 	bool contains(const panda::types::Point& point) override;
 	panda::types::Point getObjectSize() override;
