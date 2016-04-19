@@ -9,7 +9,7 @@ class AnnotationDrawStruct;
 class MoveAnnotationTextCommand : public panda::UndoCommand
 {
 public:
-	MoveAnnotationTextCommand(AnnotationDrawStruct* drawStruct, QPointF delta);
+	MoveAnnotationTextCommand(AnnotationDrawStruct* drawStruct, panda::types::Point delta);
 
 	virtual int id() const;
 
@@ -20,7 +20,7 @@ public:
 
 protected:
 	AnnotationDrawStruct* m_drawStruct;
-	QPointF m_delta;
+	panda::types::Point m_delta;
 };
 
 //****************************************************************************//
@@ -28,7 +28,7 @@ protected:
 class MoveAnnotationEndCommand : public panda::UndoCommand
 {
 public:
-	MoveAnnotationEndCommand(AnnotationDrawStruct* drawStruct, QPointF delta);
+	MoveAnnotationEndCommand(AnnotationDrawStruct* drawStruct, panda::types::Point delta);
 
 	virtual int id() const;
 
@@ -39,7 +39,7 @@ public:
 
 protected:
 	AnnotationDrawStruct* m_drawStruct;
-	QPointF m_delta;
+	panda::types::Point m_delta;
 };
 
 #endif

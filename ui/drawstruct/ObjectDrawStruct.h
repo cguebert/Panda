@@ -3,11 +3,11 @@
 
 #include <ui/graphview/graphics/DrawList.h>
 
-#include <QtWidgets>
 #include <memory>
 
 struct DrawColors;
 class GraphView;
+class QMouseEvent;
 
 namespace panda
 {
@@ -20,7 +20,7 @@ namespace panda
 class ObjectDrawStruct
 {
 public:
-	using RectDataPair = std::pair<QRectF, panda::BaseData*>;
+	using RectDataPair = std::pair<panda::types::Rect, panda::BaseData*>;
 
 	ObjectDrawStruct(GraphView* view, panda::PandaObject* obj);
 
@@ -29,9 +29,9 @@ public:
 	virtual void drawForeground(DrawList& list, DrawColors& colors) {}	// Called last
 
 	virtual void update();							// Recompute the information about this object
-	virtual void move(const QPointF& delta);		// Move the position of the object in the view
-	virtual void moveVisual(const QPointF& delta);	// The view is moving (not the position of the object)
-	virtual bool contains(const QPointF& point);	// Is this point inside of the shape of this object ? (which can be complex)
+	virtual void move(const panda::types::Point& delta);		// Move the position of the object in the view
+	virtual void moveVisual(const panda::types::Point& delta);	// The view is moving (not the position of the object)
+	virtual bool contains(const panda::types::Point& point);	// Is this point inside of the shape of this object ? (which can be complex)
 
 	virtual void save(panda::XmlElement& elem);
 	virtual void load(const panda::XmlElement& elem);
@@ -42,14 +42,14 @@ public:
 
 	virtual bool acceptsMagneticSnap() const; // If this object is used for the magnetic snap when moving objects
 
-	virtual QSize getObjectSize();
+	virtual panda::types::Point getObjectSize();
 	
 	const std::vector<RectDataPair>& getDataRects() const;
-	panda::BaseData* getDataAtPos(const QPointF &pt, QPointF* center = nullptr) const;
-	bool getDataRect(const panda::BaseData* data, QRectF& rect) const;
+	panda::BaseData* getDataAtPos(const panda::types::Point &pt, panda::types::Point* center = nullptr) const;
+	bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) const;
 
-	QRectF getObjectArea() const;
-	QPointF getPosition() const;
+	panda::types::Rect getObjectArea() const;
+	panda::types::Point getPosition() const;
 	panda::PandaObject* const getObject() const;
 
 	static const int objectDefaultWidth = 100;
@@ -68,15 +68,15 @@ protected:
 	virtual void drawDatas(DrawList& list, DrawColors& colors);
 	virtual void drawText(DrawList& list, DrawColors& colors);
 
-	virtual QRectF getTextArea(); // The area in which we can render text
+	virtual panda::types::Rect getTextArea(); // The area in which we can render text
 	virtual std::string getLabel() const; // The text to draw
 
-	void drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const QRectF& area);
+	void drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const panda::types::Rect& area);
 
 	GraphView* m_parentView;
 	panda::PandaObject* m_object;
-	QPointF m_position;
-	QRectF m_objectArea;
+	panda::types::Point m_position;
+	panda::types::Rect m_objectArea;
 
 	std::vector<RectDataPair> m_datas;
 
@@ -87,13 +87,13 @@ protected:
 inline bool ObjectDrawStruct::acceptsMagneticSnap() const
 { return true; }
 
-inline bool ObjectDrawStruct::contains(const QPointF& point)
+inline bool ObjectDrawStruct::contains(const panda::types::Point& point)
 { return m_objectArea.contains(point); }
 
-inline QRectF ObjectDrawStruct::getObjectArea() const
+inline panda::types::Rect ObjectDrawStruct::getObjectArea() const
 { return m_objectArea; }
 
-inline QPointF ObjectDrawStruct::getPosition() const
+inline panda::types::Point ObjectDrawStruct::getPosition() const
 { return m_position; }
 
 inline panda::PandaObject* const ObjectDrawStruct::getObject() const

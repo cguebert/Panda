@@ -9,19 +9,22 @@
 
 #include <cmath>
 
+using panda::types::Point;
+using panda::types::Rect;
+
 ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 	: m_parentView(view), m_object(obj)
 {
-	QSize objSize = getObjectSize();
-	QPointF center = view->contentsRect().center();
-	m_position = QPointF(center.x() - objSize.width()/2, center.y() - objSize.height()/2) - view->getViewDelta();
+	Point objSize = getObjectSize();
+	Point center = view->getNewObjectPosition();
+	m_position = (center - objSize/2) - view->getViewDelta();
 
 	update();
 }
 
 void ObjectDrawStruct::update()
 {
-	m_objectArea = QRectF(m_position + m_parentView->getViewDelta(), getObjectSize());
+	m_objectArea = Rect::fromSize(m_position + m_parentView->getViewDelta(), getObjectSize());
 
 	m_datas.clear();
 	std::vector<panda::BaseData*> inputDatas, outputDatas;
@@ -31,22 +34,22 @@ void ObjectDrawStruct::update()
 
 	for(int i=0; i<nbInputs; ++i)
 	{
-		QRectF dataArea(m_objectArea.x() + dataRectMargin,
-						m_objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
-						dataRectSize, dataRectSize);
+		Rect dataArea = Rect::fromSize(m_objectArea.left() + dataRectMargin,
+									   m_objectArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
+									   dataRectSize, dataRectSize);
 		m_datas.emplace_back(dataArea, inputDatas[i]);
 	}
 
 	for(int i=0; i<nbOutputs; ++i)
 	{
-		QRectF dataArea(m_objectArea.right() - dataRectMargin - dataRectSize,
-						m_objectArea.y() + dataStartY() + i * (dataRectSize + dataRectMargin),
-						dataRectSize, dataRectSize);
+		Rect dataArea = Rect::fromSize(m_objectArea.right() - dataRectMargin - dataRectSize,
+									   m_objectArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
+									   dataRectSize, dataRectSize);
 		m_datas.emplace_back(dataArea, outputDatas[i]);
 	}
 }
 
-void ObjectDrawStruct::move(const QPointF& delta)
+void ObjectDrawStruct::move(const Point& delta)
 {
 	if(!delta.isNull())
 	{
@@ -55,7 +58,7 @@ void ObjectDrawStruct::move(const QPointF& delta)
 	}
 }
 
-void ObjectDrawStruct::moveVisual(const QPointF& delta)
+void ObjectDrawStruct::moveVisual(const Point& delta)
 {
 	if(!delta.isNull())
 	{
@@ -65,26 +68,26 @@ void ObjectDrawStruct::moveVisual(const QPointF& delta)
 	}
 }
 
-QSize ObjectDrawStruct::getObjectSize()
+Point ObjectDrawStruct::getObjectSize()
 {
-	QSize objectSize(objectDefaultWidth, objectDefaultHeight);
+	Point objectSize(objectDefaultWidth, objectDefaultHeight);
 
 	int nbInputs, nbOutputs;
 	nbInputs = m_object->getInputDatas().size();
 	nbOutputs = m_object->getOutputDatas().size();
-	int maxData = qMax(nbInputs, nbOutputs);
-	objectSize.rheight() = qMax(objectSize.height(), 2*dataStartY() + (maxData-1)*dataRectMargin + maxData*dataRectSize);
+	int maxData = std::max(nbInputs, nbOutputs);
+	objectSize.y = std::max(objectSize.y, 2.0f * dataStartY() + (maxData-1)*dataRectMargin + maxData*dataRectSize);
 
 	return objectSize;
 }
 
-QRectF ObjectDrawStruct::getTextArea()
+Rect ObjectDrawStruct::getTextArea()
 {
 	int margin = dataRectSize + dataRectMargin + 3;
-	return QRectF(m_objectArea.adjusted(margin, 0, -margin, 0));
+	return m_objectArea.adjusted(margin, 0, -margin, 0);
 }
 
-panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* center) const
+panda::BaseData* ObjectDrawStruct::getDataAtPos(const Point& pt, Point* center) const
 {
 	for(const auto& iter : m_datas)
 	{
@@ -99,15 +102,15 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const QPointF& pt, QPointF* cent
 	return nullptr;
 }
 
-bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, QRectF& rect) const
+bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, Rect& rect) const
 {
-	for(const auto& iter : m_datas)
+	auto it = std::find_if(m_datas.begin(), m_datas.end(), [data](const RectDataPair& p) {
+		return p.second == data;
+	});
+	if (it != m_datas.end())
 	{
-		if(iter.second == data)
-		{
-			rect = iter.first;
-			return true;
-		}
+		rect = it->first;
+		return true;
 	}
 
 	return false;
@@ -142,7 +145,7 @@ void ObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
 		drawData(list, colors, dataPair.second, dataPair.first);
 }
 
-void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const QRectF& area)
+void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const Rect& area)
 {
 	unsigned int dataCol = 0;
 	const panda::BaseData* clickedData = m_parentView->getClickedData();
@@ -151,30 +154,29 @@ void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda:
 	else
 		dataCol = DrawList::convert(data->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
 
-	pPoint dtl = pPoint(area.left(), area.top()), dbr = pPoint(area.right(), area.bottom());
+	pPoint dtl = area.topLeft(), dbr = area.bottomRight();
 	list.addRectFilled(dtl, dbr, dataCol);
 	list.addRect(dtl, dbr, colors.penColor);
 }
 
 void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)
 {
-	QRectF textArea = getTextArea();
-	pRect pArea(textArea.left(), textArea.top(), textArea.right(), textArea.bottom());
+	Rect area = getTextArea();
 	unsigned int penCol = DrawList::convert(m_parentView->palette().text().color());
-	list.addText(pArea, getLabel(), penCol, DrawList::Align_Center);
+	list.addText(area, getLabel(), penCol, DrawList::Align_Center);
 }
 
 void ObjectDrawStruct::save(panda::XmlElement& elem)
 {
-	elem.setAttribute("x", m_position.x());
-	elem.setAttribute("y", m_position.y());
+	elem.setAttribute("x", m_position.x);
+	elem.setAttribute("y", m_position.y);
 }
 
 void ObjectDrawStruct::load(const panda::XmlElement& elem)
 {
-	QPointF newPos;
-	newPos.setX(elem.attribute("x").toFloat());
-	newPos.setY(elem.attribute("y").toFloat());
+	Point newPos;
+	newPos.x = elem.attribute("x").toFloat();
+	newPos.y = elem.attribute("y").toFloat();
 	move(newPos - m_position);
 }
 

@@ -1,18 +1,21 @@
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/LinkTag.h>
 
+using panda::types::Point;
+using panda::types::Rect;
+
 LinkTag::LinkTag(GraphView* view, panda::BaseData* input, panda::BaseData* output, int index)
 	: m_index(index)
 	, m_parentView(view)
 	, m_inputData(input)
 {
-	m_outputDatas.emplace(output, std::make_pair(QRectF(),QRectF()));
+	m_outputDatas.emplace(output, std::make_pair(Rect(),Rect()));
 }
 
 void LinkTag::addOutput(panda::BaseData* output)
 {
 	if(!m_outputDatas.count(output))
-		m_outputDatas.emplace(output, std::make_pair(QRectF(),QRectF()));
+		m_outputDatas.emplace(output, std::make_pair(Rect(),Rect()));
 }
 
 void LinkTag::removeOutput(panda::BaseData* output)
@@ -22,25 +25,25 @@ void LinkTag::removeOutput(panda::BaseData* output)
 
 void LinkTag::update()
 {
-	QRectF dataRect = m_parentView->getDataRect(m_inputData);
-	m_inputDataRects.first = QRectF(dataRect.right() + tagMargin,
-						   dataRect.center().y() - tagH / 2.0,
-						   tagW, tagH);
+	auto dataRect = m_parentView->getDataRect(m_inputData);
+	m_inputDataRects.first = Rect::fromSize(dataRect.right() + tagMargin,
+											dataRect.center().y - tagH / 2.0,
+											tagW, tagH);
 	m_inputDataRects.second = dataRect;
 
-	qreal ix = dataRect.center().x();
+	float ix = dataRect.center().x;
 
 	for (auto it = m_outputDatas.begin(); it != m_outputDatas.end();)
 	{
 		dataRect = m_parentView->getDataRect(it->first);
-		qreal ox = dataRect.center().x();
+		float ox = dataRect.center().x;
 		if (!needLinkTag(ix, ox, m_parentView))
 			it = m_outputDatas.erase(it);
 		else
 		{
-			QRectF tagRect(dataRect.left() - tagW - tagMargin,
-				dataRect.center().y() - tagH / 2.0,
-				tagW, tagH);
+			Rect tagRect = Rect::fromSize(dataRect.left() - tagW - tagMargin,
+										  dataRect.center().y - tagH / 2.0,
+										  tagW, tagH);
 			it->second.first = tagRect;
 			it->second.second = dataRect;
 			++it;
@@ -53,7 +56,7 @@ bool LinkTag::isEmpty()
 	return m_outputDatas.empty();
 }
 
-bool LinkTag::containsPoint(const QPointF& point)
+bool LinkTag::containsPoint(const Point& point)
 {
 	if(m_inputDataRects.first.contains(point))
 		return true;
@@ -65,7 +68,7 @@ bool LinkTag::containsPoint(const QPointF& point)
 	return false;
 }
 
-void LinkTag::moveView(const QPointF& delta)
+void LinkTag::moveView(const Point& delta)
 {
 	m_inputDataRects.first.translate(delta);
 	m_inputDataRects.second.translate(delta);
@@ -81,21 +84,21 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 	if(m_hovering)
 	{
 		// Draw as links
-		auto inputCenter = pPoint(m_inputDataRects.second.center().x(), m_inputDataRects.second.center().y());
+		auto inputCenter = m_inputDataRects.second.center();
 		for(const auto& tagRect : m_outputDatas)
 		{
-			auto outputCenter = pPoint(tagRect.second.second.center().x(), tagRect.second.second.center().y());
-			auto w = pPoint((outputCenter.x - inputCenter.x) / 2, 0);
+			auto outputCenter = tagRect.second.second.center();
+			auto w = Point((outputCenter.x - inputCenter.x) / 2, 0);
 			list.addBezierCurve(inputCenter, inputCenter + w, outputCenter - w, outputCenter, colors.highlightColor, 3.0f);
 		}
 
 		// Draw the data rectangles
-		auto rect = pRect(m_inputDataRects.second.left(), m_inputDataRects.second.top(), m_inputDataRects.second.right(), m_inputDataRects.second.bottom());
+		auto rect = Rect(m_inputDataRects.second.left(), m_inputDataRects.second.top(), m_inputDataRects.second.right(), m_inputDataRects.second.bottom());
 		list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.highlightColor);
 		list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
 		for (const auto& tagRect : m_outputDatas)
 		{
-			rect = pRect(tagRect.second.second.left(), tagRect.second.second.top(), tagRect.second.second.right(), tagRect.second.second.bottom());
+			rect = Rect(tagRect.second.second.left(), tagRect.second.second.top(), tagRect.second.second.right(), tagRect.second.second.bottom());
 			list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.highlightColor);
 			list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
 		}
@@ -106,10 +109,10 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 
 	// input
 	auto inputRect = m_inputDataRects.first;
-	auto rect = pRect(inputRect.left(), inputRect.top(), inputRect.right(), inputRect.bottom());
+	auto rect = Rect(inputRect.left(), inputRect.top(), inputRect.right(), inputRect.bottom());
 	qreal x = inputRect.left();
-	qreal cy = inputRect.center().y();
-	list.addLine(pPoint(x - tagMargin, cy), pPoint(x, cy), colors.penColor);
+	qreal cy = inputRect.center().y;
+	list.addLine(Point(x - tagMargin, cy), Point(x, cy), colors.penColor);
 	list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.lightColor);
 	list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
 	list.addText(rect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
@@ -118,10 +121,10 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 	for(const auto& tagRectPair : m_outputDatas)
 	{
 		const auto& tagRect = tagRectPair.second.first;
-		rect = pRect(tagRect.left(), tagRect.top(), tagRect.right(), tagRect.bottom());
+		rect = Rect(tagRect.left(), tagRect.top(), tagRect.right(), tagRect.bottom());
 		x = tagRect.right();
-		cy = tagRect.center().y();
-		list.addLine(pPoint(x, cy), pPoint(x + tagMargin, cy), colors.penColor);
+		cy = tagRect.center().y;
+		list.addLine(Point(x, cy), Point(x + tagMargin, cy), colors.penColor);
 		list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.lightColor);
 		list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
 		list.addText(rect, indexText, colors.penColor, DrawList::Align_Center, fontScale);

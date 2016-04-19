@@ -3,7 +3,7 @@
 #include <ui/command/ModifyAnnotationCommand.h>
 
 MoveAnnotationTextCommand::MoveAnnotationTextCommand(AnnotationDrawStruct* drawStruct,
-													 QPointF delta)
+													 panda::types::Point delta)
 	: m_drawStruct(drawStruct)
 	, m_delta(delta)
 {
@@ -42,7 +42,7 @@ bool MoveAnnotationTextCommand::mergeWith(const panda::UndoCommand *other)
 //****************************************************************************//
 
 MoveAnnotationEndCommand::MoveAnnotationEndCommand(AnnotationDrawStruct* drawStruct,
-												   QPointF delta)
+												   panda::types::Point delta)
 	: m_drawStruct(drawStruct)
 	, m_delta(delta)
 {

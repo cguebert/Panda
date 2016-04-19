@@ -52,10 +52,10 @@ public:
 	explicit GraphView(panda::PandaDocument* doc, QWidget* parent = nullptr);
 	~GraphView();
 
-	QSize minimumSizeHint() const;
-	QSize sizeHint() const;
+	QSize minimumSizeHint() const override;
+	QSize sizeHint() const override;
 
-	QPointF getViewDelta() const;
+	panda::types::Point getViewDelta() const;
 	panda::PandaDocument* getDocument() const;
 	const panda::BaseData* getClickedData() const;
 	const panda::BaseData* getContextMenuData() const;
@@ -69,7 +69,8 @@ public:
 	std::vector<ObjectDrawStruct*> getObjectDrawStructs(const std::vector<panda::PandaObject*>& objects);
 	void setObjectDrawStruct(panda::PandaObject* object, const ObjectDrawStructPtr& drawStruct);
 
-	QRectF getDataRect(panda::BaseData* data);
+	panda::types::Point getNewObjectPosition();
+	panda::types::Rect getDataRect(panda::BaseData* data);
 
 	int getAvailableLinkTagIndex();
 
@@ -82,7 +83,7 @@ public:
 		MENU_IMAGE = 0x8
 	};
 
-	void moveObjects(std::vector<panda::PandaObject*> objects, QPointF delta);
+	void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
 
 	void setRecomputeTags(); /// Same as calling updateLinkTags, but it does it next redraw
 
@@ -117,8 +118,8 @@ protected:
 #endif
 	void paintDirtyState(DrawList& list, DrawColors& colors);
 
-	ObjectDrawStruct* getObjectDrawStructAtPos(const QPointF& pt);
-	void moveView(const QPointF& delta);
+	ObjectDrawStruct* getObjectDrawStructAtPos(const panda::types::Point& pt);
+	void moveView(const panda::types::Point& delta);
 
 	void addLinkTag(panda::BaseData* input, panda::BaseData* output);
 	void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
@@ -128,7 +129,7 @@ protected:
 	void drawConnectedDatas(panda::BaseData* sourceData);
 
 	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
-	void computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, QPointF position);
+	void computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, panda::types::Point position);
 
 	void changeLink(panda::BaseData* target, panda::BaseData* parent);
 
@@ -174,8 +175,8 @@ private:
 
 	int m_zoomLevel = 0, m_wheelTicks = 0;
 	qreal m_zoomFactor = 1.0;
-	QPointF m_viewDelta;
-	QPointF m_previousMousePos, m_currentMousePos;
+	panda::types::Point m_viewDelta;
+	panda::types::Point m_previousMousePos, m_currentMousePos;
 
 	enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK, MOVING_ZOOM, MOVING_CUSTOM };
 	MovingAction m_movingAction = MOVING_NONE;
@@ -196,13 +197,13 @@ private:
 
 	bool m_useMagneticSnap = true; /// Do we help align objects when moving them with the mouse?
 	std::set<qreal> m_snapTargetsY;
-	QPointF m_snapDelta;
+	panda::types::Point m_snapDelta;
 
 	std::vector<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied
 
 	std::shared_ptr<panda::ScopedMacro> m_moveObjectsMacro;
 
-	QRectF m_viewRect; /// Area taken by the objects on the screen
+	panda::types::Rect m_viewRect; /// Area taken by the objects on the screen
 
 	bool m_isLoading = false; /// We don't update the view while loading (unnecessary events)
 
@@ -234,7 +235,7 @@ inline ViewRenderer& GraphView::renderer() const
 inline void GraphView::debugDirtyState(bool show)
 { m_debugDirtyState = show; update(); }
 
-inline QPointF GraphView::getViewDelta() const
+inline panda::types::Point GraphView::getViewDelta() const
 { return m_viewDelta; }
 
 inline panda::PandaDocument* GraphView::getDocument() const

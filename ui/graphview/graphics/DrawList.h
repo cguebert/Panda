@@ -2,10 +2,7 @@
 
 #include <ui/graphview/graphics/DrawPath.h>
 
-#include <panda/types/Rect.h>
-
 #include <string>
-#include <vector>
 
 class Font;
 class QColor;

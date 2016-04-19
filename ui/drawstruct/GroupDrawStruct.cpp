@@ -29,15 +29,15 @@ std::string GroupDrawStruct::getLabel() const
 	return ObjectDrawStruct::getLabel();
 }
 
-void GroupDrawStruct::moveVisual(const QPointF& delta)
+void GroupDrawStruct::moveVisual(const panda::types::Point& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	m_shapePath.translate(pPoint(delta.x(), delta.y()));
+	m_shapePath.translate(delta);
 }
 
-bool GroupDrawStruct::contains(const QPointF& point)
+bool GroupDrawStruct::contains(const panda::types::Point& point)
 {
-	return m_shapePath.contains(pPoint(point.x(), point.y()));
+	return m_shapePath.contains(point);
 }
 
 void GroupDrawStruct::update()

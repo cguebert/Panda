@@ -2,7 +2,7 @@
 #define MOVEOBJECTCOMMAND_H
 
 #include <panda/UndoStack.h>
-#include <QPointF>
+#include <panda/types/Point.h>
 
 #include <vector>
 
@@ -16,8 +16,8 @@ class GraphView;
 class MoveObjectCommand : public panda::UndoCommand
 {
 public:
-	MoveObjectCommand(GraphView* view, panda::PandaObject* object, QPointF delta);
-	MoveObjectCommand(GraphView* view, std::vector<panda::PandaObject*> objects, QPointF delta);
+	MoveObjectCommand(GraphView* view, panda::PandaObject* object, panda::types::Point delta);
+	MoveObjectCommand(GraphView* view, std::vector<panda::PandaObject*> objects, panda::types::Point delta);
 
 	virtual int id() const;
 
@@ -29,7 +29,7 @@ public:
 protected:
 	GraphView* m_view;
 	std::vector<panda::PandaObject*> m_objects;
-	QPointF m_delta;
+	panda::types::Point m_delta;
 };
 
 #endif

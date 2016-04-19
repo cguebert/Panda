@@ -11,9 +11,9 @@ LayerDrawStruct::LayerDrawStruct(GraphView* view, panda::Layer* object)
 	update();
 }
 
-QRectF LayerDrawStruct::getTextArea()
+panda::types::Rect LayerDrawStruct::getTextArea()
 {
-	QRectF textArea = m_objectArea;
+	auto textArea = m_objectArea;
 	textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
 	int margin = dataRectSize+dataRectMargin+3;
 	textArea.adjust(margin, 0, -margin, 0);

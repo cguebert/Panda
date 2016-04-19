@@ -19,6 +19,9 @@
 
 #include <QMessageBox>
 
+using panda::types::Point;
+using panda::types::Rect;
+
 namespace
 {
 
@@ -37,16 +40,16 @@ QPointF convert(panda::types::Point pt)
 namespace panda
 {
 
-qreal getDataHeight(GraphView* view, BaseData* data)
+float getDataHeight(GraphView* view, BaseData* data)
 {
 	auto owner = data->getOwner();
 	if(!owner)
 		return 0;
 
 	auto ods = view->getObjectDrawStruct(owner);
-	QRectF rect;
+	Rect rect;
 	if(ods->getDataRect(data, rect))
-		return rect.center().y();
+		return rect.center().y;
 
 	return 0;
 }
@@ -142,18 +145,18 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		return false;
 
 	// Find center of the selection
-	QRectF totalView;
+	Rect totalView;
 	for(auto object : selection)
 	{
-		QRectF objectArea = view->getObjectDrawStruct(object)->getObjectArea();
+		Rect objectArea = view->getObjectDrawStruct(object)->getObjectArea();
 		totalView = totalView.united(objectArea);
 	}
 
 	// Put the new object there
 	ObjectDrawStruct* ods = view->getObjectDrawStruct(group);
-	QSize objSize = ods->getObjectSize() / 2;
-	ods->move(totalView.center() - view->getViewDelta() - ods->getPosition() - QPointF(objSize.width(), objSize.height()));
-	QPointF groupPos = ods->getPosition();
+	Point objSize = ods->getObjectSize() / 2;
+	ods->move(totalView.center() - view->getViewDelta() - ods->getPosition() - objSize);
+	Point groupPos = ods->getPosition();
 
 	// If multiple outside datas are connected to the same data, merge them
 	std::map<BaseData*, BaseData*> connectedInputDatas;
@@ -171,8 +174,8 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		undoStack.push(std::make_shared<AddObjectToGroupCommand>(group, objectPtr));
 
 		// Storing the position of this object in respect to the group object
-		QPointF delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
-		group->setPosition(object, convert(delta));
+		Point delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
+		group->setPosition(object, delta);
 
 		// Adding input datas
 		for(BaseData* data : object->getInputDatas())
@@ -328,7 +331,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 	// For each group in the selection
 	for(auto group : groups)
 	{
-		QPointF groupPos = view->getObjectDrawStruct(group)->getPosition();
+		Point groupPos = view->getObjectDrawStruct(group)->getPosition();
 
 		// Putting the objects back into the document
 		panda::Group::ObjectsList docks;
@@ -344,7 +347,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 
 				// Placing the object in the view
 				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
-				QPointF delta = groupPos + convert(group->getPosition(object.get())) - ods->getPosition();
+				Point delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
 				if(!delta.isNull())
 					undoStack.push(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
 			}
@@ -358,7 +361,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 
 			// Placing the object in the view
 			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
-			QPointF delta = groupPos + convert(group->getPosition(object.get())) - ods->getPosition();
+			Point delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
 			if(!delta.isNull())
 				undoStack.push(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
 		}

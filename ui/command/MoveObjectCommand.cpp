@@ -4,7 +4,7 @@
 
 MoveObjectCommand::MoveObjectCommand(GraphView* view,
 									 panda::PandaObject* object,
-									 QPointF delta)
+									 panda::types::Point delta)
 	: m_view(view)
 	, m_delta(delta)
 {
@@ -14,7 +14,7 @@ MoveObjectCommand::MoveObjectCommand(GraphView* view,
 
 MoveObjectCommand::MoveObjectCommand(GraphView* view,
 									 std::vector<panda::PandaObject*> objects,
-									 QPointF delta)
+									 panda::types::Point delta)
 	: m_view(view)
 	, m_objects(objects)
 	, m_delta(delta)

@@ -6,27 +6,30 @@
 
 #include <panda/PandaDocument.h>
 
+using panda::types::Point;
+using panda::types::Rect;
+
 void alignHorizontallyCenter(GraphView* view)
 {
-	qreal sum = 0;
+	float sum = 0;
 	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		sum += pos.x() + area.width() / 2;
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		sum += pos.x + area.width() / 2;
 	}
 
-	qreal center = sum / odsList.size();
+	float center = sum / odsList.size();
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("center on vertical axis").toStdString());
 
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(center - pos.x() - area.width() / 2, 0);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(center - pos.x - area.width() / 2, 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -34,12 +37,12 @@ void alignHorizontallyCenter(GraphView* view)
 
 void alignHorizontallyLeft(GraphView* view)
 {
-	qreal left = std::numeric_limits<qreal>::max();
+	float left = std::numeric_limits<float>::max();
 	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		left = std::min(pos.x(), left);
+		Point pos = ods->getPosition();
+		left = std::min(pos.x, left);
 	}
 
 	auto& undoStack = view->getDocument()->getUndoStack();
@@ -47,7 +50,7 @@ void alignHorizontallyLeft(GraphView* view)
 
 	for(auto ods : odsList)
 	{
-		QPointF delta = QPointF(left - ods->getPosition().x(), 0);
+		Point delta = Point(left - ods->getPosition().x, 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -55,13 +58,13 @@ void alignHorizontallyLeft(GraphView* view)
 
 void alignHorizontallyRight(GraphView* view)
 {
-	qreal right = std::numeric_limits<qreal>::lowest();
+	float right = std::numeric_limits<float>::lowest();
 	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		right = std::max(pos.x() + area.width(), right);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		right = std::max(pos.x + area.width(), right);
 	}
 
 	auto& undoStack = view->getDocument()->getUndoStack();
@@ -69,9 +72,9 @@ void alignHorizontallyRight(GraphView* view)
 
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(right - pos.x() - area.width(), 0);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(right - pos.x - area.width(), 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -79,25 +82,25 @@ void alignHorizontallyRight(GraphView* view)
 
 void alignVerticallyCenter(GraphView* view)
 {
-	qreal sum = 0;
+	float sum = 0;
 	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		sum += pos.y() + area.height() / 2;
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		sum += pos.y + area.height() / 2;
 	}
 
-	qreal center = sum / odsList.size();
+	float center = sum / odsList.size();
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("center on horizontal axis").toStdString());
 
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(0, center - pos.y() - area.height() / 2);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(0, center - pos.y - area.height() / 2);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -105,12 +108,12 @@ void alignVerticallyCenter(GraphView* view)
 
 void alignVerticallyTop(GraphView* view)
 {
-	qreal top = std::numeric_limits<qreal>::max();
+	float top = std::numeric_limits<float>::max();
 	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		top = std::min(pos.y(), top);
+		Point pos = ods->getPosition();
+		top = std::min(pos.y, top);
 	}
 
 	auto& undoStack = view->getDocument()->getUndoStack();
@@ -118,7 +121,7 @@ void alignVerticallyTop(GraphView* view)
 
 	for(auto ods : odsList)
 	{
-		QPointF delta = QPointF(0, top - ods->getPosition().y());
+		Point delta = Point(0, top - ods->getPosition().y);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -126,13 +129,13 @@ void alignVerticallyTop(GraphView* view)
 
 void alignVerticallyBottom(GraphView* view)
 {
-	qreal bottom = std::numeric_limits<qreal>::lowest();
+	float bottom = std::numeric_limits<float>::lowest();
 	auto odsList = view->getObjectDrawStructs(view->selection().get());
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		bottom = std::max(pos.y() + area.height(), bottom);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		bottom = std::max(pos.y + area.height(), bottom);
 	}
 
 	auto& undoStack = view->getDocument()->getUndoStack();
@@ -140,9 +143,9 @@ void alignVerticallyBottom(GraphView* view)
 
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(0, bottom - pos.y() - area.height());
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(0, bottom - pos.y - area.height());
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -155,20 +158,20 @@ void distributeHorizontallyCenter(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<qreal, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectDrawStruct*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		positions.emplace_back(pos.x() + area.width() / 2, ods);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		positions.emplace_back(pos.x + area.width() / 2, ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	qreal left = positions.front().first;
-	qreal right = positions.back().first;
-	qreal step = (right - left) / (nb - 1);
+	float left = positions.front().first;
+	float right = positions.back().first;
+	float step = (right - left) / (nb - 1);
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute centers horizontally").toStdString());
@@ -178,9 +181,9 @@ void distributeHorizontallyCenter(GraphView* view)
 		const auto& posPair = positions[i];
 		left += step;
 		auto ods = posPair.second;
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(left - pos.x() - area.width() / 2, 0);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(left - pos.x - area.width() / 2, 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -193,26 +196,26 @@ void distributeHorizontallyGaps(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<qreal, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectDrawStruct*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		positions.emplace_back(pos.x(), ods);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		positions.emplace_back(pos.x, ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	qreal left = positions.front().first + positions.front().second->getObjectArea().width();
-	qreal right = positions.back().first;
+	float left = positions.front().first + positions.front().second->getObjectArea().width();
+	float right = positions.back().first;
 	
 	// Compute total gap
-	qreal width = 0;
+	float width = 0;
 	for (int i = 1; i < nb - 1; ++i)
 		width += positions[i].second->getObjectArea().width();
 
-	qreal step = (right - left - width) / (nb - 1);
+	float step = (right - left - width) / (nb - 1);
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute gaps horizontally").toStdString());
@@ -222,9 +225,9 @@ void distributeHorizontallyGaps(GraphView* view)
 		const auto& posPair = positions[i];
 		left += step;
 		auto ods = posPair.second;
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(left - pos.x(), 0);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(left - pos.x, 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 
@@ -239,20 +242,20 @@ void distributeHorizontallyLeft(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<qreal, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectDrawStruct*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		positions.emplace_back(pos.x(), ods);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		positions.emplace_back(pos.x, ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	qreal left = positions.front().first;
-	qreal right = positions.back().first;
-	qreal step = (right - left) / (nb - 1);
+	float left = positions.front().first;
+	float right = positions.back().first;
+	float step = (right - left) / (nb - 1);
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute left edges").toStdString());
@@ -262,9 +265,9 @@ void distributeHorizontallyLeft(GraphView* view)
 		const auto& posPair = positions[i];
 		left += step;
 		auto ods = posPair.second;
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(left - pos.x(), 0);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(left - pos.x, 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -277,20 +280,20 @@ void distributeHorizontallyRight(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<qreal, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectDrawStruct*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		positions.emplace_back(pos.x() + area.width(), ods);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		positions.emplace_back(pos.x + area.width(), ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	qreal left = positions.front().first;
-	qreal right = positions.back().first;
-	qreal step = (right - left) / (nb - 1);
+	float left = positions.front().first;
+	float right = positions.back().first;
+	float step = (right - left) / (nb - 1);
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute right edges").toStdString());
@@ -300,9 +303,9 @@ void distributeHorizontallyRight(GraphView* view)
 		const auto& posPair = positions[i];
 		left += step;
 		auto ods = posPair.second;
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(left - pos.x() - area.width(), 0);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(left - pos.x - area.width(), 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -315,20 +318,20 @@ void distributeVerticallyCenter(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<qreal, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectDrawStruct*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		positions.emplace_back(pos.y() + area.height() / 2, ods);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		positions.emplace_back(pos.y + area.height() / 2, ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	qreal top = positions.front().first;
-	qreal bottom = positions.back().first;
-	qreal step = (bottom - top) / (nb - 1);
+	float top = positions.front().first;
+	float bottom = positions.back().first;
+	float step = (bottom - top) / (nb - 1);
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute centers vertically").toStdString());
@@ -338,9 +341,9 @@ void distributeVerticallyCenter(GraphView* view)
 		const auto& posPair = positions[i];
 		top += step;
 		auto ods = posPair.second;
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(0, top - pos.y() - area.height() / 2);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(0, top - pos.y - area.height() / 2);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -353,26 +356,26 @@ void distributeVerticallyGaps(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<qreal, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectDrawStruct*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		positions.emplace_back(pos.y(), ods);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		positions.emplace_back(pos.y, ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	qreal top = positions.front().first + positions.front().second->getObjectArea().height();
-	qreal bottom = positions.back().first;
+	float top = positions.front().first + positions.front().second->getObjectArea().height();
+	float bottom = positions.back().first;
 	
 	// Compute total gap
-	qreal height = 0;
+	float height = 0;
 	for (int i = 1; i < nb - 1; ++i)
 		height += positions[i].second->getObjectArea().height();
 
-	qreal step = (bottom - top - height) / (nb - 1);
+	float step = (bottom - top - height) / (nb - 1);
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute gaps vertically").toStdString());
@@ -382,9 +385,9 @@ void distributeVerticallyGaps(GraphView* view)
 		const auto& posPair = positions[i];
 		top += step;
 		auto ods = posPair.second;
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(0, top - pos.y());
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(0, top - pos.y);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 
@@ -399,20 +402,20 @@ void distributeVerticallyTop(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<qreal, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectDrawStruct*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		positions.emplace_back(pos.y(), ods);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		positions.emplace_back(pos.y, ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	qreal top = positions.front().first;
-	qreal bottom = positions.back().first;
-	qreal step = (bottom - top) / (nb - 1);
+	float top = positions.front().first;
+	float bottom = positions.back().first;
+	float step = (bottom - top) / (nb - 1);
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute top edges").toStdString());
@@ -422,9 +425,9 @@ void distributeVerticallyTop(GraphView* view)
 		const auto& posPair = positions[i];
 		top += step;
 		auto ods = posPair.second;
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(0, top - pos.y());
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(0, top - pos.y);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}
@@ -437,20 +440,20 @@ void distributeVerticallyBottom(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<qreal, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectDrawStruct*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		positions.emplace_back(pos.y() + area.height(), ods);
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		positions.emplace_back(pos.y + area.height(), ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	qreal top = positions.front().first;
-	qreal bottom = positions.back().first;
-	qreal step = (bottom - top) / (nb - 1);
+	float top = positions.front().first;
+	float bottom = positions.back().first;
+	float step = (bottom - top) / (nb - 1);
 
 	auto& undoStack = view->getDocument()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute bottom edges").toStdString());
@@ -460,9 +463,9 @@ void distributeVerticallyBottom(GraphView* view)
 		const auto& posPair = positions[i];
 		top += step;
 		auto ods = posPair.second;
-		QPointF pos = ods->getPosition();
-		QRectF area = ods->getObjectArea();
-		QPointF delta = QPointF(0, top - pos.y() - area.height());
+		Point pos = ods->getPosition();
+		Rect area = ods->getObjectArea();
+		Point delta = Point(0, top - pos.y - area.height());
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
 	}

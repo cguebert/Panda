@@ -4,18 +4,8 @@
 #include <ui/drawstruct/DockableDrawStruct.h>
 #include <ui/command/MoveObjectCommand.h>
 
-namespace
-{
-	inline pRect convert(const QRectF& rect)
-	{
-		return pRect(rect.left(), rect.top(), rect.right(), rect.bottom());
-	}
-
-	inline pRect convert(qreal left, qreal top, qreal w, qreal h)
-	{
-		return pRect(left, top, left + w, top + h);
-	}
-}
+using panda::types::Point;
+using panda::types::Rect;
 
 DockObjectDrawStruct::DockObjectDrawStruct(GraphView* view, panda::DockObject* object)
 	: ObjectDrawStruct(view, object)
@@ -30,45 +20,44 @@ void DockObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 	list.addPolyline(m_shapePath, colors.penColor, false, colors.penWidth);
 }
 
-QSize DockObjectDrawStruct::getObjectSize()
+Point DockObjectDrawStruct::getObjectSize()
 {
-	QSize temp = ObjectDrawStruct::getObjectSize();
-	temp.rwidth() += 20;
-	temp.rheight() += dockEmptyRendererHeight + dockRendererMargin * 2;
+	Point temp = ObjectDrawStruct::getObjectSize();
+	temp.x += 20;
+	temp.y += dockEmptyRendererHeight + dockRendererMargin * 2;
 
 	for(auto dockable : m_dockObject->getDockedObjects())
-		temp.rheight() += m_parentView->getObjectDrawStruct(dockable)->getObjectSize().height() + dockRendererMargin;
+		temp.y += m_parentView->getObjectDrawStruct(dockable)->getObjectSize().y + dockRendererMargin;
 
 	return temp;
 }
 
-QRectF DockObjectDrawStruct::getTextArea()
+Rect DockObjectDrawStruct::getTextArea()
 {
 	int margin = dataRectSize+dataRectMargin+3;
-	QRectF textArea = m_objectArea;
+	Rect textArea = m_objectArea;
 	textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
 	textArea.adjust(margin, 0, -margin, 0);
 	return textArea;
 }
 
-void DockObjectDrawStruct::move(const QPointF& delta)
+void DockObjectDrawStruct::move(const Point& delta)
 {
 	ObjectDrawStruct::move(delta);
 	for(auto dockable : m_dockObject->getDockedObjects())
 		m_parentView->getObjectDrawStruct(dockable)->move(delta);
 }
 
-void DockObjectDrawStruct::moveVisual(const QPointF& delta)
+void DockObjectDrawStruct::moveVisual(const Point& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	auto pDelta = pPoint(delta.x(), delta.y());
-	m_shapePath.translate(pDelta);
-	m_shapeMesh.translate(pDelta);
+	m_shapePath.translate(delta);
+	m_shapeMesh.translate(delta);
 }
 
-bool DockObjectDrawStruct::contains(const QPointF& point)
+bool DockObjectDrawStruct::contains(const Point& point)
 {
-	return m_shapePath.contains(pPoint(point.x(), point.y()));
+	return m_shapePath.contains(point);
 }
 
 void DockObjectDrawStruct::placeDockableObjects()
@@ -82,7 +71,7 @@ void DockObjectDrawStruct::placeDockableObjects()
 	const int ah = aw - dockHoleMargin * 2;
 
 	int ty;
-	ty = m_objectArea.top() + ObjectDrawStruct::getObjectSize().height() + dockRendererMargin;
+	ty = m_objectArea.top() + ObjectDrawStruct::getObjectSize().y + dockRendererMargin;
 
 	auto doc = m_parentView->getDocument();
 	auto& undoStack = doc->getUndoStack();
@@ -91,21 +80,21 @@ void DockObjectDrawStruct::placeDockableObjects()
 	for (auto dockable : m_dockObject->getDockedObjects())
 	{
 		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
-		QSize objectSize = objectStruct->getObjectSize();
+		Point objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
-		QPointF objectNewPos(m_position.x() + dockHoleWidth - objectSize.width(), m_position.y() + ty - m_objectArea.top());
+		Point objectNewPos(m_position.x + dockHoleWidth - objectSize.x, m_position.y + ty - m_objectArea.top());
 
 		// If the object has outputs, it is drawn larger but must be placed at the same position
 		if (hasOutputs)
-			objectNewPos.rx() += DockableObjectDrawStruct::dockableWithOutputAdds;
+			objectNewPos.x += DockableObjectDrawStruct::dockableWithOutputAdds;
 
 		if (canMoveObjects && objectNewPos != objectStruct->getPosition())
 			undoStack.push(std::make_shared<MoveObjectCommand>(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
 
-		QRectF objectArea = objectStruct->getObjectArea();
+		Rect objectArea = objectStruct->getObjectArea();
 		m_dockablesY.push_back(objectArea.top());
 
-		ty += objectSize.height() + dockRendererMargin;
+		ty += objectSize.y + dockRendererMargin;
 	}
 }
 
@@ -114,10 +103,10 @@ void DockObjectDrawStruct::update()
 	ObjectDrawStruct::update();
 
 	m_shapePath.clear();
-	m_shapePath.moveTo(pPoint(m_objectArea.left(), m_objectArea.bottom()));
-	m_shapePath.lineTo(pPoint(m_objectArea.right(), m_objectArea.bottom()));
-	m_shapePath.lineTo(pPoint(m_objectArea.right(), m_objectArea.top()));
-	m_shapePath.lineTo(pPoint(m_objectArea.left(), m_objectArea.top()));
+	m_shapePath.moveTo(m_objectArea.bottomLeft());
+	m_shapePath.lineTo(m_objectArea.bottomRight());
+	m_shapePath.lineTo(m_objectArea.topRight());
+	m_shapePath.lineTo(m_objectArea.topLeft());
 
 	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
 	const int dhm = dockHoleMargin;
@@ -126,56 +115,58 @@ void DockObjectDrawStruct::update()
 	const int ah = aw - dockHoleMargin * 2;
 
 	int tx, ty;
-	ty = m_objectArea.top() + ObjectDrawStruct::getObjectSize().height() + dockRendererMargin;
+	ty = m_objectArea.top() + ObjectDrawStruct::getObjectSize().y + dockRendererMargin;
 
 	for(auto dockable : m_dockObject->getDockedObjects())
 	{
 		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
-		QSize objectSize = objectStruct->getObjectSize();
+		Point objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
 
 		tx = m_objectArea.left() + dockHoleWidth - DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;
 		int w = DockableObjectDrawStruct::dockableCircleWidth;
-		int h = objectSize.height();
+		int h = objectSize.y;
 
-		QRectF objectArea = objectStruct->getObjectArea();
-		m_shapePath.lineTo(pPoint(m_objectArea.left(), ty - dockHoleMargin));
+		Rect objectArea = objectStruct->getObjectArea();
+		m_shapePath.lineTo(Point(m_objectArea.left(), ty - dockHoleMargin));
 		if (hasOutputs)
 		{
 			const int top = objectArea.top() - dhm, bot = objectArea.bottom() + dhm;
+			const auto right = objectArea.right();
 
 			// Arc at the top
-			m_shapePath.arcToDegrees(convert(objectArea.right() - rw - aw * 3, top, aw * 2, ah * 2), -90, 90);
-			m_shapePath.arcToDegrees(convert(objectArea.right() - rw - aw, top, aw * 2, ah * 2), 180, 90);
+			m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw * 3, top, aw * 2, ah * 2), -90, 90);
+			m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw, top, aw * 2, ah * 2), 180, 90);
 
-			m_shapePath.arcToDegrees(convert(objectArea.right() - cr + dhm, top, cr, cr), -90, 90); // Top right corner
-			m_shapePath.arcToDegrees(convert(objectArea.right() - cr + dhm, bot - cr, cr, cr), 0, 90); // Bottom right corner
+			m_shapePath.arcToDegrees(Rect::fromSize(right - cr + dhm, top, cr, cr), -90, 90); // Top right corner
+			m_shapePath.arcToDegrees(Rect::fromSize(right - cr + dhm, bot - cr, cr, cr), 0, 90); // Bottom right corner
 
 			// Arc at the bottom
-			m_shapePath.arcToDegrees(convert(objectArea.right() - rw - aw, bot - ah * 2, aw * 2, ah * 2), 90, 90);
-			m_shapePath.arcToDegrees(convert(objectArea.right() - rw - aw * 3, bot - ah * 2, aw * 2, ah * 2), 0, 90);
+			m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw, bot - ah * 2, aw * 2, ah * 2), 90, 90);
+			m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw * 3, bot - ah * 2, aw * 2, ah * 2), 0, 90);
 		}
 		else
-			m_shapePath.arcToDegrees(convert(tx - w - dockHoleMargin, ty - dockHoleMargin, w * 2 + dockHoleMargin, h + dockHoleMargin * 2), -90, 180);
-		m_shapePath.lineTo(pPoint(m_objectArea.left(), ty + h + dockHoleMargin));
+			m_shapePath.arcToDegrees(Rect::fromSize(tx - w - dockHoleMargin, ty - dockHoleMargin, w * 2 + dockHoleMargin, h + dockHoleMargin * 2), -90, 180);
+		m_shapePath.lineTo(Point(m_objectArea.left(), ty + h + dockHoleMargin));
 
 		ty += h + dockRendererMargin;
 	}
 
 	ty = m_objectArea.bottom()-dockEmptyRendererHeight-dockRendererMargin;
-	m_shapePath.lineTo(pPoint(m_objectArea.left(), ty));
+	m_shapePath.lineTo(Point(m_objectArea.left(), ty));
 	tx = m_objectArea.left()+dockHoleWidth-DockableObjectDrawStruct::dockableCircleWidth;
-	m_shapePath.arcToDegrees(convert(tx, ty, DockableObjectDrawStruct::dockableCircleWidth, dockEmptyRendererHeight), -90, 180);
-	m_shapePath.lineTo(pPoint(m_objectArea.left(), ty+dockEmptyRendererHeight));
+	m_shapePath.arcToDegrees(Rect::fromSize(tx, ty, DockableObjectDrawStruct::dockableCircleWidth, dockEmptyRendererHeight), -90, 180);
+	m_shapePath.lineTo(Point(m_objectArea.left(), ty+dockEmptyRendererHeight));
 	m_shapePath.close();
 
 	m_shapeMesh = m_shapePath.triangulate();
 }
 
-int DockObjectDrawStruct::getDockableIndex(const QRectF& rect)
+int DockObjectDrawStruct::getDockableIndex(const Rect& rect)
 {
 	int y = rect.top();
-	for(int i=0; i<m_dockablesY.size(); ++i)
+	int nb = m_dockablesY.size();
+	for (int i = 0; i < nb; ++i)
 	{
 		if(y < m_dockablesY[i])
 			return i;
@@ -199,28 +190,27 @@ void DockableObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 	list.addPolyline(m_shapePath, colors.penColor, false, colors.penWidth);
 }
 
-void DockableObjectDrawStruct::moveVisual(const QPointF& delta)
+void DockableObjectDrawStruct::moveVisual(const Point& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	auto pDelta = pPoint(delta.x(), delta.y());
-	m_shapePath.translate(pDelta);
-	m_shapeMesh.translate(pDelta);
+	m_shapePath.translate(delta);
+	m_shapeMesh.translate(delta);
 }
 
-bool DockableObjectDrawStruct::contains(const QPointF& point)
+bool DockableObjectDrawStruct::contains(const Point& point)
 {
-	return m_shapePath.contains(pPoint(point.x(), point.y()));
+	return m_shapePath.contains(point);
 }
 
-QSize DockableObjectDrawStruct::getObjectSize()
+Point DockableObjectDrawStruct::getObjectSize()
 {
 	auto size = ObjectDrawStruct::getObjectSize();
 	if (m_hasOutputs)
-		size.rwidth() += dockableWithOutputAdds;
+		size.x += dockableWithOutputAdds;
 	return size;
 }
 
-QRectF DockableObjectDrawStruct::getTextArea()
+Rect DockableObjectDrawStruct::getTextArea()
 {
 	auto area = ObjectDrawStruct::getTextArea();
 	if (m_hasOutputs)
@@ -236,35 +226,37 @@ void DockableObjectDrawStruct::update()
 	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
 	const int rw = dockableWithOutputRect;
 	const int aw = dockableWithOutputArc;
+	const auto left = m_objectArea.left(), top = m_objectArea.top(), 
+		right = m_objectArea.right(), bottom = m_objectArea.bottom();
 
 	if (m_hasOutputs)
 	{
 		m_shapePath.clear();
-		m_shapePath.moveTo(pPoint(m_objectArea.left(), m_objectArea.center().y()));
-		m_shapePath.arcToDegrees(convert(m_objectArea.left(), m_objectArea.top(), cr, cr), 180, 90); // Top left corner
+		m_shapePath.moveTo(Point(left, m_objectArea.center().y));
+		m_shapePath.arcToDegrees(Rect::fromSize(left, top, cr, cr), 180, 90); // Top left corner
 
 		// Arc at the top
-		m_shapePath.arcToDegrees(convert(m_objectArea.right() - rw - aw * 3, m_objectArea.top(), aw * 2, aw * 2), -90, 90);
-		m_shapePath.arcToDegrees(convert(m_objectArea.right() - rw - aw, m_objectArea.top(), aw * 2, aw * 2), 180, 90);
+		m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw * 3, top, aw * 2, aw * 2), -90, 90);
+		m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw, top, aw * 2, aw * 2), 180, 90);
 
-		m_shapePath.arcToDegrees(convert(m_objectArea.right() - cr, m_objectArea.top(), cr, cr), -90, 90); // Top right corner
-		m_shapePath.arcToDegrees(convert(m_objectArea.right() - cr, m_objectArea.bottom() - cr, cr, cr), 0, 90); // Bottom right corner
+		m_shapePath.arcToDegrees(Rect::fromSize(right - cr, top, cr, cr), -90, 90); // Top right corner
+		m_shapePath.arcToDegrees(Rect::fromSize(right - cr, bottom - cr, cr, cr), 0, 90); // Bottom right corner
 
 		// Arc at the bottom
-		m_shapePath.arcToDegrees(convert(m_objectArea.right() - rw - aw, m_objectArea.bottom() - aw * 2, aw * 2, aw * 2), 90, 90);
-		m_shapePath.arcToDegrees(convert(m_objectArea.right() - rw - aw * 3, m_objectArea.bottom() - aw * 2, aw * 2, aw * 2), 0, 90);
+		m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw, bottom - aw * 2, aw * 2, aw * 2), 90, 90);
+		m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw * 3, bottom - aw * 2, aw * 2, aw * 2), 0, 90);
 
-		m_shapePath.arcToDegrees(convert(m_objectArea.left(), m_objectArea.bottom() - cr, cr, cr), 90, 90); // Bottom left corner
+		m_shapePath.arcToDegrees(Rect::fromSize(left, bottom - cr, cr, cr), 90, 90); // Bottom left corner
 		m_shapePath.close();
 	}
 	else
 	{
 		m_shapePath.clear();
-		m_shapePath.moveTo(pPoint(m_objectArea.left(), m_objectArea.center().y()));
-		m_shapePath.arcToDegrees(convert(m_objectArea.left(), m_objectArea.top(), cr, cr), 180, 90); // Top left corner
-		m_shapePath.arcToDegrees(convert(m_objectArea.right() - dockableCircleWidth * 2, m_objectArea.top(), 
+		m_shapePath.moveTo(Point(left, m_objectArea.center().y));
+		m_shapePath.arcToDegrees(Rect::fromSize(left, top, cr, cr), 180, 90); // Top left corner
+		m_shapePath.arcToDegrees(Rect::fromSize(right - dockableCircleWidth * 2, top, 
 			dockableCircleWidth * 2, m_objectArea.height()), -90, 180); // Right side arc
-		m_shapePath.arcToDegrees(convert(m_objectArea.left(), m_objectArea.bottom() - cr, cr, cr), 90, 90); // Bottom left corner
+		m_shapePath.arcToDegrees(Rect::fromSize(left, bottom - cr, cr, cr), 90, 90); // Bottom left corner
 		m_shapePath.close();
 	}
 

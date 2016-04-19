@@ -15,7 +15,7 @@ public:
 
 	void update() override;
 	void drawDatas(DrawList& list, DrawColors& colors) override;
-	QSize getObjectSize() override;
+	panda::types::Point getObjectSize() override;
 
 	static const int createdDataRectMargin = 3;
 

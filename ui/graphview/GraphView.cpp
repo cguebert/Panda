@@ -26,7 +26,8 @@
 #include <ui/dialog/UpdateLoggerDialog.h>
 #endif
 
-using pPoint = panda::types::Point;
+using Point = panda::types::Point;
+using Rect = panda::types::Rect;
 
 namespace
 {
@@ -50,10 +51,13 @@ namespace
 
 		return false;
 	}
-}
 
-static inline panda::types::Point convert(const QPointF& pt)
-{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
+	inline panda::types::Point convert(const QPointF& pt)
+	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
+
+	inline panda::types::Rect convert(const QRectF& r)
+	{ return panda::types::Rect(r.left(), r.top(), r.right(), r.bottom()); }
+}
 
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 	: QOpenGLWidget(parent)
@@ -100,7 +104,7 @@ GraphView::~GraphView() = default;
 
 void GraphView::resetView()
 {
-	m_viewDelta = QPointF();
+	m_viewDelta = Point();
 	m_zoomLevel = 0;
 	m_zoomFactor = 1.0;
 	m_objectDrawStructs.clear();
@@ -116,7 +120,7 @@ void GraphView::resetView()
 	m_highlightConnectedDatas = false;
 	m_useMagneticSnap = true;
 	m_isLoading = false;
-	m_viewRect = QRect();
+	m_viewRect = Rect();
 	m_selectedObjectsDrawStructs.clear();
 	m_possibleLinks.clear();
 	m_dirtyDrawStructs.clear();
@@ -135,7 +139,7 @@ QSize GraphView::sizeHint() const
 	return QSize(600, 400);
 }
 
-ObjectDrawStruct* GraphView::getObjectDrawStructAtPos(const QPointF& pt)
+ObjectDrawStruct* GraphView::getObjectDrawStructAtPos(const Point& pt)
 {
 	int nb = m_orderedObjectDrawStructs.size();
 	for (int i = nb - 1; i >= 0; --i)
@@ -176,16 +180,16 @@ void GraphView::setObjectDrawStruct(panda::PandaObject* object, const ObjectDraw
 	m_orderedObjectDrawStructs.push_back(drawStruct.get());
 }
 
-QRectF GraphView::getDataRect(panda::BaseData* data)
+Rect GraphView::getDataRect(panda::BaseData* data)
 {
-	QRectF rect;
+	Rect rect;
 	ObjectDrawStruct* ods = getObjectDrawStruct(data->getOwner());
 	if(ods)
 		ods->getDataRect(data, rect);
 	return rect;
 }
 
-void GraphView::moveView(const QPointF& delta)
+void GraphView::moveView(const Point& delta)
 {
 	if(!delta.isNull())
 	{
@@ -264,17 +268,17 @@ void GraphView::paintGL()
 	// Selection rubber band
 	if (m_movingAction == MOVING_SELECTION)
 	{
-		QRectF r = QRectF(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).normalized();
+		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).canonicalized();
 		auto highlight = palette().highlight().color();
 		highlight.setAlpha(64);
-		drawList.addRectFilled(convert(r.topLeft()), convert(r.bottomRight()), DrawList::convert(highlight));
-		drawList.addRect(convert(r.topLeft()), convert(r.bottomRight()), DrawList::convert(palette().text().color()));
+		drawList.addRectFilled(r.topLeft(), r.bottomRight(), DrawList::convert(highlight));
+		drawList.addRect(r.topLeft(), r.bottomRight(), DrawList::convert(palette().text().color()));
 	}
 
 	// Link in creation
 	if (m_movingAction == MOVING_LINK)
 	{
-		drawList.addLine(convert(m_previousMousePos), convert(m_currentMousePos),
+		drawList.addLine(m_previousMousePos, m_currentMousePos,
 						 DrawList::convert(palette().text().color()), 1.5);
 	}
 
@@ -306,15 +310,15 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 			const auto object = ods->getObject();
 			unsigned int fillCol = panda::helper::valueOrDefault(states, object, nullptr) ? 0x200000FF : 0x2000FF00;
 	
-			QRectF area = ods->getObjectArea();
-			list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), fillCol);
+			auto area = ods->getObjectArea();
+			list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), fillCol);
 
 			for(panda::BaseData* data : object->getDatas())
 			{
 				if(ods->getDataRect(data, area))
 				{
 					fillCol = panda::helper::valueOrDefault(states, data, nullptr) ? 0x400000FF : 0x4000FF00;
-					list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), fillCol);
+					list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), fillCol);
 				}
 			}
 		}
@@ -326,7 +330,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 			if(object)
 			{
 				auto ods = getObjectDrawStruct(object);
-				QRectF area;
+				Rect area;
 
 				bool drawData = false;
 				const panda::BaseData* data = dynamic_cast<const panda::BaseData*>(event->m_node);
@@ -335,7 +339,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 				if(!drawData)
 					area = ods->getObjectArea();
 
-				list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), 0x80FF8080);
+				list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), 0x80FF8080);
 			}
 		}
 	}
@@ -350,15 +354,15 @@ void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
 		unsigned int fillCol = object->isDirty() ? 0x400000FF : 0x4000FF00;
 
 		auto area = ods->getObjectArea();
-		list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), fillCol);
+		list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), fillCol);
 
 		for(panda::BaseData* data : object->getDatas())
 		{
-			QRectF area;
+			Rect area;
 			if(ods->getDataRect(data, area))
 			{
 				fillCol = data->isDirty() ? 0x400000FF : 0x4000FF00;
-				list.addRectFilled(pPoint(area.left(), area.top()), pPoint(area.right(), area.bottom()), fillCol);
+				list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), fillCol);
 			}
 		}
 	}
@@ -366,7 +370,8 @@ void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
 
 void GraphView::mousePressEvent(QMouseEvent* event)
 {
-	QPointF zoomedMouse = event->localPos() / m_zoomFactor;
+	Point localPos = convert(event->localPos());
+	Point zoomedMouse = localPos / m_zoomFactor;
 	if(event->button() == Qt::LeftButton)
 	{
 		const auto ods = getObjectDrawStructAtPos(zoomedMouse);
@@ -374,7 +379,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 		{
 			const auto object = ods->getObject();
 			// Testing for Datas first
-			QPointF linkStart;
+			Point linkStart;
 			panda::BaseData* data = ods->getDataAtPos(zoomedMouse, &linkStart);
 			if(data)
 			{
@@ -431,7 +436,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 			// Starting a rubber band to select in a zone
 			m_objectsSelection->selectNone();
 			m_movingAction = MOVING_SELECTION;
-			m_previousMousePos = m_currentMousePos = event->localPos();
+			m_previousMousePos = m_currentMousePos = localPos;
 			QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
 		}
 	}
@@ -440,15 +445,15 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 		if(event->modifiers() == Qt::ControlModifier)
 		{
 			m_movingAction = MOVING_ZOOM;
-			m_currentMousePos = event->pos();
-			m_previousMousePos = event->globalPos();
+			m_currentMousePos = convert(event->pos());
+			m_previousMousePos = convert(event->globalPos());
 
 			QApplication::setOverrideCursor(QCursor(Qt::SizeVerCursor));
 		}
 		else
 		{
 			m_movingAction = MOVING_VIEW;
-			m_previousMousePos = event->globalPos();
+			m_previousMousePos = convert(event->globalPos());
 
 			QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
 		}
@@ -457,11 +462,14 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 
 void GraphView::mouseMoveEvent(QMouseEvent* event)
 {
+	Point localPos = convert(event->localPos());
+	Point globalPos = convert(event->globalPos());
+
 	if(m_movingAction == MOVING_START)
 	{
-		QPointF mousePos = event->localPos() / m_zoomFactor;
-		QPointF delta = mousePos - m_previousMousePos;
-		if(QVector2D(delta *  m_zoomFactor).length() > 5)
+		Point mousePos = localPos / m_zoomFactor;
+		Point delta = mousePos - m_previousMousePos;
+		if((delta *  m_zoomFactor).norm() > 5)
 		{
 			m_movingAction = MOVING_OBJECT;
 			if(m_useMagneticSnap && !m_selectedObjectsDrawStructs.empty())
@@ -497,11 +505,11 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == MOVING_OBJECT)
 	{
-		QPointF mousePos = event->localPos() / m_zoomFactor;
-		QPointF delta = mousePos - m_previousMousePos;
+		Point mousePos = localPos / m_zoomFactor;
+		Point delta = mousePos - m_previousMousePos;
 		if(m_useMagneticSnap && !m_selectedObjectsDrawStructs.empty())
 		{
-			QPointF oldSnapDelta = m_snapDelta;
+			Point oldSnapDelta = m_snapDelta;
 			auto ods = m_selectedObjectsDrawStructs.back();
 			auto possiblePosition = ods->getPosition() + delta - m_snapDelta;
 			computeSnapDelta(ods, possiblePosition);
@@ -515,34 +523,34 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == MOVING_VIEW)
 	{
-		QPointF delta = (event->globalPos() - m_previousMousePos) / m_zoomFactor;
+		Point delta = (globalPos - m_previousMousePos) / m_zoomFactor;
 		moveView(delta);
-		m_previousMousePos = event->globalPos();
+		m_previousMousePos = globalPos;
 		update();
 	}
 	else if(m_movingAction == MOVING_ZOOM)
 	{
-		int y = event->globalY() - m_previousMousePos.y();
-		QPointF oldPos = m_currentMousePos / m_zoomFactor;
+		int y = event->globalY() - m_previousMousePos.y;
+		Point oldPos = m_currentMousePos / m_zoomFactor;
 		m_zoomFactor = qBound(0.1, m_zoomFactor - y / 500.0, 1.0);
 		m_zoomLevel = 100.0 * (1.0 - m_zoomFactor);
 		moveView(m_currentMousePos / m_zoomFactor - oldPos);
-		m_previousMousePos = event->globalPos();
+		m_previousMousePos = globalPos;
 		update();
 	}
 	else if(m_movingAction == MOVING_SELECTION)
 	{
-		m_currentMousePos = event->localPos();
+		m_currentMousePos = localPos;
 		update();
 	}
 	else if(m_movingAction == MOVING_LINK)
 	{
-		m_currentMousePos = event->localPos() / m_zoomFactor;
+		m_currentMousePos = localPos / m_zoomFactor;
 
 		const auto ods = getObjectDrawStructAtPos(m_currentMousePos);
 		if(ods)
 		{
-			QPointF linkStart;
+			Point linkStart;
 			panda::BaseData* data = ods->getDataAtPos(m_currentMousePos, &linkStart);
 			if(data && canLinkWith(data))
 				m_currentMousePos = linkStart;
@@ -557,7 +565,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 	if(m_movingAction == MOVING_NONE || m_movingAction == MOVING_LINK)
 	{
-		QPointF zoomedMouse = event->localPos() / m_zoomFactor;
+		Point zoomedMouse = localPos / m_zoomFactor;
 		const auto ods = getObjectDrawStructAtPos(zoomedMouse);
 		if(ods)
 		{
@@ -577,13 +585,14 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 			if(m_hoverData)
 			{
-				QRectF dataRect;
+				Rect dataRect;
 				if(ods->getDataRect(m_hoverData, dataRect))
 				{
 					QString display = QString("%1\n%2")
 							.arg(QString::fromStdString(m_hoverData->getName()))
 							.arg(QString::fromStdString(m_hoverData->getDescription()));
-					QToolTip::showText(event->globalPos(), display, this, dataRect.toRect());
+					QRect area = QRect(dataRect.left(), dataRect.top(), dataRect.width(), dataRect.height());
+					QToolTip::showText(event->globalPos(), display, this, area);
 					if(!m_hoverData->getHelp().empty())
 						emit showStatusBarMessage(QString::fromStdString(m_hoverData->getHelp()));
 				}
@@ -631,7 +640,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == MOVING_OBJECT)
 	{
-		QMap<panda::PandaObject*, QPointF> positions;
+		QMap<panda::PandaObject*, Point> positions;
 		for(const auto ods : m_selectedObjectsDrawStructs)
 			positions[ods->getObject()] = ods->getPosition();
 
@@ -641,10 +650,10 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
 			if(dockable)
 			{
-				QPointF delta = positions[object] - ods->getPosition();
+				Point delta = positions[object] - ods->getPosition();
 				m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(this, dockable, delta));
 
-				QRectF dockableArea = ods->getObjectArea();
+				Rect dockableArea = ods->getObjectArea();
 				panda::DockObject* defaultDock = dockable->getDefaultDock();
 				panda::DockObject* newDock = defaultDock;
 				int newIndex = -1;
@@ -706,10 +715,10 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	{
 		m_objectsSelection->selectNone();
 
-		QRectF selectionRect = QRectF(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).normalized();
+		Rect selectionRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).canonicalized();
 		for(const auto ods : m_orderedObjectDrawStructs)
 		{
-			QRectF objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getObjectArea();
 			if(selectionRect.contains(objectArea) || selectionRect.intersects(objectArea))
 				m_objectsSelection->add(ods->getObject());
 		}
@@ -762,8 +771,8 @@ void GraphView::wheelEvent(QWheelEvent* event)
 	int newZoom = qBound(0, m_zoomLevel - ticks, 90);
 	if(m_zoomLevel != newZoom)
 	{
-		QPointF mousePos = event->pos();
-		QPointF oldPos = mousePos / m_zoomFactor;
+		Point mousePos = convert(event->pos());
+		Point oldPos = mousePos / m_zoomFactor;
 		m_zoomLevel = newZoom;
 		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
 		moveView(mousePos / m_zoomFactor - oldPos);
@@ -788,7 +797,7 @@ void GraphView::keyPressEvent(QKeyEvent* event)
 	case Qt::Key_Left:
 		if(event->modifiers() & Qt::ControlModifier)
 		{
-			moveView(QPointF(100, 0));
+			moveView(Point(100, 0));
 			updateViewRect();
 			update();
 		}
@@ -796,7 +805,7 @@ void GraphView::keyPressEvent(QKeyEvent* event)
 	case Qt::Key_Right:
 		if(event->modifiers() & Qt::ControlModifier)
 		{
-			moveView(QPointF(-100, 0));
+			moveView(Point(-100, 0));
 			updateViewRect();
 			update();
 		}
@@ -804,7 +813,7 @@ void GraphView::keyPressEvent(QKeyEvent* event)
 	case Qt::Key_Up:
 		if(event->modifiers() & Qt::ControlModifier)
 		{
-			moveView(QPointF(0, 100));
+			moveView(Point(0, 100));
 			updateViewRect();
 			update();
 		}
@@ -812,7 +821,7 @@ void GraphView::keyPressEvent(QKeyEvent* event)
 	case Qt::Key_Down:
 		if(event->modifiers() & Qt::ControlModifier)
 		{
-			moveView(QPointF(0, -100));
+			moveView(Point(0, -100));
 			updateViewRect();
 			update();
 		}
@@ -834,7 +843,7 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 {
 	m_contextMenuData = nullptr;
 	int flags = 0;
-	QPointF zoomedMouse = event->pos() / m_zoomFactor;
+	Point zoomedMouse = convert(event->pos()) / m_zoomFactor;
 	const auto ods = getObjectDrawStructAtPos(zoomedMouse);
 	if(ods)
 	{
@@ -864,8 +873,8 @@ void GraphView::zoomIn()
 {
 	if(m_zoomLevel > 0)
 	{
-		QPointF center = contentsRect().center();
-		QPointF oldPos = center / m_zoomFactor;
+		Point center = convert(contentsRect().center());
+		Point oldPos = center / m_zoomFactor;
 		m_zoomLevel = qMax(m_zoomLevel-10, 0);
 		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
 		moveView(center / m_zoomFactor - oldPos);
@@ -878,8 +887,8 @@ void GraphView::zoomOut()
 {
 	if(m_zoomLevel < 90)
 	{
-		QPointF center = contentsRect().center();
-		QPointF oldPos = center / m_zoomFactor;
+		Point center = convert(contentsRect().center());
+		Point oldPos = center / m_zoomFactor;
 		m_zoomLevel = qMin(m_zoomLevel+10, 90);
 		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
 		moveView(center / m_zoomFactor - oldPos);
@@ -892,8 +901,8 @@ void GraphView::zoomReset()
 {
 	if(m_zoomLevel != 1)
 	{
-		QPointF center = contentsRect().center();
-		QPointF oldPos = center / m_zoomFactor;
+		Point center = convert(contentsRect().center());
+		Point oldPos = center / m_zoomFactor;
 		m_zoomLevel = 1;
 		m_zoomFactor = 1.0;
 		moveView(center / m_zoomFactor - oldPos);
@@ -906,14 +915,14 @@ void GraphView::centerView()
 {
 	if(m_pandaDocument->getNbObjects())
 	{
-		QRectF totalView;
+		Rect totalView;
 		for (const auto ods : m_orderedObjectDrawStructs)
 		{
-			QRectF objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
 
-		moveView(contentsRect().center() / m_zoomFactor - totalView.center());
+		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center());
 		update();
 		updateViewRect();
 	}
@@ -923,10 +932,10 @@ void GraphView::showAll()
 {
 	if(m_pandaDocument->getNbObjects())
 	{
-		QRectF totalView;
+		Rect totalView;
 		for (const auto ods : m_orderedObjectDrawStructs)
 		{
-			QRectF objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
 
@@ -934,7 +943,7 @@ void GraphView::showAll()
 		qreal factorH = contentsRect().height() / (totalView.height() + 40);
 		m_zoomFactor = qBound(0.1, qMin(factorW, factorH), 1.0);
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-		moveView(contentsRect().center() / m_zoomFactor - totalView.center());
+		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center());
 		update();
 		updateViewRect();
 	}
@@ -944,10 +953,10 @@ void GraphView::showAllSelected()
 {
 	if(!m_objectsSelection->get().empty())
 	{
-		QRectF totalView;
+		Rect totalView;
 		for (const auto ods : m_orderedObjectDrawStructs)
 		{
-			QRectF objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
 
@@ -955,7 +964,7 @@ void GraphView::showAllSelected()
 		qreal factorH = contentsRect().height() / (totalView.height() + 40);
 		m_zoomFactor = qBound(0.1, qMin(factorW, factorH), 1.0);
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-		moveView(contentsRect().center() / m_zoomFactor - totalView.center());
+		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center());
 		update();
 		updateViewRect();
 	}
@@ -965,14 +974,14 @@ void GraphView::moveSelectedToCenter()
 {
 	if(!m_objectsSelection->get().empty())
 	{
-		QRectF totalView;
+		Rect totalView;
 		for(const auto ods : m_selectedObjectsDrawStructs)
 		{
-			QRectF objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getObjectArea();
 			totalView = totalView.united(objectArea);
 		}
 
-		QPointF delta = contentsRect().center() / m_zoomFactor - totalView.center();
+		Point delta = convert(contentsRect().center()) / m_zoomFactor - totalView.center();
 
 		for(const auto ods : m_selectedObjectsDrawStructs)
 		{
@@ -1109,8 +1118,8 @@ void GraphView::updateLinkTags(bool reset)
 			panda::BaseData* parentData = data->getParent();
 			if(parentData)
 			{
-				qreal ox = getDataRect(data).center().x();
-				qreal ix = getDataRect(parentData).center().x();
+				float ox = getDataRect(data).center().x;
+				float ix = getDataRect(parentData).center().x;
 				if(LinkTag::needLinkTag(ix, ox, this))
 					addLinkTag(parentData, data);
 			}
@@ -1172,13 +1181,13 @@ void GraphView::drawLinks()
 			panda::BaseData* parent = data->getParent();
 			if (parent && !data->isOutput())
 			{
-				QRectF fromDataRect;
+				Rect fromDataRect;
 				auto ods = getObjectDrawStruct(parent->getOwner());
 				if (ods && ods->getDataRect(parent, fromDataRect) 
 					&& !hasLinkTag(parent, data)) // We don't draw the link if there is a LinkTag
 				{
-					auto d1 = convert(fromDataRect.center()), d2 = convert(toDataRect.first.center());
-					pPoint w = { (d2.x - d1.x) / 2, 0 };
+					auto d1 = fromDataRect.center(), d2 = toDataRect.first.center();
+					Point w = { (d2.x - d1.x) / 2, 0 };
 					m_linksDrawList.addBezierCurve(d1, d1 + w, d2 - w, d2, col, 1);
 				}
 			}
@@ -1192,10 +1201,10 @@ void GraphView::drawConnectedDatas(panda::BaseData* sourceData)
 	if (!m_highlightConnectedDatas)
 		return;
 
-	std::vector<QRectF> highlightRects;
-	std::vector< std::pair<QPointF, QPointF> > highlightLinks;
+	std::vector<Rect> highlightRects;
+	std::vector< std::pair<Point, Point> > highlightLinks;
 
-	QRectF sourceRect;
+	Rect sourceRect;
 	if(getObjectDrawStruct(sourceData->getOwner())->getDataRect(sourceData, sourceRect))
 		highlightRects.push_back(sourceRect);
 	else
@@ -1213,7 +1222,7 @@ void GraphView::drawConnectedDatas(panda::BaseData* sourceData)
 				auto ods = getObjectDrawStruct(object);
 				if(ods)
 				{
-					QRectF rect;
+					Rect rect;
 					if(ods->getDataRect(data, rect))
 					{
 						highlightRects.push_back(rect);
@@ -1233,7 +1242,7 @@ void GraphView::drawConnectedDatas(panda::BaseData* sourceData)
 			auto ods = getObjectDrawStruct(object);
 			if (ods)
 			{
-				QRectF rect;
+				Rect rect;
 				if(ods->getDataRect(data, rect))
 				{
 					highlightRects.push_back(rect);
@@ -1252,15 +1261,15 @@ void GraphView::drawConnectedDatas(panda::BaseData* sourceData)
 
 	for (const auto& rect : highlightRects)
 	{
-		auto tl = convert(rect.topLeft()), br = convert(rect.bottomRight());
+		auto tl = rect.topLeft(), br = rect.bottomRight();
 		m_connectedDrawList.addRectFilled(tl, br, highlightCol);
 		m_connectedDrawList.addRect(tl, br, penCol, 1.f);
 	}
 
 	for(const auto& link : highlightLinks)
 	{
-		double w = (link.second.x() - link.first.x()) / 2;
-		auto p1 = convert(link.first), p2 = convert(link.second), d = pPoint(w, 0);
+		float w = (link.second.x - link.first.x) / 2;
+		auto p1 = link.first, p2 = link.second, d = Point(w, 0);
 		m_connectedDrawList.addBezierCurve(p1, p1 + d, p2 - d, p2, highlightCol, 3);
 	}
 }
@@ -1269,15 +1278,15 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 {
 	m_snapTargetsY.clear();
 
-	qreal y = selectedDrawStruct->getPosition().y();
+	float y = selectedDrawStruct->getPosition().y;
 	// For y, try to make the data links horizontal
 	// First for inputs
 	for(auto input : selectedDrawStruct->getObject()->getInputDatas())
 	{
-		QRectF dataRect;
+		Rect dataRect;
 		if(selectedDrawStruct->getDataRect(input, dataRect))
 		{
-			auto dataHeight = dataRect.center().y() - y;
+			auto dataHeight = dataRect.center().y - y;
 			for(auto input2 : input->getInputs())
 			{
 				auto data2 = dynamic_cast<panda::BaseData*>(input2);
@@ -1288,7 +1297,7 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 					if(ods)
 					{
 						if(ods->getDataRect(data2, dataRect))
-							m_snapTargetsY.insert(dataRect.center().y() - dataHeight);
+							m_snapTargetsY.insert(dataRect.center().y - dataHeight);
 					}
 				}
 			}
@@ -1298,10 +1307,10 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 	// Then for outputs
 	for(auto output : selectedDrawStruct->getObject()->getOutputDatas())
 	{
-		QRectF dataRect;
+		Rect dataRect;
 		if(selectedDrawStruct->getDataRect(output, dataRect))
 		{
-			auto dataHeight = dataRect.center().y() - y;
+			auto dataHeight = dataRect.center().y - y;
 			for(auto output2 : output->getOutputs())
 			{
 				auto data2 = dynamic_cast<panda::BaseData*>(output2);
@@ -1312,7 +1321,7 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 					if (ods)
 					{
 						if(ods->getDataRect(data2, dataRect))
-							m_snapTargetsY.insert(dataRect.center().y() - dataHeight);
+							m_snapTargetsY.insert(dataRect.center().y - dataHeight);
 					}
 				}
 			}
@@ -1320,23 +1329,23 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 	}
 }
 
-void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, QPointF position)
+void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, Point position)
 {
-	m_snapDelta = QPointF();
-	const qreal snapMaxDist = 5;
+	m_snapDelta = Point();
+	const float snapMaxDist = 5;
 
-	auto comparator = [](qreal pos) {
-		return [pos](const qreal& lhs, const qreal& rhs) {
+	auto comparator = [](float pos) {
+		return [pos](const float& lhs, const float& rhs) {
 			return qAbs(pos - lhs) < qAbs(pos - rhs);
 		};
 	};
 
 	// We look for the closest object above and the closest below
-	const qreal filterRatio = 0.66f, filterDist = 50;
-	auto selectedHeight = selectedDrawStruct->getObjectSize().height();
-	auto viewRect = QRectF(contentsRect());
-	auto m1 = std::numeric_limits<qreal>::lowest(), m2 = std::numeric_limits<qreal>::max();
-	QPointF abovePos(m1, m1), belowPos(m2, m2);
+	const float filterRatio = 0.66f, filterDist = 50;
+	auto selectedHeight = selectedDrawStruct->getObjectSize().y;
+	auto viewRect = convert(QRectF(contentsRect()));
+	auto m1 = std::numeric_limits<float>::lowest(), m2 = std::numeric_limits<float>::max();
+	Point abovePos(m1, m1), belowPos(m2, m2);
 	qreal aboveDist{ m2 }, belowDist{ m2 };
 	bool hasInsideObject = false;
 	std::set<qreal> snapTargetsX;
@@ -1349,29 +1358,29 @@ void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, QPointF p
 		if (viewRect.intersects(area)) // Only if visible in the current viewport
 		{
 			auto pos = ods->getPosition();
-			if (pos.y() + area.height() < position.y())
+			if (pos.y + area.height() < position.y)
 			{
 				// Distance from the bottom left corner of this one and the top left of the selected
-				auto dist = QPointF(pos.x() - position.x(), pos.y() + area.height() - position.y()).manhattanLength();
+				auto dist = Point(pos.x - position.x, pos.y + area.height() - position.y).norm();
 				if (dist < aboveDist)
 				{
 					aboveDist = dist;
-					abovePos = QPointF(pos.x() , pos.y() + area.height());
+					abovePos = Point(pos.x , pos.y + area.height());
 				}
 			}
-			else if(pos.y() > position.y() + selectedHeight)
+			else if(pos.y > position.y + selectedHeight)
 			{
 				// Distance from the top left corner of this one and the bottom left of the selected
-				auto dist = QPointF(pos.x() - position.x(), pos.y() - (position.y() + selectedHeight)).manhattanLength();
+				auto dist = Point(pos.x - position.x, pos.y - (position.y + selectedHeight)).norm();
 				if (dist < belowDist)
 				{
 					belowDist = dist;
-					belowPos = QPointF(pos.x() , pos.y() - selectedHeight);
+					belowPos = Point(pos.x , pos.y - selectedHeight);
 				}
 			}
-			else if(qAbs(pos.x() - position.x()) < filterDist) // The selected one intersects the y axis of this one, and is close enough on the x axis
+			else if(qAbs(pos.x - position.x) < filterDist) // The selected one intersects the y axis of this one, and is close enough on the x axis
 			{
-				snapTargetsX.insert(pos.x());
+				snapTargetsX.insert(pos.x);
 				hasInsideObject = true;
 			}
 		}
@@ -1380,44 +1389,47 @@ void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, QPointF p
 	if (hasInsideObject)
 	{
 		// Only take the other ones if their are close
-		if(qAbs(abovePos.y() - position.y()) < filterDist)
-			snapTargetsX.insert(abovePos.x());
-		if (qAbs(belowPos.y() - position.y()) < filterDist)
-			snapTargetsX.insert(belowPos.x());
+		if(qAbs(abovePos.y - position.y) < filterDist)
+			snapTargetsX.insert(abovePos.x);
+		if (qAbs(belowPos.y - position.y) < filterDist)
+			snapTargetsX.insert(belowPos.x);
 	}
 	else
 	{
 		// We only take the closest if the other one is at least 50% further
 		if (aboveDist < belowDist * filterRatio && belowDist > filterDist)
-			snapTargetsX.insert(abovePos.x());
+			snapTargetsX.insert(abovePos.x);
 		else if (belowDist < aboveDist * filterRatio && aboveDist > filterDist)
-			snapTargetsX.insert(belowPos.x());
+			snapTargetsX.insert(belowPos.x);
 		else
 		{
-			snapTargetsX.insert(abovePos.x());
-			snapTargetsX.insert(belowPos.x());
+			snapTargetsX.insert(abovePos.x);
+			snapTargetsX.insert(belowPos.x);
 		}
 	}
 
-	auto minIter = std::min_element(snapTargetsX.begin(), snapTargetsX.end(), comparator(position.x()));
+	auto minIter = std::min_element(snapTargetsX.begin(), snapTargetsX.end(), comparator(position.x));
 	if(minIter != snapTargetsX.end())
 	{
 		qreal x = *minIter;
-		if(qAbs(x - position.x()) < snapMaxDist)
-			m_snapDelta.setX(x - position.x());
+		if(qAbs(x - position.x) < snapMaxDist)
+			m_snapDelta.x = x - position.x;
 	}
 
-	minIter = std::min_element(m_snapTargetsY.begin(), m_snapTargetsY.end(), comparator(position.y()));
+	minIter = std::min_element(m_snapTargetsY.begin(), m_snapTargetsY.end(), comparator(position.y));
 	if(minIter != m_snapTargetsY.end())
 	{
 		qreal y = *minIter;
-		if(qAbs(y - position.y()) < snapMaxDist)
-			m_snapDelta.setY(y - position.y());
+		if(qAbs(y - position.y) < snapMaxDist)
+			m_snapDelta.y = y - position.y;
 	}
 }
 
-void GraphView::moveObjects(std::vector<panda::PandaObject*> objects, QPointF delta)
+void GraphView::moveObjects(std::vector<panda::PandaObject*> objects, Point delta)
 {
+	if(delta.isNull())
+		return;
+
 	for(auto object : objects)
 	{
 		auto ods = getObjectDrawStruct(object);
@@ -1443,9 +1455,9 @@ void GraphView::sortDockable(panda::DockableObject* dockable, panda::DockObject*
 	std::sort(dockables.begin(), dockables.end(), [this](panda::DockableObject* lhs, panda::DockableObject* rhs){
 		auto lpos = getObjectDrawStruct(lhs)->getPosition();
 		auto rpos = getObjectDrawStruct(rhs)->getPosition();
-		if(lpos.y() == rpos.y())
-			return lpos.x() > rpos.x();
-		return lpos.y() < rpos.y();
+		if(lpos.y == rpos.y)
+			return lpos.x > rpos.x;
+		return lpos.y < rpos.y;
 	});
 
 	auto iter = std::find(dockables.begin(), dockables.end(), dockable);
@@ -1506,18 +1518,19 @@ void GraphView::changedDock(panda::DockableObject* dockable)
 
 QSize GraphView::viewSize()
 {
-	return m_viewRect.size().toSize();
+	return QSize(m_viewRect.width(), m_viewRect.height());
 }
 
 QPoint GraphView::viewPosition()
 {
-	return m_viewRect.topLeft().toPoint();
+	return QPoint(m_viewRect.left(), m_viewRect.top());
 }
 
 void GraphView::scrollView(QPoint position)
 {
-	QPointF delta = (position - m_viewRect.topLeft()) / m_zoomFactor;
-	m_viewRect.moveTo(position);
+	Point pos = convert(position);
+	Point delta = (pos - m_viewRect.topLeft()) / m_zoomFactor;
+	m_viewRect.moveTo(pos);
 	moveView(delta);
 	update();
 }
@@ -1527,11 +1540,11 @@ void GraphView::updateViewRect()
 	if(m_isLoading)
 		return;
 
-	m_viewRect = QRectF();
+	m_viewRect = Rect();
 	for(const auto& ods : m_orderedObjectDrawStructs)
 	{
-		QRectF area = ods->getObjectArea();
-		QRectF zoomedArea = QRectF(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
+		Rect area = ods->getObjectArea();
+		Rect zoomedArea = Rect::fromSize(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
 		m_viewRect |= zoomedArea; // Union
 	}
 
@@ -1616,4 +1629,9 @@ void GraphView::objectsReordered()
 	m_orderedObjectDrawStructs.clear();
 	for (const auto& obj : m_pandaDocument->getObjects())
 		m_orderedObjectDrawStructs.push_back(getObjectDrawStruct(obj.get()));
+}
+
+panda::types::Point GraphView::getNewObjectPosition()
+{
+	return convert(contentsRect().center());
 }

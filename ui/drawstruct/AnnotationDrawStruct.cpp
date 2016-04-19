@@ -11,12 +11,13 @@
 
 using panda::Annotation;
 using panda::types::Point;
+using panda::types::Rect;
 
 namespace
 {
-	inline pPoint convert(const QPointF& pt)
+	inline Point convert(const QPointF& pt)
 	{
-		return pPoint(pt.x(), pt.y());
+		return Point(pt.x(), pt.y());
 	}
 }
 
@@ -32,10 +33,10 @@ void AnnotationDrawStruct::drawBackground(DrawList& list, DrawColors& colors)
 	// Compute the bounding box of the text, if it changed
 	int textCounter = m_annotation->m_text.getCounter();
 	int colorCounter = m_annotation->m_color.getCounter();
-	if(m_textSize.isEmpty() || m_textCounter != textCounter || m_colorCounter != colorCounter)
+	if(m_textSize.isNull() || m_textCounter != textCounter || m_colorCounter != colorCounter)
 	{
 		auto tempSize = list.calcTextSize(1.0f, m_annotation->m_text.getValue());
-		m_textSize = QSizeF(tempSize.x + 1, tempSize.y);
+		m_textSize = Point(tempSize.x + 1, tempSize.y);
 		m_textCounter = textCounter;
 		m_colorCounter = colorCounter;
 		update();
@@ -63,25 +64,23 @@ void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
 			&& m_parentView->selection().get().size() == 1
 			&& m_parentView->selection().isSelected(m_annotation))	// The annotation is the only selected object
 	{
-		auto center = pPoint(m_endPos.x(), m_endPos.y());
-		list.addCircleFilled(center, 5, colors.midLightColor);
-		list.addCircle(center, 5, colors.penColor);
+		list.addCircleFilled(m_endPos, 5, colors.midLightColor);
+		list.addCircle(m_endPos, 5, colors.penColor);
 	}
 }
 
-void AnnotationDrawStruct::moveVisual(const QPointF& delta)
+void AnnotationDrawStruct::moveVisual(const Point& delta)
 {
 	ObjectDrawStruct::moveVisual(delta);
-	auto pDelta = pPoint(delta.x(), delta.y());
-	m_shapePath.translate(pDelta);
-	m_shapeMesh.translate(pDelta);
+	m_shapePath.translate(delta);
+	m_shapeMesh.translate(delta);
 
 	m_textArea.translate(delta);
 	m_startPos += delta;
 	m_endPos += delta;
 }
 
-void AnnotationDrawStruct::moveText(const QPointF& delta, bool emitModified)
+void AnnotationDrawStruct::moveText(const Point& delta, bool emitModified)
 {
 	move(delta);
 	if (emitModified)
@@ -89,26 +88,26 @@ void AnnotationDrawStruct::moveText(const QPointF& delta, bool emitModified)
 	m_parentView->update();
 }
 
-void AnnotationDrawStruct::moveEnd(const QPointF& delta, bool emitModified)
+void AnnotationDrawStruct::moveEnd(const Point& delta, bool emitModified)
 {
 	m_endPos += delta;
 	update();
 	if (emitModified)
 	{
-		m_annotation->m_deltaToEnd.setValue(m_annotation->m_deltaToEnd.getValue() + Point(delta.x(), delta.y()));
+		m_annotation->m_deltaToEnd.setValue(m_annotation->m_deltaToEnd.getValue() + delta);
 		emit m_parentView->modified();
 	}
 	m_parentView->update();
 }
 
-bool AnnotationDrawStruct::contains(const QPointF& point)
+bool AnnotationDrawStruct::contains(const Point& point)
 {
 	const panda::PandaDocument* doc = m_parentView->getDocument();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
 			&& m_parentView->selection().get().size() == 1
 			&& m_parentView->selection().isSelected(m_annotation))	// The annotation is the only selected object
 	{
-		if((point - m_endPos).manhattanLength() < 10)
+		if((point - m_endPos).norm() < 10)
 			return true;
 	}
 
@@ -119,15 +118,14 @@ void AnnotationDrawStruct::update()
 {
 //	ObjectDrawStruct::update();	// No need to call it
 
-	QPointF viewDelta = m_parentView->getViewDelta();
+	auto viewDelta = m_parentView->getViewDelta();
 
 	m_startPos = m_position + viewDelta;
-	auto deltaToEnd = m_annotation->m_deltaToEnd.getValue();
 	if(m_movingAction == MOVING_NONE)
-		m_endPos = m_startPos + QPointF(deltaToEnd.x, deltaToEnd.y);
+		m_endPos = m_startPos + m_annotation->m_deltaToEnd.getValue();
 
-	m_textArea = QRectF(m_startPos, m_textSize);
-	m_textArea.translate(0, -m_textSize.height());
+	m_textArea = Rect::fromSize(m_startPos, m_textSize);
+	m_textArea.translate(0, -m_textSize.y);
 	m_textArea.adjust(3, -13, 13, -3);
 
 	m_shapePath.clear();
@@ -137,38 +135,38 @@ void AnnotationDrawStruct::update()
 			break;
 		case Annotation::ANNOTATION_ARROW:
 		{
-			QPointF start = m_textArea.center();
-			QPointF dir = m_endPos - start;
-			const qreal w = 2.5;
-			qreal length = sqrt(dir.x()*dir.x() + dir.y()*dir.y());
+			Point start = m_textArea.center();
+			Point dir = m_endPos - start;
+			const float w = 2.5;
+			float length = dir.norm();
 
 			if(length < w * 20)
 				break;
 
 			dir /= length;
-			QPointF dir2 = QPointF(-dir.y(), dir.x());
+			Point dir2 = Point(-dir.y, dir.x);
 			dir *= w;
 			dir2 *= w;
 
-			m_shapePath.moveTo(convert(m_endPos));
-			m_shapePath.lineTo(convert(m_endPos + 5*dir2 - 15*dir));
-			m_shapePath.lineTo(convert(m_endPos + dir2 - 10*dir));
-			m_shapePath.lineTo(convert(start + dir2));
-			m_shapePath.lineTo(convert(start - dir2));
-			m_shapePath.lineTo(convert(m_endPos - dir2 - 10*dir));
-			m_shapePath.lineTo(convert(m_endPos - 5*dir2 - 15*dir));
-			m_shapePath.lineTo(convert(m_endPos));
+			m_shapePath.moveTo(m_endPos);
+			m_shapePath.lineTo(m_endPos + 5*dir2 - 15*dir);
+			m_shapePath.lineTo(m_endPos + dir2 - 10*dir);
+			m_shapePath.lineTo(start + dir2);
+			m_shapePath.lineTo(start - dir2);
+			m_shapePath.lineTo(m_endPos - dir2 - 10*dir);
+			m_shapePath.lineTo(m_endPos - 5*dir2 - 15*dir);
+			m_shapePath.lineTo(m_endPos);
 			break;
 		}
 		case Annotation::ANNOTATION_RECTANGLE:
 		{
-			m_shapePath.rect(pPoint(m_startPos.x(), m_startPos.y()), pPoint(m_endPos.x(), m_endPos.y()));
+			m_shapePath.rect(m_startPos, m_endPos);
 			m_shapePath.close();
 			break;
 		}
 		case Annotation::ANNOTATION_ELLIPSE:
 		{
-			m_shapePath.arcToDegrees(pRect(m_startPos.x(), m_startPos.y(), m_endPos.x(), m_endPos.y()), 0, 360);
+			m_shapePath.arcToDegrees(Rect(m_startPos, m_endPos), 0, 360);
 			break;
 		}
 	}
@@ -178,12 +176,12 @@ void AnnotationDrawStruct::update()
 	m_annotation->cleanDirty();
 	m_objectArea = m_textArea;
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT)
-		 m_objectArea |= QRectF(m_startPos, m_endPos).normalized();
+		 m_objectArea |= Rect(m_startPos, m_endPos).canonicalized();
 }
 
 bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 {
-	QPointF zoomedMouse = event->localPos() / m_parentView->getZoom();
+	Point zoomedMouse = convert(event->localPos() )/ m_parentView->getZoom();
 
 	if(m_textArea.contains(zoomedMouse))
 	{
@@ -192,7 +190,7 @@ bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 		return true;
 	}
 
-	if((zoomedMouse - m_endPos).manhattanLength() < 10)
+	if((zoomedMouse - m_endPos).norm() < 10)
 	{
 		m_movingAction = MOVING_POINT;
 		m_startMousePos = m_previousMousePos = zoomedMouse;
@@ -204,8 +202,8 @@ bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 
 void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 {
-	QPointF zoomedMouse = event->localPos() / m_parentView->getZoom();
-	QPointF delta = zoomedMouse - m_previousMousePos;
+	Point zoomedMouse = convert(event->localPos()) / m_parentView->getZoom();
+	Point delta = zoomedMouse - m_previousMousePos;
 	m_previousMousePos = zoomedMouse;
 	if(delta.isNull())
 		return;
@@ -218,9 +216,9 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 
 void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
 {
-	QPointF zoomedMouse = event->localPos() / m_parentView->getZoom();
-	QPointF deltaStart = m_startMousePos - m_previousMousePos;
-	QPointF delta = zoomedMouse - m_startMousePos;
+	Point zoomedMouse = convert(event->localPos()) / m_parentView->getZoom();
+	Point deltaStart = m_startMousePos - m_previousMousePos;
+	Point delta = zoomedMouse - m_startMousePos;
 
 	if (m_movingAction == MOVING_TEXT)
 	{
@@ -236,9 +234,9 @@ void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
 	m_movingAction = MOVING_NONE;
 }
 
-QSize AnnotationDrawStruct::getObjectSize()
+Point AnnotationDrawStruct::getObjectSize()
 {
-	return QSize(100, 50);
+	return Point(100, 50);
 }
 
 int AnnotationDrawClass = RegisterDrawObject<panda::Annotation, AnnotationDrawStruct>();

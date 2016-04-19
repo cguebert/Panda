@@ -18,9 +18,9 @@ class AnnotationDrawStruct : public ObjectDrawStruct
 public:
 	AnnotationDrawStruct(GraphView* view, panda::PandaObject* m_object);
 
-	void moveVisual(const QPointF& delta) override;
+	void moveVisual(const panda::types::Point& delta) override;
 	void update() override;
-	bool contains(const QPointF& point) override;
+	bool contains(const panda::types::Point& point) override;
 
 	bool mousePressEvent(QMouseEvent* event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;
@@ -28,10 +28,10 @@ public:
 
 	bool acceptsMagneticSnap() const override { return false; }
 
-	virtual QSize getObjectSize();
+	virtual panda::types::Point getObjectSize();
 
-	void moveText(const QPointF& delta, bool emitModified = true);
-	void moveEnd(const QPointF& delta, bool emitModified = true);
+	void moveText(const panda::types::Point& delta, bool emitModified = true);
+	void moveEnd(const panda::types::Point& delta, bool emitModified = true);
 
 protected:
 	void drawBackground(DrawList& list, DrawColors& colors) override;
@@ -39,15 +39,15 @@ protected:
 	void drawForeground(DrawList& list, DrawColors& colors) override;
 
 	panda::Annotation* m_annotation;
-	QPointF m_endPos, m_startPos;
-	QSizeF m_textSize;
-	QRectF m_textArea;
+	panda::types::Point m_endPos, m_startPos;
+	panda::types::Point m_textSize;
+	panda::types::Rect m_textArea;
 	int m_textCounter = -1, m_colorCounter = -1;
 	DrawPath m_shapePath;
 	DrawMesh m_shapeMesh;
 	enum MovingAction { MOVING_NONE=0, MOVING_TEXT, MOVING_POINT };
 	MovingAction m_movingAction = MOVING_NONE;
-	QPointF m_previousMousePos, m_startMousePos;
+	panda::types::Point m_previousMousePos, m_startMousePos;
 };
 
 #endif // ANNOTATIONDRAWSTRUCT_H

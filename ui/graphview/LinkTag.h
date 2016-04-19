@@ -1,7 +1,7 @@
 #ifndef LINKTAG_H
 #define LINKTAG_H
 
-#include <QRectF>
+#include <panda/types/Rect.h>
 #include <map>
 
 namespace panda
@@ -20,9 +20,9 @@ public:
 	void removeOutput(panda::BaseData* output);
 	void update();
 	bool isEmpty();
-	bool containsPoint(const QPointF& point);
+	bool containsPoint(const panda::types::Point& point);
 
-	void moveView(const QPointF& delta);
+	void moveView(const panda::types::Point& delta);
 	void draw(DrawList& list, DrawColors& colors);
 
 	panda::BaseData* getInputData() const;
@@ -46,7 +46,7 @@ private:
 
 	panda::BaseData* m_inputData = nullptr;
 
-	using DataRects = std::pair<QRectF, QRectF>; // Tag rect, Data rect
+	using DataRects = std::pair<panda::types::Rect, panda::types::Rect>; // Tag rect, Data rect
 	DataRects m_inputDataRects;
 	std::map<panda::BaseData*, DataRects> m_outputDatas;
 };

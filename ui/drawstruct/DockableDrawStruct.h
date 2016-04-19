@@ -13,14 +13,14 @@ public:
 	void placeDockableObjects();
 
 	void drawShape(DrawList& list, DrawColors& colors) override;
-	QSize getObjectSize() override;
-	QRectF getTextArea() override;
-	void move(const QPointF& delta) override;
-	void moveVisual(const QPointF& delta) override;
+	panda::types::Point getObjectSize() override;
+	panda::types::Rect getTextArea() override;
+	void move(const panda::types::Point& delta) override;
+	void moveVisual(const panda::types::Point& delta) override;
 	void update() override;
-	bool contains(const QPointF& point) override;
+	bool contains(const panda::types::Point& point) override;
 
-	int getDockableIndex(const QRectF& rect);
+	int getDockableIndex(const panda::types::Rect& rect);
 
 	static const int dockEmptyRendererHeight = 30;
 	static const int dockHoleWidth = 80;
@@ -30,7 +30,7 @@ protected:
 	panda::DockObject* m_dockObject;
 	DrawPath m_shapePath;
 	DrawMesh m_shapeMesh;
-	QList<int> m_dockablesY;	// Used only in "getDockableIndex"
+	std::vector<int> m_dockablesY;	// Used only in "getDockableIndex"
 };
 
 class DockableObjectDrawStruct : public ObjectDrawStruct
@@ -39,11 +39,11 @@ public:
 	DockableObjectDrawStruct(GraphView* view, panda::DockableObject* m_object);
 
 	void drawShape(DrawList& list, DrawColors& colors) override;
-	void moveVisual(const QPointF& delta) override;
+	void moveVisual(const panda::types::Point& delta) override;
 	void update() override;
-	bool contains(const QPointF& point) override;
-	QSize getObjectSize() override;
-	QRectF getTextArea() override;
+	bool contains(const panda::types::Point& point) override;
+	panda::types::Point getObjectSize() override;
+	panda::types::Rect getTextArea() override;
 
 	static const int dockableCircleWidth = 20;
 
