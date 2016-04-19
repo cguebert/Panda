@@ -90,7 +90,7 @@ public:
 
 		// Save the window size
 		ImVec2 nSize = ImGui::GetWindowSize();
-		if (size != types::Point::zero() && (size.x != nSize.x || size.y != nSize.y))
+		if (!size.isNull() && (size.x != nSize.x || size.y != nSize.y))
 			m_size.setValue({ nSize.x, nSize.y });
 
 		ImGui::End();

@@ -23,6 +23,9 @@ public:
 	Rect(const Point& p1, const Point& p2);
 	Rect(const Point& p, float w, float h);
 
+	static Rect fromSize(float x1, float y1, float w, float h);
+	static Rect fromSize(const Point& topLeft, const Point& size);
+
 	void set(float nx1, float ny1, float nx2, float ny2);
 	void set(const Rect& p);
 
@@ -135,6 +138,12 @@ inline Rect::Rect(const Point& p1, const Point& p2)
 
 inline Rect::Rect(const Point& p, float w, float h)
 : x1(p.x), y1(p.y), x2(p.x + w), y2(p.y + h) { }
+
+inline Rect Rect::fromSize(float x1, float y1, float w, float h)
+{ return Rect(x1, y1, x1 + w, y1 + h); }
+
+inline Rect Rect::fromSize(const Point& topLeft, const Point& size)
+{ return Rect(topLeft, topLeft + size); }
 
 inline void Rect::set(float nx1, float ny1, float nx2, float ny2)
 { x1 = nx1; y1 = ny1; x2 = nx2; y2 = ny2; }

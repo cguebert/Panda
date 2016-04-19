@@ -84,6 +84,8 @@ public:
 	bool operator==(const Point& p) const;
 	bool operator!=(const Point& p) const;
 
+	bool isNull() const;
+
 	static Point max();
 
 	static Point zero();
@@ -215,6 +217,9 @@ inline bool Point::operator==(const Point& p) const
 
 inline bool Point::operator!=(const Point& p) const
 { return !pFuzzyIsNull(x - p.x) || !pFuzzyIsNull(y - p.y); }
+
+inline bool Point::isNull() const
+{ return pFuzzyIsNull(x) && pFuzzyIsNull(y); }
 
 inline Point Point::max()
 { return Point(std::numeric_limits<float>::max(), std::numeric_limits<float>::max()); }

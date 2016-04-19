@@ -651,7 +651,7 @@ public:
 				const auto& pt = valA[i % nbA];
 				const auto& size = valB[i % nbB];
 
-				if (pt == Point::zero() || size == Point::zero())
+				if (pt.isNull() || size.isNull())
 				{
 					res[i].set(0, 0);
 					continue;
