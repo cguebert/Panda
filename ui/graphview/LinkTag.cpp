@@ -94,13 +94,13 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 
 		// Draw the data rectangles
 		auto rect = Rect(m_inputDataRects.second.left(), m_inputDataRects.second.top(), m_inputDataRects.second.right(), m_inputDataRects.second.bottom());
-		list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.highlightColor);
-		list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
+		list.addRectFilled(rect, colors.highlightColor);
+		list.addRect(rect, colors.penColor);
 		for (const auto& tagRect : m_outputDatas)
 		{
 			rect = Rect(tagRect.second.second.left(), tagRect.second.second.top(), tagRect.second.second.right(), tagRect.second.second.bottom());
-			list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.highlightColor);
-			list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
+			list.addRectFilled(rect, colors.highlightColor);
+			list.addRect(rect, colors.penColor);
 		}
 	}
 
@@ -113,8 +113,8 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 	qreal x = inputRect.left();
 	qreal cy = inputRect.center().y;
 	list.addLine(Point(x - tagMargin, cy), Point(x, cy), colors.penColor);
-	list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.lightColor);
-	list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
+	list.addRectFilled(rect, colors.lightColor);
+	list.addRect(rect, colors.penColor);
 	list.addText(rect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
 
 	// outputs
@@ -125,8 +125,8 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 		x = tagRect.right();
 		cy = tagRect.center().y;
 		list.addLine(Point(x, cy), Point(x + tagMargin, cy), colors.penColor);
-		list.addRectFilled(rect.topLeft(), rect.bottomRight(), colors.lightColor);
-		list.addRect(rect.topLeft(), rect.bottomRight(), colors.penColor);
+		list.addRectFilled(rect, colors.lightColor);
+		list.addRect(rect, colors.penColor);
 		list.addText(rect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
 	}
 }

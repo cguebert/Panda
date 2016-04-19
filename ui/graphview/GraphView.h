@@ -74,7 +74,7 @@ public:
 
 	int getAvailableLinkTagIndex();
 
-	qreal getZoom();
+	float getZoom();
 
 	enum ContextMenuReason {
 		MENU_OBJECT = 0x1,
@@ -174,7 +174,7 @@ private:
 	panda::PandaDocument* m_pandaDocument;
 
 	int m_zoomLevel = 0, m_wheelTicks = 0;
-	qreal m_zoomFactor = 1.0;
+	float m_zoomFactor = 1.0f;
 	panda::types::Point m_viewDelta;
 	panda::types::Point m_previousMousePos, m_currentMousePos;
 
@@ -196,7 +196,7 @@ private:
 	bool m_highlightConnectedDatas = false;
 
 	bool m_useMagneticSnap = true; /// Do we help align objects when moving them with the mouse?
-	std::set<qreal> m_snapTargetsY;
+	std::set<float> m_snapTargetsY;
 	panda::types::Point m_snapDelta;
 
 	std::vector<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied
@@ -247,7 +247,7 @@ inline const panda::BaseData* GraphView::getClickedData() const
 inline const panda::BaseData* GraphView::getContextMenuData() const
 { return m_contextMenuData; }
 
-inline qreal GraphView::getZoom()
+inline float GraphView::getZoom()
 { return m_zoomFactor; }
 
 inline void GraphView::setRecomputeTags()

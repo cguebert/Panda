@@ -122,9 +122,8 @@ void GenericObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
 				dataCol = colors.lightColor;
 
 			const auto& area = dataPair.first;
-			pPoint dtl = pPoint(area.left(), area.top()), dbr = pPoint(area.right(), area.bottom());
-			list.addRectFilled(dtl, dbr, dataCol, 3.0f);
-			list.addRect(dtl, dbr, colors.penColor, 1.0f, 3.0f);
+			list.addRectFilled(area, dataCol, 3.0f);
+			list.addRect(area, colors.penColor, 1.0f, 3.0f);
 		}
 		else
 			drawData(list, colors, dataPair.second, dataPair.first);

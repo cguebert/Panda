@@ -134,9 +134,8 @@ void ObjectDrawStruct::draw(DrawList& list, DrawColors& colors, bool selected)
 void ObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 {
 	// Draw the shape around the object
-	pPoint tl = pPoint(m_objectArea.left(), m_objectArea.top()), br = pPoint(m_objectArea.right(), m_objectArea.bottom());
-	list.addRectFilled(tl, br, colors.fillColor, objectCorner);
-	list.addRect(tl, br, colors.penColor, colors.penWidth, objectCorner);
+	list.addRectFilled(m_objectArea, colors.fillColor, objectCorner);
+	list.addRect(m_objectArea, colors.penColor, colors.penWidth, objectCorner);
 }
 
 void ObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
@@ -154,9 +153,8 @@ void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda:
 	else
 		dataCol = DrawList::convert(data->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
 
-	pPoint dtl = area.topLeft(), dbr = area.bottomRight();
-	list.addRectFilled(dtl, dbr, dataCol);
-	list.addRect(dtl, dbr, colors.penColor);
+	list.addRectFilled(area, dataCol);
+	list.addRect(area, colors.penColor);
 }
 
 void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)

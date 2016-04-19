@@ -166,12 +166,13 @@ void DrawPath::bezierCurveTo(const Point& p2, const Point& p3, const Point& p4, 
 	}
 }
 
-void DrawPath::rect(const Point& a, const Point& b, float rounding, int rounding_corners)
+void DrawPath::rect(const pRect& rect, float rounding, int rounding_corners)
 {
 	float r = rounding;
-	r = std::min(r, fabsf(b.x-a.x) * ( ((rounding_corners&(1|2))==(1|2)) || ((rounding_corners&(4|8))==(4|8)) ? 0.5f : 1.0f ) - 1.0f);
-	r = std::min(r, fabsf(b.y-a.y) * ( ((rounding_corners&(1|8))==(1|8)) || ((rounding_corners&(2|4))==(2|4)) ? 0.5f : 1.0f ) - 1.0f);
+	r = std::min(r, fabsf(rect.width()) * ( ((rounding_corners&(1|2))==(1|2)) || ((rounding_corners&(4|8))==(4|8)) ? 0.5f : 1.0f ) - 1.0f);
+	r = std::min(r, fabsf(rect.height()) * ( ((rounding_corners&(1|8))==(1|8)) || ((rounding_corners&(2|4))==(2|4)) ? 0.5f : 1.0f ) - 1.0f);
 
+	Point a = rect.topLeft(), b = rect.bottomRight();
 	if (r <= 0.0f || rounding_corners == 0)
 	{
 		lineTo(a);

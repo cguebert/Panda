@@ -52,7 +52,7 @@ void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
 	auto textArea = pRect(m_textArea.left(), m_textArea.top(), m_textArea.right(), m_textArea.bottom());
 
 	// Draw the box behind the text
-	list.addRectFilled(textArea.topLeft(), textArea.bottomRight(), colors.midLightColor);
+	list.addRectFilled(textArea, colors.midLightColor);
 
 	// Draw the text
 	textArea.adjust(5, 5, -5, -5);
@@ -160,7 +160,7 @@ void AnnotationDrawStruct::update()
 		}
 		case Annotation::ANNOTATION_RECTANGLE:
 		{
-			m_shapePath.rect(m_startPos, m_endPos);
+			m_shapePath.rect(Rect(m_startPos, m_endPos));
 			m_shapePath.close();
 			break;
 		}

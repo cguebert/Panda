@@ -153,31 +153,32 @@ void DrawList::addLine(const Point& a, const Point& b, unsigned int col, float t
 }
 
 // a: upper-left, b: lower-right. we don't render 1 px sized rectangles properly.
-void DrawList::addRect(const Point& a, const Point& b, unsigned int col, float thickness, float rounding, int rounding_corners)
+void DrawList::addRect(const Rect& r, unsigned int col, float thickness, float rounding, int rounding_corners)
 {
 	if ((col >> 24) == 0)
 		return;
-	m_path.rect(a + Point(0.5f,0.5f), b - Point(0.5f,0.5f), rounding, rounding_corners);
+	// a + Point(0.5f,0.5f), b - Point(0.5f,0.5f)
+	m_path.rect(r, rounding, rounding_corners);
 	pathStroke(col, true, thickness);
 }
 
-void DrawList::addRectFilled(const Point& a, const Point& b, unsigned int col, float rounding, int rounding_corners)
+void DrawList::addRectFilled(const Rect& r, unsigned int col, float rounding, int rounding_corners)
 {
 	if ((col >> 24) == 0)
 		return;
 	if (rounding > 0.0f)
 	{
-		m_path.rect(a, b, rounding, rounding_corners);
+		m_path.rect(r, rounding, rounding_corners);
 		pathFill(col);
 	}
 	else
 	{
 		primReserve(6, 4);
-		primRect(a, b, col);
+		primRect(r, col);
 	}
 }
 
-void DrawList::addRectFilledMultiColor(const Point& a, const Point& c, unsigned int col_upr_left, unsigned int col_upr_right, unsigned int col_bot_right, unsigned int col_bot_left)
+void DrawList::addRectFilledMultiColor(const Rect& r, unsigned int col_upr_left, unsigned int col_upr_right, unsigned int col_bot_right, unsigned int col_bot_left)
 {
 	if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) >> 24) == 0)
 		return;
@@ -186,10 +187,10 @@ void DrawList::addRectFilledMultiColor(const Point& a, const Point& c, unsigned 
 	primReserve(6, 4);
 	primWriteIdx(m_vtxCurrentIdx); primWriteIdx(m_vtxCurrentIdx+1); primWriteIdx(m_vtxCurrentIdx+2);
 	primWriteIdx(m_vtxCurrentIdx); primWriteIdx(m_vtxCurrentIdx+2); primWriteIdx(m_vtxCurrentIdx+3);
-	primWriteVtx(a, uv, col_upr_left);
-	primWriteVtx(Point(c.x, a.y), uv, col_upr_right);
-	primWriteVtx(c, uv, col_bot_right);
-	primWriteVtx(Point(a.x, c.y), uv, col_bot_left);
+	primWriteVtx(r.topLeft(), uv, col_upr_left);
+	primWriteVtx(r.topRight(), uv, col_upr_right);
+	primWriteVtx(r.bottomRight(), uv, col_bot_right);
+	primWriteVtx(r.bottomLeft(), uv, col_bot_left);
 }
 
 void DrawList::addTriangle(const Point& a, const Point& b, const Point& c, unsigned int col, float thickness)
@@ -232,6 +233,26 @@ void DrawList::addCircleFilled(const Point& centre, float radius, unsigned int c
 	const float a_max = M_PI*2.0f * ((float)num_segments - 1.0f) / (float)num_segments;
 	m_path.arcTo(centre, radius, 0.0f, a_max, num_segments);
 	pathFill(col);
+}
+
+void DrawList::addEllipse(const pRect& rect, unsigned int col, float thickness, float precision)
+{
+	if ((col >> 24) == 0)
+		return;
+
+	m_path.arcTo(rect, 0, (float)M_PI * 2.0f, precision);
+	pathStroke(col, false, thickness);
+}
+
+void DrawList::addEllipseFilled(const pRect& rect, unsigned int col, float precision)
+{
+	if ((col >> 24) == 0)
+		return;
+
+	m_path.arcTo(rect, 0, (float)M_PI * 2.0f, precision);
+	auto mesh = m_path.triangulate();
+	m_path.clear();
+	addMesh(mesh, col);
 }
 
 void DrawList::addBezierCurve(const Point& pos0, const Point& cp0, const Point& cp1, const Point& pos1, unsigned int col, float thickness, int num_segments)
@@ -326,7 +347,7 @@ void DrawList::addText(const Rect& rect, const std::string& text, unsigned int c
 		addText(*font, pos, text, col, scale, wrap_width, nullptr);
 }
 
-void DrawList::addImage(unsigned int user_texture_id, const Point& a, const Point& b, const Point& uv0, const Point& uv1, unsigned int col)
+void DrawList::addImage(unsigned int user_texture_id, const Rect& r, const Rect& uv, unsigned int col)
 {
 	if ((col >> 24) == 0)
 		return;
@@ -337,7 +358,7 @@ void DrawList::addImage(unsigned int user_texture_id, const Point& a, const Poin
 		pushTextureID(user_texture_id);
 
 	primReserve(6, 4);
-	primRectUV(a, b, uv0, uv1, col);
+	primRectUV(r, uv, col);
 
 	if (push_texture_id)
 		popTextureID();
@@ -659,31 +680,30 @@ void DrawList::primReserve(int idx_count, int vtx_count)
 }
 
 // Fully unrolled with inline call to keep our debug builds decently fast.
-void DrawList::primRect(const Point& a, const Point& c, unsigned int col)
+void DrawList::primRect(const Rect& r, unsigned int col)
 {
-	Point b(c.x, a.y), d(a.x, c.y), uv(0, 0);
+	Point uv(0, 0);
 	DrawIdx idx = (DrawIdx)m_vtxCurrentIdx;
 	m_idxWritePtr[0] = idx; m_idxWritePtr[1] = (DrawIdx)(idx+1); m_idxWritePtr[2] = (DrawIdx)(idx+2);
 	m_idxWritePtr[3] = idx; m_idxWritePtr[4] = (DrawIdx)(idx+2); m_idxWritePtr[5] = (DrawIdx)(idx+3);
-	m_vtxWritePtr[0].pos = a; m_vtxWritePtr[0].uv = uv; m_vtxWritePtr[0].col = col;
-	m_vtxWritePtr[1].pos = b; m_vtxWritePtr[1].uv = uv; m_vtxWritePtr[1].col = col;
-	m_vtxWritePtr[2].pos = c; m_vtxWritePtr[2].uv = uv; m_vtxWritePtr[2].col = col;
-	m_vtxWritePtr[3].pos = d; m_vtxWritePtr[3].uv = uv; m_vtxWritePtr[3].col = col;
+	m_vtxWritePtr[0].pos = r.topLeft();		m_vtxWritePtr[0].uv = uv; m_vtxWritePtr[0].col = col;
+	m_vtxWritePtr[1].pos = r.topRight();	m_vtxWritePtr[1].uv = uv; m_vtxWritePtr[1].col = col;
+	m_vtxWritePtr[2].pos = r.bottomRight(); m_vtxWritePtr[2].uv = uv; m_vtxWritePtr[2].col = col;
+	m_vtxWritePtr[3].pos = r.bottomLeft();	m_vtxWritePtr[3].uv = uv; m_vtxWritePtr[3].col = col;
 	m_vtxWritePtr += 4;
 	m_vtxCurrentIdx += 4;
 	m_idxWritePtr += 6;
 }
 
-void DrawList::primRectUV(const Point& a, const Point& c, const Point& uv_a, const Point& uv_c, unsigned int col)
+void DrawList::primRectUV(const Rect& r, const Rect& uv, unsigned int col)
 {
-	Point b(c.x, a.y), d(a.x, c.y), uv_b(uv_c.x, uv_a.y), uv_d(uv_a.x, uv_c.y);
 	DrawIdx idx = m_vtxCurrentIdx;
 	m_idxWritePtr[0] = idx; m_idxWritePtr[1] = idx+1; m_idxWritePtr[2] = idx+2;
 	m_idxWritePtr[3] = idx; m_idxWritePtr[4] = idx+2; m_idxWritePtr[5] = idx+3;
-	m_vtxWritePtr[0].pos = a; m_vtxWritePtr[0].uv = uv_a; m_vtxWritePtr[0].col = col;
-	m_vtxWritePtr[1].pos = b; m_vtxWritePtr[1].uv = uv_b; m_vtxWritePtr[1].col = col;
-	m_vtxWritePtr[2].pos = c; m_vtxWritePtr[2].uv = uv_c; m_vtxWritePtr[2].col = col;
-	m_vtxWritePtr[3].pos = d; m_vtxWritePtr[3].uv = uv_d; m_vtxWritePtr[3].col = col;
+	m_vtxWritePtr[0].pos = r.topLeft();		m_vtxWritePtr[0].uv = uv.topLeft();		m_vtxWritePtr[0].col = col;
+	m_vtxWritePtr[1].pos = r.topRight();	m_vtxWritePtr[1].uv = uv.topRight();	m_vtxWritePtr[1].col = col;
+	m_vtxWritePtr[2].pos = r.bottomRight();	m_vtxWritePtr[2].uv = uv.bottomRight();	m_vtxWritePtr[2].col = col;
+	m_vtxWritePtr[3].pos = r.bottomLeft();	m_vtxWritePtr[3].uv = uv.bottomLeft();	m_vtxWritePtr[3].col = col;
 	m_vtxWritePtr += 4;
 	m_vtxCurrentIdx += 4;
 	m_idxWritePtr += 6;

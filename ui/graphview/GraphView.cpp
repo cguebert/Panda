@@ -271,8 +271,8 @@ void GraphView::paintGL()
 		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).canonicalized();
 		auto highlight = palette().highlight().color();
 		highlight.setAlpha(64);
-		drawList.addRectFilled(r.topLeft(), r.bottomRight(), DrawList::convert(highlight));
-		drawList.addRect(r.topLeft(), r.bottomRight(), DrawList::convert(palette().text().color()));
+		drawList.addRectFilled(r, DrawList::convert(highlight));
+		drawList.addRect(r, DrawList::convert(palette().text().color()));
 	}
 
 	// Link in creation
@@ -311,14 +311,14 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 			unsigned int fillCol = panda::helper::valueOrDefault(states, object, nullptr) ? 0x200000FF : 0x2000FF00;
 	
 			auto area = ods->getObjectArea();
-			list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), fillCol);
+			list.addRectFilled(area, fillCol);
 
 			for(panda::BaseData* data : object->getDatas())
 			{
 				if(ods->getDataRect(data, area))
 				{
 					fillCol = panda::helper::valueOrDefault(states, data, nullptr) ? 0x400000FF : 0x4000FF00;
-					list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), fillCol);
+					list.addRectFilled(area, fillCol);
 				}
 			}
 		}
@@ -339,7 +339,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 				if(!drawData)
 					area = ods->getObjectArea();
 
-				list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), 0x80FF8080);
+				list.addRectFilled(area, 0x80FF8080);
 			}
 		}
 	}
@@ -354,7 +354,7 @@ void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
 		unsigned int fillCol = object->isDirty() ? 0x400000FF : 0x4000FF00;
 
 		auto area = ods->getObjectArea();
-		list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), fillCol);
+		list.addRectFilled(area, fillCol);
 
 		for(panda::BaseData* data : object->getDatas())
 		{
@@ -362,7 +362,7 @@ void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
 			if(ods->getDataRect(data, area))
 			{
 				fillCol = data->isDirty() ? 0x400000FF : 0x4000FF00;
-				list.addRectFilled(Point(area.left(), area.top()), Point(area.right(), area.bottom()), fillCol);
+				list.addRectFilled(area, fillCol);
 			}
 		}
 	}
@@ -939,9 +939,9 @@ void GraphView::showAll()
 			totalView = totalView.united(objectArea);
 		}
 
-		qreal factorW = contentsRect().width() / (totalView.width() + 40);
-		qreal factorH = contentsRect().height() / (totalView.height() + 40);
-		m_zoomFactor = qBound(0.1, qMin(factorW, factorH), 1.0);
+		float factorW = contentsRect().width() / (totalView.width() + 40);
+		float factorH = contentsRect().height() / (totalView.height() + 40);
+		m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
 		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center());
 		update();
@@ -960,9 +960,9 @@ void GraphView::showAllSelected()
 			totalView = totalView.united(objectArea);
 		}
 
-		qreal factorW = contentsRect().width() / (totalView.width() + 40);
-		qreal factorH = contentsRect().height() / (totalView.height() + 40);
-		m_zoomFactor = qBound(0.1, qMin(factorW, factorH), 1.0);
+		float factorW = contentsRect().width() / (totalView.width() + 40);
+		float factorH = contentsRect().height() / (totalView.height() + 40);
+		m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
 		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center());
 		update();
@@ -1261,9 +1261,8 @@ void GraphView::drawConnectedDatas(panda::BaseData* sourceData)
 
 	for (const auto& rect : highlightRects)
 	{
-		auto tl = rect.topLeft(), br = rect.bottomRight();
-		m_connectedDrawList.addRectFilled(tl, br, highlightCol);
-		m_connectedDrawList.addRect(tl, br, penCol, 1.f);
+		m_connectedDrawList.addRectFilled(rect, highlightCol);
+		m_connectedDrawList.addRect(rect, penCol, 1.f);
 	}
 
 	for(const auto& link : highlightLinks)
@@ -1336,7 +1335,7 @@ void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, Point pos
 
 	auto comparator = [](float pos) {
 		return [pos](const float& lhs, const float& rhs) {
-			return qAbs(pos - lhs) < qAbs(pos - rhs);
+			return fabs(pos - lhs) < fabs(pos - rhs);
 		};
 	};
 
@@ -1346,9 +1345,9 @@ void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, Point pos
 	auto viewRect = convert(QRectF(contentsRect()));
 	auto m1 = std::numeric_limits<float>::lowest(), m2 = std::numeric_limits<float>::max();
 	Point abovePos(m1, m1), belowPos(m2, m2);
-	qreal aboveDist{ m2 }, belowDist{ m2 };
+	float aboveDist{ m2 }, belowDist{ m2 };
 	bool hasInsideObject = false;
-	std::set<qreal> snapTargetsX;
+	std::set<float> snapTargetsX;
 	for (const auto ods : m_orderedObjectDrawStructs)
 	{
 		if (ods == selectedDrawStruct || !ods->acceptsMagneticSnap())
@@ -1411,7 +1410,7 @@ void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, Point pos
 	auto minIter = std::min_element(snapTargetsX.begin(), snapTargetsX.end(), comparator(position.x));
 	if(minIter != snapTargetsX.end())
 	{
-		qreal x = *minIter;
+		float x = *minIter;
 		if(qAbs(x - position.x) < snapMaxDist)
 			m_snapDelta.x = x - position.x;
 	}
@@ -1419,7 +1418,7 @@ void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, Point pos
 	minIter = std::min_element(m_snapTargetsY.begin(), m_snapTargetsY.end(), comparator(position.y));
 	if(minIter != m_snapTargetsY.end())
 	{
-		qreal y = *minIter;
+		float y = *minIter;
 		if(qAbs(y - position.y) < snapMaxDist)
 			m_snapDelta.y = y - position.y;
 	}

@@ -63,18 +63,20 @@ public:
 
 	// Primitives
 	void addLine(const pPoint& a, const pPoint& b, unsigned int col, float thickness = 1.0f);
-	void addRect(const pPoint& a, const pPoint& b, unsigned int col, float thickness = 1.0f, float rounding = 0.0f, int rounding_corners = 0x0F);        // a: upper-left, b: lower-right
-	void addRectFilled(const pPoint& a, const pPoint& b, unsigned int col, float rounding = 0.0f, int rounding_corners = 0x0F);  // a: upper-left, b: lower-right
-	void addRectFilledMultiColor(const pPoint& a, const pPoint& b, unsigned int col_upr_left, unsigned int col_upr_right, unsigned int col_bot_right, unsigned int col_bot_left);
+	void addRect(const pRect& r, unsigned int col, float thickness = 1.0f, float rounding = 0.0f, int rounding_corners = 0x0F);        // a: upper-left, b: lower-right
+	void addRectFilled(const pRect& r, unsigned int col, float rounding = 0.0f, int rounding_corners = 0x0F);  // a: upper-left, b: lower-right
+	void addRectFilledMultiColor(const pRect& r, unsigned int col_upr_left, unsigned int col_upr_right, unsigned int col_bot_right, unsigned int col_bot_left);
 	void addTriangle(const pPoint& a, const pPoint& b, const pPoint& c, unsigned int col, float thickness);
 	void addTriangleFilled(const pPoint& a, const pPoint& b, const pPoint& c, unsigned int col);
 	void addCircle(const pPoint& centre, float radius, unsigned int col, int num_segments = 12, float thickness = 1.0f);
 	void addCircleFilled(const pPoint& centre, float radius, unsigned int col, int num_segments = 12);
+	void addEllipse(const pRect& rect, unsigned int col, float thickness = 1.0f, float precision = 1.0f);
+	void addEllipseFilled(const pRect& rect, unsigned int col, float precision = 1.0f);
 	void addBezierCurve(const pPoint& pos0, const pPoint& cp0, const pPoint& cp1, const pPoint& pos1, unsigned int col, float thickness, int num_segments = 0);
 	void addText(const pPoint& pos, const std::string& text, unsigned int col);
 	void addText(const pRect& rect, const std::string& text, unsigned int col, TextAlign align = Align_Default, float scale = 1.0f, bool wrap = true, bool fit = false); // fit: if true, will decrease the scale so that the text can fit in the rectangle
 	void addText(const Font& font, const pPoint& pos, const std::string& text, unsigned int col, float font_scale = 1.0f, float wrap_width = 0.0f, const panda::types::Rect* cpu_fine_clip_rect = NULL);
-	void addImage(unsigned int texture_id, const pPoint& a, const pPoint& b, const pPoint& uv0 = panda::types::Point(0,0), const pPoint& uv1 = panda::types::Point(1,1), unsigned int col = 0xFFFFFFFF);
+	void addImage(unsigned int texture_id, const pRect& r, const pRect& uv = panda::types::Rect(0,0,1,1), unsigned int col = 0xFFFFFFFF);
 	void addPolyline(const DrawPath& path, unsigned int col, bool close = true, float thickness = 1.0f, bool anti_aliased = true);
 	void addConvexPolyFilled(const DrawPath& path, unsigned int col, bool anti_aliased = true);
 	void addMesh(const DrawMesh& mesh, unsigned int col);
@@ -95,8 +97,8 @@ public:
 
 private:  
 	void primReserve(int idx_count, int vtx_count);
-	void primRect(const pPoint& a, const pPoint& b, unsigned int col);      // Axis aligned rectangle (composed of two triangles)
-	void primRectUV(const pPoint& a, const pPoint& b, const pPoint& uv_a, const pPoint& uv_b, unsigned int col);
+	void primRect(const pRect& r, unsigned int col);      // Axis aligned rectangle (composed of two triangles)
+	void primRectUV(const pRect& r, const pRect& uv, unsigned int col);
 	inline void primVtx(const pPoint& pos, const pPoint& uv, unsigned int col)
 	{ primWriteIdx(m_vtxCurrentIdx); primWriteVtx(pos, uv, col); }
 	inline void primWriteVtx(const pPoint& pos, const pPoint& uv, unsigned int col)
