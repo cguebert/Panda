@@ -217,7 +217,8 @@ void GraphView::paintGL()
 		m_recomputeTags = false;
 	}
 
-	m_viewRenderer->setView(Rect(m_viewDelta, width() / m_zoomFactor, height() / m_zoomFactor));
+	Rect viewRect(m_viewDelta, width() / m_zoomFactor, height() / m_zoomFactor);
+	m_viewRenderer->setView(viewRect);
 	m_viewRenderer->newFrame();
 	DrawList drawList;
 
@@ -227,7 +228,10 @@ void GraphView::paintGL()
 
 	// Give a possibility to draw behind normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->drawBackground(drawList, m_drawColors);
+	{
+		if (ods->getObjectArea().intersects(viewRect))
+			ods->drawBackground(drawList, m_drawColors);
+	}
 
 	// Draw links
 	drawLinks();
@@ -235,15 +239,24 @@ void GraphView::paintGL()
 
 	// Draw the objects
 	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->draw(drawList, m_drawColors);
+	{
+		if (ods->getObjectArea().intersects(viewRect))
+			ods->draw(drawList, m_drawColors);
+	}
 
 	// Give a possibility to draw in front of normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
-		ods->drawForeground(drawList, m_drawColors);
+	{
+		if (ods->getObjectArea().intersects(viewRect))
+			ods->drawForeground(drawList, m_drawColors);
+	}
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for (auto& ods : m_selectedObjectsDrawStructs)
-		ods->draw(drawList, m_drawColors, true);
+	{
+		if (ods->getObjectArea().intersects(viewRect))
+			ods->draw(drawList, m_drawColors, true);
+	}
 
 	// Draw links tags
 	for (auto& tag : m_linkTags)
