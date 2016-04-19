@@ -51,7 +51,7 @@ void GenericObjectDrawStruct::update()
 		{
 			Rect dataArea = Rect::fromSize(xi, startY + index * dh, 
 										   dataRectSize, dataRectSize);
-			m_datas.emplace_back(dataArea, data);
+			m_datas.emplace_back(data, dataArea);
 			++index;
 		}
 	}
@@ -65,7 +65,7 @@ void GenericObjectDrawStruct::update()
 		{
 			Rect dataArea = Rect::fromSize(xo, startY + index * dh,
 										   dataRectSize, dataRectSize);
-			m_datas.emplace_back(dataArea, data);
+			m_datas.emplace_back(data, dataArea);
 			++index;
 		}
 	}
@@ -87,13 +87,13 @@ void GenericObjectDrawStruct::update()
 			if(m_genericObject->m_dataDefinitions[j].input)
 			{
 				Rect dataArea = Rect::fromSize(xi, y + inputIndex * dh, dataRectSize, dataRectSize);
-				m_datas.emplace_back(dataArea, createdDatas[j].get());
+				m_datas.emplace_back(createdDatas[j].get(), dataArea);
 				++inputIndex;
 			}
 			if(m_genericObject->m_dataDefinitions[j].output)
 			{
 				Rect dataArea = Rect::fromSize(xo, y + outputIndex * dh, dataRectSize, dataRectSize);
-				m_datas.emplace_back(dataArea, createdDatas[j].get());
+				m_datas.emplace_back(createdDatas[j].get(), dataArea);
 				++outputIndex;
 			}
 		}
@@ -103,30 +103,30 @@ void GenericObjectDrawStruct::update()
 
 	// And the generic data
 	Rect dataArea = Rect::fromSize(xi, y, dataRectSize, dataRectSize);
-	m_datas.emplace_back(dataArea, (panda::BaseData*)m_genericObject->m_genericData);
+	m_datas.emplace_back((panda::BaseData*)m_genericObject->m_genericData, dataArea);
 }
 
 void GenericObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
 {
 	const panda::BaseData* clickedData = m_parentView->getClickedData();
 
-	for(RectDataPair dataPair : m_datas)
+	for(DataRectPair dataPair : m_datas)
 	{
-		if (dynamic_cast<panda::BaseGenericData*>(dataPair.second))
+		auto data = dataPair.first;
+		if (dynamic_cast<panda::BaseGenericData*>(data))
 		{
 			unsigned int dataCol = 0;
-			auto data = dataPair.second;
 			if (clickedData && clickedData != data && m_parentView->canLinkWith(data))
 				dataCol = DrawList::convert(clickedData->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
 			else
 				dataCol = colors.lightColor;
 
-			const auto& area = dataPair.first;
+			const auto& area = dataPair.second;
 			list.addRectFilled(area, dataCol, 3.0f);
 			list.addRect(area, colors.penColor, 1.0f, 3.0f);
 		}
 		else
-			drawData(list, colors, dataPair.second, dataPair.first);
+			drawData(list, colors, dataPair.first, dataPair.second);
 	}
 }
 

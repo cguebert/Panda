@@ -37,7 +37,7 @@ void ObjectDrawStruct::update()
 		Rect dataArea = Rect::fromSize(m_objectArea.left() + dataRectMargin,
 									   m_objectArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
 									   dataRectSize, dataRectSize);
-		m_datas.emplace_back(dataArea, inputDatas[i]);
+		m_datas.emplace_back(inputDatas[i], dataArea);
 	}
 
 	for(int i=0; i<nbOutputs; ++i)
@@ -45,7 +45,7 @@ void ObjectDrawStruct::update()
 		Rect dataArea = Rect::fromSize(m_objectArea.right() - dataRectMargin - dataRectSize,
 									   m_objectArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
 									   dataRectSize, dataRectSize);
-		m_datas.emplace_back(dataArea, outputDatas[i]);
+		m_datas.emplace_back(outputDatas[i], dataArea);
 	}
 }
 
@@ -63,8 +63,8 @@ void ObjectDrawStruct::moveVisual(const Point& delta)
 	if(!delta.isNull())
 	{
 		m_objectArea.translate(delta);
-		for(std::vector<RectDataPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
-			iter->first.translate(delta);
+		for(std::vector<DataRectPair>::iterator iter=m_datas.begin(); iter!=m_datas.end(); ++iter)
+			iter->second.translate(delta);
 	}
 }
 
@@ -91,11 +91,11 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const Point& pt, Point* center) 
 {
 	for(const auto& iter : m_datas)
 	{
-		if(iter.first.contains(pt))
+		if(iter.second.contains(pt))
 		{
 			if(center)
-				*center = iter.first.center();
-			return iter.second;
+				*center = iter.second.center();
+			return iter.first;
 		}
 	}
 
@@ -104,12 +104,12 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const Point& pt, Point* center) 
 
 bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, Rect& rect) const
 {
-	auto it = std::find_if(m_datas.begin(), m_datas.end(), [data](const RectDataPair& p) {
-		return p.second == data;
+	auto it = std::find_if(m_datas.begin(), m_datas.end(), [data](const DataRectPair& p) {
+		return p.first == data;
 	});
 	if (it != m_datas.end())
 	{
-		rect = it->first;
+		rect = it->second;
 		return true;
 	}
 
@@ -141,7 +141,7 @@ void ObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 void ObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
 {
 	for(const auto& dataPair : m_datas)
-		drawData(list, colors, dataPair.second, dataPair.first);
+		drawData(list, colors, dataPair.first, dataPair.second);
 }
 
 void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const Rect& area)

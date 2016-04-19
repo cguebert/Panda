@@ -20,7 +20,7 @@ namespace panda
 class ObjectDrawStruct
 {
 public:
-	using RectDataPair = std::pair<panda::types::Rect, panda::BaseData*>;
+	using DataRectPair = std::pair<panda::BaseData*, panda::types::Rect>;
 
 	ObjectDrawStruct(GraphView* view, panda::PandaObject* obj);
 
@@ -44,7 +44,7 @@ public:
 
 	virtual panda::types::Point getObjectSize();
 	
-	const std::vector<RectDataPair>& getDataRects() const;
+	const std::vector<DataRectPair>& getDataRects() const;
 	panda::BaseData* getDataAtPos(const panda::types::Point &pt, panda::types::Point* center = nullptr) const;
 	bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) const;
 
@@ -78,7 +78,7 @@ protected:
 	panda::types::Point m_position;
 	panda::types::Rect m_objectArea;
 
-	std::vector<RectDataPair> m_datas;
+	std::vector<DataRectPair> m_datas;
 
 	DrawList m_normalDrawList;
 	DrawPath m_outline;
@@ -102,7 +102,7 @@ inline panda::PandaObject* const ObjectDrawStruct::getObject() const
 inline int ObjectDrawStruct::dataStartY()
 { return dataRectMargin; }
 
-inline const std::vector<ObjectDrawStruct::RectDataPair>& ObjectDrawStruct::getDataRects() const
+inline const std::vector<ObjectDrawStruct::DataRectPair>& ObjectDrawStruct::getDataRects() const
 { return m_datas; }
 
 //****************************************************************************//

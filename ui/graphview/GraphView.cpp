@@ -1177,7 +1177,7 @@ void GraphView::drawLinks()
 	{
 		for (const auto& toDataRect : ods->getDataRects())
 		{
-			panda::BaseData* data = toDataRect.second;
+			panda::BaseData* data = toDataRect.first;
 			panda::BaseData* parent = data->getParent();
 			if (parent && !data->isOutput())
 			{
@@ -1186,7 +1186,7 @@ void GraphView::drawLinks()
 				if (ods && ods->getDataRect(parent, fromDataRect) 
 					&& !hasLinkTag(parent, data)) // We don't draw the link if there is a LinkTag
 				{
-					auto d1 = fromDataRect.center(), d2 = toDataRect.first.center();
+					auto d1 = fromDataRect.center(), d2 = toDataRect.second.center();
 					Point w = { (d2.x - d1.x) / 2, 0 };
 					m_linksDrawList.addBezierCurve(d1, d1 + w, d2 - w, d2, col, 1);
 				}
