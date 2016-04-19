@@ -114,7 +114,7 @@ bool AnnotationDrawStruct::contains(const Point& point)
 
 void AnnotationDrawStruct::update()
 {
-	//	ObjectDrawStruct::update();	// No need to call it
+//	ObjectDrawStruct::update();	// No need to call it
 
 	if (m_movingAction == MOVING_NONE)
 		m_endPos = m_position + m_annotation->m_deltaToEnd.getValue();
@@ -125,8 +125,6 @@ void AnnotationDrawStruct::update()
 
 	m_annotation->cleanDirty();
 	m_objectArea = m_textArea;
-	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT)
-		 m_objectArea |= Rect(m_position, m_endPos).canonicalized();
 
 	createShape();
 }
