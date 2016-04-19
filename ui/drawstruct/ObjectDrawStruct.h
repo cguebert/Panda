@@ -67,6 +67,8 @@ protected:
 	virtual void drawDatas(DrawList& list, DrawColors& colors);
 	virtual void drawText(DrawList& list, DrawColors& colors);
 
+	virtual void createShape(); // Modify m_outline & m_fillShape
+
 	virtual panda::types::Rect getTextArea(); // The area in which we can render text
 	virtual std::string getLabel() const; // The text to draw
 
@@ -79,15 +81,17 @@ protected:
 
 	std::vector<DataRectPair> m_datas;
 
-	DrawList m_normalDrawList;
+	std::string m_currentLabel;
+	DrawList m_textDrawList;
 	DrawPath m_outline;
+	DrawMesh m_fillShape;
 };
 
 inline bool ObjectDrawStruct::acceptsMagneticSnap() const
 { return true; }
 
 inline bool ObjectDrawStruct::contains(const panda::types::Point& point)
-{ return m_objectArea.contains(point); }
+{ return m_objectArea.contains(point) && m_outline.contains(point); }
 
 inline panda::types::Rect ObjectDrawStruct::getObjectArea() const
 { return m_objectArea; }

@@ -14,12 +14,6 @@ DockObjectDrawStruct::DockObjectDrawStruct(GraphView* view, panda::DockObject* o
 	update();
 }
 
-void DockObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
-{
-	list.addMesh(m_shapeMesh, colors.fillColor);
-	list.addPolyline(m_shapePath, colors.penColor, false, colors.penWidth);
-}
-
 Point DockObjectDrawStruct::getObjectSize()
 {
 	Point temp = ObjectDrawStruct::getObjectSize();
@@ -46,11 +40,6 @@ void DockObjectDrawStruct::move(const Point& delta)
 	ObjectDrawStruct::move(delta);
 	for(auto dockable : m_dockObject->getDockedObjects())
 		m_parentView->getObjectDrawStruct(dockable)->move(delta);
-}
-
-bool DockObjectDrawStruct::contains(const Point& point)
-{
-	return m_shapePath.contains(point);
 }
 
 void DockObjectDrawStruct::placeDockableObjects()
@@ -91,15 +80,13 @@ void DockObjectDrawStruct::placeDockableObjects()
 	}
 }
 
-void DockObjectDrawStruct::update()
+void DockObjectDrawStruct::createShape()
 {
-	ObjectDrawStruct::update();
-
-	m_shapePath.clear();
-	m_shapePath.moveTo(m_objectArea.bottomLeft());
-	m_shapePath.lineTo(m_objectArea.bottomRight());
-	m_shapePath.lineTo(m_objectArea.topRight());
-	m_shapePath.lineTo(m_objectArea.topLeft());
+	m_outline.clear();
+	m_outline.moveTo(m_objectArea.bottomLeft());
+	m_outline.lineTo(m_objectArea.bottomRight());
+	m_outline.lineTo(m_objectArea.topRight());
+	m_outline.lineTo(m_objectArea.topLeft());
 
 	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
 	const int dhm = dockHoleMargin;
@@ -121,38 +108,38 @@ void DockObjectDrawStruct::update()
 		int h = objectSize.y;
 
 		Rect objectArea = objectStruct->getObjectArea();
-		m_shapePath.lineTo(Point(m_objectArea.left(), ty - dockHoleMargin));
+		m_outline.lineTo(Point(m_objectArea.left(), ty - dockHoleMargin));
 		if (hasOutputs)
 		{
 			const int top = objectArea.top() - dhm, bot = objectArea.bottom() + dhm;
 			const auto right = objectArea.right();
 
 			// Arc at the top
-			m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw * 3, top, aw * 2, ah * 2), -90, 90);
-			m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw, top, aw * 2, ah * 2), 180, 90);
+			m_outline.arcToDegrees(Rect::fromSize(right - rw - aw * 3, top, aw * 2, ah * 2), -90, 90);
+			m_outline.arcToDegrees(Rect::fromSize(right - rw - aw, top, aw * 2, ah * 2), 180, 90);
 
-			m_shapePath.arcToDegrees(Rect::fromSize(right - cr + dhm, top, cr, cr), -90, 90); // Top right corner
-			m_shapePath.arcToDegrees(Rect::fromSize(right - cr + dhm, bot - cr, cr, cr), 0, 90); // Bottom right corner
+			m_outline.arcToDegrees(Rect::fromSize(right - cr + dhm, top, cr, cr), -90, 90); // Top right corner
+			m_outline.arcToDegrees(Rect::fromSize(right - cr + dhm, bot - cr, cr, cr), 0, 90); // Bottom right corner
 
 			// Arc at the bottom
-			m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw, bot - ah * 2, aw * 2, ah * 2), 90, 90);
-			m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw * 3, bot - ah * 2, aw * 2, ah * 2), 0, 90);
+			m_outline.arcToDegrees(Rect::fromSize(right - rw - aw, bot - ah * 2, aw * 2, ah * 2), 90, 90);
+			m_outline.arcToDegrees(Rect::fromSize(right - rw - aw * 3, bot - ah * 2, aw * 2, ah * 2), 0, 90);
 		}
 		else
-			m_shapePath.arcToDegrees(Rect::fromSize(tx - w - dockHoleMargin, ty - dockHoleMargin, w * 2 + dockHoleMargin, h + dockHoleMargin * 2), -90, 180);
-		m_shapePath.lineTo(Point(m_objectArea.left(), ty + h + dockHoleMargin));
+			m_outline.arcToDegrees(Rect::fromSize(tx - w - dockHoleMargin, ty - dockHoleMargin, w * 2 + dockHoleMargin, h + dockHoleMargin * 2), -90, 180);
+		m_outline.lineTo(Point(m_objectArea.left(), ty + h + dockHoleMargin));
 
 		ty += h + dockRendererMargin;
 	}
 
 	ty = m_objectArea.bottom()-dockEmptyRendererHeight-dockRendererMargin;
-	m_shapePath.lineTo(Point(m_objectArea.left(), ty));
+	m_outline.lineTo(Point(m_objectArea.left(), ty));
 	tx = m_objectArea.left()+dockHoleWidth-DockableObjectDrawStruct::dockableCircleWidth;
-	m_shapePath.arcToDegrees(Rect::fromSize(tx, ty, DockableObjectDrawStruct::dockableCircleWidth, dockEmptyRendererHeight), -90, 180);
-	m_shapePath.lineTo(Point(m_objectArea.left(), ty+dockEmptyRendererHeight));
-	m_shapePath.close();
+	m_outline.arcToDegrees(Rect::fromSize(tx, ty, DockableObjectDrawStruct::dockableCircleWidth, dockEmptyRendererHeight), -90, 180);
+	m_outline.lineTo(Point(m_objectArea.left(), ty+dockEmptyRendererHeight));
+	m_outline.close();
 
-	m_shapeMesh = m_shapePath.triangulate();
+	m_fillShape = m_outline.triangulate();
 }
 
 int DockObjectDrawStruct::getDockableIndex(const Rect& rect)
@@ -177,15 +164,9 @@ DockableObjectDrawStruct::DockableObjectDrawStruct(GraphView* view, panda::Docka
 	update();
 }
 
-void DockableObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
-{
-	list.addMesh(m_shapeMesh, colors.fillColor);
-	list.addPolyline(m_shapePath, colors.penColor, false, colors.penWidth);
-}
-
 bool DockableObjectDrawStruct::contains(const Point& point)
 {
-	return m_shapePath.contains(point);
+	return m_outline.contains(point);
 }
 
 Point DockableObjectDrawStruct::getObjectSize()
@@ -208,7 +189,10 @@ void DockableObjectDrawStruct::update()
 {
 	m_hasOutputs = !getObject()->getOutputDatas().empty();
 	ObjectDrawStruct::update();
+}
 
+void DockableObjectDrawStruct::createShape()
+{
 	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
 	const int rw = dockableWithOutputRect;
 	const int aw = dockableWithOutputArc;
@@ -217,36 +201,36 @@ void DockableObjectDrawStruct::update()
 
 	if (m_hasOutputs)
 	{
-		m_shapePath.clear();
-		m_shapePath.moveTo(Point(left, m_objectArea.center().y));
-		m_shapePath.arcToDegrees(Rect::fromSize(left, top, cr, cr), 180, 90); // Top left corner
+		m_outline.clear();
+		m_outline.moveTo(Point(left, m_objectArea.center().y));
+		m_outline.arcToDegrees(Rect::fromSize(left, top, cr, cr), 180, 90); // Top left corner
 
 		// Arc at the top
-		m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw * 3, top, aw * 2, aw * 2), -90, 90);
-		m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw, top, aw * 2, aw * 2), 180, 90);
+		m_outline.arcToDegrees(Rect::fromSize(right - rw - aw * 3, top, aw * 2, aw * 2), -90, 90);
+		m_outline.arcToDegrees(Rect::fromSize(right - rw - aw, top, aw * 2, aw * 2), 180, 90);
 
-		m_shapePath.arcToDegrees(Rect::fromSize(right - cr, top, cr, cr), -90, 90); // Top right corner
-		m_shapePath.arcToDegrees(Rect::fromSize(right - cr, bottom - cr, cr, cr), 0, 90); // Bottom right corner
+		m_outline.arcToDegrees(Rect::fromSize(right - cr, top, cr, cr), -90, 90); // Top right corner
+		m_outline.arcToDegrees(Rect::fromSize(right - cr, bottom - cr, cr, cr), 0, 90); // Bottom right corner
 
 		// Arc at the bottom
-		m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw, bottom - aw * 2, aw * 2, aw * 2), 90, 90);
-		m_shapePath.arcToDegrees(Rect::fromSize(right - rw - aw * 3, bottom - aw * 2, aw * 2, aw * 2), 0, 90);
+		m_outline.arcToDegrees(Rect::fromSize(right - rw - aw, bottom - aw * 2, aw * 2, aw * 2), 90, 90);
+		m_outline.arcToDegrees(Rect::fromSize(right - rw - aw * 3, bottom - aw * 2, aw * 2, aw * 2), 0, 90);
 
-		m_shapePath.arcToDegrees(Rect::fromSize(left, bottom - cr, cr, cr), 90, 90); // Bottom left corner
-		m_shapePath.close();
+		m_outline.arcToDegrees(Rect::fromSize(left, bottom - cr, cr, cr), 90, 90); // Bottom left corner
+		m_outline.close();
 	}
 	else
 	{
-		m_shapePath.clear();
-		m_shapePath.moveTo(Point(left, m_objectArea.center().y));
-		m_shapePath.arcToDegrees(Rect::fromSize(left, top, cr, cr), 180, 90); // Top left corner
-		m_shapePath.arcToDegrees(Rect::fromSize(right - dockableCircleWidth * 2, top, 
+		m_outline.clear();
+		m_outline.moveTo(Point(left, m_objectArea.center().y));
+		m_outline.arcToDegrees(Rect::fromSize(left, top, cr, cr), 180, 90); // Top left corner
+		m_outline.arcToDegrees(Rect::fromSize(right - dockableCircleWidth * 2, top, 
 			dockableCircleWidth * 2, m_objectArea.height()), -90, 180); // Right side arc
-		m_shapePath.arcToDegrees(Rect::fromSize(left, bottom - cr, cr, cr), 90, 90); // Bottom left corner
-		m_shapePath.close();
+		m_outline.arcToDegrees(Rect::fromSize(left, bottom - cr, cr, cr), 90, 90); // Bottom left corner
+		m_outline.close();
 	}
 
-	m_shapeMesh = m_shapePath.triangulate();
+	m_fillShape = m_outline.triangulate();
 }
 
 int DockableObjectDrawClass = RegisterDrawObject<panda::DockableObject, DockableObjectDrawStruct>();

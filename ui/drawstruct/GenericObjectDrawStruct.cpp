@@ -104,6 +104,8 @@ void GenericObjectDrawStruct::update()
 	// And the generic data
 	Rect dataArea = Rect::fromSize(xi, y, dataRectSize, dataRectSize);
 	m_datas.emplace_back((panda::BaseData*)m_genericObject->m_genericData, dataArea);
+
+	createShape();
 }
 
 void GenericObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)

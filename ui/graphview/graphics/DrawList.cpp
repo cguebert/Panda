@@ -10,6 +10,14 @@
 using panda::types::Point;
 using panda::types::Rect;
 
+namespace
+{
+	inline Rect defaultClipRect()
+	{
+		return Rect(-FLT_MAX, -FLT_MAX, FLT_MAX, FLT_MAX);
+	}
+}
+
 unsigned int DrawList::convert(const QColor& col)
 {
 	unsigned int out;
@@ -25,7 +33,7 @@ DrawList::DrawList()
 	if (ViewRenderer::initialized())
 	{
 		m_textureIdStack.push_back(ViewRenderer::defaultTextureId());
-		m_clipRectStack.push_back(ViewRenderer::defaultClipRect());
+		m_clipRectStack.push_back(defaultClipRect());
 	}
 	addDrawCmd();
 }
@@ -46,7 +54,7 @@ void DrawList::addDrawCmd()
 {
 	DrawCmd draw_cmd;
 	draw_cmd.textureId = m_textureIdStack.empty() ? 0 : m_textureIdStack.back();
-	draw_cmd.clipRect = m_clipRectStack.empty() ? ViewRenderer::defaultClipRect() : m_clipRectStack.back();
+	draw_cmd.clipRect = m_clipRectStack.empty() ? defaultClipRect() : m_clipRectStack.back();
 
 	m_cmdBuffer.push_back(draw_cmd);
 }
@@ -82,7 +90,7 @@ void DrawList::merge(DrawList& list, bool ignoreClip)
 void DrawList::updateClipRect()
 {
 	// If current command is used with different settings we need to add a new command
-	const Rect curr_clip_rect = m_clipRectStack.empty() ? ViewRenderer::defaultClipRect() : m_clipRectStack.back();
+	const Rect curr_clip_rect = m_clipRectStack.empty() ? defaultClipRect() : m_clipRectStack.back();
 	DrawCmd* curr_cmd = m_cmdBuffer.empty() ? nullptr : &m_cmdBuffer.back();
 	if (!curr_cmd || (curr_cmd->elemCount != 0 && curr_cmd->clipRect != curr_clip_rect))
 	{

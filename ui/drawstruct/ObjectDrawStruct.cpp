@@ -47,6 +47,16 @@ void ObjectDrawStruct::update()
 									   dataRectSize, dataRectSize);
 		m_datas.emplace_back(outputDatas[i], dataArea);
 	}
+
+	createShape();
+}
+
+void ObjectDrawStruct::createShape()
+{
+	m_outline.clear();
+	m_outline.rect(m_objectArea, objectCorner);
+	m_outline.close();
+	m_fillShape = m_outline.triangulate();
 }
 
 void ObjectDrawStruct::move(const Point& delta)
@@ -57,6 +67,9 @@ void ObjectDrawStruct::move(const Point& delta)
 		m_objectArea.translate(delta);
 		for (auto& it : m_datas)
 			it.second.translate(delta);
+		m_outline.translate(delta);
+		m_fillShape.translate(delta);
+		m_textDrawList.translate(delta);
 	}
 }
 
@@ -126,8 +139,8 @@ void ObjectDrawStruct::draw(DrawList& list, DrawColors& colors, bool selected)
 void ObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
 {
 	// Draw the shape around the object
-	list.addRectFilled(m_objectArea, colors.fillColor, objectCorner);
-	list.addRect(m_objectArea, colors.penColor, colors.penWidth, objectCorner);
+	list.addMesh(m_fillShape, colors.fillColor);
+	list.addPolyline(m_outline, colors.penColor, false, colors.penWidth);
 }
 
 void ObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
@@ -151,9 +164,15 @@ void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda:
 
 void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)
 {
-	Rect area = getTextArea();
-	unsigned int penCol = DrawList::convert(m_parentView->palette().text().color());
-	list.addText(area, getLabel(), penCol, DrawList::Align_Center);
+	auto label = getLabel();
+	if (label != m_currentLabel)
+	{
+		m_currentLabel = label;
+		m_textDrawList = DrawList();
+		m_textDrawList.addText(getTextArea(), label, colors.penColor, DrawList::Align_Center);
+	}
+	
+	list.merge(m_textDrawList);
 }
 
 void ObjectDrawStruct::save(panda::XmlElement& elem)

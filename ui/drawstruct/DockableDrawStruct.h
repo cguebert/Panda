@@ -12,12 +12,10 @@ public:
 
 	void placeDockableObjects();
 
-	void drawShape(DrawList& list, DrawColors& colors) override;
 	panda::types::Point getObjectSize() override;
 	panda::types::Rect getTextArea() override;
 	void move(const panda::types::Point& delta) override;
-	void update() override;
-	bool contains(const panda::types::Point& point) override;
+	void createShape() override;
 
 	int getDockableIndex(const panda::types::Rect& rect);
 
@@ -27,8 +25,6 @@ public:
 	static const int dockRendererMargin = 10;
 protected:
 	panda::DockObject* m_dockObject;
-	DrawPath m_shapePath;
-	DrawMesh m_shapeMesh;
 	std::vector<int> m_dockablesY;	// Used only in "getDockableIndex"
 };
 
@@ -37,8 +33,8 @@ class DockableObjectDrawStruct : public ObjectDrawStruct
 public:
 	DockableObjectDrawStruct(GraphView* view, panda::DockableObject* m_object);
 
-	void drawShape(DrawList& list, DrawColors& colors) override;
 	void update() override;
+	void createShape() override;
 	bool contains(const panda::types::Point& point) override;
 	panda::types::Point getObjectSize() override;
 	panda::types::Rect getTextArea() override;
@@ -50,8 +46,6 @@ public:
 	static const int dockableWithOutputArc = 15;
 
 protected:
-	DrawPath m_shapePath;
-	DrawMesh m_shapeMesh;
 	bool m_hasOutputs = false;
 };
 

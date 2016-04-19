@@ -29,7 +29,6 @@ public:
 
 	static bool initialized();
 	static unsigned int defaultTextureId();
-	static panda::types::Rect defaultClipRect();
 	static Font* currentFont();
 
 private:

@@ -719,7 +719,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		for(const auto ods : m_orderedObjectDrawStructs)
 		{
 			Rect objectArea = ods->getObjectArea();
-			if(selectionRect.contains(objectArea) || selectionRect.intersects(objectArea))
+			if(selectionRect.intersects(objectArea))
 				m_objectsSelection->add(ods->getObject());
 		}
 

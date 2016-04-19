@@ -7,9 +7,6 @@
 class Font;
 class QColor;
 
-using pPoint = panda::types::Point;
-using pRect = panda::types::Rect;
-
 class DrawList
 {
 public:
@@ -95,6 +92,8 @@ public:
 	inline void setVtxWritePtr(DrawVert* ptr) { m_vtxWritePtr = ptr; }
 	inline void setIdxWritePtr(DrawIdx* ptr) { m_idxWritePtr = ptr; }
 
+	inline void translate(const pPoint& delta) { for (auto& vtx : m_vtxBuffer) vtx.pos += delta; }
+
 private:  
 	void primReserve(int idx_count, int vtx_count);
 	void primRect(const pRect& r, unsigned int col);      // Axis aligned rectangle (composed of two triangles)
@@ -119,7 +118,7 @@ private:
 	DrawVert* m_vtxWritePtr = nullptr; // Point within m_vtxBuffer after each add command (to avoid using the vector operators too much)
 	DrawIdx* m_idxWritePtr = nullptr; // Index within m_idxBuffer after each add command (to avoid using the vector operators too much)
 	std::vector<unsigned int> m_textureIdStack;
-	std::vector<panda::types::Rect> m_clipRectStack;
+	std::vector<pRect> m_clipRectStack;
 
 	DrawPath m_path;
 };

@@ -43,8 +43,9 @@ void AnnotationDrawStruct::drawBackground(DrawList& list, DrawColors& colors)
 	}
 
 	// Draw the shape of the annotation
-	list.addConvexPolyFilled(m_shapePath, DrawList::convert(m_annotation->m_color.getValue().toHex()));
-	list.addPolyline(m_shapePath, colors.penColor, false);
+	auto fillColor = DrawList::convert(m_annotation->m_color.getValue().toHex());
+	list.addMesh(m_fillShape, fillColor);
+	list.addPolyline(m_outline, colors.penColor, false);
 }
 
 void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
@@ -72,8 +73,6 @@ void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
 void AnnotationDrawStruct::move(const Point& delta)
 {
 	ObjectDrawStruct::move(delta);
-	m_shapePath.translate(delta);
-	m_shapeMesh.translate(delta);
 
 	m_textArea.translate(delta);
 	m_endPos += delta;
@@ -115,16 +114,26 @@ bool AnnotationDrawStruct::contains(const Point& point)
 
 void AnnotationDrawStruct::update()
 {
-//	ObjectDrawStruct::update();	// No need to call it
+	//	ObjectDrawStruct::update();	// No need to call it
 
-	if(m_movingAction == MOVING_NONE)
+	if (m_movingAction == MOVING_NONE)
 		m_endPos = m_position + m_annotation->m_deltaToEnd.getValue();
 
 	m_textArea = Rect::fromSize(m_position, m_textSize);
 	m_textArea.translate(0, -m_textSize.y);
 	m_textArea.adjust(3, -13, 13, -3);
 
-	m_shapePath.clear();
+	m_annotation->cleanDirty();
+	m_objectArea = m_textArea;
+	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT)
+		 m_objectArea |= Rect(m_position, m_endPos).canonicalized();
+
+	createShape();
+}
+
+void AnnotationDrawStruct::createShape()
+{
+	m_outline.clear();
 	switch(m_annotation->m_type.getValue())
 	{
 		case Annotation::ANNOTATION_TEXT:
@@ -144,35 +153,30 @@ void AnnotationDrawStruct::update()
 			dir *= w;
 			dir2 *= w;
 
-			m_shapePath.moveTo(m_endPos);
-			m_shapePath.lineTo(m_endPos + 5*dir2 - 15*dir);
-			m_shapePath.lineTo(m_endPos + dir2 - 10*dir);
-			m_shapePath.lineTo(start + dir2);
-			m_shapePath.lineTo(start - dir2);
-			m_shapePath.lineTo(m_endPos - dir2 - 10*dir);
-			m_shapePath.lineTo(m_endPos - 5*dir2 - 15*dir);
-			m_shapePath.lineTo(m_endPos);
+			m_outline.moveTo(m_endPos);
+			m_outline.lineTo(m_endPos + 5*dir2 - 15*dir);
+			m_outline.lineTo(m_endPos + dir2 - 10*dir);
+			m_outline.lineTo(start + dir2);
+			m_outline.lineTo(start - dir2);
+			m_outline.lineTo(m_endPos - dir2 - 10*dir);
+			m_outline.lineTo(m_endPos - 5*dir2 - 15*dir);
+			m_outline.lineTo(m_endPos);
 			break;
 		}
 		case Annotation::ANNOTATION_RECTANGLE:
 		{
-			m_shapePath.rect(Rect(m_position, m_endPos));
-			m_shapePath.close();
+			m_outline.rect(Rect(m_position, m_endPos));
+			m_outline.close();
 			break;
 		}
 		case Annotation::ANNOTATION_ELLIPSE:
 		{
-			m_shapePath.arcToDegrees(Rect(m_position, m_endPos), 0, 360);
+			m_outline.arcToDegrees(Rect(m_position, m_endPos), 0, 360);
 			break;
 		}
 	}
 
-	m_shapeMesh = m_shapePath.triangulate();
-
-	m_annotation->cleanDirty();
-	m_objectArea = m_textArea;
-	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT)
-		 m_objectArea |= Rect(m_position, m_endPos).canonicalized();
+	m_fillShape = m_outline.triangulate();
 }
 
 bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)

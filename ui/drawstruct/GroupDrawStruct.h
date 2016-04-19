@@ -15,15 +15,12 @@ class GroupDrawStruct : public ObjectDrawStruct
 public:
 	GroupDrawStruct(GraphView* view, panda::Group* object);
 
-	void drawShape(DrawList& list, DrawColors& colors) override;
 	std::string getLabel() const override;
 
-	void update() override;
-	bool contains(const panda::types::Point& point) override;
+	void createShape() override;
 	int dataStartY() override;
 
 protected:
-	DrawPath m_shapePath;
 	panda::Group* m_group;
 };
 

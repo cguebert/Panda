@@ -246,13 +246,6 @@ unsigned int ViewRenderer::defaultTextureId()
 	return 0;
 }
 
-Rect ViewRenderer::defaultClipRect()
-{
-	if (g_viewRenderer && g_viewRenderer->m_fontTexture)
-		return g_viewRenderer->m_viewBounds;
-	return Rect(-8192.f, -8192.f, 8192.f, 8192.f);
-}
-
 Font* ViewRenderer::currentFont()
 {
 	if (g_viewRenderer && g_viewRenderer->m_fontTexture && !g_viewRenderer->m_atlas->fonts().empty())

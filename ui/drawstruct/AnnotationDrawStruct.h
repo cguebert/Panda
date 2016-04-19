@@ -19,6 +19,7 @@ public:
 	AnnotationDrawStruct(GraphView* view, panda::PandaObject* m_object);
 
 	void update() override;
+	void createShape() override;
 	void move(const panda::types::Point& delta) override;
 	bool contains(const panda::types::Point& point) override;
 
@@ -42,8 +43,6 @@ protected:
 	panda::types::Point m_endPos, m_textSize;
 	panda::types::Rect m_textArea;
 	int m_textCounter = -1, m_colorCounter = -1;
-	DrawPath m_shapePath;
-	DrawMesh m_shapeMesh;
 	enum MovingAction { MOVING_NONE=0, MOVING_TEXT, MOVING_POINT };
 	MovingAction m_movingAction = MOVING_NONE;
 	panda::types::Point m_previousMousePos, m_startMousePos;

@@ -11,12 +11,6 @@ GroupDrawStruct::GroupDrawStruct(GraphView* view, panda::Group* object)
 	update();
 }
 
-void GroupDrawStruct::drawShape(DrawList& list, DrawColors& colors)
-{
-	list.addConvexPolyFilled(m_shapePath, colors.fillColor, false);
-	list.addPolyline(m_shapePath, colors.penColor, false, colors.penWidth, true);
-}
-
 std::string GroupDrawStruct::getLabel() const
 {
 	if (m_group)
@@ -29,26 +23,22 @@ std::string GroupDrawStruct::getLabel() const
 	return ObjectDrawStruct::getLabel();
 }
 
-bool GroupDrawStruct::contains(const panda::types::Point& point)
-{
-	return m_shapePath.contains(point);
-}
-
-void GroupDrawStruct::update()
+void GroupDrawStruct::createShape()
 {
 	const int w = 9, h = 9;
-	ObjectDrawStruct::update();
 
-	m_shapePath.clear();
-	m_shapePath.moveTo(pPoint(m_objectArea.left()+w, m_objectArea.top()));
-	m_shapePath.lineTo(pPoint(m_objectArea.right()-w, m_objectArea.top()));
-	m_shapePath.lineTo(pPoint(m_objectArea.right(), m_objectArea.top()+h));
-	m_shapePath.lineTo(pPoint(m_objectArea.right(), m_objectArea.bottom()-h));
-	m_shapePath.lineTo(pPoint(m_objectArea.right()-w, m_objectArea.bottom()));
-	m_shapePath.lineTo(pPoint(m_objectArea.left()+w, m_objectArea.bottom()));
-	m_shapePath.lineTo(pPoint(m_objectArea.left(), m_objectArea.bottom()-h));
-	m_shapePath.lineTo(pPoint(m_objectArea.left(), m_objectArea.top()+h));
-	m_shapePath.lineTo(pPoint(m_objectArea.left()+w, m_objectArea.top()));
+	m_outline.clear();
+	m_outline.moveTo(pPoint(m_objectArea.left()+w, m_objectArea.top()));
+	m_outline.lineTo(pPoint(m_objectArea.right()-w, m_objectArea.top()));
+	m_outline.lineTo(pPoint(m_objectArea.right(), m_objectArea.top()+h));
+	m_outline.lineTo(pPoint(m_objectArea.right(), m_objectArea.bottom()-h));
+	m_outline.lineTo(pPoint(m_objectArea.right()-w, m_objectArea.bottom()));
+	m_outline.lineTo(pPoint(m_objectArea.left()+w, m_objectArea.bottom()));
+	m_outline.lineTo(pPoint(m_objectArea.left(), m_objectArea.bottom()-h));
+	m_outline.lineTo(pPoint(m_objectArea.left(), m_objectArea.top()+h));
+	m_outline.lineTo(pPoint(m_objectArea.left()+w, m_objectArea.top()));
+
+	m_fillShape = m_outline.triangulate();
 }
 
 int GroupDrawStruct::dataStartY()
