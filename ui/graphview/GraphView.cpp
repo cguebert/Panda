@@ -922,7 +922,7 @@ void GraphView::centerView()
 			totalView = totalView.united(objectArea);
 		}
 
-		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center());
+		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center() + m_viewDelta);
 		update();
 		updateViewRect();
 	}
@@ -943,7 +943,7 @@ void GraphView::showAll()
 		float factorH = contentsRect().height() / (totalView.height() + 40);
 		m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center());
+		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center() + m_viewDelta);
 		update();
 		updateViewRect();
 	}
@@ -964,7 +964,7 @@ void GraphView::showAllSelected()
 		float factorH = contentsRect().height() / (totalView.height() + 40);
 		m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center());
+		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center() + m_viewDelta);
 		update();
 		updateViewRect();
 	}
@@ -981,7 +981,7 @@ void GraphView::moveSelectedToCenter()
 			totalView = totalView.united(objectArea);
 		}
 
-		Point delta = convert(contentsRect().center()) / m_zoomFactor - totalView.center();
+		Point delta = convert(contentsRect().center()) / m_zoomFactor - totalView.center() + m_viewDelta;
 
 		for(const auto ods : m_selectedObjectsDrawStructs)
 		{
@@ -1522,14 +1522,13 @@ QSize GraphView::viewSize()
 
 QPoint GraphView::viewPosition()
 {
-	return QPoint(m_viewRect.left(), m_viewRect.top());
+	auto delta = m_viewDelta * m_zoomFactor;
+	return QPoint(m_viewRect.left() - delta.x, m_viewRect.top() - delta.y);
 }
 
 void GraphView::scrollView(QPoint position)
 {
-	Point pos = convert(position);
-	Point delta = (pos - m_viewRect.topLeft()) / m_zoomFactor;
-	m_viewRect.moveTo(pos);
+	Point delta = convert(position) / m_zoomFactor - m_viewRect.topLeft() + m_viewDelta;
 	moveView(delta);
 	update();
 }
@@ -1544,7 +1543,7 @@ void GraphView::updateViewRect()
 	{
 		Rect area = ods->getObjectArea();
 		Rect zoomedArea = Rect::fromSize(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
-		m_viewRect |= zoomedArea; // Union
+		m_viewRect |= ods->getObjectArea(); // Union
 	}
 
 	if(!m_orderedObjectDrawStructs.empty())
@@ -1632,5 +1631,5 @@ void GraphView::objectsReordered()
 
 panda::types::Point GraphView::getNewObjectPosition()
 {
-	return convert(contentsRect().center());
+	return convert(contentsRect().center()) + m_viewDelta;
 }
