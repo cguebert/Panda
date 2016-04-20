@@ -460,9 +460,6 @@ void Font::renderText(float scale, pPoint pos, unsigned int col, const pRect& cl
 	const char* text_begin = text.data();
 	const char* text_end = text_begin + text.size();
 
-	// Align to be pixel perfect
-	pos.x = (float)(int)pos.x + m_displayOffset.x;
-	pos.y = (float)(int)pos.y + m_displayOffset.y;
 	float x = pos.x;
 	float y = pos.y;
 	if (y > clip_rect.bottom())
