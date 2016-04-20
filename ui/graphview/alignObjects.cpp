@@ -16,7 +16,7 @@ void alignHorizontallyCenter(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		sum += pos.x + area.width() / 2;
 	}
 
@@ -28,7 +28,7 @@ void alignHorizontallyCenter(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(center - pos.x - area.width() / 2, 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -63,7 +63,7 @@ void alignHorizontallyRight(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		right = std::max(pos.x + area.width(), right);
 	}
 
@@ -73,7 +73,7 @@ void alignHorizontallyRight(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(right - pos.x - area.width(), 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -87,7 +87,7 @@ void alignVerticallyCenter(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		sum += pos.y + area.height() / 2;
 	}
 
@@ -99,7 +99,7 @@ void alignVerticallyCenter(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(0, center - pos.y - area.height() / 2);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -134,7 +134,7 @@ void alignVerticallyBottom(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		bottom = std::max(pos.y + area.height(), bottom);
 	}
 
@@ -144,7 +144,7 @@ void alignVerticallyBottom(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(0, bottom - pos.y - area.height());
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -163,7 +163,7 @@ void distributeHorizontallyCenter(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		positions.emplace_back(pos.x + area.width() / 2, ods);
 	}
 
@@ -182,7 +182,7 @@ void distributeHorizontallyCenter(GraphView* view)
 		left += step;
 		auto ods = posPair.second;
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(left - pos.x - area.width() / 2, 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -201,19 +201,19 @@ void distributeHorizontallyGaps(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		positions.emplace_back(pos.x, ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	float left = positions.front().first + positions.front().second->getObjectArea().width();
+	float left = positions.front().first + positions.front().second->getVisualArea().width();
 	float right = positions.back().first;
 	
 	// Compute total gap
 	float width = 0;
 	for (int i = 1; i < nb - 1; ++i)
-		width += positions[i].second->getObjectArea().width();
+		width += positions[i].second->getVisualArea().width();
 
 	float step = (right - left - width) / (nb - 1);
 
@@ -226,7 +226,7 @@ void distributeHorizontallyGaps(GraphView* view)
 		left += step;
 		auto ods = posPair.second;
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(left - pos.x, 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -247,7 +247,7 @@ void distributeHorizontallyLeft(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		positions.emplace_back(pos.x, ods);
 	}
 
@@ -266,7 +266,7 @@ void distributeHorizontallyLeft(GraphView* view)
 		left += step;
 		auto ods = posPair.second;
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(left - pos.x, 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -285,7 +285,7 @@ void distributeHorizontallyRight(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		positions.emplace_back(pos.x + area.width(), ods);
 	}
 
@@ -304,7 +304,7 @@ void distributeHorizontallyRight(GraphView* view)
 		left += step;
 		auto ods = posPair.second;
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(left - pos.x - area.width(), 0);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -323,7 +323,7 @@ void distributeVerticallyCenter(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		positions.emplace_back(pos.y + area.height() / 2, ods);
 	}
 
@@ -342,7 +342,7 @@ void distributeVerticallyCenter(GraphView* view)
 		top += step;
 		auto ods = posPair.second;
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(0, top - pos.y - area.height() / 2);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -361,19 +361,19 @@ void distributeVerticallyGaps(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		positions.emplace_back(pos.y, ods);
 	}
 
 	std::sort(positions.begin(), positions.end(), [](const PosOds& lhs, const PosOds& rhs) { return lhs.first < rhs.first; });
 
-	float top = positions.front().first + positions.front().second->getObjectArea().height();
+	float top = positions.front().first + positions.front().second->getVisualArea().height();
 	float bottom = positions.back().first;
 	
 	// Compute total gap
 	float height = 0;
 	for (int i = 1; i < nb - 1; ++i)
-		height += positions[i].second->getObjectArea().height();
+		height += positions[i].second->getVisualArea().height();
 
 	float step = (bottom - top - height) / (nb - 1);
 
@@ -386,7 +386,7 @@ void distributeVerticallyGaps(GraphView* view)
 		top += step;
 		auto ods = posPair.second;
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(0, top - pos.y);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -407,7 +407,7 @@ void distributeVerticallyTop(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		positions.emplace_back(pos.y, ods);
 	}
 
@@ -426,7 +426,7 @@ void distributeVerticallyTop(GraphView* view)
 		top += step;
 		auto ods = posPair.second;
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(0, top - pos.y);
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
@@ -445,7 +445,7 @@ void distributeVerticallyBottom(GraphView* view)
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		positions.emplace_back(pos.y + area.height(), ods);
 	}
 
@@ -464,7 +464,7 @@ void distributeVerticallyBottom(GraphView* view)
 		top += step;
 		auto ods = posPair.second;
 		Point pos = ods->getPosition();
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Point delta = Point(0, top - pos.y - area.height());
 		if(!delta.isNull())
 			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));

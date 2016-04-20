@@ -13,7 +13,7 @@ LayerDrawStruct::LayerDrawStruct(GraphView* view, panda::Layer* object)
 
 panda::types::Rect LayerDrawStruct::getTextArea()
 {
-	auto textArea = m_objectArea;
+	auto textArea = m_visualArea;
 	textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
 	int margin = dataRectSize+dataRectMargin+3;
 	textArea.adjust(margin, 0, -margin, 0);

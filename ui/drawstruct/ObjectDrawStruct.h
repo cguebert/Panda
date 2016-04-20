@@ -47,7 +47,8 @@ public:
 	panda::BaseData* getDataAtPos(const panda::types::Point &pt, panda::types::Point* center = nullptr) const;
 	bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) const;
 
-	panda::types::Rect getObjectArea() const;
+	panda::types::Rect getVisualArea() const;
+	panda::types::Rect getSelectionArea() const;
 	panda::types::Point getPosition() const;
 	panda::PandaObject* const getObject() const;
 
@@ -77,7 +78,7 @@ protected:
 	GraphView* m_parentView;
 	panda::PandaObject* m_object;
 	panda::types::Point m_position;
-	panda::types::Rect m_objectArea;
+	panda::types::Rect m_visualArea, m_selectionArea;
 
 	std::vector<DataRectPair> m_datas;
 
@@ -91,10 +92,13 @@ inline bool ObjectDrawStruct::acceptsMagneticSnap() const
 { return true; }
 
 inline bool ObjectDrawStruct::contains(const panda::types::Point& point)
-{ return m_objectArea.contains(point) && m_outline.contains(point); }
+{ return m_selectionArea.contains(point) && m_outline.contains(point); }
 
-inline panda::types::Rect ObjectDrawStruct::getObjectArea() const
-{ return m_objectArea; }
+inline panda::types::Rect ObjectDrawStruct::getVisualArea() const
+{ return m_visualArea; }
+
+inline panda::types::Rect ObjectDrawStruct::getSelectionArea() const
+{ return m_selectionArea; }
 
 inline panda::types::Point ObjectDrawStruct::getPosition() const
 { return m_position; }

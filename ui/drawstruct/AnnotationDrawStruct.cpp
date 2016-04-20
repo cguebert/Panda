@@ -124,7 +124,10 @@ void AnnotationDrawStruct::update()
 	m_textArea.adjust(3, -13, 13, -3);
 
 	m_annotation->cleanDirty();
-	m_objectArea = m_textArea;
+	m_selectionArea = m_visualArea = m_textArea;
+
+	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT)
+		 m_visualArea |= Rect(m_position, m_endPos).canonicalized();
 
 	createShape();
 }

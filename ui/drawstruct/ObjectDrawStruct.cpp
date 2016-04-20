@@ -24,7 +24,7 @@ ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 
 void ObjectDrawStruct::update()
 {
-	m_objectArea = Rect::fromSize(m_position, getObjectSize());
+	m_selectionArea = m_visualArea = Rect::fromSize(m_position, getObjectSize());
 
 	m_datas.clear();
 	std::vector<panda::BaseData*> inputDatas, outputDatas;
@@ -34,16 +34,16 @@ void ObjectDrawStruct::update()
 
 	for(int i=0; i<nbInputs; ++i)
 	{
-		Rect dataArea = Rect::fromSize(m_objectArea.left() + dataRectMargin,
-									   m_objectArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
+		Rect dataArea = Rect::fromSize(m_visualArea.left() + dataRectMargin,
+									   m_visualArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
 									   dataRectSize, dataRectSize);
 		m_datas.emplace_back(inputDatas[i], dataArea);
 	}
 
 	for(int i=0; i<nbOutputs; ++i)
 	{
-		Rect dataArea = Rect::fromSize(m_objectArea.right() - dataRectMargin - dataRectSize,
-									   m_objectArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
+		Rect dataArea = Rect::fromSize(m_visualArea.right() - dataRectMargin - dataRectSize,
+									   m_visualArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
 									   dataRectSize, dataRectSize);
 		m_datas.emplace_back(outputDatas[i], dataArea);
 	}
@@ -54,7 +54,7 @@ void ObjectDrawStruct::update()
 void ObjectDrawStruct::createShape()
 {
 	m_outline.clear();
-	m_outline.rect(m_objectArea, objectCorner);
+	m_outline.rect(m_visualArea, objectCorner);
 	m_outline.close();
 	m_fillShape = m_outline.triangulate();
 }
@@ -64,7 +64,7 @@ void ObjectDrawStruct::move(const Point& delta)
 	if(!delta.isNull())
 	{
 		m_position += delta;
-		m_objectArea.translate(delta);
+		m_visualArea.translate(delta);
 		for (auto& it : m_datas)
 			it.second.translate(delta);
 		m_outline.translate(delta);
@@ -89,7 +89,7 @@ Point ObjectDrawStruct::getObjectSize()
 Rect ObjectDrawStruct::getTextArea()
 {
 	int margin = dataRectSize + dataRectMargin + 3;
-	return m_objectArea.adjusted(margin, 0, -margin, 0);
+	return m_visualArea.adjusted(margin, 0, -margin, 0);
 }
 
 panda::BaseData* ObjectDrawStruct::getDataAtPos(const Point& pt, Point* center) const

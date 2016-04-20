@@ -229,7 +229,7 @@ void GraphView::paintGL()
 	// Give a possibility to draw behind normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
 	{
-		if (ods->getObjectArea().intersects(viewRect))
+		if (ods->getVisualArea().intersects(viewRect))
 			ods->drawBackground(drawList, m_drawColors);
 	}
 
@@ -240,21 +240,21 @@ void GraphView::paintGL()
 	// Draw the objects
 	for (auto& ods : m_orderedObjectDrawStructs)
 	{
-		if (ods->getObjectArea().intersects(viewRect))
+		if (ods->getVisualArea().intersects(viewRect))
 			ods->draw(drawList, m_drawColors);
 	}
 
 	// Give a possibility to draw in front of normal objects
 	for (auto& ods : m_orderedObjectDrawStructs)
 	{
-		if (ods->getObjectArea().intersects(viewRect))
+		if (ods->getVisualArea().intersects(viewRect))
 			ods->drawForeground(drawList, m_drawColors);
 	}
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for (auto& ods : m_selectedObjectsDrawStructs)
 	{
-		if (ods->getObjectArea().intersects(viewRect))
+		if (ods->getVisualArea().intersects(viewRect))
 			ods->draw(drawList, m_drawColors, true);
 	}
 
@@ -310,7 +310,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 			const auto object = ods->getObject();
 			unsigned int fillCol = panda::helper::valueOrDefault(states, object, nullptr) ? 0x200000FF : 0x2000FF00;
 	
-			auto area = ods->getObjectArea();
+			auto area = ods->getVisualArea();
 			list.addRectFilled(area, fillCol);
 
 			for(panda::BaseData* data : object->getDatas())
@@ -337,7 +337,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 				if(data)
 					drawData = ods->getDataRect(data, area);
 				if(!drawData)
-					area = ods->getObjectArea();
+					area = ods->getVisualArea();
 
 				list.addRectFilled(area, 0x80FF8080);
 			}
@@ -353,7 +353,7 @@ void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
 		const auto object = ods->getObject();
 		unsigned int fillCol = object->isDirty() ? 0x400000FF : 0x4000FF00;
 
-		auto area = ods->getObjectArea();
+		auto area = ods->getVisualArea();
 		list.addRectFilled(area, fillCol);
 
 		for(panda::BaseData* data : object->getDatas())
@@ -653,7 +653,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				Point delta = positions[object] - ods->getPosition();
 				m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(this, dockable, delta));
 
-				Rect dockableArea = ods->getObjectArea();
+				Rect dockableArea = ods->getSelectionArea();
 				panda::DockObject* defaultDock = dockable->getDefaultDock();
 				panda::DockObject* newDock = defaultDock;
 				int newIndex = -1;
@@ -662,7 +662,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(ods2->getObject());
 					if(dock)
 					{
-						if(dockableArea.intersects(ods2->getObjectArea()) && dock->accepts(dockable))
+						if(dockableArea.intersects(ods2->getSelectionArea()) && dock->accepts(dockable))
 						{
 							newIndex = dynamic_cast<DockObjectDrawStruct*>(ods2)->getDockableIndex(dockableArea);
 							newDock = dock;
@@ -718,7 +718,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		Rect selectionRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
 		for(const auto ods : m_orderedObjectDrawStructs)
 		{
-			Rect objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getSelectionArea();
 			if(selectionRect.intersects(objectArea))
 				m_objectsSelection->add(ods->getObject());
 		}
@@ -918,7 +918,7 @@ void GraphView::centerView()
 		Rect totalView;
 		for (const auto ods : m_orderedObjectDrawStructs)
 		{
-			Rect objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getVisualArea();
 			totalView = totalView.united(objectArea);
 		}
 
@@ -935,7 +935,7 @@ void GraphView::showAll()
 		Rect totalView;
 		for (const auto ods : m_orderedObjectDrawStructs)
 		{
-			Rect objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getVisualArea();
 			totalView = totalView.united(objectArea);
 		}
 
@@ -956,7 +956,7 @@ void GraphView::showAllSelected()
 		Rect totalView;
 		for (const auto ods : m_orderedObjectDrawStructs)
 		{
-			Rect objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getVisualArea();
 			totalView = totalView.united(objectArea);
 		}
 
@@ -977,7 +977,7 @@ void GraphView::moveSelectedToCenter()
 		Rect totalView;
 		for(const auto ods : m_selectedObjectsDrawStructs)
 		{
-			Rect objectArea = ods->getObjectArea();
+			Rect objectArea = ods->getVisualArea();
 			totalView = totalView.united(objectArea);
 		}
 
@@ -1353,7 +1353,7 @@ void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, Point pos
 		if (ods == selectedDrawStruct || !ods->acceptsMagneticSnap())
 			continue;
 
-		auto area = ods->getObjectArea();
+		auto area = ods->getVisualArea();
 		if (viewRect.intersects(area)) // Only if visible in the current viewport
 		{
 			auto pos = ods->getPosition();
@@ -1541,9 +1541,9 @@ void GraphView::updateViewRect()
 	m_viewRect = Rect();
 	for(const auto& ods : m_orderedObjectDrawStructs)
 	{
-		Rect area = ods->getObjectArea();
+		Rect area = ods->getVisualArea();
 		Rect zoomedArea = Rect::fromSize(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
-		m_viewRect |= ods->getObjectArea(); // Union
+		m_viewRect |= ods->getVisualArea(); // Union
 	}
 
 	if(!m_orderedObjectDrawStructs.empty())

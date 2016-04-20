@@ -148,7 +148,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	Rect totalView;
 	for(auto object : selection)
 	{
-		Rect objectArea = view->getObjectDrawStruct(object)->getObjectArea();
+		Rect objectArea = view->getObjectDrawStruct(object)->getVisualArea();
 		totalView = totalView.united(objectArea);
 	}
 
