@@ -1344,7 +1344,7 @@ void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, Point pos
 	// We look for the closest object above and the closest below
 	const float filterRatio = 0.66f, filterDist = 50;
 	auto selectedHeight = selectedDrawStruct->getObjectSize().y;
-	auto viewRect = convert(QRectF(contentsRect()));
+	Rect viewRect(m_viewDelta, width() / m_zoomFactor, height() / m_zoomFactor);
 	auto m1 = std::numeric_limits<float>::lowest(), m2 = std::numeric_limits<float>::max();
 	Point abovePos(m1, m1), belowPos(m2, m2);
 	float aboveDist{ m2 }, belowDist{ m2 };
