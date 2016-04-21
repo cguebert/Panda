@@ -526,6 +526,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		moveView(delta);
 		m_previousMousePos = globalPos;
 		update();
+		emit viewModified();
 	}
 	else if(m_movingAction == MOVING_ZOOM)
 	{
@@ -704,7 +705,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == MOVING_VIEW)
 	{
-		updateViewRect();
+		emit viewModified();
 	}
 	else if(m_movingAction == MOVING_ZOOM)
 	{
@@ -1530,7 +1531,7 @@ QPoint GraphView::viewPosition()
 
 void GraphView::scrollView(QPoint position)
 {
-	Point delta = convert(position) / m_zoomFactor - m_viewRect.topLeft() + m_viewDelta;
+	Point delta = convert(position) - m_viewRect.topLeft() + m_viewDelta * m_zoomFactor;
 	moveView(delta);
 	update();
 }
@@ -1545,7 +1546,7 @@ void GraphView::updateViewRect()
 	{
 		Rect area = ods->getVisualArea();
 		Rect zoomedArea = Rect::fromSize(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
-		m_viewRect |= ods->getVisualArea(); // Union
+		m_viewRect |= zoomedArea; // Union
 	}
 
 	if(!m_orderedObjectDrawStructs.empty())
