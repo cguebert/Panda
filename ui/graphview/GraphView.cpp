@@ -194,16 +194,12 @@ void GraphView::initializeGL()
 	m_viewRenderer->initialize();
 	m_linksDrawList = DrawList();
 	m_connectedDrawList = DrawList();
-	m_selectedObjectsDrawList = DrawList();
 }
 
 void GraphView::resizeGL(int w, int h)
 {
 	glViewport(0, 0, w, h);
 	m_viewRenderer->resize(w, h);
-	m_linksDrawList = DrawList();
-	m_connectedDrawList = DrawList();
-	m_selectedObjectsDrawList = DrawList();
 	update();
 }
 
@@ -211,11 +207,9 @@ void GraphView::paintGL()
 {
 	updateDirtyDrawStructs();
 
-	if(m_recomputeTags)
-	{
-		updateLinkTags();
-		m_recomputeTags = false;
-	}
+	if(m_recomputeTags)			updateLinkTags();
+	if(m_recomputeLinks)		updateLinks();
+	if(m_recomputeConnected)	updateConnectedDatas();
 
 	Rect viewRect(m_viewDelta, width() / m_zoomFactor, height() / m_zoomFactor);
 	m_viewRenderer->setView(viewRect);
@@ -234,7 +228,6 @@ void GraphView::paintGL()
 	}
 
 	// Draw links
-	drawLinks();
 	drawList.merge(m_linksDrawList);
 
 	// Draw the objects
@@ -261,9 +254,6 @@ void GraphView::paintGL()
 	// Draw links tags
 	for (auto& tag : m_linkTags)
 		tag.second->draw(drawList, m_drawColors);
-
-	// Highlight connected Datas
-	drawConnectedDatas(m_hoverData);
 
 	// Selection rubber band
 	if (m_movingAction == MOVING_SELECTION)
@@ -293,8 +283,14 @@ void GraphView::paintGL()
 			paintDirtyState(drawList, m_drawColors);
 	}
 
+	// Add the main draw list
 	m_viewRenderer->addDrawList(&drawList);
-	m_viewRenderer->addDrawList(&m_connectedDrawList);
+
+	// Highlight connected Datas
+	if(m_highlightConnectedDatas)
+		m_viewRenderer->addDrawList(&m_connectedDrawList);
+
+	// Execute the render commands
 	m_viewRenderer->render();
 }
 
@@ -516,8 +512,11 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			delta = delta - oldSnapDelta + m_snapDelta;
 		}
 
-		if(!m_customSelection.empty() && !delta.isNull())
+		if (!m_customSelection.empty() && !delta.isNull())
+		{
 			m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(this, m_customSelection, delta));
+			m_recomputeLinks = true;
+		}
 
 		m_previousMousePos = mousePos;
 	}
@@ -1035,6 +1034,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 
 void GraphView::modifiedObject(panda::PandaObject* object)
 {
+	m_recomputeLinks = true;
 	auto ods = getObjectDrawStruct(object);
 	if(ods)	// Can be called before the object is fully created
 	{
@@ -1106,11 +1106,9 @@ void GraphView::removeLinkTag(panda::BaseData* input, panda::BaseData* output)
 	}
 }
 
-void GraphView::updateLinkTags(bool reset)
+void GraphView::updateLinkTags()
 {
-	if(reset)
-		m_linkTags.clear();
-
+	m_recomputeTags = false;
 	for(auto& object : m_pandaDocument->getObjects())
 	{
 		for(auto& data : object->getInputDatas())
@@ -1163,12 +1161,14 @@ void GraphView::hoverDataInfo()
 	if(m_hoverData)
 	{
 		m_highlightConnectedDatas = true;
+		m_recomputeConnected = true;
 		update();
 	}
 }
 
-void GraphView::drawLinks()
+void GraphView::updateLinks()
 {
+	m_recomputeLinks = false;
 	m_linksDrawList.clear();
 
 	auto col = DrawList::convert(palette().text().color());
@@ -1195,8 +1195,9 @@ void GraphView::drawLinks()
 	}
 }
 
-void GraphView::drawConnectedDatas(panda::BaseData* sourceData)
+void GraphView::updateConnectedDatas()
 {
+	m_recomputeConnected = false;
 	m_connectedDrawList.clear();
 	if (!m_highlightConnectedDatas)
 		return;
@@ -1205,15 +1206,15 @@ void GraphView::drawConnectedDatas(panda::BaseData* sourceData)
 	std::vector< std::pair<Point, Point> > highlightLinks;
 
 	Rect sourceRect;
-	if(getObjectDrawStruct(sourceData->getOwner())->getDataRect(sourceData, sourceRect))
+	if(getObjectDrawStruct(m_hoverData->getOwner())->getDataRect(m_hoverData, sourceRect))
 		highlightRects.push_back(sourceRect);
 	else
 		return;
 
 	// Get outputs
-	if(sourceData->isOutput())
+	if(m_hoverData->isOutput())
 	{
-		for(const auto node : sourceData->getOutputs())
+		for(const auto node : m_hoverData->getOutputs())
 		{
 			panda::BaseData* data = dynamic_cast<panda::BaseData*>(node);
 			if(data)
@@ -1233,9 +1234,9 @@ void GraphView::drawConnectedDatas(panda::BaseData* sourceData)
 		}
 	}
 	// Or the one input
-	else if(sourceData->isInput())
+	else if(m_hoverData->isInput())
 	{
-		panda::BaseData* data = sourceData->getParent();
+		panda::BaseData* data = m_hoverData->getParent();
 		if(data)
 		{
 			panda::PandaObject* object = data->getOwner();
@@ -1437,6 +1438,7 @@ void GraphView::moveObjects(std::vector<panda::PandaObject*> objects, Point delt
 	}
 	emit modified();
 	updateLinkTags();
+	m_recomputeLinks = true;
 	update();
 }
 
@@ -1619,6 +1621,8 @@ void GraphView::updateDirtyDrawStructs()
 	m_highlightConnectedDatas = false;
 	m_hoverData = nullptr;
 	m_hoverTimer->stop();
+	m_recomputeLinks = true;
+	m_recomputeConnected = true;
 	updateViewRect();
 }
 

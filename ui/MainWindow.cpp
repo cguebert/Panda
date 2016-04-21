@@ -164,7 +164,6 @@ void MainWindow::open()
 			m_document->resetDocument();
 			m_graphView->resetView();
 			loadFile(fileName);
-			m_graphView->updateLinkTags(true);
 		}
 	}
 }
@@ -178,8 +177,6 @@ void MainWindow::import()
 	{
 		if(loadFile(fileName, true))
 		{
-			m_graphView->updateLinkTags();
-
 			auto selection = m_graphView->selection().get();
 			if(!selection.empty())
 				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, selection));
@@ -224,7 +221,6 @@ void MainWindow::openRecentFile()
 			m_playAction->setChecked(false);
 			m_document->resetDocument();
 			loadFile(action->data().toString());
-			m_graphView->updateLinkTags(true);
 		}
 	}
 }
@@ -1030,9 +1026,7 @@ void MainWindow::paste()
 		return;
 
 	m_graphView->selection().set(result.second);
-
 	m_graphView->moveSelectedToCenter();
-	m_graphView->updateLinkTags();
 
 	m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_graphView, result.second));
 }

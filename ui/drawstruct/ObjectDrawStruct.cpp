@@ -65,6 +65,7 @@ void ObjectDrawStruct::move(const Point& delta)
 	{
 		m_position += delta;
 		m_visualArea.translate(delta);
+		m_selectionArea.translate(delta);
 		for (auto& it : m_datas)
 			it.second.translate(delta);
 		m_outline.translate(delta);

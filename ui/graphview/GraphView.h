@@ -85,8 +85,6 @@ public:
 
 	void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
 
-	void setRecomputeTags(); /// Same as calling updateLinkTags, but it does it next redraw
-
 	/// Objects docked to the default docks are sorted by their height in the graph view
 	void sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock);
 	void sortDockablesInDock(panda::DockObject* dock);
@@ -125,8 +123,9 @@ protected:
 	void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
 	bool hasLinkTag(panda::BaseData* input, panda::BaseData* output);
 
-	void drawLinks();
-	void drawConnectedDatas(panda::BaseData* sourceData);
+	void updateLinks();
+	void updateConnectedDatas();
+	void updateLinkTags();
 
 	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
 	void computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, panda::types::Point position);
@@ -161,7 +160,6 @@ public slots:
 	void modifiedObject(panda::PandaObject* object);
 	void savingObject(panda::XmlElement&, panda::PandaObject*);
 	void loadingObject(const panda::XmlElement&, panda::PandaObject*);
-	void updateLinkTags(bool reset=false);
 	void removeLink();
 	void hoverDataInfo();
 	void startLoading();
@@ -220,8 +218,9 @@ private:
 	std::set<ObjectDrawStruct*> m_dirtyDrawStructsSet; /// To ensure we do not update multiple times the same object
 
 	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
-	DrawList m_linksDrawList, m_connectedDrawList, m_selectedObjectsDrawList;
+	DrawList m_linksDrawList, m_connectedDrawList;
 	DrawColors m_drawColors; /// So that we aquire Qt colors only once
+	bool m_recomputeLinks = false, m_recomputeConnected = false;
 };
 
 //****************************************************************************//
@@ -252,9 +251,6 @@ inline float GraphView::getZoom()
 
 inline void GraphView::moveView(const panda::types::Point& delta)
 { m_viewDelta -= delta; }
-
-inline void GraphView::setRecomputeTags()
-{ m_recomputeTags = true; }
 
 inline bool GraphView::hasLinkTag(panda::BaseData* input, panda::BaseData* output)
 { return m_linkTagsDatas.count(std::make_pair(input, output)) != 0; }
