@@ -285,6 +285,7 @@ public:
 				path.points.push_back(convert(e->pos[1]));
 				e = e->next;
 			}
+			path.points.back() = path.points.front(); // We want to be sure the values are exactly the same
 			acc.push_back(path);
 		}
 
