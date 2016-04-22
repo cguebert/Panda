@@ -34,7 +34,7 @@
 
 namespace p2t {
 
-SweepContext::SweepContext(std::vector<Point*> polyline) :
+SweepContext::SweepContext(const std::vector<Point*>& polyline) :
   front_(0),
   head_(0),
   tail_(0),
@@ -101,10 +101,8 @@ Node& SweepContext::LocateNode(Point& point)
   return *front_->LocateNode(point.x);
 }
 
-void SweepContext::CreateAdvancingFront(std::vector<Node*> nodes)
+void SweepContext::CreateAdvancingFront()
 {
-
-  (void) nodes;
   // Initial triangle
   Triangle* triangle = new Triangle(*points_[0], *tail_, *head_);
 

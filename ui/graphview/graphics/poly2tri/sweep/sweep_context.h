@@ -51,7 +51,7 @@ class AdvancingFront;
 class SweepContext 
 {
 public:
-	SweepContext(std::vector<Point*> polyline);
+	SweepContext(const std::vector<Point*>& polyline);
 	~SweepContext();
 
 	void set_head(Point* p1);
@@ -64,7 +64,7 @@ public:
 
 	Node& LocateNode(Point& point);
 
-	void CreateAdvancingFront(std::vector<Node*> nodes);
+	void CreateAdvancingFront();
 
 	/// Try to map a node to all sides of this triangle that don't have a neighbor
 	void MapTriangleToNodes(Triangle& t);
