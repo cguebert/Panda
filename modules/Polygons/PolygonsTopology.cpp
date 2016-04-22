@@ -415,11 +415,9 @@ public:
 		auto& output = acc.wref();
 		output.clear();
 
+		int nb = initValues.size();
 		int maxValue = getMaxValue(neighbors);
-		if (maxValue < 0)
-			return;
-		int nb = maxValue + 1;
-		if (initValues.size() != nb || canPropagateVal.size() != nb)
+		if (maxValue < 0 || maxValue > nb || canPropagateVal.size() != nb)
 			return;
 
 		std::vector<bool> closedList(nb, false), canPropagate(nb, false);

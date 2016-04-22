@@ -58,12 +58,15 @@ public:
 		int valSize = inVal.size();
 
 		outVal = inList;
-		if(listSize && idSize && valSize && idSize == valSize)
+		if(listSize && idSize && valSize)
 		{
+			if (valSize != idSize)
+				valSize = 1;
+
 			for(int i=0; i<idSize; ++i)
 			{
 				if(id[i] >= 0 && id[i] < listSize)
-					outVal[id[i]] = inVal[i];
+					outVal[id[i]] = inVal[i % valSize];
 			}
 		}
 	}
