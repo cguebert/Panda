@@ -843,7 +843,7 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 {
 	m_contextMenuData = nullptr;
 	int flags = 0;
-	Point zoomedMouse = convert(event->pos()) / m_zoomFactor;
+	Point zoomedMouse = convert(event->pos()) / m_zoomFactor + m_viewDelta;
 	const auto ods = getObjectDrawStructAtPos(zoomedMouse);
 	if(ods)
 	{
