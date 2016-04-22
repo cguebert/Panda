@@ -170,7 +170,7 @@ void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)
 	{
 		m_currentLabel = label;
 		m_textDrawList = DrawList();
-		m_textDrawList.addText(getTextArea(), label, colors.penColor, DrawList::Align_Center);
+		m_textDrawList.addText(getTextArea(), label, colors.penColor, DrawList::Align_Center, 1.0f, true, true);
 	}
 	
 	list.merge(m_textDrawList);
