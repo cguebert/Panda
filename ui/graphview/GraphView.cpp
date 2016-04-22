@@ -125,6 +125,8 @@ void GraphView::resetView()
 	m_possibleLinks.clear();
 	m_dirtyDrawStructs.clear();
 	m_dirtyDrawStructsSet.clear();
+	m_linksDrawList.clear();
+	m_connectedDrawList.clear();
 
 	emit viewModified();
 }
