@@ -107,6 +107,9 @@ public:
 		output.clear();
 
 		int nbA = inputA.size(), nbB = inputB.size();
+		if (!nbA || !nbB)
+			return;
+
 		int nb = std::max(nbA, nbB);
 		if (nbA < nb) nbA = 1;
 		if (nbB < nb) nbB = 1;
@@ -175,6 +178,9 @@ public:
 		output.clear();
 
 		int nbA = inputA.size(), nbB = inputB.size();
+		if (!nbA || !nbB)
+			return;
+
 		int nb = std::max(nbA, nbB);
 		if (nbA < nb) nbA = 1;
 		if (nbB < nb) nbB = 1;
