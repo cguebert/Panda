@@ -120,9 +120,11 @@ void UndoStack::undo()
 	if (!m_macros.empty())
 		return;
 
+	m_isExecuting = true;
 	int index = m_index - 1;
 	m_commands[index]->undo();
 	changeIndex(index);
+	m_isExecuting = false;
 }
 
 void UndoStack::redo()
@@ -133,8 +135,10 @@ void UndoStack::redo()
 	if (!m_macros.empty())
 		return;
 
+	m_isExecuting = true;
 	m_commands[m_index]->redo();
 	changeIndex(m_index + 1);
+	m_isExecuting = false;
 }
 
 bool UndoStack::canUndo() const

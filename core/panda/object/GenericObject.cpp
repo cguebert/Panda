@@ -170,26 +170,6 @@ void GenericObject::updateDataNames()
 	}
 }
 
-BaseGenericData* const GenericObject::getGenericData() const
-{
-	return m_genericData;
-}
-
-int GenericObject::nbOfCreatedDatas() const
-{
-	return m_createdDatasStructs.size();
-}
-
-bool GenericObject::isCreatedData(BaseData* data) const
-{
-	return m_createdDatasMap.count(data) != 0;
-}
-
-void GenericObject::update()
-{
-	doUpdate();
-}
-
 void GenericObject::doUpdate(bool updateAllInputs)
 {
 	int nbDefs = m_dataDefinitions.size();
@@ -217,13 +197,11 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 {
 	if(data == m_genericData)
 	{
-		int type = m_genericData->getCompatibleType(parent);
-		BaseData* inputData = createDatas(type);
+		if (!parent) // When cancelling the connection to this object (see ConnectGenericDataCommand)
+			return;
 
-		if(inputData)
-			inputData->setParent(parent);
-
-		parentDocument()->onModifiedObject(this);
+		if(!parentDocument()->getUndoStack().isExecuting()) // If a command is not currently creating the link
+			createConnectCommand(parent);
 	}
 	else if (parent || !m_createdDatasMap.count(data))
 	{
@@ -244,21 +222,28 @@ void GenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
 			// Create commmands so that we can undo the removal
-			createUndoCommands(createdDatasStruct);
+			createDisconnectCommands(createdDatasStruct);
 
-			for(BaseDataPtr d : createdDatasStruct->datas)
-			{
-				removeData(d.get());
-				m_createdDatasMap.erase(d.get());
-			}
-
-			helper::removeAll(m_createdDatasStructs, createdDatasStruct);
-			createdDatasStruct->datas.clear();
-			updateDataNames();
+			// Remove all datas in this group
+			disconnectData(data);
 		}
 
 		parentDocument()->onModifiedObject(this);
 	}
+}
+
+void GenericObject::disconnectData(BaseData* data)
+{
+	CreatedDatasStructPtr createdDatasStruct = m_createdDatasMap[data];
+	for(BaseDataPtr d : createdDatasStruct->datas)
+	{
+		removeData(d.get());
+		m_createdDatasMap.erase(d.get());
+	}
+
+	helper::removeAll(m_createdDatasStructs, createdDatasStruct);
+	createdDatasStruct->datas.clear();
+	updateDataNames();
 }
 
 std::vector<int> GenericObject::getRegisteredTypes()
@@ -302,7 +287,13 @@ bool GenericObject::load(XmlElement& elem)
 	return PandaObject::load(elem);
 }
 
-void GenericObject::createUndoCommands(const CreatedDatasStructPtr& createdData)
+void GenericObject::createConnectCommand(BaseData* parent)
+{
+	auto& undoStack = parentDocument()->getUndoStack();
+	undoStack.push(std::make_shared<ConnectGenericDataCommand>(this, parent));
+}
+
+void GenericObject::createDisconnectCommands(const CreatedDatasStructPtr& createdData)
 {
 	// Bugfix: don't do anything if we are currently deleting the object
 	if(isDestructing())
@@ -454,13 +445,11 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 	// New connection
 	if(data == m_genericData)
 	{
-		int type = m_genericData->getCompatibleType(parent);
-		BaseData *inputData = createDatas(type);
+		if (!parent) // When cancelling the connection to this object (see ConnectGenericDataCommand)
+			return;
 
-		if(inputData)
-			inputData->setParent(parent);
-
-		parentDocument()->onModifiedObject(this);
+		if(!parentDocument()->getUndoStack().isExecuting()) // If a command is not currently creating the link
+			createConnectCommand(parent);
 	}
 	// Changing connection
 	else if(parent || !m_createdDatasMap.count(data))
@@ -483,47 +472,54 @@ void SingleTypeGenericObject::dataSetParent(BaseData* data, BaseData* parent)
 		if(!nbConnectedInputs)	// We remove this group of datas
 		{
 			// Create commmands so that we can undo the removal
-			createUndoCommands(createdDatasStruct);
+			createDisconnectCommands(createdDatasStruct);
 
-			// Last generic data
-			bool lastGeneric = (m_createdDatasStructs.size() == 1);
-			if(lastGeneric)
-			{
-				m_connectedType = -1;
-				m_genericData->m_allowedTypes = getRegisteredTypes();
-			}
-
-			int nbDefs = m_dataDefinitions.size();
-			for(int i=0; i<nbDefs; ++i)
-			{
-				BaseDataPtr dataPtr = createdDatasStruct->datas[i];
-				if(m_singleOutput && m_dataDefinitions[i].output && !m_dataDefinitions[i].input)
-				{
-					if(lastGeneric)
-					{
-						removeData(dataPtr.get());
-						m_createdDatasMap.erase(dataPtr.get());
-					}
-					else if(dataPtr) // Copy this data to the next created data
-						m_createdDatasStructs[1]->datas[i] = dataPtr;
-				}
-				else
-				{
-					removeData(dataPtr.get());
-					m_createdDatasMap.erase(dataPtr.get());
-				}
-			}
-
-			helper::removeAll(m_createdDatasStructs, createdDatasStruct);
-			createdDatasStruct->datas.clear();
-			updateDataNames();
-
-			if(m_singleOutput)
-				setDirtyValue(this);
+			disconnectData(data);
 		}
 
 		parentDocument()->onModifiedObject(this);
 	}
+}
+
+void SingleTypeGenericObject::disconnectData(BaseData* data)
+{
+	CreatedDatasStructPtr createdDatasStruct = m_createdDatasMap[data];
+
+	// Last generic data
+	bool lastGeneric = (m_createdDatasStructs.size() == 1);
+	if(lastGeneric)
+	{
+		m_connectedType = -1;
+		m_genericData->m_allowedTypes = getRegisteredTypes();
+	}
+
+	int nbDefs = m_dataDefinitions.size();
+	for(int i=0; i<nbDefs; ++i)
+	{
+		BaseDataPtr dataPtr = createdDatasStruct->datas[i];
+		if(m_singleOutput && m_dataDefinitions[i].output && !m_dataDefinitions[i].input)
+		{
+			if(lastGeneric)
+			{
+				removeData(dataPtr.get());
+				m_createdDatasMap.erase(dataPtr.get());
+			}
+			else if(dataPtr) // Copy this data to the next created data
+				m_createdDatasStructs[1]->datas[i] = dataPtr;
+		}
+		else
+		{
+			removeData(dataPtr.get());
+			m_createdDatasMap.erase(dataPtr.get());
+		}
+	}
+
+	helper::removeAll(m_createdDatasStructs, createdDatasStruct);
+	createdDatasStruct->datas.clear();
+	updateDataNames();
+
+	if(m_singleOutput)
+		setDirtyValue(this);
 }
 
 //****************************************************************************//

@@ -100,20 +100,21 @@ public:
 	explicit GenericObject(PandaDocument* parent = nullptr);
 	virtual ~GenericObject();
 
-	virtual void update();
-	virtual void dataSetParent(BaseData* data, BaseData* parent);
+	void update() override;
+	void dataSetParent(BaseData* data, BaseData* parent) override;
 
-	virtual void save(XmlElement& elem, const std::vector<PandaObject*>* selected = nullptr);
-	virtual bool load(XmlElement& elem);
+	void save(XmlElement& elem, const std::vector<PandaObject*>* selected = nullptr) override;
+	bool load(XmlElement& elem) override;
 
+	BaseGenericData* const getGenericData() const; // Access to m_genericData
 	virtual BaseData* createDatas(int type, int index = -1);
+	virtual void disconnectData(BaseData* data);
 
 protected:
 	void doUpdate(bool updateAllInputs = true);
 	virtual void reorderDatas();
 	virtual void updateDataNames();
 
-	BaseGenericData* const getGenericData() const; // Access to m_genericData
 	int nbOfCreatedDatas() const; // Size of m_createdDatasStructs
 	bool isCreatedData(BaseData* data) const; // Return true if data has been created by the GenericObject
 	std::vector<int> getRegisteredTypes();
@@ -145,7 +146,8 @@ private:
 	std::vector<CreatedDatasStructPtr> m_createdDatasStructs;
 	std::map<BaseData*, CreatedDatasStructPtr> m_createdDatasMap;
 
-	void createUndoCommands(const CreatedDatasStructPtr& createdData);
+	void createConnectCommand(BaseData* parent);
+	void createDisconnectCommands(const CreatedDatasStructPtr& createdData);
 	void setupGenericData(BaseGenericData& data, const GenericDataDefinitionList& defList);
 
 	using FuncPtr = std::function<void(DataList&)>;
@@ -169,6 +171,19 @@ private:
 	void invokeFunction(int type, DataList& list);
 };
 
+inline BaseGenericData* const GenericObject::getGenericData() const
+{ return m_genericData; }
+
+inline int GenericObject::nbOfCreatedDatas() const
+{ return m_createdDatasStructs.size(); }
+
+inline bool GenericObject::isCreatedData(BaseData* data) const
+{ return m_createdDatasMap.count(data) != 0; }
+
+inline void GenericObject::update()
+{ doUpdate(); }
+
+
 //****************************************************************************//
 
 // Works as a GenericObject, but as soon as one input Data is connected,
@@ -180,9 +195,10 @@ public:
 
 	explicit SingleTypeGenericObject(PandaDocument* parent = nullptr);
 
-	virtual void update();
-	virtual BaseData* createDatas(int type, int index = -1);
-	virtual void dataSetParent(BaseData* data, BaseData* parent);
+	void update() override;
+	BaseData* createDatas(int type, int index = -1) override;
+	void dataSetParent(BaseData* data, BaseData* parent) override;
+	void disconnectData(BaseData* data) override;
 
 protected:
 	bool m_singleOutput; // Set this to true to only create outputs for the first connected Data

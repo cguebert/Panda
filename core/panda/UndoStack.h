@@ -62,7 +62,8 @@ public:
 
 	std::shared_ptr<ScopedMacro> beginMacro(const std::string& text); /// Any following commands until a call to endMacro() will be treated as one single command 
 
-	bool isInCommandMacro() const;
+	bool isExecuting() const; /// True when in redo or undo
+	bool isInCommandMacro() const; /// True if a macro is currently active
 	UndoCommand* getCurrentCommand() const; /// The command we are currently adding (if we want to connect another to this one)
 
 	int count() const;
@@ -89,6 +90,7 @@ private:
 	int m_index = 0, m_cleanIndex = 0, m_undoLimit = 0;
 	int m_inCommandMacro = 0;
 	bool m_enabled = true;
+	bool m_isExecuting = false; // When in redo or undo
 	std::deque<UndoCommand::SPtr> m_commands, m_macros;
 	std::shared_ptr<UndoCommand> m_currentCommand;
 };
@@ -131,6 +133,9 @@ inline int UndoStack::cleanIndex() const
 
 inline bool UndoStack::isInCommandMacro() const
 { return m_inCommandMacro > 0; }
+
+inline bool UndoStack::isExecuting() const
+{ return m_isExecuting; }
 
 inline UndoCommand* UndoStack::getCurrentCommand() const
 { return m_currentCommand.get(); }
