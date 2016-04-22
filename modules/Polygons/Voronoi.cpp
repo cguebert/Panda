@@ -13,6 +13,9 @@ namespace gtl = boost::polygon;
 #pragma warning(disable : 4244) /* conversion from 'type1' to 'type2', possible loss of data */
 #endif
 
+#define JC_VORONOI_IMPLEMENTATION
+#include <modules/Polygons/libs/jc_voronoi.h>
+
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -231,5 +234,70 @@ protected:
 
 int GeneratorMesh_VoronoiClass = RegisterObject<GeneratorMesh_Voronoi>("Generator/Mesh/Voronoi")
 		.setDescription("Create a mesh from a Voronoi tessellation");
+
+//****************************************************************************//
+
+class GeneratorMesh_Voronoi2 : public PandaObject
+{
+public:
+	PANDA_CLASS(GeneratorMesh_Voronoi2, PandaObject)
+
+	GeneratorMesh_Voronoi2(PandaDocument *doc)
+		: PandaObject(doc)
+		, m_sites(initData("sites", "Sites of the Voronoi tessellation"))
+		, m_paths(initData("polygons", "Polygons created from the Voronoi tessellation"))
+	{
+		addInput(m_sites);
+		addOutput(m_paths);
+	}
+
+	static inline Point convert(const jcv_point& pt)
+	{ return{ pt.x, pt.y }; }
+
+	void update()
+	{
+		auto size = parentDocument()->getRenderSize();
+
+		const std::vector<Point>& pts = m_sites.getValue();
+		auto acc = m_paths.getAccessor();
+		acc.clear();
+
+		if (pts.empty())
+			return;
+		
+		jcv_diagram diagram;
+		memset(&diagram, 0, sizeof(jcv_diagram));
+		jcv_diagram_generate(pts.size(), reinterpret_cast<const jcv_point*>(pts.data()),
+							 static_cast<int>(size.width()), static_cast<int>(size.height()),
+							 &diagram);
+
+		const auto sites = jcv_diagram_get_sites(&diagram);
+		for (int i = 0; i < diagram.numsites; ++i)
+		{
+			const jcv_site& site = sites[i];
+			const jcv_graphedge* e = site.edges;
+
+			Path path;
+			while (e)
+			{
+				if (path.points.empty() || (path.points.back() - convert(e->pos[0])).norm2() > 1e-4)
+					path.points.push_back(convert(e->pos[0]));
+				path.points.push_back(convert(e->pos[1]));
+				e = e->next;
+			}
+			acc.push_back(path);
+		}
+
+		jcv_diagram_free(&diagram);
+	}
+
+protected:
+	Data< std::vector<Point> > m_sites;
+	Data< std::vector<Path> > m_paths;
+};
+
+int GeneratorMesh_Voronoi2Class = RegisterObject<GeneratorMesh_Voronoi2>("Generator/Mesh/Voronoi JC")
+		.setDescription("Create a mesh from a Voronoi tessellation");
+
 
 } // namespace Panda

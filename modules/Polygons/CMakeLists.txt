@@ -5,6 +5,7 @@ project(${PROJECT_NAME})
 
 set(HEADER_FILES
 	Clipperutils.h
+	libs/jc_voronoi.h
 	libs/clipper/clipper.hpp
 	libs/poly2tri/poly2tri.h
 	libs/poly2tri/common/shapes.h
