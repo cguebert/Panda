@@ -1,5 +1,5 @@
 #include <panda/object/GenericObject.h>
-#include <panda/command/RemoveGenericDataCommand.h>
+#include <panda/command/GenericDataCommand.h>
 
 namespace panda
 {

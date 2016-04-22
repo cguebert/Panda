@@ -6,7 +6,7 @@
 #include <panda/helper/algorithm.h>
 
 #include <panda/command/LinkDatasCommand.h>
-#include <panda/command/RemoveGenericDataCommand.h>
+#include <panda/command/GenericDataCommand.h>
 
 #include <iostream>
 

@@ -14,10 +14,10 @@ set(HEADER_FILES
 	panda/XmlDocument.h
 	panda/command/CommandId.h
 	panda/command/DockableCommand.h
+	panda/command/GenericDataCommand.h
 	panda/command/GroupCommand.h
 	panda/command/LinkDatasCommand.h
 	panda/command/MoveLayerCommand.h
-	panda/command/RemoveGenericDataCommand.h
 	panda/data/BaseClass.h
 	panda/data/BaseData.h
 	panda/data/Data.h
@@ -93,10 +93,10 @@ set(SOURCE_FILES
 	panda/XmlDocument.cpp
 	panda/command/CommandId.cpp
 	panda/command/DockableCommand.cpp
+	panda/command/GenericDataCommand.cpp
 	panda/command/GroupCommand.cpp
 	panda/command/LinkDatasCommand.cpp
 	panda/command/MoveLayerCommand.cpp
-	panda/command/RemoveGenericDataCommand.cpp
 	panda/data/BaseClass.cpp
 	panda/data/BaseData.cpp
 	panda/data/DataCopier.cpp
