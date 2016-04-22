@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <array>
 #include <deque>
+#include <queue>
 #include <set>
 
 namespace
@@ -477,18 +478,18 @@ public:
 		, m_init(initData("init", "Initial values for each point"))
 		, m_edgeWeight(initData("edge weight", "Going through an edge adds the value from this list"))
 		, m_output(initData("output", "Values after propagation and accumulation"))
-//		, m_method(initData(1, "method", "How to decide if the propagation goes to a neighbor"))
+		, m_method(initData(0, "method", "Interaction with the edge weight"))
 	{
 		addInput(m_edges);
 		addInput(m_start);
 		addInput(m_init);
 		addInput(m_edgeWeight);
-//		addInput(m_method);
+		addInput(m_method);
 
 		addOutput(m_output);
 
-//		m_method.setWidget("enum");
-//		m_method.setWidgetData("greater;lesser");
+		m_method.setWidget("enum");
+		m_method.setWidgetData("addition;multiplication");
 	}
 
 	void update()
@@ -501,20 +502,22 @@ public:
 		auto& output = acc.wref();
 		output.clear();
 
-		int nbEdges = edges.size();
-		if (edgeWeight.size() != nbEdges)
+		int nbPts = start.size(), nbEdges = edges.size(), nbWeigths = edgeWeight.size();
+		if (edgeWeight.empty() || initValues.empty())
 			return;
+
+		if (nbWeigths != nbEdges)
+			nbWeigths = 1;
 
 		// First pass, get the number of points
 		int maxId = getMaxValue(edges);
-		if (maxId < 0)
+		if (maxId < 0 || maxId > nbPts)
 			return;
 
-		int nbPts = maxId + 1;
-		if (start.size() != nbPts || initValues.size() != nbPts)
-			return;
-
-		output = initValues;
+		if (initValues.size() == nbPts)
+			output = initValues;
+		else
+			output.assign(nbPts, initValues[0]);
 
 		// Create the "edges around points" list
 		IntVectorList edgesAroundPoints;
@@ -526,18 +529,24 @@ public:
 		}
 
 		// Find the starting positions
-		std::deque<int> openList;
+		std::vector<bool> isInserted(nbPts, false);
+		std::priority_queue<int> openList;
 		for (int i = 0; i < nbPts; ++i)
 		{
 			if (start[i] != 0)
-				openList.push_back(i);
+			{
+				openList.push(i);
+				isInserted[i] = true;
+			}
 		}
 
-//		bool keepLesser = (m_method.getValue() != 0);
+		int iteration = 0, maxIterations = nbPts * nbPts;
+		bool multiply = (m_method.getValue() != 0);
 		while (!openList.empty())
 		{
-			int id = openList.front();
-			openList.pop_front();
+			int id = openList.top();
+			openList.pop();
+			isInserted[id] = false;
 
 			for (auto edgeId : edgesAroundPoints[id].values)
 			{
@@ -546,18 +555,22 @@ public:
 					if (n == id)
 						continue;
 
-					auto val = output[id] + edgeWeight[edgeId];
-//					if ((keepLesser && val < output[n]) || (!keepLesser && val > output[n]))
-					if (val < output[n])
+					auto weight = edgeWeight[edgeId % nbWeigths];
+					auto val = multiply ? (output[id] * weight) : (output[id] + weight);
+					bool greater = (!multiply && weight < 0) || (multiply && weight < 1);
+					if ((greater && val > output[n]) || (!greater && val < output[n]))
 					{
 						output[n] = val;
-						openList.push_back(n);
+						++iteration;
+
+						if(!isInserted[n])
+							openList.push(n);
 					}
 				}
 			}
 
 			// Failsafe if the method has been wrongly chosen and we started a complete recursion
-			if ((int)openList.size() >= nbPts)
+			if(iteration > maxIterations)	
 			{
 				output.clear();
 				return;
@@ -569,7 +582,7 @@ protected:
 	Data< std::vector<IntVector> > m_edges;
 	Data< std::vector<int> > m_start;
 	Data< std::vector<float> > m_init, m_edgeWeight, m_output;
-//	Data< int > m_method;
+	Data< int > m_method;
 };
 
 int Polygon_PropagateAndAccumulateClass = RegisterObject<Polygon_PropagateAndAccumulate>("Math/Polygon/Topology/Propagate and accumulate")
