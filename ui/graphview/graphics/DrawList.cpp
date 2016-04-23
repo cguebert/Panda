@@ -338,6 +338,14 @@ void DrawList::addText(const Rect& rect, const std::string& text, unsigned int c
 		scale = rect.width() / (text_size.x + 1.f);
 		text_size *= scale;
 	}
+	if (fit)
+	{
+		while (text_size.y > rect.height())
+		{
+			scale -= 0.05f;
+			text_size = font->calcTextSize(scale, wrap_width, text, false);
+		}
+	}
 	
 	// Align
 	Point pos = rect.topLeft();
