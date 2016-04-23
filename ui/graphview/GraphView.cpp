@@ -54,9 +54,6 @@ namespace
 
 	inline panda::types::Point convert(const QPointF& pt)
 	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
-
-	inline panda::types::Rect convert(const QRectF& r)
-	{ return panda::types::Rect(r.left(), r.top(), r.right(), r.bottom()); }
 }
 
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
@@ -617,11 +614,24 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				for(auto& tagPair : m_linkTags)
 				{
 					auto& tag = tagPair.second;
-					bool hover = tag->containsPoint(zoomedMouse);
-					if(hover != tag->isHovering())
+					auto dataPair = tag->getDataAtPoint(zoomedMouse);
+					auto data = dataPair.first;
+					bool hovering = data != nullptr;
+					if(hovering != tag->isHovering())
 					{
-						tag->setHovering(hover);
+						tag->setHovering(hovering);
 						update();
+					}
+
+					if (data && data->isInput())
+					{
+						auto parent = data->getParent();
+						QString display = QString("%1\n%2")
+							.arg(QString::fromStdString(parent->getOwner()->getName()))
+							.arg(QString::fromStdString(parent->getName()));
+						auto tagRect = dataPair.second;
+						auto rect = QRect(tagRect.left(), tagRect.top(), tagRect.width(), tagRect.height());
+						QToolTip::showText(event->globalPos(), display, this, rect);
 					}
 				}
 			}

@@ -56,16 +56,16 @@ bool LinkTag::isEmpty()
 	return m_outputDatas.empty();
 }
 
-bool LinkTag::containsPoint(const Point& point)
+std::pair<panda::BaseData*, panda::types::Rect> LinkTag::getDataAtPoint(const Point& point)
 {
-	if(m_inputDataRects.first.contains(point))
-		return true;
+	if (m_inputDataRects.first.contains(point))
+		return { m_inputData, m_inputDataRects.first };
 
 	for(auto rect : m_outputDatas)
 		if(rect.second.first.contains(point))
-			return true;
+			return std::make_pair(rect.first, rect.second.first);
 
-	return false;
+	return { nullptr, Rect() };
 }
 
 void LinkTag::moveView(const Point& delta)

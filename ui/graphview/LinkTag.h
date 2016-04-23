@@ -20,7 +20,7 @@ public:
 	void removeOutput(panda::BaseData* output);
 	void update();
 	bool isEmpty();
-	bool containsPoint(const panda::types::Point& point);
+	std::pair<panda::BaseData*, panda::types::Rect> getDataAtPoint(const panda::types::Point& point);
 
 	void moveView(const panda::types::Point& delta);
 	void draw(DrawList& list, DrawColors& colors);
