@@ -108,7 +108,7 @@ void GraphView::resetView()
 	m_orderedObjectDrawStructs.clear();
 	m_linkTags.clear();
 	m_linkTagsMap.clear();
-	m_movingAction = MOVING_NONE;
+	m_movingAction = Moving::None;
 	m_clickedData = nullptr;
 	m_hoverData = nullptr;
 	m_contextMenuData = nullptr;
@@ -256,7 +256,7 @@ void GraphView::paintGL()
 		tag->draw(drawList, m_drawColors);
 
 	// Selection rubber band
-	if (m_movingAction == MOVING_SELECTION)
+	if (m_movingAction == Moving::Selection)
 	{
 		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
 		auto highlight = palette().highlight().color();
@@ -266,7 +266,7 @@ void GraphView::paintGL()
 	}
 
 	// Link in creation
-	if (m_movingAction == MOVING_LINK)
+	if (m_movingAction == Moving::Link)
 	{
 		drawList.addLine(m_previousMousePos, m_currentMousePos,
 						 DrawList::convert(palette().text().color()), 1.5);
@@ -391,7 +391,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 					{
 						m_clickedData = data;
 						computeCompatibleDatas(data);
-						m_movingAction = MOVING_LINK;
+						m_movingAction = Moving::Link;
 						m_previousMousePos = m_currentMousePos = linkStart;
 
 						m_objectsSelection->selectNone();
@@ -414,14 +414,14 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 						m_objectsSelection->selectNone();
 
 					m_objectsSelection->setLastSelectedObject(object);
-					m_movingAction = MOVING_START;
+					m_movingAction = Moving::Start;
 					m_previousMousePos = zoomedMouse;
 				}
 
 				// Maybe do a custom action ?
 				if(ods->mousePressEvent(event))
 				{
-					m_movingAction = MOVING_CUSTOM;
+					m_movingAction = Moving::Custom;
 					m_capturedDrawStruct = ods;
 				}
 			}
@@ -431,7 +431,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 			// Clicked where there is nothing
 			// Starting a rubber band to select in a zone
 			m_objectsSelection->selectNone();
-			m_movingAction = MOVING_SELECTION;
+			m_movingAction = Moving::Selection;
 			m_previousMousePos = m_currentMousePos = localPos;
 			QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
 		}
@@ -440,7 +440,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 	{
 		if(event->modifiers() == Qt::ControlModifier)
 		{
-			m_movingAction = MOVING_ZOOM;
+			m_movingAction = Moving::Zoom;
 			m_currentMousePos = convert(event->pos());
 			m_previousMousePos = convert(event->globalPos());
 
@@ -448,7 +448,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 		}
 		else
 		{
-			m_movingAction = MOVING_VIEW;
+			m_movingAction = Moving::View;
 			m_previousMousePos = convert(event->globalPos());
 
 			QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
@@ -461,13 +461,13 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	Point localPos = convert(event->localPos());
 	Point globalPos = convert(event->globalPos());
 
-	if(m_movingAction == MOVING_START)
+	if(m_movingAction == Moving::Start)
 	{
 		Point mousePos = m_viewDelta + localPos / m_zoomFactor;
 		Point delta = mousePos - m_previousMousePos;
 		if((delta * m_zoomFactor).norm() > 5)
 		{
-			m_movingAction = MOVING_OBJECT;
+			m_movingAction = Moving::Object;
 			if(m_useMagneticSnap && !m_selectedObjectsDrawStructs.empty())
 			{
 				auto ods = m_selectedObjectsDrawStructs.back();
@@ -499,7 +499,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			m_previousMousePos = mousePos;
 		}
 	}
-	else if(m_movingAction == MOVING_OBJECT)
+	else if(m_movingAction == Moving::Object)
 	{
 		Point mousePos = m_viewDelta + localPos / m_zoomFactor;
 		Point delta = mousePos - m_previousMousePos;
@@ -520,7 +520,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 		m_previousMousePos = mousePos;
 	}
-	else if(m_movingAction == MOVING_VIEW)
+	else if(m_movingAction == Moving::View)
 	{
 		Point delta = (globalPos - m_previousMousePos) / m_zoomFactor;
 		moveView(delta);
@@ -528,7 +528,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		update();
 		emit viewModified();
 	}
-	else if(m_movingAction == MOVING_ZOOM)
+	else if(m_movingAction == Moving::Zoom)
 	{
 		int y = event->globalY() - m_previousMousePos.y;
 		Point oldPos = m_currentMousePos / m_zoomFactor;
@@ -538,12 +538,12 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		m_previousMousePos = globalPos;
 		update();
 	}
-	else if(m_movingAction == MOVING_SELECTION)
+	else if(m_movingAction == Moving::Selection)
 	{
 		m_currentMousePos = localPos;
 		update();
 	}
-	else if(m_movingAction == MOVING_LINK)
+	else if(m_movingAction == Moving::Link)
 	{
 		m_currentMousePos = m_viewDelta + localPos / m_zoomFactor;
 
@@ -557,13 +557,13 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		}
 		update();
 	}
-	else if(m_movingAction == MOVING_CUSTOM)
+	else if(m_movingAction == Moving::Custom)
 	{
 		if(m_capturedDrawStruct)
 			m_capturedDrawStruct->mouseMoveEvent(event);
 	}
 
-	if(m_movingAction == MOVING_NONE || m_movingAction == MOVING_LINK)
+	if(m_movingAction == Moving::None || m_movingAction == Moving::Link)
 	{
 		Point zoomedMouse = m_viewDelta + localPos / m_zoomFactor;
 		const auto ods = getObjectDrawStructAtPos(zoomedMouse);
@@ -609,7 +609,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			if(m_hoverTimer->isActive())
 				m_hoverTimer->stop();
 
-			if(m_movingAction == MOVING_NONE)
+			if(m_movingAction == Moving::None)
 			{
 				// Look for link tags
 				for(auto& tag : m_linkTags)
@@ -655,7 +655,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 void GraphView::mouseReleaseEvent(QMouseEvent* event)
 {
-	if(m_movingAction == MOVING_START)
+	if(m_movingAction == Moving::Start)
 	{
 		panda::PandaObject* object = m_objectsSelection->lastSelectedObject();
 		if(object)
@@ -664,7 +664,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 			m_objectsSelection->add(object);
 		}
 	}
-	else if(m_movingAction == MOVING_OBJECT)
+	else if(m_movingAction == Moving::Object)
 	{
 		QMap<panda::PandaObject*, Point> positions;
 		for(const auto ods : m_selectedObjectsDrawStructs)
@@ -729,15 +729,15 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 
 		updateViewRect();
 	}
-	else if(m_movingAction == MOVING_VIEW)
+	else if(m_movingAction == Moving::View)
 	{
 		emit viewModified();
 	}
-	else if(m_movingAction == MOVING_ZOOM)
+	else if(m_movingAction == Moving::Zoom)
 	{
 		updateViewRect();
 	}
-	else if(m_movingAction == MOVING_SELECTION)
+	else if(m_movingAction == Moving::Selection)
 	{
 		m_objectsSelection->selectNone();
 
@@ -751,7 +751,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 
 		update();
 	}
-	else if(m_movingAction == MOVING_LINK)
+	else if(m_movingAction == Moving::Link)
 	{
 		const auto ods = getObjectDrawStructAtPos(m_currentMousePos);
 		if(ods)
@@ -769,7 +769,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		m_clickedData = nullptr;
 		update();
 	}
-	else if(m_movingAction == MOVING_CUSTOM)
+	else if(m_movingAction == Moving::Custom)
 	{
 		if(m_capturedDrawStruct)
 		{
@@ -780,12 +780,12 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	}
 
 	QApplication::restoreOverrideCursor();
-	m_movingAction = MOVING_NONE;
+	m_movingAction = Moving::None;
 }
 
 void GraphView::wheelEvent(QWheelEvent* event)
 {
-	if(m_movingAction != MOVING_NONE)
+	if(m_movingAction != Moving::None)
 	{
 		event->ignore();
 		return;
@@ -1063,7 +1063,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 	if(ods)
 		panda::helper::removeOne(m_orderedObjectDrawStructs, ods);
 	m_capturedDrawStruct = nullptr;
-	m_movingAction = MOVING_NONE;
+	m_movingAction = Moving::None;
 	m_linkTags.clear();
 	m_linkTagsMap.clear();
 	m_recomputeTags = true;

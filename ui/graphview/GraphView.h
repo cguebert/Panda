@@ -178,8 +178,19 @@ private:
 	panda::types::Point m_viewDelta;
 	panda::types::Point m_previousMousePos, m_currentMousePos;
 
-	enum MovingAction { MOVING_NONE=0, MOVING_START, MOVING_OBJECT, MOVING_VIEW, MOVING_SELECTION, MOVING_LINK, MOVING_ZOOM, MOVING_CUSTOM };
-	MovingAction m_movingAction = MOVING_NONE;
+	enum class Moving
+	{
+		None=0,
+		Start,
+		Object,
+		View,
+		Selection,
+		Link,
+		Zoom,
+		ZoomBox,
+		Custom
+	};
+	Moving m_movingAction = Moving::None;
 
 	panda::BaseData *m_clickedData = nullptr, *m_hoverData = nullptr, *m_contextMenuData = nullptr;
 
