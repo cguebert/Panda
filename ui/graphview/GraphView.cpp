@@ -623,12 +623,26 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 						update();
 					}
 
-					if (data && data->isInput())
+					if (!data)
+						continue;
+
+					auto inputData = tag->getInputData();
+					auto it = std::find_if(m_dataLabels.begin(), m_dataLabels.end(), [inputData](const auto& dl) {
+						return dl.data == inputData;
+					});
+					QString display;
+					if (it != m_dataLabels.end())
+						display = QString("<b>%1</b>").arg(QString::fromStdString(it->label));
+					else if (data && data->isInput())
 					{
 						auto parent = data->getParent();
-						QString display = QString("%1\n%2")
+						display = QString("%1\n%2")
 							.arg(QString::fromStdString(parent->getOwner()->getName()))
 							.arg(QString::fromStdString(parent->getName()));
+					}
+
+					if (!display.isEmpty())
+					{
 						auto tagRect = dataPair.second;
 						auto rect = QRect(tagRect.left(), tagRect.top(), tagRect.width(), tagRect.height());
 						QToolTip::showText(event->globalPos(), display, this, rect);
@@ -1144,6 +1158,7 @@ void GraphView::removeLinkTag(panda::BaseData* input, panda::BaseData* output)
 void GraphView::updateLinkTags()
 {
 	m_recomputeTags = false;
+	// Testing all links and adding new tags
 	for(auto& object : m_pandaDocument->getObjects())
 	{
 		for(auto& data : object->getInputDatas())
@@ -1680,4 +1695,45 @@ void GraphView::objectsReordered()
 panda::types::Point GraphView::getNewObjectPosition()
 {
 	return convert(contentsRect().center()) + m_viewDelta;
+}
+
+void GraphView::setLinkTagName()
+{
+	if (!m_contextLinkTag)
+		return;
+
+	auto data = m_contextLinkTag->getInputData();
+	auto it = std::find_if(m_dataLabels.begin(), m_dataLabels.end(), [data](const auto& dl) {
+		return dl.data == data;
+	});
+
+	std::string label;
+	if (it != m_dataLabels.end())
+		label = it->label;
+
+	bool ok = false;
+	label = QInputDialog::getMultiLineText(this, tr("Data label"), tr("Label:"), QString::fromStdString(label), &ok).toStdString();
+	if (!ok)
+		return;
+
+	// Remove the label
+	if (label.empty())
+	{
+		if (it != m_dataLabels.end())
+			m_dataLabels.erase(it);
+	}
+	else
+	{
+		// Modify the label
+		if (it != m_dataLabels.end())
+			it->label = label;
+		else // Add a label
+		{
+			DataLabel dl;
+			dl.data = data;
+			dl.object = data->getOwner();
+			dl.label = label;
+			m_dataLabels.push_back(dl);
+		}
+	}
 }

@@ -168,6 +168,7 @@ public slots:
 	void changedDock(panda::DockableObject* dockable);
 	void showChooseWidgetDialog();
 	void debugDirtyState(bool show = true);
+	void setLinkTagName();
 
 private:
 	panda::PandaDocument* m_pandaDocument;
@@ -188,7 +189,7 @@ private:
 	ObjectDrawStruct* m_capturedDrawStruct = nullptr; /// Clicked ObjectDrawStruct that want to intercept mouse events
 
 	std::vector<std::shared_ptr<LinkTag>> m_linkTags;
-	std::map<panda::BaseData*, LinkTag*> m_linkTagsMap;
+	std::map<panda::BaseData*, LinkTag*> m_linkTagsMap; /// Input data of the link tag
 	std::set<std::pair<panda::BaseData*, panda::BaseData*>> m_linkTagsDatas; /// A copy of the link tags connections
 	bool m_recomputeTags = false; /// Should we recompute the linkTags next PaintEvent?
 	LinkTag* m_contextLinkTag = nullptr;
@@ -224,6 +225,15 @@ private:
 	DrawList m_linksDrawList, m_connectedDrawList;
 	DrawColors m_drawColors; /// So that we aquire Qt colors only once
 	bool m_recomputeLinks = false, m_recomputeConnected = false;
+
+	/// To be able to add a label to any Data
+	struct DataLabel
+	{
+		panda::PandaObject* object;
+		panda::BaseData* data;
+		std::string label;
+	};
+	std::vector<DataLabel> m_dataLabels;
 };
 
 //****************************************************************************//

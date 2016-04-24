@@ -493,6 +493,7 @@ void MainWindow::createActions()
 
 	m_nameLinkTag = new QAction(tr("Set label"), this);
 	m_nameLinkTag->setStatusTip(tr("Set a label for the link"));
+	connect(m_nameLinkTag, &QAction::triggered, m_graphView, &GraphView::setLinkTagName);
 	addAction(m_nameLinkTag);
 
 	m_chooseWidget = new QAction(tr("Choose widget"), this);
@@ -1129,6 +1130,9 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 
 	if(flags & GraphView::MENU_IMAGE)
 		menu.addAction(m_showImageViewport);
+
+	if (flags & GraphView::MENU_TAG)
+		menu.addAction(m_nameLinkTag);
 
 	int nbSelected = m_graphView->selection().get().size();
 	if(nbSelected == 1 && dynamic_cast<panda::Group*>(obj))
