@@ -265,6 +265,13 @@ void GraphView::paintGL()
 		drawList.addRect(r, DrawList::convert(palette().text().color()), 0.75f / m_zoomFactor);
 	}
 
+	// Zoom box
+	if (m_movingAction == Moving::ZoomBox)
+	{
+		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
+		drawList.addRect(r, DrawList::convert(palette().text().color()), 0.75f / m_zoomFactor);
+	}
+
 	// Link in creation
 	if (m_movingAction == Moving::Link)
 	{
@@ -427,11 +434,19 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 			}
 		}
 		else
-		{
-			// Clicked where there is nothing
-			// Starting a rubber band to select in a zone
+		{	// Clicked where there is nothing
+			if (event->modifiers() == Qt::ControlModifier)
+			{
+				// Starting a zoom box
+				m_movingAction = Moving::ZoomBox;
+			}
+			else
+			{
+				// Starting a rubber band to select in a zone
+				m_movingAction = Moving::Selection;
+			}
+
 			m_objectsSelection->selectNone();
-			m_movingAction = Moving::Selection;
 			m_previousMousePos = m_currentMousePos = localPos;
 			QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
 		}
@@ -538,7 +553,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		m_previousMousePos = globalPos;
 		update();
 	}
-	else if(m_movingAction == Moving::Selection)
+	else if(m_movingAction == Moving::Selection || m_movingAction == Moving::ZoomBox)
 	{
 		m_currentMousePos = localPos;
 		update();
@@ -735,6 +750,20 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::Zoom)
 	{
+		updateViewRect();
+	}
+	else if(m_movingAction == Moving::ZoomBox)
+	{
+		Rect zoomRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
+		if (zoomRect.area() > 1000)
+		{
+			float factorW = contentsRect().width() / (zoomRect.width() + 40);
+			float factorH = contentsRect().height() / (zoomRect.height() + 40);
+			m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
+			m_zoomLevel = 100 * (1.0 - m_zoomFactor);
+			moveView(convert(contentsRect().center()) / m_zoomFactor - zoomRect.center() + m_viewDelta);
+		}
+		update();
 		updateViewRect();
 	}
 	else if(m_movingAction == Moving::Selection)
