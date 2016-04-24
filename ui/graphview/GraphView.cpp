@@ -107,6 +107,7 @@ void GraphView::resetView()
 	m_objectDrawStructs.clear();
 	m_orderedObjectDrawStructs.clear();
 	m_linkTags.clear();
+	m_linkTagsMap.clear();
 	m_movingAction = MOVING_NONE;
 	m_clickedData = nullptr;
 	m_hoverData = nullptr;
@@ -252,7 +253,7 @@ void GraphView::paintGL()
 
 	// Draw links tags
 	for (auto& tag : m_linkTags)
-		tag.second->draw(drawList, m_drawColors);
+		tag->draw(drawList, m_drawColors);
 
 	// Selection rubber band
 	if (m_movingAction == MOVING_SELECTION)
@@ -611,9 +612,8 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			if(m_movingAction == MOVING_NONE)
 			{
 				// Look for link tags
-				for(auto& tagPair : m_linkTags)
+				for(auto& tag : m_linkTags)
 				{
-					auto& tag = tagPair.second;
 					auto dataPair = tag->getDataAtPoint(zoomedMouse);
 					auto data = dataPair.first;
 					bool hovering = data != nullptr;
@@ -875,6 +875,18 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 		}
 	}
 
+	m_contextLinkTag = nullptr;
+	for (const auto& linkTag : m_linkTags)
+	{
+		auto dataPair = linkTag->getDataAtPoint(zoomedMouse);
+		if (dataPair.first)
+		{
+			flags |= MENU_TAG;
+			m_contextLinkTag = linkTag.get();
+			break;
+		}
+	}
+
 	if(m_hoverTimer->isActive())
 		m_hoverTimer->stop();
 
@@ -1039,6 +1051,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 	m_capturedDrawStruct = nullptr;
 	m_movingAction = MOVING_NONE;
 	m_linkTags.clear();
+	m_linkTagsMap.clear();
 	m_recomputeTags = true;
 	m_highlightConnectedDatas = false;
 	update();
@@ -1084,9 +1097,9 @@ int GraphView::getAvailableLinkTagIndex()
 	int nb = m_linkTags.size();
 	std::vector<bool> indices(nb, true);
 
-	for(const auto& tagPair : m_linkTags)
+	for(const auto& linkTag : m_linkTags)
 	{
-		int id = tagPair.second->index();
+		int id = linkTag->index();
 		if(id < nb)
 			indices[id] = false;
 	}
@@ -1102,20 +1115,29 @@ int GraphView::getAvailableLinkTagIndex()
 
 void GraphView::addLinkTag(panda::BaseData* input, panda::BaseData* output)
 {
-	if(m_linkTags.count(input))
-		m_linkTags[input]->addOutput(output);
+	if(m_linkTagsMap.count(input))
+		m_linkTagsMap[input]->addOutput(output);
 	else
-		m_linkTags[input] = std::make_shared<LinkTag>(this, input, output, getAvailableLinkTagIndex());
+	{
+		auto tag = std::make_shared<LinkTag>(this, input, output, getAvailableLinkTagIndex());
+		m_linkTags.push_back(tag);
+		m_linkTagsMap[input] = tag.get();
+	}
 }
 
 void GraphView::removeLinkTag(panda::BaseData* input, panda::BaseData* output)
 {
-	if(m_linkTags.count(input))
+	if(m_linkTagsMap.count(input))
 	{
-		LinkTag* tag = m_linkTags[input].get();
+		LinkTag* tag = m_linkTagsMap[input];
 		tag->removeOutput(output);
-		if(tag->isEmpty())
-			m_linkTags.erase(input);
+		if (tag->isEmpty())
+		{
+			m_linkTagsMap.erase(input);
+			panda::helper::removeIf(m_linkTags, [tag](const auto& ptr) {
+				return ptr.get() == tag;
+			});
+		}
 	}
 }
 
@@ -1137,21 +1159,29 @@ void GraphView::updateLinkTags()
 		}
 	}
 
-	// Updating tags and removing empty ones
-	for (auto it = m_linkTags.begin(); it != m_linkTags.end();)
+	// Updating tags
+	for (auto& linkTag : m_linkTags)
+		linkTag->update();
+
+	// Removing empty ones from the map
+	for (auto it = m_linkTagsMap.begin(); it != m_linkTagsMap.end();)
 	{
-		it->second->update();
 		if (it->second->isEmpty())
-			it = m_linkTags.erase(it);
+			it = m_linkTagsMap.erase(it);
 		else
 			++it;
 	}
 
+	// And removing them from the list (freeing them in the process)
+	auto last = std::remove_if(m_linkTags.begin(), m_linkTags.end(), [](const auto& tag) {
+		return tag->isEmpty();
+	});
+	m_linkTags.erase(last, m_linkTags.end());
+
 	// Updating the connections list
 	m_linkTagsDatas.clear();
-	for (const auto& it : m_linkTags)
+	for (const auto& linkTag : m_linkTags)
 	{
-		const auto& linkTag = it.second;
 		const auto input = linkTag->getInputData();
 		for (const auto output : linkTag->getOutputDatas())
 			m_linkTagsDatas.emplace(input, output);
@@ -1630,6 +1660,7 @@ void GraphView::updateDirtyDrawStructs()
 	m_dirtyDrawStructsSet.clear();
 
 	m_linkTags.clear();
+	m_linkTagsMap.clear();
 	m_recomputeTags = true;
 	m_highlightConnectedDatas = false;
 	m_hoverData = nullptr;

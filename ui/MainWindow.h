@@ -173,6 +173,7 @@ private:
 		*m_undoAction,
 		*m_redoAction,
 		*m_showImageViewport,
+		*m_nameLinkTag,
 		*m_chooseWidget;
 	QLabel* m_timeLabel;
 };

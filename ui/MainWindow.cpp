@@ -491,6 +491,10 @@ void MainWindow::createActions()
 	connect(m_showImageViewport, SIGNAL(triggered()), this, SLOT(showImageViewport()));
 	addAction(m_showImageViewport);
 
+	m_nameLinkTag = new QAction(tr("Set label"), this);
+	m_nameLinkTag->setStatusTip(tr("Set a label for the link"));
+	addAction(m_nameLinkTag);
+
 	m_chooseWidget = new QAction(tr("Choose widget"), this);
 	m_chooseWidget->setStatusTip(tr("Choose the widget to use for this data"));
 	connect(m_chooseWidget, SIGNAL(triggered()), m_graphView, SLOT(showChooseWidgetDialog()));

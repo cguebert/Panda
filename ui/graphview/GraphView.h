@@ -77,10 +77,11 @@ public:
 	float getZoom();
 
 	enum ContextMenuReason {
-		MENU_OBJECT = 0x1,
-		MENU_DATA = 0x2,
-		MENU_LINK = 0x4,
-		MENU_IMAGE = 0x8
+		MENU_OBJECT	= 1 << 0,
+		MENU_DATA	= 1 << 1,
+		MENU_LINK	= 1 << 2,
+		MENU_IMAGE	= 1 << 3,
+		MENU_TAG	= 1 << 4
 	};
 
 	void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
@@ -186,9 +187,11 @@ private:
 
 	ObjectDrawStruct* m_capturedDrawStruct = nullptr; /// Clicked ObjectDrawStruct that want to intercept mouse events
 
-	std::map<panda::BaseData*, std::shared_ptr<LinkTag> > m_linkTags;
+	std::vector<std::shared_ptr<LinkTag>> m_linkTags;
+	std::map<panda::BaseData*, LinkTag*> m_linkTagsMap;
 	std::set<std::pair<panda::BaseData*, panda::BaseData*>> m_linkTagsDatas; /// A copy of the link tags connections
 	bool m_recomputeTags = false; /// Should we recompute the linkTags next PaintEvent?
+	LinkTag* m_contextLinkTag = nullptr;
 
 	QTimer* m_hoverTimer; /// Counting how long the mouse is staying over a Data
 	bool m_highlightConnectedDatas = false;
