@@ -1099,11 +1099,38 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 void GraphView::savingObject(panda::XmlElement& elem, panda::PandaObject* object)
 {
 	getObjectDrawStruct(object)->save(elem);
+
+	// Save data labels for this object
+	for (const auto& dl : m_dataLabels)
+	{
+		if (dl.object == object)
+		{
+			auto dlNode = elem.addChild("DataLabel");
+			dlNode.setAttribute("data", dl.data->getName());
+			dlNode.setText(dl.label);
+		}
+	}
 }
 
 void GraphView::loadingObject(const panda::XmlElement& elem, panda::PandaObject* object)
 {
 	getObjectDrawStruct(object)->load(elem);
+
+	// Load data labels
+	auto e = elem.firstChild("DataLabel");
+	while(e)
+	{
+		auto data = object->getData(e.attribute("data").toString());
+		if (data)
+		{
+			DataLabel dl;
+			dl.data = data;
+			dl.object = object;
+			dl.label = e.text();
+			m_dataLabels.push_back(dl);
+		}
+		e = e.nextSibling("DataLabel");
+	}
 }
 
 int GraphView::getAvailableLinkTagIndex()
@@ -1736,4 +1763,6 @@ void GraphView::setLinkTagName()
 			m_dataLabels.push_back(dl);
 		}
 	}
+
+	emit modified();
 }
