@@ -113,6 +113,27 @@ int ImGui_Data_IntSliderClass = RegisterObject<ImGui_Data_IntSlider>("ImGui/Inte
 
 //****************************************************************************//
 
+class ImGui_Data_IntCheckbox : public ImGui_Data<int>
+{
+public:
+	PANDA_CLASS(ImGui_Data_IntCheckbox, PANDA_TEMPLATE(ImGui_Data, int))
+
+	ImGui_Data_IntCheckbox(PandaDocument* doc)
+		: ImGui_Data<int>(doc) { }
+
+	void fillGui() override
+	{
+		bool value = m_outputValue.getValue() != 0;
+		if (ImGui::Checkbox(m_fieldName.c_str(), &value))
+			m_outputValue.setValue(value ? 1 : 0);
+	}
+};
+
+int ImGui_Data_IntCheckboxClass = RegisterObject<ImGui_Data_IntCheckbox>("ImGui/Integer/ImGui integer checkbox").setDescription("Create an ImGui field for editing a single integer value using a checkbox");
+
+
+//****************************************************************************//
+
 class ImGui_Data_FloatSimple : public ImGui_Data<float>
 {
 public:
@@ -273,16 +294,55 @@ public:
 	PANDA_CLASS(ImGui_Data_ColorSimple, PANDA_TEMPLATE(ImGui_Data, types::Color))
 
 		ImGui_Data_ColorSimple(PandaDocument* doc)
-		: ImGui_Data<types::Color>(doc) {}
+		: ImGui_Data<types::Color>(doc)
+		, m_alpha(initData(0, "edit alpha", "If true, show the alpha to also be edited"))
+	{
+		addInput(m_alpha);
+		m_alpha.setWidget("checkbox");
+	}
 
 	void fillGui() override
 	{
 		types::Color value = m_outputValue.getValue();
-		if (ImGui::ColorEdit4(m_fieldName.c_str(), value.data()))
+		bool editAlpha = m_alpha.getValue() != 0;
+		if (ImGui::ColorEdit4(m_fieldName.c_str(), value.data(), editAlpha))
 			m_outputValue.setValue(value);
 	}
+
+	Data<int> m_alpha;
 };
 
 int ImGui_Data_ColorSimpleClass = RegisterObject<ImGui_Data_ColorSimple>("ImGui/Color/ImGui color").setDescription("Create an ImGui field for editing a single color value");
+
+//****************************************************************************//
+
+class ImGui_Data_StringSimple : public ImGui_Data<std::string>
+{
+public:
+	PANDA_CLASS(ImGui_Data_StringSimple, PANDA_TEMPLATE(ImGui_Data, std::string))
+
+	ImGui_Data_StringSimple(PandaDocument* doc)
+		: ImGui_Data<std::string>(doc)
+		, m_maxLength(initData(255, "max length", "Maximum text length"))
+	{
+		addInput(m_maxLength);
+	}
+
+	void fillGui() override
+	{
+		std::string value = m_outputValue.getValue();
+		int bufSize = m_maxLength.getValue();
+		if (bufSize < 1)
+			bufSize = 1;
+		value.reserve(bufSize);
+		if (ImGui::InputText(m_fieldName.c_str(), &value[0], bufSize-1))
+			m_outputValue.setValue(value.c_str());
+	}
+
+	Data<int> m_maxLength;
+};
+
+int ImGui_Data_StringSimpleClass = RegisterObject<ImGui_Data_StringSimple>("ImGui/Color/ImGui text").setDescription("Create an ImGui field for editing a single text value");
+
 
 } // namespace Panda
