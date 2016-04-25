@@ -1,5 +1,5 @@
 #include <QtWidgets>
-#include <cmath>
+#include <chrono>
 #include <functional>
 #include <limits>
 
@@ -54,6 +54,13 @@ namespace
 
 	inline panda::types::Point convert(const QPointF& pt)
 	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
+
+	long long currentTime()
+	{
+		using namespace std::chrono;
+		auto now = time_point_cast<microseconds>(high_resolution_clock::now());
+		return now.time_since_epoch().count();
+	}
 }
 
 GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
@@ -373,6 +380,7 @@ void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
 
 void GraphView::mousePressEvent(QMouseEvent* event)
 {
+	m_previousTime = currentTime();
 	Point localPos = convert(event->localPos());
 	Point zoomedMouse = m_viewDelta + localPos / m_zoomFactor;
 	if(event->button() == Qt::LeftButton)
@@ -570,6 +578,36 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			if(data && canLinkWith(data))
 				m_currentMousePos = linkStart;
 		}
+
+		// Moving the view if the mouse is near the border of the widget
+		auto contents = contentsRect();
+		auto area = Rect(convert(contents.topLeft()), convert(contents.bottomRight()));
+		const float maxDist = 50;
+		area.adjust(maxDist, maxDist, -maxDist, -maxDist);
+		if (!area.contains(localPos))
+		{
+			float dx = 0, dy = 0;
+			if (localPos.x < area.left())
+				dx = area.left() - localPos.x;
+			else if (localPos.x > area.right())
+				dx = area.right() - localPos.x;
+
+			if (localPos.y < area.top())
+				dy = area.top() - localPos.y;
+			else if (localPos.y > area.bottom())
+				dy = area.bottom() - localPos.y;
+
+			auto now = currentTime();
+			if (now > m_previousTime)
+			{
+				float dt = (now - m_previousTime) / 1000000.f;
+				const float speed = 10.f / m_zoomFactor;
+				m_previousTime = now;
+				Point delta = speed * dt * Point(dx, dy);
+				moveView(delta);
+			}
+		}
+
 		update();
 	}
 	else if(m_movingAction == Moving::Custom)

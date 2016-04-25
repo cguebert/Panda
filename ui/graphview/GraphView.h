@@ -245,6 +245,8 @@ private:
 		std::string label;
 	};
 	std::vector<DataLabel> m_dataLabels;
+
+	long long m_previousTime = 0;
 };
 
 //****************************************************************************//
