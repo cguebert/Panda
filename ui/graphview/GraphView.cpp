@@ -212,6 +212,10 @@ void GraphView::resizeGL(int w, int h)
 
 void GraphView::paintGL()
 {
+	// Moving the view when creating a link if the mouse is near the border of the widget
+	if(m_movingAction == Moving::Link)
+		moveViewIfMouseOnBorder();
+
 	updateDirtyDrawStructs();
 
 	if(m_recomputeTags)			updateLinkTags();
@@ -580,33 +584,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		}
 
 		// Moving the view if the mouse is near the border of the widget
-		auto contents = contentsRect();
-		auto area = Rect(convert(contents.topLeft()), convert(contents.bottomRight()));
-		const float maxDist = 50;
-		area.adjust(maxDist, maxDist, -maxDist, -maxDist);
-		if (!area.contains(localPos))
-		{
-			float dx = 0, dy = 0;
-			if (localPos.x < area.left())
-				dx = area.left() - localPos.x;
-			else if (localPos.x > area.right())
-				dx = area.right() - localPos.x;
-
-			if (localPos.y < area.top())
-				dy = area.top() - localPos.y;
-			else if (localPos.y > area.bottom())
-				dy = area.bottom() - localPos.y;
-
-			auto now = currentTime();
-			if (now > m_previousTime)
-			{
-				float dt = (now - m_previousTime) / 1000000.f;
-				const float speed = 10.f / m_zoomFactor;
-				m_previousTime = now;
-				Point delta = speed * dt * Point(dx, dy);
-				moveView(delta);
-			}
-		}
+		moveViewIfMouseOnBorder();
 
 		update();
 	}
@@ -1832,4 +1810,38 @@ void GraphView::setLinkTagName()
 	}
 
 	emit modified();
+}
+
+void GraphView::moveViewIfMouseOnBorder()
+{
+	auto localPos = (m_currentMousePos - m_viewDelta) * m_zoomFactor;
+	auto contents = contentsRect();
+	auto area = Rect(convert(contents.topLeft()), convert(contents.bottomRight()));
+	const float maxDist = 50;
+	area.adjust(maxDist, maxDist, -maxDist, -maxDist);
+	if (!area.contains(localPos))
+	{
+		float dx = 0, dy = 0;
+		if (localPos.x < area.left())
+			dx = area.left() - localPos.x;
+		else if (localPos.x > area.right())
+			dx = area.right() - localPos.x;
+
+		if (localPos.y < area.top())
+			dy = area.top() - localPos.y;
+		else if (localPos.y > area.bottom())
+			dy = area.bottom() - localPos.y;
+
+		auto now = currentTime();
+		if (now > m_previousTime)
+		{
+			float dt = (now - m_previousTime) / 1000000.f;
+			const float speed = 10.f / m_zoomFactor;
+			m_previousTime = now;
+			Point delta = speed * dt * Point(dx, dy);
+			moveView(delta);
+		}
+	}
+
+	update();
 }

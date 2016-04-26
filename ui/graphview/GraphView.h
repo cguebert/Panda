@@ -104,12 +104,12 @@ protected:
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
 
-	void mousePressEvent(QMouseEvent* event);
-	void mouseMoveEvent(QMouseEvent* event);
-	void mouseReleaseEvent(QMouseEvent* event);
-	void wheelEvent(QWheelEvent* event);
-	void keyPressEvent(QKeyEvent* event);
-	void contextMenuEvent(QContextMenuEvent* event);
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
+	void wheelEvent(QWheelEvent* event) override;
+	void keyPressEvent(QKeyEvent* event) override;
+	void contextMenuEvent(QContextMenuEvent* event) override;
 	void focusOutEvent(QFocusEvent*) override;
 
 #ifdef PANDA_LOG_EVENTS
@@ -119,6 +119,7 @@ protected:
 
 	ObjectDrawStruct* getObjectDrawStructAtPos(const panda::types::Point& pt);
 	void moveView(const panda::types::Point& delta);
+	void moveViewIfMouseOnBorder();
 
 	void addLinkTag(panda::BaseData* input, panda::BaseData* output);
 	void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
