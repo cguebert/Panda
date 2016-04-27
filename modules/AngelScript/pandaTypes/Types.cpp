@@ -65,7 +65,9 @@ namespace panda
 	{
 		registerColor(engine);
 		registerInt(engine);
+		registerIntVector(engine);
 		registerFloat(engine);
+		registerFloatVector(engine);
 		registerGradient(engine);
 		registerPoint(engine);
 		registerRect(engine);

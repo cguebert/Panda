@@ -60,7 +60,9 @@ set(SOURCE_FILES
 	addons/aatc/aatc_serializer.cpp
 	pandaTypes/Animation.cpp
 	pandaTypes/Color.cpp
+	pandaTypes/FloatVector.cpp
 	pandaTypes/Gradient.cpp
+	pandaTypes/IntVector.cpp
 	pandaTypes/Mesh.cpp
 	pandaTypes/Path.cpp
 	pandaTypes/Point.cpp
