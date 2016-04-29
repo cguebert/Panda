@@ -131,6 +131,35 @@ public:
 
 int ImGui_Data_IntCheckboxClass = RegisterObject<ImGui_Data_IntCheckbox>("ImGui/Integer/ImGui integer checkbox").setDescription("Create an ImGui field for editing a single integer value using a checkbox");
 
+//****************************************************************************//
+
+class ImGui_Data_IntComboBox : public ImGui_Data<int>
+{
+public:
+	PANDA_CLASS(ImGui_Data_IntComboBox, PANDA_TEMPLATE(ImGui_Data, int))
+
+	ImGui_Data_IntComboBox(PandaDocument* doc)
+		: ImGui_Data<int>(doc)
+		, m_items(initData("items", "Items in the combo box"))
+	{
+		addInput(m_items);
+	}
+
+	void fillGui() override
+	{
+		int value = m_outputValue.getValue();
+		std::vector<const char*> items;
+		for (const auto& item : m_items.getValue())
+			items.push_back(item.c_str());
+		if (ImGui::Combo(m_fieldName.c_str(), &value, items.data(), items.size()))
+			m_outputValue.setValue(value);
+	}
+
+	Data<std::vector<std::string>> m_items;
+};
+
+int ImGui_Data_IntComboBoxClass = RegisterObject<ImGui_Data_IntComboBox>("ImGui/Integer/ImGui integer combobox").setDescription("Create an ImGui field for editing a single integer value using a combo box");
+
 
 //****************************************************************************//
 
