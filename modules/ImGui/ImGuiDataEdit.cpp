@@ -371,7 +371,7 @@ public:
 	Data<int> m_maxLength;
 };
 
-int ImGui_Data_StringSimpleClass = RegisterObject<ImGui_Data_StringSimple>("ImGui/Color/ImGui text").setDescription("Create an ImGui field for editing a single text value");
+int ImGui_Data_StringSimpleClass = RegisterObject<ImGui_Data_StringSimple>("ImGui/Text/ImGui text").setDescription("Create an ImGui field for editing a single text value");
 
 
 } // namespace Panda

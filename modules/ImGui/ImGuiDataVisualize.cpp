@@ -5,6 +5,8 @@
 
 #include <panda/types/DataTraits.h>
 #include <panda/types/DataTypeId.h>
+#include <panda/types/ImageWrapper.h>
+#include <panda/types/Point.h>
 
 #include "imgui/imgui.h"
 
@@ -64,7 +66,36 @@ public:
 	}
 };
 
-int ImGui_Visualize_TextClass = RegisterObject<ImGui_Visualize_Text>("ImGui/Color/ImGui visualize text").setDescription("Create an ImGui field for visualizing a single text value");
+int ImGui_Visualize_TextClass = RegisterObject<ImGui_Visualize_Text>("ImGui/Text/ImGui visualize text").setDescription("Create an ImGui field for visualizing a single text value");
+
+//****************************************************************************//
+
+class ImGui_Visualize_Image : public ImGui_Visualize<types::ImageWrapper>
+{
+public:
+	PANDA_CLASS(ImGui_Visualize_Image, PANDA_TEMPLATE(ImGui_Visualize, types::ImageWrapper))
+
+	ImGui_Visualize_Image(PandaDocument* doc)
+		: ImGui_Visualize<types::ImageWrapper>(doc)
+		, m_size(initData(types::Point(50, 50), "size", "Size of the widget"))
+	{
+		addInput(m_size);
+	}
+
+	void fillGui() override
+	{
+		auto id = m_value.getValue().getTextureId();
+		if (!id)
+			return;
+		auto imId = reinterpret_cast<void*>(static_cast<intptr_t>(id));
+		auto size = m_size.getValue();
+		ImGui::Image(imId, { size.x, size.y });
+	}
+
+	Data<types::Point> m_size;
+};
+
+int ImGui_Visualize_ImageClass = RegisterObject<ImGui_Visualize_Image>("ImGui/Image/ImGui visualize image").setDescription("Create an ImGui field for visualizing a single image");
 
 
 } // namespace Panda
