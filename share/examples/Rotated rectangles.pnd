@@ -17,64 +17,8 @@
             <Value x="0" y="0"/>
         </Data>
     </Object>
-    <Object type="panda::Group" index="10" x="95.5" y="366">
-        <GroupData type="integer" input="0" output="1" name="# of rects2" help="The value stored" widget="default"/>
-        <GroupData type="integer" input="1" output="0" name="# of rects" help="The value you want to store" widget="default"/>
-        <GroupData type="point" input="0" output="1" name="Initial position2" help="The value stored" widget="default"/>
-        <GroupData type="point" input="1" output="0" name="Initial position" help="The value you want to store" widget="default"/>
-        <GroupData type="point" input="0" output="1" name="Rect size2" help="The value stored" widget="default"/>
-        <GroupData type="point" input="1" output="0" name="Rect size" help="The value you want to store" widget="default"/>
-        <GroupData type="real" input="0" output="1" name="Angle2" help="The value stored" widget="default"/>
-        <GroupData type="real" input="1" output="0" name="Angle" help="The value you want to store" widget="slider" widgetData="0 45 0.01"/>
-        <GroupData type="point_vector" input="0" output="1" name="point" help="Point created from the 2 coordinates" widget="default"/>
-        <GroupData type="real" input="1" output="0" name="Rot center X" help="The value you want to store" widget="slider" widgetData="-100 100 0.1"/>
-        <GroupData type="real" input="1" output="0" name="Rot center Y" help="The value you want to store" widget="slider" widgetData="-100 100 0.1"/>
-        <Data name="name">Parameters</Data>
-        <Data name="# of rects" int="20"/>
-        <Data name="Initial position" x="300" y="300"/>
-        <Data name="Rect size" x="200" y="100"/>
-        <Data name="Angle" real="20"/>
-        <Data name="Rot center X" real="0"/>
-        <Data name="Rot center Y" real="-67.699997"/>
-        <Object type="panda::GeneratorUser&lt;integer&gt;" index="11" x="76.5" y="139">
-            <Data name="caption"># of rects</Data>
-        </Object>
-        <Object type="panda::GeneratorUser&lt;point&gt;" index="12" x="76.5" y="71">
-            <Data name="caption">Initial position</Data>
-        </Object>
-        <Object type="panda::GeneratorUser&lt;point&gt;" index="13" x="76.5" y="7">
-            <Data name="caption">Rect size</Data>
-        </Object>
-        <Object type="panda::GeneratorUser&lt;real&gt;" index="14" x="76.5" y="-139">
-            <Data name="caption">Angle</Data>
-            <Data name="input" widget="slider" widgetData="0 45 0.01"/>
-        </Object>
-        <Object type="panda::GeneratorPoints_Compose" index="15" x="76.5" y="-61"/>
-        <Object type="panda::GeneratorUser&lt;real&gt;" index="16" x="-76.5" y="-81">
-            <Data name="caption">Rot center X</Data>
-            <Data name="input" widget="slider" widgetData="-100 100 0.1"/>
-        </Object>
-        <Object type="panda::GeneratorUser&lt;real&gt;" index="17" x="-76.5" y="-24">
-            <Data name="caption">Rot center Y</Data>
-            <Data name="input" widget="slider" widgetData="-100 100 0.1"/>
-        </Object>
-        <Link object1="11" data1="input" object2="0" data2="# of rects"/>
-        <Link object1="12" data1="input" object2="0" data2="Initial position"/>
-        <Link object1="13" data1="input" object2="0" data2="Rect size"/>
-        <Link object1="14" data1="input" object2="0" data2="Angle"/>
-        <Link object1="15" data1="x" object2="16" data2="value"/>
-        <Link object1="15" data1="y" object2="17" data2="value"/>
-        <Link object1="16" data1="input" object2="0" data2="Rot center X"/>
-        <Link object1="17" data1="input" object2="0" data2="Rot center Y"/>
-        <Link object1="0" data1="# of rects2" object2="11" data2="value"/>
-        <Link object1="0" data1="Initial position2" object2="12" data2="value"/>
-        <Link object1="0" data1="Rect size2" object2="13" data2="value"/>
-        <Link object1="0" data1="Angle2" object2="14" data2="value"/>
-        <Link object1="0" data1="point" object2="15" data2="point"/>
-    </Object>
-    <Object type="panda::Annotation" index="18" x="20.75" y="364">
-        <Data name="text">Regrouped all parameters in a group.
-
+    <Object type="panda::Annotation" index="18" x="-93.25" y="197">
+        <Data name="text">Regrouped all parameters in a ImGui window.
 Easier to modify them while viewing the render.</Data>
         <Data name="deltaToEnd" x="200" y="100"/>
     </Object>
@@ -97,19 +41,53 @@ Easier to modify them while viewing the render.</Data>
         <Data name="text">Render all rectangles</Data>
         <Data name="deltaToEnd" x="200" y="100"/>
     </Object>
-    <Link object1="1" data1="# numbers" object2="10" data2="# of rects2"/>
+    <Object type="panda::ImGui_Window" index="23" x="-37" y="206">
+        <Data name="title">Parameters</Data>
+        <Data name="position" x="20" y="20"/>
+        <Data name="size" x="350" y="150"/>
+    </Object>
+    <Object type="panda::ImGui_Data_IntSimple" index="24" x="-57" y="266">
+        <Data name="name"># of rects</Data>
+        <Data name="init" int="20"/>
+        <Data name="step" int="1"/>
+    </Object>
+    <Object type="panda::ImGui_Data_PointSimple" index="25" x="-57" y="326">
+        <Data name="name">First position</Data>
+        <Data name="init" x="200" y="300"/>
+    </Object>
+    <Object type="panda::ImGui_Data_PointSimple" index="26" x="-57" y="386">
+        <Data name="name">Rect size</Data>
+        <Data name="init" x="200" y="100"/>
+    </Object>
+    <Object type="panda::ImGui_Data_FloatSlider" index="27" x="-57" y="446">
+        <Data name="name">Angle step</Data>
+        <Data name="init" real="20"/>
+        <Data name="max" real="45"/>
+    </Object>
+    <Object type="panda::ImGui_Data_PointSlider" index="28" x="-57" y="521">
+        <Data name="name">Rot center</Data>
+        <Data name="init" x="0" y="-67.699997"/>
+        <Data name="min" real="-100"/>
+        <Data name="max" real="100"/>
+    </Object>
+    <Link object1="1" data1="# numbers" object2="24" data2="value"/>
     <Link object1="2" data1="input" object2="7" data2="output"/>
-    <Link object1="2" data1="center" object2="10" data2="Initial position2"/>
+    <Link object1="2" data1="center" object2="25" data2="value"/>
     <Link object1="2" data1="angle" object2="5" data2="result"/>
     <Link object1="3" data1="rectangle" object2="4" data2="rectangle"/>
-    <Link object1="4" data1="center" object2="10" data2="Initial position2"/>
-    <Link object1="4" data1="size" object2="10" data2="Rect size2"/>
+    <Link object1="4" data1="center" object2="25" data2="value"/>
+    <Link object1="4" data1="size" object2="26" data2="value"/>
     <Link object1="5" data1="input 1" object2="1" data2="numbers"/>
-    <Link object1="5" data1="input 2" object2="10" data2="Angle2"/>
+    <Link object1="5" data1="input 2" object2="27" data2="value"/>
     <Link object1="6" data1="path" object2="8" data2="output"/>
     <Link object1="7" data1="input" object2="3" data2="path"/>
-    <Link object1="7" data1="translation" object2="10" data2="point"/>
+    <Link object1="7" data1="translation" object2="28" data2="value"/>
     <Link object1="8" data1="input" object2="2" data2="output"/>
     <Link object1="8" data1="translation" object2="9" data2="result"/>
-    <Link object1="9" data1="point 2" object2="10" data2="point"/>
+    <Link object1="9" data1="point 2" object2="28" data2="value"/>
+    <Dock dock="23" docked="24"/>
+    <Dock dock="23" docked="25"/>
+    <Dock dock="23" docked="26"/>
+    <Dock dock="23" docked="27"/>
+    <Dock dock="23" docked="28"/>
 </Panda>
