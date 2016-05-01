@@ -1,0 +1,94 @@
+<Panda>
+    <Data name="render size" x="800" y="250"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
+    <Data name="timestep" real="1"/>
+    <Data name="use timer" int="1"/>
+    <Data name="nb threads" int="0"/>
+    <Object type="panda::GeneratorText_DateTime" index="1" x="482" y="355.25"/>
+    <Object type="panda::RenderText" index="2" x="650" y="354.5">
+        <Data name="font">Tahoma,tahomabd.ttf,0,175,75,0</Data>
+        <Data name="color">
+            <Value r="1" g="1" b="1" a="1"/>
+        </Data>
+        <Data name="align H" int="2"/>
+        <Data name="align V" int="2"/>
+    </Object>
+    <Object type="panda::GeneratorPoints_Random" index="3" x="664" y="529">
+        <Data name="# points" int="5000"/>
+    </Object>
+    <Object type="panda::ModifierPoints_Union" index="4" x="902" y="295.25"/>
+    <Object type="panda::Layer" index="5" x="1208.5" y="221">
+        <Data name="name">Full</Data>
+        <Data name="opacity" real="1"/>
+    </Object>
+    <Object type="panda::RenderModifier_BlendMode" index="6" x="1188.5" y="370.75">
+        <Data name="source" int="4"/>
+        <Data name="destination" int="7"/>
+    </Object>
+    <Object type="panda::RenderDisk_Gradient" index="7" x="873" y="460.25">
+        <Data name="center">
+            <Value x="10" y="10"/>
+        </Data>
+        <Data name="radius">
+            <Value real="7"/>
+        </Data>
+        <Data name="gradient">
+            <Value extend="0">
+                <Stop pos="0.51249999" r="1" g="1" b="1" a="1"/>
+                <Stop pos="0.88749999" r="0" g="0" b="0" a="1"/>
+            </Value>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorImage_CreateTexture" index="8" x="893" y="400.25">
+        <Data name="size" x="20" y="20"/>
+    </Object>
+    <Object type="panda::GeneratorImage_CreateTexture" index="9" x="670" y="295.25"/>
+    <Object type="panda::GeneratorPoint_RenderSize" index="10" x="318.25" y="187.5"/>
+    <Object type="panda::PointMath_Division" index="11" x="479" y="187.5">
+        <Data name="factor">
+            <Value real="2"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="12" x="318.25" y="295.25">
+        <Data name="caption">Size</Data>
+        <Data name="input" x="800" y="250"/>
+    </Object>
+    <Object type="panda::GeneratorRectangles_ComposeCorners" index="13" x="479" y="423">
+        <Data name="top-left">
+            <Value x="0" y="0"/>
+        </Data>
+    </Object>
+    <Object type="panda::PointMath_Division" index="14" x="479" y="248.5">
+        <Data name="factor">
+            <Value real="2"/>
+        </Data>
+    </Object>
+    <Object type="panda::PointMath_Substraction" index="15" x="670" y="233.5"/>
+    <Object type="panda::PointMath_Addition" index="16" x="1054.75" y="280.25"/>
+    <Object type="panda::GeneratorNumber_AnimationTime" index="17" x="479" y="544"/>
+    <Object type="panda::RenderSprite" index="19" x="1188.5" y="280.75">
+        <Data name="size">
+            <Value real="40"/>
+        </Data>
+    </Object>
+    <Link object1="2" data1="text" object2="1" data2="text"/>
+    <Link object1="2" data1="rectangle" object2="13" data2="rectangle"/>
+    <Link object1="3" data1="seed" object2="17" data2="time"/>
+    <Link object1="3" data1="area" object2="13" data2="rectangle"/>
+    <Link object1="4" data1="image" object2="9" data2="texture"/>
+    <Link object1="4" data1="input" object2="3" data2="points"/>
+    <Link object1="9" data1="size" object2="12" data2="value"/>
+    <Link object1="11" data1="point" object2="10" data2="size"/>
+    <Link object1="13" data1="bottom-right" object2="12" data2="value"/>
+    <Link object1="14" data1="point" object2="12" data2="value"/>
+    <Link object1="15" data1="point 1" object2="11" data2="result"/>
+    <Link object1="15" data1="point 2" object2="14" data2="result"/>
+    <Link object1="16" data1="point 1" object2="15" data2="result"/>
+    <Link object1="16" data1="point 2" object2="4" data2="output"/>
+    <Link object1="19" data1="position" object2="16" data2="result"/>
+    <Link object1="19" data1="texture" object2="8" data2="texture"/>
+    <Dock dock="5" docked="19"/>
+    <Dock dock="5" docked="6"/>
+    <Dock dock="8" docked="7"/>
+    <Dock dock="9" docked="2"/>
+</Panda>

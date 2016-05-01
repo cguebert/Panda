@@ -1,0 +1,1188 @@
+<Panda>
+    <Data name="render size" x="1200" y="800"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
+    <Data name="timestep" real="0.0099999998"/>
+    <Data name="use timer" int="1"/>
+    <Data name="nb threads" int="0"/>
+    <Object type="panda::RenderPath" index="1" x="1395.7466" y="244.99998"/>
+    <Object type="panda::Polygon_DecomposeToPaths" index="2" x="347.88831" y="231.65395"/>
+    <Object type="panda::GeneratorPoints_Random" index="3" x="81.976563" y="240.1245">
+        <Data name="seed" int="4255"/>
+    </Object>
+    <Object type="panda::ListLoop" index="4" x="498.88831" y="168.65395">
+        <CreatedData type="path"/>
+        <CreatedData type="point"/>
+    </Object>
+    <Object type="panda::PathMath_Centroid" index="5" x="347.88831" y="287.88922"/>
+    <Object type="panda::GeneratorUser&lt;integer&gt;" index="6" x="213.85889" y="199.56712">
+        <Data name="caption">relaxations count</Data>
+        <Data name="input" widget="slider" widgetData="1 20 1" int="4"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;integer&gt;" index="7" x="-41.317566" y="240.1245">
+        <Data name="caption"># points</Data>
+        <Data name="input" int="2000"/>
+    </Object>
+    <Object type="panda::Polygon_ToIndices" index="8" x="647.63818" y="195.67805">
+        <DataLabel data="indices">Indices of points in the polygons (closed).</DataLabel>
+    </Object>
+    <Object type="panda::Polygon_FacesAroundPoints" index="9" x="795.38043" y="231.65395"/>
+    <Object type="panda::Annotation" index="10" x="204.68243" y="134.0069">
+        <Data name="type" int="2"/>
+        <Data name="text">Lloyd's relaxation: generating multiples time the voronoi diagram, 
+ each time moving the sites to the centroid of the faces.</Data>
+        <Data name="deltaToEnd" x="407" y="212"/>
+    </Object>
+    <Object type="panda::RectangleMath_Adjust" index="11" x="647.63818" y="130.63391">
+        <Data name="adjust">
+            <Value l="1" t="1" r="-1" b="-1"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorRect_RenderArea" index="12" x="-41.317566" y="130.63391"/>
+    <Object type="panda::ModifierPoints_PointsInRect" index="13" x="825.11639" y="148.42273">
+        <DataLabel data="isInside">Non border status of points</DataLabel>
+    </Object>
+    <Object type="panda::ListMeanFromIndices" index="14" x="907.03131" y="231.65395">
+        <CreatedData type="point"/>
+    </Object>
+    <Object type="panda::ListCondition" index="15" x="1137.0106" y="162.67804">
+        <CreatedData type="point"/>
+        <DataLabel data="result #1">Points</DataLabel>
+    </Object>
+    <Object type="panda::AnimationInterpolation&lt;point&gt;" index="16" x="1027.1556" y="234.65395"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="17" x="795.38043" y="301.82056">
+        <Data name="caption">Edge relaxation</Data>
+        <Data name="input" widget="slider" widgetData="0 1 0.01" real="0.5"/>
+    </Object>
+    <Object type="panda::Polygon_CreateFromIndices" index="18" x="1252.4197" y="245.00096">
+        <DataLabel data="output">Polygons</DataLabel>
+    </Object>
+    <Object type="panda::Annotation" index="19" x="634.94464" y="116.24142">
+        <Data name="type" int="2"/>
+        <Data name="text">Move close points apart, by moving them closer to the mean of their neighbor polygons' centroid.
+The points on the border are not moved.</Data>
+        <Data name="deltaToEnd" x="723.59851" y="241.60361"/>
+    </Object>
+    <Object type="panda::GeneratorPoints_Noise2d" index="20" x="1518.2402" y="52.060303">
+        <Data name="seed" int="8836"/>
+    </Object>
+    <Object type="panda::GeneratorPoint_RenderSize" index="21" x="1058.7218" y="-3.1580811"/>
+    <Object type="panda::PointMath_Norm2" index="22" x="1517.0842" y="-18.158081"/>
+    <Object type="panda::PointMath_LinearDivision" index="23" x="1287.903" y="-18.158081"/>
+    <Object type="panda::PointMath_Scale" index="24" x="1173.3124" y="-3.1580811">
+        <Data name="factor">
+            <Value real="0.5"/>
+        </Data>
+    </Object>
+    <Object type="panda::PointMath_Substraction" index="25" x="1402.4935" y="-18.158081">
+        <Data name="point 2">
+            <Value x="1" y="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::DoubleMath_Power" index="26" x="1631.6748" y="-18.158081">
+        <Data name="input 2">
+            <Value real="2"/>
+        </Data>
+    </Object>
+    <Object type="panda::SortList" index="27" x="1995.0677" y="-21.158081">
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::ListSize" index="28" x="1886.9045" y="-68.673157">
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="29" x="1886.9045" y="-128.87726">
+        <Data name="caption">Landmass fraction</Data>
+        <Data name="input" widget="slider" widgetData="0 1 0.01" real="0.5"/>
+    </Object>
+    <Object type="panda::DoubleMath_Mult" index="30" x="1995.0677" y="-81.387451"/>
+    <Object type="panda::ListItem" index="31" x="2113.272" y="-36.97757">
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="32" x="2235.1741" y="15.439331"/>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="33" x="3244.4573" y="301.94556">
+        <Data name="input" r="0.019607844" g="0.62352943" b="1" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="34" x="3244.4573" y="243.41554">
+        <Data name="input" r="0" g="0.66666669" b="0" a="1"/>
+    </Object>
+    <Object type="panda::DoubleMath_Mult" index="35" x="1631.6748" y="52.060303"/>
+    <Object type="panda::DoubleMath_Add" index="36" x="1756.9979" y="-18.158081"/>
+    <Object type="panda::Annotation" index="37" x="1050.7507" y="-30.729218">
+        <Data name="type" int="2"/>
+        <Data name="text">Scale points to [-1:1]</Data>
+        <Data name="deltaToEnd" x="456.47052" y="84.705887"/>
+    </Object>
+    <Object type="panda::Annotation" index="38" x="1511.6978" y="-28.939911">
+        <Data name="type" int="2"/>
+        <Data name="text">Create noise, add the distance from the center.</Data>
+        <Data name="deltaToEnd" x="356.09744" y="201.42024"/>
+    </Object>
+    <Object type="panda::Annotation" index="39" x="1880.2361" y="-138.82709">
+        <Data name="type" int="2"/>
+        <Data name="text">Select a given fraction of the points to be water.</Data>
+        <Data name="deltaToEnd" x="462" y="212"/>
+    </Object>
+    <Object type="panda::ListSumFromIndices" index="40" x="2412.8726" y="-2.5606689">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::VectorListSize" index="41" x="2412.8726" y="62.57486">
+        <CreatedData type="intvector"/>
+    </Object>
+    <Object type="panda::DoubleMath_Div" index="42" x="2553.9775" y="50.416962"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="43" x="2553.9775" y="107.94327">
+        <Data name="caption">Water threshold</Data>
+        <Data name="input" widget="slider" widgetData="0.1 0.9 0.01" real="0.29999998"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="44" x="2692.3154" y="56.964417"/>
+    <Object type="panda::RenderConvexPolygon" index="45" x="3515.2258" y="228"/>
+    <Object type="panda::Annotation" index="46" x="2406.9438" y="-7.7243042">
+        <Data name="type" int="2"/>
+        <Data name="text">A face is water if a set fraction of its points are water.</Data>
+        <Data name="deltaToEnd" x="393" y="184"/>
+    </Object>
+    <Object type="panda::ListSumFromIndices" index="47" x="2528.1582" y="216.10014">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::BooleanMath_Not" index="48" x="2412.8726" y="233.67157"/>
+    <Object type="panda::Annotation" index="49" x="2404.7297" y="211.36777">
+        <Data name="type" int="2"/>
+        <Data name="text">Faces on the border are always water (and ocean).</Data>
+        <Data name="deltaToEnd" x="352.42859" y="81.285698"/>
+    </Object>
+    <Object type="panda::Polygon_IndicesOpenLoop" index="50" x="2225.7095" y="210.67805">
+        <DataLabel data="output">Indices of points in the polygons (open)</DataLabel>
+    </Object>
+    <Object type="panda::ListMeanFromIndices" index="51" x="2412.8726" y="114.84402">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="52" x="1518.2402" y="115.026">
+        <Data name="caption">Noise factor</Data>
+        <Data name="input" widget="slider" widgetData="0.1 5 .1" real="3"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="53" x="1402.4935" y="82.060303">
+        <Data name="caption">Noise scale</Data>
+        <Data name="input" widget="slider" widgetData="0.001 0.01 0.0001" real="0.0040000002"/>
+    </Object>
+    <Object type="panda::IntegerMath_Add" index="54" x="3124.0786" y="226.21143"/>
+    <Object type="panda::ListSwitchItem" index="55" x="3380.9358" y="225.41554">
+        <CreatedData type="color"/>
+        <CreatedData type="color"/>
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="56" x="2649.6919" y="234.10014">
+        <Data name="inputB">
+            <Value real="0"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="57" x="3244.4573" y="366.67737">
+        <Data name="input" r="0" g="0" b="1" a="1"/>
+    </Object>
+    <Object type="panda::Layer" index="58" x="3535.2258" y="168.52667">
+        <Data name="name">Water</Data>
+        <Data name="opacity" real="1"/>
+    </Object>
+    <Object type="panda::Layer" index="59" x="1415.7466" y="185.49892">
+        <Data name="name">Polygons</Data>
+        <Data name="opacity" real="0.17999999"/>
+    </Object>
+    <Object type="panda::Annotation" index="60" x="2103.7871" y="203.93935">
+        <Data name="type" int="0"/>
+        <Data name="text">Indices of the points in the polygons.
+We also ensure there are no duplicate indices.</Data>
+        <Data name="deltaToEnd" x="352.42859" y="81.285698"/>
+    </Object>
+    <Object type="panda::Polygon_Propagate" index="61" x="2981.9146" y="277.41833"/>
+    <Object type="panda::Annotation" index="62" x="2951.9001" y="363.64972">
+        <Data name="type" int="0"/>
+        <Data name="text">Propagating ocean faces</Data>
+        <Data name="deltaToEnd" x="487.42859" y="152.28571"/>
+    </Object>
+    <Object type="panda::Annotation" index="63" x="2929.2336" y="173.82031">
+        <Data name="type" int="0"/>
+        <Data name="text">0 = land, 1 = water</Data>
+        <Data name="deltaToEnd" x="487.42859" y="152.28571"/>
+    </Object>
+    <Object type="panda::Polygon_FacesAroundFaces" index="64" x="2821.0669" y="245.41832"/>
+    <Object type="panda::BooleanMath_Or" index="65" x="2821.0669" y="162.21143">
+        <DataLabel data="result">Water status of faces</DataLabel>
+    </Object>
+    <Object type="panda::BooleanMath_Not" index="66" x="3290.4653" y="744.07727"/>
+    <Object type="panda::ListCondition" index="67" x="3451.4409" y="781.10828">
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::Polygon_CreateEdgesList" index="68" x="2751.5378" y="606.0072">
+        <DataLabel data="ouput">Edges</DataLabel>
+    </Object>
+    <Object type="panda::VectorListTranspose" index="69" x="2885.2407" y="603.0072">
+        <CreatedData type="intvector"/>
+    </Object>
+    <Object type="panda::VectorListItem" index="70" x="3029.3167" y="557.27441">
+        <CreatedData type="intvector"/>
+    </Object>
+    <Object type="panda::VectorListItem" index="71" x="3029.3167" y="639.90637">
+        <CreatedData type="intvector"/>
+        <Data name="index">
+            <Value int="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::ListItem" index="72" x="3153.5562" y="575.11945">
+        <CreatedData type="point"/>
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::ListItem" index="73" x="3153.5562" y="658.39221">
+        <CreatedData type="point"/>
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::PointMath_Distance" index="74" x="3290.4653" y="612.39221"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="75" x="3290.4653" y="803.57404"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="76" x="3290.4653" y="856.89221">
+        <Data name="input" real="1e+10"/>
+    </Object>
+    <Object type="panda::Polygon_PropagateAndAccumulate" index="77" x="3573.9653" y="734.75909"/>
+    <Object type="panda::DoubleMath_Div" index="78" x="3817.1921" y="734.75909"/>
+    <Object type="panda::GeneratorUser&lt;gradient&gt;" index="79" x="4260.9722" y="1246.627"/>
+    <Object type="panda::ModifierColor_InGradient" index="80" x="4397.272" y="1268.6539"/>
+    <Object type="panda::RenderConvexPolygon_ColoredPoints" index="81" x="4512.2856" y="1238"/>
+    <Object type="panda::ListCondition" index="83" x="3451.4409" y="579.96625">
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="84" x="3290.4653" y="554.81232">
+        <Data name="input" real="0.001"/>
+    </Object>
+    <Object type="panda::BooleanMath_And" index="85" x="3290.4653" y="678.90637"/>
+    <Object type="panda::BooleanMath_Or" index="86" x="2878.2407" y="783.30737"/>
+    <Object type="panda::Annotation" index="87" x="2884.4546" y="866.80023">
+        <Data name="type" int="0"/>
+        <Data name="text">Water points</Data>
+        <Data name="deltaToEnd" x="487.42859" y="152.28571"/>
+    </Object>
+    <Object type="panda::DoubleMath_Sub" index="88" x="3956.2021" y="719.75909">
+        <Data name="input 1">
+            <Value real="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::DoubleMath_Sqrt" index="89" x="4071.4963" y="719.75909"/>
+    <Object type="panda::DoubleMath_Sub" index="90" x="4184.6138" y="704.75909">
+        <Data name="input 1">
+            <Value real="1"/>
+        </Data>
+        <DataLabel data="result">Elevation of points</DataLabel>
+    </Object>
+    <Object type="panda::Annotation" index="91" x="3951.8245" y="700.39478">
+        <Data name="type" int="2"/>
+        <Data name="text">Rescale: 1 - sqrt(1 - h)</Data>
+        <Data name="deltaToEnd" x="336.16745" y="75.226517"/>
+    </Object>
+    <Object type="panda::Polygon_PointsAroundPoints" index="92" x="4380.981" y="687.87994"/>
+    <Object type="panda::VectorListIndicesMin" index="93" x="4515.6953" y="688.35944">
+        <CreatedData type="real"/>
+        <DataLabel data="indices #1">Index of the downslope point of each point</DataLabel>
+    </Object>
+    <Object type="panda::Annotation" index="94" x="2742.5708" y="544.07355">
+        <Data name="type" int="2"/>
+        <Data name="text">Compute the elevation of the points.
+We start at border points (which are at 0 height).
+For each edge we add its length.
+If an edge is under water, its length is negligeable.</Data>
+        <Data name="deltaToEnd" x="1187.5204" y="378.52063"/>
+    </Object>
+    <Object type="panda::Annotation" index="95" x="4375.2881" y="681.97882">
+        <Data name="type" int="2"/>
+        <Data name="text">Finding slopes</Data>
+        <Data name="deltaToEnd" x="247.79535" y="99.645126"/>
+    </Object>
+    <Object type="panda::Polygon_FacesAroundPoints" index="96" x="3469.3103" y="442.51007"/>
+    <Object type="panda::Polygon_EdgesInPolygons" index="97" x="3352.4092" y="442.51007"/>
+    <Object type="panda::Annotation" index="98" x="3345.9902" y="439.08185">
+        <Data name="type" int="2"/>
+        <Data name="text">Compute polygons around edges</Data>
+        <Data name="deltaToEnd" x="227.79535" y="58.645126"/>
+    </Object>
+    <Object type="panda::ListFindMax" index="99" x="3698.781" y="747.61017">
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::ListSumFromIndices" index="100" x="3610.7051" y="443.19421">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::Annotation" index="101" x="2746.9797" y="739.7937">
+        <Data name="type" int="2"/>
+        <Data name="text">Convert the edges from pairs to 2 lists of values.</Data>
+        <Data name="deltaToEnd" x="518.52039" y="-189.47937"/>
+    </Object>
+    <Object type="panda::ListDataCounterSum" index="102" x="347.88831" y="147.64124">
+        <CreatedData type="point"/>
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::GeneratorMesh_Voronoi2" index="103" x="213.85889" y="267.79648"/>
+    <Object type="panda::BooleanMath_Greater" index="104" x="4499.7534" y="1012.9741"/>
+    <Object type="panda::BooleanMath_Greater" index="105" x="4499.7534" y="1084.9036"/>
+    <Object type="panda::BooleanMath_And" index="106" x="4631.5737" y="1044.9019"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="107" x="4355.9277" y="1027.9741">
+        <Data name="caption">River start min height</Data>
+        <Data name="input" real="0.25"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="108" x="4355.9277" y="1084.9036">
+        <Data name="caption">River start max height</Data>
+        <Data name="input" real="0.60000002"/>
+    </Object>
+    <Object type="panda::Annotation" index="109" x="4344.9272" y="933.3623">
+        <Data name="type" int="2"/>
+        <Data name="text">Selecting possible rivers start points</Data>
+        <Data name="deltaToEnd" x="759.19629" y="204.86584"/>
+    </Object>
+    <Object type="panda::BooleanMath_Not" index="110" x="4833.5737" y="869.94031"/>
+    <Object type="panda::BooleanMath_And" index="111" x="4958.6646" y="869.94031"/>
+    <Object type="panda::Polygon_FacesAroundPoints" index="112" x="4569.7534" y="819.82172"/>
+    <Object type="panda::ListSumFromIndices" index="113" x="4712.6948" y="852.32422">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="114" x="5129.1504" y="938.73999">
+        <Data name="caption">Rivers fraction</Data>
+        <Data name="input" widget="slider" widgetData="0.01 0.5 0.01" real="0.099999994"/>
+    </Object>
+    <Object type="panda::GeneratorReals_Random" index="115" x="5387.1504" y="938.73999">
+        <Data name="seed" int="8426"/>
+    </Object>
+    <Object type="panda::DoubleMath_Mult" index="116" x="5262.1504" y="938.73999"/>
+    <Object type="panda::Annotation" index="117" x="4553.0425" y="816.87146">
+        <Data name="type" int="2"/>
+        <Data name="text">If we want to select only land points</Data>
+        <Data name="deltaToEnd" x="511.94141" y="109.58826"/>
+    </Object>
+    <Object type="panda::Annotation" index="118" x="5118.3076" y="932.96606">
+        <Data name="type" int="2"/>
+        <Data name="text">Select a portion of these points</Data>
+        <Data name="deltaToEnd" x="488.53711" y="139.37549"/>
+    </Object>
+    <Object type="panda::VectorListTranspose" index="119" x="3984.2151" y="476.51147">
+        <CreatedData type="intvector"/>
+    </Object>
+    <Object type="panda::FilterItems" index="120" x="3868.3804" y="461.29822">
+        <CreatedData type="intvector"/>
+    </Object>
+    <Object type="panda::ListItem" index="121" x="4111.6211" y="461.89014">
+        <CreatedData type="intvector"/>
+    </Object>
+    <Object type="panda::ListItem" index="122" x="4111.6211" y="543.78766">
+        <CreatedData type="intvector"/>
+        <Data name="index">
+            <Value int="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::ListItem" index="123" x="4251.0752" y="479.44629">
+        <CreatedData type="point"/>
+    </Object>
+    <Object type="panda::ListItem" index="124" x="4251.0752" y="562.10797">
+        <CreatedData type="point"/>
+    </Object>
+    <Object type="panda::Layer" index="125" x="4405.7969" y="339.61542">
+        <Data name="name">Shores</Data>
+        <Data name="composition mode" int="0"/>
+        <Data name="opacity" real="0.58999997"/>
+    </Object>
+    <Object type="panda::Layer" index="126" x="6342.8008" y="378.14014">
+        <Data name="name">Moisture</Data>
+        <Data name="composition mode" int="0"/>
+        <Data name="opacity" real="0.51999998"/>
+    </Object>
+    <Object type="panda::RenderLine" index="127" x="4385.7969" y="474">
+        <Data name="width">
+            <Value real="2"/>
+        </Data>
+        <Data name="color">
+            <Value r="1" g="0.66666669" b="0" a="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::ListItemsEqual" index="128" x="3734.5002" y="457.72897">
+        <CreatedData type="integer"/>
+        <Data name="input B #1">
+            <Value int="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::Annotation" index="129" x="3604.7742" y="435.18835">
+        <Data name="type" int="2"/>
+        <Data name="text">Get shore edges</Data>
+        <Data name="deltaToEnd" x="368.99976" y="94"/>
+    </Object>
+    <Object type="panda::Polygon_FacesAroundPoints" index="130" x="3753.1533" y="345.08862"/>
+    <Object type="panda::ListSumFromIndices" index="131" x="3868.3804" y="345.21585">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="132" x="3986.636" y="363.03708">
+        <Data name="inputB">
+            <Value real="0"/>
+        </Data>
+    </Object>
+    <Object type="panda::RenderDisk" index="133" x="4385.7969" y="399">
+        <Data name="radius">
+            <Value real="5"/>
+        </Data>
+        <Data name="color">
+            <Value r="1" g="0.66666669" b="0" a="0.76862746"/>
+        </Data>
+    </Object>
+    <Object type="panda::FilterItems" index="134" x="4244.7676" y="363.56732">
+        <CreatedData type="point"/>
+    </Object>
+    <Object type="panda::BooleanMath_And" index="135" x="4109.9854" y="363.03708"/>
+    <Object type="panda::Annotation" index="136" x="3745.6362" y="337.46799">
+        <Data name="type" int="2"/>
+        <Data name="text">Get shore points</Data>
+        <Data name="deltaToEnd" x="603.44312" y="89.278351"/>
+    </Object>
+    <Object type="panda::Annotation" index="137" x="2813.5063" y="136.5639">
+        <Data name="type" int="2"/>
+        <Data name="text">Type of each face: 0 = land, 1 = water, 2 = ocean</Data>
+        <Data name="deltaToEnd" x="418.88232" y="228.7059"/>
+    </Object>
+    <Object type="panda::Polygon_Propagate" index="138" x="5773.2739" y="755.26294"/>
+    <Object type="panda::ReplaceItem" index="139" x="5638.4492" y="752.5542">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::FillList" index="140" x="5517.9673" y="753.46082">
+        <CreatedData type="integer"/>
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::ListSize" index="141" x="5377.2671" y="750.46893">
+        <CreatedData type="point"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;integer&gt;" index="142" x="5377.2671" y="809.78088">
+        <Data name="caption">False</Data>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;integer&gt;" index="143" x="5377.2671" y="866.81635">
+        <Data name="caption">True</Data>
+        <Data name="input" int="1"/>
+    </Object>
+    <Object type="panda::VectorListTranspose" index="144" x="4691.9287" y="627.0144">
+        <CreatedData type="intvector"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;intvector&gt;" index="145" x="4691.9287" y="684.42615"/>
+    <Object type="panda::ListCondition" index="146" x="4818.9873" y="612.19092">
+        <CreatedData type="intvector"/>
+    </Object>
+    <Object type="panda::BooleanMath_Not" index="147" x="4691.9287" y="568.79565">
+        <DataLabel data="result">Inverse shore status of points</DataLabel>
+    </Object>
+    <Object type="panda::DoubleListMath_SumMeanStdDev" index="148" x="4767.5386" y="1036.5435"/>
+    <Object type="panda::GeneratorReals_Enumeration" index="149" x="4889.6196" y="994.09814"/>
+    <Object type="panda::FilterItems" index="150" x="5003.4673" y="976.42822">
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::ListItem" index="151" x="5500.3677" y="939.10498">
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::FilterItems" index="152" x="6380.3252" y="1790.0245">
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::ListSize" index="153" x="6149.0908" y="1805.0088">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::GeneratorReals_Enumeration" index="154" x="6258.1821" y="1807.0503"/>
+    <Object type="panda::BooleanMath_And" index="155" x="6149.0908" y="1744.125"/>
+    <Object type="panda::ListItem" index="156" x="6513.063" y="1823.085">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::ListItem" index="157" x="6675.0518" y="1781.2936">
+        <CreatedData type="point"/>
+    </Object>
+    <Object type="panda::ListItem" index="158" x="6675.0518" y="1846.344">
+        <CreatedData type="point"/>
+    </Object>
+    <Object type="panda::RenderLine" index="159" x="6829.8579" y="1815">
+        <Data name="width">
+            <Value real="3"/>
+        </Data>
+        <Data name="color">
+            <Value r="0.33333334" g="1" b="1" a="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::Annotation" index="160" x="4686.1313" y="559.66974">
+        <Data name="type" int="2"/>
+        <Data name="text">For each point, select the direction of the slope
+(or empty if on the shore)</Data>
+        <Data name="deltaToEnd" x="241.21387" y="180.7384"/>
+    </Object>
+    <Object type="panda::Annotation" index="161" x="5371.6558" y="744.25433">
+        <Data name="type" int="2"/>
+        <Data name="text">Compute the rivers (for each point, 1 if in a river, 0 otherwise)</Data>
+        <Data name="deltaToEnd" x="507.80176" y="179.56195"/>
+    </Object>
+    <Object type="panda::Annotation" index="162" x="6142.8496" y="1736.6273">
+        <Data name="type" int="2"/>
+        <Data name="text">Select each point in a river and the next downslope (excluding points on the shore)</Data>
+        <Data name="deltaToEnd" x="642.39014" y="177.20898"/>
+    </Object>
+    <Object type="panda::Annotation" index="163" x="3977.8811" y="453.68408">
+        <Data name="type" int="2"/>
+        <Data name="text">Get the points in these edges</Data>
+        <Data name="deltaToEnd" x="377.5105" y="169.53186"/>
+    </Object>
+    <Object type="panda::Polygon_PropagateAndAccumulate" index="164" x="6099.604" y="740.49817">
+        <Data name="method" int="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="165" x="5943.7988" y="785.49817">
+        <Data name="caption">Moisture propagation</Data>
+        <Data name="input" real="0.89999998"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;gradient&gt;" index="166" x="6066.3335" y="424.51587">
+        <Data name="input" extend="0">
+            <Stop pos="0" r="1" g="0.66666669" b="0" a="0.50196081"/>
+            <Stop pos="1" r="0.33333334" g="0.33333334" b="1" a="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::ModifierColor_InGradient" index="167" x="6209.8496" y="467.53387"/>
+    <Object type="panda::RenderConvexPolygon_ColoredPoints" index="168" x="6322.8008" y="438"/>
+    <Object type="panda::Annotation" index="169" x="5937.5049" y="735.36932">
+        <Data name="type" int="2"/>
+        <Data name="text">Propagate the moisture around the rivers</Data>
+        <Data name="deltaToEnd" x="268.04053" y="107.21649"/>
+    </Object>
+    <Object type="panda::ListMeanFromIndices" index="170" x="6232.9849" y="704.52441">
+        <CreatedData type="real"/>
+        <CreatedData type="real"/>
+    </Object>
+    <Object type="panda::Annotation" index="171" x="6199.8784" y="702.10852">
+        <Data name="text">Elevation and moisture of the faces</Data>
+    </Object>
+    <Object type="panda::ListCondition" index="172" x="7337.3154" y="-142.03418">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::ListCondition" index="173" x="7107.7944" y="-250.62769">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::Annotation" index="174" x="6973.312" y="-256.70398">
+        <Data name="type" int="2"/>
+        <Data name="text">Ocean</Data>
+        <Data name="deltaToEnd" x="253.04395" y="80.813171"/>
+    </Object>
+    <Object type="panda::Annotation" index="175" x="7350.5771" y="-144.26807">
+        <Data name="text">Water / Land</Data>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="176" x="6979.5757" y="-232.73328">
+        <Data name="caption">Ocean</Data>
+        <Data name="input" r="0.26666668" g="0.26666668" b="0.47843137" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="177" x="6860.8999" y="-107.34174">
+        <Data name="caption">Marsh</Data>
+        <Data name="input" r="0.18431373" g="0.40000001" b="0.40000001" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="178" x="6743.9429" y="12.665741">
+        <Data name="caption">Ice</Data>
+        <Data name="input" r="0.60000002" g="1" b="1" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="179" x="6743.9429" y="72.809784">
+        <Data name="caption">Lake</Data>
+        <Data name="input" r="0.2" g="0.40000001" b="0.60000002" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="180" x="7107.7944" y="-108.83728">
+        <Data name="caption">Beach</Data>
+        <Data name="input" r="0.627451" g="0.56470591" b="0.46666667" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="181" x="6860.8999" y="261.909">
+        <Data name="caption">Snow</Data>
+        <Data name="input" r="1" g="1" b="1" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="182" x="6743.9429" y="379.99445">
+        <Data name="caption">Tundra</Data>
+        <Data name="input" r="0.73333335" g="0.73333335" b="0.66666669" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="183" x="6624.082" y="492.64575">
+        <Data name="caption">Bare</Data>
+        <Data name="input" r="0.53333336" g="0.53333336" b="0.53333336" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="184" x="6624.082" y="552.19415">
+        <Data name="caption">Scorched</Data>
+        <Data name="input" r="0.33333334" g="0.33333334" b="0.33333334" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="185" x="6743.9429" y="689.63019">
+        <Data name="caption">Taiga</Data>
+        <Data name="input" r="0.60000002" g="0.66666669" b="0.46666667" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="186" x="6624.082" y="804.03479">
+        <Data name="caption">Shrubland</Data>
+        <Data name="input" r="0.53333336" g="0.60000002" b="0.46666667" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="187" x="6392.0234" y="1250.757">
+        <Data name="caption">Temperate desert</Data>
+        <Data name="input" r="0.78823531" g="0.82352942" b="0.60784316" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="188" x="6624.082" y="1021.3333">
+        <Data name="caption">Temperate rain forest</Data>
+        <Data name="input" r="0.26666668" g="0.53333336" b="0.33333334" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="189" x="6506.6929" y="1136.7245">
+        <Data name="caption">Temperate deciduous forest</Data>
+        <Data name="input" r="0.40392157" g="0.58039218" b="0.34901962" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="190" x="6392.0234" y="1591.1339">
+        <Data name="caption">Grassland</Data>
+        <Data name="input" r="0.53333336" g="0.66666669" b="0.33333334" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="191" x="6624.082" y="1360.1847">
+        <Data name="caption">Tropical rain forest</Data>
+        <Data name="input" r="0.2" g="0.46666667" b="0.33333334" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="192" x="6506.6929" y="1474.3607">
+        <Data name="caption">Tropical seasonal forest</Data>
+        <Data name="input" r="0.33333334" g="0.60000002" b="0.26666668" a="1"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;color&gt;" index="193" x="6392.0234" y="1647.8302">
+        <Data name="caption">Subtropical desert</Data>
+        <Data name="input" r="0.82352942" g="0.72549021" b="0.54509807" a="1"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="194" x="6860.8999" y="-163.27661"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="195" x="6743.9429" y="-163.27661">
+        <Data name="caption">Marsh threshold</Data>
+        <Data name="input" real="0.1"/>
+    </Object>
+    <Object type="panda::ListCondition" index="196" x="6979.5757" y="-162.49731">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::Annotation" index="197" x="6738.2368" y="-170.98962">
+        <Data name="type" int="2"/>
+        <Data name="text">Marsh: water with elevation &lt; 0.1</Data>
+        <Data name="deltaToEnd" x="344.05469" y="117.67029"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="198" x="6743.9429" y="-42.844574"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="199" x="6624.082" y="-27.844574">
+        <Data name="caption">Ice threshold</Data>
+        <Data name="input" real="0.80000001"/>
+    </Object>
+    <Object type="panda::ListCondition" index="200" x="6860.8999" y="-42.065277">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::Annotation" index="201" x="6621.4155" y="-49.557526">
+        <Data name="type" int="2"/>
+        <Data name="text">Ice: water with elevation &gt; 0.8</Data>
+        <Data name="deltaToEnd" x="345.05469" y="116.67029"/>
+    </Object>
+    <Object type="panda::RenderConvexPolygon" index="202" x="7469.2207" y="-140"/>
+    <Object type="panda::Layer" index="203" x="7489.2207" y="-200.53674">
+        <Data name="name">Biomes</Data>
+        <Data name="opacity" real="1"/>
+    </Object>
+    <Object type="panda::Layer" index="82" x="4532.2856" y="1178.9614">
+        <Data name="name">Elevation</Data>
+        <Data name="composition mode" int="17"/>
+        <Data name="opacity" real="0.68000001"/>
+    </Object>
+    <Object type="panda::Layer" index="204" x="6849.8579" y="1755.9099">
+        <Data name="name">Rivers</Data>
+        <Data name="opacity" real="0.47"/>
+    </Object>
+    <Object type="panda::ListSumFromIndices" index="205" x="4253.8228" y="268.84885">
+        <CreatedData type="integer"/>
+    </Object>
+    <Object type="panda::BooleanMath_And" index="206" x="4376.6338" y="212.47296">
+        <DataLabel data="result">Shore status of faces</DataLabel>
+    </Object>
+    <Object type="panda::BooleanMath_Not" index="207" x="4255.6338" y="212.47296"/>
+    <Object type="panda::Annotation" index="208" x="4247.9126" y="206.33377">
+        <Data name="type" int="2"/>
+        <Data name="text">Get shore faces (on land)</Data>
+        <Data name="deltaToEnd" x="241.44312" y="121.27835"/>
+    </Object>
+    <Object type="panda::ListCondition" index="209" x="7219.8516" y="-126.29614">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::Annotation" index="210" x="7104.6899" y="-132.53418">
+        <Data name="type" int="2"/>
+        <Data name="text">Beach</Data>
+        <Data name="deltaToEnd" x="221.04395" y="79.813171"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="211" x="6979.5757" y="129.71945"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="212" x="6860.8999" y="144.71939">
+        <Data name="caption">Very high elevation</Data>
+        <Data name="input" real="0.80000001"/>
+    </Object>
+    <Object type="panda::ListCondition" index="213" x="7107.7944" y="130.70419">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="214" x="6860.8999" y="549.24652"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="215" x="6743.9429" y="564.24652">
+        <Data name="caption">High elevation</Data>
+        <Data name="input" real="0.60000002"/>
+    </Object>
+    <Object type="panda::ListCondition" index="216" x="6979.5757" y="550.23138">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="217" x="6743.9429" y="885.75226"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="218" x="6624.082" y="900.75226">
+        <Data name="caption">Medium elevation</Data>
+        <Data name="input" real="0.30000001"/>
+    </Object>
+    <Object type="panda::ListCondition" index="219" x="6860.8999" y="886.73688">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="220" x="6860.8999" y="204.30121"/>
+    <Object type="panda::ListCondition" index="221" x="6979.5757" y="205.28607">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="222" x="6743.9429" y="219.30121">
+        <Data name="caption">Snow threshold</Data>
+        <Data name="input" real="0.5"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="223" x="6743.9429" y="319.38324"/>
+    <Object type="panda::ListCondition" index="224" x="6860.8999" y="320.26947">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="225" x="6624.082" y="334.38324">
+        <Data name="caption">Tundra threshold</Data>
+        <Data name="input" real="0.33000001"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="226" x="6624.082" y="437.57269"/>
+    <Object type="panda::ListCondition" index="227" x="6743.9429" y="438.55756">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="228" x="6506.6929" y="452.57269">
+        <Data name="caption">Bare threshold</Data>
+        <Data name="input" real="0.16"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="229" x="6624.082" y="644.30243">
+        <Data name="caption">Taiga threshold</Data>
+        <Data name="input" real="0.66000003"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="230" x="6743.9429" y="629.30243"/>
+    <Object type="panda::ListCondition" index="231" x="6860.8999" y="630.28729">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="232" x="6506.6929" y="762.61987">
+        <Data name="caption">Shrubland threshold</Data>
+        <Data name="input" real="0.33000001"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="233" x="6624.082" y="747.61987"/>
+    <Object type="panda::ListCondition" index="234" x="6743.9429" y="748.60474">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::ListCondition" index="235" x="6743.9429" y="962.94391">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="236" x="6624.082" y="961.95905"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="237" x="6506.6929" y="976.95905">
+        <Data name="caption">Temperate rain forest threshold</Data>
+        <Data name="input" real="0.82999998"/>
+    </Object>
+    <Object type="panda::ListCondition" index="238" x="6624.082" y="1080.3341">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="239" x="6506.6929" y="1079.3492"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="240" x="6392.0234" y="1094.3492">
+        <Data name="caption">Deciduous forest threshold</Data>
+        <Data name="input" real="0.5"/>
+    </Object>
+    <Object type="panda::ListCondition" index="241" x="6506.6929" y="1197.4071">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="242" x="6392.0234" y="1196.4222"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="243" x="6273.6592" y="1211.4222">
+        <Data name="caption">Grassland threshold</Data>
+        <Data name="input" real="0.16"/>
+    </Object>
+    <Object type="panda::ListCondition" index="244" x="6743.9429" y="1304.8783">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="245" x="6624.082" y="1303.8934"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="246" x="6506.6929" y="1318.8934">
+        <Data name="caption">Tropical rain forest threshold</Data>
+        <Data name="input" real="0.66000003"/>
+    </Object>
+    <Object type="panda::ListCondition" index="247" x="6624.082" y="1417.2474">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="248" x="6506.6929" y="1416.2626"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="249" x="6392.0234" y="1431.2626">
+        <Data name="caption">Tropical seasonal forest threshold</Data>
+        <Data name="input" real="0.33000001"/>
+    </Object>
+    <Object type="panda::ListCondition" index="250" x="6506.6929" y="1535.2474">
+        <CreatedData type="color"/>
+    </Object>
+    <Object type="panda::BooleanMath_Greater" index="251" x="6392.0234" y="1534.2626"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="252" x="6273.6592" y="1549.2626">
+        <Data name="caption">Grassland threshold</Data>
+        <Data name="input" real="0.16"/>
+    </Object>
+    <Object type="panda::Annotation" index="253" x="6858.3828" y="126.09271">
+        <Data name="type" int="2"/>
+        <Data name="text">Elevation &gt; 0.8</Data>
+        <Data name="deltaToEnd" x="356.04346" y="76.010971"/>
+    </Object>
+    <Object type="panda::Annotation" index="254" x="6738.6021" y="202.46649">
+        <Data name="type" int="2"/>
+        <Data name="text">Snow: moisture &gt; 0.5</Data>
+        <Data name="deltaToEnd" x="343.95557" y="113.37364"/>
+    </Object>
+    <Object type="panda::Annotation" index="255" x="6621.9536" y="318.90466">
+        <Data name="type" int="2"/>
+        <Data name="text">Tundra: moisture &gt; 0.33</Data>
+        <Data name="deltaToEnd" x="343.95557" y="113.37364"/>
+    </Object>
+    <Object type="panda::Annotation" index="256" x="6503.7832" y="436.89868">
+        <Data name="type" int="2"/>
+        <Data name="text">Bare: moisture &gt; 0.16</Data>
+        <Data name="deltaToEnd" x="343.95557" y="113.37364"/>
+    </Object>
+    <Object type="panda::Annotation" index="257" x="6740.564" y="542.84998">
+        <Data name="type" int="2"/>
+        <Data name="text">Elevation &gt; 0.6</Data>
+        <Data name="deltaToEnd" x="343.95557" y="80.373642"/>
+    </Object>
+    <Object type="panda::Annotation" index="258" x="6620.7832" y="880.97882">
+        <Data name="type" int="2"/>
+        <Data name="text">Elevation &gt; 0.3</Data>
+        <Data name="deltaToEnd" x="343.95557" y="80.373642"/>
+    </Object>
+    <Object type="panda::Annotation" index="259" x="6606.9419" y="115.89682">
+        <Data name="text">Lake: elevation [0.1;0.8]</Data>
+    </Object>
+    <Object type="panda::Annotation" index="260" x="6619.9331" y="628.81671">
+        <Data name="type" int="2"/>
+        <Data name="text">Taiga: moisture &gt; 0.66</Data>
+        <Data name="deltaToEnd" x="343.95557" y="113.37364"/>
+    </Object>
+    <Object type="panda::Annotation" index="261" x="6502.2583" y="745.48694">
+        <Data name="type" int="2"/>
+        <Data name="text">Shrubland: moisture &gt; 0.33</Data>
+        <Data name="deltaToEnd" x="345.95557" y="109.37364"/>
+    </Object>
+    <Object type="panda::Annotation" index="262" x="6501.8711" y="960.44824">
+        <Data name="type" int="2"/>
+        <Data name="text">Temperate rain forest: moisture &gt; 0.83</Data>
+        <Data name="deltaToEnd" x="344.9248" y="112.46642"/>
+    </Object>
+    <Object type="panda::Annotation" index="263" x="6386.9233" y="1077.4586">
+        <Data name="type" int="2"/>
+        <Data name="text">Deciduous forest: moisture &gt; 0.5</Data>
+        <Data name="deltaToEnd" x="344.9248" y="112.46642"/>
+    </Object>
+    <Object type="panda::Annotation" index="264" x="6269.3979" y="1196.0151">
+        <Data name="type" int="2"/>
+        <Data name="text">Grassland forest: moisture &gt; 0.16</Data>
+        <Data name="deltaToEnd" x="344.9248" y="112.46642"/>
+    </Object>
+    <Object type="panda::Annotation" index="265" x="6502.1187" y="1303.0955">
+        <Data name="type" int="2"/>
+        <Data name="text">Tropical rain forest: elevation &lt; 0.3 &amp; moisture &gt; 0.66</Data>
+        <Data name="deltaToEnd" x="344.9248" y="112.46642"/>
+    </Object>
+    <Object type="panda::Annotation" index="266" x="6385.9512" y="1416.4268">
+        <Data name="type" int="2"/>
+        <Data name="text">Tropical seasonal forest: moisture &gt; 0.33</Data>
+        <Data name="deltaToEnd" x="344.9248" y="112.46642"/>
+    </Object>
+    <Object type="panda::Annotation" index="267" x="6266.9512" y="1531.4268">
+        <Data name="type" int="2"/>
+        <Data name="text">Grassland forest: moisture &gt; 0.16</Data>
+        <Data name="deltaToEnd" x="344.9248" y="112.46642"/>
+    </Object>
+    <Link object1="1" data1="path" object2="18" data2="output"/>
+    <Link object1="2" data1="polygon" object2="103" data2="polygons"/>
+    <Link object1="3" data1="# points" object2="7" data2="value"/>
+    <Link object1="3" data1="area" object2="12" data2="area"/>
+    <Link object1="4" data1="control" object2="102" data2="counter"/>
+    <Link object1="4" data1="nbIterations" object2="6" data2="value"/>
+    <Link object1="4" data1="input #1" object2="2" data2="paths"/>
+    <Link object1="4" data1="init #1" object2="2" data2="paths"/>
+    <Link object1="4" data1="input #2" object2="5" data2="centroid"/>
+    <Link object1="4" data1="init #2" object2="3" data2="points"/>
+    <Link object1="5" data1="path" object2="103" data2="polygons"/>
+    <Link object1="8" data1="input" object2="4" data2="output #1"/>
+    <Link object1="9" data1="indices" object2="8" data2="indices"/>
+    <Link object1="11" data1="rectangle" object2="12" data2="area"/>
+    <Link object1="13" data1="rectangle" object2="11" data2="result"/>
+    <Link object1="13" data1="input" object2="8" data2="points"/>
+    <Link object1="14" data1="indices" object2="9" data2="ouput"/>
+    <Link object1="14" data1="input #1" object2="4" data2="output #2"/>
+    <Link object1="15" data1="control" object2="13" data2="isInside"/>
+    <Link object1="15" data1="true #1" object2="16" data2="result"/>
+    <Link object1="15" data1="false #1" object2="8" data2="points"/>
+    <Link object1="16" data1="from" object2="8" data2="points"/>
+    <Link object1="16" data1="to" object2="14" data2="output #1"/>
+    <Link object1="16" data1="progress" object2="17" data2="value"/>
+    <Link object1="18" data1="points" object2="15" data2="result #1"/>
+    <Link object1="18" data1="indices" object2="8" data2="indices"/>
+    <Link object1="20" data1="input" object2="15" data2="result #1"/>
+    <Link object1="20" data1="scale" object2="53" data2="value"/>
+    <Link object1="22" data1="input" object2="25" data2="result"/>
+    <Link object1="23" data1="point 1" object2="15" data2="result #1"/>
+    <Link object1="23" data1="point 2" object2="24" data2="result"/>
+    <Link object1="24" data1="point" object2="21" data2="size"/>
+    <Link object1="25" data1="point 1" object2="23" data2="result"/>
+    <Link object1="26" data1="input 1" object2="22" data2="output"/>
+    <Link object1="27" data1="input #1" object2="36" data2="result"/>
+    <Link object1="28" data1="input #1" object2="26" data2="result"/>
+    <Link object1="30" data1="input 1" object2="29" data2="value"/>
+    <Link object1="30" data1="input 2" object2="28" data2="size #1"/>
+    <Link object1="31" data1="index" object2="30" data2="result"/>
+    <Link object1="31" data1="input #1" object2="27" data2="output #1"/>
+    <Link object1="32" data1="inputA" object2="36" data2="result"/>
+    <Link object1="32" data1="inputB" object2="31" data2="output #1"/>
+    <Link object1="35" data1="input 1" object2="20" data2="output"/>
+    <Link object1="35" data1="input 2" object2="52" data2="value"/>
+    <Link object1="36" data1="input 1" object2="26" data2="result"/>
+    <Link object1="36" data1="input 2" object2="35" data2="result"/>
+    <Link object1="40" data1="indices" object2="50" data2="output"/>
+    <Link object1="40" data1="input #1" object2="32" data2="result"/>
+    <Link object1="41" data1="input #1" object2="50" data2="output"/>
+    <Link object1="42" data1="input 1" object2="40" data2="output #1"/>
+    <Link object1="42" data1="input 2" object2="41" data2="size #1"/>
+    <Link object1="44" data1="inputA" object2="42" data2="result"/>
+    <Link object1="44" data1="inputB" object2="43" data2="value"/>
+    <Link object1="45" data1="polygon" object2="18" data2="output"/>
+    <Link object1="45" data1="color" object2="55" data2="result #1"/>
+    <Link object1="47" data1="indices" object2="50" data2="output"/>
+    <Link object1="47" data1="input #1" object2="48" data2="result"/>
+    <Link object1="48" data1="input" object2="13" data2="isInside"/>
+    <Link object1="50" data1="input" object2="8" data2="indices"/>
+    <Link object1="51" data1="indices" object2="50" data2="output"/>
+    <Link object1="51" data1="input #1" object2="32" data2="result"/>
+    <Link object1="54" data1="input 1" object2="65" data2="result"/>
+    <Link object1="54" data1="input 2" object2="61" data2="output"/>
+    <Link object1="55" data1="index" object2="54" data2="result"/>
+    <Link object1="55" data1="list #1" object2="34" data2="value"/>
+    <Link object1="55" data1="list #2" object2="33" data2="value"/>
+    <Link object1="55" data1="list #3" object2="57" data2="value"/>
+    <Link object1="56" data1="inputA" object2="47" data2="output #1"/>
+    <Link object1="61" data1="neighbors" object2="64" data2="output"/>
+    <Link object1="61" data1="init" object2="56" data2="result"/>
+    <Link object1="61" data1="can propagate" object2="65" data2="result"/>
+    <Link object1="64" data1="polygons" object2="50" data2="output"/>
+    <Link object1="65" data1="inputA" object2="44" data2="result"/>
+    <Link object1="65" data1="inputB" object2="56" data2="result"/>
+    <Link object1="66" data1="input" object2="13" data2="isInside"/>
+    <Link object1="67" data1="control" object2="66" data2="result"/>
+    <Link object1="67" data1="true #1" object2="75" data2="value"/>
+    <Link object1="67" data1="false #1" object2="76" data2="value"/>
+    <Link object1="68" data1="indices" object2="50" data2="output"/>
+    <Link object1="69" data1="input #1" object2="68" data2="ouput"/>
+    <Link object1="70" data1="input #1" object2="69" data2="output #1"/>
+    <Link object1="71" data1="input #1" object2="69" data2="output #1"/>
+    <Link object1="72" data1="index" object2="70" data2="output #1"/>
+    <Link object1="72" data1="input #1" object2="15" data2="result #1"/>
+    <Link object1="72" data1="input #2" object2="86" data2="result"/>
+    <Link object1="73" data1="index" object2="71" data2="output #1"/>
+    <Link object1="73" data1="input #1" object2="15" data2="result #1"/>
+    <Link object1="73" data1="input #2" object2="86" data2="result"/>
+    <Link object1="74" data1="point 1" object2="72" data2="output #1"/>
+    <Link object1="74" data1="point 2" object2="73" data2="output #1"/>
+    <Link object1="77" data1="edges" object2="68" data2="ouput"/>
+    <Link object1="77" data1="start" object2="66" data2="result"/>
+    <Link object1="77" data1="init" object2="67" data2="result #1"/>
+    <Link object1="77" data1="edge weight" object2="83" data2="result #1"/>
+    <Link object1="78" data1="input 1" object2="77" data2="output"/>
+    <Link object1="78" data1="input 2" object2="99" data2="maximum #1"/>
+    <Link object1="80" data1="gradient" object2="79" data2="value"/>
+    <Link object1="80" data1="position" object2="90" data2="result"/>
+    <Link object1="81" data1="points" object2="15" data2="result #1"/>
+    <Link object1="81" data1="indices" object2="50" data2="output"/>
+    <Link object1="81" data1="color" object2="80" data2="color"/>
+    <Link object1="83" data1="control" object2="85" data2="result"/>
+    <Link object1="83" data1="true #1" object2="84" data2="value"/>
+    <Link object1="83" data1="false #1" object2="74" data2="distance"/>
+    <Link object1="85" data1="inputA" object2="72" data2="output #2"/>
+    <Link object1="85" data1="inputB" object2="73" data2="output #2"/>
+    <Link object1="86" data1="inputA" object2="32" data2="result"/>
+    <Link object1="86" data1="inputB" object2="48" data2="result"/>
+    <Link object1="88" data1="input 2" object2="78" data2="result"/>
+    <Link object1="89" data1="input" object2="88" data2="result"/>
+    <Link object1="90" data1="input 2" object2="89" data2="result"/>
+    <Link object1="92" data1="indices" object2="50" data2="output"/>
+    <Link object1="93" data1="indices" object2="92" data2="output"/>
+    <Link object1="93" data1="input #1" object2="90" data2="result"/>
+    <Link object1="96" data1="indices" object2="97" data2="output"/>
+    <Link object1="97" data1="polygons" object2="50" data2="output"/>
+    <Link object1="97" data1="edges" object2="68" data2="ouput"/>
+    <Link object1="99" data1="input #1" object2="77" data2="output"/>
+    <Link object1="100" data1="indices" object2="96" data2="ouput"/>
+    <Link object1="100" data1="input #1" object2="61" data2="output"/>
+    <Link object1="102" data1="data #1" object2="3" data2="points"/>
+    <Link object1="102" data1="data #2" object2="6" data2="value"/>
+    <Link object1="103" data1="sites" object2="4" data2="output #2"/>
+    <Link object1="104" data1="inputA" object2="90" data2="result"/>
+    <Link object1="104" data1="inputB" object2="107" data2="value"/>
+    <Link object1="105" data1="inputA" object2="108" data2="value"/>
+    <Link object1="105" data1="inputB" object2="90" data2="result"/>
+    <Link object1="106" data1="inputA" object2="104" data2="result"/>
+    <Link object1="106" data1="inputB" object2="105" data2="result"/>
+    <Link object1="110" data1="input" object2="113" data2="output #1"/>
+    <Link object1="111" data1="inputA" object2="110" data2="result"/>
+    <Link object1="111" data1="inputB" object2="106" data2="result"/>
+    <Link object1="112" data1="indices" object2="50" data2="output"/>
+    <Link object1="113" data1="indices" object2="112" data2="ouput"/>
+    <Link object1="113" data1="input #1" object2="54" data2="result"/>
+    <Link object1="115" data1="# numbers" object2="116" data2="result"/>
+    <Link object1="115" data1="maximum" object2="148" data2="sum"/>
+    <Link object1="116" data1="input 1" object2="114" data2="value"/>
+    <Link object1="116" data1="input 2" object2="148" data2="sum"/>
+    <Link object1="119" data1="input #1" object2="120" data2="output #1"/>
+    <Link object1="120" data1="condition" object2="128" data2="equal #1"/>
+    <Link object1="120" data1="input #1" object2="68" data2="ouput"/>
+    <Link object1="121" data1="input #1" object2="119" data2="output #1"/>
+    <Link object1="122" data1="input #1" object2="119" data2="output #1"/>
+    <Link object1="123" data1="index" object2="121" data2="output #1"/>
+    <Link object1="123" data1="input #1" object2="15" data2="result #1"/>
+    <Link object1="124" data1="index" object2="122" data2="output #1"/>
+    <Link object1="124" data1="input #1" object2="15" data2="result #1"/>
+    <Link object1="127" data1="point 1" object2="123" data2="output #1"/>
+    <Link object1="127" data1="point 2" object2="124" data2="output #1"/>
+    <Link object1="128" data1="input A #1" object2="100" data2="output #1"/>
+    <Link object1="130" data1="indices" object2="68" data2="ouput"/>
+    <Link object1="131" data1="indices" object2="130" data2="ouput"/>
+    <Link object1="131" data1="input #1" object2="128" data2="equal #1"/>
+    <Link object1="132" data1="inputA" object2="131" data2="output #1"/>
+    <Link object1="133" data1="center" object2="134" data2="output #1"/>
+    <Link object1="134" data1="condition" object2="135" data2="result"/>
+    <Link object1="134" data1="input #1" object2="15" data2="result #1"/>
+    <Link object1="135" data1="inputA" object2="132" data2="result"/>
+    <Link object1="135" data1="inputB" object2="13" data2="isInside"/>
+    <Link object1="138" data1="neighbors" object2="146" data2="result #1"/>
+    <Link object1="138" data1="init" object2="139" data2="output #1"/>
+    <Link object1="138" data1="can propagate" object2="140" data2="output #2"/>
+    <Link object1="139" data1="indices" object2="151" data2="output #1"/>
+    <Link object1="139" data1="input #1" object2="140" data2="output #1"/>
+    <Link object1="139" data1="values #1" object2="143" data2="value"/>
+    <Link object1="140" data1="size" object2="141" data2="size #1"/>
+    <Link object1="140" data1="input #1" object2="142" data2="value"/>
+    <Link object1="140" data1="input #2" object2="143" data2="value"/>
+    <Link object1="141" data1="input #1" object2="15" data2="result #1"/>
+    <Link object1="144" data1="input #1" object2="93" data2="indices #1"/>
+    <Link object1="146" data1="control" object2="147" data2="result"/>
+    <Link object1="146" data1="true #1" object2="144" data2="output #1"/>
+    <Link object1="146" data1="false #1" object2="145" data2="value"/>
+    <Link object1="147" data1="input" object2="135" data2="result"/>
+    <Link object1="148" data1="input" object2="106" data2="result"/>
+    <Link object1="149" data1="# numbers" object2="148" data2="# of elements"/>
+    <Link object1="150" data1="condition" object2="106" data2="result"/>
+    <Link object1="150" data1="input #1" object2="149" data2="numbers"/>
+    <Link object1="151" data1="index" object2="115" data2="numbers"/>
+    <Link object1="151" data1="input #1" object2="150" data2="output #1"/>
+    <Link object1="152" data1="condition" object2="155" data2="result"/>
+    <Link object1="152" data1="input #1" object2="154" data2="numbers"/>
+    <Link object1="153" data1="input #1" object2="138" data2="output"/>
+    <Link object1="154" data1="# numbers" object2="153" data2="size #1"/>
+    <Link object1="155" data1="inputA" object2="147" data2="result"/>
+    <Link object1="155" data1="inputB" object2="138" data2="output"/>
+    <Link object1="156" data1="index" object2="152" data2="output #1"/>
+    <Link object1="156" data1="input #1" object2="93" data2="indices #1"/>
+    <Link object1="157" data1="index" object2="152" data2="output #1"/>
+    <Link object1="157" data1="input #1" object2="15" data2="result #1"/>
+    <Link object1="158" data1="index" object2="156" data2="output #1"/>
+    <Link object1="158" data1="input #1" object2="15" data2="result #1"/>
+    <Link object1="159" data1="point 1" object2="157" data2="output #1"/>
+    <Link object1="159" data1="point 2" object2="158" data2="output #1"/>
+    <Link object1="164" data1="edges" object2="68" data2="ouput"/>
+    <Link object1="164" data1="start" object2="138" data2="output"/>
+    <Link object1="164" data1="init" object2="138" data2="output"/>
+    <Link object1="164" data1="edge weight" object2="165" data2="value"/>
+    <Link object1="167" data1="gradient" object2="166" data2="value"/>
+    <Link object1="167" data1="position" object2="164" data2="output"/>
+    <Link object1="168" data1="points" object2="15" data2="result #1"/>
+    <Link object1="168" data1="indices" object2="50" data2="output"/>
+    <Link object1="168" data1="color" object2="167" data2="color"/>
+    <Link object1="170" data1="indices" object2="50" data2="output"/>
+    <Link object1="170" data1="input #1" object2="90" data2="result"/>
+    <Link object1="170" data1="input #2" object2="164" data2="output"/>
+    <Link object1="172" data1="control" object2="65" data2="result"/>
+    <Link object1="172" data1="true #1" object2="173" data2="result #1"/>
+    <Link object1="172" data1="false #1" object2="209" data2="result #1"/>
+    <Link object1="173" data1="control" object2="61" data2="output"/>
+    <Link object1="173" data1="true #1" object2="176" data2="value"/>
+    <Link object1="173" data1="false #1" object2="196" data2="result #1"/>
+    <Link object1="194" data1="inputA" object2="195" data2="value"/>
+    <Link object1="194" data1="inputB" object2="170" data2="output #1"/>
+    <Link object1="196" data1="control" object2="194" data2="result"/>
+    <Link object1="196" data1="true #1" object2="177" data2="value"/>
+    <Link object1="196" data1="false #1" object2="200" data2="result #1"/>
+    <Link object1="198" data1="inputA" object2="170" data2="output #1"/>
+    <Link object1="198" data1="inputB" object2="199" data2="value"/>
+    <Link object1="200" data1="control" object2="198" data2="result"/>
+    <Link object1="200" data1="true #1" object2="178" data2="value"/>
+    <Link object1="200" data1="false #1" object2="179" data2="value"/>
+    <Link object1="202" data1="polygon" object2="18" data2="output"/>
+    <Link object1="202" data1="color" object2="172" data2="result #1"/>
+    <Link object1="205" data1="indices" object2="50" data2="output"/>
+    <Link object1="205" data1="input #1" object2="135" data2="result"/>
+    <Link object1="206" data1="inputA" object2="207" data2="result"/>
+    <Link object1="206" data1="inputB" object2="205" data2="output #1"/>
+    <Link object1="207" data1="input" object2="65" data2="result"/>
+    <Link object1="209" data1="control" object2="206" data2="result"/>
+    <Link object1="209" data1="true #1" object2="180" data2="value"/>
+    <Link object1="209" data1="false #1" object2="213" data2="result #1"/>
+    <Link object1="211" data1="inputA" object2="170" data2="output #1"/>
+    <Link object1="211" data1="inputB" object2="212" data2="value"/>
+    <Link object1="213" data1="control" object2="211" data2="result"/>
+    <Link object1="213" data1="true #1" object2="221" data2="result #1"/>
+    <Link object1="213" data1="false #1" object2="216" data2="result #1"/>
+    <Link object1="214" data1="inputA" object2="170" data2="output #1"/>
+    <Link object1="214" data1="inputB" object2="215" data2="value"/>
+    <Link object1="216" data1="control" object2="214" data2="result"/>
+    <Link object1="216" data1="true #1" object2="231" data2="result #1"/>
+    <Link object1="216" data1="false #1" object2="219" data2="result #1"/>
+    <Link object1="217" data1="inputA" object2="170" data2="output #1"/>
+    <Link object1="217" data1="inputB" object2="218" data2="value"/>
+    <Link object1="219" data1="control" object2="217" data2="result"/>
+    <Link object1="219" data1="true #1" object2="235" data2="result #1"/>
+    <Link object1="219" data1="false #1" object2="244" data2="result #1"/>
+    <Link object1="220" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="220" data1="inputB" object2="222" data2="value"/>
+    <Link object1="221" data1="control" object2="220" data2="result"/>
+    <Link object1="221" data1="true #1" object2="181" data2="value"/>
+    <Link object1="221" data1="false #1" object2="224" data2="result #1"/>
+    <Link object1="223" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="223" data1="inputB" object2="225" data2="value"/>
+    <Link object1="224" data1="control" object2="223" data2="result"/>
+    <Link object1="224" data1="true #1" object2="182" data2="value"/>
+    <Link object1="224" data1="false #1" object2="227" data2="result #1"/>
+    <Link object1="226" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="226" data1="inputB" object2="228" data2="value"/>
+    <Link object1="227" data1="control" object2="226" data2="result"/>
+    <Link object1="227" data1="true #1" object2="183" data2="value"/>
+    <Link object1="227" data1="false #1" object2="184" data2="value"/>
+    <Link object1="230" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="230" data1="inputB" object2="229" data2="value"/>
+    <Link object1="231" data1="control" object2="230" data2="result"/>
+    <Link object1="231" data1="true #1" object2="185" data2="value"/>
+    <Link object1="231" data1="false #1" object2="234" data2="result #1"/>
+    <Link object1="233" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="233" data1="inputB" object2="232" data2="value"/>
+    <Link object1="234" data1="control" object2="233" data2="result"/>
+    <Link object1="234" data1="true #1" object2="186" data2="value"/>
+    <Link object1="234" data1="false #1" object2="187" data2="value"/>
+    <Link object1="235" data1="control" object2="236" data2="result"/>
+    <Link object1="235" data1="true #1" object2="188" data2="value"/>
+    <Link object1="235" data1="false #1" object2="238" data2="result #1"/>
+    <Link object1="236" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="236" data1="inputB" object2="237" data2="value"/>
+    <Link object1="238" data1="control" object2="239" data2="result"/>
+    <Link object1="238" data1="true #1" object2="189" data2="value"/>
+    <Link object1="238" data1="false #1" object2="241" data2="result #1"/>
+    <Link object1="239" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="239" data1="inputB" object2="240" data2="value"/>
+    <Link object1="241" data1="control" object2="242" data2="result"/>
+    <Link object1="241" data1="true #1" object2="187" data2="value"/>
+    <Link object1="241" data1="false #1" object2="190" data2="value"/>
+    <Link object1="242" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="242" data1="inputB" object2="243" data2="value"/>
+    <Link object1="244" data1="control" object2="245" data2="result"/>
+    <Link object1="244" data1="true #1" object2="191" data2="value"/>
+    <Link object1="244" data1="false #1" object2="247" data2="result #1"/>
+    <Link object1="245" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="245" data1="inputB" object2="246" data2="value"/>
+    <Link object1="247" data1="control" object2="248" data2="result"/>
+    <Link object1="247" data1="true #1" object2="192" data2="value"/>
+    <Link object1="247" data1="false #1" object2="250" data2="result #1"/>
+    <Link object1="248" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="248" data1="inputB" object2="249" data2="value"/>
+    <Link object1="250" data1="control" object2="251" data2="result"/>
+    <Link object1="250" data1="true #1" object2="190" data2="value"/>
+    <Link object1="250" data1="false #1" object2="193" data2="value"/>
+    <Link object1="251" data1="inputA" object2="170" data2="output #2"/>
+    <Link object1="251" data1="inputB" object2="252" data2="value"/>
+    <Dock dock="58" docked="45"/>
+    <Dock dock="59" docked="1"/>
+    <Dock dock="125" docked="133"/>
+    <Dock dock="125" docked="127"/>
+    <Dock dock="126" docked="168"/>
+    <Dock dock="203" docked="202"/>
+    <Dock dock="82" docked="81"/>
+    <Dock dock="204" docked="159"/>
+</Panda>
