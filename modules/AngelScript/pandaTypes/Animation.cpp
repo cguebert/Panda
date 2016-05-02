@@ -25,17 +25,17 @@ namespace panda
 
 namespace
 {
-	BaseDataWrapper* createFloatAnimationData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Animation<float>, panda::AnimationDataWrapper<float>>(input, name, help); }
+	BaseDataWrapper* createFloatAnimationData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Animation<float>, panda::AnimationDataWrapper<float>>(name, help); }
 
-	BaseDataWrapper* createPointAnimationData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Animation<Point>, panda::AnimationDataWrapper<Point>>(input, name, help); }
+	BaseDataWrapper* createPointAnimationData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Animation<Point>, panda::AnimationDataWrapper<Point>>(name, help); }
 
-	BaseDataWrapper* createColorAnimationData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Animation<Color>, panda::AnimationDataWrapper<Color>>(input, name, help); }
+	BaseDataWrapper* createColorAnimationData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Animation<Color>, panda::AnimationDataWrapper<Color>>(name, help); }
 
-	BaseDataWrapper* createGradientAnimationData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Animation<Gradient>, panda::AnimationDataWrapper<Gradient>>(input, name, help); }
+	BaseDataWrapper* createGradientAnimationData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Animation<Gradient>, panda::AnimationDataWrapper<Gradient>>(name, help); }
 
 }
 
@@ -169,8 +169,14 @@ namespace panda
 		void setValue(const AnimWrapper* wrapper)
 		{ m_data->setValue(wrapper->animation()); }
 
-		int getCounter() const
+		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		AnimData* m_data = nullptr;
@@ -194,8 +200,7 @@ namespace panda
 			asMETHOD(AnimWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(dtn, str("void setValue(const " + animTypeName + " &in)"),
 			asMETHOD(AnimWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(dtn, "int getCounter()",
-			asMETHOD(AnimWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<AnimWrapper>(engine, dtn);
 	}
 
 	template <class T>
@@ -257,13 +262,13 @@ namespace panda
 		registerAnimationT<Color>(engine, "Color");
 		registerAnimationT<Gradient>(engine, "Gradient");
 
-		int r = engine->RegisterObjectMethod("PandaObject", "FloatAnimationData@ createFloatAnimationData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "FloatAnimationData@ createFloatAnimationData(const string &in, const string &in)",
 			asFUNCTION(createFloatAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "PointAnimationData@ createPointAnimationData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "PointAnimationData@ createPointAnimationData(const string &in, const string &in)",
 			asFUNCTION(createPointAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "ColorAnimationData@ createColorAnimationData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "ColorAnimationData@ createColorAnimationData(const string &in, const string &in)",
 			asFUNCTION(createColorAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "GradientAnimationData@ createGradientAnimationData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "GradientAnimationData@ createGradientAnimationData(const string &in, const string &in)",
 			asFUNCTION(createGradientAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

@@ -64,6 +64,7 @@ set(SOURCE_FILES
 	pandaTypes/Gradient.cpp
 	pandaTypes/IntVector.cpp
 	pandaTypes/Mesh.cpp
+	pandaTypes/ObjectWrapper.cpp
 	pandaTypes/Path.cpp
 	pandaTypes/Point.cpp
 	pandaTypes/Polygon.cpp

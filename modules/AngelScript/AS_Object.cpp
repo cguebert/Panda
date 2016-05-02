@@ -103,7 +103,7 @@ public:
 
 			if (newData.input)
 				addInput(*newData.data);
-			else
+			if (newData.output)
 				addOutput(*newData.data);
 
 			// Look for the same data, if it was already present

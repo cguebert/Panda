@@ -19,11 +19,11 @@ namespace panda
 
 namespace
 {
-	BaseDataWrapper* createFloatVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<FloatVector, panda::FloatVectorDataWrapper>(input, name, help); }
+	BaseDataWrapper* createFloatVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<FloatVector, panda::FloatVectorDataWrapper>(name, help); }
 
-	BaseDataWrapper* createFloatVectorVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<FloatVector>, panda::FloatVectorVectorDataWrapper>(input, name, help); }
+	BaseDataWrapper* createFloatVectorVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<FloatVector>, panda::FloatVectorVectorDataWrapper>(name, help); }
 }
 
 namespace panda 
@@ -87,8 +87,14 @@ namespace panda
 		void setValue(const FloatVectorWrapper* wrapper)
 		{ m_data->setValue(wrapper->intVector()); }
 
-		int getCounter() const
+		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		Data<types::FloatVector>* m_data = nullptr;
@@ -125,7 +131,13 @@ namespace panda
 
 		int getCounter() const 
 		{ return m_data->getCounter(); }
-	
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
+
 	private:
 		data_type* m_data = nullptr;
 		asIScriptEngine* m_engine = nullptr;
@@ -140,8 +152,7 @@ namespace panda
 			asMETHOD(FloatVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("FloatVecData", "void setValue(const FloatVec &in)",
 			asMETHOD(FloatVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("FloatVecData", "int getCounter()",
-			asMETHOD(FloatVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<FloatVectorDataWrapper>(engine, "FloatVecData");
 	}
 
 	void registerFloatVectorVectorDataType(asIScriptEngine* engine)
@@ -152,8 +163,7 @@ namespace panda
 			asMETHOD(FloatVectorVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("FloatVecVectorData", str("void setValue(const vector<FloatVec@> &in)"),
 			asMETHOD(FloatVectorVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("FloatVecVectorData", "int getCounter()",
-			asMETHOD(FloatVectorVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<FloatVectorVectorDataWrapper>(engine, "FloatVecVectorData");
 	}
 
 	void registerFloatVectorType(asIScriptEngine* engine)
@@ -177,9 +187,9 @@ namespace panda
 		registerFloatVectorData(engine);
 		registerFloatVectorVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "FloatVecData@ createFloatVecData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "FloatVecData@ createFloatVecData(const string &in, const string &in)",
 			asFUNCTION(createFloatVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "FloatVecVectorData@ createFloatVecVectorData(bool, const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "FloatVecVectorData@ createFloatVecVectorData(const string &in, const string &in)",
 			asFUNCTION(createFloatVectorVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

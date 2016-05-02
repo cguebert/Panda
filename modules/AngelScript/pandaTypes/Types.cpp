@@ -8,23 +8,23 @@ using panda::ObjectWrapper;
 namespace
 {
 
-BaseDataWrapper* createIntData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-{ return wrapper->createData<int>(input, name, help); }
+BaseDataWrapper* createIntData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+{ return wrapper->createData<int>(name, help); }
 
-BaseDataWrapper* createIntVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-{ return wrapper->createData<std::vector<int>>(input, name, help); }
+BaseDataWrapper* createIntVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+{ return wrapper->createData<std::vector<int>>(name, help); }
 
-BaseDataWrapper* createFloatData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-{ return wrapper->createData<float>(input, name, help); }
+BaseDataWrapper* createFloatData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+{ return wrapper->createData<float>(name, help); }
 
-BaseDataWrapper* createFloatVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-{ return wrapper->createData<std::vector<float>>(input, name, help); }
+BaseDataWrapper* createFloatVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+{ return wrapper->createData<std::vector<float>>(name, help); }
 
-BaseDataWrapper* createStringData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-{ return wrapper->createData<std::string>(input, name, help); }
+BaseDataWrapper* createStringData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+{ return wrapper->createData<std::string>(name, help); }
 
-BaseDataWrapper* createStringVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-{ return wrapper->createData<std::vector<std::string>>(input, name, help); }
+BaseDataWrapper* createStringVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+{ return wrapper->createData<std::vector<std::string>>(name, help); }
 
 }
 
@@ -35,9 +35,9 @@ namespace panda
 	{
 		registerDataType<int>(engine, "int");
 		registerVectorDataType<int>(engine, "int");
-		int r = engine->RegisterObjectMethod("PandaObject", "IntData@ createIntData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "IntData@ createIntData(const string &in, const string &in)",
 			asFUNCTION(createIntData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "IntVectorData@ createIntVectorData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "IntVectorData@ createIntVectorData(const string &in, const string &in)",
 			asFUNCTION(createIntVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
@@ -45,9 +45,9 @@ namespace panda
 	{
 		registerDataType<float>(engine, "float");
 		registerVectorDataType<int>(engine, "float");
-		int r = engine->RegisterObjectMethod("PandaObject", "FloatData@ createFloatData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "FloatData@ createFloatData(const string &in, const string &in)",
 			asFUNCTION(createFloatData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "FloatVectorData@ createFloatVectorData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "FloatVectorData@ createFloatVectorData(const string &in, const string &in)",
 			asFUNCTION(createFloatVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
@@ -55,9 +55,9 @@ namespace panda
 	{
 		registerDataType<std::string>(engine, "string");
 		registerVectorDataType<int>(engine, "string");
-		int r = engine->RegisterObjectMethod("PandaObject", "StringData@ createStringData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "StringData@ createStringData(const string &in, const string &in)",
 			asFUNCTION(createStringData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "StringVectorData@ createStringVectorData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "StringVectorData@ createStringVectorData(const string &in, const string &in)",
 			asFUNCTION(createStringVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

@@ -33,11 +33,11 @@ namespace
 	void ColorSetIndex(int idx, float value, Color* self)
 	{ if (idx >= 0 || idx < 4) (*self)[idx] = value; }
 
-	BaseDataWrapper* createColorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Color>(input, name, help); }
+	BaseDataWrapper* createColorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Color>(name, help); }
 
-	BaseDataWrapper* createColorVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Color>, panda::VectorDataWrapper<Color>>(input, name, help); }
+	BaseDataWrapper* createColorVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Color>, panda::VectorDataWrapper<Color>>(name, help); }
 
 }
 
@@ -96,9 +96,9 @@ namespace panda
 
 		aatc::container::tempspec::vector<Color>::Register(engine, "Color");
 		registerVectorDataType<Color>(engine, "Color");
-		int r = engine->RegisterObjectMethod("PandaObject", "ColorData@ createColorData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "ColorData@ createColorData(const string &in, const string &in)",
 			asFUNCTION(createColorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "ColorVectorData@ createColorVectorData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "ColorVectorData@ createColorVectorData(const string &in, const string &in)",
 			asFUNCTION(createColorVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

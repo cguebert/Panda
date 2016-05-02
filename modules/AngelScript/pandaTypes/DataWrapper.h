@@ -41,6 +41,12 @@ public:
 
 	int getCounter() const 
 	{ return m_data->getCounter(); }
+
+	void setWidget(const std::string& widget)
+	{ m_data->setWidget(widget); }
+
+	void setWidgetData(const std::string& widgetData)
+	{ m_data->setWidgetData(widgetData); }
 	
 private:
 	Data<T>* m_data = nullptr;
@@ -69,11 +75,28 @@ public:
 
 	int getCounter() const 
 	{ return m_data->getCounter(); }
+
+	void setWidget(const std::string& widget)
+	{ m_data->setWidget(widget); }
+
+	void setWidgetData(const std::string& widgetData)
+	{ m_data->setWidgetData(widgetData); }
 	
 private:
 	data_type* m_data = nullptr;
 };
 
+template <class T>
+void registerBaseDataMethods(asIScriptEngine* engine, const char* dtn)
+{
+	int r = 0;
+	r = engine->RegisterObjectMethod(dtn, "int getCounter()",
+		asMETHOD(T, getCounter), asCALL_THISCALL); assert(r >= 0);
+	r = engine->RegisterObjectMethod(dtn, "void setWidget(const string &in widget)",
+		asMETHOD(T, setWidget), asCALL_THISCALL); assert(r >= 0);
+	r = engine->RegisterObjectMethod(dtn, "void setWidgetData(const string &in widgetData)",
+		asMETHOD(T, setWidgetData), asCALL_THISCALL); assert(r >= 0);
+}
 
 template <class T>
 void registerDataType(asIScriptEngine* engine, const std::string& typeName)
@@ -86,10 +109,9 @@ void registerDataType(asIScriptEngine* engine, const std::string& typeName)
 	r = engine->RegisterObjectType(dtn, 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 	r = engine->RegisterObjectMethod(dtn, str("const " + typeName + "& getValue() const"),
 		asMETHOD(panda::DataWrapper<T>, getValue), asCALL_THISCALL); assert(r >= 0);
-	r = engine->RegisterObjectMethod(dtn, str("void setValue(const " + typeName + " &in)"),
+	r = engine->RegisterObjectMethod(dtn, str("void setValue(const " + typeName + " &in value)"),
 		asMETHOD(panda::DataWrapper<T>, setValue), asCALL_THISCALL); assert(r >= 0);
-	r = engine->RegisterObjectMethod(dtn, "int getCounter()",
-		asMETHOD(panda::DataWrapper<T>, getCounter), asCALL_THISCALL); assert(r >= 0);
+	registerBaseDataMethods<panda::DataWrapper<T>>(engine, dtn);
 }
 
 template <class T>
@@ -105,8 +127,7 @@ void registerVectorDataType(asIScriptEngine* engine, const std::string& typeName
 		asMETHOD(panda::VectorDataWrapper<T>, getValue), asCALL_THISCALL); assert(r >= 0);
 	r = engine->RegisterObjectMethod(dtn, str("void setValue(const vector<" + typeName + "> &in)"),
 		asMETHOD(panda::VectorDataWrapper<T>, setValue), asCALL_THISCALL); assert(r >= 0);
-	r = engine->RegisterObjectMethod(dtn, "int getCounter()",
-		asMETHOD(panda::VectorDataWrapper<T>, getCounter), asCALL_THISCALL); assert(r >= 0);
+	registerBaseDataMethods<panda::VectorDataWrapper<T>>(engine, dtn);
 }
 
 } // namespace panda

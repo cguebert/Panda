@@ -50,11 +50,11 @@ namespace
 		return opCompare(self->y, p.y);
 	}
 
-	BaseDataWrapper* createPointData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Point>(input, name, help); }
+	BaseDataWrapper* createPointData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Point>(name, help); }
 
-	BaseDataWrapper* createPointVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Point>, panda::VectorDataWrapper<Point>>(input, name, help); }
+	BaseDataWrapper* createPointVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Point>, panda::VectorDataWrapper<Point>>(name, help); }
 
 }
 
@@ -114,9 +114,9 @@ namespace panda
 		aatc::container::tempspec::vector<Point>::Register(engine, "Point");
 		registerVectorDataType<Point>(engine, "Point");
 
-		int r = engine->RegisterObjectMethod("PandaObject", "PointData@ createPointData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "PointData@ createPointData(const string &in, const string &in)",
 			asFUNCTION(createPointData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "PointVectorData@ createPointVectorData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "PointVectorData@ createPointVectorData(const string &in, const string &in)",
 			asFUNCTION(createPointVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

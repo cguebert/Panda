@@ -8,33 +8,37 @@ class asIScriptEngine;
 namespace panda
 {
 
-struct DataInfo
-{
-	bool input = true;
-	std::shared_ptr<BaseData> data;
-	std::shared_ptr<BaseDataWrapper> dataWrapper;
-};
+void registerObject(asIScriptEngine* engine);
 
 class ObjectWrapper
 {
 public:
+	struct DataInfo
+	{
+		bool input = false, output = false;
+		std::shared_ptr<BaseData> data;
+		std::shared_ptr<BaseDataWrapper> dataWrapper;
+	};
+
 	ObjectWrapper(PandaObject* object, asIScriptEngine* engine);
 
 	// For the scripts
 	template <class T, class Wrapper = DataWrapper<T>>
-	BaseDataWrapper* createData(bool input, const std::string& name, const std::string& help)
+	BaseDataWrapper* createData(const std::string& name, const std::string& help)
 	{
 		auto data = std::make_shared<Data<T>>(name, help, m_object);
 		auto dataWrapper = std::make_shared<Wrapper>(data.get(), m_engine);
 
 		DataInfo info;
-		info.input = input;
 		info.data = data;
 		info.dataWrapper = dataWrapper;
 		m_datas.push_back(info);
 
 		return dataWrapper.get();
 	}
+
+	void setInput(BaseDataWrapper* wrapper);
+	void setOutput(BaseDataWrapper* wrapper);
 
 	// For the AS_Object
 	void clear();
@@ -53,7 +57,7 @@ inline ObjectWrapper::ObjectWrapper(PandaObject* object, asIScriptEngine* engine
 inline void ObjectWrapper::clear()
 { m_datas.clear(); }
 
-inline const std::vector<DataInfo>& ObjectWrapper::datas()
+inline const std::vector<ObjectWrapper::DataInfo>& ObjectWrapper::datas()
 { return m_datas; }
 
 } // namespace panda

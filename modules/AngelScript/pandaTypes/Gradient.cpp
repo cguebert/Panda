@@ -18,11 +18,11 @@ namespace panda
 
 namespace
 {
-	BaseDataWrapper* createGradientData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Gradient, panda::GradientDataWrapper>(input, name, help); }
+	BaseDataWrapper* createGradientData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Gradient, panda::GradientDataWrapper>(name, help); }
 
-	BaseDataWrapper* createGradientVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Gradient>, panda::GradientVectorDataWrapper>(input, name, help); }
+	BaseDataWrapper* createGradientVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Gradient>, panda::GradientVectorDataWrapper>(name, help); }
 }
 
 namespace panda 
@@ -140,8 +140,14 @@ namespace panda
 		void setValue(const GradientWrapper* wrapper)
 		{ m_data->setValue(wrapper->gradient()); }
 
-		int getCounter() const
+		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		Data<types::Gradient>* m_data = nullptr;
@@ -172,6 +178,12 @@ namespace panda
 
 		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 	
 	private:
 		data_type* m_data = nullptr;
@@ -187,8 +199,7 @@ namespace panda
 			asMETHOD(GradientDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("GradientData", "void setValue(const Gradient &in)",
 			asMETHOD(GradientDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("GradientData", "int getCounter()",
-			asMETHOD(GradientDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<GradientDataWrapper>(engine, "GradientData");
 	}
 
 	void registerGradientVectorDataType(asIScriptEngine* engine)
@@ -199,8 +210,7 @@ namespace panda
 			asMETHOD(GradientVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("GradientVectorData", str("void setValue(const vector<Gradient@> &in)"),
 			asMETHOD(GradientVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("GradientVectorData", "int getCounter()",
-			asMETHOD(GradientVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<GradientVectorDataWrapper>(engine, "GradientVectorData");
 	}
 
 	void registerGradientType(asIScriptEngine* engine)
@@ -235,9 +245,9 @@ namespace panda
 		registerGradientData(engine);
 		registerGradientVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "GradientData@ createGradientData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "GradientData@ createGradientData(const string &in, const string &in)",
 			asFUNCTION(createGradientData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "GradientVectorData@ createGradientVectorData(bool, const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "GradientVectorData@ createGradientVectorData(const string &in, const string &in)",
 			asFUNCTION(createGradientVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

@@ -19,11 +19,11 @@ namespace panda
 
 namespace
 {
-	BaseDataWrapper* createPathData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Path, panda::PathDataWrapper>(input, name, help); }
+	BaseDataWrapper* createPathData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Path, panda::PathDataWrapper>(name, help); }
 
-	BaseDataWrapper* createPathVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Path>, panda::PathVectorDataWrapper>(input, name, help); }
+	BaseDataWrapper* createPathVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Path>, panda::PathVectorDataWrapper>(name, help); }
 }
 
 namespace panda 
@@ -132,8 +132,14 @@ namespace panda
 		void setValue(const PathWrapper* wrapper)
 		{ m_data->setValue(wrapper->path()); }
 
-		int getCounter() const
+		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		Data<types::Path>* m_data = nullptr;
@@ -170,6 +176,12 @@ namespace panda
 
 		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 	
 	private:
 		data_type* m_data = nullptr;
@@ -185,8 +197,7 @@ namespace panda
 			asMETHOD(PathDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PathData", "void setValue(const Path &in)",
 			asMETHOD(PathDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PathData", "int getCounter()",
-			asMETHOD(PathDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<PathDataWrapper>(engine, "PathData");
 	}
 
 	void registerPathVectorDataType(asIScriptEngine* engine)
@@ -197,8 +208,7 @@ namespace panda
 			asMETHOD(PathVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PathVectorData", str("void setValue(const vector<Path@> &in)"),
 			asMETHOD(PathVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PathVectorData", "int getCounter()",
-			asMETHOD(PathVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<PathVectorDataWrapper>(engine, "PathVectorData");
 	}
 
 	void registerPathType(asIScriptEngine* engine)
@@ -244,9 +254,9 @@ namespace panda
 		registerPathData(engine);
 		registerPathVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "PathData@ createPathData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "PathData@ createPathData(const string &in, const string &in)",
 			asFUNCTION(createPathData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "PathVectorData@ createPathVectorData(bool, const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "PathVectorData@ createPathVectorData(const string &in, const string &in)",
 			asFUNCTION(createPathVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

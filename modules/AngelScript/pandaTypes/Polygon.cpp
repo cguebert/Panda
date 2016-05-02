@@ -21,11 +21,11 @@ namespace panda
 
 namespace
 {
-	BaseDataWrapper* createPolygonData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Polygon, panda::PolygonDataWrapper>(input, name, help); }
+	BaseDataWrapper* createPolygonData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Polygon, panda::PolygonDataWrapper>(name, help); }
 
-	BaseDataWrapper* createPolygonVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Polygon>, panda::PolygonVectorDataWrapper>(input, name, help); }
+	BaseDataWrapper* createPolygonVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Polygon>, panda::PolygonVectorDataWrapper>(name, help); }
 }
 
 namespace panda 
@@ -117,8 +117,14 @@ namespace panda
 		void setValue(const PolygonWrapper* wrapper)
 		{ m_data->setValue(wrapper->polygon()); }
 
-		int getCounter() const
+		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		Data<types::Polygon>* m_data = nullptr;
@@ -156,6 +162,12 @@ namespace panda
 
 		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 	
 	private:
 		data_type* m_data = nullptr;
@@ -171,8 +183,7 @@ namespace panda
 			asMETHOD(PolygonDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PolygonData", "void setValue(const Polygon &in)",
 			asMETHOD(PolygonDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PolygonData", "int getCounter()",
-			asMETHOD(PolygonDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<PolygonDataWrapper>(engine, "PolygonData");
 	}
 
 	void registerPolygonVectorDataType(asIScriptEngine* engine)
@@ -183,8 +194,7 @@ namespace panda
 			asMETHOD(PolygonVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PolygonVectorData", str("void setValue(const vector<Polygon@> &in)"),
 			asMETHOD(PolygonVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PolygonVectorData", "int getCounter()",
-			asMETHOD(PolygonVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<PolygonVectorDataWrapper>(engine, "PolygonVectorData");
 	}
 
 	void registerPolygonType(asIScriptEngine* engine)
@@ -220,9 +230,9 @@ namespace panda
 		registerPolygonData(engine);
 		registerPolygonVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "PolygonData@ createPolygonData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "PolygonData@ createPolygonData(const string &in, const string &in)",
 			asFUNCTION(createPolygonData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "PolygonVectorData@ createPolygonVectorData(bool, const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "PolygonVectorData@ createPolygonVectorData(const string &in, const string &in)",
 			asFUNCTION(createPolygonVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

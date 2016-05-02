@@ -30,11 +30,11 @@ namespace
 	void RectPointSizeConstructor(const Point& p, float w, float h, Rect* self)
 	{ new(self) Rect(p, w, h); }
 
-	BaseDataWrapper* createRectData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Rect>(input, name, help); }
+	BaseDataWrapper* createRectData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Rect>(name, help); }
 
-	BaseDataWrapper* createRectVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Rect>, panda::VectorDataWrapper<Rect>>(input, name, help); }
+	BaseDataWrapper* createRectVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Rect>, panda::VectorDataWrapper<Rect>>(name, help); }
 
 }
 
@@ -145,9 +145,9 @@ namespace panda
 		aatc::container::tempspec::vector<Rect>::Register(engine, "Rect");
 		registerVectorDataType<Rect>(engine, "Rect");
 
-		int r = engine->RegisterObjectMethod("PandaObject", "RectData@ createRectData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "RectData@ createRectData(const string &in, const string &in)",
 			asFUNCTION(createRectData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "RectVectorData@ createRectVectorData(bool, const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "RectVectorData@ createRectVectorData(const string &in, const string &in)",
 			asFUNCTION(createRectVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

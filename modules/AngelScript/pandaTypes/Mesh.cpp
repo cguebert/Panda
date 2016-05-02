@@ -19,11 +19,11 @@ namespace panda
 
 namespace
 {
-	BaseDataWrapper* createMeshData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<Mesh, panda::MeshDataWrapper>(input, name, help); }
+	BaseDataWrapper* createMeshData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<Mesh, panda::MeshDataWrapper>(name, help); }
 
-	BaseDataWrapper* createMeshVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<Mesh>, panda::MeshVectorDataWrapper>(input, name, help); }
+	BaseDataWrapper* createMeshVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<Mesh>, panda::MeshVectorDataWrapper>(name, help); }
 
 	void EdgeDefaultConstructor(Mesh::Edge* self)
 	{ new(self) Mesh::Edge({ 0, 0 }); }
@@ -291,8 +291,14 @@ namespace panda
 		void setValue(const MeshWrapper* wrapper)
 		{ m_data->setValue(wrapper->mesh()); }
 
-		int getCounter() const
+		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		Data<types::Mesh>* m_data = nullptr;
@@ -330,6 +336,12 @@ namespace panda
 
 		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 	
 	private:
 		data_type* m_data = nullptr;
@@ -345,8 +357,7 @@ namespace panda
 			asMETHOD(MeshDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("MeshData", "void setValue(const Mesh&)",
 			asMETHOD(MeshDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("MeshData", "int getCounter()",
-			asMETHOD(MeshDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<MeshDataWrapper>(engine, "MeshData");
 	}
 
 	void registerMeshVectorDataType(asIScriptEngine* engine)
@@ -357,8 +368,7 @@ namespace panda
 			asMETHOD(MeshVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("MeshVectorData", str("void setValue(const vector<Mesh@>&)"),
 			asMETHOD(MeshVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("MeshVectorData", "int getCounter()",
-			asMETHOD(MeshVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<MeshVectorDataWrapper>(engine, "MeshVectorData");
 	}
 
 	void registerMeshType(asIScriptEngine* engine)
@@ -494,9 +504,9 @@ namespace panda
 		registerMeshData(engine);
 		registerMeshVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "MeshData@ createMeshData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "MeshData@ createMeshData(const string &in, const string &in)",
 			asFUNCTION(createMeshData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "MeshVectorData@ createMeshVectorData(bool, const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "MeshVectorData@ createMeshVectorData(const string &in, const string &in)",
 			asFUNCTION(createMeshVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

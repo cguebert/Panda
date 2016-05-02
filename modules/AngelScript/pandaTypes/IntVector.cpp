@@ -19,11 +19,11 @@ namespace panda
 
 namespace
 {
-	BaseDataWrapper* createIntVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<IntVector, panda::IntVectorDataWrapper>(input, name, help); }
+	BaseDataWrapper* createIntVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<IntVector, panda::IntVectorDataWrapper>(name, help); }
 
-	BaseDataWrapper* createIntVectorVectorData(bool input, const std::string& name, const std::string& help, ObjectWrapper* wrapper)
-	{ return wrapper->createData<std::vector<IntVector>, panda::IntVectorVectorDataWrapper>(input, name, help); }
+	BaseDataWrapper* createIntVectorVectorData(const std::string& name, const std::string& help, ObjectWrapper* wrapper)
+	{ return wrapper->createData<std::vector<IntVector>, panda::IntVectorVectorDataWrapper>(name, help); }
 }
 
 namespace panda 
@@ -87,8 +87,14 @@ namespace panda
 		void setValue(const IntVectorWrapper* wrapper)
 		{ m_data->setValue(wrapper->intVector()); }
 
-		int getCounter() const
+		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		Data<types::IntVector>* m_data = nullptr;
@@ -125,6 +131,12 @@ namespace panda
 
 		int getCounter() const 
 		{ return m_data->getCounter(); }
+
+		void setWidget(const std::string& widget)
+		{ m_data->setWidget(widget); }
+
+		void setWidgetData(const std::string& widgetData)
+		{ m_data->setWidgetData(widgetData); }
 	
 	private:
 		data_type* m_data = nullptr;
@@ -140,8 +152,7 @@ namespace panda
 			asMETHOD(IntVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("IntVecData", "void setValue(const IntVec &in)",
 			asMETHOD(IntVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("IntVecData", "int getCounter()",
-			asMETHOD(IntVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<IntVectorDataWrapper>(engine, "IntVecData");
 	}
 
 	void registerIntVectorVectorDataType(asIScriptEngine* engine)
@@ -152,8 +163,7 @@ namespace panda
 			asMETHOD(IntVectorVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("IntVecVectorData", str("void setValue(const vector<IntVec@> &in)"),
 			asMETHOD(IntVectorVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("IntVecVectorData", "int getCounter()",
-			asMETHOD(IntVectorVectorDataWrapper, getCounter), asCALL_THISCALL); assert(r >= 0);
+		registerBaseDataMethods<IntVectorVectorDataWrapper>(engine, "IntVecVectorData");
 	}
 
 	void registerIntVectorType(asIScriptEngine* engine)
@@ -177,9 +187,9 @@ namespace panda
 		registerIntVectorData(engine);
 		registerIntVectorVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "IntVecData@ createIntVecData(bool, const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "IntVecData@ createIntVecData(const string &in, const string &in)",
 			asFUNCTION(createIntVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "IntVecVectorData@ createIntVecVectorData(bool, const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "IntVecVectorData@ createIntVecVectorData(const string &in, const string &in)",
 			asFUNCTION(createIntVectorVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
