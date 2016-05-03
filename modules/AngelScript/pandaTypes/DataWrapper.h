@@ -87,6 +87,12 @@ private:
 };
 
 template <class T>
+BaseDataWrapper* castToBase(T* data)
+{
+	return dynamic_cast<BaseDataWrapper*>(data);
+}
+
+template <class T>
 void registerBaseDataMethods(asIScriptEngine* engine, const char* dtn)
 {
 	int r = 0;
@@ -96,6 +102,8 @@ void registerBaseDataMethods(asIScriptEngine* engine, const char* dtn)
 		asMETHOD(T, setWidget), asCALL_THISCALL); assert(r >= 0);
 	r = engine->RegisterObjectMethod(dtn, "void setWidgetData(const string &in widgetData)",
 		asMETHOD(T, setWidgetData), asCALL_THISCALL); assert(r >= 0);
+
+	r = engine->RegisterObjectMethod(dtn, "BaseData@ opImplCast()", asFUNCTION(castToBase<T>), asCALL_CDECL_OBJLAST); assert(r >= 0);
 }
 
 template <class T>

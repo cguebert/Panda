@@ -37,8 +37,8 @@ public:
 		return dataWrapper.get();
 	}
 
-	void setInput(BaseDataWrapper* wrapper);
-	void setOutput(BaseDataWrapper* wrapper);
+	void setInput(const BaseDataWrapper* wrapper);
+	void setOutput(const BaseDataWrapper* wrapper);
 
 	// For the AS_Object
 	void clear();
