@@ -161,22 +161,13 @@ namespace panda
 		using AnimData = Data<types::Animation<T>>;
 
 		AnimationDataWrapper(AnimData* data, asIScriptEngine* engine)
-			: m_data(data), m_engine(engine) { }
+			: BaseDataWrapper(data), m_data(data), m_engine(engine) { }
 
 		AnimWrapper* getValue() const
 		{ return AnimWrapper::create(m_data->getValue(), m_engine); }
 
 		void setValue(const AnimWrapper* wrapper)
 		{ m_data->setValue(wrapper->animation()); }
-
-		int getCounter() const 
-		{ return m_data->getCounter(); }
-
-		void setWidget(const std::string& widget)
-		{ m_data->setWidget(widget); }
-
-		void setWidgetData(const std::string& widgetData)
-		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		AnimData* m_data = nullptr;

@@ -24,29 +24,37 @@ inline const char* str(const std::string& text)
 namespace panda
 {
 
-class BaseDataWrapper {};
+class BaseDataWrapper 
+{
+public:
+	BaseDataWrapper(BaseData* data)
+		: m_baseData(data) { }
+
+	int getCounter() const 
+	{ return m_baseData->getCounter(); }
+
+	void setWidget(const std::string& widget)
+	{ m_baseData->setWidget(widget); }
+
+	void setWidgetData(const std::string& widgetData)
+	{ m_baseData->setWidgetData(widgetData); }
+
+private:
+	BaseData* m_baseData = nullptr;
+};
 
 template <class T, class Ref = const T&>
 class DataWrapper : public BaseDataWrapper
 {
 public:
 	DataWrapper(Data<T>* data, asIScriptEngine* /*engine*/) 
-		: m_data(data) { }
+		: BaseDataWrapper(data), m_data(data) { }
 
 	Ref getValue() const 
 	{ return m_data->getValue(); }
 	
 	void setValue(Ref value) 
 	{ m_data->setValue(value); }
-
-	int getCounter() const 
-	{ return m_data->getCounter(); }
-
-	void setWidget(const std::string& widget)
-	{ m_data->setWidget(widget); }
-
-	void setWidgetData(const std::string& widgetData)
-	{ m_data->setWidgetData(widgetData); }
 	
 private:
 	Data<T>* m_data = nullptr;
@@ -61,7 +69,7 @@ public:
 	using script_vector = aatc::container::tempspec::vector<T>;
 
 	VectorDataWrapper(data_type* data, asIScriptEngine* /*engine*/)
-		: m_data(data) { }
+		: BaseDataWrapper(data), m_data(data) { }
 
 	script_vector* getValue() const
 	{
@@ -73,15 +81,6 @@ public:
 	void setValue(const script_vector* vec)
 	{ m_data->setValue(vec->container); }
 
-	int getCounter() const 
-	{ return m_data->getCounter(); }
-
-	void setWidget(const std::string& widget)
-	{ m_data->setWidget(widget); }
-
-	void setWidgetData(const std::string& widgetData)
-	{ m_data->setWidgetData(widgetData); }
-	
 private:
 	data_type* m_data = nullptr;
 };

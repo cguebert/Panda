@@ -109,22 +109,13 @@ namespace panda
 	{
 	public:
 		PolygonDataWrapper(Data<types::Polygon>* data, asIScriptEngine* engine)
-			: m_data(data), m_engine(engine) { }
+			: BaseDataWrapper(data), m_data(data), m_engine(engine) { }
 
 		PolygonWrapper* getValue() const
 		{ return PolygonWrapper::create(m_data->getValue(), m_engine); }
 
 		void setValue(const PolygonWrapper* wrapper)
 		{ m_data->setValue(wrapper->polygon()); }
-
-		int getCounter() const 
-		{ return m_data->getCounter(); }
-
-		void setWidget(const std::string& widget)
-		{ m_data->setWidget(widget); }
-
-		void setWidgetData(const std::string& widgetData)
-		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		Data<types::Polygon>* m_data = nullptr;
@@ -139,7 +130,7 @@ namespace panda
 		using script_vector = aatc::container::templated::vector;
 
 		PolygonVectorDataWrapper(data_type* data, asIScriptEngine* engine)
-			: m_data(data), m_engine(engine)
+			: BaseDataWrapper(data), m_data(data), m_engine(engine)
 		{ }
 
 		script_vector* getValue() const
@@ -160,15 +151,6 @@ namespace panda
 				acc.push_back(static_cast<PolygonWrapper*>(ptr)->polygon());
 		}
 
-		int getCounter() const 
-		{ return m_data->getCounter(); }
-
-		void setWidget(const std::string& widget)
-		{ m_data->setWidget(widget); }
-
-		void setWidgetData(const std::string& widgetData)
-		{ m_data->setWidgetData(widgetData); }
-	
 	private:
 		data_type* m_data = nullptr;
 		asIScriptEngine* m_engine = nullptr;

@@ -79,22 +79,13 @@ namespace panda
 	{
 	public:
 		FloatVectorDataWrapper(Data<types::FloatVector>* data, asIScriptEngine* engine)
-			: m_data(data) { }
+			: BaseDataWrapper(data), m_data(data) { }
 
 		FloatVectorWrapper* getValue() const
 		{ return FloatVectorWrapper::create(m_data->getValue()); }
 
 		void setValue(const FloatVectorWrapper* wrapper)
 		{ m_data->setValue(wrapper->intVector()); }
-
-		int getCounter() const 
-		{ return m_data->getCounter(); }
-
-		void setWidget(const std::string& widget)
-		{ m_data->setWidget(widget); }
-
-		void setWidgetData(const std::string& widgetData)
-		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		Data<types::FloatVector>* m_data = nullptr;
@@ -108,7 +99,7 @@ namespace panda
 		using script_vector = aatc::container::templated::vector;
 
 		FloatVectorVectorDataWrapper(data_type* data, asIScriptEngine* engine)
-			: m_data(data), m_engine(engine)
+			: BaseDataWrapper(data), m_data(data), m_engine(engine)
 		{ }
 
 		script_vector* getValue() const
@@ -128,15 +119,6 @@ namespace panda
 			for (const auto& ptr : vec->container)
 				acc.push_back(static_cast<FloatVectorWrapper*>(ptr)->intVector());
 		}
-
-		int getCounter() const 
-		{ return m_data->getCounter(); }
-
-		void setWidget(const std::string& widget)
-		{ m_data->setWidget(widget); }
-
-		void setWidgetData(const std::string& widgetData)
-		{ m_data->setWidgetData(widgetData); }
 
 	private:
 		data_type* m_data = nullptr;
