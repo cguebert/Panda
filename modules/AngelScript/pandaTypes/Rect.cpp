@@ -51,12 +51,12 @@ namespace panda
 		r = engine->RegisterObjectProperty("Rect", "float y2", asOFFSET(Rect, y2)); assert( r >= 0 );
 
 		r = engine->RegisterObjectBehaviour("Rect", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(RectDefaultConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-		r = engine->RegisterObjectBehaviour("Rect", asBEHAVE_CONSTRUCT, "void f(float, float, float, float)", asFUNCTION(Rect4FloatsConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-		r = engine->RegisterObjectBehaviour("Rect", asBEHAVE_CONSTRUCT, "void f(const Rect &in)", asFUNCTION(RectCopyConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-		r = engine->RegisterObjectBehaviour("Rect", asBEHAVE_CONSTRUCT, "void f(const Point &in, const Point &in)", asFUNCTION(Rect2PointsConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-		r = engine->RegisterObjectBehaviour("Rect", asBEHAVE_CONSTRUCT, "void f(const Point &in, float, float)", asFUNCTION(RectPointSizeConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectBehaviour("Rect", asBEHAVE_CONSTRUCT, "void f(float left, float top, float right, float bottom)", asFUNCTION(Rect4FloatsConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectBehaviour("Rect", asBEHAVE_CONSTRUCT, "void f(const Rect &in rect)", asFUNCTION(RectCopyConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectBehaviour("Rect", asBEHAVE_CONSTRUCT, "void f(const Point &in topLeft, const Point &in bottomRight)", asFUNCTION(Rect2PointsConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectBehaviour("Rect", asBEHAVE_CONSTRUCT, "void f(const Point &in topLeft, float width, float height)", asFUNCTION(RectPointSizeConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void set(float, float, float, float)", asMETHODPR(Rect, set, (float, float, float, float), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void set(float left, float top, float right, float bottom)", asMETHODPR(Rect, set, (float, float, float, float), void), asCALL_THISCALL); assert( r >= 0 );
 		
 		r = engine->RegisterObjectMethod("Rect", "void normalize()", asMETHOD(Rect, canonicalize), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Rect", "Rect normalized() const", asMETHOD(Rect, canonicalized), asCALL_THISCALL); assert( r >= 0 );
@@ -68,20 +68,20 @@ namespace panda
 		r = engine->RegisterObjectMethod("Rect", "float area() const", asMETHOD(Rect, area), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Rect", "bool empty() const", asMETHOD(Rect, empty), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void setWidth(float)", asMETHOD(Rect, setWidth), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void setHeight(float)", asMETHOD(Rect, setHeight), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void setSize(float, float)", asMETHODPR(Rect, setSize, (float, float), void), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void setSize(const Point &in)", asMETHODPR(Rect, setSize, (const Point&), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setWidth(float width)", asMETHOD(Rect, setWidth), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setHeight(float height)", asMETHOD(Rect, setHeight), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setSize(float width, float height)", asMETHODPR(Rect, setSize, (float, float), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setSize(const Point &in size)", asMETHODPR(Rect, setSize, (const Point&), void), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Rect", "float left() const", asMETHOD(Rect, left), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Rect", "float top() const", asMETHOD(Rect, top), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Rect", "float right() const", asMETHOD(Rect, right), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Rect", "float bottom() const", asMETHOD(Rect, bottom), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void setLeft(float)", asMETHOD(Rect, setLeft), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void setTop(float)", asMETHOD(Rect, setTop), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void setRight(float)", asMETHOD(Rect, setRight), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void setBottom(float)", asMETHOD(Rect, setBottom), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setLeft(float left)", asMETHOD(Rect, setLeft), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setTop(float top)", asMETHOD(Rect, setTop), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setRight(float right)", asMETHOD(Rect, setRight), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setBottom(float bottom)", asMETHOD(Rect, setBottom), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Rect", "Point topLeft() const", asMETHOD(Rect, topLeft), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Rect", "Point bottomRight() const", asMETHOD(Rect, bottomRight), asCALL_THISCALL); assert( r >= 0 );
@@ -89,52 +89,52 @@ namespace panda
 		r = engine->RegisterObjectMethod("Rect", "Point bottomLeft() const", asMETHOD(Rect, bottomLeft), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Rect", "Point center() const", asMETHOD(Rect, center), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void setTopLeft(const Point &in)", asMETHOD(Rect, setTopLeft), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void setBottomRight(const Point &in)", asMETHOD(Rect, setBottomRight), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void setTopRight(const Point &in)", asMETHOD(Rect, setTopRight), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void setBottomLeft(const Point &in)", asMETHOD(Rect, setBottomLeft), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setTopLeft(const Point &in topLeft)", asMETHOD(Rect, setTopLeft), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setBottomRight(const Point &in bottomRight)", asMETHOD(Rect, setBottomRight), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setTopRight(const Point &in topRight)", asMETHOD(Rect, setTopRight), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void setBottomLeft(const Point &in bottomLeft)", asMETHOD(Rect, setBottomLeft), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void translate(const Point &in)", asMETHODPR(Rect, translate, (const Point&), void), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void translate(float, float)", asMETHODPR(Rect, translate, (float, float), void), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "Rect translated(const Point &in) const", asMETHODPR(Rect, translated, (const Point&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "Rect translated(float, float) const", asMETHODPR(Rect, translated, (float, float) const, Rect), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void translate(const Point &in delta)", asMETHODPR(Rect, translate, (const Point&), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void translate(float dx, float dy)", asMETHODPR(Rect, translate, (float, float), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect translated(const Point &in delta) const", asMETHODPR(Rect, translated, (const Point&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect translated(float dx, float dy) const", asMETHODPR(Rect, translated, (float, float) const, Rect), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void moveTo(const Point &in)", asMETHODPR(Rect, moveTo, (const Point&), void), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void moveTo(float, float)", asMETHODPR(Rect, moveTo, (float, float), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveTo(const Point &in topLeft)", asMETHODPR(Rect, moveTo, (const Point&), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveTo(float left, float top)", asMETHODPR(Rect, moveTo, (float, float), void), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void moveLeft(float)", asMETHOD(Rect, moveLeft), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void moveTop(float)", asMETHOD(Rect, moveTop), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void moveRight(float)", asMETHOD(Rect, moveRight), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void moveBottom(float)", asMETHOD(Rect, moveBottom), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveLeft(float left)", asMETHOD(Rect, moveLeft), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveTop(float top)", asMETHOD(Rect, moveTop), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveRight(float right)", asMETHOD(Rect, moveRight), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveBottom(float bottom)", asMETHOD(Rect, moveBottom), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void moveTopLeft(const Point &in)", asMETHOD(Rect, moveTopLeft), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void moveBottomRight(const Point &in)", asMETHOD(Rect, moveBottomRight), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void moveTopRight(const Point &in)", asMETHOD(Rect, moveTopRight), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void moveBottomLeft(const Point &in)", asMETHOD(Rect, moveBottomLeft), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveTopLeft(const Point &in topLeft)", asMETHOD(Rect, moveTopLeft), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveBottomRight(const Point &in bottomRight)", asMETHOD(Rect, moveBottomRight), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveTopRight(const Point &in topRight)", asMETHOD(Rect, moveTopRight), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveBottomLeft(const Point &in bottomLeft)", asMETHOD(Rect, moveBottomLeft), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void moveCenter(const Point &in)", asMETHOD(Rect, moveCenter), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void moveCenter(const Point &in center)", asMETHOD(Rect, moveCenter), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "void adjust(float, float, float, float)", asMETHODPR(Rect, adjust, (float, float, float, float), void), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "void adjust(const Rect &in)", asMETHODPR(Rect, adjust, (const Rect&), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void adjust(float left, float top, float right, float bottom)", asMETHODPR(Rect, adjust, (float, float, float, float), void), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "void adjust(const Rect &in rect)", asMETHODPR(Rect, adjust, (const Rect&), void), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "Rect adjusted(float, float, float, float) const", asMETHODPR(Rect, adjusted, (float, float, float, float) const, Rect), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "Rect adjusted(const Rect &in) const", asMETHODPR(Rect, adjusted, (const Rect&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect adjusted(float left, float top, float right, float bottom) const", asMETHODPR(Rect, adjusted, (float, float, float, float) const, Rect), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect adjusted(const Rect &in rect) const", asMETHODPR(Rect, adjusted, (const Rect&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "Rect &opOrAssign(const Rect &in)", asMETHODPR(Rect, operator|=, (const Rect&), Rect&), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "Rect opOr(const Rect &in) const", asMETHODPR(Rect, operator|, (const Rect&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "Rect united(const Rect &in) const", asMETHOD(Rect, united), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect &opOrAssign(const Rect &in rect)", asMETHODPR(Rect, operator|=, (const Rect&), Rect&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect opOr(const Rect &in rect) const", asMETHODPR(Rect, operator|, (const Rect&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect united(const Rect &in rect) const", asMETHOD(Rect, united), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "Rect &opAndAssign(const Rect &in)", asMETHODPR(Rect, operator&=, (const Rect&), Rect&), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "Rect opAnd(const Rect &in) const", asMETHODPR(Rect, operator&, (const Rect&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "Rect intersected(const Rect &in) const", asMETHOD(Rect, intersected), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect &opAndAssign(const Rect &in rect)", asMETHODPR(Rect, operator&=, (const Rect&), Rect&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect opAnd(const Rect &in rect) const", asMETHODPR(Rect, operator&, (const Rect&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect intersected(const Rect &in rect) const", asMETHOD(Rect, intersected), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "bool intersects(const Rect &in) const", asMETHOD(Rect, intersects), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "bool intersects(const Rect &in rect) const", asMETHOD(Rect, intersects), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "bool contains(const Rect &in) const", asMETHODPR(Rect, contains, (const Rect&) const, bool), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "bool contains(const Point &in) const", asMETHODPR(Rect, contains, (const Point&) const, bool), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "bool contains(float, float) const", asMETHODPR(Rect, contains, (float, float) const, bool), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "bool contains(const Rect &in rect) const", asMETHODPR(Rect, contains, (const Rect&) const, bool), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "bool contains(const Point &in point) const", asMETHODPR(Rect, contains, (const Point&) const, bool), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "bool contains(float px, float py) const", asMETHODPR(Rect, contains, (float, float) const, bool), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Rect", "bool opEquals(const Rect &in) const", asMETHODPR(Rect, operator==, (const Rect &) const, bool), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "bool opEquals(const Rect &in rect) const", asMETHODPR(Rect, operator==, (const Rect &) const, bool), asCALL_THISCALL); assert( r >= 0 );
 	}
 
 	void registerRect(asIScriptEngine* engine)
@@ -145,9 +145,9 @@ namespace panda
 		aatc::container::tempspec::vector<Rect>::Register(engine, "Rect");
 		registerVectorDataType<Rect>(engine, "Rect");
 
-		int r = engine->RegisterObjectMethod("PandaObject", "RectData@ createRectData(const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "RectData@ createRectData(const string &in name, const string &in description)",
 			asFUNCTION(createRectData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "RectVectorData@ createRectVectorData(const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "RectVectorData@ createRectVectorData(const string &in name, const string &in description)",
 			asFUNCTION(createRectVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

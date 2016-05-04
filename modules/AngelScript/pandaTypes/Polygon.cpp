@@ -163,7 +163,7 @@ namespace panda
 		r = engine->RegisterObjectType("PolygonData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PolygonData", "Polygon@ getValue() const",
 			asMETHOD(PolygonDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PolygonData", "void setValue(const Polygon &in)",
+		r = engine->RegisterObjectMethod("PolygonData", "void setValue(const Polygon &in value)",
 			asMETHOD(PolygonDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		registerBaseDataMethods<PolygonDataWrapper>(engine, "PolygonData");
 	}
@@ -174,7 +174,7 @@ namespace panda
 		r = engine->RegisterObjectType("PolygonVectorData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PolygonVectorData", str("vector<Polygon@>@ getValue() const"),
 			asMETHOD(PolygonVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PolygonVectorData", str("void setValue(const vector<Polygon@> &in)"),
+		r = engine->RegisterObjectMethod("PolygonVectorData", str("void setValue(const vector<Polygon@> &in value)"),
 			asMETHOD(PolygonVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		registerBaseDataMethods<PolygonVectorDataWrapper>(engine, "PolygonVectorData");
 	}
@@ -187,23 +187,23 @@ namespace panda
 
 		r = engine->RegisterObjectBehaviour("Polygon", asBEHAVE_ADDREF, "void f()", asMETHOD(PolygonWrapper, addRef), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Polygon", asBEHAVE_RELEASE, "void f()", asMETHOD(PolygonWrapper, release), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Polygon", "Polygon& opAssign(const Polygon &in)", asMETHOD(PolygonWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Polygon", "bool opEquals(const Polygon &in) const", asMETHOD(PolygonWrapper, operator==), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Polygon", "Polygon& opAssign(const Polygon &in poly)", asMETHOD(PolygonWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Polygon", "bool opEquals(const Polygon &in poly) const", asMETHOD(PolygonWrapper, operator==), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Polygon", "Path@ getContour()", asMETHOD(PolygonWrapper, getContour), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Polygon", "void setContour(const Path &in)", asMETHOD(PolygonWrapper, setContour), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Polygon", "void setContour(const Path &in contour)", asMETHOD(PolygonWrapper, setContour), asCALL_THISCALL); assert(r >= 0);
 	
 		r = engine->RegisterObjectMethod("Polygon", "vector<Path@>@ getHoles()", asMETHOD(PolygonWrapper, getHoles), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Polygon", "void setHoles(const vector<Path@> &in)", asMETHOD(PolygonWrapper, setHoles), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Polygon", "void setHoles(const vector<Path@> &in holes)", asMETHOD(PolygonWrapper, setHoles), asCALL_THISCALL); assert(r >= 0);
 	
-		r = engine->RegisterObjectMethod("Polygon", "Polygon@ translated(const Point &in) const", asMETHOD(PolygonWrapper, translatedPolygon), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Polygon", "void translate(const Point &in)", asMETHOD(PolygonWrapper, translatePolygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Polygon", "Polygon@ translated(const Point &in delta) const", asMETHOD(PolygonWrapper, translatedPolygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Polygon", "void translate(const Point &in delta)", asMETHOD(PolygonWrapper, translatePolygon), asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod("Polygon", "Polygon@ rotated(const Point &in, float) const", asMETHOD(PolygonWrapper, rotatedPolygon), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Polygon", "void rotate(const Point &in, float)", asMETHOD(PolygonWrapper, rotatePolygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Polygon", "Polygon@ rotated(const Point &in center, float angle) const", asMETHOD(PolygonWrapper, rotatedPolygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Polygon", "void rotate(const Point &in center, float angle)", asMETHOD(PolygonWrapper, rotatePolygon), asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod("Polygon", "Polygon@ scaled(float) const", asMETHOD(PolygonWrapper, scaledPolygon), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Polygon", "void scale(float)", asMETHOD(PolygonWrapper, scalePolygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Polygon", "Polygon@ scaled(float scale) const", asMETHOD(PolygonWrapper, scaledPolygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Polygon", "void scale(float scale)", asMETHOD(PolygonWrapper, scalePolygon), asCALL_THISCALL); assert(r >= 0);
 	}
 
 	void registerPolygon(asIScriptEngine* engine)
@@ -212,9 +212,9 @@ namespace panda
 		registerPolygonData(engine);
 		registerPolygonVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "PolygonData@ createPolygonData(const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "PolygonData@ createPolygonData(const string &in name, const string &in description)",
 			asFUNCTION(createPolygonData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "PolygonVectorData@ createPolygonVectorData(const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "PolygonVectorData@ createPolygonVectorData(const string &in name, const string &in description)",
 			asFUNCTION(createPolygonVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

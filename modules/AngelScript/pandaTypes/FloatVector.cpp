@@ -132,7 +132,7 @@ namespace panda
 		r = engine->RegisterObjectType("FloatVecData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 		r = engine->RegisterObjectMethod("FloatVecData", "FloatVec@ getValue() const",
 			asMETHOD(FloatVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("FloatVecData", "void setValue(const FloatVec &in)",
+		r = engine->RegisterObjectMethod("FloatVecData", "void setValue(const FloatVec &in value)",
 			asMETHOD(FloatVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		registerBaseDataMethods<FloatVectorDataWrapper>(engine, "FloatVecData");
 	}
@@ -143,7 +143,7 @@ namespace panda
 		r = engine->RegisterObjectType("FloatVecVectorData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 		r = engine->RegisterObjectMethod("FloatVecVectorData", str("vector<FloatVec@>@ getValue() const"),
 			asMETHOD(FloatVectorVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("FloatVecVectorData", str("void setValue(const vector<FloatVec@> &in)"),
+		r = engine->RegisterObjectMethod("FloatVecVectorData", str("void setValue(const vector<FloatVec@> &in value)"),
 			asMETHOD(FloatVectorVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		registerBaseDataMethods<FloatVectorVectorDataWrapper>(engine, "FloatVecVectorData");
 	}
@@ -156,11 +156,11 @@ namespace panda
 
 		r = engine->RegisterObjectBehaviour("FloatVec", asBEHAVE_ADDREF, "void f()", asMETHOD(FloatVectorWrapper, addRef), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("FloatVec", asBEHAVE_RELEASE, "void f()", asMETHOD(FloatVectorWrapper, release), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("FloatVec", "FloatVec& opAssign(const FloatVec &in)", asMETHOD(FloatVectorWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("FloatVec", "bool opEquals(const FloatVec &in) const", asMETHOD(FloatVectorWrapper, operator==), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("FloatVec", "FloatVec& opAssign(const FloatVec &in vec)", asMETHOD(FloatVectorWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("FloatVec", "bool opEquals(const FloatVec &in vec) const", asMETHOD(FloatVectorWrapper, operator==), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("FloatVec", "vector<float>@ getValues()", asMETHOD(FloatVectorWrapper, getValues), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("FloatVec", "void setValues(const vector<float> &in)", asMETHOD(FloatVectorWrapper, setValues), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("FloatVec", "void setValues(const vector<float> &in values)", asMETHOD(FloatVectorWrapper, setValues), asCALL_THISCALL); assert(r >= 0);
 	}
 
 	void registerFloatVector(asIScriptEngine* engine)
@@ -169,9 +169,9 @@ namespace panda
 		registerFloatVectorData(engine);
 		registerFloatVectorVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "FloatVecData@ createFloatVecData(const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "FloatVecData@ createFloatVecData(const string &in name, const string &in description)",
 			asFUNCTION(createFloatVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "FloatVecVectorData@ createFloatVecVectorData(const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "FloatVecVectorData@ createFloatVecVectorData(const string &in name, const string &in description)",
 			asFUNCTION(createFloatVectorVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

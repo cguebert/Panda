@@ -35,9 +35,9 @@ namespace panda
 	{
 		registerDataType<int>(engine, "int");
 		registerVectorDataType<int>(engine, "int");
-		int r = engine->RegisterObjectMethod("PandaObject", "IntData@ createIntData(const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "IntData@ createIntData(const string &in name, const string &in description)",
 			asFUNCTION(createIntData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "IntVectorData@ createIntVectorData(const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "IntVectorData@ createIntVectorData(const string &in name, const string &in description)",
 			asFUNCTION(createIntVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
@@ -45,9 +45,9 @@ namespace panda
 	{
 		registerDataType<float>(engine, "float");
 		registerVectorDataType<int>(engine, "float");
-		int r = engine->RegisterObjectMethod("PandaObject", "FloatData@ createFloatData(const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "FloatData@ createFloatData(const string &in name, const string &in description)",
 			asFUNCTION(createFloatData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "FloatVectorData@ createFloatVectorData(const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "FloatVectorData@ createFloatVectorData(const string &in name, const string &in description)",
 			asFUNCTION(createFloatVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
@@ -55,9 +55,9 @@ namespace panda
 	{
 		registerDataType<std::string>(engine, "string");
 		registerVectorDataType<int>(engine, "string");
-		int r = engine->RegisterObjectMethod("PandaObject", "StringData@ createStringData(const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "StringData@ createStringData(const string &in name, const string &in description)",
 			asFUNCTION(createStringData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "StringVectorData@ createStringVectorData(const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "StringVectorData@ createStringVectorData(const string &in name, const string &in description)",
 			asFUNCTION(createStringVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

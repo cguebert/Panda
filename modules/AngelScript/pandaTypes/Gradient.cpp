@@ -179,7 +179,7 @@ namespace panda
 		r = engine->RegisterObjectType("GradientData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 		r = engine->RegisterObjectMethod("GradientData", "Gradient@ getValue() const",
 			asMETHOD(GradientDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("GradientData", "void setValue(const Gradient &in)",
+		r = engine->RegisterObjectMethod("GradientData", "void setValue(const Gradient &in value)",
 			asMETHOD(GradientDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		registerBaseDataMethods<GradientDataWrapper>(engine, "GradientData");
 	}
@@ -190,7 +190,7 @@ namespace panda
 		r = engine->RegisterObjectType("GradientVectorData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 		r = engine->RegisterObjectMethod("GradientVectorData", str("vector<Gradient@>@ getValue() const"),
 			asMETHOD(GradientVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("GradientVectorData", str("void setValue(const vector<Gradient@> &in)"),
+		r = engine->RegisterObjectMethod("GradientVectorData", str("void setValue(const vector<Gradient@> &in value)"),
 			asMETHOD(GradientVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		registerBaseDataMethods<GradientVectorDataWrapper>(engine, "GradientVectorData");
 	}
@@ -203,19 +203,20 @@ namespace panda
 
 		r = engine->RegisterObjectBehaviour("Gradient", asBEHAVE_ADDREF, "void f()", asMETHOD(GradientWrapper, addRef), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Gradient", asBEHAVE_RELEASE, "void f()", asMETHOD(GradientWrapper, release), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Gradient", "Gradient& opAssign(const Gradient &in)", asMETHOD(GradientWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Gradient", "Gradient& opAssign(const Gradient &in gradient)", asMETHOD(GradientWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
 
+		r = engine->RegisterObjectMethod("Gradient", "int size() const", asMETHOD(GradientWrapper, size), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Gradient", "void clear()", asMETHOD(GradientWrapper, clear), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Gradient", "void add(float, Color)", asMETHOD(GradientWrapper, add), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Gradient", "Color get(float)", asMETHOD(GradientWrapper, get), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Gradient", "void add(float pos, Color color)", asMETHOD(GradientWrapper, add), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Gradient", "Color get(float pos)", asMETHOD(GradientWrapper, get), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Gradient", "Color getAtIndex(int) const", asMETHOD(GradientWrapper, getAtIndex), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Gradient", "void setAtIndex(int, Color)", asMETHOD(GradientWrapper, setAtIndex), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Gradient", "Color getAtIndex(int index) const", asMETHOD(GradientWrapper, getAtIndex), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Gradient", "void setAtIndex(int index, Color color)", asMETHOD(GradientWrapper, setAtIndex), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Gradient", "void removeAtIndex(int)", asMETHOD(GradientWrapper, removeAtIndex), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Gradient", "void removeAtIndex(int index)", asMETHOD(GradientWrapper, removeAtIndex), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Gradient", "int extend() const", asMETHOD(GradientWrapper, extend), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Gradient", "void setExtend(int)", asMETHOD(GradientWrapper, setExtend), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Gradient", "void setExtend(int extend)", asMETHOD(GradientWrapper, setExtend), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Gradient", "vector<Color>@ colors() const", asMETHOD(GradientWrapper, colors), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Gradient", "vector<float>@ keys() const", asMETHOD(GradientWrapper, keys), asCALL_THISCALL); assert( r >= 0 );
@@ -227,9 +228,9 @@ namespace panda
 		registerGradientData(engine);
 		registerGradientVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "GradientData@ createGradientData(const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "GradientData@ createGradientData(const string &in name, const string &in description)",
 			asFUNCTION(createGradientData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "GradientVectorData@ createGradientVectorData(const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "GradientVectorData@ createGradientVectorData(const string &in name, const string &in description)",
 			asFUNCTION(createGradientVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

@@ -132,7 +132,7 @@ void registerVectorDataType(asIScriptEngine* engine, const std::string& typeName
 	r = engine->RegisterObjectType(dtn, 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 	r = engine->RegisterObjectMethod(dtn, str("vector< " + typeName + ">@ getValue() const"),
 		asMETHOD(panda::VectorDataWrapper<T>, getValue), asCALL_THISCALL); assert(r >= 0);
-	r = engine->RegisterObjectMethod(dtn, str("void setValue(const vector<" + typeName + "> &in)"),
+	r = engine->RegisterObjectMethod(dtn, str("void setValue(const vector<" + typeName + "> &in value)"),
 		asMETHOD(panda::VectorDataWrapper<T>, setValue), asCALL_THISCALL); assert(r >= 0);
 	registerBaseDataMethods<panda::VectorDataWrapper<T>>(engine, dtn);
 }

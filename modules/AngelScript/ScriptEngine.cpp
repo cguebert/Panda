@@ -72,7 +72,7 @@ ScriptEngine::ScriptEngine()
 	//	RegisterStdStringUtils(engine);
 
 	// The scripts can directly print text
-	r = m_engine->RegisterGlobalFunction("void print(const string &in)", asMETHOD(ScriptEngine, print), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
+	r = m_engine->RegisterGlobalFunction("void print(const string &in message)", asMETHOD(ScriptEngine, print), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
 
 	RegisterScriptMath(m_engine);
 	aatc::RegisterAllContainers(m_engine);

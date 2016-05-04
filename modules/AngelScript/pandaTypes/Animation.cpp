@@ -189,7 +189,7 @@ namespace panda
 		r = engine->RegisterObjectType(dtn, 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 		r = engine->RegisterObjectMethod(dtn, str(animTypeName + "@ getValue() const"),
 			asMETHOD(AnimWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(dtn, str("void setValue(const " + animTypeName + " &in)"),
+		r = engine->RegisterObjectMethod(dtn, str("void setValue(const " + animTypeName + " &in value)"),
 			asMETHOD(AnimWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		registerBaseDataMethods<AnimWrapper>(engine, dtn);
 	}
@@ -221,19 +221,19 @@ namespace panda
 		r = engine->RegisterObjectMethod(atn, "int size() const", asMETHOD(AnimWrapper, size), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod(atn, "void clear()", asMETHOD(AnimWrapper, clear), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod(atn, str("void add(float, " + writeTypeName + ")"), asMETHOD(AnimWrapper, add), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, str("void add(float pos, " + writeTypeName + " value)"), asMETHOD(AnimWrapper, add), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod(atn, str(readTypeName + " get(float) const"), asMETHOD(AnimWrapper, get), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod(atn, str(readTypeName + " getAtIndex(int) const"), asMETHOD(AnimWrapper, getAtIndex), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod(atn, str("void setAtIndex(int, " + writeTypeName + ")"), asMETHOD(AnimWrapper, setAtIndex), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, str("void setAtIndex(int index, " + writeTypeName + " value)"), asMETHOD(AnimWrapper, setAtIndex), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod(atn, "void removeAtIndex(int)", asMETHOD(AnimWrapper, removeAtIndex), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, "void removeAtIndex(int index)", asMETHOD(AnimWrapper, removeAtIndex), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod(atn, "int interpolation() const", asMETHOD(AnimWrapper, interpolation), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod(atn, "void setInterpolation(int)", asMETHOD(AnimWrapper, setInterpolation), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, "void setInterpolation(int interpolation)", asMETHOD(AnimWrapper, setInterpolation), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod(atn, "int extend() const", asMETHOD(AnimWrapper, extend), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod(atn, "void setExtend(int)", asMETHOD(AnimWrapper, setExtend), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod(atn, "void setExtend(int extend)", asMETHOD(AnimWrapper, setExtend), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod(atn, str("vector<" + typeName + ">@ values() const"), asMETHOD(AnimWrapper, values), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod(atn, "vector<float>@ keys() const", asMETHOD(AnimWrapper, keys), asCALL_THISCALL); assert( r >= 0 );
@@ -253,13 +253,13 @@ namespace panda
 		registerAnimationT<Color>(engine, "Color");
 		registerAnimationT<Gradient>(engine, "Gradient");
 
-		int r = engine->RegisterObjectMethod("PandaObject", "FloatAnimationData@ createFloatAnimationData(const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "FloatAnimationData@ createFloatAnimationData(const string &in name, const string &in description)",
 			asFUNCTION(createFloatAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "PointAnimationData@ createPointAnimationData(const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "PointAnimationData@ createPointAnimationData(const string &in name, const string &in description)",
 			asFUNCTION(createPointAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "ColorAnimationData@ createColorAnimationData(const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "ColorAnimationData@ createColorAnimationData(const string &in name, const string &in description)",
 			asFUNCTION(createColorAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PandaObject", "GradientAnimationData@ createGradientAnimationData(const string &in, const string &in)",
+		r = engine->RegisterObjectMethod("PandaObject", "GradientAnimationData@ createGradientAnimationData(const string &in name, const string &in description)",
 			asFUNCTION(createGradientAnimationData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 

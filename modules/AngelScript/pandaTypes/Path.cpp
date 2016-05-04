@@ -177,7 +177,7 @@ namespace panda
 		r = engine->RegisterObjectType("PathData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PathData", "Path@ getValue() const",
 			asMETHOD(PathDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PathData", "void setValue(const Path &in)",
+		r = engine->RegisterObjectMethod("PathData", "void setValue(const Path &in value)",
 			asMETHOD(PathDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		registerBaseDataMethods<PathDataWrapper>(engine, "PathData");
 	}
@@ -188,7 +188,7 @@ namespace panda
 		r = engine->RegisterObjectType("PathVectorData", 0, asOBJ_REF | asOBJ_NOCOUNT); assert(r >= 0);
 		r = engine->RegisterObjectMethod("PathVectorData", str("vector<Path@>@ getValue() const"),
 			asMETHOD(PathVectorDataWrapper, getValue), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("PathVectorData", str("void setValue(const vector<Path@> &in)"),
+		r = engine->RegisterObjectMethod("PathVectorData", str("void setValue(const vector<Path@> &in value)"),
 			asMETHOD(PathVectorDataWrapper, setValue), asCALL_THISCALL); assert(r >= 0);
 		registerBaseDataMethods<PathVectorDataWrapper>(engine, "PathVectorData");
 	}
@@ -201,30 +201,30 @@ namespace panda
 
 		r = engine->RegisterObjectBehaviour("Path", asBEHAVE_ADDREF, "void f()", asMETHOD(PathWrapper, addRef), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Path", asBEHAVE_RELEASE, "void f()", asMETHOD(PathWrapper, release), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path& opAssign(const Path &in)", asMETHOD(PathWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opAssign(const Path &in path)", asMETHOD(PathWrapper, assign), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Path", "vector<Point>@ getPoints()", asMETHOD(PathWrapper, getPoints), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Path", "void setPoints(const vector<Point>&in)", asMETHOD(PathWrapper, setPoints), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "void setPoints(const vector<Point>&in points)", asMETHOD(PathWrapper, setPoints), asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod("Path", "Path@ opAdd(const Point &in) const", asMETHODPR(PathWrapper, operator+, (const Point &) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path& opAddAssign(const Point &in)", asMETHODPR(PathWrapper, operator+=, (const Point &), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path@ opSub(const Point &in) const", asMETHODPR(PathWrapper, operator-, (const Point &) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path& opSubAssign(const Point &in)", asMETHODPR(PathWrapper, operator-=, (const Point &), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path@ opMul(float) const", asMETHODPR(PathWrapper, operator*, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path@ opMul_r(float) const",asMETHODPR(PathWrapper, operator*, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path& opMulAssign(float)", asMETHODPR(PathWrapper, operator*=, (float), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path@ opDiv(float) const", asMETHODPR(PathWrapper, operator/, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "Path& opDivAssign(float)", asMETHODPR(PathWrapper, operator/=, (float), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Path", "bool opEquals(const Path &in) const", asMETHODPR(PathWrapper, operator==, (const PathWrapper*) const, bool), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path@ opAdd(const Point &in delta) const", asMETHODPR(PathWrapper, operator+, (const Point &) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opAddAssign(const Point &in delta)", asMETHODPR(PathWrapper, operator+=, (const Point &), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path@ opSub(const Point &in delta) const", asMETHODPR(PathWrapper, operator-, (const Point &) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opSubAssign(const Point &in delta)", asMETHODPR(PathWrapper, operator-=, (const Point &), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path@ opMul(float factor) const", asMETHODPR(PathWrapper, operator*, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path@ opMul_r(float factor) const",asMETHODPR(PathWrapper, operator*, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opMulAssign(float factor)", asMETHODPR(PathWrapper, operator*=, (float), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path@ opDiv(float factor) const", asMETHODPR(PathWrapper, operator/, (float) const, PathWrapper*), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "Path& opDivAssign(float factor)", asMETHODPR(PathWrapper, operator/=, (float), PathWrapper&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Path", "bool opEquals(const Path &in path) const", asMETHODPR(PathWrapper, operator==, (const PathWrapper*) const, bool), asCALL_THISCALL); assert( r >= 0 );
 
-		r = engine->RegisterObjectMethod("Path", "Path@ linearProduct(const Point &in) const", asMETHOD(PathWrapper, linearProduct), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Path", "Path@ linearDivision(const Point &in) const", asMETHOD(PathWrapper, linearDivision), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "Path@ linearProduct(const Point &in point) const", asMETHOD(PathWrapper, linearProduct), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "Path@ linearDivision(const Point &in point) const", asMETHOD(PathWrapper, linearDivision), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod("Path", "Path@ reversed() const", asMETHOD(PathWrapper, reversed), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Path", "void reverse()", asMETHOD(PathWrapper, reverse), asCALL_THISCALL); assert(r >= 0);
 		
-		r = engine->RegisterObjectMethod("Path", "Path@ rotated(const Point &in, float) const", asMETHOD(PathWrapper, rotatedPath), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod("Path", "void rotate(const Point &in, float)", asMETHOD(PathWrapper, rotatePath), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "Path@ rotated(const Point &in center, float angle) const", asMETHOD(PathWrapper, rotatedPath), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod("Path", "void rotate(const Point &in center, float angle)", asMETHOD(PathWrapper, rotatePath), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod("Path", "float area() const", asMETHOD(PathWrapper, area), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Path", "Point centroid()", asMETHOD(PathWrapper, centroid), asCALL_THISCALL); assert(r >= 0);
@@ -236,9 +236,9 @@ namespace panda
 		registerPathData(engine);
 		registerPathVectorDataType(engine);
 
-		int r = engine->RegisterObjectMethod("PandaObject", "PathData@ createPathData(const string &in, const string &in)",
+		int r = engine->RegisterObjectMethod("PandaObject", "PathData@ createPathData(const string &in name, const string &in description)",
 			asFUNCTION(createPathData), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		engine->RegisterObjectMethod("PandaObject", "PathVectorData@ createPathVectorData(const string &in, const string &in)",
+		engine->RegisterObjectMethod("PandaObject", "PathVectorData@ createPathVectorData(const string &in name, const string &in description)",
 			asFUNCTION(createPathVectorData), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	}
 
