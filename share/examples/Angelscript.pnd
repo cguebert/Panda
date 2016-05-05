@@ -1,0 +1,269 @@
+<Panda>
+    <Data name="render size" x="800" y="600"/>
+    <Data name="background color" r="1" g="1" b="1" a="1"/>
+    <Data name="timestep" real="0.0099999998"/>
+    <Data name="use timer" int="1"/>
+    <Data name="nb threads" int="0"/>
+    <Object type="panda::AS_ScriptedObject" index="1" x="166" y="41">
+        <Data name="script">// Creating a star shape
+
+// Inputs
+PointData@ d_center;
+IntData@ d_nbSides;
+FloatData@ d_radius, d_ratio, d_rotation;
+
+// Outputs
+PathData@ d_outline;
+
+// This is called for the initialization of the object.  Only place where Datas can be created.
+void setup(PandaObject@ object)
+{
+	object.setName("Star");
+	
+	// Create the Data
+	@d_center = object.createPointData("center", "Center of the shape");
+	@d_nbSides = object.createIntData("nb sides", "Number of star sides");
+	@d_radius = object.createFloatData("radius", "Radius of the shape");
+	@d_ratio = object.createFloatData("ratio", "Ratio between the inner circle and the outer one");
+	@d_rotation = object.createFloatData("rotation", "Rotation of the shape");
+	@d_outline = object.createPathData("outline", "Outline of the shape");
+	
+	// Set them as inputs or outputs for the UI
+	object.addInput(d_center);
+	object.addInput(d_nbSides);
+	object.addInput(d_radius);
+	object.addInput(d_ratio);
+	object.addInput(d_rotation);
+	object.addOutput(d_outline);
+	
+	// Initial values of the inputs
+	d_center.setValue(Point(300, 300));
+	d_nbSides.setValue(5);
+	d_radius.setValue(100.0f);
+	d_ratio.setValue(0.5f);
+	d_rotation.setValue(0.0f);
+	
+	// Change the widgets
+	d_ratio.setWidget("slider");
+	d_ratio.setWidgetData("0.05 0.95 0.01");
+	
+	d_rotation.setWidget("slider");
+	d_rotation.setWidgetData("0 360 1");
+}
+
+// User defined function, setting the output Data
+void setOutline(const vector&lt;Point&gt;&amp; points)
+{
+	Path path;
+	path.setPoints(points);
+	d_outline.setValue(path);
+}
+
+// Called to compute the outputs when some inputs are dirty
+void update()
+{
+	vector&lt;Point&gt; points;
+	int nbSides = d_nbSides.getValue();
+	if (nbSides &lt; 3)
+	{
+		setOutline(points);
+		return;
+	}
+	
+	// Getting the inputs
+	Point center = d_center.getValue();
+	const float radius = d_radius.getValue();
+	const float ratio = d_ratio.getValue();
+	const float rotation = d_rotation.getValue();
+	
+	const float insideRadius = ratio * radius;
+	const float pi2 = 2 * 3.14159265f;
+	const float insideAngleDelta = pi2 / nbSides / 2;
+	const float startAngle = pi2 * rotation / 360;
+	
+	// Computing the star shape
+	for(int i=0; i&lt;nbSides; ++i)
+	{
+		float angle = startAngle + pi2 / nbSides * i;
+		Point pt = center + radius * Point(cos(angle), sin(angle));
+		points.push_back(pt);
+		
+		angle += insideAngleDelta;
+		pt = center + insideRadius * Point(cos(angle), sin(angle));
+		points.push_back(pt);
+	}
+	
+	points.push_back(points.front()); // Ensure the outline is closed
+	setOutline(points);	
+}
+
+</Data>
+        <Data name="center" x="400" y="300"/>
+        <Data name="nb sides" int="6"/>
+        <Data name="radius" real="250"/>
+        <Data name="ratio" real="0.40000001"/>
+        <Data name="rotation" real="30"/>
+    </Object>
+    <Object type="panda::RenderPath" index="2" x="456" y="26"/>
+    <Object type="panda::RenderMesh" index="4" x="456" y="103">
+        <Data name="color">
+            <Value r="0.78431374" g="0.78431374" b="0.78431374" a="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::AS_ScriptedObject" index="5" x="302" y="26">
+        <Data name="script">// Construction of a Koch Snowflake fractal
+
+PathData@ d_input, d_outline;
+MeshData@ d_mesh;
+IntData@ d_level;
+
+// Object initialization
+void setup(PandaObject@ object)
+{
+	object.setName("Koch snowflake");
+	
+	// Create the Data
+	@d_input = object.createPathData("input", "Input path");
+	@d_level = object.createIntData("level", "Number of fractal iterations");
+	@d_outline = object.createPathData("outline", "Constructed outline");
+	@d_mesh = object.createMeshData("mesh", "Constructed mesh");
+	
+	// Add them as inputs or outputs for the UI
+	object.addInput(d_input);
+	object.addInput(d_level);
+	object.addOutput(d_outline);
+	object.addOutput(d_mesh);
+	
+	// Custom widgets
+	d_level.setWidget("slider");
+	d_level.setWidgetData("0 5 1");
+}
+
+void prepareMesh(vector&lt;Point&gt;&amp; points, Mesh&amp; mesh)
+{
+	// Compute center
+	int nbPts = points.size();
+	Point center;
+	for (int i=0; i&lt;nbPts; ++i)
+		center += points[i];
+	center /= nbPts;
+	
+	// Add the center to the mesh
+	mesh.addPoint(center);
+	
+	// Add the outline
+	mesh.addPoints(points);
+	
+	// Create the triangles
+	for (int i=0; i&lt;nbPts; ++i)
+		mesh.addTriangle(0, 1+i, 1+(i+1)%nbPts);
+}
+
+void doFractal(bool CW, vector&lt;Point&gt;&amp; points, Mesh&amp; mesh)
+{
+	vector&lt;Point&gt; input = points;
+	points.clear();
+	points.push_back(input.front());
+	int nbPts = input.size();
+	for (int i=0; i&lt;nbPts; ++i)
+	{
+		Point pt1 = input[i];
+		Point pt2 = input[(i+1)%nbPts];
+		
+		// Direction of the segment
+		Point dir(pt2-pt1);
+		Point rot; // Rotate it 90 degrees
+		if (CW)
+			rot.set(dir.y, -dir.x);
+		else
+			rot.set(-dir.y, dir.x);
+		
+		// New triangle
+		Point pt3 = pt1 + dir/3;
+		Point pt4 = pt1 + dir/2 + 0.288675 * rot;
+		Point pt5 = pt1 + 2*dir/3;
+		
+		// Add points to the outline
+		points.push_back(pt3);
+		points.push_back(pt4);
+		points.push_back(pt5);
+		points.push_back(pt2);
+		
+		// Add points to the mesh
+		uint id1 = mesh.addPoint(pt3);
+		uint id2 = mesh.addPoint(pt4);
+		uint id3 = mesh.addPoint(pt5);
+		mesh.addTriangle(id1, id2, id3);
+	}
+}
+
+float areaOfPolygon(vector&lt;Point&gt;&amp; points)
+{
+	int nbPts = points.size();
+	float area = 0;
+	for (int i=0; i&lt;nbPts; ++i)
+	{
+		int j = (i+1)%nbPts;
+		area += points[i].x * points[j].y - points[j].x * points[i].y;
+	}
+	return area / 2;
+}
+
+// Object computation
+void update()
+{
+	// Get the inputs
+	Path path = d_input.getValue();
+	vector&lt;Point&gt; points = path.getPoints();
+	
+	// Remove duplicate last point
+	if (!points.empty() &amp;&amp; points.front() == points.back())
+		points.pop_back();
+	
+	// Test for empty case
+	Path outline;
+	Mesh mesh;
+	if (points.size() &lt; 3)
+	{
+		d_outline.setValue(outline);
+		d_mesh.setValue(mesh);
+		return;
+	}
+	
+	// Triangulate the polygon (we know it is convex)
+	prepareMesh(points, mesh);
+	
+	// Determine the orientation of the input
+	bool CW = (areaOfPolygon(points) &gt; 0);
+	
+	// Do the fractal iterations
+	int levels = d_level.getValue();
+	for (int i=0; i&lt;levels; ++i)
+		doFractal(CW, points, mesh);
+	
+	// Close the polygon again, only necessary if no fractal iterations
+	if (levels == 0)
+		points.push_back(points.front());
+	
+	// Ask for the computation of the edges
+	mesh.createEdgeList();
+	
+	// Update the outputs
+	outline.setPoints(points);
+	d_outline.setValue(outline);
+	d_mesh.setValue(mesh);
+}
+
+</Data>
+        <Data name="level" int="4"/>
+    </Object>
+    <Object type="panda::Annotation" index="8" x="159.86078" y="14.253143">
+        <Data name="type" int="2"/>
+        <Data name="text">These objects manipulate types using a scripting language.
+See their input named "script".</Data>
+        <Data name="deltaToEnd" x="248.14636" y="134.82928"/>
+    </Object>
+    <Link object1="2" data1="path" object2="5" data2="outline"/>
+    <Link object1="4" data1="mesh" object2="5" data2="mesh"/>
+    <Link object1="5" data1="input" object2="1" data2="outline"/>
+</Panda>
