@@ -4,8 +4,8 @@
     <Data name="timestep" real="1"/>
     <Data name="use timer" int="1"/>
     <Data name="nb threads" int="0"/>
-    <Object type="panda::GeneratorText_DateTime" index="1" x="482" y="355.25"/>
-    <Object type="panda::RenderText" index="2" x="650" y="354.5">
+    <Object type="panda::GeneratorText_DateTime" index="1" x="525" y="355.25"/>
+    <Object type="panda::RenderText" index="2" x="650" y="372.5">
         <Data name="font">Tahoma,tahomabd.ttf,0,175,75,0</Data>
         <Data name="color">
             <Value r="1" g="1" b="1" a="1"/>
@@ -16,16 +16,16 @@
     <Object type="panda::GeneratorPoints_Random" index="3" x="664" y="529">
         <Data name="# points" int="5000"/>
     </Object>
-    <Object type="panda::ModifierPoints_Union" index="4" x="902" y="295.25"/>
-    <Object type="panda::Layer" index="5" x="1208.5" y="221">
+    <Object type="panda::ModifierPoints_Union" index="4" x="866" y="313.25"/>
+    <Object type="panda::Layer" index="5" x="1160.5" y="220.25">
         <Data name="name">Full</Data>
         <Data name="opacity" real="1"/>
     </Object>
-    <Object type="panda::RenderModifier_BlendMode" index="6" x="1188.5" y="370.75">
+    <Object type="panda::RenderModifier_BlendMode" index="6" x="1140.5" y="370">
         <Data name="source" int="4"/>
         <Data name="destination" int="7"/>
     </Object>
-    <Object type="panda::RenderDisk_Gradient" index="7" x="873" y="460.25">
+    <Object type="panda::RenderDisk_Gradient" index="7" x="840" y="460">
         <Data name="center">
             <Value x="10" y="10"/>
         </Data>
@@ -39,37 +39,59 @@
             </Value>
         </Data>
     </Object>
-    <Object type="panda::GeneratorImage_CreateTexture" index="8" x="893" y="400.25">
+    <Object type="panda::GeneratorImage_CreateTexture" index="8" x="860" y="400.25">
         <Data name="size" x="20" y="20"/>
     </Object>
-    <Object type="panda::GeneratorImage_CreateTexture" index="9" x="670" y="295.25"/>
-    <Object type="panda::GeneratorPoint_RenderSize" index="10" x="318.25" y="187.5"/>
-    <Object type="panda::PointMath_Division" index="11" x="479" y="187.5">
+    <Object type="panda::GeneratorImage_CreateTexture" index="9" x="670" y="313.25"/>
+    <Object type="panda::GeneratorPoint_RenderSize" index="10" x="388.25" y="187.5"/>
+    <Object type="panda::PointMath_Division" index="11" x="525" y="187.5">
         <Data name="factor">
             <Value real="2"/>
         </Data>
     </Object>
-    <Object type="panda::GeneratorUser&lt;point&gt;" index="12" x="318.25" y="295.25">
+    <Object type="panda::GeneratorUser&lt;point&gt;" index="12" x="388.25" y="313.25">
         <Data name="caption">Size</Data>
         <Data name="input" x="800" y="250"/>
     </Object>
-    <Object type="panda::GeneratorRectangles_ComposeCorners" index="13" x="479" y="423">
+    <Object type="panda::GeneratorRectangles_ComposeCorners" index="13" x="525" y="423">
         <Data name="top-left">
             <Value x="0" y="0"/>
         </Data>
     </Object>
-    <Object type="panda::PointMath_Division" index="14" x="479" y="248.5">
+    <Object type="panda::PointMath_Division" index="14" x="525" y="248.5">
         <Data name="factor">
             <Value real="2"/>
         </Data>
     </Object>
     <Object type="panda::PointMath_Substraction" index="15" x="670" y="233.5"/>
-    <Object type="panda::PointMath_Addition" index="16" x="1054.75" y="280.25"/>
-    <Object type="panda::GeneratorNumber_AnimationTime" index="17" x="479" y="544"/>
-    <Object type="panda::RenderSprite" index="19" x="1188.5" y="280.75">
+    <Object type="panda::PointMath_Addition" index="16" x="1021.75" y="280.25"/>
+    <Object type="panda::GeneratorNumber_AnimationTime" index="17" x="525" y="544"/>
+    <Object type="panda::RenderSprite" index="18" x="1140.5" y="280">
         <Data name="size">
             <Value real="40"/>
         </Data>
+    </Object>
+    <Object type="panda::Annotation" index="19" x="384.375" y="184.25">
+        <Data name="type" int="2"/>
+        <Data name="text">Center the rectangle in the render view.</Data>
+        <Data name="deltaToEnd" x="415" y="117"/>
+    </Object>
+    <Object type="panda::Annotation" index="20" x="383.375" y="521.75">
+        <Data name="type" int="2"/>
+        <Data name="text">Create a texture with the current time.</Data>
+        <Data name="deltaToEnd" x="413" y="-214"/>
+    </Object>
+    <Object type="panda::Annotation" index="21" x="519.43884" y="622.51166">
+        <Data name="type" int="2"/>
+        <Data name="text">Each second, create random points.</Data>
+        <Data name="deltaToEnd" x="278" y="-97"/>
+    </Object>
+    <Object type="panda::Annotation" index="22" x="879.43884" y="401.51166">
+        <Data name="text">Create the sprite.</Data>
+    </Object>
+    <Object type="panda::Annotation" index="23" x="834.43884" y="312.01166">
+        <Data name="text">Only keep the points that are 
+not transparent in the texture.</Data>
     </Object>
     <Link object1="2" data1="text" object2="1" data2="text"/>
     <Link object1="2" data1="rectangle" object2="13" data2="rectangle"/>
@@ -85,9 +107,9 @@
     <Link object1="15" data1="point 2" object2="14" data2="result"/>
     <Link object1="16" data1="point 1" object2="15" data2="result"/>
     <Link object1="16" data1="point 2" object2="4" data2="output"/>
-    <Link object1="19" data1="position" object2="16" data2="result"/>
-    <Link object1="19" data1="texture" object2="8" data2="texture"/>
-    <Dock dock="5" docked="19"/>
+    <Link object1="18" data1="position" object2="16" data2="result"/>
+    <Link object1="18" data1="texture" object2="8" data2="texture"/>
+    <Dock dock="5" docked="18"/>
     <Dock dock="5" docked="6"/>
     <Dock dock="8" docked="7"/>
     <Dock dock="9" docked="2"/>
