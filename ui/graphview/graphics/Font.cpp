@@ -357,10 +357,13 @@ const char* Font::calcWordWrapPosition(float scale, const char* text, const char
 		// We ignore blank width at the end of the line (they can be skipped)
 		if (line_width + word_width >= wrap_width)
 		{
-			// Words that cannot possibly fit within an entire line will be cut anywhere.
-			if (word_width < wrap_width || !cutWords)
+			if (word_width < wrap_width)
+			{
 				s = prev_word_end ? prev_word_end : word_end;
-			break;
+				break;
+			}
+			else if(cutWords) // Words that cannot possibly fit within an entire line will be cut anywhere.
+				break;
 		}
 
 		s = next_s;

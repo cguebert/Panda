@@ -388,6 +388,6 @@ graphics::Size GroupWithLayer::getLayerSize() const
 		return parentDocument()->getRenderSize();
 }
 
-int GroupWithLayerClass = RegisterObject<GroupWithLayer>("GroupWithLayer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);
+int GroupWithLayerClass = RegisterObject<GroupWithLayer>("Group with Layer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);
 
 } // namespace panda
