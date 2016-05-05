@@ -76,6 +76,8 @@ public:
 	virtual NodesList getNonRecursiveInputs() const; /// Get input nodes, without those that can create loops in the graph (see ListLoop and ListBuffer objects)
 	virtual NodesList getNonRecursiveOutputs() const; /// Get output nodes, without those that can create loops in the graph
 
+	virtual std::string getLabel() const; /// If not empty, will be shown in the graph view (with the format "label (name)")
+
 protected:
 	void setInternalData(const std::string& name, uint32_t index); /// Should only be called by the Object Factory, to set the object's name and index
 	friend class ObjectFactory;

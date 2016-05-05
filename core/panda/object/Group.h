@@ -24,7 +24,8 @@ public:
 
 	void reset() override;
 
-	const std::string& getGroupName();
+	const std::string& getGroupName() const;
+	std::string getLabel() const override;
 
 	typedef std::shared_ptr<PandaObject> ObjectPtr;
 	typedef std::vector<ObjectPtr> ObjectsList;
@@ -56,7 +57,10 @@ protected:
 	GroupDataList m_groupDatas;
 };
 
-inline const std::string& Group::getGroupName()
+inline const std::string& Group::getGroupName() const
+{ return m_groupName.getValue(); }
+
+inline std::string Group::getLabel() const
 { return m_groupName.getValue(); }
 
 inline const Group::ObjectsList& Group::getObjects() const
@@ -130,7 +134,7 @@ public:
 		, m_caption(initData("caption", "The caption to use in the graph view"))
 	{ }
 
-	const std::string& getCaption()
+	std::string getLabel() const override
 	{ return m_caption.getValue(); }
 
 	virtual bool hasConnectedInput() = 0;

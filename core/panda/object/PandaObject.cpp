@@ -159,6 +159,11 @@ void PandaObject::emitDirty()
 		m_parentDocument->onDirtyObject(this);
 }
 
+std::string PandaObject::getLabel() const
+{
+	return "";
+}
+
 } // namespace Panda
 
 

@@ -11,18 +11,6 @@ GroupDrawStruct::GroupDrawStruct(GraphView* view, panda::Group* object)
 	update();
 }
 
-std::string GroupDrawStruct::getLabel() const
-{
-	if (m_group)
-	{
-		const auto& name = m_group->getGroupName();
-		if (!name.empty())
-			return name;
-	}
-	
-	return ObjectDrawStruct::getLabel();
-}
-
 void GroupDrawStruct::createShape()
 {
 	const int w = 9, h = 9;

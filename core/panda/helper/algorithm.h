@@ -39,7 +39,9 @@ int indexOf(const Container& container, const Value& value)
 template <class Container, class Value>
 int removeAll(Container& container, const Value& value)
 {
-	auto last = std::remove(container.begin(),container.end(), value);
+	if (container.empty())
+		return 0;
+	auto last = std::remove(container.begin(), container.end(), value);
 	int dist = std::distance(last, container.end());
 	container.erase(last, container.end());
 	return dist;

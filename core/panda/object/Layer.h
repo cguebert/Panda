@@ -64,6 +64,7 @@ public:
 
 	const std::string& getLayerName() const override;
 	Data<std::string>& getLayerNameData() override;
+	std::string getLabel() const override;
 
 	int getCompositionMode() const override;
 	Data<int>& getCompositionModeData() override;
@@ -94,6 +95,9 @@ inline const std::string& Layer::getLayerName() const
 
 inline Data<std::string>& Layer::getLayerNameData()
 { return m_layerName; }
+
+inline std::string Layer::getLabel() const
+{ return m_layerName.getValue(); }
 
 inline int Layer::getCompositionMode() const
 { return m_compositionMode.getValue(); }

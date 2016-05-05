@@ -244,9 +244,9 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 
 		// Looking for UserValue objects that can be used as inputs or outputs to the group
 		BaseGeneratorUser* userValue = dynamic_cast<BaseGeneratorUser*>(object);
-		if(userValue && !userValue->getCaption().empty())
+		if(userValue && !userValue->getLabel().empty())
 		{
-			auto caption = userValue->getCaption();
+			auto caption = userValue->getLabel();
 			auto inputData = userValue->getInputUserData();
 			auto outputData = userValue->getOutputUserData();
 			if(userValue->hasConnectedInput())

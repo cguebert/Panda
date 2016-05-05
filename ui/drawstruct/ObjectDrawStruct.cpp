@@ -192,7 +192,12 @@ void ObjectDrawStruct::load(const panda::XmlElement& elem)
 
 std::string ObjectDrawStruct::getLabel() const
 {
-	return m_object->getName();
+	const auto& name = m_object->getName();
+	const auto& label = m_object->getLabel();
+	if (!label.empty())
+		return label + "\n(" + name + ")";
+
+	return name;
 }
 
 //****************************************************************************//

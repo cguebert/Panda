@@ -26,7 +26,7 @@ public:
 	void setDebug(const std::string& str);
 
 	void setLabel(const std::string& label);
-	const std::string& getLabel() const;
+	std::string getLabel() const override;
 
 protected:
 	Data<std::string> m_scriptText;
@@ -46,7 +46,7 @@ protected:
 inline void AS_ScriptedObject::setLabel(const std::string& label)
 { m_label = label; }
 
-inline const std::string& AS_ScriptedObject::getLabel() const
+inline std::string AS_ScriptedObject::getLabel() const
 { return m_label; }
 
 } // namespace panda

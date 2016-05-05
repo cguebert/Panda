@@ -15,8 +15,6 @@ class GroupDrawStruct : public ObjectDrawStruct
 public:
 	GroupDrawStruct(GraphView* view, panda::Group* object);
 
-	std::string getLabel() const override;
-
 	void createShape() override;
 	int dataStartY() override;
 

@@ -37,9 +37,7 @@ set(HEADER_FILES
 	drawstruct/DockableDrawStruct.h
 	drawstruct/GenericObjectDrawStruct.h
 	drawstruct/GroupDrawStruct.h
-	drawstruct/LayerDrawStruct.h
 	drawstruct/ObjectDrawStruct.h
-	drawstruct/UserValueDrawStruct.h
 	graphview/alignObjects.h
 	graphview/GraphView.h
 	graphview/LinkTag.h
@@ -99,9 +97,7 @@ set(SOURCE_FILES
 	drawstruct/DockableDrawStruct.cpp
 	drawstruct/GenericObjectDrawStruct.cpp
 	drawstruct/GroupDrawStruct.cpp
-	drawstruct/LayerDrawStruct.cpp
 	drawstruct/ObjectDrawStruct.cpp
-	drawstruct/UserValueDrawStruct.cpp
 	graphview/alignObjects.cpp
 	graphview/GraphView.cpp
 	graphview/LinkTag.cpp
