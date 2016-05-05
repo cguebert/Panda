@@ -57,7 +57,7 @@ public:
 		auto outVal = dataOutput->getAccessor();
 		outVal.clear();
 
-		if(!nbC || !nbT || !nbF)
+		if(!nbC)
 			return;
 
 		int nb = std::max(nbT, nbF);
@@ -65,12 +65,14 @@ public:
 			outVal = c[0] ? inT : inF;
 		else if (nb == 1)
 		{
+			if (!nbT || !nbF) return;
 			outVal.resize(nbC);
 			for (int i = 0; i < nbC; ++i)
 				outVal[i] = c[i] ? inT[0] : inF[0];
 		}
 		else
 		{
+			if (!nbT || !nbF) return;
 			if (nbT < nb) nbT = 1;
 			if (nbF < nb) nbF = 1;
 
