@@ -3,6 +3,8 @@
 #include <panda/object/PandaObject.h>
 #include "DataWrapper.h"
 
+#include <modules/AngelScript/AS_Object.h>
+
 class asIScriptEngine;
 
 namespace panda
@@ -20,7 +22,7 @@ public:
 		std::shared_ptr<BaseDataWrapper> dataWrapper;
 	};
 
-	ObjectWrapper(PandaObject* object, asIScriptEngine* engine);
+	ObjectWrapper(AS_ScriptedObject* object, asIScriptEngine* engine);
 
 	// For the scripts
 	template <class T, class Wrapper = DataWrapper<T>>
@@ -40,17 +42,19 @@ public:
 	void setInput(const BaseDataWrapper* wrapper);
 	void setOutput(const BaseDataWrapper* wrapper);
 
+	void setName(const std::string& name);
+
 	// For the AS_Object
 	void clear();
 	const std::vector<DataInfo>& datas();
 	
 private:
-	PandaObject* m_object = nullptr;
+	AS_ScriptedObject* m_object = nullptr;
 	asIScriptEngine* m_engine = nullptr;
 	std::vector<DataInfo> m_datas;
 };
 
-inline ObjectWrapper::ObjectWrapper(PandaObject* object, asIScriptEngine* engine)
+inline ObjectWrapper::ObjectWrapper(AS_ScriptedObject* object, asIScriptEngine* engine)
 	: m_object(object), m_engine(engine)
 { }
 

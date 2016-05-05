@@ -1,4 +1,5 @@
 #include "ObjectWrapper.h"
+#include <modules/AngelScript/AS_Object.h>
 
 namespace panda
 {
@@ -10,6 +11,8 @@ namespace panda
 		
 		r = engine->RegisterObjectMethod("PandaObject", "void addInput(BaseData &in data)", asMETHOD(ObjectWrapper, setInput), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("PandaObject", "void addOutput(BaseData &in data)", asMETHOD(ObjectWrapper, setOutput), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("PandaObject", "void setName(const string &in name)", asMETHOD(ObjectWrapper, setName), asCALL_THISCALL); assert( r >= 0 );
 	}
 
 	void ObjectWrapper::setInput(const BaseDataWrapper* wrapper)
@@ -28,6 +31,11 @@ namespace panda
 		});
 		if (it != m_datas.end())
 			it->output = true;
+	}
+
+	void ObjectWrapper::setName(const std::string& name)
+	{
+		m_object->setLabel(name);
 	}
 
 } // namespace panda

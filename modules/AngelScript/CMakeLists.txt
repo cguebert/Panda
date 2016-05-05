@@ -4,6 +4,7 @@ set(PROJECT_NAME "AngelScript")
 project(${PROJECT_NAME})
 
 set(HEADER_FILES
+	AS_Object.h
 	ScriptEngine.h
 	addons/scriptarray/scriptarray.h
 	addons/scriptmath/scriptmath.h
