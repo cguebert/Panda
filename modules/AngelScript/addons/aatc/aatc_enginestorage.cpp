@@ -31,6 +31,8 @@ samivuorela@gmail.com
 
 #include "aatc_enginestorage.hpp"
 
+#include "string.h"
+
 
 
 BEGIN_AS_NAMESPACE
@@ -85,15 +87,15 @@ namespace aatc {
 			func_hash(NULL)
 		{
 			asIScriptEngine* engine = ctss->els->engine;
-			asITypeInfo* objtype = engine->GetTypeInfoById(subtypeid);
+			asITypeInfo* typeinfo = engine->GetTypeInfoById(subtypeid);
 
 			//get opEquals or opCmp function for this type to be stored
 
 			bool mustBeConst = (subtypeid & asTYPEID_HANDLETOCONST) ? true : false;
 
-			if (objtype){
-				for (asUINT i = 0; i < objtype->GetMethodCount(); i++){
-					asIScriptFunction *func = objtype->GetMethodByIndex(i);
+			if (typeinfo){
+				for (asUINT i = 0; i < typeinfo->GetMethodCount(); i++){
+					asIScriptFunction *func = typeinfo->GetMethodByIndex(i);
 
 					asDWORD flags = 0;
 					int returnTypeId = func->GetReturnTypeId(&flags);
@@ -180,7 +182,7 @@ namespace aatc {
 
 
 		engine_level_storage* Get_ELS(asIScriptEngine* engine){
-			return (engine_level_storage*)engine->GetUserData(config::engine_userdata_id);
+			return (engine_level_storage*)engine->GetUserData(config::detail::engine_userdata_id);
 		}
 		asIScriptContext* contextcache_Get(){
 			engine_level_storage* els = Get_ELS(asGetActiveContext()->GetEngine());
@@ -196,6 +198,14 @@ namespace aatc {
 
 			els->Clean();
 			delete els;
+		}
+
+		void enginestorage::engine_level_storage::RegisterFuncdefIfNeeded(std::string const& this_funcdef_def) {
+			if (registered_funcdefs.find(this_funcdef_def) == registered_funcdefs.end()) {
+				engine->RegisterFuncdef(this_funcdef_def.c_str());
+
+				registered_funcdefs.insert(this_funcdef_def);
+			}
 		}
 
 

@@ -60,7 +60,7 @@ namespace aatc {
 
 
 
-						template<typename T_container> void push_back(T_container* t, typename const T_container::T_content& value) {
+						template<typename T_container> void push_back(T_container* t, const typename T_container::T_content& value) {
 							t->container.push_back(value);
 
 							t->safety_iteratorversion_Increment();
@@ -77,7 +77,7 @@ namespace aatc {
 							t->safety_iteratorversion_Increment();
 						}
 
-						template<typename T_container> void push_front(T_container* t, typename const T_container::T_content& value) {
+						template<typename T_container> void push_front(T_container* t, const typename T_container::T_content& value) {
 							t->container.push_front(value);
 
 							t->safety_iteratorversion_Increment();
@@ -115,7 +115,7 @@ namespace aatc {
 							return t->container.front();
 						}
 
-						template<typename T_container> bool erase_value(T_container* t, typename const T_container::T_content& value) {
+						template<typename T_container> bool erase_value(T_container* t, const typename T_container::T_content& value) {
 							config::t::sizetype oldsize = config::t::sizetype(t->container.size());
 
 							t->container.erase(value);
@@ -123,7 +123,7 @@ namespace aatc {
 
 							return oldsize != t->container.size();
 						}
-						template<typename T_container> void insert_value(T_container* t, typename const T_container::T_content& value) {
+						template<typename T_container> void insert_value(T_container* t, const typename T_container::T_content& value) {
 							t->container.insert(value);
 							t->safety_iteratorversion_Increment();
 						}
@@ -151,28 +151,133 @@ namespace aatc {
 							t->safety_iteratorversion_Increment();
 
 							if (ascending) {
-								t->container.sort(std::less<T_container::T_content>());
+								t->container.sort(std::less<typename T_container::T_content>());
 							} else {
-								t->container.sort(common::functor_notcmp<T_container::T_content, std::less<T_container::T_content>>());
+								t->container.sort(common::detail::functor_notcmp<typename T_container::T_content, std::less<typename T_container::T_content>>());
 
 								///*
-								//std::list didn't like common::functor_notcmp with primitives in debug mode for some reason
+								//std::list didn't like common::detail::functor_notcmp with primitives in debug mode for some reason
 								//so we'll have to use some black majicks
 								//*/
 								//t->container.sort(
 								//	std::conditional<
 								//	std::is_class<T_content>::value,
-								//	common::functor_notcmp<T_content, std::less<T_content>>,
+								//	common::detail::functor_notcmp<T_content, std::less<T_content>>,
 								//	std::greater<T_content>
 								//	>::type()
 								//);
 							}
 						}
-						template<typename T_container> bool contains(T_container* t, typename const T_container::T_content& value) {
+						template<typename T_container> void sort_aatcfuncptr(T_container* t, common::script_Funcpointer* funcptr, bool ascending) {
+							t->safety_iteratorversion_Increment();
+
+							asIScriptFunction* scriptfunc = funcptr->func;
+							asIScriptContext* context = NULL;
+							asIScriptEngine* engine = t->engine;
+							asIScriptContext* old_context = asGetActiveContext();
+
+							if (old_context) {
+								if (old_context->PushState() > -1) {
+									context = old_context;
+								} else {
+									context = engine->RequestContext();
+								}
+							} else {
+								context = engine->RequestContext();
+							}
+
+
+
+							int reverse_multiplier = -1;
+							if (ascending) {
+								reverse_multiplier = 1;
+							}
+
+							void* aux_object = funcptr->so;
+							if (aux_object) {
+								container::shared::scriptcmpfunctor_method<typename T_container::T_content> functor;
+								functor.context = context;
+								functor.func = scriptfunc;
+								functor.reverse_multiplier = reverse_multiplier;
+
+								functor.aux_object = aux_object;
+
+								t->container.sort(functor);
+							} else {
+								container::shared::scriptcmpfunctor_globalfunction<typename T_container::T_content> functor;
+								functor.context = context;
+								functor.func = scriptfunc;
+								functor.reverse_multiplier = reverse_multiplier;
+
+								t->container.sort(functor);
+							}
+
+
+
+							if (context == old_context) {
+								old_context->PopState();
+							} else {
+								engine->ReturnContext(context);
+							}
+						}
+						template<typename T_container> void sort_scriptfunc(T_container* t, asIScriptFunction* scriptfunc, bool ascending) {
+							t->safety_iteratorversion_Increment();
+
+							asIScriptContext* context = NULL;
+							asIScriptEngine* engine = t->engine;
+							asIScriptContext* old_context = asGetActiveContext();
+
+							if (old_context) {
+								if (old_context->PushState() > -1) {
+									context = old_context;
+								} else {
+									context = engine->RequestContext();
+								}
+							} else {
+								context = engine->RequestContext();
+							}
+
+
+
+							int reverse_multiplier = -1;
+							if (ascending) {
+								reverse_multiplier = 1;
+							}
+
+							void* aux_object = scriptfunc->GetAuxiliary();
+							if (aux_object) {
+								container::shared::scriptcmpfunctor_method<typename T_container::T_content> functor;
+								functor.context = context;
+								functor.func = scriptfunc;
+								functor.reverse_multiplier = reverse_multiplier;
+
+								functor.aux_object = aux_object;
+
+								t->container.sort(functor);
+							} else {
+								container::shared::scriptcmpfunctor_globalfunction<typename T_container::T_content> functor;
+								functor.context = context;
+								functor.func = scriptfunc;
+								functor.reverse_multiplier = reverse_multiplier;
+
+								t->container.sort(functor);
+							}
+
+
+
+							if (context == old_context) {
+								old_context->PopState();
+							} else {
+								engine->ReturnContext(context);
+							}
+						}
+
+
+						template<typename T_container> bool contains(T_container* t, const typename T_container::T_content& value) {
 							return t->container.find(value) != t->container.end();
 						}
 
-						template<typename T_container> bool erase_iterator(T_container* t, typename const T_container::Iterator& aatc_it) {
+						template<typename T_container> bool erase_iterator(T_container* t, const typename T_container::Iterator& aatc_it) {
 							if (t->container.empty()) { return 0; }
 
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_ITERATOR_SAFETY_VERSION_NUMBERS
@@ -195,7 +300,7 @@ namespace aatc {
 							return 1;
 						}
 
-						template<typename T_container> config::t::sizetype erase_iterator_range(T_container* t, typename const T_container::Iterator& aatc_it_range_begin, typename const T_container::Iterator& aatc_it_range_end) {
+						template<typename T_container> config::t::sizetype erase_iterator_range(T_container* t, const typename T_container::Iterator& aatc_it_range_begin, const typename T_container::Iterator& aatc_it_range_end) {
 							if (t->container.empty()) { return 0; }
 
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_ITERATOR_SAFETY_VERSION_NUMBERS
@@ -219,10 +324,10 @@ namespace aatc {
 							}
 						}
 
-						template<typename T_container> typename T_container::Iterator find_iterator(T_container* t, typename const T_container::T_content& value) {
-							T_container::T_iterator_native it = t->container.find(value);
+						template<typename T_container> typename T_container::Iterator find_iterator(T_container* t, const typename T_container::T_content& value) {
+							typename T_container::T_iterator_native it = t->container.find(value);
 
-							T_container::Iterator result(t);
+							typename T_container::Iterator result(t);
 							result.it = it;
 
 							if (it == t->container.end()) {
@@ -232,7 +337,7 @@ namespace aatc {
 							return result;
 						}
 
-						template<typename T_container> void insert_iterator(T_container* t, typename T_container::Iterator position, typename const T_container::T_content& value) {
+						template<typename T_container> void insert_iterator(T_container* t, typename T_container::Iterator position, const typename T_container::T_content& value) {
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_ITERATOR_SAFETY_VERSION_NUMBERS
 								if (t->safety_iteratorversion != position.safety_iteratorversion) {
 									common::errorprint::container::iterator_invalid();
@@ -283,7 +388,7 @@ namespace aatc {
 								}
 							#endif
 
-							T_container::T_iterator_native it = t->container.begin();
+							typename T_container::T_iterator_native it = t->container.begin();
 							for (int i = 0; i < position; i++) { it++; }
 
 							t->container.erase(it);
@@ -342,8 +447,8 @@ namespace aatc {
 
 							std::size_t oldsize = t->container.size();
 
-							T_container::T_iterator_native it_begin = t->container.begin();
-							T_container::T_iterator_native it_end = t->container.begin();
+							typename T_container::T_iterator_native it_begin = t->container.begin();
+							typename T_container::T_iterator_native it_end = t->container.begin();
 							for (int i = 0; i < range_begin; i++) { it_begin++; }
 							for (int i = 0; i < range_end; i++) { it_end++; }
 
@@ -356,14 +461,118 @@ namespace aatc {
 							t->safety_iteratorversion_Increment();
 
 							if (ascending) {
-								std::sort(t->container.begin(), t->container.end(), std::less<T_container::T_content>());
+								std::sort(t->container.begin(), t->container.end(), std::less<typename T_container::T_content>());
 							} else {
-								std::sort(t->container.begin(), t->container.end(), common::functor_notcmp<T_container::T_content, std::less<T_container::T_content>>());
+								std::sort(t->container.begin(), t->container.end(), common::detail::functor_notcmp<typename T_container::T_content, std::less<typename T_container::T_content>>());
+							}
+						}
+						template<typename T_container> void sort_aatcfuncptr(T_container* t, common::script_Funcpointer* funcptr, bool ascending) {
+							t->safety_iteratorversion_Increment();
+
+							asIScriptFunction* scriptfunc = funcptr->func;
+							asIScriptContext* context = NULL;
+							asIScriptEngine* engine = t->engine;
+							asIScriptContext* old_context = asGetActiveContext();
+
+							if (old_context) {
+								if (old_context->PushState() > -1) {
+									context = old_context;
+								} else {
+									context = engine->RequestContext();
+								}
+							} else {
+								context = engine->RequestContext();
+							}
+
+
+
+							int reverse_multiplier = -1;
+							if (ascending) {
+								reverse_multiplier = 1;
+							}
+
+							void* aux_object = funcptr->so;
+							if (aux_object) {
+								container::shared::scriptcmpfunctor_method<typename T_container::T_content> functor;
+								functor.context = context;
+								functor.func = scriptfunc;
+								functor.reverse_multiplier = reverse_multiplier;
+
+								functor.aux_object = aux_object;
+
+								std::sort(t->container.begin(), t->container.end(), functor);
+							} else {
+								container::shared::scriptcmpfunctor_globalfunction<typename T_container::T_content> functor;
+								functor.context = context;
+								functor.func = scriptfunc;
+								functor.reverse_multiplier = reverse_multiplier;
+
+								std::sort(t->container.begin(), t->container.end(), functor);
+							}
+
+
+
+							if (context == old_context) {
+								old_context->PopState();
+							} else {
+								engine->ReturnContext(context);
+							}
+						}
+
+						template<typename T_container> void sort_scriptfunc(T_container* t, asIScriptFunction* scriptfunc,bool ascending) {
+							t->safety_iteratorversion_Increment();
+
+							asIScriptContext* context = NULL;
+							asIScriptEngine* engine = t->engine;
+							asIScriptContext* old_context = asGetActiveContext();
+
+							if (old_context) {
+								if (old_context->PushState() > -1) {
+									context = old_context;
+								} else {
+									context = engine->RequestContext();
+								}
+							} else {
+								context = engine->RequestContext();
+							}
+
+
+
+							int reverse_multiplier = -1;
+							if (ascending) {
+								reverse_multiplier = 1;
+							}
+
+							void* aux_object = scriptfunc->GetAuxiliary();
+							if (aux_object) {
+								container::shared::scriptcmpfunctor_method<typename T_container::T_content> functor;
+								functor.context = context;
+								functor.func = scriptfunc;
+								functor.reverse_multiplier = reverse_multiplier;
+
+								functor.aux_object = aux_object;
+
+								std::sort(t->container.begin(), t->container.end(), functor);
+							} else {
+								container::shared::scriptcmpfunctor_globalfunction<typename T_container::T_content> functor;
+								functor.context = context;
+								functor.func = scriptfunc;
+								functor.reverse_multiplier = reverse_multiplier;
+
+								std::sort(t->container.begin(), t->container.end(), functor);
+							}
+
+
+
+							if (context == old_context) {
+								old_context->PopState();
+							} else {
+								engine->ReturnContext(context);
 							}
 						}
 
 
-						template<typename T_container> void insert_position_before_constant(T_container* t, config::t::sizetype position, typename const T_container::T_content& value) {
+						template<typename T_container> void insert_position_before_constant(T_container* t, config::t::sizetype position, const typename T_container::T_content& value) {
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_RUNTIME
 								if (t->empty()) {
 									aatc::common::errorprint::container::access_empty(T_container::staticname_container.c_str(), T_container::staticname_content.c_str(), config::scriptname::method::container::insert_position_before);
@@ -378,7 +587,7 @@ namespace aatc {
 							t->container.insert(t->container.begin() + position,value);
 							t->safety_iteratorversion_Increment();
 						}
-						template<typename T_container> void insert_position_before_linear(T_container* t, config::t::sizetype position, typename const T_container::T_content& value) {
+						template<typename T_container> void insert_position_before_linear(T_container* t, config::t::sizetype position, const typename T_container::T_content& value) {
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_RUNTIME
 								if (t->empty()) {
 									aatc::common::errorprint::container::access_empty(T_container::staticname_container.c_str(), T_container::staticname_content.c_str(), config::scriptname::method::container::insert_position_before);
@@ -390,14 +599,14 @@ namespace aatc {
 								}
 							#endif
 
-							T_container::T_iterator_native it = t->container.begin();
+							typename T_container::T_iterator_native it = t->container.begin();
 							for (int i = 0; i < position; i++) { it++; }
 
 							t->container.insert(it, value);
 							t->safety_iteratorversion_Increment();
 						}
 
-						template<typename T_container> config::t::sizetype erase_value(T_container* t, typename const T_container::T_content& value,bool all) {
+						template<typename T_container> config::t::sizetype erase_value(T_container* t, const typename T_container::T_content& value,bool all) {
 							t->safety_iteratorversion_Increment();
 
 							config::t::sizetype killcount = 0;
@@ -407,8 +616,8 @@ namespace aatc {
 								continuu = 0;
 								bool found = 0;
 
-								T_container::T_iterator_native it = t->container.begin();
-								T_container::T_iterator_native itend = t->container.end();
+								typename T_container::T_iterator_native it = t->container.begin();
+								typename T_container::T_iterator_native itend = t->container.end();
 
 								for (; it != itend; it++) {
 									if (*it == value) {
@@ -426,10 +635,10 @@ namespace aatc {
 							return killcount;
 						}
 
-						template<typename T_container> typename T_container::Iterator find_iterator(T_container* t, typename const T_container::T_content& value) {
-							T_container::T_iterator_native it = std::find(t->container.begin(), t->container.end(), value);
+						template<typename T_container> typename T_container::Iterator find_iterator(T_container* t, const typename T_container::T_content& value) {
+							typename T_container::T_iterator_native it = std::find(t->container.begin(), t->container.end(), value);
 
-							T_container::Iterator result(t);
+							typename T_container::Iterator result(t);
 							result.it = it;
 
 							if (it == t->container.end()) {
@@ -439,8 +648,8 @@ namespace aatc {
 							return result;
 						}
 
-						template<typename T_container> bool contains(T_container* t, typename const T_container::T_content& value) {
-							for (T_container::T_iterator_native_const it = t->container.begin(); it != t->container.end(); it++) {
+						template<typename T_container> bool contains(T_container* t, const typename T_container::T_content& value) {
+							for (typename T_container::T_iterator_native_const it = t->container.begin(); it != t->container.end(); it++) {
 								if (*it == value) {
 									return 1;
 								}
@@ -448,7 +657,7 @@ namespace aatc {
 							return 0;
 						}
 
-						template<typename T_container> config::t::sizetype count(T_container* t, typename const T_container::T_content& value) {
+						template<typename T_container> config::t::sizetype count(T_container* t, const typename T_container::T_content& value) {
 							return (config::t::sizetype)(std::count(t->container.begin(), t->container.end(), value));
 						}
 
@@ -464,8 +673,8 @@ namespace aatc {
 
 
 					template<typename T_container> static void swap(common::RegistrationState& rs) {
-						sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s& %s(%s@)", rs.n_container_T, config::scriptname::method::container::swap, rs.n_container_T);
-						rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::swap<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
+						rs.Format("%s& %s(%s &inout)", rs.n_container_T, config::scriptname::method::container::swap, rs.n_container_T);
+						rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asMETHOD(T_container,swap), asCALL_THISCALL); assert(rs.error >= 0);
 					}
 
 
@@ -474,77 +683,92 @@ namespace aatc {
 
 
 
-
 						template<typename T_container> static void push_back(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(const %s &in)", config::scriptname::method::container::push_back, rs.n_content);
+							rs.Format("void %s(const %s &in)", config::scriptname::method::container::push_back, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::push_back<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void pop_back(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s()", config::scriptname::method::container::pop_back);
+							rs.Format("void %s()", config::scriptname::method::container::pop_back);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::pop_back<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void push_front(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(const %s &in)", config::scriptname::method::container::push_front, rs.n_content);
+							rs.Format("void %s(const %s &in)", config::scriptname::method::container::push_front, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::push_front<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void pop_front(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s()", config::scriptname::method::container::pop_front);
+							rs.Format("void %s()", config::scriptname::method::container::pop_front);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::pop_front<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void back(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s& %s()", rs.n_content, config::scriptname::method::container::back);
+							rs.Format("%s& %s()", rs.n_content, config::scriptname::method::container::back);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::back<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void front(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s& %s()", rs.n_content, config::scriptname::method::container::front);
+							rs.Format("%s& %s()", rs.n_content, config::scriptname::method::container::front);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::front<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void erase_value(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "bool %s(const %s &in)", config::scriptname::method::container::erase, rs.n_content);
+							rs.Format("bool %s(const %s &in)", config::scriptname::method::container::erase, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::erase_value<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void insert_value(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(const %s &in)", config::scriptname::method::container::insert, rs.n_content);
+							rs.Format("void %s(const %s &in)", config::scriptname::method::container::insert, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::insert_value<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void operator_index_position(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s& %s(%s)", rs.n_content, config::scriptname::method::container::operator_index, config::scriptname::t::size);
+							rs.Format("%s& %s(%s)", rs.n_content, config::scriptname::method::container::operator_index, config::scriptname::t::size);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::operator_index_position<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void reserve(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(%s)", config::scriptname::method::container::reserve, config::scriptname::t::size);
+							rs.Format("void %s(%s)", config::scriptname::method::container::reserve, config::scriptname::t::size);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::reserve<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void sort(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(bool ascending = true)", config::scriptname::method::container::sort);
+							rs.Format("void %s(bool ascending)", config::scriptname::method::container::sort);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::sort<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
+
+							rs.Format("void %s(const %s&in, bool ascending)", config::scriptname::method::container::sort_aatcfuncptr, config::scriptname::funcpointer);
+							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::sort_aatcfuncptr<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
+
+
+
+							rs.Format("%s%s", config::scriptname::funcdef_cmp_prefix, rs.n_content);
+							std::string this_funcdef_name(rs.textbuf);
+
+							rs.Format("int %s(%s,%s)", this_funcdef_name.c_str(), rs.n_content, rs.n_content);
+							std::string this_funcdef_def(rs.textbuf);
+
+							enginestorage::Get_ELS(rs.engine)->RegisterFuncdefIfNeeded(this_funcdef_def);
+
+							rs.Format("void %s(%s@, bool ascending)", config::scriptname::method::container::sort_scriptfunc, this_funcdef_name.c_str());
+							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::sort_scriptfunc<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void contains(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "bool %s(const %s &in)", config::scriptname::method::container::contains, rs.n_content);
+							rs.Format("bool %s(const %s &in)", config::scriptname::method::container::contains, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::contains<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void erase_iterator(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s %s(const %s &in)", config::scriptname::t::size, config::scriptname::method::container::erase_iterator, rs.n_iterator_T);
+							rs.Format("%s %s(const %s &in)", config::scriptname::t::size, config::scriptname::method::container::erase_iterator, rs.n_iterator_T);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::erase_iterator<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void erase_iterator_range(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s %s(const %s &in,const %s &in)", config::scriptname::t::size, config::scriptname::method::container::erase_iterator_range, rs.n_iterator_T, rs.n_iterator_T);
+							rs.Format("%s %s(const %s &in,const %s &in)", config::scriptname::t::size, config::scriptname::method::container::erase_iterator_range, rs.n_iterator_T, rs.n_iterator_T);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::erase_iterator_range<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void find_iterator(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s %s(const %s &in)", rs.n_iterator_T, config::scriptname::method::container::find, rs.n_content);
+							rs.Format("%s %s(const %s &in)", rs.n_iterator_T, config::scriptname::method::container::find, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::find_iterator<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void insert_iterator(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(const %s &in,const %s &in)", config::scriptname::method::container::insert_iterator, rs.n_iterator_T, rs.n_content);
+							rs.Format("void %s(const %s &in,const %s &in)", config::scriptname::method::container::insert_iterator, rs.n_iterator_T, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::native::insert_iterator<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
@@ -558,54 +782,68 @@ namespace aatc {
 
 
 						template<typename T_container> static void erase_position_constant(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(%s)", config::scriptname::method::container::erase_position, config::scriptname::t::size);
+							rs.Format("void %s(%s)", config::scriptname::method::container::erase_position, config::scriptname::t::size);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::erase_position_constant<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void erase_position_linear(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(%s)", config::scriptname::method::container::erase_position, config::scriptname::t::size);
+							rs.Format("void %s(%s)", config::scriptname::method::container::erase_position, config::scriptname::t::size);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::erase_position_linear<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void erase_position_range_constant(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(%s,%s)", config::scriptname::method::container::erase_position_range, config::scriptname::t::size, config::scriptname::t::size);
+							rs.Format("void %s(%s,%s)", config::scriptname::method::container::erase_position_range, config::scriptname::t::size, config::scriptname::t::size);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::erase_position_range_constant<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void erase_position_range_linear(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(%s,%s)", config::scriptname::method::container::erase_position_range, config::scriptname::t::size, config::scriptname::t::size);
+							rs.Format("void %s(%s,%s)", config::scriptname::method::container::erase_position_range, config::scriptname::t::size, config::scriptname::t::size);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::erase_position_range_linear<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void sort(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(bool ascending = true)", config::scriptname::method::container::sort);
+							rs.Format("void %s(bool ascending)", config::scriptname::method::container::sort);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::sort<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
+
+							rs.Format("void %s(const %s&in, bool ascending)", config::scriptname::method::container::sort_aatcfuncptr, config::scriptname::funcpointer);
+							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::sort_aatcfuncptr<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
+
+							rs.Format("%s%s", config::scriptname::funcdef_cmp_prefix, rs.n_content);
+							std::string this_funcdef_name(rs.textbuf);
+
+							rs.Format("int %s(%s,%s)", this_funcdef_name.c_str(), rs.n_content, rs.n_content);
+							std::string this_funcdef_def(rs.textbuf);
+
+							enginestorage::Get_ELS(rs.engine)->RegisterFuncdefIfNeeded(this_funcdef_def);
+
+							rs.Format("void %s(%s@, bool ascending)", config::scriptname::method::container::sort_scriptfunc, this_funcdef_name.c_str());
+							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::sort_scriptfunc<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void insert_position_before_constant(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(%s,const %s &in)", config::scriptname::method::container::insert_position_before, config::scriptname::t::size, rs.n_content);
+							rs.Format("void %s(%s,const %s &in)", config::scriptname::method::container::insert_position_before, config::scriptname::t::size, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::insert_position_before_constant<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void insert_position_before_linear(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(%s,const %s &in)", config::scriptname::method::container::insert_position_before, config::scriptname::t::size, rs.n_content);
+							rs.Format("void %s(%s,const %s &in)", config::scriptname::method::container::insert_position_before, config::scriptname::t::size, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::insert_position_before_linear<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void erase_value(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(const %s &in,bool all = false)", config::scriptname::method::container::erase_value, rs.n_content);
+							rs.Format("void %s(const %s &in,bool all = false)", config::scriptname::method::container::erase_value, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::erase_value<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void find_iterator(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s %s(const %s &in)", rs.n_iterator_T, config::scriptname::method::container::find_iterator, rs.n_content);
+							rs.Format("%s %s(const %s &in)", rs.n_iterator_T, config::scriptname::method::container::find_iterator, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::find_iterator<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void contains(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "bool %s(const %s &in)", config::scriptname::method::container::contains, rs.n_content);
+							rs.Format("bool %s(const %s &in)", config::scriptname::method::container::contains, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::contains<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void count(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s %s(const %s &in)", config::scriptname::t::size, config::scriptname::method::container::count, rs.n_content);
+							rs.Format("%s %s(const %s &in)", config::scriptname::t::size, config::scriptname::method::container::count, rs.n_content);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::genericcc::count<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 

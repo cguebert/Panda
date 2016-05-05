@@ -28,8 +28,8 @@ samivuorela@gmail.com
 */
 
 
-#ifndef _includedh_aatc_container_vector
-#define _includedh_aatc_container_vector
+#ifndef _includedh_aatc_container_deque
+#define _includedh_aatc_container_deque
 
 
 
@@ -49,23 +49,24 @@ namespace aatc {
 
 
 
-			class vector : public shared::Containerbase <
-				aatc_acit_vector<void*>,
-				container::listing::CONTAINER::VECTOR,
-				container::listing::tags_of_container::vector
+			class deque : public shared::Containerbase <
+				aatc_acit_deque<void*>,
+				container::listing::CONTAINER::DEQUE,
+				container::listing::tags_of_container::deque
 			> {
 			public:
-				vector(asITypeInfo* typeinfo);
-				vector(const vector& other);
-				vector& operator=(const vector& other);
-				vector& swap(vector& other);
+				deque(asITypeInfo* typeinfo);
+				deque(const deque& other);
+				deque& operator=(const deque& other);
+				deque& swap(deque& other);
 
 
-
-				void reserve(config::t::sizetype size);
 
 				void push_back(void* value);
 				void pop_back();
+
+				void push_front(void* value);
+				void pop_front();
 
 				void* back();
 				void* front();
@@ -96,36 +97,37 @@ namespace aatc {
 
 
 
-			template<typename T_content> class vector : public shared::Containerbase <
-				aatc_acit_vector<T_content>,
+			template<typename T_content> class deque : public shared::Containerbase <
+				aatc_acit_deque<T_content>,
 				T_content,
-				container::listing::CONTAINER::VECTOR,
-				container::listing::tags_of_container::vector
+				container::listing::CONTAINER::DEQUE,
+				container::listing::tags_of_container::deque
 			> {
 			public:
 				typedef shared::Containerbase <
-					aatc_acit_vector<T_content>,
+					aatc_acit_deque<T_content>,
 					T_content,
-					container::listing::CONTAINER::VECTOR,
-					container::listing::tags_of_container::vector
+					container::listing::CONTAINER::DEQUE,
+					container::listing::tags_of_container::deque
 				> Containerbase;
 				typedef typename Containerbase::Iterator Iterator;
 
 
 
-				vector() {}
-				vector(const vector& other):
+				deque() {}
+				deque(const deque& other):
 					Containerbase(other)
 				{}
-				vector& operator=(const vector& other) { Containerbase::operator=(other); return *this; }
-				vector& swap(vector& other) { shared::method::swap(this, other); return *this; }
+				deque& operator=(const deque& other) { Containerbase::operator=(other); return *this; }
+				deque& swap(deque& other) { shared::method::swap(this, other); return *this; }
 
 
-
-				void reserve(config::t::sizetype size) { shared::method::native::reserve(this, size); }
 
 				void push_back(const T_content& value) { shared::method::native::push_back(this, value); }
 				void pop_back() { shared::method::native::pop_back(this); }
+
+				void push_front(const T_content& value) { shared::method::native::push_front(this, value); }
+				void pop_front() { shared::method::native::pop_front(this); }
 
 				T_content& back() { return shared::method::native::back(this); }
 				T_content& front() { return shared::method::native::front(this); }
@@ -154,15 +156,12 @@ namespace aatc {
 
 				static void Register(common::RegistrationState& rs, const char* n_content) {
 					using namespace tempspec::shared;
-					typedef vector T_container;
+					typedef deque T_container;
 
 					register_containerbase<T_container>(rs, n_content);
-
-
-
 					register_method::swap<T_container>(rs);
 
-					register_method::native::reserve<T_container>(rs);
+
 
 					register_method::native::push_back<T_container>(rs);
 					register_method::native::pop_back<T_container>(rs);

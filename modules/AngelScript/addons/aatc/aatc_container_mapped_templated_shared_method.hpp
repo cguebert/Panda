@@ -59,7 +59,7 @@ namespace aatc {
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_RUNTIME
 								if (t->need_errorcheck_missing_functions) {
 									if (t->missing_functions & common::CONTAINER_OPERATION::INSERT) {
-										common::errorprint::container::missingfunctions_operation_missing(t->objtype_container->GetName(), t->objtype_key->GetName(), "insert");
+										common::errorprint::container::missingfunctions_operation_missing(t->typeinfo_container->GetName(), t->typeinfo_key->GetName(), "insert");
 										return;
 									}
 								}
@@ -71,12 +71,12 @@ namespace aatc {
 
 							t->BuildPrimunion(findkey, key, t->datahandlingid_key, t->primitiveid_key);
 
-							T_container::T_iterator_native it = t->container.find(findkey);
+							typename T_container::T_iterator_native it = t->container.find(findkey);
 							if (it == t->container.end()) {
 								common::primunion_pair insertpair;
 
-								t->store_Scriptany_to_Primunion(key, insertpair.first, t->datahandlingid_key, t->primitiveid_key, t->objtype_key);
-								t->store_Scriptany_to_Primunion(value, insertpair.second, t->datahandlingid_value, t->primitiveid_value, t->objtype_value);
+								t->store_Scriptany_to_Primunion(key, insertpair.first, t->datahandlingid_key, t->primitiveid_key, t->typeinfo_key);
+								t->store_Scriptany_to_Primunion(value, insertpair.second, t->datahandlingid_value, t->primitiveid_value, t->typeinfo_value);
 
 								t->container.insert(insertpair);
 							}
@@ -88,7 +88,7 @@ namespace aatc {
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_RUNTIME
 								if (t->need_errorcheck_missing_functions) {
 									if (t->missing_functions & common::CONTAINER_OPERATION::ERASE_VALUE) {
-										common::errorprint::container::missingfunctions_operation_missing(t->objtype_container->GetName(), t->objtype_key->GetName(), "erase");
+										common::errorprint::container::missingfunctions_operation_missing(t->typeinfo_container->GetName(), t->typeinfo_key->GetName(), "erase");
 										return;
 									}
 								}
@@ -100,7 +100,7 @@ namespace aatc {
 
 							t->BuildPrimunion(findkey, key, t->datahandlingid_key, t->primitiveid_key);
 
-							T_container::T_iterator_native it = t->container.find(findkey);
+							typename T_container::T_iterator_native it = t->container.find(findkey);
 
 							if (it != t->container.end()) {
 								common::primunion old_key;
@@ -112,10 +112,10 @@ namespace aatc {
 								t->container.erase(it);
 
 								if (t->datahandlingid_key != common::DATAHANDLINGTYPE::PRIMITIVE) {
-									t->engine->ReleaseScriptObject(old_key.ptr, t->objtype_key);
+									t->engine->ReleaseScriptObject(old_key.ptr, t->typeinfo_key);
 								}
 								if (t->datahandlingid_value != common::DATAHANDLINGTYPE::PRIMITIVE) {
-									t->engine->ReleaseScriptObject(old_value.ptr, t->objtype_value);
+									t->engine->ReleaseScriptObject(old_value.ptr, t->typeinfo_value);
 								}
 							}
 						}
@@ -125,7 +125,7 @@ namespace aatc {
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_RUNTIME
 								if (t->need_errorcheck_missing_functions) {
 									if (t->missing_functions & common::CONTAINER_OPERATION::FIND) {
-										common::errorprint::container::missingfunctions_operation_missing(t->objtype_container->GetName(), t->objtype_key->GetName(), "find");
+										common::errorprint::container::missingfunctions_operation_missing(t->typeinfo_container->GetName(), t->typeinfo_key->GetName(), "find");
 										return T_container::DefaultPrimunion(t->datahandlingid_value, t->primitiveid_value);
 									}
 								}
@@ -134,7 +134,7 @@ namespace aatc {
 							common::primunion findkey;
 							t->BuildPrimunion(findkey, key, t->datahandlingid_key, t->primitiveid_key);
 
-							T_container::T_iterator_native_const it = t->container.find(findkey);
+							typename T_container::T_iterator_native_const it = t->container.find(findkey);
 							if (it == t->container.end()) {
 								success = 0;
 
@@ -169,7 +169,7 @@ namespace aatc {
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_RUNTIME
 								if (t->need_errorcheck_missing_functions) {
 									if (t->missing_functions & common::CONTAINER_OPERATION::FIND) {
-										common::errorprint::container::missingfunctions_operation_missing(t->objtype_container->GetName(), t->objtype_key->GetName(), "find");
+										common::errorprint::container::missingfunctions_operation_missing(t->typeinfo_container->GetName(), t->typeinfo_key->GetName(), "find");
 										return t->end();
 									}
 								}
@@ -178,10 +178,10 @@ namespace aatc {
 							common::primunion findkey;
 							t->BuildPrimunion(findkey, key, t->datahandlingid_key, t->primitiveid_key);
 
-							T_container::T_iterator_native it = t->container.find(findkey);
+							typename T_container::T_iterator_native it = t->container.find(findkey);
 
 
-							T_container::Iterator result(t);
+							typename T_container::Iterator result(t);
 							result.it = it;
 
 							if (it == t->container.end()) {
@@ -191,7 +191,7 @@ namespace aatc {
 							return result;
 						}
 
-						template<typename T_container> bool erase_iterator(T_container* t, typename const T_container::Iterator& aatc_it) {
+						template<typename T_container> bool erase_iterator(T_container* t, const typename T_container::Iterator& aatc_it) {
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_ITERATOR_SAFETY_VERSION_NUMBERS
 								if (t->safety_iteratorversion != aatc_it.safety_iteratorversion) {
 									common::errorprint::container::iterator_invalid();
@@ -199,7 +199,7 @@ namespace aatc {
 								}
 							#endif
 
-							T_container::T_iterator_native it = aatc_it.it;
+							typename T_container::T_iterator_native it = aatc_it.it;
 
 							if (it == t->container.end()) {
 								return 0;
@@ -218,12 +218,12 @@ namespace aatc {
 								case common::DATAHANDLINGTYPE::PRIMITIVE: { break; }
 								case common::DATAHANDLINGTYPE::STRING:
 								{
-									t->engine->ReleaseScriptObject(old_key.ptr, t->objtype_key);
+									t->engine->ReleaseScriptObject(old_key.ptr, t->typeinfo_key);
 									break;
 								}
 								default:
 								{
-									t->engine->ReleaseScriptObject(old_key.ptr, t->objtype_key);
+									t->engine->ReleaseScriptObject(old_key.ptr, t->typeinfo_key);
 									break;
 								}
 								};
@@ -231,12 +231,12 @@ namespace aatc {
 								case common::DATAHANDLINGTYPE::PRIMITIVE: { break; }
 								case common::DATAHANDLINGTYPE::STRING:
 								{
-									t->engine->ReleaseScriptObject(old_value.ptr, t->objtype_value);
+									t->engine->ReleaseScriptObject(old_value.ptr, t->typeinfo_value);
 									break;
 								}
 								default:
 								{
-									t->engine->ReleaseScriptObject(old_value.ptr, t->objtype_value);
+									t->engine->ReleaseScriptObject(old_value.ptr, t->typeinfo_value);
 									break;
 								}
 								};
@@ -245,7 +245,7 @@ namespace aatc {
 							}
 						}
 
-						template<typename T_container> config::t::sizetype erase_iterator_range(T_container* t, typename const T_container::Iterator& aatc_it_range_begin, typename const T_container::Iterator& aatc_it_range_end) {
+						template<typename T_container> config::t::sizetype erase_iterator_range(T_container* t, const typename T_container::Iterator& aatc_it_range_begin, const typename T_container::Iterator& aatc_it_range_end) {
 							#if aatc_CONFIG_ENABLE_ERRORCHECK_ITERATOR_SAFETY_VERSION_NUMBERS
 								if ((t->safety_iteratorversion != aatc_it_range_begin.safety_iteratorversion) || (t->safety_iteratorversion != aatc_it_range_end.safety_iteratorversion)) {
 									common::errorprint::container::iterator_invalid();
@@ -254,8 +254,8 @@ namespace aatc {
 							#endif
 
 
-							T_container::T_iterator_native it_range_begin = aatc_it_range_begin.it;
-							T_container::T_iterator_native it_range_end = aatc_it_range_end.it;
+							typename T_container::T_iterator_native it_range_begin = aatc_it_range_begin.it;
+							typename T_container::T_iterator_native it_range_end = aatc_it_range_end.it;
 
 							if (it_range_begin == it_range_end) {
 								return 0;
@@ -300,17 +300,17 @@ namespace aatc {
 								if (nonprimitives) {
 									if (nonprimitives == 2) {
 										for (auto it = old_items.begin(); it != old_items.end(); it++) {
-											t->engine->ReleaseScriptObject((*it).first.ptr, t->objtype_key);
-											t->engine->ReleaseScriptObject((*it).second.ptr, t->objtype_value);
+											t->engine->ReleaseScriptObject((*it).first.ptr, t->typeinfo_key);
+											t->engine->ReleaseScriptObject((*it).second.ptr, t->typeinfo_value);
 										}
 									} else {
 										if (t->datahandlingid_key != common::DATAHANDLINGTYPE::PRIMITIVE) {
 											for (auto it = old_items.begin(); it != old_items.end(); it++) {
-												t->engine->ReleaseScriptObject((*it).first.ptr, t->objtype_key);
+												t->engine->ReleaseScriptObject((*it).first.ptr, t->typeinfo_key);
 											}
 										} else {
 											for (auto it = old_items.begin(); it != old_items.end(); it++) {
-												t->engine->ReleaseScriptObject((*it).second.ptr, t->objtype_value);
+												t->engine->ReleaseScriptObject((*it).second.ptr, t->typeinfo_value);
 											}
 										}
 									}
@@ -332,10 +332,10 @@ namespace aatc {
 								} else {
 									common::primunion_pair insertpair;
 
-									t->store_Scriptany_to_Primunion(key, insertpair.first, t->datahandlingid_key, t->primitiveid_key, t->objtype_key);
-									t->DefaultConstructPrimunion(insertpair.second, t->datahandlingid_value, t->primitiveid_value, t->objtype_value);
+									t->store_Scriptany_to_Primunion(key, insertpair.first, t->datahandlingid_key, t->primitiveid_key, t->typeinfo_key);
+									t->DefaultConstructPrimunion(insertpair.second, t->datahandlingid_value, t->primitiveid_value, t->typeinfo_value);
 
-									std::pair<T_container::T_iterator_native,bool> insert_result = t->container.insert(insertpair);
+									std::pair<typename T_container::T_iterator_native,bool> insert_result = t->container.insert(insertpair);
 
 									return T_container::Scriptany_ref_from_Primunion(insert_result.first->second, t->datahandlingid_value, t->primitiveid_value);
 								}
@@ -351,42 +351,42 @@ namespace aatc {
 					namespace register_method {
 
 						template<typename T_container> static void swap(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s& %s(%s@)", rs.n_container_T, config::scriptname::method::container::swap, rs.n_container_T);
-							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::swap<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
+							rs.Format("%s& %s(%s &inout)", rs.n_container_T, config::scriptname::method::container::swap, rs.n_container_T);
+							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asMETHOD(T_container,swap), asCALL_THISCALL); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void insert(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(const T_key&in,const T_value&in)", config::scriptname::method::container::insert);
+							rs.Format("void %s(const T_key&in,const T_value&in)", config::scriptname::method::container::insert);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::insert<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void erase(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "void %s(const T_key&in)", config::scriptname::method::container::erase);
+							rs.Format("void %s(const T_key&in)", config::scriptname::method::container::erase);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::erase<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void find(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "T_value& %s(const T_key &in)", config::scriptname::method::container::find);
+							rs.Format("T_value& %s(const T_key &in)", config::scriptname::method::container::find);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTIONPR(method::find_value<T_container>,(T_container*, void*),void*), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "T_value& %s(const T_key &in,bool &out)", config::scriptname::method::container::find);
+							rs.Format("T_value& %s(const T_key &in,bool &out)", config::scriptname::method::container::find);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTIONPR(method::find_value<T_container>, (T_container*, void*, bool&), void*), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "bool %s(const T_key&in)", config::scriptname::method::container::contains);
+							rs.Format("bool %s(const T_key&in)", config::scriptname::method::container::contains);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::contains<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void find_iterator(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s %s(const T_key &in)", rs.n_iterator_T, config::scriptname::method::container::find_iterator);
+							rs.Format("%s %s(const T_key &in)", rs.n_iterator_T, config::scriptname::method::container::find_iterator);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::find_iterator<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 
 						template<typename T_container> static void erase_iterator(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "bool %s(const %s &in)", config::scriptname::method::container::erase_iterator, rs.n_iterator_T);
+							rs.Format("bool %s(const %s &in)", config::scriptname::method::container::erase_iterator, rs.n_iterator_T);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::erase_iterator<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 						template<typename T_container> static void erase_iterator_range(common::RegistrationState& rs) {
-							sprintf_s(rs.textbuf, common::RegistrationState::bufsize, "%s %s(const %s &in,const %s &in)", config::scriptname::t::size, config::scriptname::method::container::erase_iterator, rs.n_iterator_T, rs.n_iterator_T);
+							rs.Format("%s %s(const %s &in,const %s &in)", config::scriptname::t::size, config::scriptname::method::container::erase_iterator, rs.n_iterator_T, rs.n_iterator_T);
 							rs.error = rs.engine->RegisterObjectMethod(rs.n_container_T, rs.textbuf, asFUNCTION(method::erase_iterator_range<T_container>), asCALL_CDECL_OBJFIRST); assert(rs.error >= 0);
 						}
 

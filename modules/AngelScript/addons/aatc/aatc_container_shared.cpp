@@ -34,6 +34,10 @@ samivuorela@gmail.com
 #include "aatc_enginestorage.hpp"
 
 
+//int debug_containercount = 0;
+//#include <iostream>
+
+
 
 BEGIN_AS_NAMESPACE
 namespace aatc {
@@ -48,14 +52,31 @@ namespace aatc {
 				#if aatc_CONFIG_ENABLE_ERRORCHECK_ITERATOR_SAFETY_VERSION_NUMBERS
 					safety_iteratorversion = 0;
 				#endif
+
+				//debug_containercount++;
+				//std::cout << "debug_containercount ++ = " << debug_containercount << "\n";
 			}
-			container_basicbase::~container_basicbase() {}
+			container_basicbase::~container_basicbase() {
+				//debug_containercount--;
+				//std::cout << "debug_containercount -- = " << debug_containercount << "\n";
+			}
 
 			void container_basicbase::safety_iteratorversion_Increment() {
 				#if aatc_CONFIG_ENABLE_ERRORCHECK_ITERATOR_SAFETY_VERSION_NUMBERS
 					safety_iteratorversion++;
 				#endif
 			}
+
+
+
+			iterator_base::iterator_base() :
+				firstt(1)
+			{}
+			iterator_base::iterator_base(const iterator_base& other) :
+				firstt(other.firstt),
+				cont(other.cont)
+			{}
+
 
 
 			namespace containerfunctor {
@@ -158,7 +179,7 @@ namespace aatc {
 				}
 
 
-			};
+			};//namespace containerfunctor
 			namespace containerfunctor_map {
 				Base::Base(asIScriptEngine* _engine, Settings* settings) :
 					engine(_engine),
@@ -315,11 +336,61 @@ namespace aatc {
 				//MAP FUNCTORS
 				//MAP FUNCTORS
 				//MAP FUNCTORS
-			};//namespace detail
+			};//namespace containerfunctor_map
 
 
 
+			namespace scriptcmpfunctor_internal {
+				void functor_SetArgs<config::t::int8>::operator()(asIScriptContext* context, config::t::int8 l, config::t::int8 r) const{
+					context->SetArgByte(0, l);
+					context->SetArgByte(1, r);
+				}
+				void functor_SetArgs<config::t::uint8>::operator()(asIScriptContext* context, config::t::uint8 l, config::t::uint8 r)  const{
+					context->SetArgByte(0, l);
+					context->SetArgByte(1, r);
+				}
+				void functor_SetArgs<config::t::int16>::operator()(asIScriptContext* context, config::t::int16 l, config::t::int16 r)  const{
+					context->SetArgWord(0, l);
+					context->SetArgWord(1, r);
+				}
+				void functor_SetArgs<config::t::uint16>::operator()(asIScriptContext* context, config::t::uint16 l, config::t::uint16 r)  const{
+					context->SetArgWord(0, l);
+					context->SetArgWord(1, r);
+				}
+				void functor_SetArgs<config::t::int32>::operator()(asIScriptContext* context, config::t::int32 l, config::t::int32 r)  const{
+					context->SetArgDWord(0, l);
+					context->SetArgDWord(1, r);
+				}
+				void functor_SetArgs<config::t::uint32>::operator()(asIScriptContext* context, config::t::uint32 l, config::t::uint32 r)  const{
+					context->SetArgDWord(0, l);
+					context->SetArgDWord(1, r);
+				}
+				void functor_SetArgs<config::t::int64>::operator()(asIScriptContext* context, config::t::int64 l, config::t::int64 r)  const{
+					context->SetArgQWord(0, l);
+					context->SetArgQWord(1, r);
+				}
+				void functor_SetArgs<config::t::uint64>::operator()(asIScriptContext* context, config::t::uint64 l, config::t::uint64 r)  const{
+					context->SetArgQWord(0, l);
+					context->SetArgQWord(1, r);
+				}
+				void functor_SetArgs<config::t::float32>::operator()(asIScriptContext* context, config::t::float32 l, config::t::float32 r)  const{
+					context->SetArgFloat(0, l);
+					context->SetArgFloat(1, r);
+				}
+				void functor_SetArgs<config::t::float64>::operator()(asIScriptContext* context, config::t::float64 l, config::t::float64 r)  const{
+					context->SetArgDouble(0, l);
+					context->SetArgDouble(1, r);
+				}
 
+				void functor_SetArgs<dummytype_object>::operator()(asIScriptContext* context, void* l, void* r)const {
+					context->SetArgObject(0, l);
+					context->SetArgObject(1, r);
+				}
+				void functor_SetArgs<dummytype_handle>::operator()(asIScriptContext* context, void* l, void* r)const {
+					context->SetArgObject(0, l);
+					context->SetArgObject(1, r);
+				}
+			}//namespace scriptcmpfunctor_internal
 
 
 

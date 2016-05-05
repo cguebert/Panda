@@ -70,7 +70,7 @@ namespace aatc {
 				>
 			> {
 			public:
-				set(asITypeInfo* objtype);
+				set(asITypeInfo* typeinfo);
 				set(const set& other);
 				set& operator=(const set& other);
 				set& swap(set& other);
@@ -101,11 +101,21 @@ namespace aatc {
 				container::listing::tags_of_container::set
 			> {
 			public:
+				typedef shared::Containerbase <
+					aatc_acit_set<T_content>,
+					T_content,
+					container::listing::CONTAINER::SET,
+					container::listing::tags_of_container::set
+				> Containerbase;
+				typedef typename Containerbase::Iterator Iterator;
+
+
+
 				set() {}
 				set(const set& other):
 					Containerbase(other)
 				{}
-				set& set::operator=(const set& other) { Containerbase::operator=(other); return *this; }
+				set& operator=(const set& other) { Containerbase::operator=(other); return *this; }
 				set& swap(set& other) { shared::method::swap(this, other); return *this; }
 
 
@@ -123,24 +133,25 @@ namespace aatc {
 
 				static void Register(common::RegistrationState& rs, const char* n_content) {
 					using namespace tempspec::shared;
+					typedef set T_container;
 
-					register_containerbase<set>(rs, n_content);
-					register_method::swap<set>(rs);
+					register_containerbase<T_container>(rs, n_content);
+					register_method::swap<T_container>(rs);
 
 
 
-					register_method::native::insert_value<set>(rs);
+					register_method::native::insert_value<T_container>(rs);
 
-					register_method::native::erase_value<set>(rs);
-					register_method::native::erase_iterator<set>(rs);
-					register_method::native::erase_iterator_range<set>(rs);
+					register_method::native::erase_value<T_container>(rs);
+					register_method::native::erase_iterator<T_container>(rs);
+					register_method::native::erase_iterator_range<T_container>(rs);
 
-					register_method::native::find_iterator<set>(rs);
-					register_method::native::contains<set>(rs);
+					register_method::native::find_iterator<T_container>(rs);
+					register_method::native::contains<T_container>(rs);
 				}
 				static void Register(asIScriptEngine* engine, const char* n_content) {
 					common::RegistrationState rs(engine);
-					Register(rs, c_content);
+					Register(rs, n_content);
 				}
 			};
 

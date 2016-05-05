@@ -12,6 +12,7 @@ set(HEADER_FILES
 	addons/aatc/aatc.hpp
 	addons/aatc/aatc_common.hpp
 	addons/aatc/aatc_config.hpp
+	addons/aatc/aatc_container_deque.hpp
 	addons/aatc/aatc_container_list.hpp
 	addons/aatc/aatc_container_listing.hpp
 	addons/aatc/aatc_container_listing_heavy.hpp
@@ -48,6 +49,7 @@ set(SOURCE_FILES
 	addons/scriptstdstring/scriptstdstring_utils.cpp
 	addons/aatc/aatc.cpp
 	addons/aatc/aatc_common.cpp
+	addons/aatc/aatc_container_deque.cpp
 	addons/aatc/aatc_container_list.cpp
 	addons/aatc/aatc_container_map.cpp
 	addons/aatc/aatc_container_set.cpp

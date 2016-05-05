@@ -55,13 +55,12 @@ namespace aatc {
 				container::listing::tags_of_container::list
 			> {
 			public:
-				list(asITypeInfo* objtype);
+				list(asITypeInfo* typeinfo);
 				list(const list& other);
 				list& operator=(const list& other);
-
-
-
 				list& swap(list& other);
+
+
 
 				void push_back(void* value);
 				void pop_back();
@@ -73,7 +72,7 @@ namespace aatc {
 				void* front();
 
 				void sort(bool ascending = true);
-				void sort_funcptr(common::script_Funcpointer* funcptr, bool ascending = true);
+				void sort(common::script_Funcpointer* funcptr, bool ascending = true);
 
 				void erase(config::t::sizetype position);
 				void erase(const Iterator& position);
@@ -103,11 +102,21 @@ namespace aatc {
 				container::listing::tags_of_container::list
 			> {
 			public:
+				typedef shared::Containerbase <
+					aatc_acit_list<T_content>,
+					T_content,
+					container::listing::CONTAINER::LIST,
+					container::listing::tags_of_container::list
+				> Containerbase;
+				typedef typename Containerbase::Iterator Iterator;
+
+
+
 				list() {}
 				list(const list& other):
 					Containerbase(other)
 				{}
-				list& list::operator=(const list& other) { Containerbase::operator=(other); return *this; }
+				list& operator=(const list& other) { Containerbase::operator=(other); return *this; }
 				list& swap(list& other) { shared::method::swap(this, other); return *this; }
 
 
@@ -134,6 +143,7 @@ namespace aatc {
 				Iterator find(const T_content& value) { return shared::method::genericcc::find_iterator(this, value); }
 
 				void sort(bool ascending = true) { shared::method::genericcc::sort(this, ascending); }
+				void sort(common::script_Funcpointer* funcptr, bool ascending = true) { shared::method::genericcc::sort_aatcfuncptr(this, funcptr, ascending); }
 
 				bool contains(const T_content& value) { return shared::method::genericcc::contains(this, value); }
 				config::t::sizetype count(const T_content& value) { return shared::method::genericcc::count(this, value); }
@@ -142,42 +152,43 @@ namespace aatc {
 
 				static void Register(common::RegistrationState& rs, const char* n_content) {
 					using namespace tempspec::shared;
+					typedef list T_container;
 
-					register_containerbase<list>(rs, n_content);
+					register_containerbase<T_container>(rs, n_content);
 
 
 
-					register_method::swap<list>(rs);
+					register_method::swap<T_container>(rs);
 
-					register_method::native::push_back<list>(rs);
-					register_method::native::pop_back<list>(rs);
+					register_method::native::push_back<T_container>(rs);
+					register_method::native::pop_back<T_container>(rs);
 
-					register_method::native::push_front<list>(rs);
-					register_method::native::pop_front<list>(rs);
+					register_method::native::push_front<T_container>(rs);
+					register_method::native::pop_front<T_container>(rs);
 
-					register_method::native::back<list>(rs);
-					register_method::native::front<list>(rs);
+					register_method::native::back<T_container>(rs);
+					register_method::native::front<T_container>(rs);
 
-					register_method::genericcc::insert_position_before_linear<list>(rs);
-					register_method::native::insert_iterator<list>(rs);
+					register_method::genericcc::insert_position_before_linear<T_container>(rs);
+					register_method::native::insert_iterator<T_container>(rs);
 
-					register_method::genericcc::erase_position_linear<list>(rs);
-					register_method::native::erase_iterator<list>(rs);
-					register_method::native::erase_iterator_range<list>(rs);
-					register_method::genericcc::erase_position_range_linear<list>(rs);
+					register_method::genericcc::erase_position_linear<T_container>(rs);
+					register_method::native::erase_iterator<T_container>(rs);
+					register_method::native::erase_iterator_range<T_container>(rs);
+					register_method::genericcc::erase_position_range_linear<T_container>(rs);
 
-					register_method::genericcc::erase_value<list>(rs);
+					register_method::genericcc::erase_value<T_container>(rs);
 
-					register_method::native::sort<list>(rs);
+					register_method::native::sort<T_container>(rs);
 
-					register_method::genericcc::find_iterator<list>(rs);
+					register_method::genericcc::find_iterator<T_container>(rs);
 
-					register_method::genericcc::contains<list>(rs);
-					register_method::genericcc::count<list>(rs);
+					register_method::genericcc::contains<T_container>(rs);
+					register_method::genericcc::count<T_container>(rs);
 				}
 				static void Register(asIScriptEngine* engine, const char* n_content) {
 					common::RegistrationState rs(engine);
-					Register(rs, c_content);
+					Register(rs, n_content);
 				}
 			};
 
