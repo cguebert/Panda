@@ -18,14 +18,14 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);
-		defList.push_back(GenericDataDefinition(listType,
-											 true, false,
-											 "input",
-											 "List to reverse"));
-		defList.push_back(GenericDataDefinition(listType,
-											 false, true,
-											 "output",
-											 "Reversed list"));
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List to reverse");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Reversed list");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 

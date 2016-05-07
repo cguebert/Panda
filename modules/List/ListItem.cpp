@@ -22,14 +22,14 @@ public:
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "input",
-											 "List from which to extract values"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 false, true,
-											 "output",
-											 "Value extracted from the list"));
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List from which to extract values");
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Value extracted from the list");
 
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
@@ -82,14 +82,14 @@ public:
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(typeOfList,	
-												true, false,
-												"input",
-												"List from which to extract values"));
-		defList.push_back(GenericDataDefinition(typeOfList, 
-												false, true,
-												"output",
-												"Vector extracted from the list"));
+		defList.emplace_back(typeOfList,	
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List from which to extract values");
+		defList.emplace_back(typeOfList, 
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Vector extracted from the list");
 
 		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}

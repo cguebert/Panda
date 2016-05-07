@@ -22,18 +22,18 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);
-		defList.push_back(GenericDataDefinition(listType,
-											 true, false,
-											 "true",
-											 "List of items copied if control is true"));
-		defList.push_back(GenericDataDefinition(listType,
-											 true, false,
-											 "false",
-											 "List of items copied if control is false"));
-		defList.push_back(GenericDataDefinition(listType,
-											 false, true,
-											 "result",
-											 "Result of the condition"));
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "true",
+							 "List of items copied if control is true");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "false",
+							 "List of items copied if control is false");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Output,
+							 "result",
+							 "Result of the condition");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 

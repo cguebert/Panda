@@ -20,14 +20,14 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);
-		defList.push_back(GenericDataDefinition(listType,
-											 true, false,
-											 "input",
-											 "List of items from which to extract the tail"));
-		defList.push_back(GenericDataDefinition(listType,
-											 false, true,
-											 "output",
-											 "Result of the extraction"));
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List of items from which to extract the tail");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Result of the extraction");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 

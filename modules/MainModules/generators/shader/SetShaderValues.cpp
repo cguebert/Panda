@@ -35,15 +35,15 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.push_back(GenericDataDefinition(0,	// We keep the exact type of the connected Data
-											 true, false,
-											 "value",
-											 "Value to set in the shader"));
+		defList.emplace_back(0,	// We keep the exact type of the connected Data
+							 GenericDataDefinition::Input,
+							 "value",
+							 "Value to set in the shader");
 		// Create a single string value
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<std::string>()),
-											 true, false,
-											 "name",
-											 "Name of the uniform in the shader"));
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<std::string>()),
+							 GenericDataDefinition::Input,
+							 "name",
+							 "Name of the uniform in the shader");
 		setupGenericObject<uniformTypes>(this, generic, defList);
 	}
 

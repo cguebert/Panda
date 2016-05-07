@@ -18,14 +18,14 @@ public:
 
 		int intTypeId = types::DataTypeId::getFullTypeOfSingleValue(types::DataTypeId::getIdOf<int>());
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(0, // use the exact type of the input data
-											 true, false,
-											 "data",
-											 "Data of which to show the counter"));
-		defList.push_back(GenericDataDefinition(intTypeId,
-											 false, true,
-											 "counter",
-											 "Counter of the input data"));
+		defList.emplace_back(0, // use the exact type of the input data
+							 GenericDataDefinition::Input,
+							 "data",
+							 "Data of which to show the counter");
+		defList.emplace_back(intTypeId,
+							 GenericDataDefinition::Output,
+							 "counter",
+							 "Counter of the input data");
 
 		setupGenericObject<allDataTypes>(this, m_generic, defList);
 	}
@@ -63,10 +63,10 @@ public:
 		addOutput(m_counter);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(0, // use the exact type of the input data
-											 true, false,
-											 "data",
-											 "Data of which to show the counter"));
+		defList.emplace_back(0, // use the exact type of the input data
+							 GenericDataDefinition::Input,
+							 "data",
+							 "Data of which to show the counter");
 
 		setupGenericObject<allDataTypes>(this, m_generic, defList);
 	}

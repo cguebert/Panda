@@ -22,18 +22,18 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-											 true, false,
-											 "input A",
-											 "First value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-											 true, false,
-											 "input B",
-											 "Second value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
-											 false, true,
-											 "equal",
-											 "1 if the two values are equal, 0 otherwise"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input A",
+							 "First value");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input B",
+							 "Second value");
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "equal",
+							 "1 if the two values are equal, 0 otherwise");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
@@ -74,18 +74,18 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-											 true, false,
-											 "input A",
-											 "First value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-											 true, false,
-											 "input B",
-											 "Second value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-											 false, true,
-											 "equal",
-											 "For each item: 1 if the two values are equal, 0 otherwise"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input A",
+							 "First value");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input B",
+							 "Second value");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "equal",
+							 "For each item: 1 if the two values are equal, 0 otherwise");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
@@ -143,18 +143,18 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input A",
-												"First value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input B",
-												"Second value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<IntVector>()),
-												false, true,
-												"equal",
-												"For each item: 1 if the two values are equal, 0 otherwise"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input A",
+							 "First value");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input B",
+							 "Second value");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<IntVector>()),
+							 GenericDataDefinition::Output,
+							 "equal",
+							 "For each item: 1 if the two values are equal, 0 otherwise");
 		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}
 
@@ -227,18 +227,18 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input A",
-												"First value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input B",
-												"Second value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-												false, true,
-												"equal",
-												"For each pair of lists: 1 if the two lists are equal, 0 otherwise"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input A",
+							 "First value");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input B",
+							 "Second value");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "equal",
+							 "For each pair of lists: 1 if the two lists are equal, 0 otherwise");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 

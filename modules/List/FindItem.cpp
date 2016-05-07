@@ -20,18 +20,18 @@ public:
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "input",
-											 "List in which to look for the values"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "values",
-											 "List of values to look for"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-											 false, true,
-											 "output",
-											 "Indices of the values in the input list"));
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List in which to look for the values");
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "values",
+							 "List of values to look for");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Indices of the values in the input list");
 
 		setupGenericObject<allSearchableTypes>(this, generic, defList);
 	}

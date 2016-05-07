@@ -20,15 +20,15 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-											 true, false,
-											 "input",
-											 "List to analyse"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List to analyse");
 		// Create a single int value
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
-											 false, true,
-											 "size",
-											 "Number of values in this list"));
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "size",
+							 "Number of values in this list");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
@@ -67,15 +67,15 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input",
-												"List to analyse"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List to analyse");
 		// Create a single int value
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-												false, true,
-												"size",
-												"Number of values in each vector"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "size",
+							 "Number of values in each vector");
 		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}
 

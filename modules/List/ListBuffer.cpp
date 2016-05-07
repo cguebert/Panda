@@ -24,18 +24,18 @@ public:
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "input",
-											 "Value to put in the buffer at each timestep"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "init",
-											 "Value to put in the buffer when reset is non null"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 false, true,
-											 "output",
-											 "Value stored in the buffer"));
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Value to put in the buffer at each timestep");
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "init",
+							 "Value to put in the buffer when reset is non null");
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Value stored in the buffer");
 
 		setupGenericObject<allDataTypes>(this, generic, defList);
 

@@ -20,14 +20,14 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);
-		defList.push_back(GenericDataDefinition(listType,
-											 true, false,
-											 "input",
-											 "The initial list of items"));
-		defList.push_back(GenericDataDefinition(listType,
-											 false, true,
-											 "output",
-											 "Result of the deletion"));
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "The initial list of items");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Result of the deletion");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 

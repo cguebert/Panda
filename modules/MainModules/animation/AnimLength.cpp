@@ -22,20 +22,20 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create an animation of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
-											 true, false,
-											 "input",
-											 "Animation to analyse"));
+		defList.emplace_back(DataTypeId::getFullTypeOfAnimation(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Animation to analyse");
 		// Create a single real value
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<float>()),
-											 false, true,
-											 "length",
-											 "Length of this animation"));
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<float>()),
+							 GenericDataDefinition::Output,
+							 "length",
+							 "Length of this animation");
 		// Create a single int value
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
-											 false, true,
-											 "size",
-											 "Number of keys in this animation"));
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "size",
+							 "Number of keys in this animation");
 		setupGenericObject<allAnimationTypes>(this, generic, defList);
 	}
 

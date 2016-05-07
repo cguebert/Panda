@@ -23,18 +23,18 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = DataTypeId::getFullTypeOfVector(0);
-		defList.push_back(GenericDataDefinition(listType,
-											 true, false,
-											 "input",
-											 "List to sort"));
-		defList.push_back(GenericDataDefinition(listType,
-											 false, true,
-											 "output",
-											 "Sorted list"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-											 false, true,
-											 "indices",
-											 "Indices corresponding to the sorted list"));
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List to sort");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Sorted list");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "indices",
+							 "Indices corresponding to the sorted list");
 		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
 
@@ -95,18 +95,18 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = DataTypeId::getFullTypeOfVector(0);
-		defList.push_back(GenericDataDefinition(listType,
-												true, false,
-												"input",
-												"List to sort"));
-		defList.push_back(GenericDataDefinition(listType,
-												false, true,
-												"output",
-												"Sorted list"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<IntVector>()),
-												false, true,
-												"indices",
-												"Indices corresponding to the sorted list"));
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List to sort");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Sorted list");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<IntVector>()),
+							 GenericDataDefinition::Output,
+							 "indices",
+							 "Indices corresponding to the sorted list");
 		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}
 

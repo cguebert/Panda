@@ -69,14 +69,14 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);
-		defList.push_back(GenericDataDefinition(listType,
-											 true, false,
-											 "input",
-											 "Input list"));
-		defList.push_back(GenericDataDefinition(listType,
-											 false, true,
-											 "output",
-											 "Output list"));
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Input list");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Output list");
 		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
 

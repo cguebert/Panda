@@ -26,15 +26,15 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create an animation of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
-											 true, false,
-											 "input",
-											 "Animation from which to extract the values"));
+		defList.emplace_back(DataTypeId::getFullTypeOfAnimation(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Animation from which to extract the values");
 		// Create a list of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-											 false, true,
-											 "output",
-											 "Values extracted from the animation"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Values extracted from the animation");
 
 		setupGenericObject<allAnimationTypes>(this, generic, defList);
 	}

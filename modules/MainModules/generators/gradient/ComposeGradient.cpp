@@ -25,14 +25,14 @@ public:
 		addOutput(gradients);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<Color>()),
-											 true, false,
-											 "color",
-											 "Color to add to the gradient"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<float>()),
-											 true, false,
-											 "position",
-											 "Position where to insert the color"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<Color>()),
+							 GenericDataDefinition::Input,
+							 "color",
+							 "Color to add to the gradient");
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<float>()),
+							 GenericDataDefinition::Input,
+							 "position",
+							 "Position where to insert the color");
 		setupGenericObject<std::tuple<Color>>(this, generic, defList);
 	}
 

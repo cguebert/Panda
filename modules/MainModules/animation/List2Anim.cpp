@@ -40,15 +40,15 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-											 true, false,
-											 "input",
-											 "List used to create the animation"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List used to create the animation");
 		// Create an animation of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
-											 false, true,
-											 "output",
-											 "Animation created from the given list"));
+		defList.emplace_back(DataTypeId::getFullTypeOfAnimation(0),
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Animation created from the given list");
 
 		setupGenericObject<allAnimationTypes>(this, generic, defList);
 	}
@@ -99,20 +99,20 @@ public:
 
 		GenericDataDefinitionList defList;
 		// Create a list of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfAnimation(0),
-											 true, false,
-											 "input",
-											 "Animation from which to get the values"));
+		defList.emplace_back(DataTypeId::getFullTypeOfAnimation(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Animation from which to get the values");
 		// Create an animation of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<float>()),
-											 false, true,
-											 "keys",
-											 "List of keys of the given animation"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<float>()),
+							 GenericDataDefinition::Output,
+							 "keys",
+							 "List of keys of the given animation");
 		// Create an animation of the same type as the data connected
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-											 false, true,
-											 "values",
-											 "List of values of the given animation"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Output,
+							 "values",
+							 "List of values of the given animation");
 
 		setupGenericObject<allAnimationTypes>(this, generic, defList);
 	}

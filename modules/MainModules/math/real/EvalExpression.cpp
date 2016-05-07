@@ -25,16 +25,16 @@ public:
 
 		GenericDataDefinitionList defList;
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "input",
-											 "List from which to extract values"));
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List from which to extract values");
 
 		int stringType = types::DataTypeId::getFullTypeOfSingleValue(types::DataTypeId::getIdOf<std::string>());
-		defList.push_back(GenericDataDefinition(stringType,
-											 true, false,
-											 "name",
-											 "Name of the variable"));
+		defList.emplace_back(stringType,
+							 GenericDataDefinition::Input,
+							 "name",
+							 "Name of the variable");
 
 		using floatValues = std::tuple<float>;
 		setupGenericObject<floatValues>(this, m_generic, defList);

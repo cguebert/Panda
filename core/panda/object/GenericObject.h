@@ -85,13 +85,26 @@ public:
 
 	struct GenericDataDefinition
 	{
+		enum DataFlags
+		{
+			Input = 1 << 0,
+			Output = 1 << 1,
+			Hidden = 1 << 2, // Not shown in the GUI
+			Temporary = 1 << 3 // Not saved
+		};
+
 		GenericDataDefinition()
-			: type(0), input(false), output(false) {}
-		GenericDataDefinition(int type, bool input, bool output, std::string name, std::string help)
-			: type(type), input(input), output(output), name(name), help(help) {}
+			: type(0), flags(0) {}
+		GenericDataDefinition(int type, uint8_t flags, std::string name, std::string help)
+			: type(type), flags(flags), name(name), help(help) {}
+
+		bool isInput() const { return (flags & Input) != 0; }
+		bool isOutput() const { return (flags & Output) != 0; }
+		bool isHidden() const { return (flags & Hidden) != 0; }
+		bool isTemporary() const { return (flags & Temporary) != 0; }
 
 		int type;	// Leave the value type part at 0 to use the value type of the connected Data
-		bool input, output;
+		uint8_t flags;
 		std::string name, help;
 	};
 	typedef std::vector<GenericDataDefinition> GenericDataDefinitionList;

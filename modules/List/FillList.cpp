@@ -20,14 +20,14 @@ public:
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "input",
-											 "Value used to fill the list"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 false, true,
-											 "output",
-											 "List created from the given value"));
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Value used to fill the list");
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "List created from the given value");
 
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}

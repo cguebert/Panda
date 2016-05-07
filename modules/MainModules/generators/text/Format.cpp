@@ -38,10 +38,10 @@ public:
 
 		int typeOfValue = types::DataTypeId::getFullTypeOfVector(0);	// Create a copy of the data connected
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(typeOfValue,
-											 true, false,
-											 "input",
-											 "Value to use in the format operation"));
+		defList.emplace_back(typeOfValue,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Value to use in the format operation");
 		setupGenericObject<formatTypes>(this, m_generic, defList);
 	}
 

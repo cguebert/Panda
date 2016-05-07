@@ -22,18 +22,18 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-											 true, false,
-											 "input",
-											 "List in which to look for the minimum value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(0),
-											 false, true,
-											 "minimum",
-											 "Minimum value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
-											 false, true,
-											 "index",
-											 "Index corresponding to the minimum value"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List in which to look for the minimum value");
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(0),
+							 GenericDataDefinition::Output,
+							 "minimum",
+							 "Minimum value");
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "index",
+							 "Index corresponding to the minimum value");
 		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
 
@@ -95,18 +95,18 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input",
-												"List in which to look for the minimum value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(0),
-												false, true,
-												"maximum",
-												"Maximum value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
-												false, true,
-												"index",
-												"Index corresponding to the maximum value"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List in which to look for the minimum value");
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(0),
+							 GenericDataDefinition::Output,
+							 "maximum",
+							 "Maximum value");
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "index",
+							 "Index corresponding to the maximum value");
 		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
 
@@ -168,18 +168,18 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input",
-												"Lists in which to look for the minimum value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(0),
-												false, true,
-												"minimum",
-												"Minimum values"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-												false, true,
-												"indices",
-												"Indices corresponding to the minimum values"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Lists in which to look for the minimum value");
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(0),
+							 GenericDataDefinition::Output,
+							 "minimum",
+							 "Minimum values");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "indices",
+							 "Indices corresponding to the minimum values");
 		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}
 
@@ -256,18 +256,18 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input",
-												"Lists in which to look for the maximum value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfSingleValue(0),
-												false, true,
-												"maximum",
-												"Maximum values"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-												false, true,
-												"indices",
-												"Indices corresponding to the maximum values"));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Lists in which to look for the maximum value");
+		defList.emplace_back(DataTypeId::getFullTypeOfSingleValue(0),
+							 GenericDataDefinition::Output,
+							 "maximum",
+							 "Maximum values");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "indices",
+							 "Indices corresponding to the maximum values");
 		setupGenericObject<allListsVectorTypes>(this, generic, defList);
 	}
 
@@ -346,22 +346,22 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input",
-												"List in which to look for the minimum value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												false, true,
-												"minimum",
-												"Minimum values"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-												false, true,
-												"indices",
-												"Indices in the input of the minimum values"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-												false, true,
-												"position",
-												"Position of the minimum value in each list "));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List in which to look for the minimum value");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Output,
+							 "minimum",
+							 "Minimum values");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "indices",
+							 "Indices in the input of the minimum values");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "position",
+							 "Position of the minimum value in each list ");
 		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
 
@@ -450,22 +450,22 @@ public:
 		addInput(generic);
 
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												true, false,
-												"input",
-												"List in which to look for the maximum value"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(0),
-												false, true,
-												"maximum",
-												"Maximum values"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-												false, true,
-												"indices",
-												"Indices in the input of the maximum values"));
-		defList.push_back(GenericDataDefinition(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
-												false, true,
-												"position",
-												"Position of the maximum value in each list "));
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List in which to look for the maximum value");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(0),
+							 GenericDataDefinition::Output,
+							 "maximum",
+							 "Maximum values");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "indices",
+							 "Indices in the input of the maximum values");
+		defList.emplace_back(DataTypeId::getFullTypeOfVector(DataTypeId::getIdOf<int>()),
+							 GenericDataDefinition::Output,
+							 "position",
+							 "Position of the maximum value in each list");
 		setupGenericObject<allSortableTypes>(this, generic, defList);
 	}
 

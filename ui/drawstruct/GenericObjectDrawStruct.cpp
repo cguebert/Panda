@@ -19,9 +19,9 @@ GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::Generic
 
 	for(GenericObject::GenericDataDefinition def : object->m_dataDefinitions)
 	{
-		if(def.input)
+		if(def.isInput())
 			++m_nbDefInputs;
-		if(def.output)
+		if(def.isOutput())
 			++m_nbDefOutputs;
 	}
 }
@@ -84,13 +84,13 @@ void GenericObjectDrawStruct::update()
 			if(!createdDatas[j])
 				continue;
 
-			if(m_genericObject->m_dataDefinitions[j].input)
+			if(m_genericObject->m_dataDefinitions[j].isInput())
 			{
 				Rect dataArea = Rect::fromSize(xi, y + inputIndex * dh, dataRectSize, dataRectSize);
 				m_datas.emplace_back(createdDatas[j].get(), dataArea);
 				++inputIndex;
 			}
-			if(m_genericObject->m_dataDefinitions[j].output)
+			if(m_genericObject->m_dataDefinitions[j].isOutput())
 			{
 				Rect dataArea = Rect::fromSize(xo, y + outputIndex * dh, dataRectSize, dataRectSize);
 				m_datas.emplace_back(createdDatas[j].get(), dataArea);

@@ -23,14 +23,14 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);
-		defList.push_back(GenericDataDefinition(listType,
-											 true, false,
-											 "list",
-											 "List of items that will be added to the switch"));
-		defList.push_back(GenericDataDefinition(listType,
-											 false, true,
-											 "result",
-											 "Result of the switch"));
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "list",
+							 "List of items that will be added to the switch");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Output,
+							 "result",
+							 "Result of the switch");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 
@@ -88,14 +88,14 @@ public:
 
 		GenericDataDefinitionList defList;
 		int listType = types::DataTypeId::getFullTypeOfVector(0);
-		defList.push_back(GenericDataDefinition(listType,
-											 true, false,
-											 "list",
-											 "List of items that will be added to the switch"));
-		defList.push_back(GenericDataDefinition(listType,
-											 false, true,
-											 "result",
-											 "Result of the switch"));
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Input,
+							 "list",
+							 "List of items that will be added to the switch");
+		defList.emplace_back(listType,
+							 GenericDataDefinition::Output,
+							 "result",
+							 "Result of the switch");
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
 

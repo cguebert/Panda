@@ -22,14 +22,14 @@ public:
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "input",
-											 "List from which to extract values"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 false, true,
-											 "output",
-											 "Sum of the values extracted from the list"));
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List from which to extract values");
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Sum of the values extracted from the list");
 
 		setupGenericObject<typesSupportingAddition>(this, m_generic, defList);
 	}
@@ -88,14 +88,14 @@ public:
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(typeOfList,
-												true, false,
-												"input",
-												"List from which to extract values"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-												false, true,
-												"output",
-												"Mean of the values extracted from the list"));
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "List from which to extract values");
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Mean of the values extracted from the list");
 
 		setupGenericObject<typesSupportingAddition>(this, m_generic, defList);
 	}

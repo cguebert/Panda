@@ -36,7 +36,7 @@ void GenericObject::setupGenericData(BaseGenericData& data, const GenericDataDef
 	int nbInputDatas = 0, nbDefs = defList.size();
 	for (int i = 0; i < nbDefs; ++i)
 	{
-		if (defList[i].input)
+		if (defList[i].isInput())
 			nbInputDatas++;
 
 		std::string name = defList[i].name;
@@ -99,14 +99,14 @@ BaseData* GenericObject::createDatas(int type, int index)
 		auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
 		auto data = dataPtr.get();
 
-		if(m_dataDefinitions[i].input)
+		if(m_dataDefinitions[i].isInput())
 		{
 			addInput(*data);
 			if(!firstInputData)
 				firstInputData = data;
 		}
 
-		if(m_dataDefinitions[i].output)
+		if(m_dataDefinitions[i].isOutput())
 			addOutput(*data);
 
 		createdDatasStruct->datas.push_back(dataPtr);
@@ -180,7 +180,7 @@ void GenericObject::doUpdate(bool updateAllInputs)
 		{
 			for(int i=0; i<nbDefs; ++i)
 			{
-				if(m_dataDefinitions[i].input)
+				if(m_dataDefinitions[i].isInput())
 					created->datas[i]->updateIfDirty();
 			}
 		}
@@ -345,10 +345,10 @@ void SingleTypeGenericObject::update()
 		for(int j=0; j<nbDefs; ++j)
 		{
 			BaseDataPtr dataPtr = created->datas[j];
-			if(m_dataDefinitions[j].input)
+			if(m_dataDefinitions[j].isInput())
 				dataPtr->updateIfDirty();
 
-			if(m_singleOutput && i && m_dataDefinitions[j].output && !m_dataDefinitions[j].input)
+			if(m_singleOutput && i && m_dataDefinitions[j].isOutput() && !(m_dataDefinitions[j].isInput()))
 				list.push_back(m_createdDatasStructs[0]->datas[j].get());
 			else
 				list.push_back(dataPtr.get());
@@ -385,7 +385,7 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 	int nbDefs = m_dataDefinitions.size();
 	for(int i=0; i<nbDefs; ++i)
 	{
-		if(m_singleOutput && nbCreated > 1 && m_dataDefinitions[i].output && !m_dataDefinitions[i].input)
+		if(m_singleOutput && nbCreated > 1 && m_dataDefinitions[i].isOutput() && !m_dataDefinitions[i].isInput())
 		{
 			createdDatasStruct->datas.push_back(BaseDataPtr(nullptr));
 		}
@@ -407,14 +407,14 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 			auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
 			auto data = dataPtr.get();
 
-			if(m_dataDefinitions[i].input)
+			if(m_dataDefinitions[i].isInput())
 			{
 				addInput(*data);
 				if(!firstInputData)
 					firstInputData = data;
 			}
 
-			if(m_dataDefinitions[i].output)
+			if(m_dataDefinitions[i].isOutput())
 				addOutput(*data);
 
 			createdDatasStruct->datas.push_back(dataPtr);
@@ -497,7 +497,7 @@ void SingleTypeGenericObject::disconnectData(BaseData* data)
 	for(int i=0; i<nbDefs; ++i)
 	{
 		BaseDataPtr dataPtr = createdDatasStruct->datas[i];
-		if(m_singleOutput && m_dataDefinitions[i].output && !m_dataDefinitions[i].input)
+		if(m_singleOutput && m_dataDefinitions[i].isOutput() && !m_dataDefinitions[i].isInput())
 		{
 			if(lastGeneric)
 			{

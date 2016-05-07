@@ -22,18 +22,18 @@ public:
 
 		int typeOfList = types::DataTypeId::getFullTypeOfVector(0);	// Create a list of the same type as the data connected
 		GenericDataDefinitionList defList;
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "input",
-											 "Initial list in which to replace some values"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 true, false,
-											 "values",
-											 "Values to insert into the list"));
-		defList.push_back(GenericDataDefinition(typeOfList,
-											 false, true,
-											 "output",
-											 "Modified list"));
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "input",
+							 "Initial list in which to replace some values");
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Input,
+							 "values",
+							 "Values to insert into the list");
+		defList.emplace_back(typeOfList,
+							 GenericDataDefinition::Output,
+							 "output",
+							 "Modified list");
 
 		setupGenericObject<allDataTypes>(this, generic, defList);
 	}
