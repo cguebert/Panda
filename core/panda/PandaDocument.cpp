@@ -200,7 +200,9 @@ void PandaDocument::reinsertObject(PandaObject* object, int pos)
 	ObjectPtr objectPtr = *iter;
 
 	m_objects.erase(iter);
-	if(pos > oldPos)
+	if (pos == -1)
+		pos = m_objects.size();
+	else if(pos > oldPos)
 		--pos;
 
 	m_objects.insert(m_objects.begin() + pos, objectPtr);

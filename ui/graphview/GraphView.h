@@ -77,11 +77,12 @@ public:
 	float getZoom();
 
 	enum ContextMenuReason {
-		MENU_OBJECT	= 1 << 0,
-		MENU_DATA	= 1 << 1,
-		MENU_LINK	= 1 << 2,
-		MENU_IMAGE	= 1 << 3,
-		MENU_TAG	= 1 << 4
+		MENU_OBJECT	    = 1 << 0,
+		MENU_DATA	    = 1 << 1,
+		MENU_LINK	    = 1 << 2,
+		MENU_IMAGE	    = 1 << 3,
+		MENU_TAG	    = 1 << 4,
+		MENU_ANNOTATION = 1 << 5
 	};
 
 	void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
@@ -170,6 +171,8 @@ public slots:
 	void showChooseWidgetDialog();
 	void debugDirtyState(bool show = true);
 	void setLinkTagName();
+	void moveObjectToBack();
+	void moveObjectToFront();
 
 private:
 	panda::PandaDocument* m_pandaDocument;
@@ -194,6 +197,7 @@ private:
 	Moving m_movingAction = Moving::None;
 
 	panda::BaseData *m_clickedData = nullptr, *m_hoverData = nullptr, *m_contextMenuData = nullptr;
+	panda::PandaObject *m_contextMenuObject = nullptr;
 
 	std::map<panda::PandaObject*, ObjectDrawStructPtr> m_objectDrawStructs; /// The map of draw structs
 	std::vector<ObjectDrawStruct*> m_orderedObjectDrawStructs; /// In the same order as the document

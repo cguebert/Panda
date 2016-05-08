@@ -21,6 +21,7 @@
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
+#include <panda/object/Annotation.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <ui/dialog/UpdateLoggerDialog.h>
@@ -916,23 +917,29 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 	int flags = 0;
 	Point zoomedMouse = convert(event->pos()) / m_zoomFactor + m_viewDelta;
 	const auto ods = getObjectDrawStructAtPos(zoomedMouse);
-	if(ods)
+	if (ods)
 	{
+		m_contextMenuObject = ods->getObject();
 		flags |= MENU_OBJECT;
 		m_contextMenuData = ods->getDataAtPos(zoomedMouse);
-		if(m_contextMenuData)
+		if (m_contextMenuData)
 		{
-			if(m_contextMenuData->isDisplayed())
+			if (m_contextMenuData->isDisplayed())
 				flags |= MENU_DATA;
 
-			if(m_contextMenuData->isInput() && m_contextMenuData->getParent())
+			if (m_contextMenuData->isInput() && m_contextMenuData->getParent())
 				flags |= MENU_LINK;
 
 			const auto trait = m_contextMenuData->getDataTrait();
-			if(trait->valueTypeName() == "image")
+			if (trait->valueTypeName() == "image")
 				flags |= MENU_IMAGE;
 		}
+
+		if (dynamic_cast<panda::Annotation*>(ods->getObject()))
+			flags |= MENU_ANNOTATION;
 	}
+	else
+		m_contextMenuObject = nullptr;
 
 	m_contextLinkTag = nullptr;
 	for (const auto& linkTag : m_linkTags)
@@ -1844,4 +1851,16 @@ void GraphView::moveViewIfMouseOnBorder()
 	}
 
 	update();
+}
+
+void GraphView::moveObjectToBack()
+{
+	assert(m_contextMenuObject);
+	m_pandaDocument->reinsertObject(m_contextMenuObject, 0); // Front of the list = others are drawn on top
+}
+
+void GraphView::moveObjectToFront()
+{
+	assert(m_contextMenuObject);
+	m_pandaDocument->reinsertObject(m_contextMenuObject, -1); // Back of the list = drawn on top of the others
 }

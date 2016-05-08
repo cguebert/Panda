@@ -486,20 +486,30 @@ void MainWindow::createActions()
 	showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
 	connect(showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
 
-	m_showImageViewport = new QAction(tr("Open image viewport"), this);
-	m_showImageViewport->setStatusTip(tr("Open a new viewport to an image"));
-	connect(m_showImageViewport, SIGNAL(triggered()), this, SLOT(showImageViewport()));
-	addAction(m_showImageViewport);
+	m_showImageViewportAction = new QAction(tr("Open image viewport"), this);
+	m_showImageViewportAction->setStatusTip(tr("Open a new viewport to an image"));
+	connect(m_showImageViewportAction, SIGNAL(triggered()), this, SLOT(showImageViewport()));
+	addAction(m_showImageViewportAction);
 
-	m_nameLinkTag = new QAction(tr("Set label"), this);
-	m_nameLinkTag->setStatusTip(tr("Set a label for the link"));
-	connect(m_nameLinkTag, &QAction::triggered, m_graphView, &GraphView::setLinkTagName);
-	addAction(m_nameLinkTag);
+	m_nameLinkTagAction = new QAction(tr("Set label"), this);
+	m_nameLinkTagAction->setStatusTip(tr("Set a label for the link"));
+	connect(m_nameLinkTagAction, &QAction::triggered, m_graphView, &GraphView::setLinkTagName);
+	addAction(m_nameLinkTagAction);
 
-	m_chooseWidget = new QAction(tr("Choose widget"), this);
-	m_chooseWidget->setStatusTip(tr("Choose the widget to use for this data"));
-	connect(m_chooseWidget, SIGNAL(triggered()), m_graphView, SLOT(showChooseWidgetDialog()));
-	addAction(m_chooseWidget);
+	m_chooseWidgetAction = new QAction(tr("Choose widget"), this);
+	m_chooseWidgetAction->setStatusTip(tr("Choose the widget to use for this data"));
+	connect(m_chooseWidgetAction, SIGNAL(triggered()), m_graphView, SLOT(showChooseWidgetDialog()));
+	addAction(m_chooseWidgetAction);
+
+	m_objectToBackAction = new QAction(tr("Move object to back"), this);
+	m_objectToBackAction->setStatusTip(tr("Move the selected object to the back of the others"));
+	connect(m_objectToBackAction, &QAction::triggered, m_graphView, &GraphView::moveObjectToBack);
+	addAction(m_objectToBackAction);
+
+	m_objectToFrontAction = new QAction(tr("Move object to front"), this);
+	m_objectToFrontAction->setStatusTip(tr("Move the selected object in front of the others"));
+	connect(m_objectToFrontAction, &QAction::triggered, m_graphView, &GraphView::moveObjectToFront);
+	addAction(m_objectToFrontAction);
 
 	m_undoAction = new QAction(tr("Undo"), this);
 	m_undoAction->setShortcut(QKeySequence::Undo);
@@ -1122,17 +1132,24 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 		if(data)
 			owner = data->getOwner();
 		if(owner && owner->getClass()->getClassName() == "GeneratorUser" && owner->getClass()->getNamespaceName() == "panda")
-			menu.addAction(m_chooseWidget);
+			menu.addAction(m_chooseWidgetAction);
 	}
 
 	if(obj && obj->getClass()->getClassName() == "GeneratorUser" && obj->getClass()->getNamespaceName() == "panda")
-		menu.addAction(m_chooseWidget);
+		menu.addAction(m_chooseWidgetAction);
 
 	if(flags & GraphView::MENU_IMAGE)
-		menu.addAction(m_showImageViewport);
+		menu.addAction(m_showImageViewportAction);
 
 	if (flags & GraphView::MENU_TAG)
-		menu.addAction(m_nameLinkTag);
+		menu.addAction(m_nameLinkTagAction);
+
+	if (flags & GraphView::MENU_ANNOTATION)
+	{
+		menu.addSeparator();
+		menu.addAction(m_objectToFrontAction);
+		menu.addAction(m_objectToBackAction);
+	}
 
 	int nbSelected = m_graphView->selection().get().size();
 	if(nbSelected == 1 && dynamic_cast<panda::Group*>(obj))

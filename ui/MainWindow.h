@@ -172,9 +172,11 @@ private:
 		*m_copyDataAction,
 		*m_undoAction,
 		*m_redoAction,
-		*m_showImageViewport,
-		*m_nameLinkTag,
-		*m_chooseWidget;
+		*m_showImageViewportAction,
+		*m_nameLinkTagAction,
+		*m_chooseWidgetAction,
+		*m_objectToBackAction,
+		*m_objectToFrontAction;
 	QLabel* m_timeLabel;
 };
 
