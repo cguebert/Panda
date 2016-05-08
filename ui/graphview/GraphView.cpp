@@ -21,6 +21,7 @@
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/object/Annotation.h>
 
 #ifdef PANDA_LOG_EVENTS
@@ -64,11 +65,12 @@ namespace
 	}
 }
 
-GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
+GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent)
 	: QOpenGLWidget(parent)
 	, m_pandaDocument(doc)
+	, m_objectsList(objectsList)
 	, m_hoverTimer(new QTimer(this))
-	, m_objectsSelection(std::make_unique<ObjectsSelection>(doc))
+	, m_objectsSelection(std::make_unique<ObjectsSelection>(objectsList))
 	, m_viewRenderer(std::make_unique<ViewRenderer>())
 {
 	QSurfaceFormat fmt;
@@ -82,15 +84,16 @@ GraphView::GraphView(panda::PandaDocument* doc, QWidget* parent)
 
 	auto& docSignals = m_pandaDocument->getSignals();
 	m_observer.get(docSignals.modified).connect<QWidget, &QWidget::update>(this);
-	m_observer.get(docSignals.addedObject).connect<GraphView, &GraphView::addedObject>(this);
-	m_observer.get(docSignals.removedObject).connect<GraphView, &GraphView::removeObject>(this);
 	m_observer.get(docSignals.modifiedObject).connect<GraphView, &GraphView::modifiedObject>(this);
 	m_observer.get(docSignals.savingObject).connect<GraphView, &GraphView::savingObject>(this);
 	m_observer.get(docSignals.loadingObject).connect<GraphView, &GraphView::loadingObject>(this);
 	m_observer.get(docSignals.startLoading).connect<GraphView, &GraphView::startLoading>(this);
 	m_observer.get(docSignals.loadingFinished).connect<GraphView, &GraphView::loadingFinished>(this);
 	m_observer.get(docSignals.changedDock).connect<GraphView, &GraphView::changedDock>(this);
-	m_observer.get(docSignals.reorderedObjects).connect<GraphView, &GraphView::objectsReordered>(this);
+
+	m_observer.get(m_objectsList.addedObject).connect<GraphView, &GraphView::addedObject>(this);
+	m_observer.get(m_objectsList.removedObject).connect<GraphView, &GraphView::removeObject>(this);
+	m_observer.get(m_objectsList.reorderedObjects).connect<GraphView, &GraphView::objectsReordered>(this);
 
 	connect(m_hoverTimer, SIGNAL(timeout()), this, SLOT(hoverDataInfo()));
 
@@ -341,7 +344,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 		const panda::helper::EventData* event = logDlg->getSelectedEvent();
 		if(event)
 		{
-			panda::PandaObject* object = m_pandaDocument->findObject(event->m_objectIndex);
+			panda::PandaObject* object = m_objectsList.find(event->m_objectIndex);
 			if(object)
 			{
 				auto ods = getObjectDrawStruct(object);
@@ -1003,7 +1006,7 @@ void GraphView::zoomReset()
 
 void GraphView::centerView()
 {
-	if(m_pandaDocument->getNbObjects())
+	if(m_objectsList.size())
 	{
 		Rect totalView;
 		for (const auto ods : m_orderedObjectDrawStructs)
@@ -1020,7 +1023,7 @@ void GraphView::centerView()
 
 void GraphView::showAll()
 {
-	if(m_pandaDocument->getNbObjects())
+	if(m_objectsList.size())
 	{
 		Rect totalView;
 		for (const auto ods : m_orderedObjectDrawStructs)
@@ -1238,7 +1241,7 @@ void GraphView::updateLinkTags()
 {
 	m_recomputeTags = false;
 	// Testing all links and adding new tags
-	for(auto& object : m_pandaDocument->getObjects())
+	for(auto& object : m_objectsList.get())
 	{
 		for(auto& data : object->getInputDatas())
 		{
@@ -1622,7 +1625,7 @@ void GraphView::sortDockablesInDock(panda::DockObject* dock)
 
 void GraphView::sortAllDockables()
 {
-	for(const auto& object : m_pandaDocument->getObjects())
+	for(const auto& object : m_objectsList.get())
 	{
 		const auto dockable = dynamic_cast<panda::DockableObject*>(object.get());
 		if(!dockable)
@@ -1732,7 +1735,7 @@ void GraphView::computeCompatibleDatas(panda::BaseData* data)
 	std::sort(forbiddenList.begin(), forbiddenList.end());
 
 	m_possibleLinks.clear();
-	for (const auto& object : m_pandaDocument->getObjects())
+	for (const auto& object : m_objectsList.get())
 	{
 		for (const auto linkData : object->getDatas())
 		{
@@ -1767,7 +1770,7 @@ void GraphView::updateDirtyDrawStructs()
 void GraphView::objectsReordered()
 {
 	m_orderedObjectDrawStructs.clear();
-	for (const auto& obj : m_pandaDocument->getObjects())
+	for (const auto& obj : m_objectsList.get())
 		m_orderedObjectDrawStructs.push_back(getObjectDrawStruct(obj.get()));
 }
 
@@ -1856,11 +1859,11 @@ void GraphView::moveViewIfMouseOnBorder()
 void GraphView::moveObjectToBack()
 {
 	assert(m_contextMenuObject);
-	m_pandaDocument->reinsertObject(m_contextMenuObject, 0); // Front of the list = others are drawn on top
+	m_objectsList.reinsertObject(m_contextMenuObject, 0); // Front of the list = others are drawn on top
 }
 
 void GraphView::moveObjectToFront()
 {
 	assert(m_contextMenuObject);
-	m_pandaDocument->reinsertObject(m_contextMenuObject, -1); // Back of the list = drawn on top of the others
+	m_objectsList.reinsertObject(m_contextMenuObject, -1); // Back of the list = drawn on top of the others
 }

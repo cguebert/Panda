@@ -6,6 +6,7 @@
 
 namespace panda
 {
+class ObjectsList;
 class PandaDocument;
 class PandaObject;
 }
@@ -13,9 +14,9 @@ class PandaObject;
 class ObjectsSelection
 {
 public:
-	ObjectsSelection(panda::PandaDocument* document);
+	ObjectsSelection(panda::ObjectsList& objectsList);
 
-	using ObjectsList = std::vector<panda::PandaObject*>;
+	using Objects = std::vector<panda::PandaObject*>;
 
 	panda::msg::Signal<void()> selectionChanged; // Any time the selection is changed
 	panda::msg::Signal<void(panda::PandaObject*)> selectedObject; // This is the last object to be added to the selection (we will show its properties in the GUI)
@@ -24,8 +25,8 @@ public:
 	void remove(panda::PandaObject* object);
 	void clear();
 
-	const ObjectsList& get() const;
-	void set(const ObjectsList& selection);
+	const Objects& get() const;
+	void set(const Objects& selection);
 
 	void selectNone();
 	void selectAll();
@@ -37,8 +38,8 @@ public:
 	void setLastSelectedObject(panda::PandaObject* object);
 
 protected:
-	ObjectsList m_selectedObjects;
-	panda::PandaDocument* m_document;
+	Objects m_selectedObjects;
+	panda::ObjectsList& m_objectsList;
 	panda::msg::Observer m_observer; // Used to connect to signals (and disconnect automatically on destruction)
 };
 
@@ -47,5 +48,5 @@ protected:
 inline bool ObjectsSelection::isSelected(panda::PandaObject* object) const
 { return std::find(m_selectedObjects.begin(), m_selectedObjects.end(), object) != m_selectedObjects.end(); }
 
-inline const ObjectsSelection::ObjectsList& ObjectsSelection::get() const
+inline const ObjectsSelection::Objects& ObjectsSelection::get() const
 { return m_selectedObjects; }

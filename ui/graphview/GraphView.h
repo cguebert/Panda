@@ -16,9 +16,10 @@ namespace panda
 class BaseData;
 class DockableObject;
 class DockObject;
+class Layer;
+class ObjectsList;
 class PandaDocument;
 class PandaObject;
-class Layer;
 class Renderer;
 class ScopedMacro;
 class XmlElement;
@@ -49,7 +50,7 @@ class GraphView : public QOpenGLWidget, public ScrollableView
 public:
 	using ObjectDrawStructPtr = std::shared_ptr<ObjectDrawStruct>;
 
-	explicit GraphView(panda::PandaDocument* doc, QWidget* parent = nullptr);
+	explicit GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
 	~GraphView();
 
 	QSize minimumSizeHint() const override;
@@ -94,6 +95,7 @@ public:
 
 	ObjectsSelection& selection() const;
 	ViewRenderer& renderer() const;
+	panda::ObjectsList& objectsList() const;
 
 	// From ScrollableView
 	virtual QSize viewSize() override;
@@ -176,6 +178,7 @@ public slots:
 
 private:
 	panda::PandaDocument* m_pandaDocument;
+	panda::ObjectsList& m_objectsList;
 
 	int m_zoomLevel = 0, m_wheelTicks = 0;
 	float m_zoomFactor = 1.0f;
@@ -261,6 +264,9 @@ inline ObjectsSelection& GraphView::selection() const
 
 inline ViewRenderer& GraphView::renderer() const
 { return *m_viewRenderer; }
+
+inline panda::ObjectsList& GraphView::objectsList() const
+{ return m_objectsList; }
 
 inline void GraphView::debugDirtyState(bool show)
 { m_debugDirtyState = show; update(); }

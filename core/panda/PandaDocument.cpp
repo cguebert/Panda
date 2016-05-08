@@ -9,6 +9,7 @@
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/document/Scheduler.h>
 #include <panda/object/Layer.h>
 #include <panda/object/ObjectFactory.h>
@@ -73,6 +74,7 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	, m_mouseClick(initData(0, "mouse click", "1 if the left mouse button is pressed"))
 	, m_nbThreads(initData(0, "nb threads", "Optimize computation for multiple CPU cores (not using the scheduler if < 0)"))
 	, m_gui(gui)
+	, m_objectsList(std::make_unique<ObjectsList>())
 	, m_renderer(std::make_unique<DocumentRenderer>(*this))
 	, m_signals(std::make_unique<DocumentSignals>())
 	, m_undoStack(std::make_unique<UndoStack>())
@@ -114,13 +116,10 @@ PandaDocument::~PandaDocument()
 	m_resetting = true;
 	m_undoStack->setEnabled(false);
 
-	// Just to be sure everything goes smoothly
-	for(auto object : m_objects)
-		object->preDestruction();
-
 	TimedFunctions::instance().shutdown();
 
-	m_objects.clear();
+	// Just to be sure everything goes smoothly
+	m_objectsList->clear(false);
 	m_undoStack->clear();
 }
 
@@ -129,15 +128,7 @@ void PandaDocument::resetDocument()
 	m_resetting = true;
 	m_undoStack->setEnabled(false);
 
-	m_signals->clearDocument.run();
-
-	for(auto object : m_objects)
-	{
-		m_signals->removedObject.run(object.get());
-		object->preDestruction();
-	}
-
-	m_objects.clear();
+	m_objectsList->clear();
 	m_currentIndex = 1;
 	m_animTimeVal = 0.0;
 	m_animTime.setValue(0.0);
@@ -164,52 +155,6 @@ void PandaDocument::resetDocument()
 
 	m_resetting = false;
 	m_undoStack->setEnabled(true);
-}
-
-PandaDocument::ObjectPtr PandaDocument::getSharedPointer(PandaObject* object) const
-{
-	auto iter = std::find_if(m_objects.begin(), m_objects.end(), [object](const ObjectPtr& ptr){
-		return ptr.get() == object;
-	});
-	if(iter != m_objects.end())
-		return *iter;
-
-	return ObjectPtr();
-}
-
-int PandaDocument::getObjectPosition(PandaObject* object) const
-{
-	auto iter = std::find_if(m_objects.begin(), m_objects.end(), [object](const ObjectPtr& ptr){
-		return ptr.get() == object;
-	});
-	if(iter != m_objects.end())
-		return std::distance(m_objects.begin(), iter);
-
-	return -1;
-}
-
-void PandaDocument::reinsertObject(PandaObject* object, int pos)
-{
-	auto iter = std::find_if(m_objects.begin(), m_objects.end(), [object](const ObjectPtr& ptr){
-		return ptr.get() == object;
-	});
-	if(iter == m_objects.end())
-		return;
-
-	int oldPos = iter - m_objects.begin();
-	ObjectPtr objectPtr = *iter;
-
-	m_objects.erase(iter);
-	if (pos == -1)
-		pos = m_objects.size();
-	else if(pos > oldPos)
-		--pos;
-
-	m_objects.insert(m_objects.begin() + pos, objectPtr);
-
-	setDirtyValue(this);
-	m_signals->reorderedObjects.run();
-	m_signals->modified.run();
 }
 
 graphics::Size PandaDocument::getRenderSize() const
@@ -257,25 +202,6 @@ void PandaDocument::textEvent(const std::string& text)
 	m_signals->textEvent.run(text);
 }
 
-void PandaDocument::addObject(ObjectPtr object)
-{
-	m_objects.push_back(object);
-	object->addedToDocument();
-	m_signals->addedObject.run(object.get());
-	m_signals->modified.run();
-}
-
-void PandaDocument::removeObject(PandaObject* object)
-{
-	object->removedFromDocument();
-	m_signals->removedObject.run(object);
-	helper::removeIf(m_objects, [object](const ObjectPtr& ptr){
-		return ptr.get() == object;
-	});
-
-	m_signals->modified.run();
-}
-
 void PandaDocument::setDataDirty(BaseData* data) const
 {
 	if(m_animMultithread && m_scheduler)
@@ -294,21 +220,9 @@ void PandaDocument::waitForOtherTasksToFinish(bool mainThread) const
 		m_scheduler->waitForOtherTasks(mainThread);
 }
 
-PandaObject* PandaDocument::findObject(uint32_t objectIndex)
-{
-	auto iter = std::find_if(m_objects.cbegin(), m_objects.cend(), [objectIndex](const ObjectPtr& object){
-		return object->getIndex() == objectIndex;
-	});
-
-	if(iter != m_objects.end())
-		return iter->get();
-
-	return nullptr;
-}
-
 BaseData* PandaDocument::findData(uint32_t objectIndex, const std::string& dataName)
 {
-	PandaObject* object = findObject(objectIndex);
+	PandaObject* object = m_objectsList->find(objectIndex);
 	if(object)
 		return object->getData(dataName);
 
@@ -430,7 +344,7 @@ void PandaDocument::step()
 
 	setInStep(true);
 	// Force the value of isInStep, because some objects will propagate dirtyValue during beginStep
-	for(auto& object : m_objects)
+	for(auto& object : m_objectsList->get())
 		object->setInStep(true);
 
 	// First update the value of the document (without modifying the corresponding Data)
@@ -449,7 +363,7 @@ void PandaDocument::step()
 		m_scheduler->setDirty();
 
 	// Let some objects set dirtyValue for each step
-	for(auto& object : m_objects)
+	for(auto& object : m_objectsList->get())
 		object->beginStep();
 
 	// Update the documents Data (all the values are already correct if using the getters)
@@ -461,7 +375,7 @@ void PandaDocument::step()
 	updateIfDirty();
 
 	setInStep(false);
-	for(auto& object : m_objects)
+	for(auto& object : m_objectsList->get())
 		object->endStep();
 
 	panda::helper::UpdateLogger::getInstance()->stopLog();
@@ -511,7 +425,7 @@ void PandaDocument::rewind()
 	m_mousePosition.setValue(m_mousePositionBuffer);
 	m_mouseClickVal = 0;
 	m_mouseClick.setValue(0);
-	for(auto object : m_objects)
+	for(auto object : m_objectsList->get())
 		object->reset();
 	setDirtyValue(this);
 	m_signals->timeChanged.run();
@@ -531,7 +445,7 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 	if(!object)
 		return;
 
-	addObject(object);
+	m_objectsList->addObject(object);
 	BaseData* inputData = object->getData("input");
 	if(inputData)
 	{

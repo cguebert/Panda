@@ -1,16 +1,15 @@
 #include <ui/graphview/ObjectsSelection.h>
 
-#include <panda/PandaDocument.h>
-#include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 #include <panda/object/PandaObject.h>
 
-ObjectsSelection::ObjectsSelection(panda::PandaDocument* document)
-	: m_document(document)
+ObjectsSelection::ObjectsSelection(panda::ObjectsList& objectsList)
+	: m_objectsList(objectsList)
 {
-	m_observer.get(document->getSignals().clearDocument).connect<ObjectsSelection, &ObjectsSelection::clear>(this);
-	m_observer.get(document->getSignals().removedObject).connect<ObjectsSelection, &ObjectsSelection::remove>(this);
+	m_observer.get(m_objectsList.clearedList).connect<ObjectsSelection, &ObjectsSelection::clear>(this);
+	m_observer.get(m_objectsList.removedObject).connect<ObjectsSelection, &ObjectsSelection::remove>(this);
 }
 
 void ObjectsSelection::clear()
@@ -36,7 +35,7 @@ void ObjectsSelection::setLastSelectedObject(panda::PandaObject* object)
 	selectionChanged.run();
 }
 
-void ObjectsSelection::set(const ObjectsList& selection)
+void ObjectsSelection::set(const Objects& selection)
 {
 	m_selectedObjects = selection;
 	selectedObject.run(m_selectedObjects.empty() ? nullptr : m_selectedObjects.back());
@@ -65,7 +64,7 @@ void ObjectsSelection::remove(panda::PandaObject* object)
 
 void ObjectsSelection::selectAll()
 {
-	const auto& objects = m_document->getObjects();
+	const auto& objects = m_objectsList.get();
 	if (objects.empty())
 		return;
 

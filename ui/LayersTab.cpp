@@ -6,6 +6,7 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/object/Layer.h>
 
 namespace
@@ -91,11 +92,11 @@ LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
 	mainLayout->addLayout(moveButtonsLayout);
 	setLayout(mainLayout);
 
-	m_observer.get(m_document->getSignals().addedObject).connect<LayersTab, &LayersTab::addedObject>(this);
-	m_observer.get(m_document->getSignals().removedObject).connect<LayersTab, &LayersTab::removedObject>(this);
+	m_observer.get(m_document->getObjectsList().addedObject).connect<LayersTab, &LayersTab::addedObject>(this);
+	m_observer.get(m_document->getObjectsList().removedObject).connect<LayersTab, &LayersTab::removedObject>(this);
+	m_observer.get(m_document->getObjectsList().reorderedObjects).connect<LayersTab, &LayersTab::reorderObjects>(this);
 	m_observer.get(m_document->getSignals().dirtyObject).connect<LayersTab, &LayersTab::dirtyObject>(this);
 	m_observer.get(m_document->getSignals().modifiedObject).connect<LayersTab, &LayersTab::modifiedObject>(this);
-	m_observer.get(m_document->getSignals().reorderedObjects).connect<LayersTab, &LayersTab::reorderObjects>(this);
 
 	connect(m_nameEdit, SIGNAL(editingFinished()), this, SLOT(nameChanged()));
 	connect(m_tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));
@@ -215,7 +216,7 @@ void LayersTab::moveLayerUp()
 		m_moveDownButton->setEnabled(index > 0);
 
 		auto object = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		m_document->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(m_document, object, index));
+		m_document->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(m_document->getObjectsList(), object, index));
 	}
 }
 
@@ -228,7 +229,7 @@ void LayersTab::moveLayerDown()
 		m_moveDownButton->setEnabled(index > 0);
 
 		auto object = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		m_document->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(m_document, object, index));
+		m_document->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(m_document->getObjectsList(), object, index));
 	}
 }
 
@@ -251,7 +252,7 @@ void LayersTab::nameChanged()
 void LayersTab::reorderObjects()
 {
 	QList<panda::BaseLayer*> newList;
-	for(auto& object : m_document->getObjects())
+	for(auto& object : m_document->getObjectsList().get())
 	{
 		auto layer = dynamic_cast<panda::BaseLayer*>(object.get());
 		if(layer)

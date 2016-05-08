@@ -5,6 +5,7 @@
 #include <panda/SimpleGUI.h>
 #include <panda/TimedFunctions.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Dockable.h>
 
@@ -251,7 +252,7 @@ void ImGui_Wrapper::renderGui()
 
 void ImGui_Wrapper::updateObjects()
 {
-	for (auto& object : m_document->getObjects())
+	for (auto& object : m_document->getObjectsList().get())
 	{
 		auto dockable = dynamic_cast<BaseImGuiContainer*>(object.get());
 		if (dockable)

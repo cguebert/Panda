@@ -4,6 +4,7 @@
 #include <panda/SimpleGUI.h>
 #include <panda/XmlDocument.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 #include <panda/object/Dockable.h>
 #include <panda/object/ObjectFactory.h>
@@ -20,7 +21,7 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 	auto root = doc.root();
 	root.setName("Panda");
 	document->save(root);	// The document's Datas
-	auto& objects = document->getObjects();
+	auto& objects = document->getObjectsList().get();
 	ObjectsList allObjects;
 	for(auto object : objects)
 		allObjects.push_back(object.get());
@@ -163,11 +164,12 @@ LoadResult loadDoc(PandaDocument* document, XmlElement& root)
 	}
 
 	// Now that we have created all the objects, we actually add them to the document
+	auto& objectsList = document->getObjectsList();
 	ObjectsList objects;
 	for (const auto& p : newObjects)
 	{
 		const auto& object = p.first;
-		document->addObject(object);
+		objectsList.addObject(object);
 		objects.push_back(object.get());
 		document->getSignals().loadingObject.run(p.second, object.get());
 	}
@@ -205,8 +207,8 @@ LoadResult loadDoc(PandaDocument* document, XmlElement& root)
 		dockIndex = importIndicesMap[dockIndex];
 		dockableIndex = importIndicesMap[dockableIndex];
 
-		DockObject* dock = dynamic_cast<DockObject*>(document->findObject(dockIndex));
-		DockableObject* dockable = dynamic_cast<DockableObject*>(document->findObject(dockableIndex));
+		DockObject* dock = dynamic_cast<DockObject*>(objectsList.find(dockIndex));
+		DockableObject* dockable = dynamic_cast<DockableObject*>(objectsList.find(dockableIndex));
 		if(dock && dockable)
 		{
 			DockObject* defaultDock = dockable->getDefaultDock();

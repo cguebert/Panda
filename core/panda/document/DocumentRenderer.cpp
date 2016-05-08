@@ -4,6 +4,7 @@
 #include <panda/SimpleGUI.h>
 #include <panda/helper/UpdateLogger.h>
 #include <panda/document/DocumentRenderer.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Model.h>
 #include <panda/object/Layer.h>
@@ -70,7 +71,7 @@ void DocumentRenderer::renderGL()
 
 	m_document.getDefaultLayer()->updateIfDirty();
 
-	for(auto& obj : m_document.getObjects())
+	for(auto& obj : m_document.getObjectsList().get())
 	{
 		if(dynamic_cast<BaseLayer*>(obj.get()))
 			obj->updateIfDirty();
@@ -114,7 +115,7 @@ void DocumentRenderer::renderGL()
 	}
 
 	bool inverse = false;
-	for(auto& obj : m_document.getObjects())
+	for(auto& obj : m_document.getObjectsList().get())
 	{
 		BaseLayer* layer = dynamic_cast<BaseLayer*>(obj.get());
 		if(layer)

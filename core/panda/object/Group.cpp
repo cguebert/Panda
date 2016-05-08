@@ -7,6 +7,7 @@
 #include <panda/object/Renderer.h>
 #include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 
 namespace panda
@@ -57,7 +58,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	typedef std::pair<uint32_t, uint32_t> IntPair;
 	std::vector<IntPair> dockedObjects;
 
-	PandaDocument::ObjectsRawList allObjects;
+	std::vector<PandaObject*> allObjects;
 	for(auto object : m_objects)
 		allObjects.push_back(object.get());
 	allObjects.push_back(this);
@@ -310,9 +311,9 @@ void GroupWithLayer::setLayer(Layer* newLayer)
 	// Reinsert the group where the layer was
 	if(m_layer)
 	{
-		int layerPos = parentDocument()->getObjectPosition(m_layer);
+		int layerPos = parentDocument()->getObjectsList().getObjectPosition(m_layer);
 		if(layerPos != -1)
-			parentDocument()->reinsertObject(this, layerPos);
+			parentDocument()->getObjectsList().reinsertObject(this, layerPos);
 	}
 }
 
@@ -375,8 +376,8 @@ void GroupWithLayer::removedFromDocument()
 	// Reinsert the layer where the group was
 	if(m_layer)
 	{
-		int layerPos = parentDocument()->getObjectPosition(this);
-		parentDocument()->reinsertObject(m_layer, layerPos);
+		int layerPos = parentDocument()->getObjectsList().getObjectPosition(this);
+		parentDocument()->getObjectsList().reinsertObject(m_layer, layerPos);
 	}
 }
 

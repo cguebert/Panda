@@ -1,6 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/command/CommandId.h>
 #include <panda/command/LinkDatasCommand.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 #include <ui/graphview/GraphView.h>
 #include <ui/command/RemoveObjectCommand.h>
@@ -33,7 +34,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 {
 	for(auto object : objects)
 	{
-		auto objectPtr = m_document->getSharedPointer(object);
+		auto objectPtr = m_view->objectsList().getShared(object);
 		auto ods = m_view->getSharedObjectDrawStruct(object);
 		if(objectPtr && ods)
 			m_objects.emplace_back(objectPtr, ods);
@@ -75,7 +76,7 @@ int RemoveObjectCommand::id() const
 void RemoveObjectCommand::redo()
 {
 	for(auto& object : m_objects)
-		m_document->removeObject(object.first.get());
+		m_view->objectsList().removeObject(object.first.get());
 }
 
 void RemoveObjectCommand::undo()
@@ -83,7 +84,7 @@ void RemoveObjectCommand::undo()
 	for(auto& object : m_objects)
 	{
 		m_view->setObjectDrawStruct(object.first.get(), object.second);
-		m_document->addObject(object.first);
+		m_view->objectsList().addObject(object.first);
 	}
 }
 

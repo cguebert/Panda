@@ -16,6 +16,7 @@ class DockableObject;
 class DocumentRenderer;
 class DocumentSignals;
 class Layer;
+class ObjectsList;
 class Scheduler;
 class UndoStack;
 class XmlElement;
@@ -36,24 +37,10 @@ class PANDA_CORE_API PandaDocument : public PandaObject
 public:
 	PANDA_CLASS(PandaDocument, PandaObject)
 
-	typedef std::shared_ptr<PandaObject> ObjectPtr;
-	typedef std::vector<ObjectPtr> ObjectsList;
-	typedef std::vector<PandaObject*> ObjectsRawList;
-
 	explicit PandaDocument(gui::BaseGUI& gui);
 	~PandaDocument();
 
 	void resetDocument();
-
-	void addObject(ObjectPtr object);
-	void removeObject(PandaObject* object);
-
-	int getNbObjects() const;
-	const ObjectsList& getObjects() const;
-	ObjectPtr getSharedPointer(PandaObject* object) const;
-
-	int getObjectPosition(PandaObject* object) const; /// Get the object's position in the objects list
-	void reinsertObject(PandaObject* object, int pos); /// Reorder the object so it is inserted at the index pos in the objects list
 
 	types::Color getBackgroundColor() const;
 	void setBackgroundColor(types::Color color);
@@ -77,7 +64,6 @@ public:
 	void textEvent(const std::string& text); // Unicode inputs
 
 	uint32_t getNextIndex();
-	PandaObject* findObject(uint32_t objectIndex);
 	BaseData* findData(uint32_t objectIndex, const std::string& dataName);
 
 	void update() override;
@@ -96,6 +82,7 @@ public:
 	void onChangedDock(DockableObject* dockable); // When the dockable has changed dock
 
 	gui::BaseGUI& getGUI() const; // Access to the GUI thread, update the view, show message boxes
+	ObjectsList& getObjectsList() const; // Access to the objects, signals when modified
 	DocumentSignals& getSignals() const; // Connect and run signals for when the document is modified
 	DocumentRenderer& getRenderer() const; // What takes care of rendering the document in OpenGL
 	UndoStack& getUndoStack() const; // Undo/redo capabilities
@@ -109,7 +96,7 @@ public:
 protected:
 	void render();
 
-	ObjectsList m_objects;
+	using ObjectsRawList = std::vector<PandaObject*>;
 	ObjectsRawList m_dirtyObjects; // All the objects that were dirty during the current step
 	uint32_t m_currentIndex;
 	std::shared_ptr<Layer> m_defaultLayer;
@@ -140,6 +127,7 @@ protected:
 	float m_currentFPS = 0;
 
 	gui::BaseGUI& m_gui;
+	std::unique_ptr<ObjectsList> m_objectsList;
 	std::unique_ptr<DocumentRenderer> m_renderer;
 	std::unique_ptr<DocumentSignals> m_signals;
 	std::unique_ptr<Scheduler> m_scheduler;
@@ -147,12 +135,6 @@ protected:
 };
 
 //****************************************************************************//
-
-inline int PandaDocument::getNbObjects() const
-{ return m_objects.size(); }
-
-inline const PandaDocument::ObjectsList& PandaDocument::getObjects() const
-{ return m_objects; }
 
 inline types::Color PandaDocument::getBackgroundColor() const
 { return m_backgroundColor.getValue(); }
@@ -189,6 +171,9 @@ inline Layer* PandaDocument::getDefaultLayer() const
 
 inline gui::BaseGUI& PandaDocument::getGUI() const
 { return m_gui; }
+
+inline ObjectsList& PandaDocument::getObjectsList() const
+{ return *m_objectsList; }
 
 inline DocumentRenderer& PandaDocument::getRenderer() const
 { return *m_renderer; }

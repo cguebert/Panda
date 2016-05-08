@@ -2,6 +2,7 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/command/MoveLayerCommand.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/UpdateLogger.h>
@@ -134,7 +135,7 @@ void Layer::postCreate()
 {
 	PandaObject::postCreate();
 	int i = 1;
-	for(auto& obj : parentDocument()->getObjects())
+	for(auto& obj : parentDocument()->getObjectsList().get())
 	{
 		if(dynamic_cast<Layer*>(obj.get()) && obj.get() != this)
 			++i;
@@ -154,7 +155,7 @@ void Layer::removedFromDocument()
 
 	auto& undoStack = parentDocument()->getUndoStack();
 	if(undoStack.isInCommandMacro())
-		undoStack.push(std::make_shared<MoveLayerCommand>(parentDocument(), this, 0));
+		undoStack.push(std::make_shared<MoveLayerCommand>(parentDocument()->getObjectsList(), this, 0));
 }
 
 graphics::Size Layer::getLayerSize() const

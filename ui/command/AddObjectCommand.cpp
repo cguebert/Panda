@@ -1,5 +1,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/command/CommandId.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 #include <ui/graphview/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
@@ -36,7 +37,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 {
 	for(auto object : objects)
 	{
-		auto objectPtr = document->getSharedPointer(object);
+		auto objectPtr = m_view->objectsList().getShared(object);
 		if(objectPtr)
 			m_objects.push_back(objectPtr);
 	}
@@ -61,7 +62,7 @@ void AddObjectCommand::redo()
 		m_view->setObjectDrawStruct(ods->getObject(), ods);
 
 	for(auto object : m_objects)
-		m_document->addObject(object);
+		m_view->objectsList().addObject(object);
 }
 
 void AddObjectCommand::undo()
@@ -77,7 +78,7 @@ void AddObjectCommand::undo()
 	}
 
 	for(auto object : m_objects)
-		m_document->removeObject(object.get());
+		m_view->objectsList().removeObject(object.get());
 }
 
 bool AddObjectCommand::mergeWith(const UndoCommand *other)

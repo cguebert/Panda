@@ -16,6 +16,7 @@
 #include <panda/object/Layer.h>
 #include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
+#include <panda/document/ObjectsList.h>
 
 #include <QMessageBox>
 
@@ -168,7 +169,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	// Adding the objects
 	for(auto object : selection)
 	{
-		auto objectPtr = doc->getSharedPointer(object);
+		auto objectPtr = view->objectsList().getShared(object);
 		if(!objectPtr)
 			continue;
 		undoStack.push(std::make_shared<AddObjectToGroupCommand>(group, objectPtr));

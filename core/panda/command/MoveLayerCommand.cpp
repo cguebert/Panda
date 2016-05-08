@@ -1,23 +1,23 @@
-#include <panda/PandaDocument.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/object/Layer.h>
 #include <panda/command/MoveLayerCommand.h>
 
 namespace panda
 {
 
-MoveLayerCommand::MoveLayerCommand(PandaDocument* document,
+MoveLayerCommand::MoveLayerCommand(ObjectsList& objectsList,
 								   PandaObject* layer,
 								   int pos)
-	: m_document(document)
+	: m_objectsList(objectsList)
 	, m_layer(layer)
 {
-	m_prevPos = m_document->getObjectPosition(layer);
+	m_prevPos = m_objectsList.getObjectPosition(layer);
 
 	if(!pos) // Insert at the front of the list
 		m_newPos = 0;
 	else // Find the position after the xth Layer
 	{
-		const auto& objects = m_document->getObjects();
+		const auto& objects = m_objectsList.get();
 		m_newPos = objects.size() - 1;
 		int nbLayer = 0;
 		for(int i=0, nb=objects.size(); i<nb; ++i)
@@ -43,12 +43,12 @@ MoveLayerCommand::MoveLayerCommand(PandaDocument* document,
 
 void MoveLayerCommand::redo()
 {
-	m_document->reinsertObject(m_layer, m_newPos);
+	m_objectsList.reinsertObject(m_layer, m_newPos);
 }
 
 void MoveLayerCommand::undo()
 {
-	m_document->reinsertObject(m_layer, m_prevPos);
+	m_objectsList.reinsertObject(m_layer, m_prevPos);
 }
 
 } // namespace panda

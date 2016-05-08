@@ -1,4 +1,5 @@
 #include <panda/PandaDocument.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/helper/UpdateLogger.h>
 #include <panda/object/PandaObject.h>
 
@@ -144,7 +145,7 @@ void UpdateLogger::startLog(PandaDocument* doc)
 	m_logLevelMap.resize(m_nbThreads, -1);
 
 	m_nodeStates.clear();
-	for (auto& object : doc->getObjects())
+	for (auto& object : doc->getObjectsList().get())
 	{
 		m_nodeStates[object.get()] = object->isDirty();
 
@@ -162,7 +163,7 @@ void UpdateLogger::stopLog()
 
 void UpdateLogger::updateDirtyStates()
 {
-	for (auto& object : m_document->getObjects())
+	for (auto& object : m_document->getObjectsList().get())
 	{
 		m_nodeStates[object.get()] = object->isDirty();
 

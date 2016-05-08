@@ -26,6 +26,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/types/DataTraits.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/document/Serialization.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Group.h>
@@ -47,7 +48,7 @@ MainWindow::MainWindow()
 	m_simpleGUI = new SimpleGUIImpl(this);
 	m_document = std::make_unique<panda::PandaDocument>(*m_simpleGUI);
 
-	m_graphView = new GraphView(m_document.get());
+	m_graphView = new GraphView(m_document.get(), m_document->getObjectsList());
 	m_graphViewContainer = new ScrollContainer();
 	m_graphViewContainer->setFrameStyle(0); // No frame
 	m_graphViewContainer->setView(m_graphView);
@@ -88,7 +89,7 @@ MainWindow::MainWindow()
 
 	m_observer.get(m_document->getSignals().modified).connect<MainWindow, &MainWindow::documentModified>(this);
 	m_observer.get(m_graphView->selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
-	m_observer.get(m_document->getSignals().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
+	m_observer.get(m_document->getObjectsList().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
 
 	m_observer.get(m_document->getUndoStack().m_canUndoChangedSignal).connect<MainWindow, &MainWindow::undoEnabled>(this);
 	m_observer.get(m_document->getUndoStack().m_canRedoChangedSignal).connect<MainWindow, &MainWindow::redoEnabled>(this);
@@ -724,19 +725,19 @@ void MainWindow::createActions()
 
 struct menuItemInfo
 {
-	typedef QMap<QString, QAction*> ActionsMap;
-	typedef QMap<QString, menuItemInfo> ChildsMap;
+	typedef std::map<QString, QAction*> ActionsMap;
+	typedef std::map<QString, menuItemInfo> ChildsMap;
 
 	ActionsMap actions;
 	ChildsMap childs;
 
 	void registerActions(QMenu* menu)
 	{
-		for(ActionsMap::iterator it=actions.begin(); it!=actions.end(); ++it)
-			menu->addAction(it.value());
+		for(const auto& action : actions)
+			menu->addAction(action.second);
 
-		for(ChildsMap::iterator it=childs.begin(); it!=childs.end(); ++it)
-			it.value().registerActions(menu->addMenu(it.key()));
+		for(auto& child : childs)
+			child.second.registerActions(menu->addMenu(child.first));
 	}
 };
 

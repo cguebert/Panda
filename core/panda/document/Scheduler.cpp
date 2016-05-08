@@ -1,6 +1,7 @@
 #include <panda/PandaDocument.h>
 #include <panda/helper/UpdateLogger.h>
 #include <panda/document/GraphUtils.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/document/Scheduler.h>
 #include <panda/helper/algorithm.h>
 
@@ -258,7 +259,7 @@ void Scheduler::buildUpdateGraph()
 {
 	// Initialize the tasks list
 	std::vector<PandaObject*> objects;
-	for(auto& object : m_document->getObjects())
+	for(auto& object : m_document->getObjectsList().get())
 		objects.push_back(object.get());
 	objects = graph::expandObjectsList(objects);
 	int nb = objects.size();
