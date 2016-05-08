@@ -15,7 +15,7 @@ void SelectGroupCommand::redo()
 {
 	// If at least one of the object inside the group was selected, select the group
 	auto& selection = m_view->selection();
-	for(auto& object : m_group->getObjects())
+	for(auto& object : m_group->getObjectsList().get())
 	{
 		if(selection.isSelected(object.get()))
 		{
@@ -31,7 +31,7 @@ void SelectGroupCommand::undo()
 	auto& selection = m_view->selection();
 	if(selection.isSelected(m_group))
 	{
-		for(auto& object : m_group->getObjects())
+		for(auto& object : m_group->getObjectsList().get())
 			selection.add(object.get());
 	}
 }
@@ -51,7 +51,7 @@ void SelectObjectsInGroupCommand::redo()
 	auto& selection = m_view->selection();
 	if(selection.isSelected(m_group))
 	{
-		for(auto& object : m_group->getObjects())
+		for(auto& object : m_group->getObjectsList().get())
 			selection.add(object.get());
 	}
 }
@@ -60,7 +60,7 @@ void SelectObjectsInGroupCommand::undo()
 {
 	// If at least one of the object inside the group was selected, select the group
 	auto& selection = m_view->selection();
-	for(auto& object : m_group->getObjects())
+	for(auto& object : m_group->getObjectsList().get())
 	{
 		if(selection.isSelected(object.get()))
 		{

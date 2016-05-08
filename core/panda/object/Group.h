@@ -4,6 +4,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/Layer.h>
 #include <panda/types/Point.h>
+#include <panda/document/ObjectsList.h>
 
 namespace panda
 {
@@ -27,12 +28,7 @@ public:
 	const std::string& getGroupName() const;
 	std::string getLabel() const override;
 
-	typedef std::shared_ptr<PandaObject> ObjectPtr;
-	typedef std::vector<ObjectPtr> ObjectsList;
-	const ObjectsList& getObjects() const;
-
-	virtual void addObject(ObjectPtr object);
-	virtual void removeObject(PandaObject*) {} // Bugfix: we never remove objects from groups, there are freed if the group is destroyed
+	ObjectsList& getObjectsList();
 
 	void beginStep() override;
 	void endStep() override;
@@ -52,7 +48,7 @@ protected:
 
 	Data<std::string> m_groupName;
 
-	ObjectsList m_objects;
+	ObjectsList m_objectsList;
 	std::map<PandaObject*, types::Point> m_positions;
 	GroupDataList m_groupDatas;
 };
@@ -63,8 +59,8 @@ inline const std::string& Group::getGroupName() const
 inline std::string Group::getLabel() const
 { return m_groupName.getValue(); }
 
-inline const Group::ObjectsList& Group::getObjects() const
-{ return m_objects; }
+inline ObjectsList& Group::getObjectsList()
+{ return m_objectsList; }
 
 inline void Group::addGroupData(DataPtr data)
 { m_groupDatas.push_back(data); }
@@ -106,8 +102,8 @@ public:
 	graphics::Mat4x4& getMVPMatrix() override;
 	graphics::Size getLayerSize() const override;
 
-	void addObject(ObjectPtr object) override;
-	void removeObject(PandaObject* object) override;
+	void addedObject(PandaObject* object);
+	void removedObject(PandaObject* object);
 
 	void removedFromDocument() override;
 

@@ -21,7 +21,7 @@ std::vector<PandaObject*> expandObjectsList(std::vector<PandaObject*> objects)
 		if(group)
 		{
 			helper::removeAt(objects, i);
-			for(auto& object : group->getObjects())
+			for(auto& object : group->getObjectsList().get())
 				objects.push_back(object.get());
 		}
 		else

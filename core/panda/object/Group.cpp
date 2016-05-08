@@ -23,12 +23,6 @@ Group::~Group()
 {
 }
 
-void Group::addObject(ObjectPtr object)
-{
-	if (!helper::contains(m_objects, object))
-		m_objects.push_back(object);
-}
-
 void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 {
 	// Saving group datas
@@ -59,12 +53,12 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	std::vector<IntPair> dockedObjects;
 
 	std::vector<PandaObject*> allObjects;
-	for(auto object : m_objects)
+	for(auto object : m_objectsList.get())
 		allObjects.push_back(object.get());
 	allObjects.push_back(this);
 
 	// Saving objects in this group
-	for(auto object : m_objects)
+	for(auto object : m_objectsList.get())
 	{
 		auto node = elem.addChild("Object");
 		node.setAttribute("type", ObjectFactory::getRegistryName(object.get()));
@@ -172,7 +166,7 @@ bool Group::load(XmlElement& elem)
 		if(object)
 		{
 			importObjectsMap[index] = object.get();
-			addObject(object);
+			m_objectsList.addObject(object);
 
 			if (!object->load(objectNode))
 				return false;
@@ -257,28 +251,28 @@ bool Group::load(XmlElement& elem)
 
 void Group::reset()
 {
-	for(auto& object : m_objects)
+	for(auto& object : m_objectsList.get())
 		object->reset();
 }
 
 void Group::beginStep()
 {
 	PandaObject::beginStep();
-	for(auto& object : m_objects)
+	for(auto& object : m_objectsList.get())
 		object->beginStep();
 }
 
 void Group::endStep()
 {
 	PandaObject::endStep();
-	for(auto& object : m_objects)
+	for(auto& object : m_objectsList.get())
 		object->endStep();
 }
 
 void Group::preDestruction()
 {
 	PandaObject::preDestruction();
-	for (auto& object : m_objects)
+	for (auto& object : m_objectsList.get())
 		object->preDestruction();
 }
 
@@ -330,11 +324,9 @@ BaseLayer::RenderersList GroupWithLayer::getRenderers()
 		return m_renderers;
 }
 
-void GroupWithLayer::addObject(ObjectPtr object)
+void GroupWithLayer::addedObject(PandaObject* object)
 {
-	Group::addObject(object);
-
-	Layer* layer = dynamic_cast<Layer*>(object.get());
+	Layer* layer = dynamic_cast<Layer*>(object);
 	if(layer)
 	{
 		setLayer(layer);
@@ -342,7 +334,7 @@ void GroupWithLayer::addObject(ObjectPtr object)
 	}
 
 	Layer* defaultLayer = parentDocument()->getDefaultLayer();
-	Renderer* renderer = dynamic_cast<Renderer*>(object.get());
+	Renderer* renderer = dynamic_cast<Renderer*>(object);
 	if(renderer)
 	{
 		if(renderer->getParentDock() == defaultLayer)
@@ -360,10 +352,8 @@ void GroupWithLayer::addObject(ObjectPtr object)
 	}
 }
 
-void GroupWithLayer::removeObject(PandaObject* object)
+void GroupWithLayer::removedObject(PandaObject* object)
 {
-	Group::removeObject(object);
-
 	Renderer* renderer = dynamic_cast<Renderer*>(object);
 	if(renderer && !renderer->getParentDock())
 		parentDocument()->getDefaultLayer()->addDockable(renderer);

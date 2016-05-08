@@ -1,5 +1,6 @@
 #include <panda/PandaDocument.h>
 #include <panda/object/Group.h>
+#include <panda/document/ObjectsList.h>
 
 #include <panda/command/GroupCommand.h>
 
@@ -18,12 +19,12 @@ AddObjectToGroupCommand::AddObjectToGroupCommand(Group* group,
 
 void AddObjectToGroupCommand::redo()
 {
-	m_group->addObject(m_object);
+	m_group->getObjectsList().addObject(m_object);
 }
 
 void AddObjectToGroupCommand::undo()
 {
-	m_group->removeObject(m_object.get());
+	m_group->getObjectsList().removeObject(m_object.get());
 }
 
 //****************************************************************************//
@@ -38,12 +39,12 @@ RemoveObjectFromGroupCommand::RemoveObjectFromGroupCommand(Group* group,
 
 void RemoveObjectFromGroupCommand::redo()
 {
-	m_group->removeObject(m_object.get());
+	m_group->getObjectsList().removeObject(m_object.get());
 }
 
 void RemoveObjectFromGroupCommand::undo()
 {
-	m_group->addObject(m_object);
+	m_group->getObjectsList().addObject(m_object);
 }
 
 //****************************************************************************//

@@ -335,8 +335,9 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		Point groupPos = view->getObjectDrawStruct(group)->getPosition();
 
 		// Putting the objects back into the document
-		panda::Group::ObjectsList docks;
-		for(auto& object : group->getObjects())
+		panda::ObjectsList::SPtrList docks;
+		auto objects = group->getObjectsList().get(); // Need to get a copy as we modify the original while iterating over it
+		for(auto& object : objects)
 		{
 			panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.get());
 			if(dock)
