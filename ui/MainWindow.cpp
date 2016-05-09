@@ -19,6 +19,8 @@
 #include <ui/dialog/EditGroupDialog.h>
 #include <ui/dialog/UpdateLoggerDialog.h>
 
+#include <ui/drawstruct/ObjectDrawStruct.h>
+
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/alignObjects.h>
 #include <ui/graphview/ObjectsSelection.h>
@@ -1130,6 +1132,17 @@ void MainWindow::openGroup()
 		return;
 
 	auto groupView = new GraphView(m_document.get(), group->getObjectsList());
+
+	// Move the object based on the positions saved in the group
+	for (const auto& object : group->getObjectsList().get())
+	{
+		auto obj = object.get();
+		auto newPos = group->getPosition(obj);
+		auto ods = groupView->getObjectDrawStruct(obj);
+		if (ods)
+			ods->move(newPos - ods->getPosition());
+	}
+
 	auto graphViewContainer = new ScrollContainer();
 	graphViewContainer->setFrameStyle(0); // No frame
 	graphViewContainer->setView(groupView);
