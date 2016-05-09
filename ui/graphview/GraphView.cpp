@@ -22,7 +22,6 @@
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
 #include <panda/document/ObjectsList.h>
-#include <panda/object/Annotation.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <ui/dialog/UpdateLoggerDialog.h>
@@ -106,6 +105,10 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	m_drawColors.midLightColor = DrawList::convert(pal.midlight().color());
 	m_drawColors.lightColor = DrawList::convert(pal.light().color());
 	m_drawColors.highlightColor = DrawList::convert(pal.highlight().color());
+
+	// Create the draw structs for the objects already present
+	for (const auto& object : m_objectsList.get())
+		addedObject(object.get());
 }
 
 GraphView::~GraphView() = default;
@@ -937,9 +940,6 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 			if (trait->valueTypeName() == "image")
 				flags |= MENU_IMAGE;
 		}
-
-		if (dynamic_cast<panda::Annotation*>(ods->getObject()))
-			flags |= MENU_ANNOTATION;
 	}
 	else
 		m_contextMenuObject = nullptr;

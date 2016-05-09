@@ -82,8 +82,7 @@ public:
 		MENU_DATA	    = 1 << 1,
 		MENU_LINK	    = 1 << 2,
 		MENU_IMAGE	    = 1 << 3,
-		MENU_TAG	    = 1 << 4,
-		MENU_ANNOTATION = 1 << 5
+		MENU_TAG	    = 1 << 4
 	};
 
 	void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);

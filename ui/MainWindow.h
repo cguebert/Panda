@@ -66,6 +66,7 @@ private slots:
 	void ungroup();
 	void editGroup();
 	void saveGroup();
+	void openGroup();
 	void createGroupObject();
 	void showContextMenu(QPoint, int);
 	void copyDataToUserValue();
@@ -168,6 +169,7 @@ private:
 		*m_ungroupAction,
 		*m_editGroupAction,
 		*m_saveGroupAction,
+		*m_openGroupAction,
 		*m_removeLinkAction,
 		*m_copyDataAction,
 		*m_undoAction,

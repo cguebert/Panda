@@ -28,6 +28,7 @@
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/document/Serialization.h>
+#include <panda/object/Annotation.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Group.h>
 #include <panda/helper/system/FileRepository.h>
@@ -351,6 +352,13 @@ void MainWindow::createActions()
 	connect(m_editGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
 	addAction(m_editGroupAction);
 
+	m_openGroupAction = new QAction(tr("&Open group"), this);
+	m_openGroupAction->setShortcut(tr("Ctrl+R"));
+	m_openGroupAction->setStatusTip(tr("Open the group in a new window"));
+	m_openGroupAction->setEnabled(false);
+	connect(m_openGroupAction, SIGNAL(triggered()), this, SLOT(openGroup()));
+	addAction(m_openGroupAction);
+
 	m_saveGroupAction = new QAction(tr("&Save group"), this);
 	m_saveGroupAction->setShortcut(tr("Ctrl+Shift+E"));
 	m_saveGroupAction->setStatusTip(tr("Save the selected group for later use"));
@@ -647,6 +655,7 @@ void MainWindow::createActions()
 	m_groupMenu->addAction(m_groupAction);
 	m_groupMenu->addAction(m_ungroupAction);
 	m_groupMenu->addAction(m_editGroupAction);
+	m_groupMenu->addAction(m_openGroupAction);
 	m_groupMenu->addAction(m_saveGroupAction);
 
 	m_editMenu->addSeparator();
@@ -1110,6 +1119,24 @@ void MainWindow::createGroupObject()
 	}
 }
 
+void MainWindow::openGroup()
+{
+	const auto& selection = m_graphView->selection().get();
+	if (selection.size() != 1)
+		return;
+
+	auto group = dynamic_cast<panda::Group*>(selection.front());
+	if (!group)
+		return;
+
+	auto groupView = new GraphView(m_document.get(), group->getObjectsList());
+	auto graphViewContainer = new ScrollContainer();
+	graphViewContainer->setFrameStyle(0); // No frame
+	graphViewContainer->setView(groupView);
+
+	m_tabWidget->addTab(graphViewContainer, tr("Group"));
+}
+
 void MainWindow::showContextMenu(QPoint pos, int flags)
 {
 	QMenu menu(this);
@@ -1145,18 +1172,20 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 	if (flags & GraphView::MENU_TAG)
 		menu.addAction(m_nameLinkTagAction);
 
-	if (flags & GraphView::MENU_ANNOTATION)
+	int nbSelected = m_graphView->selection().get().size();
+	if(nbSelected == 1 && dynamic_cast<panda::Annotation*>(obj))
 	{
 		menu.addSeparator();
 		menu.addAction(m_objectToFrontAction);
 		menu.addAction(m_objectToBackAction);
 	}
 
-	int nbSelected = m_graphView->selection().get().size();
 	if(nbSelected == 1 && dynamic_cast<panda::Group*>(obj))
 	{
+		menu.addSeparator();
 		menu.addAction(m_ungroupAction);
 		menu.addAction(m_editGroupAction);
+		menu.addAction(m_openGroupAction);
 		menu.addAction(m_saveGroupAction);
 	}
 
@@ -1243,6 +1272,7 @@ void MainWindow::selectedObject(panda::PandaObject* object)
 
 	m_ungroupAction->setEnabled(isGroup);
 	m_editGroupAction->setEnabled(isGroup);
+	m_openGroupAction->setEnabled(isGroup);
 	m_saveGroupAction->setEnabled(isGroup);
 
 	m_groupAction->setEnabled(nbSelected > 1);
