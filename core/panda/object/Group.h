@@ -5,6 +5,7 @@
 #include <panda/object/Layer.h>
 #include <panda/types/Point.h>
 #include <panda/document/ObjectsList.h>
+#include <panda/messaging.h>
 
 namespace panda
 {
@@ -116,6 +117,8 @@ protected:
 
 	Layer* m_layer;
 	RenderersList m_renderers;
+
+	msg::Observer m_observer;
 };
 
 //****************************************************************************//

@@ -296,6 +296,9 @@ GroupWithLayer::GroupWithLayer(PandaDocument* parent)
 	m_compositionMode.setDisplayed(false);
 	m_opacity.setInput(false);
 	m_opacity.setDisplayed(false);
+
+	m_observer.get(m_objectsList.addedObject).connect<GroupWithLayer, &GroupWithLayer::addedObject>(this);
+	m_observer.get(m_objectsList.removedObject).connect<GroupWithLayer, &GroupWithLayer::removedObject>(this);
 }
 
 void GroupWithLayer::setLayer(Layer* newLayer)
