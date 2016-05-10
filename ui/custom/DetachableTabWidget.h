@@ -69,6 +69,7 @@ public:
 
 signals:
 	void openDetachedWindow(DetachedWindow* window);
+	void closedTab(QWidget* widget);
 
 public slots:
 	void moveTab(int from, int to);

@@ -675,7 +675,7 @@ Point DrawList::calcTextSize(float scale, const std::string& text, float wrap_wi
 {
 	auto font = ViewRenderer::currentFont();
 	if (!font)
-		Point();
+		return Point();
 
 	return font->calcTextSize(scale, wrap_width, text, cutWords); // Do not cut words
 }

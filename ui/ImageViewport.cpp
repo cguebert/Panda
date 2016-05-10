@@ -56,8 +56,6 @@ ImageViewport::~ImageViewport()
 	m_texturedShader.clear();
 	m_rectModel.clear();
 	doneCurrent();
-
-	emit destroyedViewport(this);
 }
 
 QSize ImageViewport::minimumSizeHint() const

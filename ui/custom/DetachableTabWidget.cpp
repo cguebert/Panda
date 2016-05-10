@@ -178,6 +178,8 @@ void DetachableTabWidget::closeTab(int id)
 	removeTab(id);
 	w->deleteLater();
 	m_tabsInfo.remove(w);
+
+	emit closedTab(w);
 }
 
 void DetachableTabWidget::renameTab(DetachableWidgetInfo* info, QString title)

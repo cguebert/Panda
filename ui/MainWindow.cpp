@@ -103,6 +103,7 @@ MainWindow::MainWindow()
 	connect(m_graphView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(m_graphView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
 	connect(m_tabWidget, SIGNAL(openDetachedWindow(DetachedWindow*)), this, SLOT(openDetachedWindow(DetachedWindow*)));
+	connect(m_tabWidget, &DetachableTabWidget::closedTab, this, &MainWindow::onTabWidgetCloseTab);
 
 	connect(m_graphView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	connect(m_openGLRenderView, &OpenGLRenderView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
@@ -1143,17 +1144,24 @@ void MainWindow::openGroup()
 			ods->move(newPos - ods->getPosition());
 	}
 
-	auto graphViewContainer = new ScrollContainer();
-	graphViewContainer->setFrameStyle(0); // No frame
-	graphViewContainer->setView(groupView);
+	auto groupViewContainer = new ScrollContainer();
+	groupViewContainer->setFrameStyle(0); // No frame
+	groupViewContainer->setView(groupView);
+
+	auto detachableInfo = new DetachableWidgetInfo(groupViewContainer);
 
 	GroupViewInfo info;
 	info.view = groupView;
-	info.container = graphViewContainer;
+	info.container = groupViewContainer;
+	info.detachableInfo = detachableInfo;
 	info.object = group;
 	m_groupViews.push_back(info);
 
-	m_tabWidget->addTab(graphViewContainer, tr("Group"));
+	m_tabWidget->addTab(groupViewContainer, tr("Group"), detachableInfo);
+
+	m_tabWidget->setCurrentWidget(groupViewContainer);
+	groupViewContainer->setFocus();
+	groupView->showAll();
 }
 
 void MainWindow::showContextMenu(QPoint pos, int flags)
@@ -1330,8 +1338,7 @@ void MainWindow::showImageViewport()
 	}
 
 	ImageViewport* imageViewport = new ImageViewport(clickedData, index, this);
-	connect(imageViewport, SIGNAL(closeViewport(ImageViewport*)), this, SLOT(closeViewport(ImageViewport*)));
-	connect(imageViewport, SIGNAL(destroyedViewport(ImageViewport*)), this, SLOT(destroyedViewport(ImageViewport*)));
+	connect(imageViewport, &ImageViewport::closeViewport, this, &MainWindow::closeViewport);
 	connect(imageViewport, &ImageViewport::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	QScrollArea* container = new QScrollArea();
 	container->setFrameStyle(0);
@@ -1365,20 +1372,8 @@ void MainWindow::closeViewport(ImageViewport* viewport)
 	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [viewport](const ImageViewportInfo& info) {
 		return info.viewport == viewport;
 	});
-	if (it == m_imageViewports.end())
-		return;
-
-	closeTab(it->container);
-	m_imageViewports.erase(it);
-}
-
-void MainWindow::destroyedViewport(ImageViewport* viewport)
-{
-	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [viewport](const ImageViewportInfo& info) {
-		return info.viewport == viewport;
-	});
 	if (it != m_imageViewports.end())
-		m_imageViewports.erase(it);
+		closeTab(it->container);
 }
 
 void MainWindow::closeGroupView(GraphView* view)
@@ -1386,11 +1381,8 @@ void MainWindow::closeGroupView(GraphView* view)
 	auto it = std::find_if(m_groupViews.begin(), m_groupViews.end(), [view](const GroupViewInfo& info) {
 		return info.view == view;
 	});
-	if (it == m_groupViews.end())
-		return;
-
-	closeTab(it->container);
-	m_groupViews.erase(it);
+	if (it != m_groupViews.end())
+		closeTab(it->container);
 }
 
 void MainWindow::closeTab(QWidget* container)
@@ -1400,6 +1392,7 @@ void MainWindow::closeTab(QWidget* container)
 		if(window->getTabInfo().widget == container)
 		{
 			window->closeTab();
+			onTabWidgetCloseTab(container); // To be sure we remove the tab info from the lists
 			return;
 		}
 	}
@@ -1496,6 +1489,23 @@ void MainWindow::onTabWidgetFocusLoss(QWidget* w)
 {
 	if (m_fullScreen && m_exitFullscreenOnFocusLoss && w == selectedTabWidget()) 
 		toggleFullScreen(false);
+}
+
+void MainWindow::onTabWidgetCloseTab(QWidget* w)
+{
+	// Remove corresponding image viewport if any
+	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [w](const ImageViewportInfo& info) {
+		return info.container == w;
+	});
+	if (it != m_imageViewports.end())
+		m_imageViewports.erase(it);
+
+	// Remove corresponding group view if any
+	auto it2 = std::find_if(m_groupViews.begin(), m_groupViews.end(), [w](const GroupViewInfo& info) {
+		return info.container == w;
+	});
+	if (it2 != m_groupViews.end())
+		m_groupViews.erase(it2);
 }
 
 namespace

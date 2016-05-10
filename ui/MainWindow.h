@@ -14,6 +14,7 @@ class QScrollArea;
 
 class DatasTable;
 class DetachableTabWidget;
+class DetachableWidgetInfo;
 class DetachedWindow;
 class GraphView;
 class ImageViewport;
@@ -79,11 +80,11 @@ private slots:
 	void openDetachedWindow(DetachedWindow* window);
 	void closeDetachedWindow(DetachedWindow* window);
 	void closeViewport(ImageViewport* viewport);
-	void destroyedViewport(ImageViewport* viewport);
 	void closeGroupView(GraphView* view);
 	void convertSavedDocuments();
 	void removedObject(panda::PandaObject*);
 	void onTabWidgetFocusLoss(QWidget*);
+	void onTabWidgetCloseTab(QWidget*);
 
 private:
 	void createActions();
@@ -146,6 +147,7 @@ private:
 	{
 		GraphView* view = nullptr;
 		QWidget* container = nullptr;
+		DetachableWidgetInfo* detachableInfo = nullptr;
 		const panda::PandaObject* object = nullptr;
 	};
 	std::vector<GroupViewInfo> m_groupViews;
