@@ -27,6 +27,7 @@ public:
 	void reset() override;
 
 	const std::string& getGroupName() const;
+	BaseData& getGroupNameData();
 	std::string getLabel() const override;
 
 	ObjectsList& getObjectsList();
@@ -56,6 +57,9 @@ protected:
 
 inline const std::string& Group::getGroupName() const
 { return m_groupName.getValue(); }
+
+inline BaseData& Group::getGroupNameData()
+{ return m_groupName; }
 
 inline std::string Group::getLabel() const
 { return m_groupName.getValue(); }

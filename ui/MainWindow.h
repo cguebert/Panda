@@ -13,6 +13,7 @@ class QLabel;
 class QScrollArea;
 
 class DatasTable;
+class DataWatcher;
 class DetachableTabWidget;
 class DetachableWidgetInfo;
 class DetachedWindow;
@@ -149,6 +150,7 @@ private:
 		QWidget* container = nullptr;
 		DetachableWidgetInfo* detachableInfo = nullptr;
 		const panda::PandaObject* object = nullptr;
+		std::shared_ptr<DataWatcher> nameWatcher;
 	};
 	std::vector<GroupViewInfo> m_groupViews;
 

@@ -37,6 +37,24 @@
 #include <panda/PluginsManager.h>
 
 #include <iostream>
+#include <functional>
+
+// A small class to call a function when a DataNode changes
+class DataWatcher : public panda::DataNode
+{
+public:
+	using Callback = std::function<void()>;
+
+	DataWatcher(DataNode& node, Callback func)
+	: m_callback(func) 
+	{ node.addOutput(*this); }
+
+	void update() override { cleanDirty(); }
+	void setDirtyValue(const DataNode*) override { m_callback(); }
+
+private:
+	std::function<void()> m_callback;
+};
 
 MainWindow::MainWindow()
 {
@@ -1160,14 +1178,25 @@ void MainWindow::openGroup()
 
 	auto detachableInfo = new DetachableWidgetInfo(groupViewContainer);
 
+	auto getLabel = [group, detachableInfo]() {
+		const auto& name = group->getName();
+		const auto& label = group->getLabel();
+		std::string tabName = name;
+		if (!label.empty())
+			tabName = label + " (" + name + ")";
+		detachableInfo->changeTitle(QString::fromStdString(tabName));
+		return tabName;
+	};
+
 	GroupViewInfo info;
 	info.view = groupView;
 	info.container = groupViewContainer;
 	info.detachableInfo = detachableInfo;
 	info.object = group;
+	info.nameWatcher = std::make_shared<DataWatcher>(group->getGroupNameData(), getLabel);
 	m_groupViews.push_back(info);
 
-	m_tabWidget->addTab(groupViewContainer, tr("Group"), detachableInfo);
+	m_tabWidget->addTab(groupViewContainer, QString::fromStdString(getLabel()), detachableInfo);
 
 	m_tabWidget->setCurrentWidget(groupViewContainer);
 	groupViewContainer->setFocus();
