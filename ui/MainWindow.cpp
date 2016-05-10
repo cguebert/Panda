@@ -1132,6 +1132,16 @@ void MainWindow::openGroup()
 	if (!group)
 		return;
 
+	auto it = std::find_if(m_groupViews.begin(), m_groupViews.end(), [group](const GroupViewInfo& info) {
+		return info.object == group;
+	});
+	if (it != m_groupViews.end()) // Do not open another view
+	{
+		m_tabWidget->setCurrentWidget(it->container);
+		it->container->setFocus();
+		return;
+	}
+
 	auto groupView = new GraphView(m_document.get(), group->getObjectsList());
 
 	// Move the object based on the positions saved in the group
@@ -1319,7 +1329,11 @@ void MainWindow::showImageViewport()
 			return info.data == clickedData;
 		});
 		if (it != m_imageViewports.end()) // Do not open another viewport
+		{
+			m_tabWidget->setCurrentWidget(it->container);
+			it->container->setFocus();
 			return;
+		}
 	}
 
 	QString label = QString::fromStdString(clickedData->getOwner()->getName()) + "." + QString::fromStdString(clickedData->getName());
@@ -1354,6 +1368,9 @@ void MainWindow::showImageViewport()
 	m_imageViewports.push_back(info);
 
 	m_tabWidget->addTab(container, label, imageViewport->getDetachableWidgetInfo());
+
+	m_tabWidget->setCurrentWidget(container);
+	container->setFocus();
 }
 
 void MainWindow::openDetachedWindow(DetachedWindow* window)
