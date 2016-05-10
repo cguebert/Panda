@@ -1147,6 +1147,12 @@ void MainWindow::openGroup()
 	graphViewContainer->setFrameStyle(0); // No frame
 	graphViewContainer->setView(groupView);
 
+	GroupViewInfo info;
+	info.view = groupView;
+	info.container = graphViewContainer;
+	info.object = group;
+	m_groupViews.push_back(info);
+
 	m_tabWidget->addTab(graphViewContainer, tr("Group"));
 }
 
@@ -1362,8 +1368,33 @@ void MainWindow::closeViewport(ImageViewport* viewport)
 	if (it == m_imageViewports.end())
 		return;
 
-	QWidget* container = it->container;
+	closeTab(it->container);
 	m_imageViewports.erase(it);
+}
+
+void MainWindow::destroyedViewport(ImageViewport* viewport)
+{
+	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [viewport](const ImageViewportInfo& info) {
+		return info.viewport == viewport;
+	});
+	if (it != m_imageViewports.end())
+		m_imageViewports.erase(it);
+}
+
+void MainWindow::closeGroupView(GraphView* view)
+{
+	auto it = std::find_if(m_groupViews.begin(), m_groupViews.end(), [view](const GroupViewInfo& info) {
+		return info.view == view;
+	});
+	if (it == m_groupViews.end())
+		return;
+
+	closeTab(it->container);
+	m_groupViews.erase(it);
+}
+
+void MainWindow::closeTab(QWidget* container)
+{
 	for(DetachedWindow* window : m_detachedWindows)
 	{
 		if(window->getTabInfo().widget == container)
@@ -1383,23 +1414,23 @@ void MainWindow::closeViewport(ImageViewport* viewport)
 	}
 }
 
-void MainWindow::destroyedViewport(ImageViewport* viewport)
-{
-	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [viewport](const ImageViewportInfo& info) {
-		return info.viewport == viewport;
-	});
-	if (it != m_imageViewports.end())
-		m_imageViewports.erase(it);
-}
-
 void MainWindow::removedObject(panda::PandaObject* object)
 {
-	auto it = std::find_if(m_imageViewports.begin(), m_imageViewports.end(), [object](const ImageViewportInfo& info) {
-		return info.object == object;
-	});
+	// Close the image viewports connected to it
+	auto imageViewports = m_imageViewports;
+	for (const auto& info : imageViewports)
+	{
+		if (info.object == object)
+			closeViewport(info.viewport);
+	}
 
-	if (it != m_imageViewports.end())
-		closeViewport(it->viewport);
+	// Close any group view opened
+	auto groupViews = m_groupViews;
+	for (const auto& info : groupViews)
+	{
+		if (info.object == object)
+			closeGroupView(info.view);
+	}
 }
 
 void MainWindow::convertSavedDocuments()

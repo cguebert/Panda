@@ -80,6 +80,7 @@ private slots:
 	void closeDetachedWindow(DetachedWindow* window);
 	void closeViewport(ImageViewport* viewport);
 	void destroyedViewport(ImageViewport* viewport);
+	void closeGroupView(GraphView* view);
 	void convertSavedDocuments();
 	void removedObject(panda::PandaObject*);
 	void onTabWidgetFocusLoss(QWidget*);
@@ -102,6 +103,8 @@ private:
 	void redoEnabled(bool enabled);
 	void undoTextChanged(const std::string& text);
 	void redoTextChanged(const std::string& text);
+
+	void closeTab(QWidget* container);
 
 	QWidget* selectedTabWidget() const; // Return either the render view, the graph view or one image viewport
 
@@ -138,6 +141,14 @@ private:
 		const panda::PandaObject* object = nullptr;
 	};
 	std::vector<ImageViewportInfo> m_imageViewports;
+
+	struct GroupViewInfo
+	{
+		GraphView* view = nullptr;
+		QWidget* container = nullptr;
+		const panda::PandaObject* object = nullptr;
+	};
+	std::vector<GroupViewInfo> m_groupViews;
 
 	enum { MaxRecentFiles = 5 };
 	QAction* m_recentFileActions[MaxRecentFiles];
