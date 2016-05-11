@@ -14,8 +14,6 @@
 using panda::types::Point;
 using panda::types::Rect;
 
-static ViewRenderer* g_viewRenderer = nullptr;
-
 namespace
 {
 	class OpenGLStateSaver
@@ -60,36 +58,79 @@ namespace
 			last_blend_dst, last_blend_equation_rgb, last_blend_equation_alpha, last_viewport[4];
 		GLboolean last_enable_blend, last_enable_cull_face, last_enable_depth_test, last_enable_scissor_test;
 	};
+
+	std::weak_ptr<QOpenGLTexture>& getFontTextureWeak()
+	{
+		static std::weak_ptr<QOpenGLTexture> ptr;
+		return ptr;
+	}
+
+	std::shared_ptr<QOpenGLTexture> getFontTexture()
+	{
+		auto& ptr = getFontTextureWeak();
+		if (ptr.expired())
+		{
+			auto newPtr = std::make_shared<QOpenGLTexture>(QOpenGLTexture::Target2D);
+			ptr = newPtr;
+			return newPtr;
+		}
+		else
+			return ptr.lock();
+	}
+
+	std::weak_ptr<FontAtlas>& getFontAtlasWeak()
+	{
+		static std::weak_ptr<FontAtlas> ptr;
+		return ptr;
+	}
+
+	std::shared_ptr<FontAtlas> getFontAtlas()
+	{
+		auto& ptr = getFontAtlasWeak();
+		if (ptr.expired())
+		{
+			auto newPtr = std::make_shared<FontAtlas>();
+			ptr = newPtr;
+			return newPtr;
+		}
+		else
+			return ptr.lock();
+	}
+
 }
 
 ViewRenderer::ViewRenderer()
-	: m_atlas(std::make_unique<FontAtlas>())
+	: m_atlas(getFontAtlas())
 {
-	g_viewRenderer = this;
 	for(int i = 0; i < 4; ++i)
 		m_viewBounds[i] = 0;
 
 #ifdef WIN32
-	FontConfig cfg;
-	cfg.Name = "Tahoma";
-	m_atlas->addFontFromFileTTF("C:/Windows/Fonts/tahoma.ttf", 13, cfg, m_atlas->getGlyphRangesDefault());
+	if (m_atlas->fonts().empty())
+	{
+		FontConfig cfg;
+		cfg.Name = "Tahoma";
+		m_atlas->addFontFromFileTTF("C:/Windows/Fonts/tahoma.ttf", 13, cfg, m_atlas->getGlyphRangesDefault());
+	}
 #endif
-}
-
-ViewRenderer::~ViewRenderer()
-{
-	g_viewRenderer = nullptr;
 }
 
 void ViewRenderer::initialize()
 {
 	QOpenGLFunctions* f = QOpenGLContext::currentContext()->functions();
 
-	unsigned char* pixels;
-	int width, height;
-	m_atlas->getTexDataAsRGBA32(&pixels, &width, &height);
-	QImage img(pixels, width, height, QImage::Format::Format_ARGB32);
-	m_fontTexture = std::make_unique<QOpenGLTexture>(img);
+	if (getFontTextureWeak().expired())
+	{
+		unsigned char* pixels;
+		int width, height;
+		m_atlas->getTexDataAsRGBA32(&pixels, &width, &height);
+		QImage img(pixels, width, height, QImage::Format::Format_ARGB32);
+		auto fontTexture = std::make_shared<QOpenGLTexture>(img);
+		getFontTextureWeak() = fontTexture;
+		m_fontTexture = fontTexture;
+	}
+	else
+		m_fontTexture = getFontTexture();
 	m_atlas->setTexID(m_fontTexture->textureId());
 
 	const GLchar* vertex_shader =
@@ -236,19 +277,23 @@ void ViewRenderer::render()
 
 bool ViewRenderer::initialized()
 {
-	return g_viewRenderer && g_viewRenderer->m_fontTexture;
+	return !getFontTextureWeak().expired();
 }
 
 unsigned int ViewRenderer::defaultTextureId()
 {
-	if (g_viewRenderer && g_viewRenderer->m_fontTexture)
-		return g_viewRenderer->m_fontTexture->textureId();
-	return 0;
+	if (getFontTextureWeak().expired())
+		return 0;
+	return getFontTexture()->textureId();
 }
 
 Font* ViewRenderer::currentFont()
 {
-	if (g_viewRenderer && g_viewRenderer->m_fontTexture && !g_viewRenderer->m_atlas->fonts().empty())
-		return g_viewRenderer->m_atlas->fonts().back().get();
+	if (!getFontTextureWeak().expired() && !getFontAtlasWeak().expired())
+	{
+		const auto& fonts = getFontAtlas()->fonts();
+		if (!fonts.empty())
+			return fonts.back().get();
+	}
 	return nullptr;
 }

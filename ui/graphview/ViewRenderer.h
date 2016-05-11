@@ -17,7 +17,6 @@ class ViewRenderer
 {
 public:
 	ViewRenderer();
-	~ViewRenderer();
 
 	void initialize();
 	void resize(int w, int h);
@@ -32,7 +31,7 @@ public:
 	static Font* currentFont();
 
 private:
-	std::unique_ptr<QOpenGLTexture> m_fontTexture;
+	std::shared_ptr<QOpenGLTexture> m_fontTexture;
 	std::unique_ptr<QOpenGLShaderProgram> m_shader;
 	std::unique_ptr<QOpenGLVertexArrayObject> m_VAO;
 	std::unique_ptr<QOpenGLBuffer> m_VBO, m_EBO;
@@ -42,7 +41,7 @@ private:
 	panda::types::Rect m_viewBounds;
 
 	std::vector<DrawList*> m_drawLists;
-	std::unique_ptr<FontAtlas> m_atlas;
+	std::shared_ptr<FontAtlas> m_atlas;
 };
 
 inline void ViewRenderer::addDrawList(DrawList* dl)
