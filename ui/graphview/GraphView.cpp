@@ -194,15 +194,6 @@ void GraphView::setObjectDrawStruct(panda::PandaObject* object, const ObjectDraw
 	m_orderedObjectDrawStructs.push_back(drawStruct.get());
 }
 
-Rect GraphView::getDataRect(panda::BaseData* data)
-{
-	Rect rect;
-	ObjectDrawStruct* ods = getObjectDrawStruct(data->getOwner());
-	if(ods)
-		ods->getDataRect(data, rect);
-	return rect;
-}
-
 void GraphView::initializeGL()
 {
 	m_viewRenderer->initialize();
@@ -1248,10 +1239,18 @@ void GraphView::updateLinkTags()
 			panda::BaseData* parentData = data->getParent();
 			if(parentData)
 			{
-				float ox = getDataRect(data).center().x;
-				float ix = getDataRect(parentData).center().x;
-				if(LinkTag::needLinkTag(ix, ox, this))
-					addLinkTag(parentData, data);
+				auto ownerOds = getObjectDrawStruct(data->getOwner());
+				auto parentOds = getObjectDrawStruct(parentData->getOwner());
+				if (ownerOds && parentOds)
+				{
+					Rect ownerRect, parentRect;
+					ownerOds->getDataRect(data, ownerRect);
+					parentOds->getDataRect(parentData, parentRect);
+					float ox = ownerRect.center().x;
+					float ix = parentRect.center().x;
+					if (LinkTag::needLinkTag(ix, ox, this))
+						addLinkTag(parentData, data);
+				}
 			}
 		}
 	}

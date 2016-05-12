@@ -1,5 +1,6 @@
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/LinkTag.h>
+#include <ui/drawstruct/ObjectDrawStruct.h>
 
 using panda::types::Point;
 using panda::types::Rect;
@@ -25,7 +26,12 @@ void LinkTag::removeOutput(panda::BaseData* output)
 
 void LinkTag::update()
 {
-	auto dataRect = m_parentView->getDataRect(m_inputData);
+	Rect dataRect;
+	auto ods = m_parentView->getObjectDrawStruct(m_inputData->getOwner());
+	if (!ods)
+		return;
+
+	ods->getDataRect(m_inputData, dataRect);
 	m_inputDataRects.first = Rect::fromSize(dataRect.right() + tagMargin,
 											dataRect.center().y - tagH / 2.0,
 											tagW, tagH);
@@ -35,7 +41,10 @@ void LinkTag::update()
 
 	for (auto it = m_outputDatas.begin(); it != m_outputDatas.end();)
 	{
-		dataRect = m_parentView->getDataRect(it->first);
+		ods = m_parentView->getObjectDrawStruct(m_inputData->getOwner());
+		if (!ods)
+			continue;
+		ods->getDataRect(it->first, dataRect);
 		float ox = dataRect.center().x;
 		if (!needLinkTag(ix, ox, m_parentView))
 			it = m_outputDatas.erase(it);

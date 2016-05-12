@@ -71,7 +71,6 @@ public:
 	void setObjectDrawStruct(panda::PandaObject* object, const ObjectDrawStructPtr& drawStruct);
 
 	panda::types::Point getNewObjectPosition();
-	panda::types::Rect getDataRect(panda::BaseData* data);
 
 	int getAvailableLinkTagIndex();
 
