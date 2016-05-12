@@ -18,6 +18,7 @@ class DetachableTabWidget;
 class DetachableWidgetInfo;
 class DetachedWindow;
 class GraphView;
+class GroupView;
 class ImageViewport;
 class LayersTab;
 class OpenGLRenderView;
@@ -81,7 +82,7 @@ private slots:
 	void openDetachedWindow(DetachedWindow* window);
 	void closeDetachedWindow(DetachedWindow* window);
 	void closeViewport(ImageViewport* viewport);
-	void closeGroupView(GraphView* view);
+	void closeGroupView(GroupView* view);
 	void convertSavedDocuments();
 	void removedObject(panda::PandaObject*);
 	void onTabWidgetFocusLoss(QWidget*);
@@ -146,7 +147,7 @@ private:
 
 	struct GroupViewInfo
 	{
-		GraphView* view = nullptr;
+		GroupView* view = nullptr;
 		QWidget* container = nullptr;
 		DetachableWidgetInfo* detachableInfo = nullptr;
 		const panda::PandaObject* object = nullptr;

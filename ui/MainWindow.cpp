@@ -22,6 +22,7 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
 
 #include <ui/graphview/GraphView.h>
+#include <ui/graphview/GroupView.h>
 #include <ui/graphview/alignObjects.h>
 #include <ui/graphview/ObjectsSelection.h>
 
@@ -1160,7 +1161,7 @@ void MainWindow::openGroup()
 		return;
 	}
 
-	auto groupView = new GraphView(m_document.get(), group->getObjectsList());
+	auto groupView = new GroupView(group, m_document.get(), group->getObjectsList());
 
 	// Move the object based on the positions saved in the group
 	for (const auto& object : group->getObjectsList().get())
@@ -1422,7 +1423,7 @@ void MainWindow::closeViewport(ImageViewport* viewport)
 		closeTab(it->container);
 }
 
-void MainWindow::closeGroupView(GraphView* view)
+void MainWindow::closeGroupView(GroupView* view)
 {
 	auto it = std::find_if(m_groupViews.begin(), m_groupViews.end(), [view](const GroupViewInfo& info) {
 		return info.view == view;

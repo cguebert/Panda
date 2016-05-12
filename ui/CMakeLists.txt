@@ -40,6 +40,7 @@ set(HEADER_FILES
 	drawstruct/ObjectDrawStruct.h
 	graphview/alignObjects.h
 	graphview/GraphView.h
+	graphview/GroupView.h
 	graphview/LinkTag.h
 	graphview/ObjectsSelection.h
 	graphview/ViewRenderer.h
@@ -100,6 +101,7 @@ set(SOURCE_FILES
 	drawstruct/ObjectDrawStruct.cpp
 	graphview/alignObjects.cpp
 	graphview/GraphView.cpp
+	graphview/GroupView.cpp
 	graphview/LinkTag.cpp
 	graphview/ObjectsSelection.cpp
 	graphview/ViewRenderer.cpp

@@ -84,7 +84,7 @@ public:
 		MENU_TAG	    = 1 << 4
 	};
 
-	void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
+	virtual void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
 
 	/// Objects docked to the default docks are sorted by their height in the graph view
 	void sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock);
