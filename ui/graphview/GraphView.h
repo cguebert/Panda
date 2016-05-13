@@ -161,8 +161,6 @@ public slots:
 	void addedObject(panda::PandaObject* object);
 	void removeObject(panda::PandaObject* object);
 	void modifiedObject(panda::PandaObject* object);
-	void savingObject(panda::XmlElement&, panda::PandaObject*);
-	void loadingObject(const panda::XmlElement&, panda::PandaObject*);
 	void removeLink();
 	void hoverDataInfo();
 	void startLoading();
@@ -174,7 +172,7 @@ public slots:
 	void moveObjectToBack();
 	void moveObjectToFront();
 
-private:
+protected:
 	panda::PandaDocument* m_pandaDocument;
 	panda::ObjectsList& m_objectsList;
 

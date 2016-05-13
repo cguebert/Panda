@@ -39,6 +39,7 @@ set(HEADER_FILES
 	drawstruct/GroupDrawStruct.h
 	drawstruct/ObjectDrawStruct.h
 	graphview/alignObjects.h
+	graphview/DocumentView.h
 	graphview/GraphView.h
 	graphview/GroupView.h
 	graphview/LinkTag.h
@@ -100,6 +101,7 @@ set(SOURCE_FILES
 	drawstruct/GroupDrawStruct.cpp
 	drawstruct/ObjectDrawStruct.cpp
 	graphview/alignObjects.cpp
+	graphview/DocumentView.cpp
 	graphview/GraphView.cpp
 	graphview/GroupView.cpp
 	graphview/LinkTag.cpp

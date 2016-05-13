@@ -17,7 +17,7 @@ class DataWatcher;
 class DetachableTabWidget;
 class DetachableWidgetInfo;
 class DetachedWindow;
-class GraphView;
+class DocumentView;
 class GroupView;
 class ImageViewport;
 class LayersTab;
@@ -57,7 +57,7 @@ private slots:
 	void updateStatusBar();
 	void documentModified();
 	void createObject();
-	void switchToGraphView();
+	void switchToDocumentView();
 	void switchToOpenGLView();
 	void toggleFullScreen(bool);
 	void showStatusBarMessage(QString);
@@ -109,11 +109,11 @@ private:
 
 	void closeTab(QWidget* container);
 
-	QWidget* selectedTabWidget() const; // Return either the render view, the graph view or one image viewport
+	QWidget* selectedTabWidget() const; // Return either the render view, a graph view or an image viewport
 
 	DetachableTabWidget* m_tabWidget = nullptr;
-	GraphView* m_graphView = nullptr;
-	ScrollContainer* m_graphViewContainer = nullptr;
+	DocumentView* m_documentView = nullptr;
+	ScrollContainer* m_documentViewContainer = nullptr;
 	OpenGLRenderView* m_openGLRenderView = nullptr;
 	QScrollArea* m_openGLViewContainer = nullptr;
 	std::unique_ptr<panda::PandaDocument> m_document;

@@ -4,36 +4,36 @@
     <Data name="timestep" real="0.0099999998"/>
     <Data name="use timer" int="1"/>
     <Data name="nb threads" int="0"/>
-    <Object type="panda::GeneratorPoints_Random" index="1" x="392.89077758789062" y="471.26171875"/>
-    <Object type="panda::GeneratorNumber_AnimationTime" index="2" x="-263.3016357421875" y="471.05706787109375"/>
-    <Object type="panda::DoubleMath_Floor" index="3" x="-122.67799377441406" y="471.05706787109375"/>
-    <Object type="panda::GeneratorPoints_Random" index="4" x="392.89077758789062" y="543.1107177734375"/>
-    <Object type="panda::DoubleMath_Add" index="5" x="4.9977245330810547" y="501.89337158203125">
+    <Object type="panda::GeneratorPoints_Random" index="1" x="392.89078" y="471.26172"/>
+    <Object type="panda::GeneratorNumber_AnimationTime" index="2" x="-263.30164" y="471.05707"/>
+    <Object type="panda::DoubleMath_Floor" index="3" x="-122.67798" y="471.05707"/>
+    <Object type="panda::GeneratorPoints_Random" index="4" x="392.89078" y="543.11072"/>
+    <Object type="panda::DoubleMath_Add" index="5" x="4.9977417" y="501.89337">
         <Data name="input 2">
             <Value real="1"/>
         </Data>
     </Object>
-    <Object type="panda::AnimationInterpolation&lt;point&gt;" index="6" x="549.12255859375" y="471.26171875">
+    <Object type="panda::AnimationInterpolation&lt;point&gt;" index="6" x="549.12256" y="471.26172">
         <Data name="mode" int="3"/>
     </Object>
-    <Object type="panda::DoubleMath_Mod" index="7" x="4.9977245330810547" y="578.79107666015625">
+    <Object type="panda::DoubleMath_Mod" index="7" x="4.9977417" y="578.79108">
         <Data name="input 2">
             <Value real="1"/>
         </Data>
     </Object>
-    <Object type="panda::GeneratorUser&lt;integer&gt;" index="8" x="271.34906005859375" y="543.1107177734375">
+    <Object type="panda::GeneratorUser&lt;integer&gt;" index="8" x="271.34906" y="543.11072">
         <Data name="caption"># of points</Data>
         <Data name="input" int="8"/>
     </Object>
-    <Object type="panda::Curve_BezierSpline" index="9" x="684.2177734375" y="471.26171875">
+    <Object type="panda::Curve_BezierSpline" index="9" x="684.21777" y="471.26172">
         <Data name="steps" int="16"/>
     </Object>
-    <Object type="panda::PointListMath_Extrude" index="10" x="1066.5970458984375" y="469.07461547851562">
+    <Object type="panda::PointListMath_Extrude" index="10" x="1066.597" y="469.07462">
         <Data name="cap" int="1"/>
         <Data name="join" int="1"/>
     </Object>
-    <Object type="panda::DoubleMath_Cos" index="11" x="220.43611145019531" y="302.136962890625"/>
-    <Object type="panda::GeneratorUser&lt;real_vector&gt;" index="12" x="-83.311172485351563" y="236.14793395996094">
+    <Object type="panda::DoubleMath_Cos" index="11" x="220.4361" y="302.13696"/>
+    <Object type="panda::GeneratorUser&lt;real_vector&gt;" index="12" x="-83.311157" y="236.14793">
         <Data name="caption"># of size values</Data>
         <Data name="input">
             <Value real="0"/>
@@ -42,71 +42,66 @@
             <Value real="90"/>
         </Data>
     </Object>
-    <Object type="panda::DoubleMath_Add" index="13" x="64.093307495117187" y="302.136962890625"/>
-    <Object type="panda::GeneratorUser&lt;real&gt;" index="14" x="220.43611145019531" y="243.60234069824219">
+    <Object type="panda::DoubleMath_Add" index="13" x="64.093323" y="302.13696"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="14" x="220.4361" y="243.60234">
         <Data name="caption">variation</Data>
         <Data name="input" real="8"/>
     </Object>
-    <Object type="panda::DoubleMath_Mult" index="15" x="386.70965576171875" y="287.136962890625"/>
-    <Object type="panda::GeneratorUser&lt;real&gt;" index="16" x="386.70965576171875" y="228.36964416503906">
+    <Object type="panda::DoubleMath_Mult" index="15" x="386.70966" y="287.13696"/>
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="16" x="386.70966" y="228.36964">
         <Data name="caption">base width</Data>
         <Data name="input" real="12"/>
     </Object>
-    <Object type="panda::DoubleMath_Add" index="17" x="543.0179443359375" y="272.136962890625"/>
-    <Object type="panda::DoubleMath_Mult" index="18" x="-83.311172485351563" y="317.136962890625">
+    <Object type="panda::DoubleMath_Add" index="17" x="543.01794" y="272.13696"/>
+    <Object type="panda::DoubleMath_Mult" index="18" x="-83.311157" y="317.13696">
         <Data name="input 2">
             <Value real="180"/>
         </Data>
     </Object>
-    <Object type="panda::List2Anim" index="19" x="673.2177734375" y="224.13694763183594">
+    <Object type="panda::List2Anim" index="19" x="673.21777" y="224.13695">
         <CreatedData type="real"/>
         <Data name="interpolation" int="0"/>
     </Object>
-    <Object type="panda::Annotation" index="20" x="-98.388916015625" y="155.89645385742187">
+    <Object type="panda::Annotation" index="20" x="-98.388916" y="155.89645">
         <Data name="type" int="2"/>
         <Data name="text">Animation of the width of the extrusion</Data>
-        <Data name="font">MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0</Data>
         <Data name="deltaToEnd" x="898.77252" y="225.21628"/>
     </Object>
-    <Object type="panda::Annotation" index="21" x="257.2291259765625" y="640.19134521484375">
+    <Object type="panda::Annotation" index="21" x="257.22913" y="640.19135">
         <Data name="type" int="2"/>
         <Data name="text">Animation of the points</Data>
-        <Data name="font">MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0</Data>
         <Data name="deltaToEnd" x="534.40967" y="-179.53531"/>
     </Object>
-    <Object type="panda::GeneratorColors_Random" index="22" x="243.25862121582031" y="688.58782958984375"/>
-    <Object type="panda::Annotation" index="23" x="-271.87567138671875" y="459.71084594726562">
+    <Object type="panda::GeneratorColors_Random" index="22" x="243.25861" y="688.58783"/>
+    <Object type="panda::Annotation" index="23" x="-271.87567" y="459.71085">
         <Data name="type" int="2"/>
         <Data name="text">Integer and fractional part of the time </Data>
-        <Data name="font">MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0</Data>
         <Data name="deltaToEnd" x="386.54364" y="176.60814"/>
     </Object>
-    <Object type="panda::GeneratorColors_Random" index="24" x="243.25862121582031" y="776.47021484375"/>
-    <Object type="panda::AnimationInterpolation&lt;color&gt;" index="25" x="405.11285400390625" y="750.29864501953125">
+    <Object type="panda::GeneratorColors_Random" index="24" x="243.25861" y="776.47021"/>
+    <Object type="panda::AnimationInterpolation&lt;color&gt;" index="25" x="405.11285" y="750.29865">
         <Data name="mode" int="19"/>
     </Object>
-    <Object type="panda::Annotation" index="26" x="829.6680908203125" y="403.53582763671875">
+    <Object type="panda::Annotation" index="26" x="829.66809" y="403.53583">
         <Data name="type" int="2"/>
         <Data name="text">Creation of the mesh, its colors, and then rendering it</Data>
-        <Data name="font">MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0</Data>
         <Data name="deltaToEnd" x="572.93616" y="185.82979"/>
     </Object>
-    <Object type="panda::Annotation" index="27" x="90.740890502929688" y="890.73583984375">
+    <Object type="panda::Annotation" index="27" x="90.740906" y="890.73584">
         <Data name="type" int="2"/>
         <Data name="text">Animation of a gradient</Data>
-        <Data name="font">MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0</Data>
         <Data name="deltaToEnd" x="821.35583" y="-215.44954"/>
     </Object>
-    <Object type="panda::List2Anim" index="28" x="549.12255859375" y="702.29864501953125">
+    <Object type="panda::List2Anim" index="28" x="549.12256" y="702.29865">
         <CreatedData type="color"/>
         <Data name="interpolation" int="0"/>
     </Object>
-    <Object type="panda::GeneratorUser&lt;integer&gt;" index="29" x="102.89768218994141" y="776.47021484375">
+    <Object type="panda::GeneratorUser&lt;integer&gt;" index="29" x="102.89771" y="776.47021">
         <Data name="caption"># of colors</Data>
         <Data name="input" int="4"/>
     </Object>
-    <Object type="panda::Anim2Gradient" index="30" x="673.2177734375" y="750.29864501953125"/>
-    <Object type="panda::Group" index="31" x="405.11285400390625" y="684.26324462890625">
+    <Object type="panda::Anim2Gradient" index="30" x="673.21777" y="750.29865"/>
+    <Object type="panda::Group" index="31" x="405.11285" y="684.26324">
         <GroupData type="integer" input="1" output="0" name="# of values" help="Number of values in the enumeration" widget="default"/>
         <GroupData type="real" input="1" output="0" name="min" help="Minimum bound" widget="default"/>
         <GroupData type="real" input="1" output="0" name="max" help="Maximum bound" widget="default"/>
@@ -132,7 +127,7 @@
         <Link object1="35" data1="input 1" object2="0" data2="# of values"/>
         <Link object1="0" data1="output" object2="32" data2="numbers"/>
     </Object>
-    <Object type="panda::Group" index="36" x="543.0179443359375" y="201.88575744628906">
+    <Object type="panda::Group" index="36" x="543.01794" y="201.88576">
         <GroupData type="integer" input="1" output="0" name="# of values" help="Number of values in the enumeration" widget="default"/>
         <GroupData type="real" input="1" output="0" name="min" help="Minimum bound" widget="default"/>
         <GroupData type="real" input="1" output="0" name="max" help="Maximum bound" widget="default"/>
@@ -158,10 +153,10 @@
         <Link object1="40" data1="input 1" object2="0" data2="# of values"/>
         <Link object1="0" data1="output" object2="37" data2="numbers"/>
     </Object>
-    <Object type="panda::ListSize" index="41" x="386.70965576171875" y="171.31027221679687">
+    <Object type="panda::ListSize" index="41" x="386.70966" y="171.31027">
         <CreatedData type="real"/>
     </Object>
-    <Object type="panda::GradientTexture2D" index="42" x="802.00634765625" y="750.29864501953125">
+    <Object type="panda::GradientTexture2D" index="42" x="802.00635" y="750.29865">
         <Data name="vertical" extend="0">
             <Stop pos="0" r="1" g="1" b="1" a="0"/>
             <Stop pos="0.25" r="1" g="1" b="1" a="1"/>
@@ -170,12 +165,12 @@
         </Data>
         <Data name="size" x="256" y="16"/>
     </Object>
-    <Object type="panda::RenderMesh_Textured" index="43" x="1185.7884521484375" y="469.07461547851562"/>
-    <Object type="panda::Layer" index="44" x="1205.7884521484375" y="409.15426635742187">
+    <Object type="panda::RenderMesh_Textured" index="43" x="1185.7885" y="469.07462"/>
+    <Object type="panda::Layer" index="44" x="1205.7885" y="409.15427">
         <Data name="name">Mesh</Data>
         <Data name="opacity" real="1"/>
     </Object>
-    <Object type="panda::Group" index="45" x="949.9560546875" y="464.07461547851562">
+    <Object type="panda::Group" index="45" x="949.95605" y="464.07462">
         <GroupData type="path" input="1" output="0" name="input" help="The value you want to store" widget="default"/>
         <GroupData type="path" input="0" output="1" name="output" help="The value stored" widget="default"/>
         <GroupData type="real" input="1" output="0" name="step" help="The value you want to store" widget="default"/>
@@ -183,7 +178,7 @@
         <Object type="panda::GeneratorReals_Enumeration" index="46" x="245.47664" y="-9.4446249"/>
         <Object type="panda::DoubleMath_Div" index="47" x="-233.68819" y="-3.950119"/>
         <Object type="panda::PathMath_GetPoint" index="48" x="386.47665" y="-24.444624"/>
-        <Object type="panda::GeneratorUser&lt;path&gt;" index="49" x="-522.97662" y="-55">
+        <Object type="panda::GeneratorUser&lt;path&gt;" index="49" x="-522.97662" y="-57.444626">
             <Data name="caption">input</Data>
         </Object>
         <Object type="panda::GeneratorUser&lt;path&gt;" index="50" x="522.97662" y="-24.444624">
@@ -216,7 +211,7 @@
         <Link object1="55" data1="input" object2="47" data2="result"/>
         <Link object1="0" data1="output" object2="50" data2="value"/>
     </Object>
-    <Object type="panda::GeneratorUser&lt;real&gt;" index="56" x="836.91839599609375" y="484.07461547851562">
+    <Object type="panda::GeneratorUser&lt;real&gt;" index="56" x="836.9184" y="484.07462">
         <Data name="caption">dist between points</Data>
         <Data name="input" real="5"/>
     </Object>

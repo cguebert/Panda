@@ -84,8 +84,6 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	auto& docSignals = m_pandaDocument->getSignals();
 	m_observer.get(docSignals.modified).connect<QWidget, &QWidget::update>(this);
 	m_observer.get(docSignals.modifiedObject).connect<GraphView, &GraphView::modifiedObject>(this);
-	m_observer.get(docSignals.savingObject).connect<GraphView, &GraphView::savingObject>(this);
-	m_observer.get(docSignals.loadingObject).connect<GraphView, &GraphView::loadingObject>(this);
 	m_observer.get(docSignals.startLoading).connect<GraphView, &GraphView::startLoading>(this);
 	m_observer.get(docSignals.loadingFinished).connect<GraphView, &GraphView::loadingFinished>(this);
 	m_observer.get(docSignals.changedDock).connect<GraphView, &GraphView::changedDock>(this);
@@ -1139,43 +1137,6 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 		}
 		
 		update();
-	}
-}
-
-void GraphView::savingObject(panda::XmlElement& elem, panda::PandaObject* object)
-{
-	getObjectDrawStruct(object)->save(elem);
-
-	// Save data labels for this object
-	for (const auto& dl : m_dataLabels)
-	{
-		if (dl.object == object)
-		{
-			auto dlNode = elem.addChild("DataLabel");
-			dlNode.setAttribute("data", dl.data->getName());
-			dlNode.setText(dl.label);
-		}
-	}
-}
-
-void GraphView::loadingObject(const panda::XmlElement& elem, panda::PandaObject* object)
-{
-	getObjectDrawStruct(object)->load(elem);
-
-	// Load data labels
-	auto e = elem.firstChild("DataLabel");
-	while(e)
-	{
-		auto data = object->getData(e.attribute("data").toString());
-		if (data)
-		{
-			DataLabel dl;
-			dl.data = data;
-			dl.object = object;
-			dl.label = e.text();
-			m_dataLabels.push_back(dl);
-		}
-		e = e.nextSibling("DataLabel");
 	}
 }
 
