@@ -41,7 +41,7 @@ void LinkTag::update()
 
 	for (auto it = m_outputDatas.begin(); it != m_outputDatas.end();)
 	{
-		ods = m_parentView->getObjectDrawStruct(m_inputData->getOwner());
+		ods = m_parentView->getObjectDrawStruct(it->first->getOwner());
 		if (!ods)
 			continue;
 		ods->getDataRect(it->first, dataRect);

@@ -22,7 +22,6 @@ DocumentView::DocumentView(panda::PandaDocument* doc, panda::ObjectsList& object
 	m_observer.get(docSignals.loadingObject).connect<DocumentView, &DocumentView::loadingObject>(this);
 }
 
-
 void DocumentView::savingObject(panda::XmlElement& elem, panda::PandaObject* object)
 {
 	getObjectDrawStruct(object)->save(elem);
