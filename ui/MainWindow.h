@@ -18,6 +18,7 @@ class DetachableTabWidget;
 class DetachableWidgetInfo;
 class DetachedWindow;
 class DocumentView;
+class GraphView;
 class GroupView;
 class ImageViewport;
 class LayersTab;
@@ -87,6 +88,7 @@ private slots:
 	void removedObject(panda::PandaObject*);
 	void onTabWidgetFocusLoss(QWidget*);
 	void onTabWidgetCloseTab(QWidget*);
+	void onTabChanged();
 
 private:
 	void createActions();
@@ -114,6 +116,7 @@ private:
 	DetachableTabWidget* m_tabWidget = nullptr;
 	DocumentView* m_documentView = nullptr;
 	ScrollContainer* m_documentViewContainer = nullptr;
+	GraphView* m_currentGraphView = nullptr;
 	OpenGLRenderView* m_openGLRenderView = nullptr;
 	QScrollArea* m_openGLViewContainer = nullptr;
 	std::unique_ptr<panda::PandaDocument> m_document;
@@ -155,9 +158,11 @@ private:
 	};
 	std::vector<GroupViewInfo> m_groupViews;
 
-	enum { MaxRecentFiles = 5 };
+	static const int MaxRecentFiles = 5;
 	QAction* m_recentFileActions[MaxRecentFiles];
 	QAction* m_separatorAction;
+	std::vector<QAction*> m_allViewsActions; // The list of actions that apply to all views (GraphView & ImageViewport)
+	std::vector<QAction*> m_graphViewsActions; // Actions that apply to GraphView (document & groups)
 
 	QMenu *m_fileMenu,
 		*m_editMenu,
@@ -188,6 +193,7 @@ private:
 		*m_openGroupAction,
 		*m_removeLinkAction,
 		*m_copyDataAction,
+		*m_showDirtyInfoAction,
 		*m_undoAction,
 		*m_redoAction,
 		*m_showImageViewportAction,

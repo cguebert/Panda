@@ -1680,7 +1680,11 @@ void GraphView::selectionChanged()
 	m_selectedObjectsDrawStructs.clear();
 
 	for (auto object : m_objectsSelection->get())
-		m_selectedObjectsDrawStructs.push_back(getObjectDrawStruct(object));
+	{
+		auto ods = getObjectDrawStruct(object);
+		if(ods)
+			m_selectedObjectsDrawStructs.push_back(ods);
+	}
 
 	update();
 }

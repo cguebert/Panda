@@ -74,6 +74,7 @@ MainWindow::MainWindow()
 	m_documentViewContainer = new ScrollContainer();
 	m_documentViewContainer->setFrameStyle(0); // No frame
 	m_documentViewContainer->setView(m_documentView);
+	m_currentGraphView = m_documentView;
 
 	m_openGLRenderView = new OpenGLRenderView(m_document.get());
 	m_openGLViewContainer = new QScrollArea();
@@ -123,6 +124,7 @@ MainWindow::MainWindow()
 	connect(m_documentView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
 	connect(m_tabWidget, SIGNAL(openDetachedWindow(DetachedWindow*)), this, SLOT(openDetachedWindow(DetachedWindow*)));
 	connect(m_tabWidget, &DetachableTabWidget::closedTab, this, &MainWindow::onTabWidgetCloseTab);
+	connect(m_tabWidget, &DetachableTabWidget::currentChanged, this, &MainWindow::onTabChanged);
 
 	connect(m_documentView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	connect(m_openGLRenderView, &OpenGLRenderView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
@@ -313,127 +315,127 @@ void MainWindow::createActions()
 	m_cutAction->setShortcut(QKeySequence::Cut);
 	m_cutAction->setStatusTip(tr("Cut the current selection's contents to the clipboard"));
 	connect(m_cutAction, SIGNAL(triggered()), this, SLOT(cut()));
-	addAction(m_cutAction);
+	m_graphViewsActions.push_back(m_cutAction);
 
 	m_copyAction = new QAction(tr("&Copy"), this);
 	m_copyAction->setIcon(QIcon(":/share/icons/copy.png"));
 	m_copyAction->setShortcut(QKeySequence::Copy);
 	m_copyAction->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
 	connect(m_copyAction, SIGNAL(triggered()), this, SLOT(copy()));
-	addAction(m_copyAction);
+	m_graphViewsActions.push_back(m_copyAction);
 
 	m_pasteAction = new QAction(tr("&Paste"), this);
 	m_pasteAction->setIcon(QIcon(":/share/icons/paste.png"));
 	m_pasteAction->setShortcut(QKeySequence::Paste);
 	m_pasteAction->setStatusTip(tr("Paste the clipboard's contents into the current selection"));
 	connect(m_pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
-	addAction(m_pasteAction);
+	m_graphViewsActions.push_back(m_pasteAction);
 
 	m_deleteAction = new QAction(tr("&Delete"), this);
 	m_deleteAction->setShortcut(QKeySequence::Delete);
 	m_deleteAction->setStatusTip(tr("Delete the current selection's contents"));
 	connect(m_deleteAction, SIGNAL(triggered()), this, SLOT(del()));
-	addAction(m_deleteAction);
+	m_graphViewsActions.push_back(m_deleteAction);
 
 	auto selectAllAction = new QAction(tr("Select &all"), this);
 	selectAllAction->setShortcut(QKeySequence::SelectAll);
 	selectAllAction->setStatusTip(tr("Select all objects"));
-	connect(selectAllAction, &QAction::triggered, [this]() { m_documentView->selection().selectAll(); });
-	addAction(selectAllAction);
+	connect(selectAllAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->selection().selectAll(); });
+	m_graphViewsActions.push_back(selectAllAction);
 
 	auto selectNoneAction = new QAction(tr("Select &none"), this);
 	selectNoneAction->setShortcut(tr("Ctrl+Shift+A"));
 	selectNoneAction->setStatusTip(tr("Deselect all objets"));
-	connect(selectNoneAction, &QAction::triggered, [this]() { m_documentView->selection().selectNone(); });
-	addAction(selectNoneAction);
+	connect(selectNoneAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->selection().selectNone(); });
+	m_graphViewsActions.push_back(selectNoneAction);
 
 	auto selectConnectedAction = new QAction(tr("Select &connected"), this);
 	selectConnectedAction->setShortcut(tr("Ctrl+Shift+C"));
 	selectConnectedAction->setStatusTip(tr("Select all objects connected to the current one"));
-	connect(selectConnectedAction, &QAction::triggered, [this]() { m_documentView->selection().selectConnected(); });
-	addAction(selectConnectedAction);
+	connect(selectConnectedAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->selection().selectConnected(); });
+	m_graphViewsActions.push_back(selectConnectedAction);
 
 	m_groupAction = new QAction(tr("&Group selected"), this);
 	m_groupAction->setShortcut(tr("Ctrl+G"));
 	m_groupAction->setStatusTip(tr("Group selected objects"));
 	m_groupAction->setEnabled(false);
 	connect(m_groupAction, SIGNAL(triggered()), this, SLOT(group()));
-	addAction(m_groupAction);
+	m_graphViewsActions.push_back(m_groupAction);
 
 	m_ungroupAction = new QAction(tr("&Ungroup selected"), this);
 	m_ungroupAction->setShortcut(tr("Ctrl+Shift+G"));
 	m_ungroupAction->setStatusTip(tr("Ungroup selected objects"));
 	m_ungroupAction->setEnabled(false);
 	connect(m_ungroupAction, SIGNAL(triggered()), this, SLOT(ungroup()));
-	addAction(m_ungroupAction);
+	m_graphViewsActions.push_back(m_ungroupAction);
 
 	m_editGroupAction = new QAction(tr("&Edit group"), this);
 	m_editGroupAction->setShortcut(tr("Ctrl+E"));
 	m_editGroupAction->setStatusTip(tr("Edit the selected group name and parameters"));
 	m_editGroupAction->setEnabled(false);
 	connect(m_editGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
-	addAction(m_editGroupAction);
+	m_graphViewsActions.push_back(m_editGroupAction);
 
 	m_openGroupAction = new QAction(tr("&Open group"), this);
 	m_openGroupAction->setShortcut(tr("Ctrl+R"));
 	m_openGroupAction->setStatusTip(tr("Open the group in a new window"));
 	m_openGroupAction->setEnabled(false);
 	connect(m_openGroupAction, SIGNAL(triggered()), this, SLOT(openGroup()));
-	addAction(m_openGroupAction);
+	m_graphViewsActions.push_back(m_openGroupAction);
 
 	m_saveGroupAction = new QAction(tr("&Save group"), this);
 	m_saveGroupAction->setShortcut(tr("Ctrl+Shift+E"));
 	m_saveGroupAction->setStatusTip(tr("Save the selected group for later use"));
 	m_saveGroupAction->setEnabled(false);
 	connect(m_saveGroupAction, SIGNAL(triggered()), this, SLOT(saveGroup()));
-	addAction(m_saveGroupAction);
+	m_graphViewsActions.push_back(m_saveGroupAction);
 
 	auto zoomResetAction = new QAction(tr("Reset &zoom"), this);
 	zoomResetAction->setShortcut(tr("Ctrl+0"));
 	zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
 	zoomResetAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(zoomResetAction, SIGNAL(triggered()), m_documentView, SLOT(zoomReset()));
-	m_documentView->addAction(zoomResetAction);
+	connect(zoomResetAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->zoomReset(); });
+	m_allViewsActions.push_back(zoomResetAction);
 
-	auto zoomInAction = new QAction(tr("Zoom &in"), m_documentView);
+	auto zoomInAction = new QAction(tr("Zoom &in"), this);
 	zoomInAction->setShortcut(QKeySequence::ZoomIn);
 	zoomInAction->setStatusTip(tr("Zoom in"));
 	zoomInAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(zoomInAction, SIGNAL(triggered()), m_documentView, SLOT(zoomIn()));
-	m_documentView->addAction(zoomInAction);
+	connect(zoomInAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->zoomIn(); });
+	m_allViewsActions.push_back(zoomInAction);
 
-	auto zoomOutAction = new QAction(tr("Zoom &out"), m_documentView);
+	auto zoomOutAction = new QAction(tr("Zoom &out"), this);
 	zoomOutAction->setShortcut(QKeySequence::ZoomOut);
 	zoomOutAction->setStatusTip(tr("Zoom out"));
 	zoomOutAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(zoomOutAction, SIGNAL(triggered()), m_documentView, SLOT(zoomOut()));
-	m_documentView->addAction(zoomOutAction);
+	connect(zoomOutAction,&QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->zoomOut(); });
+	m_allViewsActions.push_back(zoomOutAction);
 
 	auto centerViewAction = new QAction(tr("&Center view"), this);
 	centerViewAction->setShortcut(tr("Ctrl+5"));
 	centerViewAction->setStatusTip(tr("Center the view"));
 	centerViewAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(centerViewAction, SIGNAL(triggered()), m_documentView, SLOT(centerView()));
-	m_documentView->addAction(centerViewAction);
+	connect(centerViewAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->centerView(); });
+	m_graphViewsActions.push_back(centerViewAction);
 
 	auto showAllAction = new QAction(tr("Show &all"), this);
 	showAllAction->setShortcut(tr("Ctrl+f"));
 	showAllAction->setStatusTip(tr("Center and zoom the view so that all objects are visible"));
 	showAllAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(showAllAction, SIGNAL(triggered()), m_documentView, SLOT(showAll()));
-	m_documentView->addAction(showAllAction);
+	connect(showAllAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->showAll(); });
+	m_graphViewsActions.push_back(showAllAction);
 
 	auto showAllSelectedAction = new QAction(tr("Show all &selected"), this);
 	showAllSelectedAction->setShortcut(tr("Ctrl+d"));
 	showAllSelectedAction->setStatusTip(tr("Center and zoom the view so that all selected objects are visible"));
 	showAllSelectedAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(showAllSelectedAction, SIGNAL(triggered()), m_documentView, SLOT(showAllSelected()));
-	m_documentView->addAction(showAllSelectedAction);
+	connect(showAllSelectedAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->showAllSelected(); });
+	m_graphViewsActions.push_back(showAllSelectedAction);
 
 	auto showGraphViewAction = new QAction(tr("Show &graph view"), this);
 	showGraphViewAction->setShortcut(tr("Ctrl+1"));
 	showGraphViewAction->setStatusTip(tr("Switch to the graph view"));
-	connect(showGraphViewAction, SIGNAL(triggered()), this, SLOT(switchToGraphView()));
+	connect(showGraphViewAction, SIGNAL(triggered()), this, SLOT(switchToDocumentView()));
 	addAction(showGraphViewAction);
 
 	auto showOpenGLViewAction = new QAction(tr("Show &render view"), this);
@@ -495,23 +497,24 @@ void MainWindow::createActions()
 
 	m_removeLinkAction = new QAction(tr("Remove link"), this);
 	m_removeLinkAction->setStatusTip(tr("Remove the link to this data"));
-	connect(m_removeLinkAction, SIGNAL(triggered()), m_documentView, SLOT(removeLink()));
-	addAction(m_removeLinkAction);
+	connect(m_removeLinkAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->removeLink(); });
+	m_graphViewsActions.push_back(m_removeLinkAction);
 
 	m_copyDataAction = new QAction(tr("Copy data"), this);
 	m_copyDataAction->setStatusTip(tr("Create a user value generator based on this data"));
 	connect(m_copyDataAction, SIGNAL(triggered()), this, SLOT(copyDataToUserValue()));
-	addAction(m_copyDataAction);
+	m_graphViewsActions.push_back(m_copyDataAction);
 
 	auto showLoggerDialogAction = new QAction(tr("Show &log"), this);
 	showLoggerDialogAction->setShortcut(tr("F2"));
 	showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
 	connect(showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
 
-	auto showDirtyInfoAction = new QAction(tr("Debug dirty state"), this);
-	showDirtyInfoAction->setCheckable(true);
-	showDirtyInfoAction->setStatusTip(tr("Show the dirty status of each object and data"));
-	connect(showDirtyInfoAction, &QAction::triggered, m_documentView, &GraphView::debugDirtyState);
+	m_showDirtyInfoAction = new QAction(tr("Debug dirty state"), this);
+	m_showDirtyInfoAction->setCheckable(true);
+	m_showDirtyInfoAction->setStatusTip(tr("Show the dirty status of each object and data"));
+	connect(m_showDirtyInfoAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->debugDirtyState(); });
+	m_graphViewsActions.push_back(m_showDirtyInfoAction);
 
 	auto showObjectsAndTypesAction = new QAction(tr("List types and objects"), this);
 	showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
@@ -524,23 +527,23 @@ void MainWindow::createActions()
 
 	m_nameLinkTagAction = new QAction(tr("Set label"), this);
 	m_nameLinkTagAction->setStatusTip(tr("Set a label for the link"));
-	connect(m_nameLinkTagAction, &QAction::triggered, m_documentView, &GraphView::setLinkTagName);
-	addAction(m_nameLinkTagAction);
+	connect(m_nameLinkTagAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->setLinkTagName(); });
+	m_graphViewsActions.push_back(m_nameLinkTagAction);
 
 	m_chooseWidgetAction = new QAction(tr("Choose widget"), this);
 	m_chooseWidgetAction->setStatusTip(tr("Choose the widget to use for this data"));
-	connect(m_chooseWidgetAction, SIGNAL(triggered()), m_documentView, SLOT(showChooseWidgetDialog()));
-	addAction(m_chooseWidgetAction);
+	connect(m_chooseWidgetAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->showChooseWidgetDialog(); });
+	m_graphViewsActions.push_back(m_chooseWidgetAction);
 
 	m_objectToBackAction = new QAction(tr("Move object to back"), this);
 	m_objectToBackAction->setStatusTip(tr("Move the selected object to the back of the others"));
-	connect(m_objectToBackAction, &QAction::triggered, m_documentView, &GraphView::moveObjectToBack);
-	addAction(m_objectToBackAction);
+	connect(m_objectToBackAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->moveObjectToBack(); });
+	m_graphViewsActions.push_back(m_objectToBackAction);
 
 	m_objectToFrontAction = new QAction(tr("Move object to front"), this);
 	m_objectToFrontAction->setStatusTip(tr("Move the selected object in front of the others"));
-	connect(m_objectToFrontAction, &QAction::triggered, m_documentView, &GraphView::moveObjectToFront);
-	addAction(m_objectToFrontAction);
+	connect(m_objectToFrontAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->moveObjectToFront(); });
+	m_graphViewsActions.push_back(m_objectToFrontAction);
 
 	m_undoAction = new QAction(tr("Undo"), this);
 	m_undoAction->setShortcut(QKeySequence::Undo);
@@ -561,89 +564,94 @@ void MainWindow::createActions()
 	auto alignHorCenterAction = new QAction(tr("Center"), this);
 	alignHorCenterAction->setIcon(QIcon(":/share/icons/align-horizontal-center.png"));
 	alignHorCenterAction->setStatusTip(tr("Center on vertical axis"));
-	connect(alignHorCenterAction, &QAction::triggered, [this]() { alignHorizontallyCenter(m_documentView); });
-	addAction(alignHorCenterAction);
+	connect(alignHorCenterAction, &QAction::triggered, [this]() { if(m_currentGraphView) alignHorizontallyCenter(m_currentGraphView); });
+	m_graphViewsActions.push_back(alignHorCenterAction);
 
 	auto alignHorLeftAction = new QAction(tr("Left"), this);
 	alignHorLeftAction->setIcon(QIcon(":/share/icons/align-horizontal-left.png"));
 	alignHorLeftAction->setStatusTip(tr("Align left edges"));
-	connect(alignHorLeftAction, &QAction::triggered, [this]() { alignHorizontallyLeft(m_documentView); });
-	addAction(alignHorLeftAction);
+	connect(alignHorLeftAction, &QAction::triggered, [this]() { if(m_currentGraphView) alignHorizontallyLeft(m_currentGraphView); });
+	m_graphViewsActions.push_back(alignHorLeftAction);
 
 	auto alignHorRightAction = new QAction(tr("Right"), this);
 	alignHorRightAction->setIcon(QIcon(":/share/icons/align-horizontal-right.png"));
 	alignHorRightAction->setStatusTip(tr("Align right edges"));
-	connect(alignHorRightAction, &QAction::triggered, [this]() { alignHorizontallyRight(m_documentView); });
-	addAction(alignHorRightAction);
+	connect(alignHorRightAction, &QAction::triggered, [this]() { if(m_currentGraphView) alignHorizontallyRight(m_currentGraphView); });
+	m_graphViewsActions.push_back(alignHorRightAction);
 
 	// Alignment (vertical)
 	auto alignVertCenterAction = new QAction(tr("Center"), this);
 	alignVertCenterAction->setIcon(QIcon(":/share/icons/align-vertical-center.png"));
 	alignVertCenterAction->setStatusTip(tr("Center on horizontal axis"));
-	connect(alignVertCenterAction, &QAction::triggered, [this]() { alignVerticallyCenter(m_documentView); });
-	addAction(alignVertCenterAction);
+	connect(alignVertCenterAction, &QAction::triggered, [this]() { if(m_currentGraphView) alignVerticallyCenter(m_currentGraphView); });
+	m_graphViewsActions.push_back(alignVertCenterAction);
 
 	auto alignVertTopAction = new QAction(tr("Top"), this);
 	alignVertTopAction->setIcon(QIcon(":/share/icons/align-vertical-top.png"));
 	alignVertTopAction->setStatusTip(tr("Align top edges"));
-	connect(alignVertTopAction, &QAction::triggered, [this]() { alignVerticallyTop(m_documentView); });
-	addAction(alignVertTopAction);
+	connect(alignVertTopAction, &QAction::triggered, [this]() { if(m_currentGraphView) alignVerticallyTop(m_currentGraphView); });
+	m_graphViewsActions.push_back(alignVertTopAction);
 
 	auto alignVertBottomAction = new QAction(tr("Bottom"), this);
 	alignVertBottomAction->setIcon(QIcon(":/share/icons/align-vertical-bottom.png"));
 	alignVertBottomAction->setStatusTip(tr("Align bottom edges"));
-	connect(alignVertBottomAction, &QAction::triggered, [this]() { alignVerticallyBottom(m_documentView); });
-	addAction(alignVertBottomAction);
+	connect(alignVertBottomAction, &QAction::triggered, [this]() { if(m_currentGraphView) alignVerticallyBottom(m_currentGraphView); });
+	m_graphViewsActions.push_back(alignVertBottomAction);
 
 	// Distribution (horizontal)
 	auto distributeHorCenterAction = new QAction(tr("Center"), this);
 	distributeHorCenterAction->setIcon(QIcon(":/share/icons/distribute-horizontal-center.png"));
 	distributeHorCenterAction->setStatusTip(tr("Distribute centers equidistantly horizontally"));
-	connect(distributeHorCenterAction, &QAction::triggered, [this]() { distributeHorizontallyCenter(m_documentView); });
-	addAction(distributeHorCenterAction);
+	connect(distributeHorCenterAction, &QAction::triggered, [this]() { if(m_currentGraphView) distributeHorizontallyCenter(m_currentGraphView); });
+	m_graphViewsActions.push_back(distributeHorCenterAction);
 
 	auto distributeHorGapsAction = new QAction(tr("Gaps"), this);
 	distributeHorGapsAction->setIcon(QIcon(":/share/icons/distribute-horizontal-gaps.png"));
 	distributeHorGapsAction->setStatusTip(tr("Make horizontal gaps between objects equal"));
-	connect(distributeHorGapsAction, &QAction::triggered, [this]() { distributeHorizontallyGaps(m_documentView); });
-	addAction(distributeHorGapsAction);
+	connect(distributeHorGapsAction, &QAction::triggered, [this]() { if(m_currentGraphView) distributeHorizontallyGaps(m_currentGraphView); });
+	m_graphViewsActions.push_back(distributeHorGapsAction);
 
 	auto distributeHorLeftAction = new QAction(tr("Left"), this);
 	distributeHorLeftAction->setIcon(QIcon(":/share/icons/distribute-horizontal-left.png"));
 	distributeHorLeftAction->setStatusTip(tr("Distribute left edges equidistantly"));
-	connect(distributeHorLeftAction, &QAction::triggered, [this]() { distributeHorizontallyLeft(m_documentView); });
-	addAction(distributeHorLeftAction);
+	connect(distributeHorLeftAction, &QAction::triggered, [this]() { if(m_currentGraphView) distributeHorizontallyLeft(m_currentGraphView); });
+	m_graphViewsActions.push_back(distributeHorLeftAction);
 
 	auto distributeHorRightAction = new QAction(tr("Right"), this);
 	distributeHorRightAction->setIcon(QIcon(":/share/icons/distribute-horizontal-right.png"));
 	distributeHorRightAction->setStatusTip(tr("Distribute left edges equidistantly"));
-	connect(distributeHorRightAction, &QAction::triggered, [this]() { distributeHorizontallyRight(m_documentView); });
-	addAction(distributeHorRightAction);
+	connect(distributeHorRightAction, &QAction::triggered, [this]() { if(m_currentGraphView) distributeHorizontallyRight(m_currentGraphView); });
+	m_graphViewsActions.push_back(distributeHorRightAction);
 
 	// Distribution (vertical)
 	auto distributeVertCenterAction = new QAction(tr("Center"), this);
 	distributeVertCenterAction->setIcon(QIcon(":/share/icons/distribute-vertical-center.png"));
 	distributeVertCenterAction->setStatusTip(tr("Distribute centers equidistantly vertically"));
-	connect(distributeVertCenterAction, &QAction::triggered, [this]() { distributeVerticallyCenter(m_documentView); });
-	addAction(distributeVertCenterAction);
+	connect(distributeVertCenterAction, &QAction::triggered, [this]() { if(m_currentGraphView) distributeVerticallyCenter(m_currentGraphView); });
+	m_graphViewsActions.push_back(distributeVertCenterAction);
 
 	auto distributeVertGapsAction = new QAction(tr("Gaps"), this);
 	distributeVertGapsAction->setIcon(QIcon(":/share/icons/distribute-vertical-gaps.png"));
 	distributeVertGapsAction->setStatusTip(tr("Make vertical gaps between objects equal"));
-	connect(distributeVertGapsAction, &QAction::triggered, [this]() { distributeVerticallyGaps(m_documentView); });
-	addAction(distributeVertGapsAction);
+	connect(distributeVertGapsAction, &QAction::triggered, [this]() { if(m_currentGraphView) distributeVerticallyGaps(m_currentGraphView); });
+	m_graphViewsActions.push_back(distributeVertGapsAction);
 
 	auto distributeVertTopAction = new QAction(tr("Top"), this);
 	distributeVertTopAction->setIcon(QIcon(":/share/icons/distribute-vertical-top.png"));
 	distributeVertTopAction->setStatusTip(tr("Distribute top edges equidistantly"));
-	connect(distributeVertTopAction, &QAction::triggered, [this]() { distributeVerticallyTop(m_documentView); });
-	addAction(distributeVertTopAction);
+	connect(distributeVertTopAction, &QAction::triggered, [this]() { if(m_currentGraphView) distributeVerticallyTop(m_currentGraphView); });
+	m_graphViewsActions.push_back(distributeVertTopAction);
 
 	auto distributeVertBottomAction = new QAction(tr("Bottom"), this);
 	distributeVertBottomAction->setIcon(QIcon(":/share/icons/distribute-vertical-bottom.png"));
 	distributeVertBottomAction->setStatusTip(tr("Distribute bottom edges equidistantly"));
-	connect(distributeVertBottomAction, &QAction::triggered, [this]() { distributeVerticallyBottom(m_documentView); });
-	addAction(distributeVertBottomAction);
+	connect(distributeVertBottomAction, &QAction::triggered, [this]() { if(m_currentGraphView) distributeVerticallyBottom(m_currentGraphView); });
+	m_graphViewsActions.push_back(distributeVertBottomAction);
+
+	for (auto action : m_allViewsActions)
+		m_documentView->addAction(action);
+	for (auto action : m_graphViewsActions)
+		m_documentView->addAction(action);
 
 /*** Creation of menus ***/
 	m_fileMenu = menuBar()->addMenu(tr("&File"));
@@ -720,7 +728,7 @@ void MainWindow::createActions()
 	m_viewMenu->addAction(m_fullScreenAction);
 	m_viewMenu->addAction(exitFullscreenOnFocusLossAction);
 	m_viewMenu->addSeparator();
-	m_viewMenu->addAction(showDirtyInfoAction);
+	m_viewMenu->addAction(m_showDirtyInfoAction);
 #ifdef PANDA_LOG_EVENTS
 	m_viewMenu->addAction(showLoggerDialogAction);
 #endif
@@ -1162,6 +1170,12 @@ void MainWindow::openGroup()
 	}
 
 	auto groupView = new GroupView(group, m_document.get(), group->getObjectsList());
+	
+	// Register the actions for the group view
+	for (auto action : m_allViewsActions)
+		groupView->addAction(action);
+	for (auto action : m_graphViewsActions)
+		groupView->addAction(action);
 
 	// Move the object based on the positions saved in the group
 	for (const auto& object : group->getObjectsList().get())
@@ -1583,5 +1597,25 @@ QWidget* MainWindow::selectedTabWidget() const
 			return imageViewport.viewport;
 	}
 
+	for (const auto& graphView : m_groupViews)
+	{
+		if (hasParent(graphView.view, currentTabWidget))
+			return graphView.view;
+	}
+
 	return nullptr;
+}
+
+void MainWindow::onTabChanged()
+{
+	auto widget = selectedTabWidget();
+	m_currentGraphView = dynamic_cast<GraphView*>(widget);
+
+	bool isAnyView = (widget != m_openGLRenderView);
+	for (auto action : m_allViewsActions)
+		action->setEnabled(isAnyView);
+
+	bool isGraphView = (m_currentGraphView != nullptr);
+	for (auto action : m_graphViewsActions)
+		action->setEnabled(isGraphView);
 }
