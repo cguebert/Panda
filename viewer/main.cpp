@@ -127,7 +127,7 @@ void drop_callback(GLFWwindow* window, int count, const char** paths)
 		return;
 
 	document->resetDocument();
-	panda::serialization::readFile(document.get(), paths[0]);
+	panda::serialization::readFile(document.get(), document->getObjectsList(), paths[0]);
 	document->setRenderSize({ currentWidth, currentHeight });
 	document->play(true);
 }
@@ -208,7 +208,7 @@ bool init(const std::string& filePath = "")
 	
 	if (!filePath.empty())
 	{
-		panda::serialization::readFile(document.get(), filePath);
+		panda::serialization::readFile(document.get(), document->getObjectsList(), filePath);
 		document->play(true);
 	}
 

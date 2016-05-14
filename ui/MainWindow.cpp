@@ -205,7 +205,7 @@ void MainWindow::import()
 		{
 			auto selection = m_documentView->selection().get();
 			if(!selection.empty())
-				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_documentView, selection));
+				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_document->getObjectsList(), m_documentView, selection));
 		}
 	}
 }
@@ -314,27 +314,27 @@ void MainWindow::createActions()
 	m_cutAction->setIcon(QIcon(":/share/icons/cut.png"));
 	m_cutAction->setShortcut(QKeySequence::Cut);
 	m_cutAction->setStatusTip(tr("Cut the current selection's contents to the clipboard"));
-	connect(m_cutAction, SIGNAL(triggered()), this, SLOT(cut()));
+	connect(m_cutAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->cut(); });
 	m_graphViewsActions.push_back(m_cutAction);
 
 	m_copyAction = new QAction(tr("&Copy"), this);
 	m_copyAction->setIcon(QIcon(":/share/icons/copy.png"));
 	m_copyAction->setShortcut(QKeySequence::Copy);
 	m_copyAction->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
-	connect(m_copyAction, SIGNAL(triggered()), this, SLOT(copy()));
+	connect(m_copyAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->copy(); });
 	m_graphViewsActions.push_back(m_copyAction);
 
 	m_pasteAction = new QAction(tr("&Paste"), this);
 	m_pasteAction->setIcon(QIcon(":/share/icons/paste.png"));
 	m_pasteAction->setShortcut(QKeySequence::Paste);
 	m_pasteAction->setStatusTip(tr("Paste the clipboard's contents into the current selection"));
-	connect(m_pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
+	connect(m_pasteAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->paste(); });
 	m_graphViewsActions.push_back(m_pasteAction);
 
 	m_deleteAction = new QAction(tr("&Delete"), this);
 	m_deleteAction->setShortcut(QKeySequence::Delete);
 	m_deleteAction->setStatusTip(tr("Delete the current selection's contents"));
-	connect(m_deleteAction, SIGNAL(triggered()), this, SLOT(del()));
+	connect(m_deleteAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->del(); });
 	m_graphViewsActions.push_back(m_deleteAction);
 
 	auto selectAllAction = new QAction(tr("Select &all"), this);
@@ -906,7 +906,7 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile(const QString &fileName, bool import)
 {
-	auto result = panda::serialization::readFile(m_document.get(), fileName.toStdString(), import);
+	auto result = panda::serialization::readFile(m_document.get(), m_document->getObjectsList(), fileName.toStdString(), import);
 
 	if(!result.first)
 	{
@@ -996,7 +996,9 @@ void MainWindow::createObject()
 	if(action)
 	{
 		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString().toStdString(), m_document.get());
-		m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_documentView, object));
+		auto& objectsList = m_currentGraphView ? m_currentGraphView->objectsList() : m_document->getObjectsList();
+		auto view = m_currentGraphView ? (m_currentGraphView->isTemporaryView() ? nullptr : m_currentGraphView) : m_documentView;
+		m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), objectsList, view, object));
 	}
 }
 
@@ -1053,47 +1055,6 @@ void MainWindow::adjustRenderSizeToView()
 void MainWindow::showStatusBarMessage(QString text)
 {
 	statusBar()->showMessage(text, 2000);
-}
-
-void MainWindow::copy()
-{
-	if (m_documentView->selection().get().empty())
-		return;
-
-	auto objects = m_documentView->selection().get();
-	QApplication::clipboard()->setText(QString::fromStdString(panda::serialization::writeTextDocument(m_document.get(), objects)));
-}
-
-void MainWindow::cut()
-{
-	copy();
-	del();
-}
-
-void MainWindow::paste()
-{
-	const QMimeData* mimeData = QApplication::clipboard()->mimeData();
-	if (!mimeData->hasText())
-		return;
-	
-	auto result = panda::serialization::readTextDocument(m_document.get(), mimeData->text().toStdString());
-	if (!result.first || result.second.empty())
-		return;
-
-	m_documentView->selection().set(result.second);
-	m_documentView->moveSelectedToCenter();
-
-	m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_documentView, result.second));
-}
-
-void MainWindow::del()
-{
-	auto selection = m_documentView->selection().get();
-	if(!selection.empty())
-	{
-		auto macro = m_document->getUndoStack().beginMacro(tr("delete objects").toStdString());
-		m_document->getUndoStack().push(std::make_shared<RemoveObjectCommand>(m_document.get(), m_documentView, selection));
-	}
 }
 
 void MainWindow::group()
@@ -1500,7 +1461,7 @@ void MainWindow::convertSavedDocuments()
 	{
 		auto path = entry.absoluteFilePath();
 		m_document->resetDocument();
-		if (panda::serialization::readFile(m_document.get(), path.toStdString()).first)
+		if (panda::serialization::readFile(m_document.get(), m_document->getObjectsList(), path.toStdString()).first)
 		{
 			panda::serialization::writeFile(m_document.get(), path.toStdString());
 			++nb;

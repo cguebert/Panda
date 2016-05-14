@@ -3,7 +3,9 @@
 #include <functional>
 #include <limits>
 
+#include <ui/command/AddObjectCommand.h>
 #include <ui/command/MoveObjectCommand.h>
+#include <ui/command/RemoveObjectCommand.h>
 #include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/dialog/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
@@ -22,6 +24,7 @@
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
 #include <panda/document/ObjectsList.h>
+#include <panda/document/Serialization.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <ui/dialog/UpdateLoggerDialog.h>
@@ -1830,4 +1833,47 @@ void GraphView::moveObjectToFront()
 {
 	assert(m_contextMenuObject);
 	m_objectsList.reinsertObject(m_contextMenuObject, -1); // Back of the list = drawn on top of the others
+}
+
+void GraphView::copy()
+{
+	const auto& selection = m_objectsSelection->get();
+	if (selection.empty())
+		return;
+
+	QApplication::clipboard()->setText(QString::fromStdString(panda::serialization::writeTextDocument(m_pandaDocument, selection)));
+}
+
+void GraphView::cut()
+{
+	copy();
+	del();
+}
+
+void GraphView::paste()
+{
+	const QMimeData* mimeData = QApplication::clipboard()->mimeData();
+	if (!mimeData->hasText())
+		return;
+	
+	auto result = panda::serialization::readTextDocument(m_pandaDocument, objectsList(), mimeData->text().toStdString());
+	if (!result.first || result.second.empty())
+		return;
+
+	m_objectsSelection->set(result.second);
+	moveSelectedToCenter();
+
+	auto view = isTemporaryView() ? nullptr : this;
+	m_pandaDocument->getUndoStack().push(std::make_shared<AddObjectCommand>(m_pandaDocument, m_objectsList, view, result.second));
+}
+
+void GraphView::del()
+{
+	const auto& selection = m_objectsSelection->get();
+	if (selection.empty())
+		return;
+
+	auto view = isTemporaryView() ? nullptr : this;
+	auto macro = m_pandaDocument->getUndoStack().beginMacro(tr("delete objects").toStdString());	
+	m_pandaDocument->getUndoStack().push(std::make_shared<RemoveObjectCommand>(m_pandaDocument, m_objectsList, view, selection));
 }

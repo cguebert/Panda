@@ -8,6 +8,7 @@
 
 namespace panda
 {
+class ObjectsList;
 class PandaDocument;
 class PandaObject;
 }
@@ -18,9 +19,9 @@ class ObjectDrawStruct;
 class AddObjectCommand : public panda::UndoCommand
 {
 public:
-	AddObjectCommand(panda::PandaDocument* document, GraphView* view, std::shared_ptr<panda::PandaObject> object);
-	AddObjectCommand(panda::PandaDocument* document, GraphView* view, std::vector<std::shared_ptr<panda::PandaObject>> objects);
-	AddObjectCommand(panda::PandaDocument* document, GraphView* view, std::vector<panda::PandaObject*> objects);
+	AddObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view, std::shared_ptr<panda::PandaObject> object);
+	AddObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view, std::vector<std::shared_ptr<panda::PandaObject>> objects);
+	AddObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view, std::vector<panda::PandaObject*> objects);
 
 	virtual int id() const;
 
@@ -31,6 +32,7 @@ public:
 
 protected:
 	panda::PandaDocument* m_document;
+	panda::ObjectsList& m_objectsList;
 	GraphView* m_view;
 	bool m_ignoreRedo;
 	std::vector<std::shared_ptr<panda::PandaObject>> m_objects;

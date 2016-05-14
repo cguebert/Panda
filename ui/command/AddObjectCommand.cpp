@@ -7,9 +7,11 @@
 #include <ui/command/AddObjectCommand.h>
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
+								   panda::ObjectsList& objectsList,
 								   GraphView* view,
 								   std::shared_ptr<panda::PandaObject> object)
 	: m_document(document)
+	, m_objectsList(objectsList)
 	, m_view(view)
 	, m_ignoreRedo(false)
 {
@@ -18,9 +20,11 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 }
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
+								   panda::ObjectsList& objectsList,
 								   GraphView* view,
 								   std::vector<std::shared_ptr<panda::PandaObject>> objects)
 	: m_document(document)
+	, m_objectsList(objectsList)
 	, m_view(view)
 	, m_objects(objects)
 	, m_ignoreRedo(false)
@@ -29,15 +33,17 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 }
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
+								   panda::ObjectsList& objectsList,
 								   GraphView* view,
 								   std::vector<panda::PandaObject*> objects)
 	: m_document(document)
+	, m_objectsList(objectsList)
 	, m_view(view)
 	, m_ignoreRedo(true) // This version is used when importing a document: when the command is created, objects are already added
 {
 	for(auto object : objects)
 	{
-		auto objectPtr = m_view->objectsList().getShared(object);
+		auto objectPtr = m_objectsList.getShared(object);
 		if(objectPtr)
 			m_objects.push_back(objectPtr);
 	}
@@ -62,12 +68,12 @@ void AddObjectCommand::redo()
 		m_view->setObjectDrawStruct(ods->getObject(), ods);
 
 	for(auto object : m_objects)
-		m_view->objectsList().addObject(object);
+		m_objectsList.addObject(object);
 }
 
 void AddObjectCommand::undo()
 {
-	if(m_drawStructs.empty())
+	if(m_view && m_drawStructs.empty())
 	{
 		for(auto object : m_objects)
 		{
@@ -78,7 +84,7 @@ void AddObjectCommand::undo()
 	}
 
 	for(auto object : m_objects)
-		m_view->objectsList().removeObject(object.get());
+		m_objectsList.removeObject(object.get());
 }
 
 bool AddObjectCommand::mergeWith(const UndoCommand *other)

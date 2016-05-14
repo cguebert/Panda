@@ -206,7 +206,8 @@ void QuickCreateDialog::createObject()
 			if(getFactoryEntry(selectedItemText.toStdString(), entry))
 			{
 				auto object = ObjectFactory::getInstance()->create(entry.className, m_document);
-				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document, m_view, object));
+				auto viewPtr = m_view->isTemporaryView() ? nullptr : m_view;
+				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document, m_view->objectsList(), viewPtr, object));
 			}
 		}
 	}

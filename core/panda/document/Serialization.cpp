@@ -22,7 +22,7 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 	root.setName("Panda");
 	document->save(root);	// The document's Datas
 	auto& objects = document->getObjectsList().get();
-	ObjectsList allObjects;
+	Objects allObjects;
 	for(auto object : objects)
 		allObjects.push_back(object.get());
 	saveDoc(document, root, allObjects);	// The document and all of its objects
@@ -34,7 +34,7 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 	return result;
 }
 
-LoadResult readFile(PandaDocument* document, const std::string& fileName, bool isImport)
+LoadResult readFile(PandaDocument* document, ObjectsList& objectsList, const std::string& fileName, bool isImport)
 {
 	XmlDocument doc;
 	if (!doc.loadFromFile(fileName))
@@ -46,10 +46,10 @@ LoadResult readFile(PandaDocument* document, const std::string& fileName, bool i
 	auto root = doc.root();
 	if(!isImport)	// Bugfix: don't read the doc's datas if we are merging 2 documents
 		document->load(root);		// Only the document's Datas
-	return loadDoc(document, root);	// All the document's objects
+	return loadDoc(document, objectsList, root);	// All the document's objects
 }
 
-std::string writeTextDocument(PandaDocument* document, const ObjectsList& objects)
+std::string writeTextDocument(PandaDocument* document, const Objects& objects)
 {
 	XmlDocument doc;
 	auto root = doc.root();
@@ -61,16 +61,16 @@ std::string writeTextDocument(PandaDocument* document, const ObjectsList& object
 	return doc.saveToMemory();
 }
 
-LoadResult readTextDocument(PandaDocument* document, const std::string& text)
+LoadResult readTextDocument(PandaDocument* document, ObjectsList& objectsList, const std::string& text)
 {
 	XmlDocument doc;
 	if (!doc.loadFromMemory(text))
 		return { false, {} };
 
-	return loadDoc(document, doc.root());
+	return loadDoc(document, objectsList, doc.root());
 }
 
-bool saveDoc(PandaDocument* document, XmlElement& root, const ObjectsList& objects)
+bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects)
 {
 	typedef std::pair<BaseData*, BaseData*> DataPair;
 	std::vector<DataPair> links;
@@ -127,7 +127,7 @@ bool saveDoc(PandaDocument* document, XmlElement& root, const ObjectsList& objec
 	return true;
 }
 
-LoadResult loadDoc(PandaDocument* document, XmlElement& root)
+LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement& root)
 {
 	document->getSignals().startLoading.run();
 	std::map<uint32_t, uint32_t> importIndicesMap;
@@ -164,8 +164,7 @@ LoadResult loadDoc(PandaDocument* document, XmlElement& root)
 	}
 
 	// Now that we have created all the objects, we actually add them to the document
-	auto& objectsList = document->getObjectsList();
-	ObjectsList objects;
+	Objects objects;
 	for (const auto& p : newObjects)
 	{
 		const auto& object = p.first;

@@ -8,6 +8,7 @@
 
 namespace panda
 {
+class ObjectsList;
 class PandaDocument;
 class PandaObject;
 }
@@ -18,9 +19,9 @@ class ObjectDrawStruct;
 class RemoveObjectCommand : public panda::UndoCommand
 {
 public:
-	RemoveObjectCommand(panda::PandaDocument* document, GraphView* view,
+	RemoveObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view,
 						const std::vector<panda::PandaObject*>& objects, bool unlinkDatas = true);
-	RemoveObjectCommand(panda::PandaDocument* document, GraphView* view,
+	RemoveObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view,
 						panda::PandaObject* object, bool unlinkDatas = true);
 
 	virtual int id() const;
@@ -32,6 +33,7 @@ public:
 
 protected:
 	panda::PandaDocument* m_document;
+	panda::ObjectsList& m_objectsList;
 	GraphView* m_view;
 	std::vector< std::pair< std::shared_ptr<panda::PandaObject>, std::shared_ptr<ObjectDrawStruct> > > m_objects;
 

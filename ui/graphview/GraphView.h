@@ -100,6 +100,8 @@ public:
 	virtual QPoint viewPosition() override;
 	virtual void scrollView(QPoint position) override;
 
+	virtual bool isTemporaryView() const; // If true, do not store any pointer to this view (in commands for example)
+
 protected:
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
@@ -151,6 +153,10 @@ signals:
 	void lostFocus(QWidget*);
 
 public slots:
+	void copy();
+	void cut();
+	void paste();
+	void del();
 	void zoomIn();
 	void zoomOut();
 	void zoomReset();
@@ -290,5 +296,8 @@ inline bool GraphView::hasLinkTag(panda::BaseData* input, panda::BaseData* outpu
 
 inline bool GraphView::canLinkWith(const panda::BaseData* data) const
 { return m_possibleLinks.count(data) != 0; }
+
+inline bool GraphView::isTemporaryView() const
+{ return false; }
 
 #endif

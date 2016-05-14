@@ -17,6 +17,8 @@ public:
 
 	void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta) override;
 
+	bool isTemporaryView() const;
+
 protected:
 	void paintGL() override;
 

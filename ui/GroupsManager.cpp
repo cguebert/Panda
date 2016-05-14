@@ -1,6 +1,7 @@
 #include <QtWidgets>
 
 #include <ui/GroupsManager.h>
+#include <ui/graphview/GraphView.h>
 #include <ui/command/AddObjectCommand.h>
 
 #include <panda/object/Group.h>
@@ -145,7 +146,7 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 	auto object = panda::ObjectFactory::getInstance()->create(registryName, document);
 	if(object && object->load(root))
 	{
-		document->getUndoStack().push(std::make_shared<AddObjectCommand>(document, view, object));
+		document->getUndoStack().push(std::make_shared<AddObjectCommand>(document, view->objectsList(), view, object));
 		return object.get();
 	}
 	else

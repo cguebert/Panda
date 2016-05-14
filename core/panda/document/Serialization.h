@@ -8,6 +8,7 @@
 
 namespace panda {
 
+class ObjectsList;
 class PandaDocument;
 class PandaObject;
 class XmlElement;
@@ -15,17 +16,17 @@ class XmlElement;
 namespace serialization
 {
 
-using ObjectsList = std::vector<panda::PandaObject*>;
-using LoadResult = std::pair<bool, ObjectsList>;
+using Objects = std::vector<panda::PandaObject*>;
+using LoadResult = std::pair<bool, Objects>;
 
 bool PANDA_CORE_API writeFile(PandaDocument* document, const std::string& fileName);
-LoadResult PANDA_CORE_API readFile(PandaDocument* document, const std::string& fileName, bool isImport = false);
+LoadResult PANDA_CORE_API readFile(PandaDocument* document, ObjectsList& objectsList, const std::string& fileName, bool isImport = false);
 
-std::string PANDA_CORE_API writeTextDocument(PandaDocument* document, const ObjectsList& objects);
-LoadResult PANDA_CORE_API readTextDocument(PandaDocument* document, const std::string& text);
+std::string PANDA_CORE_API writeTextDocument(PandaDocument* document, const Objects& objects);
+LoadResult PANDA_CORE_API readTextDocument(PandaDocument* document, ObjectsList& objectsList, const std::string& text);
 
-bool PANDA_CORE_API saveDoc(PandaDocument* document, XmlElement& root, const ObjectsList& objects);
-LoadResult PANDA_CORE_API loadDoc(PandaDocument* document, XmlElement& root);
+bool PANDA_CORE_API saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects);
+LoadResult PANDA_CORE_API loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement& root);
 
 } // namespace serialization
 

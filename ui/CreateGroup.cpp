@@ -129,17 +129,18 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 
 	auto factory = ObjectFactory::getInstance();
 	Group* group = nullptr;
+	auto viewPtr = view->isTemporaryView() ? nullptr : view;
 	if(hasRenderer)
 	{
 		auto object = factory->create(ObjectFactory::getRegistryName<GroupWithLayer>(), doc);
-		undoStack.push(std::make_shared<AddObjectCommand>(doc, view, object));
+		undoStack.push(std::make_shared<AddObjectCommand>(doc, view->objectsList(), viewPtr, object));
 		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(object.get());
 		group = groupWithLayer;
 	}
 	else
 	{
 		auto object = factory->create(ObjectFactory::getRegistryName<Group>(), doc);
-		undoStack.push(std::make_shared<AddObjectCommand>(doc, view, object));
+		undoStack.push(std::make_shared<AddObjectCommand>(doc, view->objectsList(), viewPtr, object));
 		group = dynamic_cast<Group*>(object.get());
 	}
 	if(!group)
@@ -304,7 +305,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	undoStack.push(std::make_shared<SelectGroupCommand>(view, group));
 
 	// Removing the objects from the document, but don't unlink datas
-	undoStack.push(std::make_shared<RemoveObjectCommand>(doc, view, selection, false));
+	undoStack.push(std::make_shared<RemoveObjectCommand>(doc, doc->getObjectsList(), view, selection, false));
 
 	return true;
 }
@@ -329,6 +330,9 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 	auto& undoStack = doc->getUndoStack();
 	auto macro = undoStack.beginMacro("ungroup selection");
 
+	auto& objectsList = view->objectsList();
+	auto viewPtr = view->isTemporaryView() ? nullptr : view;
+
 	// For each group in the selection
 	for(auto group : groups)
 	{
@@ -344,7 +348,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 				docks.push_back(object);
 			else
 			{
-				undoStack.push(std::make_shared<AddObjectCommand>(doc, view, object));
+				undoStack.push(std::make_shared<AddObjectCommand>(doc, objectsList, viewPtr, object));
 				undoStack.push(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
 
 				// Placing the object in the view
@@ -358,7 +362,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		// We extract docks last (their docked objects must be out first)
 		for(auto& object : docks)
 		{
-			undoStack.push(std::make_shared<AddObjectCommand>(doc, view, object));
+			undoStack.push(std::make_shared<AddObjectCommand>(doc, objectsList, viewPtr, object));
 			undoStack.push(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
 
 			// Placing the object in the view
@@ -382,7 +386,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		}
 
 		undoStack.push(std::make_shared<SelectObjectsInGroupCommand>(view, group)); // Select all the object that were in the group
-		undoStack.push(std::make_shared<RemoveObjectCommand>(doc, view, group));
+		undoStack.push(std::make_shared<RemoveObjectCommand>(doc, doc->getObjectsList(), view, group));
 	}
 
 	view->sortAllDockables();

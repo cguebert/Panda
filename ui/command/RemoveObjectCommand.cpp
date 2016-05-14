@@ -7,10 +7,12 @@
 #include <ui/command/RemoveObjectCommand.h>
 
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
+										 panda::ObjectsList& objectsList,
 										 GraphView* view,
 										 const std::vector<panda::PandaObject*>& objects,
 										 bool unlinkDatas)
 	: m_document(document)
+	, m_objectsList(objectsList)
 	, m_view(view)
 {
 	prepareCommand(objects, unlinkDatas);
@@ -18,10 +20,12 @@ RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 }
 
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
+										 panda::ObjectsList& objectsList,
 										 GraphView* view,
 										 panda::PandaObject* object,
 										 bool unlinkDatas)
 	: m_document(document)
+	, m_objectsList(objectsList)
 	, m_view(view)
 {
 	std::vector<panda::PandaObject*> objects;
@@ -34,16 +38,16 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 {
 	for(auto object : objects)
 	{
-		auto objectPtr = m_view->objectsList().getShared(object);
-		auto ods = m_view->getSharedObjectDrawStruct(object);
-		if(objectPtr && ods)
+		auto objectPtr = m_objectsList.getShared(object);
+		auto ods = m_view ? m_view->getSharedObjectDrawStruct(object) : nullptr;
+		if(objectPtr)
 			m_objects.emplace_back(objectPtr, ods);
 
 		if(unlinkDatas)
 		{
 			// Create (and apply) unlink commands
 			// We start from output datas
-			const auto outputsDatas = objectPtr->getOutputDatas();
+			const auto outputsDatas = object->getOutputDatas();
 			for(auto data : outputsDatas)
 			{
 				const auto outputs = data->getOutputs();
@@ -57,7 +61,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 
 			// And then the inputs
 			// We have to reverse the order as the generic objects can remove following datas when unlinking one
-			auto inputDatas = objectPtr->getInputDatas();
+			auto inputDatas = object->getInputDatas();
 			std::reverse(inputDatas.begin(), inputDatas.end());
 			for(auto data : inputDatas)
 			{
@@ -76,15 +80,16 @@ int RemoveObjectCommand::id() const
 void RemoveObjectCommand::redo()
 {
 	for(auto& object : m_objects)
-		m_view->objectsList().removeObject(object.first.get());
+		m_objectsList.removeObject(object.first.get());
 }
 
 void RemoveObjectCommand::undo()
 {
 	for(auto& object : m_objects)
 	{
-		m_view->setObjectDrawStruct(object.first.get(), object.second);
-		m_view->objectsList().addObject(object.first);
+		if(m_view)
+			m_view->setObjectDrawStruct(object.first.get(), object.second);
+		m_objectsList.addObject(object.first);
 	}
 }
 

@@ -38,3 +38,8 @@ void GroupView::moveObjects(std::vector<panda::PandaObject*> objects, Point delt
 			m_group->setPosition(obj, ods->getPosition());
 	}
 }
+
+bool GroupView::isTemporaryView() const
+{ 
+	return true; 
+}

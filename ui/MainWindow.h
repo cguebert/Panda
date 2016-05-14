@@ -62,10 +62,6 @@ private slots:
 	void switchToOpenGLView();
 	void toggleFullScreen(bool);
 	void showStatusBarMessage(QString);
-	void copy();
-	void cut();
-	void paste();
-	void del();
 	void group();
 	void ungroup();
 	void editGroup();
