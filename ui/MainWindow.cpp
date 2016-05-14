@@ -1131,6 +1131,8 @@ void MainWindow::openGroup()
 	}
 
 	auto groupView = new GroupView(group, m_document.get(), group->getObjectsList());
+
+	m_observer.get(groupView->selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
 	
 	// Register the actions for the group view
 	for (auto action : m_allViewsActions)
@@ -1309,7 +1311,7 @@ void MainWindow::play(bool playing)
 
 void MainWindow::selectedObject(panda::PandaObject* object)
 {
-	int nbSelected = m_documentView->selection().get().size();
+	int nbSelected = m_currentGraphView ? m_currentGraphView->selection().get().size() : 0;
 	bool isGroup = (nbSelected == 1) && dynamic_cast<panda::Group*>(object);
 
 	m_ungroupAction->setEnabled(isGroup);
@@ -1318,6 +1320,8 @@ void MainWindow::selectedObject(panda::PandaObject* object)
 	m_saveGroupAction->setEnabled(isGroup);
 
 	m_groupAction->setEnabled(nbSelected > 1);
+
+	m_datasTable->setSelectedObject(object);
 }
 
 void MainWindow::showImageViewport()
@@ -1571,7 +1575,7 @@ void MainWindow::onTabChanged()
 {
 	auto widget = selectedTabWidget();
 	m_currentGraphView = dynamic_cast<GraphView*>(widget);
-
+	
 	bool isAnyView = (widget != m_openGLRenderView);
 	for (auto action : m_allViewsActions)
 		action->setEnabled(isAnyView);
@@ -1579,4 +1583,7 @@ void MainWindow::onTabChanged()
 	bool isGraphView = (m_currentGraphView != nullptr);
 	for (auto action : m_graphViewsActions)
 		action->setEnabled(isGraphView);
+
+	if (m_currentGraphView)
+		selectedObject(m_currentGraphView->selection().lastSelectedObject());
 }

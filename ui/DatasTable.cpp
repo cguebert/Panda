@@ -64,7 +64,6 @@ DatasTable::DatasTable(GraphView* view, QWidget* parent)
 
 	queuePopulate(nullptr);
 
-	m_observer.get(view->selection().selectedObject).connect<DatasTable, &DatasTable::queuePopulate>(this);
 	m_observer.get(m_document->getSignals().modifiedObject).connect<DatasTable, &DatasTable::onModifiedObject>(this);
 	m_observer.get(m_document->getSignals().timeChanged).connect<DatasTable, &DatasTable::updateCurrentObject>(this);
 }
@@ -154,6 +153,11 @@ void DatasTable::populateTable()
 void DatasTable::updateCurrentObject()
 {
 	queuePopulate(m_currentObject);
+}
+
+void DatasTable::setSelectedObject(panda::PandaObject* object)
+{
+	queuePopulate(object);
 }
 
 void DatasTable::queuePopulate(panda::PandaObject* object)

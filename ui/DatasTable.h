@@ -29,6 +29,7 @@ public:
 	~DatasTable();
 
 	void updateCurrentObject();
+	void setSelectedObject(panda::PandaObject* object);
 
 public slots:
 	void populateTable();
