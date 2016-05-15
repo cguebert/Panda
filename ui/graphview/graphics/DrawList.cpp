@@ -165,7 +165,6 @@ void DrawList::addRect(const Rect& r, unsigned int col, float thickness, float r
 {
 	if ((col >> 24) == 0)
 		return;
-	// a + Point(0.5f,0.5f), b - Point(0.5f,0.5f)
 	m_path.rect(r, rounding, rounding_corners);
 	pathStroke(col, true, thickness);
 }

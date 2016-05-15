@@ -102,14 +102,14 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 		}
 
 		// Draw the data rectangles
-		auto rect = Rect(m_inputDataRects.second.left(), m_inputDataRects.second.top(), m_inputDataRects.second.right(), m_inputDataRects.second.bottom());
+		const auto& rect = m_inputDataRects.second;
 		list.addRectFilled(rect, colors.highlightColor);
 		list.addRect(rect, colors.penColor);
 		for (const auto& tagRect : m_outputDatas)
 		{
-			rect = Rect(tagRect.second.second.left(), tagRect.second.second.top(), tagRect.second.second.right(), tagRect.second.second.bottom());
-			list.addRectFilled(rect, colors.highlightColor);
-			list.addRect(rect, colors.penColor);
+			const auto& tr = tagRect.second.second;
+			list.addRectFilled(tr, colors.highlightColor);
+			list.addRect(tr, colors.penColor);
 		}
 	}
 
@@ -118,25 +118,23 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 
 	// input
 	auto inputRect = m_inputDataRects.first;
-	auto rect = Rect(inputRect.left(), inputRect.top(), inputRect.right(), inputRect.bottom());
-	qreal x = inputRect.left();
-	qreal cy = inputRect.center().y;
+	float x = inputRect.left();
+	float cy = inputRect.center().y;
 	list.addLine(Point(x - tagMargin, cy), Point(x, cy), colors.penColor);
-	list.addRectFilled(rect, colors.lightColor);
-	list.addRect(rect, colors.penColor);
-	list.addText(rect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
+	list.addRectFilled(inputRect, colors.lightColor);
+	list.addRect(inputRect, colors.penColor);
+	list.addText(inputRect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
 
 	// outputs
 	for(const auto& tagRectPair : m_outputDatas)
 	{
 		const auto& tagRect = tagRectPair.second.first;
-		rect = Rect(tagRect.left(), tagRect.top(), tagRect.right(), tagRect.bottom());
 		x = tagRect.right();
 		cy = tagRect.center().y;
 		list.addLine(Point(x, cy), Point(x + tagMargin, cy), colors.penColor);
-		list.addRectFilled(rect, colors.lightColor);
-		list.addRect(rect, colors.penColor);
-		list.addText(rect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
+		list.addRectFilled(tagRect, colors.lightColor);
+		list.addRect(tagRect, colors.penColor);
+		list.addText(tagRect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
 	}
 }
 

@@ -63,7 +63,7 @@ public:
 	void addRect(const pRect& r, unsigned int col, float thickness = 1.0f, float rounding = 0.0f, int rounding_corners = 0x0F);        // a: upper-left, b: lower-right
 	void addRectFilled(const pRect& r, unsigned int col, float rounding = 0.0f, int rounding_corners = 0x0F);  // a: upper-left, b: lower-right
 	void addRectFilledMultiColor(const pRect& r, unsigned int col_upr_left, unsigned int col_upr_right, unsigned int col_bot_right, unsigned int col_bot_left);
-	void addTriangle(const pPoint& a, const pPoint& b, const pPoint& c, unsigned int col, float thickness);
+	void addTriangle(const pPoint& a, const pPoint& b, const pPoint& c, unsigned int col, float thickness = 1.0f);
 	void addTriangleFilled(const pPoint& a, const pPoint& b, const pPoint& c, unsigned int col);
 	void addCircle(const pPoint& centre, float radius, unsigned int col, int num_segments = 12, float thickness = 1.0f);
 	void addCircleFilled(const pPoint& centre, float radius, unsigned int col, int num_segments = 12);
