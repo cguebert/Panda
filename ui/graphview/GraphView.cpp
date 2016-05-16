@@ -133,6 +133,7 @@ void GraphView::resetView()
 	m_highlightConnectedDatas = false;
 	m_useMagneticSnap = true;
 	m_isLoading = false;
+	m_objectsRect = Rect();
 	m_viewRect = Rect();
 	m_selectedObjectsDrawStructs.clear();
 	m_possibleLinks.clear();
@@ -269,24 +270,23 @@ void GraphView::paintGL()
 	if (m_movingAction == Moving::Selection)
 	{
 		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
-		auto highlight = palette().highlight().color();
-		highlight.setAlpha(64);
-		drawList.addRectFilled(r, DrawList::convert(highlight));
-		drawList.addRect(r, DrawList::convert(palette().text().color()), 0.75f / m_zoomFactor);
+		auto highlight = m_drawColors.highlightColor;
+		highlight = (highlight & 0x00FFFFFF) | 0x40000000;
+		drawList.addRectFilled(r, highlight);
+		drawList.addRect(r, m_drawColors.penColor, 0.75f / m_zoomFactor);
 	}
 
 	// Zoom box
 	if (m_movingAction == Moving::ZoomBox)
 	{
 		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
-		drawList.addRect(r, DrawList::convert(palette().text().color()), 0.75f / m_zoomFactor);
+		drawList.addRect(r, m_drawColors.penColor, 0.75f / m_zoomFactor);
 	}
 
 	// Link in creation
 	if (m_movingAction == Moving::Link)
 	{
-		drawList.addLine(m_previousMousePos, m_currentMousePos,
-						 DrawList::convert(palette().text().color()), 1.5);
+		drawList.addLine(m_previousMousePos, m_currentMousePos, m_drawColors.penColor, 1.5);
 	}
 
 	if (m_debugDirtyState)
@@ -1274,7 +1274,7 @@ void GraphView::updateLinks()
 	m_recomputeLinks = false;
 	m_linksDrawList.clear();
 
-	auto col = DrawList::convert(palette().text().color());
+	auto col = m_drawColors.penColor;
 
 	for(const auto ods : m_orderedObjectDrawStructs)
 	{
@@ -1643,10 +1643,11 @@ void GraphView::updateViewRect()
 	if(m_isLoading)
 		return;
 
-	m_viewRect = Rect();
+	m_objectsRect = m_viewRect = Rect();
 	for(const auto& ods : m_orderedObjectDrawStructs)
 	{
 		Rect area = ods->getVisualArea();
+		m_objectsRect |= area;
 		Rect zoomedArea = Rect::fromSize(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
 		m_viewRect |= zoomedArea; // Union
 	}

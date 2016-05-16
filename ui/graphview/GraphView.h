@@ -226,7 +226,8 @@ protected:
 
 	std::shared_ptr<panda::ScopedMacro> m_moveObjectsMacro;
 
-	panda::types::Rect m_viewRect; /// Area taken by the objects on the screen
+	panda::types::Rect m_objectsRect; /// Area taken by the objects on the screen
+	panda::types::Rect m_viewRect; /// Area taken by the objects on the screen, including zoom
 
 	bool m_isLoading = false; /// We don't update the view while loading (unnecessary events)
 
