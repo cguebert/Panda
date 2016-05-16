@@ -22,8 +22,12 @@ public:
 protected:
 	void paintGL() override;
 
+	std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt) override;
+
 private:
 	panda::Group* m_group;
+
+	std::vector<std::pair<panda::BaseData*, panda::types::Rect>> m_groupDataRects;
 };
 
 #endif // GROUPVIEW_H

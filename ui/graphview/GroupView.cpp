@@ -53,6 +53,7 @@ void GroupView::paintGL()
 	const float inputsStartY = m_objectsRect.center().y - inputsSize / 2.0f;
 	const float outputsStartY = m_objectsRect.center().y - outputsSize / 2.0f;
 
+	m_groupDataRects.clear();
 	auto pen = m_drawColors.penColor;
 	int inputIndex = 0, outputIndex = 0;
 	for (const auto& groupData : m_group->getGroupDatas())
@@ -64,6 +65,7 @@ void GroupView::paintGL()
 												inputsStartY + inputIndex * (dataRectSize + dataMarginH),
 												dataRectSize, dataRectSize);
 			++inputIndex;
+			m_groupDataRects.emplace_back(groupData.get(), groupDataRect);
 
 			unsigned int dataColor = DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
 			list.addRectFilled(groupDataRect, dataColor);
@@ -111,6 +113,7 @@ void GroupView::paintGL()
 												outputsStartY + outputIndex * (dataRectSize + dataMarginH),
 												dataRectSize, dataRectSize);
 			++outputIndex;
+			m_groupDataRects.emplace_back(groupData.get(), groupDataRect);
 
 			unsigned int dataColor = DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
 			list.addRectFilled(groupDataRect, dataColor);
@@ -174,4 +177,19 @@ void GroupView::moveObjects(std::vector<panda::PandaObject*> objects, Point delt
 bool GroupView::isTemporaryView() const
 { 
 	return true; 
+}
+
+std::pair<panda::BaseData*, Rect> GroupView::getDataAtPos(const panda::types::Point& pt)
+{
+	auto res = GraphView::getDataAtPos(pt);
+	if (res.first)
+		return res;
+
+	for (const auto& groupDataRect : m_groupDataRects)
+	{
+		if (groupDataRect.second.contains(pt))
+			return groupDataRect;
+	}
+
+	return{ nullptr, Rect() };
 }

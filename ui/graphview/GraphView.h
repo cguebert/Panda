@@ -121,6 +121,7 @@ protected:
 	void paintDirtyState(DrawList& list, DrawColors& colors);
 
 	ObjectDrawStruct* getObjectDrawStructAtPos(const panda::types::Point& pt);
+	virtual std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt);
 	void moveView(const panda::types::Point& delta);
 	void moveViewIfMouseOnBorder();
 

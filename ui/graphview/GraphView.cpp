@@ -167,6 +167,20 @@ ObjectDrawStruct* GraphView::getObjectDrawStructAtPos(const Point& pt)
 	return nullptr;
 }
 
+std::pair<panda::BaseData*, Rect> GraphView::getDataAtPos(const panda::types::Point& pt)
+{
+	const auto ods = getObjectDrawStructAtPos(pt);
+	if (ods)
+	{
+		panda::BaseData* data = ods->getDataAtPos(pt);
+		Rect dataRect;
+		if (ods->getDataRect(data, dataRect))
+			return{ data, dataRect };
+	}
+
+	return{ nullptr, Rect() };
+}
+
 GraphView::ObjectDrawStructPtr GraphView::getSharedObjectDrawStruct(panda::PandaObject* object)
 {
 	return panda::helper::valueOrDefault(m_objectDrawStructs, object);
@@ -596,11 +610,10 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	if(m_movingAction == Moving::None || m_movingAction == Moving::Link)
 	{
 		Point zoomedMouse = m_viewDelta + localPos / m_zoomFactor;
-		const auto ods = getObjectDrawStructAtPos(zoomedMouse);
-		if(ods)
+		auto dataRect = getDataAtPos(zoomedMouse);
+		if(dataRect.first)
 		{
-			panda::BaseData* data = ods->getDataAtPos(zoomedMouse);
-			if(m_hoverData != data)
+			if(m_hoverData != dataRect.first)
 			{
 				m_hoverTimer->stop();
 				if(m_highlightConnectedDatas)
@@ -608,25 +621,17 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 					m_highlightConnectedDatas = false;
 					update();
 				}
-				m_hoverData = data;
-				if(m_hoverData)
-					m_hoverTimer->start(500);
+				m_hoverData = dataRect.first;
+				m_hoverTimer->start(500);
 			}
 
-			if(m_hoverData)
-			{
-				Rect dataRect;
-				if(ods->getDataRect(m_hoverData, dataRect))
-				{
-					QString display = QString("%1\n%2")
-							.arg(QString::fromStdString(m_hoverData->getName()))
-							.arg(QString::fromStdString(m_hoverData->getDescription()));
-					QRect area = QRect(dataRect.left(), dataRect.top(), dataRect.width(), dataRect.height());
-					QToolTip::showText(event->globalPos(), display, this, area);
-					if(!m_hoverData->getHelp().empty())
-						emit showStatusBarMessage(QString::fromStdString(m_hoverData->getHelp()));
-				}
-			}
+			QString display = QString("%1\n%2")
+				.arg(QString::fromStdString(m_hoverData->getName()))
+				.arg(QString::fromStdString(m_hoverData->getDescription()));
+			QRect area = QRect(dataRect.second.left(), dataRect.second.top(), dataRect.second.width(), dataRect.second.height());
+			QToolTip::showText(event->globalPos(), display, this, area);
+			if(!m_hoverData->getHelp().empty())
+				emit showStatusBarMessage(QString::fromStdString(m_hoverData->getHelp()));
 		}
 		else
 		{
