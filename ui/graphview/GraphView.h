@@ -124,6 +124,10 @@ protected:
 	virtual std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt);
 	virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
 
+	using Rects = std::vector<panda::types::Rect>;
+	using PointsPairs = std::vector<std::pair<panda::types::Point, panda::types::Point>>;
+	virtual std::pair<Rects, PointsPairs> getConnectedDatas(panda::BaseData* data);
+
 	void moveView(const panda::types::Point& delta);
 	void moveViewIfMouseOnBorder();
 

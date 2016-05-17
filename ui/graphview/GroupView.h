@@ -24,6 +24,7 @@ protected:
 
 	std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt) override;
 	bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) override;
+	std::pair<Rects, PointsPairs> getConnectedDatas(panda::BaseData* data) override;
 
 private:
 	panda::Group* m_group;

@@ -35,8 +35,6 @@ void GroupView::paintGL()
 
 	DrawList list;
 
-	list.addRect(m_objectsRect, m_drawColors.penColor);
-
 	// Count the number of inputs and outputs
 	int nbInputs = 0, nbOutputs = 0;
 	for (const auto& groupData : m_group->getGroupDatas())
@@ -211,4 +209,53 @@ bool GroupView::getDataRect(const panda::BaseData* data, panda::types::Rect& rec
 	}
 	else
 		return GraphView::getDataRect(data, rect);
+}
+
+std::pair<GraphView::Rects, GraphView::PointsPairs> GroupView::getConnectedDatas(panda::BaseData* srcData)
+{
+	if (srcData->getOwner() != m_group)
+		return GraphView::getConnectedDatas(srcData);
+
+	GraphView::Rects rects;
+	GraphView::PointsPairs links;
+
+	Rect sourceRect;
+	if(getDataRect(srcData, sourceRect))
+		rects.push_back(sourceRect);
+	else
+		return{ rects, links };
+
+	// Get outputs
+	if(srcData->isInput())
+	{
+		for(const auto node : srcData->getOutputs())
+		{
+			panda::BaseData* data = dynamic_cast<panda::BaseData*>(node);
+			if(data)
+			{
+				Rect rect;
+				if (getDataRect(data, rect))
+				{
+					rects.push_back(rect);
+					links.emplace_back(rect.center(), sourceRect.center());
+				}
+			}
+		}
+	}
+	// Or the one input
+	else if(srcData->isOutput())
+	{
+		panda::BaseData* data = srcData->getParent();
+		if(data)
+		{
+			Rect rect;
+			if(getDataRect(data, rect))
+			{
+				rects.push_back(rect);
+				links.emplace_back(sourceRect.center(), rect.center());
+			}
+		}
+	}
+
+	return{ rects, links };
 }

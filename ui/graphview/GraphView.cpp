@@ -1318,19 +1318,46 @@ void GraphView::updateConnectedDatas()
 	if (!m_highlightConnectedDatas)
 		return;
 
-	std::vector<Rect> highlightRects;
-	std::vector< std::pair<Point, Point> > highlightLinks;
+	auto connected = getConnectedDatas(m_hoverData);
+	const auto& rects = connected.first;
+	const auto& links = connected.second;
 
-	Rect sourceRect;
-	if(getDataRect(m_hoverData, sourceRect))
-		highlightRects.push_back(sourceRect);
-	else
+	if(links.empty())
 		return;
 
-	// Get outputs
-	if(m_hoverData->isOutput())
+	// Now draw everything
+	auto highlightCol = DrawList::convert(palette().highlight().color());
+	auto penCol = DrawList::convert(palette().text().color());
+
+	for (const auto& rect : rects)
 	{
-		for(const auto node : m_hoverData->getOutputs())
+		m_connectedDrawList.addRectFilled(rect, highlightCol);
+		m_connectedDrawList.addRect(rect, penCol, 1.f);
+	}
+
+	for(const auto& link : links)
+	{
+		float w = (link.second.x - link.first.x) / 2;
+		auto p1 = link.first, p2 = link.second, d = Point(w, 0);
+		m_connectedDrawList.addBezierCurve(p1, p1 + d, p2 - d, p2, highlightCol, 3);
+	}
+}
+
+std::pair<GraphView::Rects, GraphView::PointsPairs> GraphView::getConnectedDatas(panda::BaseData* srcData)
+{
+	GraphView::Rects rects;
+	GraphView::PointsPairs links;
+
+	Rect sourceRect;
+	if(getDataRect(srcData, sourceRect))
+		rects.push_back(sourceRect);
+	else
+		return{ rects, links };
+
+	// Get outputs
+	if(srcData->isOutput())
+	{
+		for(const auto node : srcData->getOutputs())
 		{
 			panda::BaseData* data = dynamic_cast<panda::BaseData*>(node);
 			if(data)
@@ -1338,46 +1365,28 @@ void GraphView::updateConnectedDatas()
 				Rect rect;
 				if (getDataRect(data, rect))
 				{
-					highlightRects.push_back(rect);
-					highlightLinks.emplace_back(rect.center(), sourceRect.center());
+					rects.push_back(rect);
+					links.emplace_back(rect.center(), sourceRect.center());
 				}
 			}
 		}
 	}
 	// Or the one input
-	else if(m_hoverData->isInput())
+	else if(srcData->isInput())
 	{
-		panda::BaseData* data = m_hoverData->getParent();
+		panda::BaseData* data = srcData->getParent();
 		if(data)
 		{
 			Rect rect;
 			if(getDataRect(data, rect))
 			{
-				highlightRects.push_back(rect);
-				highlightLinks.emplace_back(sourceRect.center(), rect.center());
+				rects.push_back(rect);
+				links.emplace_back(sourceRect.center(), rect.center());
 			}
 		}
 	}
 
-	if(highlightLinks.empty())
-		return;
-
-	// Now draw everything
-	auto highlightCol = DrawList::convert(palette().highlight().color());
-	auto penCol = DrawList::convert(palette().text().color());
-
-	for (const auto& rect : highlightRects)
-	{
-		m_connectedDrawList.addRectFilled(rect, highlightCol);
-		m_connectedDrawList.addRect(rect, penCol, 1.f);
-	}
-
-	for(const auto& link : highlightLinks)
-	{
-		float w = (link.second.x - link.first.x) / 2;
-		auto p1 = link.first, p2 = link.second, d = Point(w, 0);
-		m_connectedDrawList.addBezierCurve(p1, p1 + d, p2 - d, p2, highlightCol, 3);
-	}
+	return{ rects, links };
 }
 
 void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
