@@ -193,3 +193,22 @@ std::pair<panda::BaseData*, Rect> GroupView::getDataAtPos(const panda::types::Po
 
 	return{ nullptr, Rect() };
 }
+
+bool GroupView::getDataRect(const panda::BaseData* data, panda::types::Rect& rect)
+{
+	if (data->getOwner() == m_group)
+	{
+		for (const auto& groupDataRect : m_groupDataRects)
+		{
+			if (groupDataRect.first == data)
+			{
+				rect = groupDataRect.second;
+				return true;
+			}
+		}
+
+		return false;
+	}
+	else
+		return GraphView::getDataRect(data, rect);
+}

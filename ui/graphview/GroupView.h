@@ -23,6 +23,7 @@ protected:
 	void paintGL() override;
 
 	std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt) override;
+	bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) override;
 
 private:
 	panda::Group* m_group;

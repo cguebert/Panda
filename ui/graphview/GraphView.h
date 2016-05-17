@@ -122,6 +122,8 @@ protected:
 
 	ObjectDrawStruct* getObjectDrawStructAtPos(const panda::types::Point& pt);
 	virtual std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt);
+	virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
+
 	void moveView(const panda::types::Point& delta);
 	void moveViewIfMouseOnBorder();
 

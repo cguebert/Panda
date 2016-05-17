@@ -181,6 +181,14 @@ std::pair<panda::BaseData*, Rect> GraphView::getDataAtPos(const panda::types::Po
 	return{ nullptr, Rect() };
 }
 
+bool GraphView::getDataRect(const panda::BaseData* data, panda::types::Rect& rect)
+{
+	auto ods = getObjectDrawStruct(data->getOwner());
+	if (!ods)
+		return false;
+	return ods->getDataRect(data, rect);
+}
+
 GraphView::ObjectDrawStructPtr GraphView::getSharedObjectDrawStruct(panda::PandaObject* object)
 {
 	return panda::helper::valueOrDefault(m_objectDrawStructs, object);
@@ -1314,7 +1322,7 @@ void GraphView::updateConnectedDatas()
 	std::vector< std::pair<Point, Point> > highlightLinks;
 
 	Rect sourceRect;
-	if(getObjectDrawStruct(m_hoverData->getOwner())->getDataRect(m_hoverData, sourceRect))
+	if(getDataRect(m_hoverData, sourceRect))
 		highlightRects.push_back(sourceRect);
 	else
 		return;
@@ -1327,16 +1335,11 @@ void GraphView::updateConnectedDatas()
 			panda::BaseData* data = dynamic_cast<panda::BaseData*>(node);
 			if(data)
 			{
-				panda::PandaObject* object = data->getOwner();
-				auto ods = getObjectDrawStruct(object);
-				if(ods)
+				Rect rect;
+				if (getDataRect(data, rect))
 				{
-					Rect rect;
-					if(ods->getDataRect(data, rect))
-					{
-						highlightRects.push_back(rect);
-						highlightLinks.emplace_back(rect.center(), sourceRect.center());
-					}
+					highlightRects.push_back(rect);
+					highlightLinks.emplace_back(rect.center(), sourceRect.center());
 				}
 			}
 		}
@@ -1347,16 +1350,11 @@ void GraphView::updateConnectedDatas()
 		panda::BaseData* data = m_hoverData->getParent();
 		if(data)
 		{
-			panda::PandaObject* object = data->getOwner();
-			auto ods = getObjectDrawStruct(object);
-			if (ods)
+			Rect rect;
+			if(getDataRect(data, rect))
 			{
-				Rect rect;
-				if(ods->getDataRect(data, rect))
-				{
-					highlightRects.push_back(rect);
-					highlightLinks.emplace_back(sourceRect.center(), rect.center());
-				}
+				highlightRects.push_back(rect);
+				highlightLinks.emplace_back(sourceRect.center(), rect.center());
 			}
 		}
 	}
