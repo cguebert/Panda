@@ -74,6 +74,7 @@ MainWindow::MainWindow()
 	m_documentViewContainer = new ScrollContainer();
 	m_documentViewContainer->setFrameStyle(0); // No frame
 	m_documentViewContainer->setView(m_documentView);
+	m_documentViewContainer->setFocusProxy(m_documentViewContainer);
 	m_currentGraphView = m_documentView;
 
 	m_openGLRenderView = new OpenGLRenderView(m_document.get());
@@ -82,6 +83,7 @@ MainWindow::MainWindow()
 	m_openGLViewContainer->setAlignment(Qt::AlignCenter);
 	m_openGLViewContainer->setWidget(m_openGLRenderView);
 	m_openGLViewContainer->setWidgetResizable(true);
+	m_openGLViewContainer->setFocusProxy(m_openGLRenderView);
 
 	m_tabWidget = new DetachableTabWidget;
 	m_tabWidget->addTab(m_documentViewContainer, tr("Graph"));
@@ -1143,6 +1145,7 @@ void MainWindow::openGroup()
 	auto groupViewContainer = new ScrollContainer();
 	groupViewContainer->setFrameStyle(0); // No frame
 	groupViewContainer->setView(groupView);
+	groupViewContainer->setFocusProxy(groupView);
 
 	auto detachableInfo = new DetachableWidgetInfo(groupViewContainer);
 
