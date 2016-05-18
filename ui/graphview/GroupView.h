@@ -26,7 +26,12 @@ protected:
 	bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) override;
 	std::pair<Rects, PointsPairs> getConnectedDatas(panda::BaseData* data) override;
 
+	void updateLinks() override;
+	void updateViewRect() override;
+
 private:
+	void updateGroupDataRects();
+
 	panda::Group* m_group;
 
 	std::vector<std::pair<panda::BaseData*, panda::types::Rect>> m_groupDataRects;

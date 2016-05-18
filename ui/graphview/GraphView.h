@@ -135,7 +135,7 @@ protected:
 	void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
 	bool hasLinkTag(panda::BaseData* input, panda::BaseData* output);
 
-	void updateLinks();
+	virtual void updateLinks();
 	void updateConnectedDatas();
 	void updateLinkTags();
 
@@ -145,7 +145,7 @@ protected:
 	void changeLink(panda::BaseData* target, panda::BaseData* parent);
 
 	void updateDirtyDrawStructs();
-	void updateViewRect();
+	virtual void updateViewRect();
 
 	void selectionChanged();
 	void objectsReordered();
