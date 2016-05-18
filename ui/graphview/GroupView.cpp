@@ -18,6 +18,17 @@ GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::Obje
 	: GraphView(doc, objectsList, parent)
 	, m_group(group)
 {
+	// Move the object based on the positions saved in the group
+	for (const auto& object : group->getObjectsList().get())
+	{
+		auto obj = object.get();
+		auto newPos = m_group->getPosition(obj);
+		auto ods = getObjectDrawStruct(obj);
+		if (ods)
+			ods->move(newPos - ods->getPosition());
+	}
+
+	updateObjectsRect();
 }
 
 void GroupView::paintGL()
@@ -25,11 +36,8 @@ void GroupView::paintGL()
 	GraphView::paintGL();
 
 	m_viewRenderer->newFrame();
-// Testing a way to draw the group datas
-	const int tagW = 18;
-	const int tagH = 13;
-	const int tagMargin = 10;
 
+// Testing a way to draw the group datas
 	DrawList list;
 
 	auto pen = m_drawColors.penColor;
@@ -190,18 +198,43 @@ std::pair<GraphView::Rects, GraphView::PointsPairs> GroupView::getConnectedDatas
 	return{ rects, links };
 }
 
+void GroupView::updateObjectsRect()
+{
+	if(m_isLoading)
+		return;
+
+	m_objectsRect = Rect();
+	for(const auto& ods : m_orderedObjectDrawStructs)
+		m_objectsRect |= ods->getVisualArea();
+
+	int nbInputs = 0, nbOutputs = 0;
+	for (const auto& groupData : m_group->getGroupDatas())
+	{
+		if (groupData->isInput())	++nbInputs;
+		if (groupData->isOutput())	++nbOutputs;
+	}
+
+	m_onlyObjectsRect = m_objectsRect;
+	if (nbInputs)
+		m_objectsRect.adjust(-(dataMarginW + dataRectSize + tagMargin + tagW), 0, 0, 0);
+	if (nbOutputs)
+		m_objectsRect.adjust(0, 0, dataMarginW + tagMargin + tagW, 0);
+
+	updateViewRect();
+	updateGroupDataRects();
+}
+
 void GroupView::updateViewRect()
 {
-	GraphView::updateViewRect();
-	updateGroupDataRects();
+	m_viewRect = Rect::fromSize(m_objectsRect.topLeft() * m_zoomFactor, m_objectsRect.size() * m_zoomFactor);
+	if(!m_orderedObjectDrawStructs.empty())
+		m_viewRect.adjust(-5, -5, 5, 5);
+
+	emit viewModified();
 }
 
 void GroupView::updateGroupDataRects()
 {
-	const int dataRectSize = 10;
-	const int dataMarginW = 100;
-	const int dataMarginH = 20;
-
 	// Count the number of inputs and outputs
 	int nbInputs = 0, nbOutputs = 0;
 	for (const auto& groupData : m_group->getGroupDatas())
@@ -215,8 +248,8 @@ void GroupView::updateGroupDataRects()
 	// Where to draw the inputs and outputs
 	const int inputsSize = nbInputs * dataRectSize + (nbInputs - 1) * dataMarginH;
 	const int outputsSize = nbOutputs * dataRectSize + (nbOutputs - 1) * dataMarginH;
-	const float inputsStartY = m_objectsRect.center().y - inputsSize / 2.0f;
-	const float outputsStartY = m_objectsRect.center().y - outputsSize / 2.0f;
+	const float inputsStartY = m_onlyObjectsRect.center().y - inputsSize / 2.0f;
+	const float outputsStartY = m_onlyObjectsRect.center().y - outputsSize / 2.0f;
 
 	m_groupDataRects.clear();
 	auto pen = m_drawColors.penColor;
@@ -226,7 +259,7 @@ void GroupView::updateGroupDataRects()
 		if (groupData->isInput())
 		{
 			// Draw the data
-			Rect groupDataRect = Rect::fromSize(m_objectsRect.left() - dataMarginW - dataRectSize, 
+			Rect groupDataRect = Rect::fromSize(m_onlyObjectsRect.left() - dataMarginW - dataRectSize, 
 												inputsStartY + inputIndex * (dataRectSize + dataMarginH),
 												dataRectSize, dataRectSize);
 			++inputIndex;
@@ -236,7 +269,7 @@ void GroupView::updateGroupDataRects()
 		if (groupData->isOutput())
 		{
 			// Draw the data
-			Rect groupDataRect = Rect::fromSize(m_objectsRect.right() + dataMarginW, 
+			Rect groupDataRect = Rect::fromSize(m_onlyObjectsRect.right() + dataMarginW, 
 												outputsStartY + outputIndex * (dataRectSize + dataMarginH),
 												dataRectSize, dataRectSize);
 			++outputIndex;

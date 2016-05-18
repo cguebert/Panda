@@ -585,6 +585,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		moveView(m_currentMousePos / m_zoomFactor - oldPos);
 		m_previousMousePos = globalPos;
 		update();
+		emit viewModified();
 	}
 	else if(m_movingAction == Moving::Selection || m_movingAction == Moving::ZoomBox)
 	{
@@ -770,7 +771,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 
 		m_moveObjectsMacro.reset();
 
-		updateViewRect();
+		updateObjectsRect();
 	}
 	else if(m_movingAction == Moving::View)
 	{
@@ -832,7 +833,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		{
 			m_capturedDrawStruct->mouseReleaseEvent(event);
 			m_capturedDrawStruct = nullptr;
-			updateViewRect();
+			updateObjectsRect();
 		}
 	}
 
@@ -1013,14 +1014,7 @@ void GraphView::centerView()
 {
 	if(m_objectsList.size())
 	{
-		Rect totalView;
-		for (const auto ods : m_orderedObjectDrawStructs)
-		{
-			Rect objectArea = ods->getVisualArea();
-			totalView = totalView.united(objectArea);
-		}
-
-		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center() + m_viewDelta);
+		moveView(convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta);
 		update();
 		updateViewRect();
 	}
@@ -1030,18 +1024,11 @@ void GraphView::showAll()
 {
 	if(m_objectsList.size())
 	{
-		Rect totalView;
-		for (const auto ods : m_orderedObjectDrawStructs)
-		{
-			Rect objectArea = ods->getVisualArea();
-			totalView = totalView.united(objectArea);
-		}
-
-		float factorW = contentsRect().width() / (totalView.width() + 40);
-		float factorH = contentsRect().height() / (totalView.height() + 40);
+		float factorW = contentsRect().width() / (m_objectsRect.width() + 40);
+		float factorH = contentsRect().height() / (m_objectsRect.height() + 40);
 		m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center() + m_viewDelta);
+		moveView(convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta);
 		update();
 		updateViewRect();
 	}
@@ -1051,18 +1038,11 @@ void GraphView::showAllSelected()
 {
 	if(!m_objectsSelection->get().empty())
 	{
-		Rect totalView;
-		for (const auto ods : m_orderedObjectDrawStructs)
-		{
-			Rect objectArea = ods->getVisualArea();
-			totalView = totalView.united(objectArea);
-		}
-
-		float factorW = contentsRect().width() / (totalView.width() + 40);
-		float factorH = contentsRect().height() / (totalView.height() + 40);
+		float factorW = contentsRect().width() / (m_objectsRect.width() + 40);
+		float factorH = contentsRect().height() / (m_objectsRect.height() + 40);
 		m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-		moveView(convert(contentsRect().center()) / m_zoomFactor - totalView.center() + m_viewDelta);
+		moveView(convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta);
 		update();
 		updateViewRect();
 	}
@@ -1072,14 +1052,7 @@ void GraphView::moveSelectedToCenter()
 {
 	if(!m_objectsSelection->get().empty())
 	{
-		Rect totalView;
-		for(const auto ods : m_selectedObjectsDrawStructs)
-		{
-			Rect objectArea = ods->getVisualArea();
-			totalView = totalView.united(objectArea);
-		}
-
-		Point delta = convert(contentsRect().center()) / m_zoomFactor - totalView.center() + m_viewDelta;
+		Point delta = convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta;
 
 		for(const auto ods : m_selectedObjectsDrawStructs)
 		{
@@ -1090,7 +1063,7 @@ void GraphView::moveSelectedToCenter()
 		}
 
 		update();
-		updateViewRect();
+		updateObjectsRect();
 	}
 }
 
@@ -1129,7 +1102,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 	m_recomputeTags = true;
 	m_highlightConnectedDatas = false;
 	update();
-	updateViewRect();
+	updateObjectsRect();
 }
 
 void GraphView::modifiedObject(panda::PandaObject* object)
@@ -1555,6 +1528,7 @@ void GraphView::moveObjects(std::vector<panda::PandaObject*> objects, Point delt
 	updateLinkTags();
 	m_recomputeLinks = true;
 	update();
+	updateObjectsRect();
 }
 
 void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)
@@ -1650,20 +1624,21 @@ void GraphView::scrollView(QPoint position)
 	update();
 }
 
-void GraphView::updateViewRect()
+void GraphView::updateObjectsRect()
 {
 	if(m_isLoading)
 		return;
 
-	m_objectsRect = m_viewRect = Rect();
+	m_objectsRect = Rect();
 	for(const auto& ods : m_orderedObjectDrawStructs)
-	{
-		Rect area = ods->getVisualArea();
-		m_objectsRect |= area;
-		Rect zoomedArea = Rect::fromSize(area.topLeft() * m_zoomFactor, area.size() * m_zoomFactor);
-		m_viewRect |= zoomedArea; // Union
-	}
+		m_objectsRect |= ods->getVisualArea();
 
+	updateViewRect();
+}
+
+void GraphView::updateViewRect()
+{
+	m_viewRect = Rect::fromSize(m_objectsRect.topLeft() * m_zoomFactor, m_objectsRect.size() * m_zoomFactor);
 	if(!m_orderedObjectDrawStructs.empty())
 		m_viewRect.adjust(-5, -5, 5, 5);
 
@@ -1744,7 +1719,7 @@ void GraphView::updateDirtyDrawStructs()
 	m_hoverTimer->stop();
 	m_recomputeLinks = true;
 	m_recomputeConnected = true;
-	updateViewRect();
+	updateObjectsRect();
 }
 
 void GraphView::objectsReordered()

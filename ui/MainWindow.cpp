@@ -1140,16 +1140,6 @@ void MainWindow::openGroup()
 	for (auto action : m_graphViewsActions)
 		groupView->addAction(action);
 
-	// Move the object based on the positions saved in the group
-	for (const auto& object : group->getObjectsList().get())
-	{
-		auto obj = object.get();
-		auto newPos = group->getPosition(obj);
-		auto ods = groupView->getObjectDrawStruct(obj);
-		if (ods)
-			ods->move(newPos - ods->getPosition());
-	}
-
 	auto groupViewContainer = new ScrollContainer();
 	groupViewContainer->setFrameStyle(0); // No frame
 	groupViewContainer->setView(groupView);

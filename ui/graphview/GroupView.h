@@ -27,13 +27,21 @@ protected:
 	std::pair<Rects, PointsPairs> getConnectedDatas(panda::BaseData* data) override;
 
 	void updateLinks() override;
+	void updateObjectsRect() override;
 	void updateViewRect() override;
 
 private:
 	void updateGroupDataRects();
 
-	panda::Group* m_group;
+	static const int dataRectSize = 10;
+	static const int dataMarginW = 100;
+	static const int dataMarginH = 20;
+	static const int tagW = 18;
+	static const int tagH = 13;
+	static const int tagMargin = 10;
 
+	panda::Group* m_group;
+	panda::types::Rect m_onlyObjectsRect; // Without the group datas
 	std::vector<std::pair<panda::BaseData*, panda::types::Rect>> m_groupDataRects;
 };
 

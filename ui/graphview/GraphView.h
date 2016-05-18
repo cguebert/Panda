@@ -145,6 +145,7 @@ protected:
 	void changeLink(panda::BaseData* target, panda::BaseData* parent);
 
 	void updateDirtyDrawStructs();
+	virtual void updateObjectsRect();
 	virtual void updateViewRect();
 
 	void selectionChanged();
