@@ -1,11 +1,8 @@
 #include <panda/object/PandaObject.h>
 #include <panda/PandaDocument.h>
-#include <panda/helper/UpdateLogger.h>
 #include <panda/XmlDocument.h>
 #include <panda/helper/algorithm.h>
-#include <panda/object/ObjectFactory.h>
-
-#include <iostream>
+#include <panda/helper/UpdateLogger.h>
 
 namespace panda {
 

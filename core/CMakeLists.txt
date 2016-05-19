@@ -60,6 +60,7 @@ set(HEADER_FILES
 	panda/object/GenericObject.h
 	panda/object/Group.h
 	panda/object/Layer.h
+	panda/object/ObjectAddons.h
 	panda/object/ObjectFactory.h
 	panda/object/OGLObject.h
 	panda/object/PandaObject.h
@@ -131,6 +132,7 @@ set(SOURCE_FILES
 	panda/object/GenericObject.cpp
 	panda/object/Group.cpp
 	panda/object/Layer.cpp
+	panda/object/ObjectAddons.cpp
 	panda/object/ObjectFactory.cpp
 	panda/object/OGLObject.cpp
 	panda/object/PandaObject.cpp
