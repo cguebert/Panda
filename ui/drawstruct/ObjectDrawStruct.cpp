@@ -1,4 +1,5 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
+#include <ui/drawstruct/ViewPositionAddon.h>
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/ObjectsSelection.h>
 
@@ -6,48 +7,12 @@
 #include <panda/object/ObjectAddons.h>
 #include <panda/messaging.h>
 #include <panda/PandaDocument.h>
-#include <panda/XmlDocument.h>
 #include <panda/types/DataTraits.h>
 
 #include <cmath>
 
 using panda::types::Point;
 using panda::types::Rect;
-
-class ViewPositionAddon : public panda::BaseObjectAddon
-{
-public:
-	ViewPositionAddon(panda::PandaObject& object) : panda::BaseObjectAddon(object) { }
-
-	void save(panda::XmlElement& elem)
-	{ elem.setAttribute("x", m_position.x); elem.setAttribute("y", m_position.y); }
-
-	void load(panda::XmlElement& elem)
-	{ setPosition({ elem.attribute("x").toFloat(), elem.attribute("y").toFloat() }); }
-
-	bool isSet() const
-	{ return m_isSet; }
-
-	Point getPosition()
-	{ return m_position; }
-
-	void setPosition(Point pt)
-	{
-		m_position = pt;
-		m_isSet = true;
-		positionChanged.run(pt);
-	}
-
-	panda::msg::Signal<void(panda::types::Point newPos)> positionChanged;
-
-private:
-	bool m_isSet = false;
-	Point m_position;
-};
-
-int ViewPositionAddon_Reg = panda::RegisterObjectAddon<ViewPositionAddon>();
-
-//****************************************************************************//
 
 ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 	: m_parentView(view), m_object(obj)
