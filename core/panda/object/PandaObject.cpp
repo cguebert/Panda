@@ -3,8 +3,18 @@
 #include <panda/XmlDocument.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/UpdateLogger.h>
+#include <panda/object/ObjectAddons.h>
 
-namespace panda {
+namespace panda 
+{
+
+PandaObject::PandaObject(PandaDocument* document)
+	: m_parentDocument(document)
+	, m_addons(std::make_unique<ObjectAddons>(*this))
+{
+}
+
+PandaObject::~PandaObject() = default;
 
 void PandaObject::addData(BaseData* data, int index)
 {
@@ -122,6 +132,8 @@ void PandaObject::save(XmlElement& elem, const std::vector<PandaObject*> *select
 			data->save(xmlData);
 		}
 	}
+
+	m_addons->save(elem);
 }
 
 bool PandaObject::load(XmlElement& elem)
@@ -134,6 +146,8 @@ bool PandaObject::load(XmlElement& elem)
 			data->load(e);
 		e = e.nextSibling("Data");
 	}
+
+	m_addons->load(elem);
 
 	return true;
 }

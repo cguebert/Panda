@@ -10,6 +10,7 @@
 namespace panda
 {
 
+class ObjectAddons;
 class PandaDocument;
 class XmlElement;
 
@@ -18,6 +19,7 @@ class PANDA_CORE_API PandaObject : public DataNode
 public:
 	PANDA_CLASS(PandaObject, DataNode)
 	explicit PandaObject(PandaDocument* document); /// The document is guaranteed to not change during the life of the object
+	virtual ~PandaObject();
 
 	const std::string& getName() const; /// Returns the name of the object (what is shown in the graph view)
 	uint32_t getIndex() const; /// Returns the index of creation of this object (will not change during the life of the document)
@@ -77,6 +79,8 @@ public:
 
 	virtual std::string getLabel() const; /// If not empty, will be shown in the graph view (with the format "label (name)")
 
+	ObjectAddons& addons() const; /// Get the addons for this object
+
 protected:
 	void setInternalData(const std::string& name, uint32_t index); /// Should only be called by the Object Factory, to set the object's name and index
 	friend class ObjectFactory;
@@ -94,6 +98,7 @@ private:
 	std::vector<BaseData*> m_datas; // The list of Datas added to this object (via the use of initData in a Data constructor or with addData)
 	uint32_t m_index = 0; // The unique index of this object. This is set automatically by the factory
 	std::string m_name; // The class name of this object. This is set automatically by the factory
+	std::unique_ptr<ObjectAddons> m_addons; // Addons for this object
 
 	bool m_doEmitModified = true; // If false, prevent the emission of the modified signal
 	bool m_doEmitDirty = true; // If false, prevent the emission of the dirty signal
@@ -105,9 +110,6 @@ private:
 };
 
 //****************************************************************************//
-
-inline PandaObject::PandaObject(PandaDocument* document)
-	: m_parentDocument(document) { }
 
 inline BaseData::BaseInitData PandaObject::initData(std::string name, std::string help)
 { return BaseData::BaseInitData(name, help, this); }
@@ -171,6 +173,9 @@ inline DataNode::NodesList PandaObject::getNonRecursiveInputs() const
 
 inline DataNode::NodesList PandaObject::getNonRecursiveOutputs() const
 { return getOutputs(); }
+
+inline ObjectAddons& PandaObject::addons() const
+{ return *m_addons.get(); }
 
 } // namespace Panda
 

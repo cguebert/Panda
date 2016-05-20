@@ -21,7 +21,7 @@ public:
 	virtual ~BaseObjectAddon();
 
 	virtual void save(XmlElement& elem) = 0;
-	virtual bool load(XmlElement& elem) = 0;
+	virtual void load(XmlElement& elem) = 0;
 
 protected:
 	PandaObject& m_object;
@@ -31,6 +31,23 @@ class PANDA_CORE_API ObjectAddons
 {
 public:
 	explicit ObjectAddons(PandaObject& object);
+
+	template <class T>
+	T& get()
+	{
+		static_assert(std::is_base_of<BaseObjectAddon, T>::value, "The argument of ObjectAddons::get must inherit from BaseObjectAddon");
+
+		for (auto addon : m_addons)
+		{
+			auto ptr = std::dynamic_pointer_cast<T>(addon);
+			if (ptr)
+				return *ptr.get();
+		}
+
+		auto addon = std::make_shared<T>(m_object);
+		m_addons.push_back(addon);
+		return *addon.get();
+	}
 
 	void save(XmlElement& elem);
 	void load(XmlElement& elem);
@@ -54,7 +71,7 @@ public:
 };
 
 template <class T>
-class ObjectAddonCreator
+class ObjectAddonCreator : public BaseObjectAddonCreator
 {
 public:
 	virtual BaseObjectAddon::SPtr create(PandaObject& object)
@@ -80,6 +97,18 @@ private:
 	ObjectAddonsRegistry();
 
 	Creators m_creators;
+};
+
+template <class T>
+class RegisterObjectAddon
+{
+public:
+	RegisterObjectAddon() {}
+	operator int()
+	{
+		ObjectAddonsRegistry::instance().addObjectAddon<T>();
+		return 1;
+	}
 };
 
 } // namespace Panda

@@ -24,7 +24,7 @@ namespace panda
 	ObjectAddons::ObjectAddons(PandaObject& object)
 		: m_object(object)
 	{
-
+		createAddons();
 	}
 
 	void ObjectAddons::createAddons()
