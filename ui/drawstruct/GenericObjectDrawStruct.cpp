@@ -28,7 +28,7 @@ GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::Generic
 
 void GenericObjectDrawStruct::update()
 {
-	m_selectionArea = m_visualArea = Rect::fromSize(m_position, getObjectSize());
+	m_selectionArea = m_visualArea = Rect::fromSize(getPosition(), getObjectSize());
 
 	m_datas.clear();
 	std::vector<panda::BaseData*> inputDatas, outputDatas;
@@ -110,7 +110,7 @@ void GenericObjectDrawStruct::update()
 
 void GenericObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
 {
-	const panda::BaseData* clickedData = m_parentView->getClickedData();
+	const panda::BaseData* clickedData = getParentView()->getClickedData();
 
 	for(DataRectPair dataPair : m_datas)
 	{
@@ -118,7 +118,7 @@ void GenericObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
 		if (dynamic_cast<panda::BaseGenericData*>(data))
 		{
 			unsigned int dataCol = 0;
-			if (clickedData && clickedData != data && m_parentView->canLinkWith(data))
+			if (clickedData && clickedData != data && getParentView()->canLinkWith(data))
 				dataCol = DrawList::convert(clickedData->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
 			else
 				dataCol = colors.lightColor;

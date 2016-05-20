@@ -24,11 +24,6 @@ DocumentView::DocumentView(panda::PandaDocument* doc, panda::ObjectsList& object
 
 void DocumentView::savingObject(panda::XmlElement& elem, panda::PandaObject* object)
 {
-	auto ods = getObjectDrawStruct(object);
-	if (!ods)
-		return;
-	ods->save(elem);
-
 	// Save data labels for this object
 	for (const auto& dl : m_dataLabels)
 	{
@@ -43,11 +38,6 @@ void DocumentView::savingObject(panda::XmlElement& elem, panda::PandaObject* obj
 
 void DocumentView::loadingObject(const panda::XmlElement& elem, panda::PandaObject* object)
 {
-	auto ods = getObjectDrawStruct(object);
-	if (!ods)
-		return;
-	ods->load(elem);
-
 	// Load data labels
 	auto e = elem.firstChild("DataLabel");
 	while(e)

@@ -8,6 +8,7 @@
 struct DrawColors;
 class GraphView;
 class QMouseEvent;
+class ViewPositionAddon;
 
 namespace panda
 {
@@ -15,6 +16,9 @@ namespace panda
 	class BaseData;
 	class BaseClass;
 	class XmlElement;
+
+	namespace msg
+	{ class Observer; }
 }
 
 class ObjectDrawStruct
@@ -23,6 +27,7 @@ public:
 	using DataRectPair = std::pair<panda::BaseData*, panda::types::Rect>;
 
 	ObjectDrawStruct(GraphView* view, panda::PandaObject* obj);
+	virtual ~ObjectDrawStruct();
 
 	virtual void drawBackground(DrawList& list, DrawColors& colors) {}	// Called first
 	virtual void draw(DrawList& list, DrawColors& colors, bool selected = false); // "Normal" draw
@@ -31,9 +36,6 @@ public:
 	virtual void update();										// Recompute the information about this object
 	virtual void move(const panda::types::Point& delta);		// Move the position of the object in the view
 	virtual bool contains(const panda::types::Point& point);	// Is this point inside of the shape of this object ? (which can be complex)
-
-	virtual void save(panda::XmlElement& elem);
-	virtual void load(const panda::XmlElement& elem);
 
 	virtual bool mousePressEvent(QMouseEvent*) { return false; }	// Return true to capture the mouse for this object
 	virtual void mouseMoveEvent(QMouseEvent*) {}
@@ -51,6 +53,7 @@ public:
 	panda::types::Rect getSelectionArea() const;
 	panda::types::Point getPosition() const;
 	panda::PandaObject* const getObject() const;
+	GraphView* const getParentView() const;
 
 	static const int objectDefaultWidth = 100;
 	static const int objectDefaultHeight = 50;
@@ -74,18 +77,24 @@ protected:
 	virtual std::string getLabel() const; // The text to draw
 
 	void drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const panda::types::Rect& area);
-
-	GraphView* m_parentView;
+	
 	panda::PandaObject* m_object;
-	panda::types::Point m_position;
 	panda::types::Rect m_visualArea, m_selectionArea;
-
 	std::vector<DataRectPair> m_datas;
 
 	std::string m_currentLabel;
 	DrawList m_textDrawList;
 	DrawPath m_outline;
 	DrawMesh m_fillShape;
+
+	std::unique_ptr<panda::msg::Observer> m_observer;
+
+private:
+	void positionChanged(panda::types::Point newPos);
+
+	GraphView* m_parentView;
+	ViewPositionAddon& m_positionAddon;
+	panda::types::Point m_position;
 };
 
 inline bool ObjectDrawStruct::acceptsMagneticSnap() const
@@ -105,6 +114,9 @@ inline panda::types::Point ObjectDrawStruct::getPosition() const
 
 inline panda::PandaObject* const ObjectDrawStruct::getObject() const
 { return m_object; }
+
+inline GraphView* const ObjectDrawStruct::getParentView() const
+{ return m_parentView; }
 
 inline int ObjectDrawStruct::dataStartY()
 { return dataRectMargin; }

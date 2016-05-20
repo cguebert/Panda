@@ -60,10 +60,10 @@ void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
 	list.addText(textArea, m_annotation->m_text.getValue(), colors.penColor);
 
 	// Draw the handle
-	const panda::PandaDocument* doc = m_parentView->getDocument();
+	const panda::PandaDocument* doc = getParentView()->getDocument();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
-			&& m_parentView->selection().get().size() == 1
-			&& m_parentView->selection().isSelected(m_annotation))	// The annotation is the only selected object
+			&& getParentView()->selection().get().size() == 1
+			&& getParentView()->selection().isSelected(m_annotation))	// The annotation is the only selected object
 	{
 		list.addCircleFilled(m_endPos, 5, colors.midLightColor);
 		list.addCircle(m_endPos, 5, colors.penColor);
@@ -82,8 +82,8 @@ void AnnotationDrawStruct::moveText(const Point& delta, bool emitModified)
 {
 	move(delta);
 	if (emitModified)
-		emit m_parentView->modified();
-	m_parentView->update();
+		emit getParentView()->modified();
+	getParentView()->update();
 }
 
 void AnnotationDrawStruct::moveEnd(const Point& delta, bool emitModified)
@@ -93,17 +93,17 @@ void AnnotationDrawStruct::moveEnd(const Point& delta, bool emitModified)
 	if (emitModified)
 	{
 		m_annotation->m_deltaToEnd.setValue(m_annotation->m_deltaToEnd.getValue() + delta);
-		emit m_parentView->modified();
+		emit getParentView()->modified();
 	}
-	m_parentView->update();
+	getParentView()->update();
 }
 
 bool AnnotationDrawStruct::contains(const Point& point)
 {
-	const panda::PandaDocument* doc = m_parentView->getDocument();
+	const panda::PandaDocument* doc = getParentView()->getDocument();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
-			&& m_parentView->selection().get().size() == 1
-			&& m_parentView->selection().isSelected(m_annotation))	// The annotation is the only selected object
+			&& getParentView()->selection().get().size() == 1
+			&& getParentView()->selection().isSelected(m_annotation))	// The annotation is the only selected object
 	{
 		if((point - m_endPos).norm() < 10)
 			return true;
@@ -117,9 +117,9 @@ void AnnotationDrawStruct::update()
 //	ObjectDrawStruct::update();	// No need to call it
 
 	if (m_movingAction == MOVING_NONE)
-		m_endPos = m_position + m_annotation->m_deltaToEnd.getValue();
+		m_endPos = getPosition() + m_annotation->m_deltaToEnd.getValue();
 
-	m_textArea = Rect::fromSize(m_position, m_textSize);
+	m_textArea = Rect::fromSize(getPosition(), m_textSize);
 	m_textArea.translate(0, -m_textSize.y);
 	m_textArea.adjust(3, -13, 13, -3);
 
@@ -127,7 +127,7 @@ void AnnotationDrawStruct::update()
 	m_selectionArea = m_visualArea = m_textArea;
 
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT)
-		 m_visualArea |= Rect(m_position, m_endPos).canonicalized();
+		 m_visualArea |= Rect(getPosition(), m_endPos).canonicalized();
 
 	createShape();
 }
@@ -166,13 +166,13 @@ void AnnotationDrawStruct::createShape()
 		}
 		case Annotation::ANNOTATION_RECTANGLE:
 		{
-			m_outline.rect(Rect(m_position, m_endPos));
+			m_outline.rect(Rect(getPosition(), m_endPos));
 			m_outline.close();
 			break;
 		}
 		case Annotation::ANNOTATION_ELLIPSE:
 		{
-			m_outline.arcToDegrees(Rect(m_position, m_endPos), 0, 360);
+			m_outline.arcToDegrees(Rect(getPosition(), m_endPos), 0, 360);
 			break;
 		}
 	}
@@ -182,7 +182,7 @@ void AnnotationDrawStruct::createShape()
 
 bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 {
-	Point zoomedMouse = m_parentView->getViewDelta() + convert(event->localPos() )/ m_parentView->getZoom();
+	Point zoomedMouse = getParentView()->getViewDelta() + convert(event->localPos() )/ getParentView()->getZoom();
 
 	if(m_textArea.contains(zoomedMouse))
 	{
@@ -203,7 +203,7 @@ bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 
 void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 {
-	Point zoomedMouse = m_parentView->getViewDelta() + convert(event->localPos()) / m_parentView->getZoom();
+	Point zoomedMouse = getParentView()->getViewDelta() + convert(event->localPos()) / getParentView()->getZoom();
 	Point delta = zoomedMouse - m_previousMousePos;
 	m_previousMousePos = zoomedMouse;
 	if(delta.isNull())
@@ -217,19 +217,19 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 
 void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
 {
-	Point zoomedMouse = m_parentView->getViewDelta() + convert(event->localPos()) / m_parentView->getZoom();
+	Point zoomedMouse = getParentView()->getViewDelta() + convert(event->localPos()) / getParentView()->getZoom();
 	Point deltaStart = m_startMousePos - m_previousMousePos;
 	Point delta = zoomedMouse - m_startMousePos;
 
 	if (m_movingAction == MOVING_TEXT)
 	{
 		moveText(deltaStart, false);
-		m_parentView->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationTextCommand>(this, delta));
+		getParentView()->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationTextCommand>(this, delta));
 	}
 	else if (m_movingAction == MOVING_POINT)
 	{
 		moveEnd(deltaStart, false);
-		m_parentView->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationEndCommand>(this, delta));
+		getParentView()->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationEndCommand>(this, delta));
 	}
 		
 	m_movingAction = MOVING_NONE;

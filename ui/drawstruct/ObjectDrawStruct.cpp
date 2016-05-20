@@ -3,6 +3,8 @@
 #include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/object/PandaObject.h>
+#include <panda/object/ObjectAddons.h>
+#include <panda/messaging.h>
 #include <panda/PandaDocument.h>
 #include <panda/XmlDocument.h>
 #include <panda/types/DataTraits.h>
@@ -12,19 +14,68 @@
 using panda::types::Point;
 using panda::types::Rect;
 
+class ViewPositionAddon : public panda::BaseObjectAddon
+{
+public:
+	ViewPositionAddon(panda::PandaObject& object) : panda::BaseObjectAddon(object) { }
+
+	void save(panda::XmlElement& elem)
+	{ elem.setAttribute("x", m_position.x); elem.setAttribute("y", m_position.y); }
+
+	void load(panda::XmlElement& elem)
+	{ setPosition({ elem.attribute("x").toFloat(), elem.attribute("y").toFloat() }); }
+
+	bool isSet() const
+	{ return m_isSet; }
+
+	Point getPosition()
+	{ return m_position; }
+
+	void setPosition(Point pt)
+	{
+		m_position = pt;
+		m_isSet = true;
+		positionChanged.run(pt);
+	}
+
+	panda::msg::Signal<void(panda::types::Point newPos)> positionChanged;
+
+private:
+	bool m_isSet = false;
+	Point m_position;
+};
+
+int ViewPositionAddon_Reg = panda::RegisterObjectAddon<ViewPositionAddon>();
+
+//****************************************************************************//
+
 ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 	: m_parentView(view), m_object(obj)
+	, m_positionAddon(obj->addons().get<ViewPositionAddon>())
+	, m_observer(std::make_unique<panda::msg::Observer>())
 {
-	Point objSize = getObjectSize();
-	Point center = view->getNewObjectPosition();
-	m_position = (center - objSize/2);
+	if (!m_positionAddon.isSet())
+	{
+		Point objSize = getObjectSize();
+		Point center = view->getNewObjectPosition();
+		m_position = (center - objSize / 2);
+		m_positionAddon.setPosition((center - objSize / 2));
+	}
+	else
+		m_position = m_positionAddon.getPosition();
+
+	m_observer->get(m_positionAddon.positionChanged).connect<ObjectDrawStruct, &ObjectDrawStruct::positionChanged>(this);
 
 	update();
 }
 
+ObjectDrawStruct::~ObjectDrawStruct()
+{
+}
+
 void ObjectDrawStruct::update()
 {
-	m_selectionArea = m_visualArea = Rect::fromSize(m_position, getObjectSize());
+	m_selectionArea = m_visualArea = Rect::fromSize(getPosition(), getObjectSize());
 
 	m_datas.clear();
 	std::vector<panda::BaseData*> inputDatas, outputDatas;
@@ -64,6 +115,9 @@ void ObjectDrawStruct::move(const Point& delta)
 	if(!delta.isNull())
 	{
 		m_position += delta;
+		if (m_positionAddon.getPosition() != m_position)
+			m_positionAddon.setPosition(m_position);
+
 		m_visualArea.translate(delta);
 		m_selectionArea.translate(delta);
 		for (auto& it : m_datas)
@@ -153,8 +207,8 @@ void ObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
 void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const Rect& area)
 {
 	unsigned int dataCol = 0;
-	const panda::BaseData* clickedData = m_parentView->getClickedData();
-	if (clickedData && clickedData != data && !m_parentView->canLinkWith(data))
+	const panda::BaseData* clickedData = getParentView()->getClickedData();
+	if (clickedData && clickedData != data && !getParentView()->canLinkWith(data))
 		dataCol = colors.lightColor;
 	else
 		dataCol = DrawList::convert(data->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
@@ -176,20 +230,6 @@ void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)
 	list.merge(m_textDrawList);
 }
 
-void ObjectDrawStruct::save(panda::XmlElement& elem)
-{
-	elem.setAttribute("x", m_position.x);
-	elem.setAttribute("y", m_position.y);
-}
-
-void ObjectDrawStruct::load(const panda::XmlElement& elem)
-{
-	Point newPos;
-	newPos.x = elem.attribute("x").toFloat();
-	newPos.y = elem.attribute("y").toFloat();
-	move(newPos - m_position);
-}
-
 std::string ObjectDrawStruct::getLabel() const
 {
 	const auto& name = m_object->getName();
@@ -198,6 +238,12 @@ std::string ObjectDrawStruct::getLabel() const
 		return label + "\n(" + name + ")";
 
 	return name;
+}
+
+void ObjectDrawStruct::positionChanged(panda::types::Point newPos)
+{
+	if (m_position != newPos)
+		move(newPos - m_position);
 }
 
 //****************************************************************************//

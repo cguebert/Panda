@@ -21,7 +21,7 @@ Point DockObjectDrawStruct::getObjectSize()
 	temp.y += dockEmptyRendererHeight + dockRendererMargin * 2;
 
 	for(auto dockable : m_dockObject->getDockedObjects())
-		temp.y += m_parentView->getObjectDrawStruct(dockable)->getObjectSize().y + dockRendererMargin;
+		temp.y += getParentView()->getObjectDrawStruct(dockable)->getObjectSize().y + dockRendererMargin;
 
 	return temp;
 }
@@ -39,7 +39,7 @@ void DockObjectDrawStruct::move(const Point& delta)
 {
 	ObjectDrawStruct::move(delta);
 	for(auto dockable : m_dockObject->getDockedObjects())
-		m_parentView->getObjectDrawStruct(dockable)->move(delta);
+		getParentView()->getObjectDrawStruct(dockable)->move(delta);
 }
 
 void DockObjectDrawStruct::placeDockableObjects()
@@ -55,23 +55,24 @@ void DockObjectDrawStruct::placeDockableObjects()
 	int ty;
 	ty = m_visualArea.top() + ObjectDrawStruct::getObjectSize().y + dockRendererMargin;
 
-	auto doc = m_parentView->getDocument();
+	auto doc = getParentView()->getDocument();
 	auto& undoStack = doc->getUndoStack();
 	bool canMoveObjects = doc->getUndoStack().isInCommandMacro();
 
+	const auto position = getPosition();
 	for (auto dockable : m_dockObject->getDockedObjects())
 	{
-		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
+		ObjectDrawStruct* objectStruct = getParentView()->getObjectDrawStruct(dockable);
 		Point objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
-		Point objectNewPos(m_position.x + dockHoleWidth - objectSize.x, m_position.y + ty - m_visualArea.top());
+		Point objectNewPos(position.x + dockHoleWidth - objectSize.x, position.y + ty - m_visualArea.top());
 
 		// If the object has outputs, it is drawn larger but must be placed at the same position
 		if (hasOutputs)
 			objectNewPos.x += DockableObjectDrawStruct::dockableWithOutputAdds;
 
 		if (canMoveObjects && objectNewPos != objectStruct->getPosition())
-			undoStack.push(std::make_shared<MoveObjectCommand>(m_parentView, dockable, objectNewPos - objectStruct->getPosition()));
+			undoStack.push(std::make_shared<MoveObjectCommand>(getParentView(), dockable, objectNewPos - objectStruct->getPosition()));
 
 		Rect objectArea = objectStruct->getVisualArea();
 		m_dockablesY.push_back(objectArea.top());
@@ -99,7 +100,7 @@ void DockObjectDrawStruct::createShape()
 
 	for(auto dockable : m_dockObject->getDockedObjects())
 	{
-		ObjectDrawStruct* objectStruct = m_parentView->getObjectDrawStruct(dockable);
+		ObjectDrawStruct* objectStruct = getParentView()->getObjectDrawStruct(dockable);
 		Point objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
 
