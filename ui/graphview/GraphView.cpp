@@ -240,6 +240,14 @@ void GraphView::paintGL()
 
 	updateDirtyDrawStructs();
 
+	if (m_objectsMoved)
+	{
+		emit modified();
+		m_recomputeTags = true;
+		m_recomputeLinks = true;
+		updateObjectsRect();
+	}
+
 	if(m_recomputeTags)			updateLinkTags();
 	if(m_recomputeLinks)		updateLinks();
 	if(m_recomputeConnected)	updateConnectedDatas();
@@ -542,7 +550,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			m_moveObjectsMacro = m_pandaDocument->getUndoStack().beginMacro(tr("move objects").toStdString());
 
 			if(!delta.isNull())
-				m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(this, m_customSelection, delta));
+				m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(m_customSelection, delta));
 
 			m_previousMousePos = mousePos;
 		}
@@ -562,7 +570,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 		if (!m_customSelection.empty() && !delta.isNull())
 		{
-			m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(this, m_customSelection, delta));
+			m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(m_customSelection, delta));
 			m_recomputeLinks = true;
 		}
 
@@ -584,8 +592,8 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		m_zoomLevel = 100.0 * (1.0 - m_zoomFactor);
 		moveView(m_currentMousePos / m_zoomFactor - oldPos);
 		m_previousMousePos = globalPos;
+		updateViewRect();
 		update();
-		emit viewModified();
 	}
 	else if(m_movingAction == Moving::Selection || m_movingAction == Moving::ZoomBox)
 	{
@@ -721,7 +729,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 			if(dockable)
 			{
 				Point delta = positions[object] - ods->getPosition();
-				m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(this, dockable, delta));
+				m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(dockable, delta));
 
 				Rect dockableArea = ods->getSelectionArea();
 				panda::DockObject* defaultDock = dockable->getDefaultDock();
@@ -1524,11 +1532,14 @@ void GraphView::moveObjects(std::vector<panda::PandaObject*> objects, Point delt
 		if(ods)
 			ods->move(delta);
 	}
-	emit modified();
-	updateLinkTags();
-	m_recomputeLinks = true;
+
+	objectsMoved();
+}
+
+void GraphView::objectsMoved()
+{
+	m_objectsMoved = true;
 	update();
-	updateObjectsRect();
 }
 
 void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)

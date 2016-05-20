@@ -178,7 +178,9 @@ void ScrollContainer::resizeView()
 		viewportSize.setHeight(maxSize.height());
 	if(size.height() < maxSize.height() && verticalScrollBarPolicy() != Qt::ScrollBarAlwaysOn)
 		viewportSize.setWidth(maxSize.width());
-	m_viewWidget->resize(viewportSize);
+
+	if(viewportSize != m_viewWidget->size())
+		m_viewWidget->resize(viewportSize);
 
 	updateScrollBars();
 }

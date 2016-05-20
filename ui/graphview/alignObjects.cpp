@@ -31,7 +31,7 @@ void alignHorizontallyCenter(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(center - pos.x - area.width() / 2, 0);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -52,7 +52,7 @@ void alignHorizontallyLeft(GraphView* view)
 	{
 		Point delta = Point(left - ods->getPosition().x, 0);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -76,7 +76,7 @@ void alignHorizontallyRight(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(right - pos.x - area.width(), 0);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -102,7 +102,7 @@ void alignVerticallyCenter(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(0, center - pos.y - area.height() / 2);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -123,7 +123,7 @@ void alignVerticallyTop(GraphView* view)
 	{
 		Point delta = Point(0, top - ods->getPosition().y);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -147,7 +147,7 @@ void alignVerticallyBottom(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(0, bottom - pos.y - area.height());
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -185,7 +185,7 @@ void distributeHorizontallyCenter(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(left - pos.x - area.width() / 2, 0);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -229,7 +229,7 @@ void distributeHorizontallyGaps(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(left - pos.x, 0);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 
 		left += area.width();
 	}
@@ -269,7 +269,7 @@ void distributeHorizontallyLeft(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(left - pos.x, 0);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -307,7 +307,7 @@ void distributeHorizontallyRight(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(left - pos.x - area.width(), 0);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -345,7 +345,7 @@ void distributeVerticallyCenter(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(0, top - pos.y - area.height() / 2);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -389,7 +389,7 @@ void distributeVerticallyGaps(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(0, top - pos.y);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 
 		top += area.height();
 	}
@@ -429,7 +429,7 @@ void distributeVerticallyTop(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(0, top - pos.y);
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
 
@@ -467,6 +467,6 @@ void distributeVerticallyBottom(GraphView* view)
 		Rect area = ods->getVisualArea();
 		Point delta = Point(0, top - pos.y - area.height());
 		if(!delta.isNull())
-			undoStack.push(std::make_shared<MoveObjectCommand>(view, ods->getObject(), delta));
+			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }

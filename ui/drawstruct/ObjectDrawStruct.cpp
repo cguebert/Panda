@@ -208,7 +208,10 @@ std::string ObjectDrawStruct::getLabel() const
 void ObjectDrawStruct::positionChanged(panda::types::Point newPos)
 {
 	if (m_position != newPos)
+	{
 		move(newPos - m_position);
+		getParentView()->objectsMoved();
+	}
 }
 
 //****************************************************************************//

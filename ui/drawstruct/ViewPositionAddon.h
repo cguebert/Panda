@@ -20,7 +20,8 @@ public:
 	bool isSet() const;
 
 	panda::types::Point getPosition() const;
-	void setPosition(panda::types::Point pt);
+	void setPosition(panda::types::Point pos);
+	void move(panda::types::Point delta);
 
 	panda::msg::Signal<void(panda::types::Point newPos)> positionChanged;
 

@@ -85,6 +85,7 @@ public:
 	};
 
 	virtual void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
+	void objectsMoved(); // Refresh the view, links & tags
 
 	/// Objects docked to the default docks are sorted by their height in the graph view
 	void sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock);
@@ -254,7 +255,7 @@ protected:
 	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
 	DrawList m_linksDrawList, m_connectedDrawList;
 	DrawColors m_drawColors; /// So that we aquire Qt colors only once
-	bool m_recomputeLinks = false, m_recomputeConnected = false;
+	bool m_recomputeLinks = false, m_recomputeConnected = false, m_objectsMoved = false;
 
 	/// To be able to add a label to any Data
 	struct DataLabel

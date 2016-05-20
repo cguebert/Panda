@@ -355,7 +355,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
 				Point delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
 				if(!delta.isNull())
-					undoStack.push(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
+					undoStack.push(std::make_shared<MoveObjectCommand>(object.get(), delta));
 			}
 		}
 
@@ -369,7 +369,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
 			Point delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
 			if(!delta.isNull())
-				undoStack.push(std::make_shared<MoveObjectCommand>(view, object.get(), delta));
+				undoStack.push(std::make_shared<MoveObjectCommand>(object.get(), delta));
 		}
 
 		// Reconnecting datas

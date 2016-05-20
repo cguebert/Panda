@@ -11,13 +11,13 @@ namespace panda
 class PandaObject;
 }
 
-class GraphView;
+class ViewPositionAddon;
 
 class MoveObjectCommand : public panda::UndoCommand
 {
 public:
-	MoveObjectCommand(GraphView* view, panda::PandaObject* object, panda::types::Point delta);
-	MoveObjectCommand(GraphView* view, std::vector<panda::PandaObject*> objects, panda::types::Point delta);
+	MoveObjectCommand(panda::PandaObject* object, panda::types::Point delta);
+	MoveObjectCommand(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
 
 	virtual int id() const;
 
@@ -27,8 +27,11 @@ public:
 	virtual bool mergeWith(const panda::UndoCommand *other);
 
 protected:
-	GraphView* m_view;
+	void getPositionAddons();
+	void moveObjects(panda::types::Point delta);
+
 	std::vector<panda::PandaObject*> m_objects;
+	std::vector<ViewPositionAddon*> m_positionAddons;
 	panda::types::Point m_delta;
 };
 

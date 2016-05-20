@@ -1,4 +1,5 @@
 #include <panda/object/ObjectAddons.h>
+#include <panda/PandaDocument.h>
 #include <panda/XmlDocument.h>
 #include <panda/helper/algorithm.h>
 #include <panda/object/PandaObject.h>
@@ -24,7 +25,8 @@ namespace panda
 	ObjectAddons::ObjectAddons(PandaObject& object)
 		: m_object(object)
 	{
-		createAddons();
+		if (&object != object.parentDocument())
+			createAddons();
 	}
 
 	void ObjectAddons::createAddons()

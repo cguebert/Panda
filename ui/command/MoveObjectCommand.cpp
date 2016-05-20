@@ -1,25 +1,25 @@
-#include <ui/graphview/GraphView.h>
-#include <panda/command/CommandId.h>
 #include <ui/command/MoveObjectCommand.h>
+#include <ui/drawstruct/ViewPositionAddon.h>
+#include <panda/command/CommandId.h>
+#include <panda/object/ObjectAddons.h>
+#include <panda/object/PandaObject.h>
 
-MoveObjectCommand::MoveObjectCommand(GraphView* view,
-									 panda::PandaObject* object,
+MoveObjectCommand::MoveObjectCommand(panda::PandaObject* object,
 									 panda::types::Point delta)
-	: m_view(view)
+	: m_objects({ object })
 	, m_delta(delta)
 {
-	m_objects.push_back(object);
 	setText("move objects");
+	getPositionAddons();
 }
 
-MoveObjectCommand::MoveObjectCommand(GraphView* view,
-									 std::vector<panda::PandaObject*> objects,
+MoveObjectCommand::MoveObjectCommand(std::vector<panda::PandaObject*> objects,
 									 panda::types::Point delta)
-	: m_view(view)
-	, m_objects(objects)
+	: m_objects(objects)
 	, m_delta(delta)
 {
 	setText("move objects");
+	getPositionAddons();
 }
 
 int MoveObjectCommand::id() const
@@ -29,12 +29,12 @@ int MoveObjectCommand::id() const
 
 void MoveObjectCommand::redo()
 {
-	m_view->moveObjects(m_objects, m_delta);
+	moveObjects(m_delta);
 }
 
 void MoveObjectCommand::undo()
 {
-	m_view->moveObjects(m_objects, -m_delta);
+	moveObjects(-m_delta);
 }
 
 bool MoveObjectCommand::mergeWith(const panda::UndoCommand *other)
@@ -42,11 +42,24 @@ bool MoveObjectCommand::mergeWith(const panda::UndoCommand *other)
 	const MoveObjectCommand* command = dynamic_cast<const MoveObjectCommand*>(other);
 	if(!command)
 		return false;
-	if(m_view == command->m_view && m_objects == command->m_objects)
+	if(m_objects == command->m_objects)
 	{
 		m_delta += command->m_delta;
 		return true;
 	}
 
 	return false;
+}
+
+void MoveObjectCommand::getPositionAddons()
+{
+	m_positionAddons.clear();
+	for (auto obj : m_objects)
+		m_positionAddons.push_back(&obj->addons().get<ViewPositionAddon>());
+}
+
+void MoveObjectCommand::moveObjects(panda::types::Point delta)
+{
+	for (auto posAddon : m_positionAddons)
+		posAddon->move(delta);
 }

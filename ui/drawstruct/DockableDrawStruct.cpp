@@ -72,7 +72,7 @@ void DockObjectDrawStruct::placeDockableObjects()
 			objectNewPos.x += DockableObjectDrawStruct::dockableWithOutputAdds;
 
 		if (canMoveObjects && objectNewPos != objectStruct->getPosition())
-			undoStack.push(std::make_shared<MoveObjectCommand>(getParentView(), dockable, objectNewPos - objectStruct->getPosition()));
+			undoStack.push(std::make_shared<MoveObjectCommand>(dockable, objectNewPos - objectStruct->getPosition()));
 
 		Rect objectArea = objectStruct->getVisualArea();
 		m_dockablesY.push_back(objectArea.top());

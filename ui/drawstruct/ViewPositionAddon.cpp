@@ -26,11 +26,16 @@ panda::types::Point ViewPositionAddon::getPosition() const
 	return m_position; 
 }
 
-void ViewPositionAddon::setPosition(panda::types::Point pt)
+void ViewPositionAddon::setPosition(panda::types::Point pos)
 {
-	m_position = pt;
+	m_position = pos;
 	m_isSet = true;
-	positionChanged.run(pt);
+	positionChanged.run(pos);
+}
+
+void ViewPositionAddon::move(panda::types::Point delta)
+{
+	setPosition(m_position + delta);
 }
 
 //****************************************************************************//
