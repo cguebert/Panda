@@ -431,7 +431,7 @@ void PandaDocument::rewind()
 	m_signals->timeChanged.run();
 }
 
-void PandaDocument::copyDataToUserValue(const BaseData* data)
+void PandaDocument::copyDataToUserValue(const BaseData* data, ObjectsList& objectList)
 {
 	if(!data)
 		return;
@@ -445,7 +445,7 @@ void PandaDocument::copyDataToUserValue(const BaseData* data)
 	if(!object)
 		return;
 
-	m_objectsList->addObject(object);
+	objectList.addObject(object);
 	BaseData* inputData = object->getData("input");
 	if(inputData)
 	{

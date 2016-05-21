@@ -103,6 +103,8 @@ public:
 
 	virtual bool isTemporaryView() const; // If true, do not store any pointer to this view (in commands for example)
 
+	virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
+
 protected:
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
@@ -123,7 +125,6 @@ protected:
 
 	ObjectDrawStruct* getObjectDrawStructAtPos(const panda::types::Point& pt);
 	virtual std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt);
-	virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
 
 	using Rects = std::vector<panda::types::Rect>;
 	using PointsPairs = std::vector<std::pair<panda::types::Point, panda::types::Point>>;

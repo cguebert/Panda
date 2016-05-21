@@ -49,9 +49,9 @@ private:
 
 //****************************************************************************//
 
-DatasTable::DatasTable(GraphView* view, QWidget* parent)
+DatasTable::DatasTable(panda::PandaDocument* document, QWidget* parent)
 	: QWidget(parent)
-	, m_document(view->getDocument())
+	, m_document(document)
 	, m_objectWatcher(std::make_unique<ObjectWatcher>(*this))
 {
 	m_nameLabel = new QLabel("Document");

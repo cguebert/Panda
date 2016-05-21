@@ -91,7 +91,7 @@ public:
 	void play(bool playing);
 	void step();
 	void rewind();
-	void copyDataToUserValue(const panda::BaseData* data);
+	void copyDataToUserValue(const panda::BaseData* data, ObjectsList& objectList);
 
 protected:
 	void render();

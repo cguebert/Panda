@@ -136,7 +136,7 @@ MainWindow::MainWindow()
 	setWindowIcon(QIcon(":/share/icons/icon.png"));
 	setCurrentFile("");
 
-	m_datasTable = new DatasTable(m_documentView, this);
+	m_datasTable = new DatasTable(m_document.get(), this);
 
 	m_datasDock = new QDockWidget(tr("Properties"), this);
 	m_datasDock->setObjectName("PropertiesDock");
@@ -1061,21 +1061,21 @@ void MainWindow::showStatusBarMessage(QString text)
 
 void MainWindow::group()
 {
-	bool res = panda::createGroup(m_document.get(), m_documentView);
+	bool res = panda::createGroup(m_document.get(), m_currentGraphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not create a group from the selection"), 2000);
 }
 
 void MainWindow::ungroup()
 {
-	bool res = panda::ungroupSelection(m_document.get(), m_documentView);
+	bool res = panda::ungroupSelection(m_document.get(), m_currentGraphView);
 	if(!res)
 		statusBar()->showMessage(tr("Could not ungroup the selection"), 2000);
 }
 
 void MainWindow::editGroup()
 {
-	panda::Group* group = dynamic_cast<panda::Group*>(m_documentView->selection().lastSelectedObject());
+	panda::Group* group = dynamic_cast<panda::Group*>(m_currentGraphView->selection().lastSelectedObject());
 	if(group)
 	{
 		EditGroupDialog dlg(group, this);
@@ -1087,7 +1087,7 @@ void MainWindow::editGroup()
 
 void MainWindow::saveGroup()
 {
-	panda::PandaObject* object = m_documentView->selection().lastSelectedObject();
+	panda::PandaObject* object = m_currentGraphView->selection().lastSelectedObject();
 	panda::Group* group = dynamic_cast<panda::Group*>(object);
 	if(group)
 	{
@@ -1108,7 +1108,7 @@ void MainWindow::createGroupObject()
 	if(action)
 	{
 		QString path = action->data().toString();
-		GroupsManager::getInstance()->createGroupObject(m_document.get(), m_documentView, path);
+		GroupsManager::getInstance()->createGroupObject(m_document.get(), m_currentGraphView, path);
 	}
 }
 
@@ -1134,6 +1134,10 @@ void MainWindow::openGroup()
 
 	auto groupView = new GroupView(group, m_document.get(), group->getObjectsList());
 
+	connect(groupView, SIGNAL(modified()), this, SLOT(documentModified()));
+	connect(groupView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
+	connect(groupView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
+	connect(groupView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	m_observer.get(groupView->selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
 	
 	// Register the actions for the group view
@@ -1178,7 +1182,7 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 {
 	QMenu menu(this);
 
-	panda::PandaObject* obj = m_documentView->selection().lastSelectedObject();
+	panda::PandaObject* obj = m_currentGraphView->selection().lastSelectedObject();
 	if(obj)
 	{
 		menu.addAction(m_cutAction);
@@ -1193,7 +1197,7 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 	{
 		menu.addAction(m_copyDataAction);
 		const panda::PandaObject* owner = nullptr;
-		auto data = m_documentView->getContextMenuData();
+		auto data = m_currentGraphView->getContextMenuData();
 		if(data)
 			owner = data->getOwner();
 		if(owner && owner->getClass()->getClassName() == "GeneratorUser" && owner->getClass()->getNamespaceName() == "panda")
@@ -1209,7 +1213,7 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 	if (flags & GraphView::MENU_TAG)
 		menu.addAction(m_nameLinkTagAction);
 
-	int nbSelected = m_documentView->selection().get().size();
+	int nbSelected = m_currentGraphView->selection().get().size();
 	if(nbSelected == 1 && dynamic_cast<panda::Annotation*>(obj))
 	{
 		menu.addSeparator();
@@ -1246,9 +1250,9 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 
 void MainWindow::copyDataToUserValue()
 {
-	const panda::BaseData* clickedData = m_documentView->getContextMenuData();
+	const panda::BaseData* clickedData = m_currentGraphView->getContextMenuData();
 	if(clickedData)
-		m_document->copyDataToUserValue(clickedData);
+		m_document->copyDataToUserValue(clickedData, m_currentGraphView->objectsList());
 }
 
 void MainWindow::showLoggerDialog()
@@ -1319,7 +1323,7 @@ void MainWindow::selectedObject(panda::PandaObject* object)
 
 void MainWindow::showImageViewport()
 {
-	const panda::BaseData* clickedData = m_documentView->getContextMenuData();
+	const panda::BaseData* clickedData = m_currentGraphView->getContextMenuData();
 	if (!clickedData)
 		return;
 
@@ -1579,4 +1583,6 @@ void MainWindow::onTabChanged()
 
 	if (m_currentGraphView)
 		selectedObject(m_currentGraphView->selection().lastSelectedObject());
+	else
+		m_currentGraphView = m_documentView;
 }

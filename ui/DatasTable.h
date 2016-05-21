@@ -25,7 +25,7 @@ class DatasTable : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit DatasTable(GraphView* view, QWidget* parent = nullptr);
+	explicit DatasTable(panda::PandaDocument* document, QWidget* parent = nullptr);
 	~DatasTable();
 
 	void updateCurrentObject();

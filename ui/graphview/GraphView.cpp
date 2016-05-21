@@ -1109,6 +1109,13 @@ void GraphView::removeObject(panda::PandaObject* object)
 	m_linkTagsMap.clear();
 	m_recomputeTags = true;
 	m_highlightConnectedDatas = false;
+
+	if (m_dirtyDrawStructsSet.count(ods))
+	{
+		panda::helper::removeOne(m_dirtyDrawStructs, ods);
+		m_dirtyDrawStructsSet.erase(ods);
+	}
+
 	update();
 	updateObjectsRect();
 }
