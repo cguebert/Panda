@@ -15,8 +15,6 @@ class GroupView : public GraphView
 public:
 	explicit GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
 
-	void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta) override;
-
 	bool isTemporaryView() const override;
 
 protected:

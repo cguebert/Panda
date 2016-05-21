@@ -42,16 +42,12 @@ public:
 	void addGroupData(DataPtr data);
 	const GroupDataList& getGroupDatas(); // Can modify the datas, not the list
 
-	void setPosition(PandaObject* object, types::Point pos);
-	types::Point getPosition(PandaObject* object) const;
-
 protected:
 	friend class panda::EditGroupCommand;
 
 	Data<std::string> m_groupName;
 
 	ObjectsList m_objectsList;
-	std::map<PandaObject*, types::Point> m_positions;
 	GroupDataList m_groupDatas;
 };
 
@@ -72,12 +68,6 @@ inline void Group::addGroupData(DataPtr data)
 
 inline const Group::GroupDataList& Group::getGroupDatas()
 { return m_groupDatas; }
-
-inline void Group::setPosition(PandaObject* object, types::Point pos)
-{ m_positions[object] = pos; }
-
-inline types::Point Group::getPosition(PandaObject* object) const
-{ return m_positions.at(object); }
 
 //****************************************************************************//
 

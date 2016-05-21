@@ -1,5 +1,6 @@
 #include <ui/drawstruct/ViewPositionAddon.h>
 #include <panda/XmlDocument.h>
+#include <panda/object/PandaObject.h>
 
 ViewPositionAddon::ViewPositionAddon(panda::PandaObject& object) 
 	: panda::BaseObjectAddon(object) 
@@ -36,6 +37,18 @@ void ViewPositionAddon::setPosition(panda::types::Point pos)
 void ViewPositionAddon::move(panda::types::Point delta)
 {
 	setPosition(m_position + delta);
+}
+
+//****************************************************************************//
+
+panda::types::Point getPosition(panda::PandaObject* object)
+{
+	return object->addons().get<ViewPositionAddon>().getPosition();
+}
+
+void setPosition(panda::PandaObject* object, const panda::types::Point& pos)
+{
+	object->addons().get<ViewPositionAddon>().setPosition(pos);
 }
 
 //****************************************************************************//

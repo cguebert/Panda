@@ -1,18 +1,19 @@
 #include <ui/CreateGroup.h>
 #include <ui/graphview/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
+#include <ui/drawstruct/ViewPositionAddon.h>
 #include <ui/graphview/ObjectsSelection.h>
 
 #include <ui/command/AddObjectCommand.h>
 #include <ui/command/GroupSelectionCommand.h>
 #include <ui/command/RemoveObjectCommand.h>
-#include <ui/command/MoveObjectCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/data/DataFactory.h>
 #include <panda/object/Group.h>
 #include <panda/object/Renderer.h>
 #include <panda/object/ObjectFactory.h>
+#include <panda/object/PandaObject.h>
 #include <panda/object/Layer.h>
 #include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
@@ -149,10 +150,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	// Find center of the selection
 	Rect totalView;
 	for(auto object : selection)
-	{
-		Rect objectArea = view->getObjectDrawStruct(object)->getVisualArea();
-		totalView = totalView.united(objectArea);
-	}
+		totalView |= view->getObjectDrawStruct(object)->getVisualArea();
 
 	// Put the new object there
 	ObjectDrawStruct* ods = view->getObjectDrawStruct(group);
@@ -174,10 +172,6 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		if(!objectPtr)
 			continue;
 		undoStack.push(std::make_shared<AddObjectToGroupCommand>(group, objectPtr));
-
-		// Storing the position of this object in respect to the group object
-		Point delta = view->getObjectDrawStruct(object)->getPosition() - groupPos;
-		group->setPosition(object, delta);
 
 		// Adding input datas
 		for(BaseData* data : object->getInputDatas())
@@ -336,11 +330,21 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 	// For each group in the selection
 	for(auto group : groups)
 	{
-		Point groupPos = view->getObjectDrawStruct(group)->getPosition();
+		auto groupOds = view->getObjectDrawStruct(group);
+		Point groupPos = groupOds->getPosition();
 
 		// Putting the objects back into the document
 		panda::ObjectsList::SPtrList docks;
 		auto objects = group->getObjectsList().get(); // Need to get a copy as we modify the original while iterating over it
+
+		// Compute the center of the group objects positions
+		Rect objectsRect;
+		Point defaultSize(100, 50);
+		for (auto& object : objects)
+			objectsRect |= Rect::fromSize(getPosition(object.get()), defaultSize);
+		auto center = objectsRect.center() - groupOds->getObjectSize() / 2;
+
+		// Moving the object from the group to the parent document
 		for(auto& object : objects)
 		{
 			panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.get());
@@ -352,10 +356,8 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 				undoStack.push(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
 
 				// Placing the object in the view
-				ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
-				Point delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
-				if(!delta.isNull())
-					undoStack.push(std::make_shared<MoveObjectCommand>(object.get(), delta));
+				Point pos = groupPos + getPosition(object.get()) - center;
+				setPosition(object.get(), pos);
 			}
 		}
 
@@ -366,10 +368,8 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 			undoStack.push(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
 
 			// Placing the object in the view
-			ObjectDrawStruct* ods = view->getObjectDrawStruct(object.get());
-			Point delta = groupPos + group->getPosition(object.get()) - ods->getPosition();
-			if(!delta.isNull())
-				undoStack.push(std::make_shared<MoveObjectCommand>(object.get(), delta));
+			Point pos = groupPos + getPosition(object.get()) - center;
+			setPosition(object.get(), pos);
 		}
 
 		// Reconnecting datas

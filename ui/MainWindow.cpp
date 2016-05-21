@@ -1114,7 +1114,7 @@ void MainWindow::createGroupObject()
 
 void MainWindow::openGroup()
 {
-	const auto& selection = m_documentView->selection().get();
+	const auto& selection = m_currentGraphView->selection().get();
 	if (selection.size() != 1)
 		return;
 

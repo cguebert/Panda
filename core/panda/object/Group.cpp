@@ -66,10 +66,6 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 
 		object->save(node, &allObjects);
 
-		auto pos = m_positions[object.get()];
-		node.setAttribute("x", pos.x);
-		node.setAttribute("y", pos.y);
-
 		// Preparing links
 		for(BaseData* data : object->getInputDatas())
 		{
@@ -170,11 +166,6 @@ bool Group::load(XmlElement& elem)
 
 			if (!object->load(objectNode))
 				return false;
-
-			types::Point pos;
-			pos.x = objectNode.attribute("x").toFloat();
-			pos.y = objectNode.attribute("y").toFloat();
-			m_positions[object.get()] = pos;
 		}
 		else
 		{
@@ -346,12 +337,13 @@ void GroupWithLayer::addedObject(PandaObject* object)
 		addInput(*renderer);
 
 		// Sort the renderers by their position in the view
-		auto rpos = m_positions[renderer].y;
+	/*	auto rpos = m_positions[renderer].y;
 		auto iter = std::find_if(m_renderers.begin(), m_renderers.end(), [&](Renderer* val){
 			auto lpos = m_positions[val].y;
 			return lpos > rpos;
 		});
-		m_renderers.insert(iter, renderer);
+		m_renderers.insert(iter, renderer);*/
+		m_renderers.push_back(renderer);
 	}
 }
 

@@ -19,14 +19,14 @@ GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::Obje
 	, m_group(group)
 {
 	// Move the object based on the positions saved in the group
-	for (const auto& object : group->getObjectsList().get())
+/*	for (const auto& object : group->getObjectsList().get())
 	{
 		auto obj = object.get();
 		auto newPos = m_group->getPosition(obj);
 		auto ods = getObjectDrawStruct(obj);
 		if (ods)
 			ods->move(newPos - ods->getPosition());
-	}
+	}*/
 
 	updateObjectsRect();
 }
@@ -93,21 +93,6 @@ void GroupView::paintGL()
 
 	m_viewRenderer->addDrawList(&list);
 	m_viewRenderer->render();
-}
-
-void GroupView::moveObjects(std::vector<panda::PandaObject*> objects, Point delta)
-{
-	GraphView::moveObjects(objects, delta);
-
-	if(delta.isNull())
-		return;
-
-	for (const auto& obj : objects)
-	{
-		const auto ods = getObjectDrawStruct(obj);
-		if (ods)
-			m_group->setPosition(obj, ods->getPosition());
-	}
 }
 
 bool GroupView::isTemporaryView() const
