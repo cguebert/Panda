@@ -144,7 +144,8 @@ protected:
 	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
 	void computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, panda::types::Point position);
 
-	virtual bool changeLink(panda::BaseData* data1, panda::BaseData* data2); // Return true if a link was made or modified
+	virtual bool createLink(panda::BaseData* data1, panda::BaseData* data2);
+	void changeLink(panda::BaseData* target, panda::BaseData* parent); // Return true if a link was made or modified
 
 	void updateDirtyDrawStructs();
 	virtual void updateObjectsRect();

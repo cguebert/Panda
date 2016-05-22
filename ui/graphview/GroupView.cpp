@@ -20,16 +20,6 @@ GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::Obje
 	: GraphView(doc, objectsList, parent)
 	, m_group(group)
 {
-	// Move the object based on the positions saved in the group
-/*	for (const auto& object : group->getObjectsList().get())
-	{
-		auto obj = object.get();
-		auto newPos = m_group->getPosition(obj);
-		auto ods = getObjectDrawStruct(obj);
-		if (ods)
-			ods->move(newPos - ods->getPosition());
-	}*/
-
 	updateObjectsRect();
 }
 
@@ -376,7 +366,7 @@ void GroupView::updateLinks()
 	}
 }
 
-bool GroupView::changeLink(panda::BaseData* data1, panda::BaseData* data2)
+bool GroupView::createLink(panda::BaseData* data1, panda::BaseData* data2)
 {
 	panda::BaseData *target = nullptr, *parent = nullptr;
 	bool isGroup1 = (data1->getOwner() == m_group);
@@ -388,19 +378,15 @@ bool GroupView::changeLink(panda::BaseData* data1, panda::BaseData* data2)
 
 	if (isInput1 && isOutput2)
 	{
-		target = data1;
-		parent = data2;
+		changeLink(data1, data2);
+		return true;
 	}
 	else if (isInput2 && isOutput1)
 	{
-		target = data2;
-		parent = data1;
+		changeLink(data2, data1);
+		return true;
 	}
 	else
 		return false;
-
-	auto macro = m_pandaDocument->getUndoStack().beginMacro(tr("change link").toStdString());
-	m_pandaDocument->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(target, parent));
-	return true;
 }
 

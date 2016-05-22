@@ -794,7 +794,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		auto data = dataRect.first;
 		if(data && canLinkWith(data))
 		{
-			if (changeLink(m_clickedData, data))
+			if (createLink(m_clickedData, data))
 				m_recomputeTags = true;
 		}
 		m_clickedData = nullptr;
@@ -1514,25 +1514,27 @@ void GraphView::objectsMoved()
 	update();
 }
 
-bool GraphView::changeLink(panda::BaseData* data1, panda::BaseData* data2)
+bool GraphView::createLink(panda::BaseData* data1, panda::BaseData* data2)
 {
 	panda::BaseData *target = nullptr, *parent = nullptr;
 	if (data1->isInput() && data2->isOutput())
 	{
-		target = data1;
-		parent = data2;
+		changeLink(data1, data2);
+		return true;
 	}
 	else if (data2->isInput() && data1->isOutput())
 	{
-		target = data2;
-		parent = data1;
+		changeLink(data2, data1);
+		return true;
 	}
 	else
 		return false;
+}
 
+void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)
+{
 	auto macro = m_pandaDocument->getUndoStack().beginMacro(tr("change link").toStdString());
 	m_pandaDocument->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(target, parent));
-	return true;
 }
 
 void GraphView::sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock)

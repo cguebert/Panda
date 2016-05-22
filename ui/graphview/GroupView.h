@@ -31,7 +31,7 @@ protected:
 	void updateObjectsRect() override;
 	void updateViewRect() override;
 
-	bool changeLink(panda::BaseData* data1, panda::BaseData* data2) override;
+	bool createLink(panda::BaseData* data1, panda::BaseData* data2) override;
 
 private:
 	void updateGroupDataRects();
