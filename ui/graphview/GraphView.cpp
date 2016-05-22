@@ -35,27 +35,6 @@ using Rect = panda::types::Rect;
 
 namespace
 {
-	bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2)
-	{
-		if(data1->getOwner() == data2->getOwner())
-			return false;
-
-		if(data1->isInput())
-		{
-			if(!data2->isOutput())
-				return false;
-			return data1->validParent(data2);
-		}
-		else if(data2->isInput())
-		{
-			if(!data1->isOutput())
-				return false;
-			return data2->validParent(data1);
-		}
-
-		return false;
-	}
-
 	inline panda::types::Point convert(const QPointF& pt)
 	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
 
@@ -418,60 +397,57 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 	Point zoomedMouse = m_viewDelta + localPos / m_zoomFactor;
 	if(event->button() == Qt::LeftButton)
 	{
-		const auto ods = getObjectDrawStructAtPos(zoomedMouse);
-		if(ods)
+		// Testing for Datas first
+		const auto dataRect = getDataAtPos(zoomedMouse);
+		if (dataRect.first)
 		{
-			const auto object = ods->getObject();
-			// Testing for Datas first
-			Point linkStart;
-			panda::BaseData* data = ods->getDataAtPos(zoomedMouse, &linkStart);
-			if(data)
+			if (!m_pandaDocument->animationIsPlaying())
 			{
-				if(!m_pandaDocument->animationIsPlaying())
+				const auto data = dataRect.first;
+				// Remove
+				if (data->isInput() && data->getParent() && event->modifiers() == Qt::ControlModifier)
 				{
-					// Remove
-					if(data->isInput() && data->getParent() && event->modifiers() == Qt::ControlModifier)
-					{
-						removeLinkTag(data->getParent(), data);
-						changeLink(data, nullptr);
-					}
-					else	// Creating a new Link
-					{
-						m_clickedData = data;
-						computeCompatibleDatas(data);
-						m_movingAction = Moving::Link;
-						m_previousMousePos = m_currentMousePos = linkStart;
+					removeLinkTag(data->getParent(), data);
+					changeLink(data, nullptr);
+				}
+				else	// Creating a new Link
+				{
+					m_clickedData = data;
+					computeCompatibleDatas(data);
+					m_movingAction = Moving::Link;
+					m_previousMousePos = m_currentMousePos = dataRect.second.center();
 
-						m_objectsSelection->selectNone();
-					}
+					m_objectsSelection->selectNone();
 				}
 			}
-			else	// No Data, but we still clicked on an object
+		}
+		else if(const auto ods = getObjectDrawStructAtPos(zoomedMouse))
+		{ // No Data, but we still clicked on an object
+			auto object = ods->getObject();
+	
+			// Add the object to the selection
+			if(event->modifiers() == Qt::ControlModifier)
 			{
-				// Add the object to the selection
-				if(event->modifiers() == Qt::ControlModifier)
-				{
-					if(m_objectsSelection->isSelected(object))
-						m_objectsSelection->remove(object);
-					else
-						m_objectsSelection->add(object);
-				}
-				else	// Moving the object (or selecting only this one if we release the mouse without moving)
-				{
-					if(!m_objectsSelection->isSelected(object))
-						m_objectsSelection->selectNone();
+				if(m_objectsSelection->isSelected(object))
+					m_objectsSelection->remove(object);
+				else
+					m_objectsSelection->add(object);
+			}
+			else	// Moving the object (or selecting only this one if we release the mouse without moving)
+			{
+				if(!m_objectsSelection->isSelected(object))
+					m_objectsSelection->selectNone();
 
-					m_objectsSelection->setLastSelectedObject(object);
-					m_movingAction = Moving::Start;
-					m_previousMousePos = zoomedMouse;
-				}
+				m_objectsSelection->setLastSelectedObject(object);
+				m_movingAction = Moving::Start;
+				m_previousMousePos = zoomedMouse;
+			}
 
-				// Maybe do a custom action ?
-				if(ods->mousePressEvent(event))
-				{
-					m_movingAction = Moving::Custom;
-					m_capturedDrawStruct = ods;
-				}
+			// Maybe do a custom action ?
+			if(ods->mousePressEvent(event))
+			{
+				m_movingAction = Moving::Custom;
+				m_capturedDrawStruct = ods;
 			}
 		}
 		else
@@ -604,14 +580,9 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	{
 		m_currentMousePos = m_viewDelta + localPos / m_zoomFactor;
 
-		const auto ods = getObjectDrawStructAtPos(m_currentMousePos);
-		if(ods)
-		{
-			Point linkStart;
-			panda::BaseData* data = ods->getDataAtPos(m_currentMousePos, &linkStart);
-			if(data && canLinkWith(data))
-				m_currentMousePos = linkStart;
-		}
+		auto dataRect = getDataAtPos(m_currentMousePos);
+		if (dataRect.first && canLinkWith(dataRect.first))
+			m_currentMousePos = dataRect.second.center();
 
 		// Moving the view if the mouse is near the border of the widget
 		moveViewIfMouseOnBorder();
@@ -627,7 +598,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	if(m_movingAction == Moving::None || m_movingAction == Moving::Link)
 	{
 		Point zoomedMouse = m_viewDelta + localPos / m_zoomFactor;
-		auto dataRect = getDataAtPos(zoomedMouse);
+		const auto dataRect = getDataAtPos(zoomedMouse);
 		if(dataRect.first)
 		{
 			if(m_hoverData != dataRect.first)
@@ -819,18 +790,12 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::Link)
 	{
-		const auto ods = getObjectDrawStructAtPos(m_currentMousePos);
-		if(ods)
+		const auto dataRect = getDataAtPos(m_currentMousePos);
+		auto data = dataRect.first;
+		if(data && canLinkWith(data))
 		{
-			panda::BaseData* secondData = ods->getDataAtPos(m_currentMousePos);
-			if(secondData && canLinkWith(secondData))
-			{
-				if(m_clickedData->isInput() && secondData->isOutput())
-					changeLink(m_clickedData, secondData);
-				else if(secondData->isInput() && m_clickedData->isOutput())
-					changeLink(secondData, m_clickedData);
-				updateLinkTags();
-			}
+			if (changeLink(m_clickedData, data))
+				m_recomputeTags = true;
 		}
 		m_clickedData = nullptr;
 		update();
@@ -1549,10 +1514,25 @@ void GraphView::objectsMoved()
 	update();
 }
 
-void GraphView::changeLink(panda::BaseData* target, panda::BaseData* parent)
+bool GraphView::changeLink(panda::BaseData* data1, panda::BaseData* data2)
 {
+	panda::BaseData *target = nullptr, *parent = nullptr;
+	if (data1->isInput() && data2->isOutput())
+	{
+		target = data1;
+		parent = data2;
+	}
+	else if (data2->isInput() && data1->isOutput())
+	{
+		target = data2;
+		parent = data1;
+	}
+	else
+		return false;
+
 	auto macro = m_pandaDocument->getUndoStack().beginMacro(tr("change link").toStdString());
 	m_pandaDocument->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(target, parent));
+	return true;
 }
 
 void GraphView::sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock)
@@ -1696,6 +1676,27 @@ void GraphView::selectionChanged()
 	}
 
 	update();
+}
+
+bool GraphView::isCompatible(const panda::BaseData* data1, const panda::BaseData* data2)
+{
+	if(data1->getOwner() == data2->getOwner())
+		return false;
+
+	if(data1->isInput())
+	{
+		if(!data2->isOutput())
+			return false;
+		return data1->validParent(data2);
+	}
+	else if(data2->isInput())
+	{
+		if(!data1->isOutput())
+			return false;
+		return data2->validParent(data1);
+	}
+
+	return false;
 }
 
 void GraphView::computeCompatibleDatas(panda::BaseData* data)

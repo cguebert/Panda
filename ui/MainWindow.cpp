@@ -1139,6 +1139,7 @@ void MainWindow::openGroup()
 	connect(groupView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
 	connect(groupView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	m_observer.get(groupView->selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
+	m_observer.get(group->getObjectsList().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
 	
 	// Register the actions for the group view
 	for (auto action : m_allViewsActions)

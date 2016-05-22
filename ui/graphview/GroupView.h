@@ -24,10 +24,14 @@ protected:
 
 	std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt) override;
 	std::pair<Rects, PointsPairs> getConnectedDatas(panda::BaseData* data) override;
+	bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2) override;
+	void computeCompatibleDatas(panda::BaseData* data) override;
 
 	void updateLinks() override;
 	void updateObjectsRect() override;
 	void updateViewRect() override;
+
+	bool changeLink(panda::BaseData* data1, panda::BaseData* data2) override;
 
 private:
 	void updateGroupDataRects();

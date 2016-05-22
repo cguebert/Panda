@@ -144,7 +144,7 @@ protected:
 	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
 	void computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, panda::types::Point position);
 
-	void changeLink(panda::BaseData* target, panda::BaseData* parent);
+	virtual bool changeLink(panda::BaseData* data1, panda::BaseData* data2); // Return true if a link was made or modified
 
 	void updateDirtyDrawStructs();
 	virtual void updateObjectsRect();
@@ -153,7 +153,8 @@ protected:
 	void selectionChanged();
 	void objectsReordered();
 
-	void computeCompatibleDatas(panda::BaseData* data);
+	virtual bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2);
+	virtual void computeCompatibleDatas(panda::BaseData* data);
 
 signals:
 	void modified();

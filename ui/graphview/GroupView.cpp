@@ -7,7 +7,9 @@
 #include <ui/graphview/graphics/DrawList.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/document/GraphUtils.h>
 #include <panda/document/ObjectsList.h>
+#include <panda/command/LinkDatasCommand.h>
 #include <panda/object/Group.h>
 #include <panda/types/DataTraits.h>
 
@@ -40,6 +42,7 @@ void GroupView::paintGL()
 // Testing a way to draw the group datas
 	DrawList list;
 
+	const auto clickedData = getClickedData();
 	auto pen = m_drawColors.penColor;
 	int inputIndex = 0, outputIndex = 0;
 	for (const auto& gdr : m_groupDataRects)
@@ -49,7 +52,11 @@ void GroupView::paintGL()
 		if (groupData->isInput())
 		{
 			// Draw the data
-			unsigned int dataColor = DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
+			unsigned int dataColor = 0;
+			if (clickedData && clickedData != groupData && !canLinkWith(groupData))
+				dataColor = m_drawColors.lightColor;
+			else
+				dataColor = DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
 			list.addRectFilled(groupDataRect, dataColor);
 			list.addRect(groupDataRect, m_drawColors.penColor);
 
@@ -71,7 +78,11 @@ void GroupView::paintGL()
 		if (groupData->isOutput())
 		{
 			// Draw the data
-			unsigned int dataColor = DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
+			unsigned int dataColor = 0;
+			if (clickedData && clickedData != groupData && !canLinkWith(groupData))
+				dataColor = m_drawColors.lightColor;
+			else
+				dataColor = DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
 			list.addRectFilled(groupDataRect, dataColor);
 			list.addRect(groupDataRect, m_drawColors.penColor);
 
@@ -181,6 +192,60 @@ std::pair<GraphView::Rects, GraphView::PointsPairs> GroupView::getConnectedDatas
 	}
 
 	return{ rects, links };
+}
+
+bool GroupView::isCompatible(const panda::BaseData* data1, const panda::BaseData* data2)
+{
+	if(data1->getOwner() == data2->getOwner())
+		return false;
+
+	bool isGroup1 = (data1->getOwner() == m_group);
+	bool isGroup2 = (data2->getOwner() == m_group);
+	bool isInput1 = isGroup1 ? data1->isOutput() : data1->isInput();
+	bool isInput2 = isGroup2 ? data2->isOutput() : data2->isInput();
+	bool isOutput1 = isGroup1 ? data1->isInput() : data1->isOutput();
+	bool isOutput2 = isGroup2 ? data2->isInput() : data2->isOutput();
+	if(isInput1)
+	{
+		if(!isOutput2)
+			return false;
+		return data1->validParent(data2);
+	}
+	else if(isInput2)
+	{
+		if(!isOutput1)
+			return false;
+		return data2->validParent(data1);
+	}
+
+	return false;
+}
+
+void GroupView::computeCompatibleDatas(panda::BaseData* data)
+{
+	if (data->getOwner() != m_group)
+	{
+		GraphView::computeCompatibleDatas(data);
+		return;
+	}
+
+	std::vector<panda::BaseData*> forbiddenList;
+	if (data->isOutput())
+		forbiddenList = panda::graph::extractDatas(panda::graph::computeConnectedOutputNodes(data, false));
+	else if(data->isInput())
+		forbiddenList = panda::graph::extractDatas(panda::graph::computeConnectedInputNodes(data, false));
+	std::sort(forbiddenList.begin(), forbiddenList.end());
+
+	m_possibleLinks.clear();
+	for (const auto& object : m_objectsList.get())
+	{
+		for (const auto linkData : object->getDatas())
+		{
+			if (isCompatible(data, linkData) 
+				&& !std::binary_search(forbiddenList.begin(), forbiddenList.end(), linkData))
+				m_possibleLinks.insert(linkData);
+		}
+	}
 }
 
 void GroupView::updateObjectsRect()
@@ -310,3 +375,32 @@ void GroupView::updateLinks()
 		}
 	}
 }
+
+bool GroupView::changeLink(panda::BaseData* data1, panda::BaseData* data2)
+{
+	panda::BaseData *target = nullptr, *parent = nullptr;
+	bool isGroup1 = (data1->getOwner() == m_group);
+	bool isGroup2 = (data2->getOwner() == m_group);
+	bool isInput1 = isGroup1 ? data1->isOutput() : data1->isInput();
+	bool isInput2 = isGroup2 ? data2->isOutput() : data2->isInput();
+	bool isOutput1 = isGroup1 ? data1->isInput() : data1->isOutput();
+	bool isOutput2 = isGroup2 ? data2->isInput() : data2->isOutput();
+
+	if (isInput1 && isOutput2)
+	{
+		target = data1;
+		parent = data2;
+	}
+	else if (isInput2 && isOutput1)
+	{
+		target = data2;
+		parent = data1;
+	}
+	else
+		return false;
+
+	auto macro = m_pandaDocument->getUndoStack().beginMacro(tr("change link").toStdString());
+	m_pandaDocument->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(target, parent));
+	return true;
+}
+
