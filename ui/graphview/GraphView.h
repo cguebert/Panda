@@ -260,15 +260,6 @@ protected:
 	DrawColors m_drawColors; /// So that we aquire Qt colors only once
 	bool m_recomputeLinks = false, m_recomputeConnected = false, m_objectsMoved = false;
 
-	/// To be able to add a label to any Data
-	struct DataLabel
-	{
-		panda::PandaObject* object;
-		panda::BaseData* data;
-		std::string label;
-	};
-	std::vector<DataLabel> m_dataLabels;
-
 	long long m_previousTime = 0;
 };
 

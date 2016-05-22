@@ -40,6 +40,7 @@ set(HEADER_FILES
 	drawstruct/ObjectDrawStruct.h
 	drawstruct/ViewPositionAddon.h
 	graphview/alignObjects.h
+	graphview/DataLabelAddon.h
 	graphview/DocumentView.h
 	graphview/GraphView.h
 	graphview/GroupView.h
@@ -103,6 +104,7 @@ set(SOURCE_FILES
 	drawstruct/ObjectDrawStruct.cpp
 	drawstruct/ViewPositionAddon.cpp
 	graphview/alignObjects.cpp
+	graphview/DataLabelAddon.cpp
 	graphview/DocumentView.cpp
 	graphview/GraphView.cpp
 	graphview/GroupView.cpp

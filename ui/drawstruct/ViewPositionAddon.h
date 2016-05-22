@@ -4,11 +4,6 @@
 #include <panda/types/Point.h>
 #include <panda/messaging.h>
 
-namespace panda
-{
-	class XmlElement;
-}
-
 panda::types::Point getPosition(panda::PandaObject* object);
 void setPosition(panda::PandaObject* object, const panda::types::Point& pos);
 

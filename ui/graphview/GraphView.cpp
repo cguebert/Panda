@@ -10,6 +10,7 @@
 #include <ui/dialog/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/graphview/DataLabelAddon.h>
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/ObjectsSelection.h>
@@ -649,13 +650,11 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 					if (!data)
 						continue;
 
-					auto inputData = tag->getInputData();
-					auto it = std::find_if(m_dataLabels.begin(), m_dataLabels.end(), [inputData](const auto& dl) {
-						return dl.data == inputData;
-					});
+					auto label = getDataLabel(tag->getInputData());
+					
 					QString display;
-					if (it != m_dataLabels.end())
-						display = QString("<b>%1</b>").arg(QString::fromStdString(it->label));
+					if(!label.empty())
+						display = QString("<b>%1</b>").arg(QString::fromStdString(label));
 					else if (data && data->isInput())
 					{
 						auto parent = data->getParent();
@@ -1761,39 +1760,14 @@ void GraphView::setLinkTagName()
 		return;
 
 	auto data = m_contextLinkTag->getInputData();
-	auto it = std::find_if(m_dataLabels.begin(), m_dataLabels.end(), [data](const auto& dl) {
-		return dl.data == data;
-	});
-
-	std::string label;
-	if (it != m_dataLabels.end())
-		label = it->label;
+	auto label = getDataLabel(data);
 
 	bool ok = false;
 	label = QInputDialog::getMultiLineText(this, tr("Data label"), tr("Label:"), QString::fromStdString(label), &ok).toStdString();
 	if (!ok)
 		return;
 
-	// Remove the label
-	if (label.empty())
-	{
-		if (it != m_dataLabels.end())
-			m_dataLabels.erase(it);
-	}
-	else
-	{
-		// Modify the label
-		if (it != m_dataLabels.end())
-			it->label = label;
-		else // Add a label
-		{
-			DataLabel dl;
-			dl.data = data;
-			dl.object = data->getOwner();
-			dl.label = label;
-			m_dataLabels.push_back(dl);
-		}
-	}
+	setDataLabel(data, label);
 
 	emit modified();
 }
