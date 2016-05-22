@@ -2,9 +2,9 @@
 #define DETACHABLETABWIDGET_H
 
 #include <QDialog>
-#include <QMap>
 #include <QTabBar>
 #include <QTabWidget>
+#include <map>
 
 class QVBoxLayout;
 class DetachedWindow;
@@ -33,6 +33,7 @@ public:
 signals:
 	void moveTab(int from, int to);
 	void detachTab(int id);
+	void middleClicked(int id);
 
 protected:
 	void mousePressEvent(QMouseEvent* event);
@@ -77,10 +78,11 @@ public slots:
 	void attachTab(DetachableTabWidget::TabInfo tabInfo);
 	void closeTab(int id);
 	void renameTab(DetachableWidgetInfo* info, QString title);
+	void middleClicked(int id);
 
 protected:
 	DetachableTabBar* m_tabBar;
-	QMap<QWidget*, TabInfo> m_tabsInfo;
+	std::map<QWidget*, TabInfo> m_tabsInfo;
 };
 
 //****************************************************************************//

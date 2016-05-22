@@ -23,6 +23,13 @@ void DetachableTabBar::mousePressEvent(QMouseEvent* event)
 {
 	if(event->button() == Qt::LeftButton)
 		m_dragStart = event->pos();
+	else if (event->button() == Qt::MiddleButton)
+	{
+		int id = tabAt(event->pos());
+		if (id != -1)
+			emit middleClicked(id);
+		return;
+	}
 
 	m_dragDrop = QPoint();
 	m_dragging = false;
@@ -119,6 +126,7 @@ DetachableTabWidget::DetachableTabWidget(QWidget* parent)
 	connect(m_tabBar, SIGNAL(moveTab(int,int)), this, SLOT(moveTab(int,int)));
 	connect(m_tabBar, SIGNAL(detachTab(int)), this, SLOT(detachTab(int)));
 	connect(m_tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+	connect(m_tabBar, SIGNAL(middleClicked(int)), this, SLOT(middleClicked(int)));
 }
 
 int DetachableTabWidget::addTab(QWidget* widget, const QString& label, DetachableWidgetInfo* info)
@@ -147,6 +155,12 @@ void DetachableTabWidget::moveTab(int from, int to)
 	removeTab(from);
 	insertTab(to, tab, icon, text);
 	setCurrentIndex(to);
+
+	if (!m_tabsInfo[tab].info)
+	{
+		m_tabBar->setTabButton(to, QTabBar::RightSide, nullptr);
+		m_tabBar->setTabButton(to, QTabBar::LeftSide, nullptr);
+	}
 }
 
 void DetachableTabWidget::detachTab(int id)
@@ -177,31 +191,29 @@ void DetachableTabWidget::closeTab(int id)
 	QWidget* w = widget(id);
 	removeTab(id);
 	w->deleteLater();
-	m_tabsInfo.remove(w);
+	m_tabsInfo.erase(w);
 
 	emit closedTab(w);
 }
 
 void DetachableTabWidget::renameTab(DetachableWidgetInfo* info, QString title)
 {
-	QWidget* wi = nullptr;
-	TabInfo* tabInfo = nullptr;
-	for (auto& ti : m_tabsInfo)
-	{
-		if (ti.info == info)
-		{
-			tabInfo = &ti;
-			break;
-		}
-	}
-
-	if (!tabInfo)
+	auto it = std::find_if(m_tabsInfo.begin(), m_tabsInfo.end(), [info](const auto& ti) {
+		return ti.second.info == info;
+	});
+	if (it == m_tabsInfo.end())
 		return;
 
-	tabInfo->title = title;
-	int index = indexOf(tabInfo->widget);
+	it->second.title = title;
+	int index = indexOf(it->second.widget);
 	if(index != -1)
 		setTabText(index, title);
+}
+
+void DetachableTabWidget::middleClicked(int id)
+{
+	if (m_tabsInfo[widget(id)].info)
+		closeTab(id);
 }
 
 //****************************************************************************//
