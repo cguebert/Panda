@@ -216,6 +216,22 @@ void GroupView::computeCompatibleDatas(panda::BaseData* data)
 	if (data->getOwner() != m_group)
 	{
 		GraphView::computeCompatibleDatas(data);
+		if (data->isInput())
+		{
+			for (auto groupData : m_group->getGroupDatas())
+			{
+				if (groupData->isInput())
+					m_possibleLinks.insert(groupData.get());
+			}
+		}
+		else if (data->isOutput())
+		{
+			for (auto groupData : m_group->getGroupDatas())
+			{
+				if (groupData->isOutput())
+					m_possibleLinks.insert(groupData.get());
+			}
+		}
 		return;
 	}
 
