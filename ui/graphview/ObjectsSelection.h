@@ -28,6 +28,7 @@ public:
 	const Objects& get() const;
 	void set(const Objects& selection);
 
+	void selectOne(panda::PandaObject* object);
 	void selectNone();
 	void selectAll();
 	void selectConnected();

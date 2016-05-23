@@ -438,9 +438,9 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 			else	// Moving the object (or selecting only this one if we release the mouse without moving)
 			{
 				if(!m_objectsSelection->isSelected(object))
-					m_objectsSelection->selectNone();
-
-				m_objectsSelection->setLastSelectedObject(object);
+					m_objectsSelection->selectOne(object);
+				else
+					m_objectsSelection->setLastSelectedObject(object);
 				m_movingAction = Moving::Start;
 				m_previousMousePos = zoomedMouse;
 			}
@@ -683,8 +683,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		panda::PandaObject* object = m_objectsSelection->lastSelectedObject();
 		if(object)
 		{
-			m_objectsSelection->selectNone();
-			m_objectsSelection->add(object);
+			m_objectsSelection->selectOne(object);
 		}
 	}
 	else if(m_movingAction == Moving::Object)
@@ -776,16 +775,16 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::Selection)
 	{
-		m_objectsSelection->selectNone();
-
+		ObjectsSelection::Objects selection;
 		Rect selectionRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
 		for(const auto ods : m_orderedObjectDrawStructs)
 		{
 			Rect objectArea = ods->getSelectionArea();
 			if(selectionRect.intersects(objectArea))
-				m_objectsSelection->add(ods->getObject());
+				selection.push_back(ods->getObject());
 		}
 
+		m_objectsSelection->set(selection);
 		update();
 	}
 	else if(m_movingAction == Moving::Link)

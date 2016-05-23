@@ -42,6 +42,20 @@ void ObjectsSelection::set(const Objects& selection)
 	selectionChanged.run();
 }
 
+void ObjectsSelection::selectOne(panda::PandaObject* object)
+{
+	if (!object)
+		selectNone();
+	else
+	{
+		m_selectedObjects.clear();
+		m_selectedObjects.push_back(object);
+	}
+
+	selectedObject.run(m_selectedObjects.empty() ? nullptr : m_selectedObjects.back());
+	selectionChanged.run();
+}
+
 void ObjectsSelection::add(panda::PandaObject* object)
 {
 	if(!panda::helper::contains(m_selectedObjects, object))
