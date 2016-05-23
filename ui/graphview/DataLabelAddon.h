@@ -1,6 +1,7 @@
 #pragma once
 
 #include <panda/object/ObjectAddons.h>
+#include <panda/messaging.h>
 
 namespace panda
 {
@@ -28,5 +29,8 @@ public:
 	void setLabel(panda::BaseData* data, const std::string& label);
 
 private:
+	void modifiedObject(panda::PandaObject* object);
+
 	std::vector<DataLabel> m_dataLabels;
+	panda::msg::Observer m_observer;
 };

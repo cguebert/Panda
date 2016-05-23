@@ -1,11 +1,17 @@
 #include <ui/graphview/DataLabelAddon.h>
+#include <panda/PandaDocument.h>
 #include <panda/XmlDocument.h>
+#include <panda/document/DocumentSignals.h>
 #include <panda/helper/algorithm.h>
 #include <panda/object/PandaObject.h>
 
+#include <set>
+
 DataLabelAddon::DataLabelAddon(panda::PandaObject& object) 
 	: panda::BaseObjectAddon(object) 
-{ }
+{ 
+	m_observer.get(object.parentDocument()->getSignals().modifiedObject).connect<DataLabelAddon, &DataLabelAddon::modifiedObject>(this);
+}
 
 void DataLabelAddon::save(panda::XmlElement& elem)
 { 
@@ -65,6 +71,20 @@ void DataLabelAddon::setLabel(panda::BaseData* data, const std::string& label)
 			dl.label = label;
 			m_dataLabels.push_back(std::move(dl));
 		}
+	}
+}
+
+void DataLabelAddon::modifiedObject(panda::PandaObject* object)
+{
+	if (object == &m_object)
+	{
+		std::set<panda::BaseData*> datas;
+		for (auto data : object->getDatas())
+			datas.insert(data);
+		auto last = std::remove_if(m_dataLabels.begin(), m_dataLabels.end(), [&datas](const auto& dl) {
+			return !datas.count(dl.data);
+		});
+		m_dataLabels.erase(last, m_dataLabels.end());
 	}
 }
 

@@ -102,8 +102,6 @@ bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects)
 			for(auto dockable : dock->getDockedObjects())
 				dockedObjects.push_back(std::make_pair(dock->getIndex(), dockable->getIndex()));
 		}
-
-		document->getSignals().savingObject.run(elem, object);
 	}
 
 	// Saving links
@@ -170,7 +168,6 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement
 		const auto& object = p.first;
 		objectsList.addObject(object);
 		objects.push_back(object.get());
-		document->getSignals().loadingObject.run(p.second, object.get());
 	}
 
 	// Create links

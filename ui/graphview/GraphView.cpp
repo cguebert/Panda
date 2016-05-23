@@ -222,6 +222,7 @@ void GraphView::paintGL()
 
 	if (m_objectsMoved)
 	{
+		m_objectsMoved = false;
 		emit modified();
 		m_recomputeTags = true;
 		m_recomputeLinks = true;

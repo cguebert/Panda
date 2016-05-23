@@ -25,7 +25,8 @@ namespace panda
 	ObjectAddons::ObjectAddons(PandaObject& object)
 		: m_object(object)
 	{
-		if (&object != object.parentDocument())
+		// Do not create addons for the document
+		if (object.parentDocument() && &object != object.parentDocument())
 			createAddons();
 	}
 

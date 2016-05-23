@@ -17,8 +17,6 @@ public:
 	msg::Signal<void()> modified;
 	msg::Signal<void(panda::PandaObject*)> modifiedObject;
 	msg::Signal<void(panda::PandaObject*)> dirtyObject;
-	msg::Signal<void(XmlElement&, panda::PandaObject*)> savingObject;
-	msg::Signal<void(const XmlElement&, panda::PandaObject*)> loadingObject;
 	msg::Signal<void()> timeChanged;
 	msg::Signal<void()> startLoading;
 	msg::Signal<void()> loadingFinished;
