@@ -44,6 +44,8 @@ public:
 
 	OpenGLRenderView* getOpenGLView() const;
 
+	DetachedWindow* openDetachedWindow();
+
 protected:
 	void closeEvent(QCloseEvent* event);
 
@@ -76,8 +78,7 @@ private slots:
 	void selectedObject(panda::PandaObject*);
 	void adjustRenderSizeToView();
 	void showImageViewport();
-	void openDetachedWindow(DetachedWindow* window);
-	void closeDetachedWindow(DetachedWindow* window);
+	void closedDetachedWindow(DetachedWindow* window);
 	void closeViewport(ImageViewport* viewport);
 	void closeGroupView(GroupView* view);
 	void convertSavedDocuments();

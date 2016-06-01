@@ -1,8 +1,7 @@
 #include <ui/custom/DetachableTabWidget.h>
+#include <ui/MainWindow.h>
 
 #include <QtWidgets>
-
-#include <iostream>
 
 void DetachableWidgetInfo::changeTitle(QString title)
 {
@@ -21,8 +20,12 @@ DetachableTabBar::DetachableTabBar(QWidget* parent)
 
 void DetachableTabBar::mousePressEvent(QMouseEvent* event)
 {
-	if(event->button() == Qt::LeftButton)
+	if (event->button() == Qt::LeftButton)
+	{
 		m_dragStart = event->pos();
+		m_dropPosition = QPoint();
+		m_dragging = false;
+	}
 	else if (event->button() == Qt::MiddleButton)
 	{
 		int id = tabAt(event->pos());
@@ -30,9 +33,6 @@ void DetachableTabBar::mousePressEvent(QMouseEvent* event)
 			emit middleClicked(id);
 		return;
 	}
-
-	m_dragDrop = QPoint();
-	m_dragging = false;
 
 	QTabBar::mousePressEvent(event);
 }
@@ -67,19 +67,12 @@ void DetachableTabBar::mouseMoveEvent(QMouseEvent* event)
 
 		// Start the drag action
 		Qt::DropAction dragged = dragAction.exec(Qt::MoveAction);
-		if(dragged == Qt::IgnoreAction)
-		{
-			event->accept();
-			detachTab(tabAt(m_dragStart));
-		}
-		else if(dragged == Qt::MoveAction)
-		{
-			if(!m_dragDrop.isNull())
-			{
-				event->accept();
-				moveTab(tabAt(m_dragStart), tabAt(m_dragDrop));
-			}
-		}
+
+		event->accept(); // Break the mouse move event
+		emit dropTab(tabAt(m_dragStart), m_dropWidget, m_dropPosition); // The drop action is now done by the tab widget
+
+		m_dragging = false;
+		m_dropWidget = nullptr;
 	}
 	else
 		QTabBar::mouseMoveEvent(event);
@@ -90,8 +83,6 @@ void DetachableTabBar::dragEnterEvent(QDragEnterEvent* event)
 	const QMimeData* mime = event->mimeData();
 	if(mime->formats().contains("action") && mime->data("action") == "application/tab-detach")
 		event->acceptProposedAction();
-
-	QTabBar::dragEnterEvent(event);
 }
 
 void DetachableTabBar::dragMoveEvent(QDragMoveEvent* event)
@@ -99,8 +90,6 @@ void DetachableTabBar::dragMoveEvent(QDragMoveEvent* event)
 	const QMimeData* mime = event->mimeData();
 	if(mime->formats().contains("action") && mime->data("action") == "application/tab-detach")
 		event->acceptProposedAction();
-
-	QTabBar::dragMoveEvent(event);
 }
 
 void DetachableTabBar::dropEvent(QDropEvent* event)
@@ -109,24 +98,30 @@ void DetachableTabBar::dropEvent(QDropEvent* event)
 	{
 		event->setDropAction(Qt::MoveAction);
 		event->accept();
+
+		if (auto source = qobject_cast<DetachableTabBar*>(event->source()))
+			source->setDropDestination(this, event->pos());
 	}
-	// TODO: is it the same tabbar or in another window?
-	m_dragDrop = event->pos();
-	QTabBar::dropEvent(event);
+}
+
+void DetachableTabBar::setDropDestination(QWidget* widget, QPoint position)
+{
+	m_dropWidget = widget;
+	m_dropPosition = position;
 }
 
 //****************************************************************************//
 
-DetachableTabWidget::DetachableTabWidget(QWidget* parent)
+DetachableTabWidget::DetachableTabWidget(MainWindow* mainWindow, QWidget* parent)
 	: QTabWidget(parent)
+	, m_mainWindow(mainWindow)
 {
 	m_tabBar = new DetachableTabBar(this);
 	setTabBar(m_tabBar);
 
-	connect(m_tabBar, SIGNAL(moveTab(int,int)), this, SLOT(moveTab(int,int)));
-	connect(m_tabBar, SIGNAL(detachTab(int)), this, SLOT(detachTab(int)));
-	connect(m_tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-	connect(m_tabBar, SIGNAL(middleClicked(int)), this, SLOT(middleClicked(int)));
+	connect(m_tabBar, &DetachableTabBar::tabCloseRequested, this, &DetachableTabWidget::closeTab);
+	connect(m_tabBar, &DetachableTabBar::middleClicked, this, &DetachableTabWidget::middleClicked);
+	connect(m_tabBar, &DetachableTabBar::dropTab, this, &DetachableTabWidget::dropTab);
 }
 
 int DetachableTabWidget::addTab(QWidget* widget, const QString& label, DetachableWidgetInfo* info)
@@ -146,6 +141,12 @@ int DetachableTabWidget::addTab(QWidget* widget, const QString& label, Detachabl
 	return id;
 }
 
+DetachableTabWidget::TabInfo DetachableTabWidget::getInfo(int id)
+{
+	auto w = widget(id);
+	return m_tabsInfo.at(w);
+}
+
 void DetachableTabWidget::moveTab(int from, int to)
 {
 	QWidget* tab = widget(from);
@@ -163,21 +164,39 @@ void DetachableTabWidget::moveTab(int from, int to)
 	}
 }
 
+void DetachableTabWidget::moveTab(int id, DetachableTabWidget* dstWidget)
+{
+	QWidget* w = widget(id);
+	QString label = tabText(id);
+	w->disconnect(this);
+	dstWidget->addTab(w, label, m_tabsInfo[w].info);
+	m_tabsInfo.erase(w);
+	emit removedTab(w);
+}
+
+void DetachableTabWidget::moveTab(int id, DetachedWindow* dstWindow)
+{
+	QWidget* w = widget(id);
+	QString label = tabText(id);
+	w->disconnect(this);
+	dstWindow->attachTab(m_tabsInfo[w]);
+	m_tabsInfo.erase(w);
+	w->show();
+	emit removedTab(w);
+}
+
 void DetachableTabWidget::detachTab(int id)
 {
-	DetachedWindow* detachedWindow = new DetachedWindow(parentWidget());
-	connect(detachedWindow, SIGNAL(detachTab(DetachableTabWidget::TabInfo)), this, SLOT(attachTab(DetachableTabWidget::TabInfo)));
-
+	auto detachedWindow = m_mainWindow->openDetachedWindow();
 	QWidget* w = widget(id);
 	w->disconnect(this);
 	detachedWindow->attachTab(m_tabsInfo[w]); // The setParent inside will remove the tab
+	m_tabsInfo.erase(w);
 	w->show(); // Have to call it manually
 	detachedWindow->resize(w->sizeHint().expandedTo(QSize(640, 480)));
 	detachedWindow->show();
 
-	emit openDetachedWindow(detachedWindow);
-
-	update();
+	emit removedTab(w);
 }
 
 void DetachableTabWidget::attachTab(TabInfo tabInfo)
@@ -216,49 +235,150 @@ void DetachableTabWidget::middleClicked(int id)
 		closeTab(id);
 }
 
+void DetachableTabWidget::dropTab(int from, QWidget* dstWidget, QPoint pos)
+{
+	if(!dstWidget)
+		detachTab(from);
+	else if(dstWidget == m_tabBar)
+		moveTab(from, m_tabBar->tabAt(pos));
+	else if (auto window = qobject_cast<DetachedWindow*>(dstWidget))
+		moveTab(from, window);
+	else if (auto tabBar = qobject_cast<DetachableTabBar*>(dstWidget))
+	{
+		auto tabWidget = qobject_cast<DetachableTabWidget*>(tabBar->parentWidget());
+		if(tabWidget)
+			moveTab(from, tabWidget);
+	}
+}
+
 //****************************************************************************//
 
-DetachedWindow::DetachedWindow(QWidget* parent)
+DetachedWindow::DetachedWindow(MainWindow* parent)
 	: QDialog(parent)
+	, m_mainWindow(parent)
 {
 	m_mainLayout = new QVBoxLayout(this);
 	m_mainLayout->setMargin(0);
 	setLayout(m_mainLayout);
 	setAttribute(Qt::WA_DeleteOnClose);
+	setAcceptDrops(true);
 }
 
 void DetachedWindow::attachTab(DetachableTabWidget::TabInfo tabInfo)
 {
-	setWindowTitle(tabInfo.title);
-	tabInfo.widget->setParent(this);
-	m_mainLayout->addWidget(tabInfo.widget);
-	m_tabContent = tabInfo;
+	if (!m_defaultTabContent.widget)
+	{
+		setWindowTitle(tabInfo.title);
+		auto w = tabInfo.widget;
+		w->setParent(this);
+		m_mainLayout->addWidget(w);
+		m_defaultTabContent = tabInfo;
 
-	if(tabInfo.info)
-		connect(tabInfo.info, &DetachableWidgetInfo::changedTitle, this, &DetachedWindow::changeTitle);
+		if (tabInfo.info)
+			connect(tabInfo.info, &DetachableWidgetInfo::changedTitle, this, &DetachedWindow::changeTitle);
+	}
+	else
+	{
+		if (!m_tabWidget)
+			createTabWidget();
+		m_tabWidget->addTab(tabInfo.widget, tabInfo.title, tabInfo.info);
+	}
 }
 
-void DetachedWindow::closeTab()
+bool DetachedWindow::closeTab(QWidget* tab)
 {
-	m_tabContent.widget = nullptr; // Still a child of this window, and will be deleted by it
-	close();
-}
-
-DetachableTabWidget::TabInfo DetachedWindow::getTabInfo() const
-{
-	return m_tabContent;
+	if (m_defaultTabContent.widget == tab)
+	{
+		m_defaultTabContent.widget = nullptr; // Still a child of this window, and will be deleted by it
+		close();
+		return true;
+	}
+	else
+		return false;
 }
 
 void DetachedWindow::closeEvent(QCloseEvent* /*event*/)
 {
-	// For all tabs in tabbar, emit attachTab
-	if(m_tabContent.widget)
-		emit detachTab(m_tabContent);
-	emit closeDetachedWindow(this);
+	// TODO: close tabs that can be closed, move the others to the main view
+	// For all tabs in tabbar, emit detachTab
+	if(m_defaultTabContent.widget)
+		emit detachTab(m_defaultTabContent);
+	emit closedDetachedWindow(this);
 }
 
 void DetachedWindow::changeTitle(DetachableWidgetInfo*, QString title)
 {
-	setWindowTitle(title);
-	m_tabContent.title = title;
+	if (!m_tabWidget)
+	{
+		setWindowTitle(title);
+		m_defaultTabContent.title = title;
+	}
+}
+
+void DetachedWindow::dragEnterEvent(QDragEnterEvent* event)
+{
+	const QMimeData* mime = event->mimeData();
+	if(mime->formats().contains("action") && mime->data("action") == "application/tab-detach")
+		event->acceptProposedAction();
+
+	QDialog::dragEnterEvent(event);
+}
+
+void DetachedWindow::dragMoveEvent(QDragMoveEvent* event)
+{
+const QMimeData* mime = event->mimeData();
+	if(mime->formats().contains("action") && mime->data("action") == "application/tab-detach")
+		event->acceptProposedAction();
+
+	QDialog::dragMoveEvent(event);
+}
+
+void DetachedWindow::dropEvent(QDropEvent* event)
+{
+	event->setDropAction(Qt::MoveAction);
+	event->accept();
+
+	if (auto source = qobject_cast<DetachableTabBar*>(event->source()))
+		source->setDropDestination(this, event->pos());
+}
+
+void DetachedWindow::createTabWidget()
+{
+	m_tabWidget = new DetachableTabWidget(m_mainWindow);
+	connect(m_tabWidget, &DetachableTabWidget::closedTab, [this](QWidget* w) {
+		emit closedTab(w);
+		if (!m_tabWidget->count())
+			close();
+	//	if (m_tabWidget->count() == 1)
+	//		removeTabWidget();
+	});
+	connect(m_tabWidget, &DetachableTabWidget::removedTab, [this](QWidget* w) {
+		if (!m_tabWidget->count())
+			close();
+	//	if (m_tabWidget->count() == 1)
+	//		removeTabWidget();
+	});
+
+	auto w = m_defaultTabContent.widget;
+	w->disconnect(this);
+	m_mainLayout->removeWidget(w);
+	m_tabWidget->addTab(m_defaultTabContent.widget, m_defaultTabContent.title, m_defaultTabContent.info);
+	m_mainLayout->addWidget(m_tabWidget);
+
+	m_defaultTabContent = DetachableTabWidget::TabInfo();
+	setWindowTitle(tr("Panda - detached window"));
+}
+
+void DetachedWindow::removeTabWidget()
+{
+	// TODO: This is not working yet
+	auto info = m_tabWidget->getInfo(0);
+	auto w = info.widget;
+	w->setParent(this);
+
+	m_tabWidget->removeTab(0);
+	delete m_tabWidget;
+	m_tabWidget = nullptr;
+
+	attachTab(info);
 }

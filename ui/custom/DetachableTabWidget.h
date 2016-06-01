@@ -8,6 +8,7 @@
 
 class QVBoxLayout;
 class DetachedWindow;
+class MainWindow;
 
 class DetachableWidgetInfo : public QObject
 {
@@ -30,30 +31,32 @@ class DetachableTabBar : public QTabBar
 public:
 	explicit DetachableTabBar(QWidget* parent = nullptr);
 
+	void setDropDestination(QWidget* widget, QPoint position);
+
 signals:
-	void moveTab(int from, int to);
-	void detachTab(int id);
 	void middleClicked(int id);
+	void dropTab(int from, QWidget* dstWidget, QPoint pos);
 
 protected:
-	void mousePressEvent(QMouseEvent* event);
-	void mouseMoveEvent(QMouseEvent* event);
-	void dragEnterEvent(QDragEnterEvent* event);
-	void dragMoveEvent(QDragMoveEvent* event);
-	void dropEvent(QDropEvent* event);
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void dragEnterEvent(QDragEnterEvent* event) override;
+	void dragMoveEvent(QDragMoveEvent* event) override;
+	void dropEvent(QDropEvent* event) override;
 
-	QPoint m_dragStart, m_dragDrop;
+private:
+	QPoint m_dragStart, m_dropPosition;
+	QWidget* m_dropWidget = nullptr;
 	bool m_dragging;
 };
 
 //****************************************************************************//
 
-// TODO: add a ptr to the "main" tabwidget
 class DetachableTabWidget : public QTabWidget
 {
 	Q_OBJECT
 public:
-	explicit DetachableTabWidget(QWidget* parent = nullptr);
+	explicit DetachableTabWidget(MainWindow* mainWindow, QWidget* parent = nullptr);
 
 	int addTab(QWidget* widget, const QString& label, DetachableWidgetInfo* info = nullptr); // Replacing QTabWidget::addTab functions
 
@@ -65,22 +68,28 @@ public:
 		QWidget* widget = nullptr;
 		DetachableWidgetInfo* info = nullptr;
 		QString title;
-		bool closable = false;
 	};
 
+	TabInfo getInfo(int id);
+
 signals:
-	void openDetachedWindow(DetachedWindow* window);
 	void closedTab(QWidget* widget);
+	void removedTab(QWidget* widget);
 
 public slots:
-	void moveTab(int from, int to);
-	void detachTab(int id);
 	void attachTab(DetachableTabWidget::TabInfo tabInfo);
 	void closeTab(int id);
 	void renameTab(DetachableWidgetInfo* info, QString title);
 	void middleClicked(int id);
+	void dropTab(int from, QWidget* dstWidget, QPoint pos);
 
-protected:
+private:
+	void moveTab(int from, int to);
+	void moveTab(int id, DetachableTabWidget* dstWidget);
+	void moveTab(int id, DetachedWindow* dstWindow);
+	void detachTab(int id);
+
+	MainWindow* m_mainWindow;
 	DetachableTabBar* m_tabBar;
 	std::map<QWidget*, TabInfo> m_tabsInfo;
 };
@@ -92,22 +101,32 @@ class DetachedWindow : public QDialog
 {
 	Q_OBJECT
 public:
-	DetachedWindow(QWidget* parent = nullptr);
+	DetachedWindow(MainWindow* parent = nullptr);
 
 	void attachTab(DetachableTabWidget::TabInfo tabInfo);
-	void closeTab();
+	bool closeTab(QWidget* tab);
 	DetachableTabWidget::TabInfo getTabInfo() const;
 
 signals:
 	void detachTab(DetachableTabWidget::TabInfo tabInfo);
-	void closeDetachedWindow(DetachedWindow* window);
+	void closedTab(QWidget* widget);
+	void closedDetachedWindow(DetachedWindow* window);
 
-protected:
-	void closeEvent(QCloseEvent* event);
+private:
+	void createTabWidget();
+	void removeTabWidget();
+
 	void changeTitle(DetachableWidgetInfo*, QString title);
 
+	void closeEvent(QCloseEvent* event) override;
+	void dragEnterEvent(QDragEnterEvent* event) override;
+	void dragMoveEvent(QDragMoveEvent* event) override;
+	void dropEvent(QDropEvent* event) override;
+
+	MainWindow* m_mainWindow;
 	QVBoxLayout* m_mainLayout;
-	DetachableTabWidget::TabInfo m_tabContent;
+	DetachableTabWidget* m_tabWidget = nullptr;
+	DetachableTabWidget::TabInfo m_defaultTabContent;
 };
 
 #endif // DETACHABLETABWIDGET_H

@@ -85,7 +85,7 @@ MainWindow::MainWindow()
 	m_openGLViewContainer->setWidgetResizable(true);
 	m_openGLViewContainer->setFocusProxy(m_openGLRenderView);
 
-	m_tabWidget = new DetachableTabWidget;
+	m_tabWidget = new DetachableTabWidget(this);
 	m_tabWidget->addTab(m_documentViewContainer, tr("Graph"));
 	m_tabWidget->addTab(m_openGLViewContainer, tr("Render"));
 	m_tabWidget->setCurrentWidget(m_openGLViewContainer); // First go to the OpenGL view (initialize it)
@@ -1380,13 +1380,19 @@ void MainWindow::showImageViewport()
 	container->setFocus();
 }
 
-void MainWindow::openDetachedWindow(DetachedWindow* window)
+DetachedWindow* MainWindow::openDetachedWindow()
 {
+	DetachedWindow* window = new DetachedWindow(this);
 	m_detachedWindows.push_back(window);
-	connect(window, SIGNAL(closeDetachedWindow(DetachedWindow*)), this, SLOT(closeDetachedWindow(DetachedWindow*)));
+	
+	connect(window, &DetachedWindow::closedDetachedWindow, this, &MainWindow::closedDetachedWindow);
+	connect(window, &DetachedWindow::closedTab, this, &MainWindow::onTabWidgetCloseTab);
+	connect(window, &DetachedWindow::detachTab, m_tabWidget, &DetachableTabWidget::attachTab);
+
+	return window;
 }
 
-void MainWindow::closeDetachedWindow(DetachedWindow* window)
+void MainWindow::closedDetachedWindow(DetachedWindow* window)
 {
 	m_detachedWindows.removeAll(window);
 }
@@ -1413,9 +1419,8 @@ void MainWindow::closeTab(QWidget* container)
 {
 	for(DetachedWindow* window : m_detachedWindows)
 	{
-		if(window->getTabInfo().widget == container)
+		if(window->closeTab(container))
 		{
-			window->closeTab();
 			onTabWidgetCloseTab(container); // To be sure we remove the tab info from the lists
 			return;
 		}
