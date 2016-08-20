@@ -43,12 +43,12 @@ void ViewPositionAddon::move(panda::types::Point delta)
 
 panda::types::Point getPosition(panda::PandaObject* object)
 {
-	return object->addons().get<ViewPositionAddon>().getPosition();
+	return object->addons().edit<ViewPositionAddon>().getPosition();
 }
 
 void setPosition(panda::PandaObject* object, const panda::types::Point& pos)
 {
-	object->addons().get<ViewPositionAddon>().setPosition(pos);
+	object->addons().edit<ViewPositionAddon>().setPosition(pos);
 }
 
 //****************************************************************************//

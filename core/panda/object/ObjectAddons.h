@@ -32,12 +32,29 @@ class PANDA_CORE_API ObjectAddons
 public:
 	explicit ObjectAddons(PandaObject& object);
 
+	// Returns null if not present
 	template <class T>
-	T& get()
+	T* get()
 	{
 		static_assert(std::is_base_of<BaseObjectAddon, T>::value, "The argument of ObjectAddons::get must inherit from BaseObjectAddon");
 
-		for (auto addon : m_addons)
+		for (const auto& addon : m_addons)
+		{
+			auto ptr = std::dynamic_pointer_cast<T>(addon);
+			if (ptr)
+				return ptr.get();
+		}
+
+		return nullptr;
+	}
+
+	// Creates it if not present
+	template <class T>
+	T& edit()
+	{
+		static_assert(std::is_base_of<BaseObjectAddon, T>::value, "The argument of ObjectAddons::get must inherit from BaseObjectAddon");
+
+		for (const auto& addon : m_addons)
 		{
 			auto ptr = std::dynamic_pointer_cast<T>(addon);
 			if (ptr)

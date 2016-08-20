@@ -92,12 +92,15 @@ void DataLabelAddon::modifiedObject(panda::PandaObject* object)
 
 std::string getDataLabel(panda::BaseData* data)
 {
-	return data->getOwner()->addons().get<DataLabelAddon>().getLabel(data);
+	auto addon = data->getOwner()->addons().get<DataLabelAddon>();
+	if(addon)
+		return addon->getLabel(data);
+	return {};
 }
 
 void setDataLabel(panda::BaseData* data, const std::string& label)
 {
-	data->getOwner()->addons().get<DataLabelAddon>().setLabel(data, label);
+	data->getOwner()->addons().edit<DataLabelAddon>().setLabel(data, label);
 }
 
 //****************************************************************************//

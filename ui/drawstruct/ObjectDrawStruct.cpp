@@ -16,7 +16,7 @@ using panda::types::Rect;
 
 ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 	: m_parentView(view), m_object(obj)
-	, m_positionAddon(obj->addons().get<ViewPositionAddon>())
+	, m_positionAddon(obj->addons().edit<ViewPositionAddon>())
 	, m_observer(std::make_unique<panda::msg::Observer>())
 {
 	if (!m_positionAddon.isSet())
