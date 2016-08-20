@@ -11,8 +11,6 @@ using panda::ObjectFactory;
 EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget* parent)
 	: QDialog(parent)
 	, m_group(group)
-	, m_selectedData(nullptr)
-	, m_selectedRow(-1)
 {
 	QVBoxLayout* vLayout = new QVBoxLayout;
 
@@ -24,68 +22,74 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget* parent)
 	vLayout->addLayout(groupNameLayout);
 
 	auto groupDatas = group->getGroupDatas();
-
-	m_tableWidget = new QTableWidget(this);
-	m_tableWidget->setColumnCount(4);
-	m_tableWidget->setRowCount(groupDatas.size());
-	m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	m_tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-	m_tableWidget->verticalHeader()->setEnabled(false);
-	m_tableWidget->verticalHeader()->hide();
-
-	QStringList headerLabels;
-	headerLabels << "name" << "input" << "output" << "description";
-	m_tableWidget->setHorizontalHeaderLabels(headerLabels);
-	m_tableWidget->setMinimumWidth(m_tableWidget->horizontalHeader()->length() + 10);
-	m_tableWidget->horizontalHeader()->resizeSection(1, 50);
-	m_tableWidget->horizontalHeader()->resizeSection(2, 50);
-	m_tableWidget->horizontalHeader()->setStretchLastSection(true);
-	m_tableWidget->horizontalHeader()->setSectionsClickable(false);
-
-	connect(m_tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));
-
-	int rowIndex = 0;
-	for(auto data : groupDatas)
+	Datas inputDatas, outputDatas;
+	for (const auto& dataSPtr : groupDatas)
 	{
-		populateRow(rowIndex, const_cast<panda::BaseData*>(data.get()));
-		++rowIndex;
+		auto data = dataSPtr.get();
+		if (data->isInput())
+			inputDatas.push_back(data);
+		else if (data->isOutput())
+			outputDatas.push_back(data);
+
+		auto name = QString::fromStdString(data->getName());
+		auto description = QString::fromStdString(data->getHelp());
+
+		m_datasName[data] = name;
+		m_datasDescription[data] = description;
 	}
 
+	m_inputsListWidget = new QListWidget(this);
+	m_outputsListWidget = new QListWidget(this);
+
+	fillList(m_inputsListWidget, inputDatas);
+	fillList(m_outputsListWidget, outputDatas);
+
 	QPushButton* moveUpButton = new QPushButton(tr("Move up"), this);
-	connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
+	connect(moveUpButton, &QPushButton::clicked, this, &EditGroupDialog::moveUp);
 
 	QPushButton* moveDownButton = new QPushButton(tr("Move down"), this);
-	connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
+	connect(moveDownButton, &QPushButton::clicked, this, &EditGroupDialog::moveDown);
 
 	QVBoxLayout* moveButtonsLayout = new QVBoxLayout;
+	moveButtonsLayout->addStretch();
 	moveButtonsLayout->addWidget(moveUpButton);
 	moveButtonsLayout->addWidget(moveDownButton);
+	moveButtonsLayout->addStretch();
+
+	auto inputsLayout = new QVBoxLayout;
+	auto inputsLabel = new QLabel(tr("inputs:"), this);
+	inputsLayout->addWidget(inputsLabel);
+	inputsLayout->addWidget(m_inputsListWidget);
+
+	auto ouputsLayout = new QVBoxLayout;
+	auto outputsLabel = new QLabel(tr("outputs:"), this);
+	ouputsLayout->addWidget(outputsLabel);
+	ouputsLayout->addWidget(m_outputsListWidget);
 
 	QHBoxLayout* tableLayout = new QHBoxLayout;
-	tableLayout->addWidget(m_tableWidget);
+	tableLayout->addLayout(inputsLayout);
 	tableLayout->addLayout(moveButtonsLayout);
+	tableLayout->addLayout(ouputsLayout);
 	vLayout->addLayout(tableLayout);
 
-	QGridLayout* gridLayout = new QGridLayout;
-	QLabel* dataNameLabel = new QLabel(tr("data name:"), this);
-	m_editDataName = new QLineEdit(this);
-	connect(m_editDataName, SIGNAL(textEdited(QString)), this, SLOT(dataNameEdited(QString)));
-	gridLayout->addWidget(dataNameLabel, 0, 0);
-	gridLayout->addWidget(m_editDataName, 0, 1);
+	auto editLayout = new QFormLayout;
+	m_dataTypeLabel = new QLabel(this);
+	editLayout->addRow("type:", m_dataTypeLabel);
 
-	QLabel* dataHelpLabel = new QLabel(tr("data description:"), this);
+	m_editDataName = new QLineEdit(this);
+	connect(m_editDataName, &QLineEdit::textEdited, this, &EditGroupDialog::dataNameEdited);
+	editLayout->addRow("name:", m_editDataName);
+
 	m_editDataHelp = new QLineEdit(this);
-	connect(m_editDataHelp, SIGNAL(textEdited(QString)), this, SLOT(dataHelpEdited(QString)));
-	gridLayout->addWidget(dataHelpLabel, 1, 0);
-	gridLayout->addWidget(m_editDataHelp, 1, 1);
-	vLayout->addLayout(gridLayout);
+	connect(m_editDataHelp, &QLineEdit::textEdited, this, &EditGroupDialog::dataHelpEdited);
+	editLayout->addRow("description:", m_editDataHelp);
+	vLayout->addLayout(editLayout);
 
 	QPushButton* okButton = new QPushButton(tr("Ok"), this);
 	okButton->setDefault(true);
-	connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+	connect(okButton, &QPushButton::clicked, this, &EditGroupDialog::accept);
 	QPushButton* cancelButton = new QPushButton(tr("Cancel"), this);
-	connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+	connect(cancelButton, &QPushButton::clicked, this, &EditGroupDialog::reject);
 	QHBoxLayout* buttonsLayout = new QHBoxLayout;
 	buttonsLayout->addStretch();
 	buttonsLayout->addWidget(okButton);
@@ -94,80 +98,100 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget* parent)
 
 	setLayout(vLayout);
 
-	connect(this, SIGNAL(accepted()), this, SLOT(updateGroup()));
+	connect(this, &QDialog::accepted, this, &EditGroupDialog::updateGroup);
 
 	setWindowTitle(tr("Edit group"));
 }
 
-void EditGroupDialog::populateRow(int rowIndex, panda::BaseData* data)
+void EditGroupDialog::fillList(QListWidget* listWidget, const Datas& datas)
 {
-	QTableWidgetItem *item0 = new QTableWidgetItem(QString::fromStdString(data->getName()));
-	item0->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	item0->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
-	QTableWidgetItem *item1 = new QTableWidgetItem(data->isInput()?"true":"false");
-	item1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	item1->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
-	QTableWidgetItem *item2 = new QTableWidgetItem(data->isOutput()?"true":"false");
-	item2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	item2->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
-	QTableWidgetItem *item3 = new QTableWidgetItem(QString::fromStdString(data->getHelp()));
-	item3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	item3->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
-	m_tableWidget->setItem(rowIndex, 0, item0);
-	m_tableWidget->setItem(rowIndex, 1, item1);
-	m_tableWidget->setItem(rowIndex, 2, item2);
-	m_tableWidget->setItem(rowIndex, 3, item3);
+	listWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+	listWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+	for (const auto data : datas)
+	{
+		auto item = new QListWidgetItem(m_datasName[data]);
+		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+		item->setData(Qt::UserRole, QVariant::fromValue(static_cast<void*>(data)));
+		listWidget->addItem(item);
+	}
+
+	connect(listWidget, &QListWidget::itemClicked, this, &EditGroupDialog::itemClicked);
 }
 
-void EditGroupDialog::itemClicked(QTableWidgetItem* item)
+void EditGroupDialog::itemClicked(QListWidgetItem* item)
 {
-	m_selectedRow = item->row();
+	m_selection = item;
 	panda::BaseData* newData = (panda::BaseData*)item->data(Qt::UserRole).value<void*>();
 	if(newData && newData != m_selectedData)
 	{
 		m_selectedData = newData;
 
-		m_editDataName->setText(m_tableWidget->item(m_selectedRow, 0)->text());
-		m_editDataHelp->setText(m_tableWidget->item(m_selectedRow, 3)->text());
+		m_editDataName->setText(m_datasName[m_selectedData]);
+		m_editDataHelp->setText(m_datasDescription[m_selectedData]);
+
+		if (m_selectedData->isInput())
+			m_dataTypeLabel->setText("input");
+		else if (m_selectedData->isOutput())
+			m_dataTypeLabel->setText("output");
+		else
+			m_dataTypeLabel->setText("internal"); // Is it even allowed for group objects?
 	}
+
+	auto list = item->listWidget();
+	if (list == m_inputsListWidget)
+		m_outputsListWidget->clearSelection();
+	else
+		m_inputsListWidget->clearSelection();
 }
 
 void EditGroupDialog::moveUp()
 {
-	if(!m_selectedData || m_selectedRow <= 0)
+	if(!m_selectedData || !m_selection)
 		return;
 
-	m_tableWidget->removeRow(m_selectedRow);
-	--m_selectedRow;
-	m_tableWidget->insertRow(m_selectedRow);
-	populateRow(m_selectedRow, m_selectedData);
-	m_tableWidget->selectRow(m_selectedRow);
+	auto list = m_selection->listWidget();
+	auto row = list->row(m_selection);
+	if (row <= 0)
+		return;
+
+	auto item = list->takeItem(row);
+	--row;
+	list->insertItem(row, item);
+	list->setCurrentRow(row);
 }
 
 void EditGroupDialog::moveDown()
 {
-	if(!m_selectedData || m_selectedRow >= m_tableWidget->rowCount()-1)
+	if(!m_selectedData || !m_selection)
 		return;
 
-	m_tableWidget->removeRow(m_selectedRow);
-	++m_selectedRow;
-	m_tableWidget->insertRow(m_selectedRow);
-	populateRow(m_selectedRow, m_selectedData);
-	m_tableWidget->selectRow(m_selectedRow);
+	auto list = m_selection->listWidget();
+	auto row = list->currentRow();
+	if (row >= list->count() - 1)
+		return;
+
+	auto item = list->takeItem(row);
+	++row;
+	list->insertItem(row, item);
+	list->setCurrentRow(row);
 }
 
 void EditGroupDialog::dataNameEdited(QString text)
 {
-	if(m_selectedRow < 0)
+	if(!m_selectedData || !m_selection)
 		return;
-	m_tableWidget->item(m_selectedRow, 0)->setText(text);
+
+	m_selection->setText(text);
+	m_datasName[m_selectedData] = text;
 }
 
 void EditGroupDialog::dataHelpEdited(QString text)
 {
-	if(m_selectedRow < 0)
+	if(!m_selectedData)
 		return;
-	m_tableWidget->item(m_selectedRow, 3)->setText(text);
+	m_datasDescription[m_selectedData] = text;
 }
 
 void EditGroupDialog::updateGroup()
@@ -176,38 +200,51 @@ void EditGroupDialog::updateGroup()
 	if(m_editGroupName->text().size())
 		groupName = m_editGroupName->text().toStdString();
 
+	// Get the information from the list widgets
 	panda::EditGroupCommand::DataInfo tempInfo;
 	std::vector<panda::EditGroupCommand::DataInfo> datasList;
-	for(int i=0, nb=m_tableWidget->rowCount(); i<nb; ++i)
+	for (int i = 0, nb = m_inputsListWidget->count(); i < nb; ++i)
 	{
-		panda::BaseData* data = (panda::BaseData*)m_tableWidget->item(i,0)->data(Qt::UserRole).value<void*>();
-		if(data)
-		{
-			tempInfo.data = data;
-			tempInfo.name = m_tableWidget->item(i,0)->text().toStdString();
-			tempInfo.help = m_tableWidget->item(i,3)->text().toStdString();
-			datasList.push_back(tempInfo);
-		}
+		auto item = m_inputsListWidget->item(i);
+		auto data = static_cast<panda::BaseData*>(item->data(Qt::UserRole).value<void*>());
+		tempInfo.data = data;
+		tempInfo.name = m_datasName[data].toStdString();
+		tempInfo.help = m_datasDescription[data].toStdString();
+		datasList.push_back(tempInfo);
 	}
-
+	for (int i = 0, nb = m_outputsListWidget->count(); i < nb; ++i)
+	{
+		auto item = m_outputsListWidget->item(i);
+		auto data = static_cast<panda::BaseData*>(item->data(Qt::UserRole).value<void*>());
+		tempInfo.data = data;
+		tempInfo.name = m_datasName[data].toStdString();
+		tempInfo.help = m_datasDescription[data].toStdString();
+		datasList.push_back(tempInfo);
+	}
+	
 	// Check if we are actually changing something
 	bool modified = false;
 	if(groupName != m_group->getGroupName())
 		modified = true;
 
 	auto groupDatas = m_group->getGroupDatas();
-	for(int i=0, nb=m_tableWidget->rowCount(); i<nb; ++i)
+	if (datasList.size() != groupDatas.size()) // Should not happen?
+		modified = true;
+	else
 	{
-		panda::BaseData* data = (panda::BaseData*)m_tableWidget->item(i,0)->data(Qt::UserRole).value<void*>();
-		if(data != groupDatas[i].get()) { modified = true; break; }
+		for (int i = 0, nb = groupDatas.size(); i < nb; ++i)
+		{
+			if(groupDatas[i].get() != datasList[i].data)
+			{ modified = true; break; }
 
-		auto name = m_tableWidget->item(i,0)->text().toStdString();
-		if(name != groupDatas[i]->getName()) { modified = true; break; }
+			if(groupDatas[i]->getName() != datasList[i].name)
+			{ modified = true; break; }
 
-		auto help = m_tableWidget->item(i,3)->text().toStdString();
-		if(help != groupDatas[i]->getHelp()) { modified = true; break; }
+			if(groupDatas[i]->getHelp() != datasList[i].help)
+			{ modified = true; break; }
+		}
 	}
-
+	
 	if(modified)
 		m_group->parentDocument()->getUndoStack().push(std::make_shared<panda::EditGroupCommand>(m_group, groupName, datasList));
 }

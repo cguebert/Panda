@@ -3,6 +3,9 @@
 
 #include <QDialog>
 
+#include <map>
+#include <vector>
+
 namespace panda
 {
 	class PandaDocument;
@@ -10,9 +13,10 @@ namespace panda
 	class BaseData;
 }
 
+class QLabel;
 class QLineEdit;
-class QTableWidget;
-class QTableWidgetItem;
+class QListWidget;
+class QListWidgetItem;
 
 class EditGroupDialog : public QDialog
 {
@@ -20,17 +24,22 @@ class EditGroupDialog : public QDialog
 public:
 	explicit EditGroupDialog(panda::Group* group, QWidget* parent = nullptr);
 
-	void populateRow(int rowIndex, panda::BaseData* data);
-
 protected:
+	using Datas = std::vector<panda::BaseData*>;
+	using DataTextMap = std::map<panda::BaseData*, QString>;
+
+	void fillList(QListWidget* listWidget, const Datas& datas);
+
 	panda::Group* m_group;
-	QTableWidget* m_tableWidget;
+	QListWidget *m_inputsListWidget, *m_outputsListWidget;
+	QLabel *m_dataTypeLabel;
 	QLineEdit *m_editGroupName, *m_editDataName, *m_editDataHelp;
-	panda::BaseData* m_selectedData;
-	int m_selectedRow;
+	panda::BaseData* m_selectedData = nullptr;
+	QListWidgetItem* m_selection = nullptr;
+	DataTextMap m_datasName, m_datasDescription;
 
 public slots:
-	void itemClicked(QTableWidgetItem*);
+	void itemClicked(QListWidgetItem*);
 	void moveUp();
 	void moveDown();
 	void updateGroup();
