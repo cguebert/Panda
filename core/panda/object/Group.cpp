@@ -3,6 +3,7 @@
 #include <panda/data/DataFactory.h>
 #include <panda/object/Group.h>
 #include <panda/object/Layer.h>
+#include <panda/object/ObjectAddons.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
 #include <panda/command/GroupCommand.h>
@@ -65,6 +66,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 		node.setAttribute("index", object->getIndex());
 
 		object->save(node, &allObjects);
+		object->addons().save(node);
 
 		// Preparing links
 		for(BaseData* data : object->getInputDatas())
@@ -166,6 +168,7 @@ bool Group::load(XmlElement& elem)
 
 			if (!object->load(objectNode))
 				return false;
+			object->addons().load(objectNode);
 		}
 		else
 		{

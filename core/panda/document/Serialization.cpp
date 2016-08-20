@@ -8,6 +8,7 @@
 #include <panda/helper/algorithm.h>
 #include <panda/object/Dockable.h>
 #include <panda/object/ObjectFactory.h>
+#include <panda/object/ObjectAddons.h>
 
 namespace panda 
 {
@@ -86,6 +87,7 @@ bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects)
 		elem.setAttribute("index", object->getIndex());
 
 		object->save(elem, &objects);
+		object->addons().save(elem);
 
 		// Preparing links
 		for(BaseData* data : object->getInputDatas())
@@ -149,6 +151,7 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement
 
 			if (!object->load(elem))
 				return { false, {} };
+			object->addons().load(elem);
 
 			newObjects.emplace_back(object, elem);
 		}

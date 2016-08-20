@@ -132,8 +132,6 @@ void PandaObject::save(XmlElement& elem, const std::vector<PandaObject*> *select
 			data->save(xmlData);
 		}
 	}
-
-	m_addons->save(elem);
 }
 
 bool PandaObject::load(XmlElement& elem)
@@ -146,8 +144,6 @@ bool PandaObject::load(XmlElement& elem)
 			data->load(e);
 		e = e.nextSibling("Data");
 	}
-
-	m_addons->load(elem);
 
 	return true;
 }
