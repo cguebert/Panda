@@ -10,12 +10,14 @@ RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 panda::ObjectsList& objectsList,
 										 GraphView* view,
 										 const std::vector<panda::PandaObject*>& objects,
-										 bool unlinkDatas)
+										 LinkOperation linkOp, 
+										 ObjectOperation objectOp)
 	: m_document(document)
 	, m_objectsList(objectsList)
 	, m_view(view)
+	, m_removeFromDocument(objectOp == ObjectOperation::RemoveFromDocument)
 {
-	prepareCommand(objects, unlinkDatas);
+	prepareCommand(objects, linkOp == LinkOperation::Unlink);
 	setText("delete objects");
 }
 
@@ -23,14 +25,16 @@ RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 panda::ObjectsList& objectsList,
 										 GraphView* view,
 										 panda::PandaObject* object,
-										 bool unlinkDatas)
+										 LinkOperation linkOp, 
+										 ObjectOperation objectOp)
 	: m_document(document)
 	, m_objectsList(objectsList)
 	, m_view(view)
+	, m_removeFromDocument(objectOp == ObjectOperation::RemoveFromDocument)
 {
 	std::vector<panda::PandaObject*> objects;
 	objects.push_back(object);
-	prepareCommand(objects, unlinkDatas);
+	prepareCommand(objects, linkOp == LinkOperation::Unlink);
 	setText("delete objects");
 }
 
@@ -80,7 +84,7 @@ int RemoveObjectCommand::id() const
 void RemoveObjectCommand::redo()
 {
 	for(auto& object : m_objects)
-		m_objectsList.removeObject(object.first.get());
+		m_objectsList.removeObject(object.first.get(), m_removeFromDocument);
 }
 
 void RemoveObjectCommand::undo()
@@ -89,7 +93,7 @@ void RemoveObjectCommand::undo()
 	{
 		if(m_view)
 			m_view->setObjectDrawStruct(object.first.get(), object.second);
-		m_objectsList.addObject(object.first);
+		m_objectsList.addObject(object.first, m_removeFromDocument);
 	}
 }
 

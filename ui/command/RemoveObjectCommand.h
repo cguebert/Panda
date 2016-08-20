@@ -19,10 +19,22 @@ class ObjectDrawStruct;
 class RemoveObjectCommand : public panda::UndoCommand
 {
 public:
-	RemoveObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view,
-						const std::vector<panda::PandaObject*>& objects, bool unlinkDatas = true);
-	RemoveObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view,
-						panda::PandaObject* object, bool unlinkDatas = true);
+	enum class LinkOperation { Keep, Unlink };
+	enum class ObjectOperation { None, RemoveFromDocument };
+
+	RemoveObjectCommand(panda::PandaDocument* document, 
+						panda::ObjectsList& objectsList, 
+						GraphView* view,
+						const std::vector<panda::PandaObject*>& objects, 
+						LinkOperation linkOp = LinkOperation::Unlink, 
+						ObjectOperation objectOp = ObjectOperation::RemoveFromDocument);
+
+	RemoveObjectCommand(panda::PandaDocument* document, 
+						panda::ObjectsList& objectsList, 
+						GraphView* view,
+						panda::PandaObject* object, 
+						LinkOperation linkOp = LinkOperation::Unlink, 
+						ObjectOperation objectOp = ObjectOperation::RemoveFromDocument);
 
 	virtual int id() const;
 
@@ -36,6 +48,7 @@ protected:
 	panda::ObjectsList& m_objectsList;
 	GraphView* m_view;
 	std::vector< std::pair< std::shared_ptr<panda::PandaObject>, std::shared_ptr<ObjectDrawStruct> > > m_objects;
+	bool m_removeFromDocument; // If true, signal the objects they are removed from the document (false if moving to a group)
 
 	void prepareCommand(const std::vector<panda::PandaObject*>& objects, bool unlinkDatas);
 };

@@ -35,6 +35,7 @@ protected:
 	panda::ObjectsList& m_objectsList;
 	GraphView* m_view;
 	bool m_ignoreRedo;
+	bool m_addToDocument; // If true, signal to the objects they are being added to the document (false if moving to a group)
 	std::vector<std::shared_ptr<panda::PandaObject>> m_objects;
 	std::vector<std::shared_ptr<ObjectDrawStruct>> m_drawStructs;
 };

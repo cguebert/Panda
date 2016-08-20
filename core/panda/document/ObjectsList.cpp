@@ -15,16 +15,18 @@ namespace
 namespace panda 
 {
 
-void ObjectsList::addObject(ObjectSPtr object)
+void ObjectsList::addObject(ObjectSPtr object, bool addedToDocument)
 {
 	m_objects.push_back(object);
-	object->addedToDocument();
+	if(addedToDocument)
+		object->addedToDocument();
 	addedObject.run(object.get());
 }
 
-void ObjectsList::removeObject(PandaObject* object)
+void ObjectsList::removeObject(PandaObject* object, bool removeFromDocument)
 {
-	object->removedFromDocument();
+	if(removeFromDocument)
+		object->removedFromDocument();
 	removedObject.run(object);
 	helper::removeIf(m_objects, [object](const auto& ptr){
 		return ptr.get() == object;

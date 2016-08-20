@@ -121,6 +121,33 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		}
 	}
 
+	// Verify that all dockables are selected with their docks
+	for (auto object : selection)
+	{
+		if (auto dock = dynamic_cast<DockObject*>(object))
+		{
+			for (const auto docked : dock->getDockedObjects())
+			{
+				if (!objectsSelection.isSelected(docked))
+				{
+					QMessageBox::warning(nullptr, "Panda", "All dockable objects must be selected with their dock");
+					return false;
+				}
+			}
+		}
+		else if (auto dockable = dynamic_cast<DockableObject*>(object))
+		{
+			auto dock = dockable->getParentDock();
+			if (!dock || dock == dockable->getDefaultDock())
+				continue;
+			if (!objectsSelection.isSelected(dock))
+			{
+				QMessageBox::warning(nullptr, "Panda", "All dockable objects must be selected with their dock");
+				return false;
+			}
+		}
+	}
+
 	auto& undoStack = doc->getUndoStack();
 	auto macro = undoStack.beginMacro("create Group");
 
@@ -299,7 +326,9 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	undoStack.push(std::make_shared<SelectGroupCommand>(view, group));
 
 	// Removing the objects from the document, but don't unlink datas
-	undoStack.push(std::make_shared<RemoveObjectCommand>(doc, objectsList, view, selection, false));
+	undoStack.push(std::make_shared<RemoveObjectCommand>(doc, objectsList, view, selection, 
+														 RemoveObjectCommand::LinkOperation::Keep, 
+														 RemoveObjectCommand::ObjectOperation::None)); // We are not really removing the objects from the document
 
 	return true;
 }
@@ -386,7 +415,9 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		}
 
 		undoStack.push(std::make_shared<SelectObjectsInGroupCommand>(view, group)); // Select all the object that were in the group
-		undoStack.push(std::make_shared<RemoveObjectCommand>(doc, objectsList, view, group));
+		undoStack.push(std::make_shared<RemoveObjectCommand>(doc, objectsList, view, group, 
+															 RemoveObjectCommand::LinkOperation::Unlink, 
+															 RemoveObjectCommand::ObjectOperation::None));
 	}
 
 	view->sortAllDockables();

@@ -14,6 +14,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 	, m_objectsList(objectsList)
 	, m_view(view)
 	, m_ignoreRedo(false)
+	, m_addToDocument(&objectsList == &document->getObjectsList())
 {
 	m_objects.push_back(object);
 	setText("add object");
@@ -28,6 +29,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 	, m_view(view)
 	, m_objects(objects)
 	, m_ignoreRedo(false)
+	, m_addToDocument(&objectsList == &document->getObjectsList())
 {
 	setText("add objects");
 }
@@ -40,6 +42,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 	, m_objectsList(objectsList)
 	, m_view(view)
 	, m_ignoreRedo(true) // This version is used when importing a document: when the command is created, objects are already added
+	, m_addToDocument(&objectsList == &document->getObjectsList())
 {
 	for(auto object : objects)
 	{
@@ -68,7 +71,7 @@ void AddObjectCommand::redo()
 		m_view->setObjectDrawStruct(ods->getObject(), ods);
 
 	for(auto object : m_objects)
-		m_objectsList.addObject(object);
+		m_objectsList.addObject(object, m_addToDocument);
 }
 
 void AddObjectCommand::undo()
@@ -84,7 +87,7 @@ void AddObjectCommand::undo()
 	}
 
 	for(auto object : m_objects)
-		m_objectsList.removeObject(object.get());
+		m_objectsList.removeObject(object.get(), m_addToDocument);
 }
 
 bool AddObjectCommand::mergeWith(const UndoCommand *other)

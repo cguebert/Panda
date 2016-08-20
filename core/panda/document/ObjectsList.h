@@ -15,8 +15,8 @@ public:
 	using ObjectSPtr = std::shared_ptr<PandaObject>;
 	using SPtrList = std::vector<ObjectSPtr>;
 
-	void addObject(ObjectSPtr object);
-	void removeObject(PandaObject* object);
+	void addObject(ObjectSPtr object, bool addedToDocument = false);
+	void removeObject(PandaObject* object, bool removeFromDocument = false);
 	void clear(bool runSignals = true);
 
 	int size() const;
