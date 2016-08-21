@@ -9,12 +9,13 @@
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   panda::ObjectsList& objectsList,
 								   GraphView* view,
-								   std::shared_ptr<panda::PandaObject> object)
+								   std::shared_ptr<panda::PandaObject> object,
+								   bool newObject)
 	: m_document(document)
 	, m_objectsList(objectsList)
 	, m_view(view)
 	, m_ignoreRedo(false)
-	, m_addToDocument(&objectsList == &document->getObjectsList())
+	, m_addToDocument(newObject)
 {
 	m_objects.push_back(object);
 	setText("add object");
@@ -23,13 +24,14 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   panda::ObjectsList& objectsList,
 								   GraphView* view,
-								   std::vector<std::shared_ptr<panda::PandaObject>> objects)
+								   std::vector<std::shared_ptr<panda::PandaObject>> objects,
+								   bool newObject)
 	: m_document(document)
 	, m_objectsList(objectsList)
 	, m_view(view)
 	, m_objects(objects)
 	, m_ignoreRedo(false)
-	, m_addToDocument(&objectsList == &document->getObjectsList())
+	, m_addToDocument(newObject)
 {
 	setText("add objects");
 }
@@ -37,12 +39,13 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   panda::ObjectsList& objectsList,
 								   GraphView* view,
-								   std::vector<panda::PandaObject*> objects)
+								   std::vector<panda::PandaObject*> objects,
+								   bool newObject)
 	: m_document(document)
 	, m_objectsList(objectsList)
 	, m_view(view)
 	, m_ignoreRedo(true) // This version is used when importing a document: when the command is created, objects are already added
-	, m_addToDocument(&objectsList == &document->getObjectsList())
+	, m_addToDocument(newObject)
 {
 	for(auto object : objects)
 	{

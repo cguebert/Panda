@@ -19,9 +19,21 @@ class ObjectDrawStruct;
 class AddObjectCommand : public panda::UndoCommand
 {
 public:
-	AddObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view, std::shared_ptr<panda::PandaObject> object);
-	AddObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view, std::vector<std::shared_ptr<panda::PandaObject>> objects);
-	AddObjectCommand(panda::PandaDocument* document, panda::ObjectsList& objectsList, GraphView* view, std::vector<panda::PandaObject*> objects);
+	AddObjectCommand(panda::PandaDocument* document, 
+					 panda::ObjectsList& objectsList, 
+					 GraphView* view, 
+					 std::shared_ptr<panda::PandaObject> object,
+					 bool newObject = true);
+	AddObjectCommand(panda::PandaDocument* document, 
+					 panda::ObjectsList& objectsList, 
+					 GraphView* view, 
+					 std::vector<std::shared_ptr<panda::PandaObject>> objects,
+					 bool newObject = true);
+	AddObjectCommand(panda::PandaDocument* document, 
+					 panda::ObjectsList& objectsList, 
+					 GraphView* view, 
+					 std::vector<panda::PandaObject*> objects,
+					 bool newObject = true);
 
 	virtual int id() const;
 
