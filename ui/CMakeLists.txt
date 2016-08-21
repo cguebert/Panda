@@ -20,11 +20,9 @@ set(HEADER_FILES
 	MainWindow.h
 	OpenGLRenderView.h
 	SimpleGUIImpl.h
-	command/AddObjectCommand.h
 	command/GroupSelectionCommand.h
 	command/ModifyAnnotationCommand.h
 	command/MoveObjectCommand.h
-	command/RemoveObjectCommand.h
 	command/SetDataValueCommand.h
 	custom/DetachableTabWidget.h
 	custom/ScrollContainer.h
@@ -85,11 +83,9 @@ set(SOURCE_FILES
 	MainWindow.cpp
 	OpenGLRenderView.cpp
 	SimpleGUIImpl.cpp
-	command/AddObjectCommand.cpp
 	command/GroupSelectionCommand.cpp
 	command/ModifyAnnotationCommand.cpp
 	command/MoveObjectCommand.cpp
-	command/RemoveObjectCommand.cpp
 	custom/DetachableTabWidget.cpp
 	custom/ScrollContainer.cpp
 	custom/qxt/QxtCheckComboBox.cpp

@@ -1,7 +1,6 @@
 #ifndef PANDADOCUMENT_H
 #define PANDADOCUMENT_H
 
-#include <panda/core.h>
 #include <panda/object/PandaObject.h>
 
 #include <panda/types/Color.h>

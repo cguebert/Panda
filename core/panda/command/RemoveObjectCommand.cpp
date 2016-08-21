@@ -1,10 +1,10 @@
+#include <panda/command/RemoveObjectCommand.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/command/CommandId.h>
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
-#include <ui/graphview/GraphView.h>
-#include <ui/command/RemoveObjectCommand.h>
 
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 panda::ObjectsList& objectsList,

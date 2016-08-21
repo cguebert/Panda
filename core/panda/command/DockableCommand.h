@@ -1,7 +1,6 @@
 #ifndef DETACHDOCKABLECOMMAND_H
 #define DETACHDOCKABLECOMMAND_H
 
-#include <panda/core.h>
 #include <panda/UndoStack.h>
 
 namespace panda

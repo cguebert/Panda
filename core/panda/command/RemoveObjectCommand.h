@@ -13,7 +13,7 @@ class PandaDocument;
 class PandaObject;
 }
 
-class RemoveObjectCommand : public panda::UndoCommand
+class PANDA_CORE_API RemoveObjectCommand : public panda::UndoCommand
 {
 public:
 	enum class LinkOperation { Keep, Unlink };

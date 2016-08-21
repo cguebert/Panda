@@ -2,8 +2,8 @@
 
 #include <ui/GroupsManager.h>
 #include <ui/graphview/GraphView.h>
-#include <ui/command/AddObjectCommand.h>
 
+#include <panda/command/AddObjectCommand.h>
 #include <panda/object/Group.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/PandaDocument.h>

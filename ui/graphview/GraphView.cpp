@@ -3,9 +3,7 @@
 #include <functional>
 #include <limits>
 
-#include <ui/command/AddObjectCommand.h>
 #include <ui/command/MoveObjectCommand.h>
-#include <ui/command/RemoveObjectCommand.h>
 #include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/dialog/QuickCreateDialog.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
@@ -20,8 +18,10 @@
 #include <panda/PandaDocument.h>
 #include <panda/helper/algorithm.h>
 #include <panda/types/DataTraits.h>
+#include <panda/command/AddObjectCommand.h>
 #include <panda/command/DockableCommand.h>
 #include <panda/command/LinkDatasCommand.h>
+#include <panda/command/RemoveObjectCommand.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
 #include <panda/document/ObjectsList.h>

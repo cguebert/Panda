@@ -10,9 +10,6 @@
 #include <ui/MainWindow.h>
 #include <ui/SimpleGUIImpl.h>
 
-#include <ui/command/AddObjectCommand.h>
-#include <ui/command/RemoveObjectCommand.h>
-
 #include <ui/custom/DetachableTabWidget.h>
 #include <ui/custom/ScrollContainer.h>
 
@@ -27,15 +24,19 @@
 #include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/PandaDocument.h>
-#include <panda/types/DataTraits.h>
+#include <panda/PluginsManager.h>
+#include <panda/command/AddObjectCommand.h>
+#include <panda/command/RemoveObjectCommand.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/document/Serialization.h>
+#include <panda/helper/system/FileRepository.h>
 #include <panda/object/Annotation.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Group.h>
-#include <panda/helper/system/FileRepository.h>
-#include <panda/PluginsManager.h>
+#include <panda/types/DataTraits.h>
+
+
 
 #include <iostream>
 #include <functional>

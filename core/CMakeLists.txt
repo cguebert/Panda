@@ -12,12 +12,14 @@ set(HEADER_FILES
 	panda/TimedFunctions.h
 	panda/UndoStack.h
 	panda/XmlDocument.h
+	panda/command/AddObjectCommand.h
 	panda/command/CommandId.h
 	panda/command/DockableCommand.h
 	panda/command/GenericDataCommand.h
 	panda/command/GroupCommand.h
 	panda/command/LinkDatasCommand.h
 	panda/command/MoveLayerCommand.h
+	panda/command/RemoveObjectCommand.h
 	panda/data/BaseClass.h
 	panda/data/BaseData.h
 	panda/data/Data.h
@@ -93,12 +95,14 @@ set(SOURCE_FILES
 	panda/TimedFunctions.cpp
 	panda/UndoStack.cpp
 	panda/XmlDocument.cpp
+	panda/command/AddObjectCommand.cpp
 	panda/command/CommandId.cpp
 	panda/command/DockableCommand.cpp
 	panda/command/GenericDataCommand.cpp
 	panda/command/GroupCommand.cpp
 	panda/command/LinkDatasCommand.cpp
 	panda/command/MoveLayerCommand.cpp
+	panda/command/RemoveObjectCommand.cpp
 	panda/data/BaseClass.cpp
 	panda/data/BaseData.cpp
 	panda/data/DataCopier.cpp

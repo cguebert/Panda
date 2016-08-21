@@ -13,7 +13,7 @@ class PandaDocument;
 class PandaObject;
 }
 
-class AddObjectCommand : public panda::UndoCommand
+class PANDA_CORE_API AddObjectCommand : public panda::UndoCommand
 {
 public:
 	AddObjectCommand(panda::PandaDocument* document, 

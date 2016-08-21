@@ -4,9 +4,7 @@
 #include <ui/drawstruct/ViewPositionAddon.h>
 #include <ui/graphview/ObjectsSelection.h>
 
-#include <ui/command/AddObjectCommand.h>
 #include <ui/command/GroupSelectionCommand.h>
-#include <ui/command/RemoveObjectCommand.h>
 
 #include <panda/PandaDocument.h>
 #include <panda/data/DataFactory.h>
@@ -15,8 +13,10 @@
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/Layer.h>
+#include <panda/command/AddObjectCommand.h>
 #include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
+#include <panda/command/RemoveObjectCommand.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 

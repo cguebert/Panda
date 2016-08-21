@@ -1,10 +1,9 @@
+#include <panda/command/AddObjectCommand.h>
+
 #include <panda/PandaDocument.h>
 #include <panda/command/CommandId.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
-#include <ui/graphview/GraphView.h>
-#include <ui/drawstruct/ObjectDrawStruct.h>
-#include <ui/command/AddObjectCommand.h>
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   panda::ObjectsList& objectsList,

@@ -3,9 +3,9 @@
 #include <ui/graphview/GraphView.h>
 #include <ui/GroupsManager.h>
 #include <ui/dialog/QuickCreateDialog.h>
-#include <ui/command/AddObjectCommand.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/command/AddObjectCommand.h>
 #include <panda/object/ObjectFactory.h>
 
 using panda::ObjectFactory;
