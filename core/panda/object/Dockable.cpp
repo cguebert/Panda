@@ -1,7 +1,7 @@
 #include <panda/object/Dockable.h>
 #include <panda/PandaDocument.h>
-
 #include <panda/command/DockableCommand.h>
+#include <panda/helper/algorithm.h>
 
 namespace panda
 {
@@ -34,13 +34,18 @@ DockObject::~DockObject()
 
 void DockObject::addDockable(DockableObject* dockable, int index)
 {
-	dockable->setParentDock(this);
-	addInput(*dockable);
-	if(index < 0)
-		m_dockedObjects.push_back(dockable);
+	if (helper::contains(m_dockedObjects, dockable))
+		reorderDockable(dockable, index);
 	else
-		m_dockedObjects.insert(m_dockedObjects.begin() + index, dockable);
-	parentDocument()->onModifiedObject(this);
+	{
+		dockable->setParentDock(this);
+		addInput(*dockable);
+		if (index < 0)
+			m_dockedObjects.push_back(dockable);
+		else
+			m_dockedObjects.insert(m_dockedObjects.begin() + index, dockable);
+		parentDocument()->onModifiedObject(this);
+	}
 }
 
 void DockObject::doRemoveInput(DataNode& node)
