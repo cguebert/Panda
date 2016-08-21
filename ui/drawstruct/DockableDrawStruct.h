@@ -10,7 +10,7 @@ class DockObjectDrawStruct : public ObjectDrawStruct
 public:
 	DockObjectDrawStruct(GraphView* view, panda::DockObject* m_object);
 
-	void placeDockableObjects();
+	void placeDockableObjects(bool forceMove = false);
 
 	panda::types::Point getObjectSize() override;
 	panda::types::Rect getTextArea() override;

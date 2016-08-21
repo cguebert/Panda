@@ -2,6 +2,7 @@
 
 #include <ui/graphview/GraphView.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/drawstruct/ViewPositionAddon.h>
 #include <ui/command/MoveObjectCommand.h>
 
 using panda::types::Point;
@@ -42,7 +43,7 @@ void DockObjectDrawStruct::move(const Point& delta)
 		getParentView()->getObjectDrawStruct(dockable)->move(delta);
 }
 
-void DockObjectDrawStruct::placeDockableObjects()
+void DockObjectDrawStruct::placeDockableObjects(bool forceMove)
 {
 	m_dockablesY.clear();
 
@@ -71,8 +72,14 @@ void DockObjectDrawStruct::placeDockableObjects()
 		if (hasOutputs)
 			objectNewPos.x += DockableObjectDrawStruct::dockableWithOutputAdds;
 
-		if (canMoveObjects && objectNewPos != objectStruct->getPosition())
-			undoStack.push(std::make_shared<MoveObjectCommand>(dockable, objectNewPos - objectStruct->getPosition()));
+		auto delta = objectNewPos - objectStruct->getPosition();
+		if (!delta.isNull())
+		{
+			if (canMoveObjects)
+				undoStack.push(std::make_shared<MoveObjectCommand>(dockable, delta));
+			else if (forceMove)
+				dockable->addons().edit<ViewPositionAddon>().move(delta);
+		}
 
 		Rect objectArea = objectStruct->getVisualArea();
 		m_dockablesY.push_back(objectArea.top());

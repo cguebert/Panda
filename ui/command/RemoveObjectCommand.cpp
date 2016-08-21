@@ -8,13 +8,11 @@
 
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 panda::ObjectsList& objectsList,
-										 GraphView* view,
 										 const std::vector<panda::PandaObject*>& objects,
 										 LinkOperation linkOp, 
 										 ObjectOperation objectOp)
 	: m_document(document)
 	, m_objectsList(objectsList)
-	, m_view(view)
 	, m_removeFromDocument(objectOp == ObjectOperation::RemoveFromDocument)
 {
 	prepareCommand(objects, linkOp == LinkOperation::Unlink);
@@ -23,13 +21,11 @@ RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 
 RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 										 panda::ObjectsList& objectsList,
-										 GraphView* view,
 										 panda::PandaObject* object,
 										 LinkOperation linkOp, 
 										 ObjectOperation objectOp)
 	: m_document(document)
 	, m_objectsList(objectsList)
-	, m_view(view)
 	, m_removeFromDocument(objectOp == ObjectOperation::RemoveFromDocument)
 {
 	std::vector<panda::PandaObject*> objects;
@@ -43,9 +39,8 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 	for(auto object : objects)
 	{
 		auto objectPtr = m_objectsList.getShared(object);
-		auto ods = m_view ? m_view->getSharedObjectDrawStruct(object) : nullptr;
 		if(objectPtr)
-			m_objects.emplace_back(objectPtr, ods);
+			m_objects.emplace_back(objectPtr);
 
 		if(unlinkDatas)
 		{
@@ -84,17 +79,13 @@ int RemoveObjectCommand::id() const
 void RemoveObjectCommand::redo()
 {
 	for(auto& object : m_objects)
-		m_objectsList.removeObject(object.first.get(), m_removeFromDocument);
+		m_objectsList.removeObject(object.get(), m_removeFromDocument);
 }
 
 void RemoveObjectCommand::undo()
 {
 	for(auto& object : m_objects)
-	{
-		if(m_view)
-			m_view->setObjectDrawStruct(object.first.get(), object.second);
-		m_objectsList.addObject(object.first, m_removeFromDocument);
-	}
+		m_objectsList.addObject(object, m_removeFromDocument);
 }
 
 bool RemoveObjectCommand::mergeWith(const panda::UndoCommand *other)

@@ -207,7 +207,7 @@ void MainWindow::import()
 		{
 			auto selection = m_documentView->selection().get();
 			if(!selection.empty())
-				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_document->getObjectsList(), m_documentView, selection));
+				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_document->getObjectsList(), selection));
 		}
 	}
 }
@@ -999,8 +999,7 @@ void MainWindow::createObject()
 	{
 		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString().toStdString(), m_document.get());
 		auto& objectsList = m_currentGraphView ? m_currentGraphView->objectsList() : m_document->getObjectsList();
-		auto view = m_currentGraphView ? (m_currentGraphView->isTemporaryView() ? nullptr : m_currentGraphView) : m_documentView;
-		m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), objectsList, view, object));
+		m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), objectsList, object));
 	}
 }
 

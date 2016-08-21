@@ -8,12 +8,10 @@
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   panda::ObjectsList& objectsList,
-								   GraphView* view,
 								   std::shared_ptr<panda::PandaObject> object,
 								   bool newObject)
 	: m_document(document)
 	, m_objectsList(objectsList)
-	, m_view(view)
 	, m_ignoreRedo(false)
 	, m_addToDocument(newObject)
 {
@@ -23,12 +21,10 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   panda::ObjectsList& objectsList,
-								   GraphView* view,
 								   std::vector<std::shared_ptr<panda::PandaObject>> objects,
 								   bool newObject)
 	: m_document(document)
 	, m_objectsList(objectsList)
-	, m_view(view)
 	, m_objects(objects)
 	, m_ignoreRedo(false)
 	, m_addToDocument(newObject)
@@ -38,12 +34,10 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 
 AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 								   panda::ObjectsList& objectsList,
-								   GraphView* view,
 								   std::vector<panda::PandaObject*> objects,
 								   bool newObject)
 	: m_document(document)
 	, m_objectsList(objectsList)
-	, m_view(view)
 	, m_ignoreRedo(true) // This version is used when importing a document: when the command is created, objects are already added
 	, m_addToDocument(newObject)
 {
@@ -70,25 +64,12 @@ void AddObjectCommand::redo()
 		return;
 	}
 
-	for(auto ods : m_drawStructs)
-		m_view->setObjectDrawStruct(ods->getObject(), ods);
-
 	for(auto object : m_objects)
 		m_objectsList.addObject(object, m_addToDocument);
 }
 
 void AddObjectCommand::undo()
 {
-	if(m_view && m_drawStructs.empty())
-	{
-		for(auto object : m_objects)
-		{
-			auto ods = m_view->getSharedObjectDrawStruct(object.get());
-			if(ods)
-				m_drawStructs.push_back(ods);
-		}
-	}
-
 	for(auto object : m_objects)
 		m_objectsList.removeObject(object.get(), m_addToDocument);
 }
@@ -106,7 +87,6 @@ bool AddObjectCommand::mergeWith(const UndoCommand *other)
 	if(m_document == command->m_document)
 	{
 		panda::helper::concatenate(m_objects, command->m_objects);
-		panda::helper::concatenate(m_drawStructs, command->m_drawStructs);
 		return true;
 	}
 
