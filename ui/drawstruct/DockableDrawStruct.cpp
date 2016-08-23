@@ -12,7 +12,6 @@ DockObjectDrawStruct::DockObjectDrawStruct(GraphView* view, panda::DockObject* o
 	: ObjectDrawStruct(view, object)
 	, m_dockObject(object)
 {
-	update();
 }
 
 Point DockObjectDrawStruct::getObjectSize()
@@ -169,7 +168,6 @@ int dockObjectDrawClass = RegisterDrawObject<panda::DockObject, DockObjectDrawSt
 DockableObjectDrawStruct::DockableObjectDrawStruct(GraphView* view, panda::DockableObject* dockable)
 	: ObjectDrawStruct(view, dockable)
 {
-	update();
 }
 
 bool DockableObjectDrawStruct::contains(const Point& point)

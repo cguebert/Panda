@@ -15,8 +15,6 @@ GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::Generic
 	, m_nbDefInputs(0)
 	, m_nbDefOutputs(0)
 {
-	update();
-
 	for(GenericObject::GenericDataDefinition def : object->m_dataDefinitions)
 	{
 		if(def.isInput())

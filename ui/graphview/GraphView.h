@@ -252,9 +252,6 @@ protected:
 
 	std::set<const panda::BaseData*> m_possibleLinks; /// When creating a new link, this contains all possible destinations
 
-	std::vector<ObjectDrawStruct*> m_dirtyDrawStructs; /// The list of draw structs that need to be updated (we update them in the order we enter them in the list)
-	std::set<ObjectDrawStruct*> m_dirtyDrawStructsSet; /// To ensure we do not update multiple times the same object
-
 	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
 	DrawList m_linksDrawList, m_connectedDrawList;
 	DrawColors m_drawColors; /// So that we aquire Qt colors only once

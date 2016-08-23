@@ -30,8 +30,6 @@ ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 		m_position = m_positionAddon.getPosition();
 
 	m_observer->get(m_positionAddon.positionChanged).connect<ObjectDrawStruct, &ObjectDrawStruct::positionChanged>(this);
-
-	update();
 }
 
 ObjectDrawStruct::~ObjectDrawStruct()
@@ -212,6 +210,23 @@ void ObjectDrawStruct::positionChanged(panda::types::Point newPos)
 		move(newPos - m_position);
 		getParentView()->objectsMoved();
 	}
+}
+
+bool ObjectDrawStruct::updateIfDirty()
+{
+	if (m_dirty)
+	{
+		m_dirty = false;
+		update();
+		return true;
+	}
+
+	return false;
+}
+
+void ObjectDrawStruct::setDirty()
+{
+	m_dirty = true;
 }
 
 //****************************************************************************//

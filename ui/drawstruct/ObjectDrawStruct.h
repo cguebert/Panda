@@ -65,6 +65,9 @@ public:
 
 	virtual int dataStartY();
 
+	bool updateIfDirty(); // Returns true if it was dirty (and we did something), false if there was nothing to do
+	void setDirty();
+
 protected:
 	// The next 3 functions are here if we want to replace only part of the normal draw
 	virtual void drawShape(DrawList& list, DrawColors& colors);
@@ -95,6 +98,7 @@ private:
 	GraphView* m_parentView;
 	ViewPositionAddon& m_positionAddon;
 	panda::types::Point m_position;
+	bool m_dirty = true;
 };
 
 inline bool ObjectDrawStruct::acceptsMagneticSnap() const

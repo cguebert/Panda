@@ -135,8 +135,6 @@ void GraphView::resetView()
 	m_viewRect = Rect();
 	m_selectedObjectsDrawStructs.clear();
 	m_possibleLinks.clear();
-	m_dirtyDrawStructs.clear();
-	m_dirtyDrawStructsSet.clear();
 	m_linksDrawList.clear();
 	m_connectedDrawList.clear();
 
@@ -1070,12 +1068,8 @@ void GraphView::addedObject(panda::PandaObject* object)
 		m_orderedObjectDrawStructs.push_back(ods);
 	}
 
-	if (!m_dirtyDrawStructsSet.count(ods))
-	{
-		m_dirtyDrawStructs.push_back(ods);
-		m_dirtyDrawStructsSet.insert(ods);
-		update();
-	}
+	ods->setDirty();
+	update();
 }
 
 void GraphView::removeObject(panda::PandaObject* object)
@@ -1090,12 +1084,6 @@ void GraphView::removeObject(panda::PandaObject* object)
 	m_linkTagsMap.clear();
 	m_recomputeTags = true;
 	m_highlightConnectedDatas = false;
-
-	if (m_dirtyDrawStructsSet.count(ods))
-	{
-		panda::helper::removeOne(m_dirtyDrawStructs, ods);
-		m_dirtyDrawStructsSet.erase(ods);
-	}
 
 	update();
 	updateObjectsRect();
@@ -1115,12 +1103,6 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 				dods->placeDockableObjects();
 		}
 
-		if (!m_dirtyDrawStructsSet.count(ods))
-		{
-			m_dirtyDrawStructs.push_back(ods);
-			m_dirtyDrawStructsSet.insert(ods);
-		}
-		
 		update();
 	}
 }
@@ -1740,13 +1722,12 @@ void GraphView::computeCompatibleDatas(panda::BaseData* data)
 
 void GraphView::updateDirtyDrawStructs()
 {
-	if (m_dirtyDrawStructs.empty())
-		return;
+	bool updated = false;
+	for (auto ods : m_orderedObjectDrawStructs)
+		updated |= ods->updateIfDirty();
 
-	for (auto ods : m_dirtyDrawStructs)
-		ods->update();
-	m_dirtyDrawStructs.clear();
-	m_dirtyDrawStructsSet.clear();
+	if (!updated)
+		return;
 
 	m_linkTags.clear();
 	m_linkTagsMap.clear();

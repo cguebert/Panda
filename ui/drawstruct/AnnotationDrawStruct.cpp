@@ -25,7 +25,6 @@ AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* 
 	: ObjectDrawStruct(view, object)
 	, m_annotation(dynamic_cast<Annotation*>(object))
 {
-	update();
 }
 
 void AnnotationDrawStruct::drawBackground(DrawList& list, DrawColors& colors)

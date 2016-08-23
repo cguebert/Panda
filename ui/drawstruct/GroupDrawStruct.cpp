@@ -8,7 +8,6 @@ GroupDrawStruct::GroupDrawStruct(GraphView* view, panda::Group* object)
 	: ObjectDrawStruct(view, object)
 	, m_group(object)
 {
-	update();
 }
 
 void GroupDrawStruct::createShape()
