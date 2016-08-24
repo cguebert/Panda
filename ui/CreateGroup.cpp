@@ -1,6 +1,6 @@
 #include <ui/CreateGroup.h>
 #include <ui/graphview/GraphView.h>
-#include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/drawstruct/ViewPositionAddon.h>
 #include <ui/graphview/ObjectsSelection.h>
 
@@ -147,13 +147,6 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				return false;
 			}
 		}
-	}
-
-	// Reorder the selection so that the dock objects are last (the docked objects must be added first)
-	for (auto it = selection.begin(), itEnd = selection.end(); it != itEnd; ++it)
-	{
-		if (dynamic_cast<DockObject*>(*it))
-			std::rotate(it, it + 1, itEnd);
 	}
 
 	auto& undoStack = doc->getUndoStack();
@@ -369,7 +362,6 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		Point groupPos = groupOds->getPosition();
 
 		// Putting the objects back into the document
-		panda::ObjectsList::SPtrList docks;
 		auto objects = group->getObjectsList().get(); // Need to get a copy as we modify the original while iterating over it
 
 		// Compute the center of the group objects positions
@@ -382,35 +374,15 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		// Moving the object from the group to the parent document
 		for(auto& object : objects)
 		{
-			panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object.get());
-			if(dock)
-				docks.push_back(object);
-			else
-			{
-				undoStack.push(std::make_shared<AddObjectCommand>(doc, objectsList, object, false));
-				undoStack.push(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
-
-				// Placing the object in the view
-				Point pos = groupPos + getPosition(object.get()) - center;
-				setPosition(object.get(), pos);
-			}
+			undoStack.push(std::make_shared<AddObjectCommand>(doc, objectsList, object, false));
+			undoStack.push(std::make_shared<RemoveObjectFromGroupCommand>(group, object));
 		}
 
-		// We extract docks last (their docked objects must be out first)
-		for(auto& objectSPtr : docks)
+		// Placing the object in the view
+		for(auto& object : objects)
 		{
-			undoStack.push(std::make_shared<AddObjectCommand>(doc, objectsList, objectSPtr, false));
-			undoStack.push(std::make_shared<RemoveObjectFromGroupCommand>(group, objectSPtr));
-
-			auto object = objectSPtr.get();
-
-			// Placing the object in the view
-			Point pos = groupPos + getPosition(object) - center;
-			setPosition(object, pos);
-
-			auto ods = dynamic_cast<DockObjectDrawStruct*>(view->getObjectDrawStruct(object));
-			if (ods)
-				ods->placeDockableObjects();
+			Point pos = groupPos + getPosition(object.get()) - center;
+			setPosition(object.get(), pos);
 		}
 
 		// Reconnecting datas
