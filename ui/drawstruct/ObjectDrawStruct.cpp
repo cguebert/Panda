@@ -88,6 +88,8 @@ void ObjectDrawStruct::move(const Point& delta)
 		m_outline.translate(delta);
 		m_fillShape.translate(delta);
 		m_textDrawList.translate(delta);
+
+		setDirty();
 	}
 }
 

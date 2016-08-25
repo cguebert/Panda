@@ -87,27 +87,11 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	m_drawColors.lightColor = DrawList::convert(pal.light().color());
 	m_drawColors.highlightColor = DrawList::convert(pal.highlight().color());
 
-	auto list = m_objectsList.get();
-	// Reorder the selection so that the dock objects are last (the docked objects must be added first)
-	for (auto it = list.begin(), itEnd = list.end(); it != itEnd; ++it)
-	{
-		if (dynamic_cast<panda::DockObject*>(it->get()))
-			std::rotate(it, it + 1, itEnd);
-	}
-	
 	// Create the draw structs for the objects already present
-	for (const auto& object : list)
-	{
+	for (const auto& object : m_objectsList.get())
 		addedObject(object.get());
 
-		// We have to ask the docks to correctly place the docked objects
-		if (dynamic_cast<panda::DockObject*>(object.get()))
-		{
-			auto ods = dynamic_cast<DockObjectDrawStruct*>(getObjectDrawStruct(object.get()));
-			if (ods)
-				ods->placeDockableObjects(true); // Force move
-		}
-	}
+	updateDirtyDrawStructs();
 }
 
 GraphView::~GraphView() = default;

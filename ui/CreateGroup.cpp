@@ -381,6 +381,9 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		// Placing the object in the view
 		for(auto& object : objects)
 		{
+			if (dynamic_cast<DockableObject*>(object.get()))
+				continue;
+
 			Point pos = groupPos + getPosition(object.get()) - center;
 			setPosition(object.get(), pos);
 		}
