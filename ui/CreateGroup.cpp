@@ -25,21 +25,6 @@
 using panda::types::Point;
 using panda::types::Rect;
 
-namespace
-{
-
-panda::types::Point convert(QPointF pt)
-{
-	return panda::types::Point(pt.x(), pt.y());
-}
-
-QPointF convert(panda::types::Point pt)
-{
-	return QPointF(pt.x, pt.y);
-}
-
-}
-
 namespace panda
 {
 

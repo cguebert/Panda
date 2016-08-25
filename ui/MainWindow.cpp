@@ -124,7 +124,6 @@ MainWindow::MainWindow()
 
 	connect(m_documentView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(m_documentView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
-	connect(m_documentView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
 	connect(m_tabWidget, SIGNAL(openDetachedWindow(DetachedWindow*)), this, SLOT(openDetachedWindow(DetachedWindow*)));
 	connect(m_tabWidget, &DetachableTabWidget::closedTab, this, &MainWindow::onTabWidgetCloseTab);
 	connect(m_tabWidget, &DetachableTabWidget::currentChanged, this, &MainWindow::onTabChanged);
@@ -1136,7 +1135,6 @@ void MainWindow::openGroup()
 
 	connect(groupView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(groupView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
-	connect(groupView, SIGNAL(showContextMenu(QPoint,int)), this, SLOT(showContextMenu(QPoint,int)));
 	connect(groupView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	m_observer.get(groupView->selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
 	m_observer.get(group->getObjectsList().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
@@ -1179,10 +1177,9 @@ void MainWindow::openGroup()
 	groupView->showAll();
 }
 
-void MainWindow::showContextMenu(QPoint pos, int flags)
+void MainWindow::fillContextMenu(QMenu& menu, int flags) const
 {
-	QMenu menu(this);
-
+	namespace gm = panda::gui::menu;
 	panda::PandaObject* obj = m_currentGraphView->selection().lastSelectedObject();
 	if(obj)
 	{
@@ -1191,10 +1188,10 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 	}
 	menu.addAction(m_pasteAction);
 
-	if(flags & GraphView::MENU_LINK)
+	if(flags & gm::Link)
 		menu.addAction(m_removeLinkAction);
 
-	if(flags & GraphView::MENU_DATA)
+	if(flags & gm::Data)
 	{
 		menu.addAction(m_copyDataAction);
 		const panda::PandaObject* owner = nullptr;
@@ -1208,10 +1205,10 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 	if(obj && obj->getClass()->getClassName() == "GeneratorUser" && obj->getClass()->getNamespaceName() == "panda")
 		menu.addAction(m_chooseWidgetAction);
 
-	if(flags & GraphView::MENU_IMAGE)
+	if(flags & gm::Image)
 		menu.addAction(m_showImageViewportAction);
 
-	if (flags & GraphView::MENU_TAG)
+	if (flags & gm::Tag)
 		menu.addAction(m_nameLinkTagAction);
 
 	int nbSelected = m_currentGraphView->selection().get().size();
@@ -1244,9 +1241,6 @@ void MainWindow::showContextMenu(QPoint pos, int flags)
 		menu.addMenu(m_distributeHorizontallyMenu);
 		menu.addMenu(m_distributeVerticallyMenu);
 	}
-
-	if(!menu.actions().empty())
-		menu.exec(pos);
 }
 
 void MainWindow::copyDataToUserValue()

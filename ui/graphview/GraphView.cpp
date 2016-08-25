@@ -16,6 +16,7 @@
 #include <ui/graphview/graphics/DrawList.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/SimpleGUI.h>
 #include <panda/helper/algorithm.h>
 #include <panda/types/DataTraits.h>
 #include <panda/command/AddObjectCommand.h>
@@ -898,25 +899,40 @@ void GraphView::keyPressEvent(QKeyEvent* event)
 void GraphView::contextMenuEvent(QContextMenuEvent* event)
 {
 	m_contextMenuData = nullptr;
+	
+	Point pos = convert(event->pos()) / m_zoomFactor + m_viewDelta;
+	QMenu menu(this);
+	int flags = getContextMenuFlags(pos);
+	
+	if(m_hoverTimer->isActive())
+		m_hoverTimer->stop();
+
+	const auto gPos = event->globalPos();
+	const auto posI = panda::graphics::PointInt(gPos.x(), gPos.y());
+	m_pandaDocument->getGUI().contextMenu(posI, flags);
+}
+
+int GraphView::getContextMenuFlags(const panda::types::Point& pos)
+{
+	namespace gm = panda::gui::menu;
 	int flags = 0;
-	Point zoomedMouse = convert(event->pos()) / m_zoomFactor + m_viewDelta;
-	const auto ods = getObjectDrawStructAtPos(zoomedMouse);
+	const auto ods = getObjectDrawStructAtPos(pos);
 	if (ods)
 	{
 		m_contextMenuObject = ods->getObject();
-		flags |= MENU_OBJECT;
-		m_contextMenuData = ods->getDataAtPos(zoomedMouse);
+		flags |= gm::Object;
+		m_contextMenuData = ods->getDataAtPos(pos);
 		if (m_contextMenuData)
 		{
 			if (m_contextMenuData->isDisplayed())
-				flags |= MENU_DATA;
+				flags |= gm::Data;
 
 			if (m_contextMenuData->isInput() && m_contextMenuData->getParent())
-				flags |= MENU_LINK;
+				flags |= gm::Link;
 
 			const auto trait = m_contextMenuData->getDataTrait();
 			if (trait->valueTypeName() == "image")
-				flags |= MENU_IMAGE;
+				flags |= gm::Image;
 		}
 	}
 	else
@@ -925,19 +941,16 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 	m_contextLinkTag = nullptr;
 	for (const auto& linkTag : m_linkTags)
 	{
-		auto dataPair = linkTag->getDataAtPoint(zoomedMouse);
+		auto dataPair = linkTag->getDataAtPoint(pos);
 		if (dataPair.first)
 		{
-			flags |= MENU_TAG;
+			flags |= gm::Tag;
 			m_contextLinkTag = linkTag.get();
 			break;
 		}
 	}
 
-	if(m_hoverTimer->isActive())
-		m_hoverTimer->stop();
-
-	emit showContextMenu(event->globalPos(), flags);
+	return flags;
 }
 
 void GraphView::zoomIn()

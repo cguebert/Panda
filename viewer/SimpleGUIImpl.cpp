@@ -21,6 +21,10 @@ int SimpleGUIImpl::messageBox(panda::gui::MessageBoxType type, const std::string
 	return 0;
 }
 
+void SimpleGUIImpl::contextMenu(panda::graphics::PointInt pos, int flags, const Actions& customActions)
+{
+}
+
 void SimpleGUIImpl::updateView()
 {
 }
@@ -33,7 +37,7 @@ void SimpleGUIImpl::contextDoneCurrent()
 {
 }
 
-void SimpleGUIImpl::executeByUI(panda::gui::CallbackFunc func)
+void SimpleGUIImpl::executeByUI(CallbackFunc func)
 {
 	std::lock_guard<std::mutex> lock(m_functionsMutex);
 	m_functions.push_back(func);
@@ -41,7 +45,7 @@ void SimpleGUIImpl::executeByUI(panda::gui::CallbackFunc func)
 
 void SimpleGUIImpl::executeFunctions()
 {
-	std::vector<panda::gui::CallbackFunc> functions;
+	std::vector<CallbackFunc> functions;
 	{
 		std::lock_guard<std::mutex> lock(m_functionsMutex);
 		m_functions.swap(functions);

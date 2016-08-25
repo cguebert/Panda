@@ -44,6 +44,8 @@ public:
 
 	OpenGLRenderView* getOpenGLView() const;
 
+	void fillContextMenu(QMenu& menu, int flags) const;
+
 protected:
 	void closeEvent(QCloseEvent* event);
 
@@ -68,7 +70,6 @@ private slots:
 	void saveGroup();
 	void openGroup();
 	void createGroupObject();
-	void showContextMenu(QPoint, int);
 	void copyDataToUserValue();
 	void showLoggerDialog();
 	void showObjectsAndTypes();

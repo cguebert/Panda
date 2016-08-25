@@ -76,14 +76,6 @@ public:
 
 	float getZoom();
 
-	enum ContextMenuReason {
-		MENU_OBJECT	    = 1 << 0,
-		MENU_DATA	    = 1 << 1,
-		MENU_LINK	    = 1 << 2,
-		MENU_IMAGE	    = 1 << 3,
-		MENU_TAG	    = 1 << 4
-	};
-
 	virtual void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
 	void objectsMoved(); // Refresh the view, links & tags
 
@@ -157,10 +149,11 @@ protected:
 	virtual bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2);
 	virtual void computeCompatibleDatas(panda::BaseData* data);
 
+	int getContextMenuFlags(const panda::types::Point& pos);
+
 signals:
 	void modified();
 	void showStatusBarMessage(QString);
-	void showContextMenu(QPoint pos, int reason);
 	void viewModified();
 	void lostFocus(QWidget*);
 

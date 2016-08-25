@@ -2,9 +2,11 @@
 #define BASEGUI_H
 
 #include <panda/core.h>
+#include <panda/graphics/PointInt.h>
 
 #include <functional>
 #include <string>
+#include <vector>
 
 namespace panda
 {
@@ -15,7 +17,8 @@ namespace gui
 namespace buttons
 {
 
-enum {
+enum 
+{
 	Ok = 0x00000400,
 	Save = 0x00000800,
 	SaveAll = 0x00001000,
@@ -37,6 +40,22 @@ enum {
 
 } // namespace buttons
 
+namespace menu
+{
+	enum
+	{
+		Object = 1 << 0,
+		Data = 1 << 1,
+		Link = 1 << 2,
+		Image = 1 << 3,
+		Tag = 1 << 4,
+		Annotation = 1 << 5,
+		Group = 1 << 6,
+		SelectedGreaterThan1 = 1 << 7,
+		SelectedGreaterThan2 = 1 << 8
+	};
+}
+
 enum class Color
 {
 	Window,
@@ -52,16 +71,20 @@ enum class Color
 
 enum class MessageBoxType { about, critical, information, question, warning };
 
-using CallbackFunc = std::function<void()>;
-
 // A class used to communicate from the core (or the plugins) to the gui, if there is one
 class PANDA_CORE_API BaseGUI
 {
 public:
+	using CallbackFunc = std::function<void()>;
+	using Action = std::pair<std::string, CallbackFunc>; // Menu text, function
+	using Actions = std::vector<Action>;
+
 	virtual ~BaseGUI();
 
 	// A combination of buttons can be set. Returns the button the user has clicked.
 	virtual int messageBox(MessageBoxType type, const std::string& caption, const std::string& text, int buttons = buttons::Ok) = 0;
+
+	virtual void contextMenu(panda::graphics::PointInt pos, int flags, const Actions& customActions = {}) = 0;
 
 	virtual void updateView() = 0; // Update the OpenGL view
 
