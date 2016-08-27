@@ -21,6 +21,7 @@ public:
 
 protected:
 	void paintGL() override;
+	void contextMenuEvent(QContextMenuEvent* event) override;
 
 	std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt) override;
 	std::pair<Rects, PointsPairs> getConnectedDatas(panda::BaseData* data) override;
@@ -36,6 +37,11 @@ protected:
 private:
 	void updateGroupDataRects();
 
+	void createInputGroupData();
+	void createOutputGroupData();
+	void removeInputGroupData();
+	void removeOutputGroupData();
+
 	static const int dataRectSize = 10;
 	static const int dataMarginW = 100;
 	static const int dataMarginH = 20;
@@ -45,7 +51,9 @@ private:
 
 	panda::Group* m_group;
 	panda::types::Rect m_onlyObjectsRect; // Without the group datas
-	std::vector<std::pair<panda::BaseData*, panda::types::Rect>> m_groupDataRects;
+
+	using DataRect = std::pair<panda::BaseData*, panda::types::Rect>;
+	std::vector<DataRect> m_groupDataRects;
 };
 
 #endif // GROUPVIEW_H

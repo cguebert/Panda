@@ -33,12 +33,12 @@ int SimpleGUIImpl::messageBox(panda::gui::MessageBoxType type, const std::string
 
 void SimpleGUIImpl::contextMenu(panda::graphics::PointInt pos, int flags, const Actions& customActions)
 {
+	if (!flags && customActions.empty())
+		return;
+
 	QMenu menu(m_mainWindow);
 
 	m_mainWindow->fillContextMenu(menu, flags);
-
-	if (!menu.isEmpty())
-		menu.addSeparator();
 
 	for (const auto& action : customActions)
 	{

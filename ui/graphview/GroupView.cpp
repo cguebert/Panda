@@ -7,14 +7,23 @@
 #include <ui/graphview/graphics/DrawList.h>
 
 #include <panda/PandaDocument.h>
+#include <panda/SimpleGUI.h>
 #include <panda/document/GraphUtils.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/object/Group.h>
 #include <panda/types/DataTraits.h>
 
+#include <QtWidgets>
+
 using Point = panda::types::Point;
 using Rect = panda::types::Rect;
+
+namespace
+{
+	inline panda::types::Point convert(const QPointF& pt)
+	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
+}
 
 GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent)
 	: GraphView(doc, objectsList, parent)
@@ -406,3 +415,84 @@ bool GroupView::createLink(panda::BaseData* data1, panda::BaseData* data2)
 		return false;
 }
 
+void GroupView::contextMenuEvent(QContextMenuEvent* event)
+{
+	m_contextMenuData = nullptr;
+
+	Point pos = convert(event->pos()) / m_zoomFactor + m_viewDelta;
+	QMenu menu(this);
+	int flags = getContextMenuFlags(pos);
+
+	if (m_hoverTimer->isActive())
+		m_hoverTimer->stop();
+
+	panda::gui::BaseGUI::Actions actions;
+
+	if (m_contextMenuData)
+	{
+		if (m_contextMenuData->isInput())
+		{
+			if (!m_contextMenuData->getParent())
+				actions.emplace_back("Add input group data", [this]() { createInputGroupData(); });
+		}
+		else if (m_contextMenuData->isOutput())
+		{
+			bool connectedToGroup = false;
+			const auto& outputs = m_contextMenuData->getOutputs();
+			if (!outputs.empty())
+			{
+				for (const auto output : outputs)
+				{
+					auto data = dynamic_cast<panda::BaseData*>(output);
+					if (data && data->getOwner() == m_group)
+					{
+						connectedToGroup = true;
+						break;
+					}
+				}
+			}
+
+			if(!connectedToGroup)
+				actions.emplace_back("Add output group data", [this]() { createOutputGroupData(); });
+		}
+	}
+	else
+	{
+		for (const auto& dataRect : m_groupDataRects)
+		{
+			if (dataRect.second.contains(pos))
+			{
+				m_contextMenuData = dataRect.first;
+				if (m_contextMenuData->isInput())
+					actions.emplace_back("Remove input group data", [this]() { removeInputGroupData(); });
+				else if (m_contextMenuData->isOutput())
+					actions.emplace_back("Remove output group data", [this]() { removeOutputGroupData(); });
+				break;
+			}
+		}
+	}
+
+	const auto gPos = event->globalPos();
+	const auto posI = panda::graphics::PointInt(gPos.x(), gPos.y());
+	m_pandaDocument->getGUI().contextMenu(posI, flags, actions);
+}
+
+void GroupView::createInputGroupData()
+{
+
+}
+
+void GroupView::createOutputGroupData()
+{
+
+}
+
+void GroupView::removeInputGroupData()
+{
+
+}
+
+void GroupView::removeOutputGroupData()
+{
+
+}
