@@ -36,6 +36,18 @@ void SimpleGUIImpl::contextMenu(panda::graphics::PointInt pos, int flags, const 
 	QMenu menu(m_mainWindow);
 
 	m_mainWindow->fillContextMenu(menu, flags);
+
+	if (!menu.isEmpty())
+		menu.addSeparator();
+
+	for (const auto& action : customActions)
+	{
+		const auto& label = action.first;
+		if (label.empty() && !menu.isEmpty())
+			menu.addSeparator();
+		if (!label.empty())
+			menu.addAction(QString::fromStdString(label), action.second);
+	}
 	
 	if(!menu.actions().empty())
 		menu.exec({ pos.x, pos.y });

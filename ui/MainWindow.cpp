@@ -1211,35 +1211,38 @@ void MainWindow::fillContextMenu(QMenu& menu, int flags) const
 	if (flags & gm::Tag)
 		menu.addAction(m_nameLinkTagAction);
 
-	int nbSelected = m_currentGraphView->selection().get().size();
-	if(nbSelected == 1 && dynamic_cast<panda::Annotation*>(obj))
+	if (flags & gm::Selection)
 	{
-		menu.addSeparator();
-		menu.addAction(m_objectToFrontAction);
-		menu.addAction(m_objectToBackAction);
-	}
+		int nbSelected = m_currentGraphView->selection().get().size();
+		if (nbSelected == 1 && dynamic_cast<panda::Annotation*>(obj))
+		{
+			menu.addSeparator();
+			menu.addAction(m_objectToFrontAction);
+			menu.addAction(m_objectToBackAction);
+		}
 
-	if(nbSelected == 1 && dynamic_cast<panda::Group*>(obj))
-	{
-		menu.addSeparator();
-		menu.addAction(m_ungroupAction);
-		menu.addAction(m_editGroupAction);
-		menu.addAction(m_openGroupAction);
-		menu.addAction(m_saveGroupAction);
-	}
+		if (nbSelected == 1 && dynamic_cast<panda::Group*>(obj))
+		{
+			menu.addSeparator();
+			menu.addAction(m_ungroupAction);
+			menu.addAction(m_editGroupAction);
+			menu.addAction(m_openGroupAction);
+			menu.addAction(m_saveGroupAction);
+		}
 
-	if(nbSelected > 1)
-	{
-		menu.addAction(m_groupAction);
-		menu.addSeparator();
-		menu.addMenu(m_alignHorizontallyMenu);
-		menu.addMenu(m_alignVerticallyMenu);
-	}
+		if (nbSelected > 1)
+		{
+			menu.addAction(m_groupAction);
+			menu.addSeparator();
+			menu.addMenu(m_alignHorizontallyMenu);
+			menu.addMenu(m_alignVerticallyMenu);
+		}
 
-	if (nbSelected > 2)
-	{
-		menu.addMenu(m_distributeHorizontallyMenu);
-		menu.addMenu(m_distributeVerticallyMenu);
+		if (nbSelected > 2)
+		{
+			menu.addMenu(m_distributeHorizontallyMenu);
+			menu.addMenu(m_distributeVerticallyMenu);
+		}
 	}
 }
 

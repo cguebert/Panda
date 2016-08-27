@@ -49,10 +49,11 @@ namespace menu
 		Link = 1 << 2,
 		Image = 1 << 3,
 		Tag = 1 << 4,
-		Annotation = 1 << 5,
+		Selection = 1 << 5 // Fill automatically based on the current selection
+	/*	Annotation = 1 << 5,
 		Group = 1 << 6,
 		SelectedGreaterThan1 = 1 << 7,
-		SelectedGreaterThan2 = 1 << 8
+		SelectedGreaterThan2 = 1 << 8 */
 	};
 }
 

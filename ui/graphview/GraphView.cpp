@@ -915,7 +915,7 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 int GraphView::getContextMenuFlags(const panda::types::Point& pos)
 {
 	namespace gm = panda::gui::menu;
-	int flags = 0;
+	int flags = gm::Selection; // Let MainWindow fill the menu based on the current selection
 	const auto ods = getObjectDrawStructAtPos(pos);
 	if (ods)
 	{
