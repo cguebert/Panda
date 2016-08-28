@@ -127,6 +127,24 @@ void replaceAll(String& val, const String& from, const String& to)
 	}
 }
 
+template <class It> 
+std::pair<It, It> slide(It first, It last, It pos)
+{
+	if (pos < first) 
+		return { pos, std::rotate(pos, first, last) };
+	if (last < pos)
+		return { std::rotate(first, last, pos), pos };
+	return { first, last };
+}
+
+template <class BiIt, class UnPred> 
+std::pair <BiIt, BiIt> gather(BiIt first, BiIt last, BiIt pos, UnPred pred)
+{
+	using value_type = typename std::iterator_traits<BiIt>::value_type;
+	return { std::stable_partition(first, pos, [&](const value_type& x){ return !pred(x); }), 
+			 std::stable_partition(pos, last, pred) };
+}
+
 } // namespace helper
 
 } // namespace panda

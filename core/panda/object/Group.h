@@ -39,8 +39,13 @@ public:
 	typedef std::shared_ptr<BaseData> DataPtr;
 	typedef std::vector<DataPtr> GroupDataList;
 
-	void addGroupData(DataPtr data);
+	void addGroupData(DataPtr data, int index = -1);
+	void removeGroupData(DataPtr data);
+	void reorderData(DataPtr data, int index);
 	const GroupDataList& getGroupDatas(); // Can modify the datas, not the list
+
+	std::string findAvailableDataName(const std::string& baseName, BaseData* data = nullptr);
+	DataPtr duplicateData(BaseData* data);
 
 protected:
 	friend class panda::EditGroupCommand;
@@ -62,9 +67,6 @@ inline std::string Group::getLabel() const
 
 inline ObjectsList& Group::getObjectsList()
 { return m_objectsList; }
-
-inline void Group::addGroupData(DataPtr data)
-{ m_groupDatas.push_back(data); }
 
 inline const Group::GroupDataList& Group::getGroupDatas()
 { return m_groupDatas; }

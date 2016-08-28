@@ -73,7 +73,7 @@ void EditGroupCommand::redo()
 	m_group->m_groupName.setValue(m_newName);
 
 	std::map< BaseData*, std::shared_ptr<BaseData> > datasPtrMap;
-	for(std::shared_ptr<BaseData> dataPtr : m_group->m_groupDatas)
+	for(const auto& dataPtr : m_group->m_groupDatas)
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
 	m_group->enableModifiedSignal(false);
@@ -96,7 +96,7 @@ void EditGroupCommand::undo()
 	m_group->m_groupName.setValue(m_prevName);
 
 	std::map< BaseData*, std::shared_ptr<BaseData> > datasPtrMap;
-	for(std::shared_ptr<BaseData> dataPtr : m_group->m_groupDatas)
+	for(const auto& dataPtr : m_group->m_groupDatas)
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
 	m_group->enableModifiedSignal(false);
@@ -114,4 +114,89 @@ void EditGroupCommand::undo()
 	m_group->emitModified();
 }
 
+//****************************************************************************//
+
+AddDataToGroupCommand::AddDataToGroupCommand(Group* group, std::shared_ptr<BaseData> data)
+	: m_group(group)
+	, m_data(data)
+{
+	setText("add group data");
+}
+
+void AddDataToGroupCommand::redo()
+{
+	m_group->addGroupData(m_data);
+	m_group->emitModified();
+}
+
+void AddDataToGroupCommand::undo()
+{
+	m_group->removeGroupData(m_data);
+	m_group->emitModified();
+}
+
+//****************************************************************************//
+
+RemoveDataFromGroupCommand::RemoveDataFromGroupCommand(Group* group, BaseData* data)
+	: m_group(group)
+{
+	setText("remove group data");
+
+	const auto& groupDatas = m_group->getGroupDatas();
+	auto gIt = std::find_if(groupDatas.begin(), groupDatas.end(), [data](const std::shared_ptr<BaseData>& dataSPtr) {
+		return dataSPtr.get() == data;
+	});
+	m_data = *gIt;
+	m_groupDataIndex = std::distance(groupDatas.begin(), gIt);
+
+	const auto& datas = m_group->getDatas();
+	auto dIt = std::find_if(datas.begin(), datas.end(), [data](const BaseData* dataPtr) {
+		return dataPtr == data;
+	});
+	m_dataIndex = std::distance(datas.begin(), dIt);
+
+	m_input = data->isInput();
+	m_output = data->isOutput();
+}
+
+void RemoveDataFromGroupCommand::redo()
+{
+	if (m_input)
+		m_group->removeInput(*m_data);
+	if (m_output)
+		m_group->removeOutput(*m_data);
+
+	m_group->removeGroupData(m_data);
+	m_group->removeData(m_data.get());
+}
+
+void RemoveDataFromGroupCommand::undo()
+{
+	if (m_input)
+		m_group->addInput(*m_data);
+	if (m_output)
+	{
+		m_data->setOutput(true);
+		m_group->addOutput(*m_data);
+	}
+
+	m_group->addGroupData(m_data, m_groupDataIndex);
+	m_group->addData(m_data.get(), m_dataIndex);
+}
+
+//****************************************************************************//
+
+ReorderGroupDataCommand::ReorderGroupDataCommand(Group* group, BaseData* data, int index)
+	: m_group(group)
+{
+	setText("reorder group data");
+}
+
+void ReorderGroupDataCommand::redo()
+{
+}
+
+void ReorderGroupDataCommand::undo()
+{
+}
 } // namespace panda

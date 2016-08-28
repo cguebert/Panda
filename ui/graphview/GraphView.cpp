@@ -1092,6 +1092,8 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 	auto ods = getObjectDrawStruct(object);
 	if(ods)	// Can be called before the object is fully created
 	{
+		ods->setDirty();
+
 		panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object);
 		if (dock)
 		{

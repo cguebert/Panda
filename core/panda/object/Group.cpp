@@ -270,6 +270,61 @@ void Group::preDestruction()
 		object->preDestruction();
 }
 
+void Group::addGroupData(DataPtr data, int index)
+{ 
+	if(index < 0 || index >= static_cast<int>(m_groupDatas.size()))
+		m_groupDatas.push_back(data); 
+	else
+		m_groupDatas.insert(m_groupDatas.begin() + index, data);
+}
+
+void Group::removeGroupData(DataPtr data)
+{
+	auto it = std::find(m_groupDatas.begin(), m_groupDatas.end(), data);
+	if (it != m_groupDatas.end())
+		m_groupDatas.erase(it);
+}
+
+void Group::reorderData(DataPtr data, int index)
+{
+	auto it = std::find(m_groupDatas.begin(), m_groupDatas.end(), data);
+	helper::slide(it, it + 1, m_groupDatas.begin() + index);
+}
+
+std::string Group::findAvailableDataName(const std::string& baseName, BaseData* data)
+{
+	auto name = baseName;
+	BaseData* testData = getData(name);
+	if(testData && testData != data)
+	{
+		int i=2;
+		testData = getData(name + std::to_string(i));
+		while(testData && testData != data)
+		{
+			++i;
+			testData = getData(name + std::to_string(i));
+		}
+		name = name + std::to_string(i);
+	}
+	return name;
+}
+
+Group::DataPtr Group::duplicateData(BaseData* data)
+{
+	auto name = findAvailableDataName(data->getName());
+
+	auto newData = DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(),
+										   name, data->getHelp(), this);
+	newData->setDisplayed(data->isDisplayed());
+	newData->setPersistent(data->isPersistent());
+	newData->setWidget(data->getWidget());
+	newData->setWidgetData(data->getWidgetData());
+	newData->setInput(data->isInput());
+	newData->setOutput(data->isOutput());
+
+	return newData;
+}
+
 int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many object into a single one").setHidden(true);
 
 //****************************************************************************//

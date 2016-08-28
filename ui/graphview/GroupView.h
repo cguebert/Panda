@@ -39,8 +39,9 @@ private:
 
 	void createInputGroupData();
 	void createOutputGroupData();
-	void removeInputGroupData();
-	void removeOutputGroupData();
+	void removeGroupData(panda::BaseData* data);
+
+	void modifiedObject(panda::PandaObject* object);
 
 	static const int dataRectSize = 10;
 	static const int dataMarginW = 100;

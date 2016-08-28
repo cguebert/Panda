@@ -41,39 +41,6 @@ float getDataHeight(GraphView* view, BaseData* data)
 	return 0;
 }
 
-std::string findAvailableDataName(PandaObject* object, const std::string& baseName, BaseData* data = nullptr)
-{
-	auto name = baseName;
-	BaseData* testData = object->getData(name);
-	if(testData && testData != data)
-	{
-		int i=2;
-		testData = object->getData(name + std::to_string(i));
-		while(testData && testData != data)
-		{
-			++i;
-			testData = object->getData(name + std::to_string(i));
-		}
-		name = name + std::to_string(i);
-	}
-	return name;
-}
-
-BaseData* duplicateData(Group* group, BaseData* data)
-{
-	auto name = findAvailableDataName(group, data->getName());
-
-	auto newData = DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(),
-										   name, data->getHelp(), group);
-	newData->setDisplayed(data->isDisplayed());
-	newData->setPersistent(data->isPersistent());
-	newData->setWidget(data->getWidget());
-	newData->setWidgetData(data->getWidgetData());
-	group->addGroupData(newData);
-
-	return newData.get();
-}
-
 bool createGroup(PandaDocument* doc, GraphView* view)
 {
 	const auto& objectsSelection = view->selection();
@@ -197,7 +164,9 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 					BaseData* createdData = nullptr;
 					if(!connectedInputDatas.count(otherData))
 					{
-						createdData = duplicateData(group, data);
+						auto newData = group->duplicateData(data);
+						group->addGroupData(newData);
+						createdData = newData.get();
 						createdData->copyValueFrom(otherData);
 						group->addInput(*createdData);
 						undoStack.push(std::make_shared<LinkDatasCommand>(createdData, otherData));
@@ -207,7 +176,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 					else
 					{
 						createdData = connectedInputDatas.at(otherData);
-						auto name = findAvailableDataName(group, otherData->getName(), createdData);
+						auto name = group->findAvailableDataName(otherData->getName(), createdData);
 						if(name != createdData->getName())
 						{
 							createdData->setName(name);
@@ -236,7 +205,9 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 					{
 						if(!createdData)
 						{
-							createdData = duplicateData(group, data);
+							auto newData = group->duplicateData(data);
+							group->addGroupData(newData);
+							createdData = newData.get();
 							createdData->copyValueFrom(data);
 							createdData->setOutput(true);
 							group->dataSetParent(createdData, data);
@@ -261,13 +232,15 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 			{
 				auto data = inputData->getParent();
 				if(data->getOwner() ==  group)
-					data->setName(findAvailableDataName(group, caption, data));
+					data->setName(group->findAvailableDataName(caption, data));
 			}
 			else // We create a data in the group for this input
 			{
-				BaseData* createdData = duplicateData(group, inputData);
+				auto newData = group->duplicateData(inputData);
+				group->addGroupData(newData);
+				auto createdData = newData.get();
 				createdData->copyValueFrom(inputData);
-				createdData->setName(findAvailableDataName(group, caption, createdData));
+				createdData->setName(group->findAvailableDataName(caption, createdData));
 				group->addInput(*createdData);
 				undoStack.push(std::make_shared<LinkDatasCommand>(inputData, createdData));
 				createdDatasHeights.emplace_back(createdData, getDataHeight(view, inputData));
@@ -279,16 +252,18 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				{
 					if(data->getParent() == outputData)
 					{
-						data->setName(findAvailableDataName(group, caption, data.get()));
+						data->setName(group->findAvailableDataName(caption, data.get()));
 						data->setDisplayed(true);
 					}
 				}
 			}
 			else // We create a data in the group for this output
 			{
-				BaseData* createdData = duplicateData(group, outputData);
+				auto newData = group->duplicateData(inputData);
+				group->addGroupData(newData);
+				auto createdData = newData.get();
 				createdData->copyValueFrom(outputData);
-				createdData->setName(findAvailableDataName(group, caption, createdData));
+				createdData->setName(group->findAvailableDataName(caption, createdData));
 				createdData->setOutput(true);
 				group->dataSetParent(createdData, outputData);
 				group->addOutput(*createdData);

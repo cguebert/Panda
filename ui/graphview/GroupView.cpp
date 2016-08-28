@@ -8,8 +8,10 @@
 
 #include <panda/PandaDocument.h>
 #include <panda/SimpleGUI.h>
+#include <panda/document/DocumentSignals.h>
 #include <panda/document/GraphUtils.h>
 #include <panda/document/ObjectsList.h>
+#include <panda/command/GroupCommand.h>
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/object/Group.h>
 #include <panda/types/DataTraits.h>
@@ -30,6 +32,9 @@ GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::Obje
 	, m_group(group)
 {
 	updateObjectsRect();
+
+	auto& docSignals = m_pandaDocument->getSignals();
+	m_observer.get(docSignals.modifiedObject).connect<GroupView, &GroupView::modifiedObject>(this);
 }
 
 void GroupView::paintGL()
@@ -464,9 +469,15 @@ void GroupView::contextMenuEvent(QContextMenuEvent* event)
 			{
 				m_contextMenuData = dataRect.first;
 				if (m_contextMenuData->isInput())
-					actions.emplace_back("Remove input group data", [this]() { removeInputGroupData(); });
+					actions.emplace_back("Remove input group data", [this]() { 
+						auto macro = m_pandaDocument->getUndoStack().beginMacro("remove input group data");
+						removeGroupData(m_contextMenuData);
+					});
 				else if (m_contextMenuData->isOutput())
-					actions.emplace_back("Remove output group data", [this]() { removeOutputGroupData(); });
+					actions.emplace_back("Remove output group data", [this](){ 
+						auto macro = m_pandaDocument->getUndoStack().beginMacro("remove output group data");
+						removeGroupData(m_contextMenuData);
+					});
 				break;
 			}
 		}
@@ -487,12 +498,24 @@ void GroupView::createOutputGroupData()
 
 }
 
-void GroupView::removeInputGroupData()
+void GroupView::removeGroupData(panda::BaseData* data)
 {
+	auto& undoStack = m_pandaDocument->getUndoStack();
 
+	auto outputs = data->getOutputs();
+	for (auto node : outputs)
+	{
+		auto outData = dynamic_cast<panda::BaseData*>(node);
+		if (outData)
+			undoStack.push(std::make_shared<panda::LinkDatasCommand>(outData, nullptr));
+	}
+
+	undoStack.push(std::make_shared<panda::RemoveDataFromGroupCommand>(m_group, data));
+	undoStack.push(std::make_shared<panda::LinkDatasCommand>(data, nullptr));
 }
 
-void GroupView::removeOutputGroupData()
+void GroupView::modifiedObject(panda::PandaObject* object)
 {
-
+	if(object == m_group)
+		updateGroupDataRects();
 }

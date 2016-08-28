@@ -20,14 +20,10 @@ void PandaObject::addData(BaseData* data, int index)
 {
 	helper::removeAll(m_datas, data);
 	
-	if(index < 0)
+	if(index < 0 || index >= static_cast<int>(m_datas.size()))
 		m_datas.push_back(data);
 	else
-	{
-		index = std::min<int>(index, m_datas.size());
-		auto it = m_datas.begin() + index;
-		m_datas.insert(it, data);
-	}
+		m_datas.insert(m_datas.begin() + index, data);
 	emitModified();
 }
 
