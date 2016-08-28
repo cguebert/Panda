@@ -490,12 +490,24 @@ void GroupView::contextMenuEvent(QContextMenuEvent* event)
 
 void GroupView::createInputGroupData()
 {
+	auto& undoStack = m_pandaDocument->getUndoStack();
+	auto macro = undoStack.beginMacro("create input group data");
 
+	auto newData = m_group->duplicateData(m_contextMenuData);
+	undoStack.push(std::make_shared<panda::AddDataToGroupCommand>(m_group, newData, true, false));
+	auto createdData = newData.get();
+	createdData->copyValueFrom(m_contextMenuData);
+	undoStack.push(std::make_shared<panda::LinkDatasCommand>(m_contextMenuData, createdData));
 }
 
 void GroupView::createOutputGroupData()
 {
+	auto& undoStack = m_pandaDocument->getUndoStack();
+	auto macro = undoStack.beginMacro("create input group data");
 
+	auto newData = m_group->duplicateData(m_contextMenuData);
+	undoStack.push(std::make_shared<panda::AddDataToGroupCommand>(m_group, newData, false, true));
+	undoStack.push(std::make_shared<panda::LinkDatasCommand>(newData.get(), m_contextMenuData));
 }
 
 void GroupView::removeGroupData(panda::BaseData* data)

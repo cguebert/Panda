@@ -116,23 +116,35 @@ void EditGroupCommand::undo()
 
 //****************************************************************************//
 
-AddDataToGroupCommand::AddDataToGroupCommand(Group* group, std::shared_ptr<BaseData> data)
+AddDataToGroupCommand::AddDataToGroupCommand(Group* group, std::shared_ptr<BaseData> data, bool isInput, bool isOutput)
 	: m_group(group)
 	, m_data(data)
+	, m_input(isInput)
+	, m_output(isOutput)
 {
 	setText("add group data");
 }
 
 void AddDataToGroupCommand::redo()
 {
+	if (m_input)
+		m_group->addInput(*m_data);
+	if (m_output)
+		m_group->addOutput(*m_data);
+
 	m_group->addGroupData(m_data);
-	m_group->emitModified();
+	m_group->addData(m_data.get());
 }
 
 void AddDataToGroupCommand::undo()
 {
+	if (m_input)
+		m_group->removeInput(*m_data);
+	if (m_output)
+		m_group->removeOutput(*m_data);
+
 	m_group->removeGroupData(m_data);
-	m_group->emitModified();
+	m_group->removeData(m_data.get());
 }
 
 //****************************************************************************//
@@ -175,10 +187,7 @@ void RemoveDataFromGroupCommand::undo()
 	if (m_input)
 		m_group->addInput(*m_data);
 	if (m_output)
-	{
-		m_data->setOutput(true);
 		m_group->addOutput(*m_data);
-	}
 
 	m_group->addGroupData(m_data, m_groupDataIndex);
 	m_group->addData(m_data.get(), m_dataIndex);

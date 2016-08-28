@@ -72,7 +72,7 @@ protected:
 class PANDA_CORE_API AddDataToGroupCommand : public UndoCommand
 {
 public:
-	AddDataToGroupCommand(Group* group, std::shared_ptr<BaseData> data);
+	AddDataToGroupCommand(Group* group, std::shared_ptr<BaseData> data, bool isInput, bool isOutput);
 
 	virtual void redo();
 	virtual void undo();
@@ -80,6 +80,7 @@ public:
 protected:
 	Group* m_group;
 	std::shared_ptr<BaseData> m_data;
+	bool m_input, m_output;
 };
 
 //****************************************************************************//
