@@ -30,7 +30,7 @@ public:
 	typedef std::vector<Renderer*> RenderersList;
 	virtual RenderersList getRenderers() = 0;
 
-	virtual const std::string& getLayerName() const = 0;
+	virtual const std::string getLayerName() const = 0;
 	virtual Data<std::string>& getLayerNameData() = 0;
 
 	virtual int getCompositionMode() const = 0;
@@ -62,7 +62,7 @@ public:
 
 	RenderersList getRenderers();
 
-	const std::string& getLayerName() const override;
+	const std::string getLayerName() const override;
 	Data<std::string>& getLayerNameData() override;
 	std::string getLabel() const override;
 
@@ -90,7 +90,7 @@ protected:
 
 //****************************************************************************//
 
-inline const std::string& Layer::getLayerName() const
+inline const std::string Layer::getLayerName() const
 { return m_layerName.getValue(); }
 
 inline Data<std::string>& Layer::getLayerNameData()

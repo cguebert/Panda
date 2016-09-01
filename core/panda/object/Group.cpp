@@ -432,6 +432,15 @@ graphics::Size GroupWithLayer::getLayerSize() const
 		return parentDocument()->getRenderSize();
 }
 
+const std::string GroupWithLayer::getLayerName() const
+{
+	const auto& groupName = m_groupName.getValue();
+	if(m_layer) 
+		return groupName + '.' + m_layer->getLayerName(); 
+	else 
+		return groupName; 
+}
+
 int GroupWithLayerClass = RegisterObject<GroupWithLayer>("Group with Layer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);
 
 } // namespace panda

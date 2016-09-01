@@ -270,8 +270,9 @@ void LayersTab::updateWidgets(panda::BaseLayer* layer, int row)
 {
 	if (layer)
 	{
-		m_nameEdit->setEnabled(!isReadOnly(layer->getLayerNameData()));
-		m_nameEdit->setText(QString::fromStdString(layer->getLayerName()));
+		const auto& nameData = layer->getLayerNameData();
+		m_nameEdit->setEnabled(!isReadOnly(nameData));
+		m_nameEdit->setText(QString::fromStdString(nameData.getValue()));
 		m_compositionBox->setEnabled(!isReadOnly(layer->getCompositionModeData()));
 		m_compositionBox->setCurrentIndex(layer->getCompositionMode());
 		m_opacitySlider->setEnabled(!isReadOnly(layer->getOpacityData()));

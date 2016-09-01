@@ -85,7 +85,7 @@ public:
 
 	RenderersList getRenderers() override;
 
-	const std::string& getLayerName() const override;
+	const std::string getLayerName() const override;
 	Data<std::string>& getLayerNameData() override;
 
 	int getCompositionMode() const override;
@@ -143,9 +143,6 @@ protected:
 };
 
 //****************************************************************************//
-
-inline const std::string& GroupWithLayer::getLayerName() const
-{ if(m_layer) return m_layer->getLayerName(); else return m_groupName.getValue(); }
 
 inline Data<std::string>& GroupWithLayer::getLayerNameData()
 { if(m_layer) return m_layer->getLayerNameData(); else return m_groupName; }
