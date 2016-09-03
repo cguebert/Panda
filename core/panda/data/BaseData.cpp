@@ -68,7 +68,8 @@ void BaseData::setParent(BaseData* parent)
 		return;
 	setFlag(FLAG_SETPARENTPROTECTION, true);
 
-	helper::removeOne(m_inputs, m_parentBaseData);
+	if (m_parentBaseData)
+		removeInput(*m_parentBaseData);
 
 	if(parent)
 	{
