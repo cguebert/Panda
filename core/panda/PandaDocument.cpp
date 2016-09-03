@@ -1,5 +1,3 @@
-#include <GL/glew.h>
-
 #include <panda/PandaDocument.h>
 #include <panda/Messaging.h>
 #include <panda/SimpleGUI.h>
@@ -23,21 +21,9 @@
 #include <panda/helper/system/FileRepository.h>
 
 #include <chrono>
-#include <set>
 
 namespace
 {
-
-int loadGlew()
-{
-	// Get OpenGL functions
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	  fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-
-	return 1;
-}
 
 long long currentTime()
 {
