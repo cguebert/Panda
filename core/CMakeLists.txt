@@ -29,6 +29,7 @@ set(HEADER_FILES
 	panda/data/DataNode.h
 	panda/document/DocumentRenderer.h
 	panda/document/DocumentSignals.h
+	panda/document/DocumentUtils.h
 	panda/document/GraphUtils.h
 	panda/document/ObjectsList.h
 	panda/document/Scheduler.h
@@ -109,6 +110,7 @@ set(SOURCE_FILES
 	panda/data/DataFactory.cpp
 	panda/data/DataNode.cpp
 	panda/document/DocumentRenderer.cpp
+	panda/document/DocumentUtils.cpp
 	panda/document/GraphUtils.cpp
 	panda/document/ObjectsList.cpp
 	panda/document/Scheduler.cpp

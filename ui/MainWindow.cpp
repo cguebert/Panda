@@ -28,6 +28,7 @@
 #include <panda/command/AddObjectCommand.h>
 #include <panda/command/RemoveObjectCommand.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/document/DocumentUtils.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/document/Serialization.h>
 #include <panda/helper/system/FileRepository.h>
@@ -1250,7 +1251,7 @@ void MainWindow::copyDataToUserValue()
 {
 	const panda::BaseData* clickedData = m_currentGraphView->getContextMenuData();
 	if(clickedData)
-		m_document->copyDataToUserValue(clickedData, m_currentGraphView->objectsList());
+		panda::copyDataToUserValue(clickedData, m_document.get(), m_currentGraphView->objectsList());
 }
 
 void MainWindow::showLoggerDialog()

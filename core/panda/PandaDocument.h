@@ -90,11 +90,8 @@ public:
 	void play(bool playing);
 	void step();
 	void rewind();
-	void copyDataToUserValue(const panda::BaseData* data, ObjectsList& objectList);
 
 protected:
-	void render();
-
 	using ObjectsRawList = std::vector<PandaObject*>;
 	ObjectsRawList m_dirtyObjects; // All the objects that were dirty during the current step
 	uint32_t m_currentIndex;

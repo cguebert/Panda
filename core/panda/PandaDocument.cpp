@@ -431,38 +431,6 @@ void PandaDocument::rewind()
 	m_signals->timeChanged.run();
 }
 
-void PandaDocument::copyDataToUserValue(const BaseData* data, ObjectsList& objectList)
-{
-	if(!data)
-		return;
-
-	auto entry = DataFactory::getInstance()->getEntry(data->getDataTrait()->fullTypeId());
-	if(!entry)
-		return;
-
-	std::string registryName = std::string("panda::GeneratorUser<") + entry->className + ">";
-	auto object = ObjectFactory::getInstance()->create(registryName, this);
-	if(!object)
-		return;
-
-	objectList.addObject(object);
-	BaseData* inputData = object->getData("input");
-	if(inputData)
-	{
-		inputData->copyValueFrom(data);
-		inputData->setWidget(data->getWidget());
-		inputData->setWidgetData(data->getWidgetData());
-	}
-
-	BaseData* captionData = object->getData("caption");
-	if (captionData)
-	{
-		auto captionTextData = dynamic_cast<Data<std::string>*>(captionData);
-		if (captionTextData)
-			captionTextData->setValue(data->getName());
-	}
-}
-
 } // namespace panda
 
 
