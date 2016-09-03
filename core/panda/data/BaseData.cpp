@@ -3,6 +3,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/types/DataTraits.h>
 #include <panda/types/TypeConverter.h>
+#include <panda/helper/algorithm.h>
 #include <panda/helper/UpdateLogger.h>
 
 #include <iostream>
@@ -67,20 +68,11 @@ void BaseData::setParent(BaseData* parent)
 		return;
 	setFlag(FLAG_SETPARENTPROTECTION, true);
 
+	helper::removeOne(m_inputs, m_parentBaseData);
+
 	if(parent)
 	{
-		/* BUGFIX : only remove non-PandaObjects from inputs
-		* This is for the special case of the Group objects
-		* where an output Data is connected to another Data
-		*/
-		auto inputs = m_inputs; // Iterate over a copy
-		for(DataNode* node : inputs)
-		{
-			if(!dynamic_cast<PandaObject*>(node))
-				removeInput(*node);
-		}
-
-		if(parent && !validParent(parent))
+		if(!validParent(parent))
 			return;
 
 		m_parentBaseData = parent;
@@ -90,11 +82,7 @@ void BaseData::setParent(BaseData* parent)
 		forceSet();
 	}
 	else
-	{
 		m_parentBaseData = nullptr;
-		while(!m_inputs.empty())
-			removeInput(*m_inputs.front());
-	}
 
 	setFlag(FLAG_SETPARENTPROTECTION, false);
 }
