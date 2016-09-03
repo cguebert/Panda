@@ -20,7 +20,6 @@ set(HEADER_FILES
 	MainWindow.h
 	OpenGLRenderView.h
 	SimpleGUIImpl.h
-	command/GroupSelectionCommand.h
 	command/ModifyAnnotationCommand.h
 	command/MoveObjectCommand.h
 	command/SetDataValueCommand.h
@@ -83,7 +82,6 @@ set(SOURCE_FILES
 	MainWindow.cpp
 	OpenGLRenderView.cpp
 	SimpleGUIImpl.cpp
-	command/GroupSelectionCommand.cpp
 	command/ModifyAnnotationCommand.cpp
 	command/MoveObjectCommand.cpp
 	custom/DetachableTabWidget.cpp

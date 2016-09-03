@@ -4,8 +4,6 @@
 #include <ui/drawstruct/ViewPositionAddon.h>
 #include <ui/graphview/ObjectsSelection.h>
 
-#include <ui/command/GroupSelectionCommand.h>
-
 #include <panda/PandaDocument.h>
 #include <panda/data/DataFactory.h>
 #include <panda/object/Group.h>
@@ -282,13 +280,13 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		group->addData(dataPair.first);
 	}
 
-	// Select the group
-	undoStack.push(std::make_shared<SelectGroupCommand>(view, group));
-
 	// Removing the objects from the document, but don't unlink datas
 	undoStack.push(std::make_shared<RemoveObjectCommand>(doc, objectsList, selection, 
 														 RemoveObjectCommand::LinkOperation::Keep, 
 														 RemoveObjectCommand::ObjectOperation::None)); // We are not really removing the objects from the document
+
+	// Select the group
+	view->selection().add(group);
 
 	return true;
 }
@@ -361,10 +359,14 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 			}
 		}
 
-		undoStack.push(std::make_shared<SelectObjectsInGroupCommand>(view, group)); // Select all the object that were in the group
 		undoStack.push(std::make_shared<RemoveObjectCommand>(doc, objectsList, group, 
 															 RemoveObjectCommand::LinkOperation::Unlink, 
 															 RemoveObjectCommand::ObjectOperation::None));
+
+		// Select all the objects that were in the group
+		auto& selectionList = view->selection();
+		for(const auto& object : objects)
+			selectionList.add(object.get());
 	}
 
 	view->sortAllDockables();
