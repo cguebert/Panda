@@ -689,7 +689,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::Object)
 	{
-		QMap<panda::PandaObject*, Point> positions;
+		std::map<panda::PandaObject*, Point> positions;
 		for(const auto ods : m_selectedObjectsDrawStructs)
 			positions[ods->getObject()] = ods->getPosition();
 
@@ -697,7 +697,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		{
 			auto object = ods->getObject();
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
-			if(dockable)
+			if(dockable && !m_objectsSelection->isSelected(dockable->getParentDock()))
 			{
 				Point delta = positions[object] - ods->getPosition();
 				m_pandaDocument->getUndoStack().push(std::make_shared<MoveObjectCommand>(dockable, delta));
