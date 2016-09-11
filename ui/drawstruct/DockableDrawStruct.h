@@ -14,7 +14,6 @@ public:
 
 	panda::types::Point getObjectSize() override;
 	panda::types::Rect getTextArea() override;
-	void move(const panda::types::Point& delta) override;
 	void createShape() override;
 
 	int getDockableIndex(const panda::types::Rect& rect);

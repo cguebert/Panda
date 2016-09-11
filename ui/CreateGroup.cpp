@@ -316,9 +316,6 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 	// For each group in the selection
 	for(auto group : groups)
 	{
-		auto groupOds = view->getObjectDrawStruct(group);
-		Point groupPos = groupOds->getPosition();
-
 		// Putting the objects back into the document
 		auto objects = group->getObjectsList().get(); // Need to get a copy as we modify the original while iterating over it
 
@@ -327,7 +324,8 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		Point defaultSize(100, 50);
 		for (auto& object : objects)
 			objectsRect |= Rect::fromSize(getPosition(object.get()), defaultSize);
-		auto center = objectsRect.center() - groupOds->getObjectSize() / 2;
+		auto groupOds = view->getObjectDrawStruct(group);
+		auto delta = groupOds->getPosition() - objectsRect.center() - groupOds->getObjectSize() / 2;
 
 		// Moving the object from the group to the parent document
 		for(auto& object : objects)
@@ -338,13 +336,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 
 		// Placing the object in the view
 		for(auto& object : objects)
-		{
-			if (dynamic_cast<DockableObject*>(object.get()))
-				continue;
-
-			Point pos = groupPos + getPosition(object.get()) - center;
-			setPosition(object.get(), pos);
-		}
+			setPosition(object.get(), getPosition(object.get()) + delta);
 
 		// Reconnecting datas
 		for(auto& data : group->getGroupDatas())

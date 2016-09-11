@@ -516,15 +516,22 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			}
 			QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
 
-			// Remove docked objects from the selection
-			m_customSelection.clear();
+			// Make sure docked objects are in the selection with their dock
+			std::set<panda::PandaObject*> selectionSet;
 			for(auto object : m_objectsSelection->get())
 			{
-				panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
-				if(dockable && m_objectsSelection->isSelected(dockable->getParentDock()))
-					continue; // don't move a dockable object if their parent dock is selected, it will move them
-				m_customSelection.push_back(object);
+				selectionSet.insert(object);
+				panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object);
+				if (dock)
+				{
+					for (auto docked : dock->getDockedObjects())
+						selectionSet.insert(docked);
+				}
 			}
+
+			m_customSelection.clear();
+			for (auto object : selectionSet)
+				m_customSelection.push_back(object);
 
 			m_moveObjectsMacro = m_pandaDocument->getUndoStack().beginMacro(tr("move objects").toStdString());
 
@@ -1040,12 +1047,7 @@ void GraphView::moveSelectedToCenter()
 		Point delta = convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta;
 
 		for(const auto ods : m_selectedObjectsDrawStructs)
-		{
-			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(ods->getObject());
-			// Do not move (docked) dockable objects, their parent dock move them already
-			if(!dockable || !m_objectsSelection->isSelected(dockable->getParentDock()))
-				ods->move(delta);
-		}
+			ods->move(delta);
 
 		update();
 		updateObjectsRect();

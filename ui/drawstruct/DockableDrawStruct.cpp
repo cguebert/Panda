@@ -35,13 +35,6 @@ Rect DockObjectDrawStruct::getTextArea()
 	return textArea;
 }
 
-void DockObjectDrawStruct::move(const Point& delta)
-{
-	ObjectDrawStruct::move(delta);
-	for(auto dockable : m_dockObject->getDockedObjects())
-		getParentView()->getObjectDrawStruct(dockable)->move(delta);
-}
-
 void DockObjectDrawStruct::placeDockableObjects(bool forceMove)
 {
 	m_dockablesY.clear();
