@@ -4,31 +4,15 @@
 #include <panda/UndoStack.h>
 #include <QPointF>
 
-class AnnotationDrawStruct;
-
-class MoveAnnotationTextCommand : public panda::UndoCommand
+namespace panda 
 {
-public:
-	MoveAnnotationTextCommand(AnnotationDrawStruct* drawStruct, panda::types::Point delta);
-
-	virtual int id() const;
-
-	virtual void redo();
-	virtual void undo();
-
-	virtual bool mergeWith(const panda::UndoCommand *other);
-
-protected:
-	AnnotationDrawStruct* m_drawStruct;
-	panda::types::Point m_delta;
-};
-
-//****************************************************************************//
+	class Annotation;
+}
 
 class MoveAnnotationEndCommand : public panda::UndoCommand
 {
 public:
-	MoveAnnotationEndCommand(AnnotationDrawStruct* drawStruct, panda::types::Point delta);
+	MoveAnnotationEndCommand(panda::Annotation* annotation, panda::types::Point delta);
 
 	virtual int id() const;
 
@@ -38,7 +22,7 @@ public:
 	virtual bool mergeWith(const panda::UndoCommand *other);
 
 protected:
-	AnnotationDrawStruct* m_drawStruct;
+	panda::Annotation* m_annotation;
 	panda::types::Point m_delta;
 };
 

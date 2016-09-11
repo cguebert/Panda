@@ -39,6 +39,16 @@ void Annotation::setDirtyValue(const DataNode* caller)
 		PandaObject::setDirtyValue(caller);
 }
 
+types::Point Annotation::getDeltaToEnd()
+{
+	return m_deltaToEnd.getValue();
+}
+
+void Annotation::setDeltaToEnd(types::Point delta)
+{
+	m_deltaToEnd.setValue(delta);
+}
+
 int AnnotationClass = RegisterObject<Annotation>("Annotation").setDescription("Create an annotation in the graph view");
 
 } // namespace panda

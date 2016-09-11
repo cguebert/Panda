@@ -1,6 +1,7 @@
 #include <ui/graphview/GraphView.h>
 #include <ui/drawstruct/AnnotationDrawStruct.h>
 #include <ui/command/ModifyAnnotationCommand.h>
+#include <ui/command/MoveObjectCommand.h>
 #include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/object/Annotation.h>
@@ -25,6 +26,7 @@ AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* 
 	: ObjectDrawStruct(view, object)
 	, m_annotation(dynamic_cast<Annotation*>(object))
 {
+	m_observer->get(m_annotation->deltaToEndChanged).connect<AnnotationDrawStruct, &AnnotationDrawStruct::deltaToEndChanged>(this);
 }
 
 void AnnotationDrawStruct::drawBackground(DrawList& list, DrawColors& colors)
@@ -77,23 +79,16 @@ void AnnotationDrawStruct::move(const Point& delta)
 	m_endPos += delta;
 }
 
-void AnnotationDrawStruct::moveText(const Point& delta, bool emitModified)
+void AnnotationDrawStruct::moveText(const Point& delta)
 {
 	move(delta);
-	if (emitModified)
-		emit getParentView()->modified();
 	getParentView()->update();
 }
 
-void AnnotationDrawStruct::moveEnd(const Point& delta, bool emitModified)
+void AnnotationDrawStruct::moveEnd(const Point& delta)
 {
 	m_endPos += delta;
 	update();
-	if (emitModified)
-	{
-		m_annotation->m_deltaToEnd.setValue(m_annotation->m_deltaToEnd.getValue() + delta);
-		emit getParentView()->modified();
-	}
 	getParentView()->update();
 }
 
@@ -116,7 +111,7 @@ void AnnotationDrawStruct::update()
 //	ObjectDrawStruct::update();	// No need to call it
 
 	if (m_movingAction == MOVING_NONE)
-		m_endPos = getPosition() + m_annotation->m_deltaToEnd.getValue();
+		m_endPos = getPosition() + m_annotation->getDeltaToEnd();
 
 	m_textArea = Rect::fromSize(getPosition(), m_textSize);
 	m_textArea.translate(0, -m_textSize.y);
@@ -209,9 +204,9 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 		return;
 
 	if (m_movingAction == MOVING_TEXT)
-		moveText(delta, false);
+		moveText(delta);
 	else if (m_movingAction == MOVING_POINT)
-		moveEnd(delta, false);
+		moveEnd(delta);
 }
 
 void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
@@ -222,13 +217,13 @@ void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
 
 	if (m_movingAction == MOVING_TEXT)
 	{
-		moveText(deltaStart, false);
-		getParentView()->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationTextCommand>(this, delta));
+		moveText(deltaStart);
+		getParentView()->getDocument()->getUndoStack().push(std::make_shared<MoveObjectCommand>(m_annotation, delta));
 	}
 	else if (m_movingAction == MOVING_POINT)
 	{
-		moveEnd(deltaStart, false);
-		getParentView()->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationEndCommand>(this, delta));
+		moveEnd(deltaStart);
+		getParentView()->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationEndCommand>(m_annotation, delta));
 	}
 		
 	m_movingAction = MOVING_NONE;
@@ -237,6 +232,13 @@ void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
 Point AnnotationDrawStruct::getObjectSize()
 {
 	return Point(100, 50);
+}
+
+void AnnotationDrawStruct::deltaToEndChanged()
+{
+	m_endPos = m_annotation->getDeltaToEnd();
+	update();
+	getParentView()->update();
 }
 
 int AnnotationDrawClass = RegisterDrawObject<panda::Annotation, AnnotationDrawStruct>();

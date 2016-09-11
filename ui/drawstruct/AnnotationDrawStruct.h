@@ -31,13 +31,15 @@ public:
 
 	virtual panda::types::Point getObjectSize();
 
-	void moveText(const panda::types::Point& delta, bool emitModified = true);
-	void moveEnd(const panda::types::Point& delta, bool emitModified = true);
+	void moveText(const panda::types::Point& delta);
+	void moveEnd(const panda::types::Point& delta);
 
 protected:
 	void drawBackground(DrawList& list, DrawColors& colors) override;
 	void draw(DrawList& list, DrawColors& colors, bool selected) override {}	// Don't draw the normal object
 	void drawForeground(DrawList& list, DrawColors& colors) override;
+
+	void deltaToEndChanged();
 
 	panda::Annotation* m_annotation;
 	panda::types::Point m_endPos, m_textSize;
