@@ -21,6 +21,24 @@ bool contains(const Container& container, const Value& value)
 	return std::find(std::begin(container), std::end(container), value) != std::end(container);
 }
 
+template <class Container, class Pred>
+bool contains_if(const Container& container, const Pred& pred)
+{
+	return std::find_if(std::begin(container), std::end(container), pred) != std::end(container);
+}
+
+template <class Container, class Value>
+bool find(const Container& container, const Value& value)
+{
+	return std::find(std::begin(container), std::end(container), value);
+}
+
+template <class Container, class Pred>
+bool find_if(const Container& container, const Pred& pred)
+{
+	return std::find_if(std::begin(container), std::end(container), pred);
+}
+
 template <class Container, class Value>
 int count(const Container& container, const Value& value)
 {

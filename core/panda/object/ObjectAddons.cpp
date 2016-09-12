@@ -19,9 +19,24 @@ namespace
 
 		for (const auto& child : def.children())
 		{
-			auto node = elem.addChild(child->name());
+			auto node = elem.addChild("Child");
+			node.setAttribute("name", child->name());
 			node.setAttribute("hasText", child->hasText());
 			saveDefinition(*child, node);
+		}
+	}
+
+	void loadDefinition(panda::ObjectAddonNodeDefinition& def, const panda::XmlElement& elem)
+	{
+		for (auto attNode = elem.firstChild("Attribute"); attNode; attNode = attNode.nextSibling("Attribute"))
+			def.addAttribute(attNode.attribute("name").toString());
+
+		for (auto childNode = elem.firstChild("Child"); childNode; childNode = childNode.nextSibling("Child"))
+		{
+			const auto name = childNode.attribute("name").toString();
+			const auto hasText = childNode.attribute("hasText").toBool();
+			auto& child = def.addChild(name, hasText);
+			loadDefinition(child, childNode);
 		}
 	}
 
@@ -253,14 +268,29 @@ namespace panda
 			auto defNode = node.addChild(def.name());
 			saveDefinition(def, defNode);
 		}
+
+		for (const auto& def : m_loadedDefinitions)
+		{
+			auto defNode = node.addChild(def->name());
+			saveDefinition(*def, defNode);
+		}
 	}
 
 	void ObjectAddonsRegistry::load(const XmlElement& elem)
 	{
+		m_loadedDefinitions.clear();
 		auto node = elem.firstChild("ObjectAddons");
 		for (auto addonNode = node.firstChild(); addonNode; addonNode = addonNode.nextSibling())
 		{
+			auto name = addonNode.name();
+			if (helper::contains_if(m_addons, [&name](const AddonInfo& info) {
+				return info.definition->name() == name;
+			}))
+				continue; // Ignore the definitions we already know from the registered addons
 
+			auto def = std::make_shared<ObjectAddonNodeDefinition>(name, false);
+			loadDefinition(*def, addonNode);
+			m_loadedDefinitions.push_back(def);
 		}
 	}
 
