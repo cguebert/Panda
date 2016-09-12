@@ -55,24 +55,29 @@ namespace panda
 	void ObjectAddons::createAddons()
 	{
 		const auto& reg = ObjectAddonsRegistry::instance();
-		for (const auto& creator : reg.getCreators())
+		for (const auto& addonInfo : reg.getAddons())
 		{
-			auto addon = creator->create(m_object);
-			if(addon)
-				m_addons.push_back(addon);
+			auto addonPtr = addonInfo.creator->create(m_object);
+			if (addonPtr)
+			{
+				Addon addon;
+				addon.addonPtr = addonPtr;
+				addon.definition = addonInfo.definition;
+				m_addons.push_back(std::move(addon));
+			}
 		}
 	}
 
 	void ObjectAddons::save(XmlElement& elem)
 	{
 		for (const auto& addon : m_addons)
-			addon->save(elem);
+			addon.addonPtr->save(elem);
 	}
 
 	void ObjectAddons::load(XmlElement& elem)
 	{
 		for (const auto& addon : m_addons)
-			addon->load(elem);
+			addon.addonPtr->load(elem);
 	}
 	
 //****************************************************************************//
@@ -135,8 +140,9 @@ namespace panda
 	void ObjectAddonsRegistry::save(XmlElement& elem)
 	{
 		auto node = elem.addChild("ObjectAddons");
-		for (const auto& def : m_definitions)
+		for (const auto& addon : m_addons)
 		{
+			auto def = *addon.definition;
 			auto defNode = node.addChild(def.name());
 			saveDefinition(def, defNode);
 		}
@@ -147,9 +153,9 @@ namespace panda
 		auto node = elem.firstChild("ObjectAddons");
 	}
 
-	const ObjectAddonsRegistry::Creators& ObjectAddonsRegistry::getCreators() const
+	const ObjectAddonsRegistry::Addons& ObjectAddonsRegistry::getAddons() const
 	{
-		return m_creators;
+		return m_addons;
 	}
 
 } // namespace Panda

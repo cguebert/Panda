@@ -10,6 +10,7 @@
 namespace panda
 {
 
+class ObjectAddonNodeDefinition;
 class PandaObject;
 class XmlAttribute;
 class XmlElement;
@@ -45,7 +46,7 @@ public:
 
 		for (const auto& addon : m_addons)
 		{
-			auto ptr = std::dynamic_pointer_cast<T>(addon);
+			auto ptr = std::dynamic_pointer_cast<T>(addon.addonPtr);
 			if (ptr)
 				return ptr.get();
 		}
@@ -61,14 +62,21 @@ public:
 
 		for (const auto& addon : m_addons)
 		{
-			auto ptr = std::dynamic_pointer_cast<T>(addon);
+			auto ptr = std::dynamic_pointer_cast<T>(addon.addonPtr);
 			if (ptr)
-				return *ptr.get();
+				return *ptr;
 		}
 
-		auto addon = std::make_shared<T>(m_object);
+		auto ptr = std::make_shared<T>(m_object);
+		auto def = ObjectAddonsRegistry::instance().getDefinition<T>();
+		if (!def)
+			throw std::exception("Could not find the addon definition for this type");
+
+		Addon addon;
+		addon.addonPtr = ptr;
+		addon.definition = def;
 		m_addons.push_back(addon);
-		return *addon.get();
+		return *ptr;
 	}
 
 	void save(XmlElement& elem);
@@ -77,8 +85,14 @@ public:
 private:
 	void createAddons();
 
-	PandaObject& m_object;	
-	std::vector<BaseObjectAddon::SPtr> m_addons;
+	PandaObject& m_object;
+
+	struct Addon
+	{
+		BaseObjectAddon::SPtr addonPtr;
+		std::shared_ptr<ObjectAddonNodeDefinition> definition;
+	};
+	std::vector<Addon> m_addons;
 };
 
 //****************************************************************************//
@@ -88,8 +102,8 @@ class PANDA_CORE_API ObjectAddonNodeDefinition
 public:
 	enum class NodeMultiplicity { Single, Multiple };
 	using Attributes = std::vector<std::string>;
-	using NodeSPtr = std::shared_ptr<ObjectAddonNodeDefinition>;
-	using Nodes = std::vector<NodeSPtr>;
+	using SPtr = std::shared_ptr<ObjectAddonNodeDefinition>;
+	using Nodes = std::vector<SPtr>;
 
 	ObjectAddonNodeDefinition(const std::string& name, bool hasText, NodeMultiplicity multiplicity);
 
@@ -134,32 +148,49 @@ public:
 class PANDA_CORE_API ObjectAddonsRegistry
 {
 public:
+	struct AddonInfo
+	{
+		BaseObjectAddonCreator::SPtr creator;
+		ObjectAddonNodeDefinition::SPtr definition;
+	};
+	using Addons = std::vector<AddonInfo>;
+
 	static ObjectAddonsRegistry& instance();
 
 	void save(XmlElement& elem);
 	void load(XmlElement& elem);
 
 	template <class T>
-	int addObjectAddon()
+	void addObjectAddon()
 	{ 
-		m_creators.push_back(std::make_shared<ObjectAddonCreator<T>>());
-
 		auto name = BaseClass::decodeTypeName(typeid(T));
-		auto def = ObjectAddonNodeDefinition(name, false, ObjectAddonNodeDefinition::NodeMultiplicity::Single);
-		T::setDefinition(def);
-		m_definitions.push_back(def);
-		return 0;
-	}
+		auto def = std::make_shared<ObjectAddonNodeDefinition>(name, false, ObjectAddonNodeDefinition::NodeMultiplicity::Single);
+		T::setDefinition(*def);
 
-	using Creators = std::vector<BaseObjectAddonCreator::SPtr>;
-	const Creators& getCreators() const;
+		AddonInfo info;
+		info.creator = std::make_shared<ObjectAddonCreator<T>>();
+		info.definition = def;
+		m_addons.push_back(std::move(info));
+	}
+	
+	const Addons& getAddons() const;
+
+	template <class T>
+	ObjectAddonNodeDefinition::SPtr getDefinition() const
+	{
+		for (const auto& addon : m_addons)
+		{
+			if (std::dynamic_pointer_cast<ObjectAddonCreator<T>>(addon.creator))
+				return addon.definition;
+		}
+
+		return nullptr;
+	}
 	
 private:
 	ObjectAddonsRegistry();
 
-	Creators m_creators;
-
-	std::vector<ObjectAddonNodeDefinition> m_definitions;
+	Addons m_addons;
 };
 
 template <class T>
