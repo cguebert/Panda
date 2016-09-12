@@ -14,8 +14,8 @@ public:
 
 	static void setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition);
 
-	void save(panda::XmlElement& elem) override;
-	void load(panda::XmlElement& elem) override;
+	void save(panda::ObjectAddonNode& node) override;
+	void load(const panda::ObjectAddonNode& node) override;
 
 	bool isSet() const;
 

@@ -15,23 +15,23 @@ DataLabelAddon::DataLabelAddon(panda::PandaObject& object)
 
 void DataLabelAddon::setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition)
 {
-	auto& labelNode = nodeDefinition.addChild("DataLabel", true, panda::ObjectAddonNodeDefinition::NodeMultiplicity::Multiple);
+	auto& labelNode = nodeDefinition.addChild("DataLabel", true);
 	labelNode.addAttribute("data");
 }
 
-void DataLabelAddon::save(panda::XmlElement& elem)
+void DataLabelAddon::save(panda::ObjectAddonNode& node)
 { 
 	for (const auto& dl : m_dataLabels)
 	{
-		auto dlNode = elem.addChild("DataLabel");
+		auto dlNode = node.addChild("DataLabel");
 		dlNode.setAttribute("data", dl.data->getName());
 		dlNode.setText(dl.label);
 	}
 }
 
-void DataLabelAddon::load(panda::XmlElement& elem)
+void DataLabelAddon::load(const panda::ObjectAddonNode& node)
 { 
-	auto e = elem.firstChild("DataLabel");
+	auto e = node.firstChild("DataLabel");
 	while(e)
 	{
 		auto data = m_object.getData(e.attribute("data").toString());

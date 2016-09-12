@@ -24,8 +24,8 @@ public:
 
 	static void setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition);
 
-	void save(panda::XmlElement& elem) override;
-	void load(panda::XmlElement& elem) override;
+	void save(panda::ObjectAddonNode& node) override;
+	void load(const panda::ObjectAddonNode& node) override;
 
 	std::string getLabel(panda::BaseData* data) const;
 	void setLabel(panda::BaseData* data, const std::string& label);

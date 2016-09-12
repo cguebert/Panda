@@ -12,15 +12,15 @@ void ViewPositionAddon::setDefinition(panda::ObjectAddonNodeDefinition& nodeDefi
 	nodeDefinition.addAttribute("y");
 }
 
-void ViewPositionAddon::save(panda::XmlElement& elem)
+void ViewPositionAddon::save(panda::ObjectAddonNode& node)
 { 
-	elem.setAttribute("x", m_position.x); 
-	elem.setAttribute("y", m_position.y); 
+	node.setAttribute("x", m_position.x); 
+	node.setAttribute("y", m_position.y); 
 }
 
-void ViewPositionAddon::load(panda::XmlElement& elem)
+void ViewPositionAddon::load(const panda::ObjectAddonNode& node)
 { 
-	setPosition({ elem.attribute("x").toFloat(), elem.attribute("y").toFloat() }); 
+	setPosition({ node.attribute("x").toFloat(), node.attribute("y").toFloat() }); 
 }
 
 bool ViewPositionAddon::isSet() const

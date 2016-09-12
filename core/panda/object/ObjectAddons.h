@@ -2,6 +2,7 @@
 #define OBJECTADDONS_H
 
 #include <panda/data/BaseClass.h>
+#include <panda/XmlDocument.h>
 
 #include <memory>
 #include <string>
@@ -11,9 +12,8 @@ namespace panda
 {
 
 class ObjectAddonNodeDefinition;
+class ObjectAddonNode;
 class PandaObject;
-class XmlAttribute;
-class XmlElement;
 
 class PANDA_CORE_API BaseObjectAddon
 {
@@ -26,8 +26,8 @@ public:
 	// Each Addon class must define the following method:
 //	static void setDefinition(ObjectAddonNodeDefinition& nodeDefinition);
 
-	virtual void save(XmlElement& elem) = 0;
-	virtual void load(XmlElement& elem) = 0;
+	virtual void save(ObjectAddonNode& node) = 0;
+	virtual void load(const ObjectAddonNode& node) = 0;
 
 protected:
 	PandaObject& m_object;
@@ -100,30 +100,61 @@ private:
 class PANDA_CORE_API ObjectAddonNodeDefinition
 {
 public:
-	enum class NodeMultiplicity { Single, Multiple };
 	using Attributes = std::vector<std::string>;
 	using SPtr = std::shared_ptr<ObjectAddonNodeDefinition>;
 	using Nodes = std::vector<SPtr>;
 
-	ObjectAddonNodeDefinition(const std::string& name, bool hasText, NodeMultiplicity multiplicity);
+	ObjectAddonNodeDefinition(const std::string& name, bool hasText);
 
 	// Creation of the definition
 	void addAttribute(const std::string& name);
-	ObjectAddonNodeDefinition& addChild(const std::string& name, bool hasText, NodeMultiplicity multiplicity);
+	ObjectAddonNodeDefinition& addChild(const std::string& name, bool hasText);
 
 	// Access to the definition
 	const std::string& name() const;
 	bool hasText() const;
-	NodeMultiplicity multiplicity() const;
 	const Attributes& attributes() const;
 	const Nodes& children() const;
 
 private:
 	std::string m_name;
 	bool m_hasText = false;
-	NodeMultiplicity m_multiplicity = NodeMultiplicity::Single;
 	Attributes m_attributes;
 	Nodes m_children;
+};
+
+//****************************************************************************//
+
+class PANDA_CORE_API ObjectAddonNode
+{
+public:
+	ObjectAddonNode(XmlElement element, ObjectAddonNodeDefinition::SPtr definition);
+
+	explicit operator bool() const; // Test if valid
+
+	ObjectAddonNode addChild(const std::string& name);
+
+	ObjectAddonNode firstChild(const std::string& name) const;
+	ObjectAddonNode nextSibling(const std::string& name) const;
+
+	XmlAttribute attribute(const std::string& name) const;
+
+	void setAttribute(const std::string& name, bool value);
+	void setAttribute(const std::string& name, int value);
+	void setAttribute(const std::string& name, unsigned int value);
+	void setAttribute(const std::string& name, float value);
+	void setAttribute(const std::string& name, double value);
+	void setAttribute(const std::string& name, const std::string& value);
+
+	std::string text() const;
+	void setText(const std::string& text);
+
+private:
+	void throwIfAttributeIsNotDefined(const std::string& name) const;
+	ObjectAddonNodeDefinition::SPtr childDefinition(const std::string& name) const;
+
+	XmlElement m_element;
+	ObjectAddonNodeDefinition::SPtr m_definition;
 };
 
 //****************************************************************************//
@@ -164,7 +195,7 @@ public:
 	void addObjectAddon()
 	{ 
 		auto name = BaseClass::decodeTypeName(typeid(T));
-		auto def = std::make_shared<ObjectAddonNodeDefinition>(name, false, ObjectAddonNodeDefinition::NodeMultiplicity::Single);
+		auto def = std::make_shared<ObjectAddonNodeDefinition>(name, false);
 		T::setDefinition(*def);
 
 		AddonInfo info;
