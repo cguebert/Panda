@@ -73,6 +73,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			verticalSync = !verticalSync;
 			glfwSwapInterval(verticalSync ? 1 : 0);
 			break;
+		case GLFW_KEY_F3:
+			panda::serialization::writeFile(document.get(), "export.pnd");
+			break;
 		case GLFW_KEY_F5:
 			document->play(!document->animationIsPlaying());
 			break;
