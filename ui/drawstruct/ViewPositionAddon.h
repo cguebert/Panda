@@ -4,9 +4,6 @@
 #include <panda/types/Point.h>
 #include <panda/messaging.h>
 
-panda::types::Point getPosition(panda::PandaObject* object);
-void setPosition(panda::PandaObject* object, const panda::types::Point& pos);
-
 class ViewPositionAddon : public panda::BaseObjectAddon
 {
 public:
@@ -22,6 +19,9 @@ public:
 	panda::types::Point getPosition() const;
 	void setPosition(panda::types::Point pos);
 	void move(panda::types::Point delta);
+
+	static panda::types::Point getPosition(panda::PandaObject* object);
+	static void setPosition(panda::PandaObject* object, const panda::types::Point& pos);
 
 	panda::msg::Signal<void(panda::types::Point newPos)> positionChanged;
 

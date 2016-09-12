@@ -323,7 +323,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		Rect objectsRect;
 		Point defaultSize(100, 50);
 		for (auto& object : objects)
-			objectsRect |= Rect::fromSize(getPosition(object.get()), defaultSize);
+			objectsRect |= Rect::fromSize(ViewPositionAddon::getPosition(object.get()), defaultSize);
 		auto groupOds = view->getObjectDrawStruct(group);
 		auto delta = groupOds->getPosition() - objectsRect.center() - groupOds->getObjectSize() / 2;
 
@@ -336,7 +336,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 
 		// Placing the object in the view
 		for(auto& object : objects)
-			setPosition(object.get(), getPosition(object.get()) + delta);
+			ViewPositionAddon::setPosition(object.get(), ViewPositionAddon::getPosition(object.get()) + delta);
 
 		// Reconnecting datas
 		for(auto& data : group->getGroupDatas())
