@@ -22,6 +22,8 @@ public:
 
 	DataLabelAddon(panda::PandaObject& object);
 
+	static void setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition);
+
 	void save(panda::XmlElement& elem) override;
 	void load(panda::XmlElement& elem) override;
 

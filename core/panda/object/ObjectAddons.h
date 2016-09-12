@@ -1,15 +1,17 @@
 #ifndef OBJECTADDONS_H
 #define OBJECTADDONS_H
 
-#include <panda/core.h>
+#include <panda/data/BaseClass.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace panda
 {
 
 class PandaObject;
+class XmlAttribute;
 class XmlElement;
 
 class PANDA_CORE_API BaseObjectAddon
@@ -19,6 +21,9 @@ public:
 
 	BaseObjectAddon(PandaObject& object);
 	virtual ~BaseObjectAddon();
+
+	// Each Addon class must define the following method:
+//	static void setDefinition(ObjectAddonNodeDefinition& nodeDefinition);
 
 	virtual void save(XmlElement& elem) = 0;
 	virtual void load(XmlElement& elem) = 0;
@@ -78,6 +83,37 @@ private:
 
 //****************************************************************************//
 
+class PANDA_CORE_API ObjectAddonNodeDefinition
+{
+public:
+	enum class NodeMultiplicity { Single, Multiple };
+	using Attributes = std::vector<std::string>;
+	using NodeSPtr = std::shared_ptr<ObjectAddonNodeDefinition>;
+	using Nodes = std::vector<NodeSPtr>;
+
+	ObjectAddonNodeDefinition(const std::string& name, bool hasText, NodeMultiplicity multiplicity);
+
+	// Creation of the definition
+	void addAttribute(const std::string& name);
+	ObjectAddonNodeDefinition& addChild(const std::string& name, bool hasText, NodeMultiplicity multiplicity);
+
+	// Access to the definition
+	const std::string& name() const;
+	bool hasText() const;
+	NodeMultiplicity multiplicity() const;
+	const Attributes& attributes() const;
+	const Nodes& children() const;
+
+private:
+	std::string m_name;
+	bool m_hasText = false;
+	NodeMultiplicity m_multiplicity = NodeMultiplicity::Single;
+	Attributes m_attributes;
+	Nodes m_children;
+};
+
+//****************************************************************************//
+
 class PANDA_CORE_API BaseObjectAddonCreator
 {
 public:
@@ -100,10 +136,18 @@ class PANDA_CORE_API ObjectAddonsRegistry
 public:
 	static ObjectAddonsRegistry& instance();
 
+	void save(XmlElement& elem);
+	void load(XmlElement& elem);
+
 	template <class T>
 	int addObjectAddon()
 	{ 
 		m_creators.push_back(std::make_shared<ObjectAddonCreator<T>>());
+
+		auto name = BaseClass::decodeTypeName(typeid(T));
+		auto def = ObjectAddonNodeDefinition(name, false, ObjectAddonNodeDefinition::NodeMultiplicity::Single);
+		T::setDefinition(def);
+		m_definitions.push_back(def);
 		return 0;
 	}
 
@@ -114,6 +158,8 @@ private:
 	ObjectAddonsRegistry();
 
 	Creators m_creators;
+
+	std::vector<ObjectAddonNodeDefinition> m_definitions;
 };
 
 template <class T>

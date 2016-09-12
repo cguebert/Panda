@@ -6,6 +6,12 @@ ViewPositionAddon::ViewPositionAddon(panda::PandaObject& object)
 	: panda::BaseObjectAddon(object) 
 { }
 
+void ViewPositionAddon::setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition)
+{
+	nodeDefinition.addAttribute("x");
+	nodeDefinition.addAttribute("y");
+}
+
 void ViewPositionAddon::save(panda::XmlElement& elem)
 { 
 	elem.setAttribute("x", m_position.x); 

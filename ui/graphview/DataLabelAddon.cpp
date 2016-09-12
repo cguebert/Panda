@@ -13,6 +13,12 @@ DataLabelAddon::DataLabelAddon(panda::PandaObject& object)
 	m_observer.get(object.parentDocument()->getSignals().modifiedObject).connect<DataLabelAddon, &DataLabelAddon::modifiedObject>(this);
 }
 
+void DataLabelAddon::setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition)
+{
+	auto& labelNode = nodeDefinition.addChild("DataLabel", true, panda::ObjectAddonNodeDefinition::NodeMultiplicity::Multiple);
+	labelNode.addAttribute("data");
+}
+
 void DataLabelAddon::save(panda::XmlElement& elem)
 { 
 	for (const auto& dl : m_dataLabels)

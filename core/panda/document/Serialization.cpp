@@ -22,10 +22,15 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 	auto root = doc.root();
 	root.setName("Panda");
 	document->save(root);	// The document's Datas
+
+	ObjectAddonsRegistry::instance().save(root); // The definition of object addons
+
+	// Get the objects list
 	auto& objects = document->getObjectsList().get();
 	Objects allObjects;
 	for(auto object : objects)
 		allObjects.push_back(object.get());
+
 	saveDoc(document, root, allObjects);	// The document and all of its objects
 
 	bool result = doc.saveToFile(fileName);
@@ -47,6 +52,9 @@ LoadResult readFile(PandaDocument* document, ObjectsList& objectsList, const std
 	auto root = doc.root();
 	if(!isImport)	// Bugfix: don't read the doc's datas if we are merging 2 documents
 		document->load(root);		// Only the document's Datas
+
+	ObjectAddonsRegistry::instance().load(root); // The definition of object addons
+
 	return loadDoc(document, objectsList, root);	// All the document's objects
 }
 
