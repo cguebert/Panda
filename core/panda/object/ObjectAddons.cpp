@@ -4,8 +4,6 @@
 #include <panda/helper/algorithm.h>
 #include <panda/object/PandaObject.h>
 
-#include <iostream>
-
 namespace
 {
 
@@ -84,12 +82,68 @@ namespace panda
 	{
 		for (const auto& addon : m_addons)
 			addon.addonPtr->save(ObjectAddonNode{ elem, addon.definition });
+
+		saveNode(elem, m_loadedNode);
 	}
 
 	void ObjectAddons::load(const XmlElement& elem)
 	{
 		for (const auto& addon : m_addons)
 			addon.addonPtr->load(ObjectAddonNode{ elem, addon.definition });
+
+		const auto& loadedDefs = ObjectAddonsRegistry::instance().getLoadedDefinitions();
+		if (!loadedDefs.empty())
+		{
+			m_loadedNode.attributes.clear();
+			m_loadedNode.children.clear();
+
+			for (const auto& def : loadedDefs)
+				loadNode(elem, m_loadedNode, *def);
+		}
+	}
+
+	void ObjectAddons::saveNode(XmlElement& elem, const TempNode& node)
+	{
+		for (const auto& attPair : node.attributes)
+			elem.setAttribute(attPair.first, attPair.second);
+
+		if (!node.text.empty())
+			elem.setText(node.text);
+
+		for (const auto& childNode : node.children)
+		{
+			auto xmlNode = elem.addChild(childNode->name);
+			saveNode(xmlNode, *childNode);
+		}
+	}
+
+	void ObjectAddons::loadNode(const XmlElement& elem, TempNode& node, const ObjectAddonNodeDefinition& def)
+	{
+		for (const auto& attName : def.attributes())
+		{
+			auto val = elem.attribute(attName).toString();
+			if (!val.empty())
+				node.attributes[attName] = val;
+		}
+
+		if (def.hasText())
+		{
+			auto val = elem.text();
+			if (!val.empty())
+				node.text = val;
+		}
+
+		for (const auto& childDef : def.children())
+		{
+			const auto childName = childDef->name();
+			for (auto childXML = elem.firstChild(childName); childXML; childXML = childXML.nextSibling(childName))
+			{
+				auto childNode = std::make_shared<TempNode>();
+				childNode->name = childName;
+				node.children.push_back(childNode);
+				loadNode(childXML, *childNode, *childDef);
+			}
+		}
 	}
 	
 //****************************************************************************//

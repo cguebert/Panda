@@ -4,6 +4,7 @@
 #include <panda/data/BaseClass.h>
 #include <panda/XmlDocument.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -93,6 +94,17 @@ private:
 		std::shared_ptr<ObjectAddonNodeDefinition> definition;
 	};
 	std::vector<Addon> m_addons;
+	
+	struct TempNode
+	{
+		std::string name, text;
+		std::map<std::string, std::string> attributes;
+		std::vector<std::shared_ptr<TempNode>> children;
+	};
+	TempNode m_loadedNode; // To store the data of the addons not registered in the current environment
+
+	void saveNode(XmlElement& elem, const TempNode& node);
+	void loadNode(const XmlElement& elem, TempNode& node, const ObjectAddonNodeDefinition& def);
 };
 
 //****************************************************************************//
