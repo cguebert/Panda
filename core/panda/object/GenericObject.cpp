@@ -275,14 +275,10 @@ void GenericObject::save(XmlElement& elem, const std::vector<PandaObject*>* sele
 	PandaObject::save(elem, selected);
 }
 
-bool GenericObject::load(XmlElement& elem)
+bool GenericObject::load(const XmlElement& elem)
 {
-	auto e = elem.firstChild("CreatedData");
-	while(e)
-	{
+	for(auto e = elem.firstChild("CreatedData"); e; e = e.nextSibling("CreatedData"))
 		createDatas(DataFactory::nameToType(e.attribute("type").toString()));
-		e = e.nextSibling("CreatedData");
-	}
 
 	return PandaObject::load(elem);
 }

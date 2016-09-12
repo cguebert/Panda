@@ -43,15 +43,15 @@ PANDA_CORE_API void DataTrait<std::string>::writeValue(XmlElement& elem, const s
 // Overrides for readValue xml
 
 template<>
-PANDA_CORE_API void DataTrait<int>::readValue(XmlElement& elem, int& v)
+PANDA_CORE_API void DataTrait<int>::readValue(const XmlElement& elem, int& v)
 { v = elem.attribute("int").toInt(); }
 
 template<>
-PANDA_CORE_API void DataTrait<float>::readValue(XmlElement& elem, float& v)
+PANDA_CORE_API void DataTrait<float>::readValue(const XmlElement& elem, float& v)
 { v = elem.attribute("real").toFloat(); }
 
 template<>
-PANDA_CORE_API void DataTrait<std::string>::readValue(XmlElement& elem, std::string& v)
+PANDA_CORE_API void DataTrait<std::string>::readValue(const XmlElement& elem, std::string& v)
 { v = elem.text(); }
 
 //****************************************************************************//

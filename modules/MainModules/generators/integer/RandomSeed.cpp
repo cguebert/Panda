@@ -49,7 +49,7 @@ public:
 		value.setValue(dist(gen));
 	}
 
-	bool load(XmlElement& elem) override
+	bool load(const XmlElement& elem) override
 	{
 		PandaObject::load(elem);
 

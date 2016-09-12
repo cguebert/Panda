@@ -40,7 +40,7 @@ public:
 	virtual void* getVoidValue(void* value, int index) const = 0;				/// Returns a pointer to the value at this index
 
 	virtual void writeValue(XmlElement& elem, const void* value) const = 0; /// Save the value to XML
-	virtual void readValue(XmlElement& elem, void* value) const = 0;		/// Load the value from XML
+	virtual void readValue(const XmlElement& elem, void* value) const = 0;		/// Load the value from XML
 };
 
 //****************************************************************************//
@@ -67,7 +67,7 @@ public:
 	static std::string valueTypeName(); 
 	static unsigned int typeColor();
 	static void writeValue(XmlElement&, const value_type&);
-	static void readValue(XmlElement&, value_type&);
+	static void readValue(const XmlElement&, value_type&);
 
 	// Default implementation
 	static std::string valueTypeNamePlural() { return valueTypeName() + "s"; }
@@ -124,7 +124,7 @@ public:
 
 	virtual void writeValue(XmlElement& elem, const void* value) const
 	{ return value_trait::writeValue(elem, *static_cast<const value_type*>(value)); }
-	virtual void readValue(XmlElement& elem, void* value) const
+	virtual void readValue(const XmlElement& elem, void* value) const
 	{ return value_trait::readValue(elem, *static_cast<value_type*>(value)); }
 };
 
@@ -180,16 +180,14 @@ public:
 			base_trait::writeValue(node, v);
 		}
 	}
-	static void readValue(XmlElement& elem, vector_type& vec)
+	static void readValue(const XmlElement& elem, vector_type& vec)
 	{
 		vec.clear();
 		T t = T();
-		XmlElement e = elem.firstChild("Value");
-		while (e)
+		for(auto e = elem.firstChild("Value"); e; e = e.nextSibling("Value"))
 		{
 			base_trait::readValue(e, t);
 			vec.push_back(t);
-			e = e.nextSibling("Value");
 		}
 	}
 };

@@ -84,7 +84,7 @@ PANDA_CORE_API void DataTrait<Polygon>::writeValue(XmlElement& elem, const Polyg
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Polygon>::readValue(XmlElement& elem, Polygon& poly)
+PANDA_CORE_API void DataTrait<Polygon>::readValue(const XmlElement& elem, Polygon& poly)
 {
 	poly.clear();
 	auto pathTrait = DataTraitsList::getTraitOf<Path>();
@@ -92,13 +92,11 @@ PANDA_CORE_API void DataTrait<Polygon>::readValue(XmlElement& elem, Polygon& pol
 	if(ctNode)
 		pathTrait->readValue(ctNode, &poly.contour);
 
-	auto holeNode = elem.firstChild("Hole");
-	while(holeNode)
+	for(auto holeNode = elem.firstChild("Hole"); holeNode; holeNode = holeNode.nextSibling("Hole"))
 	{
 		Path path;
 		pathTrait->readValue(holeNode, &path);
 		poly.holes.push_back(path);
-		holeNode = holeNode.nextSibling("Hole");
 	}
 }
 

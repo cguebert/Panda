@@ -80,7 +80,7 @@ public:
 	}
 
 	void save(XmlElement& elem);
-	void load(XmlElement& elem);
+	void load(const XmlElement& elem);
 
 private:
 	void createAddons();
@@ -185,11 +185,12 @@ public:
 		ObjectAddonNodeDefinition::SPtr definition;
 	};
 	using Addons = std::vector<AddonInfo>;
+	using Definitions = std::vector<ObjectAddonNodeDefinition::SPtr>;
 
 	static ObjectAddonsRegistry& instance();
 
 	void save(XmlElement& elem);
-	void load(XmlElement& elem);
+	void load(const XmlElement& elem);
 
 	template <class T>
 	void addObjectAddon()
@@ -217,11 +218,14 @@ public:
 
 		return nullptr;
 	}
+
+	const Definitions& getLoadedDefinitions() const;
 	
 private:
 	ObjectAddonsRegistry();
 
 	Addons m_addons;
+	Definitions m_loadedDefinitions;
 };
 
 template <class T>

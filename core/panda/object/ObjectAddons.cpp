@@ -71,7 +71,7 @@ namespace panda
 			addon.addonPtr->save(ObjectAddonNode{ elem, addon.definition });
 	}
 
-	void ObjectAddons::load(XmlElement& elem)
+	void ObjectAddons::load(const XmlElement& elem)
 	{
 		for (const auto& addon : m_addons)
 			addon.addonPtr->load(ObjectAddonNode{ elem, addon.definition });
@@ -255,14 +255,23 @@ namespace panda
 		}
 	}
 
-	void ObjectAddonsRegistry::load(XmlElement& elem)
+	void ObjectAddonsRegistry::load(const XmlElement& elem)
 	{
 		auto node = elem.firstChild("ObjectAddons");
+		for (auto addonNode = node.firstChild(); addonNode; addonNode = addonNode.nextSibling())
+		{
+
+		}
 	}
 
 	const ObjectAddonsRegistry::Addons& ObjectAddonsRegistry::getAddons() const
 	{
 		return m_addons;
+	}
+
+	const ObjectAddonsRegistry::Definitions& ObjectAddonsRegistry::getLoadedDefinitions() const
+	{
+		return m_loadedDefinitions;
 	}
 
 } // namespace Panda

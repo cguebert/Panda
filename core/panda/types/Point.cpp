@@ -66,7 +66,7 @@ PANDA_CORE_API void DataTrait<Point>::writeValue(XmlElement& elem, const Point& 
 { elem.setAttribute("x", v.x); elem.setAttribute("y", v.y); }
 
 template<>
-PANDA_CORE_API void DataTrait<Point>::readValue(XmlElement& elem, Point& v)
+PANDA_CORE_API void DataTrait<Point>::readValue(const XmlElement& elem, Point& v)
 {	v.x = elem.attribute("x").toFloat();
 	v.y = elem.attribute("y").toFloat(); }
 

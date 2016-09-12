@@ -168,22 +168,20 @@ PANDA_CORE_API void DataTrait<Gradient>::writeValue(XmlElement& elem, const Grad
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Gradient>::readValue(XmlElement& elem, Gradient& grad)
+PANDA_CORE_API void DataTrait<Gradient>::readValue(const XmlElement& elem, Gradient& grad)
 {
 	auto colorTrait = DataTraitsList::getTraitOf<Color>();
 
 	grad.clear();
 	grad.setExtendInt(elem.attribute("extend").toInt());
 
-	auto stopNode = elem.firstChild("Stop");
-	while(stopNode)
+	for(auto stopNode = elem.firstChild("Stop"); stopNode; stopNode = stopNode.nextSibling("Stop"))
 	{
 		float pos = stopNode.attribute("pos").toFloat();
 		Color color;
 		colorTrait->readValue(stopNode, &color);
 
 		grad.add(pos, color);
-		stopNode = stopNode.nextSibling("Stop");
 	}
 }
 

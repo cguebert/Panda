@@ -135,7 +135,7 @@ bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects)
 	return true;
 }
 
-LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement& root)
+LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElement& root)
 {
 	document->getSignals().startLoading.run();
 	std::map<uint32_t, uint32_t> importIndicesMap;
@@ -145,8 +145,7 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement
 	std::vector<ObjectXmlPair> newObjects;
 
 	// Loading objects
-	auto elem = root.firstChild("Object");
-	while(elem)
+	for(auto elem = root.firstChild("Object"); elem; elem = elem.nextSibling("Object"))
 	{
 		std::string registryName = elem.attribute("type").toString();
 		if(registryName.empty())
@@ -168,8 +167,6 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement
 			document->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
 			return { false, {} };
 		}
-
-		elem = elem.nextSibling("Object");
 	}
 
 	// Now that we have created all the objects, we actually add them to the document
@@ -182,8 +179,7 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement
 	}
 
 	// Create links
-	elem = root.firstChild("Link");
-	while(elem)
+	for(auto elem = root.firstChild("Link"); elem; elem = elem.nextSibling("Link"))
 	{
 		uint32_t index1, index2;
 		std::string name1, name2;
@@ -200,13 +196,10 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement
 		data2 = document->findData(index2, name2);
 		if(data1 && data2)
 			data1->setParent(data2);
-
-		elem = elem.nextSibling("Link");
 	}
 
 	// Put dockables in their docks
-	elem = root.firstChild("Dock");
-	while(elem)
+	for(auto elem = root.firstChild("Dock"); elem; elem = elem.nextSibling("Dock"))
 	{
 		uint32_t dockIndex, dockableIndex;
 		dockIndex = elem.attribute("dock").toUnsigned();
@@ -223,8 +216,6 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement
 				defaultDock->removeDockable(dockable);
 			dock->addDockable(dockable);
 		}
-
-		elem = elem.nextSibling("Dock");
 	}
 
 	// Reset all the objects we loaded

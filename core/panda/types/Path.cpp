@@ -220,19 +220,17 @@ PANDA_CORE_API void DataTrait<Path>::writeValue(XmlElement& elem, const Path& pa
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Path>::readValue(XmlElement& elem, Path& path)
+PANDA_CORE_API void DataTrait<Path>::readValue(const XmlElement& elem, Path& path)
 {
 	auto& points = path.points;
 	points.clear();
 	auto pointTrait = DataTraitsList::getTraitOf<Point>();
 
-	auto ptNode = elem.firstChild("Point");
-	while(ptNode)
+	for(auto ptNode = elem.firstChild("Point"); ptNode; ptNode = ptNode.nextSibling("Point"))
 	{
 		Point pt;
 		pointTrait->readValue(ptNode, &pt);
 		points.push_back(pt);
-		ptNode = ptNode.nextSibling("Point");
 	}
 }
 

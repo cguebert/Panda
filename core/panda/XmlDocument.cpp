@@ -92,14 +92,14 @@ void XmlElement::setName(const std::string& name)
 XmlElement XmlElement::firstChild(const std::string& name) const
 {
 	if (m_element)
-		return XmlElement(m_element->FirstChildElement(name.c_str()));
+		return XmlElement(m_element->FirstChildElement(name.empty() ? nullptr : name.c_str()));
 	return XmlElement();
 }
 
 XmlElement XmlElement::nextSibling(const std::string& name) const
 {
 	if (m_element)
-		return XmlElement(m_element->NextSiblingElement(name.c_str()));
+		return XmlElement(m_element->NextSiblingElement(name.empty() ? nullptr : name.c_str()));
 	return XmlElement();
 }
 

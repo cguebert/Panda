@@ -58,20 +58,18 @@ public:
 			base_trait::writeValue(node, stop.second);
 		}
 	}
-	static void readValue(XmlElement& elem, animation_type& anim)
+	static void readValue(const XmlElement& elem, animation_type& anim)
 	{
 		anim.setExtendInt(elem.attribute("extend").toInt());
 		anim.setInterpolationInt(elem.attribute("interpolation").toInt());
 		anim.clear();
 		T val = T();
 		float key;
-		auto e = elem.firstChild("Value");
-		while(e)
+		for(auto e = elem.firstChild("Value"); e; e = e.nextSibling("Value"))
 		{
 			key = e.attribute("key").toFloat();
 			base_trait::readValue(e, val);
 			anim.add(key, val);
-			e = e.nextSibling("Value");
 		}
 	}
 };

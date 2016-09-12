@@ -231,24 +231,20 @@ PANDA_CORE_API void DataTrait<Shader>::writeValue(XmlElement& elem, const Shader
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Shader>::readValue(XmlElement& elem, Shader& v)
+PANDA_CORE_API void DataTrait<Shader>::readValue(const XmlElement& elem, Shader& v)
 {
 	v.clear();
 
-	auto sourceNode = elem.firstChild("Source");
-	while(sourceNode)
+	for(auto sourceNode = elem.firstChild("Source"); sourceNode; sourceNode = sourceNode.nextSibling("Source"))
 	{
 		int type = sourceNode.attribute("type").toInt();
 		v.setSource(static_cast<Shader::ShaderType>(type), sourceNode.text());
-		sourceNode = sourceNode.nextSibling("Source");
 	}
 
-	auto valueNode = elem.firstChild("Uniform");
-	while(valueNode)
+	for(auto valueNode = elem.firstChild("Uniform"); valueNode; valueNode = valueNode.nextSibling("Uniform"))
 	{
 		std::string type = valueNode.attribute("type").toString();
 		v.loadValue(type, valueNode);
-		valueNode = valueNode.nextSibling("Uniform");
 	}
 }
 

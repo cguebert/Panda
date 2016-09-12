@@ -119,10 +119,9 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	}
 }
 
-bool Group::load(XmlElement& elem)
+bool Group::load(const XmlElement& elem)
 {
-	auto groupDataNode = elem.firstChild("GroupData");
-	while(groupDataNode)
+	for(auto groupDataNode = elem.firstChild("GroupData"); groupDataNode; groupDataNode = groupDataNode.nextSibling("GroupData"))
 	{
 		uint32_t type, input, output;
 		std::string name, help, widget, widgetData;
@@ -145,8 +144,6 @@ bool Group::load(XmlElement& elem)
 			addInput(*data);
 		if(output)
 			addOutput(*data);
-
-		groupDataNode = groupDataNode.nextSibling("GroupData");
 	}
 
 	// Loading data values
@@ -155,8 +152,7 @@ bool Group::load(XmlElement& elem)
 	std::map<uint32_t, PandaObject*> importObjectsMap;
 	ObjectFactory* factory = ObjectFactory::getInstance();
 
-	auto objectNode = elem.firstChild("Object");
-	while(objectNode)
+	for(auto objectNode = elem.firstChild("Object"); objectNode; objectNode = objectNode.nextSibling("Object"))
 	{
 		std::string registryName = objectNode.attribute("type").toString();
 		uint32_t index = objectNode.attribute("index").toUnsigned();
@@ -175,13 +171,10 @@ bool Group::load(XmlElement& elem)
 			parentDocument()->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
 			return false;
 		}
-
-		objectNode = objectNode.nextSibling("Object");
 	}
 
 	// Create links
-	auto linkNode = elem.firstChild("Link");
-	while(linkNode)
+	for(auto linkNode = elem.firstChild("Link"); linkNode; linkNode = linkNode.nextSibling("Link"))
 	{
 		uint32_t index1, index2;
 		std::string name1, name2;
@@ -213,13 +206,10 @@ bool Group::load(XmlElement& elem)
 
 		if(data1 && data2)
 			data1->setParent(data2);
-
-		linkNode = linkNode.nextSibling("Link");
 	}
 
 	// Put dockables in their docks
-	auto dockNode = elem.firstChild("Dock");
-	while(dockNode)
+	for(auto dockNode = elem.firstChild("Dock"); dockNode; dockNode = dockNode.nextSibling("Dock"))
 	{
 		uint32_t dockIndex, dockableIndex;
 		dockIndex = dockNode.attribute("dock").toUnsigned();
@@ -233,9 +223,7 @@ bool Group::load(XmlElement& elem)
 			if(defaultDock)
 				defaultDock->removeDockable(dockable);
 			dock->addDockable(dockable);
-		}
-
-		dockNode = dockNode.nextSibling("Dock");
+		}		
 	}
 
 	parentDocument()->onModifiedObject(this);

@@ -31,8 +31,7 @@ void DataLabelAddon::save(panda::ObjectAddonNode& node)
 
 void DataLabelAddon::load(const panda::ObjectAddonNode& node)
 { 
-	auto e = node.firstChild("DataLabel");
-	while(e)
+	for(auto e = node.firstChild("DataLabel"); e; e = e.nextSibling("DataLabel"))
 	{
 		auto data = m_object.getData(e.attribute("data").toString());
 		if (data)
@@ -42,7 +41,6 @@ void DataLabelAddon::load(const panda::ObjectAddonNode& node)
 			dl.label = e.text();
 			m_dataLabels.push_back(dl);
 		}
-		e = e.nextSibling("DataLabel");
 	}
 }
 

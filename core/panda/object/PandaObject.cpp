@@ -130,15 +130,13 @@ void PandaObject::save(XmlElement& elem, const std::vector<PandaObject*> *select
 	}
 }
 
-bool PandaObject::load(XmlElement& elem)
+bool PandaObject::load(const XmlElement& elem)
 {
-	auto e = elem.firstChild("Data");
-	while(e)
+	for(auto e = elem.firstChild("Data"); e; e = e.nextSibling("Data"))
 	{
 		BaseData* data = getData(e.attribute("name").toString());
 		if(data)
 			data->load(e);
-		e = e.nextSibling("Data");
 	}
 
 	return true;

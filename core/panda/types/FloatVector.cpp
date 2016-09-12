@@ -86,19 +86,17 @@ namespace types
 	}
 
 	template<>
-	PANDA_CORE_API void DataTrait<FloatVector>::readValue(XmlElement& elem, FloatVector& floats)
+	PANDA_CORE_API void DataTrait<FloatVector>::readValue(const XmlElement& elem, FloatVector& floats)
 	{
 		auto& values = floats.values;
 		values.clear();
 		auto floatTrait = DataTraitsList::getTraitOf<float>();
 
-		auto node = elem.firstChild("Float");
-		while (node)
+		for(auto node = elem.firstChild("Float"); node; node = node.nextSibling("Float"))
 		{
 			float v;
 			floatTrait->readValue(node, &v);
 			values.push_back(v);
-			node = node.nextSibling("Float");
 		}
 	}
 

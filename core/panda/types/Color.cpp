@@ -138,7 +138,7 @@ PANDA_CORE_API void DataTrait<Color>::writeValue(XmlElement& elem, const Color& 
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Color>::readValue(XmlElement& elem, Color& v)
+PANDA_CORE_API void DataTrait<Color>::readValue(const XmlElement& elem, Color& v)
 {
 	Color c;
 	c.r = elem.attribute("r").toFloat();

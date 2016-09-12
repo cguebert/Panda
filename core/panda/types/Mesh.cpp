@@ -648,39 +648,33 @@ PANDA_CORE_API void DataTrait<Mesh>::writeValue(XmlElement& elem, const Mesh& v)
 }
 
 template<>
-PANDA_CORE_API void DataTrait<Mesh>::readValue(XmlElement& elem, Mesh& v)
+PANDA_CORE_API void DataTrait<Mesh>::readValue(const XmlElement& elem, Mesh& v)
 {
 	Mesh tmpMesh;
 
-	auto ptNode = elem.firstChild("Point");
-	while(ptNode)
+	for(auto ptNode = elem.firstChild("Point"); ptNode; ptNode = ptNode.nextSibling("Point"))
 	{
 		Point pt;
 		pt.x = ptNode.attribute("x").toFloat();
 		pt.y = ptNode.attribute("y").toFloat();
 		tmpMesh.addPoint(pt);
-		ptNode = ptNode.nextSibling("Point");
 	}
 
-	auto edgeNode = elem.firstChild("Edge");
-	while(edgeNode)
+	for(auto edgeNode = elem.firstChild("Edge"); edgeNode; edgeNode = edgeNode.nextSibling("Edge"))
 	{
 		Mesh::Edge edge;
 		edge[0] = edgeNode.attribute("p1").toInt();
 		edge[1] = edgeNode.attribute("p2").toInt();
 		tmpMesh.addEdge(edge);
-		edgeNode = edgeNode.nextSibling("Edge");
 	}
 
-	auto triangleNode = elem.firstChild("Triangle");
-	while(triangleNode)
+	for(auto triangleNode = elem.firstChild("Triangle"); triangleNode; triangleNode = triangleNode.nextSibling("Triangle"))
 	{
 		Mesh::Triangle triangle;
 		triangle[0] = triangleNode.attribute("p1").toInt();
 		triangle[1] = triangleNode.attribute("p2").toInt();
 		triangle[2] = triangleNode.attribute("p3").toInt();
 		tmpMesh.addTriangle(triangle);
-		triangleNode = triangleNode.nextSibling("Triangle");
 	}
 
 	v = std::move(tmpMesh);

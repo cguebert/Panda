@@ -66,7 +66,7 @@ PANDA_CORE_API void DataTrait<Rect>::writeValue(XmlElement& elem, const Rect& v)
 	elem.setAttribute("b", v.bottom()); }
 
 template<>
-PANDA_CORE_API void DataTrait<Rect>::readValue(XmlElement& elem, Rect& v)
+PANDA_CORE_API void DataTrait<Rect>::readValue(const XmlElement& elem, Rect& v)
 {
 	v.setLeft(  elem.attribute("l").toFloat());
 	v.setTop(   elem.attribute("t").toFloat());

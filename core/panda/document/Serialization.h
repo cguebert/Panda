@@ -26,7 +26,7 @@ std::string PANDA_CORE_API writeTextDocument(PandaDocument* document, const Obje
 LoadResult PANDA_CORE_API readTextDocument(PandaDocument* document, ObjectsList& objectsList, const std::string& text);
 
 bool PANDA_CORE_API saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects);
-LoadResult PANDA_CORE_API loadDoc(PandaDocument* document, ObjectsList& objectsList, XmlElement& root);
+LoadResult PANDA_CORE_API loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElement& root);
 
 } // namespace serialization
 

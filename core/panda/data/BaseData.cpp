@@ -105,7 +105,7 @@ void BaseData::save(XmlElement& elem) const
 	getDataTrait()->writeValue(elem, getVoidValue());
 }
 
-void BaseData::load(XmlElement& elem)
+void BaseData::load(const XmlElement& elem)
 {
 	auto acc = getVoidAccessor();
 	getDataTrait()->readValue(elem, acc);
