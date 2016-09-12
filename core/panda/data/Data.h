@@ -112,7 +112,8 @@ template<class T>
 Data<T>::~Data()
 {
 	// Give connected Datas a chance to copy the value before it is freed
-	for(DataNode* node : m_outputs)
+	auto outputs = m_outputs;
+	for(DataNode* node : outputs)
 		node->doRemoveInput(*this);
 	m_outputs.clear();
 }
