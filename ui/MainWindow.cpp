@@ -528,10 +528,10 @@ void MainWindow::createActions()
 	connect(m_showImageViewportAction, SIGNAL(triggered()), this, SLOT(showImageViewport()));
 	addAction(m_showImageViewportAction);
 
-	m_nameLinkTagAction = new QAction(tr("Set label"), this);
-	m_nameLinkTagAction->setStatusTip(tr("Set a label for the link"));
-	connect(m_nameLinkTagAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->setLinkTagName(); });
-	m_graphViewsActions.push_back(m_nameLinkTagAction);
+	m_setDataLabelAction = new QAction(tr("Set data label"), this);
+	m_setDataLabelAction->setStatusTip(tr("Set a label for the data"));
+	connect(m_setDataLabelAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->setDataLabel(); });
+	m_graphViewsActions.push_back(m_setDataLabelAction);
 
 	m_chooseWidgetAction = new QAction(tr("Choose widget"), this);
 	m_chooseWidgetAction->setStatusTip(tr("Choose the widget to use for this data"));
@@ -1209,8 +1209,8 @@ void MainWindow::fillContextMenu(QMenu& menu, int flags) const
 	if(flags & gm::Image)
 		menu.addAction(m_showImageViewportAction);
 
-	if (flags & gm::Tag)
-		menu.addAction(m_nameLinkTagAction);
+	if (flags & gm::Tag || flags & gm::Data)
+		menu.addAction(m_setDataLabelAction);
 
 	if (flags & gm::Selection)
 	{

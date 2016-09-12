@@ -77,7 +77,14 @@ class PANDA_CORE_API BaseGUI
 {
 public:
 	using CallbackFunc = std::function<void()>;
-	using Action = std::pair<std::string, CallbackFunc>; // Menu text, function
+	struct Action
+	{
+		Action(const std::string& name, const std::string& tip, CallbackFunc func)
+			: menuName(name), statusTip(tip), callback(func) {}
+
+		std::string menuName, statusTip;
+		CallbackFunc callback;
+	};
 	using Actions = std::vector<Action>;
 
 	virtual ~BaseGUI();

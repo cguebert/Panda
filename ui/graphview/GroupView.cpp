@@ -438,7 +438,7 @@ void GroupView::contextMenuEvent(QContextMenuEvent* event)
 		if (m_contextMenuData->isInput())
 		{
 			if (!m_contextMenuData->getParent())
-				actions.emplace_back("Add input group data", [this]() { createInputGroupData(); });
+				actions.emplace_back("Add input group data", "Add an new input data for the group, based on and connected to this data", [this]() { createInputGroupData(); });
 		}
 		else if (m_contextMenuData->isOutput())
 		{
@@ -458,7 +458,7 @@ void GroupView::contextMenuEvent(QContextMenuEvent* event)
 			}
 
 			if(!connectedToGroup)
-				actions.emplace_back("Add output group data", [this]() { createOutputGroupData(); });
+				actions.emplace_back("Add output group data", "Add an new output data for the group, based on and connected to this data", [this]() { createOutputGroupData(); });
 		}
 	}
 	else
@@ -469,12 +469,16 @@ void GroupView::contextMenuEvent(QContextMenuEvent* event)
 			{
 				m_contextMenuData = dataRect.first;
 				if (m_contextMenuData->isInput())
-					actions.emplace_back("Remove input group data", [this]() { 
+					actions.emplace_back("Remove input group data",
+										 "Disconnect this data and remove it from the group", 
+										 [this]() { 
 						auto macro = m_pandaDocument->getUndoStack().beginMacro("remove input group data");
 						removeGroupData(m_contextMenuData);
 					});
 				else if (m_contextMenuData->isOutput())
-					actions.emplace_back("Remove output group data", [this](){ 
+					actions.emplace_back("Remove output group data", 
+										 "Disconnect this data and remove it from the group", 
+										 [this](){ 
 						auto macro = m_pandaDocument->getUndoStack().beginMacro("remove output group data");
 						removeGroupData(m_contextMenuData);
 					});

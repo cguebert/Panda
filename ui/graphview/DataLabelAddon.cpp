@@ -94,7 +94,7 @@ void DataLabelAddon::modifiedObject(panda::PandaObject* object)
 
 //****************************************************************************//
 
-std::string getDataLabel(panda::BaseData* data)
+std::string DataLabelAddon::getDataLabel(panda::BaseData* data)
 {
 	auto addon = data->getOwner()->addons().get<DataLabelAddon>();
 	if(addon)
@@ -102,7 +102,7 @@ std::string getDataLabel(panda::BaseData* data)
 	return {};
 }
 
-void setDataLabel(panda::BaseData* data, const std::string& label)
+void DataLabelAddon::setDataLabel(panda::BaseData* data, const std::string& label)
 {
 	data->getOwner()->addons().edit<DataLabelAddon>().setLabel(data, label);
 }

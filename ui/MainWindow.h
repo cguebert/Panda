@@ -194,7 +194,7 @@ private:
 		*m_undoAction,
 		*m_redoAction,
 		*m_showImageViewportAction,
-		*m_nameLinkTagAction,
+		*m_setDataLabelAction,
 		*m_chooseWidgetAction,
 		*m_objectToBackAction,
 		*m_objectToFrontAction;

@@ -8,9 +8,6 @@ namespace panda
 	class BaseData;
 }
 
-std::string getDataLabel(panda::BaseData* data);
-void setDataLabel(panda::BaseData* data, const std::string& label);
-
 class DataLabelAddon : public panda::BaseObjectAddon
 {
 public:
@@ -29,6 +26,9 @@ public:
 
 	std::string getLabel(panda::BaseData* data) const;
 	void setLabel(panda::BaseData* data, const std::string& label);
+
+	static std::string getDataLabel(panda::BaseData* data);
+	static void setDataLabel(panda::BaseData* data, const std::string& label);
 
 private:
 	void modifiedObject(panda::PandaObject* object);

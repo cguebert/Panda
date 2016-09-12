@@ -623,9 +623,18 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 				m_hoverTimer->start(500);
 			}
 
-			QString display = QString("%1\n%2")
-				.arg(QString::fromStdString(m_hoverData->getName()))
-				.arg(QString::fromStdString(m_hoverData->getDescription()));
+			auto label = DataLabelAddon::getDataLabel(m_hoverData);
+					
+			QString display;
+			if(!label.empty())
+				display = QString("<b>%1</b>").arg(QString::fromStdString(label));
+			else
+			{
+				display = QString("%1\n%2")
+					.arg(QString::fromStdString(m_hoverData->getName()))
+					.arg(QString::fromStdString(m_hoverData->getDescription()));
+			}
+
 			QRect area = QRect(dataRect.second.left(), dataRect.second.top(), dataRect.second.width(), dataRect.second.height());
 			QToolTip::showText(event->globalPos(), display, this, area);
 			if(!m_hoverData->getHelp().empty())
@@ -659,7 +668,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 					if (!data)
 						continue;
 
-					auto label = getDataLabel(tag->getInputData());
+					auto label = DataLabelAddon::getDataLabel(tag->getInputData());
 					
 					QString display;
 					if(!label.empty())
@@ -1082,6 +1091,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 	m_linkTags.clear();
 	m_linkTagsMap.clear();
 	m_recomputeTags = true;
+	m_recomputeLinks = true;
 	m_highlightConnectedDatas = false;
 
 	update();
@@ -1753,20 +1763,20 @@ panda::types::Point GraphView::getNewObjectPosition()
 	return convert(contentsRect().center()) + m_viewDelta;
 }
 
-void GraphView::setLinkTagName()
+void GraphView::setDataLabel()
 {
-	if (!m_contextLinkTag)
+	if (!m_contextLinkTag && !m_contextMenuData)
 		return;
 
-	auto data = m_contextLinkTag->getInputData();
-	auto label = getDataLabel(data);
+	auto data = m_contextLinkTag ? m_contextLinkTag->getInputData() : m_contextMenuData;
+	auto label = DataLabelAddon::getDataLabel(data);
 
 	bool ok = false;
 	label = QInputDialog::getMultiLineText(this, tr("Data label"), tr("Label:"), QString::fromStdString(label), &ok).toStdString();
 	if (!ok)
 		return;
 
-	setDataLabel(data, label);
+	DataLabelAddon::setDataLabel(data, label);
 
 	emit modified();
 }

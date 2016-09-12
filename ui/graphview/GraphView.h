@@ -179,7 +179,7 @@ public slots:
 	void changedDock(panda::DockableObject* dockable);
 	void showChooseWidgetDialog();
 	void debugDirtyState(bool show = true);
-	void setLinkTagName();
+	void setDataLabel();
 	void moveObjectToBack();
 	void moveObjectToFront();
 
