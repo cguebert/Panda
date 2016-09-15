@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
@@ -25,7 +25,7 @@ class RenderRect : public Renderer
 public:
 	PANDA_CLASS(RenderRect, Renderer)
 
-	RenderRect(PandaDocument* parent)
+	RenderRect(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_rect(initData("rectangle", "Position and size of the rectangle"))
 		, m_lineWidth(initData("lineWidth", "Width of the line"))
@@ -174,7 +174,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_colorsVBO;
 };
 
-int RenderRectClass = RegisterObject<RenderRect>("Render/Line/Rectangle")
+int RenderRectClass = RegisterObject<RenderRect, RenderedDocument>("Render/Line/Rectangle")
 		.setName("Rectangle").setDescription("Draw a rectangle");
 
 //****************************************************************************//
@@ -184,7 +184,7 @@ class RenderFilledRect : public Renderer
 public:
 	PANDA_CLASS(RenderFilledRect, Renderer)
 
-	RenderFilledRect(PandaDocument* parent)
+	RenderFilledRect(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_rect(initData("rectangle", "Position and size of the rectangle"))
 		, m_color(initData("color", "Color of the rectangle"))
@@ -306,7 +306,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderFilledRectClass = RegisterObject<RenderFilledRect>("Render/Filled/Rectangle")
+int RenderFilledRectClass = RegisterObject<RenderFilledRect, RenderedDocument>("Render/Filled/Rectangle")
 		.setName("Filled rectangle").setDescription("Draw a filled rectangle");
 
 //****************************************************************************//
@@ -316,7 +316,7 @@ class RenderTexturedRect : public Renderer
 public:
 	PANDA_CLASS(RenderTexturedRect, Renderer)
 
-	RenderTexturedRect(PandaDocument* parent)
+	RenderTexturedRect(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_rect(initData("rectangle", "Position and size of the rectangle"))
 		, m_texture(initData("texture", "Texture to apply to the rectangle"))
@@ -447,7 +447,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderTexturedRectClass = RegisterObject<RenderTexturedRect>("Render/Textured/Rectangle")
+int RenderTexturedRectClass = RegisterObject<RenderTexturedRect, RenderedDocument>("Render/Textured/Rectangle")
 		.setName("Textured rectangle").setDescription("Draw a textured rectangle");
 
 

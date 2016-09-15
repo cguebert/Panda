@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
@@ -26,7 +26,7 @@ class BaseRenderFill : public Renderer
 public:
 	PANDA_CLASS(BaseRenderFill, Renderer)
 
-	BaseRenderFill(PandaDocument* parent)
+	BaseRenderFill(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_area(initData("area", "Area to paint the gradient in. If null, the render area is used instead"))
 		, m_shader(initData("shader", "Shaders used during the rendering"))
@@ -131,7 +131,7 @@ class RenderGradient_Horizontal : public BaseRenderFill
 public:
 	PANDA_CLASS(RenderGradient_Horizontal, BaseRenderFill)
 
-	RenderGradient_Horizontal(PandaDocument* parent)
+	RenderGradient_Horizontal(RenderedDocument* parent)
 		: BaseRenderFill(parent)
 		, m_gradient(initData("gradient", "Gradient to paint on the screen"))
 	{
@@ -152,7 +152,7 @@ protected:
 	Data<Gradient> m_gradient;
 };
 
-int RenderGradient_HorizontalClass = RegisterObject<RenderGradient_Horizontal>("Render/Gradient/Horizontal")
+int RenderGradient_HorizontalClass = RegisterObject<RenderGradient_Horizontal, RenderedDocument>("Render/Gradient/Horizontal")
 		.setName("Horizontal gradient").setDescription("Draw a horizontal gradient in an area");
 
 //****************************************************************************//
@@ -162,7 +162,7 @@ class RenderGradient_Vertical : public BaseRenderFill
 public:
 	PANDA_CLASS(RenderGradient_Vertical, BaseRenderFill)
 
-	RenderGradient_Vertical(PandaDocument* parent)
+	RenderGradient_Vertical(RenderedDocument* parent)
 		: BaseRenderFill(parent)
 		, m_gradient(initData("gradient", "Gradient to paint on the screen"))
 	{
@@ -183,7 +183,7 @@ protected:
 	Data<Gradient> m_gradient;
 };
 
-int RenderGradient_VerticalClass = RegisterObject<RenderGradient_Vertical>("Render/Gradient/Vertical")
+int RenderGradient_VerticalClass = RegisterObject<RenderGradient_Vertical, RenderedDocument>("Render/Gradient/Vertical")
 		.setName("Vertical gradient").setDescription("Draw a vertical gradient in an area");
 
 //****************************************************************************//
@@ -193,7 +193,7 @@ class RenderFill_Motif : public BaseRenderFill
 public:
 	PANDA_CLASS(RenderFill_Motif, BaseRenderFill)
 
-	RenderFill_Motif(PandaDocument* parent)
+	RenderFill_Motif(RenderedDocument* parent)
 		: BaseRenderFill(parent)
 		, m_texture(initData("texture", "Motif to paint on the screen"))
 	{
@@ -219,7 +219,7 @@ protected:
 	Data<ImageWrapper> m_texture;
 };
 
-int RenderFill_MotifClass = RegisterObject<RenderFill_Motif>("Render/Textured/Fill with motif")
+int RenderFill_MotifClass = RegisterObject<RenderFill_Motif, RenderedDocument>("Render/Textured/Fill with motif")
 		.setDescription("Fill an area with a motif");
 
 

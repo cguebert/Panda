@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
@@ -28,7 +28,7 @@ class RenderDisk : public Renderer
 public:
 	PANDA_CLASS(RenderDisk, Renderer)
 
-	RenderDisk(PandaDocument* parent)
+	RenderDisk(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_center(initData("center", "Center position of the disk"))
 		, m_radius(initData("radius", "Radius of the disk"))
@@ -171,7 +171,7 @@ protected:
 	graphics::Buffer m_verticesVBO;
 };
 
-int RenderDiskClass = RegisterObject<RenderDisk>("Render/Filled/Disk").setDescription("Draw a plain disk");
+int RenderDiskClass = RegisterObject<RenderDisk, RenderedDocument>("Render/Filled/Disk").setDescription("Draw a plain disk");
 
 //****************************************************************************//
 
@@ -180,7 +180,7 @@ class RenderDisk_Gradient : public Renderer
 public:
 	PANDA_CLASS(RenderDisk_Gradient, Renderer)
 
-	RenderDisk_Gradient(PandaDocument* parent)
+	RenderDisk_Gradient(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_center(initData("center", "Center position of the disk"))
 		, m_radius(initData("radius", "Radius of the disk"))
@@ -371,7 +371,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderDisk_GradientClass = RegisterObject<RenderDisk_Gradient>("Render/Gradient/Disk")
+int RenderDisk_GradientClass = RegisterObject<RenderDisk_Gradient, RenderedDocument>("Render/Gradient/Disk")
 		.setName("Gradient disk").setDescription("Draw a disk filled with a radial gradient");
 
 //****************************************************************************//
@@ -381,7 +381,7 @@ class RenderDisk_Textured : public Renderer
 public:
 	PANDA_CLASS(RenderDisk_Textured, Renderer)
 
-	RenderDisk_Textured(PandaDocument* parent)
+	RenderDisk_Textured(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_center(initData("center", "Center position of the disk"))
 		, m_radius(initData("radius", "Radius of the disk"))
@@ -542,7 +542,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderDisk_TexturedClass = RegisterObject<RenderDisk_Textured>("Render/Textured/Disk")
+int RenderDisk_TexturedClass = RegisterObject<RenderDisk_Textured, RenderedDocument>("Render/Textured/Disk")
 		.setName("Textured disk").setDescription("Draw a textured disk");
 
 } // namespace panda

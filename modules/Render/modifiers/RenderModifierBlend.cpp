@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/helper/algorithm.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
@@ -13,7 +13,7 @@ class RenderModifier_BlendMode : public Renderer
 public:
 	PANDA_CLASS(RenderModifier_BlendMode, Renderer)
 
-	RenderModifier_BlendMode(PandaDocument* parent)
+	RenderModifier_BlendMode(RenderedDocument* parent)
 		: Renderer(parent)
 		, source(initData(4, "source", "Source blending mode"))
 		, destination(initData(6, "destination", "Destination blending mode"))
@@ -52,6 +52,6 @@ protected:
 	Data<int> source, destination;
 };
 
-int RenderModifier_BlendModeClass = RegisterObject<RenderModifier_BlendMode>("Render/Modifier/Blend mode").setDescription("Change the blend mode");
+int RenderModifier_BlendModeClass = RegisterObject<RenderModifier_BlendMode, RenderedDocument>("Render/Modifier/Blend mode").setDescription("Change the blend mode");
 
 } // namespace panda

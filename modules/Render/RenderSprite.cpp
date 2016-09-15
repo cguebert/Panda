@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
@@ -26,7 +26,7 @@ class RenderSprite : public Renderer
 public:
 	PANDA_CLASS(RenderSprite, Renderer)
 
-	RenderSprite(PandaDocument* parent)
+	RenderSprite(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_position(initData("position", "Position of the sprite"))
 		, m_size(initData("size", "Size of the sprite" ))
@@ -150,7 +150,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_colorsVBO, m_sizeVBO;
 };
 
-int RenderSpriteClass = RegisterObject<RenderSprite>("Render/Textured/Sprite").setDescription("Draw a sprite");
+int RenderSpriteClass = RegisterObject<RenderSprite, RenderedDocument>("Render/Textured/Sprite").setDescription("Draw a sprite");
 
 //****************************************************************************//
 
@@ -159,7 +159,7 @@ class RenderSpriteGeometryShader : public Renderer
 public:
 	PANDA_CLASS(RenderSpriteGeometryShader, Renderer)
 
-		RenderSpriteGeometryShader(PandaDocument* parent)
+	RenderSpriteGeometryShader(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_position(initData("position", "Position of the sprite"))
 		, m_size(initData("size", "Size of the sprite"))
@@ -278,7 +278,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_colorsVBO, m_sizeVBO;
 };
 
-int RenderSpriteGeometryShaderClass = RegisterObject<RenderSpriteGeometryShader>("Render/Textured/Sprite GS")
+int RenderSpriteGeometryShaderClass = RegisterObject<RenderSpriteGeometryShader, RenderedDocument>("Render/Textured/Sprite GS")
 	.setDescription("Draw a sprite using the geometry shader");
 
 

@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
@@ -30,7 +30,7 @@ class RenderLine : public Renderer
 public:
 	PANDA_CLASS(RenderLine, Renderer)
 
-	RenderLine(PandaDocument* parent)
+	RenderLine(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_inputA(initData("point 1", "Start of the line"))
 		, m_inputB(initData("point 2", "End of the line"))
@@ -189,7 +189,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_colorsVBO;
 };
 
-int RenderLineClass = RegisterObject<RenderLine>("Render/Line/Line").setDescription("Draw a line between 2 points");
+int RenderLineClass = RegisterObject<RenderLine, RenderedDocument>("Render/Line/Line").setDescription("Draw a line between 2 points");
 
 //****************************************************************************//
 
@@ -198,7 +198,7 @@ class RenderPath : public Renderer
 public:
 	PANDA_CLASS(RenderPath, Renderer)
 
-	RenderPath(PandaDocument* parent)
+	RenderPath(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_input(initData("path", "Path to be drawn"))
 		, m_lineWidth(initData("width", "Width of the line"))
@@ -345,7 +345,7 @@ protected:
 	graphics::Buffer m_verticesVBO;
 };
 
-int RenderPathClass = RegisterObject<RenderPath>("Render/Line/Path").setDescription("Draw a path");
+int RenderPathClass = RegisterObject<RenderPath, RenderedDocument>("Render/Line/Path").setDescription("Draw a path");
 
 
 //****************************************************************************//
@@ -355,7 +355,7 @@ class RenderGradientPath : public Renderer
 public:
 	PANDA_CLASS(RenderGradientPath, Renderer)
 
-	RenderGradientPath(PandaDocument* parent)
+	RenderGradientPath(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_input(initData("path", "Path to be drawn"))
 		, m_lineWidth(initData("width", "Width of the line"))
@@ -561,7 +561,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderGradientPathClass = RegisterObject<RenderGradientPath>("Render/Gradient/Path")
+int RenderGradientPathClass = RegisterObject<RenderGradientPath, RenderedDocument>("Render/Gradient/Path")
 		.setName("Gradient path").setDescription("Draw a path using a gradient");
 
 //****************************************************************************//
@@ -571,7 +571,7 @@ class RenderTexturedPath : public Renderer
 public:
 	PANDA_CLASS(RenderTexturedPath, Renderer)
 
-	RenderTexturedPath(PandaDocument* parent)
+	RenderTexturedPath(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_input(initData("path", "Path to be drawn"))
 		, m_lineWidth(initData("width", "Width of the line"))
@@ -776,7 +776,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderTexturedPathClass = RegisterObject<RenderTexturedPath>("Render/Textured/Path")
+int RenderTexturedPathClass = RegisterObject<RenderTexturedPath, RenderedDocument>("Render/Textured/Path")
 		.setName("Textured path").setDescription("Draw a textured path");
 
 } // namespace panda

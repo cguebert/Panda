@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Color.h>
@@ -27,7 +27,7 @@ class RenderConvexPolygon : public Renderer
 public:
 	PANDA_CLASS(RenderConvexPolygon, Renderer)
 
-	RenderConvexPolygon(PandaDocument* parent)
+	RenderConvexPolygon(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_polygons(initData("polygon", "Convex polygon to render"))
 		, m_color(initData("color", "Color of the polygon"))
@@ -112,7 +112,7 @@ protected:
 	graphics::Buffer m_verticesVBO;
 };
 
-int RenderConvexPolygonClass = RegisterObject<RenderConvexPolygon>("Render/Filled/Plain convex polygon").setDescription("Draw a convex polygon");
+int RenderConvexPolygonClass = RegisterObject<RenderConvexPolygon, RenderedDocument>("Render/Filled/Plain convex polygon").setDescription("Draw a convex polygon");
 
 //****************************************************************************//
 
@@ -121,7 +121,7 @@ class RenderConvexPolygon_ColoredPoints : public Renderer
 public:
 	PANDA_CLASS(RenderConvexPolygon_ColoredPoints, Renderer)
 
-	RenderConvexPolygon_ColoredPoints(PandaDocument* parent)
+	RenderConvexPolygon_ColoredPoints(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_points(initData("points", "Points of the polygons"))
 		, m_indices(initData("indices", "Indices to create the polygons"))
@@ -216,7 +216,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_colorsVBO;
 };
 
-int RenderConvexPolygon_ColoredPointsClass = RegisterObject<RenderConvexPolygon_ColoredPoints>("Render/Filled/Convex polygon").setDescription("Draw a convex polygon, each point having its own color");
+int RenderConvexPolygon_ColoredPointsClass = RegisterObject<RenderConvexPolygon_ColoredPoints, RenderedDocument>("Render/Filled/Convex polygon").setDescription("Draw a convex polygon, each point having its own color");
 
 //****************************************************************************//
 
@@ -225,7 +225,7 @@ class RenderConvexPolygon_Textured : public Renderer
 public:
 	PANDA_CLASS(RenderConvexPolygon_Textured, Renderer)
 
-	RenderConvexPolygon_Textured(PandaDocument* parent)
+	RenderConvexPolygon_Textured(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_points(initData("points", "Points of the polygons"))
 		, m_indices(initData("indices", "Indices to create the polygons"))
@@ -325,7 +325,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderConvexPolygon_TexturedClass = RegisterObject<RenderConvexPolygon_Textured>("Render/Textured/Convex polygon")
+int RenderConvexPolygon_TexturedClass = RegisterObject<RenderConvexPolygon_Textured, RenderedDocument>("Render/Textured/Convex polygon")
 	.setName("Textured convex polygon").setDescription("Draw a textured convex polygon");
 
 } // namespace panda

@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
@@ -23,7 +23,7 @@ class RenderImage : public Renderer
 public:
 	PANDA_CLASS(RenderImage, Renderer)
 
-	RenderImage(PandaDocument* parent)
+	RenderImage(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_image(initData("image", "Image to render on screen" ))
 		, m_position(initData("position", "Position of the image"))
@@ -248,7 +248,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderImageClass = RegisterObject<RenderImage>("Render/Textured/Image").setDescription("Renders an image at a position");
+int RenderImageClass = RegisterObject<RenderImage, RenderedDocument>("Render/Textured/Image").setDescription("Renders an image at a position");
 
 //****************************************************************************//
 
@@ -257,7 +257,7 @@ class RenderImage_InRect : public Renderer
 public:
 	PANDA_CLASS(RenderImage_InRect, Renderer)
 
-	RenderImage_InRect(PandaDocument* parent)
+	RenderImage_InRect(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_image(initData("image", "Image to render on screen" ))
 		, m_rectangle(initData("rectangle", "Rectangle defining the position and size of the rendered image"))
@@ -410,7 +410,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int RenderImage_InRectClass = RegisterObject<RenderImage_InRect>("Render/Textured/Image in rectangle")
+int RenderImage_InRectClass = RegisterObject<RenderImage_InRect, RenderedDocument>("Render/Textured/Image in rectangle")
 	.setDescription("Renders an image inside a rectangle");
 
 } // namespace panda

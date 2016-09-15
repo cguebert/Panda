@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Color.h>
@@ -23,7 +23,7 @@ class RenderTriangle : public Renderer
 public:
 	PANDA_CLASS(RenderTriangle, Renderer)
 
-	RenderTriangle(PandaDocument* parent)
+	RenderTriangle(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_mesh(initData("mesh", "Triangle to render"))
 		, m_color(initData("color", "Color of the triangle"))
@@ -140,6 +140,6 @@ protected:
 	graphics::Buffer m_verticesVBO, m_colorsVBO;
 };
 
-int RenderTriangleClass = RegisterObject<RenderTriangle>("Render/Filled/Triangle").setDescription("Draw a triangle");
+int RenderTriangleClass = RegisterObject<RenderTriangle, RenderedDocument>("Render/Filled/Triangle").setDescription("Draw a triangle");
 
 } // namespace panda

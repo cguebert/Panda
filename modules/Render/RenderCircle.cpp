@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
@@ -24,7 +24,7 @@ class RenderCircle : public Renderer
 public:
 	PANDA_CLASS(RenderCircle, Renderer)
 
-	RenderCircle(PandaDocument* parent)
+	RenderCircle(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_center(initData("center", "Center position of the circle"))
 		, m_radius(initData("radius", "Radius of the circle" ))
@@ -176,6 +176,6 @@ protected:
 	graphics::Buffer m_verticesVBO;
 };
 
-int RenderCircleClass = RegisterObject<RenderCircle>("Render/Line/Circle").setDescription("Draw a circle");
+int RenderCircleClass = RegisterObject<RenderCircle, RenderedDocument>("Render/Line/Circle").setDescription("Draw a circle");
 
 } // namespace panda

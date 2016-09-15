@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/object/PandaObject.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
 #include <panda/types/Color.h>
@@ -27,7 +27,7 @@ class RenderText : public Renderer
 public:
 	PANDA_CLASS(RenderText, Renderer)
 
-	RenderText(PandaDocument* parent)
+	RenderText(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_text(initData("text", "Text to be drawn"))
 		, m_font(initData("font", "Font to use for the text rendering"))
@@ -311,7 +311,7 @@ protected:
 	std::shared_ptr<TextureFont> m_texFont;
 };
 
-int RenderTextClass = RegisterObject<RenderText>("Render/Text").setDescription("Draw some text");
+int RenderTextClass = RegisterObject<RenderText, RenderedDocument>("Render/Text").setDescription("Draw some text");
 
 //****************************************************************************//
 
@@ -320,7 +320,7 @@ class RenderText_OnCurve : public Renderer
 public:
 	PANDA_CLASS(RenderText_OnCurve, Renderer)
 
-	RenderText_OnCurve(PandaDocument* parent)
+	RenderText_OnCurve(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_text(initData("text", "Text to be drawn"))
 		, m_font(initData("font", "Font to use for the text rendering"))
@@ -513,7 +513,7 @@ protected:
 	std::shared_ptr<TextureFont> m_texFont;
 };
 
-int RenderText_OnCurveClass = RegisterObject<RenderText_OnCurve>("Render/Text on curve").setDescription("Draw some on a curve (each letter its own position)");
+int RenderText_OnCurveClass = RegisterObject<RenderText_OnCurve, RenderedDocument>("Render/Text on curve").setDescription("Draw some on a curve (each letter its own position)");
 
 
 } // namespace panda

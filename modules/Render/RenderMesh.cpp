@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Color.h>
@@ -25,7 +25,7 @@ class RenderMesh : public Renderer
 public:
 	PANDA_CLASS(RenderMesh, Renderer)
 
-	RenderMesh(PandaDocument* parent)
+	RenderMesh(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_meshes(initData("mesh", "Mesh to render"))
 		, m_color(initData("color", "Color of the mesh"))
@@ -108,7 +108,7 @@ protected:
 	graphics::Buffer m_verticesVBO;
 };
 
-int RenderMeshClass = RegisterObject<RenderMesh>("Render/Filled/Plain mesh").setDescription("Draw a mesh");
+int RenderMeshClass = RegisterObject<RenderMesh, RenderedDocument>("Render/Filled/Plain mesh").setDescription("Draw a mesh");
 
 //****************************************************************************//
 
@@ -117,7 +117,7 @@ class RenderMeshColoredPoints : public Renderer
 public:
 	PANDA_CLASS(RenderMeshColoredPoints, Renderer)
 
-		RenderMeshColoredPoints(PandaDocument* parent)
+	RenderMeshColoredPoints(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_mesh(initData("mesh", "Mesh to render"))
 		, m_color(initData("color", "Color of the points"))
@@ -200,7 +200,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_colorsVBO;
 };
 
-int RenderMeshColoredPointsClass = RegisterObject<RenderMeshColoredPoints>("Render/Filled/Mesh").setDescription("Draw a mesh, each point having its own color");
+int RenderMeshColoredPointsClass = RegisterObject<RenderMeshColoredPoints, RenderedDocument>("Render/Filled/Mesh").setDescription("Draw a mesh, each point having its own color");
 
 //****************************************************************************//
 
@@ -209,7 +209,7 @@ class RenderMesh_Textured : public Renderer
 public:
 	PANDA_CLASS(RenderMesh_Textured, Renderer)
 
-	RenderMesh_Textured(PandaDocument* parent)
+	RenderMesh_Textured(RenderedDocument* parent)
 		: Renderer(parent)
 		, m_mesh(initData("mesh", "Mesh to render"))
 		, m_uvCoords(initData("UV Coords", "Texture coordinates"))
@@ -303,7 +303,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO, m_trianglesEBO;
 };
 
-int RenderMesh_TexturedClass = RegisterObject<RenderMesh_Textured>("Render/Textured/Mesh")
+int RenderMesh_TexturedClass = RegisterObject<RenderMesh_Textured, RenderedDocument>("Render/Textured/Mesh")
 		.setName("Textured mesh").setDescription("Draw a textured mesh");
 
 } // namespace panda

@@ -1,6 +1,7 @@
 #include "ImGuiBase.h"
 #include "ImGuiWrapper.h"
 
+#include <panda/document/PandaDocument.h>
 #include <panda/object/Dockable.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
