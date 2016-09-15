@@ -1,5 +1,5 @@
 #include <panda/object/OGLObject.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 
 namespace panda {
 

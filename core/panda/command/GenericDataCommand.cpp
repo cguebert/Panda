@@ -1,6 +1,6 @@
 #include <panda/object/GenericObject.h>
 #include <panda/command/GenericDataCommand.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 
 namespace panda
 {

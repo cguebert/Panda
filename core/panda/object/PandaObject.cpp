@@ -1,5 +1,5 @@
 #include <panda/object/PandaObject.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/XmlDocument.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/UpdateLogger.h>

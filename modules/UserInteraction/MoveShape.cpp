@@ -1,5 +1,5 @@
 #include <panda/object/PandaObject.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 

@@ -15,7 +15,7 @@
 #include <ui/graphview/ViewRenderer.h>
 #include <ui/graphview/graphics/DrawList.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/SimpleGUI.h>
 #include <panda/helper/algorithm.h>
 #include <panda/types/DataTraits.h>

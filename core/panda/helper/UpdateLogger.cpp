@@ -1,4 +1,4 @@
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/UpdateLogger.h>
 #include <panda/object/PandaObject.h>

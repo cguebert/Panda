@@ -3,7 +3,7 @@
 #include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/widget/DataWidgetFactory.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/helper/algorithm.h>
 
 #include <type_traits>

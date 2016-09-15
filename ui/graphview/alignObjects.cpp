@@ -4,7 +4,7 @@
 #include <ui/drawstruct/ObjectDrawStruct.h>
 #include <ui/command/MoveObjectCommand.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 
 using panda::types::Point;
 using panda::types::Rect;

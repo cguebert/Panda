@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/PluginsManager.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>

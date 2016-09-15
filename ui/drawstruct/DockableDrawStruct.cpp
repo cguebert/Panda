@@ -1,4 +1,4 @@
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 
 #include <ui/graphview/GraphView.h>
 #include <ui/drawstruct/DockableDrawStruct.h>

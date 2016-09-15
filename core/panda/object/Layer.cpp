@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/command/MoveLayerCommand.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/graphics/Framebuffer.h>

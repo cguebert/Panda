@@ -2,7 +2,7 @@
 #define DATAWIDGET_H
 
 #include <panda/data/Data.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 
 #include <ui/command/SetDataValueCommand.h>
 

@@ -1,6 +1,6 @@
 #include <panda/command/AddObjectCommand.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/command/CommandId.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>

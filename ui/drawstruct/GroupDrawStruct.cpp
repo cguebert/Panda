@@ -1,7 +1,7 @@
 #include <ui/drawstruct/GroupDrawStruct.h>
 #include <ui/graphview/GraphView.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/object/Group.h>
 
 GroupDrawStruct::GroupDrawStruct(GraphView* view, panda::Group* object)

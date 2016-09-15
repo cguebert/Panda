@@ -30,4 +30,4 @@
 
 #include <panda/data/Data.h>
 #include <panda/object/PandaObject.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>

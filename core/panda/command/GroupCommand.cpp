@@ -1,4 +1,4 @@
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/object/Group.h>
 #include <panda/document/ObjectsList.h>
 

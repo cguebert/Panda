@@ -23,7 +23,7 @@
 #include <ui/graphview/alignObjects.h>
 #include <ui/graphview/ObjectsSelection.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/PluginsManager.h>
 #include <panda/command/AddObjectCommand.h>
 #include <panda/command/RemoveObjectCommand.h>

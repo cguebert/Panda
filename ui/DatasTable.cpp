@@ -5,7 +5,7 @@
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/widget/DataWidgetFactory.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/document/DocumentSignals.h>
 
 // A small class to be notified when the outputs of an object change

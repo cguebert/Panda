@@ -1,5 +1,5 @@
 #include <panda/object/Dockable.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/command/DockableCommand.h>
 #include <panda/helper/algorithm.h>
 

@@ -1,6 +1,6 @@
 #include <panda/command/RemoveObjectCommand.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/command/CommandId.h>
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/document/ObjectsList.h>

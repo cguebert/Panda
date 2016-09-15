@@ -6,7 +6,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectAddons.h>
 #include <panda/messaging.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/types/DataTraits.h>
 
 #include <cmath>

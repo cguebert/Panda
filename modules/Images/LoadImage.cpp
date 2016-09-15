@@ -1,6 +1,6 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/SimpleGUI.h>
 
 #include <modules/Images/utils.h>

@@ -4,7 +4,7 @@
 #include <panda/command/GroupCommand.h>
 
 #include <panda/object/Group.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 
 using panda::ObjectFactory;
 

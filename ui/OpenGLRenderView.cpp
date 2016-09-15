@@ -2,7 +2,7 @@
 
 #include <ui/OpenGLRenderView.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/graphics/Framebuffer.h>

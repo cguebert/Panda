@@ -4,7 +4,7 @@
 #include <ui/GroupsManager.h>
 #include <ui/dialog/QuickCreateDialog.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/command/AddObjectCommand.h>
 #include <panda/object/ObjectFactory.h>
 

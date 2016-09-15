@@ -4,7 +4,7 @@
 #include <ui/command/SetDataValueCommand.h>
 #include <panda/command/MoveLayerCommand.h>
 
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/object/Layer.h>

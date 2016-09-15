@@ -5,7 +5,7 @@
 #include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/object/Annotation.h>
-#include <panda/PandaDocument.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/XmlDocument.h>
 
 #include <QMouseEvent>
