@@ -3,6 +3,8 @@
 #include <panda/object/GenericObject.h>
 
 #include <algorithm>
+#include <cassert>
+
 #include "TinyExpr/tinyexpr.h"
 
 namespace panda {

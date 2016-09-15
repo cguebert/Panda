@@ -22,6 +22,15 @@ Rect Rect::operator|(const Rect &r) const
 				std::max(x2, r.x2), std::max(y2, r.y2));
 }
 
+Rect Rect::operator|(const Point &p) const
+{
+	if(empty())
+		return Rect(p.x, p.y, p.x + 1, p.y + 1);
+
+	return Rect(std::min(x1, p.x), std::min(y1, p.y),
+				std::max(x2, p.x), std::max(y2, p.y));
+}
+
 Rect Rect::operator&(const Rect &r) const
 {
 	if(x1 >= r.x2 || r.x1 >= x2 || y1 >= r.y2 || r.y1 >= y2)

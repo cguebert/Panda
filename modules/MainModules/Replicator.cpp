@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/helper/UpdateLogger.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
@@ -12,7 +12,7 @@ class Replicator : public Layer
 public:
 	PANDA_CLASS(Replicator, Layer)
 
-	Replicator(PandaDocument *doc)
+	Replicator(RenderedDocument *doc)
 		: Layer(doc)
 		, index(initData(0, "index", "0-based index of the current iteration"))
 		, nbIterations(initData(1, "# iterations", "Number of times the objects have to be rendered"))
@@ -54,7 +54,7 @@ protected:
 	Data<int> index, nbIterations;
 };
 
-int ReplicatorClass = RegisterObject<Replicator>("Replicator").setDescription("Draw multiple times the objects");
+int ReplicatorClass = RegisterObject<Replicator, RenderedDocument>("Replicator").setDescription("Draw multiple times the objects");
 
 } // namespace Panda
 

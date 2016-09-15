@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/helper/PointsGrid.h>
@@ -47,8 +47,7 @@ public:
 		if(nb && searchPts.size())
 		{
 			float maxD = maxDist.getValue();
-			auto size = parentDocument()->getRenderSize();
-			Rect area = Rect(0, 0, static_cast<float>(size.width()-1), static_cast<float>(size.height()-1));
+			auto area = helper::PointsGrid::computeBounds(searchPts);
 			grid.initGrid(area, std::max<float>(maxD, 10.0));
 			grid.addPoints(searchPts);
 

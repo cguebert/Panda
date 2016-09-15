@@ -28,6 +28,8 @@ public:
 
 	bool getNearest(const types::Point& point, float maxDist, types::Point& result);
 
+	static types::Rect computeBounds(const std::vector<types::Point>& points);
+
 protected:
 	int cellIndex(const types::Point& point);
 

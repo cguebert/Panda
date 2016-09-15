@@ -123,6 +123,17 @@ int PointsGrid::cellIndex(const Point& point)
 	return gy * m_width + gx;
 }
 
+types::Rect PointsGrid::computeBounds(const std::vector<types::Point>& points)
+{
+	if (points.empty())
+		return Rect();
+
+	Rect result;
+	for (const auto& pt : points)
+		result |= pt;
+	return result;
+}
+
 } // namespace helper
 
 } // namespace panda

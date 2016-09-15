@@ -4,6 +4,7 @@
 #include <panda/helper/algorithm.h>
 #include <panda/helper/EasingFunctions.h>
 #include <panda/types/Gradient.h>
+#include <panda/types/Point.h>
 
 namespace panda {
 

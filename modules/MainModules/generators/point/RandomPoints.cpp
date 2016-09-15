@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
@@ -53,7 +53,10 @@ public:
 		Rect area = m_area.getValue();
 		if(area.empty())
 		{
-			auto size = parentDocument()->getRenderSize();
+			auto docPtr = dynamic_cast<RenderedDocument*>(parentDocument());
+			if (!docPtr)
+				return; // Empty area, cannot compute
+			auto size = docPtr->getRenderSize();
 			area = Rect(0, 0, static_cast<float>(size.width()-1), static_cast<float>(size.height()-1));
 		}
 		float w = area.width(), h = area.height();

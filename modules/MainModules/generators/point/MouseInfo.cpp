@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 
@@ -44,7 +44,8 @@ public:
 
 	void update()
 	{
-		Point oldPos = m_position.getValue(), newPos = parentDocument()->getMousePosition();
+		auto doc = parent<InteractiveDocument>();
+		Point oldPos = m_position.getValue(), newPos = doc->getMousePosition();
 
 		Point delta;
 		if(oldPos != newPos)
@@ -57,7 +58,7 @@ public:
 		if(delta != m_movement.getValue())
 			m_movement.setValue(delta);
 
-		m_clickState.setValue(parentDocument()->getMouseClick());
+		m_clickState.setValue(doc->getMouseClick());
 
 		m_firstTimestep = false;
 	}
@@ -68,7 +69,7 @@ protected:
 	Data<int> m_clickState;
 };
 
-int GeneratorPoint_MouseInfoClass = RegisterObject<GeneratorPoint_MouseInfo>("Generator/Point/Mouse").setDescription("Gives information about the mouse in the render view");
+int GeneratorPoint_MouseInfoClass = RegisterObject<GeneratorPoint_MouseInfo, InteractiveDocument>("Generator/Point/Mouse").setDescription("Gives information about the mouse in the render view");
 
 } // namespace Panda
 

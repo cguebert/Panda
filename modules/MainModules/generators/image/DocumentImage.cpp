@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
@@ -35,7 +35,7 @@ public:
 
 	void update()
 	{
-		image.getAccessor()->setFbo(parentDocument()->getFBO());
+		image.getAccessor()->setFbo(parent<RenderedDocument>()->getFBO());
 	}
 
 protected:
@@ -43,7 +43,7 @@ protected:
 	Data<ImageWrapper> image;
 };
 
-int GeneratorImage_DocumentRenderedClass = RegisterObject<GeneratorImage_DocumentRendered>("Generator/Image/Document image")
+int GeneratorImage_DocumentRenderedClass = RegisterObject<GeneratorImage_DocumentRendered, RenderedDocument>("Generator/Image/Document image")
 		.setDescription("Get the last rendered image of the document");
 
 } // namespace Panda

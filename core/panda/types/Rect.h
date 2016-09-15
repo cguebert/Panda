@@ -99,12 +99,16 @@ public:
 	Rect adjusted(float dx1, float dy1, float dx2, float dy2) const;
 	Rect adjusted(const Rect& r) const;
 
-	Rect operator|(const Rect &r) const; /// Union
-	Rect& operator|=(const Rect &r);
+	Rect operator|(const Rect& r) const; /// Union
+	Rect& operator|=(const Rect& r);
 	Rect united(const Rect& r) const;
 
-	Rect operator&(const Rect &r) const; /// Intersection
-	Rect& operator&=(const Rect &r);
+	Rect operator|(const Point& p) const; /// Union with a point
+	Rect& operator|=(const Point& p);
+	Rect united(const Point& p) const;
+
+	Rect operator&(const Rect& r) const; /// Intersection
+	Rect& operator&=(const Rect& r);
 	Rect intersected(const Rect& r) const;
 
 	bool intersects(const Rect& r) const;
@@ -310,13 +314,19 @@ inline Rect Rect::adjusted(float dx1, float dy1, float dx2, float dy2) const
 inline Rect Rect::adjusted(const Rect& r) const
 { return Rect(x1 + r.x1, y1 + r.y1, x2 + r.x2, y2 + r.y2); }
 
-inline Rect& Rect::operator|=(const Rect &r)
+inline Rect& Rect::operator|=(const Rect& r)
 { *this = *this | r; return *this; }
 
 inline Rect Rect::united(const Rect& r) const
 { return *this | r; }
 
-inline Rect& Rect::operator&=(const Rect &r)
+inline Rect& Rect::operator|=(const Point &p)
+{ *this = *this | p; return *this; }
+
+inline Rect Rect::united(const Point& p) const
+{ return *this | p; }
+
+inline Rect& Rect::operator&=(const Rect& r)
 { *this = *this & r; return *this; }
 
 inline Rect Rect::intersected(const Rect& r) const

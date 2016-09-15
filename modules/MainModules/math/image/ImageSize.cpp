@@ -2,6 +2,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
+#include <panda/types/Point.h>
 
 namespace panda {
 

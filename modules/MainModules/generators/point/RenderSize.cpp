@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
@@ -25,7 +25,7 @@ public:
 
 	void update()
 	{
-		auto tmpSize = parentDocument()->getRenderSize();
+		auto tmpSize = parent<RenderedDocument>()->getRenderSize();
 		renderSize.setValue(Point(static_cast<float>(tmpSize.width()), static_cast<float>(tmpSize.height())));
 	}
 
@@ -33,7 +33,7 @@ protected:
 	Data<Point> renderSize;
 };
 
-int GeneratorPoint_RenderSizeClass = RegisterObject<GeneratorPoint_RenderSize>("Generator/Point/Size of render view").setDescription("Gives the dimensions of the render");
+int GeneratorPoint_RenderSizeClass = RegisterObject<GeneratorPoint_RenderSize, RenderedDocument>("Generator/Point/Size of render view").setDescription("Gives the dimensions of the render");
 
 //****************************************************************************//
 
@@ -55,7 +55,7 @@ public:
 
 	void update()
 	{
-		auto tmpSize = parentDocument()->getRenderSize();
+		auto tmpSize = parent<RenderedDocument>()->getRenderSize();
 		renderArea.setValue(types::Rect(0, 0, static_cast<float>(tmpSize.width()), static_cast<float>(tmpSize.height())));
 	}
 
@@ -63,7 +63,7 @@ protected:
 	Data<types::Rect> renderArea;
 };
 
-int GeneratorRect_RenderAreaClass = RegisterObject<GeneratorRect_RenderArea>("Generator/Rectangle/Area of render view").setDescription("Gives the area used by the render");
+int GeneratorRect_RenderAreaClass = RegisterObject<GeneratorRect_RenderArea, RenderedDocument>("Generator/Rectangle/Area of render view").setDescription("Gives the area used by the render");
 
 
 } // namespace Panda
