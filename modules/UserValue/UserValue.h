@@ -1,4 +1,4 @@
-#include <panda/object/PandaObject.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/object/Group.h> // For BaseGeneratorUser
 #include <panda/XmlDocument.h>
 #include <panda/helper/algorithm.h>

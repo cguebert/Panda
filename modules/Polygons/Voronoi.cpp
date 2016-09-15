@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Path.h>
@@ -217,7 +217,10 @@ public:
 		auto boundingBox = m_boundingBox.getValue();
 		if (boundingBox.empty())
 		{
-			auto size = parentDocument()->getRenderSize();
+			auto docPtr = dynamic_cast<RenderedDocument*>(parentDocument());
+			if (!docPtr)
+				return; // Empty area, cannot compute
+			auto size = docPtr->getRenderSize();
 			boundingBox.set(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
 		}
 
@@ -245,9 +248,11 @@ public:
 	GeneratorMesh_Voronoi2(PandaDocument *doc)
 		: PandaObject(doc)
 		, m_sites(initData("sites", "Sites of the Voronoi tessellation"))
+		, m_size(initData("size", "Size of the voronoi diagram. If null, will use the render size."))
 		, m_paths(initData("polygons", "Polygons created from the Voronoi tessellation"))
 	{
 		addInput(m_sites);
+		addInput(m_size);
 		addOutput(m_paths);
 	}
 
@@ -256,7 +261,17 @@ public:
 
 	void update()
 	{
-		auto size = parentDocument()->getRenderSize();
+		graphics::Size size;
+		auto dSize = m_size.getValue();
+		if (dSize.isNull())
+		{
+			auto docPtr = dynamic_cast<RenderedDocument*>(parentDocument());
+			if (!docPtr)
+				return; // Empty area, cannot compute
+			size = docPtr->getRenderSize();
+		}
+		else
+			size = graphics::Size({ static_cast<int>(dSize.x), static_cast<int>(dSize.y) });
 
 		const std::vector<Point>& pts = m_sites.getValue();
 		auto acc = m_paths.getAccessor();
@@ -294,6 +309,7 @@ public:
 
 protected:
 	Data< std::vector<Point> > m_sites;
+	Data< Point > m_size;
 	Data< std::vector<Path> > m_paths;
 };
 

@@ -122,7 +122,11 @@ namespace panda
 
 		r = engine->RegisterObjectMethod("Rect", "Rect &opOrAssign(const Rect &in rect)", asMETHODPR(Rect, operator|=, (const Rect&), Rect&), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Rect", "Rect opOr(const Rect &in rect) const", asMETHODPR(Rect, operator|, (const Rect&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
-		r = engine->RegisterObjectMethod("Rect", "Rect united(const Rect &in rect) const", asMETHOD(Rect, united), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect united(const Rect &in rect) const", asMETHODPR(Rect, united, (const Rect&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
+
+		r = engine->RegisterObjectMethod("Rect", "Rect &opOrAssign(const Point &in point)", asMETHODPR(Rect, operator|=, (const Point&), Rect&), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect opOr(const Point &in point) const", asMETHODPR(Rect, operator|, (const Point&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
+		r = engine->RegisterObjectMethod("Rect", "Rect united(const Point &in point) const", asMETHODPR(Rect, united, (const Point&) const, Rect), asCALL_THISCALL); assert( r >= 0 );
 
 		r = engine->RegisterObjectMethod("Rect", "Rect &opAndAssign(const Rect &in rect)", asMETHODPR(Rect, operator&=, (const Rect&), Rect&), asCALL_THISCALL); assert( r >= 0 );
 		r = engine->RegisterObjectMethod("Rect", "Rect opAnd(const Rect &in rect) const", asMETHODPR(Rect, operator&, (const Rect&) const, Rect), asCALL_THISCALL); assert( r >= 0 );

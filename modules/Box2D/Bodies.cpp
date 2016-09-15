@@ -1,6 +1,6 @@
 #include <modules/Box2D/World.h>
 
-#include <panda/object/PandaObject.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Mesh.h>
 #include <panda/types/Path.h>

@@ -1,4 +1,4 @@
-#include <panda/object/PandaObject.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/IntVector.h>
 #include <panda/types/Path.h>

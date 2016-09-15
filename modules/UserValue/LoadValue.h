@@ -1,4 +1,4 @@
-#include <panda/object/PandaObject.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/XmlDocument.h>
 
 namespace panda {
