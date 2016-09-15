@@ -26,8 +26,6 @@ protected:
 	graphics::Mat4x4& getMVPMatrix();
 	graphics::Size getLayerSize() const;
 	BaseDrawTarget* getDrawTarget() const;
-
-	RenderedDocument* m_parentRenderedDocument;
 };
 
 } // namespace panda

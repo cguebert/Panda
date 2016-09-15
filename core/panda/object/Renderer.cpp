@@ -7,7 +7,6 @@ namespace panda
 
 Renderer::Renderer(RenderedDocument* doc)
 	: DockableObject(doc)
-	, m_parentRenderedDocument(doc)
 {
 	BaseData* data = doc->getData("render size");
 	if(data) addInput(*data);
@@ -15,7 +14,7 @@ Renderer::Renderer(RenderedDocument* doc)
 
 DockObject* Renderer::getDefaultDock() const
 {
-	return m_parentRenderedDocument->getDefaultLayer();
+	return parent<RenderedDocument>()->getDefaultLayer();
 }
 
 graphics::Mat4x4& Renderer::getMVPMatrix()

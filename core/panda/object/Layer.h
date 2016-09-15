@@ -82,7 +82,6 @@ public:
 	virtual void removedFromDocument();
 
 protected:
-	RenderedDocument* m_parentRenderedDocument;
 	Data<std::string> m_layerName;
 	Data<types::ImageWrapper> m_image;
 	Data<int> m_compositionMode;

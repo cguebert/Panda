@@ -319,7 +319,6 @@ int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many obje
 
 GroupWithLayer::GroupWithLayer(RenderedDocument* parent)
 	: Group(parent)
-	, m_parentRenderedDocument(parent)
 	, m_layer(nullptr)
 	, m_image(initData("image", "Image created by the renderers connected to this layer"))
 	, m_compositionMode(initData(0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
@@ -354,7 +353,7 @@ void GroupWithLayer::setLayer(Layer* newLayer)
 
 void GroupWithLayer::update()
 {
-	updateLayer(m_parentRenderedDocument);
+	updateLayer(parent<RenderedDocument>());
 }
 
 BaseLayer::RenderersList GroupWithLayer::getRenderers()
@@ -374,7 +373,7 @@ void GroupWithLayer::addedObject(PandaObject* object)
 		return;
 	}
 
-	Layer* defaultLayer = m_parentRenderedDocument->getDefaultLayer();
+	Layer* defaultLayer = parent<RenderedDocument>()->getDefaultLayer();
 	Renderer* renderer = dynamic_cast<Renderer*>(object);
 	if(renderer)
 	{
@@ -398,7 +397,7 @@ void GroupWithLayer::removedObject(PandaObject* object)
 {
 	Renderer* renderer = dynamic_cast<Renderer*>(object);
 	if(renderer && !renderer->getParentDock())
-		m_parentRenderedDocument->getDefaultLayer()->addDockable(renderer);
+		parent<RenderedDocument>()->getDefaultLayer()->addDockable(renderer);
 }
 
 void GroupWithLayer::removedFromDocument()
@@ -418,7 +417,7 @@ graphics::Size GroupWithLayer::getLayerSize() const
 	if(m_layer)
 		return m_layer->getLayerSize();
 	else
-		return m_parentRenderedDocument->getRenderSize();
+		return parent<RenderedDocument>()->getRenderSize();
 }
 
 const std::string GroupWithLayer::getLayerName() const

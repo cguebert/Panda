@@ -65,6 +65,9 @@ public:
 
 	PandaDocument* parentDocument() const; /// Get the parent document of this object (for a document, this is itself)
 
+	template <class D>
+	D* parent() const; /// Get the parent document of this object, casted to the given type
+
 	virtual void addedToDocument() {}		/// The object is being added
 	virtual void removedFromDocument() {}	/// Ths object is being removed (but not deleted as it can be undone later)
 
@@ -143,6 +146,13 @@ inline PandaDocument* PandaObject::parentDocument() const
 
 inline void PandaObject::setParentDocument(PandaDocument* doc)
 { if (!m_parentDocument) m_parentDocument = doc; }
+
+template <class D>
+D* PandaObject::parent() const
+{
+	static_assert(std::is_base_of<PandaDocument, D>::value, "The argument of PandaObject::parent must inherit from PandaDocument");
+	return dynamic_cast<D*>(m_parentDocument);
+}
 
 inline bool PandaObject::isUpdating() const
 { return m_isUpdating; }

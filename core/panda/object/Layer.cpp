@@ -84,7 +84,6 @@ unsigned int BaseLayer::getTextureId() const
 
 Layer::Layer(RenderedDocument* parent)
 	: DockObject(parent)
-	, m_parentRenderedDocument(parent)
 	, m_layerName(initData("name", "Name of this layer"))
 	, m_image(initData("image", "Image created by the renderers connected to this layer"))
 	, m_compositionMode(initData(0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
@@ -112,7 +111,7 @@ Layer::Layer(RenderedDocument* parent)
 
 void Layer::update()
 {
-	updateLayer(m_parentRenderedDocument);
+	updateLayer(parent<RenderedDocument>());
 }
 
 bool Layer::accepts(DockableObject* dockable) const
@@ -162,7 +161,7 @@ void Layer::removedFromDocument()
 
 graphics::Size Layer::getLayerSize() const
 {
-	return m_parentRenderedDocument->getRenderSize();
+	return parent<RenderedDocument>()->getRenderSize();
 }
 
 int LayerClass = RegisterObject<Layer, RenderedDocument>("Layer").setDescription("Organize renderers and change opacity and the composition mode");

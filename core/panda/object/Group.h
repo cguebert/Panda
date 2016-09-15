@@ -112,7 +112,6 @@ protected:
 
 	graphics::Mat4x4 m_mvpMatrix;
 
-	RenderedDocument* m_parentRenderedDocument;
 	Layer* m_layer;
 	RenderersList m_renderers;
 
