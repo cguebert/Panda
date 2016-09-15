@@ -2,6 +2,7 @@
 #define DOCUMENTRENDERER_H
 
 #include <panda/core.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/graphics/Mat4x4.h>
 #include <panda/graphics/Model.h>
@@ -12,7 +13,7 @@ namespace panda {
 class PANDA_CORE_API DocumentRenderer
 {
 public:
-	DocumentRenderer(PandaDocument& document);
+	DocumentRenderer(RenderedDocument& document);
 
 	void initializeGL();
 	void resizeGL();
@@ -26,7 +27,7 @@ public:
 	graphics::Framebuffer& getFBO();
 
 private:
-	PandaDocument& m_document;
+	RenderedDocument& m_document;
 	bool m_isRenderingMainView = false; // If true, the context of the main render view has already been made current
 	graphics::Framebuffer m_renderFBO, m_secondRenderFBO;
 	graphics::ShaderProgram m_mergeLayersShader;

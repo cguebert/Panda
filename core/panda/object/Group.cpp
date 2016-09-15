@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/SimpleGUI.h>
 #include <panda/data/DataFactory.h>
 #include <panda/object/Group.h>
@@ -317,8 +317,9 @@ int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many obje
 
 //****************************************************************************//
 
-GroupWithLayer::GroupWithLayer(PandaDocument* parent)
+GroupWithLayer::GroupWithLayer(RenderedDocument* parent)
 	: Group(parent)
+	, m_parentRenderedDocument(parent)
 	, m_layer(nullptr)
 	, m_image(initData("image", "Image created by the renderers connected to this layer"))
 	, m_compositionMode(initData(0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
@@ -353,7 +354,7 @@ void GroupWithLayer::setLayer(Layer* newLayer)
 
 void GroupWithLayer::update()
 {
-	updateLayer(parentDocument());
+	updateLayer(m_parentRenderedDocument);
 }
 
 BaseLayer::RenderersList GroupWithLayer::getRenderers()
@@ -373,7 +374,7 @@ void GroupWithLayer::addedObject(PandaObject* object)
 		return;
 	}
 
-	Layer* defaultLayer = parentDocument()->getDefaultLayer();
+	Layer* defaultLayer = m_parentRenderedDocument->getDefaultLayer();
 	Renderer* renderer = dynamic_cast<Renderer*>(object);
 	if(renderer)
 	{
@@ -397,7 +398,7 @@ void GroupWithLayer::removedObject(PandaObject* object)
 {
 	Renderer* renderer = dynamic_cast<Renderer*>(object);
 	if(renderer && !renderer->getParentDock())
-		parentDocument()->getDefaultLayer()->addDockable(renderer);
+		m_parentRenderedDocument->getDefaultLayer()->addDockable(renderer);
 }
 
 void GroupWithLayer::removedFromDocument()
@@ -417,7 +418,7 @@ graphics::Size GroupWithLayer::getLayerSize() const
 	if(m_layer)
 		return m_layer->getLayerSize();
 	else
-		return parentDocument()->getRenderSize();
+		return m_parentRenderedDocument->getRenderSize();
 }
 
 const std::string GroupWithLayer::getLayerName() const
@@ -429,6 +430,6 @@ const std::string GroupWithLayer::getLayerName() const
 		return groupName; 
 }
 
-int GroupWithLayerClass = RegisterObject<GroupWithLayer>("Group with Layer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);
+int GroupWithLayerClass = RegisterObject<GroupWithLayer, RenderedDocument>("Group with Layer").setDescription("Groups many object into a single one (version with a layer)").setHidden(true);
 
 } // namespace panda

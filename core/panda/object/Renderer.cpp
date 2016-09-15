@@ -1,12 +1,13 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/Renderer.h>
 #include <panda/object/Layer.h>
 
 namespace panda
 {
 
-Renderer::Renderer(PandaDocument* doc)
+Renderer::Renderer(RenderedDocument* doc)
 	: DockableObject(doc)
+	, m_parentRenderedDocument(doc)
 {
 	BaseData* data = doc->getData("render size");
 	if(data) addInput(*data);
@@ -14,7 +15,7 @@ Renderer::Renderer(PandaDocument* doc)
 
 DockObject* Renderer::getDefaultDock() const
 {
-	return parentDocument()->getDefaultLayer();
+	return m_parentRenderedDocument->getDefaultLayer();
 }
 
 graphics::Mat4x4& Renderer::getMVPMatrix()

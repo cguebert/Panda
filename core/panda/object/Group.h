@@ -12,6 +12,7 @@ namespace panda
 
 class EditGroupCommand;
 class PandaDocument;
+class RenderedDocument;
 
 class PANDA_CORE_API Group : public PandaObject
 {
@@ -78,7 +79,7 @@ class PANDA_CORE_API GroupWithLayer : public Group, public BaseLayer
 public:
 	PANDA_CLASS(GroupWithLayer, Group)
 
-	explicit GroupWithLayer(PandaDocument* parent);
+	explicit GroupWithLayer(RenderedDocument* parent);
 	void setLayer(Layer* m_layer);
 
 	void update() override;
@@ -111,6 +112,7 @@ protected:
 
 	graphics::Mat4x4 m_mvpMatrix;
 
+	RenderedDocument* m_parentRenderedDocument;
 	Layer* m_layer;
 	RenderersList m_renderers;
 

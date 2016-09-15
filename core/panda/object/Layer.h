@@ -8,6 +8,7 @@
 namespace panda
 {
 
+class RenderedDocument;
 class Renderer;
 
 namespace graphics
@@ -25,7 +26,7 @@ public:
 class PANDA_CORE_API BaseLayer : public BaseDrawTarget
 {
 public:
-	virtual void updateLayer(PandaDocument* doc);
+	virtual void updateLayer(RenderedDocument* doc);
 
 	typedef std::vector<Renderer*> RenderersList;
 	virtual RenderersList getRenderers() = 0;
@@ -55,7 +56,7 @@ class PANDA_CORE_API Layer : public DockObject, public BaseLayer
 public:
 	PANDA_CLASS(Layer, DockObject)
 
-	explicit Layer(PandaDocument* parent = nullptr);
+	explicit Layer(RenderedDocument* parent = nullptr);
 
 	void update() override;
 	bool accepts(DockableObject* dockable) const override;
@@ -81,6 +82,7 @@ public:
 	virtual void removedFromDocument();
 
 protected:
+	RenderedDocument* m_parentRenderedDocument;
 	Data<std::string> m_layerName;
 	Data<types::ImageWrapper> m_image;
 	Data<int> m_compositionMode;

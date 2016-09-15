@@ -10,13 +10,14 @@ namespace panda
 
 class Layer;
 class BaseDrawTarget;
+class RenderedDocument;
 
 class PANDA_CORE_API Renderer : public DockableObject
 {
 public:
 	PANDA_CLASS(Renderer, DockableObject)
 
-	explicit Renderer(PandaDocument* doc);
+	explicit Renderer(RenderedDocument* doc);
 	virtual DockObject* getDefaultDock() const;
 
 	virtual void render() = 0;
@@ -25,6 +26,8 @@ protected:
 	graphics::Mat4x4& getMVPMatrix();
 	graphics::Size getLayerSize() const;
 	BaseDrawTarget* getDrawTarget() const;
+
+	RenderedDocument* m_parentRenderedDocument;
 };
 
 } // namespace panda

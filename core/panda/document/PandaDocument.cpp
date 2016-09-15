@@ -1,24 +1,11 @@
 #include <panda/document/PandaDocument.h>
-#include <panda/Messaging.h>
 #include <panda/SimpleGUI.h>
 #include <panda/TimedFunctions.h>
 #include <panda/UndoStack.h>
-#include <panda/data/DataFactory.h>
-#include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
-#include <panda/document/GraphUtils.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/document/Scheduler.h>
-#include <panda/object/Layer.h>
-#include <panda/object/ObjectFactory.h>
-#include <panda/object/Renderer.h>
-#include <panda/graphics/Framebuffer.h>
-#include <panda/graphics/Model.h>
-#include <panda/helper/algorithm.h>
-#include <panda/helper/GradientCache.h>
-#include <panda/helper/ShaderCache.h>
 #include <panda/helper/UpdateLogger.h>
-#include <panda/helper/system/FileRepository.h>
 
 #include <chrono>
 
@@ -44,29 +31,18 @@ double toSeconds(long long elapsed)
 
 namespace panda {
 
-using types::Color;
-using types::ImageWrapper;
-using types::Point;
-
 PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	: PandaObject(nullptr)
 	, m_currentIndex(1)
-	, m_renderSize(initData(Point(800,600), "render size", "Size of the image to be rendered"))
-	, m_backgroundColor(initData(Color::white(), "background color", "Background color of the image to be rendered"))
 	, m_animTime(initData(0.0, "time", "Time of the animation"))
 	, m_timestep(initData(0.01, "timestep", "Time step of the animation"))
 	, m_useTimer(initData(1, "use timer", "If true, wait before the next timestep. If false, compute the next one as soon as the previous finished."))
-	, m_mousePosition(initData("mouse position", "Current position of the mouse in the render view"))
-	, m_mouseClick(initData(0, "mouse click", "1 if the left mouse button is pressed"))
 	, m_nbThreads(initData(0, "nb threads", "Optimize computation for multiple CPU cores (not using the scheduler if < 0)"))
 	, m_gui(gui)
 	, m_objectsList(std::make_unique<ObjectsList>())
-	, m_renderer(std::make_unique<DocumentRenderer>(*this))
 	, m_signals(std::make_unique<DocumentSignals>())
 	, m_undoStack(std::make_unique<UndoStack>())
 {
-	addInput(m_renderSize);
-	addInput(m_backgroundColor);
 	addInput(m_timestep);
 	addInput(m_useTimer);
 	addInput(m_nbThreads);
@@ -76,16 +52,6 @@ PandaDocument::PandaDocument(gui::BaseGUI& gui)
 	// Not connecting to the document, otherwise it would update the layers each time we get the time.
 	m_animTime.setOutput(true);
 	m_animTime.setReadOnly(true);
-
-	m_mousePosition.setOutput(true);
-	m_mousePosition.setReadOnly(true);
-
-	m_mouseClick.setOutput(true);
-	m_mouseClick.setReadOnly(true);
-	m_mouseClick.setWidget("checkbox");
-
-	m_defaultLayer = std::make_shared<Layer>(this);
-	m_defaultLayer->getLayerNameData().setValue("Default Layer");
 
 	setInternalData("Document", 0);
 	
@@ -120,10 +86,7 @@ void PandaDocument::resetDocument()
 	m_animTime.setValue(0.0);
 	m_timestep.setValue((float)0.01);
 	m_useTimer.setValue(1);
-	m_backgroundColor.setValue(Color::white());
 	m_nbThreads.setValue(0);
-
-	setRenderSize({ 800, 600 });
 
 	m_animPlaying = false;
 	m_animMultithread = false;
@@ -133,59 +96,11 @@ void PandaDocument::resetDocument()
 
 	m_undoStack->clear();
 
-	helper::GradientCache::getInstance()->clear();
-	helper::ShaderCache::getInstance()->clear();
-
 	m_signals->modified.run();
 	m_signals->timeChanged.run();
 
 	m_resetting = false;
 	m_undoStack->setEnabled(true);
-}
-
-graphics::Size PandaDocument::getRenderSize() const
-{
-	Point pt = m_renderSize.getValue();
-	return graphics::Size(std::max(1, static_cast<int>(pt.x)), std::max(1, static_cast<int>(pt.y)));
-}
-
-void PandaDocument::setRenderSize(graphics::Size size)
-{ 
-	m_renderSize.setValue(
-		panda::types::Point(
-			std::max(1.f, static_cast<float>(size.width())), 
-			std::max(1.f, static_cast<float>(size.height()))
-			)
-		); 
-}
-
-void PandaDocument::mouseMoveEvent(types::Point localPos, types::Point globalPos)
-{ 
-	m_mousePositionBuffer = localPos;
-	m_signals->mouseMoveEvent.run(localPos, globalPos);
-}
-
-void PandaDocument::mouseButtonEvent(int button, bool isPressed, types::Point pos)
-{
-	if (button == 0)
-	{
-		if (m_mouseClickBuffer && !isPressed) // Pressed & released in 1 timestep, we will send 2 events
-			m_mouseClickBuffer = -1;
-		else
-			m_mouseClickBuffer = isPressed;
-	}
-
-	m_signals->mouseButtonEvent.run(button, isPressed, pos);
-}
-
-void PandaDocument::keyEvent(int key, bool isPressed)
-{
-	m_signals->keyEvent.run(key, isPressed);
-}
-
-void PandaDocument::textEvent(const std::string& text)
-{
-	m_signals->textEvent.run(text);
 }
 
 void PandaDocument::setDataDirty(BaseData* data) const
@@ -241,34 +156,8 @@ void PandaDocument::onChangedDock(DockableObject* dockable)
 
 void PandaDocument::update()
 {
-	helper::GradientCache::getInstance()->resetUsedFlag();
-	helper::ShaderCache::getInstance()->resetUsedFlag();
-
-	if (!m_renderer->renderingMainView()) // If it not already the case, make the OpenGL context current
-	{
-		helper::ScopedEvent log("context make current");
-		m_gui.contextMakeCurrent();
-	}
-
 	if(m_animMultithread && m_scheduler)
 		m_scheduler->update();
-
-	m_renderer->renderGL();
-
-	helper::GradientCache::getInstance()->clearUnused();
-	helper::ShaderCache::getInstance()->clearUnused();
-
-	if (!m_renderer->renderingMainView()) // Release the context if we made it current ourselves
-	{
-		helper::ScopedEvent log("context done current");
-		m_gui.contextDoneCurrent();
-	}
-}
-
-graphics::Framebuffer& PandaDocument::getFBO()
-{
-	updateIfDirty();
-	return m_renderer->getFBO();
 }
 
 void PandaDocument::play(bool playing)
@@ -276,6 +165,7 @@ void PandaDocument::play(bool playing)
 	m_animPlaying = playing;
 	if(m_animPlaying)
 	{
+		m_timeStepVal = m_timestep.getValue();
 		int nbThreads = m_nbThreads.getValue();
 		m_animMultithread = nbThreads != 0;
 		if(m_animMultithread)
@@ -315,7 +205,6 @@ void PandaDocument::step()
 		return;
 	}
 
-	auto timeStepval = m_timestep.getValue();
 	auto startTime = std::chrono::high_resolution_clock::now();
 	panda::helper::UpdateLogger::getInstance()->startLog(this);
 
@@ -324,29 +213,7 @@ void PandaDocument::step()
 	for(auto& object : m_objectsList->get())
 		object->setInStep(true);
 
-	// First update the value of the document (without modifying the corresponding Data)
-	// This is so an object reacting on the time having changed can get the correct value of the mouse position (and not the one from the previous step)
-	m_animTimeVal += timeStepval;
-	m_mousePositionVal = m_mousePositionBuffer;
-	if(m_mouseClickBuffer < 0)
-	{
-		m_mouseClickVal = 1;
-		m_mouseClickBuffer = 0;
-	}
-	else
-		m_mouseClickVal = m_mouseClickBuffer;
-
-	if (m_animPlaying && m_animMultithread && m_scheduler)
-		m_scheduler->setDirty();
-
-	// Let some objects set dirtyValue for each step
-	for(auto& object : m_objectsList->get())
-		object->beginStep();
-
-	// Update the documents Data (all the values are already correct if using the getters)
-	m_animTime.setValue(m_animTimeVal);
-	m_mousePosition.setValue(m_mousePositionVal);
-	m_mouseClick.setValue(m_mouseClickVal);
+	updateDocumentData();
 
 	setDirtyValue(this);
 	updateIfDirty();
@@ -395,17 +262,29 @@ void PandaDocument::step()
 
 void PandaDocument::rewind()
 {
-	panda::helper::UpdateLogger::getInstance()->startLog(this);
 	m_animTimeVal = 0.0;
 	m_animTime.setValue(0.0);
-	m_mousePositionVal = m_mousePositionBuffer;
-	m_mousePosition.setValue(m_mousePositionBuffer);
-	m_mouseClickVal = 0;
-	m_mouseClick.setValue(0);
 	for(auto object : m_objectsList->get())
 		object->reset();
 	setDirtyValue(this);
 	m_signals->timeChanged.run();
+}
+
+void PandaDocument::updateDocumentData()
+{
+	// First update the value of the document (without modifying the corresponding Data)
+	// This is so an object reacting on the time having changed can get the correct value of the mouse position (and not the one from the previous step)
+	m_animTimeVal += m_timeStepVal;
+
+	if (m_animPlaying && m_animMultithread && m_scheduler)
+		m_scheduler->setDirty();
+
+	// Let some objects set dirtyValue for each step
+	for(auto& object : m_objectsList->get())
+		object->beginStep();
+
+	// Update the documents Data (all the values are already correct if using the getters)
+	m_animTime.setValue(m_animTimeVal);
 }
 
 } // namespace panda

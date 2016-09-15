@@ -3,28 +3,13 @@
 
 #include <panda/object/PandaObject.h>
 
-#include <panda/types/Color.h>
-#include <panda/types/Point.h>
-
-#include <panda/graphics/Size.h>
-
 namespace panda {
 
-class BaseLayer;
 class DockableObject;
-class DocumentRenderer;
 class DocumentSignals;
-class Layer;
 class ObjectsList;
 class Scheduler;
 class UndoStack;
-class XmlElement;
-
-namespace graphics
-{
-	class Framebuffer;
-	class ShaderProgram; 
-}
 
 namespace gui
 {
@@ -39,13 +24,7 @@ public:
 	explicit PandaDocument(gui::BaseGUI& gui);
 	~PandaDocument();
 
-	void resetDocument();
-
-	types::Color getBackgroundColor() const;
-	void setBackgroundColor(types::Color color);
-
-	graphics::Size getRenderSize() const;
-	void setRenderSize(graphics::Size size);
+	virtual void resetDocument();
 
 	float getAnimationTime() const;
 	float getTimeStep() const;
@@ -53,22 +32,9 @@ public:
 	bool animationIsPlaying() const;
 	bool animationIsMultithread() const;
 
-	types::Point getMousePosition() const;
-	void mouseMoveEvent(types::Point localPos, types::Point globalPos);
-
-	int getMouseClick() const; // Only gives the status of the left button
-	void mouseButtonEvent(int button, bool isPressed, types::Point pos);
-
-	void keyEvent(int key, bool isPressed);
-	void textEvent(const std::string& text); // Unicode inputs
-
 	uint32_t getNextIndex();
 
 	void update() override;
-
-	graphics::Framebuffer& getFBO();
-
-	Layer* getDefaultLayer() const;
 
 	// When an object is set to laterUpdate, use these functions to help the Scheduler
 	void setDataDirty(BaseData* data) const; // Set the outputs to dirty before setting the value (so it doesn't propagate)
@@ -82,34 +48,25 @@ public:
 	gui::BaseGUI& getGUI() const; // Access to the GUI thread, update the view, show message boxes
 	ObjectsList& getObjectsList() const; // Access to the objects, signals when modified
 	DocumentSignals& getSignals() const; // Connect and run signals for when the document is modified
-	DocumentRenderer& getRenderer() const; // What takes care of rendering the document in OpenGL
 	UndoStack& getUndoStack() const; // Undo/redo capabilities
 
 	// Slots or called only by the UI
 	void play(bool playing);
 	void step();
-	void rewind();
+	virtual void rewind();
 
 protected:
+	virtual void updateDocumentData(); // At the start of a step
+
 	using ObjectsRawList = std::vector<PandaObject*>;
 	ObjectsRawList m_dirtyObjects; // All the objects that were dirty during the current step
 	uint32_t m_currentIndex;
-	std::shared_ptr<Layer> m_defaultLayer;
 
-	float m_animTimeVal = 0.0;
-	types::Point m_mousePositionVal;
-	int m_mouseClickVal = 0;
+	float m_animTimeVal = 0, m_timeStepVal = 0;
 
-	Data<types::Point> m_renderSize;
-	Data<types::Color> m_backgroundColor;
 	Data<float> m_animTime, m_timestep;
 	Data<int> m_useTimer;
-	Data<types::Point> m_mousePosition;
-	Data<int> m_mouseClick;
 	Data<int> m_nbThreads;
-
-	types::Point m_mousePositionBuffer;
-	int m_mouseClickBuffer = 0;
 
 	bool m_resetting = false;
 
@@ -123,19 +80,12 @@ protected:
 
 	gui::BaseGUI& m_gui;
 	std::unique_ptr<ObjectsList> m_objectsList;
-	std::unique_ptr<DocumentRenderer> m_renderer;
 	std::unique_ptr<DocumentSignals> m_signals;
 	std::unique_ptr<Scheduler> m_scheduler;
 	std::unique_ptr<UndoStack> m_undoStack;
 };
 
 //****************************************************************************//
-
-inline types::Color PandaDocument::getBackgroundColor() const
-{ return m_backgroundColor.getValue(); }
-
-inline void PandaDocument::setBackgroundColor(types::Color color)
-{ m_backgroundColor.setValue(color); }
 
 inline float PandaDocument::getAnimationTime() const
 { return m_animTimeVal; }
@@ -152,26 +102,14 @@ inline bool PandaDocument::animationIsPlaying() const
 inline bool PandaDocument::animationIsMultithread() const
 { return m_animMultithread; }
 
-inline types::Point PandaDocument::getMousePosition() const
-{ return m_mousePositionVal; }
-
-inline int PandaDocument::getMouseClick() const
-{ return m_mouseClickVal; }
-
 inline uint32_t PandaDocument::getNextIndex()
 { return m_currentIndex++; }
-
-inline Layer* PandaDocument::getDefaultLayer() const
-{ return m_defaultLayer.get(); }
 
 inline gui::BaseGUI& PandaDocument::getGUI() const
 { return m_gui; }
 
 inline ObjectsList& PandaDocument::getObjectsList() const
 { return *m_objectsList; }
-
-inline DocumentRenderer& PandaDocument::getRenderer() const
-{ return *m_renderer; }
 
 inline DocumentSignals& PandaDocument::getSignals() const
 { return *m_signals; }

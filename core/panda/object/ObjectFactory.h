@@ -69,7 +69,7 @@ public:
 	{ return m_modules; }
 
 protected:
-	template<class T> friend class RegisterObject;
+	template<class O, class D> friend class RegisterObject;
 	void registerObject(const std::string& className, ClassEntry entry);
 
 	friend class ModuleHandle;
@@ -91,29 +91,37 @@ PANDA_CORE_API void objectDeletor(PandaObject* object);
 
 //****************************************************************************//
 
-template<class T>
+template <class Object, class Document>
 class ObjectCreator : public BaseObjectCreator
 {
 public:
 	std::shared_ptr<PandaObject> create(PandaDocument* document) override
-	{ return std::shared_ptr<PandaObject>(new T(document), objectDeletor); }
+	{
+		auto docPtr = dynamic_cast<Document*>(document);
+		return std::shared_ptr<PandaObject>(new Object(docPtr), objectDeletor); 
+	}
 
 	bool canCreate(PandaDocument* document) override
-	{ return canCreateFunc ? canCreateFunc(document) : true; }
+	{
+		auto docPtr = dynamic_cast<Document*>(document);
+		if (!docPtr)
+			return false;
+		return canCreateFunc ? canCreateFunc(docPtr) : true;
+	}
 
-	std::function<bool(PandaDocument*)> canCreateFunc;
+	std::function<bool(Document*)> canCreateFunc;
 };
 
-template <class T>
+template <class Object, class Document = PandaDocument>
 class RegisterObject
 {
 public:
 	explicit RegisterObject(std::string menuDisplay)
 	{
-		auto creator = std::make_shared<ObjectCreator<T>>();
+		auto creator = std::make_shared<ObjectCreator<Object, Document>>();
 		m_creator = creator.get();
 		entry.creator = creator;
-		entry.theClass = T::GetClass();
+		entry.theClass = Object::GetClass();
 		entry.menuDisplay = menuDisplay;
 		if (!menuDisplay.empty())
 		{
@@ -134,12 +142,8 @@ public:
 	RegisterObject& setHidden(bool hid)
 	{ entry.hidden = hid; return *this; }
 
-	RegisterObject& setCanCreateFunction(std::function<bool(PandaDocument*)> func)
+	RegisterObject& setCanCreateFunction(std::function<bool(Document*)> func)
 	{ m_creator->canCreateFunc = func; return *this; }
-
-	template <class D>
-	RegisterObject& setRequiredDocument()
-	{ return setCanCreateFunction([](PandaDocument* document) { return dynamic_cast<D>(document) != nullptr; }); }
 
 	operator int()
 	{
@@ -155,7 +159,7 @@ protected:
 private:
 	RegisterObject();
 
-	ObjectCreator<T>* m_creator;
+	ObjectCreator<Object, Document>* m_creator;
 };
 
 //****************************************************************************//

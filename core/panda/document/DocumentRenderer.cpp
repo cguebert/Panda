@@ -13,7 +13,7 @@
 namespace panda 
 {
 
-DocumentRenderer::DocumentRenderer(PandaDocument& document)
+DocumentRenderer::DocumentRenderer(RenderedDocument& document)
 	: m_document(document)
 {
 }

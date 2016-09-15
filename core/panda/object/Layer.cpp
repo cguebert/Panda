@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/command/MoveLayerCommand.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/graphics/Framebuffer.h>
@@ -13,7 +13,7 @@
 namespace panda
 {
 
-void BaseLayer::updateLayer(PandaDocument* doc)
+void BaseLayer::updateLayer(RenderedDocument* doc)
 {
 	// Bugfix : we update the input Datas of the renderers before setting the viewport
 	//  as getting the image from an ImageWrapper can screw it up
@@ -82,8 +82,9 @@ unsigned int BaseLayer::getTextureId() const
 
 //****************************************************************************//
 
-Layer::Layer(PandaDocument* parent)
+Layer::Layer(RenderedDocument* parent)
 	: DockObject(parent)
+	, m_parentRenderedDocument(parent)
 	, m_layerName(initData("name", "Name of this layer"))
 	, m_image(initData("image", "Image created by the renderers connected to this layer"))
 	, m_compositionMode(initData(0, "composition mode", "Defines how this layer is merged on top of the previous ones (see help for list of modes)"))
@@ -111,7 +112,8 @@ Layer::Layer(PandaDocument* parent)
 
 void Layer::update()
 {
-	updateLayer(parentDocument());}
+	updateLayer(m_parentRenderedDocument);
+}
 
 bool Layer::accepts(DockableObject* dockable) const
 {
@@ -160,9 +162,9 @@ void Layer::removedFromDocument()
 
 graphics::Size Layer::getLayerSize() const
 {
-	return parentDocument()->getRenderSize();
+	return m_parentRenderedDocument->getRenderSize();
 }
 
-int LayerClass = RegisterObject<Layer>("Layer").setDescription("Organize renderers and change opacity and the composition mode");
+int LayerClass = RegisterObject<Layer, RenderedDocument>("Layer").setDescription("Organize renderers and change opacity and the composition mode");
 
 } // namespace panda
