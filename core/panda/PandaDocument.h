@@ -63,7 +63,6 @@ public:
 	void textEvent(const std::string& text); // Unicode inputs
 
 	uint32_t getNextIndex();
-	BaseData* findData(uint32_t objectIndex, const std::string& dataName);
 
 	void update() override;
 

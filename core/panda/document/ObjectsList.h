@@ -23,7 +23,7 @@ public:
 	const SPtrList& get() const;
 	ObjectSPtr getShared(PandaObject* object) const;
 
-	PandaObject* find(uint32_t objectIndex);
+	PandaObject* find(uint32_t objectIndex) const;
 
 	int getObjectPosition(PandaObject* object) const; /// Get the object's position in the objects list
 	void reinsertObject(PandaObject* object, int pos); /// Reorder the object so it is inserted at the index pos in the objects list

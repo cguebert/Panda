@@ -3,6 +3,7 @@
 
 #include <panda/data/BaseClass.h>
 
+#include <functional>
 #include <map>
 #include <memory>
 
@@ -16,7 +17,8 @@ class PANDA_CORE_API BaseObjectCreator
 {
 public:
 	virtual ~BaseObjectCreator() {}
-	virtual std::shared_ptr<PandaObject> create(PandaDocument* parent) = 0;
+	virtual std::shared_ptr<PandaObject> create(PandaDocument* document) = 0;
+	virtual bool canCreate(PandaDocument* document) = 0;
 };
 
 class PANDA_CORE_API ObjectFactory
@@ -55,7 +57,8 @@ public:
 	{ return T::GetClass()->getTypeName(); }
 	static std::string getRegistryName(PandaObject* object);
 
-	std::shared_ptr<PandaObject> create(const std::string& className, PandaDocument* parent) const;
+	std::shared_ptr<PandaObject> create(const std::string& className, PandaDocument* document) const;
+	bool canCreate(const std::string& className, PandaDocument* document) const;
 
 	typedef std::map< std::string, ClassEntry > RegistryMap;
 	const RegistryMap& getRegistryMap() const
@@ -92,8 +95,13 @@ template<class T>
 class ObjectCreator : public BaseObjectCreator
 {
 public:
-	virtual std::shared_ptr<PandaObject> create(PandaDocument* parent)
-	{ return std::shared_ptr<PandaObject>(new T(parent), objectDeletor); }
+	std::shared_ptr<PandaObject> create(PandaDocument* document) override
+	{ return std::shared_ptr<PandaObject>(new T(document), objectDeletor); }
+
+	bool canCreate(PandaDocument* document) override
+	{ return canCreateFunc ? canCreateFunc(document) : true; }
+
+	std::function<bool(PandaDocument*)> canCreateFunc;
 };
 
 template <class T>
@@ -102,7 +110,9 @@ class RegisterObject
 public:
 	explicit RegisterObject(std::string menuDisplay)
 	{
-		entry.creator = std::make_shared<ObjectCreator<T>>();
+		auto creator = std::make_shared<ObjectCreator<T>>();
+		m_creator = creator.get();
+		entry.creator = creator;
 		entry.theClass = T::GetClass();
 		entry.menuDisplay = menuDisplay;
 		if (!menuDisplay.empty())
@@ -124,6 +134,13 @@ public:
 	RegisterObject& setHidden(bool hid)
 	{ entry.hidden = hid; return *this; }
 
+	RegisterObject& setCanCreateFunction(std::function<bool(PandaDocument*)> func)
+	{ m_creator->canCreateFunc = func; return *this; }
+
+	template <class D>
+	RegisterObject& setRequiredDocument()
+	{ return setCanCreateFunction([](PandaDocument* document) { return dynamic_cast<D>(document) != nullptr; }); }
+
 	operator int()
 	{
 		std::string typeName = entry.theClass->getTypeName();
@@ -137,6 +154,8 @@ protected:
 
 private:
 	RegisterObject();
+
+	ObjectCreator<T>* m_creator;
 };
 
 //****************************************************************************//

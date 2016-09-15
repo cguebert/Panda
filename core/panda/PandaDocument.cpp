@@ -206,15 +206,6 @@ void PandaDocument::waitForOtherTasksToFinish(bool mainThread) const
 		m_scheduler->waitForOtherTasks(mainThread);
 }
 
-BaseData* PandaDocument::findData(uint32_t objectIndex, const std::string& dataName)
-{
-	PandaObject* object = m_objectsList->find(objectIndex);
-	if(object)
-		return object->getData(dataName);
-
-	return nullptr;
-}
-
 void PandaDocument::onDirtyObject(PandaObject* object)
 {
 	if(m_resetting)

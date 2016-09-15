@@ -10,6 +10,20 @@
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/ObjectAddons.h>
 
+namespace
+{
+
+	panda::BaseData* findData(const panda::ObjectsList& objects, uint32_t objectIndex, const std::string& dataName)
+	{
+		auto object = objects.find(objectIndex);
+		if(object)
+			return object->getData(dataName);
+
+		return nullptr;
+	}
+
+}
+
 namespace panda 
 {
 
@@ -192,8 +206,8 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlE
 		name2 = elem.attribute("data2").toString();
 
 		BaseData *data1, *data2;
-		data1 = document->findData(index1, name1);
-		data2 = document->findData(index2, name2);
+		data1 = findData(document->getObjectsList(), index1, name1);
+		data2 = findData(document->getObjectsList(), index2, name2);
 		if(data1 && data2)
 			data1->setParent(data2);
 	}

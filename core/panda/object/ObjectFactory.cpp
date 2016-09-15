@@ -57,7 +57,7 @@ ObjectFactory* ObjectFactory::getInstance()
 	return &instance;
 }
 
-std::shared_ptr<PandaObject> ObjectFactory::create(const std::string& className, PandaDocument* parent) const
+std::shared_ptr<PandaObject> ObjectFactory::create(const std::string& className, PandaDocument* document) const
 {
 	auto iter = m_registry.find(className);
 	if(iter != m_registry.end())
@@ -65,10 +65,10 @@ std::shared_ptr<PandaObject> ObjectFactory::create(const std::string& className,
 		ClassEntry entry = iter->second;
 		if(entry.creator)
 		{
-			std::shared_ptr<PandaObject> object = entry.creator->create(parent);
+			std::shared_ptr<PandaObject> object = entry.creator->create(document);
 			if(object)
 			{
-				object->setInternalData(entry.objectName, parent->getNextIndex());
+				object->setInternalData(entry.objectName, document->getNextIndex());
 				object->postCreate();
 			}
 			return object;
@@ -77,6 +77,20 @@ std::shared_ptr<PandaObject> ObjectFactory::create(const std::string& className,
 
 	std::cerr << "Factory has no entry for " << className << std::endl;
 	return std::shared_ptr<PandaObject>();
+}
+
+bool ObjectFactory::canCreate(const std::string& className, PandaDocument* document) const
+{
+	auto iter = m_registry.find(className);
+	if(iter != m_registry.end())
+	{
+		ClassEntry entry = iter->second;
+		if (entry.creator)
+			return entry.creator->canCreate(document);
+	}
+
+	std::cerr << "Factory has no entry for " << className << std::endl;
+	return false;
 }
 
 std::string ObjectFactory::getRegistryName(PandaObject* object)

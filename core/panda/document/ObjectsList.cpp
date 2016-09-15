@@ -84,7 +84,7 @@ void ObjectsList::reinsertObject(PandaObject* object, int pos)
 	reorderedObjects.run();
 }
 
-PandaObject* ObjectsList::find(uint32_t objectIndex)
+PandaObject* ObjectsList::find(uint32_t objectIndex) const
 {
 	auto iter = std::find_if(m_objects.cbegin(), m_objects.cend(), [objectIndex](const auto& object){
 		return object->getIndex() == objectIndex;
