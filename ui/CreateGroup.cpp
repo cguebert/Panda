@@ -4,7 +4,7 @@
 #include <ui/drawstruct/ViewPositionAddon.h>
 #include <ui/graphview/ObjectsSelection.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/data/DataFactory.h>
 #include <panda/object/Group.h>
 #include <panda/object/Renderer.h>
@@ -41,6 +41,7 @@ float getDataHeight(GraphView* view, BaseData* data)
 
 bool createGroup(PandaDocument* doc, GraphView* view)
 {
+	auto renderedDoc = dynamic_cast<RenderedDocument*>(doc);
 	const auto& objectsSelection = view->selection();
 	auto selection = objectsSelection.get(); // Taking a copy
 
@@ -64,7 +65,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 				return false;
 			}
 
-			if(layer && layer != doc->getDefaultLayer() && !objectsSelection.isSelected(layer))
+			if(layer && renderedDoc && layer != renderedDoc->getDefaultLayer() && !objectsSelection.isSelected(layer))
 			{
 				QMessageBox::warning(nullptr, "Panda", "Renderers must be grouped with their layers");
 				return false;
@@ -102,7 +103,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	auto& undoStack = doc->getUndoStack();
 	auto macro = undoStack.beginMacro("create Group");
 
-	if(layer == doc->getDefaultLayer())	// Won't be added in the group!
+	if(renderedDoc && layer == renderedDoc->getDefaultLayer())	// Won't be added in the group!
 		layer = nullptr;
 
 	auto& objectsList = view->objectsList();

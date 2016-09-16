@@ -29,6 +29,8 @@ RenderedDocument::~RenderedDocument() = default;
 
 void RenderedDocument::resetDocument()
 {
+	PandaDocument::resetDocument();
+
 	m_backgroundColor.setValue(Color::white());
 
 	setRenderSize({ 800, 600 });

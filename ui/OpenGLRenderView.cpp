@@ -2,7 +2,7 @@
 
 #include <ui/OpenGLRenderView.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/graphics/Framebuffer.h>
@@ -46,7 +46,7 @@ namespace
 	}
 }
 
-OpenGLRenderView::OpenGLRenderView(panda::PandaDocument* doc, QWidget *parent)
+OpenGLRenderView::OpenGLRenderView(panda::InteractiveDocument* doc, QWidget *parent)
 	: QOpenGLWidget(parent)
 	, m_document(doc)
 	, m_adjustRenderSize(false)

@@ -23,7 +23,7 @@
 #include <ui/graphview/alignObjects.h>
 #include <ui/graphview/ObjectsSelection.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/PluginsManager.h>
 #include <panda/command/AddObjectCommand.h>
 #include <panda/command/RemoveObjectCommand.h>
@@ -70,7 +70,7 @@ MainWindow::MainWindow()
 	QSurfaceFormat::setDefaultFormat(format);*/
 	
 	m_simpleGUI = new SimpleGUIImpl(this);
-	m_document = std::make_unique<panda::PandaDocument>(*m_simpleGUI);
+	m_document = std::make_unique<panda::InteractiveDocument>(*m_simpleGUI);
 
 	m_documentView = new DocumentView(m_document.get(), m_document->getObjectsList());
 	m_documentViewContainer = new ScrollContainer();

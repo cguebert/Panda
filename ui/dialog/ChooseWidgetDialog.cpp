@@ -6,8 +6,8 @@
 #include <panda/document/PandaDocument.h>
 #include <panda/helper/algorithm.h>
 
+#include <cassert>
 #include <type_traits>
-#include <iostream>
 
 ChooseWidgetDialog::ChooseWidgetDialog(panda::BaseData* data, QWidget* parent)
 	: QDialog(parent)

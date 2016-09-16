@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/PluginsManager.h>
 #include <panda/document/DocumentRenderer.h>
 #include <panda/document/DocumentSignals.h>
@@ -36,7 +36,7 @@ std::string getExecutablePath()
 
 GLFWwindow* theWindow = nullptr;
 std::shared_ptr<SimpleGUIImpl> gui;
-std::shared_ptr<panda::PandaDocument> document;
+std::shared_ptr<panda::InteractiveDocument> document;
 int currentWidth = 800, currentHeight = 600;
 panda::types::Point mousePos;
 bool verticalSync = true;
@@ -205,7 +205,7 @@ bool init(const std::string& filePath = "")
 	panda::PluginsManager::getInstance()->loadPlugins();
 
 	gui = std::make_shared<SimpleGUIImpl>();
-	document = std::make_shared<panda::PandaDocument>(*gui);
+	document = std::make_shared<panda::InteractiveDocument>(*gui);
 	auto& renderer = document->getRenderer();
 	renderer.initializeGL();
 	

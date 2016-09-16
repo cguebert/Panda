@@ -8,7 +8,7 @@
 
 namespace panda
 {
-class PandaDocument;
+class InteractiveDocument;
 class PandaObject;
 class BaseData;
 }
@@ -17,7 +17,7 @@ class OpenGLRenderView : public QOpenGLWidget
 {
 	Q_OBJECT
 public:
-	OpenGLRenderView(panda::PandaDocument* doc, QWidget* parent = nullptr);
+	OpenGLRenderView(panda::InteractiveDocument* doc, QWidget* parent = nullptr);
 
 	QSize minimumSizeHint() const;
 
@@ -40,7 +40,7 @@ protected:
 	void resizeEvent(QResizeEvent* event) override;
 	void focusOutEvent(QFocusEvent*) override;
 
-	panda::PandaDocument* m_document;
+	panda::InteractiveDocument* m_document;
 	bool m_adjustRenderSize;
 
 	panda::msg::Observer m_observer;
