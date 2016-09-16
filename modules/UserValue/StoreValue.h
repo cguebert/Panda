@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/object/PandaObject.h>
 #include <panda/XmlDocument.h>
 #include <panda/SimpleGUI.h>
 #include <panda/TimedFunctions.h>

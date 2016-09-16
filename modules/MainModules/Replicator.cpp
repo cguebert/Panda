@@ -1,6 +1,5 @@
 #include <panda/document/RenderedDocument.h>
 #include <panda/helper/UpdateLogger.h>
-#include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
 #include <panda/object/Layer.h>

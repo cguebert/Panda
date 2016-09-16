@@ -1,6 +1,5 @@
 #include "ImGuiBase.h"
 
-#include <panda/document/PandaDocument.h>
 #include <panda/object/Dockable.h>
 #include <panda/object/ObjectFactory.h>
 

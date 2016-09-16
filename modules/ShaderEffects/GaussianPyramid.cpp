@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/ObjectFactory.h>
 
 #include "ShaderEffects.h"
@@ -102,7 +102,7 @@ protected:
 	Data< int > m_levels;
 };
 
-int ModifierImage_GaussianPyramidClass = RegisterObject<ModifierImage_GaussianPyramid>("Modifier/Image/Gaussian & Laplacian pyramids")
+int ModifierImage_GaussianPyramidClass = RegisterObject<ModifierImage_GaussianPyramid, RenderedDocument>("Modifier/Image/Gaussian & Laplacian pyramids")
 		.setDescription("Build the Gaussian and Laplacian pyramid of an image");
 
 //****************************************************************************//
@@ -186,7 +186,7 @@ protected:
 	Data< ImageWrapper > m_output;
 };
 
-int ModifierImage_CollapsePyramidClass = RegisterObject<ModifierImage_CollapsePyramid>("Modifier/Image/Collapse pyramids")
+int ModifierImage_CollapsePyramidClass = RegisterObject<ModifierImage_CollapsePyramid, RenderedDocument>("Modifier/Image/Collapse pyramids")
 		.setDescription("Reconstruct an image from the Gaussian and Laplacian pyramids");
 
 } // namespace Panda

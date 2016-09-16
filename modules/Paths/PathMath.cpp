@@ -1,10 +1,8 @@
-#include <panda/document/PandaDocument.h>
 #include <panda/helper/algorithm.h>
-#include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Path.h>
 
-#include <cmath>
+#include <math.h>
 
 namespace panda {
 

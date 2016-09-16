@@ -1,5 +1,3 @@
-#include <panda/document/PandaDocument.h>
-#include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 
 namespace panda {

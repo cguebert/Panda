@@ -1,3 +1,4 @@
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/ObjectFactory.h>
 
 #include <GL/glew.h>
@@ -78,7 +79,7 @@ protected:
 	graphics::ShaderProgram m_shaderProgram;
 };
 
-int TexturesOuterProductClass = RegisterObject<TexturesOuterProduct>("Modifier/Image/Textures outer product")
+int TexturesOuterProductClass = RegisterObject<TexturesOuterProduct, RenderedDocument>("Modifier/Image/Textures outer product")
 		.setDescription("Compute the outer product of two 1d textures (result is 2d)");
 
 //****************************************************************************//

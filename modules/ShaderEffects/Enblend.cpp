@@ -1,5 +1,4 @@
-#include <panda/document/PandaDocument.h>
-#include <panda/object/PandaObject.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
 
@@ -64,7 +63,7 @@ protected:
 	std::vector< std::shared_ptr<QOpenGLFramebufferObject> > m_gaussianFbos, m_laplacianFbos;
 };
 
-int ModifierImage_EnblendClass = RegisterObject<ModifierImage_Enblend>("Modifier/Image/Effects/Enblend")
+int ModifierImage_EnblendClass = RegisterObject<ModifierImage_Enblend, RenderedDocument>("Modifier/Image/Effects/Enblend")
 		.setDescription("Tests of algorithms");
 */
 } // namespace Panda

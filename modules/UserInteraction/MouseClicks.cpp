@@ -1,4 +1,4 @@
-#include <panda/object/PandaObject.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 
@@ -70,7 +70,7 @@ protected:
 	std::vector<Point> m_clicsBuffer;
 };
 
-int UserInteraction_MouseClicksClass = RegisterObject<UserInteraction_MouseClicks>("Interaction/Mouse clicks").setDescription("Detect mouse clicks");
+int UserInteraction_MouseClicksClass = RegisterObject<UserInteraction_MouseClicks, InteractiveDocument>("Interaction/Mouse clicks").setDescription("Detect mouse clicks");
 
 //****************************************************************************//
 
@@ -156,7 +156,7 @@ protected:
 	long long m_clicTime;
 };
 
-int UserInteraction_MouseDoubleClicksClass = RegisterObject<UserInteraction_MouseDoubleClicks>("Interaction/Double clicks").setDescription("Detect mouse double clicks");
+int UserInteraction_MouseDoubleClicksClass = RegisterObject<UserInteraction_MouseDoubleClicks, InteractiveDocument>("Interaction/Double clicks").setDescription("Detect mouse double clicks");
 
 //****************************************************************************//
 
@@ -241,7 +241,7 @@ protected:
 	std::vector<Point> m_clicsBuffer;
 };
 
-int UserInteraction_ButtonClass = RegisterObject<UserInteraction_Button>("Interaction/Button").setDescription("Detect mouse clicks in a rectangle");
+int UserInteraction_ButtonClass = RegisterObject<UserInteraction_Button, InteractiveDocument>("Interaction/Button").setDescription("Detect mouse clicks in a rectangle");
 
 } // namespace Panda
 

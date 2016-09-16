@@ -1,4 +1,3 @@
-#include <panda/document/PandaDocument.h>
 #include <panda/helper/UpdateLogger.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>

@@ -2,7 +2,6 @@
 
 #include <panda/document/RenderedDocument.h>
 #include <panda/helper/algorithm.h>
-#include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Renderer.h>
 

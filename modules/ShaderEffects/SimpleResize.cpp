@@ -1,3 +1,4 @@
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/ImageWrapper.h>
 
@@ -88,7 +89,7 @@ protected:
 	std::vector<graphics::Framebuffer> m_FBOs;
 };
 
-int ModifierImage_DownscaleClass = RegisterObject<ModifierImage_Downscale>("Modifier/Image/Downscale")
+int ModifierImage_DownscaleClass = RegisterObject<ModifierImage_Downscale, RenderedDocument>("Modifier/Image/Downscale")
 		.setDescription("Divide by 2 the size of the image");
 
 //****************************************************************************//
@@ -145,7 +146,7 @@ protected:
 	graphics::Framebuffer m_outputFBO;
 };
 
-int ModifierImage_UpscaleClass = RegisterObject<ModifierImage_Upscale>("Modifier/Image/Upscale")
+int ModifierImage_UpscaleClass = RegisterObject<ModifierImage_Upscale, RenderedDocument>("Modifier/Image/Upscale")
 		.setDescription("Multiply by 2 the size of the image");
 
 } // namespace Panda

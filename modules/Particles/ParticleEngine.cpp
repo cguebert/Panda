@@ -1,6 +1,5 @@
 #include <panda/object/Dockable.h>
 #include <panda/object/ObjectFactory.h>
-#include <panda/document/PandaDocument.h>
 
 #include <modules/particles/ParticleEngine.h>
 #include <modules/particles/ParticleEffector.h>

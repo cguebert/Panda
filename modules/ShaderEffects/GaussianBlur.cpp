@@ -1,3 +1,4 @@
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/helper/algorithm.h>
 #include <panda/helper/ShaderCache.h>
@@ -138,7 +139,7 @@ protected:
 	graphics::ShaderProgram m_shaderProgram;
 };
 
-int ModifierImage_GaussianBlurClass = RegisterObject<ModifierImage_GaussianBlur>("Modifier/Image/Gaussian blur")
+int ModifierImage_GaussianBlurClass = RegisterObject<ModifierImage_GaussianBlur, RenderedDocument>("Modifier/Image/Gaussian blur")
 		.setDescription("Apply a gaussian blur to an image");
 
 } // namespace Panda

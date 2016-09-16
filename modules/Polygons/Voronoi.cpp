@@ -1,5 +1,4 @@
 #include <panda/document/RenderedDocument.h>
-#include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Path.h>
 #include <panda/types/Rect.h>
@@ -214,6 +213,13 @@ public:
 
 	void update()
 	{
+		auto acc = m_paths.getAccessor();
+		acc.clear();
+
+		const std::vector<Point>& pts = m_sites.getValue();
+		if (pts.empty())
+			return;
+
 		auto boundingBox = m_boundingBox.getValue();
 		if (boundingBox.empty())
 		{
@@ -224,8 +230,6 @@ public:
 			boundingBox.set(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
 		}
 
-		const std::vector<Point>& pts = m_sites.getValue();
-		auto acc = m_paths.getAccessor();
 		acc.wref() = VoronoiHelper::computeVoronoi(pts, boundingBox);
 	}
 
@@ -261,6 +265,14 @@ public:
 
 	void update()
 	{
+		auto acc = m_paths.getAccessor();
+		acc.clear();
+
+		const std::vector<Point>& pts = m_sites.getValue();
+
+		if (pts.empty())
+			return;
+
 		graphics::Size size;
 		auto dSize = m_size.getValue();
 		if (dSize.isNull())
@@ -273,13 +285,6 @@ public:
 		else
 			size = graphics::Size({ static_cast<int>(dSize.x), static_cast<int>(dSize.y) });
 
-		const std::vector<Point>& pts = m_sites.getValue();
-		auto acc = m_paths.getAccessor();
-		acc.clear();
-
-		if (pts.empty())
-			return;
-		
 		jcv_diagram diagram;
 		memset(&diagram, 0, sizeof(jcv_diagram));
 		jcv_diagram_generate(pts.size(), reinterpret_cast<const jcv_point*>(pts.data()),

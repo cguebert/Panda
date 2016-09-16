@@ -1,8 +1,6 @@
 #include <GL/glew.h>
 
-#include <panda/document/PandaDocument.h>
 #include <panda/helper/UpdateLogger.h>
-#include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Dockable.h>
 #include <panda/object/Renderer.h>

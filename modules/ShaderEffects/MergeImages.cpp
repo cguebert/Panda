@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/OGLObject.h>
 #include <panda/types/ImageWrapper.h>
@@ -131,7 +131,7 @@ protected:
 	graphics::Buffer m_verticesVBO, m_texCoordsVBO;
 };
 
-int ModifierImage_MergeImagesClass = RegisterObject<ModifierImage_MergeImages>("Modifier/Image/Merge images")
+int ModifierImage_MergeImagesClass = RegisterObject<ModifierImage_MergeImages, RenderedDocument>("Modifier/Image/Merge images")
 		.setDescription("Combine 2 images (same operation as with layers)");
 
 } // namespace Panda

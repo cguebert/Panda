@@ -1,5 +1,4 @@
-#include <panda/object/PandaObject.h>
-#include <panda/document/PandaDocument.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 
@@ -145,7 +144,7 @@ public:
 
 			if(m_currentSelection != -1)
 			{
-				Point currentPos = parentDocument()->getMousePosition();
+				Point currentPos = parent<InteractiveDocument>()->getMousePosition();
 				editRectangle(output[m_currentSelection], m_selectedHandle,
 							  currentPos - m_moveStartPos,
 							  centerH[m_currentSelection], cornerH[m_currentSelection]);
@@ -167,7 +166,7 @@ protected:
 	bool m_selectedHandle; // If true: center is selected; false: corner is selected
 };
 
-int UserInteraction_EditRectangleClass = RegisterObject<UserInteraction_EditRectangle>("Interaction/Edit rectangle").setDescription("Modify rectangles with the mouse");
+int UserInteraction_EditRectangleClass = RegisterObject<UserInteraction_EditRectangle, InteractiveDocument>("Interaction/Edit rectangle").setDescription("Modify rectangles with the mouse");
 
 //****************************************************************************//
 

@@ -1,7 +1,6 @@
 #include <GL/glew.h>
 
 #include <panda/document/RenderedDocument.h>
-#include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Color.h>
 #include <panda/types/ImageWrapper.h>

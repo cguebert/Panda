@@ -1,5 +1,4 @@
-#include <panda/document/PandaDocument.h>
-#include <panda/object/PandaObject.h>
+#include <panda/document/RenderedDocument.h>
 #include <panda/object/ObjectFactory.h>
 
 #include <panda/types/Mesh.h>
@@ -38,20 +37,34 @@ public:
 
 	GeneratorMesh_Delaunay(PandaDocument *doc)
 		: PandaObject(doc)
-		, vertices(initData("vertices", "Sites of the Delaunay triangulation"))
-		, mesh(initData("mesh", "Mesh created from the Delaunay triangulation"))
+		, m_vertices(initData("vertices", "Sites of the Delaunay triangulation"))
+		, m_boundingBox(initData("bounding box", "The polygon will be clipped to this rectangle. If null, will use the render area."))
+		, m_mesh(initData("mesh", "Mesh created from the Delaunay triangulation"))
 	{
-		addInput(vertices);
+		addInput(m_vertices);
+		addInput(m_boundingBox);
 
-		addOutput(mesh);
+		addOutput(m_mesh);
 	}
 
 	void update()
-	{
-		const std::vector<Point>& pts = vertices.getValue();
-		auto outMesh = mesh.getAccessor();
-
+	{	
+		auto outMesh = m_mesh.getAccessor();
 		outMesh->clear();
+
+		const std::vector<Point>& pts = m_vertices.getValue();
+		if (pts.empty())
+			return;
+
+		auto boundingBox = m_boundingBox.getValue();
+		if (boundingBox.empty())
+		{
+			auto docPtr = dynamic_cast<RenderedDocument*>(parentDocument());
+			if (!docPtr)
+				return; // Empty area, cannot compute
+			auto size = docPtr->getRenderSize();
+			boundingBox.set(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
+		}
 
 		vector<IPoint> points;
 		for(const auto& p : pts)
@@ -64,9 +77,6 @@ public:
 
 		outMesh->addPoints(pts);
 
-		auto s = parentDocument()->getRenderSize();
-		Rect area = Rect(0, 0, static_cast<float>(s.width()), static_cast<float>(s.height()));
-
 		for(EdgeIterator it = vd.edges().begin(); it != vd.edges().end(); ++it)
 		{
 			const Cell* c1 = it->cell();
@@ -74,12 +84,12 @@ public:
 			if(it->vertex0())
 			{
 				Point pt = Point(static_cast<float>(it->vertex0()->x()), static_cast<float>(it->vertex0()->y()));
-				bp1 = area.contains(pt);
+				bp1 = boundingBox.contains(pt);
 			}
 			if(it->vertex1())
 			{
 				Point pt = Point(static_cast<float>(it->vertex1()->x()), static_cast<float>(it->vertex1()->y()));
-				bp2 = area.contains(pt);
+				bp2 = boundingBox.contains(pt);
 			}
 			if(it->twin() && (bp1 || bp2))
 			{
@@ -94,8 +104,9 @@ public:
 	}
 
 protected:
-	Data< std::vector<Point> > vertices;
-	Data<Mesh> mesh;
+	Data< std::vector<Point> > m_vertices;
+	Data< Rect > m_boundingBox;
+	Data<Mesh> m_mesh;
 };
 
 int GeneratorMesh_DelaunayClass = RegisterObject<GeneratorMesh_Delaunay>("Generator/Mesh/Delaunay")

@@ -1,6 +1,5 @@
 #include "AS_Object.h"
 #include <panda/object/ObjectFactory.h>
-#include <panda/document/PandaDocument.h>
 
 #include "ScriptEngine.h"
 #include "pandaTypes/ObjectWrapper.h"

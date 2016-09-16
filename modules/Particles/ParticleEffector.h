@@ -2,7 +2,6 @@
 #define PARTICLEEFFECTOR_H
 
 #include <panda/object/Dockable.h>
-#include <panda/document/PandaDocument.h>
 #include <modules/particles/Particle.h>
 #include <set>
 

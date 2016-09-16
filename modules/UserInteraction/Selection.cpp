@@ -1,4 +1,4 @@
-#include <panda/object/PandaObject.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 
@@ -90,7 +90,7 @@ protected:
 	int m_counter;
 };
 
-int UserInteraction_SelectionDiskClass = RegisterObject<UserInteraction_SelectionDisk>("Interaction/Disk selection").setDescription("Select disks with the mouse");
+int UserInteraction_SelectionDiskClass = RegisterObject<UserInteraction_SelectionDisk, InteractiveDocument>("Interaction/Disk selection").setDescription("Select disks with the mouse");
 
 //****************************************************************************//
 
@@ -170,7 +170,7 @@ protected:
 	int m_counter;
 };
 
-int UserInteraction_SelectionRectangleClass = RegisterObject<UserInteraction_SelectionRectangle>("Interaction/Rectangle selection").setDescription("Select rectangles with the mouse");
+int UserInteraction_SelectionRectangleClass = RegisterObject<UserInteraction_SelectionRectangle, InteractiveDocument>("Interaction/Rectangle selection").setDescription("Select rectangles with the mouse");
 
 } // namespace Panda
 

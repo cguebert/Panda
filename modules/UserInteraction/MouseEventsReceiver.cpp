@@ -1,4 +1,4 @@
-#include <panda/document/PandaDocument.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/object/ObjectFactory.h>
 

@@ -1,5 +1,4 @@
-#include <panda/object/PandaObject.h>
-#include <panda/document/PandaDocument.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 
@@ -100,7 +99,7 @@ public:
 
 			if(m_currentSelection != -1)
 			{
-				Point currentPos = parentDocument()->getMousePosition();
+				Point currentPos = parent<InteractiveDocument>()->getMousePosition();
 				output[m_currentSelection] += currentPos - m_moveStartPos;
 				m_moveStartPos = currentPos;
 			}
@@ -206,7 +205,7 @@ public:
 
 			if(m_currentSelection != -1)
 			{
-				Point currentPos = parentDocument()->getMousePosition();
+				Point currentPos = parent<InteractiveDocument>()->getMousePosition();
 				output[m_currentSelection].translate(currentPos - m_moveStartPos);
 				m_moveStartPos = currentPos;
 			}
@@ -223,7 +222,7 @@ protected:
 	int m_counter, m_currentSelection;
 };
 
-int UserInteraction_MoveRectangleClass = RegisterObject<UserInteraction_MoveRectangle>("Interaction/Move rectangle").setDescription("Move rectangles with the mouse");
+int UserInteraction_MoveRectangleClass = RegisterObject<UserInteraction_MoveRectangle, InteractiveDocument>("Interaction/Move rectangle").setDescription("Move rectangles with the mouse");
 
 } // namespace Panda
 

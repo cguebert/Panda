@@ -1,5 +1,3 @@
-#include <panda/document/PandaDocument.h>
-#include <panda/object/PandaObject.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Mesh.h>
 #include <panda/helper/PointsGrid.h>
@@ -42,10 +40,22 @@ public:
 
 	void update()
 	{
+		auto outMesh = output.getAccessor();
+		outMesh->clear();
+
+		const std::vector<Mesh>& meshesList = inputs.getValue();
+		if (meshesList.empty())
+			return;
+
 		helper::PointsGrid grid;
-		auto size = parentDocument()->getRenderSize();
-		Rect area(0, 0, static_cast<float>(size.width()), static_cast<float>(size.height()));
-		grid.initGrid(area, 10);
+
+		// Compute the bounds of all meshes
+		Rect area;
+		for (const Mesh& mesh : meshesList)
+			area |= helper::PointsGrid::computeBounds(mesh.getPoints());
+		const auto maxSide = std::max(area.width(), area.height());
+		auto ceilSize = std::max(maxSide / 100, 10.0f);
+		grid.initGrid(area, ceilSize);
 
 		float thres = threshold.getValue();
 
@@ -54,7 +64,7 @@ public:
 
 		std::map<Point, Mesh::PointID, PointCompare> pointsMap;
 
-		const std::vector<Mesh>& meshesList = inputs.getValue();
+		
 		for(const Mesh& mesh : meshesList)
 		{
 			if(newPoints.empty())
@@ -96,8 +106,6 @@ public:
 			}
 		}
 
-		auto outMesh = output.getAccessor();
-		outMesh->clear();
 		outMesh->addPoints(newPoints);
 		outMesh->addTriangles(newTriangles);
 	}

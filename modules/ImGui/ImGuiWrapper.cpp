@@ -1,7 +1,6 @@
 #include "ImGuiWrapper.h"
 #include "ImGuiBase.h"
 
-#include <panda/document/PandaDocument.h>
 #include <panda/SimpleGUI.h>
 #include <panda/TimedFunctions.h>
 #include <panda/document/DocumentSignals.h>
