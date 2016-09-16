@@ -2,7 +2,6 @@
 #include <panda/document/PandaDocument.h>
 #include <panda/XmlDocument.h>
 #include <panda/helper/algorithm.h>
-#include <panda/object/PandaObject.h>
 
 namespace
 {

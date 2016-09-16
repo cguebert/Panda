@@ -1,7 +1,7 @@
 #ifndef OBJECTFACTORY_H
 #define OBJECTFACTORY_H
 
-#include <panda/data/BaseClass.h>
+#include <panda/document/PandaDocument.h>
 
 #include <functional>
 #include <map>
@@ -9,9 +9,6 @@
 
 namespace panda
 {
-
-class PandaObject;
-class PandaDocument;
 
 class PANDA_CORE_API BaseObjectCreator
 {

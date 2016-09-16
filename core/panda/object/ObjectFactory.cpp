@@ -1,6 +1,4 @@
 #include <panda/object/ObjectFactory.h>
-#include <panda/document/PandaDocument.h>
-#include <panda/object/PandaObject.h>
 #include <panda/helper/algorithm.h>
 
 #include <panda/types/DataTypeId.h>
