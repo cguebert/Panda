@@ -1,4 +1,3 @@
-
 #include <panda/object/GenericObject.h>
 #include <panda/object/ObjectFactory.h>
 

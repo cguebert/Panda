@@ -1,4 +1,3 @@
-
 #include <panda/object/ObjectFactory.h>
 #include <panda/types/Rect.h>
 
