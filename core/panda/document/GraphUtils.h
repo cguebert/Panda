@@ -3,6 +3,7 @@
 #include <panda/core.h>
 
 #include <functional>
+#include <memory>
 #include <vector>
 
 namespace panda {
@@ -13,6 +14,9 @@ class PandaObject;
 
 namespace graph
 {
+
+	// Convert from a list a smart pointers to a list of raw pointers
+	std::vector<PandaObject*> PANDA_CORE_API getRawObjectsList(std::vector<std::shared_ptr<PandaObject>> objects);
 
 	// Extract objects inside the groups
 	std::vector<PandaObject*> PANDA_CORE_API expandObjectsList(std::vector<PandaObject*> objects);

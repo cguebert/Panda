@@ -23,6 +23,7 @@
 #include <ui/graphview/alignObjects.h>
 #include <ui/graphview/ObjectsSelection.h>
 
+#include <panda/document/GraphUtils.h>
 #include <panda/document/InteractiveDocument.h>
 #include <panda/PluginsManager.h>
 #include <panda/command/AddObjectCommand.h>
@@ -37,9 +38,6 @@
 #include <panda/object/Group.h>
 #include <panda/types/DataTraits.h>
 
-
-
-#include <iostream>
 #include <functional>
 
 // A small class to call a function when a DataNode changes
@@ -70,22 +68,16 @@ MainWindow::MainWindow()
 	QSurfaceFormat::setDefaultFormat(format);*/
 	
 	m_simpleGUI = new SimpleGUIImpl(this);
-	m_document = std::make_unique<panda::InteractiveDocument>(*m_simpleGUI);
 
-	m_documentView = new DocumentView(m_document.get(), m_document->getObjectsList());
 	m_documentViewContainer = new ScrollContainer();
 	m_documentViewContainer->setFrameStyle(0); // No frame
-	m_documentViewContainer->setView(m_documentView);
-	m_documentViewContainer->setFocusProxy(m_documentViewContainer);
-	m_currentGraphView = m_documentView;
 
-	m_openGLRenderView = new OpenGLRenderView(m_document.get());
 	m_openGLViewContainer = new QScrollArea();
 	m_openGLViewContainer->setFrameStyle(0);
 	m_openGLViewContainer->setAlignment(Qt::AlignCenter);
-	m_openGLViewContainer->setWidget(m_openGLRenderView);
 	m_openGLViewContainer->setWidgetResizable(true);
-	m_openGLViewContainer->setFocusProxy(m_openGLRenderView);
+
+	setDocument(std::make_shared<panda::InteractiveDocument>(*m_simpleGUI));
 
 	m_tabWidget = new DetachableTabWidget;
 	m_tabWidget->addTab(m_documentViewContainer, tr("Graph"));
@@ -114,23 +106,9 @@ MainWindow::MainWindow()
 	createActions();
 	createStatusBar();
 
-	m_observer.get(m_document->getSignals().modified).connect<MainWindow, &MainWindow::documentModified>(this);
-	m_observer.get(m_documentView->selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
-	m_observer.get(m_document->getObjectsList().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
-
-	m_observer.get(m_document->getUndoStack().m_canUndoChangedSignal).connect<MainWindow, &MainWindow::undoEnabled>(this);
-	m_observer.get(m_document->getUndoStack().m_canRedoChangedSignal).connect<MainWindow, &MainWindow::redoEnabled>(this);
-	m_observer.get(m_document->getUndoStack().m_undoTextChangedSignal).connect<MainWindow, &MainWindow::undoTextChanged>(this);
-	m_observer.get(m_document->getUndoStack().m_redoTextChangedSignal).connect<MainWindow, &MainWindow::redoTextChanged>(this);
-
-	connect(m_documentView, SIGNAL(modified()), this, SLOT(documentModified()));
-	connect(m_documentView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(m_tabWidget, SIGNAL(openDetachedWindow(DetachedWindow*)), this, SLOT(openDetachedWindow(DetachedWindow*)));
 	connect(m_tabWidget, &DetachableTabWidget::closedTab, this, &MainWindow::onTabWidgetCloseTab);
 	connect(m_tabWidget, &DetachableTabWidget::currentChanged, this, &MainWindow::onTabChanged);
-
-	connect(m_documentView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
-	connect(m_openGLRenderView, &OpenGLRenderView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 
 	createGroupRegistryMenu();
 
@@ -155,8 +133,6 @@ MainWindow::MainWindow()
 
 	readSettings();
 }
-
-MainWindow::~MainWindow() = default;
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
@@ -188,12 +164,7 @@ void MainWindow::open()
 								   tr("Open Document"), ".",
 								   tr("Panda files (*.pnd);;XML Files (*.xml)"));
 		if (!fileName.isEmpty())
-		{
-			m_playAction->setChecked(false);
-			m_document->resetDocument();
-			m_documentView->resetView();
 			loadFile(fileName);
-		}
 	}
 }
 
@@ -204,7 +175,7 @@ void MainWindow::import()
 							   tr("Panda files (*.pnd);;XML Files (*.xml)"));
 	if (!fileName.isEmpty())
 	{
-		if(loadFile(fileName, true))
+		if(importFile(fileName))
 		{
 			auto selection = m_documentView->selection().get();
 			if(!selection.empty())
@@ -246,11 +217,7 @@ void MainWindow::openRecentFile()
 	{
 		QAction *action = qobject_cast<QAction *>(sender());
 		if(action)
-		{
-			m_playAction->setChecked(false);
-			m_document->resetDocument();
 			loadFile(action->data().toString());
-		}
 	}
 }
 
@@ -907,9 +874,37 @@ bool MainWindow::okToContinue()
 	return true;
 }
 
-bool MainWindow::loadFile(const QString &fileName, bool import)
+bool MainWindow::loadFile(const QString &fileName)
 {
-	auto result = panda::serialization::readFile(m_document.get(), m_document->getObjectsList(), fileName.toStdString(), import);
+	auto document = panda::serialization::readFile(fileName.toStdString(), *m_simpleGUI);
+
+	if(!document)
+	{
+		statusBar()->showMessage(tr("Loading failed"), 2000);
+		return false;
+	}
+
+
+	setDocument(std::move(document));
+
+	m_playAction->setChecked(false);
+	m_document->resetDocument();
+	m_documentView->resetView();
+
+	m_documentView->selection().set(panda::graph::getRawObjectsList(document->getObjectsList().get()));
+
+	m_document->getUndoStack().clear();
+	m_documentView->selection().selectNone();
+	setCurrentFile(fileName);
+	statusBar()->showMessage(tr("File loaded"), 2000);
+
+	m_documentView->showAll();
+	return true;
+}
+
+bool MainWindow::importFile(const QString& fileName)
+{
+	auto result = panda::serialization::importFile(m_document.get(), m_document->getObjectsList(), fileName.toStdString());
 
 	if(!result.first)
 	{
@@ -919,15 +914,7 @@ bool MainWindow::loadFile(const QString &fileName, bool import)
 
 	m_documentView->selection().set(result.second);
 
-	if(!import)
-	{
-		m_document->getUndoStack().clear();
-		m_documentView->selection().selectNone();
-		setCurrentFile(fileName);
-		statusBar()->showMessage(tr("File loaded"), 2000);
-	}
-	else
-		statusBar()->showMessage(tr("File imported"), 2000);
+	statusBar()->showMessage(tr("File imported"), 2000);
 	m_documentView->showAll();
 	return true;
 }
@@ -1460,10 +1447,10 @@ void MainWindow::convertSavedDocuments()
 	for (const auto& entry : entries)
 	{
 		auto path = entry.absoluteFilePath();
-		m_document->resetDocument();
-		if (panda::serialization::readFile(m_document.get(), m_document->getObjectsList(), path.toStdString()).first)
+		
+		if (auto document = panda::serialization::readFile(path.toStdString(), *m_simpleGUI))
 		{
-			panda::serialization::writeFile(m_document.get(), path.toStdString());
+			panda::serialization::writeFile(document.get(), path.toStdString());
 			++nb;
 		}
 		else
@@ -1584,4 +1571,40 @@ void MainWindow::onTabChanged()
 		selectedObject(m_currentGraphView->selection().lastSelectedObject());
 	else
 		m_currentGraphView = m_documentView;
+}
+
+void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& document)
+{
+	// TODO: change this when we will allow the creation of other types of documents
+	m_document = std::dynamic_pointer_cast<panda::InteractiveDocument>(document);
+
+	if (m_documentView)
+		m_documentView->deleteLater();
+
+	m_documentView = new DocumentView(m_document.get(), m_document->getObjectsList());
+	m_documentViewContainer->setView(m_documentView);
+	m_documentViewContainer->setFocusProxy(m_documentView);
+	m_currentGraphView = m_documentView;
+
+	if (m_openGLRenderView)
+		m_openGLRenderView->deleteLater();
+
+	m_openGLRenderView = new OpenGLRenderView(m_document.get());
+	m_openGLViewContainer->setWidget(m_openGLRenderView);
+	m_openGLViewContainer->setFocusProxy(m_openGLRenderView);
+
+	m_observer.get(m_document->getSignals().modified).connect<MainWindow, &MainWindow::documentModified>(this);
+	m_observer.get(m_document->getObjectsList().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
+	m_observer.get(m_documentView->selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
+
+	m_observer.get(m_document->getUndoStack().m_canUndoChangedSignal).connect<MainWindow, &MainWindow::undoEnabled>(this);
+	m_observer.get(m_document->getUndoStack().m_canRedoChangedSignal).connect<MainWindow, &MainWindow::redoEnabled>(this);
+	m_observer.get(m_document->getUndoStack().m_undoTextChangedSignal).connect<MainWindow, &MainWindow::undoTextChanged>(this);
+	m_observer.get(m_document->getUndoStack().m_redoTextChangedSignal).connect<MainWindow, &MainWindow::redoTextChanged>(this);
+
+	connect(m_documentView, SIGNAL(modified()), this, SLOT(documentModified()));
+	connect(m_documentView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
+	connect(m_documentView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
+
+	connect(m_openGLRenderView, &OpenGLRenderView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 }

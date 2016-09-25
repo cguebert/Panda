@@ -11,6 +11,16 @@ namespace panda
 namespace graph 
 {
 
+std::vector<PandaObject*> getRawObjectsList(std::vector<std::shared_ptr<PandaObject>> objects)
+{
+	std::vector<PandaObject*> result;
+	result.reserve(objects.size());
+	for (const auto& sptr : objects)
+		result.push_back(sptr.get());
+
+	return result;
+}
+
 // The objects are given by value so that we can directly modify the list
 std::vector<PandaObject*> expandObjectsList(std::vector<PandaObject*> objects)
 {

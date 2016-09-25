@@ -9,10 +9,6 @@ class DocumentView : public GraphView
 
 public:
 	explicit DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
-
-private:
-	void savingObject(panda::XmlElement&, panda::PandaObject*);
-	void loadingObject(const panda::XmlElement&, panda::PandaObject*);
 };
 
 #endif // DOCUMENTVIEW_H

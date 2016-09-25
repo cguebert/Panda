@@ -204,6 +204,8 @@ public:
 	void save(XmlElement& elem);
 	void load(const XmlElement& elem);
 
+	void clearDefinitions();
+
 	template <class T>
 	void addObjectAddon()
 	{ 

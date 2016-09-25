@@ -54,7 +54,30 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 	return result;
 }
 
-LoadResult readFile(PandaDocument* document, ObjectsList& objectsList, const std::string& fileName, bool isImport)
+std::unique_ptr<PandaDocument> readFile(const std::string& fileName, panda::gui::BaseGUI& gui)
+{
+	XmlDocument doc;
+	if (!doc.loadFromFile(fileName))
+	{
+		gui.messageBox(gui::MessageBoxType::warning, "Panda", "Cannot parse xml file  " + fileName + ".");
+		return nullptr;
+	}
+
+	auto root = doc.root();
+
+	auto& objectsAddonsReg = ObjectAddonsRegistry::instance();
+	objectsAddonsReg.clearDefinitions(); // Remove previous definitions
+	objectsAddonsReg.load(root); // Load the definition of object addons
+
+	auto document = std::make_unique<PandaDocument>(gui);
+
+	if (loadDoc(document.get(), document->getObjectsList(), root).first)
+		return document;
+	else 
+		return nullptr;
+}
+
+LoadResult importFile(PandaDocument* document, ObjectsList& objectsList, const std::string& fileName)
 {
 	XmlDocument doc;
 	if (!doc.loadFromFile(fileName))
@@ -64,10 +87,8 @@ LoadResult readFile(PandaDocument* document, ObjectsList& objectsList, const std
 	}
 
 	auto root = doc.root();
-	if(!isImport)	// Bugfix: don't read the doc's datas if we are merging 2 documents
-		document->load(root);		// Only the document's Datas
 
-	ObjectAddonsRegistry::instance().load(root); // The definition of object addons
+	ObjectAddonsRegistry::instance().load(root); // The definition of object addons, without clearing them first
 
 	return loadDoc(document, objectsList, root);	// All the document's objects
 }

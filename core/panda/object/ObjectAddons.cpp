@@ -331,7 +331,6 @@ namespace panda
 
 	void ObjectAddonsRegistry::load(const XmlElement& elem)
 	{
-		m_loadedDefinitions.clear();
 		auto node = elem.firstChild("ObjectAddons");
 		for (auto addonNode = node.firstChild(); addonNode; addonNode = addonNode.nextSibling())
 		{
@@ -345,6 +344,11 @@ namespace panda
 			loadDefinition(*def, addonNode);
 			m_loadedDefinitions.push_back(def);
 		}
+	}
+
+	void ObjectAddonsRegistry::clearDefinitions()
+	{
+		m_loadedDefinitions.clear();
 	}
 
 	const ObjectAddonsRegistry::Addons& ObjectAddonsRegistry::getAddons() const

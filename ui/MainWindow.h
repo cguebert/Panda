@@ -31,6 +31,7 @@ namespace panda
 {
 class BaseData;
 class InteractiveDocument;
+class PandaDocument;
 class PandaObject;
 }
 
@@ -40,7 +41,6 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow();
-	~MainWindow();
 
 	OpenGLRenderView* getOpenGLView() const;
 
@@ -95,11 +95,12 @@ private:
 	void readSettings();
 	void writeSettings();
 	bool okToContinue();
-	bool loadFile(const QString &fileName, bool import = false);
-	bool saveFile(const QString &fileName);
-	void setCurrentFile(const QString &fileName);
+	bool loadFile(const QString& fileName);
+	bool importFile(const QString& fileName);
+	bool saveFile(const QString& fileName);
+	void setCurrentFile(const QString& fileName);
 	void updateRecentFileActions();
-	QString strippedName(const QString &fullFileName);
+	QString strippedName(const QString& fullFileName);
 
 	void undoEnabled(bool enabled);
 	void redoEnabled(bool enabled);
@@ -110,13 +111,15 @@ private:
 
 	QWidget* selectedTabWidget() const; // Return either the render view, a graph view or an image viewport
 
+	void setDocument(const std::shared_ptr<panda::PandaDocument>& document);
+
 	DetachableTabWidget* m_tabWidget = nullptr;
 	DocumentView* m_documentView = nullptr;
 	ScrollContainer* m_documentViewContainer = nullptr;
 	GraphView* m_currentGraphView = nullptr;
 	OpenGLRenderView* m_openGLRenderView = nullptr;
 	QScrollArea* m_openGLViewContainer = nullptr;
-	std::unique_ptr<panda::InteractiveDocument> m_document;
+	std::shared_ptr<panda::InteractiveDocument> m_document;
 	DatasTable* m_datasTable = nullptr;
 	QDockWidget* m_datasDock = nullptr;
 	LayersTab* m_layersTab = nullptr;
