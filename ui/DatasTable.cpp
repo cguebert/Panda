@@ -49,9 +49,8 @@ private:
 
 //****************************************************************************//
 
-DatasTable::DatasTable(panda::PandaDocument* document, QWidget* parent)
+DatasTable::DatasTable(QWidget* parent)
 	: QWidget(parent)
-	, m_document(document)
 	, m_objectWatcher(std::make_unique<ObjectWatcher>(*this))
 {
 	m_nameLabel = new QLabel("Document");
@@ -61,20 +60,26 @@ DatasTable::DatasTable(panda::PandaDocument* document, QWidget* parent)
 	mainLayout->addWidget(m_nameLabel);
 	mainLayout->addLayout(m_stackedLayout);
 	setLayout(mainLayout);
+}
 
-	queuePopulate(nullptr);
+DatasTable::~DatasTable() = default;
+
+void DatasTable::setDocument(panda::PandaDocument* document)
+{
+	m_document = document;
 
 	m_observer.get(m_document->getSignals().modifiedObject).connect<DatasTable, &DatasTable::onModifiedObject>(this);
 	m_observer.get(m_document->getSignals().timeChanged).connect<DatasTable, &DatasTable::updateCurrentObject>(this);
 }
-
-DatasTable::~DatasTable() = default;
 
 void DatasTable::populateTable()
 {
 	m_waitingPopulate = false;
 	if (!m_nextObject)
 		m_nextObject = m_document;
+
+	if (!m_nextObject)
+		return;
 
 	// If possible, only update widgets
 	if(!m_objectIsModified && m_currentObject == m_nextObject)

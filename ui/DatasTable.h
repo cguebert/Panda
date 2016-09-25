@@ -25,11 +25,12 @@ class DatasTable : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit DatasTable(panda::PandaDocument* document, QWidget* parent = nullptr);
+	explicit DatasTable(QWidget* parent = nullptr);
 	~DatasTable();
 
 	void updateCurrentObject();
 	void setSelectedObject(panda::PandaObject* object);
+	void setDocument(panda::PandaDocument* document);
 
 public slots:
 	void populateTable();
@@ -40,7 +41,7 @@ private:
 
 	QStackedLayout* m_stackedLayout;
 	QLabel* m_nameLabel;
-	panda::PandaDocument* m_document;
+	panda::PandaDocument* m_document = nullptr;
 	panda::PandaObject *m_currentObject = nullptr, *m_nextObject = nullptr;
 	bool m_waitingPopulate = false;
 	bool m_objectIsModified = false;

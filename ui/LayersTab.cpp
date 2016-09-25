@@ -15,9 +15,8 @@ namespace
 	{ return data.isReadOnly() || data.getParent() != nullptr; }
 }
 
-LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
+LayersTab::LayersTab(QWidget* parent)
 	: QWidget(parent)
-	, m_document(document)
 	, m_selectedLayer(nullptr)
 {
 	QLabel* nameLabel = new QLabel(tr("Name:"), this);
@@ -92,12 +91,6 @@ LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
 	mainLayout->addLayout(moveButtonsLayout);
 	setLayout(mainLayout);
 
-	m_observer.get(m_document->getObjectsList().addedObject).connect<LayersTab, &LayersTab::addedObject>(this);
-	m_observer.get(m_document->getObjectsList().removedObject).connect<LayersTab, &LayersTab::removedObject>(this);
-	m_observer.get(m_document->getObjectsList().reorderedObjects).connect<LayersTab, &LayersTab::reorderObjects>(this);
-	m_observer.get(m_document->getSignals().dirtyObject).connect<LayersTab, &LayersTab::dirtyObject>(this);
-	m_observer.get(m_document->getSignals().modifiedObject).connect<LayersTab, &LayersTab::modifiedObject>(this);
-
 	connect(m_nameEdit, SIGNAL(editingFinished()), this, SLOT(nameChanged()));
 	connect(m_tableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(itemClicked(QTableWidgetItem*)));
 	connect(m_compositionBox, SIGNAL(currentIndexChanged(int)), this, SLOT(compositionModeChanged(int)));
@@ -110,6 +103,17 @@ LayersTab::LayersTab(panda::PandaDocument* document, QWidget* parent)
 	m_opacitySlider->setEnabled(false);
 	m_moveUpButton->setEnabled(false);
 	m_moveDownButton->setEnabled(false);
+}
+
+void LayersTab::setDocument(panda::PandaDocument* document)
+{
+	m_document = document;
+
+	m_observer.get(m_document->getObjectsList().addedObject).connect<LayersTab, &LayersTab::addedObject>(this);
+	m_observer.get(m_document->getObjectsList().removedObject).connect<LayersTab, &LayersTab::removedObject>(this);
+	m_observer.get(m_document->getObjectsList().reorderedObjects).connect<LayersTab, &LayersTab::reorderObjects>(this);
+	m_observer.get(m_document->getSignals().dirtyObject).connect<LayersTab, &LayersTab::dirtyObject>(this);
+	m_observer.get(m_document->getSignals().modifiedObject).connect<LayersTab, &LayersTab::modifiedObject>(this);
 }
 
 void LayersTab::updateTable()

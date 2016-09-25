@@ -66,8 +66,6 @@ MainWindow::MainWindow()
 	format.setVersion(3, 0);
 	format.setProfile(QSurfaceFormat::CoreProfile);
 	QSurfaceFormat::setDefaultFormat(format);*/
-	
-	m_simpleGUI = new SimpleGUIImpl(this);
 
 	m_documentViewContainer = new ScrollContainer();
 	m_documentViewContainer->setFrameStyle(0); // No frame
@@ -76,20 +74,6 @@ MainWindow::MainWindow()
 	m_openGLViewContainer->setFrameStyle(0);
 	m_openGLViewContainer->setAlignment(Qt::AlignCenter);
 	m_openGLViewContainer->setWidgetResizable(true);
-
-	setDocument(std::make_shared<panda::InteractiveDocument>(*m_simpleGUI));
-
-	m_tabWidget = new DetachableTabWidget;
-	m_tabWidget->addTab(m_documentViewContainer, tr("Graph"));
-	m_tabWidget->addTab(m_openGLViewContainer, tr("Render"));
-	m_tabWidget->setCurrentWidget(m_openGLViewContainer); // First go to the OpenGL view (initialize it)
-	setCentralWidget(m_tabWidget);
-
-	// Go back to the graph view asap
-	QTimer::singleShot(0, [this](){
-		m_tabWidget->setCurrentWidget(m_documentViewContainer);
-		m_documentView->setFocus();
-	});
 
 	// Set the application directories
 	auto& dataRepository = panda::helper::system::DataRepository;
@@ -115,7 +99,7 @@ MainWindow::MainWindow()
 	setWindowIcon(QIcon(":/share/icons/icon.png"));
 	setCurrentFile("");
 
-	m_datasTable = new DatasTable(m_document.get(), this);
+	m_datasTable = new DatasTable(this);
 
 	m_datasDock = new QDockWidget(tr("Properties"), this);
 	m_datasDock->setObjectName("PropertiesDock");
@@ -123,13 +107,29 @@ MainWindow::MainWindow()
 	m_datasDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	addDockWidget(Qt::LeftDockWidgetArea, m_datasDock);
 
-	m_layersTab = new LayersTab(m_document.get(), this);
+	m_layersTab = new LayersTab(this);
 
 	m_layersDock = new QDockWidget(tr("Layers"), this);
 	m_layersDock->setObjectName("LayersDock");
 	m_layersDock->setWidget(m_layersTab);
 	m_layersDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	addDockWidget(Qt::LeftDockWidgetArea, m_layersDock);
+
+	m_simpleGUI = new SimpleGUIImpl(this);
+
+	setDocument(std::make_shared<panda::InteractiveDocument>(*m_simpleGUI));
+
+	m_tabWidget = new DetachableTabWidget;
+	m_tabWidget->addTab(m_documentViewContainer, tr("Graph"));
+	m_tabWidget->addTab(m_openGLViewContainer, tr("Render"));
+	m_tabWidget->setCurrentWidget(m_openGLViewContainer); // First go to the OpenGL view (initialize it)
+	setCentralWidget(m_tabWidget);
+
+	// Go back to the graph view asap
+	QTimer::singleShot(0, [this](){
+		m_tabWidget->setCurrentWidget(m_documentViewContainer);
+		m_documentView->setFocus();
+	});
 
 	readSettings();
 }
@@ -618,11 +618,6 @@ void MainWindow::createActions()
 	connect(distributeVertBottomAction, &QAction::triggered, [this]() { if(m_currentGraphView) distributeVerticallyBottom(m_currentGraphView); });
 	m_graphViewsActions.push_back(distributeVertBottomAction);
 
-	for (auto action : m_allViewsActions)
-		m_documentView->addAction(action);
-	for (auto action : m_graphViewsActions)
-		m_documentView->addAction(action);
-
 /*** Creation of menus ***/
 	m_fileMenu = menuBar()->addMenu(tr("&File"));
 	m_fileMenu->addAction(newAction);
@@ -827,10 +822,6 @@ void MainWindow::createStatusBar()
 	m_timeLabel->setMinimumSize(m_timeLabel->sizeHint());
 
 	statusBar()->addWidget(m_timeLabel);
-
-	m_observer.get(m_document->getSignals().timeChanged).connect<MainWindow, &MainWindow::updateStatusBar>(this);
-
-	updateStatusBar();
 }
 
 void MainWindow::readSettings()
@@ -888,10 +879,8 @@ bool MainWindow::loadFile(const QString &fileName)
 	setDocument(std::move(document));
 
 	m_playAction->setChecked(false);
-	m_document->resetDocument();
-	m_documentView->resetView();
 
-	m_documentView->selection().set(panda::graph::getRawObjectsList(document->getObjectsList().get()));
+	m_documentView->selection().set(panda::graph::getRawObjectsList(m_document->getObjectsList().get()));
 
 	m_document->getUndoStack().clear();
 	m_documentView->selection().selectNone();
@@ -1607,4 +1596,14 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	connect(m_documentView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 
 	connect(m_openGLRenderView, &OpenGLRenderView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
+
+	m_datasTable->setSelectedObject(m_document.get());
+
+	for (auto action : m_allViewsActions)
+		m_documentView->addAction(action);
+	for (auto action : m_graphViewsActions)
+		m_documentView->addAction(action);
+
+	m_observer.get(m_document->getSignals().timeChanged).connect<MainWindow, &MainWindow::updateStatusBar>(this);
+	updateStatusBar();
 }
