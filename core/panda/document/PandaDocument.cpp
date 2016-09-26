@@ -65,7 +65,7 @@ PandaDocument::~PandaDocument()
 	if(m_scheduler)
 		m_scheduler->stop();
 
-	m_resetting = true;
+	m_isResetting = true;
 	m_undoStack->setEnabled(false);
 
 	TimedFunctions::instance().shutdown();
@@ -77,7 +77,7 @@ PandaDocument::~PandaDocument()
 
 void PandaDocument::resetDocument()
 {
-	m_resetting = true;
+	m_isResetting = true;
 	m_undoStack->setEnabled(false);
 
 	m_objectsList->clear();
@@ -99,7 +99,7 @@ void PandaDocument::resetDocument()
 	m_signals->modified.run();
 	m_signals->timeChanged.run();
 
-	m_resetting = false;
+	m_isResetting = false;
 	m_undoStack->setEnabled(true);
 }
 
@@ -123,7 +123,7 @@ void PandaDocument::waitForOtherTasksToFinish(bool mainThread) const
 
 void PandaDocument::onDirtyObject(PandaObject* object)
 {
-	if(m_resetting)
+	if(m_isResetting)
 		return;
 
 	if (isInStep())
@@ -139,7 +139,7 @@ void PandaDocument::onDirtyObject(PandaObject* object)
 
 void PandaDocument::onModifiedObject(PandaObject* object)
 {
-	if(m_resetting)
+	if(m_isResetting)
 		return;
 
 	m_signals->modifiedObject.run(object);
@@ -148,7 +148,7 @@ void PandaDocument::onModifiedObject(PandaObject* object)
 
 void PandaDocument::onChangedDock(DockableObject* dockable)
 {
-	if(m_resetting)
+	if(m_isResetting)
 		return;
 
 	m_signals->changedDock.run(dockable);

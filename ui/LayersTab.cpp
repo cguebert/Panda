@@ -105,15 +105,17 @@ LayersTab::LayersTab(QWidget* parent)
 	m_moveDownButton->setEnabled(false);
 }
 
-void LayersTab::setDocument(panda::PandaDocument* document)
+void LayersTab::setDocument(const std::shared_ptr<panda::PandaDocument>& document)
 {
+	m_tableWidget->clear();
+	m_selectedLayer = nullptr;
 	m_document = document;
 
-	m_observer.get(m_document->getObjectsList().addedObject).connect<LayersTab, &LayersTab::addedObject>(this);
-	m_observer.get(m_document->getObjectsList().removedObject).connect<LayersTab, &LayersTab::removedObject>(this);
-	m_observer.get(m_document->getObjectsList().reorderedObjects).connect<LayersTab, &LayersTab::reorderObjects>(this);
-	m_observer.get(m_document->getSignals().dirtyObject).connect<LayersTab, &LayersTab::dirtyObject>(this);
-	m_observer.get(m_document->getSignals().modifiedObject).connect<LayersTab, &LayersTab::modifiedObject>(this);
+	m_observer.get(document->getObjectsList().addedObject).connect<LayersTab, &LayersTab::addedObject>(this);
+	m_observer.get(document->getObjectsList().removedObject).connect<LayersTab, &LayersTab::removedObject>(this);
+	m_observer.get(document->getObjectsList().reorderedObjects).connect<LayersTab, &LayersTab::reorderObjects>(this);
+	m_observer.get(document->getSignals().dirtyObject).connect<LayersTab, &LayersTab::dirtyObject>(this);
+	m_observer.get(document->getSignals().modifiedObject).connect<LayersTab, &LayersTab::modifiedObject>(this);
 }
 
 void LayersTab::updateTable()
@@ -193,8 +195,9 @@ void LayersTab::compositionModeChanged(int mode)
 		auto data = &m_selectedLayer->getCompositionModeData();
 		auto oldValue = data->getValue();
 		auto owner = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		if (oldValue != mode)
-			m_document->getUndoStack().push(std::make_shared<SetDataValueCommand<int>>(data, oldValue, mode, owner));
+		auto doc = m_document.lock();
+		if (doc && oldValue != mode)
+			doc->getUndoStack().push(std::make_shared<SetDataValueCommand<int>>(data, oldValue, mode, owner));
 	}
 }
 
@@ -206,8 +209,9 @@ void LayersTab::opacityChanged(int opacity)
 		auto oldValue = data->getValue();
 		auto owner = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
 		float newValue = opacity / 100.0;
-		if (oldValue != newValue)
-			m_document->getUndoStack().push(std::make_shared<SetDataValueCommand<float>>(data, oldValue, newValue, owner));
+		auto doc = m_document.lock();
+		if (doc && oldValue != newValue)
+			doc->getUndoStack().push(std::make_shared<SetDataValueCommand<float>>(data, oldValue, newValue, owner));
 	}
 }
 
@@ -219,8 +223,10 @@ void LayersTab::moveLayerUp()
 		m_moveUpButton->setEnabled(index < m_layers.size() - 1);
 		m_moveDownButton->setEnabled(index > 0);
 
+		auto doc = m_document.lock();
 		auto object = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		m_document->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(m_document->getObjectsList(), object, index));
+		if(doc && object)
+			doc->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(doc->getObjectsList(), object, index));
 	}
 }
 
@@ -232,22 +238,25 @@ void LayersTab::moveLayerDown()
 		m_moveUpButton->setEnabled(index < m_layers.size() - 1);
 		m_moveDownButton->setEnabled(index > 0);
 
+		auto doc = m_document.lock();
 		auto object = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-		m_document->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(m_document->getObjectsList(), object, index));
+		if(doc && object)
+			doc->getUndoStack().push(std::make_shared<panda::MoveLayerCommand>(doc->getObjectsList(), object, index));
 	}
 }
 
 void LayersTab::nameChanged()
 {
+	auto doc = m_document.lock();
 	auto name = m_nameEdit->text().toStdString();
-	if(m_selectedLayer)
+	if(m_selectedLayer && doc)
 	{
 		auto data = &m_selectedLayer->getLayerNameData();
 		auto oldValue = data->getValue();
 		if(oldValue != name)
 		{
 			auto owner = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-			m_document->getUndoStack().push(std::make_shared<SetDataValueCommand<std::string>>(data, oldValue, name, owner));
+			doc->getUndoStack().push(std::make_shared<SetDataValueCommand<std::string>>(data, oldValue, name, owner));
 			updateTable();
 		}
 	}
@@ -255,8 +264,12 @@ void LayersTab::nameChanged()
 
 void LayersTab::reorderObjects()
 {
+	auto doc = m_document.lock();
+	if (!doc)
+		return;
+
 	QList<panda::BaseLayer*> newList;
-	for(auto& object : m_document->getObjectsList().get())
+	for(auto& object : doc->getObjectsList().get())
 	{
 		auto layer = dynamic_cast<panda::BaseLayer*>(object.get());
 		if(layer)

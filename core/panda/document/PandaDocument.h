@@ -25,6 +25,7 @@ public:
 	~PandaDocument();
 
 	virtual void resetDocument();
+	bool isResetting() const;
 
 	float getAnimationTime() const;
 	float getTimeStep() const;
@@ -68,7 +69,7 @@ protected:
 	Data<int> m_useTimer;
 	Data<int> m_nbThreads;
 
-	bool m_resetting = false;
+	bool m_isResetting = false;
 
 	bool m_animPlaying = false, m_animMultithread = false;
 	bool m_stepQueued = false, m_stepCanceled = false;
@@ -86,6 +87,9 @@ protected:
 };
 
 //****************************************************************************//
+
+inline bool PandaDocument::isResetting() const
+{ return m_isResetting; }
 
 inline float PandaDocument::getAnimationTime() const
 { return m_animTimeVal; }

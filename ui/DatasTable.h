@@ -30,7 +30,7 @@ public:
 
 	void updateCurrentObject();
 	void setSelectedObject(panda::PandaObject* object);
-	void setDocument(panda::PandaDocument* document);
+	void setDocument(const std::shared_ptr<panda::PandaDocument>& document);
 
 public slots:
 	void populateTable();
@@ -41,7 +41,7 @@ private:
 
 	QStackedLayout* m_stackedLayout;
 	QLabel* m_nameLabel;
-	panda::PandaDocument* m_document = nullptr;
+	std::weak_ptr<panda::PandaDocument> m_document;
 	panda::PandaObject *m_currentObject = nullptr, *m_nextObject = nullptr;
 	bool m_waitingPopulate = false;
 	bool m_objectIsModified = false;

@@ -64,19 +64,19 @@ DatasTable::DatasTable(QWidget* parent)
 
 DatasTable::~DatasTable() = default;
 
-void DatasTable::setDocument(panda::PandaDocument* document)
+void DatasTable::setDocument(const std::shared_ptr<panda::PandaDocument>& document)
 {
 	m_document = document;
 
-	m_observer.get(m_document->getSignals().modifiedObject).connect<DatasTable, &DatasTable::onModifiedObject>(this);
-	m_observer.get(m_document->getSignals().timeChanged).connect<DatasTable, &DatasTable::updateCurrentObject>(this);
+	m_observer.get(document->getSignals().modifiedObject).connect<DatasTable, &DatasTable::onModifiedObject>(this);
+	m_observer.get(document->getSignals().timeChanged).connect<DatasTable, &DatasTable::updateCurrentObject>(this);
 }
 
 void DatasTable::populateTable()
 {
 	m_waitingPopulate = false;
 	if (!m_nextObject)
-		m_nextObject = m_document;
+		m_nextObject = m_document.lock().get();
 
 	if (!m_nextObject)
 		return;

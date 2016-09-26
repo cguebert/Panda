@@ -887,7 +887,7 @@ bool MainWindow::loadFile(const QString &fileName)
 	setCurrentFile(fileName);
 	statusBar()->showMessage(tr("File loaded"), 2000);
 
-	m_documentView->showAll();
+	m_documentView->executeNextRefresh([view = m_documentView] {view->showAll(); });
 	return true;
 }
 
@@ -1597,6 +1597,7 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 
 	connect(m_openGLRenderView, &OpenGLRenderView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 
+	m_datasTable->setDocument(m_document);
 	m_datasTable->setSelectedObject(m_document.get());
 
 	for (auto action : m_allViewsActions)

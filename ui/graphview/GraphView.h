@@ -3,6 +3,7 @@
 
 #include <QOpenGLWidget>
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <set>
@@ -96,6 +97,8 @@ public:
 	virtual bool isTemporaryView() const; // If true, do not store any pointer to this view (in commands for example)
 
 	virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
+
+	void executeNextRefresh(std::function<void ()> func);
 
 protected:
 	void initializeGL() override;
@@ -251,6 +254,8 @@ protected:
 	bool m_recomputeLinks = false, m_recomputeConnected = false, m_objectsMoved = false;
 
 	long long m_previousTime = 0;
+
+	std::vector<std::function<void ()>> m_functionsToExecuteNextRefresh;
 };
 
 //****************************************************************************//

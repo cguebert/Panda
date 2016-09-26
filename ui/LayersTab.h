@@ -6,6 +6,8 @@
 
 #include <panda/messaging.h>
 
+#include <memory>
+
 class QTableWidget;
 class QTableWidgetItem;
 class QComboBox;
@@ -25,7 +27,7 @@ class LayersTab : public QWidget
 	Q_OBJECT
 public:
 	explicit LayersTab(QWidget* parent = nullptr);
-	void setDocument(panda::PandaDocument* document);
+	void setDocument(const std::shared_ptr<panda::PandaDocument>& document);
 
 protected:
 	void updateWidgets(panda::BaseLayer* layer, int row = 0);
@@ -36,9 +38,9 @@ protected:
 	QTableWidget* m_tableWidget;
 	QPushButton *m_moveUpButton, *m_moveDownButton;
 
-	panda::PandaDocument* m_document = nullptr;
+	std::weak_ptr<panda::PandaDocument> m_document;
 	QList<panda::BaseLayer*> m_layers;
-	panda::BaseLayer* m_selectedLayer;
+	panda::BaseLayer* m_selectedLayer = nullptr;
 
 	panda::msg::Observer m_observer;
 

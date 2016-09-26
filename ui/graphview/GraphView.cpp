@@ -215,6 +215,11 @@ void GraphView::resizeGL(int w, int h)
 
 void GraphView::paintGL()
 {
+	auto functions = m_functionsToExecuteNextRefresh;
+	m_functionsToExecuteNextRefresh.clear();
+	for (const auto func : functions)
+		func();
+	
 	// Moving the view when creating a link if the mouse is near the border of the widget
 	if(m_movingAction == Moving::Link)
 		moveViewIfMouseOnBorder();
@@ -1866,4 +1871,9 @@ void GraphView::del()
 
 	auto macro = m_pandaDocument->getUndoStack().beginMacro(tr("delete objects").toStdString());	
 	m_pandaDocument->getUndoStack().push(std::make_shared<RemoveObjectCommand>(m_pandaDocument, m_objectsList, selection));
+}
+
+void GraphView::executeNextRefresh(std::function<void()> func)
+{
+	m_functionsToExecuteNextRefresh.push_back(func);
 }

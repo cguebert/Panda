@@ -13,6 +13,9 @@ DockObject::DockObject(PandaDocument* document)
 
 DockObject::~DockObject()
 {
+	if (parentDocument()->isResetting()) // DO not bother when the whole document is being thrown away
+		return;
+
 	DockObject* defaultDock = nullptr;
 
 	auto dockedObjects = getDockedObjects();
