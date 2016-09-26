@@ -70,6 +70,7 @@ std::unique_ptr<PandaDocument> readFile(const std::string& fileName, panda::gui:
 	objectsAddonsReg.load(root); // Load the definition of object addons
 
 	auto document = std::make_unique<InteractiveDocument>(gui);
+	document->load(root); // Load the document's Datas
 
 	if (loadDoc(document.get(), document->getObjectsList(), root).first)
 		return document;
