@@ -215,8 +215,8 @@ void GraphView::resizeGL(int w, int h)
 
 void GraphView::paintGL()
 {
-	auto functions = m_functionsToExecuteNextRefresh;
-	m_functionsToExecuteNextRefresh.clear();
+	decltype(m_functionsToExecuteNextRefresh) functions;
+	functions.swap(m_functionsToExecuteNextRefresh);
 	for (const auto func : functions)
 		func();
 	
