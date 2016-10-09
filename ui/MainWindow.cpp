@@ -1638,4 +1638,24 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 
 	m_observer.get(m_document->getSignals().timeChanged).connect<MainWindow, &MainWindow::updateStatusBar>(this);
 	updateStatusBar();
+
+	// Enable actions depending on if the corresponding object can be created or not with this new document
+	updateAddObjectActions(m_registryMenu);
+}
+
+void MainWindow::updateAddObjectActions(QMenu* menu)
+{
+	auto factory = panda::ObjectFactory::getInstance();
+	for (auto action : menu->actions())
+	{
+		if (action->isSeparator())
+			continue;
+		if (action->menu())
+		{
+			updateAddObjectActions(action->menu());
+			continue;
+		}
+
+		action->setEnabled(factory->canCreate(action->data().toString().toStdString(), m_document.get()));
+	}
 }

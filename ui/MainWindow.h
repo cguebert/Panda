@@ -111,6 +111,7 @@ private:
 	QWidget* selectedTabWidget() const; // Return either the render view, a graph view or an image viewport
 
 	void setDocument(const std::shared_ptr<panda::PandaDocument>& document);
+	void updateAddObjectActions(QMenu* menu);
 
 	DetachableTabWidget* m_tabWidget = nullptr;
 	DocumentView* m_documentView = nullptr;

@@ -52,7 +52,7 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, GraphView* view)
 	std::vector<std::string> displayNames;
 	for(const auto& entry : ObjectFactory::getInstance()->getRegistryMap())
 	{
-		if (!entry.second.hidden)
+		if (!entry.second.hidden && entry.second.creator->canCreate(doc))
 			displayNames.push_back(entry.second.menuDisplay);
 	}
 

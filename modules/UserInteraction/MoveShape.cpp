@@ -117,7 +117,7 @@ protected:
 	int m_counter, m_currentSelection;
 };
 
-int UserInteraction_MoveDiskClass = RegisterObject<UserInteraction_MoveDisk>("Interaction/Move disk").setDescription("Move disks with the mouse");
+int UserInteraction_MoveDiskClass = RegisterObject<UserInteraction_MoveDisk, InteractiveDocument>("Interaction/Move disk").setDescription("Move disks with the mouse");
 
 //****************************************************************************//
 
