@@ -21,6 +21,105 @@ namespace
 
 		return nullptr;
 	}
+	
+	enum class DocumentType
+	{ Base, Rendered, Interactive };
+
+	using DocumentTypes = std::vector<std::pair<DocumentType, std::string>>;
+	const DocumentTypes& getDocumentTypes()
+	{
+		static DocumentTypes types = []	{
+			DocumentTypes tmp;
+			tmp.emplace_back(DocumentType::Base,        "Base");
+			tmp.emplace_back(DocumentType::Rendered,    "Rendered");
+			tmp.emplace_back(DocumentType::Interactive, "Interactive");
+			return tmp;
+		}();
+		return types;
+	}
+
+	const std::string& getDocumentName(DocumentType type)
+	{
+		const auto index = static_cast<int>(type);
+		return getDocumentTypes()[index].second;
+	}
+
+	DocumentType getDocumentType(const std::string& name)
+	{
+		const auto& list = getDocumentTypes();
+		auto it = std::find_if(list.begin(), list.end(), [&name](const auto& p) {
+			return p.second == name;
+		});
+		if (it != list.end())
+			return it->first;
+		return DocumentType::Base;
+	}
+
+	DocumentType getDocumentType(panda::PandaDocument* document)
+	{
+		if (dynamic_cast<panda::InteractiveDocument*>(document))
+			return DocumentType::Interactive;
+		else if (dynamic_cast<panda::RenderedDocument*>(document))
+			return DocumentType::Rendered;
+		return DocumentType::Base;
+	}
+
+	DocumentType getDocumentType(const panda::XmlElement& root)
+	{
+		auto node = root.firstChild("Document");
+		if(!node)
+			return DocumentType::Interactive;
+		const auto str = node.attribute("type").toString();
+		return getDocumentType(str);
+	}
+
+	void writeDocumentType(panda::PandaDocument* document, panda::XmlElement& root)
+	{
+		const auto type = getDocumentType(document);
+		const auto& str = getDocumentName(type);
+		auto node = root.addChild("Document");
+		node.setAttribute("type", str);
+	}
+
+	std::unique_ptr<panda::PandaDocument> createDocument(DocumentType type, panda::gui::BaseGUI& gui)
+	{
+		switch (type)
+		{
+		case DocumentType::Base:        return std::make_unique<panda::PandaDocument>(gui);
+		case DocumentType::Rendered:    return std::make_unique<panda::RenderedDocument>(gui);
+		case DocumentType::Interactive: return std::make_unique<panda::InteractiveDocument>(gui);
+		}
+	}
+
+	std::unique_ptr<panda::PandaDocument> createDocument(const panda::XmlElement& root, panda::gui::BaseGUI& gui)
+	{
+		const auto type = getDocumentType(root);
+		return createDocument(type, gui);
+	}
+
+	bool canImport(DocumentType current, DocumentType import)
+	{
+		using DT = DocumentType;
+		switch (current)
+		{
+		case DT::Base:
+			return import == DT::Base;
+		case DT::Rendered:
+			return import == DT::Base 
+				|| import == DT::Rendered;
+		case DT::Interactive:
+			return import == DT::Base 
+				|| import == DT::Rendered 
+				|| import == DT::Interactive;
+		}
+	}
+
+	bool canImport(panda::PandaDocument* document, const panda::XmlElement& root)
+	{
+		const auto currentType = getDocumentType(document);
+		const auto importType = getDocumentType(root);
+		return canImport(currentType, importType);
+	}
 
 }
 
@@ -35,6 +134,7 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 	XmlDocument doc;
 	auto root = doc.root();
 	root.setName("Panda");
+	writeDocumentType(document, root);
 	document->save(root);	// The document's Datas
 
 	ObjectAddonsRegistry::instance().save(root); // The definition of object addons
@@ -69,7 +169,7 @@ std::unique_ptr<PandaDocument> readFile(const std::string& fileName, panda::gui:
 	objectsAddonsReg.clearDefinitions(); // Remove previous definitions
 	objectsAddonsReg.load(root); // Load the definition of object addons
 
-	auto document = std::make_unique<InteractiveDocument>(gui);
+	auto document = createDocument(root, gui);
 	document->load(root); // Load the document's Datas
 
 	if (loadDoc(document.get(), document->getObjectsList(), root).first)
@@ -83,11 +183,16 @@ LoadResult importFile(PandaDocument* document, ObjectsList& objectsList, const s
 	XmlDocument doc;
 	if (!doc.loadFromFile(fileName))
 	{
-		document->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Cannot parse xml file  " + fileName + ".");
+		document->getGUI().messageBox(gui::MessageBoxType::warning, "Import", "Cannot parse xml file  " + fileName + ".");
 		return { false, {} };
 	}
 
 	auto root = doc.root();
+	if (!canImport(document, root))
+	{
+		document->getGUI().messageBox(gui::MessageBoxType::warning, "Import", "Cannot import into this document, types incompatible");
+		return { false, {} };
+	}
 
 	ObjectAddonsRegistry::instance().load(root); // The definition of object addons, without clearing them first
 
@@ -99,6 +204,9 @@ std::string writeTextDocument(PandaDocument* document, const Objects& objects)
 	XmlDocument doc;
 	auto root = doc.root();
 	root.setName("Panda");
+
+	// We save the document's type, in order to test it when importing in another document
+	writeDocumentType(document, root);
 
 	// Here we do not save the document's Data, only the objects from the list
 	saveDoc(document, root, objects);
@@ -112,7 +220,14 @@ LoadResult readTextDocument(PandaDocument* document, ObjectsList& objectsList, c
 	if (!doc.loadFromMemory(text))
 		return { false, {} };
 
-	return loadDoc(document, objectsList, doc.root());
+	auto root = doc.root();
+	if (!canImport(document, root))
+	{
+		document->getGUI().messageBox(gui::MessageBoxType::warning, "Import", "Cannot import into this document, types incompatible");
+		return { false, {} };
+	}
+
+	return loadDoc(document, objectsList, root);
 }
 
 bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects)
