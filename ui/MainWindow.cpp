@@ -144,8 +144,23 @@ void MainWindow::newFile()
 	{
 		m_playAction->setChecked(false);
 		play(false);
-		m_documentView->resetView();
-		m_document->resetDocument();
+
+		QStringList items;
+		items << tr("Basic") << tr("Rendered") << tr("Interactive");
+
+		bool ok;
+		auto item = QInputDialog::getItem(this, tr("New document"), tr("Type of the document:"), items, 2, false, &ok);
+		if (ok && !item.isEmpty())
+		{
+			auto index = items.indexOf(item);
+			switch (index)
+			{
+			case 0: setDocument(std::make_shared<panda::PandaDocument>      (*m_simpleGUI)); break;
+			case 1: setDocument(std::make_shared<panda::RenderedDocument>   (*m_simpleGUI)); break;
+			case 2: setDocument(std::make_shared<panda::InteractiveDocument>(*m_simpleGUI)); break;
+			}
+		}
+
 		setCurrentFile("");
 	}
 }
@@ -1568,7 +1583,10 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	m_currentGraphView = m_documentView;
 
 	if (m_openGLRenderView)
+	{
 		m_openGLRenderView->deleteLater();
+		m_openGLRenderView = nullptr;
+	}
 
 	int tabIndex = m_tabWidget->indexOf(m_openGLViewContainer);
 	auto renderedDocument = dynamic_cast<panda::RenderedDocument*>(document.get());
