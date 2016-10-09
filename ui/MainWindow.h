@@ -30,7 +30,6 @@ class UpdateLoggerDialog;
 namespace panda
 {
 class BaseData;
-class InteractiveDocument;
 class PandaDocument;
 class PandaObject;
 }
@@ -119,7 +118,7 @@ private:
 	GraphView* m_currentGraphView = nullptr;
 	OpenGLRenderView* m_openGLRenderView = nullptr;
 	QScrollArea* m_openGLViewContainer = nullptr;
-	std::shared_ptr<panda::InteractiveDocument> m_document;
+	std::shared_ptr<panda::PandaDocument> m_document;
 	DatasTable* m_datasTable = nullptr;
 	QDockWidget* m_datasDock = nullptr;
 	LayersTab* m_layersTab = nullptr;

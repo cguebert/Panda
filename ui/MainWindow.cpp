@@ -117,19 +117,12 @@ MainWindow::MainWindow()
 
 	m_simpleGUI = new SimpleGUIImpl(this);
 
-	setDocument(std::make_shared<panda::InteractiveDocument>(*m_simpleGUI));
-
 	m_tabWidget = new DetachableTabWidget;
 	m_tabWidget->addTab(m_documentViewContainer, tr("Graph"));
-	m_tabWidget->addTab(m_openGLViewContainer, tr("Render"));
-	m_tabWidget->setCurrentWidget(m_openGLViewContainer); // First go to the OpenGL view (initialize it)
-	setCentralWidget(m_tabWidget);
 
-	// Go back to the graph view asap
-	QTimer::singleShot(0, [this](){
-		m_tabWidget->setCurrentWidget(m_documentViewContainer);
-		m_documentView->setFocus();
-	});
+	setDocument(std::make_shared<panda::InteractiveDocument>(*m_simpleGUI));
+	
+	setCentralWidget(m_tabWidget);
 
 	readSettings();
 }
@@ -1564,8 +1557,7 @@ void MainWindow::onTabChanged()
 
 void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& document)
 {
-	// TODO: change this when we will allow the creation of other types of documents
-	m_document = std::dynamic_pointer_cast<panda::InteractiveDocument>(document);
+	m_document = document;
 
 	if (m_documentView)
 		m_documentView->deleteLater();
@@ -1578,9 +1570,32 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	if (m_openGLRenderView)
 		m_openGLRenderView->deleteLater();
 
-	m_openGLRenderView = new OpenGLRenderView(m_document.get());
-	m_openGLViewContainer->setWidget(m_openGLRenderView);
-	m_openGLViewContainer->setFocusProxy(m_openGLRenderView);
+	int tabIndex = m_tabWidget->indexOf(m_openGLViewContainer);
+	auto renderedDocument = dynamic_cast<panda::RenderedDocument*>(document.get());
+	if (renderedDocument)
+	{
+		m_openGLRenderView = new OpenGLRenderView(renderedDocument);
+		m_openGLViewContainer->setWidget(m_openGLRenderView);
+		m_openGLViewContainer->setFocusProxy(m_openGLRenderView);
+
+		if (tabIndex == -1)
+			m_tabWidget->addTab(m_openGLViewContainer, tr("Render"));
+
+		m_tabWidget->setCurrentWidget(m_openGLViewContainer); // First go to the OpenGL view (initialize it)
+	
+		// Go back to the graph view asap
+		QTimer::singleShot(0, [this](){
+			m_tabWidget->setCurrentWidget(m_documentViewContainer);
+			m_documentView->setFocus();
+		});
+
+		connect(m_openGLRenderView, &OpenGLRenderView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
+	}
+	else
+	{
+		if (tabIndex != -1)
+			m_tabWidget->removeTab(tabIndex);
+	}
 
 	m_observer.get(m_document->getSignals().modified).connect<MainWindow, &MainWindow::documentModified>(this);
 	m_observer.get(m_document->getObjectsList().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
@@ -1594,9 +1609,7 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	connect(m_documentView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(m_documentView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
 	connect(m_documentView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
-
-	connect(m_openGLRenderView, &OpenGLRenderView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
-
+	
 	m_datasTable->setDocument(m_document);
 	m_datasTable->setSelectedObject(m_document.get());
 

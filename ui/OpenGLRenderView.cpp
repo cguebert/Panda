@@ -46,9 +46,10 @@ namespace
 	}
 }
 
-OpenGLRenderView::OpenGLRenderView(panda::InteractiveDocument* doc, QWidget *parent)
+OpenGLRenderView::OpenGLRenderView(panda::RenderedDocument* doc, QWidget *parent)
 	: QOpenGLWidget(parent)
-	, m_document(doc)
+	, m_renderedDocument(doc)
+	, m_interactiveDocument(dynamic_cast<panda::InteractiveDocument*>(doc))
 	, m_adjustRenderSize(false)
 {
 	setAutoFillBackground(true);
@@ -69,27 +70,27 @@ void OpenGLRenderView::setAdjustRenderSize(bool adjust)
 	if(m_adjustRenderSize)
 	{
 		QRect viewRect = contentsRect();
-		m_document->setRenderSize(convert(viewRect.size()));
+		m_renderedDocument->setRenderSize(convert(viewRect.size()));
 	}
 }
 
 void OpenGLRenderView::initializeGL()
 {
-	m_document->getRenderer().initializeGL();
+	m_renderedDocument->getRenderer().initializeGL();
 }
 
 void OpenGLRenderView::resizeGL(int w, int h)
 {
 	if (m_adjustRenderSize)
-		m_document->setRenderSize({ w, h });
+		m_renderedDocument->setRenderSize({ w, h });
 }
 
 void OpenGLRenderView::paintGL()
 {
-	m_document->getRenderer().setRenderingMainView(true);
-	m_document->updateIfDirty();
-	m_document->getRenderer().setRenderingMainView(false);
-	auto fbo = m_document->getFBO();
+	m_renderedDocument->getRenderer().setRenderingMainView(true);
+	m_renderedDocument->updateIfDirty();
+	m_renderedDocument->getRenderer().setRenderingMainView(false);
+	auto fbo = m_renderedDocument->getFBO();
 
 	QRect viewRect = contentsRect();
 	auto col = palette().window().color();
@@ -105,51 +106,66 @@ void OpenGLRenderView::paintGL()
 	panda::graphics::RectInt dstRect(m_deltaPos.x, m_deltaPos.y, m_deltaPos.x + w, m_deltaPos.y + h);
 	panda::graphics::Framebuffer::blitFramebuffer(defaultFramebufferObject(), dstRect, fbo.id(), srcRect);
 
-	m_document->getSignals().postRender.run(viewRect.width(), viewRect.height(), defaultFramebufferObject());
+	m_renderedDocument->getSignals().postRender.run(viewRect.width(), viewRect.height(), defaultFramebufferObject());
 }
 
 void OpenGLRenderView::mouseMoveEvent(QMouseEvent* event)
 {
+	if (!m_interactiveDocument)
+		return;
+
 	panda::types::Point globalPos(event->localPos().x(), event->localPos().y());
 	panda::types::Point localPos(globalPos.x - m_deltaPos.x, globalPos.y - m_deltaPos.y);
-	m_document->mouseMoveEvent(localPos, globalPos);
+	m_interactiveDocument->mouseMoveEvent(localPos, globalPos);
 }
 
 void OpenGLRenderView::mousePressEvent(QMouseEvent* event)
 {
+	if (!m_interactiveDocument)
+		return;
+
 	panda::types::Point pos(event->localPos().x() - m_deltaPos.x, event->localPos().y() - m_deltaPos.y);
 	switch (event->button())
 	{
-	case Qt::LeftButton:	m_document->mouseButtonEvent(0, true, pos); break;
-	case Qt::RightButton:	m_document->mouseButtonEvent(1, true, pos); break;
-	case Qt::MiddleButton:	m_document->mouseButtonEvent(2, true, pos); break;
+	case Qt::LeftButton:	m_interactiveDocument->mouseButtonEvent(0, true, pos); break;
+	case Qt::RightButton:	m_interactiveDocument->mouseButtonEvent(1, true, pos); break;
+	case Qt::MiddleButton:	m_interactiveDocument->mouseButtonEvent(2, true, pos); break;
 	}
 }
 
 void OpenGLRenderView::mouseReleaseEvent(QMouseEvent* event)
 {
+	if (!m_interactiveDocument)
+		return;
+
 	panda::types::Point pos(event->localPos().x() - m_deltaPos.x, event->localPos().y() - m_deltaPos.y);
 	switch (event->button())
 	{
-	case Qt::LeftButton:	m_document->mouseButtonEvent(0, false, pos); break;
-	case Qt::RightButton:	m_document->mouseButtonEvent(1, false, pos); break;
-	case Qt::MiddleButton:	m_document->mouseButtonEvent(2, false, pos); break;
+	case Qt::LeftButton:	m_interactiveDocument->mouseButtonEvent(0, false, pos); break;
+	case Qt::RightButton:	m_interactiveDocument->mouseButtonEvent(1, false, pos); break;
+	case Qt::MiddleButton:	m_interactiveDocument->mouseButtonEvent(2, false, pos); break;
 	}
 }
 
 void OpenGLRenderView::keyPressEvent(QKeyEvent* event)
 {
+	if (!m_interactiveDocument)
+		return;
+
 	int key = convertKey(event->key());
 	if (key != -1)
-		m_document->keyEvent(key, true);
+		m_interactiveDocument->keyEvent(key, true);
 
 	auto text = event->text();
 	if (!text.isEmpty())
-		m_document->textEvent(text.toStdString());
+		m_interactiveDocument->textEvent(text.toStdString());
 }
 
 void OpenGLRenderView::keyReleaseEvent(QKeyEvent* event)
 {
+	if (!m_interactiveDocument)
+		return;
+
 	int key = event->key();
 	auto mods = event->modifiers();
 	if (key == Qt::Key_Control && mods & Qt::ControlModifier)
@@ -159,7 +175,7 @@ void OpenGLRenderView::keyReleaseEvent(QKeyEvent* event)
 
 	key = convertKey(key);
 	if (key != -1)
-		m_document->keyEvent(key, false);
+		m_interactiveDocument->keyEvent(key, false);
 }
 
 void OpenGLRenderView::resizeEvent(QResizeEvent* event)
@@ -168,7 +184,7 @@ void OpenGLRenderView::resizeEvent(QResizeEvent* event)
 	if(m_adjustRenderSize)
 	{
 		QRect viewRect = contentsRect();
-		m_document->setRenderSize(convert(viewRect.size()));
+		m_renderedDocument->setRenderSize(convert(viewRect.size()));
 	}
 }
 
