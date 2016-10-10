@@ -1,4 +1,4 @@
-<Group type="panda::Group" description="Create a list of points from the position of the mouse during the last X frames.">
+<Group type="panda::Group" description="Create a list of points from the position of the mouse during the last X frames." document="Interactive">
     <GroupData output="0" help="Number of points to keep (put in negative)" type="integer" input="1" name="nb points"/>
     <GroupData output="1" help="List of points created with the mouse" type="point_vector" input="0" name="points"/>
     <Data name="name">Mouse trace</Data>

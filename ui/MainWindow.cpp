@@ -238,7 +238,7 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::documentModified()
 {
-	if(m_openGLRenderView->isVisible())
+	if(m_openGLRenderView && m_openGLRenderView->isVisible())
 		m_openGLRenderView->update();
 
 	setWindowModified(true);
@@ -812,7 +812,7 @@ void MainWindow::createGroupRegistryMenu()
 				currentMenu = &currentMenu->childs[hierarchy[i]];
 
 			QAction* tempAction = new QAction(hierarchy.last(), this);
-			tempAction->setStatusTip(group.second);
+			tempAction->setStatusTip(group.second.description);
 			tempAction->setData(group.first);
 			currentMenu->actions[hierarchy.last()] = tempAction;
 
@@ -1641,6 +1641,7 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 
 	// Enable actions depending on if the corresponding object can be created or not with this new document
 	updateAddObjectActions(m_registryMenu);
+	updateAddGroupActions(m_groupsRegistryMenu);
 }
 
 void MainWindow::updateAddObjectActions(QMenu* menu)
@@ -1657,5 +1658,23 @@ void MainWindow::updateAddObjectActions(QMenu* menu)
 		}
 
 		action->setEnabled(factory->canCreate(action->data().toString().toStdString(), m_document.get()));
+	}
+}
+
+void MainWindow::updateAddGroupActions(QMenu* menu)
+{
+	auto docType = panda::serialization::getDocumentType(m_document.get());
+	auto factory = GroupsManager::getInstance();
+	for (auto action : menu->actions())
+	{
+		if (action->isSeparator())
+			continue;
+		if (action->menu())
+		{
+			updateAddGroupActions(action->menu());
+			continue;
+		}
+
+		action->setEnabled(factory->canCreate(action->data().toString(), docType));
 	}
 }

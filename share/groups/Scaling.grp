@@ -1,4 +1,4 @@
-<Group type="panda::Group" description="Scale a list of points around the center of the view.">
+<Group type="panda::Group" description="Scale a list of points around the center of the view." document="Rendered">
     <GroupData type="point_vector" output="0" name="points" input="1" help="List of points to scale"/>
     <GroupData type="real_vector" output="0" name="factor" input="1" help="Scaling factor"/>
     <GroupData type="point_vector" output="1" name="result" input="0" help="Result of the scaling"/>

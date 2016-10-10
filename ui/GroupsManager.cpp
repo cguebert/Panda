@@ -4,10 +4,37 @@
 #include <ui/graphview/GraphView.h>
 
 #include <panda/command/AddObjectCommand.h>
+#include <panda/document/PandaDocument.h>
+#include <panda/document/Serialization.h>
 #include <panda/object/Group.h>
 #include <panda/object/ObjectFactory.h>
-#include <panda/document/PandaDocument.h>
 #include <panda/XmlDocument.h>
+
+namespace
+{
+
+	std::pair<bool, GroupsManager::GroupInformation> getGroupInformation(const QString &fileName)
+	{
+		panda::XmlDocument doc;
+		if (!doc.loadFromFile(fileName.toStdString()))
+			return { false, {} };
+
+		auto root = doc.root();
+		auto descAtt = root.attribute("description");
+		if(!descAtt)
+			return { false, {} };
+
+		const auto description = QString::fromStdString(descAtt.toString());
+
+		auto docTypeAtt = root.attribute("document");
+		auto docType = panda::serialization::DocumentType::Base;
+		if (docTypeAtt)
+			docType = panda::serialization::getDocumentType(docTypeAtt.toString());
+
+		return { true, {description, docType} };
+	}
+
+}
 
 GroupsManager::GroupsManager()
 {
@@ -36,14 +63,14 @@ void GroupsManager::createGroupsList()
 		QFileInfoList entries = dir.entryInfoList(nameFilter, QDir::Files);
 		for(int i=0, nb=entries.size(); i<nb; i++)
 		{
-			QString desc;
-			if(getGroupDescription(entries[i].absoluteFilePath(), desc))
+			const auto infoPair = getGroupInformation(entries[i].absoluteFilePath());
+			if(infoPair.first)
 			{
 				QString path = groupsDir.relativeFilePath(entries[i].absoluteFilePath());
 				int n = path.lastIndexOf(".grp", -1, Qt::CaseInsensitive);
 				if(n != -1)
 					path = path.left(n);
-				m_groupsMap[path] = desc;
+				m_groupsMap[path] = infoPair.second;
 			}
 		}
 
@@ -52,20 +79,6 @@ void GroupsManager::createGroupsList()
 		for(int i=0, nb=entries.size(); i<nb; i++)
 			dirList.push(entries[i].absoluteFilePath());
 	}
-}
-
-bool GroupsManager::getGroupDescription(const QString &fileName, QString& description)
-{
-	panda::XmlDocument doc;
-	if (!doc.loadFromFile(fileName.toStdString()))
-		return false;
-
-	auto descAtt = doc.root().attribute("description");
-	if(!descAtt)
-		return false;
-	description = QString::fromStdString(descAtt.toString());
-
-	return true;
 }
 
 bool GroupsManager::saveGroup(panda::Group *group)
@@ -93,7 +106,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 							  QMessageBox::Yes)
 				!= QMessageBox::Yes)
 			return false;
-		getGroupDescription(fileName, description);
+		description = getGroupInformation(fileName).second.description;
 	}
 
 	if (!file.open(QIODevice::WriteOnly))
@@ -116,6 +129,8 @@ bool GroupsManager::saveGroup(panda::Group *group)
 
 	root.setAttribute("description", description.toStdString());
 	root.setAttribute("type", panda::ObjectFactory::getRegistryName(group));
+	const auto docType = panda::serialization::getDocumentType(group->parentDocument());
+	root.setAttribute("document", panda::serialization::getDocumentName(docType));
 
 	group->save(root);
 
@@ -160,5 +175,11 @@ const GroupsManager::GroupsMap& GroupsManager::getGroups()
 
 QString GroupsManager::getGroupDescription(const QString& groupName)
 {
-	return m_groupsMap.at(groupName);
+	return m_groupsMap.at(groupName).description;
+}
+
+bool GroupsManager::canCreate(const QString& groupName, panda::serialization::DocumentType docType)
+{
+	const auto groupDocType = m_groupsMap.at(groupName).documentType;
+	return panda::serialization::canImport(docType, groupDocType);
 }

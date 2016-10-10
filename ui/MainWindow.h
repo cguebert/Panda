@@ -112,6 +112,7 @@ private:
 
 	void setDocument(const std::shared_ptr<panda::PandaDocument>& document);
 	void updateAddObjectActions(QMenu* menu);
+	void updateAddGroupActions(QMenu* menu);
 
 	DetachableTabWidget* m_tabWidget = nullptr;
 	DocumentView* m_documentView = nullptr;

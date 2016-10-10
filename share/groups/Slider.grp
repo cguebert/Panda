@@ -1,4 +1,4 @@
-<Group type="panda::GroupWithLayer" description="Constructs a slider usable on the render view.">
+<Group type="panda::GroupWithLayer" description="Constructs a slider usable on the render view." document="Interactive">
     <GroupData output="0" help="Minimum value of the slider." type="real" widget="default" name="min" input="1"/>
     <GroupData output="0" help="Minimum value of the slider." type="real" widget="default" name="max" input="1"/>
     <GroupData output="0" help="Initial value of the slider." type="real" widget="default" name="init" input="1"/>

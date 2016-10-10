@@ -21,102 +21,47 @@ namespace
 
 		return nullptr;
 	}
-	
-	enum class DocumentType
-	{ Base, Rendered, Interactive };
 
-	using DocumentTypes = std::vector<std::pair<DocumentType, std::string>>;
+	using DocumentTypes = std::vector<std::pair<panda::serialization::DocumentType, std::string>>;
 	const DocumentTypes& getDocumentTypes()
 	{
 		static DocumentTypes types = []	{
+			using DT = panda::serialization::DocumentType;
 			DocumentTypes tmp;
-			tmp.emplace_back(DocumentType::Base,        "Base");
-			tmp.emplace_back(DocumentType::Rendered,    "Rendered");
-			tmp.emplace_back(DocumentType::Interactive, "Interactive");
+			tmp.emplace_back(DT::Base,        "Base");
+			tmp.emplace_back(DT::Rendered,    "Rendered");
+			tmp.emplace_back(DT::Interactive, "Interactive");
 			return tmp;
 		}();
 		return types;
 	}
 
-	const std::string& getDocumentName(DocumentType type)
-	{
-		const auto index = static_cast<int>(type);
-		return getDocumentTypes()[index].second;
-	}
-
-	DocumentType getDocumentType(const std::string& name)
-	{
-		const auto& list = getDocumentTypes();
-		auto it = std::find_if(list.begin(), list.end(), [&name](const auto& p) {
-			return p.second == name;
-		});
-		if (it != list.end())
-			return it->first;
-		return DocumentType::Base;
-	}
-
-	DocumentType getDocumentType(panda::PandaDocument* document)
-	{
-		if (dynamic_cast<panda::InteractiveDocument*>(document))
-			return DocumentType::Interactive;
-		else if (dynamic_cast<panda::RenderedDocument*>(document))
-			return DocumentType::Rendered;
-		return DocumentType::Base;
-	}
-
-	DocumentType getDocumentType(const panda::XmlElement& root)
+	panda::serialization::DocumentType getDocumentType(const panda::XmlElement& root)
 	{
 		auto node = root.firstChild("Document");
 		if(!node)
-			return DocumentType::Interactive;
+			return panda::serialization::DocumentType::Interactive;
 		const auto str = node.attribute("type").toString();
-		return getDocumentType(str);
+		return panda::serialization::getDocumentType(str);
 	}
 
 	void writeDocumentType(panda::PandaDocument* document, panda::XmlElement& root)
 	{
-		const auto type = getDocumentType(document);
-		const auto& str = getDocumentName(type);
+		const auto type = panda::serialization::getDocumentType(document);
+		const auto str = panda::serialization::getDocumentName(type);
 		auto node = root.addChild("Document");
 		node.setAttribute("type", str);
-	}
-
-	std::unique_ptr<panda::PandaDocument> createDocument(DocumentType type, panda::gui::BaseGUI& gui)
-	{
-		switch (type)
-		{
-		case DocumentType::Base:        return std::make_unique<panda::PandaDocument>(gui);
-		case DocumentType::Rendered:    return std::make_unique<panda::RenderedDocument>(gui);
-		case DocumentType::Interactive: return std::make_unique<panda::InteractiveDocument>(gui);
-		}
 	}
 
 	std::unique_ptr<panda::PandaDocument> createDocument(const panda::XmlElement& root, panda::gui::BaseGUI& gui)
 	{
 		const auto type = getDocumentType(root);
-		return createDocument(type, gui);
-	}
-
-	bool canImport(DocumentType current, DocumentType import)
-	{
-		using DT = DocumentType;
-		switch (current)
-		{
-		case DT::Base:
-			return import == DT::Base;
-		case DT::Rendered:
-			return import == DT::Base 
-				|| import == DT::Rendered;
-		case DT::Interactive:
-			return import == DT::Base 
-				|| import == DT::Rendered 
-				|| import == DT::Interactive;
-		}
+		return panda::serialization::createDocument(type, gui);
 	}
 
 	bool canImport(panda::PandaDocument* document, const panda::XmlElement& root)
 	{
-		const auto currentType = getDocumentType(document);
+		const auto currentType = panda::serialization::getDocumentType(document);
 		const auto importType = getDocumentType(root);
 		return canImport(currentType, importType);
 	}
@@ -128,6 +73,63 @@ namespace panda
 
 namespace serialization 
 {
+
+std::string getDocumentName(DocumentType type)
+{
+	const auto index = static_cast<int>(type);
+	return getDocumentTypes()[index].second;
+}
+
+DocumentType getDocumentType(const std::string& name)
+{
+	const auto& list = getDocumentTypes();
+	auto it = std::find_if(list.begin(), list.end(), [&name](const auto& p) {
+		return p.second == name;
+	});
+	if (it != list.end())
+		return it->first;
+	return DocumentType::Base;
+}
+
+DocumentType getDocumentType(panda::PandaDocument* document)
+{
+	if (dynamic_cast<panda::InteractiveDocument*>(document))
+		return DocumentType::Interactive;
+	else if (dynamic_cast<panda::RenderedDocument*>(document))
+		return DocumentType::Rendered;
+	return DocumentType::Base;
+}
+
+std::unique_ptr<panda::PandaDocument> createDocument(DocumentType type, panda::gui::BaseGUI& gui)
+{
+	switch (type)
+	{
+	case DocumentType::Base:        return std::make_unique<panda::PandaDocument>(gui);
+	case DocumentType::Rendered:    return std::make_unique<panda::RenderedDocument>(gui);
+	case DocumentType::Interactive: return std::make_unique<panda::InteractiveDocument>(gui);
+	}
+
+	throw std::exception("Unknown document type in createDocument");
+}
+
+bool canImport(DocumentType current, DocumentType import)
+{
+	using DT = DocumentType;
+	switch (current)
+	{
+	case DT::Base:
+		return import == DT::Base;
+	case DT::Rendered:
+		return import == DT::Base 
+			|| import == DT::Rendered;
+	case DT::Interactive:
+		return import == DT::Base 
+			|| import == DT::Rendered 
+			|| import == DT::Interactive;
+	}
+
+	throw std::exception("Unknown document type in canImport");
+}
 
 bool writeFile(PandaDocument* document, const std::string& fileName)
 {
@@ -169,7 +171,7 @@ std::unique_ptr<PandaDocument> readFile(const std::string& fileName, panda::gui:
 	objectsAddonsReg.clearDefinitions(); // Remove previous definitions
 	objectsAddonsReg.load(root); // Load the definition of object addons
 
-	auto document = createDocument(root, gui);
+	auto document = ::createDocument(root, gui);
 	document->load(root); // Load the document's Datas
 
 	if (loadDoc(document.get(), document->getObjectsList(), root).first)
@@ -188,7 +190,7 @@ LoadResult importFile(PandaDocument* document, ObjectsList& objectsList, const s
 	}
 
 	auto root = doc.root();
-	if (!canImport(document, root))
+	if (!::canImport(document, root))
 	{
 		document->getGUI().messageBox(gui::MessageBoxType::warning, "Import", "Cannot import into this document, types incompatible");
 		return { false, {} };
@@ -221,7 +223,7 @@ LoadResult readTextDocument(PandaDocument* document, ObjectsList& objectsList, c
 		return { false, {} };
 
 	auto root = doc.root();
-	if (!canImport(document, root))
+	if (!::canImport(document, root))
 	{
 		document->getGUI().messageBox(gui::MessageBoxType::warning, "Import", "Cannot import into this document, types incompatible");
 		return { false, {} };

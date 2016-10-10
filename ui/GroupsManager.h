@@ -5,6 +5,8 @@
 #include <QString>
 #include <map>
 
+#include <panda/document/Serialization.h>
+
 namespace panda
 {
 	class PandaDocument;
@@ -18,19 +20,24 @@ class GroupsManager : public QObject
 {
 	Q_OBJECT
 public:
-	typedef std::map<QString, QString> GroupsMap;
+	struct GroupInformation
+	{
+		QString description;
+		panda::serialization::DocumentType documentType;
+	};
+	using GroupsMap = std::map<QString, GroupInformation>;
 
 	static GroupsManager* getInstance();
 
 	void createGroupsList();
 	const GroupsMap& getGroups();
 	QString getGroupDescription(const QString& groupName);
+	bool canCreate(const QString& groupName, panda::serialization::DocumentType docType);
 	bool saveGroup(panda::Group* group);
 	panda::PandaObject* createGroupObject(panda::PandaDocument* document, GraphView* view, QString groupPath);
 
 protected:
 	GroupsManager();
-	bool getGroupDescription(const QString &fileName, QString& description);
 
 	GroupsMap m_groupsMap;
 	QString m_groupsDirPath;
