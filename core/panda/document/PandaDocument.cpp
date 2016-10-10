@@ -68,8 +68,6 @@ PandaDocument::~PandaDocument()
 	m_isResetting = true;
 	m_undoStack->setEnabled(false);
 
-	TimedFunctions::instance().shutdown();
-
 	// Just to be sure everything goes smoothly
 	m_objectsList->clear(false);
 	m_undoStack->clear();

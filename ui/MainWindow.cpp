@@ -26,6 +26,7 @@
 #include <panda/document/GraphUtils.h>
 #include <panda/document/InteractiveDocument.h>
 #include <panda/PluginsManager.h>
+#include <panda/TimedFunctions.h>
 #include <panda/command/AddObjectCommand.h>
 #include <panda/command/RemoveObjectCommand.h>
 #include <panda/document/DocumentSignals.h>
@@ -131,6 +132,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
 	if (okToContinue())
 	{
+		panda::TimedFunctions::instance().shutdown();
 		writeSettings();
 		event->accept();
 	}
