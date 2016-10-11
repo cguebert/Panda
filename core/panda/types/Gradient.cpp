@@ -185,22 +185,23 @@ PANDA_CORE_API void DataTrait<Gradient>::readValue(const XmlElement& elem, Gradi
 	}
 }
 
-template class PANDA_CORE_API Data< Gradient >;
-template class PANDA_CORE_API Data< std::vector<Gradient> >;
-
-int gradientDataClass = RegisterData< Gradient >();
-int gradientVectorDataClass = RegisterData< std::vector<Gradient> >();
-
-//****************************************************************************//
-
 template<>
 Gradient interpolate(const Gradient& g1, const Gradient& g2, float amt)
 { return Gradient::interpolate(g1, g2, amt); }
 
 template class PANDA_CORE_API Animation<Gradient>;
-template class PANDA_CORE_API Data< Animation<Gradient> >;
-int gradientAnimationDataClass = RegisterData< Animation<Gradient> >();
 
 } // namespace types
+
+template class PANDA_CORE_API Data<types::Gradient >;
+template class PANDA_CORE_API Data<std::vector<types::Gradient>>;
+
+int gradientDataClass = RegisterData< types::Gradient >();
+int gradientVectorDataClass = RegisterData< std::vector<types::Gradient> >();
+
+//****************************************************************************//
+
+template class PANDA_CORE_API Data<types::Animation<types::Gradient>>;
+int gradientAnimationDataClass = RegisterData<types::Animation<types::Gradient>>();
 
 } // namespace panda

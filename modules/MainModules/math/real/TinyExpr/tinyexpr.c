@@ -47,7 +47,7 @@ typedef struct {
 
 
 static te_expr *new_expr(te_expr *l, te_expr *r) {
-    te_expr *ret = malloc(sizeof(te_expr));
+    te_expr *ret = (te_expr*)malloc(sizeof(te_expr));
     ret->left = l;
     ret->right = r;
     ret->bound = 0;

@@ -205,7 +205,7 @@ public:
 private:
 	DataTraitsList();
 
-	template<class T> friend class RegisterData;
+	template<class T> friend class panda::RegisterData;
 
 	static void registerTrait(AbstractDataTrait* trait);
 };

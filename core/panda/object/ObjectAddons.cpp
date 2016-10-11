@@ -80,7 +80,10 @@ namespace panda
 	void ObjectAddons::save(XmlElement& elem)
 	{
 		for (const auto& addon : m_addons)
-			addon.addonPtr->save(ObjectAddonNode{ elem, addon.definition });
+		{
+			ObjectAddonNode node { elem, addon.definition };
+			addon.addonPtr->save(node);
+		}
 
 		saveNode(elem, m_loadedNode);
 	}

@@ -38,7 +38,7 @@ public:
 	{
 		const auto& inputList = m_input.getValue();
 		const auto& sizeList = m_size.getValue();
-		auto& outputList = m_output.getAccessor();
+		auto outputList = m_output.getAccessor();
 
 		if (!inputList.empty() && !sizeList.empty())
 		{
@@ -104,7 +104,7 @@ public:
 	void update()
 	{
 		const auto& inputList = m_input.getValue();
-		auto& outputList = m_output.getAccessor();
+		auto outputList = m_output.getAccessor();
 		const int size = m_size.getValue();
 
 		if (!inputList.empty() && size > 0)

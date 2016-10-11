@@ -250,12 +250,12 @@ PANDA_CORE_API void DataTrait<Shader>::readValue(const XmlElement& elem, Shader&
 
 //****************************************************************************//
 
-template class PANDA_CORE_API Data<Shader>;
-template class PANDA_CORE_API Data< std::vector<Shader> >;
-
-int shaderDataClass = RegisterData< Shader >();
-int shaderVectorDataClass = RegisterData< std::vector<Shader> >();
-
 } // namespace types
+
+template class PANDA_CORE_API Data<types::Shader>;
+template class PANDA_CORE_API Data<std::vector<types::Shader>>;
+
+int shaderDataClass = RegisterData<types::Shader>();
+int shaderVectorDataClass = RegisterData<std::vector<types::Shader>>();
 
 } // namespace panda

@@ -179,7 +179,7 @@ public:
 	void update()
 	{
 		const auto& path = m_fileName.getValue();
-		auto& image = m_image.getAccessor();
+		auto image = m_image.getAccessor();
 		
 		if (m_asynchronous.getValue() != 0 || m_loadingThread.isWorking())
 		{
@@ -270,7 +270,7 @@ public:
 	void update()
 	{
 		const auto& paths = m_fileName.getValue();
-		auto& images = m_image.getAccessor();
+		auto images = m_image.getAccessor();
 		int nb = paths.size();
 		
 		if (m_asynchronous.getValue() != 0 || m_loadingThread.isWorking())

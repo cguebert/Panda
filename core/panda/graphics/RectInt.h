@@ -3,6 +3,7 @@
 
 #include <panda/graphics/PointInt.h>
 #include <cmath>
+#include <utility>
 
 namespace panda
 {

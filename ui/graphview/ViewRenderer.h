@@ -3,6 +3,7 @@
 #include <panda/types/Rect.h>
 
 #include <memory>
+#include <vector>
 
 class QOpenGLBuffer;
 class QOpenGLShaderProgram;

@@ -234,13 +234,13 @@ PANDA_CORE_API void DataTrait<Path>::readValue(const XmlElement& elem, Path& pat
 	}
 }
 
-template class PANDA_CORE_API Data< Path >;
-template class PANDA_CORE_API Data< std::vector<Path> >;
-
-int pathDataClass = RegisterData< Path >();
-int pathVectorDataClass = RegisterData< std::vector<Path> >();
-
 } // namespace types
+
+template class PANDA_CORE_API Data<types::Path>;
+template class PANDA_CORE_API Data<std::vector<types::Path>>;
+
+int pathDataClass = RegisterData<types::Path>();
+int pathVectorDataClass = RegisterData< std::vector<types::Path>>();
 
 } // namespace panda
 

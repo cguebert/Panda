@@ -1,7 +1,10 @@
 #include <panda/types/Gradient.h>
 
 class asIScriptEngine;
-class aatc::container::templated::vector;
+
+namespace aatc { namespace container { namespace templated { 
+	class vector; 
+} } }
 
 namespace panda 
 {

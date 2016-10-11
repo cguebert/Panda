@@ -236,7 +236,7 @@ public:
 private:
 	DataCopiersList();
 
-	template<class T> friend class RegisterData;
+	template<class T> friend class panda::RegisterData;
 
 	static void registerCopier(int fullTypeId, AbstractDataCopier* copier);
 };

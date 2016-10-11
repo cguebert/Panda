@@ -100,13 +100,13 @@ PANDA_CORE_API void DataTrait<Polygon>::readValue(const XmlElement& elem, Polygo
 	}
 }
 
-template class PANDA_CORE_API Data< Polygon >;
-template class PANDA_CORE_API Data< std::vector<Polygon> >;
-
-int polygonDataClass = RegisterData< Polygon >();
-int polygonVectorDataClass = RegisterData< std::vector<Polygon> >();
-
 } // namespace types
+
+template class PANDA_CORE_API Data<types::Polygon>;
+template class PANDA_CORE_API Data<std::vector<types::Polygon>>;
+
+int polygonDataClass = RegisterData<types::Polygon>();
+int polygonVectorDataClass = RegisterData<std::vector<types::Polygon>>();
 
 } // namespace panda
 

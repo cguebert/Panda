@@ -161,10 +161,10 @@ public:
 
 			m_bodies.emplace_back(body, dynamicShape.path);
 
-			Path path;
+			Path newPath;
 			for (const auto& pt : dynamicShape.path)
-				path.points.push_back(b2Panda::convert(pt));
-			output.push_back(path); // At the wrong place now, but it will be moved at the end of the timestep anyway
+				newPath.points.push_back(b2Panda::convert(pt));
+			output.push_back(newPath); // At the wrong place now, but it will be moved at the end of the timestep anyway
 		}
 	}
 

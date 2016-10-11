@@ -70,18 +70,18 @@ PANDA_CORE_API void DataTrait<Point>::readValue(const XmlElement& elem, Point& v
 {	v.x = elem.attribute("x").toFloat();
 	v.y = elem.attribute("y").toFloat(); }
 
-template class PANDA_CORE_API std::vector<Point>;
-
-template class PANDA_CORE_API Data< Point >;
-template class PANDA_CORE_API Data< std::vector<Point> >;
-
-template class PANDA_CORE_API Animation<Point>;
-template class PANDA_CORE_API Data< Animation<Point> >;
-
-int pointDataClass = RegisterData< Point >();
-int pointVectorDataClass = RegisterData< std::vector<Point> >();
-int pointAnimationDataClass = RegisterData< Animation<Point> >();
-
 } // namespace types
+
+//template class PANDA_CORE_API std::vector<types::Point>;
+
+template class PANDA_CORE_API Data<types::Point>;
+template class PANDA_CORE_API Data<std::vector<types::Point>>;
+
+template class PANDA_CORE_API types::Animation<types::Point>;
+template class PANDA_CORE_API Data<types::Animation<types::Point>>;
+
+int pointDataClass = RegisterData<types::Point>();
+int pointVectorDataClass = RegisterData<std::vector<types::Point>>();
+int pointAnimationDataClass = RegisterData<types::Animation<types::Point>>();
 
 } // namespace panda

@@ -56,6 +56,8 @@ PANDA_CORE_API void DataTrait<std::string>::readValue(const XmlElement& elem, st
 
 //****************************************************************************//
 
+} // namespace types
+
 template class PANDA_CORE_API Data<int>;
 template class PANDA_CORE_API Data<float>;
 template class PANDA_CORE_API Data<std::string>;
@@ -72,11 +74,9 @@ int intVectorDataClass = RegisterData< std::vector<int> >();
 int doubleVectorDataClass = RegisterData< std::vector<float> >();
 int stringVectorDataClass = RegisterData< std::vector<std::string> >();
 
-template class PANDA_CORE_API Animation<float>;
-template class PANDA_CORE_API Data< Animation<float> >;
-int realAnimationDataClass = RegisterData< Animation<float> >();
-
-} // namespace types
+template class PANDA_CORE_API types::Animation<float>;
+template class PANDA_CORE_API Data<types::Animation<float>>;
+int realAnimationDataClass = RegisterData<types::Animation<float>>();
 
 } // namespace panda
 

@@ -174,12 +174,12 @@ template<> PANDA_CORE_API void DataTrait<ImageWrapper>::readValue(const XmlEleme
 template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isDisplayed() { return false; }
 template<> PANDA_CORE_API bool DataTrait<ImageWrapper>::isPersistent() { return false; }
 
-template class PANDA_CORE_API Data< ImageWrapper >;
-template class PANDA_CORE_API Data< std::vector<ImageWrapper> >;
-
-int imageDataClass = RegisterData< ImageWrapper >();
-int imageVectorDataClass = RegisterData< std::vector<ImageWrapper> >();
-
 } // namespace types
+
+template class PANDA_CORE_API Data<types::ImageWrapper>;
+template class PANDA_CORE_API Data<std::vector<types::ImageWrapper>>;
+
+int imageDataClass = RegisterData<types::ImageWrapper>();
+int imageVectorDataClass = RegisterData<std::vector<types::ImageWrapper>>();
 
 } // namespace panda

@@ -680,12 +680,12 @@ PANDA_CORE_API void DataTrait<Mesh>::readValue(const XmlElement& elem, Mesh& v)
 	v = std::move(tmpMesh);
 }
 
-template class PANDA_CORE_API Data< Mesh >;
-template class PANDA_CORE_API Data< std::vector<Mesh> >;
-
-int meshDataClass = RegisterData< Mesh >();
-int meshVectorDataClass = RegisterData< std::vector<Mesh> >();
-
 } // namespace types
+
+template class PANDA_CORE_API Data<types::Mesh>;
+template class PANDA_CORE_API Data< std::vector<types::Mesh>>;
+
+int meshDataClass = RegisterData<types::Mesh>();
+int meshVectorDataClass = RegisterData<std::vector<types::Mesh>>();
 
 } // namespace panda

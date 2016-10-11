@@ -7,6 +7,9 @@
 
 #include <memory>
 
+template<class From, class To>
+void convertType(const From&, To&);
+
 namespace panda
 {
 
@@ -33,10 +36,36 @@ private:
 };
 
 template<class From, class To>
+class TypeConverterFunctor : public BaseConverterFunctor
+{
+public:
+	typedef void convertTypeFunc(const From& valueFrom, To& valueTo);
+
+	TypeConverterFunctor(convertTypeFunc* function) : convertFunction(function) {}
+	virtual void convert(const void* valueFrom, void* valueTo) const
+	{
+		(*convertFunction)(*static_cast<const From*>(valueFrom), *static_cast<To*>(valueTo));
+	}
+
+private:
+	convertTypeFunc* convertFunction;
+};
+
+template<class From, class To>
+class TypeConverterGlobal : public BaseConverterFunctor
+{
+public:
+	virtual void convert(const void* valueFrom, void* valueTo) const
+	{
+		::convertType(*static_cast<const From*>(valueFrom), *static_cast<To*>(valueTo));
+	}
+};
+
+template<class From, class To>
 class RegisterTypeConverter
 {
 public:
-	typedef void convertType(const From& valueFrom, To& valueTo);
+	typedef void convertTypeFunc(const From& valueFrom, To& valueTo);
 
 	RegisterTypeConverter()
 	{
@@ -48,7 +77,7 @@ public:
 		TypeConverter::registerFunctor(fromType, toType, functor);
 	}
 
-	RegisterTypeConverter(convertType* function)
+	RegisterTypeConverter(convertTypeFunc* function)
 	{
 		ensureTypesAreRegistered();
 		int fromType = DataTypeId::getIdOf<From>();
@@ -64,32 +93,6 @@ protected:
 	{
 		DataTypeId::registerType<From>(DataTrait<From>::fullTypeId());
 		DataTypeId::registerType<To>(DataTrait<To>::fullTypeId());
-	}
-};
-
-template<class From, class To>
-class TypeConverterFunctor : public BaseConverterFunctor
-{
-public:
-	typedef void convertType(const From& valueFrom, To& valueTo);
-
-	TypeConverterFunctor(convertType* function) : convertFunction(function) {}
-	virtual void convert(const void* valueFrom, void* valueTo) const
-	{
-		(*convertFunction)(*static_cast<const From*>(valueFrom), *static_cast<To*>(valueTo));
-	}
-
-private:
-	convertType* convertFunction;
-};
-
-template<class From, class To>
-class TypeConverterGlobal : public BaseConverterFunctor
-{
-public:
-	virtual void convert(const void* valueFrom, void* valueTo) const
-	{
-		::convertType(*static_cast<const From*>(valueFrom), *static_cast<To*>(valueTo));
 	}
 };
 

@@ -100,13 +100,13 @@ namespace types
 		}
 	}
 
-	template class PANDA_CORE_API Data< FloatVector >;
-	template class PANDA_CORE_API Data< std::vector<FloatVector> >;
-
-	int floatsDataClass = RegisterData< FloatVector >();
-	int floatsVectorDataClass = RegisterData< std::vector<FloatVector> >();
-
 } // namespace types
+
+template class PANDA_CORE_API Data<types::FloatVector>;
+template class PANDA_CORE_API Data<std::vector<types::FloatVector>>;
+
+int floatsDataClass = RegisterData<types::FloatVector>();
+int floatsVectorDataClass = RegisterData<std::vector<types::FloatVector>>();
 
 } // namespace panda
 

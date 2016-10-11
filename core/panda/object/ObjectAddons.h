@@ -14,6 +14,7 @@ namespace panda
 
 class ObjectAddonNodeDefinition;
 class ObjectAddonNode;
+class ObjectAddonsRegistry;
 class PandaObject;
 
 class PANDA_CORE_API BaseObjectAddon
@@ -56,29 +57,7 @@ public:
 	}
 
 	// Creates it if not present
-	template <class T>
-	T& edit()
-	{
-		static_assert(std::is_base_of<BaseObjectAddon, T>::value, "The argument of ObjectAddons::get must inherit from BaseObjectAddon");
-
-		for (const auto& addon : m_addons)
-		{
-			auto ptr = std::dynamic_pointer_cast<T>(addon.addonPtr);
-			if (ptr)
-				return *ptr;
-		}
-
-		auto ptr = std::make_shared<T>(m_object);
-		auto def = ObjectAddonsRegistry::instance().getDefinition<T>();
-		if (!def)
-			throw std::exception("Could not find the addon definition for this type");
-
-		Addon addon;
-		addon.addonPtr = ptr;
-		addon.definition = def;
-		m_addons.push_back(addon);
-		return *ptr;
-	}
+	template <class T> T& edit();
 
 	void save(XmlElement& elem);
 	void load(const XmlElement& elem);
@@ -253,6 +232,32 @@ public:
 		return 1;
 	}
 };
+
+//****************************************************************************//
+
+template <class T>
+T& ObjectAddons::edit()
+{
+	static_assert(std::is_base_of<BaseObjectAddon, T>::value, "The argument of ObjectAddons::get must inherit from BaseObjectAddon");
+
+	for (const auto& addon : m_addons)
+	{
+		auto ptr = std::dynamic_pointer_cast<T>(addon.addonPtr);
+		if (ptr)
+			return *ptr;
+	}
+
+	auto ptr = std::make_shared<T>(m_object);
+	auto def = ObjectAddonsRegistry::instance().getDefinition<T>();
+	if (!def)
+		throw std::exception("Could not find the addon definition for this type");
+
+	Addon addon;
+	addon.addonPtr = ptr;
+	addon.definition = def;
+	m_addons.push_back(addon);
+	return *ptr;
+}
 
 } // namespace Panda
 

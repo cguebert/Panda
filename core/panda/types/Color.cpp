@@ -150,16 +150,16 @@ PANDA_CORE_API void DataTrait<Color>::readValue(const XmlElement& elem, Color& v
 
 //****************************************************************************//
 
-template class PANDA_CORE_API Data<Color>;
-template class PANDA_CORE_API Data< std::vector<Color> >;
-
 template class PANDA_CORE_API Animation<Color>;
-template class PANDA_CORE_API Data< Animation<Color> >;
-
-int colorDataClass = RegisterData< Color >();
-int colorVectorDataClass = RegisterData< std::vector<Color> >();
-int colorAnimationDataClass = RegisterData< Animation<Color> >();
 
 } // namespace types
+
+template class PANDA_CORE_API Data<types::Color>;
+template class PANDA_CORE_API Data<std::vector<types::Color>>;
+template class PANDA_CORE_API Data<types::Animation<types::Color>>;
+
+int colorDataClass = RegisterData<types::Color>();
+int colorVectorDataClass = RegisterData<std::vector<types::Color>>();
+int colorAnimationDataClass = RegisterData<types::Animation<types::Color>>();
 
 } // namespace panda
