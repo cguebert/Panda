@@ -687,11 +687,13 @@ void DrawList::primReserve(int idx_count, int vtx_count)
 
 	int vtx_buffer_size = m_vtxBuffer.size();
 	m_vtxBuffer.resize(vtx_buffer_size + vtx_count);
-	m_vtxWritePtr = &m_vtxBuffer[vtx_buffer_size];
+	if (vtx_count)
+		m_vtxWritePtr = &m_vtxBuffer[vtx_buffer_size];
 
 	int idx_buffer_size = m_idxBuffer.size();
 	m_idxBuffer.resize(idx_buffer_size + idx_count);
-	m_idxWritePtr = &m_idxBuffer[idx_buffer_size];
+	if (idx_count)
+		m_idxWritePtr = &m_idxBuffer[idx_buffer_size];
 }
 
 // Fully unrolled with inline call to keep our debug builds decently fast.

@@ -1710,8 +1710,15 @@ void GraphView::computeCompatibleDatas(panda::BaseData* data)
 void GraphView::updateDirtyDrawStructs()
 {
 	bool updated = false;
+
+	// Bugfix: update the dock objects last
 	for (auto ods : m_orderedObjectDrawStructs)
-		updated |= ods->updateIfDirty();
+		if(!dynamic_cast<panda::DockObject*>(ods->getObject()))
+			updated |= ods->updateIfDirty();
+
+	for (auto ods : m_orderedObjectDrawStructs)
+		if(dynamic_cast<panda::DockObject*>(ods->getObject()))
+			updated |= ods->updateIfDirty();
 
 	if (!updated)
 		return;
