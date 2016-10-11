@@ -24,7 +24,6 @@ public:
 	explicit PandaDocument(gui::BaseGUI& gui);
 	~PandaDocument();
 
-	virtual void resetDocument();
 	bool isResetting() const;
 
 	float getAnimationTime() const;

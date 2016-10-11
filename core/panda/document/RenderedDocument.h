@@ -25,8 +25,6 @@ public:
 	explicit RenderedDocument(gui::BaseGUI& gui);
 	~RenderedDocument();
 
-	void resetDocument() override;
-
 	types::Color getBackgroundColor() const;
 	void setBackgroundColor(types::Color color);
 

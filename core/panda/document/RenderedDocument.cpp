@@ -27,18 +27,6 @@ RenderedDocument::RenderedDocument(gui::BaseGUI& gui)
 
 RenderedDocument::~RenderedDocument() = default;
 
-void RenderedDocument::resetDocument()
-{
-	PandaDocument::resetDocument();
-
-	m_backgroundColor.setValue(Color::white());
-
-	setRenderSize({ 800, 600 });
-
-	helper::GradientCache::getInstance()->clear();
-	helper::ShaderCache::getInstance()->clear();
-}
-
 graphics::Size RenderedDocument::getRenderSize() const
 {
 	Point pt = m_renderSize.getValue();

@@ -1461,8 +1461,6 @@ void MainWindow::convertSavedDocuments()
 				break;
 		}
 	}
-	m_document->resetDocument();
-	setWindowModified(false);
 
 	QMessageBox::information(this, tr("Operation finished"), tr("Converted %1/%2 documents").arg(nb).arg(entries.size()));
 }

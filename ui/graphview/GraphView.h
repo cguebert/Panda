@@ -64,8 +64,6 @@ public:
 
 	bool canLinkWith(const panda::BaseData* data) const; /// Is it possible to link this data and the clicked data
 
-	void resetView();
-
 	ObjectDrawStructPtr getSharedObjectDrawStruct(panda::PandaObject* object);
 	ObjectDrawStruct* getObjectDrawStruct(panda::PandaObject* object);
 	std::vector<ObjectDrawStruct*> getObjectDrawStructs(const std::vector<panda::PandaObject*>& objects);

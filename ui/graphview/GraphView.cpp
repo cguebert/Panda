@@ -97,35 +97,6 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 
 GraphView::~GraphView() = default;
 
-void GraphView::resetView()
-{
-	m_viewDelta = Point();
-	m_zoomLevel = 0;
-	m_zoomFactor = 1.0;
-	m_objectDrawStructs.clear();
-	m_orderedObjectDrawStructs.clear();
-	m_linkTags.clear();
-	m_linkTagsMap.clear();
-	m_movingAction = Moving::None;
-	m_clickedData = nullptr;
-	m_hoverData = nullptr;
-	m_contextMenuData = nullptr;
-	m_capturedDrawStruct = nullptr;
-	m_recomputeTags = false;
-	m_hoverTimer->stop();
-	m_highlightConnectedDatas = false;
-	m_useMagneticSnap = true;
-	m_isLoading = false;
-	m_objectsRect = Rect();
-	m_viewRect = Rect();
-	m_selectedObjectsDrawStructs.clear();
-	m_possibleLinks.clear();
-	m_linksDrawList.clear();
-	m_connectedDrawList.clear();
-
-	emit viewModified();
-}
-
 QSize GraphView::minimumSizeHint() const
 {
 	return QSize(300, 200);

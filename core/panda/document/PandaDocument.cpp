@@ -73,34 +73,6 @@ PandaDocument::~PandaDocument()
 	m_undoStack->clear();
 }
 
-void PandaDocument::resetDocument()
-{
-	m_isResetting = true;
-	m_undoStack->setEnabled(false);
-
-	m_objectsList->clear();
-	m_currentIndex = 1;
-	m_animTimeVal = 0.0;
-	m_animTime.setValue(0.0);
-	m_timestep.setValue((float)0.01);
-	m_useTimer.setValue(1);
-	m_nbThreads.setValue(0);
-
-	m_animPlaying = false;
-	m_animMultithread = false;
-	TimedFunctions::instance().cancelAll();
-	if(m_scheduler)
-		m_scheduler->stop();
-
-	m_undoStack->clear();
-
-	m_signals->modified.run();
-	m_signals->timeChanged.run();
-
-	m_isResetting = false;
-	m_undoStack->setEnabled(true);
-}
-
 void PandaDocument::setDataDirty(BaseData* data) const
 {
 	if(m_animMultithread && m_scheduler)
