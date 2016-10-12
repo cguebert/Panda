@@ -1264,20 +1264,17 @@ void GraphView::updateConnectedDatas()
 		return;
 
 	// Now draw everything
-	auto highlightCol = DrawList::convert(palette().highlight().color());
-	auto penCol = DrawList::convert(palette().text().color());
-
 	for (const auto& rect : rects)
 	{
-		m_connectedDrawList.addRectFilled(rect, highlightCol);
-		m_connectedDrawList.addRect(rect, penCol, 1.f);
+		m_connectedDrawList.addRectFilled(rect, m_drawColors.highlightColor);
+		m_connectedDrawList.addRect(rect, m_drawColors.penColor, 1.f);
 	}
 
 	for(const auto& link : links)
 	{
 		float w = (link.second.x - link.first.x) / 2;
 		auto p1 = link.first, p2 = link.second, d = Point(w, 0);
-		m_connectedDrawList.addBezierCurve(p1, p1 + d, p2 - d, p2, highlightCol, 3);
+		m_connectedDrawList.addBezierCurve(p1, p1 + d, p2 - d, p2, m_drawColors.highlightColor, 3);
 	}
 }
 
