@@ -200,6 +200,8 @@ protected:
 		Object,
 		View,
 		Selection,
+		SelectionAdd,
+		SelectionRemove,
 		Link,
 		Zoom,
 		ZoomBox,

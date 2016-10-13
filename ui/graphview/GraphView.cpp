@@ -255,7 +255,9 @@ void GraphView::paintGL()
 		tag->draw(drawList, m_drawColors);
 
 	// Selection rubber band
-	if (m_movingAction == Moving::Selection)
+	if (m_movingAction == Moving::Selection 
+		|| m_movingAction == Moving::SelectionAdd 
+		|| m_movingAction == Moving::SelectionRemove)
 	{
 		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
 		auto highlight = m_drawColors.highlightColor;
@@ -431,18 +433,22 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 		}
 		else
 		{	// Clicked where there is nothing
-			if (event->modifiers() == Qt::ControlModifier)
+			const auto modifiers = event->modifiers();
+			if (modifiers == Qt::NoModifier)
 			{
-				// Starting a zoom box
-				m_movingAction = Moving::ZoomBox;
+				m_movingAction = Moving::Selection; // Starting a rubber band to select in a zone
+				m_objectsSelection->selectNone();
 			}
-			else
+			else if (modifiers & Qt::ShiftModifier)
 			{
-				// Starting a rubber band to select in a zone
-				m_movingAction = Moving::Selection;
+				if (modifiers & Qt::ControlModifier)
+					m_movingAction = Moving::SelectionRemove;
+				else
+					m_movingAction = Moving::SelectionAdd;
 			}
+			else if (event->modifiers() == Qt::ControlModifier)
+				m_movingAction = Moving::ZoomBox; // Starting a zoom box
 
-			m_objectsSelection->selectNone();
 			m_previousMousePos = m_currentMousePos = localPos;
 			QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
 		}
@@ -557,7 +563,10 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		updateViewRect();
 		update();
 	}
-	else if(m_movingAction == Moving::Selection || m_movingAction == Moving::ZoomBox)
+	else if(m_movingAction == Moving::Selection
+			|| m_movingAction == Moving::SelectionAdd
+			|| m_movingAction == Moving::SelectionRemove
+			|| m_movingAction == Moving::ZoomBox)
 	{
 		m_currentMousePos = localPos;
 		update();
@@ -675,9 +684,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	{
 		panda::PandaObject* object = m_objectsSelection->lastSelectedObject();
 		if(object)
-		{
 			m_objectsSelection->selectOne(object);
-		}
 	}
 	else if(m_movingAction == Moving::Object)
 	{
@@ -766,15 +773,24 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		update();
 		updateViewRect();
 	}
-	else if(m_movingAction == Moving::Selection)
+	else if(m_movingAction == Moving::Selection
+			|| m_movingAction == Moving::SelectionAdd
+			|| m_movingAction == Moving::SelectionRemove)
 	{
-		ObjectsSelection::Objects selection;
+		bool remove = m_movingAction == Moving::SelectionRemove;
+		ObjectsSelection::Objects selection = m_objectsSelection->get();
 		Rect selectionRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
 		for(const auto ods : m_orderedObjectDrawStructs)
 		{
 			Rect objectArea = ods->getSelectionArea();
-			if(selectionRect.intersects(objectArea))
-				selection.push_back(ods->getObject());
+			if (selectionRect.intersects(objectArea))
+			{
+				auto object = ods->getObject();
+				if (remove)
+					panda::helper::removeOne(selection, object);
+				else if(!panda::helper::contains(selection, object))
+					selection.push_back(ods->getObject());
+			}
 		}
 
 		m_objectsSelection->set(selection);
