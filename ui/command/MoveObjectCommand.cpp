@@ -1,5 +1,5 @@
 #include <ui/command/MoveObjectCommand.h>
-#include <ui/drawstruct/ViewPositionAddon.h>
+#include <ui/graphview/ViewPositionAddon.h>
 #include <panda/command/CommandId.h>
 #include <panda/object/ObjectAddons.h>
 #include <panda/object/PandaObject.h>

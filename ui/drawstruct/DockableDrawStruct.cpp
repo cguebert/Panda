@@ -1,8 +1,8 @@
 #include <panda/document/PandaDocument.h>
 
 #include <ui/graphview/GraphView.h>
+#include <ui/graphview/ViewPositionAddon.h>
 #include <ui/drawstruct/DockableDrawStruct.h>
-#include <ui/drawstruct/ViewPositionAddon.h>
 #include <ui/command/MoveObjectCommand.h>
 
 using panda::types::Point;

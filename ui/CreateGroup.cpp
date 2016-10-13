@@ -1,8 +1,9 @@
 #include <ui/CreateGroup.h>
 #include <ui/graphview/GraphView.h>
 #include <ui/drawstruct/ObjectDrawStruct.h>
-#include <ui/drawstruct/ViewPositionAddon.h>
+
 #include <ui/graphview/ObjectsSelection.h>
+#include <ui/graphview/ViewPositionAddon.h>
 
 #include <panda/document/RenderedDocument.h>
 #include <panda/data/DataFactory.h>

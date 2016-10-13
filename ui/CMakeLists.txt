@@ -35,7 +35,6 @@ set(HEADER_FILES
 	drawstruct/GenericObjectDrawStruct.h
 	drawstruct/GroupDrawStruct.h
 	drawstruct/ObjectDrawStruct.h
-	drawstruct/ViewPositionAddon.h
 	graphview/alignObjects.h
 	graphview/DataLabelAddon.h
 	graphview/DocumentView.h
@@ -43,6 +42,7 @@ set(HEADER_FILES
 	graphview/GroupView.h
 	graphview/LinkTag.h
 	graphview/ObjectsSelection.h
+	graphview/ViewPositionAddon.h
 	graphview/ViewRenderer.h
 	graphview/graphics/DefaultFont.h
 	graphview/graphics/DrawList.h
@@ -96,7 +96,6 @@ set(SOURCE_FILES
 	drawstruct/GenericObjectDrawStruct.cpp
 	drawstruct/GroupDrawStruct.cpp
 	drawstruct/ObjectDrawStruct.cpp
-	drawstruct/ViewPositionAddon.cpp
 	graphview/alignObjects.cpp
 	graphview/DataLabelAddon.cpp
 	graphview/DocumentView.cpp
@@ -104,6 +103,7 @@ set(SOURCE_FILES
 	graphview/GroupView.cpp
 	graphview/LinkTag.cpp
 	graphview/ObjectsSelection.cpp
+	graphview/ViewPositionAddon.cpp
 	graphview/ViewRenderer.cpp
 	graphview/graphics/DefaultFont.cpp
 	graphview/graphics/DrawList.cpp
