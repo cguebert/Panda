@@ -186,6 +186,11 @@ static inline bool CharIsSpace(int c) { return c == ' ' || c == '\t' || c == 0x3
 
 //****************************************************************************//
 
+namespace graphview
+{
+
+namespace graphics
+{
 Font::Font()
 {
 	clear();
@@ -615,3 +620,7 @@ void Font::renderText(float scale, pPoint pos, unsigned int col, const pRect& cl
 	draw_list->setVtxCurrentIdx(vtx_current_idx);
 	draw_list->setIdxWritePtr(idx_write);
 }
+
+} // namespace graphics
+
+} // namespace graphview

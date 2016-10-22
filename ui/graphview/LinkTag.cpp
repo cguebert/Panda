@@ -1,9 +1,12 @@
-#include <ui/graphview/GraphView.h>
 #include <ui/graphview/LinkTag.h>
+#include <ui/graphview/GraphView.h>
 #include <ui/graphview/object/ObjectRenderer.h>
 
 using panda::types::Point;
 using panda::types::Rect;
+
+namespace graphview
+{
 
 LinkTag::LinkTag(GraphView* view, panda::BaseData* input, panda::BaseData* output, int index)
 	: m_index(index)
@@ -88,7 +91,7 @@ void LinkTag::moveView(const Point& delta)
 	}
 }
 
-void LinkTag::draw(DrawList& list, DrawColors& colors)
+void LinkTag::draw(graphics::DrawList& list, graphics::DrawColors& colors)
 {
 	if(m_hovering)
 	{
@@ -123,7 +126,7 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 	list.addLine(Point(x - tagMargin, cy), Point(x, cy), colors.penColor);
 	list.addRectFilled(inputRect, colors.lightColor);
 	list.addRect(inputRect, colors.penColor);
-	list.addText(inputRect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
+	list.addText(inputRect, indexText, colors.penColor, graphics::DrawList::Align_Center, fontScale);
 
 	// outputs
 	for(const auto& tagRectPair : m_outputDatas)
@@ -134,7 +137,7 @@ void LinkTag::draw(DrawList& list, DrawColors& colors)
 		list.addLine(Point(x, cy), Point(x + tagMargin, cy), colors.penColor);
 		list.addRectFilled(tagRect, colors.lightColor);
 		list.addRect(tagRect, colors.penColor);
-		list.addText(tagRect, indexText, colors.penColor, DrawList::Align_Center, fontScale);
+		list.addText(tagRect, indexText, colors.penColor, graphics::DrawList::Align_Center, fontScale);
 	}
 }
 
@@ -150,3 +153,5 @@ std::vector<panda::BaseData*> LinkTag::getOutputDatas() const
 		res.push_back(dataRect.first);
 	return res;
 }
+
+} // namespace graphview

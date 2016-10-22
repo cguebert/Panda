@@ -1,5 +1,4 @@
-#ifndef GROUPVIEW_H
-#define GROUPVIEW_H
+#pragma once
 
 #include <ui/graphview/GraphView.h>
 
@@ -7,6 +6,9 @@ namespace panda
 {
 class Group;
 }
+
+namespace graphview
+{
 
 class GroupView : public GraphView
 {
@@ -57,4 +59,4 @@ private:
 	std::vector<DataRect> m_groupDataRects;
 };
 
-#endif // GROUPVIEW_H
+} // namespace graphview

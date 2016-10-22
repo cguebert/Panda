@@ -8,6 +8,12 @@
 using panda::types::Point;
 using panda::types::Rect;
 
+namespace graphview
+{
+
+namespace object
+{
+
 DockObjectRenderer::DockObjectRenderer(GraphView* view, panda::DockObject* object)
 	: ObjectRenderer(view, object)
 	, m_dockObject(object)
@@ -234,3 +240,6 @@ void DockableObjectRenderer::createShape()
 
 int DockableObjectDrawClass = RegisterDrawObject<panda::DockableObject, DockableObjectRenderer>();
 
+} // namespace object
+
+} // namespace graphview

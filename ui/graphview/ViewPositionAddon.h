@@ -4,6 +4,9 @@
 #include <panda/types/Point.h>
 #include <panda/messaging.h>
 
+namespace graphview
+{
+
 class ViewPositionAddon : public panda::BaseObjectAddon
 {
 public:
@@ -29,3 +32,5 @@ private:
 	bool m_isSet = false;
 	panda::types::Point m_position;
 };
+
+} // namespace graphview

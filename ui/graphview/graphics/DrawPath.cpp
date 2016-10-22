@@ -78,6 +78,12 @@ namespace
 
 } // Unnamed namespace
 
+namespace graphview
+{
+
+namespace graphics
+{
+
 void DrawPath::arcToFast(const Point& centre, float radius, int amin, int amax)
 {
 	static const int circle_vtx_count = 12;
@@ -252,3 +258,7 @@ DrawMesh DrawPath::triangulate() const
 	
 	return mesh;
 }
+
+} // namespace graphics
+
+} // namespace graphview

@@ -18,6 +18,12 @@ namespace
 	}
 }
 
+namespace graphview
+{
+
+namespace graphics
+{
+
 unsigned int DrawList::convert(const QColor& col)
 {
 	unsigned int out;
@@ -271,7 +277,6 @@ void DrawList::addBezierCurve(const Point& pos0, const Point& cp0, const Point& 
 	m_path.bezierCurveTo(cp0, cp1, pos1, num_segments);
 	pathStroke(col, false, thickness);
 }
-
 
 void DrawList::addText(const Font& font, const Point& pos, const std::string& text, unsigned int col, float font_scale, float wrap_width, const Rect* cpu_fine_clip_rect)
 {
@@ -725,3 +730,7 @@ void DrawList::primRectUV(const Rect& r, const Rect& uv, unsigned int col)
 	m_vtxCurrentIdx += 4;
 	m_idxWritePtr += 6;
 }
+
+} // namespace graphics
+
+} // namespace graphview

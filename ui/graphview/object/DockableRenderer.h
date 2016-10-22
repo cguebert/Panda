@@ -1,9 +1,14 @@
-#ifndef DOCKABLEDRAWSTRUCT_H
-#define DOCKABLEDRAWSTRUCT_H
+#pragma once
 
 #include <panda/object/Dockable.h>
 
 #include <ui/graphview/object/ObjectRenderer.h>
+
+namespace graphview
+{
+
+namespace object
+{
 
 class DockObjectRenderer : public ObjectRenderer
 {
@@ -48,4 +53,6 @@ protected:
 	bool m_hasOutputs = false;
 };
 
-#endif
+} // namespace object
+
+} // namespace graphview

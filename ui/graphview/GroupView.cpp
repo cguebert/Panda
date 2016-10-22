@@ -27,6 +27,9 @@ namespace
 	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
 }
 
+namespace graphview
+{
+
 GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent)
 	: GraphView(doc, objectsList, parent)
 	, m_group(group)
@@ -44,7 +47,7 @@ void GroupView::paintGL()
 	m_viewRenderer->newFrame();
 
 // Testing a way to draw the group datas
-	DrawList list;
+	graphics::DrawList list;
 
 	const auto clickedData = getClickedData();
 	auto pen = m_drawColors.penColor;
@@ -60,7 +63,7 @@ void GroupView::paintGL()
 			if (clickedData && clickedData != groupData && !canLinkWith(groupData))
 				dataColor = m_drawColors.lightColor;
 			else
-				dataColor = DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
+				dataColor = graphics::DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
 			list.addRectFilled(groupDataRect, dataColor);
 			list.addRect(groupDataRect, m_drawColors.penColor);
 
@@ -86,7 +89,7 @@ void GroupView::paintGL()
 			if (clickedData && clickedData != groupData && !canLinkWith(groupData))
 				dataColor = m_drawColors.lightColor;
 			else
-				dataColor = DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
+				dataColor = graphics::DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
 			list.addRectFilled(groupDataRect, dataColor);
 			list.addRect(groupDataRect, m_drawColors.penColor);
 
@@ -535,3 +538,5 @@ void GroupView::modifiedObject(panda::PandaObject* object)
 	if(object == m_group)
 		updateGroupDataRects();
 }
+
+} // namespace graphview

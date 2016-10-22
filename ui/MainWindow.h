@@ -17,9 +17,6 @@ class DataWatcher;
 class DetachableTabWidget;
 class DetachableWidgetInfo;
 class DetachedWindow;
-class DocumentView;
-class GraphView;
-class GroupView;
 class ImageViewport;
 class LayersTab;
 class OpenGLRenderView;
@@ -27,11 +24,16 @@ class SimpleGUIImpl;
 class ScrollContainer;
 class UpdateLoggerDialog;
 
-namespace panda
-{
-class BaseData;
-class PandaDocument;
-class PandaObject;
+namespace panda {
+	class BaseData;
+	class PandaDocument;
+	class PandaObject;
+}
+
+namespace graphview {
+	class DocumentView;
+	class GraphView;
+	class GroupView;
 }
 
 class MainWindow : public QMainWindow
@@ -79,7 +81,7 @@ private slots:
 	void openDetachedWindow(DetachedWindow* window);
 	void closeDetachedWindow(DetachedWindow* window);
 	void closeViewport(ImageViewport* viewport);
-	void closeGroupView(GroupView* view);
+	void closeGroupView(graphview::GroupView* view);
 	void convertSavedDocuments();
 	void removedObject(panda::PandaObject*);
 	void onTabWidgetFocusLoss(QWidget*);
@@ -115,9 +117,9 @@ private:
 	void updateAddGroupActions(QMenu* menu);
 
 	DetachableTabWidget* m_tabWidget = nullptr;
-	DocumentView* m_documentView = nullptr;
+	graphview::DocumentView* m_documentView = nullptr;
 	ScrollContainer* m_documentViewContainer = nullptr;
-	GraphView* m_currentGraphView = nullptr;
+	graphview::GraphView* m_currentGraphView = nullptr;
 	OpenGLRenderView* m_openGLRenderView = nullptr;
 	QScrollArea* m_openGLViewContainer = nullptr;
 	std::shared_ptr<panda::PandaDocument> m_document;
@@ -151,7 +153,7 @@ private:
 
 	struct GroupViewInfo
 	{
-		GroupView* view = nullptr;
+		graphview::GroupView* view = nullptr;
 		QWidget* container = nullptr;
 		DetachableWidgetInfo* detachableInfo = nullptr;
 		const panda::PandaObject* object = nullptr;

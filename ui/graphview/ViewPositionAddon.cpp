@@ -2,6 +2,9 @@
 #include <panda/XmlDocument.h>
 #include <panda/object/PandaObject.h>
 
+namespace graphview
+{
+
 ViewPositionAddon::ViewPositionAddon(panda::PandaObject& object) 
 	: panda::BaseObjectAddon(object) 
 { }
@@ -60,3 +63,5 @@ void ViewPositionAddon::setPosition(panda::PandaObject* object, const panda::typ
 //****************************************************************************//
 
 int ViewPositionAddon_Reg = panda::RegisterObjectAddon<ViewPositionAddon>();
+
+} // namespace graphview

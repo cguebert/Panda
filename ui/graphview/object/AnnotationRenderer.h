@@ -1,5 +1,4 @@
-#ifndef ANNOTATIONDRAWSTRUCT_H
-#define ANNOTATIONDRAWSTRUCT_H
+#pragma once
 
 #include <ui/graphview/object/ObjectRenderer.h>
 
@@ -12,6 +11,12 @@ class Annotation;
 }
 
 //****************************************************************************//
+
+namespace graphview
+{
+
+namespace object
+{
 
 class AnnotationRenderer : public ObjectRenderer
 {
@@ -35,9 +40,9 @@ public:
 	void moveEnd(const panda::types::Point& delta);
 
 protected:
-	void drawBackground(DrawList& list, DrawColors& colors) override;
-	void draw(DrawList& list, DrawColors& colors, bool selected) override {}	// Don't draw the normal object
-	void drawForeground(DrawList& list, DrawColors& colors) override;
+	void drawBackground(graphics::DrawList& list, graphics::DrawColors& colors) override;
+	void draw(graphics::DrawList& list, graphics::DrawColors& colors, bool selected) override {}	// Don't draw the normal object
+	void drawForeground(graphics::DrawList& list, graphics::DrawColors& colors) override;
 
 	void deltaToEndChanged();
 
@@ -50,4 +55,6 @@ protected:
 	panda::types::Point m_previousMousePos, m_startMousePos;
 };
 
-#endif // ANNOTATIONDRAWSTRUCT_H
+} // namespace object
+
+} // namespace graphview

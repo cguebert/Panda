@@ -1,14 +1,10 @@
-#ifndef OBJECTDRAWSTRUCT_H
-#define OBJECTDRAWSTRUCT_H
+#pragma once
 
 #include <ui/graphview/graphics/DrawList.h>
 
 #include <memory>
 
-struct DrawColors;
-class GraphView;
 class QMouseEvent;
-class ViewPositionAddon;
 
 namespace panda
 {
@@ -21,6 +17,19 @@ namespace panda
 	{ class Observer; }
 }
 
+namespace graphview
+{
+
+namespace graphics {
+	struct DrawColors;
+}
+
+class GraphView;
+class ViewPositionAddon;
+
+namespace object
+{
+
 class ObjectRenderer
 {
 public:
@@ -29,9 +38,9 @@ public:
 	ObjectRenderer(GraphView* view, panda::PandaObject* obj);
 	virtual ~ObjectRenderer();
 
-	virtual void drawBackground(DrawList& list, DrawColors& colors) {}	// Called first
-	virtual void draw(DrawList& list, DrawColors& colors, bool selected = false); // "Normal" draw
-	virtual void drawForeground(DrawList& list, DrawColors& colors) {}	// Called last
+	virtual void drawBackground(graphics::DrawList& list, graphics::DrawColors& colors) {}	// Called first
+	virtual void draw(graphics::DrawList& list, graphics::DrawColors& colors, bool selected = false); // "Normal" draw
+	virtual void drawForeground(graphics::DrawList& list, graphics::DrawColors& colors) {}	// Called last
 
 	virtual void update();										// Recompute the information about this object
 	virtual void move(const panda::types::Point& delta);		// Move the position of the object in the view
@@ -70,25 +79,25 @@ public:
 
 protected:
 	// The next 3 functions are here if we want to replace only part of the normal draw
-	virtual void drawShape(DrawList& list, DrawColors& colors);
-	virtual void drawDatas(DrawList& list, DrawColors& colors);
-	virtual void drawText(DrawList& list, DrawColors& colors);
+	virtual void drawShape(graphics::DrawList& list, graphics::DrawColors& colors);
+	virtual void drawDatas(graphics::DrawList& list, graphics::DrawColors& colors);
+	virtual void drawText(graphics::DrawList& list, graphics::DrawColors& colors);
 
 	virtual void createShape(); // Modify m_outline & m_fillShape
 
 	virtual panda::types::Rect getTextArea(); // The area in which we can render text
 	virtual std::string getLabel() const; // The text to draw
 
-	void drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const panda::types::Rect& area);
+	void drawData(graphics::DrawList& list, graphics::DrawColors& colors, const panda::BaseData* data, const panda::types::Rect& area);
 	
 	panda::PandaObject* m_object;
 	panda::types::Rect m_visualArea, m_selectionArea;
 	std::vector<DataRectPair> m_datas;
 
 	std::string m_currentLabel;
-	DrawList m_textDrawList;
-	DrawPath m_outline;
-	DrawMesh m_fillShape;
+	graphics::DrawList m_textDrawList;
+	graphics::DrawPath m_outline;
+	graphics::DrawMesh m_fillShape;
 
 	std::unique_ptr<panda::msg::Observer> m_observer;
 
@@ -182,4 +191,6 @@ public:
 	}
 };
 
-#endif
+} // namespace object
+
+} // namespace graphview

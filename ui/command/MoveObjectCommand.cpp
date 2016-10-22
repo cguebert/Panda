@@ -55,7 +55,7 @@ void MoveObjectCommand::getPositionAddons()
 {
 	m_positionAddons.clear();
 	for (auto obj : m_objects)
-		m_positionAddons.push_back(&obj->addons().edit<ViewPositionAddon>());
+		m_positionAddons.push_back(&obj->addons().edit<graphview::ViewPositionAddon>());
 }
 
 void MoveObjectCommand::moveObjects(panda::types::Point delta)

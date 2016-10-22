@@ -4,6 +4,12 @@
 #include <panda/document/PandaDocument.h>
 #include <panda/object/Group.h>
 
+namespace graphview
+{
+
+namespace object
+{
+
 GroupRenderer::GroupRenderer(GraphView* view, panda::Group* object)
 	: ObjectRenderer(view, object)
 	, m_group(object)
@@ -34,3 +40,7 @@ int GroupRenderer::dataStartY()
 }
 
 int GroupDrawClass = RegisterDrawObject<panda::Group, GroupRenderer>();
+
+} // namespace object
+
+} // namespace graphview

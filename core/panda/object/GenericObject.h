@@ -8,7 +8,10 @@
 #include <functional>
 #include <map>
 
-class GenericObjectRenderer;
+namespace graphview { 
+	namespace object {
+		class GenericObjectRenderer;
+} }
 
 namespace panda
 {
@@ -141,7 +144,7 @@ protected:
 
 private:
 	friend class SingleTypeGenericObject;
-	friend class GenericObjectRenderer;
+	friend class graphview::object::GenericObjectRenderer;
 
 	typedef std::shared_ptr<BaseData> BaseDataPtr;
 	typedef std::vector<BaseDataPtr> DataPtrList;

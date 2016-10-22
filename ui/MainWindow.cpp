@@ -1116,11 +1116,11 @@ void MainWindow::openGroup()
 		return;
 	}
 
-	auto groupView = new GroupView(group, m_document.get(), group->getObjectsList());
+	auto groupView = new graphview::GroupView(group, m_document.get(), group->getObjectsList(), this);
 
 	connect(groupView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(groupView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
-	connect(groupView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
+	connect(groupView, &graphview::GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	m_observer.get(groupView->selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
 	m_observer.get(group->getObjectsList().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);
 	
@@ -1382,7 +1382,7 @@ void MainWindow::closeViewport(ImageViewport* viewport)
 		closeTab(it->container);
 }
 
-void MainWindow::closeGroupView(GroupView* view)
+void MainWindow::closeGroupView(graphview::GroupView* view)
 {
 	auto it = std::find_if(m_groupViews.begin(), m_groupViews.end(), [view](const GroupViewInfo& info) {
 		return info.view == view;
@@ -1552,7 +1552,7 @@ QWidget* MainWindow::selectedTabWidget() const
 void MainWindow::onTabChanged()
 {
 	auto widget = selectedTabWidget();
-	m_currentGraphView = dynamic_cast<GraphView*>(widget);
+	m_currentGraphView = dynamic_cast<graphview::GraphView*>(widget);
 	
 	bool isAnyView = (widget != m_openGLRenderView);
 	for (auto action : m_allViewsActions)
@@ -1575,7 +1575,7 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	if (m_documentView)
 		m_documentView->deleteLater();
 
-	m_documentView = new DocumentView(m_document.get(), m_document->getObjectsList());
+	m_documentView = new graphview::DocumentView(m_document.get(), m_document->getObjectsList());
 	m_documentViewContainer->setView(m_documentView);
 	m_documentViewContainer->setFocusProxy(m_documentView);
 	m_currentGraphView = m_documentView;
@@ -1624,7 +1624,7 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 
 	connect(m_documentView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(m_documentView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
-	connect(m_documentView, &GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
+	connect(m_documentView, &graphview::GraphView::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	
 	m_datasTable->setDocument(m_document);
 	m_datasTable->setSelectedObject(m_document.get());

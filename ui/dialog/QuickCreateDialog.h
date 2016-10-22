@@ -8,7 +8,10 @@ namespace panda
 	class PandaDocument;
 }
 
-class GraphView;
+namespace graphview
+{
+	class GraphView;
+}
 
 class QLineEdit;
 class QListWidget;
@@ -18,11 +21,11 @@ class QuickCreateDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit QuickCreateDialog(panda::PandaDocument* doc, GraphView* view);
+	explicit QuickCreateDialog(panda::PandaDocument* doc, graphview::GraphView* view);
 
 protected:
 	panda::PandaDocument* m_document;
-	GraphView* m_view;
+	graphview::GraphView* m_view;
 	QLineEdit* m_lineEdit;
 	QLabel* m_descLabel;
 	QListWidget* m_listWidget;

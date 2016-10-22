@@ -7,6 +7,9 @@
 
 #include <set>
 
+namespace graphview
+{
+
 DataLabelAddon::DataLabelAddon(panda::PandaObject& object) 
 	: panda::BaseObjectAddon(object) 
 { 
@@ -110,3 +113,5 @@ void DataLabelAddon::setDataLabel(panda::BaseData* data, const std::string& labe
 //****************************************************************************//
 
 int DataLabelAddon_Reg = panda::RegisterObjectAddon<DataLabelAddon>();
+
+} // namespace graphview

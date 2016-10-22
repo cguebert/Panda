@@ -31,7 +31,13 @@ namespace
 		}
 		return contents;
 	}
-}
+} // Unammed namespace
+
+namespace graphview
+{
+
+namespace graphics
+{
 
 FontAtlas::~FontAtlas()
 {
@@ -505,3 +511,7 @@ GlyphRangeList FontAtlas::getGlyphRangesDefault()
 {
 	return { {0x0020, 0x00FF} };
 }
+
+} // namespace graphics
+
+} // namespace graphview

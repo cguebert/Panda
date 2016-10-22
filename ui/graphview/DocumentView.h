@@ -1,7 +1,9 @@
-#ifndef DOCUMENTVIEW_H
-#define DOCUMENTVIEW_H
+#pragma once
 
 #include <ui/graphview/GraphView.h>
+
+namespace graphview
+{
 
 class DocumentView : public GraphView
 {
@@ -11,4 +13,4 @@ public:
 	explicit DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
 };
 
-#endif // DOCUMENTVIEW_H
+} // namespace graphview

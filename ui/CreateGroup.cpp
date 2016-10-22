@@ -1,9 +1,9 @@
 #include <ui/CreateGroup.h>
-#include <ui/graphview/GraphView.h>
-#include <ui/graphview/object/ObjectRenderer.h>
+#include <ui/GraphView/GraphView.h>
+#include <ui/GraphView/object/ObjectRenderer.h>
 
-#include <ui/graphview/ObjectsSelection.h>
-#include <ui/graphview/ViewPositionAddon.h>
+#include <ui/GraphView/ObjectsSelection.h>
+#include <ui/GraphView/ViewPositionAddon.h>
 
 #include <panda/document/RenderedDocument.h>
 #include <panda/data/DataFactory.h>
@@ -27,7 +27,7 @@ using panda::types::Rect;
 namespace panda
 {
 
-float getDataHeight(GraphView* view, BaseData* data)
+float getDataHeight(graphview::GraphView* view, BaseData* data)
 {
 	auto owner = data->getOwner();
 	if(!owner)
@@ -40,7 +40,7 @@ float getDataHeight(GraphView* view, BaseData* data)
 	return 0;
 }
 
-bool createGroup(PandaDocument* doc, GraphView* view)
+bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 {
 	auto renderedDoc = dynamic_cast<RenderedDocument*>(doc);
 	const auto& objectsSelection = view->selection();
@@ -132,7 +132,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 		totalView |= view->getObjectRenderer(object)->getVisualArea();
 
 	// Put the new object there
-	ObjectRenderer* ods = view->getObjectRenderer(group);
+	auto* ods = view->getObjectRenderer(group);
 	Point objSize = ods->getObjectSize() / 2;
 	ods->move(totalView.center() - ods->getPosition() - objSize);
 	Point groupPos = ods->getPosition();
@@ -293,7 +293,7 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	return true;
 }
 
-bool ungroupSelection(PandaDocument* doc, GraphView* view)
+bool ungroupSelection(PandaDocument* doc, graphview::GraphView* view)
 {
 	const auto& selection = view->selection().get();
 	if(selection.empty())
@@ -325,7 +325,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		Rect objectsRect;
 		Point defaultSize(100, 50);
 		for (auto& object : objects)
-			objectsRect |= Rect::fromSize(ViewPositionAddon::getPosition(object.get()), defaultSize);
+			objectsRect |= Rect::fromSize(graphview::ViewPositionAddon::getPosition(object.get()), defaultSize);
 		auto groupOds = view->getObjectRenderer(group);
 		auto delta = groupOds->getPosition() - objectsRect.center() - groupOds->getObjectSize() / 2;
 
@@ -338,7 +338,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 
 		// Placing the object in the view
 		for(auto& object : objects)
-			ViewPositionAddon::setPosition(object.get(), ViewPositionAddon::getPosition(object.get()) + delta);
+			graphview::ViewPositionAddon::setPosition(object.get(), graphview::ViewPositionAddon::getPosition(object.get()) + delta);
 
 		// Reconnecting datas
 		for(auto& data : group->getGroupDatas())

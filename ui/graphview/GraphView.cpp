@@ -48,6 +48,9 @@ namespace
 	}
 }
 
+namespace graphview
+{
+
 GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent)
 	: QOpenGLWidget(parent)
 	, m_pandaDocument(doc)
@@ -83,10 +86,10 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	setMouseTracking(true);
 
 	const auto& pal = palette();
-	m_drawColors.penColor = DrawList::convert(pal.text().color());
-	m_drawColors.midLightColor = DrawList::convert(pal.midlight().color());
-	m_drawColors.lightColor = DrawList::convert(pal.light().color());
-	m_drawColors.highlightColor = DrawList::convert(pal.highlight().color());
+	m_drawColors.penColor = graphics::DrawList::convert(pal.text().color());
+	m_drawColors.midLightColor = graphics::DrawList::convert(pal.midlight().color());
+	m_drawColors.lightColor = graphics::DrawList::convert(pal.light().color());
+	m_drawColors.highlightColor = graphics::DrawList::convert(pal.highlight().color());
 
 	// Create the draw structs for the objects already present
 	for (const auto& object : m_objectsList.get())
@@ -107,7 +110,7 @@ QSize GraphView::sizeHint() const
 	return QSize(600, 400);
 }
 
-ObjectRenderer* GraphView::getObjectRendererAtPos(const Point& pt)
+object::ObjectRenderer* GraphView::getObjectRendererAtPos(const Point& pt)
 {
 	int nb = m_orderedObjectRenderers.size();
 	for (int i = nb - 1; i >= 0; --i)
@@ -146,14 +149,14 @@ GraphView::ObjectRendererPtr GraphView::getSharedObjectRenderer(panda::PandaObje
 	return panda::helper::valueOrDefault(m_objectRenderers, object);
 }
 
-ObjectRenderer* GraphView::getObjectRenderer(panda::PandaObject* object)
+graphview::object::ObjectRenderer* GraphView::getObjectRenderer(panda::PandaObject* object)
 {
 	return panda::helper::valueOrDefault(m_objectRenderers, object).get();
 }
 
-std::vector<ObjectRenderer*> GraphView::getObjectRenderers(const std::vector<panda::PandaObject*>& objects)
+std::vector<object::ObjectRenderer*> GraphView::getObjectRenderers(const std::vector<panda::PandaObject*>& objects)
 {
-	std::vector<ObjectRenderer*> odsList;
+	std::vector<object::ObjectRenderer*> odsList;
 	for (auto object : objects)
 	{
 		auto ods = getObjectRenderer(object);
@@ -173,8 +176,8 @@ void GraphView::setObjectRenderer(panda::PandaObject* object, const ObjectRender
 void GraphView::initializeGL()
 {
 	m_viewRenderer->initialize();
-	m_linksDrawList = DrawList();
-	m_connectedDrawList = DrawList();
+	m_linksDrawList = {};
+	m_connectedDrawList = {};
 }
 
 void GraphView::resizeGL(int w, int h)
@@ -213,7 +216,7 @@ void GraphView::paintGL()
 	Rect viewRect(m_viewDelta, width() / m_zoomFactor, height() / m_zoomFactor);
 	m_viewRenderer->setView(viewRect);
 	m_viewRenderer->newFrame();
-	DrawList drawList;
+	graphics::DrawList drawList;
 
 	auto col = palette().background().color();
 	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
@@ -302,7 +305,7 @@ void GraphView::paintGL()
 }
 
 #ifdef PANDA_LOG_EVENTS
-void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
+void GraphView::paintLogDebug(graphics::DrawList& list, graphics::DrawColors& colors)
 {
 	UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
 	if(logDlg && logDlg->isVisible())
@@ -349,7 +352,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 }
 #endif
 
-void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
+void GraphView::paintDirtyState(graphics::DrawList& list, graphics::DrawColors& colors)
 {
 	for(const auto& ods : m_orderedObjectRenderers)
 	{
@@ -712,7 +715,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 					{
 						if(dockableArea.intersects(ods2->getSelectionArea()) && dock->accepts(dockable))
 						{
-							newIndex = dynamic_cast<DockObjectRenderer*>(ods2)->getDockableIndex(dockableArea);
+							newIndex = dynamic_cast<object::DockObjectRenderer*>(ods2)->getDockableIndex(dockableArea);
 							newDock = dock;
 							break;
 						}
@@ -1061,7 +1064,7 @@ void GraphView::addedObject(panda::PandaObject* object)
 	auto ods = getObjectRenderer(object);
 	if (!ods)
 	{
-		auto odsPtr = ObjectRendererFactory::getInstance()->createRenderer(this, object);
+		auto odsPtr = object::ObjectRendererFactory::getInstance()->createRenderer(this, object);
 		m_objectRenderers.emplace(object, odsPtr);
 
 		ods = odsPtr.get();
@@ -1101,7 +1104,7 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 		panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object);
 		if (dock)
 		{
-			auto dods = dynamic_cast<DockObjectRenderer*>(ods);
+			auto dods = dynamic_cast<object::DockObjectRenderer*>(ods);
 			if (dods)
 				dods->placeDockableObjects();
 		}
@@ -1340,7 +1343,7 @@ std::pair<GraphView::Rects, GraphView::PointsPairs> GraphView::getConnectedDatas
 	return{ rects, links };
 }
 
-void GraphView::prepareSnapTargets(ObjectRenderer* selectedRenderer)
+void GraphView::prepareSnapTargets(object::ObjectRenderer* selectedRenderer)
 {
 	m_snapTargetsY.clear();
 
@@ -1395,7 +1398,7 @@ void GraphView::prepareSnapTargets(ObjectRenderer* selectedRenderer)
 	}
 }
 
-void GraphView::computeSnapDelta(ObjectRenderer* selectedRenderer, Point position)
+void GraphView::computeSnapDelta(object::ObjectRenderer* selectedRenderer, Point position)
 {
 	m_snapDelta = Point();
 	const float snapMaxDist = 5;
@@ -1868,3 +1871,5 @@ void GraphView::executeNextRefresh(std::function<void()> func)
 {
 	m_functionsToExecuteNextRefresh.push_back(func);
 }
+
+} // namespace graphview

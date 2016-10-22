@@ -8,6 +8,9 @@ namespace panda
 	class BaseData;
 }
 
+namespace graphview
+{
+
 class DataLabelAddon : public panda::BaseObjectAddon
 {
 public:
@@ -36,3 +39,5 @@ private:
 	std::vector<DataLabel> m_dataLabels;
 	panda::msg::Observer m_observer;
 };
+
+} // namespace graphview

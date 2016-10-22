@@ -7,6 +7,12 @@
 #include <string>
 #include <utility>
 
+namespace graphview
+{
+
+namespace graphics
+{
+
 // Load and rasterize multiple TTF fonts into a same texture.
 // Sharing a texture for multiple fonts allows us to reduce the number of draw calls during rendering.
 // We also add custom graphic data into the texture that serves for ImGui.
@@ -62,3 +68,7 @@ private:
 	bool build();
 	void renderCustomTexData(int pass, void* rects);
 };
+
+} // namespace graphics
+
+} // namespace graphview

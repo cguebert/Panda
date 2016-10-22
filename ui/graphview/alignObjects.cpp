@@ -9,6 +9,9 @@
 using panda::types::Point;
 using panda::types::Rect;
 
+namespace graphview
+{
+
 void alignHorizontallyCenter(GraphView* view)
 {
 	float sum = 0;
@@ -158,7 +161,7 @@ void distributeHorizontallyCenter(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectRenderer*>;
+	using PosOds = std::pair<float, object::ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -196,7 +199,7 @@ void distributeHorizontallyGaps(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectRenderer*>;
+	using PosOds = std::pair<float, object::ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -242,7 +245,7 @@ void distributeHorizontallyLeft(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectRenderer*>;
+	using PosOds = std::pair<float, object::ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -280,7 +283,7 @@ void distributeHorizontallyRight(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectRenderer*>;
+	using PosOds = std::pair<float, object::ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -318,7 +321,7 @@ void distributeVerticallyCenter(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectRenderer*>;
+	using PosOds = std::pair<float, object::ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -356,7 +359,7 @@ void distributeVerticallyGaps(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectRenderer*>;
+	using PosOds = std::pair<float, object::ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -402,7 +405,7 @@ void distributeVerticallyTop(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectRenderer*>;
+	using PosOds = std::pair<float, object::ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -440,7 +443,7 @@ void distributeVerticallyBottom(GraphView* view)
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectRenderer*>;
+	using PosOds = std::pair<float, object::ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -470,3 +473,5 @@ void distributeVerticallyBottom(GraphView* view)
 			undoStack.push(std::make_shared<MoveObjectCommand>(ods->getObject(), delta));
 	}
 }
+
+} // namespace graphview

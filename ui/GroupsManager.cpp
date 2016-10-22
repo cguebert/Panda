@@ -138,7 +138,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 	return true;
 }
 
-panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* document, GraphView* view, QString groupPath)
+panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* document, graphview::GraphView* view, QString groupPath)
 {
 	QString fileName = m_groupsDirPath + "/" + groupPath + ".grp";
 	QFile file(fileName);

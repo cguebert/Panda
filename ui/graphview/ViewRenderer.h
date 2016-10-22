@@ -10,9 +10,15 @@ class QOpenGLShaderProgram;
 class QOpenGLTexture;
 class QOpenGLVertexArrayObject;
 
-class DrawList;
-class FontAtlas;
-class Font;
+namespace graphview
+{
+
+namespace graphics 
+{
+	class DrawList;
+	class FontAtlas;
+	class Font;
+}
 
 class ViewRenderer
 {
@@ -24,12 +30,12 @@ public:
 
 	void setView(const panda::types::Rect& bounds);
 	void newFrame();
-	void addDrawList(DrawList* dl);
+	void addDrawList(graphics::DrawList* dl);
 	void render();
 
 	static bool initialized();
 	static unsigned int defaultTextureId();
-	static Font* currentFont();
+	static graphics::Font* currentFont();
 
 private:
 	std::shared_ptr<QOpenGLTexture> m_fontTexture;
@@ -41,9 +47,12 @@ private:
 	int m_width = 0, m_height = 0;
 	panda::types::Rect m_viewBounds;
 
-	std::vector<DrawList*> m_drawLists;
-	std::shared_ptr<FontAtlas> m_atlas;
+	std::vector<graphics::DrawList*> m_drawLists;
+	std::shared_ptr<graphics::FontAtlas> m_atlas;
 };
 
-inline void ViewRenderer::addDrawList(DrawList* dl)
+inline void ViewRenderer::addDrawList(graphics::DrawList* dl)
 { m_drawLists.push_back(dl); }
+
+} // namespace graphview
+

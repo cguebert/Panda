@@ -10,7 +10,7 @@
 
 using panda::ObjectFactory;
 
-QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, GraphView* view)
+QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, graphview::GraphView* view)
 	: QDialog(view, Qt::Popup)
 	, m_document(doc)
 	, m_view(view)

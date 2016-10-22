@@ -1,5 +1,4 @@
-#ifndef GENERICOBJECTDRAWSTRUCT_H
-#define GENERICOBJECTDRAWSTRUCT_H
+#pragma once
 
 #include <ui/graphview/object/ObjectRenderer.h>
 
@@ -8,13 +7,19 @@ namespace panda
 class GenericObject;
 }
 
+namespace graphview
+{
+
+namespace object
+{
+
 class GenericObjectRenderer : public ObjectRenderer
 {
 public:
 	GenericObjectRenderer(GraphView* view, panda::GenericObject* m_object);
 
 	void update() override;
-	void drawDatas(DrawList& list, DrawColors& colors) override;
+	void drawDatas(graphics::DrawList& list, graphics::DrawColors& colors) override;
 	panda::types::Point getObjectSize() override;
 
 	static const int createdDataRectMargin = 3;
@@ -24,4 +29,6 @@ protected:
 	int m_nbDefInputs, m_nbDefOutputs;
 };
 
-#endif
+} // namespace object
+
+} // namespace graphview

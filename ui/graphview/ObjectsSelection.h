@@ -11,6 +11,9 @@ class PandaDocument;
 class PandaObject;
 }
 
+namespace graphview
+{
+
 class ObjectsSelection
 {
 public:
@@ -51,3 +54,5 @@ inline bool ObjectsSelection::isSelected(panda::PandaObject* object) const
 
 inline const ObjectsSelection::Objects& ObjectsSelection::get() const
 { return m_selectedObjects; }
+
+} // namespace graphview

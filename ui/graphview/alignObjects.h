@@ -1,5 +1,7 @@
-#ifndef ALIGNOBJECTS_H
-#define ALIGNOBJECTS_H
+#pragma once
+
+namespace graphview
+{
 
 class GraphView;
 
@@ -19,4 +21,4 @@ void distributeVerticallyGaps(GraphView* view);
 void distributeVerticallyTop(GraphView* view);
 void distributeVerticallyBottom(GraphView* view);
 
-#endif // ALIGNOBJECTS_H
+} // namespace graphview

@@ -9,6 +9,12 @@ using panda::GenericObject;
 using panda::types::Point;
 using panda::types::Rect;
 
+namespace graphview
+{
+
+namespace object
+{
+
 GenericObjectRenderer::GenericObjectRenderer(GraphView* view, panda::GenericObject* object)
 	: ObjectRenderer(view, (panda::PandaObject*)object)
 	, m_genericObject(object)
@@ -106,7 +112,7 @@ void GenericObjectRenderer::update()
 	createShape();
 }
 
-void GenericObjectRenderer::drawDatas(DrawList& list, DrawColors& colors)
+void GenericObjectRenderer::drawDatas(graphics::DrawList& list, graphics::DrawColors& colors)
 {
 	const panda::BaseData* clickedData = getParentView()->getClickedData();
 
@@ -117,7 +123,7 @@ void GenericObjectRenderer::drawDatas(DrawList& list, DrawColors& colors)
 		{
 			unsigned int dataCol = 0;
 			if (clickedData && clickedData != data && getParentView()->canLinkWith(data))
-				dataCol = DrawList::convert(clickedData->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
+				dataCol = graphics::DrawList::convert(clickedData->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
 			else
 				dataCol = colors.lightColor;
 
@@ -161,3 +167,7 @@ Point GenericObjectRenderer::getObjectSize()
 }
 
 int GenericObjectDrawClass = RegisterDrawObject<panda::GenericObject, GenericObjectRenderer>();
+
+} // namespace object
+
+} // namespace graphview

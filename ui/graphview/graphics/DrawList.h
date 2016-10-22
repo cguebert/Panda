@@ -4,8 +4,15 @@
 
 #include <string>
 
-class Font;
 class QColor;
+
+namespace graphview
+{
+
+namespace graphics
+{
+
+class Font;
 
 class DrawList
 {
@@ -122,3 +129,7 @@ private:
 
 	DrawPath m_path;
 };
+
+} // namespace graphics
+
+} // namespace graphview

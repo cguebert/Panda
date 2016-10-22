@@ -22,6 +22,12 @@ namespace
 	}
 }
 
+namespace graphview
+{
+
+namespace object
+{
+
 AnnotationRenderer::AnnotationRenderer(GraphView* view, panda::PandaObject* object)
 	: ObjectRenderer(view, object)
 	, m_annotation(dynamic_cast<Annotation*>(object))
@@ -29,7 +35,7 @@ AnnotationRenderer::AnnotationRenderer(GraphView* view, panda::PandaObject* obje
 	m_observer->get(m_annotation->deltaToEndChanged).connect<AnnotationRenderer, &AnnotationRenderer::deltaToEndChanged>(this);
 }
 
-void AnnotationRenderer::drawBackground(DrawList& list, DrawColors& colors)
+void AnnotationRenderer::drawBackground(graphics::DrawList& list, graphics::DrawColors& colors)
 {
 	// Compute the bounding box of the text, if it changed
 	int textCounter = m_annotation->m_text.getCounter();
@@ -44,14 +50,14 @@ void AnnotationRenderer::drawBackground(DrawList& list, DrawColors& colors)
 	}
 
 	// Draw the shape of the annotation
-	auto fillColor = DrawList::convert(m_annotation->m_color.getValue().toHex());
+	auto fillColor = graphics::DrawList::convert(m_annotation->m_color.getValue().toHex());
 	list.addMesh(m_fillShape, fillColor);
 	list.addPolyline(m_outline, colors.penColor, false);
 }
 
-void AnnotationRenderer::drawForeground(DrawList& list, DrawColors& colors)
+void AnnotationRenderer::drawForeground(graphics::DrawList& list, graphics::DrawColors& colors)
 {
-	auto textArea = pRect(m_textArea.left(), m_textArea.top(), m_textArea.right(), m_textArea.bottom());
+	auto textArea = Rect(m_textArea.left(), m_textArea.top(), m_textArea.right(), m_textArea.bottom());
 
 	// Draw the box behind the text
 	list.addRectFilled(textArea, colors.midLightColor);
@@ -242,3 +248,7 @@ void AnnotationRenderer::deltaToEndChanged()
 }
 
 int AnnotationDrawClass = RegisterDrawObject<panda::Annotation, AnnotationRenderer>();
+
+} // namespace object
+
+} // namespace graphview

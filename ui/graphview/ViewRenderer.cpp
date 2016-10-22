@@ -78,18 +78,18 @@ namespace
 			return ptr.lock();
 	}
 
-	std::weak_ptr<FontAtlas>& getFontAtlasWeak()
+	std::weak_ptr<graphview::graphics::FontAtlas>& getFontAtlasWeak()
 	{
-		static std::weak_ptr<FontAtlas> ptr;
+		static std::weak_ptr<graphview::graphics::FontAtlas> ptr;
 		return ptr;
 	}
 
-	std::shared_ptr<FontAtlas> getFontAtlas()
+	std::shared_ptr<graphview::graphics::FontAtlas> getFontAtlas()
 	{
 		auto& ptr = getFontAtlasWeak();
 		if (ptr.expired())
 		{
-			auto newPtr = std::make_shared<FontAtlas>();
+			auto newPtr = std::make_shared<graphview::graphics::FontAtlas>();
 			ptr = newPtr;
 			return newPtr;
 		}
@@ -97,7 +97,10 @@ namespace
 			return ptr.lock();
 	}
 
-}
+} // Unnamed namespace
+
+namespace graphview
+{
 
 ViewRenderer::ViewRenderer()
 	: m_atlas(getFontAtlas())
@@ -108,7 +111,7 @@ ViewRenderer::ViewRenderer()
 #ifdef WIN32
 	if (m_atlas->fonts().empty())
 	{
-		FontConfig cfg;
+		graphics::FontConfig cfg;
 		cfg.Name = "Tahoma";
 		m_atlas->addFontFromFileTTF("C:/Windows/Fonts/tahoma.ttf", 13, cfg, m_atlas->getGlyphRangesDefault());
 	}
@@ -176,13 +179,13 @@ void ViewRenderer::initialize()
 	m_VBO->setUsagePattern(QOpenGLBuffer::StreamDraw);
 	m_VBO->bind();
 	
-	f->glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(DrawList::DrawVert), (GLvoid*)offsetof(DrawList::DrawVert, pos));
+	f->glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(graphics::DrawList::DrawVert), (GLvoid*)offsetof(graphics::DrawList::DrawVert, pos));
 	f->glEnableVertexAttribArray(0);
 
-	f->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(DrawList::DrawVert), (GLvoid*)offsetof(DrawList::DrawVert, uv));
+	f->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(graphics::DrawList::DrawVert), (GLvoid*)offsetof(graphics::DrawList::DrawVert, uv));
 	f->glEnableVertexAttribArray(1);
 
-	f->glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(DrawList::DrawVert), (GLvoid*)offsetof(DrawList::DrawVert, col));
+	f->glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(graphics::DrawList::DrawVert), (GLvoid*)offsetof(graphics::DrawList::DrawVert, col));
 	f->glEnableVertexAttribArray(2);
 	
 	m_VBO->release();
@@ -233,15 +236,15 @@ void ViewRenderer::render()
 	m_VAO->bind();
 
 	int vboSize = 0, eboSize = 0;
-	for (const DrawList* cmd_list : m_drawLists)
+	for (const auto* cmd_list : m_drawLists)
 	{
 		if (cmd_list->vtxBuffer().empty() || cmd_list->idxBuffer().empty())
 			continue;
 
-		const DrawList::DrawIdx* idx_buffer_offset = nullptr;
+		const graphics::DrawList::DrawIdx* idx_buffer_offset = nullptr;
 
 		m_VBO->bind();
-		int vtxSize = cmd_list->vtxBuffer().size() * sizeof(DrawList::DrawVert);
+		int vtxSize = cmd_list->vtxBuffer().size() * sizeof(graphics::DrawList::DrawVert);
 		if (vtxSize > vboSize)
 		{
 			m_VBO->allocate(vtxSize);
@@ -250,7 +253,7 @@ void ViewRenderer::render()
 		m_VBO->write(0, &cmd_list->vtxBuffer().front(), vtxSize);
 
 		m_EBO->bind();
-		int idxSize = cmd_list->idxBuffer().size() * sizeof(DrawList::DrawIdx);
+		int idxSize = cmd_list->idxBuffer().size() * sizeof(graphics::DrawList::DrawIdx);
 		if (idxSize > eboSize)
 		{
 			m_EBO->allocate(idxSize);
@@ -258,7 +261,7 @@ void ViewRenderer::render()
 		}
 		m_EBO->write(0, &cmd_list->idxBuffer().front(), idxSize);
 
-		for (const DrawList::DrawCmd& pcmd : cmd_list->cmdBuffer())
+		for (const auto& pcmd : cmd_list->cmdBuffer())
 		{
 			glBindTexture(GL_TEXTURE_2D, pcmd.textureId);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -287,7 +290,7 @@ unsigned int ViewRenderer::defaultTextureId()
 	return getFontTexture()->textureId();
 }
 
-Font* ViewRenderer::currentFont()
+graphics::Font* ViewRenderer::currentFont()
 {
 	if (!getFontTextureWeak().expired() && !getFontAtlasWeak().expired())
 	{
@@ -297,3 +300,5 @@ Font* ViewRenderer::currentFont()
 	}
 	return nullptr;
 }
+
+} // namespace graphview

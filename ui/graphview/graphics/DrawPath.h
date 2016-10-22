@@ -7,6 +7,12 @@
 using pPoint = panda::types::Point;
 using pRect = panda::types::Rect;
 
+namespace graphview
+{
+
+namespace graphics
+{
+
 struct DrawMesh
 {
 	std::vector<pPoint> points;
@@ -40,3 +46,7 @@ public:
 private:  
 	std::vector<pPoint> m_points;
 };
+
+} // namespace graphics
+
+} // namespace graphview

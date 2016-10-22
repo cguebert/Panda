@@ -1,5 +1,4 @@
-#ifndef GROUPOBJECTDRAWSTRUCT_H
-#define GROUPOBJECTDRAWSTRUCT_H
+#pragma once
 
 #include <ui/graphview/object/ObjectRenderer.h>
 
@@ -8,7 +7,13 @@ namespace panda
 class Group;
 }
 
+namespace graphview
+{
+	
 class GraphView;
+
+namespace object
+{
 
 class GroupRenderer : public ObjectRenderer
 {
@@ -22,4 +27,6 @@ protected:
 	panda::Group* m_group;
 };
 
-#endif
+} // namespace object
+
+} // namespace graphview

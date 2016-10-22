@@ -5,6 +5,9 @@
 #include <panda/helper/algorithm.h>
 #include <panda/object/PandaObject.h>
 
+namespace graphview
+{
+
 ObjectsSelection::ObjectsSelection(panda::ObjectsList& objectsList)
 	: m_objectsList(objectsList)
 {
@@ -109,3 +112,5 @@ void ObjectsSelection::selectConnected()
 	setLastSelectedObject(currentSelected);
 	selectionChanged.run();
 }
+
+} // namespace graphview

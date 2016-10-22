@@ -1,5 +1,4 @@
-#ifndef LINKTAG_H
-#define LINKTAG_H
+#pragma once
 
 #include <panda/types/Rect.h>
 #include <map>
@@ -7,6 +6,14 @@
 namespace panda
 {
 class BaseData;
+}
+
+namespace graphview
+{
+
+namespace graphics {
+	struct DrawColors;
+	class DrawList;
 }
 
 class GraphView;
@@ -23,7 +30,7 @@ public:
 	std::pair<panda::BaseData*, panda::types::Rect> getDataAtPoint(const panda::types::Point& point);
 
 	void moveView(const panda::types::Point& delta);
-	void draw(DrawList& list, DrawColors& colors);
+	void draw(graphics::DrawList& list, graphics::DrawColors& colors);
 
 	panda::BaseData* getInputData() const;
 	std::vector<panda::BaseData*> getOutputDatas() const;
@@ -63,4 +70,4 @@ inline bool LinkTag::isHovering() const
 inline void LinkTag::setHovering(bool h)
 { m_hovering = h; }
 
-#endif
+} // namespace graphview

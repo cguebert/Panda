@@ -1,5 +1,4 @@
-#ifndef GRAPHVIEW_H
-#define GRAPHVIEW_H
+#pragma once
 
 #include <QOpenGLWidget>
 
@@ -10,6 +9,7 @@
 
 #include <ui/custom/ScrollContainer.h>
 #include <ui/graphview/graphics/DrawList.h>
+#include <ui/graphview/graphics/DrawColors.h>
 #include <panda/messaging.h>
 
 namespace panda
@@ -26,30 +26,23 @@ class ScopedMacro;
 class XmlElement;
 }
 
+namespace graphview
+{
+
+namespace object {
+	class ObjectRenderer;
+}
+
 class LinkTag;
-class ObjectRenderer;
 class ObjectsSelection;
 class ViewRenderer;
-
-struct DrawColors
-{
-// Can be modified to pass current object info
-	unsigned int penColor = 0;
-	unsigned int fillColor = 0;
-	float penWidth = 1.0f;
-	
-// Other colors
-	unsigned int midLightColor = 0;
-	unsigned int lightColor = 0;
-	unsigned int highlightColor = 0;
-};
 
 class GraphView : public QOpenGLWidget, public ScrollableView
 {
 	Q_OBJECT
 
 public:
-	using ObjectRendererPtr = std::shared_ptr<ObjectRenderer>;
+	using ObjectRendererPtr = std::shared_ptr<object::ObjectRenderer>;
 
 	explicit GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
 	~GraphView();
@@ -65,8 +58,8 @@ public:
 	bool canLinkWith(const panda::BaseData* data) const; /// Is it possible to link this data and the clicked data
 
 	ObjectRendererPtr getSharedObjectRenderer(panda::PandaObject* object);
-	ObjectRenderer* getObjectRenderer(panda::PandaObject* object);
-	std::vector<ObjectRenderer*> getObjectRenderers(const std::vector<panda::PandaObject*>& objects);
+	object::ObjectRenderer* getObjectRenderer(panda::PandaObject* object);
+	std::vector<object::ObjectRenderer*> getObjectRenderers(const std::vector<panda::PandaObject*>& objects);
 	void setObjectRenderer(panda::PandaObject* object, const ObjectRendererPtr& drawStruct);
 
 	panda::types::Point getNewObjectPosition();
@@ -112,11 +105,11 @@ protected:
 	void focusOutEvent(QFocusEvent*) override;
 
 #ifdef PANDA_LOG_EVENTS
-	void paintLogDebug(DrawList& list, DrawColors& colors);
+	void paintLogDebug(graphics::DrawList& list, graphics::DrawColors& colors);
 #endif
-	void paintDirtyState(DrawList& list, DrawColors& colors);
+	void paintDirtyState(graphics::DrawList& list, graphics::DrawColors& colors);
 
-	ObjectRenderer* getObjectRendererAtPos(const panda::types::Point& pt);
+	object::ObjectRenderer* getObjectRendererAtPos(const panda::types::Point& pt);
 	virtual std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt);
 
 	using Rects = std::vector<panda::types::Rect>;
@@ -134,8 +127,8 @@ protected:
 	void updateConnectedDatas();
 	void updateLinkTags();
 
-	void prepareSnapTargets(ObjectRenderer* selectedRenderer);
-	void computeSnapDelta(ObjectRenderer* selectedRenderer, panda::types::Point position);
+	void prepareSnapTargets(object::ObjectRenderer* selectedRenderer);
+	void computeSnapDelta(object::ObjectRenderer* selectedRenderer, panda::types::Point position);
 
 	virtual bool createLink(panda::BaseData* data1, panda::BaseData* data2);
 	void changeLink(panda::BaseData* target, panda::BaseData* parent); // Return true if a link was made or modified
@@ -213,9 +206,9 @@ protected:
 	panda::PandaObject *m_contextMenuObject = nullptr;
 
 	std::map<panda::PandaObject*, ObjectRendererPtr> m_objectRenderers; /// The map of draw structs
-	std::vector<ObjectRenderer*> m_orderedObjectRenderers; /// In the same order as the document
+	std::vector<object::ObjectRenderer*> m_orderedObjectRenderers; /// In the same order as the document
 
-	ObjectRenderer* m_capturedRenderer = nullptr; /// Clicked ObjectRenderer that want to intercept mouse events
+	object::ObjectRenderer* m_capturedRenderer = nullptr; /// Clicked object::ObjectRenderer that want to intercept mouse events
 
 	std::vector<std::shared_ptr<LinkTag>> m_linkTags;
 	std::map<panda::BaseData*, LinkTag*> m_linkTagsMap; /// Input data of the link tag
@@ -242,15 +235,15 @@ protected:
 	panda::msg::Observer m_observer; /// Used to connect to signals (and disconnect automatically on destruction)
 
 	std::unique_ptr<ObjectsSelection> m_objectsSelection; /// Contains the selected objects and the corresponding signals
-	std::vector<ObjectRenderer*> m_selectedObjectsRenderers; /// The renderers for the selected objects
+	std::vector<object::ObjectRenderer*> m_selectedObjectsRenderers; /// The renderers for the selected objects
 
 	bool m_debugDirtyState = false;
 
 	std::set<const panda::BaseData*> m_possibleLinks; /// When creating a new link, this contains all possible destinations
 
 	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
-	DrawList m_linksDrawList, m_connectedDrawList;
-	DrawColors m_drawColors; /// So that we aquire Qt colors only once
+	graphics::DrawList m_linksDrawList, m_connectedDrawList;
+	graphics::DrawColors m_drawColors; /// So that we aquire Qt colors only once
 	bool m_recomputeLinks = false, m_recomputeConnected = false, m_objectsMoved = false;
 
 	long long m_previousTime = 0;
@@ -299,4 +292,4 @@ inline bool GraphView::canLinkWith(const panda::BaseData* data) const
 inline bool GraphView::isTemporaryView() const
 { return false; }
 
-#endif
+} // namespace graphview

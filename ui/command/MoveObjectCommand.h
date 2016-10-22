@@ -6,12 +6,13 @@
 
 #include <vector>
 
-namespace panda
-{
+namespace panda {
 class PandaObject;
 }
 
-class ViewPositionAddon;
+namespace graphview {
+	class ViewPositionAddon;
+}
 
 class MoveObjectCommand : public panda::UndoCommand
 {
@@ -31,7 +32,7 @@ protected:
 	void moveObjects(panda::types::Point delta);
 
 	std::vector<panda::PandaObject*> m_objects;
-	std::vector<ViewPositionAddon*> m_positionAddons;
+	std::vector<graphview::ViewPositionAddon*> m_positionAddons;
 	panda::types::Point m_delta;
 };
 

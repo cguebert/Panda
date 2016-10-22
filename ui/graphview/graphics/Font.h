@@ -14,6 +14,12 @@ using GlyphRange = std::pair<WChar, WChar>;
 using GlyphRangeList = std::vector<GlyphRange>;
 using MemBuffer = std::vector<unsigned char>;
 
+namespace graphview
+{
+
+namespace graphics
+{
+
 class DrawList;
 class Font;
 class FontAtlas;
@@ -88,3 +94,6 @@ private:
 	std::vector<int> m_indexLookup; // Sparse. Index glyphs by Unicode code-point.
 };
 
+} // namespace graphics
+
+} // namespace graphview

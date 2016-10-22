@@ -15,6 +15,12 @@
 using panda::types::Point;
 using panda::types::Rect;
 
+namespace graphview
+{
+
+namespace object
+{
+
 ObjectRenderer::ObjectRenderer(GraphView* view, panda::PandaObject* obj)
 	: m_parentView(view), m_object(obj)
 	, m_positionAddon(obj->addons().edit<ViewPositionAddon>())
@@ -140,10 +146,10 @@ bool ObjectRenderer::getDataRect(const panda::BaseData* data, Rect& rect) const
 	return false;
 }
 
-void ObjectRenderer::draw(DrawList& list, DrawColors& colors, bool selected)
+void ObjectRenderer::draw(graphics::DrawList& list, graphics::DrawColors& colors, bool selected)
 {
 	colors.penWidth = selected ? 3.f : 1.f;
-	colors.fillColor = selected ? colors.midLightColor : DrawList::setAlpha(colors.lightColor, 128);
+	colors.fillColor = selected ? colors.midLightColor : graphics::DrawList::setAlpha(colors.lightColor, 128);
 
 	// Draw the shape around the object
 	drawShape(list, colors);
@@ -155,40 +161,40 @@ void ObjectRenderer::draw(DrawList& list, DrawColors& colors, bool selected)
 	drawText(list, colors);
 }
 
-void ObjectRenderer::drawShape(DrawList& list, DrawColors& colors)
+void ObjectRenderer::drawShape(graphics::DrawList& list, graphics::DrawColors& colors)
 {
 	// Draw the shape around the object
 	list.addMesh(m_fillShape, colors.fillColor);
 	list.addPolyline(m_outline, colors.penColor, false, colors.penWidth);
 }
 
-void ObjectRenderer::drawDatas(DrawList& list, DrawColors& colors)
+void ObjectRenderer::drawDatas(graphics::DrawList& list, graphics::DrawColors& colors)
 {
 	for(const auto& dataPair : m_datas)
 		drawData(list, colors, dataPair.first, dataPair.second);
 }
 
-void ObjectRenderer::drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const Rect& area)
+void ObjectRenderer::drawData(graphics::DrawList& list, graphics::DrawColors& colors, const panda::BaseData* data, const Rect& area)
 {
 	unsigned int dataCol = 0;
 	const panda::BaseData* clickedData = getParentView()->getClickedData();
 	if (clickedData && clickedData != data && !getParentView()->canLinkWith(data))
 		dataCol = colors.lightColor;
 	else
-		dataCol = DrawList::convert(data->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
+		dataCol = graphics::DrawList::convert(data->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
 
 	list.addRectFilled(area, dataCol);
 	list.addRect(area, colors.penColor);
 }
 
-void ObjectRenderer::drawText(DrawList& list, DrawColors& colors)
+void ObjectRenderer::drawText(graphics::DrawList& list, graphics::DrawColors& colors)
 {
 	auto label = getLabel();
 	if (label != m_currentLabel)
 	{
 		m_currentLabel = label;
-		m_textDrawList = DrawList();
-		m_textDrawList.addText(getTextArea(), label, colors.penColor, DrawList::Align_Center, 1.0f, true, true);
+		m_textDrawList = {};
+		m_textDrawList.addText(getTextArea(), label, colors.penColor, graphics::DrawList::Align_Center, 1.0f, true, true);
 	}
 	
 	list.merge(m_textDrawList);
@@ -267,3 +273,7 @@ void ObjectRendererFactory::addCreator(BaseObjectDrawCreator* creator)
 
 	creators.push_back(ptr);
 }
+
+} // namespace object
+
+} // namespace graphview
