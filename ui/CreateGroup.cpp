@@ -1,6 +1,6 @@
 #include <ui/CreateGroup.h>
 #include <ui/graphview/GraphView.h>
-#include <ui/drawstruct/ObjectDrawStruct.h>
+#include <ui/graphview/object/ObjectDrawStruct.h>
 
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/ViewPositionAddon.h>

@@ -24,8 +24,10 @@ macro(GroupFiles fileGroup)
 		set(groupName "${finalFileGroupName}")
 		if(NOT folder STREQUAL "") # Parse the remaining directories hierarchy
 			string(REGEX REPLACE "/+$" "" baseFolder ${folder}) # Remove trailing slash
-			string(REPLACE "/" "\\" baseFolder ${baseFolder})	# Forward to backward slashes
-			set(groupName "${groupName}\\${baseFolder}")		# Put together the entire group name
+			if(NOT baseFolder STREQUAL "")
+				string(REPLACE "/" "\\" baseFolder ${baseFolder})	# Forward to backward slashes
+				set(groupName "${groupName}\\${baseFolder}")		# Put together the entire group name
+			endif()
 		endif()
 		source_group("${groupName}" FILES ${currentFile})		# Put the file in this group
 	endforeach()

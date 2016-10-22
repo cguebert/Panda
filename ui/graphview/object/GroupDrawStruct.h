@@ -1,7 +1,7 @@
 #ifndef GROUPOBJECTDRAWSTRUCT_H
 #define GROUPOBJECTDRAWSTRUCT_H
 
-#include <ui/drawstruct/ObjectDrawStruct.h>
+#include <ui/graphview/object/ObjectDrawStruct.h>
 
 namespace panda
 {

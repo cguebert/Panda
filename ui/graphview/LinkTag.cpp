@@ -1,6 +1,6 @@
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/LinkTag.h>
-#include <ui/drawstruct/ObjectDrawStruct.h>
+#include <ui/graphview/object/ObjectDrawStruct.h>
 
 using panda::types::Point;
 using panda::types::Rect;

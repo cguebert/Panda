@@ -1,5 +1,5 @@
-#include <ui/drawstruct/ObjectDrawStruct.h>
-#include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/graphview/object/ObjectDrawStruct.h>
+#include <ui/graphview/object/DockableDrawStruct.h>
 #include <ui/graphview/GroupView.h>
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/ObjectsSelection.h>

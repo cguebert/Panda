@@ -6,8 +6,8 @@
 #include <ui/command/MoveObjectCommand.h>
 #include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/dialog/QuickCreateDialog.h>
-#include <ui/drawstruct/ObjectDrawStruct.h>
-#include <ui/drawstruct/DockableDrawStruct.h>
+#include <ui/graphview/object/ObjectDrawStruct.h>
+#include <ui/graphview/object/DockableDrawStruct.h>
 #include <ui/graphview/DataLabelAddon.h>
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/LinkTag.h>
