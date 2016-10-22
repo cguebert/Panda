@@ -997,11 +997,19 @@ void GraphView::showAllSelected()
 {
 	if(!m_objectsSelection->get().empty())
 	{
-		float factorW = contentsRect().width() / (m_objectsRect.width() + 40);
-		float factorH = contentsRect().height() / (m_objectsRect.height() + 40);
+		Rect area;
+		for (const auto& obj : m_objectsSelection->get())
+		{
+			auto objRnd = objectRenderers().get(obj);
+			if(objRnd)
+				area |= objRnd->getVisualArea();
+		}
+
+		float factorW = contentsRect().width() / (area.width() + 40);
+		float factorH = contentsRect().height() / (area.height() + 40);
 		m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-		moveView(convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta);
+		moveView(convert(contentsRect().center()) / m_zoomFactor - area.center() + m_viewDelta);
 		update();
 		updateViewRect();
 	}
