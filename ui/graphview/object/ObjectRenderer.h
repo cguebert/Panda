@@ -21,13 +21,13 @@ namespace panda
 	{ class Observer; }
 }
 
-class ObjectDrawStruct
+class ObjectRenderer
 {
 public:
 	using DataRectPair = std::pair<panda::BaseData*, panda::types::Rect>;
 
-	ObjectDrawStruct(GraphView* view, panda::PandaObject* obj);
-	virtual ~ObjectDrawStruct();
+	ObjectRenderer(GraphView* view, panda::PandaObject* obj);
+	virtual ~ObjectRenderer();
 
 	virtual void drawBackground(DrawList& list, DrawColors& colors) {}	// Called first
 	virtual void draw(DrawList& list, DrawColors& colors, bool selected = false); // "Normal" draw
@@ -101,31 +101,31 @@ private:
 	bool m_dirty = true;
 };
 
-inline bool ObjectDrawStruct::acceptsMagneticSnap() const
+inline bool ObjectRenderer::acceptsMagneticSnap() const
 { return true; }
 
-inline bool ObjectDrawStruct::contains(const panda::types::Point& point)
+inline bool ObjectRenderer::contains(const panda::types::Point& point)
 { return m_selectionArea.contains(point) && m_outline.contains(point); }
 
-inline panda::types::Rect ObjectDrawStruct::getVisualArea() const
+inline panda::types::Rect ObjectRenderer::getVisualArea() const
 { return m_visualArea; }
 
-inline panda::types::Rect ObjectDrawStruct::getSelectionArea() const
+inline panda::types::Rect ObjectRenderer::getSelectionArea() const
 { return m_selectionArea; }
 
-inline panda::types::Point ObjectDrawStruct::getPosition() const
+inline panda::types::Point ObjectRenderer::getPosition() const
 { return m_position; }
 
-inline panda::PandaObject* const ObjectDrawStruct::getObject() const
+inline panda::PandaObject* const ObjectRenderer::getObject() const
 { return m_object; }
 
-inline GraphView* const ObjectDrawStruct::getParentView() const
+inline GraphView* const ObjectRenderer::getParentView() const
 { return m_parentView; }
 
-inline int ObjectDrawStruct::dataStartY()
+inline int ObjectRenderer::dataStartY()
 { return dataRectMargin; }
 
-inline const std::vector<ObjectDrawStruct::DataRectPair>& ObjectDrawStruct::getDataRects() const
+inline const std::vector<ObjectRenderer::DataRectPair>& ObjectRenderer::getDataRects() const
 { return m_datas; }
 
 //****************************************************************************//
@@ -135,7 +135,7 @@ class BaseObjectDrawCreator
 public:
 	virtual ~BaseObjectDrawCreator() {}
 	virtual const panda::BaseClass* getClass() const = 0;
-	virtual std::shared_ptr<ObjectDrawStruct> create(GraphView* view, panda::PandaObject* obj) const = 0;
+	virtual std::shared_ptr<ObjectRenderer> create(GraphView* view, panda::PandaObject* obj) const = 0;
 };
 
 template<class O, class D>
@@ -149,18 +149,18 @@ public:
 	const panda::BaseClass* getClass() const override
 	{ return theClass; }
 
-	std::shared_ptr<ObjectDrawStruct> create(GraphView* view, panda::PandaObject* obj) const override
+	std::shared_ptr<ObjectRenderer> create(GraphView* view, panda::PandaObject* obj) const override
 	{ return std::make_shared<D>(view, dynamic_cast<O*>(obj)); }
 
 protected:
 	const panda::BaseClass* theClass;
 };
 
-class ObjectDrawStructFactory
+class ObjectRendererFactory
 {
 public:
-	static ObjectDrawStructFactory* getInstance();
-	std::shared_ptr<ObjectDrawStruct> createDrawStruct(GraphView *view, panda::PandaObject *obj);
+	static ObjectRendererFactory* getInstance();
+	std::shared_ptr<ObjectRenderer> createRenderer(GraphView *view, panda::PandaObject *obj);
 
 protected:
 	void addCreator(BaseObjectDrawCreator* creator);
@@ -177,7 +177,7 @@ public:
 	RegisterDrawObject() {}
 	operator int()
 	{
-		ObjectDrawStructFactory::getInstance()->addCreator(new ObjectDrawCreator<O, D>());
+		ObjectRendererFactory::getInstance()->addCreator(new ObjectDrawCreator<O, D>());
 		return 1;
 	}
 };

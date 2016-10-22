@@ -9,8 +9,8 @@ using panda::GenericObject;
 using panda::types::Point;
 using panda::types::Rect;
 
-GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::GenericObject* object)
-	: ObjectDrawStruct(view, (panda::PandaObject*)object)
+GenericObjectRenderer::GenericObjectRenderer(GraphView* view, panda::GenericObject* object)
+	: ObjectRenderer(view, (panda::PandaObject*)object)
 	, m_genericObject(object)
 	, m_nbDefInputs(0)
 	, m_nbDefOutputs(0)
@@ -24,7 +24,7 @@ GenericObjectDrawStruct::GenericObjectDrawStruct(GraphView* view, panda::Generic
 	}
 }
 
-void GenericObjectDrawStruct::update()
+void GenericObjectRenderer::update()
 {
 	m_selectionArea = m_visualArea = Rect::fromSize(getPosition(), getObjectSize());
 
@@ -106,7 +106,7 @@ void GenericObjectDrawStruct::update()
 	createShape();
 }
 
-void GenericObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
+void GenericObjectRenderer::drawDatas(DrawList& list, DrawColors& colors)
 {
 	const panda::BaseData* clickedData = getParentView()->getClickedData();
 
@@ -130,7 +130,7 @@ void GenericObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
 	}
 }
 
-Point GenericObjectDrawStruct::getObjectSize()
+Point GenericObjectRenderer::getObjectSize()
 {
 	Point objectSize(objectDefaultWidth, objectDefaultHeight);
 
@@ -160,4 +160,4 @@ Point GenericObjectDrawStruct::getObjectSize()
 	return objectSize;
 }
 
-int GenericObjectDrawClass = RegisterDrawObject<panda::GenericObject, GenericObjectDrawStruct>();
+int GenericObjectDrawClass = RegisterDrawObject<panda::GenericObject, GenericObjectRenderer>();

@@ -22,14 +22,14 @@ namespace
 	}
 }
 
-AnnotationDrawStruct::AnnotationDrawStruct(GraphView* view, panda::PandaObject* object)
-	: ObjectDrawStruct(view, object)
+AnnotationRenderer::AnnotationRenderer(GraphView* view, panda::PandaObject* object)
+	: ObjectRenderer(view, object)
 	, m_annotation(dynamic_cast<Annotation*>(object))
 {
-	m_observer->get(m_annotation->deltaToEndChanged).connect<AnnotationDrawStruct, &AnnotationDrawStruct::deltaToEndChanged>(this);
+	m_observer->get(m_annotation->deltaToEndChanged).connect<AnnotationRenderer, &AnnotationRenderer::deltaToEndChanged>(this);
 }
 
-void AnnotationDrawStruct::drawBackground(DrawList& list, DrawColors& colors)
+void AnnotationRenderer::drawBackground(DrawList& list, DrawColors& colors)
 {
 	// Compute the bounding box of the text, if it changed
 	int textCounter = m_annotation->m_text.getCounter();
@@ -49,7 +49,7 @@ void AnnotationDrawStruct::drawBackground(DrawList& list, DrawColors& colors)
 	list.addPolyline(m_outline, colors.penColor, false);
 }
 
-void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
+void AnnotationRenderer::drawForeground(DrawList& list, DrawColors& colors)
 {
 	auto textArea = pRect(m_textArea.left(), m_textArea.top(), m_textArea.right(), m_textArea.bottom());
 
@@ -71,28 +71,28 @@ void AnnotationDrawStruct::drawForeground(DrawList& list, DrawColors& colors)
 	}
 }
 
-void AnnotationDrawStruct::move(const Point& delta)
+void AnnotationRenderer::move(const Point& delta)
 {
-	ObjectDrawStruct::move(delta);
+	ObjectRenderer::move(delta);
 
 	m_textArea.translate(delta);
 	m_endPos += delta;
 }
 
-void AnnotationDrawStruct::moveText(const Point& delta)
+void AnnotationRenderer::moveText(const Point& delta)
 {
 	move(delta);
 	getParentView()->update();
 }
 
-void AnnotationDrawStruct::moveEnd(const Point& delta)
+void AnnotationRenderer::moveEnd(const Point& delta)
 {
 	m_endPos += delta;
 	update();
 	getParentView()->update();
 }
 
-bool AnnotationDrawStruct::contains(const Point& point)
+bool AnnotationRenderer::contains(const Point& point)
 {
 	const panda::PandaDocument* doc = getParentView()->getDocument();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
@@ -106,9 +106,9 @@ bool AnnotationDrawStruct::contains(const Point& point)
 	return m_textArea.contains(point);
 }
 
-void AnnotationDrawStruct::update()
+void AnnotationRenderer::update()
 {
-//	ObjectDrawStruct::update();	// No need to call it
+//	ObjectRenderer::update();	// No need to call it
 
 	if (m_movingAction == MOVING_NONE)
 		m_endPos = getPosition() + m_annotation->getDeltaToEnd();
@@ -126,7 +126,7 @@ void AnnotationDrawStruct::update()
 	createShape();
 }
 
-void AnnotationDrawStruct::createShape()
+void AnnotationRenderer::createShape()
 {
 	m_outline.clear();
 	switch(m_annotation->m_type.getValue())
@@ -174,7 +174,7 @@ void AnnotationDrawStruct::createShape()
 	m_fillShape = m_outline.triangulate();
 }
 
-bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
+bool AnnotationRenderer::mousePressEvent(QMouseEvent* event)
 {
 	Point zoomedMouse = getParentView()->getViewDelta() + convert(event->localPos() )/ getParentView()->getZoom();
 
@@ -195,7 +195,7 @@ bool AnnotationDrawStruct::mousePressEvent(QMouseEvent* event)
 	return false;
 }
 
-void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
+void AnnotationRenderer::mouseMoveEvent(QMouseEvent* event)
 {
 	Point zoomedMouse = getParentView()->getViewDelta() + convert(event->localPos()) / getParentView()->getZoom();
 	Point delta = zoomedMouse - m_previousMousePos;
@@ -209,7 +209,7 @@ void AnnotationDrawStruct::mouseMoveEvent(QMouseEvent* event)
 		moveEnd(delta);
 }
 
-void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
+void AnnotationRenderer::mouseReleaseEvent(QMouseEvent* event)
 {
 	Point zoomedMouse = getParentView()->getViewDelta() + convert(event->localPos()) / getParentView()->getZoom();
 	Point deltaStart = m_startMousePos - m_previousMousePos;
@@ -229,16 +229,16 @@ void AnnotationDrawStruct::mouseReleaseEvent(QMouseEvent* event)
 	m_movingAction = MOVING_NONE;
 }
 
-Point AnnotationDrawStruct::getObjectSize()
+Point AnnotationRenderer::getObjectSize()
 {
 	return Point(100, 50);
 }
 
-void AnnotationDrawStruct::deltaToEndChanged()
+void AnnotationRenderer::deltaToEndChanged()
 {
 	m_endPos = m_annotation->getDeltaToEnd();
 	update();
 	getParentView()->update();
 }
 
-int AnnotationDrawClass = RegisterDrawObject<panda::Annotation, AnnotationDrawStruct>();
+int AnnotationDrawClass = RegisterDrawObject<panda::Annotation, AnnotationRenderer>();

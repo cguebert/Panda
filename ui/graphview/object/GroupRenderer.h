@@ -10,10 +10,10 @@ class Group;
 
 class GraphView;
 
-class GroupDrawStruct : public ObjectDrawStruct
+class GroupRenderer : public ObjectRenderer
 {
 public:
-	GroupDrawStruct(GraphView* view, panda::Group* object);
+	GroupRenderer(GraphView* view, panda::Group* object);
 
 	void createShape() override;
 	int dataStartY() override;

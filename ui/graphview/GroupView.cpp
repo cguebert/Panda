@@ -274,7 +274,7 @@ void GroupView::updateObjectsRect()
 		return;
 
 	m_objectsRect = Rect();
-	for(const auto& ods : m_orderedObjectDrawStructs)
+	for(const auto& ods : m_orderedObjectRenderers)
 		m_objectsRect |= ods->getVisualArea();
 
 	int nbInputs = 0, nbOutputs = 0;
@@ -297,7 +297,7 @@ void GroupView::updateObjectsRect()
 void GroupView::updateViewRect()
 {
 	m_viewRect = Rect::fromSize(m_objectsRect.topLeft() * m_zoomFactor, m_objectsRect.size() * m_zoomFactor);
-	if(!m_orderedObjectDrawStructs.empty())
+	if(!m_orderedObjectRenderers.empty())
 		m_viewRect.adjust(-5, -5, 5, 5);
 
 	emit viewModified();

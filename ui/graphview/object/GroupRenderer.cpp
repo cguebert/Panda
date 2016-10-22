@@ -4,13 +4,13 @@
 #include <panda/document/PandaDocument.h>
 #include <panda/object/Group.h>
 
-GroupDrawStruct::GroupDrawStruct(GraphView* view, panda::Group* object)
-	: ObjectDrawStruct(view, object)
+GroupRenderer::GroupRenderer(GraphView* view, panda::Group* object)
+	: ObjectRenderer(view, object)
 	, m_group(object)
 {
 }
 
-void GroupDrawStruct::createShape()
+void GroupRenderer::createShape()
 {
 	const int w = 9, h = 9;
 
@@ -28,9 +28,9 @@ void GroupDrawStruct::createShape()
 	m_fillShape = m_outline.triangulate();
 }
 
-int GroupDrawStruct::dataStartY()
+int GroupRenderer::dataStartY()
 {
 	return 10;
 }
 
-int GroupDrawClass = RegisterDrawObject<panda::Group, GroupDrawStruct>();
+int GroupDrawClass = RegisterDrawObject<panda::Group, GroupRenderer>();

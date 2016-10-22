@@ -92,7 +92,7 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	for (const auto& object : m_objectsList.get())
 		addedObject(object.get());
 
-	updateDirtyDrawStructs();
+	updateDirtyRenderers();
 }
 
 GraphView::~GraphView() = default;
@@ -107,12 +107,12 @@ QSize GraphView::sizeHint() const
 	return QSize(600, 400);
 }
 
-ObjectDrawStruct* GraphView::getObjectDrawStructAtPos(const Point& pt)
+ObjectRenderer* GraphView::getObjectRendererAtPos(const Point& pt)
 {
-	int nb = m_orderedObjectDrawStructs.size();
+	int nb = m_orderedObjectRenderers.size();
 	for (int i = nb - 1; i >= 0; --i)
 	{
-		auto ods = m_orderedObjectDrawStructs[i];
+		auto ods = m_orderedObjectRenderers[i];
 		if(ods->contains(pt))
 			return ods;
 	}
@@ -121,7 +121,7 @@ ObjectDrawStruct* GraphView::getObjectDrawStructAtPos(const Point& pt)
 
 std::pair<panda::BaseData*, Rect> GraphView::getDataAtPos(const panda::types::Point& pt)
 {
-	const auto ods = getObjectDrawStructAtPos(pt);
+	const auto ods = getObjectRendererAtPos(pt);
 	if (ods)
 	{
 		panda::BaseData* data = ods->getDataAtPos(pt);
@@ -135,28 +135,28 @@ std::pair<panda::BaseData*, Rect> GraphView::getDataAtPos(const panda::types::Po
 
 bool GraphView::getDataRect(const panda::BaseData* data, panda::types::Rect& rect)
 {
-	auto ods = getObjectDrawStruct(data->getOwner());
+	auto ods = getObjectRenderer(data->getOwner());
 	if (!ods)
 		return false;
 	return ods->getDataRect(data, rect);
 }
 
-GraphView::ObjectDrawStructPtr GraphView::getSharedObjectDrawStruct(panda::PandaObject* object)
+GraphView::ObjectRendererPtr GraphView::getSharedObjectRenderer(panda::PandaObject* object)
 {
-	return panda::helper::valueOrDefault(m_objectDrawStructs, object);
+	return panda::helper::valueOrDefault(m_objectRenderers, object);
 }
 
-ObjectDrawStruct* GraphView::getObjectDrawStruct(panda::PandaObject* object)
+ObjectRenderer* GraphView::getObjectRenderer(panda::PandaObject* object)
 {
-	return panda::helper::valueOrDefault(m_objectDrawStructs, object).get();
+	return panda::helper::valueOrDefault(m_objectRenderers, object).get();
 }
 
-std::vector<ObjectDrawStruct*> GraphView::getObjectDrawStructs(const std::vector<panda::PandaObject*>& objects)
+std::vector<ObjectRenderer*> GraphView::getObjectRenderers(const std::vector<panda::PandaObject*>& objects)
 {
-	std::vector<ObjectDrawStruct*> odsList;
+	std::vector<ObjectRenderer*> odsList;
 	for (auto object : objects)
 	{
-		auto ods = getObjectDrawStruct(object);
+		auto ods = getObjectRenderer(object);
 		if(ods)
 			odsList.push_back(ods);
 	}
@@ -164,10 +164,10 @@ std::vector<ObjectDrawStruct*> GraphView::getObjectDrawStructs(const std::vector
 	return odsList;
 }
 
-void GraphView::setObjectDrawStruct(panda::PandaObject* object, const ObjectDrawStructPtr& drawStruct)
+void GraphView::setObjectRenderer(panda::PandaObject* object, const ObjectRendererPtr& drawStruct)
 {
-	m_objectDrawStructs[object] = drawStruct;
-	m_orderedObjectDrawStructs.push_back(drawStruct.get());
+	m_objectRenderers[object] = drawStruct;
+	m_orderedObjectRenderers.push_back(drawStruct.get());
 }
 
 void GraphView::initializeGL()
@@ -195,7 +195,7 @@ void GraphView::paintGL()
 	if(m_movingAction == Moving::Link)
 		moveViewIfMouseOnBorder();
 
-	updateDirtyDrawStructs();
+	updateDirtyRenderers();
 
 	if (m_objectsMoved)
 	{
@@ -220,7 +220,7 @@ void GraphView::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Give a possibility to draw behind normal objects
-	for (auto& ods : m_orderedObjectDrawStructs)
+	for (auto& ods : m_orderedObjectRenderers)
 	{
 		if (ods->getVisualArea().intersects(viewRect))
 			ods->drawBackground(drawList, m_drawColors);
@@ -230,21 +230,21 @@ void GraphView::paintGL()
 	drawList.merge(m_linksDrawList);
 
 	// Draw the objects
-	for (auto& ods : m_orderedObjectDrawStructs)
+	for (auto& ods : m_orderedObjectRenderers)
 	{
 		if (ods->getVisualArea().intersects(viewRect))
 			ods->draw(drawList, m_drawColors);
 	}
 
 	// Give a possibility to draw in front of normal objects
-	for (auto& ods : m_orderedObjectDrawStructs)
+	for (auto& ods : m_orderedObjectRenderers)
 	{
 		if (ods->getVisualArea().intersects(viewRect))
 			ods->drawForeground(drawList, m_drawColors);
 	}
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
-	for (auto& ods : m_selectedObjectsDrawStructs)
+	for (auto& ods : m_selectedObjectsRenderers)
 	{
 		if (ods->getVisualArea().intersects(viewRect))
 			ods->draw(drawList, m_drawColors, true);
@@ -308,7 +308,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 	if(logDlg && logDlg->isVisible())
 	{
 		const auto& states = logDlg->getNodeStates();
-		for(const auto ods : m_orderedObjectDrawStructs)
+		for(const auto ods : m_orderedObjectRenderers)
 		{
 			const auto object = ods->getObject();
 			unsigned int fillCol = panda::helper::valueOrDefault(states, object, nullptr) ? 0x200000FF : 0x2000FF00;
@@ -332,7 +332,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 			panda::PandaObject* object = m_objectsList.find(event->m_objectIndex);
 			if(object)
 			{
-				auto ods = getObjectDrawStruct(object);
+				auto ods = getObjectRenderer(object);
 				Rect area;
 
 				bool drawData = false;
@@ -351,7 +351,7 @@ void GraphView::paintLogDebug(DrawList& list, DrawColors& colors)
 
 void GraphView::paintDirtyState(DrawList& list, DrawColors& colors)
 {
-	for(const auto& ods : m_orderedObjectDrawStructs)
+	for(const auto& ods : m_orderedObjectRenderers)
 	{
 		const auto object = ods->getObject();
 		unsigned int fillCol = object->isDirty() ? 0x400000FF : 0x4000FF00;
@@ -402,7 +402,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 				}
 			}
 		}
-		else if(const auto ods = getObjectDrawStructAtPos(zoomedMouse))
+		else if(const auto ods = getObjectRendererAtPos(zoomedMouse))
 		{ // No Data, but we still clicked on an object
 			auto object = ods->getObject();
 	
@@ -428,7 +428,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 			if(ods->mousePressEvent(event))
 			{
 				m_movingAction = Moving::Custom;
-				m_capturedDrawStruct = ods;
+				m_capturedRenderer = ods;
 			}
 		}
 		else
@@ -485,9 +485,9 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 		if((delta * m_zoomFactor).norm() > 5)
 		{
 			m_movingAction = Moving::Object;
-			if(m_useMagneticSnap && !m_selectedObjectsDrawStructs.empty())
+			if(m_useMagneticSnap && !m_selectedObjectsRenderers.empty())
 			{
-				auto ods = m_selectedObjectsDrawStructs.back();
+				auto ods = m_selectedObjectsRenderers.back();
 				if(ods->acceptsMagneticSnap())
 				{
 					prepareSnapTargets(ods);
@@ -527,10 +527,10 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	{
 		Point mousePos = m_viewDelta + localPos / m_zoomFactor;
 		Point delta = mousePos - m_previousMousePos;
-		if(m_useMagneticSnap && !m_selectedObjectsDrawStructs.empty())
+		if(m_useMagneticSnap && !m_selectedObjectsRenderers.empty())
 		{
 			Point oldSnapDelta = m_snapDelta;
-			auto ods = m_selectedObjectsDrawStructs.back();
+			auto ods = m_selectedObjectsRenderers.back();
 			auto possiblePosition = ods->getPosition() + delta - m_snapDelta;
 			computeSnapDelta(ods, possiblePosition);
 			delta = delta - oldSnapDelta + m_snapDelta;
@@ -586,8 +586,8 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::Custom)
 	{
-		if(m_capturedDrawStruct)
-			m_capturedDrawStruct->mouseMoveEvent(event);
+		if(m_capturedRenderer)
+			m_capturedRenderer->mouseMoveEvent(event);
 	}
 
 	if(m_movingAction == Moving::None || m_movingAction == Moving::Link)
@@ -689,10 +689,10 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	else if(m_movingAction == Moving::Object)
 	{
 		std::map<panda::PandaObject*, Point> positions;
-		for(const auto ods : m_selectedObjectsDrawStructs)
+		for(const auto ods : m_selectedObjectsRenderers)
 			positions[ods->getObject()] = ods->getPosition();
 
-		for(const auto ods : m_selectedObjectsDrawStructs)
+		for(const auto ods : m_selectedObjectsRenderers)
 		{
 			auto object = ods->getObject();
 			panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
@@ -705,14 +705,14 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 				panda::DockObject* defaultDock = dockable->getDefaultDock();
 				panda::DockObject* newDock = defaultDock;
 				int newIndex = -1;
-				for(const auto ods2 : m_orderedObjectDrawStructs)
+				for(const auto ods2 : m_orderedObjectRenderers)
 				{
 					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(ods2->getObject());
 					if(dock)
 					{
 						if(dockableArea.intersects(ods2->getSelectionArea()) && dock->accepts(dockable))
 						{
-							newIndex = dynamic_cast<DockObjectDrawStruct*>(ods2)->getDockableIndex(dockableArea);
+							newIndex = dynamic_cast<DockObjectRenderer*>(ods2)->getDockableIndex(dockableArea);
 							newDock = dock;
 							break;
 						}
@@ -780,7 +780,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		bool remove = m_movingAction == Moving::SelectionRemove;
 		ObjectsSelection::Objects selection = m_objectsSelection->get();
 		Rect selectionRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
-		for(const auto ods : m_orderedObjectDrawStructs)
+		for(const auto ods : m_orderedObjectRenderers)
 		{
 			Rect objectArea = ods->getSelectionArea();
 			if (selectionRect.intersects(objectArea))
@@ -810,10 +810,10 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::Custom)
 	{
-		if(m_capturedDrawStruct)
+		if(m_capturedRenderer)
 		{
-			m_capturedDrawStruct->mouseReleaseEvent(event);
-			m_capturedDrawStruct = nullptr;
+			m_capturedRenderer->mouseReleaseEvent(event);
+			m_capturedRenderer = nullptr;
 			updateObjectsRect();
 		}
 	}
@@ -924,7 +924,7 @@ int GraphView::getContextMenuFlags(const panda::types::Point& pos)
 {
 	namespace gm = panda::gui::menu;
 	int flags = gm::Selection; // Let MainWindow fill the menu based on the current selection
-	const auto ods = getObjectDrawStructAtPos(pos);
+	const auto ods = getObjectRendererAtPos(pos);
 	if (ods)
 	{
 		m_contextMenuObject = ods->getObject();
@@ -1047,7 +1047,7 @@ void GraphView::moveSelectedToCenter()
 	{
 		Point delta = convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta;
 
-		for(const auto ods : m_selectedObjectsDrawStructs)
+		for(const auto ods : m_selectedObjectsRenderers)
 			ods->move(delta);
 
 		update();
@@ -1057,15 +1057,15 @@ void GraphView::moveSelectedToCenter()
 
 void GraphView::addedObject(panda::PandaObject* object)
 {
-	// Creating a DrawStruct depending on the class of the object been added
-	auto ods = getObjectDrawStruct(object);
+	// Creating a Renderer depending on the class of the object been added
+	auto ods = getObjectRenderer(object);
 	if (!ods)
 	{
-		auto odsPtr = ObjectDrawStructFactory::getInstance()->createDrawStruct(this, object);
-		m_objectDrawStructs.emplace(object, odsPtr);
+		auto odsPtr = ObjectRendererFactory::getInstance()->createRenderer(this, object);
+		m_objectRenderers.emplace(object, odsPtr);
 
 		ods = odsPtr.get();
-		m_orderedObjectDrawStructs.push_back(ods);
+		m_orderedObjectRenderers.push_back(ods);
 	}
 
 	ods->setDirty();
@@ -1074,11 +1074,11 @@ void GraphView::addedObject(panda::PandaObject* object)
 
 void GraphView::removeObject(panda::PandaObject* object)
 {
-	auto ods = getObjectDrawStruct(object);
-	m_objectDrawStructs.erase(object);
+	auto ods = getObjectRenderer(object);
+	m_objectRenderers.erase(object);
 	if(ods)
-		panda::helper::removeOne(m_orderedObjectDrawStructs, ods);
-	m_capturedDrawStruct = nullptr;
+		panda::helper::removeOne(m_orderedObjectRenderers, ods);
+	m_capturedRenderer = nullptr;
 	m_movingAction = Moving::None;
 	m_linkTags.clear();
 	m_linkTagsMap.clear();
@@ -1093,7 +1093,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 void GraphView::modifiedObject(panda::PandaObject* object)
 {
 	m_recomputeLinks = true;
-	auto ods = getObjectDrawStruct(object);
+	auto ods = getObjectRenderer(object);
 	if(ods)	// Can be called before the object is fully created
 	{
 		ods->setDirty();
@@ -1101,7 +1101,7 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 		panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object);
 		if (dock)
 		{
-			auto dods = dynamic_cast<DockObjectDrawStruct*>(ods);
+			auto dods = dynamic_cast<DockObjectRenderer*>(ods);
 			if (dods)
 				dods->placeDockableObjects();
 		}
@@ -1170,8 +1170,8 @@ void GraphView::updateLinkTags()
 			panda::BaseData* parentData = data->getParent();
 			if(parentData)
 			{
-				auto ownerOds = getObjectDrawStruct(data->getOwner());
-				auto parentOds = getObjectDrawStruct(parentData->getOwner());
+				auto ownerOds = getObjectRenderer(data->getOwner());
+				auto parentOds = getObjectRenderer(parentData->getOwner());
 				if (ownerOds && parentOds)
 				{
 					Rect ownerRect, parentRect;
@@ -1243,7 +1243,7 @@ void GraphView::updateLinks()
 
 	auto col = m_drawColors.penColor;
 
-	for(const auto ods : m_orderedObjectDrawStructs)
+	for(const auto ods : m_orderedObjectRenderers)
 	{
 		for (const auto& toDataRect : ods->getDataRects())
 		{
@@ -1252,7 +1252,7 @@ void GraphView::updateLinks()
 			if (parent && !data->isOutput())
 			{
 				Rect fromDataRect;
-				auto ods = getObjectDrawStruct(parent->getOwner());
+				auto ods = getObjectRenderer(parent->getOwner());
 				if (ods && ods->getDataRect(parent, fromDataRect) 
 					&& !hasLinkTag(parent, data)) // We don't draw the link if there is a LinkTag
 				{
@@ -1340,17 +1340,17 @@ std::pair<GraphView::Rects, GraphView::PointsPairs> GraphView::getConnectedDatas
 	return{ rects, links };
 }
 
-void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
+void GraphView::prepareSnapTargets(ObjectRenderer* selectedRenderer)
 {
 	m_snapTargetsY.clear();
 
-	float y = selectedDrawStruct->getPosition().y;
+	float y = selectedRenderer->getPosition().y;
 	// For y, try to make the data links horizontal
 	// First for inputs
-	for(auto input : selectedDrawStruct->getObject()->getInputDatas())
+	for(auto input : selectedRenderer->getObject()->getInputDatas())
 	{
 		Rect dataRect;
-		if(selectedDrawStruct->getDataRect(input, dataRect))
+		if(selectedRenderer->getDataRect(input, dataRect))
 		{
 			auto dataHeight = dataRect.center().y - y;
 			for(auto input2 : input->getInputs())
@@ -1359,7 +1359,7 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 				if(data2 && data2->getOwner())
 				{
 					auto owner = data2->getOwner();
-					auto ods = getObjectDrawStruct(owner);
+					auto ods = getObjectRenderer(owner);
 					if(ods)
 					{
 						if(ods->getDataRect(data2, dataRect))
@@ -1371,10 +1371,10 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 	}
 
 	// Then for outputs
-	for(auto output : selectedDrawStruct->getObject()->getOutputDatas())
+	for(auto output : selectedRenderer->getObject()->getOutputDatas())
 	{
 		Rect dataRect;
-		if(selectedDrawStruct->getDataRect(output, dataRect))
+		if(selectedRenderer->getDataRect(output, dataRect))
 		{
 			auto dataHeight = dataRect.center().y - y;
 			for(auto output2 : output->getOutputs())
@@ -1383,7 +1383,7 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 				if(data2 && data2->getOwner())
 				{
 					auto owner = data2->getOwner();
-					auto ods = getObjectDrawStruct(owner);
+					auto ods = getObjectRenderer(owner);
 					if (ods)
 					{
 						if(ods->getDataRect(data2, dataRect))
@@ -1395,7 +1395,7 @@ void GraphView::prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct)
 	}
 }
 
-void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, Point position)
+void GraphView::computeSnapDelta(ObjectRenderer* selectedRenderer, Point position)
 {
 	m_snapDelta = Point();
 	const float snapMaxDist = 5;
@@ -1408,16 +1408,16 @@ void GraphView::computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, Point pos
 
 	// We look for the closest object above and the closest below
 	const float filterRatio = 0.66f, filterDist = 50;
-	auto selectedHeight = selectedDrawStruct->getObjectSize().y;
+	auto selectedHeight = selectedRenderer->getObjectSize().y;
 	Rect viewRect(m_viewDelta, width() / m_zoomFactor, height() / m_zoomFactor);
 	auto m1 = std::numeric_limits<float>::lowest(), m2 = std::numeric_limits<float>::max();
 	Point abovePos(m1, m1), belowPos(m2, m2);
 	float aboveDist{ m2 }, belowDist{ m2 };
 	bool hasInsideObject = false;
 	std::set<float> snapTargetsX;
-	for (const auto ods : m_orderedObjectDrawStructs)
+	for (const auto ods : m_orderedObjectRenderers)
 	{
-		if (ods == selectedDrawStruct || !ods->acceptsMagneticSnap())
+		if (ods == selectedRenderer || !ods->acceptsMagneticSnap())
 			continue;
 
 		auto area = ods->getVisualArea();
@@ -1498,7 +1498,7 @@ void GraphView::moveObjects(std::vector<panda::PandaObject*> objects, Point delt
 
 	for(auto object : objects)
 	{
-		auto ods = getObjectDrawStruct(object);
+		auto ods = getObjectRenderer(object);
 		if(ods)
 			ods->move(delta);
 	}
@@ -1541,8 +1541,8 @@ void GraphView::sortDockable(panda::DockableObject* dockable, panda::DockObject*
 	auto dockables = defaultDock->getDockedObjects();
 
 	std::sort(dockables.begin(), dockables.end(), [this](panda::DockableObject* lhs, panda::DockableObject* rhs){
-		auto lpos = getObjectDrawStruct(lhs)->getPosition();
-		auto rpos = getObjectDrawStruct(rhs)->getPosition();
+		auto lpos = getObjectRenderer(lhs)->getPosition();
+		auto rpos = getObjectRenderer(rhs)->getPosition();
 		if(lpos.y == rpos.y)
 			return lpos.x > rpos.x;
 		return lpos.y < rpos.y;
@@ -1593,7 +1593,7 @@ void GraphView::loadingFinished()
 {
 	m_isLoading = false;
 	sortAllDockables();
-	updateDirtyDrawStructs();
+	updateDirtyRenderers();
 }
 
 void GraphView::changedDock(panda::DockableObject* dockable)
@@ -1628,7 +1628,7 @@ void GraphView::updateObjectsRect()
 		return;
 
 	m_objectsRect = Rect();
-	for(const auto& ods : m_orderedObjectDrawStructs)
+	for(const auto& ods : m_orderedObjectRenderers)
 		m_objectsRect |= ods->getVisualArea();
 
 	updateViewRect();
@@ -1637,7 +1637,7 @@ void GraphView::updateObjectsRect()
 void GraphView::updateViewRect()
 {
 	m_viewRect = Rect::fromSize(m_objectsRect.topLeft() * m_zoomFactor, m_objectsRect.size() * m_zoomFactor);
-	if(!m_orderedObjectDrawStructs.empty())
+	if(!m_orderedObjectRenderers.empty())
 		m_viewRect.adjust(-5, -5, 5, 5);
 
 	emit viewModified();
@@ -1666,13 +1666,13 @@ void GraphView::focusOutEvent(QFocusEvent*)
 
 void GraphView::selectionChanged()
 {
-	m_selectedObjectsDrawStructs.clear();
+	m_selectedObjectsRenderers.clear();
 
 	for (auto object : m_objectsSelection->get())
 	{
-		auto ods = getObjectDrawStruct(object);
+		auto ods = getObjectRenderer(object);
 		if(ods)
-			m_selectedObjectsDrawStructs.push_back(ods);
+			m_selectedObjectsRenderers.push_back(ods);
 	}
 
 	update();
@@ -1720,16 +1720,16 @@ void GraphView::computeCompatibleDatas(panda::BaseData* data)
 	}
 }
 
-void GraphView::updateDirtyDrawStructs()
+void GraphView::updateDirtyRenderers()
 {
 	bool updated = false;
 
 	// Bugfix: update the dock objects last
-	for (auto ods : m_orderedObjectDrawStructs)
+	for (auto ods : m_orderedObjectRenderers)
 		if(!dynamic_cast<panda::DockObject*>(ods->getObject()))
 			updated |= ods->updateIfDirty();
 
-	for (auto ods : m_orderedObjectDrawStructs)
+	for (auto ods : m_orderedObjectRenderers)
 		if(dynamic_cast<panda::DockObject*>(ods->getObject()))
 			updated |= ods->updateIfDirty();
 
@@ -1749,9 +1749,9 @@ void GraphView::updateDirtyDrawStructs()
 
 void GraphView::objectsReordered()
 {
-	m_orderedObjectDrawStructs.clear();
+	m_orderedObjectRenderers.clear();
 	for (const auto& obj : m_objectsList.get())
-		m_orderedObjectDrawStructs.push_back(getObjectDrawStruct(obj.get()));
+		m_orderedObjectRenderers.push_back(getObjectRenderer(obj.get()));
 }
 
 panda::types::Point GraphView::getNewObjectPosition()

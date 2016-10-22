@@ -15,7 +15,7 @@
 using panda::types::Point;
 using panda::types::Rect;
 
-ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
+ObjectRenderer::ObjectRenderer(GraphView* view, panda::PandaObject* obj)
 	: m_parentView(view), m_object(obj)
 	, m_positionAddon(obj->addons().edit<ViewPositionAddon>())
 	, m_observer(std::make_unique<panda::msg::Observer>())
@@ -30,14 +30,14 @@ ObjectDrawStruct::ObjectDrawStruct(GraphView* view, panda::PandaObject* obj)
 	else
 		m_position = m_positionAddon.getPosition();
 
-	m_observer->get(m_positionAddon.positionChanged).connect<ObjectDrawStruct, &ObjectDrawStruct::positionChanged>(this);
+	m_observer->get(m_positionAddon.positionChanged).connect<ObjectRenderer, &ObjectRenderer::positionChanged>(this);
 }
 
-ObjectDrawStruct::~ObjectDrawStruct()
+ObjectRenderer::~ObjectRenderer()
 {
 }
 
-void ObjectDrawStruct::update()
+void ObjectRenderer::update()
 {
 	m_selectionArea = m_visualArea = Rect::fromSize(getPosition(), getObjectSize());
 
@@ -66,7 +66,7 @@ void ObjectDrawStruct::update()
 	createShape();
 }
 
-void ObjectDrawStruct::createShape()
+void ObjectRenderer::createShape()
 {
 	m_outline.clear();
 	m_outline.rect(m_visualArea, objectCorner);
@@ -74,7 +74,7 @@ void ObjectDrawStruct::createShape()
 	m_fillShape = m_outline.triangulate();
 }
 
-void ObjectDrawStruct::move(const Point& delta)
+void ObjectRenderer::move(const Point& delta)
 {
 	if(!delta.isNull())
 	{
@@ -92,7 +92,7 @@ void ObjectDrawStruct::move(const Point& delta)
 	}
 }
 
-Point ObjectDrawStruct::getObjectSize()
+Point ObjectRenderer::getObjectSize()
 {
 	Point objectSize(objectDefaultWidth, objectDefaultHeight);
 
@@ -105,13 +105,13 @@ Point ObjectDrawStruct::getObjectSize()
 	return objectSize;
 }
 
-Rect ObjectDrawStruct::getTextArea()
+Rect ObjectRenderer::getTextArea()
 {
 	int margin = dataRectSize + dataRectMargin + 3;
 	return m_visualArea.adjusted(margin, 0, -margin, 0);
 }
 
-panda::BaseData* ObjectDrawStruct::getDataAtPos(const Point& pt, Point* center) const
+panda::BaseData* ObjectRenderer::getDataAtPos(const Point& pt, Point* center) const
 {
 	for(const auto& iter : m_datas)
 	{
@@ -126,7 +126,7 @@ panda::BaseData* ObjectDrawStruct::getDataAtPos(const Point& pt, Point* center) 
 	return nullptr;
 }
 
-bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, Rect& rect) const
+bool ObjectRenderer::getDataRect(const panda::BaseData* data, Rect& rect) const
 {
 	auto it = std::find_if(m_datas.begin(), m_datas.end(), [data](const DataRectPair& p) {
 		return p.first == data;
@@ -140,7 +140,7 @@ bool ObjectDrawStruct::getDataRect(const panda::BaseData* data, Rect& rect) cons
 	return false;
 }
 
-void ObjectDrawStruct::draw(DrawList& list, DrawColors& colors, bool selected)
+void ObjectRenderer::draw(DrawList& list, DrawColors& colors, bool selected)
 {
 	colors.penWidth = selected ? 3.f : 1.f;
 	colors.fillColor = selected ? colors.midLightColor : DrawList::setAlpha(colors.lightColor, 128);
@@ -155,20 +155,20 @@ void ObjectDrawStruct::draw(DrawList& list, DrawColors& colors, bool selected)
 	drawText(list, colors);
 }
 
-void ObjectDrawStruct::drawShape(DrawList& list, DrawColors& colors)
+void ObjectRenderer::drawShape(DrawList& list, DrawColors& colors)
 {
 	// Draw the shape around the object
 	list.addMesh(m_fillShape, colors.fillColor);
 	list.addPolyline(m_outline, colors.penColor, false, colors.penWidth);
 }
 
-void ObjectDrawStruct::drawDatas(DrawList& list, DrawColors& colors)
+void ObjectRenderer::drawDatas(DrawList& list, DrawColors& colors)
 {
 	for(const auto& dataPair : m_datas)
 		drawData(list, colors, dataPair.first, dataPair.second);
 }
 
-void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const Rect& area)
+void ObjectRenderer::drawData(DrawList& list, DrawColors& colors, const panda::BaseData* data, const Rect& area)
 {
 	unsigned int dataCol = 0;
 	const panda::BaseData* clickedData = getParentView()->getClickedData();
@@ -181,7 +181,7 @@ void ObjectDrawStruct::drawData(DrawList& list, DrawColors& colors, const panda:
 	list.addRect(area, colors.penColor);
 }
 
-void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)
+void ObjectRenderer::drawText(DrawList& list, DrawColors& colors)
 {
 	auto label = getLabel();
 	if (label != m_currentLabel)
@@ -194,7 +194,7 @@ void ObjectDrawStruct::drawText(DrawList& list, DrawColors& colors)
 	list.merge(m_textDrawList);
 }
 
-std::string ObjectDrawStruct::getLabel() const
+std::string ObjectRenderer::getLabel() const
 {
 	const auto& name = m_object->getName();
 	const auto& label = m_object->getLabel();
@@ -204,7 +204,7 @@ std::string ObjectDrawStruct::getLabel() const
 	return name;
 }
 
-void ObjectDrawStruct::positionChanged(panda::types::Point newPos)
+void ObjectRenderer::positionChanged(panda::types::Point newPos)
 {
 	if (m_position != newPos)
 	{
@@ -213,7 +213,7 @@ void ObjectDrawStruct::positionChanged(panda::types::Point newPos)
 	}
 }
 
-bool ObjectDrawStruct::updateIfDirty()
+bool ObjectRenderer::updateIfDirty()
 {
 	if (m_dirty)
 	{
@@ -225,20 +225,20 @@ bool ObjectDrawStruct::updateIfDirty()
 	return false;
 }
 
-void ObjectDrawStruct::setDirty()
+void ObjectRenderer::setDirty()
 {
 	m_dirty = true;
 }
 
 //****************************************************************************//
 
-ObjectDrawStructFactory* ObjectDrawStructFactory::getInstance()
+ObjectRendererFactory* ObjectRendererFactory::getInstance()
 {
-	static ObjectDrawStructFactory factory;
+	static ObjectRendererFactory factory;
 	return &factory;
 }
 
-std::shared_ptr<ObjectDrawStruct> ObjectDrawStructFactory::createDrawStruct(GraphView* view, panda::PandaObject* obj)
+std::shared_ptr<ObjectRenderer> ObjectRendererFactory::createRenderer(GraphView* view, panda::PandaObject* obj)
 {
 	for(const auto& creator : creators)
 	{
@@ -246,10 +246,10 @@ std::shared_ptr<ObjectDrawStruct> ObjectDrawStructFactory::createDrawStruct(Grap
 			return creator->create(view, obj);
 	}
 
-	return std::make_shared<ObjectDrawStruct>(view, obj);
+	return std::make_shared<ObjectRenderer>(view, obj);
 }
 
-void ObjectDrawStructFactory::addCreator(BaseObjectDrawCreator* creator)
+void ObjectRendererFactory::addCreator(BaseObjectDrawCreator* creator)
 {
 	const panda::BaseClass* newClass = creator->getClass();
 	std::shared_ptr<BaseObjectDrawCreator> ptr(creator);

@@ -13,10 +13,10 @@ class Annotation;
 
 //****************************************************************************//
 
-class AnnotationDrawStruct : public ObjectDrawStruct
+class AnnotationRenderer : public ObjectRenderer
 {
 public:
-	AnnotationDrawStruct(GraphView* view, panda::PandaObject* m_object);
+	AnnotationRenderer(GraphView* view, panda::PandaObject* m_object);
 
 	void update() override;
 	void createShape() override;

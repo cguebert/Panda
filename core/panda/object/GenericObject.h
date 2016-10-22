@@ -8,7 +8,7 @@
 #include <functional>
 #include <map>
 
-class GenericObjectDrawStruct;
+class GenericObjectRenderer;
 
 namespace panda
 {
@@ -141,7 +141,7 @@ protected:
 
 private:
 	friend class SingleTypeGenericObject;
-	friend class GenericObjectDrawStruct;
+	friend class GenericObjectRenderer;
 
 	typedef std::shared_ptr<BaseData> BaseDataPtr;
 	typedef std::vector<BaseDataPtr> DataPtrList;

@@ -8,10 +8,10 @@ namespace panda
 class GenericObject;
 }
 
-class GenericObjectDrawStruct : public ObjectDrawStruct
+class GenericObjectRenderer : public ObjectRenderer
 {
 public:
-	GenericObjectDrawStruct(GraphView* view, panda::GenericObject* m_object);
+	GenericObjectRenderer(GraphView* view, panda::GenericObject* m_object);
 
 	void update() override;
 	void drawDatas(DrawList& list, DrawColors& colors) override;

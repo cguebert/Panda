@@ -27,7 +27,7 @@ class XmlElement;
 }
 
 class LinkTag;
-class ObjectDrawStruct;
+class ObjectRenderer;
 class ObjectsSelection;
 class ViewRenderer;
 
@@ -49,7 +49,7 @@ class GraphView : public QOpenGLWidget, public ScrollableView
 	Q_OBJECT
 
 public:
-	using ObjectDrawStructPtr = std::shared_ptr<ObjectDrawStruct>;
+	using ObjectRendererPtr = std::shared_ptr<ObjectRenderer>;
 
 	explicit GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
 	~GraphView();
@@ -64,10 +64,10 @@ public:
 
 	bool canLinkWith(const panda::BaseData* data) const; /// Is it possible to link this data and the clicked data
 
-	ObjectDrawStructPtr getSharedObjectDrawStruct(panda::PandaObject* object);
-	ObjectDrawStruct* getObjectDrawStruct(panda::PandaObject* object);
-	std::vector<ObjectDrawStruct*> getObjectDrawStructs(const std::vector<panda::PandaObject*>& objects);
-	void setObjectDrawStruct(panda::PandaObject* object, const ObjectDrawStructPtr& drawStruct);
+	ObjectRendererPtr getSharedObjectRenderer(panda::PandaObject* object);
+	ObjectRenderer* getObjectRenderer(panda::PandaObject* object);
+	std::vector<ObjectRenderer*> getObjectRenderers(const std::vector<panda::PandaObject*>& objects);
+	void setObjectRenderer(panda::PandaObject* object, const ObjectRendererPtr& drawStruct);
 
 	panda::types::Point getNewObjectPosition();
 
@@ -116,7 +116,7 @@ protected:
 #endif
 	void paintDirtyState(DrawList& list, DrawColors& colors);
 
-	ObjectDrawStruct* getObjectDrawStructAtPos(const panda::types::Point& pt);
+	ObjectRenderer* getObjectRendererAtPos(const panda::types::Point& pt);
 	virtual std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt);
 
 	using Rects = std::vector<panda::types::Rect>;
@@ -134,13 +134,13 @@ protected:
 	void updateConnectedDatas();
 	void updateLinkTags();
 
-	void prepareSnapTargets(ObjectDrawStruct* selectedDrawStruct);
-	void computeSnapDelta(ObjectDrawStruct* selectedDrawStruct, panda::types::Point position);
+	void prepareSnapTargets(ObjectRenderer* selectedRenderer);
+	void computeSnapDelta(ObjectRenderer* selectedRenderer, panda::types::Point position);
 
 	virtual bool createLink(panda::BaseData* data1, panda::BaseData* data2);
 	void changeLink(panda::BaseData* target, panda::BaseData* parent); // Return true if a link was made or modified
 
-	void updateDirtyDrawStructs();
+	void updateDirtyRenderers();
 	virtual void updateObjectsRect();
 	virtual void updateViewRect();
 
@@ -212,10 +212,10 @@ protected:
 	panda::BaseData *m_clickedData = nullptr, *m_hoverData = nullptr, *m_contextMenuData = nullptr;
 	panda::PandaObject *m_contextMenuObject = nullptr;
 
-	std::map<panda::PandaObject*, ObjectDrawStructPtr> m_objectDrawStructs; /// The map of draw structs
-	std::vector<ObjectDrawStruct*> m_orderedObjectDrawStructs; /// In the same order as the document
+	std::map<panda::PandaObject*, ObjectRendererPtr> m_objectRenderers; /// The map of draw structs
+	std::vector<ObjectRenderer*> m_orderedObjectRenderers; /// In the same order as the document
 
-	ObjectDrawStruct* m_capturedDrawStruct = nullptr; /// Clicked ObjectDrawStruct that want to intercept mouse events
+	ObjectRenderer* m_capturedRenderer = nullptr; /// Clicked ObjectRenderer that want to intercept mouse events
 
 	std::vector<std::shared_ptr<LinkTag>> m_linkTags;
 	std::map<panda::BaseData*, LinkTag*> m_linkTagsMap; /// Input data of the link tag
@@ -242,7 +242,7 @@ protected:
 	panda::msg::Observer m_observer; /// Used to connect to signals (and disconnect automatically on destruction)
 
 	std::unique_ptr<ObjectsSelection> m_objectsSelection; /// Contains the selected objects and the corresponding signals
-	std::vector<ObjectDrawStruct*> m_selectedObjectsDrawStructs; /// The renderers for the selected objects
+	std::vector<ObjectRenderer*> m_selectedObjectsRenderers; /// The renderers for the selected objects
 
 	bool m_debugDirtyState = false;
 

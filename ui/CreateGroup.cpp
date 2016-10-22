@@ -129,10 +129,10 @@ bool createGroup(PandaDocument* doc, GraphView* view)
 	// Find center of the selection
 	Rect totalView;
 	for(auto object : selection)
-		totalView |= view->getObjectDrawStruct(object)->getVisualArea();
+		totalView |= view->getObjectRenderer(object)->getVisualArea();
 
 	// Put the new object there
-	ObjectDrawStruct* ods = view->getObjectDrawStruct(group);
+	ObjectRenderer* ods = view->getObjectRenderer(group);
 	Point objSize = ods->getObjectSize() / 2;
 	ods->move(totalView.center() - ods->getPosition() - objSize);
 	Point groupPos = ods->getPosition();
@@ -326,7 +326,7 @@ bool ungroupSelection(PandaDocument* doc, GraphView* view)
 		Point defaultSize(100, 50);
 		for (auto& object : objects)
 			objectsRect |= Rect::fromSize(ViewPositionAddon::getPosition(object.get()), defaultSize);
-		auto groupOds = view->getObjectDrawStruct(group);
+		auto groupOds = view->getObjectRenderer(group);
 		auto delta = groupOds->getPosition() - objectsRect.center() - groupOds->getObjectSize() / 2;
 
 		// Moving the object from the group to the parent document

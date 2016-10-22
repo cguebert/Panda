@@ -5,10 +5,10 @@
 
 #include <ui/graphview/object/ObjectRenderer.h>
 
-class DockObjectDrawStruct : public ObjectDrawStruct
+class DockObjectRenderer : public ObjectRenderer
 {
 public:
-	DockObjectDrawStruct(GraphView* view, panda::DockObject* m_object);
+	DockObjectRenderer(GraphView* view, panda::DockObject* m_object);
 
 	void placeDockableObjects(bool forceMove = false);
 
@@ -27,10 +27,10 @@ protected:
 	std::vector<int> m_dockablesY;	// Used only in "getDockableIndex"
 };
 
-class DockableObjectDrawStruct : public ObjectDrawStruct
+class DockableObjectRenderer : public ObjectRenderer
 {
 public:
-	DockableObjectDrawStruct(GraphView* view, panda::DockableObject* m_object);
+	DockableObjectRenderer(GraphView* view, panda::DockableObject* m_object);
 
 	void update() override;
 	void createShape() override;

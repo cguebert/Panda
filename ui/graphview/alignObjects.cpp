@@ -12,7 +12,7 @@ using panda::types::Rect;
 void alignHorizontallyCenter(GraphView* view)
 {
 	float sum = 0;
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
@@ -38,7 +38,7 @@ void alignHorizontallyCenter(GraphView* view)
 void alignHorizontallyLeft(GraphView* view)
 {
 	float left = std::numeric_limits<float>::max();
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
@@ -59,7 +59,7 @@ void alignHorizontallyLeft(GraphView* view)
 void alignHorizontallyRight(GraphView* view)
 {
 	float right = std::numeric_limits<float>::lowest();
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
@@ -83,7 +83,7 @@ void alignHorizontallyRight(GraphView* view)
 void alignVerticallyCenter(GraphView* view)
 {
 	float sum = 0;
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
@@ -109,7 +109,7 @@ void alignVerticallyCenter(GraphView* view)
 void alignVerticallyTop(GraphView* view)
 {
 	float top = std::numeric_limits<float>::max();
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
@@ -130,7 +130,7 @@ void alignVerticallyTop(GraphView* view)
 void alignVerticallyBottom(GraphView* view)
 {
 	float bottom = std::numeric_limits<float>::lowest();
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	for(auto ods : odsList)
 	{
 		Point pos = ods->getPosition();
@@ -153,12 +153,12 @@ void alignVerticallyBottom(GraphView* view)
 
 void distributeHorizontallyCenter(GraphView* view)
 {
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -191,12 +191,12 @@ void distributeHorizontallyCenter(GraphView* view)
 
 void distributeHorizontallyGaps(GraphView* view)
 {
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -237,12 +237,12 @@ void distributeHorizontallyGaps(GraphView* view)
 
 void distributeHorizontallyLeft(GraphView* view)
 {
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -275,12 +275,12 @@ void distributeHorizontallyLeft(GraphView* view)
 
 void distributeHorizontallyRight(GraphView* view)
 {
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -313,12 +313,12 @@ void distributeHorizontallyRight(GraphView* view)
 
 void distributeVerticallyCenter(GraphView* view)
 {
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -351,12 +351,12 @@ void distributeVerticallyCenter(GraphView* view)
 
 void distributeVerticallyGaps(GraphView* view)
 {
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -397,12 +397,12 @@ void distributeVerticallyGaps(GraphView* view)
 
 void distributeVerticallyTop(GraphView* view)
 {
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{
@@ -435,12 +435,12 @@ void distributeVerticallyTop(GraphView* view)
 
 void distributeVerticallyBottom(GraphView* view)
 {
-	auto odsList = view->getObjectDrawStructs(view->selection().get());
+	auto odsList = view->getObjectRenderers(view->selection().get());
 	int nb = odsList.size();
 	if (nb <= 2)
 		return;
 
-	using PosOds = std::pair<float, ObjectDrawStruct*>;
+	using PosOds = std::pair<float, ObjectRenderer*>;
 	std::vector<PosOds> positions;
 	for(auto ods : odsList)
 	{

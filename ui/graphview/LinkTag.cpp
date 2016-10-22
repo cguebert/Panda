@@ -27,7 +27,7 @@ void LinkTag::removeOutput(panda::BaseData* output)
 void LinkTag::update()
 {
 	Rect dataRect;
-	auto ods = m_parentView->getObjectDrawStruct(m_inputData->getOwner());
+	auto ods = m_parentView->getObjectRenderer(m_inputData->getOwner());
 	if (!ods)
 		return;
 
@@ -41,7 +41,7 @@ void LinkTag::update()
 
 	for (auto it = m_outputDatas.begin(); it != m_outputDatas.end();)
 	{
-		ods = m_parentView->getObjectDrawStruct(it->first->getOwner());
+		ods = m_parentView->getObjectRenderer(it->first->getOwner());
 		if (!ods)
 			continue;
 		ods->getDataRect(it->first, dataRect);

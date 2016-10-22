@@ -8,45 +8,45 @@
 using panda::types::Point;
 using panda::types::Rect;
 
-DockObjectDrawStruct::DockObjectDrawStruct(GraphView* view, panda::DockObject* object)
-	: ObjectDrawStruct(view, object)
+DockObjectRenderer::DockObjectRenderer(GraphView* view, panda::DockObject* object)
+	: ObjectRenderer(view, object)
 	, m_dockObject(object)
 {
 }
 
-Point DockObjectDrawStruct::getObjectSize()
+Point DockObjectRenderer::getObjectSize()
 {
-	Point temp = ObjectDrawStruct::getObjectSize();
+	Point temp = ObjectRenderer::getObjectSize();
 	temp.x += 20;
 	temp.y += dockEmptyRendererHeight + dockRendererMargin * 2;
 
 	for(auto dockable : m_dockObject->getDockedObjects())
-		temp.y += getParentView()->getObjectDrawStruct(dockable)->getObjectSize().y + dockRendererMargin;
+		temp.y += getParentView()->getObjectRenderer(dockable)->getObjectSize().y + dockRendererMargin;
 
 	return temp;
 }
 
-Rect DockObjectDrawStruct::getTextArea()
+Rect DockObjectRenderer::getTextArea()
 {
 	int margin = dataRectSize+dataRectMargin+3;
 	Rect textArea = m_visualArea;
-	textArea.setHeight(ObjectDrawStruct::objectDefaultHeight);
+	textArea.setHeight(ObjectRenderer::objectDefaultHeight);
 	textArea.adjust(margin, 0, -margin, 0);
 	return textArea;
 }
 
-void DockObjectDrawStruct::placeDockableObjects(bool forceMove)
+void DockObjectRenderer::placeDockableObjects(bool forceMove)
 {
 	m_dockablesY.clear();
 
 	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
 	const int dhm = dockHoleMargin;
-	const int rw = DockableObjectDrawStruct::dockableWithOutputRect;
-	const int aw = DockableObjectDrawStruct::dockableWithOutputArc;
+	const int rw = DockableObjectRenderer::dockableWithOutputRect;
+	const int aw = DockableObjectRenderer::dockableWithOutputArc;
 	const int ah = aw - dockHoleMargin * 2;
 
 	int ty;
-	ty = m_visualArea.top() + ObjectDrawStruct::getObjectSize().y + dockRendererMargin;
+	ty = m_visualArea.top() + ObjectRenderer::getObjectSize().y + dockRendererMargin;
 
 	auto doc = getParentView()->getDocument();
 	auto& undoStack = doc->getUndoStack();
@@ -55,14 +55,14 @@ void DockObjectDrawStruct::placeDockableObjects(bool forceMove)
 	const auto position = getPosition();
 	for (auto dockable : m_dockObject->getDockedObjects())
 	{
-		ObjectDrawStruct* objectStruct = getParentView()->getObjectDrawStruct(dockable);
+		ObjectRenderer* objectStruct = getParentView()->getObjectRenderer(dockable);
 		Point objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
 		Point objectNewPos(position.x + dockHoleWidth - objectSize.x, position.y + ty - m_visualArea.top());
 
 		// If the object has outputs, it is drawn larger but must be placed at the same position
 		if (hasOutputs)
-			objectNewPos.x += DockableObjectDrawStruct::dockableWithOutputAdds;
+			objectNewPos.x += DockableObjectRenderer::dockableWithOutputAdds;
 
 		auto delta = objectNewPos - objectStruct->getPosition();
 		if (!delta.isNull())
@@ -80,7 +80,7 @@ void DockObjectDrawStruct::placeDockableObjects(bool forceMove)
 	}
 }
 
-void DockObjectDrawStruct::createShape()
+void DockObjectRenderer::createShape()
 {
 	m_outline.clear();
 	m_outline.moveTo(m_visualArea.bottomLeft());
@@ -90,21 +90,21 @@ void DockObjectDrawStruct::createShape()
 
 	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
 	const int dhm = dockHoleMargin;
-	const int rw = DockableObjectDrawStruct::dockableWithOutputRect;
-	const int aw = DockableObjectDrawStruct::dockableWithOutputArc;
+	const int rw = DockableObjectRenderer::dockableWithOutputRect;
+	const int aw = DockableObjectRenderer::dockableWithOutputArc;
 	const int ah = aw - dockHoleMargin * 2;
 
 	int tx, ty;
-	ty = m_visualArea.top() + ObjectDrawStruct::getObjectSize().y + dockRendererMargin;
+	ty = m_visualArea.top() + ObjectRenderer::getObjectSize().y + dockRendererMargin;
 
 	for(auto dockable : m_dockObject->getDockedObjects())
 	{
-		ObjectDrawStruct* objectStruct = getParentView()->getObjectDrawStruct(dockable);
+		ObjectRenderer* objectStruct = getParentView()->getObjectRenderer(dockable);
 		Point objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
 
-		tx = m_visualArea.left() + dockHoleWidth - DockableObjectDrawStruct::dockableCircleWidth + dockHoleMargin;
-		int w = DockableObjectDrawStruct::dockableCircleWidth;
+		tx = m_visualArea.left() + dockHoleWidth - DockableObjectRenderer::dockableCircleWidth + dockHoleMargin;
+		int w = DockableObjectRenderer::dockableCircleWidth;
 		int h = objectSize.y;
 
 		Rect objectArea = objectStruct->getVisualArea();
@@ -134,15 +134,15 @@ void DockObjectDrawStruct::createShape()
 
 	ty = m_visualArea.bottom()-dockEmptyRendererHeight-dockRendererMargin;
 	m_outline.lineTo(Point(m_visualArea.left(), ty));
-	tx = m_visualArea.left()+dockHoleWidth-DockableObjectDrawStruct::dockableCircleWidth;
-	m_outline.arcToDegrees(Rect::fromSize(tx, ty, DockableObjectDrawStruct::dockableCircleWidth, dockEmptyRendererHeight), -90, 180);
+	tx = m_visualArea.left()+dockHoleWidth-DockableObjectRenderer::dockableCircleWidth;
+	m_outline.arcToDegrees(Rect::fromSize(tx, ty, DockableObjectRenderer::dockableCircleWidth, dockEmptyRendererHeight), -90, 180);
 	m_outline.lineTo(Point(m_visualArea.left(), ty+dockEmptyRendererHeight));
 	m_outline.close();
 
 	m_fillShape = m_outline.triangulate();
 }
 
-int DockObjectDrawStruct::getDockableIndex(const Rect& rect)
+int DockObjectRenderer::getDockableIndex(const Rect& rect)
 {
 	int y = rect.top();
 	int nb = m_dockablesY.size();
@@ -154,43 +154,43 @@ int DockObjectDrawStruct::getDockableIndex(const Rect& rect)
 	return -1;
 }
 
-int dockObjectDrawClass = RegisterDrawObject<panda::DockObject, DockObjectDrawStruct>();
+int dockObjectDrawClass = RegisterDrawObject<panda::DockObject, DockObjectRenderer>();
 
 //****************************************************************************//
 
-DockableObjectDrawStruct::DockableObjectDrawStruct(GraphView* view, panda::DockableObject* dockable)
-	: ObjectDrawStruct(view, dockable)
+DockableObjectRenderer::DockableObjectRenderer(GraphView* view, panda::DockableObject* dockable)
+	: ObjectRenderer(view, dockable)
 {
 }
 
-bool DockableObjectDrawStruct::contains(const Point& point)
+bool DockableObjectRenderer::contains(const Point& point)
 {
 	return m_outline.contains(point);
 }
 
-Point DockableObjectDrawStruct::getObjectSize()
+Point DockableObjectRenderer::getObjectSize()
 {
-	auto size = ObjectDrawStruct::getObjectSize();
+	auto size = ObjectRenderer::getObjectSize();
 	if (m_hasOutputs)
 		size.x += dockableWithOutputAdds;
 	return size;
 }
 
-Rect DockableObjectDrawStruct::getTextArea()
+Rect DockableObjectRenderer::getTextArea()
 {
-	auto area = ObjectDrawStruct::getTextArea();
+	auto area = ObjectRenderer::getTextArea();
 	if (m_hasOutputs)
 		area.adjust(0, 0, -dockableWithOutputAdds, 0);
 	return area;
 }
 
-void DockableObjectDrawStruct::update()
+void DockableObjectRenderer::update()
 {
 	m_hasOutputs = !getObject()->getOutputDatas().empty();
-	ObjectDrawStruct::update();
+	ObjectRenderer::update();
 }
 
-void DockableObjectDrawStruct::createShape()
+void DockableObjectRenderer::createShape()
 {
 	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
 	const int rw = dockableWithOutputRect;
@@ -232,5 +232,5 @@ void DockableObjectDrawStruct::createShape()
 	m_fillShape = m_outline.triangulate();
 }
 
-int DockableObjectDrawClass = RegisterDrawObject<panda::DockableObject, DockableObjectDrawStruct>();
+int DockableObjectDrawClass = RegisterDrawObject<panda::DockableObject, DockableObjectRenderer>();
 
