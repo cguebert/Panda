@@ -3,7 +3,7 @@
 
 #include <panda/object/Dockable.h>
 
-#include <ui/graphview/object/ObjectDrawStruct.h>
+#include <ui/graphview/object/ObjectRenderer.h>
 
 class DockObjectDrawStruct : public ObjectDrawStruct
 {

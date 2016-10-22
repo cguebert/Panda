@@ -1,4 +1,4 @@
-#include <ui/graphview/object/GenericObjectDrawStruct.h>
+#include <ui/graphview/object/GenericObjectRenderer.h>
 #include <ui/graphview/GraphView.h>
 
 #include <panda/object/GenericObject.h>

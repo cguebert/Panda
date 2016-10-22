@@ -16,8 +16,6 @@
 #include <ui/dialog/EditGroupDialog.h>
 #include <ui/dialog/UpdateLoggerDialog.h>
 
-#include <ui/graphview/object/ObjectDrawStruct.h>
-
 #include <ui/graphview/DocumentView.h>
 #include <ui/graphview/GroupView.h>
 #include <ui/graphview/alignObjects.h>

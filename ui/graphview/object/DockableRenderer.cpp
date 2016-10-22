@@ -2,7 +2,7 @@
 
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/ViewPositionAddon.h>
-#include <ui/graphview/object/DockableDrawStruct.h>
+#include <ui/graphview/object/DockableRenderer.h>
 #include <ui/command/MoveObjectCommand.h>
 
 using panda::types::Point;

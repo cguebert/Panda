@@ -1,7 +1,7 @@
 #ifndef ANNOTATIONDRAWSTRUCT_H
 #define ANNOTATIONDRAWSTRUCT_H
 
-#include <ui/graphview/object/ObjectDrawStruct.h>
+#include <ui/graphview/object/ObjectRenderer.h>
 
 class GraphView;
 
