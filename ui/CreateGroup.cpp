@@ -3,6 +3,7 @@
 #include <ui/GraphView/object/ObjectRenderer.h>
 
 #include <ui/GraphView/ObjectsSelection.h>
+#include <ui/GraphView/ObjectRenderersList.h>
 #include <ui/GraphView/ViewPositionAddon.h>
 
 #include <panda/document/RenderedDocument.h>
@@ -129,13 +130,13 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 	// Find center of the selection
 	Rect totalView;
 	for(auto object : selection)
-		totalView |= view->getObjectRenderer(object)->getVisualArea();
+		totalView |= view->objectRenderers().get(object)->getVisualArea();
 
 	// Put the new object there
-	auto* ods = view->getObjectRenderer(group);
-	Point objSize = ods->getObjectSize() / 2;
-	ods->move(totalView.center() - ods->getPosition() - objSize);
-	Point groupPos = ods->getPosition();
+	auto* objRnd = view->objectRenderers().get(group);
+	Point objSize = objRnd->getObjectSize() / 2;
+	objRnd->move(totalView.center() - objRnd->getPosition() - objSize);
+	Point groupPos = objRnd->getPosition();
 
 	// If multiple outside datas are connected to the same data, merge them
 	std::map<BaseData*, BaseData*> connectedInputDatas;
@@ -326,8 +327,8 @@ bool ungroupSelection(PandaDocument* doc, graphview::GraphView* view)
 		Point defaultSize(100, 50);
 		for (auto& object : objects)
 			objectsRect |= Rect::fromSize(graphview::ViewPositionAddon::getPosition(object.get()), defaultSize);
-		auto groupOds = view->getObjectRenderer(group);
-		auto delta = groupOds->getPosition() - objectsRect.center() - groupOds->getObjectSize() / 2;
+		auto groupRnd = view->objectRenderers().get(group);
+		auto delta = groupRnd->getPosition() - objectsRect.center() - groupRnd->getObjectSize() / 2;
 
 		// Moving the object from the group to the parent document
 		for(auto& object : objects)

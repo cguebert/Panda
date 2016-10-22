@@ -1,5 +1,6 @@
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/GraphView.h>
+#include <ui/graphview/ObjectRenderersList.h>
 #include <ui/graphview/object/ObjectRenderer.h>
 
 using panda::types::Point;
@@ -30,11 +31,11 @@ void LinkTag::removeOutput(panda::BaseData* output)
 void LinkTag::update()
 {
 	Rect dataRect;
-	auto ods = m_parentView->getObjectRenderer(m_inputData->getOwner());
-	if (!ods)
+	auto objRnd = m_parentView->objectRenderers().get(m_inputData->getOwner());
+	if (!objRnd)
 		return;
 
-	ods->getDataRect(m_inputData, dataRect);
+	objRnd->getDataRect(m_inputData, dataRect);
 	m_inputDataRects.first = Rect::fromSize(dataRect.right() + tagMargin,
 											dataRect.center().y - tagH / 2.0,
 											tagW, tagH);
@@ -44,10 +45,10 @@ void LinkTag::update()
 
 	for (auto it = m_outputDatas.begin(); it != m_outputDatas.end();)
 	{
-		ods = m_parentView->getObjectRenderer(it->first->getOwner());
-		if (!ods)
+		objRnd = m_parentView->objectRenderers().get(it->first->getOwner());
+		if (!objRnd)
 			continue;
-		ods->getDataRect(it->first, dataRect);
+		objRnd->getDataRect(it->first, dataRect);
 		float ox = dataRect.center().x;
 		if (!needLinkTag(ix, ox, m_parentView))
 			it = m_outputDatas.erase(it);

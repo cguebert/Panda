@@ -1,6 +1,7 @@
 #include <panda/document/PandaDocument.h>
 
 #include <ui/graphview/GraphView.h>
+#include <ui/graphview/ObjectRenderersList.h>
 #include <ui/graphview/ViewPositionAddon.h>
 #include <ui/graphview/object/DockableRenderer.h>
 #include <ui/command/MoveObjectCommand.h>
@@ -27,7 +28,7 @@ Point DockObjectRenderer::getObjectSize()
 	temp.y += dockEmptyRendererHeight + dockRendererMargin * 2;
 
 	for(auto dockable : m_dockObject->getDockedObjects())
-		temp.y += getParentView()->getObjectRenderer(dockable)->getObjectSize().y + dockRendererMargin;
+		temp.y += getParentView()->objectRenderers().get(dockable)->getObjectSize().y + dockRendererMargin;
 
 	return temp;
 }
@@ -61,7 +62,7 @@ void DockObjectRenderer::placeDockableObjects(bool forceMove)
 	const auto position = getPosition();
 	for (auto dockable : m_dockObject->getDockedObjects())
 	{
-		ObjectRenderer* objectStruct = getParentView()->getObjectRenderer(dockable);
+		ObjectRenderer* objectStruct = getParentView()->objectRenderers().get(dockable);
 		Point objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
 		Point objectNewPos(position.x + dockHoleWidth - objectSize.x, position.y + ty - m_visualArea.top());
@@ -105,7 +106,7 @@ void DockObjectRenderer::createShape()
 
 	for(auto dockable : m_dockObject->getDockedObjects())
 	{
-		ObjectRenderer* objectStruct = getParentView()->getObjectRenderer(dockable);
+		ObjectRenderer* objectStruct = getParentView()->objectRenderers().get(dockable);
 		Point objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
 

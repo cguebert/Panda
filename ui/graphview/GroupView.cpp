@@ -3,6 +3,7 @@
 #include <ui/graphview/GroupView.h>
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/ObjectsSelection.h>
+#include <ui/graphview/ObjectRenderersList.h>
 #include <ui/graphview/ViewRenderer.h>
 #include <ui/graphview/graphics/DrawList.h>
 
@@ -277,8 +278,8 @@ void GroupView::updateObjectsRect()
 		return;
 
 	m_objectsRect = Rect();
-	for(const auto& ods : m_orderedObjectRenderers)
-		m_objectsRect |= ods->getVisualArea();
+	for(const auto& objRnd : objectRenderers().getOrdered())
+		m_objectsRect |= objRnd->getVisualArea();
 
 	int nbInputs = 0, nbOutputs = 0;
 	for (const auto& groupData : m_group->getGroupDatas())
@@ -300,7 +301,7 @@ void GroupView::updateObjectsRect()
 void GroupView::updateViewRect()
 {
 	m_viewRect = Rect::fromSize(m_objectsRect.topLeft() * m_zoomFactor, m_objectsRect.size() * m_zoomFactor);
-	if(!m_orderedObjectRenderers.empty())
+	if(!objectRenderers().getOrdered().empty())
 		m_viewRect.adjust(-5, -5, 5, 5);
 
 	emit viewModified();

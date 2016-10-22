@@ -34,6 +34,7 @@ namespace object {
 }
 
 class LinkTag;
+class ObjectRenderersList;
 class ObjectsSelection;
 class ViewRenderer;
 
@@ -42,8 +43,6 @@ class GraphView : public QOpenGLWidget, public ScrollableView
 	Q_OBJECT
 
 public:
-	using ObjectRendererPtr = std::shared_ptr<object::ObjectRenderer>;
-
 	explicit GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
 	~GraphView();
 
@@ -56,11 +55,6 @@ public:
 	const panda::BaseData* getContextMenuData() const;
 
 	bool canLinkWith(const panda::BaseData* data) const; /// Is it possible to link this data and the clicked data
-
-	ObjectRendererPtr getSharedObjectRenderer(panda::PandaObject* object);
-	object::ObjectRenderer* getObjectRenderer(panda::PandaObject* object);
-	std::vector<object::ObjectRenderer*> getObjectRenderers(const std::vector<panda::PandaObject*>& objects);
-	void setObjectRenderer(panda::PandaObject* object, const ObjectRendererPtr& drawStruct);
 
 	panda::types::Point getNewObjectPosition();
 
@@ -77,8 +71,9 @@ public:
 	void sortAllDockables();
 
 	ObjectsSelection& selection() const;
-	ViewRenderer& renderer() const;
+	ViewRenderer& viewRenderer() const;
 	panda::ObjectsList& objectsList() const;
+	ObjectRenderersList& objectRenderers() const;
 
 	// From ScrollableView
 	virtual QSize viewSize() override;
@@ -109,7 +104,6 @@ protected:
 #endif
 	void paintDirtyState(graphics::DrawList& list, graphics::DrawColors& colors);
 
-	object::ObjectRenderer* getObjectRendererAtPos(const panda::types::Point& pt);
 	virtual std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt);
 
 	using Rects = std::vector<panda::types::Rect>;
@@ -205,9 +199,6 @@ protected:
 	panda::BaseData *m_clickedData = nullptr, *m_hoverData = nullptr, *m_contextMenuData = nullptr;
 	panda::PandaObject *m_contextMenuObject = nullptr;
 
-	std::map<panda::PandaObject*, ObjectRendererPtr> m_objectRenderers; /// The map of draw structs
-	std::vector<object::ObjectRenderer*> m_orderedObjectRenderers; /// In the same order as the document
-
 	object::ObjectRenderer* m_capturedRenderer = nullptr; /// Clicked object::ObjectRenderer that want to intercept mouse events
 
 	std::vector<std::shared_ptr<LinkTag>> m_linkTags;
@@ -249,6 +240,8 @@ protected:
 	long long m_previousTime = 0;
 
 	std::vector<std::function<void ()>> m_functionsToExecuteNextRefresh;
+
+	std::unique_ptr<ObjectRenderersList> m_objectRenderersList;
 };
 
 //****************************************************************************//
@@ -256,11 +249,14 @@ protected:
 inline ObjectsSelection& GraphView::selection() const
 { return *m_objectsSelection; }
 
-inline ViewRenderer& GraphView::renderer() const
+inline ViewRenderer& GraphView::viewRenderer() const
 { return *m_viewRenderer; }
 
 inline panda::ObjectsList& GraphView::objectsList() const
 { return m_objectsList; }
+
+inline ObjectRenderersList& GraphView::objectRenderers() const
+{ return *m_objectRenderersList; }
 
 inline void GraphView::debugDirtyState(bool show)
 { m_debugDirtyState = show; update(); }
