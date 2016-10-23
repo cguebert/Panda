@@ -2,7 +2,7 @@
 
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/ObjectsSelection.h>
-#include <ui/graphview/object/ViewPositionAddon.h>
+#include <ui/graphview/object/ObjectPositionAddon.h>
 
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectAddons.h>
@@ -23,7 +23,7 @@ namespace object
 
 ObjectRenderer::ObjectRenderer(GraphView* view, panda::PandaObject* obj)
 	: m_parentView(view), m_object(obj)
-	, m_positionAddon(obj->addons().edit<ViewPositionAddon>())
+	, m_positionAddon(obj->addons().edit<ObjectPositionAddon>())
 	, m_observer(std::make_unique<panda::msg::Observer>())
 {
 	if (!m_positionAddon.isSet())

@@ -3,7 +3,7 @@
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/ObjectRenderersList.h>
 #include <ui/graphview/object/DockableRenderer.h>
-#include <ui/graphview/object/ViewPositionAddon.h>
+#include <ui/graphview/object/ObjectPositionAddon.h>
 #include <ui/command/MoveObjectCommand.h>
 
 using panda::types::Point;
@@ -77,7 +77,7 @@ void DockObjectRenderer::placeDockableObjects(bool forceMove)
 			if (canMoveObjects)
 				undoStack.push(std::make_shared<MoveObjectCommand>(dockable, delta));
 			else if (forceMove)
-				dockable->addons().edit<ViewPositionAddon>().move(delta);
+				dockable->addons().edit<ObjectPositionAddon>().move(delta);
 		}
 
 		Rect objectArea = objectStruct->getVisualArea();

@@ -1,5 +1,5 @@
 #include <ui/command/MoveObjectCommand.h>
-#include <ui/graphview/object/ViewPositionAddon.h>
+#include <ui/graphview/object/ObjectPositionAddon.h>
 #include <panda/command/CommandId.h>
 #include <panda/object/ObjectAddons.h>
 #include <panda/object/PandaObject.h>
@@ -55,7 +55,7 @@ void MoveObjectCommand::getPositionAddons()
 {
 	m_positionAddons.clear();
 	for (auto obj : m_objects)
-		m_positionAddons.push_back(&obj->addons().edit<graphview::ViewPositionAddon>());
+		m_positionAddons.push_back(&obj->addons().edit<graphview::ObjectPositionAddon>());
 }
 
 void MoveObjectCommand::moveObjects(panda::types::Point delta)

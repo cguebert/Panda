@@ -25,7 +25,7 @@ namespace graphics {
 }
 
 class GraphView;
-class ViewPositionAddon;
+class ObjectPositionAddon;
 
 namespace object
 {
@@ -105,7 +105,7 @@ private:
 	void positionChanged(panda::types::Point newPos);
 
 	GraphView* m_parentView;
-	ViewPositionAddon& m_positionAddon;
+	ObjectPositionAddon& m_positionAddon;
 	panda::types::Point m_position;
 	bool m_dirty = true;
 };

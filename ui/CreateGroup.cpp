@@ -4,7 +4,7 @@
 
 #include <ui/GraphView/ObjectsSelection.h>
 #include <ui/GraphView/ObjectRenderersList.h>
-#include <ui/GraphView/object/ViewPositionAddon.h>
+#include <ui/GraphView/object/ObjectPositionAddon.h>
 
 #include <panda/document/RenderedDocument.h>
 #include <panda/data/DataFactory.h>
@@ -326,7 +326,7 @@ bool ungroupSelection(PandaDocument* doc, graphview::GraphView* view)
 		Rect objectsRect;
 		Point defaultSize(100, 50);
 		for (auto& object : objects)
-			objectsRect |= Rect::fromSize(graphview::ViewPositionAddon::getPosition(object.get()), defaultSize);
+			objectsRect |= Rect::fromSize(graphview::ObjectPositionAddon::getPosition(object.get()), defaultSize);
 		auto groupRnd = view->objectRenderers().get(group);
 		auto delta = groupRnd->getPosition() - objectsRect.center() - groupRnd->getObjectSize() / 2;
 
@@ -339,7 +339,7 @@ bool ungroupSelection(PandaDocument* doc, graphview::GraphView* view)
 
 		// Placing the object in the view
 		for(auto& object : objects)
-			graphview::ViewPositionAddon::setPosition(object.get(), graphview::ViewPositionAddon::getPosition(object.get()) + delta);
+			graphview::ObjectPositionAddon::setPosition(object.get(), graphview::ObjectPositionAddon::getPosition(object.get()) + delta);
 
 		// Reconnecting datas
 		for(auto& data : group->getGroupDatas())

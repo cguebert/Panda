@@ -11,7 +11,7 @@ class PandaObject;
 }
 
 namespace graphview {
-	class ViewPositionAddon;
+	class ObjectPositionAddon;
 }
 
 class MoveObjectCommand : public panda::UndoCommand
@@ -32,7 +32,7 @@ protected:
 	void moveObjects(panda::types::Point delta);
 
 	std::vector<panda::PandaObject*> m_objects;
-	std::vector<graphview::ViewPositionAddon*> m_positionAddons;
+	std::vector<graphview::ObjectPositionAddon*> m_positionAddons;
 	panda::types::Point m_delta;
 };
 

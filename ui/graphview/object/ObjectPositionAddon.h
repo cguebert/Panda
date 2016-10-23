@@ -7,10 +7,10 @@
 namespace graphview
 {
 
-class ViewPositionAddon : public panda::BaseObjectAddon
+class ObjectPositionAddon : public panda::BaseObjectAddon
 {
 public:
-	ViewPositionAddon(panda::PandaObject& object);
+	ObjectPositionAddon(panda::PandaObject& object);
 
 	static void setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition);
 
