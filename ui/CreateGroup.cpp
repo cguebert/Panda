@@ -4,7 +4,7 @@
 
 #include <ui/GraphView/ObjectsSelection.h>
 #include <ui/GraphView/ObjectRenderersList.h>
-#include <ui/GraphView/ViewPositionAddon.h>
+#include <ui/GraphView/object/ViewPositionAddon.h>
 
 #include <panda/document/RenderedDocument.h>
 #include <panda/data/DataFactory.h>

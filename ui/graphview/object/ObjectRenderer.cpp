@@ -2,7 +2,7 @@
 
 #include <ui/graphview/GraphView.h>
 #include <ui/graphview/ObjectsSelection.h>
-#include <ui/graphview/ViewPositionAddon.h>
+#include <ui/graphview/object/ViewPositionAddon.h>
 
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectAddons.h>

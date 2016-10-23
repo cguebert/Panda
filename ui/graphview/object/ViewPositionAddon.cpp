@@ -1,4 +1,4 @@
-#include <ui/graphview/ViewPositionAddon.h>
+#include <ui/graphview/object/ViewPositionAddon.h>
 #include <panda/XmlDocument.h>
 #include <panda/object/PandaObject.h>
 
