@@ -50,6 +50,12 @@ namespace panda
 					return { nullptr, [](void* /*NULL*/, Args... args)
 						{ return (*fun_ptr)(std::forward<Args>(args)...); } };
 				}
+				template <typename T, RT (*fun_ptr) (T*, Args...)>
+				static inline Function bind(T* pointer)
+				{
+					return { pointer, [](void* this_ptr, Args... args)
+						{ return (*fun_ptr)(static_cast<T*>(this_ptr), std::forward<Args>(args)...); } };
+				}
 				template <typename T, RT (T::* mem_ptr) (Args...)>
 				static inline Function bind(T* pointer)
 				{
@@ -106,6 +112,10 @@ namespace panda
 				template <Ret(*fun_ptr)(Args...)> 
 				void connect()
 				{ m_signal.insert(Delegate::template bind<fun_ptr>(), m_observer); }
+
+				template <typename T, Ret(*fun_ptr)(T*, Args...)> 
+				void connect(T* instance)
+				{ m_signal.insert(Delegate::template bind<T, fun_ptr>(instance), m_observer); }
 
 				template <typename T, Ret(T::*mem_ptr)(Args...)> 
 				void connect(T* instance)

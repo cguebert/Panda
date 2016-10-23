@@ -5,6 +5,7 @@
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/ObjectRenderersList.h>
 #include <ui/graphview/ViewRenderer.h>
+#include <ui/graphview/Viewport.h>
 #include <ui/graphview/graphics/DrawList.h>
 
 #include <panda/document/PandaDocument.h>
@@ -31,11 +32,59 @@ namespace
 namespace graphview
 {
 
+class GroupViewport : public Viewport
+{
+public:
+	GroupViewport(GroupView& view)
+		: Viewport(view)
+		, m_groupView(view)
+	{
+	}
+
+	panda::types::Rect onlyObjectsRect() const
+	{ return m_onlyObjectsRect; }
+
+	void updateObjectsRect() override
+	{
+		if(m_view.isLoading())
+			return;
+
+		m_objectsRect = Rect();
+		for(const auto& objRnd : m_view.objectRenderers().getOrdered())
+			m_objectsRect |= objRnd->getVisualArea();
+
+		int nbInputs = 0, nbOutputs = 0;
+		for (const auto& groupData : m_groupView.group()->getGroupDatas())
+		{
+			if (groupData->isInput())	++nbInputs;
+			if (groupData->isOutput())	++nbOutputs;
+		}
+
+		m_onlyObjectsRect = m_objectsRect;
+		if (nbInputs)
+			m_objectsRect.adjust(-(GroupView::dataMarginW + GroupView::dataRectSize + GroupView::tagMargin + GroupView::tagW), 0, 0, 0);
+		if (nbOutputs)
+			m_objectsRect.adjust(0, 0, GroupView::dataMarginW + GroupView::tagMargin + GroupView::tagW, 0);
+
+		updateViewRect();
+		m_groupView.updateGroupDataRects();
+	}
+
+private:
+	GroupView& m_groupView;
+	panda::types::Rect m_onlyObjectsRect; // Without the group datas
+};
+
+//****************************************************************************//
+
 GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent)
 	: GraphView(doc, objectsList, parent)
 	, m_group(group)
 {
-	updateObjectsRect();
+	m_viewport = std::make_unique<GroupViewport>(*this);
+	m_observer.get(m_viewport->modified).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(m_viewport->modified).connect<GraphView, &GraphView::emitViewportModified>(this);
+	m_viewport->updateObjectsRect();
 
 	auto& docSignals = m_pandaDocument->getSignals();
 	m_observer.get(docSignals.modifiedObject).connect<GroupView, &GroupView::modifiedObject>(this);
@@ -112,11 +161,6 @@ void GroupView::paintGL()
 
 	m_viewRenderer->addDrawList(&list);
 	m_viewRenderer->render();
-}
-
-bool GroupView::isTemporaryView() const
-{ 
-	return true; 
 }
 
 std::pair<panda::BaseData*, Rect> GroupView::getDataAtPos(const panda::types::Point& pt)
@@ -272,41 +316,6 @@ void GroupView::computeCompatibleDatas(panda::BaseData* data)
 	}
 }
 
-void GroupView::updateObjectsRect()
-{
-	if(m_isLoading)
-		return;
-
-	m_objectsRect = Rect();
-	for(const auto& objRnd : objectRenderers().getOrdered())
-		m_objectsRect |= objRnd->getVisualArea();
-
-	int nbInputs = 0, nbOutputs = 0;
-	for (const auto& groupData : m_group->getGroupDatas())
-	{
-		if (groupData->isInput())	++nbInputs;
-		if (groupData->isOutput())	++nbOutputs;
-	}
-
-	m_onlyObjectsRect = m_objectsRect;
-	if (nbInputs)
-		m_objectsRect.adjust(-(dataMarginW + dataRectSize + tagMargin + tagW), 0, 0, 0);
-	if (nbOutputs)
-		m_objectsRect.adjust(0, 0, dataMarginW + tagMargin + tagW, 0);
-
-	updateViewRect();
-	updateGroupDataRects();
-}
-
-void GroupView::updateViewRect()
-{
-	m_viewRect = Rect::fromSize(m_objectsRect.topLeft() * m_zoomFactor, m_objectsRect.size() * m_zoomFactor);
-	if(!objectRenderers().getOrdered().empty())
-		m_viewRect.adjust(-5, -5, 5, 5);
-
-	emit viewModified();
-}
-
 void GroupView::updateGroupDataRects()
 {
 	// Count the number of inputs and outputs
@@ -319,11 +328,13 @@ void GroupView::updateGroupDataRects()
 			++nbOutputs;
 	}
 
+	const auto onlyObjectsRect = dynamic_cast<GroupViewport*>(&viewport())->onlyObjectsRect();
+
 	// Where to draw the inputs and outputs
 	const int inputsSize = nbInputs * dataRectSize + (nbInputs - 1) * dataMarginH;
 	const int outputsSize = nbOutputs * dataRectSize + (nbOutputs - 1) * dataMarginH;
-	const float inputsStartY = m_onlyObjectsRect.center().y - inputsSize / 2.0f;
-	const float outputsStartY = m_onlyObjectsRect.center().y - outputsSize / 2.0f;
+	const float inputsStartY = onlyObjectsRect.center().y - inputsSize / 2.0f;
+	const float outputsStartY = onlyObjectsRect.center().y - outputsSize / 2.0f;
 
 	m_groupDataRects.clear();
 	auto pen = m_drawColors.penColor;
@@ -333,7 +344,7 @@ void GroupView::updateGroupDataRects()
 		if (groupData->isInput())
 		{
 			// Draw the data
-			Rect groupDataRect = Rect::fromSize(m_onlyObjectsRect.left() - dataMarginW - dataRectSize, 
+			Rect groupDataRect = Rect::fromSize(onlyObjectsRect.left() - dataMarginW - dataRectSize, 
 												inputsStartY + inputIndex * (dataRectSize + dataMarginH),
 												dataRectSize, dataRectSize);
 			++inputIndex;
@@ -343,7 +354,7 @@ void GroupView::updateGroupDataRects()
 		if (groupData->isOutput())
 		{
 			// Draw the data
-			Rect groupDataRect = Rect::fromSize(m_onlyObjectsRect.right() + dataMarginW, 
+			Rect groupDataRect = Rect::fromSize(onlyObjectsRect.right() + dataMarginW, 
 												outputsStartY + outputIndex * (dataRectSize + dataMarginH),
 												dataRectSize, dataRectSize);
 			++outputIndex;
@@ -428,7 +439,7 @@ void GroupView::contextMenuEvent(QContextMenuEvent* event)
 {
 	m_contextMenuData = nullptr;
 
-	Point pos = convert(event->pos()) / m_zoomFactor + m_viewDelta;
+	Point pos = viewport().toView(convert(event->pos()));
 	QMenu menu(this);
 	int flags = getContextMenuFlags(pos);
 

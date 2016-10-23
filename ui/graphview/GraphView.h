@@ -36,6 +36,7 @@ namespace object {
 class LinkTag;
 class ObjectRenderersList;
 class ObjectsSelection;
+class Viewport;
 class ViewRenderer;
 
 class GraphView : public QOpenGLWidget, public ScrollableView
@@ -49,7 +50,6 @@ public:
 	QSize minimumSizeHint() const override;
 	QSize sizeHint() const override;
 
-	panda::types::Point getViewDelta() const;
 	panda::PandaDocument* getDocument() const;
 	const panda::BaseData* getClickedData() const;
 	const panda::BaseData* getContextMenuData() const;
@@ -59,8 +59,6 @@ public:
 	panda::types::Point getNewObjectPosition();
 
 	int getAvailableLinkTagIndex();
-
-	float getZoom();
 
 	virtual void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
 	void objectsMoved(); // Refresh the view, links & tags
@@ -74,17 +72,23 @@ public:
 	ViewRenderer& viewRenderer() const;
 	panda::ObjectsList& objectsList() const;
 	ObjectRenderersList& objectRenderers() const;
+	Viewport& viewport() const;
 
 	// From ScrollableView
 	virtual QSize viewSize() override;
 	virtual QPoint viewPosition() override;
 	virtual void scrollView(QPoint position) override;
 
-	virtual bool isTemporaryView() const; // If true, do not store any pointer to this view (in commands for example)
-
 	virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
 
 	void executeNextRefresh(std::function<void ()> func);
+
+	const std::vector<object::ObjectRenderer*>& selectedObjectsRenderers() const;
+	bool isLoading() const;
+
+	panda::types::Rect contentsArea() const; // Should return the visible area of the view
+
+	void emitViewportModified();
 
 protected:
 	void initializeGL() override;
@@ -110,7 +114,6 @@ protected:
 	using PointsPairs = std::vector<std::pair<panda::types::Point, panda::types::Point>>;
 	virtual std::pair<Rects, PointsPairs> getConnectedDatas(panda::BaseData* data);
 
-	void moveView(const panda::types::Point& delta);
 	void moveViewIfMouseOnBorder();
 
 	void addLinkTag(panda::BaseData* input, panda::BaseData* output);
@@ -128,8 +131,6 @@ protected:
 	void changeLink(panda::BaseData* target, panda::BaseData* parent); // Return true if a link was made or modified
 
 	void updateDirtyRenderers();
-	virtual void updateObjectsRect();
-	virtual void updateViewRect();
 
 	void selectionChanged();
 	void objectsReordered();
@@ -142,7 +143,7 @@ protected:
 signals:
 	void modified();
 	void showStatusBarMessage(QString);
-	void viewModified();
+	void viewportModified();
 	void lostFocus(QWidget*);
 
 public slots:
@@ -150,13 +151,6 @@ public slots:
 	void cut();
 	void paste();
 	void del();
-	void zoomIn();
-	void zoomOut();
-	void zoomReset();
-	void centerView();
-	void showAll();
-	void showAllSelected();
-	void moveSelectedToCenter();
 	void addedObject(panda::PandaObject* object);
 	void removeObject(panda::PandaObject* object);
 	void modifiedObject(panda::PandaObject* object);
@@ -175,9 +169,7 @@ protected:
 	panda::PandaDocument* m_pandaDocument;
 	panda::ObjectsList& m_objectsList;
 
-	int m_zoomLevel = 0, m_wheelTicks = 0;
-	float m_zoomFactor = 1.0f;
-	panda::types::Point m_viewDelta;
+	int m_wheelTicks = 0;
 	panda::types::Point m_previousMousePos, m_currentMousePos;
 
 	enum class Moving
@@ -242,6 +234,7 @@ protected:
 	std::vector<std::function<void ()>> m_functionsToExecuteNextRefresh;
 
 	std::unique_ptr<ObjectRenderersList> m_objectRenderersList;
+	std::unique_ptr<Viewport> m_viewport;
 };
 
 //****************************************************************************//
@@ -258,11 +251,11 @@ inline panda::ObjectsList& GraphView::objectsList() const
 inline ObjectRenderersList& GraphView::objectRenderers() const
 { return *m_objectRenderersList; }
 
+inline Viewport& GraphView::viewport() const
+{ return *m_viewport; }
+
 inline void GraphView::debugDirtyState(bool show)
 { m_debugDirtyState = show; update(); }
-
-inline panda::types::Point GraphView::getViewDelta() const
-{ return m_viewDelta; }
 
 inline panda::PandaDocument* GraphView::getDocument() const
 { return m_pandaDocument; }
@@ -273,19 +266,16 @@ inline const panda::BaseData* GraphView::getClickedData() const
 inline const panda::BaseData* GraphView::getContextMenuData() const
 { return m_contextMenuData; }
 
-inline float GraphView::getZoom()
-{ return m_zoomFactor; }
-
-inline void GraphView::moveView(const panda::types::Point& delta)
-{ m_viewDelta -= delta; }
-
 inline bool GraphView::hasLinkTag(panda::BaseData* input, panda::BaseData* output)
 { return m_linkTagsDatas.count(std::make_pair(input, output)) != 0; }
 
 inline bool GraphView::canLinkWith(const panda::BaseData* data) const
 { return m_possibleLinks.count(data) != 0; }
 
-inline bool GraphView::isTemporaryView() const
-{ return false; }
+inline const std::vector<object::ObjectRenderer*>& GraphView::selectedObjectsRenderers() const
+{ return m_selectedObjectsRenderers; }
+
+inline bool GraphView::isLoading() const
+{ return m_isLoading; }
 
 } // namespace graphview

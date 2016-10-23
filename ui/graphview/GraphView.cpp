@@ -13,6 +13,7 @@
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/ObjectRenderersList.h>
+#include <ui/graphview/Viewport.h>
 #include <ui/graphview/ViewRenderer.h>
 #include <ui/graphview/graphics/DrawList.h>
 
@@ -41,6 +42,9 @@ namespace
 	inline panda::types::Point convert(const QPointF& pt)
 	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
 
+	inline panda::types::Rect convert(const QRect& r)
+	{ return panda::types::Rect(r.left(), r.top(), r.right(), r.bottom()); }
+
 	long long currentTime()
 	{
 		using namespace std::chrono;
@@ -60,6 +64,7 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	, m_objectsSelection(std::make_unique<ObjectsSelection>(objectsList))
 	, m_viewRenderer(std::make_unique<ViewRenderer>())
 	, m_objectRenderersList(std::make_unique<ObjectRenderersList>())
+	, m_viewport(std::make_unique<Viewport>(*this))
 {
 	QSurfaceFormat fmt;
 	fmt.setSamples(8);
@@ -80,6 +85,9 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	m_observer.get(m_objectsList.addedObject).connect<GraphView, &GraphView::addedObject>(this);
 	m_observer.get(m_objectsList.removedObject).connect<GraphView, &GraphView::removeObject>(this);
 	m_observer.get(m_objectsList.reorderedObjects).connect<GraphView, &GraphView::objectsReordered>(this);
+
+	m_observer.get(m_viewport->modified).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(m_viewport->modified).connect<GraphView, &GraphView::emitViewportModified>(this);
 
 	connect(m_hoverTimer, SIGNAL(timeout()), this, SLOT(hoverDataInfo()));
 
@@ -167,15 +175,15 @@ void GraphView::paintGL()
 		emit modified();
 		m_recomputeTags = true;
 		m_recomputeLinks = true;
-		updateObjectsRect();
+		viewport().updateObjectsRect();
 	}
 
 	if(m_recomputeTags)			updateLinkTags();
 	if(m_recomputeLinks)		updateLinks();
 	if(m_recomputeConnected)	updateConnectedDatas();
 
-	Rect viewRect(m_viewDelta, width() / m_zoomFactor, height() / m_zoomFactor);
-	m_viewRenderer->setView(viewRect);
+	const auto displayRect = viewport().displayRect();
+	m_viewRenderer->setView(displayRect);
 	m_viewRenderer->newFrame();
 	graphics::DrawList drawList;
 
@@ -188,7 +196,7 @@ void GraphView::paintGL()
 	// Give a possibility to draw behind normal objects
 	for (auto& objRnd : orderedObjectRenderers)
 	{
-		if (objRnd->getVisualArea().intersects(viewRect))
+		if (objRnd->getVisualArea().intersects(displayRect))
 			objRnd->drawBackground(drawList, m_drawColors);
 	}
 
@@ -198,21 +206,21 @@ void GraphView::paintGL()
 	// Draw the objects
 	for (auto& objRnd : orderedObjectRenderers)
 	{
-		if (objRnd->getVisualArea().intersects(viewRect))
+		if (objRnd->getVisualArea().intersects(displayRect))
 			objRnd->draw(drawList, m_drawColors);
 	}
 
 	// Give a possibility to draw in front of normal objects
 	for (auto& objRnd : orderedObjectRenderers)
 	{
-		if (objRnd->getVisualArea().intersects(viewRect))
+		if (objRnd->getVisualArea().intersects(displayRect))
 			objRnd->drawForeground(drawList, m_drawColors);
 	}
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for (auto& objRnd : m_selectedObjectsRenderers)
 	{
-		if (objRnd->getVisualArea().intersects(viewRect))
+		if (objRnd->getVisualArea().intersects(displayRect))
 			objRnd->draw(drawList, m_drawColors, true);
 	}
 
@@ -220,23 +228,26 @@ void GraphView::paintGL()
 	for (auto& tag : m_linkTags)
 		tag->draw(drawList, m_drawColors);
 
+	const auto zoom = viewport().zoom();
+	const auto viewDelta = viewport().viewDelta();
+
 	// Selection rubber band
 	if (m_movingAction == Moving::Selection 
 		|| m_movingAction == Moving::SelectionAdd 
 		|| m_movingAction == Moving::SelectionRemove)
 	{
-		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
+		auto r = Rect(m_previousMousePos / zoom, m_currentMousePos / zoom).translated(viewDelta).canonicalized();
 		auto highlight = m_drawColors.highlightColor;
 		highlight = (highlight & 0x00FFFFFF) | 0x40000000;
 		drawList.addRectFilled(r, highlight);
-		drawList.addRect(r, m_drawColors.penColor, 0.75f / m_zoomFactor);
+		drawList.addRect(r, m_drawColors.penColor, 0.75f / zoom);
 	}
 
 	// Zoom box
 	if (m_movingAction == Moving::ZoomBox)
 	{
-		auto r = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
-		drawList.addRect(r, m_drawColors.penColor, 0.75f / m_zoomFactor);
+		auto r = Rect(m_previousMousePos / zoom, m_currentMousePos / zoom).translated(viewDelta).canonicalized();
+		drawList.addRect(r, m_drawColors.penColor, 0.75f / zoom);
 	}
 
 	// Link in creation
@@ -341,7 +352,7 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 {
 	m_previousTime = currentTime();
 	Point localPos = convert(event->localPos());
-	Point zoomedMouse = m_viewDelta + localPos / m_zoomFactor;
+	Point zoomedMouse = viewport().toView(localPos);
 	if(event->button() == Qt::LeftButton)
 	{
 		// Testing for Datas first
@@ -446,9 +457,9 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 	if(m_movingAction == Moving::Start)
 	{
-		Point mousePos = m_viewDelta + localPos / m_zoomFactor;
+		Point mousePos = viewport().toView(localPos);
 		Point delta = mousePos - m_previousMousePos;
-		if((delta * m_zoomFactor).norm() > 5)
+		if((delta * viewport().zoom()).norm() > 5)
 		{
 			m_movingAction = Moving::Object;
 			if(m_useMagneticSnap && !m_selectedObjectsRenderers.empty())
@@ -491,7 +502,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::Object)
 	{
-		Point mousePos = m_viewDelta + localPos / m_zoomFactor;
+		Point mousePos = viewport().toView(localPos);
 		Point delta = mousePos - m_previousMousePos;
 		if(m_useMagneticSnap && !m_selectedObjectsRenderers.empty())
 		{
@@ -512,22 +523,15 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::View)
 	{
-		Point delta = (globalPos - m_previousMousePos) / m_zoomFactor;
-		moveView(delta);
+		viewport().moveView((globalPos - m_previousMousePos) / viewport().zoom());
 		m_previousMousePos = globalPos;
-		update();
-		emit viewModified();
 	}
 	else if(m_movingAction == Moving::Zoom)
 	{
 		int y = event->globalY() - m_previousMousePos.y;
-		Point oldPos = m_currentMousePos / m_zoomFactor;
-		m_zoomFactor = qBound(0.1, m_zoomFactor - y / 500.0, 1.0);
-		m_zoomLevel = 100.0 * (1.0 - m_zoomFactor);
-		moveView(m_currentMousePos / m_zoomFactor - oldPos);
+		auto zoom = panda::helper::bound(0.1f, viewport().zoom() - y / 500.0f, 1.0f);
+		viewport().setZoom(m_currentMousePos, zoom);
 		m_previousMousePos = globalPos;
-		updateViewRect();
-		update();
 	}
 	else if(m_movingAction == Moving::Selection
 			|| m_movingAction == Moving::SelectionAdd
@@ -539,7 +543,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::Link)
 	{
-		m_currentMousePos = m_viewDelta + localPos / m_zoomFactor;
+		m_currentMousePos = viewport().toView(localPos);
 
 		auto dataRect = getDataAtPos(m_currentMousePos);
 		if (dataRect.first && canLinkWith(dataRect.first))
@@ -558,7 +562,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 
 	if(m_movingAction == Moving::None || m_movingAction == Moving::Link)
 	{
-		Point zoomedMouse = m_viewDelta + localPos / m_zoomFactor;
+		Point zoomedMouse = viewport().toView(localPos);
 		const auto dataRect = getDataAtPos(zoomedMouse);
 		if(dataRect.first)
 		{
@@ -715,37 +719,30 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 
 		m_moveObjectsMacro.reset();
 
-		updateObjectsRect();
+		viewport().updateObjectsRect();
 	}
 	else if(m_movingAction == Moving::View)
 	{
-		emit viewModified();
+		emit viewportModified();
 	}
 	else if(m_movingAction == Moving::Zoom)
 	{
-		updateViewRect();
+		viewport().updateViewRect();
 	}
 	else if(m_movingAction == Moving::ZoomBox)
 	{
-		Rect zoomRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
-		if (zoomRect.area() > 1000)
-		{
-			float factorW = contentsRect().width() / (zoomRect.width() + 40);
-			float factorH = contentsRect().height() / (zoomRect.height() + 40);
-			m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
-			m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-			moveView(convert(contentsRect().center()) / m_zoomFactor - zoomRect.center() + m_viewDelta);
-		}
-		update();
-		updateViewRect();
+		viewport().setViewport({ m_previousMousePos, m_currentMousePos });
 	}
 	else if(m_movingAction == Moving::Selection
 			|| m_movingAction == Moving::SelectionAdd
 			|| m_movingAction == Moving::SelectionRemove)
 	{
+		const auto zoom = viewport().zoom();
 		bool remove = m_movingAction == Moving::SelectionRemove;
 		ObjectsSelection::Objects selection = m_objectsSelection->get();
-		Rect selectionRect = Rect(m_previousMousePos/m_zoomFactor, m_currentMousePos/m_zoomFactor).translated(m_viewDelta).canonicalized();
+		Rect selectionRect = Rect(m_previousMousePos / zoom, m_currentMousePos / zoom)
+			.translated(viewport().viewDelta())
+			.canonicalized();
 		for(const auto objRnd : objectRenderers().getOrdered())
 		{
 			Rect objectArea = objRnd->getSelectionArea();
@@ -780,7 +777,7 @@ void GraphView::mouseReleaseEvent(QMouseEvent* event)
 		{
 			m_capturedRenderer->mouseReleaseEvent(event);
 			m_capturedRenderer = nullptr;
-			updateObjectsRect();
+			viewport().updateObjectsRect();
 		}
 	}
 
@@ -799,17 +796,9 @@ void GraphView::wheelEvent(QWheelEvent* event)
 	m_wheelTicks += event->angleDelta().y();
 	int ticks = m_wheelTicks / 40; // Steps of 5 degrees
 	m_wheelTicks -= ticks * 40;
-	int newZoom = qBound(0, m_zoomLevel - ticks, 90);
-	if(m_zoomLevel != newZoom)
-	{
-		Point mousePos = convert(event->pos());
-		Point oldPos = mousePos / m_zoomFactor;
-		m_zoomLevel = newZoom;
-		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
-		moveView(mousePos / m_zoomFactor - oldPos);
-		update();
-		updateViewRect();
-	}
+	const auto zoomLevel = viewport().zoomLevel();
+	int newZoom = panda::helper::bound(0, zoomLevel - ticks, 90);
+	viewport().setZoomLevel(convert(event->pos()), newZoom);
 }
 
 void GraphView::keyPressEvent(QKeyEvent* event)
@@ -827,43 +816,27 @@ void GraphView::keyPressEvent(QKeyEvent* event)
 	}
 	case Qt::Key_Left:
 		if(event->modifiers() & Qt::ControlModifier)
-		{
-			moveView(Point(100, 0));
-			updateViewRect();
-			update();
-		}
+			viewport().moveView(Point(100, 0));
 		break;
 	case Qt::Key_Right:
 		if(event->modifiers() & Qt::ControlModifier)
-		{
-			moveView(Point(-100, 0));
-			updateViewRect();
-			update();
-		}
+			viewport().moveView(Point(-100, 0));
 		break;
 	case Qt::Key_Up:
 		if(event->modifiers() & Qt::ControlModifier)
-		{
-			moveView(Point(0, 100));
-			updateViewRect();
-			update();
-		}
+			viewport().moveView(Point(0, 100));
 		break;
 	case Qt::Key_Down:
 		if(event->modifiers() & Qt::ControlModifier)
-		{
-			moveView(Point(0, -100));
-			updateViewRect();
-			update();
-		}
+			viewport().moveView(Point(0, -100));
 		break;
 	case Qt::Key_Plus:
 		if(event->modifiers() & Qt::ControlModifier)
-			zoomIn();
+			viewport().zoomIn();
 		break;
 	case Qt::Key_Minus:
 		if(event->modifiers() & Qt::ControlModifier)
-			zoomOut();
+			viewport().zoomOut();
 		break;
 	default:
 		QWidget::keyPressEvent(event);
@@ -874,7 +847,7 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 {
 	m_contextMenuData = nullptr;
 	
-	Point pos = convert(event->pos()) / m_zoomFactor + m_viewDelta;
+	Point pos = viewport().toView(convert(event->pos()));
 	QMenu menu(this);
 	int flags = getContextMenuFlags(pos);
 	
@@ -927,108 +900,6 @@ int GraphView::getContextMenuFlags(const panda::types::Point& pos)
 	return flags;
 }
 
-void GraphView::zoomIn()
-{
-	if(m_zoomLevel > 0)
-	{
-		Point center = convert(contentsRect().center());
-		Point oldPos = center / m_zoomFactor;
-		m_zoomLevel = qMax(m_zoomLevel-10, 0);
-		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
-		moveView(center / m_zoomFactor - oldPos);
-		update();
-		updateViewRect();
-	}
-}
-
-void GraphView::zoomOut()
-{
-	if(m_zoomLevel < 90)
-	{
-		Point center = convert(contentsRect().center());
-		Point oldPos = center / m_zoomFactor;
-		m_zoomLevel = qMin(m_zoomLevel+10, 90);
-		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
-		moveView(center / m_zoomFactor - oldPos);
-		update();
-		updateViewRect();
-	}
-}
-
-void GraphView::zoomReset()
-{
-	if(m_zoomLevel != 1)
-	{
-		Point center = convert(contentsRect().center());
-		Point oldPos = center / m_zoomFactor;
-		m_zoomLevel = 1;
-		m_zoomFactor = 1.0;
-		moveView(center / m_zoomFactor - oldPos);
-		update();
-		updateViewRect();
-	}
-}
-
-void GraphView::centerView()
-{
-	if(m_objectsList.size())
-	{
-		moveView(convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta);
-		update();
-		updateViewRect();
-	}
-}
-
-void GraphView::showAll()
-{
-	if(m_objectsList.size())
-	{
-		float factorW = contentsRect().width() / (m_objectsRect.width() + 40);
-		float factorH = contentsRect().height() / (m_objectsRect.height() + 40);
-		m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
-		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-		moveView(convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta);
-		update();
-		updateViewRect();
-	}
-}
-
-void GraphView::showAllSelected()
-{
-	if(!m_objectsSelection->get().empty())
-	{
-		Rect area;
-		for (const auto& obj : m_objectsSelection->get())
-		{
-			auto objRnd = objectRenderers().get(obj);
-			if(objRnd)
-				area |= objRnd->getVisualArea();
-		}
-
-		float factorW = contentsRect().width() / (area.width() + 40);
-		float factorH = contentsRect().height() / (area.height() + 40);
-		m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
-		m_zoomLevel = 100 * (1.0 - m_zoomFactor);
-		moveView(convert(contentsRect().center()) / m_zoomFactor - area.center() + m_viewDelta);
-		update();
-		updateViewRect();
-	}
-}
-
-void GraphView::moveSelectedToCenter()
-{
-	if(!m_objectsSelection->get().empty())
-	{
-		Point delta = convert(contentsRect().center()) / m_zoomFactor - m_objectsRect.center() + m_viewDelta;
-
-		for(const auto objRnd : m_selectedObjectsRenderers)
-			objRnd->move(delta);
-
-		update();
-		updateObjectsRect();
-	}
-}
-
 void GraphView::addedObject(panda::PandaObject* object)
 {
 	// Creating a Renderer depending on the class of the object been added
@@ -1055,8 +926,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 	m_recomputeLinks = true;
 	m_highlightConnectedDatas = false;
 
-	update();
-	updateObjectsRect();
+	viewport().updateObjectsRect();
 }
 
 void GraphView::modifiedObject(panda::PandaObject* object)
@@ -1378,7 +1248,7 @@ void GraphView::computeSnapDelta(object::ObjectRenderer* selectedRenderer, Point
 	// We look for the closest object above and the closest below
 	const float filterRatio = 0.66f, filterDist = 50;
 	auto selectedHeight = selectedRenderer->getObjectSize().y;
-	Rect viewRect(m_viewDelta, width() / m_zoomFactor, height() / m_zoomFactor);
+	auto displayRect = viewport().displayRect();
 	auto m1 = std::numeric_limits<float>::lowest(), m2 = std::numeric_limits<float>::max();
 	Point abovePos(m1, m1), belowPos(m2, m2);
 	float aboveDist{ m2 }, belowDist{ m2 };
@@ -1390,7 +1260,7 @@ void GraphView::computeSnapDelta(object::ObjectRenderer* selectedRenderer, Point
 			continue;
 
 		auto area = objRnd->getVisualArea();
-		if (viewRect.intersects(area)) // Only if visible in the current viewport
+		if (displayRect.intersects(area)) // Only if visible in the current viewport
 		{
 			auto pos = objRnd->getPosition();
 			if (pos.y + area.height() < position.y)
@@ -1580,36 +1450,14 @@ QSize GraphView::viewSize()
 
 QPoint GraphView::viewPosition()
 {
-	auto delta = m_viewDelta * m_zoomFactor;
+	auto delta = viewport().viewDelta() * viewport().zoom();
 	return QPoint(m_viewRect.left() - delta.x, m_viewRect.top() - delta.y);
 }
 
 void GraphView::scrollView(QPoint position)
 {
-	Point delta = convert(position) - m_viewRect.topLeft() + m_viewDelta * m_zoomFactor;
-	moveView(delta);
-	update();
-}
-
-void GraphView::updateObjectsRect()
-{
-	if(m_isLoading)
-		return;
-
-	m_objectsRect = Rect();
-	for(const auto& objRnd : objectRenderers().getOrdered())
-		m_objectsRect |= objRnd->getVisualArea();
-
-	updateViewRect();
-}
-
-void GraphView::updateViewRect()
-{
-	m_viewRect = Rect::fromSize(m_objectsRect.topLeft() * m_zoomFactor, m_objectsRect.size() * m_zoomFactor);
-	if(!objectRenderers().getOrdered().empty())
-		m_viewRect.adjust(-5, -5, 5, 5);
-
-	emit viewModified();
+	Point delta = convert(position) - m_viewRect.topLeft() + viewport().viewDelta() * viewport().zoom();
+	viewport().moveView(delta);
 }
 
 void GraphView::showChooseWidgetDialog()
@@ -1714,7 +1562,8 @@ void GraphView::updateDirtyRenderers()
 	m_hoverTimer->stop();
 	m_recomputeLinks = true;
 	m_recomputeConnected = true;
-	updateObjectsRect();
+	
+	viewport().updateObjectsRect();
 }
 
 void GraphView::objectsReordered()
@@ -1724,7 +1573,7 @@ void GraphView::objectsReordered()
 
 panda::types::Point GraphView::getNewObjectPosition()
 {
-	return convert(contentsRect().center()) + m_viewDelta;
+	return contentsArea().center() + viewport().viewDelta();
 }
 
 void GraphView::setDataLabel()
@@ -1747,9 +1596,9 @@ void GraphView::setDataLabel()
 
 void GraphView::moveViewIfMouseOnBorder()
 {
-	auto localPos = (m_currentMousePos - m_viewDelta) * m_zoomFactor;
+	auto localPos = viewport().fromView(m_currentMousePos);
 	auto contents = contentsRect();
-	auto area = Rect(convert(contents.topLeft()), convert(contents.bottomRight()));
+	auto area = contentsArea();
 	const float maxDist = 50;
 	area.adjust(maxDist, maxDist, -maxDist, -maxDist);
 	if (!area.contains(localPos))
@@ -1769,10 +1618,10 @@ void GraphView::moveViewIfMouseOnBorder()
 		if (now > m_previousTime)
 		{
 			float dt = (now - m_previousTime) / 1000000.f;
-			const float speed = 10.f / m_zoomFactor;
+			const float speed = 10.f / viewport().zoom();
 			m_previousTime = now;
 			Point delta = speed * dt * Point(dx, dy);
-			moveView(delta);
+			viewport().moveView(delta);
 		}
 	}
 
@@ -1817,7 +1666,7 @@ void GraphView::paste()
 		return;
 
 	m_objectsSelection->set(result.second);
-	moveSelectedToCenter();
+	viewport().moveSelectedToCenter();
 
 	m_pandaDocument->getUndoStack().push(std::make_shared<AddObjectCommand>(m_pandaDocument, m_objectsList, result.second));
 }
@@ -1835,6 +1684,16 @@ void GraphView::del()
 void GraphView::executeNextRefresh(std::function<void()> func)
 {
 	m_functionsToExecuteNextRefresh.push_back(func);
+}
+
+panda::types::Rect GraphView::contentsArea() const
+{
+	return convert(contentsRect());
+}
+
+void GraphView::emitViewportModified()
+{
+	emit viewportModified();
 }
 
 } // namespace graphview

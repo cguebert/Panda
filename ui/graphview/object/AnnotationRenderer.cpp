@@ -1,8 +1,9 @@
 #include <ui/graphview/GraphView.h>
+#include <ui/graphview/ObjectsSelection.h>
+#include <ui/graphview/Viewport.h>
 #include <ui/graphview/object/AnnotationRenderer.h>
 #include <ui/command/ModifyAnnotationCommand.h>
 #include <ui/command/MoveObjectCommand.h>
-#include <ui/graphview/ObjectsSelection.h>
 
 #include <panda/object/Annotation.h>
 #include <panda/document/PandaDocument.h>
@@ -182,7 +183,7 @@ void AnnotationRenderer::createShape()
 
 bool AnnotationRenderer::mousePressEvent(QMouseEvent* event)
 {
-	Point zoomedMouse = getParentView()->getViewDelta() + convert(event->localPos() )/ getParentView()->getZoom();
+	Point zoomedMouse = getParentView()->viewport().viewDelta() + convert(event->localPos() )/ getParentView()->viewport().zoom();
 
 	if(m_textArea.contains(zoomedMouse))
 	{
@@ -203,7 +204,7 @@ bool AnnotationRenderer::mousePressEvent(QMouseEvent* event)
 
 void AnnotationRenderer::mouseMoveEvent(QMouseEvent* event)
 {
-	Point zoomedMouse = getParentView()->getViewDelta() + convert(event->localPos()) / getParentView()->getZoom();
+	Point zoomedMouse = getParentView()->viewport().viewDelta() + convert(event->localPos()) / getParentView()->viewport().zoom();
 	Point delta = zoomedMouse - m_previousMousePos;
 	m_previousMousePos = zoomedMouse;
 	if(delta.isNull())
@@ -217,7 +218,7 @@ void AnnotationRenderer::mouseMoveEvent(QMouseEvent* event)
 
 void AnnotationRenderer::mouseReleaseEvent(QMouseEvent* event)
 {
-	Point zoomedMouse = getParentView()->getViewDelta() + convert(event->localPos()) / getParentView()->getZoom();
+	Point zoomedMouse = getParentView()->viewport().viewDelta() + convert(event->localPos()) / getParentView()->viewport().zoom();
 	Point deltaStart = m_startMousePos - m_previousMousePos;
 	Point delta = zoomedMouse - m_startMousePos;
 
@@ -246,6 +247,12 @@ void AnnotationRenderer::deltaToEndChanged()
 	update();
 	getParentView()->update();
 }
+
+panda::types::Point AnnotationRenderer::getZoomedPosition(const QPointF& pt)
+{
+	return getParentView()->viewport().viewDelta() + convert(pt) / getParentView()->viewport().zoom();
+}
+
 
 int AnnotationDrawClass = RegisterDrawObject<panda::Annotation, AnnotationRenderer>();
 

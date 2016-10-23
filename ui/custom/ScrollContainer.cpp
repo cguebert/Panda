@@ -44,7 +44,7 @@ void ScrollContainer::setView(ScrollableView* view)
 	updateScrollBars();
 	m_viewWidget->show();
 
-	connect(m_viewWidget, SIGNAL(viewModified()), this, SLOT(viewModified()));
+	connect(m_viewWidget, SIGNAL(viewportModified()), this, SLOT(viewModified()));
 }
 
 ScrollableView* ScrollContainer::view() const

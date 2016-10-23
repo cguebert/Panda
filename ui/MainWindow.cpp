@@ -20,6 +20,7 @@
 #include <ui/graphview/GroupView.h>
 #include <ui/graphview/alignObjects.h>
 #include <ui/graphview/ObjectsSelection.h>
+#include <ui/graphview/Viewport.h>
 
 #include <panda/document/GraphUtils.h>
 #include <panda/document/InteractiveDocument.h>
@@ -38,6 +39,15 @@
 #include <panda/types/DataTraits.h>
 
 #include <functional>
+
+namespace
+{
+	inline panda::types::Point convert(const QPointF& pt)
+	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
+
+	inline panda::types::Rect convert(const QRect& r)
+	{ return panda::types::Rect(r.left(), r.top(), r.right(), r.bottom()); }
+}
 
 // A small class to call a function when a DataNode changes
 class DataWatcher : public panda::DataNode
@@ -372,42 +382,42 @@ void MainWindow::createActions()
 	zoomResetAction->setShortcut(tr("Ctrl+0"));
 	zoomResetAction->setStatusTip(tr("Set zoom to 100%"));
 	zoomResetAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(zoomResetAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->zoomReset(); });
+	connect(zoomResetAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->viewport().zoomReset(); });
 	m_allViewsActions.push_back(zoomResetAction);
 
 	auto zoomInAction = new QAction(tr("Zoom &in"), this);
 	zoomInAction->setShortcut(QKeySequence::ZoomIn);
 	zoomInAction->setStatusTip(tr("Zoom in"));
 	zoomInAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(zoomInAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->zoomIn(); });
+	connect(zoomInAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->viewport().zoomIn(); });
 	m_allViewsActions.push_back(zoomInAction);
 
 	auto zoomOutAction = new QAction(tr("Zoom &out"), this);
 	zoomOutAction->setShortcut(QKeySequence::ZoomOut);
 	zoomOutAction->setStatusTip(tr("Zoom out"));
 	zoomOutAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(zoomOutAction,&QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->zoomOut(); });
+	connect(zoomOutAction,&QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->viewport().zoomOut(); });
 	m_allViewsActions.push_back(zoomOutAction);
 
 	auto centerViewAction = new QAction(tr("&Center view"), this);
 	centerViewAction->setShortcut(tr("Ctrl+5"));
 	centerViewAction->setStatusTip(tr("Center the view"));
 	centerViewAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(centerViewAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->centerView(); });
+	connect(centerViewAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->viewport().centerView(); });
 	m_graphViewsActions.push_back(centerViewAction);
 
 	auto showAllAction = new QAction(tr("Show &all"), this);
 	showAllAction->setShortcut(tr("Ctrl+f"));
 	showAllAction->setStatusTip(tr("Center and zoom the view so that all objects are visible"));
 	showAllAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(showAllAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->showAll(); });
+	connect(showAllAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->viewport().showAll(); });
 	m_graphViewsActions.push_back(showAllAction);
 
 	auto showAllSelectedAction = new QAction(tr("Show all &selected"), this);
 	showAllSelectedAction->setShortcut(tr("Ctrl+d"));
 	showAllSelectedAction->setStatusTip(tr("Center and zoom the view so that all selected objects are visible"));
 	showAllSelectedAction->setShortcutContext(Qt::WidgetShortcut);
-	connect(showAllSelectedAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->showAllSelected(); });
+	connect(showAllSelectedAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->viewport().showAllSelected(); });
 	m_graphViewsActions.push_back(showAllSelectedAction);
 
 	auto showGraphViewAction = new QAction(tr("Show &graph view"), this);
@@ -895,7 +905,7 @@ bool MainWindow::loadFile(const QString &fileName)
 	setCurrentFile(fileName);
 	statusBar()->showMessage(tr("File loaded"), 2000);
 
-	m_documentView->executeNextRefresh([view = m_documentView] {view->showAll(); });
+	m_documentView->executeNextRefresh([view = m_documentView] { view->viewport().showAll(); });
 	return true;
 }
 
@@ -912,7 +922,7 @@ bool MainWindow::importFile(const QString& fileName)
 	m_documentView->selection().set(result.second);
 
 	statusBar()->showMessage(tr("File imported"), 2000);
-	m_documentView->showAll();
+	m_documentView->viewport().showAll();
 	return true;
 }
 
@@ -1159,7 +1169,7 @@ void MainWindow::openGroup()
 
 	m_tabWidget->setCurrentWidget(groupViewContainer);
 	groupViewContainer->setFocus();
-	groupView->showAll();
+	groupView->viewport().showAll();
 }
 
 void MainWindow::fillContextMenu(QMenu& menu, int flags) const

@@ -3,6 +3,7 @@
 #include <ui/graphview/object/ObjectRenderer.h>
 
 class GraphView;
+class QPointF;
 
 namespace panda
 {
@@ -45,6 +46,8 @@ protected:
 	void drawForeground(graphics::DrawList& list, graphics::DrawColors& colors) override;
 
 	void deltaToEndChanged();
+
+	panda::types::Point getZoomedPosition(const QPointF& pt);
 
 	panda::Annotation* m_annotation;
 	panda::types::Point m_endPos, m_textSize;
