@@ -87,6 +87,7 @@ public:
 	bool isLoading() const;
 
 	panda::types::Rect contentsArea() const; // Should return the visible area of the view
+	panda::types::Point toScreen(const panda::types::Point& pos) const; // Transform from the position in the view to the position in the screen
 
 	void emitViewportModified();
 

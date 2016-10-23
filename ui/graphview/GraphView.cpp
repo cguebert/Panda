@@ -40,10 +40,13 @@ using Rect = panda::types::Rect;
 namespace
 {
 	inline panda::types::Point convert(const QPointF& pt)
-	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
+	{ return { static_cast<float>(pt.x()), static_cast<float>(pt.y()) }; }
 
 	inline panda::types::Rect convert(const QRect& r)
 	{ return panda::types::Rect(r.left(), r.top(), r.right(), r.bottom()); }
+
+	inline QPoint convert(const panda::types::Point& pt)
+	{ return QPointF{ pt.x, pt.y }.toPoint(); }
 
 	long long currentTime()
 	{
@@ -436,14 +439,14 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 		{
 			m_movingAction = Moving::Zoom;
 			m_currentMousePos = convert(event->pos());
-			m_previousMousePos = convert(event->globalPos());
+			m_previousMousePos = convert(event->pos());
 
 			QApplication::setOverrideCursor(QCursor(Qt::SizeVerCursor));
 		}
 		else
 		{
 			m_movingAction = Moving::View;
-			m_previousMousePos = convert(event->globalPos());
+			m_previousMousePos = convert(event->pos());
 
 			QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
 		}
@@ -453,7 +456,6 @@ void GraphView::mousePressEvent(QMouseEvent* event)
 void GraphView::mouseMoveEvent(QMouseEvent* event)
 {
 	Point localPos = convert(event->localPos());
-	Point globalPos = convert(event->globalPos());
 
 	if(m_movingAction == Moving::Start)
 	{
@@ -523,15 +525,15 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if(m_movingAction == Moving::View)
 	{
-		viewport().moveView((globalPos - m_previousMousePos) / viewport().zoom());
-		m_previousMousePos = globalPos;
+		viewport().moveView((localPos - m_previousMousePos) / viewport().zoom());
+		m_previousMousePos = localPos;
 	}
 	else if(m_movingAction == Moving::Zoom)
 	{
-		int y = event->globalY() - m_previousMousePos.y;
+		int y = localPos.y - m_previousMousePos.y;
 		auto zoom = panda::helper::bound(0.1f, viewport().zoom() - y / 500.0f, 1.0f);
 		viewport().setZoom(m_currentMousePos, zoom);
-		m_previousMousePos = globalPos;
+		m_previousMousePos = localPos;
 	}
 	else if(m_movingAction == Moving::Selection
 			|| m_movingAction == Moving::SelectionAdd
@@ -591,7 +593,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 			}
 
 			QRect area = QRect(dataRect.second.left(), dataRect.second.top(), dataRect.second.width(), dataRect.second.height());
-			QToolTip::showText(event->globalPos(), display, this, area);
+			QToolTip::showText(convert(toScreen(localPos)), display, this, area);
 			if(!m_hoverData->getHelp().empty())
 				emit showStatusBarMessage(QString::fromStdString(m_hoverData->getHelp()));
 		}
@@ -640,7 +642,7 @@ void GraphView::mouseMoveEvent(QMouseEvent* event)
 					{
 						auto tagRect = dataPair.second;
 						auto rect = QRect(tagRect.left(), tagRect.top(), tagRect.width(), tagRect.height());
-						QToolTip::showText(event->globalPos(), display, this, rect);
+						QToolTip::showText(convert(toScreen(localPos)), display, this, rect);
 					}
 				}
 			}
@@ -1689,6 +1691,11 @@ void GraphView::executeNextRefresh(std::function<void()> func)
 panda::types::Rect GraphView::contentsArea() const
 {
 	return convert(contentsRect());
+}
+
+panda::types::Point GraphView::toScreen(const panda::types::Point& pos) const
+{
+	return convert(mapToGlobal(convert(pos)));
 }
 
 void GraphView::emitViewportModified()
