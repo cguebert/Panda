@@ -73,9 +73,9 @@ namespace graphview
 		}
 	}
 
-	void SnapToObjects::computeSnapDelta(object::ObjectRenderer* objRnd, const Point& position)
+	void SnapToObjects::updateSnapDelta(object::ObjectRenderer* objRnd, const Point& position)
 	{
-		m_snapDelta = Point();
+		m_snapDelta = {};
 		const float snapMaxDist = 5;
 
 		auto comparator = [](float pos) {
@@ -167,6 +167,7 @@ namespace graphview
 			if (qAbs(y - position.y) < snapMaxDist)
 				m_snapDelta.y = y - position.y;
 		}
+
 	}
 
 } // namespace graphview

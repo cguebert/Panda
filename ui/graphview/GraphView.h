@@ -33,10 +33,14 @@ namespace object {
 	class ObjectRenderer;
 }
 
+class LinksList;
 class LinkTag;
+class LinkTagsList;
 class ObjectRenderersList;
 class ObjectsSelection;
 class Viewport;
+class ViewGUI;
+class ViewInteraction;
 class ViewRenderer;
 
 class GraphView : public QOpenGLWidget, public ScrollableView
@@ -50,17 +54,10 @@ public:
 	QSize minimumSizeHint() const override;
 	QSize sizeHint() const override;
 
-	panda::PandaDocument* getDocument() const;
-	const panda::BaseData* getClickedData() const;
-	const panda::BaseData* getContextMenuData() const;
-
-	bool canLinkWith(const panda::BaseData* data) const; /// Is it possible to link this data and the clicked data
+	panda::PandaDocument* document() const;
 
 	panda::types::Point getNewObjectPosition();
 
-	int getAvailableLinkTagIndex();
-
-	virtual void moveObjects(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
 	void objectsMoved(); // Refresh the view, links & tags
 
 	/// Objects docked to the default docks are sorted by their height in the graph view
@@ -70,16 +67,18 @@ public:
 
 	ObjectsSelection& selection() const;
 	ViewRenderer& viewRenderer() const;
+	LinksList& linksList() const;
+	LinkTagsList& linkTagsList() const;
 	panda::ObjectsList& objectsList() const;
 	ObjectRenderersList& objectRenderers() const;
 	Viewport& viewport() const;
+	ViewInteraction& interaction() const;
+	ViewGUI& gui() const;
 
 	// From ScrollableView
 	virtual QSize viewSize() override;
 	virtual QPoint viewPosition() override;
 	virtual void scrollView(QPoint position) override;
-
-	virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
 
 	void executeNextRefresh(std::function<void ()> func);
 
@@ -109,37 +108,10 @@ protected:
 #endif
 	void paintDirtyState(graphics::DrawList& list, graphics::DrawColors& colors);
 
-	virtual std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt);
-
-	using Rects = std::vector<panda::types::Rect>;
-	using PointsPairs = std::vector<std::pair<panda::types::Point, panda::types::Point>>;
-	virtual std::pair<Rects, PointsPairs> getConnectedDatas(panda::BaseData* data);
-
-	void moveViewIfMouseOnBorder();
-
-	void addLinkTag(panda::BaseData* input, panda::BaseData* output);
-	void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
-	bool hasLinkTag(panda::BaseData* input, panda::BaseData* output);
-
-	virtual void updateLinks();
-	void updateConnectedDatas();
-	void updateLinkTags();
-
-	void prepareSnapTargets(object::ObjectRenderer* selectedRenderer);
-	void computeSnapDelta(object::ObjectRenderer* selectedRenderer, panda::types::Point position);
-
-	virtual bool createLink(panda::BaseData* data1, panda::BaseData* data2);
-	void changeLink(panda::BaseData* target, panda::BaseData* parent); // Return true if a link was made or modified
-
 	void updateDirtyRenderers();
 
 	void selectionChanged();
 	void objectsReordered();
-
-	virtual bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2);
-	virtual void computeCompatibleDatas(panda::BaseData* data);
-
-	int getContextMenuFlags(const panda::types::Point& pos);
 
 signals:
 	void modified();
@@ -155,61 +127,16 @@ public slots:
 	void addedObject(panda::PandaObject* object);
 	void removeObject(panda::PandaObject* object);
 	void modifiedObject(panda::PandaObject* object);
-	void removeLink();
-	void hoverDataInfo();
 	void startLoading();
 	void loadingFinished();
 	void changedDock(panda::DockableObject* dockable);
 	void showChooseWidgetDialog();
 	void debugDirtyState(bool show = true);
 	void setDataLabel();
-	void moveObjectToBack();
-	void moveObjectToFront();
 
 protected:
 	panda::PandaDocument* m_pandaDocument;
 	panda::ObjectsList& m_objectsList;
-
-	int m_wheelTicks = 0;
-	panda::types::Point m_previousMousePos, m_currentMousePos;
-
-	enum class Moving
-	{
-		None=0,
-		Start,
-		Object,
-		View,
-		Selection,
-		SelectionAdd,
-		SelectionRemove,
-		Link,
-		Zoom,
-		ZoomBox,
-		Custom
-	};
-	Moving m_movingAction = Moving::None;
-
-	panda::BaseData *m_clickedData = nullptr, *m_hoverData = nullptr, *m_contextMenuData = nullptr;
-	panda::PandaObject *m_contextMenuObject = nullptr;
-
-	object::ObjectRenderer* m_capturedRenderer = nullptr; /// Clicked object::ObjectRenderer that want to intercept mouse events
-
-	std::vector<std::shared_ptr<LinkTag>> m_linkTags;
-	std::map<panda::BaseData*, LinkTag*> m_linkTagsMap; /// Input data of the link tag
-	std::set<std::pair<panda::BaseData*, panda::BaseData*>> m_linkTagsDatas; /// A copy of the link tags connections
-	bool m_recomputeTags = false; /// Should we recompute the linkTags next PaintEvent?
-	LinkTag* m_contextLinkTag = nullptr;
-
-	QTimer* m_hoverTimer; /// Counting how long the mouse is staying over a Data
-	bool m_highlightConnectedDatas = false;
-
-	bool m_useMagneticSnap = true; /// Do we help align objects when moving them with the mouse?
-	std::set<float> m_snapTargetsY;
-	panda::types::Point m_snapDelta;
-
-	std::vector<panda::PandaObject*> m_customSelection; /// Objects on which the current action is applied
-
-	std::shared_ptr<panda::ScopedMacro> m_moveObjectsMacro;
 
 	panda::types::Rect m_objectsRect; /// Area taken by the objects on the screen
 	panda::types::Rect m_viewRect; /// Area taken by the objects on the screen, including zoom
@@ -223,19 +150,18 @@ protected:
 
 	bool m_debugDirtyState = false;
 
-	std::set<const panda::BaseData*> m_possibleLinks; /// When creating a new link, this contains all possible destinations
-
 	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
-	graphics::DrawList m_linksDrawList, m_connectedDrawList;
 	graphics::DrawColors m_drawColors; /// So that we aquire Qt colors only once
-	bool m_recomputeLinks = false, m_recomputeConnected = false, m_objectsMoved = false;
-
-	long long m_previousTime = 0;
+	bool m_objectsMoved = false;
 
 	std::vector<std::function<void ()>> m_functionsToExecuteNextRefresh;
 
+	std::unique_ptr<LinksList> m_linksList;
+	std::unique_ptr<LinkTagsList> m_linkTagsList;
 	std::unique_ptr<ObjectRenderersList> m_objectRenderersList;
 	std::unique_ptr<Viewport> m_viewport;
+	std::unique_ptr<ViewGUI> m_viewGUI;
+	std::unique_ptr<ViewInteraction> m_interaction;
 };
 
 //****************************************************************************//
@@ -246,6 +172,12 @@ inline ObjectsSelection& GraphView::selection() const
 inline ViewRenderer& GraphView::viewRenderer() const
 { return *m_viewRenderer; }
 
+inline LinksList& GraphView::linksList() const
+{ return *m_linksList; }
+
+inline LinkTagsList& GraphView::linkTagsList() const
+{ return *m_linkTagsList; }
+
 inline panda::ObjectsList& GraphView::objectsList() const
 { return m_objectsList; }
 
@@ -255,23 +187,17 @@ inline ObjectRenderersList& GraphView::objectRenderers() const
 inline Viewport& GraphView::viewport() const
 { return *m_viewport; }
 
+inline ViewInteraction& GraphView::interaction() const
+{ return *m_interaction; }
+
+inline ViewGUI& GraphView::gui() const
+{ return *m_viewGUI; }
+
 inline void GraphView::debugDirtyState(bool show)
 { m_debugDirtyState = show; update(); }
 
-inline panda::PandaDocument* GraphView::getDocument() const
+inline panda::PandaDocument* GraphView::document() const
 { return m_pandaDocument; }
-
-inline const panda::BaseData* GraphView::getClickedData() const
-{ return m_clickedData; }
-
-inline const panda::BaseData* GraphView::getContextMenuData() const
-{ return m_contextMenuData; }
-
-inline bool GraphView::hasLinkTag(panda::BaseData* input, panda::BaseData* output)
-{ return m_linkTagsDatas.count(std::make_pair(input, output)) != 0; }
-
-inline bool GraphView::canLinkWith(const panda::BaseData* data) const
-{ return m_possibleLinks.count(data) != 0; }
 
 inline const std::vector<object::ObjectRenderer*>& GraphView::selectedObjectsRenderers() const
 { return m_selectedObjectsRenderers; }

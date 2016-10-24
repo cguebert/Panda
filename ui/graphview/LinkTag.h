@@ -22,7 +22,7 @@ class GraphView;
 class LinkTag
 {
 public:
-	LinkTag(GraphView* view, panda::BaseData* input, panda::BaseData* output, int index);
+	LinkTag(GraphView& view, panda::BaseData* input, panda::BaseData* output, int index);
 	void addOutput(panda::BaseData* output);
 	void removeOutput(panda::BaseData* output);
 	void update();
@@ -39,7 +39,7 @@ public:
 	bool isHovering() const;
 	void setHovering(bool h);
 
-	static bool needLinkTag(float inputX, float outputX, GraphView* view);
+	static bool needLinkTag(float inputX, float outputX, GraphView& view);
 
 private:
 	static const int tagW = 20;
@@ -49,7 +49,7 @@ private:
 	const int m_index = 0;
 	bool m_hovering = false;
 
-	GraphView* m_parentView = nullptr;
+	GraphView& m_parentView;
 
 	panda::BaseData* m_inputData = nullptr;
 

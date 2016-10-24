@@ -58,7 +58,7 @@ namespace graphview
 			updateLinkTags();
 	}
 
-	void LinkTagsList::onEndDraw(graphics::DrawList& drawList, graphics::DrawColors& colors)
+	void LinkTagsList::drawTags(graphics::DrawList& drawList, graphics::DrawColors& colors)
 	{
 		// Draw links tags
 		for (auto& tag : m_linkTags)

@@ -17,9 +17,10 @@ class GroupView : public GraphView
 	Q_OBJECT
 
 public:
-	explicit GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
+	using DataRect = std::pair<panda::BaseData*, panda::types::Rect>;
+	using DataRects = std::vector<DataRect>;
 
-	bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) override;
+	explicit GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
 
 	panda::Group* group() const;
 
@@ -31,36 +32,29 @@ public:
 	static const int tagMargin = 10;
 
 	void updateGroupDataRects();
+	const DataRects& groupDataRects() const;
 
-protected:
-	void paintGL() override;
-	void contextMenuEvent(QContextMenuEvent* event) override;
-
-	std::pair<panda::BaseData*, panda::types::Rect> getDataAtPos(const panda::types::Point& pt) override;
-	std::pair<Rects, PointsPairs> getConnectedDatas(panda::BaseData* data) override;
-	bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2) override;
-	void computeCompatibleDatas(panda::BaseData* data) override;
-
-	void updateLinks() override;
-
-	bool createLink(panda::BaseData* data1, panda::BaseData* data2) override;
-
-private:
 	void createInputGroupData();
 	void createOutputGroupData();
 	void removeGroupData(panda::BaseData* data);
 
+protected:
+	void paintGL() override;
+
+private:
 	void modifiedObject(panda::PandaObject* object);
 
 	panda::Group* m_group;
 
-	using DataRect = std::pair<panda::BaseData*, panda::types::Rect>;
-	std::vector<DataRect> m_groupDataRects;
+	DataRects m_groupDataRects;
 };
 
 //****************************************************************************//
 
 inline panda::Group* GroupView::group() const
 { return m_group; }
+
+inline const GroupView::DataRects& GroupView::groupDataRects() const
+{ return m_groupDataRects; }
 
 } // namespace graphview

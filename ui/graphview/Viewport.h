@@ -12,6 +12,7 @@ namespace graphview
 	{
 	public:
 		Viewport(GraphView& view);
+		virtual ~Viewport();
 
 		void zoomIn();
 		void zoomOut();

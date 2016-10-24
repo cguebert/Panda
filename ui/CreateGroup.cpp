@@ -2,6 +2,7 @@
 #include <ui/GraphView/GraphView.h>
 #include <ui/GraphView/object/ObjectRenderer.h>
 
+#include <ui/GraphView/LinksList.h>
 #include <ui/GraphView/ObjectsSelection.h>
 #include <ui/GraphView/ObjectRenderersList.h>
 #include <ui/GraphView/object/ObjectPositionAddon.h>
@@ -35,7 +36,7 @@ float getDataHeight(graphview::GraphView* view, BaseData* data)
 		return 0;
 
 	Rect rect;
-	if(view->getDataRect(data, rect))
+	if(view->linksList().getDataRect(data, rect))
 		return rect.center().y;
 
 	return 0;

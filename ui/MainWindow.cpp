@@ -21,6 +21,7 @@
 #include <ui/graphview/alignObjects.h>
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/Viewport.h>
+#include <ui/graphview/ViewInteraction.h>
 
 #include <panda/document/GraphUtils.h>
 #include <panda/document/InteractiveDocument.h>
@@ -485,7 +486,7 @@ void MainWindow::createActions()
 
 	m_removeLinkAction = new QAction(tr("Remove link"), this);
 	m_removeLinkAction->setStatusTip(tr("Remove the link to this data"));
-	connect(m_removeLinkAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->removeLink(); });
+	connect(m_removeLinkAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->interaction().removeLink(); });
 	m_graphViewsActions.push_back(m_removeLinkAction);
 
 	m_copyDataAction = new QAction(tr("Copy data"), this);
@@ -525,12 +526,12 @@ void MainWindow::createActions()
 
 	m_objectToBackAction = new QAction(tr("Move object to back"), this);
 	m_objectToBackAction->setStatusTip(tr("Move the selected object to the back of the others"));
-	connect(m_objectToBackAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->moveObjectToBack(); });
+	connect(m_objectToBackAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->interaction().moveObjectToBack(); });
 	m_graphViewsActions.push_back(m_objectToBackAction);
 
 	m_objectToFrontAction = new QAction(tr("Move object to front"), this);
 	m_objectToFrontAction->setStatusTip(tr("Move the selected object in front of the others"));
-	connect(m_objectToFrontAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->moveObjectToFront(); });
+	connect(m_objectToFrontAction, &QAction::triggered, [this]() { if (m_currentGraphView) m_currentGraphView->interaction().moveObjectToFront(); });
 	m_graphViewsActions.push_back(m_objectToFrontAction);
 
 	m_undoAction = new QAction(tr("Undo"), this);
@@ -1190,7 +1191,7 @@ void MainWindow::fillContextMenu(QMenu& menu, int flags) const
 	{
 		menu.addAction(m_copyDataAction);
 		const panda::PandaObject* owner = nullptr;
-		auto data = m_currentGraphView->getContextMenuData();
+		auto data = m_currentGraphView->interaction().contextMenuData();
 		if(data)
 			owner = data->getOwner();
 		if(owner && owner->getClass()->getClassName() == "GeneratorUser" && owner->getClass()->getNamespaceName() == "panda")
@@ -1243,7 +1244,7 @@ void MainWindow::fillContextMenu(QMenu& menu, int flags) const
 
 void MainWindow::copyDataToUserValue()
 {
-	const panda::BaseData* clickedData = m_currentGraphView->getContextMenuData();
+	const panda::BaseData* clickedData = m_currentGraphView->interaction().contextMenuData();
 	if(clickedData)
 		panda::copyDataToUserValue(clickedData, m_document.get(), m_currentGraphView->objectsList());
 }
@@ -1316,7 +1317,7 @@ void MainWindow::selectedObject(panda::PandaObject* object)
 
 void MainWindow::showImageViewport()
 {
-	const panda::BaseData* clickedData = m_currentGraphView->getContextMenuData();
+	const panda::BaseData* clickedData = m_currentGraphView->interaction().contextMenuData();
 	if (!clickedData)
 		return;
 

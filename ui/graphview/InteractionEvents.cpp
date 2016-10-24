@@ -3,30 +3,30 @@
 namespace graphview
 {
 
-	InputEvent::InputEvent(EventModifier modifiers)
+	InputEvent::InputEvent(EventModifiers modifiers)
 		: m_modifiers(modifiers) 
 	{}
 
 	MouseEvent::MouseEvent(const panda::types::Point& pos, 
 						   MouseButton button, 
-						   EventModifier modifiers)
+						   EventModifiers modifiers)
 		: InputEvent(modifiers)
 		, m_pos(pos)
 		, m_button(button)
 	{}
 
-	WheelEvent::WheelEvent(const panda::types::Point& pos, const panda::types::Point& angleDelta, EventModifier modifiers)
+	WheelEvent::WheelEvent(const panda::types::Point& pos, const panda::types::Point& angleDelta, EventModifiers modifiers)
 		: InputEvent(modifiers)
 		, m_pos(pos)
 		, m_angleDelta(angleDelta)
 	{}
 
-	KeyEvent::KeyEvent(int key, EventModifier modifiers)
+	KeyEvent::KeyEvent(Key key, EventModifiers modifiers)
 		: InputEvent(modifiers)
 		, m_key(key)
 	{}
 
-	ContextMenuEvent::ContextMenuEvent(const panda::types::Point& pos, EventModifier modifiers)
+	ContextMenuEvent::ContextMenuEvent(const panda::types::Point& pos, EventModifiers modifiers)
 		: InputEvent(modifiers)
 		, m_pos(pos)
 	{}

@@ -18,6 +18,8 @@ namespace graphview
 	{
 	}
 
+	Viewport::~Viewport() = default;
+
 	void Viewport::zoomIn()
 	{
 		if(m_zoomLevel > 0)

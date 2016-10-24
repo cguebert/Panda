@@ -55,7 +55,7 @@ void DockObjectRenderer::placeDockableObjects(bool forceMove)
 	int ty;
 	ty = m_visualArea.top() + ObjectRenderer::getObjectSize().y + dockRendererMargin;
 
-	auto doc = getParentView()->getDocument();
+	auto doc = getParentView()->document();
 	auto& undoStack = doc->getUndoStack();
 	bool canMoveObjects = doc->getUndoStack().isInCommandMacro();
 

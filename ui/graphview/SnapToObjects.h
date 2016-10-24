@@ -2,6 +2,8 @@
 
 #include <panda/types/Point.h>
 
+#include <set>
+
 namespace graphview
 {
 	namespace object {
@@ -15,14 +17,21 @@ namespace graphview
 	public:
 		SnapToObjects(GraphView& view);
 
+		panda::types::Point snapDelta() const;
+
 		void prepareSnapTargets(object::ObjectRenderer* selectedRenderer);
-		void computeSnapDelta(object::ObjectRenderer* selectedRenderer, const panda::types::Point& position);
+		void updateSnapDelta(object::ObjectRenderer* selectedRenderer, const panda::types::Point& position);
 
 	protected:
 		GraphView& m_view;
 
-		std::set<float> m_snapTargetsY;
 		panda::types::Point m_snapDelta;
+		std::set<float> m_snapTargetsY;
 	};
+
+//****************************************************************************//
+
+	inline panda::types::Point SnapToObjects::snapDelta() const
+	{ return m_snapDelta; }
 
 } // namespace graphview

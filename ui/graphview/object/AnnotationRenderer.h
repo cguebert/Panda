@@ -29,9 +29,9 @@ public:
 	void move(const panda::types::Point& delta) override;
 	bool contains(const panda::types::Point& point) override;
 
-	bool mousePressEvent(QMouseEvent* event) override;
-	void mouseMoveEvent(QMouseEvent* event) override;
-	void mouseReleaseEvent(QMouseEvent* event) override;
+	bool mousePressEvent(const MouseEvent& event) override;
+	void mouseMoveEvent(const MouseEvent& event) override;
+	void mouseReleaseEvent(const MouseEvent& event) override;
 
 	bool acceptsMagneticSnap() const override { return false; }
 
@@ -46,8 +46,6 @@ protected:
 	void drawForeground(graphics::DrawList& list, graphics::DrawColors& colors) override;
 
 	void deltaToEndChanged();
-
-	panda::types::Point getZoomedPosition(const QPointF& pt);
 
 	panda::Annotation* m_annotation;
 	panda::types::Point m_endPos, m_textSize;

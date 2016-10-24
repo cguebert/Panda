@@ -1,7 +1,9 @@
 #include <ui/graphview/object/ObjectRenderer.h>
 
 #include <ui/graphview/GraphView.h>
+#include <ui/graphview/LinksList.h>
 #include <ui/graphview/ObjectsSelection.h>
+#include <ui/graphview/ViewInteraction.h>
 #include <ui/graphview/object/ObjectPositionAddon.h>
 
 #include <panda/object/PandaObject.h>
@@ -177,8 +179,8 @@ void ObjectRenderer::drawDatas(graphics::DrawList& list, graphics::DrawColors& c
 void ObjectRenderer::drawData(graphics::DrawList& list, graphics::DrawColors& colors, const panda::BaseData* data, const Rect& area)
 {
 	unsigned int dataCol = 0;
-	const panda::BaseData* clickedData = getParentView()->getClickedData();
-	if (clickedData && clickedData != data && !getParentView()->canLinkWith(data))
+	const panda::BaseData* clickedData = getParentView()->interaction().clickedData();
+	if (clickedData && clickedData != data && !getParentView()->linksList().canLinkWith(data))
 		dataCol = colors.lightColor;
 	else
 		dataCol = graphics::DrawList::convert(data->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha

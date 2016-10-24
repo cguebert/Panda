@@ -1,4 +1,5 @@
 #include <ui/graphview/GraphView.h>
+#include <ui/graphview/InteractionEvents.h>
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/Viewport.h>
 #include <ui/graphview/object/AnnotationRenderer.h>
@@ -9,19 +10,9 @@
 #include <panda/document/PandaDocument.h>
 #include <panda/XmlDocument.h>
 
-#include <QMouseEvent>
-
 using panda::Annotation;
 using panda::types::Point;
 using panda::types::Rect;
-
-namespace
-{
-	inline Point convert(const QPointF& pt)
-	{
-		return Point(pt.x(), pt.y());
-	}
-}
 
 namespace graphview
 {
@@ -68,7 +59,7 @@ void AnnotationRenderer::drawForeground(graphics::DrawList& list, graphics::Draw
 	list.addText(textArea, m_annotation->m_text.getValue(), colors.penColor);
 
 	// Draw the handle
-	const panda::PandaDocument* doc = getParentView()->getDocument();
+	const panda::PandaDocument* doc = getParentView()->document();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
 			&& getParentView()->selection().get().size() == 1
 			&& getParentView()->selection().isSelected(m_annotation))	// The annotation is the only selected object
@@ -101,7 +92,7 @@ void AnnotationRenderer::moveEnd(const Point& delta)
 
 bool AnnotationRenderer::contains(const Point& point)
 {
-	const panda::PandaDocument* doc = getParentView()->getDocument();
+	const panda::PandaDocument* doc = getParentView()->document();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
 			&& getParentView()->selection().get().size() == 1
 			&& getParentView()->selection().isSelected(m_annotation))	// The annotation is the only selected object
@@ -181,9 +172,9 @@ void AnnotationRenderer::createShape()
 	m_fillShape = m_outline.triangulate();
 }
 
-bool AnnotationRenderer::mousePressEvent(QMouseEvent* event)
+bool AnnotationRenderer::mousePressEvent(const MouseEvent& event)
 {
-	Point zoomedMouse = getParentView()->viewport().viewDelta() + convert(event->localPos() )/ getParentView()->viewport().zoom();
+	Point zoomedMouse = getParentView()->viewport().viewDelta() + event.pos() / getParentView()->viewport().zoom();
 
 	if(m_textArea.contains(zoomedMouse))
 	{
@@ -202,9 +193,9 @@ bool AnnotationRenderer::mousePressEvent(QMouseEvent* event)
 	return false;
 }
 
-void AnnotationRenderer::mouseMoveEvent(QMouseEvent* event)
+void AnnotationRenderer::mouseMoveEvent(const MouseEvent& event)
 {
-	Point zoomedMouse = getParentView()->viewport().viewDelta() + convert(event->localPos()) / getParentView()->viewport().zoom();
+	Point zoomedMouse = getParentView()->viewport().viewDelta() + event.pos() / getParentView()->viewport().zoom();
 	Point delta = zoomedMouse - m_previousMousePos;
 	m_previousMousePos = zoomedMouse;
 	if(delta.isNull())
@@ -216,21 +207,21 @@ void AnnotationRenderer::mouseMoveEvent(QMouseEvent* event)
 		moveEnd(delta);
 }
 
-void AnnotationRenderer::mouseReleaseEvent(QMouseEvent* event)
+void AnnotationRenderer::mouseReleaseEvent(const MouseEvent& event)
 {
-	Point zoomedMouse = getParentView()->viewport().viewDelta() + convert(event->localPos()) / getParentView()->viewport().zoom();
+	Point zoomedMouse = getParentView()->viewport().viewDelta() + event.pos() / getParentView()->viewport().zoom();
 	Point deltaStart = m_startMousePos - m_previousMousePos;
 	Point delta = zoomedMouse - m_startMousePos;
 
 	if (m_movingAction == MOVING_TEXT)
 	{
 		moveText(deltaStart);
-		getParentView()->getDocument()->getUndoStack().push(std::make_shared<MoveObjectCommand>(m_annotation, delta));
+		getParentView()->document()->getUndoStack().push(std::make_shared<MoveObjectCommand>(m_annotation, delta));
 	}
 	else if (m_movingAction == MOVING_POINT)
 	{
 		moveEnd(deltaStart);
-		getParentView()->getDocument()->getUndoStack().push(std::make_shared<MoveAnnotationEndCommand>(m_annotation, delta));
+		getParentView()->document()->getUndoStack().push(std::make_shared<MoveAnnotationEndCommand>(m_annotation, delta));
 	}
 		
 	m_movingAction = MOVING_NONE;
@@ -247,12 +238,6 @@ void AnnotationRenderer::deltaToEndChanged()
 	update();
 	getParentView()->update();
 }
-
-panda::types::Point AnnotationRenderer::getZoomedPosition(const QPointF& pt)
-{
-	return getParentView()->viewport().viewDelta() + convert(pt) / getParentView()->viewport().zoom();
-}
-
 
 int AnnotationDrawClass = RegisterDrawObject<panda::Annotation, AnnotationRenderer>();
 

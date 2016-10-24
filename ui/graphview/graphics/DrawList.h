@@ -57,7 +57,7 @@ public:
 	{ return (alpha << 24) | (col & 0x00FFFFFF); }
 
 	void addDrawCmd(); // This is useful if you need to forcefully create a new draw call (to allow for dependent rendering / blending). Otherwise primitives are merged into the same draw-call as much as possible
-	void merge(DrawList& list, bool ignoreClip = true); // Add the list to this one, merging it in the last draw command if possible
+	void merge(const DrawList& list, bool ignoreClip = true); // Add the list to this one, merging it in the last draw command if possible
 
 	void pushTextureID(unsigned int texture_id);
 	void popTextureID();

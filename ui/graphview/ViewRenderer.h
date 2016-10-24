@@ -30,7 +30,7 @@ public:
 
 	void setView(const panda::types::Rect& bounds);
 	void newFrame();
-	void addDrawList(graphics::DrawList* dl);
+	void addDrawList(const graphics::DrawList* dl);
 	void render();
 
 	static bool initialized();
@@ -47,11 +47,11 @@ private:
 	int m_width = 0, m_height = 0;
 	panda::types::Rect m_viewBounds;
 
-	std::vector<graphics::DrawList*> m_drawLists;
+	std::vector<const graphics::DrawList*> m_drawLists;
 	std::shared_ptr<graphics::FontAtlas> m_atlas;
 };
 
-inline void ViewRenderer::addDrawList(graphics::DrawList* dl)
+inline void ViewRenderer::addDrawList(const graphics::DrawList* dl)
 { m_drawLists.push_back(dl); }
 
 } // namespace graphview

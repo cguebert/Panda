@@ -1,5 +1,7 @@
 #include <ui/graphview/object/GenericObjectRenderer.h>
 #include <ui/graphview/GraphView.h>
+#include <ui/graphview/LinksList.h>
+#include <ui/graphview/ViewInteraction.h>
 
 #include <panda/object/GenericObject.h>
 #include <panda/data/BaseData.h>
@@ -114,7 +116,7 @@ void GenericObjectRenderer::update()
 
 void GenericObjectRenderer::drawDatas(graphics::DrawList& list, graphics::DrawColors& colors)
 {
-	const panda::BaseData* clickedData = getParentView()->getClickedData();
+	const panda::BaseData* clickedData = getParentView()->interaction().clickedData();
 
 	for(DataRectPair dataPair : m_datas)
 	{
@@ -122,7 +124,7 @@ void GenericObjectRenderer::drawDatas(graphics::DrawList& list, graphics::DrawCo
 		if (dynamic_cast<panda::BaseGenericData*>(data))
 		{
 			unsigned int dataCol = 0;
-			if (clickedData && clickedData != data && getParentView()->canLinkWith(data))
+			if (clickedData && clickedData != data && getParentView()->linksList().canLinkWith(data))
 				dataCol = graphics::DrawList::convert(clickedData->getDataTrait()->typeColor()) | 0xFF000000; // We have to set the alpha
 			else
 				dataCol = colors.lightColor;

@@ -26,7 +26,7 @@ void alignHorizontallyCenter(GraphView* view)
 
 	float center = sum / objRndList.size();
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("center on vertical axis").toStdString());
 
 	for(auto objRnd : objRndList)
@@ -49,7 +49,7 @@ void alignHorizontallyLeft(GraphView* view)
 		left = std::min(pos.x, left);
 	}
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("align left edges").toStdString());
 
 	for(auto objRnd : objRndList)
@@ -71,7 +71,7 @@ void alignHorizontallyRight(GraphView* view)
 		right = std::max(pos.x + area.width(), right);
 	}
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("align right edges").toStdString());
 
 	for(auto objRnd : objRndList)
@@ -97,7 +97,7 @@ void alignVerticallyCenter(GraphView* view)
 
 	float center = sum / objRndList.size();
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("center on horizontal axis").toStdString());
 
 	for(auto objRnd : objRndList)
@@ -120,7 +120,7 @@ void alignVerticallyTop(GraphView* view)
 		top = std::min(pos.y, top);
 	}
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("align top edges").toStdString());
 
 	for(auto objRnd : objRndList)
@@ -142,7 +142,7 @@ void alignVerticallyBottom(GraphView* view)
 		bottom = std::max(pos.y + area.height(), bottom);
 	}
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("align bottom edges").toStdString());
 
 	for(auto objRnd : objRndList)
@@ -177,7 +177,7 @@ void distributeHorizontallyCenter(GraphView* view)
 	float right = positions.back().first;
 	float step = (right - left) / (nb - 1);
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute centers horizontally").toStdString());
 
 	for (int i = 1; i < nb; ++i)
@@ -221,7 +221,7 @@ void distributeHorizontallyGaps(GraphView* view)
 
 	float step = (right - left - width) / (nb - 1);
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute gaps horizontally").toStdString());
 
 	for (int i = 1; i < nb; ++i)
@@ -261,7 +261,7 @@ void distributeHorizontallyLeft(GraphView* view)
 	float right = positions.back().first;
 	float step = (right - left) / (nb - 1);
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute left edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
@@ -299,7 +299,7 @@ void distributeHorizontallyRight(GraphView* view)
 	float right = positions.back().first;
 	float step = (right - left) / (nb - 1);
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute right edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
@@ -337,7 +337,7 @@ void distributeVerticallyCenter(GraphView* view)
 	float bottom = positions.back().first;
 	float step = (bottom - top) / (nb - 1);
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute centers vertically").toStdString());
 
 	for (int i = 1; i < nb; ++i)
@@ -381,7 +381,7 @@ void distributeVerticallyGaps(GraphView* view)
 
 	float step = (bottom - top - height) / (nb - 1);
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute gaps vertically").toStdString());
 
 	for (int i = 1; i < nb; ++i)
@@ -421,7 +421,7 @@ void distributeVerticallyTop(GraphView* view)
 	float bottom = positions.back().first;
 	float step = (bottom - top) / (nb - 1);
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute top edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)
@@ -459,7 +459,7 @@ void distributeVerticallyBottom(GraphView* view)
 	float bottom = positions.back().first;
 	float step = (bottom - top) / (nb - 1);
 
-	auto& undoStack = view->getDocument()->getUndoStack();
+	auto& undoStack = view->document()->getUndoStack();
 	auto moveMacro = undoStack.beginMacro(view->tr("distribute bottom edges").toStdString());
 
 	for (int i = 1; i < nb; ++i)

@@ -4,8 +4,6 @@
 
 #include <memory>
 
-class QMouseEvent;
-
 namespace panda
 {
 	class PandaObject;
@@ -25,6 +23,7 @@ namespace graphics {
 }
 
 class GraphView;
+class MouseEvent;
 class ObjectPositionAddon;
 
 namespace object
@@ -46,9 +45,9 @@ public:
 	virtual void move(const panda::types::Point& delta);		// Move the position of the object in the view
 	virtual bool contains(const panda::types::Point& point);	// Is this point inside of the shape of this object ? (which can be complex)
 
-	virtual bool mousePressEvent(QMouseEvent*) { return false; }	// Return true to capture the mouse for this object
-	virtual void mouseMoveEvent(QMouseEvent*) {}
-	virtual void mouseReleaseEvent(QMouseEvent*) {}
+	virtual bool mousePressEvent(const MouseEvent&) { return false; }	// Return true to capture the mouse for this object
+	virtual void mouseMoveEvent(const MouseEvent&) {}
+	virtual void mouseReleaseEvent(const MouseEvent&) {}
 
 	virtual bool acceptsMagneticSnap() const; // If this object is used for the magnetic snap when moving objects
 

@@ -22,6 +22,8 @@ namespace graphview
 	{
 	}
 
+	LinksList::~LinksList() = default;
+
 	void LinksList::clear()
 	{
 		m_recomputeLinks = true;

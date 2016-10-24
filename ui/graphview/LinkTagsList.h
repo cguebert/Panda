@@ -24,14 +24,19 @@ namespace graphview
 	class LinkTagsList
 	{
 	public:
+		using LinkTagSPtr = std::shared_ptr<LinkTag>;
+		using LinkTags = std::vector<LinkTagSPtr>;
+
 		LinkTagsList(GraphView& view);
 
 		void addLinkTag(panda::BaseData* input, panda::BaseData* output);
 		void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
 		bool hasLinkTag(panda::BaseData* input, panda::BaseData* output);
 
+		const LinkTags& get() const;
+
 		void onBeginDraw();
-		void onEndDraw(graphics::DrawList& list, graphics::DrawColors& colors);
+		void drawTags(graphics::DrawList& list, graphics::DrawColors& colors);
 
 		void clear();
 		void setDirty();
@@ -44,9 +49,14 @@ namespace graphview
 		GraphView& m_view;
 
 		bool m_recomputeTags = false; // Should we recompute the linkTags next PaintEvent?
-		std::vector<std::shared_ptr<LinkTag>> m_linkTags;
+		LinkTags m_linkTags;
 		std::map<panda::BaseData*, LinkTag*> m_linkTagsMap; // Input data of the link tag
 		std::set<std::pair<panda::BaseData*, panda::BaseData*>> m_linkTagsDatas; // A copy of the link tags connections
 	};
+
+//****************************************************************************//
+
+	inline const LinkTagsList::LinkTags& LinkTagsList::get() const
+	{ return m_linkTags; }
 
 } // namespace graphview

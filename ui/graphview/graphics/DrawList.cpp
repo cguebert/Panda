@@ -65,7 +65,7 @@ void DrawList::addDrawCmd()
 	m_cmdBuffer.push_back(draw_cmd);
 }
 
-void DrawList::merge(DrawList& list, bool ignoreClip)
+void DrawList::merge(const DrawList& list, bool ignoreClip)
 {
 	if (list.m_cmdBuffer.empty() || list.m_idxBuffer.empty())
 		return;

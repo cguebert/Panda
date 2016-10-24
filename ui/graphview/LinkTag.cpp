@@ -9,7 +9,7 @@ using panda::types::Rect;
 namespace graphview
 {
 
-LinkTag::LinkTag(GraphView* view, panda::BaseData* input, panda::BaseData* output, int index)
+LinkTag::LinkTag(GraphView& view, panda::BaseData* input, panda::BaseData* output, int index)
 	: m_index(index)
 	, m_parentView(view)
 	, m_inputData(input)
@@ -31,7 +31,7 @@ void LinkTag::removeOutput(panda::BaseData* output)
 void LinkTag::update()
 {
 	Rect dataRect;
-	auto objRnd = m_parentView->objectRenderers().get(m_inputData->getOwner());
+	auto objRnd = m_parentView.objectRenderers().get(m_inputData->getOwner());
 	if (!objRnd)
 		return;
 
@@ -45,7 +45,7 @@ void LinkTag::update()
 
 	for (auto it = m_outputDatas.begin(); it != m_outputDatas.end();)
 	{
-		objRnd = m_parentView->objectRenderers().get(it->first->getOwner());
+		objRnd = m_parentView.objectRenderers().get(it->first->getOwner());
 		if (!objRnd)
 			continue;
 		objRnd->getDataRect(it->first, dataRect);
@@ -142,9 +142,9 @@ void LinkTag::draw(graphics::DrawList& list, graphics::DrawColors& colors)
 	}
 }
 
-bool LinkTag::needLinkTag(float inputX, float outputX, GraphView* view)
+bool LinkTag::needLinkTag(float inputX, float outputX, GraphView& view)
 {
-	return outputX <= inputX || outputX > inputX + view->width() * 2 / 3;
+	return outputX <= inputX || outputX > inputX + view.contentsArea().width() * 2 / 3;
 }
 
 std::vector<panda::BaseData*> LinkTag::getOutputDatas() const

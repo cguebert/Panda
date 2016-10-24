@@ -90,9 +90,9 @@ bool TimedFunctionsData::remove(int index)
 	{
 		m_functions.erase(it);
 		ret = true;
+		m_condition.notify_one();
 	}
 
-	m_condition.notify_one();
 	return ret;
 }
 

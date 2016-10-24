@@ -28,6 +28,7 @@ namespace graphview
 		using ConnectedDatas = std::pair<Rects, PointsPairs>;
 
 		LinksList(GraphView& view);
+		virtual ~LinksList();
 
 		void clear();
 
@@ -37,8 +38,7 @@ namespace graphview
 		virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
 		virtual DataRect getDataAtPos(const panda::types::Point& pt);
 		virtual ConnectedDatas getConnectedDatas(panda::BaseData* data);
-
-		virtual void updateLinks(const graphics::DrawColors& colors);
+		
 		virtual bool createLink(panda::BaseData* data1, panda::BaseData* data2);
 		virtual bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2);
 		virtual void computeCompatibleDatas(panda::BaseData* data);
@@ -46,7 +46,9 @@ namespace graphview
 		bool canLinkWith(const panda::BaseData* data) const; // Is it possible to link this data and the clicked data
 		void changeLink(panda::BaseData* target, panda::BaseData* parent);
 
-	private:
+	protected:
+		virtual void updateLinks(const graphics::DrawColors& colors);
+
 		GraphView& m_view;
 
 		graphics::DrawList m_linksDrawList;
