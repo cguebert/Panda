@@ -339,7 +339,7 @@ namespace graphview
 					display = m_hoverData->getName() + "\n" + m_hoverData->getDescription();
 
 				Rect area { dataRect.second.left(), dataRect.second.top(), dataRect.second.width(), dataRect.second.height() };
-				m_view.gui().showToolTip(event.pos(), display, area);
+				m_view.gui().showToolTip(m_view.toScreen(event.pos()), display, area);
 				if (!m_hoverData->getHelp().empty())
 					m_view.gui().setStatusBarMessage(m_hoverData->getHelp());
 			}
@@ -383,7 +383,7 @@ namespace graphview
 
 						auto tagRect = dataPair.second;
 						Rect area { tagRect.left(), tagRect.top(), tagRect.width(), tagRect.height() };
-						m_view.gui().showToolTip(event.pos(), display, area);
+						m_view.gui().showToolTip(m_view.toScreen(event.pos()), display, area);
 					}
 				}
 			}
