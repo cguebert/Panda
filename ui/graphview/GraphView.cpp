@@ -232,7 +232,8 @@ void GraphView::paintGL()
 	m_viewRenderer->addDrawList(&drawList);
 
 	// Highlight connected Datas
-	m_viewRenderer->addDrawList(&interaction().connectedDatasDrawList());
+	if(interaction().highlightConnectedDatas())
+		m_viewRenderer->addDrawList(&interaction().connectedDatasDrawList());
 
 	// Execute the render commands
 	m_viewRenderer->render();

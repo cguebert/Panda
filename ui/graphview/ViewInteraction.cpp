@@ -338,7 +338,7 @@ namespace graphview
 				else
 					display = m_hoverData->getName() + "\n" + m_hoverData->getDescription();
 
-				Rect area { dataRect.second.left(), dataRect.second.top(), dataRect.second.width(), dataRect.second.height() };
+				Rect area { m_view.toScreen({dataRect.second.topLeft()}), m_view.toScreen({dataRect.second.bottomRight()}) };
 				m_view.gui().showToolTip(m_view.toScreen(event.pos()), display, area);
 				if (!m_hoverData->getHelp().empty())
 					m_view.gui().setStatusBarMessage(m_hoverData->getHelp());
@@ -382,7 +382,7 @@ namespace graphview
 						}
 
 						auto tagRect = dataPair.second;
-						Rect area { tagRect.left(), tagRect.top(), tagRect.width(), tagRect.height() };
+						Rect area { m_view.toScreen({tagRect.topLeft()}), m_view.toScreen({tagRect.bottomRight()}) };
 						m_view.gui().showToolTip(m_view.toScreen(event.pos()), display, area);
 					}
 				}

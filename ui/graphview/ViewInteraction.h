@@ -33,6 +33,7 @@ namespace graphview
 		void onBeginDraw(const graphics::DrawColors& colors);
 		void drawInteraction(graphics::DrawList& drawList, const graphics::DrawColors& colors);
 		const graphics::DrawList& connectedDatasDrawList() const;
+		bool highlightConnectedDatas() const;
 
 		virtual void mousePressEvent(const MouseEvent& event);
 		virtual void mouseMoveEvent(const MouseEvent& event);
@@ -47,8 +48,6 @@ namespace graphview
 		void moveObjectToBack();
 		void moveObjectToFront();
 		void removeLink();
-
-		void setDataLabel();
 
 		const panda::BaseData* clickedData() const;
 		panda::BaseData* contextMenuData() const;
@@ -113,6 +112,9 @@ namespace graphview
 
 	inline const graphics::DrawList& ViewInteraction::connectedDatasDrawList() const
 	{ return m_connectedDatasDrawList; }
+
+	inline bool ViewInteraction::highlightConnectedDatas() const
+	{ return m_highlightConnectedDatas; }
 
 } // namespace graphview
 
