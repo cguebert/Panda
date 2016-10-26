@@ -52,7 +52,7 @@ namespace graphview
 		GraphView& m_view;
 
 		graphics::DrawList m_linksDrawList;
-		bool m_recomputeLinks = false;
+		bool m_recomputeLinks = true;
 
 		std::set<const panda::BaseData*> m_possibleLinks; // When creating a new link, this contains all possible destinations
 	};

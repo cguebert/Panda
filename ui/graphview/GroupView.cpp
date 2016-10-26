@@ -91,21 +91,19 @@ private:
 
 		bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) override
 		{
-			if (data->getOwner() == m_groupView.group())
-			{
-				for (const auto& groupDataRect : m_groupView.groupDataRects())
-				{
-					if (groupDataRect.first == data)
-					{
-						rect = groupDataRect.second;
-						return true;
-					}
-				}
-
-				return false;
-			}
-			else
+			if (data->getOwner() != m_groupView.group())
 				return LinksList::getDataRect(data, rect);
+			
+			for (const auto& groupDataRect : m_groupView.groupDataRects())
+			{
+				if (groupDataRect.first == data)
+				{
+					rect = groupDataRect.second;
+					return true;
+				}
+			}
+
+			return false;			
 		}
 
 		DataRect getDataAtPos(const panda::types::Point& pt) override
