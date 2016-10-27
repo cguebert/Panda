@@ -669,9 +669,11 @@ namespace graphview
 	void ViewInteraction::updateConnectedDatas(const graphics::DrawColors& colors)
 	{
 		m_recomputeConnectedDatas = false;
-		m_connectedDatasDrawList.clear();
+		
 		if (!m_highlightConnectedDatas)
 			return;
+
+		m_connectedDatasDrawList = {};
 
 		auto connected = m_view.linksList().getConnectedDatas(m_hoverData);
 		const auto& rects = connected.first;
