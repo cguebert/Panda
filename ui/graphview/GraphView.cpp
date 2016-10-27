@@ -154,7 +154,7 @@ void GraphView::paintGL()
 	functions.swap(m_functionsToExecuteNextRefresh);
 	for (const auto func : functions)
 		func();
-	
+
 	interaction().beforeDraw();
 
 	updateDirtyRenderers();
@@ -168,14 +168,25 @@ void GraphView::paintGL()
 		viewport().updateObjectsRect();
 	}
 
-	linksList().onBeginDraw(m_drawColors);
-	linkTagsList().onBeginDraw();
-	interaction().onBeginDraw(m_drawColors);
+	drawGraphView(*m_viewRenderer, m_drawColors);
 
+	// Execute the render commands
+	m_viewRenderer->render();
+}
+
+void GraphView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors)
+{
+	// Prepare the renderer
 	const auto displayRect = viewport().displayRect();
-	m_viewRenderer->setView(displayRect);
-	m_viewRenderer->newFrame();
-	graphics::DrawList drawList;
+	viewRenderer.setView(displayRect);
+	viewRenderer.newFrame();
+
+	linksList().onBeginDraw(drawColors);
+	linkTagsList().onBeginDraw();
+	interaction().onBeginDraw(drawColors);
+
+	auto drawListSPtr = std::make_shared<graphics::DrawList>();
+	auto& drawList = *drawListSPtr;
 
 	auto col = palette().background().color();
 	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
@@ -187,7 +198,7 @@ void GraphView::paintGL()
 	for (auto& objRnd : orderedObjectRenderers)
 	{
 		if (objRnd->getVisualArea().intersects(displayRect))
-			objRnd->drawBackground(drawList, m_drawColors);
+			objRnd->drawBackground(drawList, drawColors);
 	}
 
 	// Draw links
@@ -197,46 +208,43 @@ void GraphView::paintGL()
 	for (auto& objRnd : orderedObjectRenderers)
 	{
 		if (objRnd->getVisualArea().intersects(displayRect))
-			objRnd->draw(drawList, m_drawColors);
+			objRnd->draw(drawList, drawColors);
 	}
 
 	// Give a possibility to draw in front of normal objects
 	for (auto& objRnd : orderedObjectRenderers)
 	{
 		if (objRnd->getVisualArea().intersects(displayRect))
-			objRnd->drawForeground(drawList, m_drawColors);
+			objRnd->drawForeground(drawList, drawColors);
 	}
 
 	// Redraw selected objets in case they are moved over others (so that they don't appear under them)
 	for (auto& objRnd : m_selectedObjectsRenderers)
 	{
 		if (objRnd->getVisualArea().intersects(displayRect))
-			objRnd->draw(drawList, m_drawColors, true);
+			objRnd->draw(drawList, drawColors, true);
 	}
 
-	linkTagsList().drawTags(drawList, m_drawColors);
-	interaction().drawInteraction(drawList, m_drawColors);
+	linkTagsList().drawTags(drawList, drawColors);
+	interaction().drawInteraction(drawList, drawColors);
 
 	if (m_debugDirtyState)
 	{
 #ifdef PANDA_LOG_EVENTS
 		UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
 		if(logDlg && logDlg->isVisible())
-			paintLogDebug(drawList, m_drawColors);
+			paintLogDebug(drawList, drawColors);
 		else
 #endif
-			paintDirtyState(drawList, m_drawColors);
+			paintDirtyState(drawList, drawColors);
 	}
 
 	// Add the main draw list
-	m_viewRenderer->addDrawList(&drawList);
+	viewRenderer.addDrawList(drawListSPtr);
 
 	// Highlight connected Datas
 	if(interaction().highlightConnectedDatas())
-		m_viewRenderer->addDrawList(&interaction().connectedDatasDrawList());
-
-	// Execute the render commands
-	m_viewRenderer->render();
+		viewRenderer.addDrawList(interaction().connectedDatasDrawList());
 }
 
 #ifdef PANDA_LOG_EVENTS
@@ -468,18 +476,21 @@ void GraphView::changedDock(panda::DockableObject* dockable)
 
 QSize GraphView::viewSize()
 {
-	return QSize(m_viewRect.width(), m_viewRect.height());
+	const auto& viewRect = viewport().viewRect();
+	return QSize(viewRect.width(), viewRect.height());
 }
 
 QPoint GraphView::viewPosition()
 {
+	const auto& viewRect = viewport().viewRect();
 	auto delta = viewport().viewDelta() * viewport().zoom();
-	return QPoint(m_viewRect.left() - delta.x, m_viewRect.top() - delta.y);
+	return QPoint(viewRect.left() - delta.x, viewRect.top() - delta.y);
 }
 
 void GraphView::scrollView(QPoint position)
 {
-	Point delta = convert(position) - m_viewRect.topLeft() + viewport().viewDelta() * viewport().zoom();
+	const auto& viewRect = viewport().viewRect();
+	Point delta = convert(position) - viewRect.topLeft() + viewport().viewDelta() * viewport().zoom();
 	viewport().moveView(delta);
 }
 

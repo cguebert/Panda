@@ -424,17 +424,16 @@ GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::Obje
 	m_observer.get(docSignals.modifiedObject).connect<GroupView, &GroupView::modifiedObject>(this);
 }
 
-void GroupView::paintGL()
+void GroupView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors)
 {
-	GraphView::paintGL();
-
-	m_viewRenderer->newFrame();
+	GraphView::drawGraphView(viewRenderer, drawColors);
 
 // Testing a way to draw the group datas
-	graphics::DrawList list;
+	auto drawListSPtr = std::make_shared<graphics::DrawList>();
+	auto& drawList = *drawListSPtr;
 
 	const auto clickedData = interaction().clickedData();
-	auto pen = m_drawColors.penColor;
+	auto pen = drawColors.penColor;
 	int inputIndex = 0, outputIndex = 0;
 	for (const auto& gdr : m_groupDataRects)
 	{
@@ -445,11 +444,11 @@ void GroupView::paintGL()
 			// Draw the data
 			unsigned int dataColor = 0;
 			if (clickedData && clickedData != groupData && !linksList().canLinkWith(groupData))
-				dataColor = m_drawColors.lightColor;
+				dataColor = drawColors.lightColor;
 			else
 				dataColor = graphics::DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
-			list.addRectFilled(groupDataRect, dataColor);
-			list.addRect(groupDataRect, m_drawColors.penColor);
+			drawList.addRectFilled(groupDataRect, dataColor);
+			drawList.addRect(groupDataRect, drawColors.penColor);
 
 			// Draw the tag
 			Rect tagRect = Rect::fromSize(groupDataRect.left() - tagW - tagMargin,
@@ -461,9 +460,9 @@ void GroupView::paintGL()
 			auto a = tagRect.topLeft();
 			auto b = tagRect.bottomLeft();
 			auto c = Point(x, cy);
-			list.addLine(Point(x, cy - 0.5f), Point(x + tagMargin, cy - 0.5f), m_drawColors.penColor);
-			list.addTriangleFilled(a, b, c, m_drawColors.lightColor);
-			list.addTriangle(a, b, c, m_drawColors.penColor);
+			drawList.addLine(Point(x, cy - 0.5f), Point(x + tagMargin, cy - 0.5f), drawColors.penColor);
+			drawList.addTriangleFilled(a, b, c, drawColors.lightColor);
+			drawList.addTriangle(a, b, c, drawColors.penColor);
 		}
 		
 		if (groupData->isOutput())
@@ -471,11 +470,11 @@ void GroupView::paintGL()
 			// Draw the data
 			unsigned int dataColor = 0;
 			if (clickedData && clickedData != groupData && !linksList().canLinkWith(groupData))
-				dataColor = m_drawColors.lightColor;
+				dataColor = drawColors.lightColor;
 			else
 				dataColor = graphics::DrawList::convert(groupData->getDataTrait()->typeColor()) | 0xFF000000; // Setting alpha to opaque
-			list.addRectFilled(groupDataRect, dataColor);
-			list.addRect(groupDataRect, m_drawColors.penColor);
+			drawList.addRectFilled(groupDataRect, dataColor);
+			drawList.addRect(groupDataRect, drawColors.penColor);
 
 			// Draw the tag
 			Rect tagRect = Rect::fromSize(groupDataRect.right() + tagMargin,
@@ -487,14 +486,13 @@ void GroupView::paintGL()
 			auto a = tagRect.topLeft();
 			auto b = tagRect.bottomLeft();
 			auto c = Point(tagRect.right(), cy);
-			list.addLine(Point(x - tagMargin, cy), Point(x, cy), m_drawColors.penColor);
-			list.addTriangleFilled(a, b, c, m_drawColors.lightColor);
-			list.addTriangle(a, b, c, m_drawColors.penColor);
+			drawList.addLine(Point(x - tagMargin, cy), Point(x, cy), drawColors.penColor);
+			drawList.addTriangleFilled(a, b, c, drawColors.lightColor);
+			drawList.addTriangle(a, b, c, drawColors.penColor);
 		}
 	}
 
-	m_viewRenderer->addDrawList(&list);
-	m_viewRenderer->render();
+	m_viewRenderer->addDrawList(drawListSPtr);
 }
 
 void GroupView::updateGroupDataRects()
@@ -518,7 +516,6 @@ void GroupView::updateGroupDataRects()
 	const float outputsStartY = onlyObjectsRect.center().y - outputsSize / 2.0f;
 
 	m_groupDataRects.clear();
-	auto pen = m_drawColors.penColor;
 	int inputIndex = 0, outputIndex = 0;
 	for (const auto& groupData : m_group->getGroupDatas())
 	{

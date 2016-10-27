@@ -673,8 +673,6 @@ namespace graphview
 		if (!m_highlightConnectedDatas)
 			return;
 
-		m_connectedDatasDrawList = {};
-
 		auto connected = m_view.linksList().getConnectedDatas(m_hoverData);
 		const auto& rects = connected.first;
 		const auto& links = connected.second;
@@ -682,18 +680,20 @@ namespace graphview
 		if(links.empty())
 			return;
 
+		m_connectedDatasDrawList = std::make_shared<graphics::DrawList>();
+
 		// Now draw everything
 		for (const auto& rect : rects)
 		{
-			m_connectedDatasDrawList.addRectFilled(rect, colors.highlightColor);
-			m_connectedDatasDrawList.addRect(rect, colors.penColor, 1.f);
+			m_connectedDatasDrawList->addRectFilled(rect, colors.highlightColor);
+			m_connectedDatasDrawList->addRect(rect, colors.penColor, 1.f);
 		}
 
 		for(const auto& link : links)
 		{
 			float w = (link.second.x - link.first.x) / 2;
 			auto p1 = link.first, p2 = link.second, d = Point(w, 0);
-			m_connectedDatasDrawList.addBezierCurve(p1, p1 + d, p2 - d, p2, colors.highlightColor, 3);
+			m_connectedDatasDrawList->addBezierCurve(p1, p1 + d, p2 - d, p2, colors.highlightColor, 3);
 		}
 	}
 

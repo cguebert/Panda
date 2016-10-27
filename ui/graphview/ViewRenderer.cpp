@@ -236,7 +236,7 @@ void ViewRenderer::render()
 	m_VAO->bind();
 
 	int vboSize = 0, eboSize = 0;
-	for (const auto* cmd_list : m_drawLists)
+	for (const auto cmd_list : m_drawLists)
 	{
 		if (cmd_list->vtxBuffer().empty() || cmd_list->idxBuffer().empty())
 			continue;

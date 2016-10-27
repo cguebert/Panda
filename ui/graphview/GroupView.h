@@ -39,7 +39,7 @@ public:
 	void removeGroupData(panda::BaseData* data);
 
 protected:
-	void paintGL() override;
+	void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors) override;
 
 private:
 	void modifiedObject(panda::PandaObject* object);

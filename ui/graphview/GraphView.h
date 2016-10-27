@@ -51,10 +51,9 @@ public:
 	explicit GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
 	~GraphView();
 
-	QSize minimumSizeHint() const override;
-	QSize sizeHint() const override;
-
 	panda::PandaDocument* document() const;
+
+	virtual void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors);
 
 	panda::types::Point getNewObjectPosition();
 
@@ -75,11 +74,6 @@ public:
 	ViewInteraction& interaction() const;
 	ViewGUI& gui() const;
 
-	// From ScrollableView
-	virtual QSize viewSize() override;
-	virtual QPoint viewPosition() override;
-	virtual void scrollView(QPoint position) override;
-
 	void executeNextRefresh(std::function<void ()> func);
 
 	const std::vector<object::ObjectRenderer*>& selectedObjectsRenderers() const;
@@ -95,6 +89,9 @@ protected:
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
 
+	QSize minimumSizeHint() const override;
+	QSize sizeHint() const override;
+
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
@@ -102,6 +99,11 @@ protected:
 	void keyPressEvent(QKeyEvent* event) override;
 	void contextMenuEvent(QContextMenuEvent* event) override;
 	void focusOutEvent(QFocusEvent*) override;
+
+	// From ScrollableView
+	QSize viewSize() override;
+	QPoint viewPosition() override;
+	void scrollView(QPoint position) override;
 
 #ifdef PANDA_LOG_EVENTS
 	void paintLogDebug(graphics::DrawList& list, graphics::DrawColors& colors);
@@ -137,9 +139,6 @@ public slots:
 protected:
 	panda::PandaDocument* m_pandaDocument;
 	panda::ObjectsList& m_objectsList;
-
-	panda::types::Rect m_objectsRect; /// Area taken by the objects on the screen
-	panda::types::Rect m_viewRect; /// Area taken by the objects on the screen, including zoom
 
 	bool m_isLoading = false; /// We don't update the view while loading (unnecessary events)
 

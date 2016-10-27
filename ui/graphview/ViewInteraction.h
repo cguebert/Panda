@@ -32,7 +32,7 @@ namespace graphview
 		void beforeDraw();
 		void onBeginDraw(const graphics::DrawColors& colors);
 		void drawInteraction(graphics::DrawList& drawList, const graphics::DrawColors& colors);
-		const graphics::DrawList& connectedDatasDrawList() const;
+		const std::shared_ptr<graphics::DrawList>& connectedDatasDrawList() const;
 		bool highlightConnectedDatas() const;
 
 		virtual void mousePressEvent(const MouseEvent& event);
@@ -102,7 +102,7 @@ namespace graphview
 		std::unique_ptr<SnapToObjects> m_snapToObjects;
 
 		bool m_recomputeConnectedDatas = false;
-		graphics::DrawList m_connectedDatasDrawList;
+		std::shared_ptr<graphics::DrawList> m_connectedDatasDrawList;
 	};
 
 //****************************************************************************//
@@ -110,7 +110,7 @@ namespace graphview
 	inline const panda::BaseData* ViewInteraction::clickedData() const
 	{ return m_clickedData; }
 
-	inline const graphics::DrawList& ViewInteraction::connectedDatasDrawList() const
+	inline const std::shared_ptr<graphics::DrawList>& ViewInteraction::connectedDatasDrawList() const
 	{ return m_connectedDatasDrawList; }
 
 	inline bool ViewInteraction::highlightConnectedDatas() const
