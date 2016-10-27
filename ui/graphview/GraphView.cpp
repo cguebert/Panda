@@ -190,8 +190,8 @@ void GraphView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors d
 	viewRenderer.setView(displayRect);
 	viewRenderer.newFrame();
 
-	linksList().onBeginDraw(drawColors);
 	linkTagsList().onBeginDraw();
+	linksList().onBeginDraw(drawColors);
 	interaction().onBeginDraw(drawColors);
 
 	auto& drawList = *m_drawList;

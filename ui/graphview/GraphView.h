@@ -63,7 +63,6 @@ public:
 	void sortAllDockables();
 
 	ObjectsSelection& selection() const;
-	ViewRenderer& viewRenderer() const;
 	LinksList& linksList() const;
 	LinkTagsList& linkTagsList() const;
 	panda::ObjectsList& objectsList() const;
@@ -169,9 +168,6 @@ protected:
 
 inline ObjectsSelection& GraphView::selection() const
 { return *m_objectsSelection; }
-
-inline ViewRenderer& GraphView::viewRenderer() const
-{ return *m_viewRenderer; }
 
 inline LinksList& GraphView::linksList() const
 { return *m_linksList; }
