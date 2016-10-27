@@ -4,6 +4,7 @@
 
 #include <ui/graphview/graphics/DrawList.h>
 
+#include <memory>
 #include <set>
 
 namespace panda {
@@ -32,8 +33,9 @@ namespace graphview
 
 		void clear();
 
+		void initializeRenderer(ViewRenderer& viewRenderer);
 		void onBeginDraw(const graphics::DrawColors& colors);
-		const graphics::DrawList& linksDrawList() const;
+		const std::shared_ptr<graphics::DrawList>& linksDrawList() const;
 
 		virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
 		virtual DataRect getDataAtPos(const panda::types::Point& pt);
@@ -51,7 +53,7 @@ namespace graphview
 
 		GraphView& m_view;
 
-		graphics::DrawList m_linksDrawList;
+		std::shared_ptr<graphics::DrawList> m_linksDrawList;
 		bool m_recomputeLinks = true;
 
 		std::set<const panda::BaseData*> m_possibleLinks; // When creating a new link, this contains all possible destinations
@@ -59,7 +61,7 @@ namespace graphview
 
 //****************************************************************************//
 
-	inline const graphics::DrawList& LinksList::linksDrawList() const
+	inline const std::shared_ptr<graphics::DrawList>& LinksList::linksDrawList() const
 	{ return m_linksDrawList; }
 
 	inline bool LinksList::canLinkWith(const panda::BaseData* data) const

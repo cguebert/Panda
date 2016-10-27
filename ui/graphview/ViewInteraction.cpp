@@ -58,6 +58,11 @@ namespace graphview
 
 	ViewInteraction::~ViewInteraction() = default;
 
+	void ViewInteraction::initializeRenderer(ViewRenderer& viewRenderer)
+	{
+		m_connectedDatasDrawList = std::make_shared<graphics::DrawList>(viewRenderer);
+	}
+
 	void ViewInteraction::beforeDraw()
 	{
 		// Moving the view when creating a link if the mouse is near the border of the widget
@@ -680,7 +685,7 @@ namespace graphview
 		if(links.empty())
 			return;
 
-		m_connectedDatasDrawList = std::make_shared<graphics::DrawList>();
+		m_connectedDatasDrawList->clear();
 
 		// Now draw everything
 		for (const auto& rect : rects)

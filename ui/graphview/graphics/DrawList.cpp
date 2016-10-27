@@ -34,11 +34,12 @@ unsigned int DrawList::convert(const QColor& col)
 	return out;
 }
 
-DrawList::DrawList()
+DrawList::DrawList(ViewRenderer& viewRenderer)
+	: m_viewRenderer(viewRenderer)
 {
-	if (ViewRenderer::initialized())
+	if (m_viewRenderer.initialized())
 	{
-		m_textureIdStack.push_back(ViewRenderer::defaultTextureId());
+		m_textureIdStack.push_back(m_viewRenderer.defaultTextureId());
 		m_clipRectStack.push_back(defaultClipRect());
 	}
 	addDrawCmd();
@@ -320,7 +321,7 @@ void DrawList::addText(const Font& font, const Point& pos, const std::string& te
 
 void DrawList::addText(const Point& pos, const std::string& text, unsigned int col)
 {
-	addText(*ViewRenderer::currentFont(), pos, text, col);
+	addText(*m_viewRenderer.currentFont(), pos, text, col);
 }
 
 void DrawList::addText(const Rect& rect, const std::string& text, unsigned int col, int align, float scale, bool wrap, bool fit)
@@ -328,7 +329,7 @@ void DrawList::addText(const Rect& rect, const std::string& text, unsigned int c
 	if (text.empty() || rect.empty())
 		return;
 
-	auto font = ViewRenderer::currentFont();
+	auto font = m_viewRenderer.currentFont();
 	if (!font)
 		return;
 
@@ -677,7 +678,7 @@ void DrawList::addMesh(const DrawMesh& mesh, unsigned int col)
 
 Point DrawList::calcTextSize(float scale, const std::string& text, float wrap_width, bool cutWords)
 {
-	auto font = ViewRenderer::currentFont();
+	auto font = m_viewRenderer.currentFont();
 	if (!font)
 		return Point();
 

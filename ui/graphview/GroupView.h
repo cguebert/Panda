@@ -39,6 +39,7 @@ public:
 	void removeGroupData(panda::BaseData* data);
 
 protected:
+	void initializeRenderer(ViewRenderer& viewRenderer) override;
 	void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors) override;
 
 private:
@@ -47,6 +48,8 @@ private:
 	panda::Group* m_group;
 
 	DataRects m_groupDataRects;
+
+	std::shared_ptr<graphics::DrawList> m_groupDrawList;
 };
 
 //****************************************************************************//

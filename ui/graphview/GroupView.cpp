@@ -289,7 +289,7 @@ private:
 
 							auto d2 = dataRect.center();
 							Point w = { (d2.x - d1.x) / 2, 0 };
-							m_linksDrawList.addBezierCurve(d1, d1 + w, d2 - w, d2, pen, 1);
+							m_linksDrawList->addBezierCurve(d1, d1 + w, d2 - w, d2, pen, 1);
 						}
 					}
 				}
@@ -307,7 +307,7 @@ private:
 
 							auto d1 = dataRect.center();
 							Point w = { (d2.x - d1.x) / 2, 0 };
-							m_linksDrawList.addBezierCurve(d1, d1 + w, d2 - w, d2, pen, 1);
+							m_linksDrawList->addBezierCurve(d1, d1 + w, d2 - w, d2, pen, 1);
 						}
 					}
 				}
@@ -424,13 +424,20 @@ GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::Obje
 	m_observer.get(docSignals.modifiedObject).connect<GroupView, &GroupView::modifiedObject>(this);
 }
 
+void GroupView::initializeRenderer(ViewRenderer& viewRenderer)
+{
+	GraphView::initializeRenderer(viewRenderer);
+
+	m_groupDrawList = std::make_shared<graphics::DrawList>(viewRenderer);
+}
+
 void GroupView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors)
 {
 	GraphView::drawGraphView(viewRenderer, drawColors);
 
 // Testing a way to draw the group datas
-	auto drawListSPtr = std::make_shared<graphics::DrawList>();
-	auto& drawList = *drawListSPtr;
+	auto& drawList = *m_groupDrawList;
+	drawList.clear();
 
 	const auto clickedData = interaction().clickedData();
 	auto pen = drawColors.penColor;
@@ -492,7 +499,7 @@ void GroupView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors d
 		}
 	}
 
-	m_viewRenderer->addDrawList(drawListSPtr);
+	m_viewRenderer->addDrawList(m_groupDrawList);
 }
 
 void GroupView::updateGroupDataRects()

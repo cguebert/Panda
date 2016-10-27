@@ -61,4 +61,10 @@ namespace graphview
 			m_orderedObjectRenderers.push_back(get(obj.get()));
 	}
 
+	void ObjectRenderersList::initializeRenderer(ViewRenderer& viewRenderer)
+	{
+		for (const auto& objRnd : m_orderedObjectRenderers)
+			objRnd->initializeRenderer(viewRenderer);
+	}
+
 } // namespace graphview

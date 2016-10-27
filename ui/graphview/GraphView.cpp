@@ -139,6 +139,7 @@ QSize GraphView::sizeHint() const
 void GraphView::initializeGL()
 {
 	m_viewRenderer->initialize();
+	initializeRenderer(*m_viewRenderer);
 }
 
 void GraphView::resizeGL(int w, int h)
@@ -174,6 +175,14 @@ void GraphView::paintGL()
 	m_viewRenderer->render();
 }
 
+void GraphView::initializeRenderer(ViewRenderer& viewRenderer)
+{
+	m_drawList = std::make_shared<graphics::DrawList>(viewRenderer);
+	interaction().initializeRenderer(viewRenderer);
+	linksList().initializeRenderer(viewRenderer);
+	objectRenderers().initializeRenderer(viewRenderer);
+}
+
 void GraphView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors)
 {
 	// Prepare the renderer
@@ -185,8 +194,8 @@ void GraphView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors d
 	linkTagsList().onBeginDraw();
 	interaction().onBeginDraw(drawColors);
 
-	auto drawListSPtr = std::make_shared<graphics::DrawList>();
-	auto& drawList = *drawListSPtr;
+	auto& drawList = *m_drawList;
+	drawList.clear();
 
 	auto col = palette().background().color();
 	glClearColor(col.redF(), col.greenF(), col.blueF(), 1.0);
@@ -202,7 +211,7 @@ void GraphView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors d
 	}
 
 	// Draw links
-	drawList.merge(linksList().linksDrawList());
+	drawList.merge(*linksList().linksDrawList());
 
 	// Draw the objects
 	for (auto& objRnd : orderedObjectRenderers)
@@ -240,7 +249,7 @@ void GraphView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors d
 	}
 
 	// Add the main draw list
-	viewRenderer.addDrawList(drawListSPtr);
+	viewRenderer.addDrawList(m_drawList);
 
 	// Highlight connected Datas
 	if(interaction().highlightConnectedDatas())
@@ -361,6 +370,10 @@ void GraphView::addedObject(panda::PandaObject* object)
 	if (!objRnd)
 	{
 		auto objRndPtr = object::ObjectRendererFactory::getInstance()->createRenderer(this, object);
+		
+		if (m_viewRenderer->initialized())
+			objRndPtr->initializeRenderer(*m_viewRenderer);
+
 		objectRenderers().set(object, objRndPtr);
 		objRnd = objRndPtr.get();
 	}

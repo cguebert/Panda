@@ -26,6 +26,7 @@ public:
 	using DrawListSPtr = std::shared_ptr<graphics::DrawList>;
 
 	ViewRenderer();
+	~ViewRenderer();
 
 	void initialize();
 	void resize(int w, int h);
@@ -35,12 +36,12 @@ public:
 	void addDrawList(const DrawListSPtr& dl);
 	void render();
 
-	static bool initialized();
-	static unsigned int defaultTextureId();
-	static graphics::Font* currentFont();
+	bool initialized();
+	unsigned int defaultTextureId();
+	graphics::Font* currentFont();
 
 private:
-	std::shared_ptr<QOpenGLTexture> m_fontTexture;
+	std::unique_ptr<QOpenGLTexture> m_fontTexture;
 	std::unique_ptr<QOpenGLShaderProgram> m_shader;
 	std::unique_ptr<QOpenGLVertexArrayObject> m_VAO;
 	std::unique_ptr<QOpenGLBuffer> m_VBO, m_EBO;
@@ -50,7 +51,7 @@ private:
 	panda::types::Rect m_viewBounds;
 
 	std::vector<DrawListSPtr> m_drawLists;
-	std::shared_ptr<graphics::FontAtlas> m_atlas;
+	std::unique_ptr<graphics::FontAtlas> m_atlas;
 };
 
 inline void ViewRenderer::addDrawList(const DrawListSPtr& dl)

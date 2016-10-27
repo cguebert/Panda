@@ -9,6 +9,8 @@ class QColor;
 namespace graphview
 {
 
+class ViewRenderer;
+
 namespace graphics
 {
 
@@ -47,7 +49,7 @@ public:
 	};
 	using TextAlign = int;
 
-	DrawList();
+	DrawList(ViewRenderer& viewRenderer);
 	void clear();
 
 	static unsigned int convert(const QColor& col);
@@ -128,6 +130,8 @@ private:
 	std::vector<pRect> m_clipRectStack;
 
 	DrawPath m_path;
+
+	ViewRenderer& m_viewRenderer;
 };
 
 } // namespace graphics

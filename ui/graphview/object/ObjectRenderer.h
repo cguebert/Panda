@@ -25,6 +25,7 @@ namespace graphics {
 class GraphView;
 class MouseEvent;
 class ObjectPositionAddon;
+class ViewRenderer;
 
 namespace object
 {
@@ -36,6 +37,8 @@ public:
 
 	ObjectRenderer(GraphView* view, panda::PandaObject* obj);
 	virtual ~ObjectRenderer();
+
+	void initializeRenderer(ViewRenderer& viewRenderer);
 
 	virtual void drawBackground(graphics::DrawList& list, graphics::DrawColors& colors) {}	// Called first
 	virtual void draw(graphics::DrawList& list, graphics::DrawColors& colors, bool selected = false); // "Normal" draw
@@ -94,7 +97,7 @@ protected:
 	std::vector<DataRectPair> m_datas;
 
 	std::string m_currentLabel;
-	graphics::DrawList m_textDrawList;
+	std::unique_ptr<graphics::DrawList> m_textDrawList;
 	graphics::DrawPath m_outline;
 	graphics::DrawMesh m_fillShape;
 

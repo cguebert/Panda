@@ -29,6 +29,7 @@ namespace graphview
 		ViewInteraction(GraphView& view);
 		virtual ~ViewInteraction();
 
+		void initializeRenderer(ViewRenderer& viewRenderer);
 		void beforeDraw();
 		void onBeginDraw(const graphics::DrawColors& colors);
 		void drawInteraction(graphics::DrawList& drawList, const graphics::DrawColors& colors);

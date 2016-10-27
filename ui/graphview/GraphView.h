@@ -53,8 +53,6 @@ public:
 
 	panda::PandaDocument* document() const;
 
-	virtual void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors);
-
 	panda::types::Point getNewObjectPosition();
 
 	void objectsMoved(); // Refresh the view, links & tags
@@ -85,6 +83,9 @@ public:
 	void emitViewportModified();
 
 protected:
+	virtual void initializeRenderer(ViewRenderer& viewRenderer);
+	virtual void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors);
+
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
@@ -150,6 +151,7 @@ protected:
 	bool m_debugDirtyState = false;
 
 	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
+	std::shared_ptr<graphics::DrawList> m_drawList;
 	graphics::DrawColors m_drawColors; /// So that we aquire Qt colors only once
 	bool m_objectsMoved = false;
 

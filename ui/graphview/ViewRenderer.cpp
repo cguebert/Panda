@@ -59,51 +59,13 @@ namespace
 		GLboolean last_enable_blend, last_enable_cull_face, last_enable_depth_test, last_enable_scissor_test;
 	};
 
-	std::weak_ptr<QOpenGLTexture>& getFontTextureWeak()
-	{
-		static std::weak_ptr<QOpenGLTexture> ptr;
-		return ptr;
-	}
-
-	std::shared_ptr<QOpenGLTexture> getFontTexture()
-	{
-		auto& ptr = getFontTextureWeak();
-		if (ptr.expired())
-		{
-			auto newPtr = std::make_shared<QOpenGLTexture>(QOpenGLTexture::Target2D);
-			ptr = newPtr;
-			return newPtr;
-		}
-		else
-			return ptr.lock();
-	}
-
-	std::weak_ptr<graphview::graphics::FontAtlas>& getFontAtlasWeak()
-	{
-		static std::weak_ptr<graphview::graphics::FontAtlas> ptr;
-		return ptr;
-	}
-
-	std::shared_ptr<graphview::graphics::FontAtlas> getFontAtlas()
-	{
-		auto& ptr = getFontAtlasWeak();
-		if (ptr.expired())
-		{
-			auto newPtr = std::make_shared<graphview::graphics::FontAtlas>();
-			ptr = newPtr;
-			return newPtr;
-		}
-		else
-			return ptr.lock();
-	}
-
 } // Unnamed namespace
 
 namespace graphview
 {
 
 ViewRenderer::ViewRenderer()
-	: m_atlas(getFontAtlas())
+	: m_atlas(std::make_unique<graphview::graphics::FontAtlas>())
 {
 	for(int i = 0; i < 4; ++i)
 		m_viewBounds[i] = 0;
@@ -118,22 +80,18 @@ ViewRenderer::ViewRenderer()
 #endif
 }
 
+ViewRenderer::~ViewRenderer() = default;
+
 void ViewRenderer::initialize()
 {
 	QOpenGLFunctions* f = QOpenGLContext::currentContext()->functions();
 
-	if (getFontTextureWeak().expired())
-	{
-		unsigned char* pixels;
-		int width, height;
-		m_atlas->getTexDataAsRGBA32(&pixels, &width, &height);
-		QImage img(pixels, width, height, QImage::Format::Format_ARGB32);
-		auto fontTexture = std::make_shared<QOpenGLTexture>(img);
-		getFontTextureWeak() = fontTexture;
-		m_fontTexture = fontTexture;
-	}
-	else
-		m_fontTexture = getFontTexture();
+	unsigned char* pixels;
+	int width, height;
+	m_atlas->getTexDataAsRGBA32(&pixels, &width, &height);
+	QImage img(pixels, width, height, QImage::Format::Format_ARGB32);
+	m_fontTexture = std::make_unique<QOpenGLTexture>(img);
+
 	m_atlas->setTexID(m_fontTexture->textureId());
 
 	const GLchar* vertex_shader =
@@ -280,21 +238,21 @@ void ViewRenderer::render()
 
 bool ViewRenderer::initialized()
 {
-	return !getFontTextureWeak().expired();
+	return m_fontTexture != nullptr;
 }
 
 unsigned int ViewRenderer::defaultTextureId()
 {
-	if (getFontTextureWeak().expired())
+	if (!m_fontTexture)
 		return 0;
-	return getFontTexture()->textureId();
+	return m_fontTexture->textureId();
 }
 
 graphics::Font* ViewRenderer::currentFont()
 {
-	if (!getFontTextureWeak().expired() && !getFontAtlasWeak().expired())
+	if (m_fontTexture && m_atlas)
 	{
-		const auto& fonts = getFontAtlas()->fonts();
+		const auto& fonts = m_atlas->fonts();
 		if (!fonts.empty())
 			return fonts.back().get();
 	}

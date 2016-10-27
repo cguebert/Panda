@@ -45,6 +45,11 @@ ObjectRenderer::~ObjectRenderer()
 {
 }
 
+void ObjectRenderer::initializeRenderer(ViewRenderer& viewRenderer)
+{
+	m_textDrawList = std::make_unique<graphics::DrawList>(viewRenderer);
+}
+
 void ObjectRenderer::update()
 {
 	m_selectionArea = m_visualArea = Rect::fromSize(getPosition(), getObjectSize());
@@ -96,7 +101,7 @@ void ObjectRenderer::move(const Point& delta)
 			it.second.translate(delta);
 		m_outline.translate(delta);
 		m_fillShape.translate(delta);
-		m_textDrawList.translate(delta);
+		m_textDrawList->translate(delta);
 	}
 }
 
@@ -195,11 +200,11 @@ void ObjectRenderer::drawText(graphics::DrawList& list, graphics::DrawColors& co
 	if (label != m_currentLabel)
 	{
 		m_currentLabel = label;
-		m_textDrawList = {};
-		m_textDrawList.addText(getTextArea(), label, colors.penColor, graphics::DrawList::Align_Center, 1.0f, true, true);
+		m_textDrawList->clear();
+		m_textDrawList->addText(getTextArea(), label, colors.penColor, graphics::DrawList::Align_Center, 1.0f, true, true);
 	}
 	
-	list.merge(m_textDrawList);
+	list.merge(*m_textDrawList);
 }
 
 std::string ObjectRenderer::getLabel() const

@@ -20,6 +20,8 @@ namespace graphview
 		class ObjectRenderer;
 	}
 
+	class ViewRenderer;
+
 	class ObjectRenderersList
 	{
 	public:
@@ -39,6 +41,8 @@ namespace graphview
 
 		const ObjectRenderers& getOrdered() const;
 		void reorder(const panda::ObjectsList& objects);
+
+		void initializeRenderer(ViewRenderer& viewRenderer);
 
 	private:
 		std::map<panda::PandaObject*, ObjectRendererSPtr> m_objectRenderers;

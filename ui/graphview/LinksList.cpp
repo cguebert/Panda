@@ -29,6 +29,11 @@ namespace graphview
 		m_recomputeLinks = true;
 	}
 
+	void LinksList::initializeRenderer(ViewRenderer& viewRenderer)
+	{
+		m_linksDrawList = std::make_shared<graphics::DrawList>(viewRenderer);
+	}
+
 	void LinksList::onBeginDraw(const graphics::DrawColors& colors)
 	{
 		if (m_recomputeLinks)
@@ -106,7 +111,7 @@ namespace graphview
 	void LinksList::updateLinks(const graphics::DrawColors& colors)
 	{
 		m_recomputeLinks = false;
-		m_linksDrawList.clear();
+		m_linksDrawList->clear();
 
 		auto col = colors.penColor;
 
@@ -125,7 +130,7 @@ namespace graphview
 					{
 						auto d1 = fromDataRect.center(), d2 = toDataRect.second.center();
 						Point w = { (d2.x - d1.x) / 2, 0 };
-						m_linksDrawList.addBezierCurve(d1, d1 + w, d2 - w, d2, col, 1);
+						m_linksDrawList->addBezierCurve(d1, d1 + w, d2 - w, d2, col, 1);
 					}
 				}
 			}
