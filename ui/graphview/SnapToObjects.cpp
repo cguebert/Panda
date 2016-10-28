@@ -73,7 +73,7 @@ namespace graphview
 		}
 	}
 
-	void SnapToObjects::updateSnapDelta(object::ObjectRenderer* objRnd, const Point& position)
+	void SnapToObjects::updateSnapDelta(object::ObjectRenderer* selectedObjRnd, const Point& position)
 	{
 		m_snapDelta = {};
 		const float snapMaxDist = 5;
@@ -86,7 +86,7 @@ namespace graphview
 
 		// We look for the closest object above and the closest below
 		const float filterRatio = 0.66f, filterDist = 50;
-		auto selectedHeight = objRnd->getObjectSize().y;
+		auto selectedHeight = selectedObjRnd->getObjectSize().y;
 		auto displayRect = m_view.viewport().displayRect();
 		auto m1 = std::numeric_limits<float>::lowest(), m2 = std::numeric_limits<float>::max();
 		Point abovePos(m1, m1), belowPos(m2, m2);
@@ -95,7 +95,7 @@ namespace graphview
 		std::set<float> snapTargetsX;
 		for (const auto objRnd : m_view.objectRenderers().getOrdered())
 		{
-			if (objRnd == objRnd || !objRnd->acceptsMagneticSnap())
+			if (objRnd == selectedObjRnd || !objRnd->acceptsMagneticSnap())
 				continue;
 
 			auto area = objRnd->getVisualArea();
