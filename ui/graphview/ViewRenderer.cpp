@@ -70,6 +70,9 @@ ViewRenderer::ViewRenderer()
 	for(int i = 0; i < 4; ++i)
 		m_viewBounds[i] = 0;
 
+	for(int i = 0; i < 4; ++i)
+		m_clearColor[i] = 0.f;
+
 #ifdef WIN32
 	if (m_atlas->fonts().empty())
 	{
@@ -183,6 +186,9 @@ void ViewRenderer::render()
 	f->glDisable(GL_DEPTH_TEST);
 	f->glActiveTexture(GL_TEXTURE0);
 
+	glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glViewport(0, 0, m_width, m_height);
 	QMatrix4x4 ortho;
 	ortho.ortho(m_viewBounds[0], m_viewBounds[2], m_viewBounds[3], m_viewBounds[1], -1, 1);
@@ -234,6 +240,13 @@ void ViewRenderer::render()
 
 	m_shader->release();
 	m_VAO->release();
+}
+
+void ViewRenderer::setClearColor(float r, float g, float b)
+{
+	m_clearColor[0] = r;
+	m_clearColor[1] = g;
+	m_clearColor[2] = b;
 }
 
 bool ViewRenderer::initialized()

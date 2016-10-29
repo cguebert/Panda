@@ -1,5 +1,5 @@
 #include <ui/graphview/ViewGUI.h>
-#include <ui/graphview/GraphView.h>
+#include <ui/graphview/QtViewWrapper.h>
 #include <ui/MainWindow.h>
 
 #include <QApplication>
@@ -18,8 +18,8 @@ namespace
 namespace graphview
 {
 
-	ViewGui::ViewGui(GraphView& view, MainWindow* mainWindow)
-		: m_view(view)
+	ViewGui::ViewGui(QtViewWrapper& viewWrapper, MainWindow* mainWindow)
+		: m_viewWrapper(viewWrapper)
 		, m_mainWindow(mainWindow)
 	{
 	}
@@ -41,12 +41,12 @@ namespace graphview
 
 	void ViewGui::showToolTip(const panda::types::Point& pos, const std::string& msg, const panda::types::Rect& area)
 	{
-		const auto gPos = m_view.mapToGlobal(convert(pos));
-		const auto gArea = QRect(m_view.mapToGlobal(convert(area.topLeft())), m_view.mapToGlobal(convert(area.bottomRight())));
+		const auto gPos = m_viewWrapper.mapToGlobal(convert(pos));
+		const auto gArea = QRect(m_viewWrapper.mapToGlobal(convert(area.topLeft())), m_viewWrapper.mapToGlobal(convert(area.bottomRight())));
 		if (area.empty())
-			QToolTip::showText(gPos, QString::fromStdString(msg), &m_view);
+			QToolTip::showText(gPos, QString::fromStdString(msg), &m_viewWrapper);
 		else
-			QToolTip::showText(gPos, QString::fromStdString(msg), &m_view, gArea);
+			QToolTip::showText(gPos, QString::fromStdString(msg), &m_viewWrapper, gArea);
 	}
 
 	void ViewGui::contextMenu(const panda::types::Point& pos, MenuTypes types, const Actions& customActions)
@@ -75,7 +75,7 @@ namespace graphview
 		}
 
 		if (!menu.actions().empty())
-			menu.exec(m_view.mapToGlobal(convert(pos)));
+			menu.exec(m_viewWrapper.mapToGlobal(convert(pos)));
 
 		for (auto action : tempActions)
 			action->deleteLater();

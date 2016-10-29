@@ -284,7 +284,7 @@ namespace graphview
 		}
 		else if (m_movingAction == Moving::Zoom)
 		{
-			int y = event.pos().y - m_previousMousePos.y;
+			auto y = event.pos().y - m_previousMousePos.y;
 			auto zoom = panda::helper::bound(0.1f, m_view.viewport().zoom() - y / 500.0f, 1.0f);
 			m_view.viewport().setZoom(m_currentMousePos, zoom);
 			m_previousMousePos = event.pos();
@@ -467,7 +467,7 @@ namespace graphview
 		}
 		else if (m_movingAction == Moving::View)
 		{
-			//m_view.emitViewportModified();
+			m_view.viewportModified.run();
 		}
 		else if (m_movingAction == Moving::Zoom)
 		{
@@ -535,7 +535,7 @@ namespace graphview
 			return;
 
 		m_wheelTicks += event.angleDelta().y;
-		int ticks = m_wheelTicks / 40; // Steps of 5 degrees
+		int ticks = static_cast<int>(m_wheelTicks / 40); // Steps of 5 degrees
 		m_wheelTicks -= ticks * 40;
 		const auto zoomLevel = m_view.viewport().zoomLevel();
 		int newZoom = panda::helper::bound(0, zoomLevel - ticks, 90);

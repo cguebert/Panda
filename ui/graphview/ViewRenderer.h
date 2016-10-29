@@ -36,6 +36,8 @@ public:
 	void addDrawList(const DrawListSPtr& dl);
 	void render();
 
+	void setClearColor(float r, float g, float b);
+
 	bool initialized();
 	unsigned int defaultTextureId();
 	graphics::Font* currentFont();
@@ -52,6 +54,8 @@ private:
 
 	std::vector<DrawListSPtr> m_drawLists;
 	std::unique_ptr<graphics::FontAtlas> m_atlas;
+
+	float m_clearColor[4];
 };
 
 inline void ViewRenderer::addDrawList(const DrawListSPtr& dl)

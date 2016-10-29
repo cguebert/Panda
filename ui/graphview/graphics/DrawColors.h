@@ -17,6 +17,7 @@ namespace graphics
 		unsigned int midLightColor = 0;
 		unsigned int lightColor = 0;
 		unsigned int highlightColor = 0;
+		unsigned int backgroundColor = 0;
 	};
 
 } // namespace graphics

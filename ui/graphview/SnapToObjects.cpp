@@ -122,7 +122,7 @@ namespace graphview
 						belowPos = Point(pos.x, pos.y - selectedHeight);
 					}
 				}
-				else if (qAbs(pos.x - position.x) < filterDist) // The selected one intersects the y axis of this one, and is close enough on the x axis
+				else if (std::abs(pos.x - position.x) < filterDist) // The selected one intersects the y axis of this one, and is close enough on the x axis
 				{
 					snapTargetsX.insert(pos.x);
 					hasInsideObject = true;
@@ -133,9 +133,9 @@ namespace graphview
 		if (hasInsideObject)
 		{
 			// Only take the other ones if their are close
-			if (qAbs(abovePos.y - position.y) < filterDist)
+			if (std::abs(abovePos.y - position.y) < filterDist)
 				snapTargetsX.insert(abovePos.x);
-			if (qAbs(belowPos.y - position.y) < filterDist)
+			if (std::abs(belowPos.y - position.y) < filterDist)
 				snapTargetsX.insert(belowPos.x);
 		}
 		else
@@ -156,7 +156,7 @@ namespace graphview
 		if (minIter != snapTargetsX.end())
 		{
 			float x = *minIter;
-			if (qAbs(x - position.x) < snapMaxDist)
+			if (std::abs(x - position.x) < snapMaxDist)
 				m_snapDelta.x = x - position.x;
 		}
 
@@ -164,7 +164,7 @@ namespace graphview
 		if (minIter != m_snapTargetsY.end())
 		{
 			float y = *minIter;
-			if (qAbs(y - position.y) < snapMaxDist)
+			if (std::abs(y - position.y) < snapMaxDist)
 				m_snapDelta.y = y - position.y;
 		}
 

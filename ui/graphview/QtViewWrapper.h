@@ -45,8 +45,8 @@ namespace graphview
 		void setDataLabel();
 
 	signals:
-		void modified();
 		void viewportModified();
+		void modified();
 		void lostFocus(QWidget*);
 
 	protected:
@@ -75,12 +75,15 @@ namespace graphview
 #endif
 		void paintDirtyState(graphics::DrawList& list, graphics::DrawColors& colors);
 
-	protected:
+		void emitViewportModified();
 
+	protected:
 		std::unique_ptr<GraphView> m_graphView;
 		std::shared_ptr<ViewRenderer> m_viewRenderer;
 		std::vector<std::function<void()>> m_functionsToExecuteNextRefresh;
 		bool m_debugDirtyState = false;
+
+		panda::msg::Observer m_observer;
 
 		std::shared_ptr<graphics::DrawList> m_drawList;
 		graphics::DrawColors m_drawColors; /// So that we aquire Qt colors only once

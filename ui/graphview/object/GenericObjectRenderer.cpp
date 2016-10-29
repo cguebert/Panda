@@ -75,7 +75,7 @@ void GenericObjectRenderer::update()
 			++index;
 		}
 	}
-	y = qMax(y, startY + index * dh);
+	y = std::max(y, startY + index * dh);
 
 	// Now the created datas
 	y += createdDataRectMargin;
@@ -103,7 +103,7 @@ void GenericObjectRenderer::update()
 				++outputIndex;
 			}
 		}
-		y += qMax(inputIndex, outputIndex) * dh;
+		y += std::max(inputIndex, outputIndex) * dh;
 		y += createdDataRectMargin;
 	}
 

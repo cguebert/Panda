@@ -77,7 +77,7 @@ namespace graphview
 		};
 		Moving m_movingAction = Moving::None;
 
-		int m_wheelTicks = 0;
+		float m_wheelTicks = 0;
 
 		panda::BaseData* m_clickedData = nullptr;
 		panda::BaseData* m_hoverData = nullptr;

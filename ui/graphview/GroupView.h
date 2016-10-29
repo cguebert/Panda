@@ -15,22 +15,13 @@ class GroupViewport;
 
 class GroupView : public GraphView
 {
-	Q_OBJECT
-
 public:
 	using DataRect = std::pair<panda::BaseData*, panda::types::Rect>;
 	using DataRects = std::vector<DataRect>;
 
-	static std::unique_ptr<GroupView> createGroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow);
+	static std::unique_ptr<GroupView> createGroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList);
 
 	panda::Group* group() const;
-
-	static const int dataRectSize = 10;
-	static const int dataMarginW = 100;
-	static const int dataMarginH = 20;
-	static const int tagW = 18;
-	static const int tagH = 13;
-	static const int tagMargin = 10;
 
 	void updateGroupDataRects();
 	const DataRects& groupDataRects() const;
@@ -44,7 +35,7 @@ protected:
 	void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors) override;
 
 private:
-	GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow);
+	GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList);
 
 	void modifiedObject(panda::PandaObject* object);
 

@@ -7,13 +7,11 @@ namespace graphview
 
 class DocumentView : public GraphView
 {
-	Q_OBJECT
-
 public:
-	static std::unique_ptr<DocumentView> createDocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow);
+	static std::unique_ptr<DocumentView> createDocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList);
 
 private:
-	explicit DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow);
+	explicit DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList);
 };
 
 } // namespace graphview

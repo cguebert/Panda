@@ -3,14 +3,14 @@
 namespace graphview
 {
 
-DocumentView::DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow)
-	: GraphView(doc, objectsList, mainWindow)
+DocumentView::DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList)
+	: GraphView(doc, objectsList)
 {
 }
 
-std::unique_ptr<DocumentView> DocumentView::createDocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow)
+std::unique_ptr<DocumentView> DocumentView::createDocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList)
 {
-	auto view = std::unique_ptr<DocumentView>(new DocumentView(doc, objectsList, mainWindow));
+	auto view = std::unique_ptr<DocumentView>(new DocumentView(doc, objectsList));
 	view->initComponents();
 	return view;
 }

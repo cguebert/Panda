@@ -21,7 +21,7 @@ class QuickCreateDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit QuickCreateDialog(panda::PandaDocument* doc, graphview::GraphView* view);
+	explicit QuickCreateDialog(panda::PandaDocument* doc, graphview::GraphView* view, QWidget* parent);
 
 protected:
 	panda::PandaDocument* m_document;

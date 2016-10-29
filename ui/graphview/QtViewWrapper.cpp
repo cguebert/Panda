@@ -90,15 +90,22 @@ QtViewWrapper::QtViewWrapper(std::unique_ptr<GraphView> graphView, MainWindow* m
 
 	setMouseTracking(true);
 
-	auto viewGui = std::make_unique<ViewGui>(*graphView, mainWindow);
+	auto viewGui = std::make_unique<ViewGui>(*this, mainWindow);
 
 	const auto& pal = palette();
 	m_drawColors.penColor = graphics::DrawList::convert(pal.text().color());
 	m_drawColors.midLightColor = graphics::DrawList::convert(pal.midlight().color());
 	m_drawColors.lightColor = graphics::DrawList::convert(pal.light().color());
 	m_drawColors.highlightColor = graphics::DrawList::convert(pal.highlight().color());
+	m_drawColors.backgroundColor = graphics::DrawList::convert(pal.highlight().color());
 
+	auto clearColor = palette().background().color();
+	m_viewRenderer->setClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF());
 	m_graphView->setGui(m_viewRenderer, std::move(viewGui));
+
+	m_observer.get(m_graphView->updateNeeded).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(m_graphView->modified).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(m_graphView->viewportModified).connect<QtViewWrapper, &QtViewWrapper::emitViewportModified>(this);
 }
 
 QSize QtViewWrapper::minimumSizeHint() const
@@ -254,7 +261,7 @@ void QtViewWrapper::keyPressEvent(QKeyEvent* event)
 	if (!m_graphView->interaction().keyPressEvent(ke))
 	{
 		if(event->key() == Qt::Key_Space && !m_graphView->document()->animationIsPlaying())
-			QuickCreateDialog { m_graphView->document(), m_graphView.get() }.exec();
+			QuickCreateDialog { m_graphView->document(), m_graphView.get(), this }.exec();
 		else
 			QWidget::keyPressEvent(event);
 	}
@@ -371,6 +378,11 @@ void QtViewWrapper::del()
 void QtViewWrapper::executeNextRefresh(std::function<void()> func)
 {
 	m_functionsToExecuteNextRefresh.push_back(func);
+}
+
+void QtViewWrapper::emitViewportModified()
+{
+	emit viewportModified();
 }
 
 } // namespace graphview

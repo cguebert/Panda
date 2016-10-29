@@ -11,7 +11,7 @@ class MainWindow;
 namespace graphview
 {
 
-	class GraphView;
+	class QtViewWrapper;
 
 	enum class Cursor
 	{
@@ -66,7 +66,7 @@ namespace graphview
 		};
 		using Actions = std::vector<Action>;
 
-		ViewGui(GraphView& view, MainWindow* mainWindow);
+		ViewGui(QtViewWrapper& viewWrapper, MainWindow* mainWindow);
 
 		void setCursor(Cursor cursor);
 		void restoreCursor();
@@ -78,7 +78,7 @@ namespace graphview
 		void contextMenu(const panda::types::Point& pos, MenuTypes types, const Actions& customActions = {});
 
 	protected:
-		GraphView& m_view;
+		QtViewWrapper& m_viewWrapper;
 		MainWindow* m_mainWindow;
 	};
 

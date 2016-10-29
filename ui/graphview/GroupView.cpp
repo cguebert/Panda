@@ -22,16 +22,18 @@
 #include <panda/object/Group.h>
 #include <panda/types/DataTraits.h>
 
-#include <QtWidgets>
+namespace
+{
+	static const int dataRectSize = 10;
+	static const int dataMarginW = 100;
+	static const int dataMarginH = 20;
+	static const float tagW = 18;
+	static const float tagH = 13;
+	static const float tagMargin = 10;
+}
 
 using Point = panda::types::Point;
 using Rect = panda::types::Rect;
-
-namespace
-{
-	inline panda::types::Point convert(const QPointF& pt)
-	{ return panda::types::Point(static_cast<float>(pt.x()), static_cast<float>(pt.y())); }
-}
 
 namespace graphview
 {
@@ -66,9 +68,9 @@ public:
 
 		m_onlyObjectsRect = m_objectsRect;
 		if (nbInputs)
-			m_objectsRect.adjust(-(GroupView::dataMarginW + GroupView::dataRectSize + GroupView::tagMargin + GroupView::tagW), 0, 0, 0);
+			m_objectsRect.adjust(-(dataMarginW + dataRectSize + tagMargin + tagW), 0, 0, 0);
 		if (nbOutputs)
-			m_objectsRect.adjust(0, 0, GroupView::dataMarginW + GroupView::tagMargin + GroupView::tagW, 0);
+			m_objectsRect.adjust(0, 0, dataMarginW + tagMargin + tagW, 0);
 
 		updateViewRect();
 		m_groupView.updateGroupDataRects();
@@ -407,15 +409,15 @@ private:
 
 //****************************************************************************//
 
-GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow)
-	: GraphView(doc, objectsList, mainWindow)
+GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList)
+	: GraphView(doc, objectsList)
 	, m_group(group)
 {
 }
 
-std::unique_ptr<GroupView> GroupView::createGroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow)
+std::unique_ptr<GroupView> GroupView::createGroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList)
 {
-	auto groupView = std::unique_ptr<GroupView>(new GroupView(group, doc, objectsList, mainWindow));
+	auto groupView = std::unique_ptr<GroupView>(new GroupView(group, doc, objectsList));
 	
 	auto& viewRef = *groupView;
 	groupView->m_linksList = std::make_unique<GroupLinksList>(viewRef);
@@ -465,7 +467,7 @@ void GroupView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors d
 
 			// Draw the tag
 			Rect tagRect = Rect::fromSize(groupDataRect.left() - tagW - tagMargin,
-										  groupDataRect.center().y - tagH / 2.0,
+										  groupDataRect.center().y - tagH / 2.f,
 										  tagW, tagH);
 
 			float x = tagRect.right();
@@ -491,7 +493,7 @@ void GroupView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors d
 
 			// Draw the tag
 			Rect tagRect = Rect::fromSize(groupDataRect.right() + tagMargin,
-										  groupDataRect.center().y - tagH / 2.0,
+										  groupDataRect.center().y - tagH / 2.f,
 										  tagW, tagH);
 
 			float x = tagRect.left();
@@ -537,7 +539,7 @@ void GroupView::updateGroupDataRects()
 			// Draw the data
 			Rect groupDataRect = Rect::fromSize(onlyObjectsRect.left() - dataMarginW - dataRectSize, 
 												inputsStartY + inputIndex * (dataRectSize + dataMarginH),
-												dataRectSize, dataRectSize);
+												static_cast<float>(dataRectSize), static_cast<float>(dataRectSize));
 			++inputIndex;
 			m_groupDataRects.emplace_back(groupData.get(), groupDataRect);
 		}
@@ -547,7 +549,7 @@ void GroupView::updateGroupDataRects()
 			// Draw the data
 			Rect groupDataRect = Rect::fromSize(onlyObjectsRect.right() + dataMarginW, 
 												outputsStartY + outputIndex * (dataRectSize + dataMarginH),
-												dataRectSize, dataRectSize);
+												static_cast<float>(dataRectSize), static_cast<float>(dataRectSize));
 			++outputIndex;
 			m_groupDataRects.emplace_back(groupData.get(), groupDataRect);
 		}
