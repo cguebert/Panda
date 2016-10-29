@@ -411,16 +411,23 @@ GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::Obje
 	: GraphView(doc, objectsList, mainWindow)
 	, m_group(group)
 {
-	m_linksList = std::make_unique<GroupLinksList>(*this);
-	m_interaction = std::make_unique<GroupViewInteraction>(*this);
-	m_viewport = std::make_unique<GroupViewport>(*this);
+}
 
-	m_observer.get(m_viewport->modified).connect<QWidget, &QWidget::update>(this);
-	m_observer.get(m_viewport->modified).connect<GraphView, &GraphView::emitViewportModified>(this);
-	m_viewport->updateObjectsRect();
+std::unique_ptr<GroupView> GroupView::createGroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow)
+{
+	auto groupView = std::unique_ptr<GroupView>(new GroupView(group, doc, objectsList, mainWindow));
+	
+	auto& viewRef = *groupView;
+	groupView->m_linksList = std::make_unique<GroupLinksList>(viewRef);
+	groupView->m_interaction = std::make_unique<GroupViewInteraction>(viewRef);
+	groupView->m_viewport = std::make_unique<GroupViewport>(viewRef);
 
-	auto& docSignals = m_pandaDocument->getSignals();
-	m_observer.get(docSignals.modifiedObject).connect<GroupView, &GroupView::modifiedObject>(this);
+	groupView->initComponents();
+
+	auto& docSignals = doc->getSignals();
+	groupView->m_observer.get(docSignals.modifiedObject).connect<GroupView, &GroupView::modifiedObject>(groupView.get());
+
+	return groupView;
 }
 
 void GroupView::initializeRenderer(ViewRenderer& viewRenderer)

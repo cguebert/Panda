@@ -52,7 +52,7 @@ namespace graphview
 		GraphView& m_view;
 		int m_zoomLevel = 0;
 		float m_zoomFactor = 1.0f;
-		panda::types::Point m_viewSize;
+		panda::types::Point m_viewSize = { 800, 600 };
 		panda::types::Point m_viewDelta;
 		panda::types::Rect m_objectsRect; // Area taken by the objects on the screen
 		panda::types::Rect m_viewRect; // Area taken by the objects on the screen, including zoom

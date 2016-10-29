@@ -78,14 +78,8 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	: QOpenGLWidget(mainWindow)
 	, m_pandaDocument(doc)
 	, m_objectsList(objectsList)
-	, m_linksList(std::make_unique<LinksList>(*this))
-	, m_linkTagsList(std::make_unique<LinkTagsList>(*this))
-	, m_objectsSelection(std::make_unique<ObjectsSelection>(objectsList))
 	, m_viewRenderer(std::make_unique<ViewRenderer>())
-	, m_objectRenderersList(std::make_unique<ObjectRenderersList>())
-	, m_viewport(std::make_unique<Viewport>(*this))
 	, m_viewGUI(std::make_unique<ViewGui>(*this, mainWindow))
-	, m_interaction(std::make_unique<ViewInteraction>(*this))
 {
 	QSurfaceFormat fmt;
 	fmt.setSamples(8);
@@ -94,7 +88,27 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setFocusPolicy(Qt::StrongFocus);
 
-	m_observer.get(m_objectsSelection->selectionChanged).connect<GraphView, &GraphView::selectionChanged>(this);
+	setMouseTracking(true);
+
+	const auto& pal = palette();
+	m_drawColors.penColor = graphics::DrawList::convert(pal.text().color());
+	m_drawColors.midLightColor = graphics::DrawList::convert(pal.midlight().color());
+	m_drawColors.lightColor = graphics::DrawList::convert(pal.light().color());
+	m_drawColors.highlightColor = graphics::DrawList::convert(pal.highlight().color());
+}
+
+GraphView::~GraphView() = default;
+
+void GraphView::initComponents()
+{
+	if (!m_linksList)           m_linksList           = std::make_unique<LinksList>(*this);
+	if (!m_linkTagsList)        m_linkTagsList        = std::make_unique<LinkTagsList>(*this);
+	if (!m_objectsSelection)    m_objectsSelection    = std::make_unique<ObjectsSelection>(objectsList());
+	if (!m_objectRenderersList) m_objectRenderersList = std::make_unique<ObjectRenderersList>();
+	if (!m_viewport)            m_viewport            = std::make_unique<Viewport>(*this); 
+	if (!m_interaction)         m_interaction         = std::make_unique<ViewInteraction>(*this);
+
+	m_observer.get(selection().selectionChanged).connect<GraphView, &GraphView::selectionChanged>(this);
 
 	auto& docSignals = m_pandaDocument->getSignals();
 	m_observer.get(docSignals.modified).connect<QWidget, &QWidget::update>(this);
@@ -107,25 +121,16 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	m_observer.get(m_objectsList.removedObject).connect<GraphView, &GraphView::removeObject>(this);
 	m_observer.get(m_objectsList.reorderedObjects).connect<GraphView, &GraphView::objectsReordered>(this);
 
-	m_observer.get(m_viewport->modified).connect<QWidget, &QWidget::update>(this);
-	m_observer.get(m_viewport->modified).connect<GraphView, &GraphView::emitViewportModified>(this);
-
-	setMouseTracking(true);
-
-	const auto& pal = palette();
-	m_drawColors.penColor = graphics::DrawList::convert(pal.text().color());
-	m_drawColors.midLightColor = graphics::DrawList::convert(pal.midlight().color());
-	m_drawColors.lightColor = graphics::DrawList::convert(pal.light().color());
-	m_drawColors.highlightColor = graphics::DrawList::convert(pal.highlight().color());
+	m_observer.get(viewport().modified).connect<QWidget, &QWidget::update>(this);
+	m_observer.get(viewport().modified).connect<GraphView, &GraphView::emitViewportModified>(this);
 
 	// Create the draw structs for the objects already present
 	for (const auto& object : m_objectsList.get())
 		addedObject(object.get());
 
 	updateDirtyRenderers();
+	viewport().updateObjectsRect();
 }
-
-GraphView::~GraphView() = default;
 
 QSize GraphView::minimumSizeHint() const
 {
@@ -146,7 +151,7 @@ void GraphView::initializeGL()
 void GraphView::resizeGL(int w, int h)
 {
 	glViewport(0, 0, w, h);
-	m_viewport->setViewSize({ static_cast<float>(w), static_cast<float>(h) });
+	viewport().setViewSize({ static_cast<float>(w), static_cast<float>(h) });
 	m_viewRenderer->resize(w, h);
 	update();
 }
@@ -330,28 +335,28 @@ void GraphView::paintDirtyState(graphics::DrawList& list, graphics::DrawColors& 
 
 void GraphView::mousePressEvent(QMouseEvent* event)
 {
-	m_interaction->mousePressEvent({ convert(event->pos()), convert(event->button()), convert(event->modifiers()) });
+	interaction().mousePressEvent({ convert(event->pos()), convert(event->button()), convert(event->modifiers()) });
 }
 
 void GraphView::mouseMoveEvent(QMouseEvent* event)
 {
-	m_interaction->mouseMoveEvent({ convert(event->pos()), convert(event->button()), convert(event->modifiers()) });
+	interaction().mouseMoveEvent({ convert(event->pos()), convert(event->button()), convert(event->modifiers()) });
 }
 
 void GraphView::mouseReleaseEvent(QMouseEvent* event)
 {
-	m_interaction->mouseReleaseEvent({ convert(event->pos()), convert(event->button()), convert(event->modifiers()) });
+	interaction().mouseReleaseEvent({ convert(event->pos()), convert(event->button()), convert(event->modifiers()) });
 }
 
 void GraphView::wheelEvent(QWheelEvent* event)
 {
-	m_interaction->wheelEvent({ convert(event->pos()), convert(event->angleDelta()), convert(event->modifiers()) });
+	interaction().wheelEvent({ convert(event->pos()), convert(event->angleDelta()), convert(event->modifiers()) });
 }
 
 void GraphView::keyPressEvent(QKeyEvent* event)
 {
 	KeyEvent ke { static_cast<Key>(event->key()), convert(event->modifiers()) };
-	if (!m_interaction->keyPressEvent(ke))
+	if (!interaction().keyPressEvent(ke))
 	{
 		if(event->key() == Qt::Key_Space && !document()->animationIsPlaying())
 			QuickCreateDialog { document(), this }.exec();
@@ -362,7 +367,7 @@ void GraphView::keyPressEvent(QKeyEvent* event)
 
 void GraphView::contextMenuEvent(QContextMenuEvent* event)
 {
-	m_interaction->contextMenuEvent({ convert(event->pos()), convert(event->modifiers()) });
+	interaction().contextMenuEvent({ convert(event->pos()), convert(event->modifiers()) });
 }
 
 void GraphView::addedObject(panda::PandaObject* object)
@@ -516,7 +521,7 @@ void GraphView::showChooseWidgetDialog()
 		ChooseWidgetDialog(contextMenuData, this).exec();
 	else
 	{
-		auto obj = m_objectsSelection->lastSelectedObject();
+		auto obj = selection().lastSelectedObject();
 		if(obj && obj->getClass()->getClassName() == "GeneratorUser" && obj->getClass()->getNamespaceName() == "panda")
 		{
 			auto data = obj->getData("input");
@@ -533,7 +538,7 @@ void GraphView::focusOutEvent(QFocusEvent*)
 
 void GraphView::selectionChanged()
 {
-	m_selectedObjectsRenderers = objectRenderers().get(m_objectsSelection->get());
+	m_selectedObjectsRenderers = objectRenderers().get(selection().get());
 	update();
 }
 
@@ -584,11 +589,11 @@ void GraphView::setDataLabel()
 }
 void GraphView::copy()
 {
-	const auto& selection = m_objectsSelection->get();
-	if (selection.empty())
+	const auto& selected = selection().get();
+	if (selected.empty())
 		return;
 
-	QApplication::clipboard()->setText(QString::fromStdString(panda::serialization::writeTextDocument(m_pandaDocument, selection)));
+	QApplication::clipboard()->setText(QString::fromStdString(panda::serialization::writeTextDocument(m_pandaDocument, selected)));
 }
 
 void GraphView::cut()
@@ -607,7 +612,7 @@ void GraphView::paste()
 	if (!result.first || result.second.empty())
 		return;
 
-	m_objectsSelection->set(result.second);
+	selection().set(result.second);
 	viewport().moveSelectedToCenter();
 
 	m_pandaDocument->getUndoStack().push(std::make_shared<AddObjectCommand>(m_pandaDocument, m_objectsList, result.second));
@@ -615,12 +620,12 @@ void GraphView::paste()
 
 void GraphView::del()
 {
-	const auto& selection = m_objectsSelection->get();
-	if (selection.empty())
+	const auto& selected = selection().get();
+	if (selected.empty())
 		return;
 
 	auto macro = m_pandaDocument->getUndoStack().beginMacro(tr("delete objects").toStdString());	
-	m_pandaDocument->getUndoStack().push(std::make_shared<RemoveObjectCommand>(m_pandaDocument, m_objectsList, selection));
+	m_pandaDocument->getUndoStack().push(std::make_shared<RemoveObjectCommand>(m_pandaDocument, m_objectsList, selected));
 }
 
 void GraphView::executeNextRefresh(std::function<void()> func)

@@ -1128,7 +1128,7 @@ void MainWindow::openGroup()
 		return;
 	}
 
-	auto groupView = new graphview::GroupView(group, m_document.get(), group->getObjectsList(), this);
+	auto groupView = graphview::GroupView::createGroupView(group, m_document.get(), group->getObjectsList(), this).release();
 
 	connect(groupView, SIGNAL(modified()), this, SLOT(documentModified()));
 	connect(groupView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
@@ -1588,7 +1588,7 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	if (m_documentView)
 		m_documentView->deleteLater();
 
-	m_documentView = new graphview::DocumentView(m_document.get(), m_document->getObjectsList(), this);
+	m_documentView = graphview::DocumentView::createDocumentView(m_document.get(), m_document->getObjectsList(), this).release();
 	m_documentViewContainer->setView(m_documentView);
 	m_documentViewContainer->setFocusProxy(m_documentView);
 	m_currentGraphView = m_documentView;

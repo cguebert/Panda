@@ -51,7 +51,7 @@ class GraphView : public QOpenGLWidget, public ScrollableView
 
 public:
 	explicit GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow);
-	~GraphView();
+	virtual ~GraphView();
 
 	panda::PandaDocument* document() const;
 
@@ -77,6 +77,26 @@ public:
 	bool isLoading() const;
 
 	void emitViewportModified();
+
+public slots:
+	void copy();
+	void cut();
+	void paste();
+	void del();
+	void addedObject(panda::PandaObject* object);
+	void removeObject(panda::PandaObject* object);
+	void modifiedObject(panda::PandaObject* object);
+	void startLoading();
+	void loadingFinished();
+	void changedDock(panda::DockableObject* dockable);
+	void showChooseWidgetDialog();
+	void debugDirtyState(bool show = true);
+	void setDataLabel();
+
+signals:
+	void modified();
+	void viewportModified();
+	void lostFocus(QWidget*);
 
 protected:
 	virtual void initializeRenderer(ViewRenderer& viewRenderer);
@@ -112,40 +132,22 @@ protected:
 	void selectionChanged();
 	void objectsReordered();
 
-signals:
-	void modified();
-	void viewportModified();
-	void lostFocus(QWidget*);
+	void initComponents();
 
-public slots:
-	void copy();
-	void cut();
-	void paste();
-	void del();
-	void addedObject(panda::PandaObject* object);
-	void removeObject(panda::PandaObject* object);
-	void modifiedObject(panda::PandaObject* object);
-	void startLoading();
-	void loadingFinished();
-	void changedDock(panda::DockableObject* dockable);
-	void showChooseWidgetDialog();
-	void debugDirtyState(bool show = true);
-	void setDataLabel();
-
-protected:
 	panda::PandaDocument* m_pandaDocument;
 	panda::ObjectsList& m_objectsList;
+
+	std::unique_ptr<ViewRenderer> m_viewRenderer;
+	std::unique_ptr<ViewGui> m_viewGUI;
 
 	bool m_isLoading = false; /// We don't update the view while loading (unnecessary events)
 
 	panda::msg::Observer m_observer; /// Used to connect to signals (and disconnect automatically on destruction)
 
-	std::unique_ptr<ObjectsSelection> m_objectsSelection; /// Contains the selected objects and the corresponding signals
 	std::vector<object::ObjectRenderer*> m_selectedObjectsRenderers; /// The renderers for the selected objects
 
 	bool m_debugDirtyState = false;
 
-	std::unique_ptr<ViewRenderer> m_viewRenderer; /// Custom OpenGL drawing
 	std::shared_ptr<graphics::DrawList> m_drawList;
 	graphics::DrawColors m_drawColors; /// So that we aquire Qt colors only once
 	bool m_objectsMoved = false;
@@ -155,8 +157,8 @@ protected:
 	std::unique_ptr<LinksList> m_linksList;
 	std::unique_ptr<LinkTagsList> m_linkTagsList;
 	std::unique_ptr<ObjectRenderersList> m_objectRenderersList;
+	std::unique_ptr<ObjectsSelection> m_objectsSelection;
 	std::unique_ptr<Viewport> m_viewport;
-	std::unique_ptr<ViewGui> m_viewGUI;
 	std::unique_ptr<ViewInteraction> m_interaction;
 };
 

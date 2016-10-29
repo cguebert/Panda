@@ -8,4 +8,11 @@ DocumentView::DocumentView(panda::PandaDocument* doc, panda::ObjectsList& object
 {
 }
 
+std::unique_ptr<DocumentView> DocumentView::createDocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow)
+{
+	auto view = std::unique_ptr<DocumentView>(new DocumentView(doc, objectsList, mainWindow));
+	view->initComponents();
+	return view;
+}
+
 } // namespace graphview
