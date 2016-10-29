@@ -3,8 +3,8 @@
 namespace graphview
 {
 
-DocumentView::DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent)
-	: GraphView(doc, objectsList, parent)
+DocumentView::DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow)
+	: GraphView(doc, objectsList, mainWindow)
 {
 }
 

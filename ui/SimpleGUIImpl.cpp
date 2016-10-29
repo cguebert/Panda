@@ -31,38 +31,6 @@ int SimpleGUIImpl::messageBox(panda::gui::MessageBoxType type, const std::string
 	return 0;
 }
 
-void SimpleGUIImpl::contextMenu(panda::graphics::PointInt pos, int flags, const Actions& customActions)
-{
-	if (!flags && customActions.empty())
-		return;
-
-	QMenu menu(m_mainWindow);
-
-	m_mainWindow->fillContextMenu(menu, flags);
-
-	std::vector<QAction*> tempActions;
-	for (const auto& action : customActions)
-	{
-		const auto& label = action.menuName;
-		if (label.empty() && !menu.isEmpty())
-			menu.addSeparator();
-		if (!label.empty())
-		{
-			auto actionPtr = menu.addAction(QString::fromStdString(label), action.callback);
-			tempActions.push_back(actionPtr);
-			actionPtr->setParent(m_mainWindow); // So that the status tip can be shown on the status bar of the main window
-			if (!action.statusTip.empty())
-				actionPtr->setStatusTip(QString::fromStdString(action.statusTip));
-		}
-	}
-	
-	if(!menu.actions().empty())
-		menu.exec({ pos.x, pos.y });
-
-	for (auto action : tempActions)
-		action->deleteLater();
-}
-
 void SimpleGUIImpl::updateView()
 {
 	m_mainWindow->getOpenGLView()->update();

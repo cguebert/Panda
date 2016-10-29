@@ -2,9 +2,8 @@
 
 #include <ui/graphview/GraphView.h>
 
-namespace panda
-{
-class Group;
+namespace panda {
+	class Group;
 }
 
 namespace graphview
@@ -20,7 +19,7 @@ public:
 	using DataRect = std::pair<panda::BaseData*, panda::types::Rect>;
 	using DataRects = std::vector<DataRect>;
 
-	explicit GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
+	explicit GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow);
 
 	panda::Group* group() const;
 

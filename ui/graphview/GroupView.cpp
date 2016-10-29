@@ -5,6 +5,7 @@
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/ObjectRenderersList.h>
+#include <ui/graphview/ViewGUI.h>
 #include <ui/graphview/ViewInteraction.h>
 #include <ui/graphview/Viewport.h>
 #include <ui/graphview/ViewRenderer.h>
@@ -337,7 +338,7 @@ private:
 
 			panda::TimedFunctions::instance().cancelRun(m_hoverTimerId);
 
-			panda::gui::BaseGUI::Actions actions;
+			ViewGui::Actions actions;
 
 			if (m_contextMenuData)
 			{
@@ -397,9 +398,7 @@ private:
 				}
 			}
 
-			const auto gPos = m_view.toScreen(event.pos());
-			const auto posI = panda::graphics::PointInt(static_cast<int>(gPos.x), static_cast<int>(gPos.y));
-			m_view.document()->getGUI().contextMenu(posI, flags, actions);
+			m_view.gui().contextMenu(event.pos(), flags, actions);
 		}
 
 	protected:
@@ -408,8 +407,8 @@ private:
 
 //****************************************************************************//
 
-GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent)
-	: GraphView(doc, objectsList, parent)
+GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow)
+	: GraphView(doc, objectsList, mainWindow)
 	, m_group(group)
 {
 	m_linksList = std::make_unique<GroupLinksList>(*this);

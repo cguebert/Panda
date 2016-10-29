@@ -21,10 +21,6 @@ int SimpleGUIImpl::messageBox(panda::gui::MessageBoxType type, const std::string
 	return 0;
 }
 
-void SimpleGUIImpl::contextMenu(panda::graphics::PointInt pos, int flags, const Actions& customActions)
-{
-}
-
 void SimpleGUIImpl::updateView()
 {
 }

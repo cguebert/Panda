@@ -12,6 +12,8 @@
 #include <ui/graphview/graphics/DrawColors.h>
 #include <panda/messaging.h>
 
+class MainWindow;
+
 namespace panda
 {
 class BaseData;
@@ -39,7 +41,7 @@ class LinkTagsList;
 class ObjectRenderersList;
 class ObjectsSelection;
 class Viewport;
-class ViewGUI;
+class ViewGui;
 class ViewInteraction;
 class ViewRenderer;
 
@@ -48,7 +50,7 @@ class GraphView : public QOpenGLWidget, public ScrollableView
 	Q_OBJECT
 
 public:
-	explicit GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
+	explicit GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow);
 	~GraphView();
 
 	panda::PandaDocument* document() const;
@@ -69,7 +71,7 @@ public:
 	ObjectRenderersList& objectRenderers() const;
 	Viewport& viewport() const;
 	ViewInteraction& interaction() const;
-	ViewGUI& gui() const;
+	ViewGui& gui() const;
 
 	void executeNextRefresh(std::function<void ()> func);
 
@@ -77,7 +79,6 @@ public:
 	bool isLoading() const;
 
 	panda::types::Rect contentsArea() const; // Should return the visible area of the view
-	panda::types::Point toScreen(const panda::types::Point& pos) const; // Transform from the position in the view to the position in the screen
 
 	void emitViewportModified();
 
@@ -160,7 +161,7 @@ protected:
 	std::unique_ptr<LinkTagsList> m_linkTagsList;
 	std::unique_ptr<ObjectRenderersList> m_objectRenderersList;
 	std::unique_ptr<Viewport> m_viewport;
-	std::unique_ptr<ViewGUI> m_viewGUI;
+	std::unique_ptr<ViewGui> m_viewGUI;
 	std::unique_ptr<ViewInteraction> m_interaction;
 };
 
@@ -187,7 +188,7 @@ inline Viewport& GraphView::viewport() const
 inline ViewInteraction& GraphView::interaction() const
 { return *m_interaction; }
 
-inline ViewGUI& GraphView::gui() const
+inline ViewGui& GraphView::gui() const
 { return *m_viewGUI; }
 
 inline void GraphView::debugDirtyState(bool show)

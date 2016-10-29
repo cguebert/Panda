@@ -2,6 +2,7 @@
 #include <functional>
 #include <limits>
 
+#include <ui/MainWindow.h>
 #include <ui/command/MoveObjectCommand.h>
 #include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/dialog/QuickCreateDialog.h>
@@ -73,8 +74,8 @@ namespace
 namespace graphview
 {
 
-GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent)
-	: QOpenGLWidget(parent)
+GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow)
+	: QOpenGLWidget(mainWindow)
 	, m_pandaDocument(doc)
 	, m_objectsList(objectsList)
 	, m_linksList(std::make_unique<LinksList>(*this))
@@ -83,7 +84,7 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	, m_viewRenderer(std::make_unique<ViewRenderer>())
 	, m_objectRenderersList(std::make_unique<ObjectRenderersList>())
 	, m_viewport(std::make_unique<Viewport>(*this))
-	, m_viewGUI(std::make_unique<ViewGUI>(*this))
+	, m_viewGUI(std::make_unique<ViewGui>(*this, mainWindow))
 	, m_interaction(std::make_unique<ViewInteraction>(*this))
 {
 	QSurfaceFormat fmt;
@@ -365,7 +366,7 @@ void GraphView::contextMenuEvent(QContextMenuEvent* event)
 
 void GraphView::addedObject(panda::PandaObject* object)
 {
-	// Creating a Renderer depending on the class of the object been added
+	// Creating a Renderer depending on the class of the object being added
 	auto objRnd = objectRenderers().get(object);
 	if (!objRnd)
 	{
@@ -634,11 +635,6 @@ void GraphView::executeNextRefresh(std::function<void()> func)
 panda::types::Rect GraphView::contentsArea() const
 {
 	return convert(contentsRect());
-}
-
-panda::types::Point GraphView::toScreen(const panda::types::Point& pos) const
-{
-	return convert(mapToGlobal(convert(pos)));
 }
 
 void GraphView::emitViewportModified()

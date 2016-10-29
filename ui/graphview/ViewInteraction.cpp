@@ -343,8 +343,7 @@ namespace graphview
 				else
 					display = m_hoverData->getName() + "\n" + m_hoverData->getDescription();
 
-				Rect area { m_view.toScreen({dataRect.second.topLeft()}), m_view.toScreen({dataRect.second.bottomRight()}) };
-				m_view.gui().showToolTip(m_view.toScreen(event.pos()), display, area);
+				m_view.gui().showToolTip(event.pos(), display, dataRect.second);
 				if (!m_hoverData->getHelp().empty())
 					m_view.gui().setStatusBarMessage(m_hoverData->getHelp());
 			}
@@ -386,9 +385,7 @@ namespace graphview
 							display = parent->getOwner()->getName() + "\n" + parent->getName();
 						}
 
-						auto tagRect = dataPair.second;
-						Rect area { m_view.toScreen({tagRect.topLeft()}), m_view.toScreen({tagRect.bottomRight()}) };
-						m_view.gui().showToolTip(m_view.toScreen(event.pos()), display, area);
+						m_view.gui().showToolTip(event.pos(), display, dataPair.second);
 					}
 				}
 			}
@@ -587,9 +584,7 @@ namespace graphview
 
 		panda::TimedFunctions::instance().cancelRun(m_hoverTimerId);
 
-		const auto gPos = m_view.toScreen(event.pos());
-		const auto posI = panda::graphics::PointInt(static_cast<int>(gPos.x), static_cast<int>(gPos.y));
-		m_view.document()->getGUI().contextMenu(posI, flags);
+		m_view.gui().contextMenu(event.pos(), flags);
 	}
 
 	panda::BaseData* ViewInteraction::contextMenuData() const
@@ -599,25 +594,24 @@ namespace graphview
 
 	int ViewInteraction::getContextMenuFlags(const panda::types::Point& pos)
 	{
-		namespace gm = panda::gui::menu;
-		int flags = gm::Selection; // Let MainWindow fill the menu based on the current selection
+		MenuTypes flags = MenuType::Selection; // Let MainWindow fill the menu based on the current selection
 		const auto objRnd = m_view.objectRenderers().getAtPos(pos);
 		if (objRnd)
 		{
 			m_contextMenuObject = objRnd->getObject();
-			flags |= gm::Object;
+			flags |= MenuType::Object;
 			m_contextMenuData = objRnd->getDataAtPos(pos);
 			if (m_contextMenuData)
 			{
 				if (m_contextMenuData->isDisplayed())
-					flags |= gm::Data;
+					flags |= MenuType::Data;
 
 				if (m_contextMenuData->isInput() && m_contextMenuData->getParent())
-					flags |= gm::Link;
+					flags |= MenuType::Link;
 
 				const auto trait = m_contextMenuData->getDataTrait();
 				if (trait->valueTypeName() == "image")
-					flags |= gm::Image;
+					flags |= MenuType::Image;
 			}
 		}
 		else
@@ -629,7 +623,7 @@ namespace graphview
 			auto dataPair = linkTag->getDataAtPoint(pos);
 			if (dataPair.first)
 			{
-				flags |= gm::Tag;
+				flags |= MenuType::Tag;
 				m_contextLinkTag = linkTag.get();
 				break;
 			}

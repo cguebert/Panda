@@ -9,7 +9,6 @@ class SimpleGUIImpl : public panda::gui::BaseGUI
 {
 public:
 	int messageBox(panda::gui::MessageBoxType type, const std::string& caption, const std::string& text, int buttons) override;
-	void contextMenu(panda::graphics::PointInt pos, int flags, const Actions& customActions) override;
 	void updateView() override;
 	void contextMakeCurrent() override;
 	void contextDoneCurrent() override;

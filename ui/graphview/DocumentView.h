@@ -10,7 +10,7 @@ class DocumentView : public GraphView
 	Q_OBJECT
 
 public:
-	explicit DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, QWidget* parent = nullptr);
+	explicit DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList, MainWindow* mainWindow);
 };
 
 } // namespace graphview

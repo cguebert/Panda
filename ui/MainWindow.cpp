@@ -20,6 +20,7 @@
 #include <ui/graphview/GroupView.h>
 #include <ui/graphview/alignObjects.h>
 #include <ui/graphview/ObjectsSelection.h>
+#include <ui/graphview/ViewGUI.h>
 #include <ui/graphview/Viewport.h>
 #include <ui/graphview/ViewInteraction.h>
 
@@ -1173,9 +1174,10 @@ void MainWindow::openGroup()
 	groupView->viewport().showAll();
 }
 
-void MainWindow::fillContextMenu(QMenu& menu, int flags) const
+void MainWindow::fillContextMenu(QMenu& menu, int typesVal) const
 {
-	namespace gm = panda::gui::menu;
+	const auto types = graphview::MenuTypes(typesVal);
+	using mt = graphview::MenuType;
 	panda::PandaObject* obj = m_currentGraphView->selection().lastSelectedObject();
 	if(obj)
 	{
@@ -1184,10 +1186,10 @@ void MainWindow::fillContextMenu(QMenu& menu, int flags) const
 	}
 	menu.addAction(m_pasteAction);
 
-	if(flags & gm::Link)
+	if(types & mt::Link)
 		menu.addAction(m_removeLinkAction);
 
-	if(flags & gm::Data)
+	if(types & mt::Data)
 	{
 		menu.addAction(m_copyDataAction);
 		const panda::PandaObject* owner = nullptr;
@@ -1201,13 +1203,13 @@ void MainWindow::fillContextMenu(QMenu& menu, int flags) const
 	if(obj && obj->getClass()->getClassName() == "GeneratorUser" && obj->getClass()->getNamespaceName() == "panda")
 		menu.addAction(m_chooseWidgetAction);
 
-	if(flags & gm::Image)
+	if(types & mt::Image)
 		menu.addAction(m_showImageViewportAction);
 
-	if (flags & gm::Tag || flags & gm::Data)
+	if (types & mt::Tag || types & mt::Data)
 		menu.addAction(m_setDataLabelAction);
 
-	if (flags & gm::Selection)
+	if (types & mt::Selection)
 	{
 		int nbSelected = m_currentGraphView->selection().get().size();
 		if (nbSelected == 1 && dynamic_cast<panda::Annotation*>(obj))
@@ -1586,7 +1588,7 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	if (m_documentView)
 		m_documentView->deleteLater();
 
-	m_documentView = new graphview::DocumentView(m_document.get(), m_document->getObjectsList());
+	m_documentView = new graphview::DocumentView(m_document.get(), m_document->getObjectsList(), this);
 	m_documentViewContainer->setView(m_documentView);
 	m_documentViewContainer->setFocusProxy(m_documentView);
 	m_currentGraphView = m_documentView;
