@@ -2,6 +2,8 @@
 
 #include <ui/graphview/GraphView.h>
 
+#include <panda/types/Rect.h>
+
 namespace panda {
 	class Group;
 }

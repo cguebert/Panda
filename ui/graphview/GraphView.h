@@ -8,7 +8,6 @@
 #include <set>
 
 #include <ui/custom/ScrollContainer.h>
-#include <ui/graphview/graphics/DrawList.h>
 #include <ui/graphview/graphics/DrawColors.h>
 #include <panda/messaging.h>
 
@@ -33,6 +32,10 @@ namespace graphview
 
 namespace object {
 	class ObjectRenderer;
+}
+
+namespace graphics {
+	class DrawList;
 }
 
 class LinksList;
@@ -78,6 +81,12 @@ public:
 
 	void emitViewportModified();
 
+	void setGui(const std::shared_ptr<ViewRenderer>& viewRenderer, std::unique_ptr<ViewGui> viewGui);
+
+	void beforeDraw();
+	virtual void initializeRenderer(ViewRenderer& viewRenderer);
+	virtual void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors);
+
 public slots:
 	void copy();
 	void cut();
@@ -99,9 +108,6 @@ signals:
 	void lostFocus(QWidget*);
 
 protected:
-	virtual void initializeRenderer(ViewRenderer& viewRenderer);
-	virtual void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors);
-
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
@@ -137,8 +143,8 @@ protected:
 	panda::PandaDocument* m_pandaDocument;
 	panda::ObjectsList& m_objectsList;
 
-	std::unique_ptr<ViewRenderer> m_viewRenderer;
-	std::unique_ptr<ViewGui> m_viewGUI;
+	std::shared_ptr<ViewRenderer> m_viewRenderer;
+	std::unique_ptr<ViewGui> m_viewGui;
 
 	bool m_isLoading = false; /// We don't update the view while loading (unnecessary events)
 
@@ -186,7 +192,7 @@ inline ViewInteraction& GraphView::interaction() const
 { return *m_interaction; }
 
 inline ViewGui& GraphView::gui() const
-{ return *m_viewGUI; }
+{ return *m_viewGui; }
 
 inline void GraphView::debugDirtyState(bool show)
 { m_debugDirtyState = show; update(); }

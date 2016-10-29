@@ -3,7 +3,6 @@
 #include <limits>
 
 #include <ui/MainWindow.h>
-#include <ui/command/MoveObjectCommand.h>
 #include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/dialog/QuickCreateDialog.h>
 #include <ui/graphview/object/ObjectRenderer.h>
@@ -79,7 +78,7 @@ GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList,
 	, m_pandaDocument(doc)
 	, m_objectsList(objectsList)
 	, m_viewRenderer(std::make_unique<ViewRenderer>())
-	, m_viewGUI(std::make_unique<ViewGui>(*this, mainWindow))
+	, m_viewGui(std::make_unique<ViewGui>(*this, mainWindow))
 {
 	QSurfaceFormat fmt;
 	fmt.setSamples(8);
@@ -150,7 +149,6 @@ void GraphView::initializeGL()
 
 void GraphView::resizeGL(int w, int h)
 {
-	glViewport(0, 0, w, h);
 	viewport().setViewSize({ static_cast<float>(w), static_cast<float>(h) });
 	m_viewRenderer->resize(w, h);
 	update();
@@ -163,6 +161,21 @@ void GraphView::paintGL()
 	for (const auto func : functions)
 		func();
 
+	beforeDraw();
+
+	// Prepare the renderer
+	const auto displayRect = viewport().displayRect();
+	m_viewRenderer->setView(displayRect);
+	m_viewRenderer->newFrame();
+
+	drawGraphView(*m_viewRenderer, m_drawColors);
+
+	// Execute the render commands
+	m_viewRenderer->render();
+}
+
+void GraphView::beforeDraw()
+{
 	interaction().beforeDraw();
 
 	updateDirtyRenderers();
@@ -175,11 +188,6 @@ void GraphView::paintGL()
 		linksList().clear();
 		viewport().updateObjectsRect();
 	}
-
-	drawGraphView(*m_viewRenderer, m_drawColors);
-
-	// Execute the render commands
-	m_viewRenderer->render();
 }
 
 void GraphView::initializeRenderer(ViewRenderer& viewRenderer)
@@ -192,10 +200,7 @@ void GraphView::initializeRenderer(ViewRenderer& viewRenderer)
 
 void GraphView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors)
 {
-	// Prepare the renderer
 	const auto displayRect = viewport().displayRect();
-	viewRenderer.setView(displayRect);
-	viewRenderer.newFrame();
 
 	linkTagsList().onBeginDraw();
 	linksList().onBeginDraw(drawColors);
@@ -636,6 +641,12 @@ void GraphView::executeNextRefresh(std::function<void()> func)
 void GraphView::emitViewportModified()
 {
 	emit viewportModified();
+}
+
+void GraphView::setGui(const std::shared_ptr<ViewRenderer>& viewRenderer, std::unique_ptr<ViewGui> viewGui)
+{
+	m_viewRenderer = viewRenderer;
+	m_viewGui = std::move(viewGui);
 }
 
 } // namespace graphview

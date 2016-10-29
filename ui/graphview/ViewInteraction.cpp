@@ -467,7 +467,7 @@ namespace graphview
 		}
 		else if (m_movingAction == Moving::View)
 		{
-			m_view.emitViewportModified();
+			//m_view.emitViewportModified();
 		}
 		else if (m_movingAction == Moving::Zoom)
 		{
