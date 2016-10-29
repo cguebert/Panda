@@ -635,7 +635,7 @@ namespace graphview
 	void ViewInteraction::moveViewIfMouseOnBorder()
 	{
 		auto pos = m_view.viewport().fromView(m_currentMousePos);
-		auto area = m_view.contentsArea();
+		auto area = panda::types::Rect{ { 0,0 }, m_view.viewport().viewSize() };
 		const float maxDist = 50;
 		area.adjust(maxDist, maxDist, -maxDist, -maxDist);
 		if (!area.contains(pos))

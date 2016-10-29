@@ -146,6 +146,7 @@ void GraphView::initializeGL()
 void GraphView::resizeGL(int w, int h)
 {
 	glViewport(0, 0, w, h);
+	m_viewport->setViewSize({ static_cast<float>(w), static_cast<float>(h) });
 	m_viewRenderer->resize(w, h);
 	update();
 }
@@ -566,7 +567,7 @@ void GraphView::objectsReordered()
 
 panda::types::Point GraphView::getNewObjectPosition()
 {
-	return contentsArea().center() + viewport().viewDelta();
+	return viewport().viewSize() / 2 + viewport().viewDelta();
 }
 
 void GraphView::setDataLabel()
@@ -630,11 +631,6 @@ void GraphView::del()
 void GraphView::executeNextRefresh(std::function<void()> func)
 {
 	m_functionsToExecuteNextRefresh.push_back(func);
-}
-
-panda::types::Rect GraphView::contentsArea() const
-{
-	return convert(contentsRect());
 }
 
 void GraphView::emitViewportModified()

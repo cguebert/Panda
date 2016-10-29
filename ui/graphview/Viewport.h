@@ -35,6 +35,9 @@ namespace graphview
 		int zoomLevel() const;
 		void setZoomLevel(const panda::types::Point& pos, int zoomLevel); // The position will stay put while the zoom changes
 
+		panda::types::Point viewSize() const; // The size of the view widget
+		void setViewSize(panda::types::Point size); // Set by the graph view widget
+
 		panda::types::Point viewDelta() const;
 		panda::types::Rect displayRect() const; // The area that is shown
 		const panda::types::Rect& objectsRect() const; // The area taken by the objects
@@ -49,6 +52,7 @@ namespace graphview
 		GraphView& m_view;
 		int m_zoomLevel = 0;
 		float m_zoomFactor = 1.0f;
+		panda::types::Point m_viewSize;
 		panda::types::Point m_viewDelta;
 		panda::types::Rect m_objectsRect; // Area taken by the objects on the screen
 		panda::types::Rect m_viewRect; // Area taken by the objects on the screen, including zoom
@@ -61,6 +65,9 @@ namespace graphview
 
 	inline int Viewport::zoomLevel() const
 	{ return m_zoomLevel; }
+
+	inline panda::types::Point Viewport::viewSize() const
+	{ return m_viewSize; }
 
 	inline panda::types::Point Viewport::viewDelta() const
 	{ return m_viewDelta; }

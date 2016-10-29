@@ -78,8 +78,6 @@ public:
 	const std::vector<object::ObjectRenderer*>& selectedObjectsRenderers() const;
 	bool isLoading() const;
 
-	panda::types::Rect contentsArea() const; // Should return the visible area of the view
-
 	void emitViewportModified();
 
 protected:

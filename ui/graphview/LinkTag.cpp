@@ -1,5 +1,6 @@
 #include <ui/graphview/LinkTag.h>
 #include <ui/graphview/GraphView.h>
+#include <ui/graphview/Viewport.h>
 #include <ui/graphview/ObjectRenderersList.h>
 #include <ui/graphview/object/ObjectRenderer.h>
 
@@ -144,7 +145,7 @@ void LinkTag::draw(graphics::DrawList& list, graphics::DrawColors& colors)
 
 bool LinkTag::needLinkTag(float inputX, float outputX, GraphView& view)
 {
-	return outputX <= inputX || outputX > inputX + view.contentsArea().width() * 2 / 3;
+	return outputX <= inputX || outputX > inputX + view.viewport().viewSize().x * 2 / 3;
 }
 
 std::vector<panda::BaseData*> LinkTag::getOutputDatas() const
