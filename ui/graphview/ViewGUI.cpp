@@ -36,7 +36,7 @@ namespace graphview
 
 	void ViewGui::setStatusBarMessage(const std::string& msg)
 	{
-		emit m_view.showStatusBarMessage(QString::fromStdString(msg));
+		m_mainWindow->showStatusBarMessage(QString::fromStdString(msg));
 	}
 
 	void ViewGui::showToolTip(const panda::types::Point& pos, const std::string& msg, const panda::types::Rect& area)

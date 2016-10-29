@@ -46,6 +46,7 @@ public:
 	OpenGLRenderView* getOpenGLView() const;
 
 	void fillContextMenu(QMenu& menu, int flags) const;
+	void showStatusBarMessage(QString);
 
 protected:
 	void closeEvent(QCloseEvent* event);
@@ -64,7 +65,6 @@ private slots:
 	void switchToDocumentView();
 	void switchToOpenGLView();
 	void toggleFullScreen(bool);
-	void showStatusBarMessage(QString);
 	void group();
 	void ungroup();
 	void editGroup();

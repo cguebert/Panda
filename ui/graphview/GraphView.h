@@ -55,8 +55,6 @@ public:
 
 	panda::PandaDocument* document() const;
 
-	panda::types::Point getNewObjectPosition();
-
 	void objectsMoved(); // Refresh the view, links & tags
 
 	/// Objects docked to the default docks are sorted by their height in the graph view
@@ -116,7 +114,6 @@ protected:
 
 signals:
 	void modified();
-	void showStatusBarMessage(QString);
 	void viewportModified();
 	void lostFocus(QWidget*);
 

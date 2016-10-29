@@ -565,11 +565,6 @@ void GraphView::objectsReordered()
 	objectRenderers().reorder(m_objectsList);
 }
 
-panda::types::Point GraphView::getNewObjectPosition()
-{
-	return viewport().viewSize() / 2 + viewport().viewDelta();
-}
-
 void GraphView::setDataLabel()
 {
 	auto data = interaction().contextMenuData();

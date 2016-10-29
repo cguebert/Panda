@@ -4,6 +4,7 @@
 #include <ui/graphview/LinksList.h>
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/ViewInteraction.h>
+#include <ui/graphview/Viewport.h>
 #include <ui/graphview/object/ObjectPositionAddon.h>
 
 #include <panda/object/PandaObject.h>
@@ -31,7 +32,7 @@ ObjectRenderer::ObjectRenderer(GraphView* view, panda::PandaObject* obj)
 	if (!m_positionAddon.isSet())
 	{
 		Point objSize = getObjectSize();
-		Point center = view->getNewObjectPosition();
+		Point center = view->viewport().viewSize() / 2 + view->viewport().viewDelta();
 		m_position = (center - objSize / 2);
 		m_positionAddon.setPosition((center - objSize / 2));
 	}
