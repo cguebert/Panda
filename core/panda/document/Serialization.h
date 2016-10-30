@@ -23,8 +23,6 @@ namespace serialization
 {
 
 using Objects = std::vector<panda::PandaObject*>;
-using LoadResult = std::pair<bool, Objects>;
-
 enum class DocumentType { Base, Rendered, Interactive };
 
 std::string PANDA_CORE_API getDocumentName(DocumentType type);
@@ -37,13 +35,13 @@ bool PANDA_CORE_API canImport(DocumentType current, DocumentType import);
 
 bool PANDA_CORE_API writeFile(PandaDocument* document, const std::string& fileName);
 std::unique_ptr<PandaDocument> PANDA_CORE_API readFile(const std::string& fileName, panda::gui::BaseGUI& gui);
-LoadResult PANDA_CORE_API importFile(PandaDocument* document, ObjectsList& objectsList, const std::string& fileName);
+Objects PANDA_CORE_API importFile(PandaDocument* document, ObjectsList& objectsList, const std::string& fileName);
 
 std::string PANDA_CORE_API writeTextDocument(PandaDocument* document, const Objects& objects);
-LoadResult PANDA_CORE_API readTextDocument(PandaDocument* document, ObjectsList& objectsList, const std::string& text);
+Objects PANDA_CORE_API readTextDocument(PandaDocument* document, ObjectsList& objectsList, const std::string& text);
 
 bool PANDA_CORE_API saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects);
-LoadResult PANDA_CORE_API loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElement& root);
+Objects PANDA_CORE_API loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElement& root);
 
 } // namespace serialization
 

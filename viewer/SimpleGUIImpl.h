@@ -8,7 +8,6 @@
 class SimpleGUIImpl : public panda::gui::BaseGUI
 {
 public:
-	int messageBox(panda::gui::MessageBoxType type, const std::string& caption, const std::string& text, int buttons) override;
 	void updateView() override;
 	void contextMakeCurrent() override;
 	void contextDoneCurrent() override;

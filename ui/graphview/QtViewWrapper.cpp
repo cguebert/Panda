@@ -340,7 +340,13 @@ void QtViewWrapper::copy()
 	if (selected.empty())
 		return;
 
-	QApplication::clipboard()->setText(QString::fromStdString(panda::serialization::writeTextDocument(m_graphView->document(), selected)));
+	try
+	{
+		QApplication::clipboard()->setText(QString::fromStdString(panda::serialization::writeTextDocument(m_graphView->document(), selected)));
+	}
+	catch (const std::exception&)
+	{
+	}
 }
 
 void QtViewWrapper::cut()
@@ -355,14 +361,21 @@ void QtViewWrapper::paste()
 	if (!mimeData->hasText())
 		return;
 	
-	auto result = panda::serialization::readTextDocument(m_graphView->document(), m_graphView->objectsList(), mimeData->text().toStdString());
-	if (!result.first || result.second.empty())
+	panda::serialization::Objects result;
+	try
+	{
+		result = panda::serialization::readTextDocument(m_graphView->document(), m_graphView->objectsList(), mimeData->text().toStdString());
+	}
+	catch (const std::exception& e)
+	{
+		QMessageBox::warning(this, "Import error", QString::fromLocal8Bit(e.what()));
 		return;
+	}
 
-	m_graphView->selection().set(result.second);
+	m_graphView->selection().set(result);
 	m_graphView->viewport().moveSelectedToCenter();
 
-	m_graphView->document()->getUndoStack().push(std::make_shared<AddObjectCommand>(m_graphView->document(), m_graphView->objectsList(), result.second));
+	m_graphView->document()->getUndoStack().push(std::make_shared<AddObjectCommand>(m_graphView->document(), m_graphView->objectsList(), result));
 }
 
 void QtViewWrapper::del()

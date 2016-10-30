@@ -6,6 +6,7 @@
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
+#include <panda/helper/Exception.h>
 #include <panda/object/Dockable.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/ObjectAddons.h>
@@ -151,7 +152,7 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 
 	bool result = doc.saveToFile(fileName);
 	if (!result)
-		document->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Cannot write file " + fileName);
+		throw helper::Exception("Cannot write file: " + fileName);
 
 	return result;
 }
@@ -160,10 +161,7 @@ std::unique_ptr<PandaDocument> readFile(const std::string& fileName, panda::gui:
 {
 	XmlDocument doc;
 	if (!doc.loadFromFile(fileName))
-	{
-		gui.messageBox(gui::MessageBoxType::warning, "Panda", "Cannot parse xml file  " + fileName + ".");
-		return nullptr;
-	}
+		throw helper::Exception("Cannot parse xml file: " + fileName);
 
 	auto root = doc.root();
 
@@ -174,27 +172,19 @@ std::unique_ptr<PandaDocument> readFile(const std::string& fileName, panda::gui:
 	auto document = ::createDocument(root, gui);
 	document->load(root); // Load the document's Datas
 
-	if (loadDoc(document.get(), document->getObjectsList(), root).first)
-		return document;
-	else 
-		return nullptr;
+	loadDoc(document.get(), document->getObjectsList(), root);
+	return document;
 }
 
-LoadResult importFile(PandaDocument* document, ObjectsList& objectsList, const std::string& fileName)
+Objects importFile(PandaDocument* document, ObjectsList& objectsList, const std::string& fileName)
 {
 	XmlDocument doc;
 	if (!doc.loadFromFile(fileName))
-	{
-		document->getGUI().messageBox(gui::MessageBoxType::warning, "Import", "Cannot parse xml file  " + fileName + ".");
-		return { false, {} };
-	}
+		throw helper::Exception("Cannot parse xml file: " + fileName);
 
 	auto root = doc.root();
 	if (!::canImport(document, root))
-	{
-		document->getGUI().messageBox(gui::MessageBoxType::warning, "Import", "Cannot import into this document, types incompatible");
-		return { false, {} };
-	}
+		throw helper::Exception("Cannot import into this document, types incompatible");
 
 	ObjectAddonsRegistry::instance().load(root); // The definition of object addons, without clearing them first
 
@@ -216,7 +206,7 @@ std::string writeTextDocument(PandaDocument* document, const Objects& objects)
 	return doc.saveToMemory();
 }
 
-LoadResult readTextDocument(PandaDocument* document, ObjectsList& objectsList, const std::string& text)
+Objects readTextDocument(PandaDocument* document, ObjectsList& objectsList, const std::string& text)
 {
 	XmlDocument doc;
 	if (!doc.loadFromMemory(text))
@@ -224,10 +214,7 @@ LoadResult readTextDocument(PandaDocument* document, ObjectsList& objectsList, c
 
 	auto root = doc.root();
 	if (!::canImport(document, root))
-	{
-		document->getGUI().messageBox(gui::MessageBoxType::warning, "Import", "Cannot import into this document, types incompatible");
-		return { false, {} };
-	}
+		throw helper::Exception("Cannot import into this document, types incompatible");
 
 	return loadDoc(document, objectsList, root);
 }
@@ -288,7 +275,7 @@ bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects)
 	return true;
 }
 
-LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElement& root)
+Objects loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElement& root)
 {
 	document->getSignals().startLoading.run();
 	std::map<uint32_t, uint32_t> importIndicesMap;
@@ -301,25 +288,19 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlE
 	for(auto elem = root.firstChild("Object"); elem; elem = elem.nextSibling("Object"))
 	{
 		std::string registryName = elem.attribute("type").toString();
-		if(registryName.empty())
-			return { false, {} };
 		uint32_t index = elem.attribute("index").toUnsigned();
 		auto object = factory->create(registryName, document);
 		if(object)
 		{
 			importIndicesMap[index] = object->getIndex();
 
-			if (!object->load(elem))
-				return { false, {} };
+			object->load(elem);
 			object->addons().load(elem);
 
 			newObjects.emplace_back(object, elem);
 		}
 		else
-		{
-			document->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
-			return { false, {} };
-		}
+			throw helper::Exception("Could not create the object " + registryName + ".\nA plugin must be missing.");
 	}
 
 	// Now that we have created all the objects, we actually add them to the document
@@ -377,7 +358,7 @@ LoadResult loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlE
 
 	document->getSignals().loadingFinished.run(); // For example if the view wants to do some computation
 
-	return { true, objects };
+	return objects;
 }
 
 } // namespace serialization

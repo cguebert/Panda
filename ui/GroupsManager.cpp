@@ -159,8 +159,9 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 	auto registryName = root.attribute("type").toString();
 
 	auto object = panda::ObjectFactory::getInstance()->create(registryName, document);
-	if(object && object->load(root))
+	if(object)
 	{
+		object->load(root);
 		document->getUndoStack().push(std::make_shared<AddObjectCommand>(document, view->objectsList(), object));
 		return object.get();
 	}

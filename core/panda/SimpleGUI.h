@@ -13,33 +13,6 @@ namespace panda
 namespace gui
 {
 
-namespace buttons
-{
-
-enum 
-{
-	Ok = 0x00000400,
-	Save = 0x00000800,
-	SaveAll = 0x00001000,
-	Open = 0x00002000,
-	Yes = 0x00004000,
-	YesToAll = 0x00008000,
-	No = 0x00010000,
-	NoToAll = 0x00020000,
-	Abort = 0x00040000,
-	Retry = 0x00080000,
-	Ignore = 0x00100000,
-	Close = 0x00200000,
-	Cancel = 0x00400000,
-	Discard = 0x00800000,
-	Help = 0x01000000,
-	Apply = 0x02000000,
-	Reset = 0x04000000
-};
-
-} // namespace buttons
-
-
 enum class Color
 {
 	Window,
@@ -62,9 +35,6 @@ public:
 	using CallbackFunc = std::function<void()>;
 
 	virtual ~BaseGUI();
-
-	// A combination of buttons can be set. Returns the button the user has clicked.
-	virtual int messageBox(MessageBoxType type, const std::string& caption, const std::string& text, int buttons = buttons::Ok) = 0;
 
 	virtual void updateView() = 0; // Update the OpenGL view
 

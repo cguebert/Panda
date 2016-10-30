@@ -888,14 +888,17 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile(const QString &fileName)
 {
-	auto document = panda::serialization::readFile(fileName.toStdString(), *m_simpleGUI);
+	std::unique_ptr<panda::PandaDocument> document;
 
-	if(!document)
+	try 
 	{
-		statusBar()->showMessage(tr("Loading failed"), 2000);
+		document = panda::serialization::readFile(fileName.toStdString(), *m_simpleGUI);
+	} 
+	catch (const std::exception& e)
+	{
+		QMessageBox::warning(this, "Load error", QString::fromLocal8Bit(e.what()));
 		return false;
 	}
-
 
 	setDocument(std::move(document));
 
@@ -914,15 +917,18 @@ bool MainWindow::loadFile(const QString &fileName)
 
 bool MainWindow::importFile(const QString& fileName)
 {
-	auto result = panda::serialization::importFile(m_document.get(), m_document->getObjectsList(), fileName.toStdString());
-
-	if(!result.first)
+	panda::serialization::Objects result;
+	try 
 	{
-		statusBar()->showMessage(tr("Loading failed"), 2000);
+		result = panda::serialization::importFile(m_document.get(), m_document->getObjectsList(), fileName.toStdString());
+	} 
+	catch (const std::exception& e)
+	{
+		QMessageBox::warning(this, "Import error", QString::fromLocal8Bit(e.what()));
 		return false;
 	}
 
-	m_documentView->view().selection().set(result.second);
+	m_documentView->view().selection().set(result);
 
 	statusBar()->showMessage(tr("File imported"), 2000);
 	m_documentView->view().viewport().showAll();
@@ -931,8 +937,13 @@ bool MainWindow::importFile(const QString& fileName)
 
 bool MainWindow::saveFile(const QString &fileName)
 {
-	if (!panda::serialization::writeFile(m_document.get(), fileName.toStdString()))
+	try
 	{
+		panda::serialization::writeFile(m_document.get(), fileName.toStdString());
+	}
+	catch(const std::exception& e)
+	{
+		QMessageBox::warning(this, "Save error", QString::fromLocal8Bit(e.what()));
 		statusBar()->showMessage(tr("Saving failed"), 2000);
 		return false;
 	}
@@ -1460,12 +1471,14 @@ void MainWindow::convertSavedDocuments()
 	{
 		auto path = entry.absoluteFilePath();
 		
-		if (auto document = panda::serialization::readFile(path.toStdString(), *m_simpleGUI))
+		try
 		{
+			auto document = panda::serialization::readFile(path.toStdString(), *m_simpleGUI);
+		
 			panda::serialization::writeFile(document.get(), path.toStdString());
 			++nb;
 		}
-		else
+		catch(const std::exception&)
 		{
 			if (QMessageBox::Abort == QMessageBox::question(this, 
 				tr("Error loading document"), 

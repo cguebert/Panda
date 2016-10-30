@@ -10,27 +10,6 @@ SimpleGUIImpl::SimpleGUIImpl(MainWindow* mainWindow)
 	assert(mainWindow != nullptr);
 }
 
-int SimpleGUIImpl::messageBox(panda::gui::MessageBoxType type, const std::string& caption, const std::string& text, int buttons)
-{
-	using panda::gui::MessageBoxType;
-	switch (type)
-	{
-	case MessageBoxType::about:
-		QMessageBox::about(m_mainWindow, QString::fromStdString(caption), QString::fromStdString(text));
-		return 0;
-	case MessageBoxType::critical:
-		return QMessageBox::critical(m_mainWindow, QString::fromStdString(caption), QString::fromStdString(text), static_cast<QMessageBox::StandardButtons>(buttons));
-	case MessageBoxType::information:
-		return QMessageBox::information(m_mainWindow, QString::fromStdString(caption), QString::fromStdString(text), static_cast<QMessageBox::StandardButtons>(buttons));
-	case MessageBoxType::question:
-		return QMessageBox::question(m_mainWindow, QString::fromStdString(caption), QString::fromStdString(text), static_cast<QMessageBox::StandardButtons>(buttons));
-	case MessageBoxType::warning:
-		return QMessageBox::warning(m_mainWindow, QString::fromStdString(caption), QString::fromStdString(text), static_cast<QMessageBox::StandardButtons>(buttons));
-	}
-
-	return 0;
-}
-
 void SimpleGUIImpl::updateView()
 {
 	m_mainWindow->getOpenGLView()->update();

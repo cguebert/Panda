@@ -10,6 +10,7 @@
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
+#include <panda/helper/Exception.h>
 
 namespace panda
 {
@@ -119,7 +120,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	}
 }
 
-bool Group::load(const XmlElement& elem)
+void Group::load(const XmlElement& elem)
 {
 	for(auto groupDataNode = elem.firstChild("GroupData"); groupDataNode; groupDataNode = groupDataNode.nextSibling("GroupData"))
 	{
@@ -162,15 +163,11 @@ bool Group::load(const XmlElement& elem)
 			importObjectsMap[index] = object.get();
 			m_objectsList.addObject(object);
 
-			if (!object->load(objectNode))
-				return false;
+			object->load(objectNode);
 			object->addons().load(objectNode);
 		}
 		else
-		{
-			parentDocument()->getGUI().messageBox(gui::MessageBoxType::warning, "Panda", "Could not create the object " + registryName + ".\nA plugin must be missing.");
-			return false;
-		}
+			throw panda::helper::Exception("Could not create the object " + registryName + ".\nA plugin must be missing.");
 	}
 
 	// Create links
@@ -227,8 +224,6 @@ bool Group::load(const XmlElement& elem)
 	}
 
 	parentDocument()->onModifiedObject(this);
-
-	return true;
 }
 
 void Group::reset()

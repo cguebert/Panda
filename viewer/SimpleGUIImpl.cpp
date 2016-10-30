@@ -2,25 +2,6 @@
 
 #include <iostream>
 
-int SimpleGUIImpl::messageBox(panda::gui::MessageBoxType type, const std::string& caption, const std::string& text, int buttons)
-{
-	using panda::gui::MessageBoxType;
-	switch (type)
-	{
-	case MessageBoxType::about:
-	case MessageBoxType::information:
-	case MessageBoxType::question:
-		std::cout << text << std::endl;
-		return 0;
-	case MessageBoxType::critical:
-	case MessageBoxType::warning:
-		std::cerr << text << std::endl;
-		return 0;
-	}
-
-	return 0;
-}
-
 void SimpleGUIImpl::updateView()
 {
 }

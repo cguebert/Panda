@@ -130,7 +130,7 @@ void PandaObject::save(XmlElement& elem, const std::vector<PandaObject*> *select
 	}
 }
 
-bool PandaObject::load(const XmlElement& elem)
+void PandaObject::load(const XmlElement& elem)
 {
 	for(auto e = elem.firstChild("Data"); e; e = e.nextSibling("Data"))
 	{
@@ -138,8 +138,6 @@ bool PandaObject::load(const XmlElement& elem)
 		if(data)
 			data->load(e);
 	}
-
-	return true;
 }
 
 void PandaObject::dataSetParent(BaseData* data, BaseData* parent)

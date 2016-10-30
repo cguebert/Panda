@@ -48,13 +48,11 @@ public:
 		value.setValue(dist(gen));
 	}
 
-	bool load(const XmlElement& elem) override
+	void load(const XmlElement& elem) override
 	{
 		PandaObject::load(elem);
 
 		reset();
-
-		return true;
 	}
 
 protected:

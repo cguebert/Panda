@@ -17,7 +17,6 @@ class SimpleGUIImpl : public QObject, public panda::gui::BaseGUI
 public:
 	SimpleGUIImpl(MainWindow* mainWindow);
 
-	int messageBox(panda::gui::MessageBoxType type, const std::string& caption, const std::string& text, int buttons) override;
 	void updateView() override;
 	void contextMakeCurrent() override;
 	void contextDoneCurrent() override;
