@@ -1,6 +1,5 @@
 #include <panda/graphview/GraphView.h>
 
-#include <panda/graphview/object/DockableRenderer.h>
 #include <panda/graphview/LinksList.h>
 #include <panda/graphview/LinkTagsList.h>
 #include <panda/graphview/ObjectsSelection.h>
@@ -10,6 +9,8 @@
 #include <panda/graphview/Viewport.h>
 #include <panda/graphview/ViewRenderer.h>
 #include <panda/graphview/graphics/DrawList.h>
+#include <panda/graphview/object/DockableRenderer.h>
+#include <panda/graphview/object/ObjectRendererFactory.h>
 
 #include <panda/command/DockableCommand.h>
 #include <panda/document/PandaDocument.h>

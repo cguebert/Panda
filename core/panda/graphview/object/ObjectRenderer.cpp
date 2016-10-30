@@ -245,44 +245,6 @@ void ObjectRenderer::setDirty()
 	m_dirty = true;
 }
 
-//****************************************************************************//
-
-ObjectRendererFactory* ObjectRendererFactory::getInstance()
-{
-	static ObjectRendererFactory factory;
-	return &factory;
-}
-
-std::shared_ptr<ObjectRenderer> ObjectRendererFactory::createRenderer(GraphView* view, panda::PandaObject* obj)
-{
-	for(const auto& creator : creators)
-	{
-		if(creator->getClass()->isInstance(obj))
-			return creator->create(view, obj);
-	}
-
-	return std::make_shared<ObjectRenderer>(view, obj);
-}
-
-void ObjectRendererFactory::addCreator(BaseObjectDrawCreator* creator)
-{
-	const panda::BaseClass* newClass = creator->getClass();
-	std::shared_ptr<BaseObjectDrawCreator> ptr(creator);
-
-	unsigned int nb = creators.size();
-	for(unsigned int i=0; i<nb; ++i)
-	{
-		const panda::BaseClass* prevClass = creators[i]->getClass();
-		if(newClass->hasParent(prevClass))
-		{
-			creators.insert(creators.begin() + i, ptr);
-			return;
-		}
-	}
-
-	creators.push_back(ptr);
-}
-
 } // namespace object
 
 } // namespace graphview

@@ -1,4 +1,5 @@
 #include <panda/graphview/object/GroupRenderer.h>
+#include <panda/graphview/object/ObjectRendererFactory.h>
 #include <panda/graphview/GraphView.h>
 
 #include <panda/document/PandaDocument.h>

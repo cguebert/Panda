@@ -1,4 +1,6 @@
 #include <panda/graphview/object/GenericObjectRenderer.h>
+#include <panda/graphview/object/ObjectRendererFactory.h>
+
 #include <panda/graphview/GraphView.h>
 #include <panda/graphview/LinksList.h>
 #include <panda/graphview/ViewInteraction.h>

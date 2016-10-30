@@ -3,6 +3,7 @@
 #include <panda/graphview/ObjectsSelection.h>
 #include <panda/graphview/Viewport.h>
 #include <panda/graphview/object/AnnotationRenderer.h>
+#include <panda/graphview/object/ObjectRendererFactory.h>
 
 #include <panda/command/ModifyAnnotationCommand.h>
 #include <panda/command/MoveObjectCommand.h>
