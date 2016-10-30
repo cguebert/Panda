@@ -38,8 +38,8 @@ void LinkTag::update()
 
 	objRnd->getDataRect(m_inputData, dataRect);
 	m_inputDataRects.first = Rect::fromSize(dataRect.right() + tagMargin,
-											dataRect.center().y - tagH / 2.0,
-											tagW, tagH);
+											dataRect.center().y - tagH / 2.f,
+											static_cast<float>(tagW), static_cast<float>(tagH));
 	m_inputDataRects.second = dataRect;
 
 	float ix = dataRect.center().x;
@@ -56,8 +56,8 @@ void LinkTag::update()
 		else
 		{
 			Rect tagRect = Rect::fromSize(dataRect.left() - tagW - tagMargin,
-										  dataRect.center().y - tagH / 2.0,
-										  tagW, tagH);
+										  dataRect.center().y - tagH / 2.f,
+										  static_cast<float>(tagW), static_cast<float>(tagH));
 			it->second.first = tagRect;
 			it->second.second = dataRect;
 			++it;

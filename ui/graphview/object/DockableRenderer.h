@@ -29,7 +29,7 @@ public:
 	static const int dockRendererMargin = 10;
 protected:
 	panda::DockObject* m_dockObject;
-	std::vector<int> m_dockablesY;	// Used only in "getDockableIndex"
+	std::vector<float> m_dockablesY;	// Used only in "getDockableIndex"
 };
 
 class DockableObjectRenderer : public ObjectRenderer

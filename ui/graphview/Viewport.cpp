@@ -70,7 +70,7 @@ namespace graphview
 			float factorW = m_viewSize.x / (m_objectsRect.width() + 40);
 			float factorH = m_viewSize.y / (m_objectsRect.height() + 40);
 			m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
-			m_zoomLevel = 100 * (1.0 - m_zoomFactor);
+			m_zoomLevel = static_cast<int>(100 * (1.f - m_zoomFactor));
 			moveView(m_viewSize / 2 / m_zoomFactor - m_objectsRect.center() + m_viewDelta);
 		}
 	}
@@ -90,7 +90,7 @@ namespace graphview
 			float factorW = m_viewSize.x / (selectedArea.width() + 40);
 			float factorH = m_viewSize.y / (selectedArea.height() + 40);
 			m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
-			m_zoomLevel = 100 * (1.f - m_zoomFactor);
+			m_zoomLevel = static_cast<int>(100 * (1.f - m_zoomFactor));
 			moveView(m_viewSize / 2 / m_zoomFactor - selectedArea.center() + m_viewDelta);
 		}
 	}
@@ -147,7 +147,7 @@ namespace graphview
 			float factorW = m_viewSize.x / (zoomRect.width() + 40);
 			float factorH = m_viewSize.y / (zoomRect.height() + 40);
 			m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
-			m_zoomLevel = 100 * (1.0 - m_zoomFactor);
+			m_zoomLevel = static_cast<int>(100 * (1.f - m_zoomFactor));
 			moveView(m_viewSize / 2 / m_zoomFactor - zoomRect.center() + m_viewDelta);
 		}
 	}
@@ -159,7 +159,7 @@ namespace graphview
 
 		Point oldPos = pos / m_zoomFactor;
 		m_zoomFactor = factor;
-		m_zoomLevel = 100.0 * (1.0 - m_zoomFactor);
+		m_zoomLevel = static_cast<int>(100.0 * (1.f - m_zoomFactor));
 		moveView(pos / m_zoomFactor - oldPos);
 	}
 
@@ -170,7 +170,7 @@ namespace graphview
 
 		Point oldPos = pos / m_zoomFactor;
 		m_zoomLevel = level;
-		m_zoomFactor = (100 - m_zoomLevel) / 100.0;
+		m_zoomFactor = (100 - m_zoomLevel) / 100.f;
 		moveView(pos / m_zoomFactor - oldPos);
 	}
 

@@ -60,20 +60,21 @@ void ObjectRenderer::update()
 	inputDatas = m_object->getInputDatas();
 	outputDatas = m_object->getOutputDatas();
 	int nbInputs = inputDatas.size(), nbOutputs = outputDatas.size();
+	float drs = dataRectSize;
 
 	for(int i=0; i<nbInputs; ++i)
 	{
 		Rect dataArea = Rect::fromSize(m_visualArea.left() + dataRectMargin,
-									   m_visualArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
-									   dataRectSize, dataRectSize);
+									   m_visualArea.top() + dataStartY() + i * (drs + dataRectMargin),
+									   drs, drs);
 		m_datas.emplace_back(inputDatas[i], dataArea);
 	}
 
 	for(int i=0; i<nbOutputs; ++i)
 	{
 		Rect dataArea = Rect::fromSize(m_visualArea.right() - dataRectMargin - dataRectSize,
-									   m_visualArea.top() + dataStartY() + i * (dataRectSize + dataRectMargin),
-									   dataRectSize, dataRectSize);
+									   m_visualArea.top() + dataStartY() + i * (drs + dataRectMargin),
+									   drs, drs);
 		m_datas.emplace_back(outputDatas[i], dataArea);
 	}
 
@@ -83,7 +84,7 @@ void ObjectRenderer::update()
 void ObjectRenderer::createShape()
 {
 	m_outline.clear();
-	m_outline.rect(m_visualArea, objectCorner);
+	m_outline.rect(m_visualArea, static_cast<float>(objectCorner));
 	m_outline.close();
 	m_fillShape = m_outline.triangulate();
 }
@@ -108,7 +109,7 @@ void ObjectRenderer::move(const Point& delta)
 
 Point ObjectRenderer::getObjectSize()
 {
-	Point objectSize(objectDefaultWidth, objectDefaultHeight);
+	Point objectSize(static_cast<float>(objectDefaultWidth), static_cast<float>(objectDefaultHeight));
 
 	int nbInputs, nbOutputs;
 	nbInputs = m_object->getInputDatas().size();
@@ -121,7 +122,7 @@ Point ObjectRenderer::getObjectSize()
 
 Rect ObjectRenderer::getTextArea()
 {
-	int margin = dataRectSize + dataRectMargin + 3;
+	float margin = dataRectSize + dataRectMargin + 3;
 	return m_visualArea.adjusted(margin, 0, -margin, 0);
 }
 

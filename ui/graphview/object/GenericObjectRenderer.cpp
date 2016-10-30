@@ -23,11 +23,11 @@ GenericObjectRenderer::GenericObjectRenderer(GraphView* view, panda::GenericObje
 	, m_nbDefInputs(0)
 	, m_nbDefOutputs(0)
 {
-	for(GenericObject::GenericDataDefinition def : object->m_dataDefinitions)
+	for (GenericObject::GenericDataDefinition def : object->m_dataDefinitions)
 	{
-		if(def.isInput())
+		if (def.isInput())
 			++m_nbDefInputs;
-		if(def.isOutput())
+		if (def.isOutput())
 			++m_nbDefOutputs;
 	}
 }
@@ -42,21 +42,21 @@ void GenericObjectRenderer::update()
 	outputDatas = m_object->getOutputDatas();
 	int nbInputs = inputDatas.size(), nbOutputs = outputDatas.size();
 
-	int xi = m_visualArea.left() + dataRectMargin;
-	int xo = m_visualArea.right() - dataRectMargin - dataRectSize;
-	int startY = m_visualArea.top() + dataStartY();
-	int dh = dataRectSize + dataRectMargin;
-	int y;
+	float xi = m_visualArea.left() + dataRectMargin;
+	float xo = m_visualArea.right() - dataRectMargin - dataRectSize;
+	float startY = m_visualArea.top() + dataStartY();
+	float dh = dataRectSize + dataRectMargin;
+	float drs = dataRectSize;
+	float y;
 
 	// First the "normal" datas
 	int index = 0;
-	for(int i=0; i<nbInputs; ++i)
+	for (int i = 0; i < nbInputs; ++i)
 	{
 		panda::BaseData* data = inputDatas[i];
-		if(!m_genericObject->m_createdDatasMap.count(data) && data != m_genericObject->m_genericData)
+		if (!m_genericObject->m_createdDatasMap.count(data) && data != m_genericObject->m_genericData)
 		{
-			Rect dataArea = Rect::fromSize(xi, startY + index * dh, 
-										   dataRectSize, dataRectSize);
+			Rect dataArea = Rect::fromSize(xi, startY + index * dh, drs, drs);
 			m_datas.emplace_back(data, dataArea);
 			++index;
 		}
@@ -64,13 +64,12 @@ void GenericObjectRenderer::update()
 	y = startY + index * dh;
 
 	index = 0;
-	for(int i=0; i<nbOutputs; ++i)
+	for (int i = 0; i < nbOutputs; ++i)
 	{
 		panda::BaseData* data = outputDatas[i];
-		if(!m_genericObject->m_createdDatasMap.count(data))
+		if (!m_genericObject->m_createdDatasMap.count(data))
 		{
-			Rect dataArea = Rect::fromSize(xo, startY + index * dh,
-										   dataRectSize, dataRectSize);
+			Rect dataArea = Rect::fromSize(xo, startY + index * dh, drs, drs);
 			m_datas.emplace_back(data, dataArea);
 			++index;
 		}
@@ -81,24 +80,24 @@ void GenericObjectRenderer::update()
 	y += createdDataRectMargin;
 	int nbCreated = m_genericObject->m_createdDatasStructs.size();
 	int nbDef = m_genericObject->m_dataDefinitions.size();
-	for(int i=0; i<nbCreated; ++i)
+	for (int i = 0; i < nbCreated; ++i)
 	{
 		GenericObject::DataPtrList createdDatas = m_genericObject->m_createdDatasStructs[i]->datas;
 		int inputIndex = 0, outputIndex = 0;
-		for(int j=0; j<nbDef; ++j)
+		for (int j = 0; j < nbDef; ++j)
 		{
-			if(!createdDatas[j])
+			if (!createdDatas[j])
 				continue;
 
-			if(m_genericObject->m_dataDefinitions[j].isInput())
+			if (m_genericObject->m_dataDefinitions[j].isInput())
 			{
-				Rect dataArea = Rect::fromSize(xi, y + inputIndex * dh, dataRectSize, dataRectSize);
+				Rect dataArea = Rect::fromSize(xi, y + inputIndex * dh, drs, drs);
 				m_datas.emplace_back(createdDatas[j].get(), dataArea);
 				++inputIndex;
 			}
-			if(m_genericObject->m_dataDefinitions[j].isOutput())
+			if (m_genericObject->m_dataDefinitions[j].isOutput())
 			{
-				Rect dataArea = Rect::fromSize(xo, y + outputIndex * dh, dataRectSize, dataRectSize);
+				Rect dataArea = Rect::fromSize(xo, y + outputIndex * dh, drs, drs);
 				m_datas.emplace_back(createdDatas[j].get(), dataArea);
 				++outputIndex;
 			}
@@ -108,7 +107,7 @@ void GenericObjectRenderer::update()
 	}
 
 	// And the generic data
-	Rect dataArea = Rect::fromSize(xi, y, dataRectSize, dataRectSize);
+	Rect dataArea = Rect::fromSize(xi, y, drs, drs);
 	m_datas.emplace_back((panda::BaseData*)m_genericObject->m_genericData, dataArea);
 
 	createShape();
@@ -118,7 +117,7 @@ void GenericObjectRenderer::drawDatas(graphics::DrawList& list, graphics::DrawCo
 {
 	const panda::BaseData* clickedData = getParentView()->interaction().clickedData();
 
-	for(DataRectPair dataPair : m_datas)
+	for (DataRectPair dataPair : m_datas)
 	{
 		auto data = dataPair.first;
 		if (dynamic_cast<panda::BaseGenericData*>(data))
@@ -140,7 +139,7 @@ void GenericObjectRenderer::drawDatas(graphics::DrawList& list, graphics::DrawCo
 
 Point GenericObjectRenderer::getObjectSize()
 {
-	Point objectSize(objectDefaultWidth, objectDefaultHeight);
+	Point objectSize(static_cast<float>(objectDefaultWidth), static_cast<float>(objectDefaultHeight));
 
 	int nbInputs, nbOutputs;
 	nbInputs = m_object->getInputDatas().size();
@@ -154,13 +153,13 @@ Point GenericObjectRenderer::getObjectSize()
 	nbOutputs -= nbCreatedOutputs;
 
 	int maxData = std::max(nbInputs, nbOutputs);
-	int normalDatasH = std::max(0,(maxData-1)*dataRectMargin + maxData*dataRectSize);
-	if(maxData)
+	int normalDatasH = std::max(0, (maxData - 1)*dataRectMargin + maxData*dataRectSize);
+	if (maxData)
 		normalDatasH += createdDataRectMargin;
 	normalDatasH += dataRectMargin + dataRectSize;	// Adding the generic data now
 
 	int maxCreatedDatas = std::max(m_nbDefInputs, m_nbDefOutputs);
-	int createdDatasH = (maxCreatedDatas-1)*dataRectMargin + maxCreatedDatas*dataRectSize;
+	int createdDatasH = (maxCreatedDatas - 1)*dataRectMargin + maxCreatedDatas*dataRectSize;
 	int totalCreatedDatasH = nbCreated*(createdDataRectMargin + dataRectMargin + createdDatasH);
 
 	objectSize.y = std::max(objectSize.y, 2.0f * dataStartY() + normalDatasH + totalCreatedDatasH);

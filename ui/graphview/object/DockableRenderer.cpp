@@ -27,7 +27,7 @@ Point DockObjectRenderer::getObjectSize()
 	temp.x += 20;
 	temp.y += dockEmptyRendererHeight + dockRendererMargin * 2;
 
-	for(auto dockable : m_dockObject->getDockedObjects())
+	for (auto dockable : m_dockObject->getDockedObjects())
 		temp.y += getParentView()->objectRenderers().get(dockable)->getObjectSize().y + dockRendererMargin;
 
 	return temp;
@@ -35,9 +35,9 @@ Point DockObjectRenderer::getObjectSize()
 
 Rect DockObjectRenderer::getTextArea()
 {
-	int margin = dataRectSize+dataRectMargin+3;
+	float margin = dataRectSize + dataRectMargin + 3;
 	Rect textArea = m_visualArea;
-	textArea.setHeight(ObjectRenderer::objectDefaultHeight);
+	textArea.setHeight(static_cast<float>(ObjectRenderer::objectDefaultHeight));
 	textArea.adjust(margin, 0, -margin, 0);
 	return textArea;
 }
@@ -46,14 +46,7 @@ void DockObjectRenderer::placeDockableObjects(bool forceMove)
 {
 	m_dockablesY.clear();
 
-	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
-	const int dhm = dockHoleMargin;
-	const int rw = DockableObjectRenderer::dockableWithOutputRect;
-	const int aw = DockableObjectRenderer::dockableWithOutputArc;
-	const int ah = aw - dockHoleMargin * 2;
-
-	int ty;
-	ty = m_visualArea.top() + ObjectRenderer::getObjectSize().y + dockRendererMargin;
+	float ty = m_visualArea.top() + ObjectRenderer::getObjectSize().y + dockRendererMargin;
 
 	auto doc = getParentView()->document();
 	auto& undoStack = doc->getUndoStack();
@@ -95,31 +88,31 @@ void DockObjectRenderer::createShape()
 	m_outline.lineTo(m_visualArea.topRight());
 	m_outline.lineTo(m_visualArea.topLeft());
 
-	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
+	const float cr = objectCorner * 2; // Rectangle used to create the arc of a corner
 	const int dhm = dockHoleMargin;
 	const int rw = DockableObjectRenderer::dockableWithOutputRect;
 	const int aw = DockableObjectRenderer::dockableWithOutputArc;
 	const int ah = aw - dockHoleMargin * 2;
 
-	int tx, ty;
+	float tx, ty;
 	ty = m_visualArea.top() + ObjectRenderer::getObjectSize().y + dockRendererMargin;
 
-	for(auto dockable : m_dockObject->getDockedObjects())
+	for (auto dockable : m_dockObject->getDockedObjects())
 	{
 		ObjectRenderer* objectStruct = getParentView()->objectRenderers().get(dockable);
 		Point objectSize = objectStruct->getObjectSize();
 		bool hasOutputs = !dockable->getOutputDatas().empty();
 
 		tx = m_visualArea.left() + dockHoleWidth - DockableObjectRenderer::dockableCircleWidth + dockHoleMargin;
-		int w = DockableObjectRenderer::dockableCircleWidth;
-		int h = objectSize.y;
+		float w = DockableObjectRenderer::dockableCircleWidth;
+		float h = objectSize.y;
 
 		Rect objectArea = objectStruct->getVisualArea();
 		m_outline.lineTo(Point(m_visualArea.left(), ty - dockHoleMargin));
 		if (hasOutputs)
 		{
-			const int top = objectArea.top() - dhm, bot = objectArea.bottom() + dhm;
-			const auto right = objectArea.right();
+			const float top = objectArea.top() - dhm, bot = objectArea.bottom() + dhm;
+			const float right = objectArea.right();
 
 			// Arc at the top
 			m_outline.arcToDegrees(Rect::fromSize(right - rw - aw * 3, top, aw * 2, ah * 2), -90, 90);
@@ -139,11 +132,14 @@ void DockObjectRenderer::createShape()
 		ty += h + dockRendererMargin;
 	}
 
-	ty = m_visualArea.bottom()-dockEmptyRendererHeight-dockRendererMargin;
+	ty = m_visualArea.bottom() - dockEmptyRendererHeight - dockRendererMargin;
 	m_outline.lineTo(Point(m_visualArea.left(), ty));
-	tx = m_visualArea.left()+dockHoleWidth-DockableObjectRenderer::dockableCircleWidth;
-	m_outline.arcToDegrees(Rect::fromSize(tx, ty, DockableObjectRenderer::dockableCircleWidth, dockEmptyRendererHeight), -90, 180);
-	m_outline.lineTo(Point(m_visualArea.left(), ty+dockEmptyRendererHeight));
+	tx = m_visualArea.left() + dockHoleWidth - DockableObjectRenderer::dockableCircleWidth;
+	m_outline.arcToDegrees(Rect::fromSize(tx, ty, 
+										  static_cast<float>(DockableObjectRenderer::dockableCircleWidth), 
+										  static_cast<float>(dockEmptyRendererHeight)),
+						   -90, 180);
+	m_outline.lineTo(Point(m_visualArea.left(), ty + dockEmptyRendererHeight));
 	m_outline.close();
 
 	m_fillShape = m_outline.triangulate();
@@ -151,11 +147,11 @@ void DockObjectRenderer::createShape()
 
 int DockObjectRenderer::getDockableIndex(const Rect& rect)
 {
-	int y = rect.top();
+	float y = rect.top();
 	int nb = m_dockablesY.size();
 	for (int i = 0; i < nb; ++i)
 	{
-		if(y < m_dockablesY[i])
+		if (y < m_dockablesY[i])
 			return i;
 	}
 	return -1;
@@ -199,10 +195,10 @@ void DockableObjectRenderer::update()
 
 void DockableObjectRenderer::createShape()
 {
-	const int cr = objectCorner * 2; // Rectangle used to create the arc of a corner
-	const int rw = dockableWithOutputRect;
-	const int aw = dockableWithOutputArc;
-	const auto left = m_visualArea.left(), top = m_visualArea.top(), 
+	const float cr = objectCorner * 2; // Rectangle used to create the arc of a corner
+	const float rw = dockableWithOutputRect;
+	const float aw = dockableWithOutputArc;
+	const float left = m_visualArea.left(), top = m_visualArea.top(),
 		right = m_visualArea.right(), bottom = m_visualArea.bottom();
 
 	if (m_hasOutputs)
@@ -230,8 +226,8 @@ void DockableObjectRenderer::createShape()
 		m_outline.clear();
 		m_outline.moveTo(Point(left, m_visualArea.center().y));
 		m_outline.arcToDegrees(Rect::fromSize(left, top, cr, cr), 180, 90); // Top left corner
-		m_outline.arcToDegrees(Rect::fromSize(right - dockableCircleWidth * 2, top, 
-			dockableCircleWidth * 2, m_visualArea.height()), -90, 180); // Right side arc
+		m_outline.arcToDegrees(Rect::fromSize(right - dockableCircleWidth * 2, top,
+											  dockableCircleWidth * 2, m_visualArea.height()), -90, 180); // Right side arc
 		m_outline.arcToDegrees(Rect::fromSize(left, bottom - cr, cr, cr), 90, 90); // Bottom left corner
 		m_outline.close();
 	}
