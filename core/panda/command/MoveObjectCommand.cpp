@@ -1,6 +1,6 @@
 #include <panda/command/MoveObjectCommand.h>
 #include <panda/command/CommandId.h>
-#include <ui/graphview/object/ObjectPositionAddon.h>
+#include <panda/graphview/object/ObjectPositionAddon.h>
 #include <panda/object/ObjectAddons.h>
 #include <panda/object/PandaObject.h>
 

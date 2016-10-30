@@ -1,9 +1,6 @@
 #pragma once
 
-#include <ui/graphview/object/ObjectRenderer.h>
-
-class GraphView;
-class QPointF;
+#include <panda/graphview/object/ObjectRenderer.h>
 
 namespace panda
 {
@@ -15,6 +12,8 @@ class Annotation;
 
 namespace graphview
 {
+
+class GraphView;
 
 namespace object
 {

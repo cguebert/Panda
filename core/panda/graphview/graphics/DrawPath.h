@@ -13,7 +13,7 @@ namespace graphview
 namespace graphics
 {
 
-struct DrawMesh
+struct PANDA_CORE_API DrawMesh
 {
 	std::vector<pPoint> points;
 	std::vector<unsigned int> indices;
@@ -21,7 +21,7 @@ struct DrawMesh
 	inline void translate(const pPoint& delta) { for (auto& pt : points) pt += delta; }
 };
 
-class DrawPath
+class PANDA_CORE_API DrawPath
 {
 public:
 	inline void clear() { m_points.clear(); }

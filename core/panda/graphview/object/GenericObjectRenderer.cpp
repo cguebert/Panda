@@ -1,7 +1,7 @@
-#include <ui/graphview/object/GenericObjectRenderer.h>
-#include <ui/graphview/GraphView.h>
-#include <ui/graphview/LinksList.h>
-#include <ui/graphview/ViewInteraction.h>
+#include <panda/graphview/object/GenericObjectRenderer.h>
+#include <panda/graphview/GraphView.h>
+#include <panda/graphview/LinksList.h>
+#include <panda/graphview/ViewInteraction.h>
 
 #include <panda/object/GenericObject.h>
 #include <panda/data/BaseData.h>

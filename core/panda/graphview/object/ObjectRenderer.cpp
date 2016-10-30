@@ -1,11 +1,11 @@
-#include <ui/graphview/object/ObjectRenderer.h>
+#include <panda/graphview/object/ObjectRenderer.h>
 
-#include <ui/graphview/GraphView.h>
-#include <ui/graphview/LinksList.h>
-#include <ui/graphview/ObjectsSelection.h>
-#include <ui/graphview/ViewInteraction.h>
-#include <ui/graphview/Viewport.h>
-#include <ui/graphview/object/ObjectPositionAddon.h>
+#include <panda/graphview/GraphView.h>
+#include <panda/graphview/LinksList.h>
+#include <panda/graphview/ObjectsSelection.h>
+#include <panda/graphview/ViewInteraction.h>
+#include <panda/graphview/Viewport.h>
+#include <panda/graphview/object/ObjectPositionAddon.h>
 
 #include <panda/object/PandaObject.h>
 #include <panda/object/ObjectAddons.h>

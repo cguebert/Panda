@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ui/graphview/graphics/DrawList.h>
+#include <panda/graphview/graphics/DrawList.h>
 
 #include <memory>
 
@@ -30,7 +30,7 @@ class ViewRenderer;
 namespace object
 {
 
-class ObjectRenderer
+class PANDA_CORE_API ObjectRenderer
 {
 public:
 	using DataRectPair = std::pair<panda::BaseData*, panda::types::Rect>;

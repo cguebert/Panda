@@ -5,6 +5,7 @@
 #include <panda/helper/Flags.h>
 
 #include <functional>
+#include <vector>
 
 namespace graphview
 {

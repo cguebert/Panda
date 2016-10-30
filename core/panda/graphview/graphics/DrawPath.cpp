@@ -1,5 +1,5 @@
-#include <ui/graphview/graphics/DrawPath.h>
-#include <ui/graphview/graphics/poly2tri/poly2tri.h>
+#include <panda/graphview/graphics/DrawPath.h>
+#include <panda/graphview/graphics/poly2tri/poly2tri.h>
 
 #include <algorithm>
 #include <cassert>

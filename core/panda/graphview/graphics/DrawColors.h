@@ -1,12 +1,14 @@
 #pragma once
 
+#include <panda/core.h>
+
 namespace graphview
 {
 
 namespace graphics
 {
 
-	struct DrawColors
+	struct PANDA_CORE_API DrawColors
 	{
 		// Can be modified to pass current object info
 		unsigned int penColor = 0;

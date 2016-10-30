@@ -1,4 +1,4 @@
-#include <ui/graphview/graphics/DefaultFont.h>
+#include <panda/graphview/graphics/DefaultFont.h>
 
 #include <cassert>
 #include <string.h>

@@ -2,7 +2,7 @@
 
 #include <panda/object/Dockable.h>
 
-#include <ui/graphview/object/ObjectRenderer.h>
+#include <panda/graphview/object/ObjectRenderer.h>
 
 namespace graphview
 {

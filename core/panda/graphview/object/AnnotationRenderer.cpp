@@ -1,8 +1,8 @@
-#include <ui/graphview/GraphView.h>
-#include <ui/graphview/InteractionEvents.h>
-#include <ui/graphview/ObjectsSelection.h>
-#include <ui/graphview/Viewport.h>
-#include <ui/graphview/object/AnnotationRenderer.h>
+#include <panda/graphview/GraphView.h>
+#include <panda/graphview/InteractionEvents.h>
+#include <panda/graphview/ObjectsSelection.h>
+#include <panda/graphview/Viewport.h>
+#include <panda/graphview/object/AnnotationRenderer.h>
 
 #include <panda/command/ModifyAnnotationCommand.h>
 #include <panda/command/MoveObjectCommand.h>

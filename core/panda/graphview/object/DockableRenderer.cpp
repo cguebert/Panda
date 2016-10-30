@@ -1,8 +1,8 @@
-#include <ui/graphview/object/DockableRenderer.h>
+#include <panda/graphview/object/DockableRenderer.h>
 
-#include <ui/graphview/GraphView.h>
-#include <ui/graphview/ObjectRenderersList.h>
-#include <ui/graphview/object/ObjectPositionAddon.h>
+#include <panda/graphview/GraphView.h>
+#include <panda/graphview/ObjectRenderersList.h>
+#include <panda/graphview/object/ObjectPositionAddon.h>
 
 #include <panda/command/MoveObjectCommand.h>
 #include <panda/document/PandaDocument.h>

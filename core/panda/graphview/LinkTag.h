@@ -1,7 +1,9 @@
 #pragma once
 
 #include <panda/types/Rect.h>
+
 #include <map>
+#include <vector>
 
 namespace panda
 {

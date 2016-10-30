@@ -1,8 +1,6 @@
-#include <ui/graphview/graphics/DrawList.h>
-#include <ui/graphview/graphics/FontAtlas.h>
-#include <ui/graphview/ViewRenderer.h>
-
-#include <QColor>
+#include <panda/graphview/graphics/DrawList.h>
+#include <panda/graphview/graphics/FontAtlas.h>
+#include <panda/graphview/ViewRenderer.h>
 
 #include <algorithm>
 #include <cassert>
@@ -23,16 +21,6 @@ namespace graphview
 
 namespace graphics
 {
-
-unsigned int DrawList::convert(const QColor& col)
-{
-	unsigned int out;
-	out = col.red() & 0xFF;
-	out |= (col.green() & 0xFF) << 8;
-	out |= (col.blue() & 0xFF) << 16;
-	out |= (col.alpha() & 0xFF) << 24;
-	return out;
-}
 
 DrawList::DrawList(ViewRenderer& viewRenderer)
 	: m_viewRenderer(viewRenderer)

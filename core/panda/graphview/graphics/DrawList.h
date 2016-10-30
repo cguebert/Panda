@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ui/graphview/graphics/DrawPath.h>
+#include <panda/graphview/graphics/DrawPath.h>
 
 #include <string>
 
@@ -16,7 +16,7 @@ namespace graphics
 
 class Font;
 
-class DrawList
+class PANDA_CORE_API DrawList
 {
 public:
 	using DrawIdx = unsigned int;
@@ -52,7 +52,6 @@ public:
 	DrawList(ViewRenderer& viewRenderer);
 	void clear();
 
-	static unsigned int convert(const QColor& col);
 	static inline unsigned int convert(unsigned int col)
 	{ return (col & 0xFF00FF00) | ((col & 0xFF) << 16) | ((col & 0xFF0000) >> 16); }
 	static inline unsigned int setAlpha(unsigned int col, unsigned char alpha)

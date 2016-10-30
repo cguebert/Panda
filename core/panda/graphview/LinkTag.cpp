@@ -3,6 +3,7 @@
 #include <panda/graphview/Viewport.h>
 #include <panda/graphview/ObjectRenderersList.h>
 #include <panda/graphview/object/ObjectRenderer.h>
+#include <panda/data/BaseData.h>
 
 using panda::types::Point;
 using panda::types::Rect;
