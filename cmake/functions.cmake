@@ -22,12 +22,12 @@ macro(GroupFiles fileGroup)
 		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" folder ${folder})	# Get the folder relative to the current one
 		string(REPLACE "${filename}" "" folder ${folder})					# Remove the file name
 		set(groupName "${finalFileGroupName}")
-		if(NOT folder STREQUAL "") # Parse the remaining directories hierarchy
+		if(folder) # Parse the remaining directories hierarchy
 			string(REGEX REPLACE "/+$" "" baseFolder ${folder}) # Remove trailing slash
-			if(NOT baseFolder STREQUAL "")
+			if(baseFolder)
 				string(REPLACE "/" "\\" baseFolder ${baseFolder})	# Forward to backward slashes
-				set(groupName "${groupName}\\${baseFolder}")		# Put together the entire group name
 			endif()
+			set(groupName "${groupName}\\${baseFolder}")		# Put together the entire group name
 		endif()
 		source_group("${groupName}" FILES ${currentFile})		# Put the file in this group
 	endforeach()
