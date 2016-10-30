@@ -16,14 +16,15 @@
 #include <ui/dialog/EditGroupDialog.h>
 #include <ui/dialog/UpdateLoggerDialog.h>
 
-#include <ui/graphview/DocumentView.h>
-#include <ui/graphview/GroupView.h>
-#include <ui/graphview/alignObjects.h>
-#include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/QtViewWrapper.h>
-#include <ui/graphview/ViewGUI.h>
-#include <ui/graphview/Viewport.h>
-#include <ui/graphview/ViewInteraction.h>
+
+#include <panda/graphview/DocumentView.h>
+#include <panda/graphview/GroupView.h>
+#include <panda/graphview/alignObjects.h>
+#include <panda/graphview/ObjectsSelection.h>
+#include <panda/graphview/ViewGUI.h>
+#include <panda/graphview/Viewport.h>
+#include <panda/graphview/ViewInteraction.h>
 
 #include <panda/document/GraphUtils.h>
 #include <panda/document/InteractiveDocument.h>
@@ -1069,15 +1070,33 @@ void MainWindow::showStatusBarMessage(QString text)
 
 void MainWindow::group()
 {
-	bool res = panda::createGroup(m_document.get(), &m_currentGraphView->view());
-	if(!res)
+	bool result = false;
+	try
+	{
+		result = panda::createGroup(m_document.get(), &m_currentGraphView->view());
+	}
+	catch (const std::exception& e)
+	{
+		QMessageBox::warning(this, "Group error", QString::fromLocal8Bit(e.what()));
+	}	
+
+	if(!result)
 		statusBar()->showMessage(tr("Could not create a group from the selection"), 2000);
 }
 
 void MainWindow::ungroup()
 {
-	bool res = panda::ungroupSelection(m_document.get(), &m_currentGraphView->view());
-	if(!res)
+	bool result = false;
+	try
+	{
+		panda::ungroupSelection(m_document.get(), &m_currentGraphView->view());
+	}
+	catch (const std::exception& e)
+	{
+		QMessageBox::warning(this, "Unroup error", QString::fromLocal8Bit(e.what()));
+	}
+
+	if(!result)
 		statusBar()->showMessage(tr("Could not ungroup the selection"), 2000);
 }
 

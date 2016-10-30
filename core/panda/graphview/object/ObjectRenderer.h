@@ -141,7 +141,7 @@ inline const std::vector<ObjectRenderer::DataRectPair>& ObjectRenderer::getDataR
 
 //****************************************************************************//
 
-class BaseObjectDrawCreator
+class PANDA_CORE_API BaseObjectDrawCreator
 {
 public:
 	virtual ~BaseObjectDrawCreator() {}
@@ -167,7 +167,7 @@ protected:
 	const panda::BaseClass* theClass;
 };
 
-class ObjectRendererFactory
+class PANDA_CORE_API ObjectRendererFactory
 {
 public:
 	static ObjectRendererFactory* getInstance();

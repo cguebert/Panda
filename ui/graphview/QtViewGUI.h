@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ui/graphview/ViewGUI.h>
+#include <panda/graphview/ViewGUI.h>
 
 class MainWindow;
 

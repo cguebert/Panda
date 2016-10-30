@@ -8,8 +8,8 @@
 #include <set>
 
 #include <ui/custom/ScrollContainer.h>
-#include <ui/graphview/graphics/DrawList.h>
-#include <ui/graphview/graphics/DrawColors.h>
+#include <panda/graphview/graphics/DrawList.h>
+#include <panda/graphview/graphics/DrawColors.h>
 #include <panda/messaging.h>
 
 class MainWindow;

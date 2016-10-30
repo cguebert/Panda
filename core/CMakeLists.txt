@@ -4,7 +4,7 @@ set(PROJECT_NAME "PandaCore")
 project(${PROJECT_NAME})
 
 file(GLOB_RECURSE HEADER_FILES "*.h")
-file(GLOB_RECURSE SOURCE_FILES "*.cpp")
+file(GLOB_RECURSE SOURCE_FILES "*.cpp" "*.cc")
 
 # Regroup files by folder
 GroupFiles(HEADER_FILES)

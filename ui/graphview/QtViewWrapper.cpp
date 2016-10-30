@@ -7,19 +7,20 @@
 #include <ui/MainWindow.h>
 #include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/dialog/QuickCreateDialog.h>
-#include <ui/graphview/object/ObjectRenderer.h>
-#include <ui/graphview/object/DockableRenderer.h>
-#include <ui/graphview/DataLabelAddon.h>
-#include <ui/graphview/GraphView.h>
-#include <ui/graphview/LinksList.h>
-#include <ui/graphview/LinkTagsList.h>
-#include <ui/graphview/ObjectsSelection.h>
-#include <ui/graphview/ObjectRenderersList.h>
 #include <ui/graphview/QtViewGUI.h>
-#include <ui/graphview/ViewInteraction.h>
-#include <ui/graphview/Viewport.h>
-#include <ui/graphview/ViewRenderer.h>
-#include <ui/graphview/graphics/DrawList.h>
+#include <ui/graphview/QtViewRenderer.h>
+
+#include <panda/graphview/object/ObjectRenderer.h>
+#include <panda/graphview/object/DockableRenderer.h>
+#include <panda/graphview/DataLabelAddon.h>
+#include <panda/graphview/GraphView.h>
+#include <panda/graphview/LinksList.h>
+#include <panda/graphview/LinkTagsList.h>
+#include <panda/graphview/ObjectsSelection.h>
+#include <panda/graphview/ObjectRenderersList.h>
+#include <panda/graphview/ViewInteraction.h>
+#include <panda/graphview/Viewport.h>
+#include <panda/graphview/graphics/DrawList.h>
 
 #include <panda/document/PandaDocument.h>
 #include <panda/SimpleGUI.h>
@@ -70,6 +71,16 @@ namespace
 
 		return graphview::MouseButton::NoButton;
 	}
+
+	unsigned int convert(const QColor& col)
+	{
+		unsigned int out;
+		out = col.red() & 0xFF;
+		out |= (col.green() & 0xFF) << 8;
+		out |= (col.blue() & 0xFF) << 16;
+		out |= (col.alpha() & 0xFF) << 24;
+		return out;
+	}
 }
 
 namespace graphview
@@ -78,7 +89,7 @@ namespace graphview
 QtViewWrapper::QtViewWrapper(std::unique_ptr<GraphView> graphView, MainWindow* mainWindow)
 	: QOpenGLWidget(mainWindow)
 	, m_graphView(std::move(graphView))
-	, m_viewRenderer(std::make_shared<ViewRenderer>())
+	, m_viewRenderer(std::make_shared<QtViewRenderer>())
 {
 	QSurfaceFormat fmt;
 	fmt.setSamples(8);
@@ -92,11 +103,11 @@ QtViewWrapper::QtViewWrapper(std::unique_ptr<GraphView> graphView, MainWindow* m
 	auto viewGui = std::make_unique<QtViewGui>(*this, mainWindow);
 
 	const auto& pal = palette();
-	m_drawColors.penColor = graphics::DrawList::convert(pal.text().color());
-	m_drawColors.midLightColor = graphics::DrawList::convert(pal.midlight().color());
-	m_drawColors.lightColor = graphics::DrawList::convert(pal.light().color());
-	m_drawColors.highlightColor = graphics::DrawList::convert(pal.highlight().color());
-	m_drawColors.backgroundColor = graphics::DrawList::convert(pal.highlight().color());
+	m_drawColors.penColor = convert(pal.text().color());
+	m_drawColors.midLightColor = convert(pal.midlight().color());
+	m_drawColors.lightColor = convert(pal.light().color());
+	m_drawColors.highlightColor = convert(pal.highlight().color());
+	m_drawColors.backgroundColor = convert(pal.highlight().color());
 
 	auto clearColor = palette().background().color();
 	m_viewRenderer->setClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF());

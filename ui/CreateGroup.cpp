@@ -1,11 +1,11 @@
 #include <ui/CreateGroup.h>
-#include <ui/GraphView/GraphView.h>
-#include <ui/GraphView/object/ObjectRenderer.h>
 
-#include <ui/GraphView/LinksList.h>
-#include <ui/GraphView/ObjectsSelection.h>
-#include <ui/GraphView/ObjectRenderersList.h>
-#include <ui/GraphView/object/ObjectPositionAddon.h>
+#include <panda/GraphView/GraphView.h>
+#include <panda/GraphView/LinksList.h>
+#include <panda/GraphView/ObjectsSelection.h>
+#include <panda/GraphView/ObjectRenderersList.h>
+#include <panda/GraphView/object/ObjectPositionAddon.h>
+#include <panda/GraphView/object/ObjectRenderer.h>
 
 #include <panda/document/RenderedDocument.h>
 #include <panda/data/DataFactory.h>
@@ -20,8 +20,7 @@
 #include <panda/command/RemoveObjectCommand.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
-
-#include <QMessageBox>
+#include <panda/helper/Exception.h>
 
 using panda::types::Point;
 using panda::types::Rect;
@@ -63,16 +62,10 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 			if(!layer)
 				layer = dynamic_cast<Layer*>(renderer->getParentDock());
 			else if(layer != renderer->getParentDock())
-			{
-				QMessageBox::warning(nullptr, "Panda", "All renderers must be placed in the same layer.");
-				return false;
-			}
+				throw panda::helper::Exception("All renderers must be placed in the same layer.");
 
 			if(layer && renderedDoc && layer != renderedDoc->getDefaultLayer() && !objectsSelection.isSelected(layer))
-			{
-				QMessageBox::warning(nullptr, "Panda", "Renderers must be grouped with their layers");
-				return false;
-			}
+				throw panda::helper::Exception("Renderers must be grouped with their layers");
 		}
 	}
 
@@ -84,10 +77,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 			for (const auto docked : dock->getDockedObjects())
 			{
 				if (!objectsSelection.isSelected(docked))
-				{
-					QMessageBox::warning(nullptr, "Panda", "All dockable objects must be selected with their dock");
-					return false;
-				}
+					throw panda::helper::Exception("All dockable objects must be selected with their dock");
 			}
 		}
 		else if (auto dockable = dynamic_cast<DockableObject*>(object))
@@ -96,10 +86,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 			if (!dock || dock == dockable->getDefaultDock())
 				continue;
 			if (!objectsSelection.isSelected(dock))
-			{
-				QMessageBox::warning(nullptr, "Panda", "All dockable objects must be selected with their dock");
-				return false;
-			}
+				throw panda::helper::Exception("All dockable objects must be selected with their dock");
 		}
 	}
 
@@ -143,7 +130,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 	std::map<BaseData*, BaseData*> connectedInputDatas;
 
 	// To sort the created datas by the height of their parents
-	using DataHeightPair = std::pair<BaseData*, qreal>;
+	using DataHeightPair = std::pair<BaseData*, float>;
 	std::vector<DataHeightPair> createdDatasHeights;
 
 	// Adding the objects
@@ -301,7 +288,7 @@ bool ungroupSelection(PandaDocument* doc, graphview::GraphView* view)
 	if(selection.empty())
 		return false;
 
-	QList<Group*> groups;
+	std::vector<Group*> groups;
 	for(auto object : selection)
 	{
 		Group* group = dynamic_cast<Group*>(object);
@@ -309,7 +296,7 @@ bool ungroupSelection(PandaDocument* doc, graphview::GraphView* view)
 			groups.push_back(group);
 	}
 
-	if(groups.isEmpty())
+	if(groups.empty())
 		return false;
 
 	auto& undoStack = doc->getUndoStack();

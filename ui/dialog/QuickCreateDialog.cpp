@@ -1,11 +1,11 @@
 #include <QtWidgets>
 
-#include <ui/graphview/GraphView.h>
 #include <ui/GroupsManager.h>
 #include <ui/dialog/QuickCreateDialog.h>
 
-#include <panda/document/PandaDocument.h>
 #include <panda/command/AddObjectCommand.h>
+#include <panda/document/PandaDocument.h>
+#include <panda/graphview/GraphView.h>
 #include <panda/object/ObjectFactory.h>
 
 using panda::ObjectFactory;

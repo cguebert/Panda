@@ -1,11 +1,11 @@
 #include <QtWidgets>
 
 #include <ui/GroupsManager.h>
-#include <ui/graphview/GraphView.h>
 
 #include <panda/command/AddObjectCommand.h>
 #include <panda/document/PandaDocument.h>
 #include <panda/document/Serialization.h>
+#include <panda/graphview/GraphView.h>
 #include <panda/object/Group.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/XmlDocument.h>

@@ -6,6 +6,7 @@
 #include <memory>
 
 namespace panda {
+	class BaseData;
 	class PandaObject;
 	class ScopedMacro;
 }

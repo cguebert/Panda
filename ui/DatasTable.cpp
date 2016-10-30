@@ -1,12 +1,12 @@
 #include <QtWidgets>
 
 #include <ui/DatasTable.h>
-#include <ui/graphview/GraphView.h>
-#include <ui/graphview/ObjectsSelection.h>
 #include <ui/widget/DataWidgetFactory.h>
 
 #include <panda/document/PandaDocument.h>
 #include <panda/document/DocumentSignals.h>
+#include <panda/graphview/GraphView.h>
+#include <panda/graphview/ObjectsSelection.h>
 
 // A small class to be notified when the outputs of an object change
 class ObjectWatcher : public panda::DataNode
