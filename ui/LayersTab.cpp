@@ -1,9 +1,9 @@
+#include <ui/LayersTab.h>
+
 #include <QtWidgets>
 
-#include <ui/LayersTab.h>
-#include <ui/command/SetDataValueCommand.h>
+#include <panda/command/SetDataValueCommand.h>
 #include <panda/command/MoveLayerCommand.h>
-
 #include <panda/document/PandaDocument.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/ObjectsList.h>

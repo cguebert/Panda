@@ -3,8 +3,7 @@
 
 #include <panda/data/Data.h>
 #include <panda/document/PandaDocument.h>
-
-#include <ui/command/SetDataValueCommand.h>
+#include <panda/command/SetDataValueCommand.h>
 
 #include <QWidget>
 #include <QString>
