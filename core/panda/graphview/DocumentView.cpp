@@ -1,14 +1,17 @@
 #include <panda/graphview/DocumentView.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
-DocumentView::DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList)
+DocumentView::DocumentView(PandaDocument* doc, ObjectsList& objectsList)
 	: GraphView(doc, objectsList)
 {
 }
 
-std::unique_ptr<DocumentView> DocumentView::createDocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList)
+std::unique_ptr<DocumentView> DocumentView::createDocumentView(PandaDocument* doc, ObjectsList& objectsList)
 {
 	auto view = std::unique_ptr<DocumentView>(new DocumentView(doc, objectsList));
 	view->initComponents();
@@ -16,3 +19,5 @@ std::unique_ptr<DocumentView> DocumentView::createDocumentView(panda::PandaDocum
 }
 
 } // namespace graphview
+
+} // namespace panda

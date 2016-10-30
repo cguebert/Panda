@@ -7,9 +7,10 @@
 #include <memory>
 #include <set>
 
-namespace panda {
-	class BaseData;
-}
+namespace panda
+{
+
+class BaseData;
 
 namespace graphview
 {
@@ -23,9 +24,9 @@ namespace graphview
 	class PANDA_CORE_API LinksList
 	{
 	public:
-		using DataRect = std::pair<panda::BaseData*, panda::types::Rect>;
-		using Rects = std::vector<panda::types::Rect>;
-		using PointsPairs = std::vector<std::pair<panda::types::Point, panda::types::Point>>;
+		using DataRect = std::pair<BaseData*, types::Rect>;
+		using Rects = std::vector<types::Rect>;
+		using PointsPairs = std::vector<std::pair<types::Point, types::Point>>;
 		using ConnectedDatas = std::pair<Rects, PointsPairs>;
 
 		LinksList(GraphView& view);
@@ -37,16 +38,16 @@ namespace graphview
 		void onBeginDraw(const graphics::DrawColors& colors);
 		const std::shared_ptr<graphics::DrawList>& linksDrawList() const;
 
-		virtual bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect);
-		virtual DataRect getDataAtPos(const panda::types::Point& pt);
-		virtual ConnectedDatas getConnectedDatas(panda::BaseData* data);
+		virtual bool getDataRect(const BaseData* data, types::Rect& rect);
+		virtual DataRect getDataAtPos(const types::Point& pt);
+		virtual ConnectedDatas getConnectedDatas(BaseData* data);
 		
-		virtual bool createLink(panda::BaseData* data1, panda::BaseData* data2);
-		virtual bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2);
-		virtual void computeCompatibleDatas(panda::BaseData* data);
+		virtual bool createLink(BaseData* data1, BaseData* data2);
+		virtual bool isCompatible(const BaseData* data1, const BaseData* data2);
+		virtual void computeCompatibleDatas(BaseData* data);
 
-		bool canLinkWith(const panda::BaseData* data) const; // Is it possible to link this data and the clicked data
-		void changeLink(panda::BaseData* target, panda::BaseData* parent);
+		bool canLinkWith(const BaseData* data) const; // Is it possible to link this data and the clicked data
+		void changeLink(BaseData* target, BaseData* parent);
 
 	protected:
 		virtual void updateLinks(const graphics::DrawColors& colors);
@@ -56,7 +57,7 @@ namespace graphview
 		std::shared_ptr<graphics::DrawList> m_linksDrawList;
 		bool m_recomputeLinks = true;
 
-		std::set<const panda::BaseData*> m_possibleLinks; // When creating a new link, this contains all possible destinations
+		std::set<const BaseData*> m_possibleLinks; // When creating a new link, this contains all possible destinations
 	};
 
 //****************************************************************************//
@@ -64,7 +65,9 @@ namespace graphview
 	inline const std::shared_ptr<graphics::DrawList>& LinksList::linksDrawList() const
 	{ return m_linksDrawList; }
 
-	inline bool LinksList::canLinkWith(const panda::BaseData* data) const
+	inline bool LinksList::canLinkWith(const BaseData* data) const
 	{ return m_possibleLinks.count(data) != 0; }
 
 } // namespace graphview
+
+} // namespace panda

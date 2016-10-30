@@ -2,12 +2,12 @@
 
 #include <panda/core.h>
 
+namespace panda
+{
+
 namespace graphview {
 	class GraphView;
 }
-
-namespace panda
-{
 
 class PandaDocument;
 

@@ -24,7 +24,7 @@ namespace graphview
 	{
 	}
 
-	void QtViewGui::setCursor(Cursor cursor)
+	void QtViewGui::setCursor(panda::graphview::Cursor cursor)
 	{
 		QApplication::setOverrideCursor(static_cast<Qt::CursorShape>(cursor));
 	}
@@ -49,7 +49,7 @@ namespace graphview
 			QToolTip::showText(gPos, QString::fromStdString(msg), &m_viewWrapper, gArea);
 	}
 
-	void QtViewGui::contextMenu(const panda::types::Point& pos, MenuTypes types, const Actions& customActions)
+	void QtViewGui::contextMenu(const panda::types::Point& pos, panda::graphview::MenuTypes types, const Actions& customActions)
 	{
 		if (!types && customActions.empty())
 			return;

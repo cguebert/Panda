@@ -8,12 +8,12 @@
 
 namespace panda
 {
+
 class DockableObject;
 class DockObject;
 class ObjectsList;
 class PandaDocument;
 class PandaObject;
-}
 
 namespace graphview
 {
@@ -153,3 +153,5 @@ inline bool GraphView::isLoading() const
 { return m_isLoading; }
 
 } // namespace graphview
+
+} // namespace panda

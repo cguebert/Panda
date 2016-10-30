@@ -31,9 +31,6 @@
 
 using namespace std::string_literals;
 
-using Point = panda::types::Point;
-using Rect = panda::types::Rect;
-
 namespace
 {
 
@@ -45,6 +42,12 @@ namespace
 	}
 
 }
+
+namespace panda
+{
+
+using Point = types::Point;
+using Rect = types::Rect;
 
 namespace graphview
 {
@@ -231,11 +234,11 @@ namespace graphview
 				m_view.gui().setCursor(Cursor::SizeAll);
 
 				// Make sure docked objects are in the selection with their dock
-				std::set<panda::PandaObject*> selectionSet;
+				std::set<PandaObject*> selectionSet;
 				for (auto object : m_view.selection().get())
 				{
 					selectionSet.insert(object);
-					panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object);
+					DockObject* dock = dynamic_cast<DockObject*>(object);
 					if (dock)
 					{
 						for (auto docked : dock->getDockedObjects())
@@ -284,7 +287,7 @@ namespace graphview
 		else if (m_movingAction == Moving::Zoom)
 		{
 			auto y = event.pos().y - m_previousMousePos.y;
-			auto zoom = panda::helper::bound(0.1f, m_view.viewport().zoom() - y / 500.0f, 1.0f);
+			auto zoom = helper::bound(0.1f, m_view.viewport().zoom() - y / 500.0f, 1.0f);
 			m_view.viewport().setZoom(m_currentMousePos, zoom);
 			m_previousMousePos = event.pos();
 		}
@@ -323,14 +326,14 @@ namespace graphview
 			{
 				if (m_hoverData != dataRect.first)
 				{
-					panda::TimedFunctions::cancelRun(m_hoverTimerId);
+					TimedFunctions::cancelRun(m_hoverTimerId);
 					if (m_highlightConnectedDatas)
 					{
 						m_highlightConnectedDatas = false;
 						m_view.update();
 					}
 					m_hoverData = dataRect.first;
-					m_hoverTimerId = panda::TimedFunctions::delayRun(0.5, [this] { hoverDataInfo(); });
+					m_hoverTimerId = TimedFunctions::delayRun(0.5, [this] { hoverDataInfo(); });
 				}
 
 				auto label = DataLabelAddon::getDataLabel(m_hoverData);
@@ -353,7 +356,7 @@ namespace graphview
 					m_highlightConnectedDatas = false;
 					m_view.update();
 				}
-				panda::TimedFunctions::cancelRun(m_hoverTimerId);
+				TimedFunctions::cancelRun(m_hoverTimerId);
 
 				if (m_movingAction == Moving::None)
 				{
@@ -394,32 +397,32 @@ namespace graphview
 	{
 		if (m_movingAction == Moving::Start)
 		{
-			panda::PandaObject* object = m_view.selection().lastSelectedObject();
+			PandaObject* object = m_view.selection().lastSelectedObject();
 			if (object)
 				m_view.selection().selectOne(object);
 		}
 		else if (m_movingAction == Moving::Object)
 		{
-			std::map<panda::PandaObject*, Point> positions;
+			std::map<PandaObject*, Point> positions;
 			for (const auto objRnd : m_view.selectedObjectsRenderers())
 				positions[objRnd->getObject()] = objRnd->getPosition();
 
 			for (const auto objRnd : m_view.selectedObjectsRenderers())
 			{
 				auto object = objRnd->getObject();
-				panda::DockableObject* dockable = dynamic_cast<panda::DockableObject*>(object);
+				DockableObject* dockable = dynamic_cast<DockableObject*>(object);
 				if (dockable && !m_view.selection().isSelected(dockable->getParentDock()))
 				{
 					Point delta = positions[object] - objRnd->getPosition();
 					m_view.document()->getUndoStack().push(std::make_shared<MoveObjectCommand>(dockable, delta));
 
 					Rect dockableArea = objRnd->getSelectionArea();
-					panda::DockObject* defaultDock = dockable->getDefaultDock();
-					panda::DockObject* newDock = defaultDock;
+					DockObject* defaultDock = dockable->getDefaultDock();
+					DockObject* newDock = defaultDock;
 					int newIndex = -1;
 					for (const auto objRnd2 : m_view.objectRenderers().getOrdered())
 					{
-						panda::DockObject* dock = dynamic_cast<panda::DockObject*>(objRnd2->getObject());
+						DockObject* dock = dynamic_cast<DockObject*>(objRnd2->getObject());
 						if (dock)
 						{
 							if (dockableArea.intersects(objRnd2->getSelectionArea()) && dock->accepts(dockable))
@@ -431,14 +434,14 @@ namespace graphview
 						}
 					}
 
-					panda::DockObject* prevDock = dockable->getParentDock();
+					DockObject* prevDock = dockable->getParentDock();
 					if (newDock != prevDock) // Changing dock
 					{
 						if (prevDock)
-							m_view.document()->getUndoStack().push(std::make_shared<panda::DetachDockableCommand>(prevDock, dockable));
+							m_view.document()->getUndoStack().push(std::make_shared<DetachDockableCommand>(prevDock, dockable));
 						if (newDock)
 						{
-							m_view.document()->getUndoStack().push(std::make_shared<panda::AttachDockableCommand>(newDock, dockable, newIndex));
+							m_view.document()->getUndoStack().push(std::make_shared<AttachDockableCommand>(newDock, dockable, newIndex));
 							m_view.document()->onChangedDock(dockable);
 						}
 					}
@@ -450,7 +453,7 @@ namespace graphview
 							if (newIndex > prevIndex)
 								--newIndex;
 
-							m_view.document()->getUndoStack().push(std::make_shared<panda::ReorderDockableCommand>(prevDock, dockable, newIndex));
+							m_view.document()->getUndoStack().push(std::make_shared<ReorderDockableCommand>(prevDock, dockable, newIndex));
 						}
 						m_view.modifiedObject(prevDock); // Always update
 					}
@@ -492,8 +495,8 @@ namespace graphview
 				{
 					auto object = objRnd->getObject();
 					if (remove)
-						panda::helper::removeOne(selection, object);
-					else if (!panda::helper::contains(selection, object))
+						helper::removeOne(selection, object);
+					else if (!helper::contains(selection, object))
 						selection.push_back(objRnd->getObject());
 				}
 			}
@@ -536,7 +539,7 @@ namespace graphview
 		int ticks = static_cast<int>(m_wheelTicks / 40); // Steps of 5 degrees
 		m_wheelTicks -= ticks * 40;
 		const auto zoomLevel = m_view.viewport().zoomLevel();
-		int newZoom = panda::helper::bound(0, zoomLevel - ticks, 90);
+		int newZoom = helper::bound(0, zoomLevel - ticks, 90);
 		m_view.viewport().setZoomLevel(event.pos(), newZoom);
 	}
 
@@ -580,17 +583,17 @@ namespace graphview
 		Point pos = m_view.viewport().toView(event.pos());
 		int flags = getContextMenuFlags(pos);
 
-		panda::TimedFunctions::cancelRun(m_hoverTimerId);
+		TimedFunctions::cancelRun(m_hoverTimerId);
 
 		m_view.gui().contextMenu(event.pos(), flags);
 	}
 
-	panda::BaseData* ViewInteraction::contextMenuData() const
+	BaseData* ViewInteraction::contextMenuData() const
 	{ 
 		return m_contextLinkTag ? m_contextLinkTag->getInputData() : m_contextMenuData; 
 	}
 
-	int ViewInteraction::getContextMenuFlags(const panda::types::Point& pos)
+	int ViewInteraction::getContextMenuFlags(const types::Point& pos)
 	{
 		MenuTypes flags = MenuType::Selection; // Let MainWindow fill the menu based on the current selection
 		const auto objRnd = m_view.objectRenderers().getAtPos(pos);
@@ -633,7 +636,7 @@ namespace graphview
 	void ViewInteraction::moveViewIfMouseOnBorder()
 	{
 		auto pos = m_view.viewport().fromView(m_currentMousePos);
-		auto area = panda::types::Rect{ { 0,0 }, m_view.viewport().viewSize() };
+		auto area = types::Rect{ { 0,0 }, m_view.viewport().viewSize() };
 		const float maxDist = 50;
 		area.adjust(maxDist, maxDist, -maxDist, -maxDist);
 		if (!area.contains(pos))
@@ -694,7 +697,7 @@ namespace graphview
 		}
 	}
 
-	void ViewInteraction::removeObject(panda::PandaObject* object)
+	void ViewInteraction::removeObject(PandaObject* object)
 	{
 		m_movingAction = Moving::None;
 		m_capturedRenderer = nullptr;
@@ -706,7 +709,7 @@ namespace graphview
 		m_recomputeConnectedDatas = true;
 		m_hoverData = nullptr;
 		m_highlightConnectedDatas = false;
-		panda::TimedFunctions::cancelRun(m_hoverTimerId);
+		TimedFunctions::cancelRun(m_hoverTimerId);
 	}
 
 	void ViewInteraction::moveObjectToBack()
@@ -743,3 +746,5 @@ namespace graphview
 	}
 
 } // namespace graphview
+
+} // namespace panda

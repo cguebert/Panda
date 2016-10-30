@@ -6,8 +6,11 @@
 #include <panda/command/MoveObjectCommand.h>
 #include <panda/document/PandaDocument.h>
 
-using panda::types::Point;
-using panda::types::Rect;
+namespace panda
+{
+
+using types::Point;
+using types::Rect;
 
 namespace graphview
 {
@@ -475,3 +478,5 @@ void distributeVerticallyBottom(GraphView& view)
 }
 
 } // namespace graphview
+
+} // namespace panda

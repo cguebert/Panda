@@ -7,6 +7,9 @@
 #include <functional>
 #include <vector>
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -47,7 +50,7 @@ namespace graphview
 	};
 
 	// Can use EventModifier as a flag
-	using MenuTypes = panda::helper::Flags<MenuType>;
+	using MenuTypes = helper::Flags<MenuType>;
 
 	class PANDA_CORE_API ViewGui
 	{
@@ -70,9 +73,11 @@ namespace graphview
 
 		virtual void setStatusBarMessage(const std::string& msg) = 0;
 
-		virtual void showToolTip(const panda::types::Point& pos, const std::string& msg, const panda::types::Rect& area = {}) = 0;
+		virtual void showToolTip(const types::Point& pos, const std::string& msg, const types::Rect& area = {}) = 0;
 
-		virtual void contextMenu(const panda::types::Point& pos, MenuTypes types, const Actions& customActions = {}) = 0;
+		virtual void contextMenu(const types::Point& pos, MenuTypes types, const Actions& customActions = {}) = 0;
 	};
 
-}
+} // namespace graphview
+
+} // namespace panda

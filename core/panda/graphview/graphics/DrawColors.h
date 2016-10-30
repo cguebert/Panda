@@ -2,6 +2,9 @@
 
 #include <panda/core.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -25,3 +28,5 @@ namespace graphics
 } // namespace graphics
 
 } // namespace graphview
+
+} // namespace panda

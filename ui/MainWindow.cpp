@@ -201,7 +201,7 @@ void MainWindow::import()
 		{
 			auto selection = m_documentView->view().selection().get();
 			if(!selection.empty())
-				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), m_document->getObjectsList(), selection));
+				m_document->getUndoStack().push(std::make_shared<panda::AddObjectCommand>(m_document.get(), m_document->getObjectsList(), selection));
 		}
 	}
 }
@@ -1009,7 +1009,7 @@ void MainWindow::createObject()
 	{
 		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString().toStdString(), m_document.get());
 		auto& objectsList = m_currentGraphView ? m_currentGraphView->view().objectsList() : m_document->getObjectsList();
-		m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document.get(), objectsList, object));
+		m_document->getUndoStack().push(std::make_shared<panda::AddObjectCommand>(m_document.get(), objectsList, object));
 	}
 }
 
@@ -1159,7 +1159,7 @@ void MainWindow::openGroup()
 		return;
 	}
 
-	auto view = graphview::GroupView::createGroupView(group, m_document.get(), group->getObjectsList());
+	auto view = panda::graphview::GroupView::createGroupView(group, m_document.get(), group->getObjectsList());
 	auto groupView = new graphview::QtViewWrapper(std::move(view), this);
 
 	connect(groupView, SIGNAL(modified()), this, SLOT(documentModified()));
@@ -1208,8 +1208,8 @@ void MainWindow::openGroup()
 
 void MainWindow::fillContextMenu(QMenu& menu, int typesVal) const
 {
-	const auto types = graphview::MenuTypes(typesVal);
-	using mt = graphview::MenuType;
+	const auto types = static_cast<panda::graphview::MenuTypes>(typesVal);
+	using mt = panda::graphview::MenuType;
 	panda::PandaObject* obj = m_currentGraphView->view().selection().lastSelectedObject();
 	if(obj)
 	{
@@ -1622,7 +1622,7 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	if (m_documentView)
 		m_documentView->deleteLater();
 
-	auto view = graphview::DocumentView::createDocumentView(m_document.get(), m_document->getObjectsList());
+	auto view = panda::graphview::DocumentView::createDocumentView(m_document.get(), m_document->getObjectsList());
 	m_documentView = new graphview::QtViewWrapper(std::move(view), this);
 	m_documentViewContainer->setView(m_documentView);
 	m_documentViewContainer->setFocusProxy(m_documentView);

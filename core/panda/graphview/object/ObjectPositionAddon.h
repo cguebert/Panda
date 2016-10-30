@@ -4,33 +4,38 @@
 #include <panda/types/Point.h>
 #include <panda/messaging.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
-class PANDA_CORE_API ObjectPositionAddon : public panda::BaseObjectAddon
+class PANDA_CORE_API ObjectPositionAddon : public BaseObjectAddon
 {
 public:
-	ObjectPositionAddon(panda::PandaObject& object);
+	ObjectPositionAddon(PandaObject& object);
 
-	static void setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition);
+	static void setDefinition(ObjectAddonNodeDefinition& nodeDefinition);
 
-	void save(panda::ObjectAddonNode& node) override;
-	void load(const panda::ObjectAddonNode& node) override;
+	void save(ObjectAddonNode& node) override;
+	void load(const ObjectAddonNode& node) override;
 
 	bool isSet() const;
 
-	panda::types::Point getPosition() const;
-	void setPosition(panda::types::Point pos);
-	void move(panda::types::Point delta);
+	types::Point getPosition() const;
+	void setPosition(types::Point pos);
+	void move(types::Point delta);
 
-	static panda::types::Point getPosition(panda::PandaObject* object);
-	static void setPosition(panda::PandaObject* object, const panda::types::Point& pos);
+	static types::Point getPosition(PandaObject* object);
+	static void setPosition(PandaObject* object, const types::Point& pos);
 
-	panda::msg::Signal<void(panda::types::Point newPos)> positionChanged;
+	msg::Signal<void(types::Point newPos)> positionChanged;
 
 private:
 	bool m_isSet = false;
-	panda::types::Point m_position;
+	types::Point m_position;
 };
 
 } // namespace graphview
+
+} // namespace panda

@@ -33,6 +33,9 @@ namespace
 	}
 } // Unammed namespace
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -515,3 +518,5 @@ GlyphRangeList FontAtlas::getGlyphRangesDefault()
 } // namespace graphics
 
 } // namespace graphview
+
+} // namespace panda

@@ -78,6 +78,9 @@ namespace
 
 } // Unnamed namespace
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -262,3 +265,5 @@ DrawMesh DrawPath::triangulate() const
 } // namespace graphics
 
 } // namespace graphview
+
+} // namespace panda

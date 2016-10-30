@@ -9,21 +9,23 @@ class QOpenGLShaderProgram;
 class QOpenGLTexture;
 class QOpenGLVertexArrayObject;
 
+namespace panda {
+	namespace graphview {
+		namespace graphics
+		{
+			class DrawList;
+			class FontAtlas;
+			class Font;
+		}
+	}
+}
+
 namespace graphview
 {
 
-namespace graphics 
-{
-	class DrawList;
-	class FontAtlas;
-	class Font;
-}
-
-class QtViewRenderer : public ViewRenderer
+class QtViewRenderer : public panda::graphview::ViewRenderer
 {
 public:
-	using DrawListSPtr = std::shared_ptr<graphics::DrawList>;
-
 	QtViewRenderer();
 	~QtViewRenderer();
 
@@ -39,7 +41,7 @@ public:
 
 	bool initialized() const override;
 	unsigned int defaultTextureId() const override;
-	graphics::Font* currentFont() const override;
+	panda::graphview::graphics::Font* currentFont() const override;
 
 private:
 	std::unique_ptr<QOpenGLTexture> m_fontTexture;
@@ -52,7 +54,7 @@ private:
 	panda::types::Rect m_viewBounds;
 
 	std::vector<DrawListSPtr> m_drawLists;
-	std::unique_ptr<graphics::FontAtlas> m_atlas;
+	std::unique_ptr<panda::graphview::graphics::FontAtlas> m_atlas;
 
 	float m_clearColor[4];
 };

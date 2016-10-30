@@ -4,6 +4,9 @@
 
 #include <set>
 
+namespace panda
+{
+
 namespace graphview
 {
 	namespace object {
@@ -17,21 +20,23 @@ namespace graphview
 	public:
 		SnapToObjects(GraphView& view);
 
-		panda::types::Point snapDelta() const;
+		types::Point snapDelta() const;
 
 		void prepareSnapTargets(object::ObjectRenderer* selectedRenderer);
-		void updateSnapDelta(object::ObjectRenderer* selectedRenderer, const panda::types::Point& position);
+		void updateSnapDelta(object::ObjectRenderer* selectedRenderer, const types::Point& position);
 
 	protected:
 		GraphView& m_view;
 
-		panda::types::Point m_snapDelta;
+		types::Point m_snapDelta;
 		std::set<float> m_snapTargetsY;
 	};
 
 //****************************************************************************//
 
-	inline panda::types::Point SnapToObjects::snapDelta() const
+	inline types::Point SnapToObjects::snapDelta() const
 	{ return m_snapDelta; }
 
 } // namespace graphview
+
+} // namespace panda

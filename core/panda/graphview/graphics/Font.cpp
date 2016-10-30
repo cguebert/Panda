@@ -186,6 +186,9 @@ static inline bool CharIsSpace(int c) { return c == ' ' || c == '\t' || c == 0x3
 
 //****************************************************************************//
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -624,3 +627,5 @@ void Font::renderText(float scale, pPoint pos, unsigned int col, const pRect& cl
 } // namespace graphics
 
 } // namespace graphview
+
+} // namespace panda

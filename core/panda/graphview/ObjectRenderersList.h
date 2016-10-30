@@ -6,13 +6,14 @@
 #include <memory>
 #include <vector>
 
-namespace panda {
-	class ObjectsList;
-	class PandaObject;
+namespace panda
+{
 
-	namespace types {
-		class Point;
-	}
+class ObjectsList;
+class PandaObject;
+
+namespace types {
+	class Point;
 }
 
 namespace graphview
@@ -27,27 +28,27 @@ namespace graphview
 	class PANDA_CORE_API ObjectRenderersList
 	{
 	public:
-		using Objects = std::vector<panda::PandaObject*>;
+		using Objects = std::vector<PandaObject*>;
 		using ObjectRendererSPtr = std::shared_ptr<object::ObjectRenderer>;
 		using ObjectRenderers = std::vector<object::ObjectRenderer*>;
 
-		object::ObjectRenderer* get(panda::PandaObject* object) const;
-		ObjectRendererSPtr getSPtr(panda::PandaObject* object) const;
+		object::ObjectRenderer* get(PandaObject* object) const;
+		ObjectRendererSPtr getSPtr(PandaObject* object) const;
 
 		ObjectRenderers get(const Objects& objects) const;
 
-		object::ObjectRenderer* getAtPos(const panda::types::Point& pt) const;
+		object::ObjectRenderer* getAtPos(const types::Point& pt) const;
 
-		void set(panda::PandaObject* object, const ObjectRendererSPtr& drawStruct);
-		void remove(panda::PandaObject* object);
+		void set(PandaObject* object, const ObjectRendererSPtr& drawStruct);
+		void remove(PandaObject* object);
 
 		const ObjectRenderers& getOrdered() const;
-		void reorder(const panda::ObjectsList& objects);
+		void reorder(const ObjectsList& objects);
 
 		void initializeRenderer(ViewRenderer& viewRenderer);
 
 	private:
-		std::map<panda::PandaObject*, ObjectRendererSPtr> m_objectRenderers;
+		std::map<PandaObject*, ObjectRendererSPtr> m_objectRenderers;
 		std::vector<object::ObjectRenderer*> m_orderedObjectRenderers; // In the same order as the document
 	};
 
@@ -56,4 +57,6 @@ namespace graphview
 	inline const ObjectRenderersList::ObjectRenderers& ObjectRenderersList::getOrdered() const
 	{ return m_orderedObjectRenderers; }
 
-}
+} // namespace graphview
+
+} // namespace panda

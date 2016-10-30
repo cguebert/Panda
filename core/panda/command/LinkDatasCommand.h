@@ -28,11 +28,11 @@ protected:
 	struct LinkStruct
 	{
 		PandaObject	*m_targetObject,
-							*m_initialParentObject,
-							*m_newParentObject;
+			*m_initialParentObject,
+			*m_newParentObject;
 		std::string m_targetDataName,
-				m_initialParentDataName,
-				m_newParentDataName;
+			m_initialParentDataName,
+			m_newParentDataName;
 	};
 
 	std::vector<LinkStruct> m_links;

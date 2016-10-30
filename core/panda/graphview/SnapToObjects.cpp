@@ -7,8 +7,11 @@
 
 #include <panda/object/PandaObject.h>
 
-using Point = panda::types::Point;
-using Rect = panda::types::Rect;
+namespace panda
+{
+
+using Point = types::Point;
+using Rect = types::Rect;
 
 namespace graphview
 {
@@ -33,7 +36,7 @@ namespace graphview
 				auto dataHeight = dataRect.center().y - y;
 				for (auto input2 : input->getInputs())
 				{
-					auto data2 = dynamic_cast<panda::BaseData*>(input2);
+					auto data2 = dynamic_cast<BaseData*>(input2);
 					if (data2 && data2->getOwner())
 					{
 						auto owner = data2->getOwner();
@@ -57,7 +60,7 @@ namespace graphview
 				auto dataHeight = dataRect.center().y - y;
 				for (auto output2 : output->getOutputs())
 				{
-					auto data2 = dynamic_cast<panda::BaseData*>(output2);
+					auto data2 = dynamic_cast<BaseData*>(output2);
 					if (data2 && data2->getOwner())
 					{
 						auto owner = data2->getOwner();
@@ -171,3 +174,5 @@ namespace graphview
 	}
 
 } // namespace graphview
+
+} // namespace panda

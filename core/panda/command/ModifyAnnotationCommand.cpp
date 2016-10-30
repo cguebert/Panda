@@ -2,8 +2,11 @@
 #include <panda/command/CommandId.h>
 #include <panda/object/Annotation.h>
 
-MoveAnnotationEndCommand::MoveAnnotationEndCommand(panda::Annotation* annotation,
-												   panda::types::Point delta)
+namespace panda
+{
+
+MoveAnnotationEndCommand::MoveAnnotationEndCommand(Annotation* annotation,
+												   types::Point delta)
 	: m_annotation(annotation)
 	, m_delta(delta)
 {
@@ -12,7 +15,7 @@ MoveAnnotationEndCommand::MoveAnnotationEndCommand(panda::Annotation* annotation
 
 int MoveAnnotationEndCommand::id() const
 {
-	return panda::getCommandId<MoveAnnotationEndCommand>();
+	return getCommandId<MoveAnnotationEndCommand>();
 }
 
 void MoveAnnotationEndCommand::redo()
@@ -25,7 +28,7 @@ void MoveAnnotationEndCommand::undo()
 	m_annotation->setDeltaToEnd(m_annotation->getDeltaToEnd() - m_delta);
 }
 
-bool MoveAnnotationEndCommand::mergeWith(const panda::UndoCommand *other)
+bool MoveAnnotationEndCommand::mergeWith(const UndoCommand *other)
 {
 	const MoveAnnotationEndCommand* command = dynamic_cast<const MoveAnnotationEndCommand*>(other);
 	if(!command)
@@ -38,3 +41,5 @@ bool MoveAnnotationEndCommand::mergeWith(const panda::UndoCommand *other)
 
 	return false;
 }
+
+} // namespace panda

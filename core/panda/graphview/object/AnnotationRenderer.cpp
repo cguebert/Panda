@@ -11,9 +11,11 @@
 #include <panda/object/Annotation.h>
 #include <panda/XmlDocument.h>
 
-using panda::Annotation;
-using panda::types::Point;
-using panda::types::Rect;
+namespace panda
+{
+
+using types::Point;
+using types::Rect;
 
 namespace graphview
 {
@@ -21,7 +23,7 @@ namespace graphview
 namespace object
 {
 
-AnnotationRenderer::AnnotationRenderer(GraphView* view, panda::PandaObject* object)
+AnnotationRenderer::AnnotationRenderer(GraphView* view, PandaObject* object)
 	: ObjectRenderer(view, object)
 	, m_annotation(dynamic_cast<Annotation*>(object))
 {
@@ -60,7 +62,7 @@ void AnnotationRenderer::drawForeground(graphics::DrawList& list, graphics::Draw
 	list.addText(textArea, m_annotation->m_text.getValue(), colors.penColor);
 
 	// Draw the handle
-	const panda::PandaDocument* doc = getParentView()->document();
+	const PandaDocument* doc = getParentView()->document();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
 			&& getParentView()->selection().get().size() == 1
 			&& getParentView()->selection().isSelected(m_annotation))	// The annotation is the only selected object
@@ -93,7 +95,7 @@ void AnnotationRenderer::moveEnd(const Point& delta)
 
 bool AnnotationRenderer::contains(const Point& point)
 {
-	const panda::PandaDocument* doc = getParentView()->document();
+	const PandaDocument* doc = getParentView()->document();
 	if(m_annotation->m_type.getValue() != Annotation::ANNOTATION_TEXT
 			&& getParentView()->selection().get().size() == 1
 			&& getParentView()->selection().isSelected(m_annotation))	// The annotation is the only selected object
@@ -240,8 +242,10 @@ void AnnotationRenderer::deltaToEndChanged()
 	getParentView()->update();
 }
 
-int AnnotationDrawClass = RegisterDrawObject<panda::Annotation, AnnotationRenderer>();
+int AnnotationDrawClass = RegisterDrawObject<Annotation, AnnotationRenderer>();
 
 } // namespace object
 
 } // namespace graphview
+
+} // namespace panda

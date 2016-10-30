@@ -2,16 +2,21 @@
 
 #include <panda/graphview/GraphView.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
 class PANDA_CORE_API DocumentView : public GraphView
 {
 public:
-	static std::unique_ptr<DocumentView> createDocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList);
+	static std::unique_ptr<DocumentView> createDocumentView(PandaDocument* doc, ObjectsList& objectsList);
 
 private:
-	explicit DocumentView(panda::PandaDocument* doc, panda::ObjectsList& objectsList);
+	explicit DocumentView(PandaDocument* doc, ObjectsList& objectsList);
 };
 
 } // namespace graphview
+
+} // namespace panda

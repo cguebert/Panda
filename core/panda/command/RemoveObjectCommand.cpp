@@ -6,9 +6,12 @@
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 
-RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
-										 panda::ObjectsList& objectsList,
-										 const std::vector<panda::PandaObject*>& objects,
+namespace panda
+{
+
+RemoveObjectCommand::RemoveObjectCommand(PandaDocument* document,
+										 ObjectsList& objectsList,
+										 const std::vector<PandaObject*>& objects,
 										 LinkOperation linkOp, 
 										 ObjectOperation objectOp)
 	: m_document(document)
@@ -19,22 +22,22 @@ RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
 	setText("delete objects");
 }
 
-RemoveObjectCommand::RemoveObjectCommand(panda::PandaDocument* document,
-										 panda::ObjectsList& objectsList,
-										 panda::PandaObject* object,
+RemoveObjectCommand::RemoveObjectCommand(PandaDocument* document,
+										 ObjectsList& objectsList,
+										 PandaObject* object,
 										 LinkOperation linkOp, 
 										 ObjectOperation objectOp)
 	: m_document(document)
 	, m_objectsList(objectsList)
 	, m_removeFromDocument(objectOp == ObjectOperation::RemoveFromDocument)
 {
-	std::vector<panda::PandaObject*> objects;
+	std::vector<PandaObject*> objects;
 	objects.push_back(object);
 	prepareCommand(objects, linkOp == LinkOperation::Unlink);
 	setText("delete objects");
 }
 
-void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>& objects, bool unlinkDatas)
+void RemoveObjectCommand::prepareCommand(const std::vector<PandaObject*>& objects, bool unlinkDatas)
 {
 	for(auto object : objects)
 	{
@@ -52,9 +55,9 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 				const auto outputs = data->getOutputs();
 				for(auto output : outputs)
 				{
-					auto data2 = dynamic_cast<panda::BaseData*>(output);
+					auto data2 = dynamic_cast<BaseData*>(output);
 					if(data2 && data2->getOwner())
-						m_document->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(data2, nullptr));
+						m_document->getUndoStack().push(std::make_shared<LinkDatasCommand>(data2, nullptr));
 				}
 			}
 
@@ -65,7 +68,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 			for(auto data : inputDatas)
 			{
 				if(data->getParent())
-					m_document->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(data, nullptr));
+					m_document->getUndoStack().push(std::make_shared<LinkDatasCommand>(data, nullptr));
 			}
 		}
 	}
@@ -73,7 +76,7 @@ void RemoveObjectCommand::prepareCommand(const std::vector<panda::PandaObject*>&
 
 int RemoveObjectCommand::id() const
 {
-	return panda::getCommandId<RemoveObjectCommand>();
+	return getCommandId<RemoveObjectCommand>();
 }
 
 void RemoveObjectCommand::redo()
@@ -88,7 +91,7 @@ void RemoveObjectCommand::undo()
 		m_objectsList.addObject(object, m_removeFromDocument);
 }
 
-bool RemoveObjectCommand::mergeWith(const panda::UndoCommand *other)
+bool RemoveObjectCommand::mergeWith(const UndoCommand *other)
 {
 	// Only merge if creating a macro of multiple commands (not in case of multiple users actions)
 	if(!m_document->getUndoStack().isInCommandMacro())
@@ -99,10 +102,11 @@ bool RemoveObjectCommand::mergeWith(const panda::UndoCommand *other)
 		return false;
 	if(m_document == command->m_document)
 	{
-		panda::helper::concatenate(m_objects, command->m_objects);
+		helper::concatenate(m_objects, command->m_objects);
 		return true;
 	}
 
 	return false;
 }
 
+} // namespace panda

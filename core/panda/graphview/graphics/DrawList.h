@@ -4,7 +4,8 @@
 
 #include <string>
 
-class QColor;
+namespace panda
+{
 
 namespace graphview
 {
@@ -136,3 +137,5 @@ private:
 } // namespace graphics
 
 } // namespace graphview
+
+} // namespace panda

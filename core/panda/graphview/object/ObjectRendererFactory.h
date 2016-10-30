@@ -13,7 +13,6 @@ namespace panda
 
 	namespace msg
 	{ class Observer; }
-}
 
 namespace graphview
 {
@@ -34,8 +33,8 @@ class PANDA_CORE_API BaseObjectDrawCreator
 {
 public:
 	virtual ~BaseObjectDrawCreator() {}
-	virtual const panda::BaseClass* getClass() const = 0;
-	virtual std::shared_ptr<ObjectRenderer> create(GraphView* view, panda::PandaObject* obj) const = 0;
+	virtual const BaseClass* getClass() const = 0;
+	virtual std::shared_ptr<ObjectRenderer> create(GraphView* view, PandaObject* obj) const = 0;
 };
 
 template<class O, class D>
@@ -46,21 +45,21 @@ public:
 		: theClass(O::GetClass())
 	{ }
 
-	const panda::BaseClass* getClass() const override
+	const BaseClass* getClass() const override
 	{ return theClass; }
 
-	std::shared_ptr<ObjectRenderer> create(GraphView* view, panda::PandaObject* obj) const override
+	std::shared_ptr<ObjectRenderer> create(GraphView* view, PandaObject* obj) const override
 	{ return std::make_shared<D>(view, dynamic_cast<O*>(obj)); }
 
 protected:
-	const panda::BaseClass* theClass;
+	const BaseClass* theClass;
 };
 
 class PANDA_CORE_API ObjectRendererFactory
 {
 public:
 	static ObjectRendererFactory* getInstance();
-	std::shared_ptr<ObjectRenderer> createRenderer(GraphView *view, panda::PandaObject *obj);
+	std::shared_ptr<ObjectRenderer> createRenderer(GraphView *view, PandaObject *obj);
 
 protected:
 	void addCreator(BaseObjectDrawCreator* creator);
@@ -85,3 +84,5 @@ public:
 } // namespace object
 
 } // namespace graphview
+
+} // namespace panda

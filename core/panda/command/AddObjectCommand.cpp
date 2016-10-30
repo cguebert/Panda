@@ -5,9 +5,12 @@
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 
-AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
-								   panda::ObjectsList& objectsList,
-								   std::shared_ptr<panda::PandaObject> object,
+namespace panda
+{
+
+AddObjectCommand::AddObjectCommand(PandaDocument* document,
+								   ObjectsList& objectsList,
+								   std::shared_ptr<PandaObject> object,
 								   bool newObject)
 	: m_document(document)
 	, m_objectsList(objectsList)
@@ -18,9 +21,9 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 	setText("add object");
 }
 
-AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
-								   panda::ObjectsList& objectsList,
-								   std::vector<std::shared_ptr<panda::PandaObject>> objects,
+AddObjectCommand::AddObjectCommand(PandaDocument* document,
+								   ObjectsList& objectsList,
+								   std::vector<std::shared_ptr<PandaObject>> objects,
 								   bool newObject)
 	: m_document(document)
 	, m_objectsList(objectsList)
@@ -31,9 +34,9 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 	setText("add objects");
 }
 
-AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
-								   panda::ObjectsList& objectsList,
-								   std::vector<panda::PandaObject*> objects,
+AddObjectCommand::AddObjectCommand(PandaDocument* document,
+								   ObjectsList& objectsList,
+								   std::vector<PandaObject*> objects,
 								   bool newObject)
 	: m_document(document)
 	, m_objectsList(objectsList)
@@ -52,7 +55,7 @@ AddObjectCommand::AddObjectCommand(panda::PandaDocument* document,
 
 int AddObjectCommand::id() const
 {
-	return panda::getCommandId<AddObjectCommand>();
+	return getCommandId<AddObjectCommand>();
 }
 
 void AddObjectCommand::redo()
@@ -85,9 +88,11 @@ bool AddObjectCommand::mergeWith(const UndoCommand *other)
 
 	if(m_document == command->m_document)
 	{
-		panda::helper::concatenate(m_objects, command->m_objects);
+		helper::concatenate(m_objects, command->m_objects);
 		return true;
 	}
 
 	return false;
 }
+
+} // namespace panda

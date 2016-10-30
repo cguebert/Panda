@@ -10,7 +10,7 @@
 
 using panda::ObjectFactory;
 
-QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, graphview::GraphView* view, QWidget* parent)
+QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, panda::graphview::GraphView* view, QWidget* parent)
 	: QDialog(parent, Qt::Popup)
 	, m_document(doc)
 	, m_view(view)
@@ -206,7 +206,7 @@ void QuickCreateDialog::createObject()
 			if(getFactoryEntry(selectedItemText.toStdString(), entry))
 			{
 				auto object = ObjectFactory::getInstance()->create(entry.className, m_document);
-				m_document->getUndoStack().push(std::make_shared<AddObjectCommand>(m_document, m_view->objectsList(), object));
+				m_document->getUndoStack().push(std::make_shared<panda::AddObjectCommand>(m_document, m_view->objectsList(), object));
 			}
 		}
 	}

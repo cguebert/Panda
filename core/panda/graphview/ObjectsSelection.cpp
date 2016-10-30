@@ -5,10 +5,13 @@
 #include <panda/helper/algorithm.h>
 #include <panda/object/PandaObject.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
-ObjectsSelection::ObjectsSelection(panda::ObjectsList& objectsList)
+ObjectsSelection::ObjectsSelection(ObjectsList& objectsList)
 	: m_objectsList(objectsList)
 {
 	m_observer.get(m_objectsList.clearedList).connect<ObjectsSelection, &ObjectsSelection::clear>(this);
@@ -22,7 +25,7 @@ void ObjectsSelection::clear()
 	selectionChanged.run();
 }
 
-panda::PandaObject* ObjectsSelection::lastSelectedObject() const
+PandaObject* ObjectsSelection::lastSelectedObject() const
 {
 	if(m_selectedObjects.empty())
 		return nullptr;
@@ -30,9 +33,9 @@ panda::PandaObject* ObjectsSelection::lastSelectedObject() const
 		return m_selectedObjects.back();
 }
 
-void ObjectsSelection::setLastSelectedObject(panda::PandaObject* object)
+void ObjectsSelection::setLastSelectedObject(PandaObject* object)
 {
-	panda::helper::removeAll(m_selectedObjects, object);
+	helper::removeAll(m_selectedObjects, object);
 	m_selectedObjects.push_back(object);
 	selectedObject.run(object);
 	selectionChanged.run();
@@ -45,7 +48,7 @@ void ObjectsSelection::set(const Objects& selection)
 	selectionChanged.run();
 }
 
-void ObjectsSelection::selectOne(panda::PandaObject* object)
+void ObjectsSelection::selectOne(PandaObject* object)
 {
 	if (!object)
 		selectNone();
@@ -59,9 +62,9 @@ void ObjectsSelection::selectOne(panda::PandaObject* object)
 	selectionChanged.run();
 }
 
-void ObjectsSelection::add(panda::PandaObject* object)
+void ObjectsSelection::add(PandaObject* object)
 {
-	if(!panda::helper::contains(m_selectedObjects, object))
+	if(!helper::contains(m_selectedObjects, object))
 	{
 		m_selectedObjects.push_back(object);
 		selectedObject.run(object);
@@ -69,11 +72,11 @@ void ObjectsSelection::add(panda::PandaObject* object)
 	}
 }
 
-void ObjectsSelection::remove(panda::PandaObject* object)
+void ObjectsSelection::remove(PandaObject* object)
 {
-	if(panda::helper::contains(m_selectedObjects, object))
+	if(helper::contains(m_selectedObjects, object))
 	{
-		panda::helper::removeAll(m_selectedObjects, object);
+		helper::removeAll(m_selectedObjects, object);
 		selectedObject.run(m_selectedObjects.empty() ? nullptr : m_selectedObjects.back());
 		selectionChanged.run();
 	}
@@ -108,9 +111,11 @@ void ObjectsSelection::selectConnected()
 		return;
 
 	auto currentSelected = m_selectedObjects.back();
-	m_selectedObjects = panda::graph::computeConnectedObjects(m_selectedObjects);
+	m_selectedObjects = graph::computeConnectedObjects(m_selectedObjects);
 	setLastSelectedObject(currentSelected);
 	selectionChanged.run();
 }
 
 } // namespace graphview
+
+} // namespace panda

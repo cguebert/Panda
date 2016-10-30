@@ -15,8 +15,11 @@
 
 #include <cmath>
 
-using panda::types::Point;
-using panda::types::Rect;
+namespace panda
+{
+
+using types::Point;
+using types::Rect;
 
 namespace graphview
 {
@@ -24,10 +27,10 @@ namespace graphview
 namespace object
 {
 
-ObjectRenderer::ObjectRenderer(GraphView* view, panda::PandaObject* obj)
+ObjectRenderer::ObjectRenderer(GraphView* view, PandaObject* obj)
 	: m_parentView(view), m_object(obj)
 	, m_positionAddon(obj->addons().edit<ObjectPositionAddon>())
-	, m_observer(std::make_unique<panda::msg::Observer>())
+	, m_observer(std::make_unique<msg::Observer>())
 {
 	if (!m_positionAddon.isSet())
 	{
@@ -56,7 +59,7 @@ void ObjectRenderer::update()
 	m_selectionArea = m_visualArea = Rect::fromSize(getPosition(), getObjectSize());
 
 	m_datas.clear();
-	std::vector<panda::BaseData*> inputDatas, outputDatas;
+	std::vector<BaseData*> inputDatas, outputDatas;
 	inputDatas = m_object->getInputDatas();
 	outputDatas = m_object->getOutputDatas();
 	int nbInputs = inputDatas.size(), nbOutputs = outputDatas.size();
@@ -126,7 +129,7 @@ Rect ObjectRenderer::getTextArea()
 	return m_visualArea.adjusted(margin, 0, -margin, 0);
 }
 
-panda::BaseData* ObjectRenderer::getDataAtPos(const Point& pt, Point* center) const
+BaseData* ObjectRenderer::getDataAtPos(const Point& pt, Point* center) const
 {
 	for(const auto& iter : m_datas)
 	{
@@ -141,7 +144,7 @@ panda::BaseData* ObjectRenderer::getDataAtPos(const Point& pt, Point* center) co
 	return nullptr;
 }
 
-bool ObjectRenderer::getDataRect(const panda::BaseData* data, Rect& rect) const
+bool ObjectRenderer::getDataRect(const BaseData* data, Rect& rect) const
 {
 	auto it = std::find_if(m_datas.begin(), m_datas.end(), [data](const DataRectPair& p) {
 		return p.first == data;
@@ -183,10 +186,10 @@ void ObjectRenderer::drawDatas(graphics::DrawList& list, graphics::DrawColors& c
 		drawData(list, colors, dataPair.first, dataPair.second);
 }
 
-void ObjectRenderer::drawData(graphics::DrawList& list, graphics::DrawColors& colors, const panda::BaseData* data, const Rect& area)
+void ObjectRenderer::drawData(graphics::DrawList& list, graphics::DrawColors& colors, const BaseData* data, const Rect& area)
 {
 	unsigned int dataCol = 0;
-	const panda::BaseData* clickedData = getParentView()->interaction().clickedData();
+	const BaseData* clickedData = getParentView()->interaction().clickedData();
 	if (clickedData && clickedData != data && !getParentView()->linksList().canLinkWith(data))
 		dataCol = colors.lightColor;
 	else
@@ -219,7 +222,7 @@ std::string ObjectRenderer::getLabel() const
 	return name;
 }
 
-void ObjectRenderer::positionChanged(panda::types::Point newPos)
+void ObjectRenderer::positionChanged(types::Point newPos)
 {
 	if (m_position != newPos)
 	{
@@ -248,3 +251,5 @@ void ObjectRenderer::setDirty()
 } // namespace object
 
 } // namespace graphview
+
+} // namespace panda

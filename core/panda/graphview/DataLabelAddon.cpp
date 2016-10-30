@@ -7,21 +7,24 @@
 
 #include <set>
 
+namespace panda
+{
+
 namespace graphview
 {
 
-DataLabelAddon::DataLabelAddon(panda::PandaObject& object) 
-	: panda::BaseObjectAddon(object) 
+DataLabelAddon::DataLabelAddon(PandaObject& object) 
+	: BaseObjectAddon(object) 
 {
 }
 
-void DataLabelAddon::setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition)
+void DataLabelAddon::setDefinition(ObjectAddonNodeDefinition& nodeDefinition)
 {
 	auto& labelNode = nodeDefinition.addChild("DataLabel", true);
 	labelNode.addAttribute("data");
 }
 
-void DataLabelAddon::save(panda::ObjectAddonNode& node)
+void DataLabelAddon::save(ObjectAddonNode& node)
 { 
 	for (const auto& dl : m_dataLabels)
 	{
@@ -31,7 +34,7 @@ void DataLabelAddon::save(panda::ObjectAddonNode& node)
 	}
 }
 
-void DataLabelAddon::load(const panda::ObjectAddonNode& node)
+void DataLabelAddon::load(const ObjectAddonNode& node)
 { 
 	for(auto e = node.firstChild("DataLabel"); e; e = e.nextSibling("DataLabel"))
 	{
@@ -46,7 +49,7 @@ void DataLabelAddon::load(const panda::ObjectAddonNode& node)
 	}
 }
 
-std::string DataLabelAddon::getLabel(panda::BaseData* data) const
+std::string DataLabelAddon::getLabel(BaseData* data) const
 {
 	auto it = std::find_if(m_dataLabels.begin(), m_dataLabels.end(), [data](const auto& dl) {
 		return dl.data == data;
@@ -56,7 +59,7 @@ std::string DataLabelAddon::getLabel(panda::BaseData* data) const
 	return "";
 }
 
-void DataLabelAddon::setLabel(panda::BaseData* data, const std::string& label)
+void DataLabelAddon::setLabel(BaseData* data, const std::string& label)
 {
 	auto it = std::find_if(m_dataLabels.begin(), m_dataLabels.end(), [data](const auto& dl) {
 		return dl.data == data;
@@ -82,7 +85,7 @@ void DataLabelAddon::setLabel(panda::BaseData* data, const std::string& label)
 
 void DataLabelAddon::objectModified()
 {
-	std::set<panda::BaseData*> datas;
+	std::set<BaseData*> datas;
 	for (auto data : m_object.getDatas())
 		datas.insert(data);
 	auto last = std::remove_if(m_dataLabels.begin(), m_dataLabels.end(), [&datas](const auto& dl) {
@@ -93,7 +96,7 @@ void DataLabelAddon::objectModified()
 
 //****************************************************************************//
 
-std::string DataLabelAddon::getDataLabel(panda::BaseData* data)
+std::string DataLabelAddon::getDataLabel(BaseData* data)
 {
 	auto addon = data->getOwner()->addons().get<DataLabelAddon>();
 	if(addon)
@@ -101,13 +104,15 @@ std::string DataLabelAddon::getDataLabel(panda::BaseData* data)
 	return {};
 }
 
-void DataLabelAddon::setDataLabel(panda::BaseData* data, const std::string& label)
+void DataLabelAddon::setDataLabel(BaseData* data, const std::string& label)
 {
 	data->getOwner()->addons().edit<DataLabelAddon>().setLabel(data, label);
 }
 
 //****************************************************************************//
 
-int DataLabelAddon_Reg = panda::RegisterObjectAddon<DataLabelAddon>();
+int DataLabelAddon_Reg = RegisterObjectAddon<DataLabelAddon>();
 
 } // namespace graphview
+
+} // namespace panda

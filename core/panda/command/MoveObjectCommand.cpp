@@ -4,8 +4,11 @@
 #include <panda/object/ObjectAddons.h>
 #include <panda/object/PandaObject.h>
 
-MoveObjectCommand::MoveObjectCommand(panda::PandaObject* object,
-									 panda::types::Point delta)
+namespace panda
+{
+
+MoveObjectCommand::MoveObjectCommand(PandaObject* object,
+									 types::Point delta)
 	: m_objects({ object })
 	, m_delta(delta)
 {
@@ -13,8 +16,8 @@ MoveObjectCommand::MoveObjectCommand(panda::PandaObject* object,
 	getPositionAddons();
 }
 
-MoveObjectCommand::MoveObjectCommand(std::vector<panda::PandaObject*> objects,
-									 panda::types::Point delta)
+MoveObjectCommand::MoveObjectCommand(std::vector<PandaObject*> objects,
+									 types::Point delta)
 	: m_objects(objects)
 	, m_delta(delta)
 {
@@ -24,7 +27,7 @@ MoveObjectCommand::MoveObjectCommand(std::vector<panda::PandaObject*> objects,
 
 int MoveObjectCommand::id() const
 {
-	return panda::getCommandId<MoveObjectCommand>();
+	return getCommandId<MoveObjectCommand>();
 }
 
 void MoveObjectCommand::redo()
@@ -37,7 +40,7 @@ void MoveObjectCommand::undo()
 	moveObjects(-m_delta);
 }
 
-bool MoveObjectCommand::mergeWith(const panda::UndoCommand *other)
+bool MoveObjectCommand::mergeWith(const UndoCommand *other)
 {
 	const MoveObjectCommand* command = dynamic_cast<const MoveObjectCommand*>(other);
 	if(!command)
@@ -58,8 +61,10 @@ void MoveObjectCommand::getPositionAddons()
 		m_positionAddons.push_back(&obj->addons().edit<graphview::ObjectPositionAddon>());
 }
 
-void MoveObjectCommand::moveObjects(panda::types::Point delta)
+void MoveObjectCommand::moveObjects(types::Point delta)
 {
 	for (auto posAddon : m_positionAddons)
 		posAddon->move(delta);
 }
+
+} // namespace panda

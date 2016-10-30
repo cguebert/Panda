@@ -16,6 +16,9 @@ namespace
 	}
 }
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -723,3 +726,5 @@ void DrawList::primRectUV(const Rect& r, const Rect& uv, unsigned int col)
 } // namespace graphics
 
 } // namespace graphview
+
+} // namespace panda

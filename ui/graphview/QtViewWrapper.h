@@ -17,21 +17,23 @@ class MainWindow;
 namespace panda
 {
 	class PandaObject;
+
+	namespace graphview {
+		class GraphView;
+	}
 }
 
 namespace graphview
 {
-
-	class GraphView;
 
 	class QtViewWrapper : public QOpenGLWidget, public ScrollableView
 	{
 		Q_OBJECT
 
 	public:
-		explicit QtViewWrapper(std::unique_ptr<GraphView> graphView, MainWindow* mainWindow);
+		explicit QtViewWrapper(std::unique_ptr<panda::graphview::GraphView> graphView, MainWindow* mainWindow);
 
-		GraphView& view() const;
+		panda::graphview::GraphView& view() const;
 
 		void executeNextRefresh(std::function<void()> func);
 
@@ -71,27 +73,27 @@ namespace graphview
 		void scrollView(QPoint position) override;
 
 #ifdef PANDA_LOG_EVENTS
-		void paintLogDebug(graphics::DrawList& list, graphics::DrawColors& colors);
+		void paintLogDebug(panda::graphview::graphics::DrawList& list, panda::graphview::graphics::DrawColors& colors);
 #endif
-		void paintDirtyState(graphics::DrawList& list, graphics::DrawColors& colors);
+		void paintDirtyState(panda::graphview::graphics::DrawList& list, panda::graphview::graphics::DrawColors& colors);
 
 		void emitViewportModified();
 
 	protected:
-		std::unique_ptr<GraphView> m_graphView;
-		std::shared_ptr<ViewRenderer> m_viewRenderer;
+		std::unique_ptr<panda::graphview::GraphView> m_graphView;
+		std::shared_ptr<panda::graphview::ViewRenderer> m_viewRenderer;
 		std::vector<std::function<void()>> m_functionsToExecuteNextRefresh;
 		bool m_debugDirtyState = false;
 
 		panda::msg::Observer m_observer;
 
-		std::shared_ptr<graphics::DrawList> m_drawList;
-		graphics::DrawColors m_drawColors; /// So that we aquire Qt colors only once
+		std::shared_ptr<panda::graphview::graphics::DrawList> m_drawList;
+		panda::graphview::graphics::DrawColors m_drawColors; /// So that we aquire Qt colors only once
 	};
 
 	//****************************************************************************//
 
-	inline GraphView& QtViewWrapper::view() const
+	inline panda::graphview::GraphView& QtViewWrapper::view() const
 	{ return *m_graphView; }
 
 	inline void QtViewWrapper::debugDirtyState(bool show)

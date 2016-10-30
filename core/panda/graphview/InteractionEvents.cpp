@@ -1,5 +1,8 @@
 #include <panda/graphview/InteractionEvents.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -32,3 +35,5 @@ namespace graphview
 	{}
 
 } // namespace graphview
+
+} // namespace panda

@@ -4,6 +4,9 @@
 
 #include <memory>
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -37,3 +40,4 @@ public:
 
 } // namespace graphview
 
+} // namespace panda

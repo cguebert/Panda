@@ -4,9 +4,10 @@
 
 #include <panda/types/Rect.h>
 
-namespace panda {
-	class Group;
-}
+namespace panda 
+{
+	
+class Group;
 
 namespace graphview
 {
@@ -16,30 +17,30 @@ class GroupViewport;
 class PANDA_CORE_API GroupView : public GraphView
 {
 public:
-	using DataRect = std::pair<panda::BaseData*, panda::types::Rect>;
+	using DataRect = std::pair<BaseData*, types::Rect>;
 	using DataRects = std::vector<DataRect>;
 
-	static std::unique_ptr<GroupView> createGroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList);
+	static std::unique_ptr<GroupView> createGroupView(Group* group, PandaDocument* doc, ObjectsList& objectsList);
 
-	panda::Group* group() const;
+	Group* group() const;
 
 	void updateGroupDataRects();
 	const DataRects& groupDataRects() const;
 
 	void createInputGroupData();
 	void createOutputGroupData();
-	void removeGroupData(panda::BaseData* data);
+	void removeGroupData(BaseData* data);
 
 protected:
 	void initializeRenderer(ViewRenderer& viewRenderer) override;
 	void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors) override;
 
 private:
-	GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList);
+	GroupView(Group* group, PandaDocument* doc, ObjectsList& objectsList);
 
-	void modifiedObject(panda::PandaObject* object);
+	void modifiedObject(PandaObject* object);
 
-	panda::Group* m_group;
+	Group* m_group;
 
 	DataRects m_groupDataRects;
 
@@ -48,10 +49,12 @@ private:
 
 //****************************************************************************//
 
-inline panda::Group* GroupView::group() const
+inline Group* GroupView::group() const
 { return m_group; }
 
 inline const GroupView::DataRects& GroupView::groupDataRects() const
 { return m_groupDataRects; }
 
 } // namespace graphview
+
+} // namespace panda

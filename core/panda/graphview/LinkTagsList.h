@@ -7,8 +7,8 @@
 
 namespace panda
 {
-	class BaseData;
-}
+
+class BaseData;
 
 namespace graphview
 {
@@ -29,9 +29,9 @@ namespace graphview
 
 		LinkTagsList(GraphView& view);
 
-		void addLinkTag(panda::BaseData* input, panda::BaseData* output);
-		void removeLinkTag(panda::BaseData* input, panda::BaseData* output);
-		bool hasLinkTag(panda::BaseData* input, panda::BaseData* output);
+		void addLinkTag(BaseData* input, BaseData* output);
+		void removeLinkTag(BaseData* input, BaseData* output);
+		bool hasLinkTag(BaseData* input, BaseData* output);
 
 		const LinkTags& get() const;
 
@@ -50,8 +50,8 @@ namespace graphview
 
 		bool m_recomputeTags = false; // Should we recompute the linkTags next PaintEvent?
 		LinkTags m_linkTags;
-		std::map<panda::BaseData*, LinkTag*> m_linkTagsMap; // Input data of the link tag
-		std::set<std::pair<panda::BaseData*, panda::BaseData*>> m_linkTagsDatas; // A copy of the link tags connections
+		std::map<BaseData*, LinkTag*> m_linkTagsMap; // Input data of the link tag
+		std::set<std::pair<BaseData*, BaseData*>> m_linkTagsDatas; // A copy of the link tags connections
 	};
 
 //****************************************************************************//
@@ -60,3 +60,5 @@ namespace graphview
 	{ return m_linkTags; }
 
 } // namespace graphview
+
+} // namespace panda

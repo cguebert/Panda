@@ -13,6 +13,7 @@
 
 using panda::types::Point;
 using panda::types::Rect;
+using panda::graphview::graphics::DrawList;
 
 namespace
 {
@@ -65,7 +66,7 @@ namespace graphview
 {
 
 QtViewRenderer::QtViewRenderer()
-	: m_atlas(std::make_unique<graphview::graphics::FontAtlas>())
+	: m_atlas(std::make_unique<panda::graphview::graphics::FontAtlas>())
 {
 	for(int i = 0; i < 4; ++i)
 		m_viewBounds[i] = 0;
@@ -76,7 +77,7 @@ QtViewRenderer::QtViewRenderer()
 #ifdef WIN32
 	if (m_atlas->fonts().empty())
 	{
-		graphics::FontConfig cfg;
+		panda::graphview::graphics::FontConfig cfg;
 		cfg.Name = "Tahoma";
 		m_atlas->addFontFromFileTTF("C:/Windows/Fonts/tahoma.ttf", 13, cfg, m_atlas->getGlyphRangesDefault());
 	}
@@ -140,13 +141,13 @@ void QtViewRenderer::initialize()
 	m_VBO->setUsagePattern(QOpenGLBuffer::StreamDraw);
 	m_VBO->bind();
 	
-	f->glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(graphics::DrawList::DrawVert), (GLvoid*)offsetof(graphics::DrawList::DrawVert, pos));
+	f->glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(DrawList::DrawVert), (GLvoid*)offsetof(DrawList::DrawVert, pos));
 	f->glEnableVertexAttribArray(0);
 
-	f->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(graphics::DrawList::DrawVert), (GLvoid*)offsetof(graphics::DrawList::DrawVert, uv));
+	f->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(DrawList::DrawVert), (GLvoid*)offsetof(DrawList::DrawVert, uv));
 	f->glEnableVertexAttribArray(1);
 
-	f->glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(graphics::DrawList::DrawVert), (GLvoid*)offsetof(graphics::DrawList::DrawVert, col));
+	f->glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(DrawList::DrawVert), (GLvoid*)offsetof(DrawList::DrawVert, col));
 	f->glEnableVertexAttribArray(2);
 	
 	m_VBO->release();
@@ -205,10 +206,10 @@ void QtViewRenderer::render()
 		if (cmd_list->vtxBuffer().empty() || cmd_list->idxBuffer().empty())
 			continue;
 
-		const graphics::DrawList::DrawIdx* idx_buffer_offset = nullptr;
+		const DrawList::DrawIdx* idx_buffer_offset = nullptr;
 
 		m_VBO->bind();
-		int vtxSize = cmd_list->vtxBuffer().size() * sizeof(graphics::DrawList::DrawVert);
+		int vtxSize = cmd_list->vtxBuffer().size() * sizeof(DrawList::DrawVert);
 		if (vtxSize > vboSize)
 		{
 			m_VBO->allocate(vtxSize);
@@ -217,7 +218,7 @@ void QtViewRenderer::render()
 		m_VBO->write(0, &cmd_list->vtxBuffer().front(), vtxSize);
 
 		m_EBO->bind();
-		int idxSize = cmd_list->idxBuffer().size() * sizeof(graphics::DrawList::DrawIdx);
+		int idxSize = cmd_list->idxBuffer().size() * sizeof(DrawList::DrawIdx);
 		if (idxSize > eboSize)
 		{
 			m_EBO->allocate(idxSize);
@@ -261,7 +262,7 @@ unsigned int QtViewRenderer::defaultTextureId() const
 	return m_fontTexture->textureId();
 }
 
-graphics::Font* QtViewRenderer::currentFont() const
+panda::graphview::graphics::Font* QtViewRenderer::currentFont() const
 {
 	if (m_fontTexture && m_atlas)
 	{

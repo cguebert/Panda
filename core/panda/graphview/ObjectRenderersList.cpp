@@ -4,17 +4,20 @@
 #include <panda/helper/algorithm.h>
 #include <panda/document/ObjectsList.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
-	object::ObjectRenderer* ObjectRenderersList::get(panda::PandaObject* object) const
+	object::ObjectRenderer* ObjectRenderersList::get(PandaObject* object) const
 	{
-		return panda::helper::valueOrDefault(m_objectRenderers, object).get();
+		return helper::valueOrDefault(m_objectRenderers, object).get();
 	}
 
-	ObjectRenderersList::ObjectRendererSPtr ObjectRenderersList::getSPtr(panda::PandaObject* object) const
+	ObjectRenderersList::ObjectRendererSPtr ObjectRenderersList::getSPtr(PandaObject* object) const
 	{
-		return panda::helper::valueOrDefault(m_objectRenderers, object);
+		return helper::valueOrDefault(m_objectRenderers, object);
 	}
 
 	ObjectRenderersList::ObjectRenderers ObjectRenderersList::get(const Objects& objects) const
@@ -30,7 +33,7 @@ namespace graphview
 		return list;
 	}
 
-	object::ObjectRenderer* ObjectRenderersList::getAtPos(const panda::types::Point& pt) const
+	object::ObjectRenderer* ObjectRenderersList::getAtPos(const types::Point& pt) const
 	{
 		for (auto it = m_orderedObjectRenderers.rbegin(); it != m_orderedObjectRenderers.rend(); ++it)
 		{
@@ -40,21 +43,21 @@ namespace graphview
 		return nullptr;
 	}
 
-	void ObjectRenderersList::set(panda::PandaObject* object, const ObjectRendererSPtr& drawStruct)
+	void ObjectRenderersList::set(PandaObject* object, const ObjectRendererSPtr& drawStruct)
 	{
 		m_objectRenderers[object] = drawStruct;
 		m_orderedObjectRenderers.push_back(drawStruct.get());
 	}
 
-	void ObjectRenderersList::remove(panda::PandaObject* object)
+	void ObjectRenderersList::remove(PandaObject* object)
 	{
 		auto objRnd = get(object);
 		m_objectRenderers.erase(object);
 		if(objRnd)
-			panda::helper::removeOne(m_orderedObjectRenderers, objRnd);
+			helper::removeOne(m_orderedObjectRenderers, objRnd);
 	}
 
-	void ObjectRenderersList::reorder(const panda::ObjectsList& objects)
+	void ObjectRenderersList::reorder(const ObjectsList& objects)
 	{
 		m_orderedObjectRenderers.clear();
 		for (const auto& obj : objects.get())
@@ -68,3 +71,5 @@ namespace graphview
 	}
 
 } // namespace graphview
+
+} // namespace panda

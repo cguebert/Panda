@@ -8,25 +8,25 @@
 
 namespace panda
 {
+
 class ObjectsList;
 class PandaDocument;
 class PandaObject;
-}
 
-class PANDA_CORE_API AddObjectCommand : public panda::UndoCommand
+class PANDA_CORE_API AddObjectCommand : public UndoCommand
 {
 public:
-	AddObjectCommand(panda::PandaDocument* document, 
-					 panda::ObjectsList& objectsList, 
-					 std::shared_ptr<panda::PandaObject> object,
+	AddObjectCommand(PandaDocument* document, 
+					 ObjectsList& objectsList, 
+					 std::shared_ptr<PandaObject> object,
 					 bool newObject = true);
-	AddObjectCommand(panda::PandaDocument* document, 
-					 panda::ObjectsList& objectsList, 
-					 std::vector<std::shared_ptr<panda::PandaObject>> objects,
+	AddObjectCommand(PandaDocument* document, 
+					 ObjectsList& objectsList, 
+					 std::vector<std::shared_ptr<PandaObject>> objects,
 					 bool newObject = true);
-	AddObjectCommand(panda::PandaDocument* document, 
-					 panda::ObjectsList& objectsList, 
-					 std::vector<panda::PandaObject*> objects,
+	AddObjectCommand(PandaDocument* document, 
+					 ObjectsList& objectsList, 
+					 std::vector<PandaObject*> objects,
 					 bool newObject = true);
 
 	virtual int id() const;
@@ -37,11 +37,13 @@ public:
 	virtual bool mergeWith(const UndoCommand *other);
 
 protected:
-	panda::PandaDocument* m_document;
-	panda::ObjectsList& m_objectsList;
+	PandaDocument* m_document;
+	ObjectsList& m_objectsList;
 	bool m_ignoreRedo;
 	bool m_addToDocument; // If true, signal to the objects they are being added to the document (false if moving to a group)
-	std::vector<std::shared_ptr<panda::PandaObject>> m_objects;
+	std::vector<std::shared_ptr<PandaObject>> m_objects;
 };
+
+} // namespace panda
 
 #endif

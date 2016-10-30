@@ -4,8 +4,8 @@
 
 namespace panda
 {
+
 class Group;
-}
 
 namespace graphview
 {
@@ -18,15 +18,17 @@ namespace object
 class GroupRenderer : public ObjectRenderer
 {
 public:
-	GroupRenderer(GraphView* view, panda::Group* object);
+	GroupRenderer(GraphView* view, Group* object);
 
 	void createShape() override;
 	int dataStartY() override;
 
 protected:
-	panda::Group* m_group;
+	Group* m_group;
 };
 
 } // namespace object
 
 } // namespace graphview
+
+} // namespace panda

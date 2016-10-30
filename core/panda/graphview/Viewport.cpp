@@ -7,8 +7,11 @@
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 
-using panda::types::Point;
-using panda::types::Rect;
+namespace panda
+{
+
+using types::Point;
+using types::Rect;
 
 namespace graphview
 {
@@ -69,7 +72,7 @@ namespace graphview
 		{
 			float factorW = m_viewSize.x / (m_objectsRect.width() + 40);
 			float factorH = m_viewSize.y / (m_objectsRect.height() + 40);
-			m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
+			m_zoomFactor = helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 			m_zoomLevel = static_cast<int>(100 * (1.f - m_zoomFactor));
 			moveView(m_viewSize / 2 / m_zoomFactor - m_objectsRect.center() + m_viewDelta);
 		}
@@ -89,7 +92,7 @@ namespace graphview
 
 			float factorW = m_viewSize.x / (selectedArea.width() + 40);
 			float factorH = m_viewSize.y / (selectedArea.height() + 40);
-			m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
+			m_zoomFactor = helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 			m_zoomLevel = static_cast<int>(100 * (1.f - m_zoomFactor));
 			moveView(m_viewSize / 2 / m_zoomFactor - selectedArea.center() + m_viewDelta);
 		}
@@ -109,7 +112,7 @@ namespace graphview
 		}
 	}
 
-	void Viewport::moveView(const panda::types::Point& delta)
+	void Viewport::moveView(const types::Point& delta)
 	{
 		m_viewDelta -= delta;
 		updateViewRect();
@@ -136,7 +139,7 @@ namespace graphview
 		modified.run();
 	}
 
-	void Viewport::setViewport(const panda::types::Rect& globalArea)
+	void Viewport::setViewport(const types::Rect& globalArea)
 	{
 		Rect zoomRect = Rect(globalArea.topLeft() / m_zoomFactor, globalArea.bottomRight() / m_zoomFactor)
 			.translated(m_viewDelta)
@@ -146,13 +149,13 @@ namespace graphview
 		{
 			float factorW = m_viewSize.x / (zoomRect.width() + 40);
 			float factorH = m_viewSize.y / (zoomRect.height() + 40);
-			m_zoomFactor = panda::helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
+			m_zoomFactor = helper::bound(0.1f, std::min(factorW, factorH), 1.0f);
 			m_zoomLevel = static_cast<int>(100 * (1.f - m_zoomFactor));
 			moveView(m_viewSize / 2 / m_zoomFactor - zoomRect.center() + m_viewDelta);
 		}
 	}
 
-	void Viewport::setZoom(const panda::types::Point& pos, float factor)
+	void Viewport::setZoom(const types::Point& pos, float factor)
 	{
 		if (m_zoomFactor == factor)
 			return;
@@ -163,7 +166,7 @@ namespace graphview
 		moveView(pos / m_zoomFactor - oldPos);
 	}
 
-	void Viewport::setZoomLevel(const panda::types::Point& pos, int level)
+	void Viewport::setZoomLevel(const types::Point& pos, int level)
 	{
 		if (m_zoomLevel == level)
 			return;
@@ -174,24 +177,26 @@ namespace graphview
 		moveView(pos / m_zoomFactor - oldPos);
 	}
 
-	void Viewport::setViewSize(panda::types::Point size)
+	void Viewport::setViewSize(types::Point size)
 	{
 		m_viewSize = size;
 	}
 
-	panda::types::Rect Viewport::displayRect() const
+	types::Rect Viewport::displayRect() const
 	{
 		return { m_viewDelta, m_viewDelta + m_viewSize / m_zoomFactor };
 	}
 
-	panda::types::Point Viewport::toView(const panda::types::Point& pos) const
+	types::Point Viewport::toView(const types::Point& pos) const
 	{
 		return m_viewDelta + pos / m_zoomFactor;
 	}
 
-	panda::types::Point Viewport::fromView(const panda::types::Point& pos) const
+	types::Point Viewport::fromView(const types::Point& pos) const
 	{
 		return (pos - m_viewDelta) * m_zoomFactor;
 	}
 	
 } // namespace graphview
+
+} // namespace panda

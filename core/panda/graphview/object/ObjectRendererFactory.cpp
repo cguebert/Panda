@@ -5,6 +5,9 @@
 #include <panda/document/PandaDocument.h>
 #include <panda/types/DataTraits.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -17,7 +20,7 @@ ObjectRendererFactory* ObjectRendererFactory::getInstance()
 	return &factory;
 }
 
-std::shared_ptr<ObjectRenderer> ObjectRendererFactory::createRenderer(GraphView* view, panda::PandaObject* obj)
+std::shared_ptr<ObjectRenderer> ObjectRendererFactory::createRenderer(GraphView* view, PandaObject* obj)
 {
 	for(const auto& creator : creators)
 	{
@@ -30,13 +33,13 @@ std::shared_ptr<ObjectRenderer> ObjectRendererFactory::createRenderer(GraphView*
 
 void ObjectRendererFactory::addCreator(BaseObjectDrawCreator* creator)
 {
-	const panda::BaseClass* newClass = creator->getClass();
+	const BaseClass* newClass = creator->getClass();
 	std::shared_ptr<BaseObjectDrawCreator> ptr(creator);
 
 	unsigned int nb = creators.size();
 	for(unsigned int i=0; i<nb; ++i)
 	{
-		const panda::BaseClass* prevClass = creators[i]->getClass();
+		const BaseClass* prevClass = creators[i]->getClass();
 		if(newClass->hasParent(prevClass))
 		{
 			creators.insert(creators.begin() + i, ptr);
@@ -50,3 +53,5 @@ void ObjectRendererFactory::addCreator(BaseObjectDrawCreator* creator)
 } // namespace object
 
 } // namespace graphview
+
+} // namespace panda

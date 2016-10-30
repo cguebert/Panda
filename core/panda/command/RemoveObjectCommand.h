@@ -8,26 +8,26 @@
 
 namespace panda
 {
+
 class ObjectsList;
 class PandaDocument;
 class PandaObject;
-}
 
-class PANDA_CORE_API RemoveObjectCommand : public panda::UndoCommand
+class PANDA_CORE_API RemoveObjectCommand : public UndoCommand
 {
 public:
 	enum class LinkOperation { Keep, Unlink };
 	enum class ObjectOperation { None, RemoveFromDocument };
 
-	RemoveObjectCommand(panda::PandaDocument* document, 
-						panda::ObjectsList& objectsList, 
-						const std::vector<panda::PandaObject*>& objects, 
+	RemoveObjectCommand(PandaDocument* document, 
+						ObjectsList& objectsList, 
+						const std::vector<PandaObject*>& objects, 
 						LinkOperation linkOp = LinkOperation::Unlink, 
 						ObjectOperation objectOp = ObjectOperation::RemoveFromDocument);
 
-	RemoveObjectCommand(panda::PandaDocument* document, 
-						panda::ObjectsList& objectsList, 
-						panda::PandaObject* object, 
+	RemoveObjectCommand(PandaDocument* document, 
+						ObjectsList& objectsList, 
+						PandaObject* object, 
 						LinkOperation linkOp = LinkOperation::Unlink, 
 						ObjectOperation objectOp = ObjectOperation::RemoveFromDocument);
 
@@ -36,15 +36,17 @@ public:
 	virtual void redo();
 	virtual void undo();
 
-	virtual bool mergeWith(const panda::UndoCommand *other);
+	virtual bool mergeWith(const UndoCommand *other);
 
 protected:
-	panda::PandaDocument* m_document;
-	panda::ObjectsList& m_objectsList;
-	std::vector<std::shared_ptr<panda::PandaObject>> m_objects;
+	PandaDocument* m_document;
+	ObjectsList& m_objectsList;
+	std::vector<std::shared_ptr<PandaObject>> m_objects;
 	bool m_removeFromDocument; // If true, signal the objects they are removed from the document (false if moving to a group)
 
-	void prepareCommand(const std::vector<panda::PandaObject*>& objects, bool unlinkDatas);
+	void prepareCommand(const std::vector<PandaObject*>& objects, bool unlinkDatas);
 };
+
+} // namespace panda
 
 #endif

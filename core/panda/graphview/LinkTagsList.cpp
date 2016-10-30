@@ -8,8 +8,11 @@
 
 #include <panda/helper/algorithm.h>
 
-using panda::types::Point;
-using panda::types::Rect;
+namespace panda
+{
+
+using types::Point;
+using types::Rect;
 
 namespace graphview
 {
@@ -19,7 +22,7 @@ namespace graphview
 	{
 	}
 
-	void LinkTagsList::addLinkTag(panda::BaseData* input, panda::BaseData* output)
+	void LinkTagsList::addLinkTag(BaseData* input, BaseData* output)
 	{
 		if(m_linkTagsMap.count(input))
 			m_linkTagsMap[input]->addOutput(output);
@@ -31,7 +34,7 @@ namespace graphview
 		}
 	}
 
-	void LinkTagsList::removeLinkTag(panda::BaseData* input, panda::BaseData* output)
+	void LinkTagsList::removeLinkTag(BaseData* input, BaseData* output)
 	{
 		if(m_linkTagsMap.count(input))
 		{
@@ -40,14 +43,14 @@ namespace graphview
 			if (tag->isEmpty())
 			{
 				m_linkTagsMap.erase(input);
-				panda::helper::removeIf(m_linkTags, [tag](const auto& ptr) {
+				helper::removeIf(m_linkTags, [tag](const auto& ptr) {
 					return ptr.get() == tag;
 				});
 			}
 		}
 	}
 
-	bool LinkTagsList::hasLinkTag(panda::BaseData* input, panda::BaseData* output)
+	bool LinkTagsList::hasLinkTag(BaseData* input, BaseData* output)
 	{
 		return m_linkTagsDatas.count(std::make_pair(input, output)) != 0;
 	}
@@ -73,7 +76,7 @@ namespace graphview
 		{
 			for(auto& data : object->getInputDatas())
 			{
-				panda::BaseData* parentData = data->getParent();
+				BaseData* parentData = data->getParent();
 				if(parentData)
 				{
 					auto ownerObjRnd = m_view.objectRenderers().get(data->getOwner());
@@ -155,3 +158,5 @@ namespace graphview
 	}
 
 } // namespace graphview
+
+} // namespace panda

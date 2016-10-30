@@ -7,8 +7,8 @@
 
 namespace panda
 {
+
 class BaseData;
-}
 
 namespace graphview
 {
@@ -24,18 +24,18 @@ class GraphView;
 class PANDA_CORE_API LinkTag
 {
 public:
-	LinkTag(GraphView& view, panda::BaseData* input, panda::BaseData* output, int index);
-	void addOutput(panda::BaseData* output);
-	void removeOutput(panda::BaseData* output);
+	LinkTag(GraphView& view, BaseData* input, BaseData* output, int index);
+	void addOutput(BaseData* output);
+	void removeOutput(BaseData* output);
 	void update();
 	bool isEmpty();
-	std::pair<panda::BaseData*, panda::types::Rect> getDataAtPoint(const panda::types::Point& point);
+	std::pair<BaseData*, types::Rect> getDataAtPoint(const types::Point& point);
 
-	void moveView(const panda::types::Point& delta);
+	void moveView(const types::Point& delta);
 	void draw(graphics::DrawList& list, graphics::DrawColors& colors);
 
-	panda::BaseData* getInputData() const;
-	std::vector<panda::BaseData*> getOutputDatas() const;
+	BaseData* getInputData() const;
+	std::vector<BaseData*> getOutputDatas() const;
 
 	int index() const;
 	bool isHovering() const;
@@ -53,14 +53,14 @@ private:
 
 	GraphView& m_parentView;
 
-	panda::BaseData* m_inputData = nullptr;
+	BaseData* m_inputData = nullptr;
 
-	using DataRects = std::pair<panda::types::Rect, panda::types::Rect>; // Tag rect, Data rect
+	using DataRects = std::pair<types::Rect, types::Rect>; // Tag rect, Data rect
 	DataRects m_inputDataRects;
-	std::map<panda::BaseData*, DataRects> m_outputDatas;
+	std::map<BaseData*, DataRects> m_outputDatas;
 };
 
-inline panda::BaseData* LinkTag::getInputData() const
+inline BaseData* LinkTag::getInputData() const
 { return m_inputData; }
 
 inline int LinkTag::index() const
@@ -73,3 +73,5 @@ inline void LinkTag::setHovering(bool h)
 { m_hovering = h; }
 
 } // namespace graphview
+
+} // namespace panda

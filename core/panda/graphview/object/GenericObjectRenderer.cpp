@@ -9,9 +9,11 @@
 #include <panda/data/BaseData.h>
 #include <panda/types/DataTraits.h>
 
-using panda::GenericObject;
-using panda::types::Point;
-using panda::types::Rect;
+namespace panda
+{
+
+using types::Point;
+using types::Rect;
 
 namespace graphview
 {
@@ -19,8 +21,8 @@ namespace graphview
 namespace object
 {
 
-GenericObjectRenderer::GenericObjectRenderer(GraphView* view, panda::GenericObject* object)
-	: ObjectRenderer(view, (panda::PandaObject*)object)
+GenericObjectRenderer::GenericObjectRenderer(GraphView* view, GenericObject* object)
+	: ObjectRenderer(view, (PandaObject*)object)
 	, m_genericObject(object)
 	, m_nbDefInputs(0)
 	, m_nbDefOutputs(0)
@@ -39,7 +41,7 @@ void GenericObjectRenderer::update()
 	m_selectionArea = m_visualArea = Rect::fromSize(getPosition(), getObjectSize());
 
 	m_datas.clear();
-	std::vector<panda::BaseData*> inputDatas, outputDatas;
+	std::vector<BaseData*> inputDatas, outputDatas;
 	inputDatas = m_object->getInputDatas();
 	outputDatas = m_object->getOutputDatas();
 	int nbInputs = inputDatas.size(), nbOutputs = outputDatas.size();
@@ -55,7 +57,7 @@ void GenericObjectRenderer::update()
 	int index = 0;
 	for (int i = 0; i < nbInputs; ++i)
 	{
-		panda::BaseData* data = inputDatas[i];
+		BaseData* data = inputDatas[i];
 		if (!m_genericObject->m_createdDatasMap.count(data) && data != m_genericObject->m_genericData)
 		{
 			Rect dataArea = Rect::fromSize(xi, startY + index * dh, drs, drs);
@@ -68,7 +70,7 @@ void GenericObjectRenderer::update()
 	index = 0;
 	for (int i = 0; i < nbOutputs; ++i)
 	{
-		panda::BaseData* data = outputDatas[i];
+		BaseData* data = outputDatas[i];
 		if (!m_genericObject->m_createdDatasMap.count(data))
 		{
 			Rect dataArea = Rect::fromSize(xo, startY + index * dh, drs, drs);
@@ -110,19 +112,19 @@ void GenericObjectRenderer::update()
 
 	// And the generic data
 	Rect dataArea = Rect::fromSize(xi, y, drs, drs);
-	m_datas.emplace_back((panda::BaseData*)m_genericObject->m_genericData, dataArea);
+	m_datas.emplace_back((BaseData*)m_genericObject->m_genericData, dataArea);
 
 	createShape();
 }
 
 void GenericObjectRenderer::drawDatas(graphics::DrawList& list, graphics::DrawColors& colors)
 {
-	const panda::BaseData* clickedData = getParentView()->interaction().clickedData();
+	const BaseData* clickedData = getParentView()->interaction().clickedData();
 
 	for (DataRectPair dataPair : m_datas)
 	{
 		auto data = dataPair.first;
-		if (dynamic_cast<panda::BaseGenericData*>(data))
+		if (dynamic_cast<BaseGenericData*>(data))
 		{
 			unsigned int dataCol = 0;
 			if (clickedData && clickedData != data && getParentView()->linksList().canLinkWith(data))
@@ -169,8 +171,10 @@ Point GenericObjectRenderer::getObjectSize()
 	return objectSize;
 }
 
-int GenericObjectDrawClass = RegisterDrawObject<panda::GenericObject, GenericObjectRenderer>();
+int GenericObjectDrawClass = RegisterDrawObject<GenericObject, GenericObjectRenderer>();
 
 } // namespace object
 
 } // namespace graphview
+
+} // namespace panda

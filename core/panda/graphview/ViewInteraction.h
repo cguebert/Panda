@@ -5,11 +5,12 @@
 
 #include <memory>
 
-namespace panda {
-	class BaseData;
-	class PandaObject;
-	class ScopedMacro;
-}
+namespace panda 
+{
+
+class BaseData;
+class PandaObject;
+class ScopedMacro;
 
 namespace graphview
 {
@@ -45,18 +46,18 @@ namespace graphview
 		virtual bool keyPressEvent(const KeyEvent& event); // Returns true if the event is used
 		virtual void contextMenuEvent(const ContextMenuEvent& event);
 
-		void removeObject(panda::PandaObject* object);
+		void removeObject(PandaObject* object);
 		void clear();
 
 		void moveObjectToBack();
 		void moveObjectToFront();
 		void removeLink();
 
-		const panda::BaseData* clickedData() const;
-		panda::BaseData* contextMenuData() const;
+		const BaseData* clickedData() const;
+		BaseData* contextMenuData() const;
 
 	protected:
-		int getContextMenuFlags(const panda::types::Point& pos);
+		int getContextMenuFlags(const types::Point& pos);
 
 		void moveViewIfMouseOnBorder();
 		void updateConnectedDatas(const graphics::DrawColors& colors);
@@ -81,24 +82,24 @@ namespace graphview
 
 		float m_wheelTicks = 0;
 
-		panda::BaseData* m_clickedData = nullptr;
-		panda::BaseData* m_hoverData = nullptr;
+		BaseData* m_clickedData = nullptr;
+		BaseData* m_hoverData = nullptr;
 
-		std::shared_ptr<panda::ScopedMacro> m_moveObjectsMacro;
+		std::shared_ptr<ScopedMacro> m_moveObjectsMacro;
 
 		int m_hoverTimerId = 0; // Reacting when the mouse is staying over a Data
 		bool m_highlightConnectedDatas = false;
 
-		std::vector<panda::PandaObject*> m_customSelection; // Objects on which the current action is applied
+		std::vector<PandaObject*> m_customSelection; // Objects on which the current action is applied
 
-		panda::PandaObject* m_contextMenuObject = nullptr;
-		panda::BaseData* m_contextMenuData = nullptr;
+		PandaObject* m_contextMenuObject = nullptr;
+		BaseData* m_contextMenuData = nullptr;
 		LinkTag* m_contextLinkTag = nullptr;
 
 		GraphView& m_view;
 		long long m_previousTime = 0; // Used for moving the view when the mouse in near a border, while linking data
 
-		panda::types::Point m_previousMousePos, m_currentMousePos;
+		types::Point m_previousMousePos, m_currentMousePos;
 
 		object::ObjectRenderer* m_capturedRenderer = nullptr; // Clicked object::ObjectRenderer that want to intercept mouse events
 
@@ -110,7 +111,7 @@ namespace graphview
 
 //****************************************************************************//
 
-	inline const panda::BaseData* ViewInteraction::clickedData() const
+	inline const BaseData* ViewInteraction::clickedData() const
 	{ return m_clickedData; }
 
 	inline const std::shared_ptr<graphics::DrawList>& ViewInteraction::connectedDatasDrawList() const
@@ -121,3 +122,4 @@ namespace graphview
 
 } // namespace graphview
 
+} // namespace panda

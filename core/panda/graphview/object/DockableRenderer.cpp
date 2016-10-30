@@ -8,8 +8,11 @@
 #include <panda/command/MoveObjectCommand.h>
 #include <panda/document/PandaDocument.h>
 
-using panda::types::Point;
-using panda::types::Rect;
+namespace panda
+{
+	
+using types::Point;
+using types::Rect;
 
 namespace graphview
 {
@@ -17,7 +20,7 @@ namespace graphview
 namespace object
 {
 
-DockObjectRenderer::DockObjectRenderer(GraphView* view, panda::DockObject* object)
+DockObjectRenderer::DockObjectRenderer(GraphView* view, DockObject* object)
 	: ObjectRenderer(view, object)
 	, m_dockObject(object)
 {
@@ -159,11 +162,11 @@ int DockObjectRenderer::getDockableIndex(const Rect& rect)
 	return -1;
 }
 
-int dockObjectDrawClass = RegisterDrawObject<panda::DockObject, DockObjectRenderer>();
+int dockObjectDrawClass = RegisterDrawObject<DockObject, DockObjectRenderer>();
 
 //****************************************************************************//
 
-DockableObjectRenderer::DockableObjectRenderer(GraphView* view, panda::DockableObject* dockable)
+DockableObjectRenderer::DockableObjectRenderer(GraphView* view, DockableObject* dockable)
 	: ObjectRenderer(view, dockable)
 {
 }
@@ -237,8 +240,10 @@ void DockableObjectRenderer::createShape()
 	m_fillShape = m_outline.triangulate();
 }
 
-int DockableObjectDrawClass = RegisterDrawObject<panda::DockableObject, DockableObjectRenderer>();
+int DockableObjectDrawClass = RegisterDrawObject<DockableObject, DockableObjectRenderer>();
 
 } // namespace object
 
 } // namespace graphview
+
+} // namespace panda

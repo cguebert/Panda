@@ -5,6 +5,7 @@
 
 namespace panda
 {
+
 class DockObject;
 class DockableObject;
 

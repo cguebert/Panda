@@ -5,13 +5,16 @@
 #include <panda/document/PandaDocument.h>
 #include <panda/object/Group.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
 namespace object
 {
 
-GroupRenderer::GroupRenderer(GraphView* view, panda::Group* object)
+GroupRenderer::GroupRenderer(GraphView* view, Group* object)
 	: ObjectRenderer(view, object)
 	, m_group(object)
 {
@@ -40,8 +43,10 @@ int GroupRenderer::dataStartY()
 	return 10;
 }
 
-int GroupDrawClass = RegisterDrawObject<panda::Group, GroupRenderer>();
+int GroupDrawClass = RegisterDrawObject<Group, GroupRenderer>();
 
 } // namespace object
 
 } // namespace graphview
+
+} // namespace panda

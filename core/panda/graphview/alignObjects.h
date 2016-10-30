@@ -2,6 +2,9 @@
 
 #include <panda/core.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -24,3 +27,5 @@ void PANDA_CORE_API distributeVerticallyTop(GraphView& view);
 void PANDA_CORE_API distributeVerticallyBottom(GraphView& view);
 
 } // namespace graphview
+
+} // namespace panda

@@ -4,6 +4,9 @@
 
 #include <panda/types/Point.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -221,3 +224,4 @@ namespace graphview
 
 } // namespace graphview
 
+} // namespace panda

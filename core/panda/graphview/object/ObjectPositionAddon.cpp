@@ -2,26 +2,29 @@
 #include <panda/XmlDocument.h>
 #include <panda/object/PandaObject.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
-ObjectPositionAddon::ObjectPositionAddon(panda::PandaObject& object) 
-	: panda::BaseObjectAddon(object) 
+ObjectPositionAddon::ObjectPositionAddon(PandaObject& object) 
+	: BaseObjectAddon(object) 
 { }
 
-void ObjectPositionAddon::setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition)
+void ObjectPositionAddon::setDefinition(ObjectAddonNodeDefinition& nodeDefinition)
 {
 	nodeDefinition.addAttribute("x");
 	nodeDefinition.addAttribute("y");
 }
 
-void ObjectPositionAddon::save(panda::ObjectAddonNode& node)
+void ObjectPositionAddon::save(ObjectAddonNode& node)
 { 
 	node.setAttribute("x", m_position.x); 
 	node.setAttribute("y", m_position.y); 
 }
 
-void ObjectPositionAddon::load(const panda::ObjectAddonNode& node)
+void ObjectPositionAddon::load(const ObjectAddonNode& node)
 { 
 	setPosition({ node.attribute("x").toFloat(), node.attribute("y").toFloat() }); 
 }
@@ -31,37 +34,39 @@ bool ObjectPositionAddon::isSet() const
 	return m_isSet; 
 }
 
-panda::types::Point ObjectPositionAddon::getPosition() const
+types::Point ObjectPositionAddon::getPosition() const
 { 
 	return m_position; 
 }
 
-void ObjectPositionAddon::setPosition(panda::types::Point pos)
+void ObjectPositionAddon::setPosition(types::Point pos)
 {
 	m_position = pos;
 	m_isSet = true;
 	positionChanged.run(pos);
 }
 
-void ObjectPositionAddon::move(panda::types::Point delta)
+void ObjectPositionAddon::move(types::Point delta)
 {
 	setPosition(m_position + delta);
 }
 
 //****************************************************************************//
 
-panda::types::Point ObjectPositionAddon::getPosition(panda::PandaObject* object)
+types::Point ObjectPositionAddon::getPosition(PandaObject* object)
 {
 	return object->addons().edit<ObjectPositionAddon>().getPosition();
 }
 
-void ObjectPositionAddon::setPosition(panda::PandaObject* object, const panda::types::Point& pos)
+void ObjectPositionAddon::setPosition(PandaObject* object, const types::Point& pos)
 {
 	object->addons().edit<ObjectPositionAddon>().setPosition(pos);
 }
 
 //****************************************************************************//
 
-int ObjectPositionAddon_Reg = panda::RegisterObjectAddon<ObjectPositionAddon>();
+int ObjectPositionAddon_Reg = RegisterObjectAddon<ObjectPositionAddon>();
 
 } // namespace graphview
+
+} // namespace panda

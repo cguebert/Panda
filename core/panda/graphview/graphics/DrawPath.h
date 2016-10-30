@@ -7,6 +7,9 @@
 using pPoint = panda::types::Point;
 using pRect = panda::types::Rect;
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -50,3 +53,5 @@ private:
 } // namespace graphics
 
 } // namespace graphview
+
+} // namespace panda

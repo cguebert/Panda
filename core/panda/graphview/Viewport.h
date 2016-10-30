@@ -3,6 +3,9 @@
 #include <panda/messaging.h>
 #include <panda/types/Rect.h>
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -22,40 +25,40 @@ namespace graphview
 		void showAllSelected();
 		void moveSelectedToCenter();
 
-		void moveView(const panda::types::Point& delta);
+		void moveView(const types::Point& delta);
 
 		virtual void updateObjectsRect();
 		void updateViewRect();
 
-		void setViewport(const panda::types::Rect& globalArea); // Given in non-transformed coordinates
+		void setViewport(const types::Rect& globalArea); // Given in non-transformed coordinates
 
 		float zoom() const;
-		void setZoom(const panda::types::Point& pos, float zoomFactor); // The position will stay put while the zoom changes
+		void setZoom(const types::Point& pos, float zoomFactor); // The position will stay put while the zoom changes
 
 		int zoomLevel() const;
-		void setZoomLevel(const panda::types::Point& pos, int zoomLevel); // The position will stay put while the zoom changes
+		void setZoomLevel(const types::Point& pos, int zoomLevel); // The position will stay put while the zoom changes
 
-		panda::types::Point viewSize() const; // The size of the view widget
-		void setViewSize(panda::types::Point size); // Set by the graph view widget
+		types::Point viewSize() const; // The size of the view widget
+		void setViewSize(types::Point size); // Set by the graph view widget
 
-		panda::types::Point viewDelta() const;
-		panda::types::Rect displayRect() const; // The area that is shown
-		const panda::types::Rect& objectsRect() const; // The area taken by the objects
-		const panda::types::Rect& viewRect() const; // The area taken by the objects, with the zoom
+		types::Point viewDelta() const;
+		types::Rect displayRect() const; // The area that is shown
+		const types::Rect& objectsRect() const; // The area taken by the objects
+		const types::Rect& viewRect() const; // The area taken by the objects, with the zoom
 
-		panda::types::Point toView(const panda::types::Point& pos) const;
-		panda::types::Point fromView(const panda::types::Point& pos) const;
+		types::Point toView(const types::Point& pos) const;
+		types::Point fromView(const types::Point& pos) const;
 
-		panda::msg::Signal<void()> modified;
+		msg::Signal<void()> modified;
 
 	protected:
 		GraphView& m_view;
 		int m_zoomLevel = 0;
 		float m_zoomFactor = 1.0f;
-		panda::types::Point m_viewSize = { 800, 600 };
-		panda::types::Point m_viewDelta;
-		panda::types::Rect m_objectsRect; // Area taken by the objects on the screen
-		panda::types::Rect m_viewRect; // Area taken by the objects on the screen, including zoom
+		types::Point m_viewSize = { 800, 600 };
+		types::Point m_viewDelta;
+		types::Rect m_objectsRect; // Area taken by the objects on the screen
+		types::Rect m_viewRect; // Area taken by the objects on the screen, including zoom
 	};
 
 //****************************************************************************//
@@ -66,16 +69,18 @@ namespace graphview
 	inline int Viewport::zoomLevel() const
 	{ return m_zoomLevel; }
 
-	inline panda::types::Point Viewport::viewSize() const
+	inline types::Point Viewport::viewSize() const
 	{ return m_viewSize; }
 
-	inline panda::types::Point Viewport::viewDelta() const
+	inline types::Point Viewport::viewDelta() const
 	{ return m_viewDelta; }
 
-	inline const panda::types::Rect& Viewport::viewRect() const
+	inline const types::Rect& Viewport::viewRect() const
 	{ return m_viewRect; }
 
-	inline const panda::types::Rect& Viewport::objectsRect() const
+	inline const types::Rect& Viewport::objectsRect() const
 	{ return m_objectsRect; }
 
-}
+} // namespace graphview
+
+} // namespace panda

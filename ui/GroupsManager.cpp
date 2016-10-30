@@ -138,7 +138,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 	return true;
 }
 
-panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* document, graphview::GraphView* view, QString groupPath)
+panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* document, panda::graphview::GraphView* view, QString groupPath)
 {
 	QString fileName = m_groupsDirPath + "/" + groupPath + ".grp";
 	QFile file(fileName);
@@ -162,7 +162,7 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 	if(object)
 	{
 		object->load(root);
-		document->getUndoStack().push(std::make_shared<AddObjectCommand>(document, view->objectsList(), object));
+		document->getUndoStack().push(std::make_shared<panda::AddObjectCommand>(document, view->objectsList(), object));
 		return object.get();
 	}
 	else

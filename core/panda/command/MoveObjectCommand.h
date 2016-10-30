@@ -4,35 +4,37 @@
 #include <panda/UndoStack.h>
 #include <panda/types/Point.h>
 
-
-namespace panda {
-	class PandaObject;
-}
+namespace panda
+{
+	
+class PandaObject;
 
 namespace graphview {
 	class ObjectPositionAddon;
 }
 
-class PANDA_CORE_API MoveObjectCommand : public panda::UndoCommand
+class PANDA_CORE_API MoveObjectCommand : public UndoCommand
 {
 public:
-	MoveObjectCommand(panda::PandaObject* object, panda::types::Point delta);
-	MoveObjectCommand(std::vector<panda::PandaObject*> objects, panda::types::Point delta);
+	MoveObjectCommand(PandaObject* object, types::Point delta);
+	MoveObjectCommand(std::vector<PandaObject*> objects, types::Point delta);
 
 	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();
 
-	virtual bool mergeWith(const panda::UndoCommand *other);
+	virtual bool mergeWith(const UndoCommand *other);
 
 protected:
 	void getPositionAddons();
-	void moveObjects(panda::types::Point delta);
+	void moveObjects(types::Point delta);
 
-	std::vector<panda::PandaObject*> m_objects;
+	std::vector<PandaObject*> m_objects;
 	std::vector<graphview::ObjectPositionAddon*> m_positionAddons;
-	panda::types::Point m_delta;
+	types::Point m_delta;
 };
+
+} // namespace panda
 
 #endif

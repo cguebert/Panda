@@ -5,13 +5,16 @@
 #include <panda/graphview/object/ObjectRenderer.h>
 #include <panda/data/BaseData.h>
 
-using panda::types::Point;
-using panda::types::Rect;
+namespace panda
+{
+
+using types::Point;
+using types::Rect;
 
 namespace graphview
 {
 
-LinkTag::LinkTag(GraphView& view, panda::BaseData* input, panda::BaseData* output, int index)
+LinkTag::LinkTag(GraphView& view, BaseData* input, BaseData* output, int index)
 	: m_index(index)
 	, m_parentView(view)
 	, m_inputData(input)
@@ -19,13 +22,13 @@ LinkTag::LinkTag(GraphView& view, panda::BaseData* input, panda::BaseData* outpu
 	m_outputDatas.emplace(output, std::make_pair(Rect(),Rect()));
 }
 
-void LinkTag::addOutput(panda::BaseData* output)
+void LinkTag::addOutput(BaseData* output)
 {
 	if(!m_outputDatas.count(output))
 		m_outputDatas.emplace(output, std::make_pair(Rect(),Rect()));
 }
 
-void LinkTag::removeOutput(panda::BaseData* output)
+void LinkTag::removeOutput(BaseData* output)
 {
 	m_outputDatas.erase(output);
 }
@@ -71,7 +74,7 @@ bool LinkTag::isEmpty()
 	return m_outputDatas.empty();
 }
 
-std::pair<panda::BaseData*, panda::types::Rect> LinkTag::getDataAtPoint(const Point& point)
+std::pair<BaseData*, types::Rect> LinkTag::getDataAtPoint(const Point& point)
 {
 	if (m_inputDataRects.first.contains(point))
 		return { m_inputData, m_inputDataRects.first };
@@ -149,12 +152,14 @@ bool LinkTag::needLinkTag(float inputX, float outputX, GraphView& view)
 	return outputX <= inputX || outputX > inputX + view.viewport().viewSize().x * 2 / 3;
 }
 
-std::vector<panda::BaseData*> LinkTag::getOutputDatas() const
+std::vector<BaseData*> LinkTag::getOutputDatas() const
 {
-	std::vector<panda::BaseData*> res;
+	std::vector<BaseData*> res;
 	for (const auto dataRect : m_outputDatas)
 		res.push_back(dataRect.first);
 	return res;
 }
 
 } // namespace graphview
+
+} // namespace panda

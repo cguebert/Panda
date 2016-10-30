@@ -11,8 +11,11 @@
 #include <panda/document/GraphUtils.h>
 #include <panda/document/ObjectsList.h>
 
-using panda::types::Point;
-using panda::types::Rect;
+namespace panda
+{
+
+using types::Point;
+using types::Rect;
 
 namespace graphview
 {
@@ -40,7 +43,7 @@ namespace graphview
 			updateLinks(colors);
 	}
 
-	bool LinksList::getDataRect(const panda::BaseData* data, panda::types::Rect& rect)
+	bool LinksList::getDataRect(const BaseData* data, types::Rect& rect)
 	{
 		auto objRnd = m_view.objectRenderers().get(data->getOwner());
 		if (!objRnd)
@@ -48,12 +51,12 @@ namespace graphview
 		return objRnd->getDataRect(data, rect);
 	}
 
-	LinksList::DataRect LinksList::getDataAtPos(const panda::types::Point& pt)
+	LinksList::DataRect LinksList::getDataAtPos(const types::Point& pt)
 	{
 		const auto objRnd = m_view.objectRenderers().getAtPos(pt);
 		if (objRnd)
 		{
-			panda::BaseData* data = objRnd->getDataAtPos(pt);
+			BaseData* data = objRnd->getDataAtPos(pt);
 			Rect dataRect;
 			if (objRnd->getDataRect(data, dataRect))
 				return { data, dataRect };
@@ -62,7 +65,7 @@ namespace graphview
 		return { nullptr, Rect() };
 	}
 
-	LinksList::ConnectedDatas LinksList::getConnectedDatas(panda::BaseData* srcData)
+	LinksList::ConnectedDatas LinksList::getConnectedDatas(BaseData* srcData)
 	{
 		LinksList::Rects rects;
 		LinksList::PointsPairs links;
@@ -78,7 +81,7 @@ namespace graphview
 		{
 			for (const auto node : srcData->getOutputs())
 			{
-				panda::BaseData* data = dynamic_cast<panda::BaseData*>(node);
+				BaseData* data = dynamic_cast<BaseData*>(node);
 				if (data)
 				{
 					Rect rect;
@@ -93,7 +96,7 @@ namespace graphview
 		// Or the one input
 		else if (srcData->isInput())
 		{
-			panda::BaseData* data = srcData->getParent();
+			BaseData* data = srcData->getParent();
 			if (data)
 			{
 				Rect rect;
@@ -119,8 +122,8 @@ namespace graphview
 		{
 			for (const auto& toDataRect : objRnd->getDataRects())
 			{
-				panda::BaseData* data = toDataRect.first;
-				panda::BaseData* parent = data->getParent();
+				BaseData* data = toDataRect.first;
+				BaseData* parent = data->getParent();
 				if (parent && !data->isOutput())
 				{
 					Rect fromDataRect;
@@ -137,9 +140,9 @@ namespace graphview
 		}
 	}
 
-	bool LinksList::createLink(panda::BaseData* data1, panda::BaseData* data2)
+	bool LinksList::createLink(BaseData* data1, BaseData* data2)
 	{
-		panda::BaseData *target = nullptr, *parent = nullptr;
+		BaseData *target = nullptr, *parent = nullptr;
 		if (data1->isInput() && data2->isOutput())
 		{
 			changeLink(data1, data2);
@@ -154,7 +157,7 @@ namespace graphview
 			return false;
 	}
 
-	bool LinksList::isCompatible(const panda::BaseData* data1, const panda::BaseData* data2)
+	bool LinksList::isCompatible(const BaseData* data1, const BaseData* data2)
 	{
 		if (data1->getOwner() == data2->getOwner())
 			return false;
@@ -175,13 +178,13 @@ namespace graphview
 		return false;
 	}
 
-	void LinksList::computeCompatibleDatas(panda::BaseData* data)
+	void LinksList::computeCompatibleDatas(BaseData* data)
 	{
-		std::vector<panda::BaseData*> forbiddenList;
+		std::vector<BaseData*> forbiddenList;
 		if (data->isInput())
-			forbiddenList = panda::graph::extractDatas(panda::graph::computeConnectedOutputNodes(data, false));
+			forbiddenList = graph::extractDatas(graph::computeConnectedOutputNodes(data, false));
 		else if (data->isOutput())
-			forbiddenList = panda::graph::extractDatas(panda::graph::computeConnectedInputNodes(data, false));
+			forbiddenList = graph::extractDatas(graph::computeConnectedInputNodes(data, false));
 		std::sort(forbiddenList.begin(), forbiddenList.end());
 
 		m_possibleLinks.clear();
@@ -196,10 +199,12 @@ namespace graphview
 		}
 	}
 
-	void LinksList::changeLink(panda::BaseData* target, panda::BaseData* parent)
+	void LinksList::changeLink(BaseData* target, BaseData* parent)
 	{
 		auto macro = m_view.document()->getUndoStack().beginMacro("change link");
-		m_view.document()->getUndoStack().push(std::make_shared<panda::LinkDatasCommand>(target, parent));
+		m_view.document()->getUndoStack().push(std::make_shared<LinkDatasCommand>(target, parent));
 	}
 
 } // namespace graphview
+
+} // namespace panda

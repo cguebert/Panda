@@ -38,6 +38,8 @@
 
 using Point = panda::types::Point;
 using Rect = panda::types::Rect;
+using DrawList = panda::graphview::graphics::DrawList;
+using DrawColors = panda::graphview::graphics::DrawColors;
 
 namespace
 {
@@ -53,23 +55,23 @@ namespace
 	inline QPoint convert(const panda::types::Point& pt)
 	{ return QPointF{ pt.x, pt.y }.toPoint(); }
 
-	graphview::EventModifiers convert(Qt::KeyboardModifiers modifiers)
+	panda::graphview::EventModifiers convert(Qt::KeyboardModifiers modifiers)
 	{
-		graphview::EventModifiers mod = graphview::EventModifier::NoModifier;
-		if (modifiers & Qt::KeyboardModifier::ShiftModifier)   mod |= graphview::EventModifier::ShiftModifier;
-		if (modifiers & Qt::KeyboardModifier::ControlModifier) mod |= graphview::EventModifier::ControlModifier;
-		if (modifiers & Qt::KeyboardModifier::AltModifier)     mod |= graphview::EventModifier::AltModifier;
+		panda::graphview::EventModifiers mod = panda::graphview::EventModifier::NoModifier;
+		if (modifiers & Qt::KeyboardModifier::ShiftModifier)   mod |= panda::graphview::EventModifier::ShiftModifier;
+		if (modifiers & Qt::KeyboardModifier::ControlModifier) mod |= panda::graphview::EventModifier::ControlModifier;
+		if (modifiers & Qt::KeyboardModifier::AltModifier)     mod |= panda::graphview::EventModifier::AltModifier;
 
 		return mod;
 	}
 
-	graphview::MouseButton convert(Qt::MouseButton button)
+	panda::graphview::MouseButton convert(Qt::MouseButton button)
 	{
-		if (button == Qt::MouseButton::LeftButton)   return graphview::MouseButton::LeftButton;
-		if (button == Qt::MouseButton::RightButton)  return graphview::MouseButton::RightButton;
-		if (button == Qt::MouseButton::MiddleButton) return graphview::MouseButton::MiddleButton;
+		if (button == Qt::MouseButton::LeftButton)   return panda::graphview::MouseButton::LeftButton;
+		if (button == Qt::MouseButton::RightButton)  return panda::graphview::MouseButton::RightButton;
+		if (button == Qt::MouseButton::MiddleButton) return panda::graphview::MouseButton::MiddleButton;
 
-		return graphview::MouseButton::NoButton;
+		return panda::graphview::MouseButton::NoButton;
 	}
 
 	unsigned int convert(const QColor& col)
@@ -86,7 +88,7 @@ namespace
 namespace graphview
 {
 
-QtViewWrapper::QtViewWrapper(std::unique_ptr<GraphView> graphView, MainWindow* mainWindow)
+QtViewWrapper::QtViewWrapper(std::unique_ptr<panda::graphview::GraphView> graphView, MainWindow* mainWindow)
 	: QOpenGLWidget(mainWindow)
 	, m_graphView(std::move(graphView))
 	, m_viewRenderer(std::make_shared<QtViewRenderer>())
@@ -131,7 +133,7 @@ QSize QtViewWrapper::sizeHint() const
 void QtViewWrapper::initializeGL()
 {
 	m_viewRenderer->initialize();
-	m_drawList = std::make_shared<graphics::DrawList>(*m_viewRenderer);
+	m_drawList = std::make_shared<DrawList>(*m_viewRenderer);
 	m_graphView->initializeRenderer(*m_viewRenderer);
 }
 
@@ -176,7 +178,7 @@ void QtViewWrapper::paintGL()
 }
 
 #ifdef PANDA_LOG_EVENTS
-void QtViewWrapper::paintLogDebug(graphics::DrawList& list, graphics::DrawColors& colors)
+void QtViewWrapper::paintLogDebug(DrawList& list, DrawColors& colors)
 {
 	UpdateLoggerDialog* logDlg = UpdateLoggerDialog::getInstance();
 	if(logDlg && logDlg->isVisible())
@@ -223,7 +225,7 @@ void QtViewWrapper::paintLogDebug(graphics::DrawList& list, graphics::DrawColors
 }
 #endif
 
-void QtViewWrapper::paintDirtyState(graphics::DrawList& list, graphics::DrawColors& colors)
+void QtViewWrapper::paintDirtyState(DrawList& list, DrawColors& colors)
 {
 	for(const auto& objRnd : m_graphView->objectRenderers().getOrdered())
 	{
@@ -267,7 +269,7 @@ void QtViewWrapper::wheelEvent(QWheelEvent* event)
 
 void QtViewWrapper::keyPressEvent(QKeyEvent* event)
 {
-	KeyEvent ke { static_cast<Key>(event->key()), convert(event->modifiers()) };
+	panda::graphview::KeyEvent ke { static_cast<panda::graphview::Key>(event->key()), convert(event->modifiers()) };
 	if (!m_graphView->interaction().keyPressEvent(ke))
 	{
 		if(event->key() == Qt::Key_Space && !m_graphView->document()->animationIsPlaying())
@@ -333,14 +335,14 @@ void QtViewWrapper::setDataLabel()
 	if (!data)
 		return;
 
-	auto label = DataLabelAddon::getDataLabel(data);
+	auto label = panda::graphview::DataLabelAddon::getDataLabel(data);
 
 	bool ok = false;
 	label = QInputDialog::getMultiLineText(this, tr("Data label"), tr("Label:"), QString::fromStdString(label), &ok).toStdString();
 	if (!ok)
 		return;
 
-	DataLabelAddon::setDataLabel(data, label);
+	panda::graphview::DataLabelAddon::setDataLabel(data, label);
 
 	emit modified();
 }
@@ -385,7 +387,7 @@ void QtViewWrapper::paste()
 	m_graphView->selection().set(result);
 	m_graphView->viewport().moveSelectedToCenter();
 
-	m_graphView->document()->getUndoStack().push(std::make_shared<AddObjectCommand>(m_graphView->document(), m_graphView->objectsList(), result));
+	m_graphView->document()->getUndoStack().push(std::make_shared<panda::AddObjectCommand>(m_graphView->document(), m_graphView->objectsList(), result));
 }
 
 void QtViewWrapper::del()
@@ -395,7 +397,7 @@ void QtViewWrapper::del()
 		return;
 
 	auto macro = m_graphView->document()->getUndoStack().beginMacro(tr("delete objects").toStdString());	
-	m_graphView->document()->getUndoStack().push(std::make_shared<RemoveObjectCommand>(m_graphView->document(), m_graphView->objectsList(), selected));
+	m_graphView->document()->getUndoStack().push(std::make_shared<panda::RemoveObjectCommand>(m_graphView->document(), m_graphView->objectsList(), selected));
 }
 
 void QtViewWrapper::executeNextRefresh(std::function<void()> func)

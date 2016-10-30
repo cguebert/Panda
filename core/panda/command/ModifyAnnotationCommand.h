@@ -6,24 +6,26 @@
 
 namespace panda 
 {
-	class Annotation;
-}
 
-class PANDA_CORE_API MoveAnnotationEndCommand : public panda::UndoCommand
+class Annotation;
+
+class PANDA_CORE_API MoveAnnotationEndCommand : public UndoCommand
 {
 public:
-	MoveAnnotationEndCommand(panda::Annotation* annotation, panda::types::Point delta);
+	MoveAnnotationEndCommand(Annotation* annotation, types::Point delta);
 
 	virtual int id() const;
 
 	virtual void redo();
 	virtual void undo();
 
-	virtual bool mergeWith(const panda::UndoCommand *other);
+	virtual bool mergeWith(const UndoCommand *other);
 
 protected:
-	panda::Annotation* m_annotation;
-	panda::types::Point m_delta;
+	Annotation* m_annotation;
+	types::Point m_delta;
 };
+
+} // namespace panda
 
 #endif

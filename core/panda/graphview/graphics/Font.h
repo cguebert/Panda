@@ -14,6 +14,9 @@ using GlyphRange = std::pair<WChar, WChar>;
 using GlyphRangeList = std::vector<GlyphRange>;
 using MemBuffer = std::vector<unsigned char>;
 
+namespace panda
+{
+
 namespace graphview
 {
 
@@ -97,3 +100,5 @@ private:
 } // namespace graphics
 
 } // namespace graphview
+
+} // namespace panda

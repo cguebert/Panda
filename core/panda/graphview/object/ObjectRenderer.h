@@ -14,7 +14,6 @@ namespace panda
 
 	namespace msg
 	{ class Observer; }
-}
 
 namespace graphview
 {
@@ -35,9 +34,9 @@ namespace object
 class PANDA_CORE_API ObjectRenderer
 {
 public:
-	using DataRectPair = std::pair<panda::BaseData*, panda::types::Rect>;
+	using DataRectPair = std::pair<BaseData*, types::Rect>;
 
-	ObjectRenderer(GraphView* view, panda::PandaObject* obj);
+	ObjectRenderer(GraphView* view, PandaObject* obj);
 	virtual ~ObjectRenderer();
 
 	void initializeRenderer(ViewRenderer& viewRenderer);
@@ -47,8 +46,8 @@ public:
 	virtual void drawForeground(graphics::DrawList& list, graphics::DrawColors& colors) {}	// Called last
 
 	virtual void update();										// Recompute the information about this object
-	virtual void move(const panda::types::Point& delta);		// Move the position of the object in the view
-	virtual bool contains(const panda::types::Point& point);	// Is this point inside of the shape of this object ? (which can be complex)
+	virtual void move(const types::Point& delta);		// Move the position of the object in the view
+	virtual bool contains(const types::Point& point);	// Is this point inside of the shape of this object ? (which can be complex)
 
 	virtual bool mousePressEvent(const MouseEvent&) { return false; }	// Return true to capture the mouse for this object
 	virtual void mouseMoveEvent(const MouseEvent&) {}
@@ -56,16 +55,16 @@ public:
 
 	virtual bool acceptsMagneticSnap() const; // If this object is used for the magnetic snap when moving objects
 
-	virtual panda::types::Point getObjectSize();
+	virtual types::Point getObjectSize();
 	
 	const std::vector<DataRectPair>& getDataRects() const;
-	panda::BaseData* getDataAtPos(const panda::types::Point &pt, panda::types::Point* center = nullptr) const;
-	bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) const;
+	BaseData* getDataAtPos(const types::Point &pt, types::Point* center = nullptr) const;
+	bool getDataRect(const BaseData* data, types::Rect& rect) const;
 
-	panda::types::Rect getVisualArea() const;
-	panda::types::Rect getSelectionArea() const;
-	panda::types::Point getPosition() const;
-	panda::PandaObject* const getObject() const;
+	types::Rect getVisualArea() const;
+	types::Rect getSelectionArea() const;
+	types::Point getPosition() const;
+	PandaObject* const getObject() const;
 	GraphView* const getParentView() const;
 
 	static const int objectDefaultWidth = 100;
@@ -89,13 +88,13 @@ protected:
 
 	virtual void createShape(); // Modify m_outline & m_fillShape
 
-	virtual panda::types::Rect getTextArea(); // The area in which we can render text
+	virtual types::Rect getTextArea(); // The area in which we can render text
 	virtual std::string getLabel() const; // The text to draw
 
-	void drawData(graphics::DrawList& list, graphics::DrawColors& colors, const panda::BaseData* data, const panda::types::Rect& area);
+	void drawData(graphics::DrawList& list, graphics::DrawColors& colors, const BaseData* data, const types::Rect& area);
 	
-	panda::PandaObject* m_object;
-	panda::types::Rect m_visualArea, m_selectionArea;
+	PandaObject* m_object;
+	types::Rect m_visualArea, m_selectionArea;
 	std::vector<DataRectPair> m_datas;
 
 	std::string m_currentLabel;
@@ -103,33 +102,33 @@ protected:
 	graphics::DrawPath m_outline;
 	graphics::DrawMesh m_fillShape;
 
-	std::unique_ptr<panda::msg::Observer> m_observer;
+	std::unique_ptr<msg::Observer> m_observer;
 
 private:
-	void positionChanged(panda::types::Point newPos);
+	void positionChanged(types::Point newPos);
 
 	GraphView* m_parentView;
 	ObjectPositionAddon& m_positionAddon;
-	panda::types::Point m_position;
+	types::Point m_position;
 	bool m_dirty = true;
 };
 
 inline bool ObjectRenderer::acceptsMagneticSnap() const
 { return true; }
 
-inline bool ObjectRenderer::contains(const panda::types::Point& point)
+inline bool ObjectRenderer::contains(const types::Point& point)
 { return m_selectionArea.contains(point) && m_outline.contains(point); }
 
-inline panda::types::Rect ObjectRenderer::getVisualArea() const
+inline types::Rect ObjectRenderer::getVisualArea() const
 { return m_visualArea; }
 
-inline panda::types::Rect ObjectRenderer::getSelectionArea() const
+inline types::Rect ObjectRenderer::getSelectionArea() const
 { return m_selectionArea; }
 
-inline panda::types::Point ObjectRenderer::getPosition() const
+inline types::Point ObjectRenderer::getPosition() const
 { return m_position; }
 
-inline panda::PandaObject* const ObjectRenderer::getObject() const
+inline PandaObject* const ObjectRenderer::getObject() const
 { return m_object; }
 
 inline GraphView* const ObjectRenderer::getParentView() const
@@ -144,3 +143,5 @@ inline const std::vector<ObjectRenderer::DataRectPair>& ObjectRenderer::getDataR
 } // namespace object
 
 } // namespace graphview
+
+} // namespace panda

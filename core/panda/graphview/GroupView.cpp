@@ -32,8 +32,11 @@ namespace
 	static const float tagMargin = 10;
 }
 
-using Point = panda::types::Point;
-using Rect = panda::types::Rect;
+namespace panda
+{
+
+using Point = types::Point;
+using Rect = types::Rect;
 
 namespace graphview
 {
@@ -47,7 +50,7 @@ public:
 	{
 	}
 
-	panda::types::Rect onlyObjectsRect() const
+	Rect onlyObjectsRect() const
 	{ return m_onlyObjectsRect; }
 
 	void updateObjectsRect() override
@@ -78,7 +81,7 @@ public:
 
 private:
 	GroupView& m_groupView;
-	panda::types::Rect m_onlyObjectsRect; // Without the group datas
+	types::Rect m_onlyObjectsRect; // Without the group datas
 };
 
 //****************************************************************************//
@@ -92,7 +95,7 @@ private:
 		{
 		}
 
-		bool getDataRect(const panda::BaseData* data, panda::types::Rect& rect) override
+		bool getDataRect(const BaseData* data, types::Rect& rect) override
 		{
 			if (data->getOwner() != m_groupView.group())
 				return LinksList::getDataRect(data, rect);
@@ -109,7 +112,7 @@ private:
 			return false;			
 		}
 
-		DataRect getDataAtPos(const panda::types::Point& pt) override
+		DataRect getDataAtPos(const types::Point& pt) override
 		{
 			auto res = LinksList::getDataAtPos(pt);
 			if (res.first)
@@ -124,7 +127,7 @@ private:
 			return{ nullptr, Rect() };
 		}
 
-		ConnectedDatas getConnectedDatas(panda::BaseData* srcData) override
+		ConnectedDatas getConnectedDatas(BaseData* srcData) override
 		{
 			if (srcData->getOwner() != m_groupView.group())
 				return LinksList::getConnectedDatas(srcData);
@@ -143,7 +146,7 @@ private:
 			{
 				for (const auto node : srcData->getOutputs())
 				{
-					panda::BaseData* data = dynamic_cast<panda::BaseData*>(node);
+					BaseData* data = dynamic_cast<BaseData*>(node);
 					if (data)
 					{
 						Rect rect;
@@ -158,7 +161,7 @@ private:
 			// Or the one input
 			else if (srcData->isOutput())
 			{
-				panda::BaseData* data = srcData->getParent();
+				BaseData* data = srcData->getParent();
 				if (data)
 				{
 					Rect rect;
@@ -173,9 +176,9 @@ private:
 			return { rects, links };
 		}
 		
-		bool createLink(panda::BaseData* data1, panda::BaseData* data2) override
+		bool createLink(BaseData* data1, BaseData* data2) override
 		{
-			panda::BaseData *target = nullptr, *parent = nullptr;
+			BaseData *target = nullptr, *parent = nullptr;
 			bool isGroup1 = (data1->getOwner() == m_groupView.group());
 			bool isGroup2 = (data2->getOwner() == m_groupView.group());
 			bool isInput1 = isGroup1 ? data1->isOutput() : data1->isInput();
@@ -197,7 +200,7 @@ private:
 				return false;
 		}
 
-		bool isCompatible(const panda::BaseData* data1, const panda::BaseData* data2) override
+		bool isCompatible(const BaseData* data1, const BaseData* data2) override
 		{
 			if(data1->getOwner() == data2->getOwner())
 				return false;
@@ -224,7 +227,7 @@ private:
 			return false;
 		}
 
-		void computeCompatibleDatas(panda::BaseData* data) override
+		void computeCompatibleDatas(BaseData* data) override
 		{
 			auto group = m_groupView.group();
 			if (data->getOwner() != group)
@@ -249,11 +252,11 @@ private:
 				return;
 			}
 
-			std::vector<panda::BaseData*> forbiddenList;
+			std::vector<BaseData*> forbiddenList;
 			if (data->isOutput())
-				forbiddenList = panda::graph::extractDatas(panda::graph::computeConnectedOutputNodes(data, false));
+				forbiddenList = graph::extractDatas(graph::computeConnectedOutputNodes(data, false));
 			else if (data->isInput())
-				forbiddenList = panda::graph::extractDatas(panda::graph::computeConnectedInputNodes(data, false));
+				forbiddenList = graph::extractDatas(graph::computeConnectedInputNodes(data, false));
 			std::sort(forbiddenList.begin(), forbiddenList.end());
 
 			m_possibleLinks.clear();
@@ -284,7 +287,7 @@ private:
 					auto d1 = groupDataRect.center();
 					for (const auto& output : groupData->getOutputs())
 					{
-						if (panda::BaseData* data = dynamic_cast<panda::BaseData*>(output))
+						if (BaseData* data = dynamic_cast<BaseData*>(output))
 						{
 							Rect dataRect;
 							if (!getDataRect(data, dataRect))
@@ -302,7 +305,7 @@ private:
 					auto d2 = groupDataRect.center();
 					for (const auto& input : groupData->getInputs())
 					{
-						if (panda::BaseData* data = dynamic_cast<panda::BaseData*>(input))
+						if (BaseData* data = dynamic_cast<BaseData*>(input))
 						{
 							Rect dataRect;
 							if (!getDataRect(data, dataRect))
@@ -338,7 +341,7 @@ private:
 			Point pos = m_view.viewport().toView(event.pos());
 			int flags = getContextMenuFlags(pos);
 
-			panda::TimedFunctions::cancelRun(m_hoverTimerId);
+			TimedFunctions::cancelRun(m_hoverTimerId);
 
 			ViewGui::Actions actions;
 
@@ -359,7 +362,7 @@ private:
 					{
 						for (const auto output : outputs)
 						{
-							auto data = dynamic_cast<panda::BaseData*>(output);
+							auto data = dynamic_cast<BaseData*>(output);
 							if (data && data->getOwner() == m_groupView.group())
 							{
 								connectedToGroup = true;
@@ -409,13 +412,13 @@ private:
 
 //****************************************************************************//
 
-GroupView::GroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList)
+GroupView::GroupView(Group* group, PandaDocument* doc, ObjectsList& objectsList)
 	: GraphView(doc, objectsList)
 	, m_group(group)
 {
 }
 
-std::unique_ptr<GroupView> GroupView::createGroupView(panda::Group* group, panda::PandaDocument* doc, panda::ObjectsList& objectsList)
+std::unique_ptr<GroupView> GroupView::createGroupView(Group* group, PandaDocument* doc, ObjectsList& objectsList)
 {
 	auto groupView = std::unique_ptr<GroupView>(new GroupView(group, doc, objectsList));
 	
@@ -563,10 +566,10 @@ void GroupView::createInputGroupData()
 
 	auto data = interaction().contextMenuData();
 	auto newData = m_group->duplicateData(data);
-	undoStack.push(std::make_shared<panda::AddDataToGroupCommand>(m_group, newData, true, false));
+	undoStack.push(std::make_shared<AddDataToGroupCommand>(m_group, newData, true, false));
 	auto createdData = newData.get();
 	createdData->copyValueFrom(data);
-	undoStack.push(std::make_shared<panda::LinkDatasCommand>(data, createdData));
+	undoStack.push(std::make_shared<LinkDatasCommand>(data, createdData));
 }
 
 void GroupView::createOutputGroupData()
@@ -576,30 +579,32 @@ void GroupView::createOutputGroupData()
 
 	auto data = interaction().contextMenuData();
 	auto newData = m_group->duplicateData(data);
-	undoStack.push(std::make_shared<panda::AddDataToGroupCommand>(m_group, newData, false, true));
-	undoStack.push(std::make_shared<panda::LinkDatasCommand>(newData.get(), data));
+	undoStack.push(std::make_shared<AddDataToGroupCommand>(m_group, newData, false, true));
+	undoStack.push(std::make_shared<LinkDatasCommand>(newData.get(), data));
 }
 
-void GroupView::removeGroupData(panda::BaseData* data)
+void GroupView::removeGroupData(BaseData* data)
 {
 	auto& undoStack = m_pandaDocument->getUndoStack();
 
 	auto outputs = data->getOutputs();
 	for (auto node : outputs)
 	{
-		auto outData = dynamic_cast<panda::BaseData*>(node);
+		auto outData = dynamic_cast<BaseData*>(node);
 		if (outData)
-			undoStack.push(std::make_shared<panda::LinkDatasCommand>(outData, nullptr));
+			undoStack.push(std::make_shared<LinkDatasCommand>(outData, nullptr));
 	}
 
-	undoStack.push(std::make_shared<panda::RemoveDataFromGroupCommand>(m_group, data));
-	undoStack.push(std::make_shared<panda::LinkDatasCommand>(data, nullptr));
+	undoStack.push(std::make_shared<RemoveDataFromGroupCommand>(m_group, data));
+	undoStack.push(std::make_shared<LinkDatasCommand>(data, nullptr));
 }
 
-void GroupView::modifiedObject(panda::PandaObject* object)
+void GroupView::modifiedObject(PandaObject* object)
 {
 	if(object == m_group)
 		updateGroupDataRects();
 }
 
 } // namespace graphview
+
+} // namespace panda

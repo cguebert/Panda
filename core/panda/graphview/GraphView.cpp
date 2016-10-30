@@ -18,14 +18,16 @@
 #include <panda/document/ObjectsList.h>
 #include <panda/helper/algorithm.h>
 
+namespace panda
+{
 
-using Point = panda::types::Point;
-using Rect = panda::types::Rect;
+using Point = types::Point;
+using Rect = types::Rect;
 
 namespace graphview
 {
 
-GraphView::GraphView(panda::PandaDocument* doc, panda::ObjectsList& objectsList)
+GraphView::GraphView(PandaDocument* doc, ObjectsList& objectsList)
 	: m_pandaDocument(doc)
 	, m_objectsList(objectsList)
 {
@@ -145,7 +147,7 @@ void GraphView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors d
 		viewRenderer.addDrawList(interaction().connectedDatasDrawList());
 }
 
-void GraphView::addedObject(panda::PandaObject* object)
+void GraphView::addedObject(PandaObject* object)
 {
 	// Creating a Renderer depending on the class of the object being added
 	auto objRnd = objectRenderers().get(object);
@@ -164,7 +166,7 @@ void GraphView::addedObject(panda::PandaObject* object)
 	update();
 }
 
-void GraphView::removeObject(panda::PandaObject* object)
+void GraphView::removeObject(PandaObject* object)
 {
 	objectRenderers().remove(object);
 	interaction().removeObject(object);
@@ -174,7 +176,7 @@ void GraphView::removeObject(panda::PandaObject* object)
 	viewport().updateObjectsRect();
 }
 
-void GraphView::modifiedObject(panda::PandaObject* object)
+void GraphView::modifiedObject(PandaObject* object)
 {
 	linksList().clear();
 	auto objRnd = objectRenderers().get(object);
@@ -182,7 +184,7 @@ void GraphView::modifiedObject(panda::PandaObject* object)
 	{
 		objRnd->setDirty();
 
-		panda::DockObject* dock = dynamic_cast<panda::DockObject*>(object);
+		DockObject* dock = dynamic_cast<DockObject*>(object);
 		if (dock)
 		{
 			auto dobjRnd = dynamic_cast<object::DockObjectRenderer*>(objRnd);
@@ -205,12 +207,12 @@ void GraphView::update()
 	updateNeeded.run();
 }
 
-void GraphView::sortDockable(panda::DockableObject* dockable, panda::DockObject* defaultDock)
+void GraphView::sortDockable(DockableObject* dockable, DockObject* defaultDock)
 {
 	int prevIndex = defaultDock->getIndexOfDockable(dockable);
 	auto dockables = defaultDock->getDockedObjects();
 
-	std::sort(dockables.begin(), dockables.end(), [this](panda::DockableObject* lhs, panda::DockableObject* rhs){
+	std::sort(dockables.begin(), dockables.end(), [this](DockableObject* lhs, DockableObject* rhs){
 		auto lpos = objectRenderers().get(lhs)->getPosition();
 		auto rpos = objectRenderers().get(rhs)->getPosition();
 		if(lpos.y == rpos.y)
@@ -225,11 +227,11 @@ void GraphView::sortDockable(panda::DockableObject* dockable, panda::DockObject*
 		if(newIndex == prevIndex)
 			return;
 
-		m_pandaDocument->getUndoStack().push(std::make_shared<panda::ReorderDockableCommand>(defaultDock, dockable, newIndex));
+		m_pandaDocument->getUndoStack().push(std::make_shared<ReorderDockableCommand>(defaultDock, dockable, newIndex));
 	}
 }
 
-void GraphView::sortDockablesInDock(panda::DockObject* dock)
+void GraphView::sortDockablesInDock(DockObject* dock)
 {
 	for(const auto dockable : dock->getDockedObjects())
 	{
@@ -244,7 +246,7 @@ void GraphView::sortAllDockables()
 {
 	for(const auto& object : m_objectsList.get())
 	{
-		const auto dockable = dynamic_cast<panda::DockableObject*>(object.get());
+		const auto dockable = dynamic_cast<DockableObject*>(object.get());
 		if(!dockable)
 			continue;
 		auto defaultDock = dockable->getDefaultDock();
@@ -266,7 +268,7 @@ void GraphView::loadingFinished()
 	updateDirtyRenderers();
 }
 
-void GraphView::changedDock(panda::DockableObject* dockable)
+void GraphView::changedDock(DockableObject* dockable)
 {
 	auto defaultDock = dockable->getDefaultDock();
 	auto parentDock = dockable->getParentDock();
@@ -287,11 +289,11 @@ void GraphView::updateDirtyRenderers()
 	// Bugfix: update the dock objects last
 	const auto& orderedObjectRenderers = objectRenderers().getOrdered();
 	for (auto objRnd : orderedObjectRenderers)
-		if(!dynamic_cast<panda::DockObject*>(objRnd->getObject()))
+		if(!dynamic_cast<DockObject*>(objRnd->getObject()))
 			updated |= objRnd->updateIfDirty();
 
 	for (auto objRnd : orderedObjectRenderers)
-		if(dynamic_cast<panda::DockObject*>(objRnd->getObject()))
+		if(dynamic_cast<DockObject*>(objRnd->getObject()))
 			updated |= objRnd->updateIfDirty();
 
 	if (!updated)
@@ -327,3 +329,5 @@ void GraphView::setGui(const std::shared_ptr<ViewRenderer>& viewRenderer, std::u
 }
 
 } // namespace graphview
+
+} // namespace panda
