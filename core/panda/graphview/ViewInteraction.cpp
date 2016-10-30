@@ -669,6 +669,7 @@ namespace graphview
 	void ViewInteraction::updateConnectedDatas(const graphics::DrawColors& colors)
 	{
 		m_recomputeConnectedDatas = false;
+		m_connectedDatasDrawList->clear();
 		
 		if (!m_highlightConnectedDatas)
 			return;
@@ -679,8 +680,6 @@ namespace graphview
 
 		if(links.empty())
 			return;
-
-		m_connectedDatasDrawList->clear();
 
 		// Now draw everything
 		for (const auto& rect : rects)
