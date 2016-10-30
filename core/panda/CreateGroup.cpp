@@ -1,4 +1,4 @@
-#include <ui/CreateGroup.h>
+#include <panda/CreateGroup.h>
 
 #include <panda/GraphView/GraphView.h>
 #include <panda/GraphView/LinksList.h>

@@ -1,6 +1,5 @@
 #include <QtWidgets>
 
-#include <ui/CreateGroup.h>
 #include <ui/DatasTable.h>
 #include <ui/GroupsManager.h>
 #include <ui/ImageViewport.h>
@@ -26,12 +25,13 @@
 #include <panda/graphview/Viewport.h>
 #include <panda/graphview/ViewInteraction.h>
 
-#include <panda/document/GraphUtils.h>
-#include <panda/document/InteractiveDocument.h>
+#include <panda/CreateGroup.h>
 #include <panda/PluginsManager.h>
 #include <panda/TimedFunctions.h>
 #include <panda/command/AddObjectCommand.h>
 #include <panda/command/RemoveObjectCommand.h>
+#include <panda/document/GraphUtils.h>
+#include <panda/document/InteractiveDocument.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/DocumentUtils.h>
 #include <panda/document/ObjectsList.h>
