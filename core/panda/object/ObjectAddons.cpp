@@ -147,6 +147,12 @@ namespace panda
 			}
 		}
 	}
+
+	void ObjectAddons::objectModified()
+	{
+		for (const auto& addon : m_addons)
+			addon.addonPtr->objectModified();
+	}
 	
 //****************************************************************************//
 

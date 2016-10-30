@@ -150,8 +150,11 @@ void PandaObject::dataSetParent(BaseData* data, BaseData* parent)
 
 void PandaObject::emitModified()
 {
-	if(m_doEmitModified && m_parentDocument && !m_destructing)
+	if (m_doEmitModified && m_parentDocument && !m_destructing)
+	{
 		m_parentDocument->onModifiedObject(this);
+		addons().objectModified();
+	}
 }
 
 void PandaObject::emitDirty()

@@ -27,6 +27,8 @@ public:
 	void save(panda::ObjectAddonNode& node) override;
 	void load(const panda::ObjectAddonNode& node) override;
 
+	void objectModified() override;
+
 	std::string getLabel(panda::BaseData* data) const;
 	void setLabel(panda::BaseData* data, const std::string& label);
 
@@ -34,8 +36,6 @@ public:
 	static void setDataLabel(panda::BaseData* data, const std::string& label);
 
 private:
-	void modifiedObject(panda::PandaObject* object);
-
 	std::vector<DataLabel> m_dataLabels;
 	panda::msg::Observer m_observer;
 };

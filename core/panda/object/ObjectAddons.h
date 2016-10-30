@@ -31,6 +31,8 @@ public:
 	virtual void save(ObjectAddonNode& node) = 0;
 	virtual void load(const ObjectAddonNode& node) = 0;
 
+	virtual void objectModified() {}
+
 protected:
 	PandaObject& m_object;
 };
@@ -61,6 +63,8 @@ public:
 
 	void save(XmlElement& elem);
 	void load(const XmlElement& elem);
+
+	void objectModified();
 
 private:
 	void createAddons();

@@ -12,8 +12,7 @@ namespace graphview
 
 DataLabelAddon::DataLabelAddon(panda::PandaObject& object) 
 	: panda::BaseObjectAddon(object) 
-{ 
-	m_observer.get(object.parentDocument()->getSignals().modifiedObject).connect<DataLabelAddon, &DataLabelAddon::modifiedObject>(this);
+{
 }
 
 void DataLabelAddon::setDefinition(panda::ObjectAddonNodeDefinition& nodeDefinition)
@@ -81,18 +80,15 @@ void DataLabelAddon::setLabel(panda::BaseData* data, const std::string& label)
 	}
 }
 
-void DataLabelAddon::modifiedObject(panda::PandaObject* object)
+void DataLabelAddon::objectModified()
 {
-	if (object == &m_object)
-	{
-		std::set<panda::BaseData*> datas;
-		for (auto data : object->getDatas())
-			datas.insert(data);
-		auto last = std::remove_if(m_dataLabels.begin(), m_dataLabels.end(), [&datas](const auto& dl) {
-			return !datas.count(dl.data);
-		});
-		m_dataLabels.erase(last, m_dataLabels.end());
-	}
+	std::set<panda::BaseData*> datas;
+	for (auto data : m_object.getDatas())
+		datas.insert(data);
+	auto last = std::remove_if(m_dataLabels.begin(), m_dataLabels.end(), [&datas](const auto& dl) {
+		return !datas.count(dl.data);
+	});
+	m_dataLabels.erase(last, m_dataLabels.end());
 }
 
 //****************************************************************************//
