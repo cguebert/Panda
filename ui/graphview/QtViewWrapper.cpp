@@ -16,7 +16,7 @@
 #include <ui/graphview/LinkTagsList.h>
 #include <ui/graphview/ObjectsSelection.h>
 #include <ui/graphview/ObjectRenderersList.h>
-#include <ui/graphview/ViewGUI.h>
+#include <ui/graphview/QtViewGUI.h>
 #include <ui/graphview/ViewInteraction.h>
 #include <ui/graphview/Viewport.h>
 #include <ui/graphview/ViewRenderer.h>
@@ -90,7 +90,7 @@ QtViewWrapper::QtViewWrapper(std::unique_ptr<GraphView> graphView, MainWindow* m
 
 	setMouseTracking(true);
 
-	auto viewGui = std::make_unique<ViewGui>(*this, mainWindow);
+	auto viewGui = std::make_unique<QtViewGui>(*this, mainWindow);
 
 	const auto& pal = palette();
 	m_drawColors.penColor = graphics::DrawList::convert(pal.text().color());

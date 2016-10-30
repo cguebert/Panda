@@ -6,12 +6,8 @@
 
 #include <functional>
 
-class MainWindow;
-
 namespace graphview
 {
-
-	class QtViewWrapper;
 
 	enum class Cursor
 	{
@@ -66,20 +62,16 @@ namespace graphview
 		};
 		using Actions = std::vector<Action>;
 
-		ViewGui(QtViewWrapper& viewWrapper, MainWindow* mainWindow);
+		~ViewGui();
 
-		void setCursor(Cursor cursor);
-		void restoreCursor();
+		virtual void setCursor(Cursor cursor) = 0;
+		virtual void restoreCursor() = 0;
 
-		void setStatusBarMessage(const std::string& msg);
+		virtual void setStatusBarMessage(const std::string& msg) = 0;
 
-		void showToolTip(const panda::types::Point& pos, const std::string& msg, const panda::types::Rect& area = {});
+		virtual void showToolTip(const panda::types::Point& pos, const std::string& msg, const panda::types::Rect& area = {}) = 0;
 
-		void contextMenu(const panda::types::Point& pos, MenuTypes types, const Actions& customActions = {});
-
-	protected:
-		QtViewWrapper& m_viewWrapper;
-		MainWindow* m_mainWindow;
+		virtual void contextMenu(const panda::types::Point& pos, MenuTypes types, const Actions& customActions = {}) = 0;
 	};
 
 }
