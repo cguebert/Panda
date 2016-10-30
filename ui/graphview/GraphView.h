@@ -66,6 +66,7 @@ public:
 
 	void beforeDraw();
 	virtual void initializeRenderer(ViewRenderer& viewRenderer);
+	virtual void resizeView(int w, int h);
 	virtual void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors);
 
 	void objectsMoved(); // Refresh the view, links & tags

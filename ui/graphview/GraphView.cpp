@@ -82,6 +82,13 @@ void GraphView::initializeRenderer(ViewRenderer& viewRenderer)
 	objectRenderers().initializeRenderer(viewRenderer);
 }
 
+void GraphView::resizeView(int w, int h)
+{
+	viewport().setViewSize({ static_cast<float>(w), static_cast<float>(h) });
+	linkTagsList().setDirty();
+	linksList().clear();
+}
+
 void GraphView::drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors)
 {
 	const auto displayRect = viewport().displayRect();
