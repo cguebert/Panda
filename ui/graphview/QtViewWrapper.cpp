@@ -5,7 +5,6 @@
 #include <limits>
 
 #include <ui/MainWindow.h>
-#include <ui/command/MoveObjectCommand.h>
 #include <ui/dialog/ChooseWidgetDialog.h>
 #include <ui/dialog/QuickCreateDialog.h>
 #include <ui/graphview/object/ObjectRenderer.h>

@@ -2,7 +2,6 @@
 #define MODIFYANNOTATIONCOMMAND_H
 
 #include <panda/UndoStack.h>
-#include <QPointF>
 
 namespace panda 
 {

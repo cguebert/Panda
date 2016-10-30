@@ -4,10 +4,9 @@
 #include <panda/UndoStack.h>
 #include <panda/types/Point.h>
 
-#include <vector>
 
 namespace panda {
-class PandaObject;
+	class PandaObject;
 }
 
 namespace graphview {
