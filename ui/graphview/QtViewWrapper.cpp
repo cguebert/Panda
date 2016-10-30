@@ -128,6 +128,8 @@ void QtViewWrapper::initializeGL()
 void QtViewWrapper::resizeGL(int w, int h)
 {
 	m_graphView->viewport().setViewSize({ static_cast<float>(w), static_cast<float>(h) });
+	m_graphView->linkTagsList().setDirty();
+	m_graphView->linksList().clear();
 	m_viewRenderer->resize(w, h);
 	update();
 }
