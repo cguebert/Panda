@@ -324,15 +324,14 @@ namespace graphview
 			{
 				if (m_hoverData != dataRect.first)
 				{
-					auto& timedFunctions = panda::TimedFunctions::instance();
-					timedFunctions.cancelRun(m_hoverTimerId);
+					panda::TimedFunctions::cancelRun(m_hoverTimerId);
 					if (m_highlightConnectedDatas)
 					{
 						m_highlightConnectedDatas = false;
 						m_view.update();
 					}
 					m_hoverData = dataRect.first;
-					m_hoverTimerId = timedFunctions.delayRun(0.5, [this] { hoverDataInfo(); });
+					m_hoverTimerId = panda::TimedFunctions::delayRun(0.5, [this] { hoverDataInfo(); });
 				}
 
 				auto label = DataLabelAddon::getDataLabel(m_hoverData);
@@ -355,7 +354,7 @@ namespace graphview
 					m_highlightConnectedDatas = false;
 					m_view.update();
 				}
-				panda::TimedFunctions::instance().cancelRun(m_hoverTimerId);
+				panda::TimedFunctions::cancelRun(m_hoverTimerId);
 
 				if (m_movingAction == Moving::None)
 				{
@@ -582,7 +581,7 @@ namespace graphview
 		Point pos = m_view.viewport().toView(event.pos());
 		int flags = getContextMenuFlags(pos);
 
-		panda::TimedFunctions::instance().cancelRun(m_hoverTimerId);
+		panda::TimedFunctions::cancelRun(m_hoverTimerId);
 
 		m_view.gui().contextMenu(event.pos(), flags);
 	}
@@ -708,7 +707,7 @@ namespace graphview
 		m_recomputeConnectedDatas = true;
 		m_hoverData = nullptr;
 		m_highlightConnectedDatas = false;
-		panda::TimedFunctions::instance().cancelRun(m_hoverTimerId);
+		panda::TimedFunctions::cancelRun(m_hoverTimerId);
 	}
 
 	void ViewInteraction::moveObjectToBack()

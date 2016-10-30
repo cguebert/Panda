@@ -27,7 +27,7 @@ public:
 
 	void preDestruction() override
 	{
-		if (TimedFunctions::instance().cancelRun(m_saveTimerId))
+		if (TimedFunctions::cancelRun(m_saveTimerId))
 			saveToFile();
 	}
 
@@ -60,8 +60,8 @@ public:
 		addValue();
 		PandaObject::endStep();
 
-		TimedFunctions::instance().cancelRun(m_saveTimerId);
-		m_saveTimerId = TimedFunctions::instance().delayRun(0.5, [this]() { 
+		TimedFunctions::cancelRun(m_saveTimerId);
+		m_saveTimerId = TimedFunctions::delayRun(0.5, [this]() { 
 			parentDocument()->getGUI().executeByUI([this](){
 				saveToFile();
 			});

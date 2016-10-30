@@ -285,7 +285,7 @@ void ImGui_Wrapper::update(int width, int height, int dstFbo)
 	if (!m_document->animationIsPlaying())
 	{
 		auto& gui = m_document->getGUI();
-		TimedFunctions::instance().delayRun(1 / 60.0, [&gui]() {
+		TimedFunctions::delayRun(1 / 60.0, [&gui]() {
 			gui.updateView();
 		});
 	}

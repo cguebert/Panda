@@ -10,7 +10,7 @@
 
 using namespace std::chrono;
 
-namespace panda
+namespace
 {
 
 class TimedFunctionsData
@@ -19,7 +19,7 @@ public:
 	TimedFunctionsData();
 
 	void shutdown();
-	int add(double delay, TimedFunctions::VoidFunc func);
+	int add(double delay, panda::TimedFunctions::VoidFunc func);
 	bool remove(int index);
 	void removeAll();
 
@@ -30,7 +30,7 @@ private:
 	{
 		int index;
 		high_resolution_clock::time_point time;
-		TimedFunctions::VoidFunc function;
+		panda::TimedFunctions::VoidFunc function;
 	};
 
 	int m_index = 0;
@@ -52,7 +52,7 @@ void TimedFunctionsData::shutdown()
 	m_condition.notify_one();
 }
 
-int TimedFunctionsData::add(double delay, TimedFunctions::VoidFunc func)
+int TimedFunctionsData::add(double delay, panda::TimedFunctions::VoidFunc func)
 {
 	high_resolution_clock::time_point time = high_resolution_clock::now() + microseconds(std::lround(delay * 1e6));
 
@@ -149,21 +149,24 @@ void TimedFunctionsData::threadFunc()
 	}
 }
 
+TimedFunctionsData& instance()
+{
+	static TimedFunctionsData tfd;
+	return tfd;
+}
+
+}
+
 //****************************************************************************//
 
-TimedFunctions::TimedFunctions()
-	: m_data(std::make_shared<TimedFunctionsData>())
-{ }
+namespace panda
+{
 
-TimedFunctions& TimedFunctions::instance()
-{ 
-	static TimedFunctions tf; 
-	return tf; 
-}
+	TimedFunctions::TimedFunctions() = default;
 
 void TimedFunctions::shutdown()
 { 
-	m_data->shutdown(); 
+	instance().shutdown(); 
 }
 
 int TimedFunctions::delayRun(double delay, VoidFunc func)
@@ -174,19 +177,19 @@ int TimedFunctions::delayRun(double delay, VoidFunc func)
 		return -1;
 	}
 	else
-		return m_data->add(delay, std::move(func)); 
+		return instance().add(delay, std::move(func)); 
 }
 
 bool TimedFunctions::cancelRun(int index)
 {
 	if (index < 0)
 		return false;
-	return m_data->remove(index); 
+	return instance().remove(index); 
 }
 
 void TimedFunctions::cancelAll()
 {
-	m_data->removeAll();
+	instance().removeAll();
 }
 
 } // namespace panda

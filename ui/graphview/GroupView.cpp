@@ -338,7 +338,7 @@ private:
 			Point pos = m_view.viewport().toView(event.pos());
 			int flags = getContextMenuFlags(pos);
 
-			panda::TimedFunctions::instance().cancelRun(m_hoverTimerId);
+			panda::TimedFunctions::cancelRun(m_hoverTimerId);
 
 			ViewGui::Actions actions;
 

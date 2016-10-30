@@ -143,7 +143,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
 	if (okToContinue())
 	{
-		panda::TimedFunctions::instance().shutdown();
+		panda::TimedFunctions::shutdown();
 		writeSettings();
 		event->accept();
 	}

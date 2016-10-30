@@ -161,7 +161,7 @@ void PandaDocument::play(bool playing)
 			m_scheduler->stop();
 		m_animMultithread = false;
 
-		if (m_stepQueued && !TimedFunctions::instance().cancelRun(m_animFunctionIndex))
+		if (m_stepQueued && !TimedFunctions::cancelRun(m_animFunctionIndex))
 			m_stepCanceled = true; // Ignore the next step
 	}
 }
@@ -210,8 +210,8 @@ void PandaDocument::step()
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 			double delay = m_timestep.getValue() - frameDuration.count() / 1000.0 - 0.001; // How long do we wait until we start the next step ?
-			TimedFunctions::instance().cancelRun(m_animFunctionIndex); // Remove previous
-			m_animFunctionIndex = TimedFunctions::instance().delayRun(delay, [this]() { // Ask for the delayed execution of step()
+			TimedFunctions::cancelRun(m_animFunctionIndex); // Remove previous
+			m_animFunctionIndex = TimedFunctions::delayRun(delay, [this]() { // Ask for the delayed execution of step()
 				m_gui.executeByUI([this]() { step(); });  // But we want step() to be run on the GUI thread
 			});
 		}
