@@ -21,7 +21,10 @@ public:
 
 	Data<types::Point> visualizerSize;
 
+	BaseData* visualizedData() const;
+
 protected:
+	BaseData* m_visualizedData = nullptr;
 	Data<float> m_aspectRatio;
 	Data<types::ImageWrapper> m_visualizerImage;
 };
@@ -31,5 +34,8 @@ inline float Visualizer::aspectRatio() const
 
 inline const types::ImageWrapper& Visualizer::visualizerImage() const
 { return m_visualizerImage.getValue(); }
+
+inline BaseData* Visualizer::visualizedData() const
+{ return m_visualizedData; }
 
 } // namespace panda

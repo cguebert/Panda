@@ -2,6 +2,7 @@
 
 #include <panda/graphview/GraphView.h>
 #include <panda/graphview/InteractionEvents.h>
+#include <panda/graphview/LinksList.h>
 #include <panda/graphview/Viewport.h>
 #include <panda/graphview/object/ObjectRendererFactory.h>
 
@@ -33,12 +34,33 @@ void VisualizerRenderer::drawForeground(graphics::DrawList& list, graphics::Draw
 {
 	list.addMesh(m_fillShape, colors.lightColor);
 	list.addPolyline(m_outline, colors.penColor, false);
+
+	const auto texId = m_visualizer->visualizerImage().getTextureId();
+	if (texId)
+	{
+		const auto aspectRatio = m_visualizer->aspectRatio();
+		auto imgRect = m_visualizerArea;
+		if (aspectRatio > 0)
+		{
+			const auto center = imgRect.center();
+			auto size = imgRect.size();
+			if (size.x > size.y * aspectRatio)
+				size.x = size.y * aspectRatio;
+			else if (size.y > size.x / aspectRatio)
+				size.y = size.x / aspectRatio;
+			size /= 2;
+			imgRect = Rect(center - size, center + size);
+		}
+		list.addImage(texId, imgRect, Rect(0, 1, 1, 0));
+	}
 }
 
 void VisualizerRenderer::move(const Point& delta)
 {
 	ObjectRenderer::move(delta);
 	m_visualizerArea.translate(delta);
+
+	getParentView()->linksList().clear();
 }
 
 void VisualizerRenderer::resize(const types::Point& delta)
@@ -69,6 +91,18 @@ void VisualizerRenderer::update()
 		m_visualizerArea = Rect::fromSize(getPosition(), m_visualizer->visualizerSize.getValue());
 
 	m_selectionArea = m_visualArea = m_visualizerArea;
+
+	m_datas.clear();
+
+	auto visualizedData = m_visualizer->visualizedData();
+	if (visualizedData)
+	{
+		float drs = dataRectSize;
+
+		m_datas.emplace_back(visualizedData, Rect::fromSize(m_visualArea.left() + dataRectMargin,
+															m_visualArea.top() + dataRectMargin,
+															drs, drs));
+	}
 
 	createShape();
 }

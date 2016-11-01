@@ -17,7 +17,8 @@ Visualizer::Visualizer(PandaDocument* doc)
 
 void Visualizer::setDirtyValue(const DataNode* caller)
 {
-	if(caller == &visualizerSize)
+	if(caller == &visualizerSize
+	   || (m_visualizedData && caller == m_visualizedData))
 		emitModified();
 
 	PandaObject::setDirtyValue(caller);
