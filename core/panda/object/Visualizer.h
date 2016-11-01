@@ -15,7 +15,7 @@ public:
 	Visualizer(PandaDocument *doc);
 
 	float aspectRatio() const;
-	const types::ImageWrapper& visualizerImage() const;
+	virtual const types::ImageWrapper& visualizerImage() const;
 
 	void setDirtyValue(const DataNode* caller) override;
 

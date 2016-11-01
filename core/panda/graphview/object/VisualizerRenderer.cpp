@@ -60,7 +60,7 @@ void VisualizerRenderer::move(const Point& delta)
 	ObjectRenderer::move(delta);
 	m_visualizerArea.translate(delta);
 
-	getParentView()->linksList().clear();
+	getParentView()->objectsMoved();
 }
 
 void VisualizerRenderer::resize(const types::Point& delta)

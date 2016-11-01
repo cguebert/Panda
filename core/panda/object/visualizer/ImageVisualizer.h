@@ -14,9 +14,13 @@ public:
 
 	void update();
 
+	const types::ImageWrapper& visualizerImage() const override;
+
 protected:
 	Data<types::ImageWrapper> m_input;
 };
 
+inline const types::ImageWrapper& ImageVisualizer::visualizerImage() const
+{ return m_input.getValue(); }
 
 } // namespace panda

@@ -15,10 +15,7 @@ ImageVisualizer::ImageVisualizer(PandaDocument* doc)
 
 void ImageVisualizer::update()
 {
-	const auto& img = m_input.getValue();
-	m_visualizerImage.setValue(img);
-
-	const auto size = img.size();
+	const auto size = m_input.getValue().size();
 	m_aspectRatio.setValue(size.width() / static_cast<float>(size.height()));
 }
 
