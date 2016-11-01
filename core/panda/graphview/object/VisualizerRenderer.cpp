@@ -43,9 +43,18 @@ void VisualizerRenderer::move(const Point& delta)
 
 void VisualizerRenderer::resize(const types::Point& delta)
 {
-	auto size = m_visualizerArea.size() + delta;
+	m_resizingSize += delta;
+	auto size = m_resizingSize;
 	size.x = std::max(20.f, size.x);
 	size.y = std::max(20.f, size.y);
+
+	if (m_aspectRatio > 0)
+	{
+		if (size.x > size.y * m_aspectRatio)
+			size.x = size.y * m_aspectRatio;
+		else if (size.y > size.x / m_aspectRatio)
+			size.y = size.x / m_aspectRatio;
+	}
 
 	m_visualizerArea = Rect::fromSize(getPosition(), size);
 	m_selectionArea = m_visualArea = m_visualizerArea;
@@ -84,6 +93,8 @@ bool VisualizerRenderer::mousePressEvent(const MouseEvent& event)
 	Rect resizeHandle = Rect::fromSize(m_visualizerArea.bottomRight() - size, size);
 
 	m_startMousePos = m_previousMousePos = zoomedMouse;
+	m_aspectRatio = m_visualizer->aspectRatio();
+	m_resizingSize = m_visualizer->visualizerSize.getValue();
 
 	if(resizeHandle.contains(zoomedMouse))
 		m_mouseAction = Action::Resizing;

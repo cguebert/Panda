@@ -41,6 +41,8 @@ protected:
 
 	Visualizer* m_visualizer;
 	types::Rect m_visualizerArea;
+	types::Point m_resizingSize;
+	float m_aspectRatio = 0;
 	enum class Action { None, Moving, Resizing };
 	Action m_mouseAction = Action::None;
 	types::Point m_previousMousePos, m_startMousePos;
