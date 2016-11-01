@@ -1,5 +1,4 @@
 #include <panda/graphview/object/ObjectPositionAddon.h>
-#include <panda/XmlDocument.h>
 #include <panda/object/PandaObject.h>
 
 namespace panda

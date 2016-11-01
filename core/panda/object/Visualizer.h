@@ -15,20 +15,19 @@ public:
 	Visualizer(PandaDocument *doc);
 
 	float aspectRatio() const;
-	types::Point sizeHint() const;
 	const types::ImageWrapper& visualizerImage() const;
+
+	void setDirtyValue(const DataNode* caller) override;
+
+	Data<types::Point> visualizerSize;
 
 protected:
 	Data<float> m_aspectRatio;
-	Data<types::Point> m_sizeHint;
 	Data<types::ImageWrapper> m_visualizerImage;
 };
 
 inline float Visualizer::aspectRatio() const
 { return m_aspectRatio.getValue(); }
-
-inline types::Point Visualizer::sizeHint() const
-{ return m_sizeHint.getValue(); }
 
 inline const types::ImageWrapper& Visualizer::visualizerImage() const
 { return m_visualizerImage.getValue(); }

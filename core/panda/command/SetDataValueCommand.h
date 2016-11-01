@@ -6,6 +6,9 @@
 #include <panda/data/Data.h>
 #include <panda/command/CommandId.h>
 
+namespace panda
+{
+
 template <class T>
 class SetDataValueCommand : public panda::UndoCommand
 {
@@ -69,5 +72,7 @@ protected:
 	T m_oldValue, m_newValue;
 	panda::PandaObject* m_owner;
 };
+
+} // namespace panda
 
 #endif

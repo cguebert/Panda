@@ -9,7 +9,6 @@
 #include <panda/command/MoveObjectCommand.h>
 #include <panda/document/PandaDocument.h>
 #include <panda/object/Annotation.h>
-#include <panda/XmlDocument.h>
 
 namespace panda
 {
@@ -27,7 +26,6 @@ AnnotationRenderer::AnnotationRenderer(GraphView* view, PandaObject* object)
 	: ObjectRenderer(view, object)
 	, m_annotation(dynamic_cast<Annotation*>(object))
 {
-	m_observer->get(m_annotation->deltaToEndChanged).connect<AnnotationRenderer, &AnnotationRenderer::deltaToEndChanged>(this);
 }
 
 void AnnotationRenderer::drawBackground(graphics::DrawList& list, graphics::DrawColors& colors)
@@ -52,13 +50,11 @@ void AnnotationRenderer::drawBackground(graphics::DrawList& list, graphics::Draw
 
 void AnnotationRenderer::drawForeground(graphics::DrawList& list, graphics::DrawColors& colors)
 {
-	auto textArea = Rect(m_textArea.left(), m_textArea.top(), m_textArea.right(), m_textArea.bottom());
-
 	// Draw the box behind the text
-	list.addRectFilled(textArea, colors.midLightColor);
+	list.addRectFilled(m_textArea, colors.midLightColor);
 
 	// Draw the text
-	textArea.adjust(5, 5, -5, -5);
+	auto textArea = m_textArea.adjusted(5, 5, -5, -5);
 	list.addText(textArea, m_annotation->m_text.getValue(), colors.penColor);
 
 	// Draw the handle
@@ -177,7 +173,7 @@ void AnnotationRenderer::createShape()
 
 bool AnnotationRenderer::mousePressEvent(const MouseEvent& event)
 {
-	Point zoomedMouse = getParentView()->viewport().viewDelta() + event.pos() / getParentView()->viewport().zoom();
+	Point zoomedMouse = getParentView()->viewport().toView(event.pos());
 
 	if(m_textArea.contains(zoomedMouse))
 	{
@@ -198,7 +194,7 @@ bool AnnotationRenderer::mousePressEvent(const MouseEvent& event)
 
 void AnnotationRenderer::mouseMoveEvent(const MouseEvent& event)
 {
-	Point zoomedMouse = getParentView()->viewport().viewDelta() + event.pos() / getParentView()->viewport().zoom();
+	Point zoomedMouse = getParentView()->viewport().toView(event.pos());
 	Point delta = zoomedMouse - m_previousMousePos;
 	m_previousMousePos = zoomedMouse;
 	if(delta.isNull())
@@ -212,7 +208,7 @@ void AnnotationRenderer::mouseMoveEvent(const MouseEvent& event)
 
 void AnnotationRenderer::mouseReleaseEvent(const MouseEvent& event)
 {
-	Point zoomedMouse = getParentView()->viewport().viewDelta() + event.pos() / getParentView()->viewport().zoom();
+	Point zoomedMouse = getParentView()->viewport().toView(event.pos());
 	Point deltaStart = m_startMousePos - m_previousMousePos;
 	Point delta = zoomedMouse - m_startMousePos;
 
@@ -233,13 +229,6 @@ void AnnotationRenderer::mouseReleaseEvent(const MouseEvent& event)
 Point AnnotationRenderer::getObjectSize()
 {
 	return Point(100, 50);
-}
-
-void AnnotationRenderer::deltaToEndChanged()
-{
-	m_endPos = m_annotation->getDeltaToEnd();
-	update();
-	getParentView()->update();
 }
 
 int AnnotationDrawClass = RegisterDrawObject<Annotation, AnnotationRenderer>();

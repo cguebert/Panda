@@ -4,8 +4,6 @@
 #include <panda/object/PandaObject.h>
 #include <panda/types/Color.h>
 #include <panda/types/Point.h>
-#include <panda/messaging.h>
-
 namespace panda
 {
 
@@ -16,7 +14,7 @@ public:
 
 	Annotation(PandaDocument *doc);
 
-	virtual void setDirtyValue(const DataNode* caller);
+	void setDirtyValue(const DataNode* caller) override;
 
 	Data<int> m_type;
 	Data<std::string> m_text;
@@ -26,8 +24,6 @@ public:
 
 	types::Point getDeltaToEnd();
 	void setDeltaToEnd(types::Point delta);
-
-	panda::msg::Signal<void()> deltaToEndChanged;
 
 private:
 	Data<types::Point> m_deltaToEnd;

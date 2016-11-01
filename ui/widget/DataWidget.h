@@ -151,7 +151,7 @@ public:
 			if(oldValue != value)
 			{
 				if(m_data->getOwner())
-					m_data->getOwner()->parentDocument()->getUndoStack().push(std::make_shared<SetDataValueCommand<T>>(m_data, oldValue, value));
+					m_data->getOwner()->parentDocument()->getUndoStack().push(std::make_shared<panda::SetDataValueCommand<T>>(m_data, oldValue, value));
 				else
 					m_data->setValue(value);
 			}

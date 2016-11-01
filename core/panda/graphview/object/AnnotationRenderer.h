@@ -31,7 +31,7 @@ public:
 
 	bool acceptsMagneticSnap() const override { return false; }
 
-	virtual types::Point getObjectSize();
+	types::Point getObjectSize() override;
 
 	void moveText(const types::Point& delta);
 	void moveEnd(const types::Point& delta);
@@ -40,8 +40,6 @@ protected:
 	void drawBackground(graphics::DrawList& list, graphics::DrawColors& colors) override;
 	void draw(graphics::DrawList& list, graphics::DrawColors& colors, bool selected) override {}	// Don't draw the normal object
 	void drawForeground(graphics::DrawList& list, graphics::DrawColors& colors) override;
-
-	void deltaToEndChanged();
 
 	Annotation* m_annotation;
 	types::Point m_endPos, m_textSize;

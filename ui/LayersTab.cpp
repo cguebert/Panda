@@ -197,7 +197,7 @@ void LayersTab::compositionModeChanged(int mode)
 		auto owner = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
 		auto doc = m_document.lock();
 		if (doc && oldValue != mode)
-			doc->getUndoStack().push(std::make_shared<SetDataValueCommand<int>>(data, oldValue, mode, owner));
+			doc->getUndoStack().push(std::make_shared<panda::SetDataValueCommand<int>>(data, oldValue, mode, owner));
 	}
 }
 
@@ -211,7 +211,7 @@ void LayersTab::opacityChanged(int opacity)
 		float newValue = opacity / 100.0;
 		auto doc = m_document.lock();
 		if (doc && oldValue != newValue)
-			doc->getUndoStack().push(std::make_shared<SetDataValueCommand<float>>(data, oldValue, newValue, owner));
+			doc->getUndoStack().push(std::make_shared<panda::SetDataValueCommand<float>>(data, oldValue, newValue, owner));
 	}
 }
 
@@ -256,7 +256,7 @@ void LayersTab::nameChanged()
 		if(oldValue != name)
 		{
 			auto owner = dynamic_cast<panda::PandaObject*>(m_selectedLayer);
-			doc->getUndoStack().push(std::make_shared<SetDataValueCommand<std::string>>(data, oldValue, name, owner));
+			doc->getUndoStack().push(std::make_shared<panda::SetDataValueCommand<std::string>>(data, oldValue, name, owner));
 			updateTable();
 		}
 	}
