@@ -28,6 +28,7 @@ VisualizerRenderer::VisualizerRenderer(GraphView* view, PandaObject* object)
 	: ObjectRenderer(view, object)
 	, m_visualizer(dynamic_cast<Visualizer*>(object))
 {
+	m_observer->get(m_visualizer->dirtyVisualization).connect<ObjectRenderer, &ObjectRenderer::setDirty>(this);
 }
 
 void VisualizerRenderer::drawForeground(graphics::DrawList& list, graphics::DrawColors& colors)

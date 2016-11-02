@@ -1,5 +1,6 @@
 #pragma once
 
+#include <panda/messaging.h>
 #include <panda/object/PandaObject.h>
 #include <panda/types/Point.h>
 #include <panda/types/ImageWrapper.h>
@@ -22,6 +23,8 @@ public:
 	Data<types::Point> visualizerSize;
 
 	BaseData* visualizedData() const;
+
+	msg::Signal<void()> dirtyVisualization;
 
 protected:
 	BaseData* m_visualizedData = nullptr;

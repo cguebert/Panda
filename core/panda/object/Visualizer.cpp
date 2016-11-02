@@ -19,7 +19,7 @@ void Visualizer::setDirtyValue(const DataNode* caller)
 {
 	if(caller == &visualizerSize
 	   || (m_visualizedData && caller == m_visualizedData))
-		emitModified();
+		dirtyVisualization.run();
 
 	PandaObject::setDirtyValue(caller);
 }
