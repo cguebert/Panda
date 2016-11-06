@@ -23,7 +23,7 @@ namespace serialization
 {
 
 using Objects = std::vector<panda::PandaObject*>;
-enum class DocumentType { Base, Rendered, Interactive };
+enum class DocumentType { Base, Rendered, Interactive, Visualizer };
 
 std::string PANDA_CORE_API getDocumentName(DocumentType type);
 

@@ -37,8 +37,8 @@ public:
 	void endStep() override;
 	void preDestruction() override;
 
-	typedef std::shared_ptr<BaseData> DataPtr;
-	typedef std::vector<DataPtr> GroupDataList;
+	using DataPtr = std::shared_ptr<BaseData>;
+	using GroupDataList = std::vector<DataPtr>;
 
 	void addGroupData(DataPtr data, int index = -1);
 	void removeGroupData(DataPtr data);

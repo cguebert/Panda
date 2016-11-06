@@ -10,6 +10,7 @@
 #include <panda/object/Dockable.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/ObjectAddons.h>
+#include <panda/object/visualizer/VisualizerDocument.h>
 
 namespace
 {
@@ -32,6 +33,7 @@ namespace
 			tmp.emplace_back(DT::Base,        "Base");
 			tmp.emplace_back(DT::Rendered,    "Rendered");
 			tmp.emplace_back(DT::Interactive, "Interactive");
+			tmp.emplace_back(DT::Visualizer,  "Visualizer");
 			return tmp;
 		}();
 		return types;
@@ -96,6 +98,8 @@ DocumentType getDocumentType(panda::PandaDocument* document)
 {
 	if (dynamic_cast<panda::InteractiveDocument*>(document))
 		return DocumentType::Interactive;
+	else if (dynamic_cast<panda::VisualizerDocument*>(document))
+		return DocumentType::Visualizer;
 	else if (dynamic_cast<panda::RenderedDocument*>(document))
 		return DocumentType::Rendered;
 	return DocumentType::Base;
@@ -108,6 +112,7 @@ std::unique_ptr<panda::PandaDocument> createDocument(DocumentType type, panda::g
 	case DocumentType::Base:        return std::make_unique<panda::PandaDocument>(gui);
 	case DocumentType::Rendered:    return std::make_unique<panda::RenderedDocument>(gui);
 	case DocumentType::Interactive: return std::make_unique<panda::InteractiveDocument>(gui);
+	case DocumentType::Visualizer:  return std::make_unique<panda::VisualizerDocument>(gui);
 	}
 
 	throw std::exception("Unknown document type in createDocument");
@@ -129,7 +134,7 @@ bool canImport(DocumentType current, DocumentType import)
 			|| import == DT::Interactive;
 	}
 
-	throw std::exception("Unknown document type in canImport");
+	return false;
 }
 
 bool writeFile(PandaDocument* document, const std::string& fileName)

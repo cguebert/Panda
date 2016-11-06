@@ -177,22 +177,25 @@ void MainWindow::newFile()
 			case 3: 
 			{
 				items.clear();
+				std::map<QString, int> typesMap;
 				auto df = panda::DataFactory::getInstance();
 				for (const auto entry : df->getEntries())
 				{
 					auto description = QString::fromStdString(panda::types::DataTraitsList::getTrait(entry->fullType)->typeDescription());
 					auto name = QString::fromStdString(entry->typeName);
-					items.push_back(QString("%1 (%2)").arg(description).arg(name));
+					auto label = QString("%1 (%2)").arg(description).arg(name);
+					items.push_back(label);
+					typesMap[label] = entry->fullType;
 				}
 				items.sort();
 				item = QInputDialog::getItem(this, tr("Visualizer data type"), tr("Type of the data to visualize:"), items, 0, false, &ok);
 				if (ok && !item.isEmpty())
 				{
-					auto type = panda::DataFactory::nameToType(item.toStdString());
-					if (type != -1)
+					auto it = typesMap.find(item);
+					if(it != typesMap.end())
 					{
 						auto doc = std::make_shared<panda::VisualizerDocument>(*m_simpleGUI);
-						doc->setVisualizerType(type);
+						doc->setVisualizerType(it->second);
 						setDocument(doc);
 					}
 				}
