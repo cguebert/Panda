@@ -1,6 +1,6 @@
 #pragma once
 
-#include <panda/object/Visualizer.h>
+#include <panda/object/visualizer/Visualizer.h>
 
 namespace panda
 {

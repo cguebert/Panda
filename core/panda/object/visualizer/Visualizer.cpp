@@ -1,4 +1,4 @@
-#include <panda/object/Visualizer.h>
+#include <panda/object/visualizer/Visualizer.h>
 #include <panda/object/ObjectFactory.h>
 
 namespace panda

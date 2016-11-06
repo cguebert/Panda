@@ -9,7 +9,7 @@
 #include <panda/command/MoveObjectCommand.h>
 #include <panda/command/SetDataValueCommand.h>
 #include <panda/document/PandaDocument.h>
-#include <panda/object/Visualizer.h>
+#include <panda/object/visualizer/Visualizer.h>
 #include <panda/helper/algorithm.h>
 
 namespace panda
