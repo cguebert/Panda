@@ -12,15 +12,15 @@ public:
 
 	ImageVisualizer(PandaDocument* doc);
 
-	void update();
+	void update() override;
 
-	const types::ImageWrapper& visualizerImage() const override;
+	unsigned int visualizerTextureId() const override;
 
 protected:
 	Data<types::ImageWrapper> m_input;
 };
 
-inline const types::ImageWrapper& ImageVisualizer::visualizerImage() const
-{ return m_input.getValue(); }
+inline unsigned int ImageVisualizer::visualizerTextureId() const
+{ return m_input.getValue().getTextureId(); }
 
 } // namespace panda

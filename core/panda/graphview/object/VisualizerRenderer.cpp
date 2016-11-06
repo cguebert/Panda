@@ -36,7 +36,7 @@ void VisualizerRenderer::drawForeground(graphics::DrawList& list, graphics::Draw
 	list.addMesh(m_fillShape, colors.lightColor);
 	list.addPolyline(m_outline, colors.penColor, false);
 
-	const auto texId = m_visualizer->visualizerImage().getTextureId();
+	const auto texId = m_visualizer->visualizerTextureId();
 	if (texId)
 	{
 		const auto aspectRatio = m_visualizer->aspectRatio();

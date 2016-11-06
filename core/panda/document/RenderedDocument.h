@@ -7,13 +7,13 @@
 
 #include <panda/graphics/Size.h>
 
-namespace panda {
+namespace panda 
+{
 
 class DocumentRenderer;
 class Layer;
 
-namespace graphics
-{
+namespace graphics {
 	class Framebuffer;
 }
 

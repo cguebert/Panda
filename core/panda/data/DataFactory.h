@@ -48,7 +48,7 @@ public:
 	static int nameToType(const std::string& name);
 
 	typedef std::vector< std::shared_ptr<DataEntry> > EntriesList;
-	const EntriesList getEntries() const { return m_entries; }
+	const EntriesList& getEntries() const { return m_entries; }
 
 protected:
 	EntriesList m_entries;

@@ -30,6 +30,7 @@
 #include <panda/TimedFunctions.h>
 #include <panda/command/AddObjectCommand.h>
 #include <panda/command/RemoveObjectCommand.h>
+#include <panda/data/DataFactory.h>
 #include <panda/document/GraphUtils.h>
 #include <panda/document/InteractiveDocument.h>
 #include <panda/document/DocumentSignals.h>
@@ -40,6 +41,7 @@
 #include <panda/object/Annotation.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/Group.h>
+#include <panda/object/visualizer/VisualizerDocument.h>
 #include <panda/types/DataTraits.h>
 
 #include <functional>
@@ -160,7 +162,7 @@ void MainWindow::newFile()
 		play(false);
 
 		QStringList items;
-		items << tr("Basic") << tr("Rendered") << tr("Interactive");
+		items << tr("Basic") << tr("Rendered") << tr("Interactive") << tr("Visualizer");
 
 		bool ok;
 		auto item = QInputDialog::getItem(this, tr("New document"), tr("Type of the document:"), items, 2, false, &ok);
@@ -172,6 +174,30 @@ void MainWindow::newFile()
 			case 0: setDocument(std::make_shared<panda::PandaDocument>      (*m_simpleGUI)); break;
 			case 1: setDocument(std::make_shared<panda::RenderedDocument>   (*m_simpleGUI)); break;
 			case 2: setDocument(std::make_shared<panda::InteractiveDocument>(*m_simpleGUI)); break;
+			case 3: 
+			{
+				items.clear();
+				auto df = panda::DataFactory::getInstance();
+				for (const auto entry : df->getEntries())
+				{
+					auto description = QString::fromStdString(panda::types::DataTraitsList::getTrait(entry->fullType)->typeDescription());
+					auto name = QString::fromStdString(entry->typeName);
+					items.push_back(QString("%1 (%2)").arg(description).arg(name));
+				}
+				items.sort();
+				item = QInputDialog::getItem(this, tr("Visualizer data type"), tr("Type of the data to visualize:"), items, 0, false, &ok);
+				if (ok && !item.isEmpty())
+				{
+					auto type = panda::DataFactory::nameToType(item.toStdString());
+					if (type != -1)
+					{
+						auto doc = std::make_shared<panda::VisualizerDocument>(*m_simpleGUI);
+						doc->setVisualizerType(type);
+						setDocument(doc);
+					}
+				}
+				break;
+			}
 			}
 		}
 

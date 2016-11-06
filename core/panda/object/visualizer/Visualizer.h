@@ -16,7 +16,7 @@ public:
 	Visualizer(PandaDocument *doc);
 
 	float aspectRatio() const;
-	virtual const types::ImageWrapper& visualizerImage() const;
+	virtual unsigned int visualizerTextureId() const = 0;
 
 	void setDirtyValue(const DataNode* caller) override;
 
@@ -29,14 +29,10 @@ public:
 protected:
 	BaseData* m_visualizedData = nullptr;
 	Data<float> m_aspectRatio;
-	Data<types::ImageWrapper> m_visualizerImage;
 };
 
 inline float Visualizer::aspectRatio() const
 { return m_aspectRatio.getValue(); }
-
-inline const types::ImageWrapper& Visualizer::visualizerImage() const
-{ return m_visualizerImage.getValue(); }
 
 inline BaseData* Visualizer::visualizedData() const
 { return m_visualizedData; }
