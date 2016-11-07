@@ -100,22 +100,6 @@ protected:
 	bool m_input, m_output;
 };
 
-//****************************************************************************//
-
-class PANDA_CORE_API ReorderGroupDataCommand : public UndoCommand
-{
-public:
-	ReorderGroupDataCommand(Group* group, BaseData* data, int index);
-
-	virtual void redo();
-	virtual void undo();
-
-protected:
-	Group* m_group;
-	BaseData* m_data;
-	int m_oldIndex, m_newIndex;
-};
-
 } // namespace panda
 
 #endif

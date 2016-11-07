@@ -193,19 +193,4 @@ void RemoveDataFromGroupCommand::undo()
 	m_group->addData(m_data.get(), m_dataIndex);
 }
 
-//****************************************************************************//
-
-ReorderGroupDataCommand::ReorderGroupDataCommand(Group* group, BaseData* data, int index)
-	: m_group(group)
-{
-	setText("reorder group data");
-}
-
-void ReorderGroupDataCommand::redo()
-{
-}
-
-void ReorderGroupDataCommand::undo()
-{
-}
 } // namespace panda
