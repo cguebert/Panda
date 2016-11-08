@@ -4,6 +4,7 @@
 #include <panda/object/PandaObject.h>
 #include <panda/object/Layer.h>
 #include <panda/types/Point.h>
+#include <panda/document/DocumentDatas.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/messaging.h>
 
@@ -38,12 +39,8 @@ public:
 	void preDestruction() override;
 
 	using DataPtr = std::shared_ptr<BaseData>;
-	using GroupDataList = std::vector<DataPtr>;
 
-	void addGroupData(DataPtr data, int index = -1);
-	void removeGroupData(DataPtr data);
-	void reorderData(DataPtr data, int index);
-	const GroupDataList& getGroupDatas(); // Can modify the datas, not the list
+	DocumentDatas& groupDatas();
 
 	std::string findAvailableDataName(const std::string& baseName, BaseData* data = nullptr);
 	DataPtr duplicateData(BaseData* data);
@@ -54,7 +51,7 @@ protected:
 	Data<std::string> m_groupName;
 
 	ObjectsList m_objectsList;
-	GroupDataList m_groupDatas;
+	DocumentDatas m_groupDatas;
 };
 
 inline const std::string& Group::getGroupName() const
@@ -69,7 +66,7 @@ inline std::string Group::getLabel() const
 inline ObjectsList& Group::getObjectsList()
 { return m_objectsList; }
 
-inline const Group::GroupDataList& Group::getGroupDatas()
+inline DocumentDatas& Group::groupDatas()
 { return m_groupDatas; }
 
 //****************************************************************************//

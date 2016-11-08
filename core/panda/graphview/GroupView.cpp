@@ -63,7 +63,7 @@ public:
 			m_objectsRect |= objRnd->getVisualArea();
 
 		int nbInputs = 0, nbOutputs = 0;
-		for (const auto& groupData : m_groupView.group()->getGroupDatas())
+		for (const auto& groupData : m_groupView.group()->groupDatas().get())
 		{
 			if (groupData->isInput())	++nbInputs;
 			if (groupData->isOutput())	++nbOutputs;
@@ -235,7 +235,7 @@ private:
 				LinksList::computeCompatibleDatas(data);
 				if (data->isInput())
 				{
-					for (auto groupData : group->getGroupDatas())
+					for (auto groupData : group->groupDatas().get())
 					{
 						if (groupData->isInput())
 							m_possibleLinks.insert(groupData.get());
@@ -243,7 +243,7 @@ private:
 				}
 				else if (data->isOutput())
 				{
-					for (auto groupData : group->getGroupDatas())
+					for (auto groupData : group->groupDatas().get())
 					{
 						if (groupData->isOutput())
 							m_possibleLinks.insert(groupData.get());
@@ -517,7 +517,7 @@ void GroupView::updateGroupDataRects()
 {
 	// Count the number of inputs and outputs
 	int nbInputs = 0, nbOutputs = 0;
-	for (const auto& groupData : m_group->getGroupDatas())
+	for (const auto& groupData : m_group->groupDatas().get())
 	{
 		if (groupData->isInput())
 			++nbInputs;
@@ -535,7 +535,7 @@ void GroupView::updateGroupDataRects()
 
 	m_groupDataRects.clear();
 	int inputIndex = 0, outputIndex = 0;
-	for (const auto& groupData : m_group->getGroupDatas())
+	for (const auto& groupData : m_group->groupDatas().get())
 	{
 		if (groupData->isInput())
 		{

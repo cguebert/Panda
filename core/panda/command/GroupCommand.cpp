@@ -57,7 +57,7 @@ EditGroupCommand::EditGroupCommand(Group* group,
 	, m_newDatas(newDatas)
 {
 	m_prevName = group->getGroupName();
-	for(auto data : m_group->m_groupDatas)
+	for(const auto& data : m_group->groupDatas().get())
 	{
 		DataInfo info;
 		info.data = data.get();
@@ -73,12 +73,12 @@ void EditGroupCommand::redo()
 	m_group->m_groupName.setValue(m_newName);
 
 	std::map< BaseData*, std::shared_ptr<BaseData> > datasPtrMap;
-	for(const auto& dataPtr : m_group->m_groupDatas)
+	for(const auto& dataPtr : m_group->groupDatas().get())
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
 	m_group->enableModifiedSignal(false);
 	std::vector< std::shared_ptr<BaseData> > datasList;
-	for(auto info : m_newDatas)
+	for(const auto& info : m_newDatas)
 	{
 		info.data->setName(info.name);
 		info.data->setHelp(info.help);
@@ -86,7 +86,7 @@ void EditGroupCommand::redo()
 		datasList.push_back(datasPtrMap.at(info.data));
 	}
 
-	m_group->m_groupDatas = datasList;
+	m_group->groupDatas().set(std::move(datasList));
 	m_group->enableModifiedSignal(true);
 	m_group->emitModified();
 }
@@ -96,12 +96,12 @@ void EditGroupCommand::undo()
 	m_group->m_groupName.setValue(m_prevName);
 
 	std::map< BaseData*, std::shared_ptr<BaseData> > datasPtrMap;
-	for(const auto& dataPtr : m_group->m_groupDatas)
+	for(const auto& dataPtr : m_group->groupDatas().get())
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
 	m_group->enableModifiedSignal(false);
 	std::vector< std::shared_ptr<BaseData> > datasList;
-	for(auto info : m_prevDatas)
+	for(const auto& info : m_prevDatas)
 	{
 		info.data->setName(info.name);
 		info.data->setHelp(info.help);
@@ -109,7 +109,7 @@ void EditGroupCommand::undo()
 		datasList.push_back(datasPtrMap.at(info.data));
 	}
 
-	m_group->m_groupDatas = datasList;
+	m_group->groupDatas().set(std::move(datasList));
 	m_group->enableModifiedSignal(true);
 	m_group->emitModified();
 }
@@ -132,7 +132,7 @@ void AddDataToGroupCommand::redo()
 	if (m_output)
 		m_group->addOutput(*m_data);
 
-	m_group->addGroupData(m_data);
+	m_group->groupDatas().add(m_data);
 	m_group->addData(m_data.get());
 }
 
@@ -143,7 +143,7 @@ void AddDataToGroupCommand::undo()
 	if (m_output)
 		m_group->removeOutput(*m_data);
 
-	m_group->removeGroupData(m_data);
+	m_group->groupDatas().remove(m_data);
 	m_group->removeData(m_data.get());
 }
 
@@ -154,7 +154,7 @@ RemoveDataFromGroupCommand::RemoveDataFromGroupCommand(Group* group, BaseData* d
 {
 	setText("remove group data");
 
-	const auto& groupDatas = m_group->getGroupDatas();
+	const auto& groupDatas = m_group->groupDatas().get();
 	auto gIt = std::find_if(groupDatas.begin(), groupDatas.end(), [data](const std::shared_ptr<BaseData>& dataSPtr) {
 		return dataSPtr.get() == data;
 	});
@@ -178,7 +178,7 @@ void RemoveDataFromGroupCommand::redo()
 	if (m_output)
 		m_group->removeOutput(*m_data);
 
-	m_group->removeGroupData(m_data);
+	m_group->groupDatas().remove(m_data);
 	m_group->removeData(m_data.get());
 }
 
@@ -189,7 +189,7 @@ void RemoveDataFromGroupCommand::undo()
 	if (m_output)
 		m_group->addOutput(*m_data);
 
-	m_group->addGroupData(m_data, m_groupDataIndex);
+	m_group->groupDatas().add(m_data, m_groupDataIndex);
 	m_group->addData(m_data.get(), m_dataIndex);
 }
 

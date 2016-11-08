@@ -154,7 +154,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 					if(!connectedInputDatas.count(otherData))
 					{
 						auto newData = group->duplicateData(data);
-						group->addGroupData(newData);
+						group->groupDatas().add(newData);
 						createdData = newData.get();
 						createdData->copyValueFrom(otherData);
 						group->addInput(*createdData);
@@ -195,7 +195,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 						if(!createdData)
 						{
 							auto newData = group->duplicateData(data);
-							group->addGroupData(newData);
+							group->groupDatas().add(newData);
 							createdData = newData.get();
 							createdData->copyValueFrom(data);
 							createdData->setOutput(true);
@@ -226,7 +226,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 			else // We create a data in the group for this input
 			{
 				auto newData = group->duplicateData(inputData);
-				group->addGroupData(newData);
+				group->groupDatas().add(newData);
 				auto createdData = newData.get();
 				createdData->copyValueFrom(inputData);
 				createdData->setName(group->findAvailableDataName(caption, createdData));
@@ -237,7 +237,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 
 			if(userValue->hasConnectedOutput())
 			{
-				for(auto data : group->getGroupDatas())
+				for(const auto& data : group->groupDatas().get())
 				{
 					if(data->getParent() == outputData)
 					{
@@ -249,7 +249,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 			else // We create a data in the group for this output
 			{
 				auto newData = group->duplicateData(inputData);
-				group->addGroupData(newData);
+				group->groupDatas().add(newData);
 				auto createdData = newData.get();
 				createdData->copyValueFrom(outputData);
 				createdData->setName(group->findAvailableDataName(caption, createdData));
@@ -330,7 +330,7 @@ bool ungroupSelection(PandaDocument* doc, graphview::GraphView* view)
 			graphview::ObjectPositionAddon::setPosition(object.get(), graphview::ObjectPositionAddon::getPosition(object.get()) + delta);
 
 		// Reconnecting datas
-		for(auto& data : group->getGroupDatas())
+		for(const auto& data : group->groupDatas().get())
 		{
 			auto parent = data->getParent();
 			auto outputs = data->getOutputs();

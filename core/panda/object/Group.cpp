@@ -28,7 +28,7 @@ Group::~Group()
 void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 {
 	// Saving group datas
-	for(const auto& data : m_groupDatas)
+	for(const auto& data : m_groupDatas.get())
 	{
 		auto node = elem.addChild("GroupData");
 		node.setAttribute("type", DataFactory::typeToName(data->getDataTrait()->fullTypeId()));
@@ -140,7 +140,7 @@ void Group::load(const XmlElement& elem)
 			data->setWidget(widget);
 		if(!widgetData.empty())
 			data->setWidgetData(widgetData);
-		m_groupDatas.push_back(dataPtr);
+		m_groupDatas.add(dataPtr);
 		if(input)
 			addInput(*data);
 		if(output)
@@ -251,27 +251,6 @@ void Group::preDestruction()
 	PandaObject::preDestruction();
 	for (auto& object : m_objectsList.get())
 		object->preDestruction();
-}
-
-void Group::addGroupData(DataPtr data, int index)
-{ 
-	if(index < 0 || index >= static_cast<int>(m_groupDatas.size()))
-		m_groupDatas.push_back(data); 
-	else
-		m_groupDatas.insert(m_groupDatas.begin() + index, data);
-}
-
-void Group::removeGroupData(DataPtr data)
-{
-	auto it = std::find(m_groupDatas.begin(), m_groupDatas.end(), data);
-	if (it != m_groupDatas.end())
-		m_groupDatas.erase(it);
-}
-
-void Group::reorderData(DataPtr data, int index)
-{
-	auto it = std::find(m_groupDatas.begin(), m_groupDatas.end(), data);
-	helper::slide(it, it + 1, m_groupDatas.begin() + index);
 }
 
 std::string Group::findAvailableDataName(const std::string& baseName, BaseData* data)

@@ -21,7 +21,7 @@ EditGroupDialog::EditGroupDialog(panda::Group* group, QWidget* parent)
 	groupNameLayout->addWidget(m_editGroupName);
 	vLayout->addLayout(groupNameLayout);
 
-	auto groupDatas = group->getGroupDatas();
+	const auto& groupDatas = group->groupDatas().get();
 	Datas inputDatas, outputDatas;
 	for (const auto& dataSPtr : groupDatas)
 	{
@@ -227,7 +227,7 @@ void EditGroupDialog::updateGroup()
 	if(groupName != m_group->getGroupName())
 		modified = true;
 
-	auto groupDatas = m_group->getGroupDatas();
+	const auto& groupDatas = m_group->groupDatas().get();
 	if (datasList.size() != groupDatas.size()) // Should not happen?
 		modified = true;
 	else
