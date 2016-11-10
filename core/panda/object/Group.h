@@ -29,7 +29,7 @@ public:
 	void reset() override;
 
 	const std::string& getGroupName() const;
-	BaseData& getGroupNameData();
+	Data<std::string>& getGroupNameData();
 	std::string getLabel() const override;
 
 	ObjectsList& getObjectsList();
@@ -46,8 +46,6 @@ public:
 	DataPtr duplicateData(BaseData* data);
 
 protected:
-	friend class panda::EditGroupCommand;
-
 	Data<std::string> m_groupName;
 
 	ObjectsList m_objectsList;
@@ -57,7 +55,7 @@ protected:
 inline const std::string& Group::getGroupName() const
 { return m_groupName.getValue(); }
 
-inline BaseData& Group::getGroupNameData()
+inline Data<std::string>& Group::getGroupNameData()
 { return m_groupName; }
 
 inline std::string Group::getLabel() const

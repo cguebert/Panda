@@ -56,7 +56,7 @@ EditGroupCommand::EditGroupCommand(Group* group,
 	, m_newName(newName)
 	, m_newDatas(newDatas)
 {
-	m_prevName = group->getGroupName();
+	m_prevName = m_group->getGroupName();
 	for(const auto& data : m_group->groupDatas().get())
 	{
 		DataInfo info;
@@ -70,47 +70,51 @@ EditGroupCommand::EditGroupCommand(Group* group,
 
 void EditGroupCommand::redo()
 {
-	m_group->m_groupName.setValue(m_newName);
+	m_group->getGroupNameData().setValue(m_newName);
 
 	std::map< BaseData*, std::shared_ptr<BaseData> > datasPtrMap;
 	for(const auto& dataPtr : m_group->groupDatas().get())
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
-	m_group->enableModifiedSignal(false);
-	std::vector< std::shared_ptr<BaseData> > datasList;
-	for(const auto& info : m_newDatas)
 	{
-		info.data->setName(info.name);
-		info.data->setHelp(info.help);
-		m_group->addData(info.data);
-		datasList.push_back(datasPtrMap.at(info.data));
+		ModifiedSignalDisabler disabler { m_group };
+		std::vector< std::shared_ptr<BaseData> > datasList;
+		for (const auto& info : m_newDatas)
+		{
+			info.data->setName(info.name);
+			info.data->setHelp(info.help);
+			m_group->addData(info.data);
+			datasList.push_back(datasPtrMap.at(info.data));
+		}
+
+		m_group->groupDatas().set(std::move(datasList));
 	}
 
-	m_group->groupDatas().set(std::move(datasList));
-	m_group->enableModifiedSignal(true);
 	m_group->emitModified();
 }
 
 void EditGroupCommand::undo()
 {
-	m_group->m_groupName.setValue(m_prevName);
+	m_group->getGroupNameData().setValue(m_prevName);
 
 	std::map< BaseData*, std::shared_ptr<BaseData> > datasPtrMap;
 	for(const auto& dataPtr : m_group->groupDatas().get())
 		datasPtrMap.emplace(dataPtr.get(), dataPtr);
 
-	m_group->enableModifiedSignal(false);
-	std::vector< std::shared_ptr<BaseData> > datasList;
-	for(const auto& info : m_prevDatas)
 	{
-		info.data->setName(info.name);
-		info.data->setHelp(info.help);
-		m_group->addData(info.data);
-		datasList.push_back(datasPtrMap.at(info.data));
+		ModifiedSignalDisabler disabler { m_group };
+		std::vector< std::shared_ptr<BaseData> > datasList;
+		for (const auto& info : m_prevDatas)
+		{
+			info.data->setName(info.name);
+			info.data->setHelp(info.help);
+			m_group->addData(info.data);
+			datasList.push_back(datasPtrMap.at(info.data));
+		}
+
+		m_group->groupDatas().set(std::move(datasList));
 	}
 
-	m_group->groupDatas().set(std::move(datasList));
-	m_group->enableModifiedSignal(true);
 	m_group->emitModified();
 }
 

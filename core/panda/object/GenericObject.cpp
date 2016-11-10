@@ -77,55 +77,56 @@ BaseData* GenericObject::createDatas(int type, int index)
 
 	BaseData* firstInputData = nullptr;
 
-	enableModifiedSignal(false);
-	enableDirtySignal(false);
-
-	int nbDefs = m_dataDefinitions.size();
-	for(int i=0; i<nbDefs; ++i)
 	{
-		std::string nameType = DataFactory::typeToName(type);
-		std::string dataName = m_dataDefinitions[i].name;
-		if(dataName.find("%1") != std::string::npos)
-			helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
+		ModifiedSignalDisabler modifiedDisabler { this };
+		DirtySignalDisabler dirtyDisabler { this };
 
-		dataName += " #" + std::to_string(nbCreated);	// Add the count
-
-		int dataType = m_dataDefinitions[i].type;
-		if(!dataType) // If the type in the definition is 0, use the full type of the connected Data
-			dataType = type;
-		else if(!DataTypeId::getValueType(dataType))	// Replace with the value type of the connected Data
-			dataType = types::DataTypeId::replaceValueType(dataType, valueType);
-
-		auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
-		auto data = dataPtr.get();
-
-		if(m_dataDefinitions[i].isInput())
+		int nbDefs = m_dataDefinitions.size();
+		for (int i = 0; i < nbDefs; ++i)
 		{
-			addInput(*data);
-			if(!firstInputData)
-				firstInputData = data;
+			std::string nameType = DataFactory::typeToName(type);
+			std::string dataName = m_dataDefinitions[i].name;
+			if (dataName.find("%1") != std::string::npos)
+				helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
+
+			dataName += " #" + std::to_string(nbCreated);	// Add the count
+
+			int dataType = m_dataDefinitions[i].type;
+			if (!dataType) // If the type in the definition is 0, use the full type of the connected Data
+				dataType = type;
+			else if (!DataTypeId::getValueType(dataType))	// Replace with the value type of the connected Data
+				dataType = types::DataTypeId::replaceValueType(dataType, valueType);
+
+			auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
+			auto data = dataPtr.get();
+
+			if (m_dataDefinitions[i].isInput())
+			{
+				addInput(*data);
+				if (!firstInputData)
+					firstInputData = data;
+			}
+
+			if (m_dataDefinitions[i].isOutput())
+				addOutput(*data);
+
+			createdDatasStruct->datas.push_back(dataPtr);
+			m_createdDatasMap.emplace(data, createdDatasStruct);
 		}
 
-		if(m_dataDefinitions[i].isOutput())
-			addOutput(*data);
+		if (index != -1)
+		{
+			reorderDatas();
+			updateDataNames();
+		}
+		else
+		{
+			removeData(m_genericData);	// generic must always be last
+			addData(m_genericData);
+		}
 
-		createdDatasStruct->datas.push_back(dataPtr);
-		m_createdDatasMap.emplace(data, createdDatasStruct);
 	}
 
-	if(index != -1)
-	{
-		reorderDatas();
-		updateDataNames();
-	}
-	else
-	{
-		removeData(m_genericData);	// generic must always be last
-		addData(m_genericData);
-	}
-
-	enableModifiedSignal(true);
-	enableDirtySignal(true);
 	emitModified();
 
 	return firstInputData;
@@ -375,62 +376,63 @@ BaseData* SingleTypeGenericObject::createDatas(int type, int index)
 
 	BaseData* firstInputData = nullptr;
 
-	enableModifiedSignal(false);
-	enableDirtySignal(false);
-
-	int nbDefs = m_dataDefinitions.size();
-	for(int i=0; i<nbDefs; ++i)
 	{
-		if(m_singleOutput && nbCreated > 1 && m_dataDefinitions[i].isOutput() && !m_dataDefinitions[i].isInput())
+		ModifiedSignalDisabler modifiedDisabler { this };
+		DirtySignalDisabler dirtyDisabler { this };
+
+		int nbDefs = m_dataDefinitions.size();
+		for (int i = 0; i < nbDefs; ++i)
 		{
-			createdDatasStruct->datas.push_back(BaseDataPtr(nullptr));
+			if (m_singleOutput && nbCreated > 1 && m_dataDefinitions[i].isOutput() && !m_dataDefinitions[i].isInput())
+			{
+				createdDatasStruct->datas.push_back(BaseDataPtr(nullptr));
+			}
+			else
+			{
+				std::string nameType = DataFactory::typeToName(type);
+				std::string dataName = m_dataDefinitions[i].name;
+				if (dataName.find("%1") != std::string::npos)
+					helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
+
+				dataName += " #" + std::to_string(nbCreated);	// Add the count
+
+				int dataType = m_dataDefinitions[i].type;
+				if (!dataType) // If the type in the definition is 0, use the full type of the connected Data
+					dataType = type;
+				else if (!DataTypeId::getValueType(dataType))	// Replace with the value type of the connected Data
+					dataType = types::DataTypeId::replaceValueType(dataType, valueType);
+
+				auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
+				auto data = dataPtr.get();
+
+				if (m_dataDefinitions[i].isInput())
+				{
+					addInput(*data);
+					if (!firstInputData)
+						firstInputData = data;
+				}
+
+				if (m_dataDefinitions[i].isOutput())
+					addOutput(*data);
+
+				createdDatasStruct->datas.push_back(dataPtr);
+				m_createdDatasMap.emplace(data, createdDatasStruct);
+			}
+		}
+
+		if (index != -1)
+		{
+			reorderDatas();
+			updateDataNames();
 		}
 		else
 		{
-			std::string nameType = DataFactory::typeToName(type);
-			std::string dataName = m_dataDefinitions[i].name;
-			if(dataName.find("%1") != std::string::npos)
-				helper::replaceAll(dataName, std::string("%1"), nameType);	// Insert the type's name into the data's name
-
-			dataName += " #" + std::to_string(nbCreated);	// Add the count
-
-			int dataType = m_dataDefinitions[i].type;
-			if(!dataType) // If the type in the definition is 0, use the full type of the connected Data
-				dataType = type;
-			else if(!DataTypeId::getValueType(dataType))	// Replace with the value type of the connected Data
-				dataType = types::DataTypeId::replaceValueType(dataType, valueType);
-
-			auto dataPtr = DataFactory::getInstance()->create(dataType, dataName, m_dataDefinitions[i].help, this);
-			auto data = dataPtr.get();
-
-			if(m_dataDefinitions[i].isInput())
-			{
-				addInput(*data);
-				if(!firstInputData)
-					firstInputData = data;
-			}
-
-			if(m_dataDefinitions[i].isOutput())
-				addOutput(*data);
-
-			createdDatasStruct->datas.push_back(dataPtr);
-			m_createdDatasMap.emplace(data, createdDatasStruct);
+			removeData(m_genericData);	// generic must always be last
+			addData(m_genericData);
 		}
+
 	}
 
-	if(index != -1)
-	{
-		reorderDatas();
-		updateDataNames();
-	}
-	else
-	{
-		removeData(m_genericData);	// generic must always be last
-		addData(m_genericData);
-	}
-
-	enableModifiedSignal(true);
-	enableDirtySignal(true);
 	emitModified();
 
 	return firstInputData;

@@ -10,7 +10,9 @@
 namespace panda
 {
 
+class DirtySignalDisabler;
 class ObjectAddons;
+class ModifiedSignalDisabler;
 class PandaDocument;
 class XmlElement;
 
@@ -88,10 +90,10 @@ protected:
 	void setInternalData(const std::string& name, uint32_t index); /// Should only be called by the Object Factory, to set the object's name and index
 	friend class ObjectFactory;
 
-	void setParentDocument(PandaDocument* doc); /// Set the parent document. Will do nothing if a document has already been set as this object's parent.
+	friend class DirtySignalDisabler;
+	friend class ModifiedSignalDisabler;
 
-	void enableModifiedSignal(bool b); /// To (de)activate the execution of the modified signal. Do not forget to put the previous value back when done.
-	void enableDirtySignal(bool b); /// To (de)activate the execution of the dirty signal. Do not forget to put the previous value back when done.
+	void setParentDocument(PandaDocument* doc); /// Set the parent document. Will do nothing if a document has already been set as this object's parent.
 
 	void setLaterUpdate(bool b = true); /// Tell the scheduler that this object will be dirty later in the timestep (maybe multiple times)
 	void setUpdateOnMainThread(bool b = true); /// Tell the scheduler that this object will always be updated on the main thread
@@ -110,6 +112,32 @@ private:
 	bool m_updateOnMainThread = false; // Flag for the scheduler: if true, this object will always be updated on the main thread
 	bool m_destructing = false; // If true, do not do any computations as the object will be removed from the document
 	mutable bool m_isUpdating = false; // Mutable as it will modified in const methods
+};
+
+class DirtySignalDisabler
+{
+public:
+	DirtySignalDisabler(PandaObject* object) : m_object(object)
+	{ m_object->m_doEmitDirty = false; }
+
+	~DirtySignalDisabler()
+	{ m_object->m_doEmitDirty = true; }
+
+private:
+	PandaObject* m_object;
+};
+
+class ModifiedSignalDisabler
+{
+public:
+	ModifiedSignalDisabler(PandaObject* object) : m_object(object)
+	{ m_object->m_doEmitModified = false; }
+
+	~ModifiedSignalDisabler()
+	{ m_object->m_doEmitModified = true; }
+
+private:
+	PandaObject* m_object;
 };
 
 //****************************************************************************//
@@ -165,12 +193,6 @@ inline void PandaObject::setInStep(bool inStep)
 
 inline bool PandaObject::isInStep() const
 { return m_isInStep; }
-
-inline void PandaObject::enableModifiedSignal(bool b)
-{ m_doEmitModified = b; }
-
-inline void PandaObject::enableDirtySignal(bool b)
-{ m_doEmitDirty = b; }
 
 inline void PandaObject::setLaterUpdate(bool b)
 { m_laterUpdate = b; }
