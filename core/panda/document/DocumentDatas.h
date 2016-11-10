@@ -4,13 +4,18 @@
 
 #include <memory>
 
-namespace panda {
+namespace panda 
+{
+
+class PandaObject;
 
 class PANDA_CORE_API DocumentDatas
 {
 public:
 	using DataPtr = std::shared_ptr<BaseData>;
 	using DataList = std::vector<DataPtr>;
+
+	DocumentDatas(PandaObject* parent);
 
 	const DataList& get() const;
 	void set(DataList list);
@@ -19,8 +24,12 @@ public:
 	void remove(const DataPtr& data);
 	void reorder(const DataPtr& data, int index);
 
+	void save(XmlElement& elem);
+	void load(const XmlElement& elem);
+
 protected:
 	DataList m_dataList;
+	PandaObject* m_parent;
 };
 
 inline const DocumentDatas::DataList& DocumentDatas::get() const

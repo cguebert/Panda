@@ -18,6 +18,8 @@ ScrollContainer::ScrollContainer(QWidget* parent)
 
 ScrollContainer::~ScrollContainer()
 {
+	if (m_view)
+		delete m_view;
 }
 
 void ScrollContainer::setView(ScrollableView* view)

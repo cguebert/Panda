@@ -18,6 +18,7 @@ namespace panda
 Group::Group(PandaDocument* parent)
 	: PandaObject(parent)
 	, m_groupName(initData(std::string("Group"), "name", "Name to be displayed for this group"))
+	, m_groupDatas(this)
 {
 }
 
@@ -28,22 +29,7 @@ Group::~Group()
 void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 {
 	// Saving group datas
-	for(const auto& data : m_groupDatas.get())
-	{
-		auto node = elem.addChild("GroupData");
-		node.setAttribute("type", DataFactory::typeToName(data->getDataTrait()->fullTypeId()));
-		node.setAttribute("input", data->isInput());
-		node.setAttribute("output", data->isOutput());
-		node.setAttribute("name", data->getName());
-		node.setAttribute("help", data->getHelp());
-
-		const auto widget = data->getWidget();
-		const auto widgetData = data->getWidgetData();
-		if(!widget.empty())
-			node.setAttribute("widget", widget);
-		if(!widgetData.empty())
-			node.setAttribute("widgetData", widgetData);
-	}
+	m_groupDatas.save(elem);
 
 	// Saving data values
 	PandaObject::save(elem, selected);
@@ -122,30 +108,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 
 void Group::load(const XmlElement& elem)
 {
-	for(auto groupDataNode = elem.firstChild("GroupData"); groupDataNode; groupDataNode = groupDataNode.nextSibling("GroupData"))
-	{
-		uint32_t type, input, output;
-		std::string name, help, widget, widgetData;
-		type = DataFactory::nameToType(groupDataNode.attribute("type").toString());
-		input = groupDataNode.attribute("input").toUnsigned();
-		output = groupDataNode.attribute("output").toUnsigned();
-		name = groupDataNode.attribute("name").toString();
-		help = groupDataNode.attribute("help").toString();
-		widget = groupDataNode.attribute("widget").toString();
-		widgetData = groupDataNode.attribute("widgetData").toString();
-
-		auto dataPtr = DataFactory::getInstance()->create(type, name, help, this);
-		auto data = dataPtr.get();
-		if(!widget.empty())
-			data->setWidget(widget);
-		if(!widgetData.empty())
-			data->setWidgetData(widgetData);
-		m_groupDatas.add(dataPtr);
-		if(input)
-			addInput(*data);
-		if(output)
-			addOutput(*data);
-	}
+	m_groupDatas.load(elem);
 
 	// Loading data values
 	PandaObject::load(elem);
