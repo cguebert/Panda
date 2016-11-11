@@ -44,9 +44,9 @@ namespace graphview
 class GroupViewport : public Viewport
 {
 public:
-	GroupViewport(GroupView& view)
+	GroupViewport(GraphView& view, DocumentDatas& documentDatas)
 		: Viewport(view)
-		, m_groupView(view)
+		, m_documentDatas(documentDatas)
 	{
 	}
 
@@ -61,26 +61,25 @@ public:
 		m_objectsRect = Rect();
 		for(const auto& objRnd : m_view.objectRenderers().getOrdered())
 			m_objectsRect |= objRnd->getVisualArea();
+		m_onlyObjectsRect = m_objectsRect;
 
 		int nbInputs = 0, nbOutputs = 0;
-		for (const auto& groupData : m_groupView.group()->groupDatas().get())
+		for (const auto& groupData : m_documentDatas.get())
 		{
 			if (groupData->isInput())	++nbInputs;
 			if (groupData->isOutput())	++nbOutputs;
 		}
 
-		m_onlyObjectsRect = m_objectsRect;
 		if (nbInputs)
 			m_objectsRect.adjust(-(dataMarginW + dataRectSize + tagMargin + tagW), 0, 0, 0);
 		if (nbOutputs)
 			m_objectsRect.adjust(0, 0, dataMarginW + tagMargin + tagW, 0);
 
 		updateViewRect();
-		m_groupView.updateGroupDataRects();
 	}
 
 private:
-	GroupView& m_groupView;
+	DocumentDatas& m_documentDatas;
 	types::Rect m_onlyObjectsRect; // Without the group datas
 };
 
@@ -466,12 +465,14 @@ std::unique_ptr<GroupView> GroupView::createGroupView(Group* group, PandaDocumen
 	auto& viewRef = *groupView;
 	groupView->m_linksList = std::make_unique<GroupLinksList>(viewRef);
 	groupView->m_interaction = std::make_unique<GroupViewInteraction>(viewRef);
-	groupView->m_viewport = std::make_unique<GroupViewport>(viewRef);
+	groupView->m_viewport = std::make_unique<GroupViewport>(viewRef, group->groupDatas());
 
 	groupView->initComponents();
 
 	auto& docSignals = doc->getSignals();
 	groupView->m_observer.get(docSignals.modifiedObject).connect<GroupView, &GroupView::modifiedObject>(groupView.get());
+
+	groupView->m_observer.get(groupView->m_viewport->modified).connect<GroupView, &GroupView::updateGroupDataRects>(groupView.get());
 
 	return groupView;
 }
