@@ -24,8 +24,8 @@ public:
 	void remove(const DataPtr& data);
 	void reorder(const DataPtr& data, int index);
 
-	void save(XmlElement& elem);
-	void load(const XmlElement& elem);
+	void save(XmlElement& elem, const std::string& nodeName);
+	void load(const XmlElement& elem, const std::string& nodeName);
 
 	PandaObject* parent() const;
 

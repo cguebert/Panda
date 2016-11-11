@@ -29,7 +29,7 @@ Group::~Group()
 void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 {
 	// Saving group datas
-	m_groupDatas.save(elem);
+	m_groupDatas.save(elem, "GroupData");
 
 	// Saving data values
 	PandaObject::save(elem, selected);
@@ -108,7 +108,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 
 void Group::load(const XmlElement& elem)
 {
-	m_groupDatas.load(elem);
+	m_groupDatas.load(elem, "GroupData");
 
 	// Loading data values
 	PandaObject::load(elem);

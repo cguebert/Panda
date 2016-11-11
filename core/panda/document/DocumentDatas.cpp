@@ -42,11 +42,11 @@ void DocumentDatas::reorder(const DataPtr& data, int index)
 		m_dataList.insert(m_dataList.begin() + index, data);
 }
 
-void DocumentDatas::save(XmlElement& elem)
+void DocumentDatas::save(XmlElement& elem, const std::string& nodeName)
 {
 	for(const auto& data : m_dataList)
 	{
-		auto node = elem.addChild("GroupData");
+		auto node = elem.addChild(nodeName);
 		node.setAttribute("type", DataFactory::typeToName(data->getDataTrait()->fullTypeId()));
 		node.setAttribute("input", data->isInput());
 		node.setAttribute("output", data->isOutput());
@@ -62,9 +62,9 @@ void DocumentDatas::save(XmlElement& elem)
 	}
 }
 
-void DocumentDatas::load(const XmlElement& elem)
+void DocumentDatas::load(const XmlElement& elem, const std::string& nodeName)
 {
-	for (auto groupDataNode = elem.firstChild("GroupData"); groupDataNode; groupDataNode = groupDataNode.nextSibling("GroupData"))
+	for (auto groupDataNode = elem.firstChild(nodeName); groupDataNode; groupDataNode = groupDataNode.nextSibling(nodeName))
 	{
 		uint32_t type, input, output;
 		std::string name, help, widget, widgetData;
