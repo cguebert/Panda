@@ -27,10 +27,6 @@ public:
 	void updateGroupDataRects();
 	const DataRects& groupDataRects() const;
 
-	void createInputGroupData();
-	void createOutputGroupData();
-	void removeGroupData(BaseData* data);
-
 protected:
 	void initializeRenderer(ViewRenderer& viewRenderer) override;
 	void drawGraphView(ViewRenderer& viewRenderer, graphics::DrawColors drawColors) override;

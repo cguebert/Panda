@@ -352,7 +352,7 @@ private:
 					if (!m_contextMenuData->getParent())
 						actions.emplace_back("Add input group data", 
 											 "Add an new input data for the group, based on and connected to this data", 
-											 [view = &m_groupView]() { view->createInputGroupData(); });
+											 [this]() { createInputGroupData(); });
 				}
 				else if (m_contextMenuData->isOutput())
 				{
@@ -374,7 +374,7 @@ private:
 					if (!connectedToGroup)
 						actions.emplace_back("Add output group data", 
 											 "Add an new output data for the group, based on and connected to this data", 
-											 [view = &m_groupView]() { view->createOutputGroupData(); });
+											 [this]() { createOutputGroupData(); });
 				}
 			}
 			else
@@ -389,14 +389,14 @@ private:
 												 "Disconnect this data and remove it from the group",
 												 [this]() {
 							auto macro = m_view.document()->getUndoStack().beginMacro("remove input group data");
-							m_groupView.removeGroupData(m_contextMenuData);
+							removeGroupData(m_contextMenuData);
 						});
 						else if (m_contextMenuData->isOutput())
 							actions.emplace_back("Remove output group data",
 												 "Disconnect this data and remove it from the group",
 												 [this]() {
 							auto macro = m_view.document()->getUndoStack().beginMacro("remove output group data");
-							m_groupView.removeGroupData(m_contextMenuData);
+							removeGroupData(m_contextMenuData);
 						});
 						break;
 					}
@@ -405,6 +405,47 @@ private:
 
 			m_view.gui().contextMenu(event.pos(), flags, actions);
 		}
+
+		void createInputGroupData()
+		{
+			auto& undoStack = m_view.document()->getUndoStack();
+			auto macro = undoStack.beginMacro("create input group data");
+
+			auto data = contextMenuData();
+			auto newData = m_groupView.group()->duplicateData(data);
+			undoStack.push(std::make_shared<AddDataToDocumentDatasCommand>(m_groupView.group()->groupDatas(), newData, true, false));
+			auto createdData = newData.get();
+			createdData->copyValueFrom(data);
+			undoStack.push(std::make_shared<LinkDatasCommand>(data, createdData));
+		}
+
+		void createOutputGroupData()
+		{
+			auto& undoStack = m_view.document()->getUndoStack();
+			auto macro = undoStack.beginMacro("create input group data");
+
+			auto data = contextMenuData();
+			auto newData = m_groupView.group()->duplicateData(data);
+			undoStack.push(std::make_shared<AddDataToDocumentDatasCommand>(m_groupView.group()->groupDatas(), newData, false, true));
+			undoStack.push(std::make_shared<LinkDatasCommand>(newData.get(), data));
+		}
+
+		void removeGroupData(BaseData* data)
+		{
+			auto& undoStack = m_view.document()->getUndoStack();
+
+			auto outputs = data->getOutputs();
+			for (auto node : outputs)
+			{
+				auto outData = dynamic_cast<BaseData*>(node);
+				if (outData)
+					undoStack.push(std::make_shared<LinkDatasCommand>(outData, nullptr));
+			}
+
+			undoStack.push(std::make_shared<RemoveDataFromDocumentDatasCommand>(m_groupView.group()->groupDatas(), data));
+			undoStack.push(std::make_shared<LinkDatasCommand>(data, nullptr));
+		}
+
 
 	protected:
 		GroupView& m_groupView;
@@ -557,46 +598,6 @@ void GroupView::updateGroupDataRects()
 			m_groupDataRects.emplace_back(groupData.get(), groupDataRect);
 		}
 	}
-}
-
-void GroupView::createInputGroupData()
-{
-	auto& undoStack = m_pandaDocument->getUndoStack();
-	auto macro = undoStack.beginMacro("create input group data");
-
-	auto data = interaction().contextMenuData();
-	auto newData = m_group->duplicateData(data);
-	undoStack.push(std::make_shared<AddDataToDocumentDatasCommand>(m_group->groupDatas(), newData, true, false));
-	auto createdData = newData.get();
-	createdData->copyValueFrom(data);
-	undoStack.push(std::make_shared<LinkDatasCommand>(data, createdData));
-}
-
-void GroupView::createOutputGroupData()
-{
-	auto& undoStack = m_pandaDocument->getUndoStack();
-	auto macro = undoStack.beginMacro("create input group data");
-
-	auto data = interaction().contextMenuData();
-	auto newData = m_group->duplicateData(data);
-	undoStack.push(std::make_shared<AddDataToDocumentDatasCommand>(m_group->groupDatas(), newData, false, true));
-	undoStack.push(std::make_shared<LinkDatasCommand>(newData.get(), data));
-}
-
-void GroupView::removeGroupData(BaseData* data)
-{
-	auto& undoStack = m_pandaDocument->getUndoStack();
-
-	auto outputs = data->getOutputs();
-	for (auto node : outputs)
-	{
-		auto outData = dynamic_cast<BaseData*>(node);
-		if (outData)
-			undoStack.push(std::make_shared<LinkDatasCommand>(outData, nullptr));
-	}
-
-	undoStack.push(std::make_shared<RemoveDataFromDocumentDatasCommand>(m_group->groupDatas(), data));
-	undoStack.push(std::make_shared<LinkDatasCommand>(data, nullptr));
 }
 
 void GroupView::modifiedObject(PandaObject* object)
