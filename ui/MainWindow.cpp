@@ -105,10 +105,6 @@ MainWindow::MainWindow()
 	createActions();
 	createStatusBar();
 
-	connect(m_tabWidget, SIGNAL(openDetachedWindow(DetachedWindow*)), this, SLOT(openDetachedWindow(DetachedWindow*)));
-	connect(m_tabWidget, &DetachableTabWidget::closedTab, this, &MainWindow::onTabWidgetCloseTab);
-	connect(m_tabWidget, &DetachableTabWidget::currentChanged, this, &MainWindow::onTabChanged);
-
 	createGroupRegistryMenu();
 
 	setWindowIcon(QIcon(":/share/icons/icon.png"));
@@ -134,6 +130,10 @@ MainWindow::MainWindow()
 
 	m_tabWidget = new DetachableTabWidget;
 	m_tabWidget->addTab(m_documentViewContainer, tr("Graph"));
+
+	connect(m_tabWidget, &DetachableTabWidget::openDetachedWindow, this, &MainWindow::openDetachedWindow);
+	connect(m_tabWidget, &DetachableTabWidget::closedTab, this, &MainWindow::onTabWidgetCloseTab);
+	connect(m_tabWidget, &DetachableTabWidget::currentChanged, this, &MainWindow::onTabChanged);
 
 	setDocument(std::make_shared<panda::InteractiveDocument>(*m_simpleGUI));
 	
@@ -1191,8 +1191,7 @@ void MainWindow::openGroup()
 	auto view = panda::graphview::GroupView::createGroupView(group, m_document.get(), group->getObjectsList());
 	auto groupView = new graphview::QtViewWrapper(std::move(view), this);
 
-	connect(groupView, SIGNAL(modified()), this, SLOT(documentModified()));
-	connect(groupView, SIGNAL(showStatusBarMessage(QString)), this, SLOT(showStatusBarMessage(QString)));
+	connect(groupView, &graphview::QtViewWrapper::modified, this, &MainWindow::documentModified);
 	connect(groupView, &graphview::QtViewWrapper::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
 	m_observer.get(groupView->view().selection().selectedObject).connect<MainWindow, &MainWindow::selectedObject>(this);
 	m_observer.get(group->getObjectsList().removedObject).connect<MainWindow, &MainWindow::removedObject>(this);

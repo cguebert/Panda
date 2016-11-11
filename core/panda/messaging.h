@@ -158,13 +158,10 @@ namespace panda
 			void insert(const details::DelegateKey& key, BaseObserver* obs)
 			{ m_list.emplace_front(key, obs); }
 
-			void insert(const details::DelegateKey& key)
-			{ m_list.emplace_front(key, this); }
-
-			void remove(const details::DelegateKey& key)
+			void remove(const BaseObserver* obs)
 			{
-				m_list.remove_if([&key](const DelegateKeyObserverPair& p) {
-					return p.first == key;
+				m_list.remove_if([&obs](const DelegateKeyObserverPair& p) {
+					return p.second == obs;
 				});
 			}
 
@@ -174,7 +171,7 @@ namespace panda
 				{
 					// Notify the listening Observer
 					if (p.second != this)
-						p.second->remove(p.first);
+						p.second->remove(this);
 				}
 
 				m_list.clear();
