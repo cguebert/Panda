@@ -27,6 +27,8 @@ public:
 	void save(XmlElement& elem);
 	void load(const XmlElement& elem);
 
+	PandaObject* parent() const;
+
 protected:
 	DataList m_dataList;
 	PandaObject* m_parent;
@@ -34,6 +36,9 @@ protected:
 
 inline const DocumentDatas::DataList& DocumentDatas::get() const
 { return m_dataList; }
+
+inline PandaObject* DocumentDatas::parent() const
+{ return m_parent; }
 
 } // namespace panda
 

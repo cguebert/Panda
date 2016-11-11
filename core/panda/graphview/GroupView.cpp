@@ -17,7 +17,7 @@
 #include <panda/document/GraphUtils.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/document/PandaDocument.h>
-#include <panda/command/GroupCommand.h>
+#include <panda/command/DocumentDatasCommand.h>
 #include <panda/command/LinkDatasCommand.h>
 #include <panda/object/Group.h>
 #include <panda/types/DataTraits.h>
@@ -566,7 +566,7 @@ void GroupView::createInputGroupData()
 
 	auto data = interaction().contextMenuData();
 	auto newData = m_group->duplicateData(data);
-	undoStack.push(std::make_shared<AddDataToGroupCommand>(m_group, newData, true, false));
+	undoStack.push(std::make_shared<AddDataToDocumentDatasCommand>(m_group->groupDatas(), newData, true, false));
 	auto createdData = newData.get();
 	createdData->copyValueFrom(data);
 	undoStack.push(std::make_shared<LinkDatasCommand>(data, createdData));
@@ -579,7 +579,7 @@ void GroupView::createOutputGroupData()
 
 	auto data = interaction().contextMenuData();
 	auto newData = m_group->duplicateData(data);
-	undoStack.push(std::make_shared<AddDataToGroupCommand>(m_group, newData, false, true));
+	undoStack.push(std::make_shared<AddDataToDocumentDatasCommand>(m_group->groupDatas(), newData, false, true));
 	undoStack.push(std::make_shared<LinkDatasCommand>(newData.get(), data));
 }
 
@@ -595,7 +595,7 @@ void GroupView::removeGroupData(BaseData* data)
 			undoStack.push(std::make_shared<LinkDatasCommand>(outData, nullptr));
 	}
 
-	undoStack.push(std::make_shared<RemoveDataFromGroupCommand>(m_group, data));
+	undoStack.push(std::make_shared<RemoveDataFromDocumentDatasCommand>(m_group->groupDatas(), data));
 	undoStack.push(std::make_shared<LinkDatasCommand>(data, nullptr));
 }
 

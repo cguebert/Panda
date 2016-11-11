@@ -1,9 +1,8 @@
+#include <panda/command/GroupCommand.h>
+
 #include <panda/document/PandaDocument.h>
 #include <panda/object/Group.h>
 #include <panda/document/ObjectsList.h>
-
-#include <panda/command/GroupCommand.h>
-
 #include <panda/helper/algorithm.h>
 
 namespace panda
@@ -116,85 +115,6 @@ void EditGroupCommand::undo()
 	}
 
 	m_group->emitModified();
-}
-
-//****************************************************************************//
-
-AddDataToGroupCommand::AddDataToGroupCommand(Group* group, std::shared_ptr<BaseData> data, bool isInput, bool isOutput)
-	: m_group(group)
-	, m_data(data)
-	, m_input(isInput)
-	, m_output(isOutput)
-{
-	setText("add group data");
-}
-
-void AddDataToGroupCommand::redo()
-{
-	if (m_input)
-		m_group->addInput(*m_data);
-	if (m_output)
-		m_group->addOutput(*m_data);
-
-	m_group->groupDatas().add(m_data);
-	m_group->addData(m_data.get());
-}
-
-void AddDataToGroupCommand::undo()
-{
-	if (m_input)
-		m_group->removeInput(*m_data);
-	if (m_output)
-		m_group->removeOutput(*m_data);
-
-	m_group->groupDatas().remove(m_data);
-	m_group->removeData(m_data.get());
-}
-
-//****************************************************************************//
-
-RemoveDataFromGroupCommand::RemoveDataFromGroupCommand(Group* group, BaseData* data)
-	: m_group(group)
-{
-	setText("remove group data");
-
-	const auto& groupDatas = m_group->groupDatas().get();
-	auto gIt = std::find_if(groupDatas.begin(), groupDatas.end(), [data](const std::shared_ptr<BaseData>& dataSPtr) {
-		return dataSPtr.get() == data;
-	});
-	m_data = *gIt;
-	m_groupDataIndex = std::distance(groupDatas.begin(), gIt);
-
-	const auto& datas = m_group->getDatas();
-	auto dIt = std::find_if(datas.begin(), datas.end(), [data](const BaseData* dataPtr) {
-		return dataPtr == data;
-	});
-	m_dataIndex = std::distance(datas.begin(), dIt);
-
-	m_input = data->isInput();
-	m_output = data->isOutput();
-}
-
-void RemoveDataFromGroupCommand::redo()
-{
-	if (m_input)
-		m_group->removeInput(*m_data);
-	if (m_output)
-		m_group->removeOutput(*m_data);
-
-	m_group->groupDatas().remove(m_data);
-	m_group->removeData(m_data.get());
-}
-
-void RemoveDataFromGroupCommand::undo()
-{
-	if (m_input)
-		m_group->addInput(*m_data);
-	if (m_output)
-		m_group->addOutput(*m_data);
-
-	m_group->groupDatas().add(m_data, m_groupDataIndex);
-	m_group->addData(m_data.get(), m_dataIndex);
 }
 
 } // namespace panda
