@@ -42,9 +42,6 @@ public:
 
 	DocumentDatas& groupDatas();
 
-	std::string findAvailableDataName(const std::string& baseName, BaseData* data = nullptr);
-	DataPtr duplicateData(BaseData* data);
-
 protected:
 	Data<std::string> m_groupName;
 

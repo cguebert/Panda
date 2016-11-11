@@ -9,6 +9,9 @@ namespace panda
 
 class PandaObject;
 
+std::string findAvailableDataName(PandaObject* parent, const std::string& baseName, BaseData* data = nullptr);
+std::shared_ptr<BaseData> duplicateData(PandaObject* parent, BaseData* data);
+
 class PANDA_CORE_API DocumentDatas
 {
 public:

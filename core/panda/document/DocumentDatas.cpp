@@ -8,6 +8,42 @@
 namespace panda 
 {
 
+std::string findAvailableDataName(PandaObject* parent, const std::string& baseName, BaseData* data)
+{
+	auto name = baseName;
+	BaseData* testData = parent->getData(name);
+	if(testData && testData != data)
+	{
+		int i=2;
+		testData = parent->getData(name + std::to_string(i));
+		while(testData && testData != data)
+		{
+			++i;
+			testData = parent->getData(name + std::to_string(i));
+		}
+		name = name + std::to_string(i);
+	}
+	return name;
+}
+
+std::shared_ptr<BaseData> duplicateData(PandaObject* parent, BaseData* data)
+{
+	auto name = findAvailableDataName(parent, data->getName());
+
+	auto newData = DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(),
+													  name, data->getHelp(), parent);
+	newData->setDisplayed(data->isDisplayed());
+	newData->setPersistent(data->isPersistent());
+	newData->setWidget(data->getWidget());
+	newData->setWidgetData(data->getWidgetData());
+	newData->setInput(data->isInput());
+	newData->setOutput(data->isOutput());
+
+	return newData;
+}
+
+//****************************************************************************//
+
 DocumentDatas::DocumentDatas(PandaObject* parent)
 	: m_parent(parent)
 {

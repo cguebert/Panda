@@ -412,7 +412,7 @@ private:
 			auto macro = undoStack.beginMacro("create input group data");
 
 			auto data = contextMenuData();
-			auto newData = m_groupView.group()->duplicateData(data);
+			auto newData = duplicateData(m_groupView.group(), data);
 			undoStack.push(std::make_shared<AddDataToDocumentDatasCommand>(m_groupView.group()->groupDatas(), newData, true, false));
 			auto createdData = newData.get();
 			createdData->copyValueFrom(data);
@@ -425,7 +425,7 @@ private:
 			auto macro = undoStack.beginMacro("create input group data");
 
 			auto data = contextMenuData();
-			auto newData = m_groupView.group()->duplicateData(data);
+			auto newData = duplicateData(m_groupView.group(), data);
 			undoStack.push(std::make_shared<AddDataToDocumentDatasCommand>(m_groupView.group()->groupDatas(), newData, false, true));
 			undoStack.push(std::make_shared<LinkDatasCommand>(newData.get(), data));
 		}

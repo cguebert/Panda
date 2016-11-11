@@ -153,7 +153,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 					BaseData* createdData = nullptr;
 					if(!connectedInputDatas.count(otherData))
 					{
-						auto newData = group->duplicateData(data);
+						auto newData = duplicateData(group, data);
 						group->groupDatas().add(newData);
 						createdData = newData.get();
 						createdData->copyValueFrom(otherData);
@@ -165,7 +165,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 					else
 					{
 						createdData = connectedInputDatas.at(otherData);
-						auto name = group->findAvailableDataName(otherData->getName(), createdData);
+						auto name = findAvailableDataName(group, otherData->getName(), createdData);
 						if(name != createdData->getName())
 						{
 							createdData->setName(name);
@@ -194,7 +194,7 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 					{
 						if(!createdData)
 						{
-							auto newData = group->duplicateData(data);
+							auto newData = duplicateData(group, data);
 							group->groupDatas().add(newData);
 							createdData = newData.get();
 							createdData->copyValueFrom(data);
@@ -221,15 +221,15 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 			{
 				auto data = inputData->getParent();
 				if(data->getOwner() ==  group)
-					data->setName(group->findAvailableDataName(caption, data));
+					data->setName(findAvailableDataName(group, caption, data));
 			}
 			else // We create a data in the group for this input
 			{
-				auto newData = group->duplicateData(inputData);
+				auto newData = duplicateData(group, inputData);
 				group->groupDatas().add(newData);
 				auto createdData = newData.get();
 				createdData->copyValueFrom(inputData);
-				createdData->setName(group->findAvailableDataName(caption, createdData));
+				createdData->setName(findAvailableDataName(group, caption, createdData));
 				group->addInput(*createdData);
 				undoStack.push(std::make_shared<LinkDatasCommand>(inputData, createdData));
 				createdDatasHeights.emplace_back(createdData, getDataHeight(view, inputData));
@@ -241,18 +241,18 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 				{
 					if(data->getParent() == outputData)
 					{
-						data->setName(group->findAvailableDataName(caption, data.get()));
+						data->setName(findAvailableDataName(group, caption, data.get()));
 						data->setDisplayed(true);
 					}
 				}
 			}
 			else // We create a data in the group for this output
 			{
-				auto newData = group->duplicateData(inputData);
+				auto newData = duplicateData(group, inputData);
 				group->groupDatas().add(newData);
 				auto createdData = newData.get();
 				createdData->copyValueFrom(outputData);
-				createdData->setName(group->findAvailableDataName(caption, createdData));
+				createdData->setName(findAvailableDataName(group, caption, createdData));
 				createdData->setOutput(true);
 				group->dataSetParent(createdData, outputData);
 				group->addOutput(*createdData);

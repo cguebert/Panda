@@ -216,40 +216,6 @@ void Group::preDestruction()
 		object->preDestruction();
 }
 
-std::string Group::findAvailableDataName(const std::string& baseName, BaseData* data)
-{
-	auto name = baseName;
-	BaseData* testData = getData(name);
-	if(testData && testData != data)
-	{
-		int i=2;
-		testData = getData(name + std::to_string(i));
-		while(testData && testData != data)
-		{
-			++i;
-			testData = getData(name + std::to_string(i));
-		}
-		name = name + std::to_string(i);
-	}
-	return name;
-}
-
-Group::DataPtr Group::duplicateData(BaseData* data)
-{
-	auto name = findAvailableDataName(data->getName());
-
-	auto newData = DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(),
-										   name, data->getHelp(), this);
-	newData->setDisplayed(data->isDisplayed());
-	newData->setPersistent(data->isPersistent());
-	newData->setWidget(data->getWidget());
-	newData->setWidgetData(data->getWidgetData());
-	newData->setInput(data->isInput());
-	newData->setOutput(data->isOutput());
-
-	return newData;
-}
-
 int GroupClass = RegisterObject<Group>("Group").setDescription("Groups many object into a single one").setHidden(true);
 
 //****************************************************************************//
