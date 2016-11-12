@@ -3,6 +3,7 @@
 #include <panda/graphview/LinkTagsList.h>
 #include <panda/graphview/ObjectRenderersList.h>
 #include <panda/graphview/graphics/DrawColors.h>
+#include <panda/graphview/graphics/DrawList.h>
 #include <panda/graphview/object/ObjectRenderer.h>
 
 #include <panda/UndoStack.h>

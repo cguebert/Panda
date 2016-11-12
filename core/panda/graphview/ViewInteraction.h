@@ -1,9 +1,9 @@
 #pragma once
 
 #include <panda/graphview/InteractionEvents.h>
-#include <panda/graphview/graphics/DrawList.h>
 
 #include <memory>
+#include <vector>
 
 namespace panda 
 {
@@ -16,6 +16,7 @@ namespace graphview
 {
 	namespace graphics {
 		struct DrawColors;
+		class DrawList;
 	}
 
 	namespace object {
@@ -25,6 +26,7 @@ namespace graphview
 	class GraphView;
 	class LinkTag;
 	class SnapToObjects;
+	class ViewRenderer;
 
 	class PANDA_CORE_API ViewInteraction
 	{

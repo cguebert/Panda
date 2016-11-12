@@ -2,10 +2,9 @@
 
 #include <panda/types/Rect.h>
 
-#include <panda/graphview/graphics/DrawList.h>
-
 #include <memory>
 #include <set>
+#include <vector>
 
 namespace panda
 {
@@ -17,9 +16,11 @@ namespace graphview
 
 	namespace graphics {
 		struct DrawColors;
+		class DrawList;
 	}
 
 	class GraphView;
+	class ViewRenderer;
 
 	class PANDA_CORE_API LinksList
 	{
