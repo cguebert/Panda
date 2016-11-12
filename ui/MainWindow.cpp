@@ -18,12 +18,12 @@
 #include <ui/graphview/QtViewWrapper.h>
 
 #include <panda/graphview/DocumentView.h>
-#include <panda/graphview/GroupView.h>
 #include <panda/graphview/alignObjects.h>
 #include <panda/graphview/ObjectsSelection.h>
 #include <panda/graphview/ViewGUI.h>
 #include <panda/graphview/Viewport.h>
 #include <panda/graphview/ViewInteraction.h>
+#include <panda/graphview/documentdatas/DocumentDatasView.h>
 
 #include <panda/CreateGroup.h>
 #include <panda/PluginsManager.h>
@@ -1188,7 +1188,7 @@ void MainWindow::openGroup()
 		return;
 	}
 
-	auto view = panda::graphview::GroupView::createGroupView(group, m_document.get(), group->getObjectsList());
+	auto view = panda::graphview::DocumentDatasView::createDocumentDatasView(group->groupDatas(), m_document.get(), group->getObjectsList());
 	auto groupView = new graphview::QtViewWrapper(std::move(view), this);
 
 	connect(groupView, &graphview::QtViewWrapper::modified, this, &MainWindow::documentModified);

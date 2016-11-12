@@ -31,9 +31,6 @@ namespace panda {
 }
 
 namespace graphview {
-	class DocumentView;
-	class GraphView;
-	class GroupView;
 	class QtViewWrapper;
 }
 
