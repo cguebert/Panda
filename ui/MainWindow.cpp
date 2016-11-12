@@ -294,42 +294,42 @@ void MainWindow::createActions()
 	newAction->setIcon(QIcon(":/share/icons/new.png"));
 	newAction->setShortcut(QKeySequence::New);
 	newAction->setStatusTip(tr("Create a new panda document"));
-	connect(newAction, SIGNAL(triggered()), this, SLOT(newFile()));
+	connect(newAction, &QAction::triggered, this, &MainWindow::newFile);
 
 	auto openAction = new QAction(tr("&Open..."), this);
 	openAction->setIcon(QIcon(":/share/icons/open.png"));
 	openAction->setShortcut(QKeySequence::Open);
 	openAction->setStatusTip(tr("Open an existing panda document"));
-	connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
+	connect(openAction, &QAction::triggered, this, &MainWindow::open);
 
 	m_importAction = new QAction(tr("&Import..."), this);
 	m_importAction->setIcon(QIcon(":/share/icons/open.png"));
 	m_importAction->setStatusTip(tr("Import an existing panda document into the current one"));
-	connect(m_importAction, SIGNAL(triggered()), this, SLOT(import()));
+	connect(m_importAction, &QAction::triggered, this, &MainWindow::import);
 
 	auto saveAction = new QAction(tr("&Save"), this);
 	saveAction->setIcon(QIcon(":/share/icons/save.png"));
 	saveAction->setShortcut(QKeySequence::Save);
 	saveAction->setStatusTip(tr("Save the document to disk"));
-	connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
+	connect(saveAction, &QAction::triggered, this, &MainWindow::save);
 
 	auto saveAsAction = new QAction(tr("Save &As..."), this);
 	saveAsAction->setShortcut(QKeySequence::SaveAs);
 	saveAsAction->setStatusTip(tr("Save the document under a new "
 								  "name"));
-	connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
+	connect(saveAsAction, &QAction::triggered, this, &MainWindow::saveAs);
 
 	for (int i = 0; i < MaxRecentFiles; ++i) {
 		m_recentFileActions[i] = new QAction(this);
 		m_recentFileActions[i]->setVisible(false);
-		connect(m_recentFileActions[i], SIGNAL(triggered()),
-				this, SLOT(openRecentFile()));
+		connect(m_recentFileActions[i], &QAction::triggered,
+				this, &MainWindow::openRecentFile);
 	}
 
 	auto exitAction = new QAction(tr("E&xit"), this);
 	exitAction->setShortcut(tr("Ctrl+Q"));
 	exitAction->setStatusTip(tr("Exit Panda"));
-	connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+	connect(exitAction, &QAction::triggered, this, &MainWindow::close);
 
 	m_cutAction = new QAction(tr("Cu&t"), this);
 	m_cutAction->setIcon(QIcon(":/share/icons/cut.png"));
@@ -380,35 +380,35 @@ void MainWindow::createActions()
 	m_groupAction->setShortcut(tr("Ctrl+G"));
 	m_groupAction->setStatusTip(tr("Group selected objects"));
 	m_groupAction->setEnabled(false);
-	connect(m_groupAction, SIGNAL(triggered()), this, SLOT(group()));
+	connect(m_groupAction, &QAction::triggered, this, &MainWindow::group);
 	m_graphViewsActions.push_back(m_groupAction);
 
 	m_ungroupAction = new QAction(tr("&Ungroup selected"), this);
 	m_ungroupAction->setShortcut(tr("Ctrl+Shift+G"));
 	m_ungroupAction->setStatusTip(tr("Ungroup selected objects"));
 	m_ungroupAction->setEnabled(false);
-	connect(m_ungroupAction, SIGNAL(triggered()), this, SLOT(ungroup()));
+	connect(m_ungroupAction, &QAction::triggered, this, &MainWindow::ungroup);
 	m_graphViewsActions.push_back(m_ungroupAction);
 
 	m_editGroupAction = new QAction(tr("&Edit group"), this);
 	m_editGroupAction->setShortcut(tr("Ctrl+E"));
 	m_editGroupAction->setStatusTip(tr("Edit the selected group name and parameters"));
 	m_editGroupAction->setEnabled(false);
-	connect(m_editGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
+	connect(m_editGroupAction, &QAction::triggered, this, &MainWindow::editGroup);
 	m_graphViewsActions.push_back(m_editGroupAction);
 
 	m_openGroupAction = new QAction(tr("&Open group"), this);
 	m_openGroupAction->setShortcut(tr("Ctrl+R"));
 	m_openGroupAction->setStatusTip(tr("Open the group in a new window"));
 	m_openGroupAction->setEnabled(false);
-	connect(m_openGroupAction, SIGNAL(triggered()), this, SLOT(openGroup()));
+	connect(m_openGroupAction, &QAction::triggered, this, &MainWindow::openGroup);
 	m_graphViewsActions.push_back(m_openGroupAction);
 
 	m_saveGroupAction = new QAction(tr("&Save group"), this);
 	m_saveGroupAction->setShortcut(tr("Ctrl+Shift+E"));
 	m_saveGroupAction->setStatusTip(tr("Save the selected group for later use"));
 	m_saveGroupAction->setEnabled(false);
-	connect(m_saveGroupAction, SIGNAL(triggered()), this, SLOT(saveGroup()));
+	connect(m_saveGroupAction, &QAction::triggered, this, &MainWindow::saveGroup);
 	m_graphViewsActions.push_back(m_saveGroupAction);
 
 	auto zoomResetAction = new QAction(tr("Reset &zoom"), this);
@@ -456,20 +456,20 @@ void MainWindow::createActions()
 	auto showGraphViewAction = new QAction(tr("Show &graph view"), this);
 	showGraphViewAction->setShortcut(tr("Ctrl+1"));
 	showGraphViewAction->setStatusTip(tr("Switch to the graph view"));
-	connect(showGraphViewAction, SIGNAL(triggered()), this, SLOT(switchToDocumentView()));
+	connect(showGraphViewAction, &QAction::triggered, this, &MainWindow::switchToDocumentView);
 	addAction(showGraphViewAction);
 
 	auto showOpenGLViewAction = new QAction(tr("Show &render view"), this);
 	showOpenGLViewAction->setShortcut(tr("Ctrl+2"));
 	showOpenGLViewAction->setStatusTip(tr("Switch to the render view"));
-	connect(showOpenGLViewAction, SIGNAL(triggered()), this, SLOT(switchToOpenGLView()));
+	connect(showOpenGLViewAction, &QAction::triggered, this, &MainWindow::switchToOpenGLView);
 	addAction(showOpenGLViewAction);
 
 	auto adjustRenderSizeToViewAction = new QAction(tr("Adjust size to &view"), this);
 	adjustRenderSizeToViewAction->setShortcut(tr("F10"));
 	adjustRenderSizeToViewAction->setStatusTip(tr("Adjust the render size to the view"));
 	adjustRenderSizeToViewAction->setCheckable(true);
-	connect(adjustRenderSizeToViewAction, SIGNAL(triggered()), this, SLOT(adjustRenderSizeToView()));
+	connect(adjustRenderSizeToViewAction, &QAction::triggered, this, &MainWindow::adjustRenderSizeToView);
 	addAction(adjustRenderSizeToViewAction);
 
 	m_fullScreenAction = new QAction(tr("&Full screen"), this);
@@ -487,19 +487,18 @@ void MainWindow::createActions()
 
 	auto aboutAction = new QAction(tr("&About"), this);
 	aboutAction->setStatusTip(tr("Show the application's About box"));
-	connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+	connect(aboutAction, &QAction::triggered, this, &MainWindow::about);
 
 	auto aboutQtAction = new QAction(tr("About &Qt"), this);
 	aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
-	connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+	connect(aboutQtAction, &QAction::triggered, qApp, &QApplication::aboutQt);
 
 	m_playAction = new QAction(tr("Play"), this);
 	m_playAction->setIcon(QIcon(":/share/icons/play.png"));
 	m_playAction->setShortcut(tr("F5"));
 	m_playAction->setStatusTip(tr("Start the animation"));
 	m_playAction->setCheckable(true);
-	connect(m_playAction, &QAction::triggered, [this](bool playing) { m_document->play(playing); });
-	connect(m_playAction, SIGNAL(triggered(bool)), this, SLOT(play(bool)));
+	connect(m_playAction, &QAction::triggered, this, &MainWindow::play);
 	addAction(m_playAction);
 
 	auto stepAction = new QAction(tr("Step"), this);
@@ -523,13 +522,13 @@ void MainWindow::createActions()
 
 	m_copyDataAction = new QAction(tr("Copy data"), this);
 	m_copyDataAction->setStatusTip(tr("Create a user value generator based on this data"));
-	connect(m_copyDataAction, SIGNAL(triggered()), this, SLOT(copyDataToUserValue()));
+	connect(m_copyDataAction, &QAction::triggered, this, &MainWindow::copyDataToUserValue);
 	m_graphViewsActions.push_back(m_copyDataAction);
 
 	auto showLoggerDialogAction = new QAction(tr("Show &log"), this);
 	showLoggerDialogAction->setShortcut(tr("F2"));
 	showLoggerDialogAction->setStatusTip(tr("Show the updates log dialog"));
-	connect(showLoggerDialogAction, SIGNAL(triggered()), this, SLOT(showLoggerDialog()));
+	connect(showLoggerDialogAction, &QAction::triggered, this, &MainWindow::showLoggerDialog);
 
 	m_showDirtyInfoAction = new QAction(tr("Debug dirty state"), this);
 	m_showDirtyInfoAction->setCheckable(true);
@@ -539,11 +538,11 @@ void MainWindow::createActions()
 
 	auto showObjectsAndTypesAction = new QAction(tr("List types and objects"), this);
 	showObjectsAndTypesAction->setStatusTip(tr("Show information about all available types and objects"));
-	connect(showObjectsAndTypesAction, SIGNAL(triggered()), this, SLOT(showObjectsAndTypes()));
+	connect(showObjectsAndTypesAction, &QAction::triggered, this, &MainWindow::showObjectsAndTypes);
 
 	m_showImageViewportAction = new QAction(tr("Open image viewport"), this);
 	m_showImageViewportAction->setStatusTip(tr("Open a new viewport to an image"));
-	connect(m_showImageViewportAction, SIGNAL(triggered()), this, SLOT(showImageViewport()));
+	connect(m_showImageViewportAction, &QAction::triggered, this, &MainWindow::showImageViewport);
 	addAction(m_showImageViewportAction);
 
 	m_setDataLabelAction = new QAction(tr("Set data label"), this);
@@ -579,7 +578,7 @@ void MainWindow::createActions()
 	addAction(m_redoAction);
 
 	auto convertDocumentsAction = new QAction(tr("Convert documents"), this);
-	connect(convertDocumentsAction, SIGNAL(triggered()), this, SLOT(convertSavedDocuments()));
+	connect(convertDocumentsAction, &QAction::triggered, this, &MainWindow::convertSavedDocuments);
 
 	// Alignment (horizontal)
 	auto alignHorCenterAction = new QAction(tr("Center"), this);
@@ -823,7 +822,7 @@ void MainWindow::createRegistryMenu()
 			tempAction->setData(QString::fromStdString(entry.className));
 			currentMenu->actions[hierarchy.last()] = tempAction;
 
-			connect(tempAction, SIGNAL(triggered()), this, SLOT(createObject()));
+			connect(tempAction, &QAction::triggered, this, &MainWindow::createObject);
 		}
 
 		menuTree.registerActions(m_registryMenu);
@@ -859,7 +858,7 @@ void MainWindow::createGroupRegistryMenu()
 			tempAction->setData(group.first);
 			currentMenu->actions[hierarchy.last()] = tempAction;
 
-			connect(tempAction, SIGNAL(triggered()), this, SLOT(createGroupObject()));
+			connect(tempAction, &QAction::triggered, this, &MainWindow::createGroupObject);
 		}
 
 		menuTree.registerActions(m_groupsRegistryMenu);
@@ -1178,10 +1177,10 @@ void MainWindow::openGroup()
 	if (!group)
 		return;
 
-	auto it = std::find_if(m_groupViews.begin(), m_groupViews.end(), [group](const GroupViewInfo& info) {
+	auto it = std::find_if(m_graphViews.begin(), m_graphViews.end(), [group](const GraphViewInfo& info) {
 		return info.object == group;
 	});
-	if (it != m_groupViews.end()) // Do not open another view
+	if (it != m_graphViews.end()) // Do not open another view
 	{
 		m_tabWidget->setCurrentWidget(it->container);
 		it->container->setFocus();
@@ -1219,13 +1218,13 @@ void MainWindow::openGroup()
 		return tabName;
 	};
 
-	GroupViewInfo info;
+	GraphViewInfo info;
 	info.view = groupView;
 	info.container = groupViewContainer;
 	info.detachableInfo = detachableInfo;
 	info.object = group;
 	info.nameWatcher = std::make_shared<DataWatcher>(group->getGroupNameData(), getLabel);
-	m_groupViews.push_back(info);
+	m_graphViews.push_back(info);
 
 	m_tabWidget->addTab(groupViewContainer, QString::fromStdString(getLabel()), detachableInfo);
 
@@ -1318,7 +1317,7 @@ void MainWindow::showLoggerDialog()
 		m_loggerDialog = new UpdateLoggerDialog(this);
 		UpdateLoggerDialog::setInstance(m_loggerDialog);
 
-		connect(m_loggerDialog, SIGNAL(changedSelectedEvent()), m_documentView, SLOT(update()));
+		connect(m_loggerDialog, &UpdateLoggerDialog::changedSelectedEvent, [view = m_documentView] { view->update(); });
 	}
 
 	if(m_loggerDialog->isVisible())
@@ -1360,6 +1359,8 @@ void MainWindow::play(bool playing)
 		m_undoAction->setEnabled(m_undoEnabled);
 		m_redoAction->setEnabled(m_redoEnabled);
 	}
+
+	m_document->play(playing);
 }
 
 void MainWindow::selectedObject(panda::PandaObject* object)
@@ -1438,7 +1439,7 @@ void MainWindow::showImageViewport()
 void MainWindow::openDetachedWindow(DetachedWindow* window)
 {
 	m_detachedWindows.push_back(window);
-	connect(window, SIGNAL(closeDetachedWindow(DetachedWindow*)), this, SLOT(closeDetachedWindow(DetachedWindow*)));
+	connect(window, &DetachedWindow::closeDetachedWindow, this, &MainWindow::closeDetachedWindow);
 }
 
 void MainWindow::closeDetachedWindow(DetachedWindow* window)
@@ -1455,12 +1456,12 @@ void MainWindow::closeViewport(ImageViewport* viewport)
 		closeTab(it->container);
 }
 
-void MainWindow::closeGroupView(graphview::QtViewWrapper* view)
+void MainWindow::closeGraphView(graphview::QtViewWrapper* view)
 {
-	auto it = std::find_if(m_groupViews.begin(), m_groupViews.end(), [view](const GroupViewInfo& info) {
+	auto it = std::find_if(m_graphViews.begin(), m_graphViews.end(), [view](const GraphViewInfo& info) {
 		return info.view == view;
 	});
-	if (it != m_groupViews.end())
+	if (it != m_graphViews.end())
 		closeTab(it->container);
 }
 
@@ -1496,12 +1497,12 @@ void MainWindow::removedObject(panda::PandaObject* object)
 			closeViewport(info.viewport);
 	}
 
-	// Close any group view opened
-	auto groupViews = m_groupViews;
-	for (const auto& info : groupViews)
+	// Close any graph view opened
+	auto graphViews = m_graphViews;
+	for (const auto& info : graphViews)
 	{
 		if (info.object == object)
-			closeGroupView(info.view);
+			closeGraphView(info.view);
 	}
 }
 
@@ -1579,12 +1580,12 @@ void MainWindow::onTabWidgetCloseTab(QWidget* w)
 	if (it != m_imageViewports.end())
 		m_imageViewports.erase(it);
 
-	// Remove corresponding group view if any
-	auto it2 = std::find_if(m_groupViews.begin(), m_groupViews.end(), [w](const GroupViewInfo& info) {
+	// Remove corresponding graph view if any
+	auto it2 = std::find_if(m_graphViews.begin(), m_graphViews.end(), [w](const GraphViewInfo& info) {
 		return info.container == w;
 	});
-	if (it2 != m_groupViews.end())
-		m_groupViews.erase(it2);
+	if (it2 != m_graphViews.end())
+		m_graphViews.erase(it2);
 }
 
 namespace
@@ -1615,7 +1616,7 @@ QWidget* MainWindow::selectedTabWidget() const
 			return imageViewport.viewport;
 	}
 
-	for (const auto& graphView : m_groupViews)
+	for (const auto& graphView : m_graphViews)
 	{
 		if (hasParent(graphView.view, currentTabWidget))
 			return graphView.view;

@@ -79,7 +79,7 @@ private slots:
 	void openDetachedWindow(DetachedWindow* window);
 	void closeDetachedWindow(DetachedWindow* window);
 	void closeViewport(ImageViewport* viewport);
-	void closeGroupView(graphview::QtViewWrapper* view);
+	void closeGraphView(graphview::QtViewWrapper* view);
 	void convertSavedDocuments();
 	void removedObject(panda::PandaObject*);
 	void onTabWidgetFocusLoss(QWidget*);
@@ -149,7 +149,7 @@ private:
 	};
 	std::vector<ImageViewportInfo> m_imageViewports;
 
-	struct GroupViewInfo
+	struct GraphViewInfo
 	{
 		graphview::QtViewWrapper* view = nullptr;
 		QWidget* container = nullptr;
@@ -157,13 +157,13 @@ private:
 		const panda::PandaObject* object = nullptr;
 		std::shared_ptr<DataWatcher> nameWatcher;
 	};
-	std::vector<GroupViewInfo> m_groupViews;
+	std::vector<GraphViewInfo> m_graphViews;
 
 	static const int MaxRecentFiles = 5;
 	QAction* m_recentFileActions[MaxRecentFiles];
 	QAction* m_separatorAction;
 	std::vector<QAction*> m_allViewsActions; // The list of actions that apply to all views (GraphView & ImageViewport)
-	std::vector<QAction*> m_graphViewsActions; // Actions that apply to GraphView (document & groups)
+	std::vector<QAction*> m_graphViewsActions; // Actions that apply to GraphView
 
 	QMenu *m_fileMenu,
 		*m_editMenu,
