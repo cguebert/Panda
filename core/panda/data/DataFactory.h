@@ -37,20 +37,23 @@ public:
 		std::shared_ptr<BaseDataCreator> creator;
 	};
 
-	static DataFactory* getInstance();
-	const DataEntry* getEntry(const std::string& className) const;
-	const DataEntry* getEntry(int type) const;
+	using EntriesList = std::vector<std::shared_ptr<DataEntry>>;
 
-	std::shared_ptr<BaseData> create(const std::string& className, const std::string& name, const std::string& help, PandaObject* owner) const;
-	std::shared_ptr<BaseData> create(int type, const std::string& name, const std::string& help, PandaObject* owner) const;
+	static const DataEntry* entry(const std::string& className);
+	static const DataEntry* entry(int type);
+
+	static std::shared_ptr<BaseData> create(const std::string& className, const std::string& name, const std::string& help, PandaObject* owner);
+	static std::shared_ptr<BaseData> create(int type, const std::string& name, const std::string& help, PandaObject* owner);
 
 	static std::string typeToName(int type);
 	static int nameToType(const std::string& name);
 
-	typedef std::vector< std::shared_ptr<DataEntry> > EntriesList;
-	const EntriesList& getEntries() const { return m_entries; }
+	static const EntriesList& entries();
 
-protected:
+private:
+	DataFactory() = default;
+	static DataFactory& instance();
+
 	EntriesList m_entries;
 	std::map< std::string, DataEntry* > m_registry;
 	std::map< std::string, DataEntry* > m_nameRegistry;
@@ -59,9 +62,6 @@ protected:
 
 	template<class T> friend class RegisterData;
 	void registerData(types::AbstractDataTrait* dataTrait, const BaseClass* theClass, std::shared_ptr<BaseDataCreator> creator);
-
-private:
-	DataFactory() {}
 };
 
 template<class T>
@@ -81,9 +81,9 @@ public:
 	RegisterData() {}
 	operator int()
 	{
-		typedef T value_type;
-		typedef Data<value_type> data_type;
-		typedef types::DataTrait<value_type> data_trait;
+		using value_type = T;
+		using data_type = Data<value_type>;
+		using data_trait = types::DataTrait<value_type>;
 
 		types::AbstractDataTrait* dataTrait = types::VirtualDataTrait<value_type>::get();
 		AbstractDataCopier* dataCopier = VirtualDataCopier<value_type>::get();
@@ -93,9 +93,9 @@ public:
 		types::DataTraitsList::registerTrait(dataTrait);
 		DataCopiersList::registerCopier(fullTypeId, dataCopier);
 
-		DataFactory::getInstance()->registerData(dataTrait,
-												 data_type::GetClass(),
-												 std::make_shared< DataCreator<data_type> >());
+		DataFactory::instance().registerData(dataTrait,
+											 data_type::GetClass(),
+											 std::make_shared< DataCreator<data_type> >());
 		return 1;
 	}
 };

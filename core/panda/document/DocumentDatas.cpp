@@ -30,8 +30,8 @@ std::shared_ptr<BaseData> duplicateData(PandaObject* parent, BaseData* data)
 {
 	auto name = findAvailableDataName(parent, data->getName());
 
-	auto newData = DataFactory::getInstance()->create(data->getDataTrait()->fullTypeId(),
-													  name, data->getHelp(), parent);
+	auto newData = DataFactory::create(data->getDataTrait()->fullTypeId(),
+									   name, data->getHelp(), parent);
 	newData->setDisplayed(data->isDisplayed());
 	newData->setPersistent(data->isPersistent());
 	newData->setWidget(data->getWidget());
@@ -112,7 +112,7 @@ void DocumentDatas::load(const XmlElement& elem, const std::string& nodeName)
 		widget = groupDataNode.attribute("widget").toString();
 		widgetData = groupDataNode.attribute("widgetData").toString();
 
-		auto dataPtr = DataFactory::getInstance()->create(type, name, help, m_parent);
+		auto dataPtr = DataFactory::create(type, name, help, m_parent);
 		auto data = dataPtr.get();
 		if (!widget.empty())
 			data->setWidget(widget);

@@ -6,35 +6,35 @@
 namespace panda
 {
 
-DataFactory* DataFactory::getInstance()
+DataFactory& DataFactory::instance()
 {
 	static DataFactory instance;
-	return &instance;
+	return instance;
 }
 
-const DataFactory::DataEntry* DataFactory::getEntry(const std::string& className) const
+const DataFactory::DataEntry* DataFactory::entry(const std::string& className)
 {
-	return m_registry.at(className);
+	return instance().m_registry.at(className);
 }
 
-const DataFactory::DataEntry* DataFactory::getEntry(int type) const
+const DataFactory::DataEntry* DataFactory::entry(int type)
 {
-	return m_typeRegistry.at(type);
+	return instance().m_typeRegistry.at(type);
 }
 
-std::shared_ptr<BaseData> DataFactory::create(const std::string& className, const std::string& name, const std::string& help, PandaObject* owner) const
+std::shared_ptr<BaseData> DataFactory::create(const std::string& className, const std::string& name, const std::string& help, PandaObject* owner)
 {
-	if (m_registry.count(className))
-		return m_registry.at(className)->creator->create(name, help, owner);
+	if (instance().m_registry.count(className))
+		return instance().m_registry.at(className)->creator->create(name, help, owner);
 
 	std::cerr << "Data factory has no entry for " << className << std::endl;
 	return std::shared_ptr<BaseData>();
 }
 
-std::shared_ptr<BaseData> DataFactory::create(int type, const std::string& name, const std::string& help, PandaObject* owner) const
+std::shared_ptr<BaseData> DataFactory::create(int type, const std::string& name, const std::string& help, PandaObject* owner)
 {
-	if (m_typeRegistry.count(type))
-		return m_typeRegistry.at(type)->creator->create(name, help, owner);
+	if (instance().m_typeRegistry.count(type))
+		return instance().m_typeRegistry.at(type)->creator->create(name, help, owner);
 
 	std::cerr << "Data factory has no entry for type " << type << std::endl;
 	return std::shared_ptr<BaseData>();
@@ -64,7 +64,7 @@ void DataFactory::registerData(types::AbstractDataTrait* dataTrait, const BaseCl
 
 std::string DataFactory::typeToName(int type)
 {
-	const DataFactory::DataEntry* entry = DataFactory::getInstance()->getEntry(type);
+	const DataFactory::DataEntry* entry = instance().entry(type);
 	if(entry)
 		return entry->typeName;
 	return "unknown";
@@ -72,10 +72,15 @@ std::string DataFactory::typeToName(int type)
 
 int DataFactory::nameToType(const std::string& name)
 {
-	const DataFactory::DataEntry* entry = helper::valueOrDefault(DataFactory::getInstance()->m_nameRegistry, name);
+	const DataFactory::DataEntry* entry = helper::valueOrDefault(instance().m_nameRegistry, name);
 	if(entry)
 		return entry->fullType;
 	return -1;
+}
+
+const DataFactory::EntriesList& DataFactory::entries() 
+{ 
+	return instance().m_entries; 
 }
 
 } // namespace panda

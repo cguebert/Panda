@@ -49,16 +49,17 @@ ObjectFactory::~ObjectFactory()
 	objectFactoryCreated = false;
 }
 
-ObjectFactory* ObjectFactory::getInstance()
+ObjectFactory& ObjectFactory::instance()
 {
 	static ObjectFactory instance;
-	return &instance;
+	return instance;
 }
 
-std::shared_ptr<PandaObject> ObjectFactory::create(const std::string& className, PandaDocument* document) const
+std::shared_ptr<PandaObject> ObjectFactory::create(const std::string& className, PandaDocument* document)
 {
-	auto iter = m_registry.find(className);
-	if(iter != m_registry.end())
+	auto& registry = instance().m_registry;
+	auto iter = registry.find(className);
+	if(iter != registry.end())
 	{
 		ClassEntry entry = iter->second;
 		if(entry.creator)
@@ -77,10 +78,11 @@ std::shared_ptr<PandaObject> ObjectFactory::create(const std::string& className,
 	return std::shared_ptr<PandaObject>();
 }
 
-bool ObjectFactory::canCreate(const std::string& className, PandaDocument* document) const
+bool ObjectFactory::canCreate(const std::string& className, PandaDocument* document)
 {
-	auto iter = m_registry.find(className);
-	if(iter != m_registry.end())
+	auto& registry = instance().m_registry;
+	auto iter = registry.find(className);
+	if(iter != registry.end())
 	{
 		ClassEntry entry = iter->second;
 		if (entry.creator)
@@ -91,9 +93,19 @@ bool ObjectFactory::canCreate(const std::string& className, PandaDocument* docum
 	return false;
 }
 
-std::string ObjectFactory::getRegistryName(PandaObject* object)
+std::string ObjectFactory::registryName(PandaObject* object)
 {
 	return replaceTypeNames(object->getClass()->getTypeName());
+}
+
+const ObjectFactory::RegistryMap& ObjectFactory::registryMap()
+{
+	return instance().m_registry; 
+}
+
+const ObjectFactory::ModulesList& ObjectFactory::modules()
+{
+	return instance().m_modules; 
 }
 
 void ObjectFactory::registerObject(const std::string& className, ClassEntry entry)
@@ -199,13 +211,13 @@ RegisterModule& RegisterModule::setVersion(std::string version)
 ModuleHandle::ModuleHandle(const RegisterModule& registerInfo)
 	: m_entry(registerInfo.m_entry)
 {
-	ObjectFactory::getInstance()->registerModule(m_entry);
+	ObjectFactory::instance().registerModule(m_entry);
 }
 
 ModuleHandle::~ModuleHandle()
 {
 	if(objectFactoryCreated)
-		ObjectFactory::getInstance()->unregisterModule(m_entry.name);
+		ObjectFactory::instance().unregisterModule(m_entry.name);
 }
 
 } // namespace panda

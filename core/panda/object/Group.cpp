@@ -49,7 +49,7 @@ void Group::save(XmlElement& elem, const std::vector<PandaObject*>* selected)
 	for(auto object : m_objectsList.get())
 	{
 		auto node = elem.addChild("Object");
-		node.setAttribute("type", ObjectFactory::getRegistryName(object.get()));
+		node.setAttribute("type", ObjectFactory::registryName(object.get()));
 		node.setAttribute("index", object->getIndex());
 
 		object->save(node, &allObjects);
@@ -114,13 +114,12 @@ void Group::load(const XmlElement& elem)
 	PandaObject::load(elem);
 
 	std::map<uint32_t, PandaObject*> importObjectsMap;
-	ObjectFactory* factory = ObjectFactory::getInstance();
 
 	for(auto objectNode = elem.firstChild("Object"); objectNode; objectNode = objectNode.nextSibling("Object"))
 	{
 		std::string registryName = objectNode.attribute("type").toString();
 		uint32_t index = objectNode.attribute("index").toUnsigned();
-		auto object = factory->create(registryName, parentDocument());
+		auto object = ObjectFactory::create(registryName, parentDocument());
 		if(object)
 		{
 			importObjectsMap[index] = object.get();

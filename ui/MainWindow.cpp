@@ -178,8 +178,7 @@ void MainWindow::newFile()
 			{
 				items.clear();
 				std::map<QString, int> typesMap;
-				auto df = panda::DataFactory::getInstance();
-				for (const auto entry : df->getEntries())
+				for (const auto entry : panda::DataFactory::entries())
 				{
 					auto description = QString::fromStdString(panda::types::DataTraitsList::getTrait(entry->fullType)->typeDescription());
 					auto name = QString::fromStdString(entry->typeName);
@@ -797,7 +796,7 @@ struct menuItemInfo
 
 void MainWindow::createRegistryMenu()
 {
-	const auto& registryMap = panda::ObjectFactory::getInstance()->getRegistryMap();
+	const auto& registryMap = panda::ObjectFactory::registryMap();
 	if(!registryMap.empty())
 	{
 		m_registryMenu = menuBar()->addMenu(tr("&Add"));
@@ -833,9 +832,9 @@ void MainWindow::createGroupRegistryMenu()
 {
 	if(m_groupsRegistryMenu)
 		m_groupsRegistryMenu->clear();
-	GroupsManager::getInstance()->createGroupsList();
+	GroupsManager::createGroupsList();
 
-	const auto& groups = GroupsManager::getInstance()->getGroups();
+	const auto& groups = GroupsManager::groups();
 	if(!groups.empty())
 	{
 		if(!m_groupsRegistryMenu)
@@ -1035,7 +1034,7 @@ void MainWindow::createObject()
 	QAction *action = qobject_cast<QAction *>(sender());
 	if(action)
 	{
-		auto object = panda::ObjectFactory::getInstance()->create(action->data().toString().toStdString(), m_document.get());
+		auto object = panda::ObjectFactory::create(action->data().toString().toStdString(), m_document.get());
 		auto& objectsList = m_currentGraphView ? m_currentGraphView->view().objectsList() : m_document->getObjectsList();
 		m_document->getUndoStack().push(std::make_shared<panda::AddObjectCommand>(m_document.get(), objectsList, object));
 	}
@@ -1146,7 +1145,7 @@ void MainWindow::saveGroup()
 	panda::Group* group = dynamic_cast<panda::Group*>(object);
 	if(group)
 	{
-		if(GroupsManager::getInstance()->saveGroup(group))
+		if(GroupsManager::saveGroup(group))
 		{
 			statusBar()->showMessage(tr("Group saved"), 2000);
 			createGroupRegistryMenu();
@@ -1163,7 +1162,7 @@ void MainWindow::createGroupObject()
 	if(action)
 	{
 		QString path = action->data().toString();
-		GroupsManager::getInstance()->createGroupObject(m_document.get(), &m_currentGraphView->view(), path);
+		GroupsManager::createGroupObject(m_document.get(), &m_currentGraphView->view(), path);
 	}
 }
 
@@ -1721,7 +1720,6 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 
 void MainWindow::updateAddObjectActions(QMenu* menu)
 {
-	auto factory = panda::ObjectFactory::getInstance();
 	for (auto action : menu->actions())
 	{
 		if (action->isSeparator())
@@ -1732,14 +1730,13 @@ void MainWindow::updateAddObjectActions(QMenu* menu)
 			continue;
 		}
 
-		action->setEnabled(factory->canCreate(action->data().toString().toStdString(), m_document.get()));
+		action->setEnabled(panda::ObjectFactory::canCreate(action->data().toString().toStdString(), m_document.get()));
 	}
 }
 
 void MainWindow::updateAddGroupActions(QMenu* menu)
 {
 	auto docType = panda::serialization::getDocumentType(m_document.get());
-	auto factory = GroupsManager::getInstance();
 	for (auto action : menu->actions())
 	{
 		if (action->isSeparator())
@@ -1750,6 +1747,6 @@ void MainWindow::updateAddGroupActions(QMenu* menu)
 			continue;
 		}
 
-		action->setEnabled(factory->canCreate(action->data().toString(), docType));
+		action->setEnabled(GroupsManager::canCreate(action->data().toString(), docType));
 	}
 }

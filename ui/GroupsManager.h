@@ -29,17 +29,16 @@ public:
 	};
 	using GroupsMap = std::map<QString, GroupInformation>;
 
-	static GroupsManager* getInstance();
-
-	void createGroupsList();
-	const GroupsMap& getGroups();
-	QString getGroupDescription(const QString& groupName);
-	bool canCreate(const QString& groupName, panda::serialization::DocumentType docType);
-	bool saveGroup(panda::Group* group);
-	panda::PandaObject* createGroupObject(panda::PandaDocument* document, panda::graphview::GraphView* view, QString groupPath);
+	static void createGroupsList();
+	static const GroupsMap& groups();
+	static QString groupDescription(const QString& groupName);
+	static bool canCreate(const QString& groupName, panda::serialization::DocumentType docType);
+	static bool saveGroup(panda::Group* group);
+	static panda::PandaObject* createGroupObject(panda::PandaDocument* document, panda::graphview::GraphView* view, QString groupPath);
 
 protected:
 	GroupsManager();
+	static GroupsManager& instance();
 
 	GroupsMap m_groupsMap;
 	QString m_groupsDirPath;

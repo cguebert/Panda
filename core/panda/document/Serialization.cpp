@@ -236,7 +236,7 @@ bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects)
 	for(auto object : objects)
 	{
 		auto elem = root.addChild("Object");
-		elem.setAttribute("type", ObjectFactory::getRegistryName(object));
+		elem.setAttribute("type", ObjectFactory::registryName(object));
 		elem.setAttribute("index", object->getIndex());
 
 		object->save(elem, &objects);
@@ -284,7 +284,6 @@ Objects loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElem
 {
 	document->getSignals().startLoading.run();
 	std::map<uint32_t, uint32_t> importIndicesMap;
-	auto factory = ObjectFactory::getInstance();
 
 	using ObjectXmlPair = std::pair<std::shared_ptr<PandaObject>, XmlElement>;
 	std::vector<ObjectXmlPair> newObjects;
@@ -294,7 +293,7 @@ Objects loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElem
 	{
 		std::string registryName = elem.attribute("type").toString();
 		uint32_t index = elem.attribute("index").toUnsigned();
-		auto object = factory->create(registryName, document);
+		auto object = ObjectFactory::create(registryName, document);
 		if(object)
 		{
 			importIndicesMap[index] = object->getIndex();

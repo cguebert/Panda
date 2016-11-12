@@ -83,7 +83,7 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 
 	out << "  <h1>Types</h1>\n";
 
-	auto dataEntriesList = DataFactory::getInstance()->getEntries();
+	auto dataEntriesList = DataFactory::entries();
 	std::sort(dataEntriesList.begin(), dataEntriesList.end(), dataTypeIdLessThan);
 
 	std::vector<EnrichedDataEntry> dataEntries;
@@ -91,7 +91,7 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 	for(auto d : dataEntriesList)
 	{
 		EnrichedDataEntry e = *d;
-		auto tmpData = DataFactory::getInstance()->create(d->fullType, "", "", nullptr);
+		auto tmpData = DataFactory::create(d->fullType, "", "", nullptr);
 		if(tmpData)
 		{
 			e.description = tmpData->getDescription();
@@ -154,7 +154,7 @@ QString createObjectsAndTypesPage(PandaDocument* document)
 	out << "  <h1>Objects</h1>\n";
 
 	std::vector<ObjectFactory::ClassEntry> objectsEntries;
-	for(const auto& object : ObjectFactory::getInstance()->getRegistryMap())
+	for(const auto& object : ObjectFactory::registryMap())
 		objectsEntries.push_back(object.second);
 	std::sort(objectsEntries.begin(), objectsEntries.end(), objectsMenuLessThan);
 

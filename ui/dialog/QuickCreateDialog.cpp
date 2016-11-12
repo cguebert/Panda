@@ -50,7 +50,7 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, panda::graphview
 
 	// Get the display text of all objects
 	std::vector<std::string> displayNames;
-	for(const auto& entry : ObjectFactory::getInstance()->getRegistryMap())
+	for(const auto& entry : ObjectFactory::registryMap())
 	{
 		if (!entry.second.hidden && entry.second.creator->canCreate(doc))
 			displayNames.push_back(entry.second.menuDisplay);
@@ -66,7 +66,7 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, panda::graphview
 		m_menuStringsList << QString::fromStdString(name);
 
 	// Adding groups
-	for(const auto& group : GroupsManager::getInstance()->getGroups())
+	for(const auto& group : GroupsManager::groups())
 		m_menuStringsList << "Groups/" + group.first;
 
 	m_menuStringsList.sort();
@@ -77,7 +77,7 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, panda::graphview
 
 bool getFactoryEntry(const std::string& menu, ObjectFactory::ClassEntry& entry)
 {
-	for(const auto& iter : ObjectFactory::getInstance()->getRegistryMap())
+	for(const auto& iter : ObjectFactory::registryMap())
 	{
 		if(menu == iter.second.menuDisplay)
 		{
@@ -101,7 +101,7 @@ void QuickCreateDialog::updateDescLabel()
 		if(selectedItemText.startsWith("Groups/"))
 		{
 			QString groupName = selectedItemText.mid(7);
-			QString description = GroupsManager::getInstance()->getGroupDescription(groupName);
+			QString description = GroupsManager::groupDescription(groupName);
 			m_descLabel->setText(description);
 		}
 		else
@@ -198,14 +198,14 @@ void QuickCreateDialog::createObject()
 		if(selectedItemText.startsWith("Groups/"))
 		{
 			QString groupName = selectedItemText.mid(7);
-			GroupsManager::getInstance()->createGroupObject(m_document, m_view, groupName);
+			GroupsManager::createGroupObject(m_document, m_view, groupName);
 		}
 		else
 		{
 			ObjectFactory::ClassEntry entry;
 			if(getFactoryEntry(selectedItemText.toStdString(), entry))
 			{
-				auto object = ObjectFactory::getInstance()->create(entry.className, m_document);
+				auto object = ObjectFactory::create(entry.className, m_document);
 				m_document->getUndoStack().push(std::make_shared<panda::AddObjectCommand>(m_document, m_view->objectsList(), object));
 			}
 		}

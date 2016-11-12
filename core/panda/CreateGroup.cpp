@@ -97,18 +97,17 @@ bool createGroup(PandaDocument* doc, graphview::GraphView* view)
 		layer = nullptr;
 
 	auto& objectsList = view->objectsList();
-	auto factory = ObjectFactory::getInstance();
 	Group* group = nullptr;
 	if(hasRenderer)
 	{
-		auto object = factory->create(ObjectFactory::getRegistryName<GroupWithLayer>(), doc);
+		auto object = ObjectFactory::create(ObjectFactory::registryName<GroupWithLayer>(), doc);
 		undoStack.push(std::make_shared<AddObjectCommand>(doc, objectsList, object));
 		auto groupWithLayer = dynamic_cast<GroupWithLayer*>(object.get());
 		group = groupWithLayer;
 	}
 	else
 	{
-		auto object = factory->create(ObjectFactory::getRegistryName<Group>(), doc);
+		auto object = ObjectFactory::create(ObjectFactory::registryName<Group>(), doc);
 		undoStack.push(std::make_shared<AddObjectCommand>(doc, objectsList, object));
 		group = dynamic_cast<Group*>(object.get());
 	}

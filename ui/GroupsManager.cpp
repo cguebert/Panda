@@ -41,21 +41,23 @@ GroupsManager::GroupsManager()
 	m_groupsDirPath = QCoreApplication::applicationDirPath() + "/groups/";
 }
 
-GroupsManager* GroupsManager::getInstance()
+GroupsManager& GroupsManager::instance()
 {
 	static GroupsManager groupManager;
-	return &groupManager;
+	return groupManager;
 }
 
 void GroupsManager::createGroupsList()
 {
-	m_groupsMap.clear();
+	auto& gm = instance();
+	auto& groupsMap = gm.m_groupsMap;
+	groupsMap.clear();
 	QStringList nameFilter;
 	nameFilter << "*.grp";
 
 	QStack<QString> dirList;
-	dirList.push(m_groupsDirPath);
-	QDir groupsDir(m_groupsDirPath);
+	dirList.push(gm.m_groupsDirPath);
+	QDir groupsDir(gm.m_groupsDirPath);
 
 	while(!dirList.isEmpty())
 	{
@@ -70,7 +72,7 @@ void GroupsManager::createGroupsList()
 				int n = path.lastIndexOf(".grp", -1, Qt::CaseInsensitive);
 				if(n != -1)
 					path = path.left(n);
-				m_groupsMap[path] = infoPair.second;
+				groupsMap[path] = infoPair.second;
 			}
 		}
 
@@ -90,7 +92,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 	if (!ok || text.isEmpty())
 		return false;
 
-	QString fileName = m_groupsDirPath + text + ".grp";
+	QString fileName = instance().m_groupsDirPath + text + ".grp";
 	QFileInfo fileInfo(fileName);
 	QDir dir;
 	dir.mkpath(fileInfo.dir().path());
@@ -128,7 +130,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 										description, &ok);
 
 	root.setAttribute("description", description.toStdString());
-	root.setAttribute("type", panda::ObjectFactory::getRegistryName(group));
+	root.setAttribute("type", panda::ObjectFactory::registryName(group));
 	const auto docType = panda::serialization::getDocumentType(group->parentDocument());
 	root.setAttribute("document", panda::serialization::getDocumentName(docType));
 
@@ -140,7 +142,7 @@ bool GroupsManager::saveGroup(panda::Group *group)
 
 panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* document, panda::graphview::GraphView* view, QString groupPath)
 {
-	QString fileName = m_groupsDirPath + "/" + groupPath + ".grp";
+	QString fileName = instance().m_groupsDirPath + "/" + groupPath + ".grp";
 	QFile file(fileName);
 	if(!file.open(QIODevice::ReadOnly))
 	{
@@ -158,7 +160,7 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 	auto root = doc.root();
 	auto registryName = root.attribute("type").toString();
 
-	auto object = panda::ObjectFactory::getInstance()->create(registryName, document);
+	auto object = panda::ObjectFactory::create(registryName, document);
 	if(object)
 	{
 		object->load(root);
@@ -169,18 +171,18 @@ panda::PandaObject* GroupsManager::createGroupObject(panda::PandaDocument* docum
 		return nullptr;
 }
 
-const GroupsManager::GroupsMap& GroupsManager::getGroups()
+const GroupsManager::GroupsMap& GroupsManager::groups()
 {
-	return m_groupsMap;
+	return instance().m_groupsMap;
 }
 
-QString GroupsManager::getGroupDescription(const QString& groupName)
+QString GroupsManager::groupDescription(const QString& groupName)
 {
-	return m_groupsMap.at(groupName).description;
+	return instance().m_groupsMap.at(groupName).description;
 }
 
 bool GroupsManager::canCreate(const QString& groupName, panda::serialization::DocumentType docType)
 {
-	const auto groupDocType = m_groupsMap.at(groupName).documentType;
+	const auto groupDocType = instance().m_groupsMap.at(groupName).documentType;
 	return panda::serialization::canImport(docType, groupDocType);
 }

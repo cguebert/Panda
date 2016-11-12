@@ -16,10 +16,10 @@ CustomVisualizer::CustomVisualizer(PandaDocument* doc)
 void CustomVisualizer::setDocument(std::unique_ptr<VisualizerDocument> document)
 {
 	m_visualizerDocument = std::move(document);
-	m_inputData = DataFactory::getInstance()->create(m_visualizerDocument->visualizerType(),
-													 "input",
-													 "The data to visualize on the graph view",
-													 this);
+	m_inputData = DataFactory::create(m_visualizerDocument->visualizerType(),
+									  "input",
+									  "The data to visualize on the graph view",
+									  this);
 
 	addInput(*m_inputData);
 }

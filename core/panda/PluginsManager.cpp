@@ -63,8 +63,8 @@ namespace panda
 
 	void PluginsManager::loadPlugins(const std::string& directory)
 	{
-		auto factory = panda::ObjectFactory::getInstance();
-		factory->moduleLoaded(); // Register core modules
+		auto& factory = panda::ObjectFactory::instance();
+		factory.moduleLoaded(); // Register core modules
 
 #if defined(WIN32)
 		const std::string filter = ".dll";
@@ -83,13 +83,13 @@ namespace panda
 			if (library->load())
 			{
 				m_plugins.push_back(library);
-				factory->moduleLoaded();
+				factory.moduleLoaded();
 			}
 			else
 				std::cerr << "Could not load library " << moduleName << std::endl;
 		}
 
-		factory->allObjectsRegistered();
+		factory.allObjectsRegistered();
 	}
 
 }

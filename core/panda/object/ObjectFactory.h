@@ -47,25 +47,25 @@ public:
 	};
 
 	~ObjectFactory();
-	static ObjectFactory* getInstance();
 
 	template <class T>
-	static std::string getRegistryName()
+	static std::string registryName()
 	{ return T::GetClass()->getTypeName(); }
-	static std::string getRegistryName(PandaObject* object);
+	static std::string registryName(PandaObject* object);
 
-	std::shared_ptr<PandaObject> create(const std::string& className, PandaDocument* document) const;
-	bool canCreate(const std::string& className, PandaDocument* document) const;
+	static std::shared_ptr<PandaObject> create(const std::string& className, PandaDocument* document);
+	static bool canCreate(const std::string& className, PandaDocument* document);
 
-	typedef std::map< std::string, ClassEntry > RegistryMap;
-	const RegistryMap& getRegistryMap() const
-	{ return m_registry; }
+	using RegistryMap = std::map<std::string, ClassEntry>;
+	static const RegistryMap& registryMap();
 
-	typedef std::vector<ModuleEntry> ModulesList;
-	const ModulesList& getModules() const
-	{ return m_modules; }
+	using ModulesList = std::vector<ModuleEntry>;
+	static const ModulesList& modules();
 
-protected:
+private:
+	ObjectFactory() = default;
+	static ObjectFactory& instance();
+
 	template<class O, class D> friend class RegisterObject;
 	void registerObject(const std::string& className, ClassEntry entry);
 
@@ -79,9 +79,6 @@ protected:
 
 	RegistryMap m_registry, m_tempRegistry;
 	ModulesList m_modules, m_tempModules;
-
-private:
-	ObjectFactory() {}
 };
 
 PANDA_CORE_API void objectDeletor(PandaObject* object);
@@ -145,7 +142,7 @@ public:
 	operator int()
 	{
 		std::string typeName = entry.theClass->getTypeName();
-		ObjectFactory::getInstance()->registerObject(typeName, entry);
+		ObjectFactory::instance().registerObject(typeName, entry);
 
 		return 1;
 	}

@@ -13,12 +13,12 @@ void copyDataToUserValue(const BaseData* data, PandaDocument* document, ObjectsL
 	if(!data)
 		return;
 
-	auto entry = DataFactory::getInstance()->getEntry(data->getDataTrait()->fullTypeId());
+	auto entry = DataFactory::entry(data->getDataTrait()->fullTypeId());
 	if(!entry)
 		return;
 
 	std::string registryName = std::string("panda::GeneratorUser<") + entry->className + ">";
-	auto object = ObjectFactory::getInstance()->create(registryName, document);
+	auto object = ObjectFactory::create(registryName, document);
 	if(!object)
 		return;
 
