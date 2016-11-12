@@ -111,7 +111,7 @@ namespace graphview
 	void DocumentDatasViewInteraction::createOutputData()
 	{
 		auto& undoStack = m_view.document()->getUndoStack();
-		auto macro = undoStack.beginMacro("create input data");
+		auto macro = undoStack.beginMacro("create output data");
 
 		auto data = contextMenuData();
 		auto newData = duplicateData(m_documentDatas.parent(), data);

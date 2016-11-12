@@ -1650,7 +1650,12 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	if (m_documentView)
 		m_documentView->deleteLater();
 
-	auto view = panda::graphview::DocumentView::createDocumentView(m_document.get(), m_document->getObjectsList());
+	std::unique_ptr<panda::graphview::GraphView> view;
+	auto visualizerDocument = std::dynamic_pointer_cast<panda::VisualizerDocument>(document);
+	if (visualizerDocument)
+		view = panda::graphview::DocumentDatasView::createDocumentDatasView(visualizerDocument->documentDatas(), m_document.get(), m_document->getObjectsList());
+	else
+		view = panda::graphview::DocumentView::createDocumentView(m_document.get(), m_document->getObjectsList());
 	m_documentView = new graphview::QtViewWrapper(std::move(view), this);
 	m_documentViewContainer->setView(m_documentView);
 	m_documentViewContainer->setFocusProxy(m_documentView);
