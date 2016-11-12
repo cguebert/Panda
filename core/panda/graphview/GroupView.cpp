@@ -1,6 +1,7 @@
+#include <panda/graphview/GroupView.h>
+
 #include <panda/graphview/object/ObjectRenderer.h>
 #include <panda/graphview/object/DockableRenderer.h>
-#include <panda/graphview/GroupView.h>
 #include <panda/graphview/LinksList.h>
 #include <panda/graphview/LinkTag.h>
 #include <panda/graphview/ObjectsSelection.h>

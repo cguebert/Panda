@@ -7,6 +7,7 @@
 namespace panda 
 {
 	
+class BaseData;
 class Group;
 
 namespace graphview
