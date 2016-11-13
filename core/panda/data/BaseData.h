@@ -2,6 +2,7 @@
 #define BASEDATA_H
 
 #include <panda/data/DataNode.h>
+#include <panda/helper/Flags.h>
 
 namespace panda
 {
@@ -81,6 +82,8 @@ public:
 	void setInput(bool input);
 	bool isOutput() const;		/// Is it used as of one of the outputs of a PandaObject
 	void setOutput(bool output);
+	bool isDynamicallyCreated() const; /// Has it been created after the initialization of its owner
+	void setDynamicallyCreated(bool dynamic);
 
 	PandaObject* getOwner() const; /// The PandaObject that owns this Data
 	void setOwner(PandaObject* owner);
@@ -114,29 +117,28 @@ protected:
 
 	void initInternals(const std::type_info& type);
 
-	enum DataFlagsEnum
+	enum class DataOption : uint32_t
 	{
-		FLAG_NONE = 0,
-		FLAG_READONLY = 1 << 0, /// Can this Data be edited in the GUI
-		FLAG_DISPLAYED = 1 << 1, /// Is it displayed in the GUI
-		FLAG_PERSISTENT = 1 << 2, /// Is it saved
-		FLAG_INPUT = 1 << 3, /// Is it an input of an object
-		FLAG_OUTPUT = 1 << 4, /// Is it an output of an object
-		FLAG_VALUE_SET = 1 << 5, /// Was the value modified from the default
-		FLAG_SETPARENTPROTECTION = 1 << 6 /// (internal) Are we modifying the parentage of this data
+		ReadOnly = 1 << 0, /// Can this Data be edited in the GUI
+		Displayed = 1 << 1, /// Is it displayed in the GUI
+		Persistent = 1 << 2, /// Is it saved
+		Input = 1 << 3, /// Is it an input of an object
+		Output = 1 << 4, /// Is it an output of an object
+		ValueSet = 1 << 5, /// Was the value modified from the default
+		SetParentProtection = 1 << 6, /// (internal) Are we modifying the parentage of this data
+		DynamicallyCreated = 1 << 7 /// Is it created after the initial creation of the object
 	};
-	typedef unsigned DataFlags;
-	enum { FLAG_DEFAULT = FLAG_DISPLAYED | FLAG_PERSISTENT };
+	using DataOptions = helper::Flags<DataOption>;
 
-	void setFlag(DataFlagsEnum flag, bool b);
-	bool getFlag(DataFlagsEnum flag) const;
+	void setFlag(DataOption flag, bool b);
+	bool getFlag(DataOption flag) const;
 
-	DataFlags m_dataFlags;
-	int m_counter;
-	PandaObject* m_owner;
-	BaseData* m_parentBaseData;
-	types::AbstractDataTrait* m_dataTrait;
-	AbstractDataCopier* m_dataCopier;
+	DataOptions m_dataFlags = DataOptions(DataOption::Displayed) | DataOption::Persistent;
+	int m_counter = 0;
+	PandaObject* m_owner = nullptr;
+	BaseData* m_parentBaseData = nullptr;
+	types::AbstractDataTrait* m_dataTrait = nullptr;
+	AbstractDataCopier* m_dataCopier = nullptr;
 	std::string m_name, m_help, m_widget, m_widgetData;
 
 private:
@@ -182,46 +184,52 @@ inline void BaseData::setWidgetData(const std::string& widgetData)
 { m_widgetData = widgetData; }
 
 inline bool BaseData::isSet() const
-{ return getFlag(FLAG_VALUE_SET); }
+{ return getFlag(DataOption::ValueSet); }
 
 inline void BaseData::unset()
-{ setFlag(FLAG_VALUE_SET, false); }
+{ setFlag(DataOption::ValueSet, false); }
 
 inline void BaseData::forceSet()
-{ setFlag(FLAG_VALUE_SET, true); }
+{ setFlag(DataOption::ValueSet, true); }
 
 inline int BaseData::getCounter() const
 { if(m_parentBaseData) return m_parentBaseData->getCounter(); return m_counter; }
 
 inline bool BaseData::isReadOnly() const
-{ return getFlag(FLAG_READONLY); }
+{ return getFlag(DataOption::ReadOnly); }
 
 inline void BaseData::setReadOnly(bool readOnly)
-{ setFlag(FLAG_READONLY, readOnly); }
+{ setFlag(DataOption::ReadOnly, readOnly); }
 
 inline bool BaseData::isDisplayed() const
-{ return getFlag(FLAG_DISPLAYED); }
+{ return getFlag(DataOption::Displayed); }
 
 inline void BaseData::setDisplayed(bool displayed)
-{ setFlag(FLAG_DISPLAYED, displayed); }
+{ setFlag(DataOption::Displayed, displayed); }
 
 inline bool BaseData::isPersistent() const
-{ return getFlag(FLAG_PERSISTENT); }
+{ return getFlag(DataOption::Persistent); }
 
 inline void BaseData::setPersistent(bool persistent)
-{ setFlag(FLAG_PERSISTENT, persistent); }
+{ setFlag(DataOption::Persistent, persistent); }
 
 inline bool BaseData::isInput() const
-{ return getFlag(FLAG_INPUT); }
+{ return getFlag(DataOption::Input); }
 
 inline void BaseData::setInput(bool input)
-{ setFlag(FLAG_INPUT, input); }
+{ setFlag(DataOption::Input, input); }
 
 inline bool BaseData::isOutput() const
-{ return getFlag(FLAG_OUTPUT); }
+{ return getFlag(DataOption::Output); }
 
 inline void BaseData::setOutput(bool output)
-{ setFlag(FLAG_OUTPUT, output); }
+{ setFlag(DataOption::Output, output); }
+
+inline bool BaseData::isDynamicallyCreated() const
+{ return getFlag(DataOption::DynamicallyCreated); }
+
+inline void BaseData::setDynamicallyCreated(bool dynamic)
+{ setFlag(DataOption::DynamicallyCreated, dynamic); }
 
 inline PandaObject* BaseData::getOwner() const
 { return m_owner; }
@@ -238,11 +246,11 @@ inline const types::AbstractDataTrait* BaseData::getDataTrait() const
 inline VoidDataAccessor BaseData::getVoidAccessor()
 { return VoidDataAccessor(this); }
 
-inline void BaseData::setFlag(DataFlagsEnum flag, bool b)
-{ if(b) m_dataFlags |= (DataFlags)flag; else m_dataFlags &= ~(DataFlags)flag; }
+inline void BaseData::setFlag(DataOption flag, bool b)
+{ if(b) m_dataFlags |= flag; else m_dataFlags &= ~DataOptions(flag); }
 
-inline bool BaseData::getFlag(DataFlagsEnum flag) const
-{ return (m_dataFlags & (DataFlags)flag) != 0; }
+inline bool BaseData::getFlag(DataOption flag) const
+{ return m_dataFlags.has(flag); }
 
 } // namespace panda
 

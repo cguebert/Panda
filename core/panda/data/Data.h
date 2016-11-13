@@ -137,7 +137,7 @@ template<class T>
 void Data<T>::setParent(BaseData* parent)
 {
 	// Treating disconnection of a data
-	if(!parent && !getFlag(FLAG_SETPARENTPROTECTION))
+	if(!parent && !getFlag(DataOption::SetParentProtection))
 	{
 		if(!isPersistent()) // If the data is not persistent, we reset the value
 		{

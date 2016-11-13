@@ -13,13 +13,10 @@ namespace panda
 {
 
 BaseData::BaseData(const BaseInitData& init, const std::type_info& type)
-	: m_dataFlags(FLAG_DEFAULT)
-	, m_counter(0)
-	, m_name(init.name)
+	: m_name(init.name)
 	, m_help(init.help)
 	, m_widget("default")
 	, m_owner(init.owner)
-	, m_parentBaseData(nullptr)
 {
 	initInternals(type);
 
@@ -28,13 +25,10 @@ BaseData::BaseData(const BaseInitData& init, const std::type_info& type)
 }
 
 BaseData::BaseData(const std::string& name, const std::string& help, PandaObject* owner, const std::type_info& type)
-	: m_dataFlags(FLAG_DEFAULT)
-	, m_counter(0)
-	, m_name(name)
+	: m_name(name)
 	, m_help(help)
 	, m_widget("default")
 	, m_owner(owner)
-	, m_parentBaseData(nullptr)
 {
 	initInternals(type);
 
@@ -64,9 +58,9 @@ void BaseData::setParent(BaseData* parent)
 {
 	if(m_parentBaseData == parent)
 		return;
-	if(getFlag(FLAG_SETPARENTPROTECTION))
+	if(getFlag(DataOption::SetParentProtection))
 		return;
-	setFlag(FLAG_SETPARENTPROTECTION, true);
+	setFlag(DataOption::SetParentProtection, true);
 
 	if (m_parentBaseData)
 		removeInput(*m_parentBaseData);
@@ -85,7 +79,7 @@ void BaseData::setParent(BaseData* parent)
 	else
 		m_parentBaseData = nullptr;
 
-	setFlag(FLAG_SETPARENTPROTECTION, false);
+	setFlag(DataOption::SetParentProtection, false);
 }
 
 std::string BaseData::getDescription() const
@@ -130,7 +124,7 @@ void BaseData::doRemoveInput(DataNode& node)
 	DataNode::doRemoveInput(node);
 	if(m_parentBaseData == &node)
 	{
-		if(m_owner && !getFlag(FLAG_SETPARENTPROTECTION))
+		if(m_owner && !getFlag(DataOption::SetParentProtection))
 			m_owner->dataSetParent(this, nullptr);
 	}
 	else if(dynamic_cast<PandaObject*>(&node))
@@ -156,8 +150,8 @@ void BaseData::initInternals(const std::type_info& type)
 	m_dataTrait = types::DataTraitsList::getTrait(type);
 	m_dataCopier = DataCopiersList::getCopier(type);
 
-	setFlag(FLAG_DISPLAYED, getDataTrait()->isDisplayed());
-	setFlag(FLAG_PERSISTENT, getDataTrait()->isPersistent());
+	setFlag(DataOption::Displayed, getDataTrait()->isDisplayed());
+	setFlag(DataOption::Persistent, getDataTrait()->isPersistent());
 }
 
 void BaseData::setDirtyValue(const DataNode* caller)
