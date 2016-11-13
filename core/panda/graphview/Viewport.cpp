@@ -62,13 +62,13 @@ namespace graphview
 	void Viewport::centerView()
 	{
 		const auto center = m_viewSize / 2;
-		if(!m_view.objectsList().get().empty())
+		if(!m_objectsRect.empty())
 			moveView(center / m_zoomFactor - m_objectsRect.center() + m_viewDelta);
 	}
 
 	void Viewport::showAll()
 	{
-		if(!m_view.objectsList().get().empty())
+		if(!m_objectsRect.empty())
 		{
 			float factorW = m_viewSize.x / (m_objectsRect.width() + 40);
 			float factorH = m_viewSize.y / (m_objectsRect.height() + 40);

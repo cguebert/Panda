@@ -47,6 +47,10 @@ namespace graphview
 		if (nbOutputs)
 			m_objectsRect.adjust(0, 0, dataMarginW + tagMargin + tagW, 0);
 
+		// Ensure the area is not empty if there is at least one data
+		if ((nbInputs || nbOutputs) && !m_objectsRect.height())
+			m_objectsRect.setHeight(10.f); 
+
 		updateViewRect();
 	}
 

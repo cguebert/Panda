@@ -1721,6 +1721,8 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	// Enable actions depending on if the corresponding object can be created or not with this new document
 	updateAddObjectActions(m_registryMenu);
 	updateAddGroupActions(m_groupsRegistryMenu);
+
+	m_documentView->executeNextRefresh([view = m_documentView] { view->view().viewport().showAll(); });
 }
 
 void MainWindow::updateAddObjectActions(QMenu* menu)
