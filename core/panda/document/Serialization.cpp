@@ -129,9 +129,11 @@ bool canImport(DocumentType current, DocumentType import)
 		return import == DT::Base 
 			|| import == DT::Rendered;
 	case DT::Interactive:
+	case DT::Visualizer:
 		return import == DT::Base 
 			|| import == DT::Rendered 
-			|| import == DT::Interactive;
+			|| import == DT::Interactive
+			|| import == DT::Visualizer;
 	}
 
 	return false;
