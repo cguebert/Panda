@@ -19,12 +19,10 @@ void VisualizerDocument::setVisualizerType(int type)
 		return;
 
 	auto visuData = DataFactory::create(type, "visualizerData", "The data to visualize", this);
-	if (visuData)
-	{
-		m_documentDatas.add(visuData);
-		addData(visuData.get());
-		addInput(*visuData);
-	}
+	visuData->setDynamicallyCreated(false); // This object cannot exists without this data
+	m_documentDatas.add(visuData);
+	addData(visuData.get());
+	addInput(*visuData);
 }
 
 void VisualizerDocument::save(XmlElement& elem, const std::vector<PandaObject*> *selected)
@@ -43,6 +41,8 @@ void VisualizerDocument::load(const XmlElement& elem)
 		setVisualizerType(panda::DataFactory::nameToType(node.attribute("type").toString()));
 */
 	m_documentDatas.load(elem, "DocumentData");
+	auto visuData = getData("visualizerData");
+	visuData->setDynamicallyCreated(false);
 	RenderedDocument::load(elem);
 }
 

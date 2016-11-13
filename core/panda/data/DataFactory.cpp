@@ -25,7 +25,11 @@ const DataFactory::DataEntry* DataFactory::entry(int type)
 std::shared_ptr<BaseData> DataFactory::create(const std::string& className, const std::string& name, const std::string& help, PandaObject* owner)
 {
 	if (instance().m_registry.count(className))
-		return instance().m_registry.at(className)->creator->create(name, help, owner);
+	{
+		auto data = instance().m_registry.at(className)->creator->create(name, help, owner);
+		data->setDynamicallyCreated(true);
+		return data;
+	}
 
 	std::cerr << "Data factory has no entry for " << className << std::endl;
 	return std::shared_ptr<BaseData>();
@@ -34,7 +38,11 @@ std::shared_ptr<BaseData> DataFactory::create(const std::string& className, cons
 std::shared_ptr<BaseData> DataFactory::create(int type, const std::string& name, const std::string& help, PandaObject* owner)
 {
 	if (instance().m_typeRegistry.count(type))
-		return instance().m_typeRegistry.at(type)->creator->create(name, help, owner);
+	{
+		auto data = instance().m_typeRegistry.at(type)->creator->create(name, help, owner);
+		data->setDynamicallyCreated(true);
+		return data;
+	}
 
 	std::cerr << "Data factory has no entry for type " << type << std::endl;
 	return std::shared_ptr<BaseData>();

@@ -70,7 +70,7 @@ namespace graphview
 		{
 			for (const auto& dataRect : m_documentDatasView.dataRects())
 			{
-				if (dataRect.second.contains(pos))
+				if (dataRect.second.contains(pos) && dataRect.first->isDynamicallyCreated())
 				{
 					m_contextMenuData = dataRect.first;
 					if (m_contextMenuData->isInput())
