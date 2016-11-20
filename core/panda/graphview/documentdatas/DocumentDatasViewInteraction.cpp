@@ -87,6 +87,16 @@ namespace graphview
 						auto macro = m_view.document()->getUndoStack().beginMacro("remove output data");
 						removeData(m_contextMenuData);
 					});
+
+					actions.emplace_back("Rename data", "Rename this data",
+										 [this]() {
+						auto name = m_view.gui().getText("Rename data", m_contextMenuData->getName());
+						if (!name.empty())
+						{
+							m_contextMenuData->setName(name);
+						}
+					});
+
 					break;
 				}
 			}

@@ -3,6 +3,7 @@
 #include <ui/MainWindow.h>
 
 #include <QApplication>
+#include <QInputDialog>
 #include <QMenu>
 #include <QToolTip>
 
@@ -79,6 +80,11 @@ namespace graphview
 
 		for (auto action : tempActions)
 			action->deleteLater();
+	}
+
+	std::string QtViewGui::getText(const std::string& label, const std::string& input)
+	{
+		return QInputDialog::getText(&m_viewWrapper, QString::fromStdString(label), "Value: ", QLineEdit::Normal, QString::fromStdString(input)).toStdString();
 	}
 
 } // namespace graphview

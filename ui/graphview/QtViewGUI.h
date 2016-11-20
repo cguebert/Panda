@@ -23,6 +23,8 @@ namespace graphview
 
 		void contextMenu(const panda::types::Point& pos, panda::graphview::MenuTypes types, const Actions& customActions = {}) override;
 
+		std::string getText(const std::string& label, const std::string& input) override;
+
 	protected:
 		QtViewWrapper& m_viewWrapper;
 		MainWindow* m_mainWindow;

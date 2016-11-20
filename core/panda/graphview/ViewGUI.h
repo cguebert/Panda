@@ -76,6 +76,8 @@ namespace graphview
 		virtual void showToolTip(const types::Point& pos, const std::string& msg, const types::Rect& area = {}) = 0;
 
 		virtual void contextMenu(const types::Point& pos, MenuTypes types, const Actions& customActions = {}) = 0;
+
+		virtual std::string getText(const std::string& label, const std::string& input) = 0;
 	};
 
 } // namespace graphview
