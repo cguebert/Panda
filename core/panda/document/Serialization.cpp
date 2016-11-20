@@ -15,9 +15,9 @@
 namespace
 {
 
-	panda::BaseData* findData(const panda::ObjectsList& objects, uint32_t objectIndex, const std::string& dataName)
+	panda::BaseData* findData(panda::PandaDocument* document, const panda::ObjectsList& objects, uint32_t objectIndex, const std::string& dataName)
 	{
-		auto object = objects.find(objectIndex);
+		auto object = objectIndex ? objects.find(objectIndex) : document;
 		if(object)
 			return object->getData(dataName);
 
@@ -76,6 +76,9 @@ namespace panda
 
 namespace serialization 
 {
+
+bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects, bool keepLinksToDocument = false);
+Objects loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElement& root);
 
 std::string getDocumentName(DocumentType type)
 {
@@ -155,7 +158,7 @@ bool writeFile(PandaDocument* document, const std::string& fileName)
 	for(auto object : objects)
 		allObjects.push_back(object.get());
 
-	saveDoc(document, root, allObjects);	// The document and all of its objects
+	saveDoc(document, root, allObjects, true);	// The document and all of its objects, and links to it
 
 	bool result = doc.saveToFile(fileName);
 	if (!result)
@@ -226,7 +229,7 @@ Objects readTextDocument(PandaDocument* document, ObjectsList& objectsList, cons
 	return loadDoc(document, objectsList, root);
 }
 
-bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects)
+bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects, bool keepLinksToDocument)
 {
 	typedef std::pair<BaseData*, BaseData*> DataPair;
 	std::vector<DataPair> links;
@@ -248,7 +251,10 @@ bool saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects)
 		for(BaseData* data : object->getInputDatas())
 		{
 			BaseData* parent = data->getParent();
-			if(parent && helper::contains(objects, parent->getOwner()))
+			if (!parent)
+				continue;
+			if(helper::contains(objects, parent->getOwner())
+			   || (keepLinksToDocument && parent->getOwner() == document))
 				links.push_back(std::make_pair(data, parent));
 		}
 
@@ -332,8 +338,8 @@ Objects loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElem
 		name2 = elem.attribute("data2").toString();
 
 		BaseData *data1, *data2;
-		data1 = findData(document->getObjectsList(), index1, name1);
-		data2 = findData(document->getObjectsList(), index2, name2);
+		data1 = findData(document, document->getObjectsList(), index1, name1);
+		data2 = findData(document, document->getObjectsList(), index2, name2);
 		if(data1 && data2)
 			data1->setParent(data2);
 	}

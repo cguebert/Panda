@@ -100,19 +100,22 @@ void DocumentDatas::save(XmlElement& elem, const std::string& nodeName)
 
 void DocumentDatas::load(const XmlElement& elem, const std::string& nodeName)
 {
-	for (auto groupDataNode = elem.firstChild(nodeName); groupDataNode; groupDataNode = groupDataNode.nextSibling(nodeName))
+	for (auto node = elem.firstChild(nodeName); node; node = node.nextSibling(nodeName))
 	{
 		uint32_t type, input, output;
 		std::string name, help, widget, widgetData;
-		type = DataFactory::nameToType(groupDataNode.attribute("type").toString());
-		input = groupDataNode.attribute("input").toUnsigned();
-		output = groupDataNode.attribute("output").toUnsigned();
-		name = groupDataNode.attribute("name").toString();
-		help = groupDataNode.attribute("help").toString();
-		widget = groupDataNode.attribute("widget").toString();
-		widgetData = groupDataNode.attribute("widgetData").toString();
+		type = DataFactory::nameToType(node.attribute("type").toString());
+		input = node.attribute("input").toUnsigned();
+		output = node.attribute("output").toUnsigned();
+		name = node.attribute("name").toString();
+		help = node.attribute("help").toString();
+		widget = node.attribute("widget").toString();
+		widgetData = node.attribute("widgetData").toString();
 
 		auto dataPtr = DataFactory::create(type, name, help, m_parent);
+		if (!dataPtr)
+			continue;
+
 		auto data = dataPtr.get();
 		if (!widget.empty())
 			data->setWidget(widget);

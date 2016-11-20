@@ -36,10 +36,10 @@ void VisualizerDocument::save(XmlElement& elem, const std::vector<PandaObject*> 
 
 void VisualizerDocument::load(const XmlElement& elem)
 {
-/*	auto node = elem.firstChild("VisualizerData");
+	auto node = elem.firstChild("VisualizerData");
 	if(node)
-		setVisualizerType(panda::DataFactory::nameToType(node.attribute("type").toString()));
-*/
+		m_visualizerType = panda::DataFactory::nameToType(node.attribute("type").toString());
+
 	m_documentDatas.load(elem, "DocumentData");
 	auto visuData = getData("visualizerData");
 	visuData->setDynamicallyCreated(false);

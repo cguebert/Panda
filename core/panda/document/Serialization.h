@@ -40,9 +40,6 @@ Objects PANDA_CORE_API importFile(PandaDocument* document, ObjectsList& objectsL
 std::string PANDA_CORE_API writeTextDocument(PandaDocument* document, const Objects& objects);
 Objects PANDA_CORE_API readTextDocument(PandaDocument* document, ObjectsList& objectsList, const std::string& text);
 
-bool PANDA_CORE_API saveDoc(PandaDocument* document, XmlElement& root, const Objects& objects);
-Objects PANDA_CORE_API loadDoc(PandaDocument* document, ObjectsList& objectsList, const XmlElement& root);
-
 } // namespace serialization
 
 } // namespace panda
