@@ -90,11 +90,10 @@ namespace graphview
 
 					actions.emplace_back("Rename data", "Rename this data",
 										 [this]() {
-						auto name = m_view.gui().getText("Rename data", m_contextMenuData->getName());
-						if (!name.empty())
-						{
-							m_contextMenuData->setName(name);
-						}
+						const auto prevName = m_contextMenuData->getName();
+						auto name = m_view.gui().getText("Rename data", prevName);
+						if (!name.empty() && prevName != name)
+							m_view.document()->getUndoStack().push(std::make_shared<RenameDataCommand>(m_contextMenuData, name));
 					});
 
 					break;

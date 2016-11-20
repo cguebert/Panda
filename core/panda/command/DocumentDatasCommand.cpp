@@ -13,7 +13,7 @@ AddDataToDocumentDatasCommand::AddDataToDocumentDatasCommand(DocumentDatas& docu
 	, m_input(isInput)
 	, m_output(isOutput)
 {
-	setText("add group data");
+	setText("add data");
 }
 
 void AddDataToDocumentDatasCommand::redo()
@@ -45,7 +45,7 @@ void AddDataToDocumentDatasCommand::undo()
 RemoveDataFromDocumentDatasCommand::RemoveDataFromDocumentDatasCommand(DocumentDatas& documentDatas, BaseData* data)
 	: m_documentDatas(documentDatas)
 {
-	setText("remove group data");
+	setText("remove data");
 
 	const auto& datas = m_documentDatas.get();
 	auto dIt = std::find_if(datas.begin(), datas.end(), [data](const std::shared_ptr<BaseData>& dataSPtr) {
@@ -87,5 +87,27 @@ void RemoveDataFromDocumentDatasCommand::undo()
 	m_documentDatas.add(m_data, m_documentDataIndex);
 	obj->addData(m_data.get(), m_dataIndex);
 }
+
+//****************************************************************************//
+
+RenameDataCommand::RenameDataCommand(BaseData* data, const std::string& newName)
+	: m_data(data)
+	, m_newName(newName)
+{
+	setText("rename data");
+
+	m_oldName = data->getName();
+}
+
+void RenameDataCommand::redo()
+{
+	m_data->setName(m_newName);
+}
+
+void RenameDataCommand::undo()
+{
+	m_data->setName(m_oldName);
+}
+
 
 } // namespace panda

@@ -42,4 +42,19 @@ protected:
 	bool m_input, m_output;
 };
 
+//****************************************************************************//
+
+class PANDA_CORE_API RenameDataCommand : public UndoCommand
+{
+public:
+	RenameDataCommand(BaseData* data, const std::string& newName);
+
+	virtual void redo();
+	virtual void undo();
+
+protected:
+	BaseData* m_data;
+	std::string m_oldName, m_newName;
+};
+
 } // namespace panda
