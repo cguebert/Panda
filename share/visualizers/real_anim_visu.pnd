@@ -1,0 +1,456 @@
+<Panda>
+    <Document type="Visualizer"/>
+    <VisualizerData type="real_animation"/>
+    <DocumentData type="real_animation" input="1" output="0" name="visualizerData" help="The data to visualize" widget="default"/>
+    <DocumentData type="real" input="1" output="0" name="margin" help="Size reserved for the vertical axis" widget="default"/>
+    <DocumentData type="text" input="1" output="0" name="font" help="Font used for the vertical axis" widget="font"/>
+    <Data name="visualizerData" extend="0" interpolation="11">
+        <Value key="0" real="10"/>
+        <Value key="3" real="30"/>
+        <Value key="5" real="20"/>
+        <Value key="9" real="10"/>
+    </Data>
+    <Data name="margin" real="50"/>
+    <Data name="font">Segoe UI,segoeui.ttf,0,16,50,0</Data>
+    <ObjectAddons>
+        <panda::graphview::DataLabelAddon>
+            <Child name="DataLabel" hasText="1">
+                <Attribute name="data"/>
+            </Child>
+        </panda::graphview::DataLabelAddon>
+        <panda::graphview::ObjectPositionAddon>
+            <Attribute name="x"/>
+            <Attribute name="y"/>
+        </panda::graphview::ObjectPositionAddon>
+    </ObjectAddons>
+    <Object type="panda::GeneratorPoint_RenderSize" index="1" x="-527.95166" y="180.60657"/>
+    <Object type="panda::DoubleMath_Remap" index="2" x="339.38727" y="-24.168213">
+        <Data name="oMax">
+            <Value real="0"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorPoints_Decompose" index="3" x="-407.57874" y="180.60657"/>
+    <Object type="panda::Group" index="4" x="61.344666" y="0.7253418">
+        <GroupData type="real_vector" input="1" output="0" name="values" help="The list of numbers" widget="default"/>
+        <GroupData type="real_vector" input="0" output="1" name="minimum" help="minimum axis value" widget="default"/>
+        <GroupData type="real_vector" input="0" output="1" name="maximum" help="maximum axis value" widget="default"/>
+        <GroupData type="real_vector" input="0" output="1" name="steps" help="intermediary axis values" widget="default"/>
+        <Data name="name">Axis bounds</Data>
+        <Object type="panda::ListFindMax" index="5" x="324.41327" y="546.97107">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::ListFindMin" index="6" x="324.41327" y="270.38971">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::DoubleMath_Sub" index="7" x="493.48706" y="446.88303"/>
+        <Object type="panda::DoubleMath_LogBase" index="8" x="607.20819" y="446.88303"/>
+        <Object type="panda::DoubleMath_Power" index="9" x="834.65045" y="431.88303">
+            <Data name="input 1">
+                <Value real="10"/>
+            </Data>
+        </Object>
+        <Object type="panda::DoubleMath_Floor" index="10" x="720.92932" y="446.88303"/>
+        <Object type="panda::DoubleMath_Div" index="11" x="1021.8734" y="273.38971"/>
+        <Object type="panda::DoubleMath_Div" index="12" x="1021.8734" y="549.97107"/>
+        <Object type="panda::DoubleMath_Ceil" index="13" x="1212.1423" y="491.83289"/>
+        <Object type="panda::DoubleMath_Floor" index="14" x="1212.1423" y="549.97107"/>
+        <Object type="panda::DoubleMath_Mult" index="15" x="2551.7415" y="508.80847"/>
+        <Object type="panda::DoubleMath_Floor" index="16" x="1507.4358" y="273.38971"/>
+        <Object type="panda::DoubleMath_Ceil" index="17" x="1507.4358" y="335.23633"/>
+        <Object type="panda::DoubleMath_Mult" index="18" x="1616.6586" y="273.38971"/>
+        <Object type="panda::DoubleMath_Mult" index="19" x="1616.6586" y="335.23633"/>
+        <Object type="panda::Group" index="20" x="1611.0533" y="559.11829">
+            <GroupData type="real" input="1" output="0" name="min" help="" widget="default"/>
+            <GroupData type="real" input="1" output="0" name="max" help="" widget="default"/>
+            <GroupData type="real" input="1" output="0" name="step" help="" widget="default"/>
+            <GroupData type="real_vector" input="0" output="1" name="values" help="" widget="default"/>
+            <Data name="name">Steps</Data>
+            <Data name="step" real="0.5"/>
+            <Object type="panda::DoubleMath_Sub" index="21" x="1203.8257" y="538.23889"/>
+            <Object type="panda::DoubleMath_Div" index="22" x="1325.1405" y="538.23889"/>
+            <Object type="panda::IntegerMath_Add" index="23" x="1445.0833" y="538.23889">
+                <Data name="input 2">
+                    <Value int="1"/>
+                </Data>
+            </Object>
+            <Object type="panda::GeneratorReals_Enumeration" index="24" x="1558.8589" y="538.23889"/>
+            <Link object1="21" data1="input 1" object2="0" data2="max"/>
+            <Link object1="21" data1="input 2" object2="0" data2="min"/>
+            <Link object1="22" data1="input 1" object2="21" data2="result"/>
+            <Link object1="22" data1="input 2" object2="0" data2="step"/>
+            <Link object1="23" data1="input 1" object2="22" data2="result"/>
+            <Link object1="24" data1="# numbers" object2="23" data2="result"/>
+            <Link object1="24" data1="start" object2="0" data2="min"/>
+            <Link object1="24" data1="step" object2="0" data2="step"/>
+            <Link object1="0" data1="values" object2="24" data2="numbers"/>
+        </Object>
+        <Object type="panda::DoubleMath_Add" index="25" x="1498.719" y="579.11829">
+            <Data name="input 2">
+                <Value real="0.5"/>
+            </Data>
+        </Object>
+        <Object type="panda::DoubleMath_Sub" index="26" x="1498.719" y="522.53418">
+            <Data name="input 2">
+                <Value real="0.5"/>
+            </Data>
+        </Object>
+        <Object type="panda::Group" index="27" x="1611.0533" y="492.97681">
+            <GroupData type="real" input="1" output="0" name="min" help="" widget="default"/>
+            <GroupData type="real" input="1" output="0" name="max" help="" widget="default"/>
+            <GroupData type="real" input="1" output="0" name="step" help="" widget="default"/>
+            <GroupData type="real_vector" input="0" output="1" name="values" help="" widget="default"/>
+            <Data name="name">Steps</Data>
+            <Data name="step" real="1"/>
+            <Object type="panda::DoubleMath_Sub" index="28" x="1203.8257" y="538.23889"/>
+            <Object type="panda::DoubleMath_Div" index="29" x="1325.1405" y="538.23889"/>
+            <Object type="panda::IntegerMath_Add" index="30" x="1445.0833" y="538.23889">
+                <Data name="input 2">
+                    <Value int="1"/>
+                </Data>
+            </Object>
+            <Object type="panda::GeneratorReals_Enumeration" index="31" x="1558.8589" y="538.23889"/>
+            <Link object1="28" data1="input 1" object2="0" data2="max"/>
+            <Link object1="28" data1="input 2" object2="0" data2="min"/>
+            <Link object1="29" data1="input 1" object2="28" data2="result"/>
+            <Link object1="29" data1="input 2" object2="0" data2="step"/>
+            <Link object1="30" data1="input 1" object2="29" data2="result"/>
+            <Link object1="31" data1="# numbers" object2="30" data2="result"/>
+            <Link object1="31" data1="start" object2="0" data2="min"/>
+            <Link object1="31" data1="step" object2="0" data2="step"/>
+            <Link object1="0" data1="values" object2="31" data2="numbers"/>
+        </Object>
+        <Object type="panda::Group" index="32" x="1611.0533" y="662.14868">
+            <GroupData type="real" input="1" output="0" name="min" help="" widget="default"/>
+            <GroupData type="real" input="1" output="0" name="max" help="" widget="default"/>
+            <GroupData type="real" input="1" output="0" name="step" help="" widget="default"/>
+            <GroupData type="real_vector" input="0" output="1" name="values" help="" widget="default"/>
+            <Data name="name">Steps</Data>
+            <Data name="step" real="2"/>
+            <Object type="panda::DoubleMath_Sub" index="33" x="1203.8257" y="538.23889"/>
+            <Object type="panda::DoubleMath_Div" index="34" x="1325.1405" y="538.23889"/>
+            <Object type="panda::IntegerMath_Add" index="35" x="1445.0833" y="538.23889">
+                <Data name="input 2">
+                    <Value int="1"/>
+                </Data>
+            </Object>
+            <Object type="panda::GeneratorReals_Enumeration" index="36" x="1558.8589" y="538.23889"/>
+            <Link object1="33" data1="input 1" object2="0" data2="max"/>
+            <Link object1="33" data1="input 2" object2="0" data2="min"/>
+            <Link object1="34" data1="input 1" object2="33" data2="result"/>
+            <Link object1="34" data1="input 2" object2="0" data2="step"/>
+            <Link object1="35" data1="input 1" object2="34" data2="result"/>
+            <Link object1="36" data1="# numbers" object2="35" data2="result"/>
+            <Link object1="36" data1="start" object2="0" data2="min"/>
+            <Link object1="36" data1="step" object2="0" data2="step"/>
+            <Link object1="0" data1="values" object2="36" data2="numbers"/>
+        </Object>
+        <Object type="panda::IntegerMath_Mod" index="37" x="1388.8568" y="682.14868">
+            <Data name="input 2">
+                <Value int="2"/>
+            </Data>
+        </Object>
+        <Object type="panda::DoubleMath_Add" index="38" x="1498.719" y="667.14868"/>
+        <Object type="panda::ListSize" index="39" x="1753.1951" y="494.97681">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::BooleanMath_Greater" index="40" x="2285.5593" y="502.05878">
+            <Data name="inputB">
+                <Value real="5"/>
+            </Data>
+        </Object>
+        <Object type="panda::ListCondition" index="41" x="2418.6504" y="502.05878">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::BooleanMath_Greater" index="42" x="1886.2861" y="482.97678">
+            <Data name="inputA">
+                <Value real="3"/>
+            </Data>
+        </Object>
+        <Object type="panda::ListCondition" index="43" x="2019.377" y="482.97678">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::ListSize" index="44" x="2152.4683" y="499.05872">
+            <CreatedData type="real"/>
+        </Object>
+        <Link object1="5" data1="input #1" object2="0" data2="values"/>
+        <Link object1="6" data1="input #1" object2="0" data2="values"/>
+        <Link object1="7" data1="input 1" object2="5" data2="maximum #1"/>
+        <Link object1="7" data1="input 2" object2="6" data2="minimum #1"/>
+        <Link object1="8" data1="input" object2="7" data2="result"/>
+        <Link object1="9" data1="input 2" object2="10" data2="result"/>
+        <Link object1="10" data1="input" object2="8" data2="result"/>
+        <Link object1="11" data1="input 1" object2="6" data2="minimum #1"/>
+        <Link object1="11" data1="input 2" object2="9" data2="result"/>
+        <Link object1="12" data1="input 1" object2="5" data2="maximum #1"/>
+        <Link object1="12" data1="input 2" object2="9" data2="result"/>
+        <Link object1="13" data1="input" object2="11" data2="result"/>
+        <Link object1="14" data1="input" object2="12" data2="result"/>
+        <Link object1="15" data1="input 1" object2="41" data2="result #1"/>
+        <Link object1="15" data1="input 2" object2="9" data2="result"/>
+        <Link object1="16" data1="input" object2="11" data2="result"/>
+        <Link object1="17" data1="input" object2="12" data2="result"/>
+        <Link object1="18" data1="input 1" object2="16" data2="result"/>
+        <Link object1="18" data1="input 2" object2="9" data2="result"/>
+        <Link object1="19" data1="input 1" object2="17" data2="result"/>
+        <Link object1="19" data1="input 2" object2="9" data2="result"/>
+        <Link object1="20" data1="min" object2="26" data2="result"/>
+        <Link object1="20" data1="max" object2="25" data2="result"/>
+        <Link object1="25" data1="input 1" object2="14" data2="result"/>
+        <Link object1="26" data1="input 1" object2="13" data2="result"/>
+        <Link object1="27" data1="min" object2="13" data2="result"/>
+        <Link object1="27" data1="max" object2="14" data2="result"/>
+        <Link object1="32" data1="min" object2="38" data2="result"/>
+        <Link object1="32" data1="max" object2="14" data2="result"/>
+        <Link object1="37" data1="input 1" object2="13" data2="result"/>
+        <Link object1="38" data1="input 1" object2="13" data2="result"/>
+        <Link object1="38" data1="input 2" object2="37" data2="result"/>
+        <Link object1="39" data1="input #1" object2="27" data2="values"/>
+        <Link object1="40" data1="inputA" object2="44" data2="size #1"/>
+        <Link object1="41" data1="control" object2="40" data2="result"/>
+        <Link object1="41" data1="true #1" object2="32" data2="values"/>
+        <Link object1="41" data1="false #1" object2="43" data2="result #1"/>
+        <Link object1="42" data1="inputB" object2="39" data2="size #1"/>
+        <Link object1="43" data1="control" object2="42" data2="result"/>
+        <Link object1="43" data1="true #1" object2="20" data2="values"/>
+        <Link object1="43" data1="false #1" object2="27" data2="values"/>
+        <Link object1="44" data1="input #1" object2="43" data2="result #1"/>
+        <Link object1="0" data1="minimum" object2="18" data2="result"/>
+        <Link object1="0" data1="maximum" object2="19" data2="result"/>
+        <Link object1="0" data1="steps" object2="15" data2="result"/>
+    </Object>
+    <Object type="panda::GeneratorPoints_Compose" index="47" x="578.61108" y="-77.466072"/>
+    <Object type="panda::RenderDisk" index="48" x="694.07654" y="-77.466072">
+        <Data name="radius">
+            <Value real="2.5"/>
+        </Data>
+    </Object>
+    <Object type="panda::RenderPath" index="49" x="714.80225" y="-264.29135"/>
+    <Object type="panda::DoubleMath_Remap" index="50" x="339.38727" y="-126.47763">
+        <Data name="oMin">
+            <Value real="50"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorPoints_Compose" index="51" x="-48.067078" y="324.03421"/>
+    <Object type="panda::GeneratorPoints_Compose" index="52" x="-48.067078" y="264.91675">
+        <Data name="y">
+            <Value real="0"/>
+        </Data>
+    </Object>
+    <Object type="panda::RenderLine" index="53" x="102.25208" y="264.91675">
+        <Data name="width">
+            <Value real="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::DoubleMath_Remap" index="54" x="339.38727" y="78.719757">
+        <Data name="oMax">
+            <Value real="0"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorPoints_Compose" index="55" x="578.61108" y="63.719757">
+        <Data name="x">
+            <Value real="50"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorPoints_Compose" index="56" x="578.61108" y="128.84183"/>
+    <Object type="panda::RenderLine" index="57" x="700.69641" y="81.016266">
+        <Data name="width">
+            <Value real="0.40000001"/>
+        </Data>
+        <Data name="color">
+            <Value r="0.50196081" g="0.50196081" b="0.50196081" a="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorText_Format" index="58" x="474.19934" y="197.896">
+        <CreatedData type="real"/>
+        <Data name="format">%1%  </Data>
+    </Object>
+    <Object type="panda::RenderText" index="59" x="775.65613" y="246.61935">
+        <Data name="font">Segoe UI,segoeui.ttf,0,16,50,0</Data>
+        <Data name="align H" int="1"/>
+        <Data name="align V" int="2"/>
+    </Object>
+    <Object type="panda::GeneratorRectangles_ComposeCenter" index="60" x="642.28467" y="276.61935"/>
+    <Object type="panda::GeneratorPoints_Compose" index="61" x="474.19934" y="274.50259"/>
+    <Object type="panda::DoubleMath_Div" index="62" x="229.97552" y="274.50259">
+        <Data name="input 1">
+            <Value real="50"/>
+        </Data>
+        <Data name="input 2">
+            <Value real="2"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorPoints_Compose" index="63" x="474.19934" y="336.52859">
+        <Data name="x">
+            <Value real="50"/>
+        </Data>
+        <Data name="y">
+            <Value real="25"/>
+        </Data>
+    </Object>
+    <Object type="panda::DoubleMath_Round" index="64" x="463.82275" y="78.719757"/>
+    <Object type="panda::DoubleMath_Sub" index="65" x="-179.58899" y="324.03421">
+        <Data name="input 1">
+            <Value real="50"/>
+        </Data>
+        <Data name="input 2">
+            <Value real="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::Anim2List" index="66" x="-111.10815" y="-54.194763">
+        <CreatedData type="real"/>
+        <Data name="input #1" extend="0" interpolation="11">
+            <Value key="0" real="10"/>
+            <Value key="3" real="30"/>
+            <Value key="5" real="20"/>
+            <Value key="9" real="10"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorReals_Enumeration" index="67" x="73.953064" y="-270.23557"/>
+    <Object type="panda::DoubleMath_Remap" index="68" x="216.40344" y="-241.93034">
+        <Data name="iMin">
+            <Value real="0"/>
+        </Data>
+    </Object>
+    <Object type="panda::IntegerMath_Sub" index="69" x="-45.046936" y="-270.23557">
+        <Data name="input 2">
+            <Value int="50"/>
+        </Data>
+    </Object>
+    <Object type="panda::IntegerMath_Sub" index="70" x="73.953064" y="-211.93034">
+        <Data name="input 2">
+            <Value int="1"/>
+        </Data>
+    </Object>
+    <Object type="panda::Group" index="71" x="61.344666" y="-118.51485">
+        <GroupData type="real_vector" input="1" output="0" name="values" help="" widget="default"/>
+        <GroupData type="real" input="0" output="1" name="first value" help="" widget="default"/>
+        <Data name="name">First or 0</Data>
+        <Object type="panda::ListCondition" index="72" x="338.11261" y="-210.31479">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::ListSize" index="73" x="203.41742" y="-213.31479">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::GeneratorUser&lt;real&gt;" index="74" x="203.41742" y="-93.314789"/>
+        <Object type="panda::ListItem" index="75" x="203.41742" y="-158.31479">
+            <CreatedData type="real"/>
+        </Object>
+        <Link object1="72" data1="control" object2="73" data2="size #1"/>
+        <Link object1="72" data1="true #1" object2="75" data2="output #1"/>
+        <Link object1="72" data1="false #1" object2="74" data2="value"/>
+        <Link object1="73" data1="input #1" object2="0" data2="values"/>
+        <Link object1="75" data1="input #1" object2="0" data2="values"/>
+        <Link object1="0" data1="first value" object2="72" data2="result #1"/>
+    </Object>
+    <Object type="panda::Group" index="76" x="61.344666" y="-62.709641">
+        <GroupData type="real_vector" input="1" output="0" name="values" help="" widget="default"/>
+        <GroupData type="real" input="0" output="1" name="last value" help="" widget="default"/>
+        <Data name="name">Last or 0</Data>
+        <Object type="panda::ListCondition" index="77" x="694.81451" y="-336.50958">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::ListSize" index="78" x="303.76501" y="-339.50958">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::GeneratorUser&lt;real&gt;" index="79" x="560.11932" y="-219.50958"/>
+        <Object type="panda::ListItem" index="80" x="560.11932" y="-284.50958">
+            <CreatedData type="real"/>
+        </Object>
+        <Object type="panda::IntegerMath_Sub" index="81" x="447.11932" y="-284.50958">
+            <Data name="input 2">
+                <Value int="1"/>
+            </Data>
+        </Object>
+        <Link object1="77" data1="control" object2="78" data2="size #1"/>
+        <Link object1="77" data1="true #1" object2="80" data2="output #1"/>
+        <Link object1="77" data1="false #1" object2="79" data2="value"/>
+        <Link object1="78" data1="input #1" object2="0" data2="values"/>
+        <Link object1="80" data1="index" object2="81" data2="result"/>
+        <Link object1="80" data1="input #1" object2="0" data2="values"/>
+        <Link object1="81" data1="input 1" object2="78" data2="size #1"/>
+        <Link object1="0" data1="last value" object2="77" data2="result #1"/>
+    </Object>
+    <Object type="panda::AnimValue" index="82" x="351.40344" y="-241.93034">
+        <CreatedData type="real"/>
+        <Data name="input #1" extend="0" interpolation="11">
+            <Value key="0" real="10"/>
+            <Value key="3" real="30"/>
+            <Value key="5" real="20"/>
+            <Value key="9" real="10"/>
+        </Data>
+    </Object>
+    <Object type="panda::DoubleMath_Remap" index="83" x="476.55225" y="-223.67827">
+        <Data name="oMax">
+            <Value real="0"/>
+        </Data>
+    </Object>
+    <Object type="panda::DoubleMath_Add" index="84" x="476.55225" y="-279.67825">
+        <Data name="input 2">
+            <Value real="50"/>
+        </Data>
+    </Object>
+    <Object type="panda::GeneratorPoints_Compose" index="85" x="600.17371" y="-264.29135"/>
+    <Link object1="2" data1="input" object2="66" data2="values #1"/>
+    <Link object1="2" data1="iMin" object2="4" data2="minimum"/>
+    <Link object1="2" data1="iMax" object2="4" data2="maximum"/>
+    <Link object1="2" data1="oMin" object2="3" data2="y"/>
+    <Link object1="3" data1="point" object2="1" data2="size"/>
+    <Link object1="4" data1="values" object2="66" data2="values #1"/>
+    <Link object1="47" data1="x" object2="50" data2="result"/>
+    <Link object1="47" data1="y" object2="2" data2="result"/>
+    <Link object1="48" data1="center" object2="47" data2="point"/>
+    <Link object1="49" data1="path" object2="85" data2="point"/>
+    <Link object1="50" data1="input" object2="66" data2="keys #1"/>
+    <Link object1="50" data1="iMin" object2="71" data2="first value"/>
+    <Link object1="50" data1="iMax" object2="76" data2="last value"/>
+    <Link object1="50" data1="oMin" object2="0" data2="margin"/>
+    <Link object1="50" data1="oMax" object2="3" data2="x"/>
+    <Link object1="51" data1="x" object2="65" data2="result"/>
+    <Link object1="51" data1="y" object2="3" data2="y"/>
+    <Link object1="52" data1="x" object2="65" data2="result"/>
+    <Link object1="53" data1="point 1" object2="52" data2="point"/>
+    <Link object1="53" data1="point 2" object2="51" data2="point"/>
+    <Link object1="54" data1="input" object2="4" data2="steps"/>
+    <Link object1="54" data1="iMin" object2="4" data2="minimum"/>
+    <Link object1="54" data1="iMax" object2="4" data2="maximum"/>
+    <Link object1="54" data1="oMin" object2="3" data2="y"/>
+    <Link object1="55" data1="x" object2="0" data2="margin"/>
+    <Link object1="55" data1="y" object2="64" data2="result"/>
+    <Link object1="56" data1="x" object2="3" data2="x"/>
+    <Link object1="56" data1="y" object2="64" data2="result"/>
+    <Link object1="57" data1="point 1" object2="55" data2="point"/>
+    <Link object1="57" data1="point 2" object2="56" data2="point"/>
+    <Link object1="58" data1="input #1" object2="4" data2="steps"/>
+    <Link object1="59" data1="text" object2="58" data2="text"/>
+    <Link object1="59" data1="font" object2="0" data2="font"/>
+    <Link object1="59" data1="rectangle" object2="60" data2="rectangle"/>
+    <Link object1="60" data1="center" object2="61" data2="point"/>
+    <Link object1="60" data1="size" object2="63" data2="point"/>
+    <Link object1="61" data1="x" object2="62" data2="result"/>
+    <Link object1="61" data1="y" object2="54" data2="result"/>
+    <Link object1="62" data1="input 1" object2="0" data2="margin"/>
+    <Link object1="63" data1="x" object2="0" data2="margin"/>
+    <Link object1="64" data1="input" object2="54" data2="result"/>
+    <Link object1="65" data1="input 1" object2="0" data2="margin"/>
+    <Link object1="66" data1="input #1" object2="0" data2="visualizerData"/>
+    <Link object1="67" data1="# numbers" object2="69" data2="result"/>
+    <Link object1="68" data1="input" object2="67" data2="numbers"/>
+    <Link object1="68" data1="iMax" object2="70" data2="result"/>
+    <Link object1="68" data1="oMin" object2="71" data2="first value"/>
+    <Link object1="68" data1="oMax" object2="76" data2="last value"/>
+    <Link object1="69" data1="input 1" object2="3" data2="x"/>
+    <Link object1="69" data1="input 2" object2="0" data2="margin"/>
+    <Link object1="70" data1="input 1" object2="69" data2="result"/>
+    <Link object1="71" data1="values" object2="66" data2="keys #1"/>
+    <Link object1="76" data1="values" object2="66" data2="keys #1"/>
+    <Link object1="82" data1="progress" object2="68" data2="result"/>
+    <Link object1="82" data1="input #1" object2="0" data2="visualizerData"/>
+    <Link object1="83" data1="input" object2="82" data2="output #1"/>
+    <Link object1="83" data1="iMin" object2="4" data2="minimum"/>
+    <Link object1="83" data1="iMax" object2="4" data2="maximum"/>
+    <Link object1="83" data1="oMin" object2="3" data2="y"/>
+    <Link object1="84" data1="input 1" object2="67" data2="numbers"/>
+    <Link object1="84" data1="input 2" object2="0" data2="margin"/>
+    <Link object1="85" data1="x" object2="84" data2="result"/>
+    <Link object1="85" data1="y" object2="83" data2="result"/>
+</Panda>
