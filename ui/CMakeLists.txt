@@ -48,6 +48,7 @@ install(FILES "${LIBRARIES_LIB_DIR}/qscintilla2_d.dll" CONFIGURATIONS Debug DEST
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${TARGET_DIR})
 install(DIRECTORY "../share/shaders" DESTINATION ${TARGET_DIR})
 install(DIRECTORY "../share/groups" DESTINATION ${TARGET_DIR})
+install(DIRECTORY "../share/visualizers" DESTINATION ${TARGET_DIR})
 
 # Install Qt files
 if(WIN32)

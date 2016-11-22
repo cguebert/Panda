@@ -26,8 +26,6 @@ enum class Color
 	HighlightedText
 };
 
-enum class MessageBoxType { about, critical, information, question, warning };
-
 // A class used to communicate from the core (or the plugins) to the gui, if there is one
 class PANDA_CORE_API BaseGUI
 {

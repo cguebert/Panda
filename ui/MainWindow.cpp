@@ -28,6 +28,7 @@
 #include <panda/CreateGroup.h>
 #include <panda/PluginsManager.h>
 #include <panda/TimedFunctions.h>
+#include <panda/VisualizersManager.h>
 #include <panda/command/AddObjectCommand.h>
 #include <panda/command/RemoveObjectCommand.h>
 #include <panda/data/DataFactory.h>
@@ -106,6 +107,8 @@ MainWindow::MainWindow()
 	createStatusBar();
 
 	createGroupRegistryMenu();
+
+	panda::VisualizersManager::createList("visualizers");
 
 	setWindowIcon(QIcon(":/share/icons/icon.png"));
 	setCurrentFile("");
