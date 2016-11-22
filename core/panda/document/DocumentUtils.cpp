@@ -1,7 +1,8 @@
 #include <panda/document/DocumentUtils.h>
 
-#include <panda/document/PandaDocument.h>
+#include <panda/command/AddObjectCommand.h>
 #include <panda/data/DataFactory.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/document/ObjectsList.h>
 #include <panda/object/ObjectFactory.h>
 
@@ -19,6 +20,7 @@ void copyDataToUserValue(const BaseData* data, PandaDocument* document, ObjectsL
 
 	std::string registryName = std::string("panda::GeneratorUser<") + entry->className + ">";
 	auto object = ObjectFactory::create(registryName, document);
+	document->getUndoStack().push(std::make_shared<panda::AddObjectCommand>(document, objectList, object));
 	if(!object)
 		return;
 
