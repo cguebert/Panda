@@ -59,7 +59,6 @@ namespace graphview
 
 		m_mainWindow->fillContextMenu(menu, types);
 
-		std::vector<QAction*> tempActions;
 		for (const auto& action : customActions)
 		{
 			const auto& label = action.menuName;
@@ -68,7 +67,6 @@ namespace graphview
 			if (!label.empty())
 			{
 				auto actionPtr = menu.addAction(QString::fromStdString(label), action.callback);
-				tempActions.push_back(actionPtr);
 				actionPtr->setParent(m_mainWindow); // So that the status tip can be shown on the status bar of the main window
 				if (!action.statusTip.empty())
 					actionPtr->setStatusTip(QString::fromStdString(action.statusTip));
@@ -77,9 +75,6 @@ namespace graphview
 
 		if (!menu.actions().empty())
 			menu.exec(m_viewWrapper.mapToGlobal(convert(pos)));
-
-		for (auto action : tempActions)
-			action->deleteLater();
 	}
 
 	std::string QtViewGui::getText(const std::string& label, const std::string& input)

@@ -21,18 +21,24 @@ void CustomVisualizer::setDocument(std::unique_ptr<VisualizerDocument> document)
 									  "The data to visualize on the graph view",
 									  this);
 
+	m_visualizedData = m_inputData.get();
+	addData(m_inputData.get());
 	addInput(*m_inputData);
 }
 
 void CustomVisualizer::update()
 {
-	const auto& size = m_visualizerDocument->getFBO().size();
-	m_aspectRatio.setValue(size.width() / static_cast<float>(size.height()));
+	if (!m_visualizerDocument)
+		return;
+
+//	const auto& size = m_visualizerDocument->getFBO().size();
+//	m_aspectRatio.setValue(size.width() / static_cast<float>(size.height()));
 }
 
 unsigned int CustomVisualizer::visualizerTextureId() const
 { 
-	return m_visualizerDocument->getFBO().id(); 
+	return 0;
+//	return m_visualizerDocument ? m_visualizerDocument->getFBO().id() : 0; 
 }
 
 int customVisualizerClass = RegisterObject<CustomVisualizer>("Custom visualizer").setDescription("Create a visualizer using a custom document");

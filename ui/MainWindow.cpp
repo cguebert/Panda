@@ -1259,6 +1259,9 @@ void MainWindow::fillContextMenu(QMenu& menu, int typesVal) const
 			owner = data->getOwner();
 		if(owner && owner->getClass()->getClassName() == "GeneratorUser" && owner->getClass()->getNamespaceName() == "panda")
 			menu.addAction(m_chooseWidgetAction);
+
+		if (data && !panda::VisualizersManager::visualizers(data->getDataTrait()->fullTypeId()).empty())
+			menu.addAction(tr("Visualize"), m_currentGraphView, &graphview::QtViewWrapper::createVisualizer);
 	}
 
 	if(obj && obj->getClass()->getClassName() == "GeneratorUser" && obj->getClass()->getNamespaceName() == "panda")

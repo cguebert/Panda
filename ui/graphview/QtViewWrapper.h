@@ -45,6 +45,7 @@ namespace graphview
 		void showChooseWidgetDialog();
 		void debugDirtyState(bool show = true);
 		void setDataLabel();
+		void createVisualizer();
 
 	signals:
 		void viewportModified();

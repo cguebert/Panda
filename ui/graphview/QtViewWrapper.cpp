@@ -22,15 +22,21 @@
 #include <panda/graphview/Viewport.h>
 #include <panda/graphview/graphics/DrawList.h>
 
-#include <panda/document/PandaDocument.h>
 #include <panda/SimpleGUI.h>
-#include <panda/helper/algorithm.h>
+#include <panda/VisualizersManager.h>
 #include <panda/command/AddObjectCommand.h>
 #include <panda/command/DockableCommand.h>
+#include <panda/command/LinkDatasCommand.h>
 #include <panda/command/RemoveObjectCommand.h>
 #include <panda/document/DocumentSignals.h>
 #include <panda/document/ObjectsList.h>
+#include <panda/document/PandaDocument.h>
 #include <panda/document/Serialization.h>
+#include <panda/helper/algorithm.h>
+#include <panda/object/ObjectFactory.h>
+#include <panda/object/visualizer/CustomVisualizer.h>
+#include <panda/object/visualizer/VisualizerDocument.h>
+#include <panda/types/DataTraits.h>
 
 #ifdef PANDA_LOG_EVENTS
 #include <ui/dialog/UpdateLoggerDialog.h>
@@ -346,6 +352,71 @@ void QtViewWrapper::setDataLabel()
 
 	emit modified();
 }
+
+void QtViewWrapper::createVisualizer()
+{
+	auto data = m_graphView->interaction().contextMenuData();
+	if (!data)
+		return;
+
+	const auto visualizers = panda::VisualizersManager::visualizers(data->getDataTrait()->fullTypeId());
+
+	if (visualizers.empty())
+		return;
+
+	std::string path;
+	if (visualizers.size() == 1)
+		path = visualizers.front().path;
+	else
+	{
+		QStringList items;
+		for (const auto& v : visualizers)
+			items << QString::fromStdString(v.name);
+		bool ok = false;
+		auto item = QInputDialog::getItem(this, "Create data visualizer", "Choose the type", items, 0, false, &ok);
+		if (!ok)
+			return;
+
+		const auto index = items.indexOf(item);
+		path = visualizers[index].path;
+	}
+
+	try 
+	{
+		auto document = m_graphView->document();
+		auto doc = panda::serialization::readFile(path, document->getGUI());
+		std::unique_ptr<panda::VisualizerDocument> visuDoc;
+		auto visuDocRaw = dynamic_cast<panda::VisualizerDocument*>(doc.get());
+		if (visuDocRaw)
+		{
+			visuDoc.reset(visuDocRaw);
+			doc.release();
+		}
+
+		auto& undo = document->getUndoStack();
+		auto macro = undo.beginMacro("create visualizer");
+
+		auto object = panda::ObjectFactory::create("panda::CustomVisualizer", document);
+		undo.push(std::make_shared<panda::AddObjectCommand>(document, document->getObjectsList(), object));
+
+		auto visualizer = std::dynamic_pointer_cast<panda::CustomVisualizer>(object);
+		if (visualizer)
+		{
+			visualizer->setDocument(std::move(visuDoc));
+			auto visuData = visualizer->visualizedData();
+			if(visuData)
+				undo.push(std::make_shared<panda::LinkDatasCommand>(visuData, data));
+		}
+		
+
+		emit modified();
+	}
+	catch (const std::exception& e)
+	{
+		QMessageBox::warning(this, "Load error", QString::fromLocal8Bit(e.what()));
+	}
+}
+
 void QtViewWrapper::copy()
 {
 	const auto& selected = m_graphView->selection().get();
