@@ -23,6 +23,9 @@ public:
 protected:
 	std::unique_ptr<VisualizerDocument> m_visualizerDocument;
 	std::shared_ptr<BaseData> m_inputData;
+
+	BaseData* m_docInputData = nullptr;
+	bool m_initialized = false;
 };
 
 } // namespace panda
