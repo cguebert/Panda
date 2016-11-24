@@ -116,6 +116,10 @@ void LayersTab::setDocument(const std::shared_ptr<panda::PandaDocument>& documen
 	m_observer.get(document->getObjectsList().reorderedObjects).connect<LayersTab, &LayersTab::reorderObjects>(this);
 	m_observer.get(document->getSignals().dirtyObject).connect<LayersTab, &LayersTab::dirtyObject>(this);
 	m_observer.get(document->getSignals().modifiedObject).connect<LayersTab, &LayersTab::modifiedObject>(this);
+
+	m_layers.clear();
+	for (const auto& object : document->getObjectsList().get())
+		addedObject(object.get());
 }
 
 void LayersTab::updateTable()

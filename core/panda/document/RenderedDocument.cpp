@@ -1,6 +1,7 @@
 #include <panda/document/RenderedDocument.h>
 #include <panda/SimpleGUI.h>
 #include <panda/document/DocumentRenderer.h>
+#include <panda/document/ObjectsList.h>
 #include <panda/document/Scheduler.h>
 #include <panda/object/Layer.h>
 #include <panda/object/Renderer.h>
@@ -23,6 +24,8 @@ RenderedDocument::RenderedDocument(gui::BaseGUI& gui)
 
 	m_defaultLayer = std::make_shared<Layer>(this);
 	m_defaultLayer->getLayerNameData().setValue("Default Layer");
+
+	m_observer.get(m_objectsList->reorderedObjects).connect<RenderedDocument, &RenderedDocument::objectsReordered>(this);
 }
 
 RenderedDocument::~RenderedDocument() = default;
@@ -72,6 +75,11 @@ graphics::Framebuffer& RenderedDocument::getFBO()
 {
 	updateIfDirty();
 	return m_renderer->getFBO();
+}
+
+void RenderedDocument::objectsReordered()
+{
+	setDirtyValue(this);
 }
 
 } // namespace panda

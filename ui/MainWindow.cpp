@@ -1716,6 +1716,8 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 	m_datasTable->setDocument(m_document);
 	m_datasTable->setSelectedObject(m_document.get());
 
+	m_layersTab->setDocument(m_document);
+
 	for (auto action : m_allViewsActions)
 		m_documentView->addAction(action);
 	for (auto action : m_graphViewsActions)

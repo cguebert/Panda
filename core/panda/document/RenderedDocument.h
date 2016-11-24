@@ -1,6 +1,7 @@
 #pragma once
 
 #include <panda/document/PandaDocument.h>
+#include <panda/messaging.h>
 
 #include <panda/types/Color.h>
 #include <panda/types/Point.h>
@@ -40,12 +41,15 @@ public:
 	DocumentRenderer& getRenderer() const; // What takes care of rendering the document in OpenGL
 
 protected:
+	void objectsReordered();
+
 	std::shared_ptr<Layer> m_defaultLayer;
 
 	Data<types::Point> m_renderSize;
 	Data<types::Color> m_backgroundColor;
 	
 	std::unique_ptr<DocumentRenderer> m_renderer;
+	msg::Observer m_observer;
 };
 
 //****************************************************************************//
