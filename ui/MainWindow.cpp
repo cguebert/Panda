@@ -1751,6 +1751,9 @@ void MainWindow::updateAddObjectActions(QMenu* menu)
 
 void MainWindow::updateAddGroupActions(QMenu* menu)
 {
+	if (!menu)
+		return;
+
 	auto docType = panda::serialization::getDocumentType(m_document.get());
 	for (auto action : menu->actions())
 	{
