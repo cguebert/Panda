@@ -1,7 +1,6 @@
 #include <QtWidgets>
 
 #include <ui/DatasTable.h>
-#include <ui/GroupsManager.h>
 #include <ui/ImageViewport.h>
 #include <ui/OpenGLRenderView.h>
 #include <ui/LayersTab.h>
@@ -26,6 +25,7 @@
 #include <panda/graphview/documentdatas/DocumentDatasView.h>
 
 #include <panda/CreateGroup.h>
+#include <panda/GroupsManager.h>
 #include <panda/PluginsManager.h>
 #include <panda/TimedFunctions.h>
 #include <panda/VisualizersManager.h>
@@ -410,7 +410,7 @@ void MainWindow::createActions()
 	m_saveGroupAction->setShortcut(tr("Ctrl+Shift+E"));
 	m_saveGroupAction->setStatusTip(tr("Save the selected group for later use"));
 	m_saveGroupAction->setEnabled(false);
-	connect(m_saveGroupAction, &QAction::triggered, this, &MainWindow::saveGroup);
+	connect(m_saveGroupAction, &QAction::triggered, [this]() { if(m_currentGraphView) m_currentGraphView->saveGroup(); });
 	m_graphViewsActions.push_back(m_saveGroupAction);
 
 	auto zoomResetAction = new QAction(tr("Reset &zoom"), this);
@@ -835,9 +835,9 @@ void MainWindow::createGroupRegistryMenu()
 {
 	if(m_groupsRegistryMenu)
 		m_groupsRegistryMenu->clear();
-	GroupsManager::createGroupsList();
+	panda::GroupsManager::createGroupsList();
 
-	const auto& groups = GroupsManager::groups();
+	const auto& groups = panda::GroupsManager::groups();
 	if(!groups.empty())
 	{
 		if(!m_groupsRegistryMenu)
@@ -849,15 +849,15 @@ void MainWindow::createGroupRegistryMenu()
 		menuItemInfo menuTree;
 		for(const auto& group : groups)
 		{
-			const QString& display = group.first;
+			const QString& display = QString::fromStdString(group.first);
 			QStringList hierarchy = display.split("/");
 			menuItemInfo* currentMenu = &menuTree;
 			for(int i=0; i<hierarchy.count()-1; ++i)
 				currentMenu = &currentMenu->childs[hierarchy[i]];
 
 			QAction* tempAction = new QAction(hierarchy.last(), this);
-			tempAction->setStatusTip(group.second.description);
-			tempAction->setData(group.first);
+			tempAction->setStatusTip(QString::fromStdString(group.second.description));
+			tempAction->setData(display);
 			currentMenu->actions[hierarchy.last()] = tempAction;
 
 			connect(tempAction, &QAction::triggered, this, &MainWindow::createGroupObject);
@@ -1142,30 +1142,13 @@ void MainWindow::editGroup()
 		statusBar()->showMessage(tr("The selected objet is not a group"), 2000);
 }
 
-void MainWindow::saveGroup()
-{
-	panda::PandaObject* object = m_currentGraphView->view().selection().lastSelectedObject();
-	panda::Group* group = dynamic_cast<panda::Group*>(object);
-	if(group)
-	{
-		if(GroupsManager::saveGroup(group))
-		{
-			statusBar()->showMessage(tr("Group saved"), 2000);
-			createGroupRegistryMenu();
-		}
-	}
-	else
-		statusBar()->showMessage(tr("The selected objet is not a group"), 2000);
-}
-
-
 void MainWindow::createGroupObject()
 {
-	QAction *action = qobject_cast<QAction*>(sender());
+	QAction* action = qobject_cast<QAction*>(sender());
 	if(action)
 	{
-		QString path = action->data().toString();
-		GroupsManager::createGroupObject(m_document.get(), &m_currentGraphView->view(), path);
+		const auto path = action->data().toString().toStdString();
+		panda::GroupsManager::createGroupObject(m_document.get(), &m_currentGraphView->view(), path);
 	}
 }
 
@@ -1712,6 +1695,7 @@ void MainWindow::setDocument(const std::shared_ptr<panda::PandaDocument>& docume
 
 	connect(m_documentView, &graphview::QtViewWrapper::modified, this, &MainWindow::documentModified);
 	connect(m_documentView, &graphview::QtViewWrapper::lostFocus, this, &MainWindow::onTabWidgetFocusLoss);
+	connect(m_documentView, &graphview::QtViewWrapper::groupsListModified, this, &MainWindow::createGroupRegistryMenu);
 	
 	m_datasTable->setDocument(m_document);
 	m_datasTable->setSelectedObject(m_document.get());
@@ -1765,6 +1749,7 @@ void MainWindow::updateAddGroupActions(QMenu* menu)
 			continue;
 		}
 
-		action->setEnabled(GroupsManager::canCreate(action->data().toString(), docType));
+		auto canCreate = panda::GroupsManager::canCreate(action->data().toString().toStdString(), docType);
+		action->setEnabled(canCreate);
 	}
 }

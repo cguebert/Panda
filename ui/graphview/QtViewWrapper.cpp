@@ -22,6 +22,7 @@
 #include <panda/graphview/Viewport.h>
 #include <panda/graphview/graphics/DrawList.h>
 
+#include <panda/GroupsManager.h>
 #include <panda/SimpleGUI.h>
 #include <panda/VisualizersManager.h>
 #include <panda/command/AddObjectCommand.h>
@@ -33,6 +34,7 @@
 #include <panda/document/PandaDocument.h>
 #include <panda/document/Serialization.h>
 #include <panda/helper/algorithm.h>
+#include <panda/object/Group.h>
 #include <panda/object/ObjectFactory.h>
 #include <panda/object/visualizer/CustomVisualizer.h>
 #include <panda/object/visualizer/VisualizerDocument.h>
@@ -470,6 +472,49 @@ void QtViewWrapper::executeNextRefresh(std::function<void()> func)
 void QtViewWrapper::emitViewportModified()
 {
 	emit viewportModified();
+}
+
+void QtViewWrapper::saveGroup()
+{
+	panda::PandaObject* object = m_graphView->selection().lastSelectedObject();
+	panda::Group* group = dynamic_cast<panda::Group*>(object);
+	if (!group)
+	{
+		QMessageBox::warning(this, "Save group error", "The selected objet is not a group");
+		return;
+	}
+
+	bool ok;
+	const auto text = QInputDialog::getText(nullptr, tr("Save group"),
+											tr("Group name:"), QLineEdit::Normal,
+											QString::fromStdString(group->getGroupName()), &ok);
+	if (!ok || text.isEmpty())
+		return;
+
+	const auto groupPath = text.toStdString();
+	QString description;
+	auto info = panda::GroupsManager::groupInformation(groupPath);
+
+	// It already exists
+	if (info)
+	{
+		if (QMessageBox::question(nullptr, tr("Panda"),
+									tr("This group already exists, overwrite?"),
+									QMessageBox::Yes | QMessageBox::No,
+									QMessageBox::Yes) != QMessageBox::Yes)
+			return;
+		description = QString::fromStdString(info->description);
+	}
+
+	description = QInputDialog::getText(nullptr, tr("Save group"),
+										tr("Group description:"), QLineEdit::Normal,
+										description, &ok);
+
+	if(panda::GroupsManager::saveGroup(group, groupPath, description.toStdString()))
+	{
+		m_graphView->gui().setStatusBarMessage("Group saved");
+		emit groupsListModified();
+	}
 }
 
 } // namespace graphview

@@ -46,11 +46,13 @@ namespace graphview
 		void debugDirtyState(bool show = true);
 		void setDataLabel();
 		void createVisualizer();
+		void saveGroup();
 
 	signals:
 		void viewportModified();
 		void modified();
 		void lostFocus(QWidget*);
+		void groupsListModified();
 
 	protected:
 		void initializeGL() override;

@@ -32,7 +32,7 @@ namespace panda
 		static std::unique_ptr<panda::PandaDocument> createVisualizer(const std::string& name, panda::gui::BaseGUI& gui);
 
 	protected:
-		VisualizersManager();
+		VisualizersManager() = default;
 		static VisualizersManager& instance();
 
 		Visualizers m_list;

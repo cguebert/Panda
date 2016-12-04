@@ -1,8 +1,8 @@
 #include <QtWidgets>
 
-#include <ui/GroupsManager.h>
 #include <ui/dialog/QuickCreateDialog.h>
 
+#include <panda/GroupsManager.h>
 #include <panda/command/AddObjectCommand.h>
 #include <panda/document/PandaDocument.h>
 #include <panda/graphview/GraphView.h>
@@ -66,8 +66,8 @@ QuickCreateDialog::QuickCreateDialog(panda::PandaDocument* doc, panda::graphview
 		m_menuStringsList << QString::fromStdString(name);
 
 	// Adding groups
-	for(const auto& group : GroupsManager::groups())
-		m_menuStringsList << "Groups/" + group.first;
+	for(const auto& group : panda::GroupsManager::groups())
+		m_menuStringsList << "Groups/" + QString::fromStdString(group.first);
 
 	m_menuStringsList.sort();
 	m_listWidget->addItems(m_menuStringsList);
@@ -101,7 +101,7 @@ void QuickCreateDialog::updateDescLabel()
 		if(selectedItemText.startsWith("Groups/"))
 		{
 			QString groupName = selectedItemText.mid(7);
-			QString description = GroupsManager::groupDescription(groupName);
+			const auto description = QString::fromStdString(panda::GroupsManager::groupDescription(groupName.toStdString()));
 			m_descLabel->setText(description);
 		}
 		else
@@ -198,7 +198,7 @@ void QuickCreateDialog::createObject()
 		if(selectedItemText.startsWith("Groups/"))
 		{
 			QString groupName = selectedItemText.mid(7);
-			GroupsManager::createGroupObject(m_document, m_view, groupName);
+			panda::GroupsManager::createGroupObject(m_document, m_view, groupName.toStdString());
 		}
 		else
 		{

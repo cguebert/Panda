@@ -66,7 +66,6 @@ private slots:
 	void group();
 	void ungroup();
 	void editGroup();
-	void saveGroup();
 	void openGroup();
 	void createGroupObject();
 	void copyDataToUserValue();

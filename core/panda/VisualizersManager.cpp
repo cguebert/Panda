@@ -42,10 +42,6 @@ namespace panda
 
 	const std::string VisualizersManager::m_dirPath = "visualizers";
 
-	VisualizersManager::VisualizersManager()
-	{
-	}
-
 	VisualizersManager& VisualizersManager::instance()
 	{
 		static VisualizersManager groupManager;
