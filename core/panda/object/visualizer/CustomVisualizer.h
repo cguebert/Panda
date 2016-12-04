@@ -14,18 +14,21 @@ public:
 
 	CustomVisualizer(PandaDocument* doc);
 
-	void setDocument(std::unique_ptr<VisualizerDocument> document);
+	void setDocumentPath(const std::string& path);
 
 	void update() override;
 
 	unsigned int visualizerTextureId() const override;
 
 protected:
+	void load(const XmlElement& elem) override;
+
 	std::unique_ptr<VisualizerDocument> m_visualizerDocument;
 	std::shared_ptr<BaseData> m_inputData;
 
 	BaseData* m_docInputData = nullptr;
 	bool m_initialized = false;
+	Data<std::string> m_docPath;
 };
 
 } // namespace panda

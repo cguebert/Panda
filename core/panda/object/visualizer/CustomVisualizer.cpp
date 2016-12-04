@@ -3,20 +3,35 @@
 #include <panda/object/ObjectFactory.h>
 #include <panda/data/DataFactory.h>
 #include <panda/document/DocumentRenderer.h>
+#include <panda/document/Serialization.h>
 #include <panda/graphics/Framebuffer.h>
+#include <panda/helper/Exception.h>
 
 namespace panda
 {
 
 CustomVisualizer::CustomVisualizer(PandaDocument* doc)
 	: Visualizer(doc)
+	, m_docPath(initData("documentPath", "Path to the visualizer document"))
 {
+	m_docPath.setDisplayed(false);
 }
 
-void CustomVisualizer::setDocument(std::unique_ptr<VisualizerDocument> document)
+void CustomVisualizer::setDocumentPath(const std::string& path)
 {
+	m_docPath.setValue(path);
+
+	auto doc = panda::serialization::readFile(path, parentDocument()->getGUI());
+	std::unique_ptr<panda::VisualizerDocument> visuDoc;
+	auto visuDocRaw = dynamic_cast<panda::VisualizerDocument*>(doc.get());
+	if (visuDocRaw)
+	{
+		visuDoc.reset(visuDocRaw);
+		doc.release();
+	}
+
 	m_initialized = false;
-	m_visualizerDocument = std::move(document);
+	m_visualizerDocument = std::move(visuDoc);
 	m_inputData = DataFactory::create(m_visualizerDocument->visualizerType(),
 									  "input",
 									  "The data to visualize on the graph view",
@@ -56,6 +71,16 @@ unsigned int CustomVisualizer::visualizerTextureId() const
 { 
 	updateIfDirty();
 	return m_visualizerDocument ? m_visualizerDocument->getFBO().texture() : 0; 
+}
+
+void CustomVisualizer::load(const XmlElement& elem)
+{
+	Visualizer::load(elem);
+
+	auto path = m_docPath.getValue();
+	if (path.empty())
+		throw helper::Exception("No document set for CustomVisualizer");
+	setDocumentPath(path);
 }
 
 int customVisualizerClass = RegisterObject<CustomVisualizer>("Custom visualizer").setDescription("Create a visualizer using a custom document");

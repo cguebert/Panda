@@ -384,25 +384,17 @@ void QtViewWrapper::createVisualizer()
 	try 
 	{
 		auto document = m_graphView->document();
-		auto doc = panda::serialization::readFile(path, document->getGUI());
-		std::unique_ptr<panda::VisualizerDocument> visuDoc;
-		auto visuDocRaw = dynamic_cast<panda::VisualizerDocument*>(doc.get());
-		if (visuDocRaw)
-		{
-			visuDoc.reset(visuDocRaw);
-			doc.release();
-		}
+		auto object = panda::ObjectFactory::create("panda::CustomVisualizer", document);
 
 		auto& undo = document->getUndoStack();
 		auto macro = undo.beginMacro("create visualizer");
-
-		auto object = panda::ObjectFactory::create("panda::CustomVisualizer", document);
+		
 		undo.push(std::make_shared<panda::AddObjectCommand>(document, document->getObjectsList(), object));
 
 		auto visualizer = std::dynamic_pointer_cast<panda::CustomVisualizer>(object);
 		if (visualizer)
 		{
-			visualizer->setDocument(std::move(visuDoc));
+			visualizer->setDocumentPath(path);
 			auto visuData = visualizer->visualizedData();
 			if(visuData)
 				undo.push(std::make_shared<panda::LinkDatasCommand>(visuData, data));
