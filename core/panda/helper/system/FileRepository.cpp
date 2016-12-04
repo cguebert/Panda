@@ -38,7 +38,7 @@ std::string FileRepository::findFile(const std::string& fileName) const
 		fs::path dir(path);
 		filePath = dir / fileName;
 		if(exists(filePath))
-			return absolute(filePath).string();
+			return absolute(filePath).lexically_normal().string();
 	}
 
 	return std::string();
@@ -67,8 +67,8 @@ std::vector<std::string> FileRepository::enumerateFilesInDir(const std::string& 
 	{
 		for (auto&& x : fs::recursive_directory_iterator(dir))
 		{
-			if (extension.empty() || x.path().extension() == extension)
-				files.push_back(x.path().string());
+			if (is_regular_file(x) && (extension.empty() || x.path().extension() == extension))
+				files.push_back(x.path().lexically_relative(dirPath).generic_string());
 		}
 		return files;
 	}
@@ -78,10 +78,10 @@ std::vector<std::string> FileRepository::enumerateFilesInDir(const std::string& 
 		dir = fs::path(path) / dirPath;
 		if (exists(dir) && is_directory(dir))
 		{
-			for (auto&& x : fs::directory_iterator(dir))
+			for (auto&& x : fs::recursive_directory_iterator(dir))
 			{
-				if (extension.empty() || x.path().extension() == extension)
-					files.push_back(x.path().filename().string());
+				if (is_regular_file(x) && (extension.empty() || x.path().extension() == extension))
+					files.push_back(x.path().lexically_relative(dir.string()).generic_string());
 			}
 		}
 	}

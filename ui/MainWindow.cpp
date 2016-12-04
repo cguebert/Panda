@@ -108,7 +108,7 @@ MainWindow::MainWindow()
 
 	createGroupRegistryMenu();
 
-	panda::VisualizersManager::createList("visualizers");
+	panda::VisualizersManager::createList();
 
 	setWindowIcon(QIcon(":/share/icons/icon.png"));
 	setCurrentFile("");

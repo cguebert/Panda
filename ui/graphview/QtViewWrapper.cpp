@@ -399,7 +399,6 @@ void QtViewWrapper::createVisualizer()
 			if(visuData)
 				undo.push(std::make_shared<panda::LinkDatasCommand>(visuData, data));
 		}
-		
 
 		emit modified();
 	}

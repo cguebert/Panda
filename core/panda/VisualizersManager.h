@@ -26,7 +26,7 @@ namespace panda
 		};
 		using Visualizers = std::vector<VisualizerInformation>;
 
-		static void createList(const std::string& dirPath);
+		static void createList();
 		static const Visualizers& visualizers();
 		static Visualizers visualizers(int dataType);
 		static std::unique_ptr<panda::PandaDocument> createVisualizer(const std::string& name, panda::gui::BaseGUI& gui);
@@ -36,7 +36,7 @@ namespace panda
 		static VisualizersManager& instance();
 
 		Visualizers m_list;
-		std::string m_dirPath;
+		static const std::string m_dirPath;
 	};
 
 }

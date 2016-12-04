@@ -4,6 +4,7 @@
 #include <panda/document/PandaDocument.h>
 #include <panda/document/Serialization.h>
 #include <panda/helper/Exception.h>
+#include <panda/helper/system/FileRepository.h>
 #include <panda/XmlDocument.h>
 
 #include <boost/filesystem.hpp>
@@ -13,10 +14,12 @@ namespace fs = boost::filesystem;
 namespace
 {
 
-	std::pair<bool, panda::VisualizersManager::VisualizerInformation> getInformation(const std::string& path)
+	std::pair<bool, panda::VisualizersManager::VisualizerInformation> getInformation(const std::string& dirPath, const std::string& path)
 	{
+		const auto filePath = (fs::path(dirPath) / path).generic_string();
+		const auto realPath = panda::helper::system::DataRepository.findFile(filePath);
 		panda::XmlDocument doc;
-		if (!doc.loadFromFile(path))
+		if (!doc.loadFromFile(realPath))
 			return { false, {} };
 
 		const auto root = doc.root();
@@ -26,7 +29,7 @@ namespace
 
 		panda::VisualizersManager::VisualizerInformation info;
 		info.dataType = panda::DataFactory::nameToType(dataAtt.toString());
-		info.path = path;
+		info.path = filePath;
 		info.name = fs::path { path }.stem().string();
 
 		return { true, std::move(info) };
@@ -36,6 +39,8 @@ namespace
 
 namespace panda
 {
+
+	const std::string VisualizersManager::m_dirPath = "visualizers";
 
 	VisualizersManager::VisualizersManager()
 	{
@@ -47,25 +52,19 @@ namespace panda
 		return groupManager;
 	}
 
-	void VisualizersManager::createList(const std::string& dirPath)
+	void VisualizersManager::createList()
 	{
 		auto& vm = instance();
-		vm.m_dirPath = dirPath;
 		
 		auto& list = vm.m_list;
 		list.clear();
 
-		fs::path dir(dirPath);
-		if (!dir.is_absolute())
-			dir = fs::absolute(dir);
-		if (exists(dir) && is_directory(dir))
+		const auto paths = panda::helper::system::DataRepository.enumerateFilesInDir(m_dirPath);
+		for (auto&& path : paths)
 		{
-			for (auto& x : fs::recursive_directory_iterator(dir))
-			{
-				const auto infoPair = getInformation(x.path().string());
-				if (infoPair.first)
-					list.push_back(infoPair.second);
-			}
+			const auto infoPair = getInformation(m_dirPath, path);
+			if (infoPair.first)
+				list.push_back(infoPair.second);
 		}
 	}
 
@@ -78,7 +77,9 @@ namespace panda
 		if (it == list.end())
 			return nullptr;
 
-		return serialization::readFile(it->path, gui);
+		const auto filePath = fs::path(m_dirPath) / it->path;
+		const auto realPath = panda::helper::system::DataRepository.findFile(filePath.string());
+		return serialization::readFile(realPath, gui);
 	}
 
 	const VisualizersManager::Visualizers& VisualizersManager::visualizers()

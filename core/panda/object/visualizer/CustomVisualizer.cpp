@@ -6,6 +6,7 @@
 #include <panda/document/Serialization.h>
 #include <panda/graphics/Framebuffer.h>
 #include <panda/helper/Exception.h>
+#include <panda/helper/system/FileRepository.h>
 
 namespace panda
 {
@@ -21,7 +22,8 @@ void CustomVisualizer::setDocumentPath(const std::string& path)
 {
 	m_docPath.setValue(path);
 
-	auto doc = panda::serialization::readFile(path, parentDocument()->getGUI());
+	const auto realPath = panda::helper::system::DataRepository.findFile(path);
+	auto doc = panda::serialization::readFile(realPath, parentDocument()->getGUI());
 	std::unique_ptr<panda::VisualizerDocument> visuDoc;
 	auto visuDocRaw = dynamic_cast<panda::VisualizerDocument*>(doc.get());
 	if (visuDocRaw)
@@ -29,6 +31,8 @@ void CustomVisualizer::setDocumentPath(const std::string& path)
 		visuDoc.reset(visuDocRaw);
 		doc.release();
 	}
+	else
+		throw helper::Exception("CustomVisualizer needs a VisualizerDocument");
 
 	m_initialized = false;
 	m_visualizerDocument = std::move(visuDoc);
