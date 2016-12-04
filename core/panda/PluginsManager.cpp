@@ -55,13 +55,13 @@ namespace panda
 
 //****************************************************************************//
 
-	PluginsManager* PluginsManager::getInstance()
+	PluginsManager& PluginsManager::instance()
 	{
 		static PluginsManager pluginsManager;
-		return &pluginsManager;
+		return pluginsManager;
 	}
 
-	void PluginsManager::loadPlugins(const std::string& directory)
+	void PluginsManager::loadPlugins()
 	{
 		auto& factory = panda::ObjectFactory::instance();
 		factory.moduleLoaded(); // Register core modules
@@ -74,6 +74,8 @@ namespace panda
 		const std::string filter = ".so";
 #endif
 
+		auto& plugins = instance().m_plugins;
+		const std::string directory = "modules";
 		auto modules = panda::helper::system::DataRepository.enumerateFilesInDir(directory, filter);
 		for (const auto& moduleName : modules)
 		{
@@ -82,7 +84,7 @@ namespace panda
 
 			if (library->load())
 			{
-				m_plugins.push_back(library);
+				plugins.push_back(library);
 				factory.moduleLoaded();
 			}
 			else
@@ -90,6 +92,11 @@ namespace panda
 		}
 
 		factory.allObjectsRegistered();
+	}
+
+	const PluginsManager::PluginsList& PluginsManager::plugins()
+	{
+		return instance().m_plugins;
 	}
 
 }

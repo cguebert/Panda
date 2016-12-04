@@ -101,7 +101,7 @@ MainWindow::MainWindow()
 	for (const auto& path : fontPaths)
 		dataRepository.addPath(path.toStdString());
 
-	panda::PluginsManager::getInstance()->loadPlugins();
+	panda::PluginsManager::loadPlugins();
 
 	createActions();
 	createStatusBar();

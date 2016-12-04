@@ -35,12 +35,11 @@ namespace panda
 	public:
 		using PluginsList = std::vector<DynamicLibrary::SPtr>;
 
-		static PluginsManager* getInstance();
-
-		void loadPlugins(const std::string& directory = "modules");
-		const PluginsList& plugins();
+		static void loadPlugins();
+		static const PluginsList& plugins();
 
 	protected:
+		static PluginsManager& instance();
 		std::vector<DynamicLibrary::SPtr> m_plugins;
 	};
 

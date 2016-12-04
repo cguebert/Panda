@@ -224,7 +224,7 @@ bool init(const std::string& filePath = "")
 	dataRepository.addPath("C:/Windows/Fonts");
 #endif
 
-	panda::PluginsManager::getInstance()->loadPlugins();
+	panda::PluginsManager::loadPlugins();
 
 	gui = std::make_shared<SimpleGUIImpl>();
 	
